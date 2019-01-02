@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -166,6 +166,8 @@ class FTermLinux
     static FKey          shiftAltKeyCorrection (const FKey&);
     static FKey          ctrlAltKeyCorrection (const FKey&);
     static FKey          shiftCtrlAltKeyCorrection (const FKey&);
+    static sInt16        getFontPos (wchar_t ucs);
+    static void          initSpecialCharacter();
 
     // Data Members
 #if defined(__linux__)

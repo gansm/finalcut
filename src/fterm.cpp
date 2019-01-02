@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -151,6 +151,9 @@ void FTerm::setInsertCursor (bool enable)
 //----------------------------------------------------------------------
 void FTerm::redefineDefaultColors (bool enable)
 {
+  if ( isNewFont() )  // NewFont need the reverse-video attribute
+    return;
+
   xterm->redefineDefaultColors (enable);
 }
 
@@ -693,26 +696,69 @@ std::string FTerm::getEncodingString()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::charEncodable (uInt c)
+bool FTerm::charEncodable (wchar_t c)
 {
-  uInt ch = charEncode(c);
+  wchar_t ch = charEncode(c);
   return bool(ch > 0 && ch != c);
 }
 
 //----------------------------------------------------------------------
-uInt FTerm::charEncode (uInt c)
+wchar_t FTerm::charEncode (wchar_t c)
 {
   return charEncode (c, data->getTermEncoding());
 }
 
 //----------------------------------------------------------------------
-uInt FTerm::charEncode (uInt c, fc::encoding enc)
+wchar_t FTerm::charEncode (wchar_t c, fc::encoding enc)
 {
-  for (std::size_t i = 0; i <= uInt(fc::lastCharItem); i++)
+  wchar_t ch_enc = c;
+
+  for (std::size_t i = 0; i <= fc::lastCharItem; i++)
   {
-    if ( fc::character[i][fc::UTF8] == c )
+    if ( fc::character[i][fc::UTF8] == uInt(c) )
     {
-      c = fc::character[i][enc];
+      ch_enc = wchar_t(fc::character[i][enc]);
+      break;
+    }
+  }
+
+  if ( enc == fc::PC && ch_enc == c )
+    ch_enc = FTerm::unicode_to_cp437(c);
+
+  return ch_enc;
+}
+
+//----------------------------------------------------------------------
+wchar_t FTerm::cp437_to_unicode (uChar c)
+{
+  constexpr std::size_t CP437 = 0;
+  constexpr std::size_t UNICODE = 1;
+  wchar_t ucs = wchar_t(c);
+
+  for (std::size_t i = 0; i <= fc::lastCP437Item; i++)
+  {
+    if ( fc::cp437_to_ucs[i][CP437] == c )  // found
+    {
+      ucs = fc::cp437_to_ucs[UNICODE][1];
+      break;
+    }
+  }
+
+  return ucs;
+}
+
+//----------------------------------------------------------------------
+uChar FTerm::unicode_to_cp437 (wchar_t ucs)
+{
+  constexpr std::size_t CP437 = 0;
+  constexpr std::size_t UNICODE = 1;
+  uChar c = '?';
+
+  for (std::size_t i = 0; i <= fc::lastCP437Item; i++)
+  {
+    if ( fc::cp437_to_ucs[i][UNICODE] == ucs )  // found
+    {
+      c = fc::cp437_to_ucs[i][CP437];
       break;
     }
   }
@@ -1044,15 +1090,27 @@ void FTerm::init_pc_charset()
 //----------------------------------------------------------------------
 void FTerm::init_cygwin_charmap()
 {
-  // Replace don't printable characters in a Cygwin terminal
+  // Replace don't printable PC charset characters in a Cygwin terminal
 
   if ( ! isCygwinTerminal() )
     return;
 
   for (std::size_t i = 0; i <= fc::lastCharItem; i++ )
   {
-    if ( fc::character[i][fc::UTF8] == fc::BlackUpPointingTriangle    // ▲
-      || fc::character[i][fc::UTF8] == fc::BlackDownPointingTriangle  // ▼
+    if ( fc::character[i][fc::UTF8] == fc::BlackUpPointingTriangle )  // ▲
+      fc::character[i][fc::PC] = 0x18;
+
+    if ( fc::character[i][fc::UTF8] == fc::BlackDownPointingTriangle )  // ▼
+      fc::character[i][fc::PC] = 0x19;
+
+    if ( fc::character[i][fc::UTF8] == fc::InverseBullet  // ◘
+      || fc::character[i][fc::UTF8] == fc::InverseWhiteCircle  // ◙
+      || fc::character[i][fc::UTF8] == fc::UpDownArrow  // ↕
+      || fc::character[i][fc::UTF8] == fc::LeftRightArrow  // ↔
+      || fc::character[i][fc::UTF8] == fc::DoubleExclamationMark  // ‼
+      || fc::character[i][fc::UTF8] == fc::BlackRectangle  // ▬
+      || fc::character[i][fc::UTF8] == fc::RightwardsArrow  // →
+      || fc::character[i][fc::UTF8] == fc::Section  // §
       || fc::character[i][fc::UTF8] == fc::SquareRoot )  // SquareRoot √
       fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
   }
@@ -1350,7 +1408,7 @@ void FTerm::init_individual_term_encoding()
     data->setTermEncoding (fc::PC);
     Fputchar = &FTerm::putchar_ASCII;  // function pointer
 
-    if ( hasUTF8() )
+    if ( hasUTF8() && init_values.encoding == fc::UNKNOWN )
     {
       if ( isLinuxTerm() )
         setUTF8(false);
@@ -1987,23 +2045,6 @@ void FTerm::finish_encoding()
   if ( isLinuxTerm() && data->hasUTF8Console() )
     setUTF8(true);
 #endif
-}
-
-//----------------------------------------------------------------------
-uInt FTerm::cp437_to_unicode (uChar c)
-{
-  uInt ucs = uInt(c);
-
-  for (std::size_t i = 0; i <= fc::lastCP437Item; i++)
-  {
-    if ( fc::cp437_to_ucs[i][0] == c )  // found
-    {
-      ucs = fc::cp437_to_ucs[i][1];
-      break;
-    }
-  }
-
-  return ucs;
 }
 
 //----------------------------------------------------------------------

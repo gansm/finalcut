@@ -1,7 +1,7 @@
 #
 # spec file for package finalcut
 #
-# Copyright (c) 2018 by Markus Gans
+# Copyright (c) 2019 by Markus Gans
 #
 
 %define sover   0

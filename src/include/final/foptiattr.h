@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2018 Markus Gans                                      *
+* Copyright 2016-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -77,9 +77,10 @@ class FOptiAttr
     // Typedefs
     typedef struct
     {
-      wchar_t code;      // character code
-      FColor  fg_color;  // foreground color
-      FColor  bg_color;  // background color
+      wchar_t code;          // character code
+      wchar_t encoded_code;  // encoded output character
+      FColor  fg_color;      // foreground color
+      FColor  bg_color;      // background color
 
       union attribute
       {

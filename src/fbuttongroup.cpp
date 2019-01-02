@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -380,38 +380,6 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
   }
 }
 
-//----------------------------------------------------------------------
-void FButtonGroup::cb_buttonToggled (FWidget* widget, FDataPtr)
-{
-  auto button = static_cast<FToggleButton*>(widget);
-
-  if ( ! button->isChecked() )
-    return;
-
-  if ( buttonlist.empty() )
-    return;
-
-  auto iter = buttonlist.begin();
-  auto last = buttonlist.end();
-
-  while ( iter != last )
-  {
-    auto toggle_button = static_cast<FToggleButton*>(*iter);
-
-    if ( toggle_button != button
-      && toggle_button->isChecked()
-      && isRadioButton(toggle_button) )
-    {
-      toggle_button->unsetChecked();
-
-      if ( toggle_button->isVisible() && toggle_button->isShown() )
-        toggle_button->redraw();
-    }
-
-    ++iter;
-  }
-}
-
 
 // protected methods of FButtonGroup
 //----------------------------------------------------------------------
@@ -656,6 +624,38 @@ void FButtonGroup::directFocus()
     getStatusBar()->drawMessage();
     updateTerminal();
     flush_out();
+  }
+}
+
+//----------------------------------------------------------------------
+void FButtonGroup::cb_buttonToggled (FWidget* widget, FDataPtr)
+{
+  auto button = static_cast<FToggleButton*>(widget);
+
+  if ( ! button->isChecked() )
+    return;
+
+  if ( buttonlist.empty() )
+    return;
+
+  auto iter = buttonlist.begin();
+  auto last = buttonlist.end();
+
+  while ( iter != last )
+  {
+    auto toggle_button = static_cast<FToggleButton*>(*iter);
+
+    if ( toggle_button != button
+      && toggle_button->isChecked()
+      && isRadioButton(toggle_button) )
+    {
+      toggle_button->unsetChecked();
+
+      if ( toggle_button->isVisible() && toggle_button->isShown() )
+        toggle_button->redraw();
+    }
+
+    ++iter;
   }
 }
 

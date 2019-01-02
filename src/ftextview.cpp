@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -745,7 +745,7 @@ void FTextView::drawText()
 
       // only printable and 1 column per character
       if ( ( (utf8 && std::iswprint(wint_t(ch)))
-          || (!utf8 && ch < 256 && std::isprint(ch)) )
+          || (!utf8 && std::isprint(ch)) )
           && wcwidth(ch) == 1 )
       {
         print (ch);

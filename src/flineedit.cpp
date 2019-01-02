@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -730,16 +730,7 @@ void FLineEdit::drawInputField()
 
   show_text = text.mid(1 + text_offset, getWidth() - 2);
 
-  if ( isLinuxTerm() && hasUTF8() )
-  {
-    setUTF8(true);
-
-    if ( show_text )
-      print (show_text);
-
-    setUTF8(false);
-  }
-  else if ( show_text )
+  if ( show_text )
     print (show_text);
 
   x = show_text.getLength();

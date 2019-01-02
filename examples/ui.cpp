@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -780,7 +780,7 @@ void MyDialog::cb_about (finalcut::FWidget*, FDataPtr)
   finalcut::FMessageBox info ( "About"
                              , line + L" The Final Cut " + line + "\n\n"
                                L"Version " + libver + "\n\n"
-                               L"(c) 2018 by Markus Gans"
+                               L"(c) 2019 by Markus Gans"
                              , finalcut::FMessageBox::Ok, 0, 0, this );
   info.setCenterText();
   info.show();
@@ -1002,7 +1002,7 @@ int main (int argc, char* argv[])
   const finalcut::FString ver = F_VERSION;  // Library version
   const finalcut::FString title = "The FINAL CUT "
                                 + ver
-                                + " (C) 2018 by Markus Gans";
+                                + " (C) 2019 by Markus Gans";
 
   // Create the application object app
   finalcut::FApplication app(argc, argv);

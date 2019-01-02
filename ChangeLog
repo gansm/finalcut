@@ -1,3 +1,6 @@
+2019-01-02  Markus Gans  <guru.mail@muenster.de>
+	* Improved PC encoding for Cygwin and Linux
+
 2018-12-31  Markus Gans  <guru.mail@muenster.de>
 	* Use the override specifier
 

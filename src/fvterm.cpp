@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2018 Markus Gans                                      *
+* Copyright 2016-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -2725,8 +2725,8 @@ inline void FVTerm::newFontChanges (charData*& next_char)
       case fc::NF_rev_down_pointing_triangle2:
       case fc::NF_rev_menu_button3:
       case fc::NF_rev_border_line_right_and_left:
-        // swap foreground and background color
-        std::swap (next_char->fg_color, next_char->bg_color);
+        // Show in reverse video
+        next_char->attr.bit.reverse = true;
         break;
 
       default:
@@ -2738,22 +2738,24 @@ inline void FVTerm::newFontChanges (charData*& next_char)
 //----------------------------------------------------------------------
 inline void FVTerm::charsetChanges (charData*& next_char)
 {
+  wchar_t& code = next_char->code;
+  next_char->encoded_code = code;
+
   if ( getEncoding() == fc::UTF8 )
     return;
 
-  uInt code = uInt(next_char->code);
-  uInt ch_enc = FTerm::charEncode(code);
+  wchar_t ch_enc = FTerm::charEncode(code);
 
   if ( ch_enc == code )
     return;
 
   if ( ch_enc == 0 )
   {
-    next_char->code = int(FTerm::charEncode(code, fc::ASCII));
+    next_char->encoded_code = wchar_t(FTerm::charEncode(code, fc::ASCII));
     return;
   }
 
-  next_char->code = int(ch_enc);
+  next_char->encoded_code = ch_enc;
 
   if ( getEncoding() == fc::VT100 )
     next_char->attr.bit.alt_charset = true;
@@ -2767,10 +2769,10 @@ inline void FVTerm::charsetChanges (charData*& next_char)
     if ( isXTerminal() && ch_enc < 0x20 )  // Character 0x00..0x1f
     {
       if ( hasUTF8() )
-        next_char->code = int(FTerm::charEncode(code, fc::ASCII));
+        next_char->encoded_code = int(FTerm::charEncode(code, fc::ASCII));
       else
       {
-        next_char->code += 0x5f;
+        next_char->encoded_code += 0x5f;
         next_char->attr.bit.alt_charset = true;
       }
     }
@@ -2799,7 +2801,7 @@ inline void FVTerm::appendChar (charData*& next_char)
   charsetChanges (next_char);
 
   appendAttributes (next_char);
-  appendOutputBuffer (next_char->code);
+  appendOutputBuffer (next_char->encoded_code);
 }
 
 //----------------------------------------------------------------------

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2018 Markus Gans                                      *
+* Copyright 2016-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -502,7 +502,7 @@ class FVTerm
     static charData         s_ch;      // shadow character
     static charData         i_ch;      // inherit background character
     static FPoint*          term_pos;  // terminal cursor position
-    static FTermcap::tcap_map*     tcap;
+    static FTermcap::tcap_map* tcap;
     static FKeyboard*       keyboard;
     static bool             terminal_update_complete;
     static bool             terminal_update_pending;

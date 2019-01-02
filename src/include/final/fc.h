@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -141,8 +141,19 @@ enum SpecialCharacter : wchar_t
 {
   Euro                                = 0x20ac,  // €
   Pound                               = 0x00a3,  // £
+  Section                             = 0x00a7,  // §
   Pi                                  = 0x03c0,  // π
-  SuperscriptLatinSmallLetterN        = 0x207F,  // ⁿ
+  InverseBullet                       = 0x25d8,  // ◘
+  InverseWhiteCircle                  = 0x25d9,  // ◙
+  UpDownArrow                         = 0x2195,  // ↕
+  LeftRightArrow                      = 0x2194,  // ↔
+  BlackRectangle                      = 0x25ac,  // ▬
+  UpwardsArrow                        = 0x2191,  // ↑
+  DownwardsArrow                      = 0x2193,  // ↓
+  RightwardsArrow                     = 0x2192,  // →
+  LeftwardsArrow                      = 0x2190,  // ←
+  DoubleExclamationMark               = 0x203c,  // ‼
+  SuperscriptLatinSmallLetterN        = 0x207f,  // ⁿ
   GreaterThanOrEqualTo                = 0x2265,  // ≥
   LessThanOrEqualTo                   = 0x2264,  // ≤
   NotEqualTo                          = 0x2260,  // ≠

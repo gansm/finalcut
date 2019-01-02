@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -116,9 +116,6 @@ class FButtonGroup : public FScrollView
     virtual void        onAccel (FAccelEvent*) override;
     virtual void        onFocusIn (FFocusEvent*) override;
 
-    // Callback method
-    void                cb_buttonToggled (FWidget*, FDataPtr);
-
   protected:
     // Accessor
     uChar               getHotkey();
@@ -142,6 +139,9 @@ class FButtonGroup : public FScrollView
     std::size_t         getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
     void                drawText (wchar_t[], std::size_t, std::size_t);
     void                directFocus();
+
+    // Callback method
+    void                cb_buttonToggled (FWidget*, FDataPtr);
 
     // Data Members
     FString        text{};

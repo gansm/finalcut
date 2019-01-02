@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2019 Markus Gans                                           *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -191,7 +191,7 @@ void FTermLinux::init()
 //----------------------------------------------------------------------
 void FTermLinux::initCharMap (uInt char_map[][fc::NUM_OF_ENCODINGS])
 {
-  uInt c1, c2, c3, c4, c5;
+  constexpr sInt16 NOT_FOUND = -1;
 
   if ( new_font || vga_font )
     return;
@@ -200,43 +200,16 @@ void FTermLinux::initCharMap (uInt char_map[][fc::NUM_OF_ENCODINGS])
   {
     for (std::size_t i = 0; i <= fc::lastCharItem; i++ )
     {
-      bool known_unicode = false;
+      wchar_t ucs = char_map[i][fc::UTF8];
+      sInt16 fontpos = getFontPos(ucs);
 
-      for (std::size_t n = 0; n < screen_unicode_map.entry_ct; n++)
-      {
-        if ( char_map[i][fc::UTF8] == screen_unicode_map.entries[n].unicode )
-        {
-          if ( screen_unicode_map.entries[n].fontpos < 256 )
-            known_unicode = true;
-
-          break;
-        }
-      }
-
-      if ( ! known_unicode )
+      // Fix for a non-cp437 Linux console with PC charset encoding
+      if ( fontpos > 255 || fontpos == NOT_FOUND )
         char_map[i][fc::PC] = char_map[i][fc::ASCII];
     }
   }
 
-  c1 = fc::UpperHalfBlock;
-  c2 = fc::LowerHalfBlock;
-  c3 = fc::FullBlock;
-
-  if ( FTerm::charEncode(c1, fc::PC) == FTerm::charEncode(c1, fc::ASCII)
-    || FTerm::charEncode(c2, fc::PC) == FTerm::charEncode(c2, fc::ASCII)
-    || FTerm::charEncode(c3, fc::PC) == FTerm::charEncode(c3, fc::ASCII) )
-  {
-    shadow_character = false;
-  }
-
-  c4 = fc::RightHalfBlock;
-  c5 = fc::LeftHalfBlock;
-
-  if ( FTerm::charEncode(c4, fc::PC) == FTerm::charEncode(c4, fc::ASCII)
-    || FTerm::charEncode(c5, fc::PC) == FTerm::charEncode(c5, fc::ASCII) )
-  {
-    half_block_character = false;
-  }
+  initSpecialCharacter();
 }
 
 //----------------------------------------------------------------------
@@ -1187,6 +1160,43 @@ FKey FTermLinux::shiftCtrlAltKeyCorrection (const FKey& key_id)
       return key_id;
   }
 }
+
+//----------------------------------------------------------------------
+inline void FTermLinux::initSpecialCharacter()
+{
+  uInt c1 = fc::UpperHalfBlock;
+  uInt c2 = fc::LowerHalfBlock;
+  uInt c3 = fc::FullBlock;
+
+  if ( FTerm::charEncode(c1, fc::PC) == FTerm::charEncode(c1, fc::ASCII)
+    || FTerm::charEncode(c2, fc::PC) == FTerm::charEncode(c2, fc::ASCII)
+    || FTerm::charEncode(c3, fc::PC) == FTerm::charEncode(c3, fc::ASCII) )
+  {
+    shadow_character = false;
+  }
+
+  uInt c4 = fc::RightHalfBlock;
+  uInt c5 = fc::LeftHalfBlock;
+
+  if ( FTerm::charEncode(c4, fc::PC) == FTerm::charEncode(c4, fc::ASCII)
+    || FTerm::charEncode(c5, fc::PC) == FTerm::charEncode(c5, fc::ASCII) )
+  {
+    half_block_character = false;
+  }
+}
+
+//----------------------------------------------------------------------
+sInt16 FTermLinux::getFontPos (wchar_t ucs)
+{
+  for (std::size_t n = 0; n < screen_unicode_map.entry_ct; n++)
+  {
+    if ( screen_unicode_map.entries[n].unicode == ucs )
+      return screen_unicode_map.entries[n].fontpos;
+  }
+
+  return -1;
+}
+
 #endif  // defined(__linux__)
 
 }  // namespace finalcut

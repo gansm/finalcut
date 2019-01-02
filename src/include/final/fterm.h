@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -257,9 +257,11 @@ class FTerm
     static void            setEncoding (fc::encoding);
     static fc::encoding    getEncoding();
     static std::string     getEncodingString();
-    static bool            charEncodable (uInt);
-    static uInt            charEncode (uInt);
-    static uInt            charEncode (uInt, fc::encoding);
+    static bool            charEncodable (wchar_t);
+    static wchar_t         charEncode (wchar_t);
+    static wchar_t         charEncode (wchar_t, fc::encoding);
+    static wchar_t         cp437_to_unicode (uChar);
+    static uChar           unicode_to_cp437 (wchar_t);
 
     static bool            scrollTermForward();
     static bool            scrollTermReverse();
@@ -383,7 +385,6 @@ class FTerm
     void                   finish();
     void                   finishOSspecifics1();
     void                   finish_encoding();
-    static uInt            cp437_to_unicode (uChar);
     static void            setSignalHandler();
     static void            resetSignalHandler();
     static void            signal_handler (int);
