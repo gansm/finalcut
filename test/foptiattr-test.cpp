@@ -938,9 +938,8 @@ void FOptiAttrTest::vt100Test()
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m\017$<2>") );
-  CPPUNIT_ASSERT ( *from != *to );
-  CPPUNIT_ASSERT ( to->code == ' ' );
-  from->code = ' ';
+  CPPUNIT_ASSERT ( *from == *to );
+  CPPUNIT_ASSERT ( to->encoded_code == ' ' );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Invisible off (with default colors)
@@ -1887,9 +1886,8 @@ void FOptiAttrTest::rxvtTest()
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m\017") );
-  CPPUNIT_ASSERT ( *from != *to );
-  CPPUNIT_ASSERT ( to->code == ' ' );
-  from->code = ' ';
+  CPPUNIT_ASSERT ( *from == *to );
+  CPPUNIT_ASSERT ( to->encoded_code == ' ' );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Invisible off (with default colors)
@@ -2360,9 +2358,8 @@ void FOptiAttrTest::linuxTest()
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m\017") );
-  CPPUNIT_ASSERT ( *from != *to );
-  CPPUNIT_ASSERT ( to->code == ' ' );
-  from->code = ' ';
+  CPPUNIT_ASSERT ( *from == *to );
+  CPPUNIT_ASSERT ( to->encoded_code == ' ' );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Invisible off (with default colors)
@@ -2845,9 +2842,8 @@ void FOptiAttrTest::puttyTest()
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m\017") );
-  CPPUNIT_ASSERT ( *from != *to );
-  CPPUNIT_ASSERT ( to->code == ' ' );
-  from->code = ' ';
+  CPPUNIT_ASSERT ( *from == *to );
+  CPPUNIT_ASSERT ( to->encoded_code == ' ' );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Invisible off (with default colors)
@@ -3320,9 +3316,8 @@ void FOptiAttrTest::teratermTest()
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m\017$<2>") );
-  CPPUNIT_ASSERT ( *from != *to );
-  CPPUNIT_ASSERT ( to->code == ' ' );
-  from->code = ' ';
+  CPPUNIT_ASSERT ( *from == *to );
+  CPPUNIT_ASSERT ( to->encoded_code == ' ' );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Invisible off (with default colors)
@@ -3779,9 +3774,8 @@ void FOptiAttrTest::ibmColorTest()
   to->attr.bit.invisible = true;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR("") );
-  CPPUNIT_ASSERT ( *from != *to );
-  CPPUNIT_ASSERT ( to->code == ' ' );
-  from->code = ' ';
+  CPPUNIT_ASSERT ( *from == *to );
+  CPPUNIT_ASSERT ( to->encoded_code == ' ' );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Invisible off (with default colors)
