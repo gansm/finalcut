@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -2331,16 +2331,9 @@ void FWidget::setColorTheme()
   // Sets the default color theme
 
   if ( getMaxColor() < 16 )  // for 8 color mode
-  {
     wc.set8ColorTheme();
-  }
   else
-  {
     wc.set16ColorTheme();
-
-    if ( isKdeTerminal() )
-      wc.term_bg = fc::SkyBlue2;
-  }
 }
 
 }  // namespace finalcut

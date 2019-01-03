@@ -134,6 +134,22 @@ bool FTerm::isCursorHideable()
 }
 
 //----------------------------------------------------------------------
+bool FTerm::canChangeColorPalette()
+{
+  if ( isCygwinTerminal()
+    || isKdeTerminal()
+    || isTeraTerm()
+    || isMltermTerminal()
+    || isNetBSDTerm()
+    || isOpenBSDTerm()
+    || isSunTerminal()
+    || isAnsiTerminal() )
+  return false;
+
+  return FTermcap::can_change_color_palette;
+}
+
+//----------------------------------------------------------------------
 void FTerm::setTermType (const char term_name[])
 {
   data->setTermType(term_name);
@@ -1485,22 +1501,6 @@ inline bool FTerm::hasNoFontSettingOption()
     return true;
 
   return false;
-}
-
-//----------------------------------------------------------------------
-inline bool FTerm::canChangeColorPalette()
-{
-  if ( isCygwinTerminal()
-    || isKdeTerminal()
-    || isTeraTerm()
-    || isMltermTerminal()
-    || isNetBSDTerm()
-    || isOpenBSDTerm()
-    || isSunTerminal()
-    || isAnsiTerminal() )
-  return false;
-
-  return FTermcap::can_change_color_palette;
 }
 
 //----------------------------------------------------------------------

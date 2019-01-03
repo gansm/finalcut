@@ -224,6 +224,7 @@ class FTerm
     static bool            hasShadowCharacter();
     static bool            hasHalfBlockCharacter();
     static bool            hasAlternateScreen();
+    static bool            canChangeColorPalette();
 
     // Mutators
     static void            setTermType (const char[]);
@@ -364,7 +365,6 @@ class FTerm
     static void            init_tab_quirks();
     static void            init_captureFontAndTitle();
     static bool            hasNoFontSettingOption();
-    static bool            canChangeColorPalette();
     static void            redefineColorPalette();
     static void            restoreColorPalette();
     static void            setInsertCursorStyle();

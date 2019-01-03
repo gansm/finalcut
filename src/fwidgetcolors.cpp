@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fterm.h"
 #include "final/fwidgetcolors.h"
 
 namespace finalcut
@@ -206,6 +207,9 @@ void FWidgetColors::set16ColorTheme()
   scrollbar_button_bg               = fc::LightGray;
   progressbar_fg                    = fc::DarkGray;
   progressbar_bg                    = fc::LightBlue;
+
+  if ( ! FTerm::canChangeColorPalette() && FTerm::getMaxColor() > 16 )
+    term_bg = fc::SkyBlue2;
 }
 
 }  // namespace finalcut
