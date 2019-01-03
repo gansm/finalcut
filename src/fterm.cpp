@@ -1111,6 +1111,7 @@ void FTerm::init_cygwin_charmap()
   if ( ! isCygwinTerminal() )
     return;
 
+  // PC encoding changes
   for (std::size_t i = 0; i <= fc::lastCharItem; i++ )
   {
     if ( fc::character[i][fc::UTF8] == fc::BlackUpPointingTriangle )  // ▲
@@ -1130,6 +1131,17 @@ void FTerm::init_cygwin_charmap()
       || fc::character[i][fc::UTF8] == fc::SquareRoot )  // SquareRoot √
       fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
   }
+
+  // General encoding changes
+  characterSub& sub_map = data->getCharSubstitutionMap();
+  sub_map[L'•'] = L'*';
+  sub_map[L'●'] = L'*';
+  sub_map[L'◘'] = L'*';
+  sub_map[L'○'] = L'*';
+  sub_map[L'◙'] = L'*';
+  sub_map[L'♪'] = L'♫';
+  sub_map[L'√'] = L'x';
+  sub_map[L'ˣ'] = L'`';
 }
 
 //----------------------------------------------------------------------
