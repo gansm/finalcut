@@ -86,12 +86,12 @@ void FStatusKey::setActive()
 }
 
 //----------------------------------------------------------------------
-bool FStatusKey::setMouseFocus(bool on)
+bool FStatusKey::setMouseFocus(bool enable)
 {
-  if ( on == mouse_focus )
+  if ( mouse_focus == enable )
     return true;
 
-  return (mouse_focus = on);
+  return (mouse_focus = enable);
 }
 
 
@@ -479,7 +479,7 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FStatusBar::cb_statuskey_activated (FWidget* widget, data_ptr)
+void FStatusBar::cb_statuskey_activated (FWidget* widget, FDataPtr)
 {
   if ( ! key_list.empty() )
   {

@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
 #include <vector>
 
 #include "final/fapplication.h"
@@ -215,7 +216,7 @@ void FMenuBar::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::cb_item_deactivated (FWidget* widget, data_ptr)
+void FMenuBar::cb_item_deactivated (FWidget* widget, FDataPtr)
 {
   auto menuitem = static_cast<FMenuItem*>(widget);
 
@@ -657,7 +658,7 @@ inline void FMenuBar::drawMenuText (menuText& data)
 }
 
 //----------------------------------------------------------------------
-inline void FMenuBar::drawEllipsis (menuText& txtdata, std::size_t x)
+inline void FMenuBar::drawEllipsis (const menuText& txtdata, std::size_t x)
 {
   if ( x > screenWidth + 1 )
   {
@@ -820,7 +821,7 @@ void FMenuBar::unselectMenuItem (FMenuItem* item)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::mouseDownOverList (FMouseEvent* ev)
+void FMenuBar::mouseDownOverList (const FMouseEvent* ev)
 {
   if ( item_list.empty() )
     return;
@@ -868,7 +869,7 @@ void FMenuBar::mouseDownOverList (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::mouseUpOverList (FMouseEvent* ev)
+void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
 {
   if ( item_list.empty() )
     return;
@@ -910,7 +911,7 @@ void FMenuBar::mouseUpOverList (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::mouseMoveOverList (FMouseEvent* ev)
+void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
 {
   if ( item_list.empty() )
     return;
@@ -970,29 +971,29 @@ void FMenuBar::mouseMoveOverList (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::passEventToMenu (FMouseEvent*& ev)
+void FMenuBar::passEventToMenu (const FMouseEvent*& ev)
 {
   if ( ! hasSelectedItem() || ! getSelectedItem()->hasMenu() )
     return;
 
   // Mouse event handover to the menu
-  auto menu = getSelectedItem()->getMenu();
+  const auto& menu = getSelectedItem()->getMenu();
   const auto& menu_geometry = menu->getTermGeometry();
 
   if ( menu->getCount() > 0
     && menu_geometry.contains(ev->getTermPos()) )
   {
-    const FPoint& t = ev->getTermPos();
-    const FPoint& p = menu->termToWidgetPos(t);
+    const auto& t = ev->getTermPos();
+    const auto& p = menu->termToWidgetPos(t);
     int b = ev->getButton();
 
     try
     {
-      auto _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+      const auto& _ev = \
+          std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
       menu->mouse_down = true;
       setClickedWidget(menu);
-      menu->onMouseMove(_ev);
-      delete _ev;
+      menu->onMouseMove(_ev.get());
     }
     catch (const std::bad_alloc& ex)
     {

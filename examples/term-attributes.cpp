@@ -36,8 +36,10 @@ class AttribDlg : public finalcut::FDialog
   public:
     // Constructor
     explicit AttribDlg (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     AttribDlg (const AttribDlg&) = delete;
+
     // Destructor
     ~AttribDlg();
 
@@ -45,20 +47,20 @@ class AttribDlg : public finalcut::FDialog
     AttribDlg& operator = (const AttribDlg&) = delete;
 
     // Event handlers
-    virtual void onAccel (finalcut::FAccelEvent*);
-    virtual void onWheel (finalcut::FWheelEvent*);
-    virtual void onClose (finalcut::FCloseEvent*);
+    virtual void onAccel (finalcut::FAccelEvent*) override;
+    virtual void onWheel (finalcut::FWheelEvent*) override;
+    virtual void onClose (finalcut::FCloseEvent*) override;
 
     // Callback methods
-    void cb_next (finalcut::FWidget* = nullptr, data_ptr = nullptr);
-    void cb_back (finalcut::FWidget* = nullptr, data_ptr = nullptr);
+    void cb_next (finalcut::FWidget* = nullptr, FDataPtr = nullptr);
+    void cb_back (finalcut::FWidget* = nullptr, FDataPtr = nullptr);
 
     // Data Members
     FColor bgcolor;
 
   private:
     // Method
-    virtual void adjustSize();
+    virtual void adjustSize() override;
 
     // Data Members
     finalcut::FButton next_button{"&Next >", this};
@@ -123,7 +125,7 @@ void AttribDlg::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::cb_next (finalcut::FWidget*, data_ptr)
+void AttribDlg::cb_next (finalcut::FWidget*, FDataPtr)
 {
   if ( isMonochron() )
     return;
@@ -139,7 +141,7 @@ void AttribDlg::cb_next (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::cb_back (finalcut::FWidget*, data_ptr)
+void AttribDlg::cb_back (finalcut::FWidget*, FDataPtr)
 {
   if ( isMonochron() )
     return;
@@ -193,7 +195,7 @@ class AttribDemo : public finalcut::FWidget
     { }
 
     // Event handler
-    virtual void onWheel (finalcut::FWheelEvent* ev)
+    virtual void onWheel (finalcut::FWheelEvent* ev) override
     {
       auto p = static_cast<AttribDlg*>(getParentWidget());
 
@@ -218,7 +220,7 @@ class AttribDemo : public finalcut::FWidget
     void printStandout();
     void printInvisible();
     void printProtected();
-    virtual void draw();
+    virtual void draw() override;
 
     // Data Member
     int colors;

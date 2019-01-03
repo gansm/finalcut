@@ -44,8 +44,10 @@ class Transparent : public finalcut::FDialog
     // Constructor
     explicit Transparent ( finalcut::FWidget* = nullptr
                          , trans_type = transparent );
+
     // Disable copy constructor
     Transparent (const Transparent&) = delete;
+
     // Destructor
     ~Transparent();
 
@@ -54,10 +56,10 @@ class Transparent : public finalcut::FDialog
 
   private:
     // Method
-    virtual void draw();
+    virtual void draw() override;
 
     // Event handlers
-    virtual void onKeyPress (finalcut::FKeyEvent* ev);
+    virtual void onKeyPress (finalcut::FKeyEvent* ev) override;
 
     // Data Members
     trans_type type;
@@ -151,8 +153,10 @@ class MainWindow : public finalcut::FDialog
   public:
     // Constructor
     explicit MainWindow (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     MainWindow (const MainWindow&) = delete;
+
     // Destructor
     ~MainWindow();
 
@@ -161,13 +165,13 @@ class MainWindow : public finalcut::FDialog
 
   private:
     // Method
-    virtual void draw();
+    virtual void draw() override;
 
     // Event handlers
-    virtual void onClose (finalcut::FCloseEvent*);
-    virtual void onShow  (finalcut::FShowEvent*);
-    virtual void onTimer (finalcut::FTimerEvent*);
-    virtual void onKeyPress (finalcut::FKeyEvent* ev)
+    virtual void onClose (finalcut::FCloseEvent*) override;
+    virtual void onShow  (finalcut::FShowEvent*) override;
+    virtual void onTimer (finalcut::FTimerEvent*) override;
+    virtual void onKeyPress (finalcut::FKeyEvent* ev) override
     {
       if ( ! ev )
         return;
@@ -201,7 +205,7 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   // The memory allocation for the following three sub windows occurs
   // with the operator new. The lifetime of the generated widget
   // is managed by the parent object (this). The operator delete
-  // is not required in this scope and would result in a double free.
+  // is not required in this class and would result in a double free.
   transpwin = new Transparent(this);
   transpwin->setText("transparent");
   transpwin->setGeometry (6, 3, 29, 12);

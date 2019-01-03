@@ -25,11 +25,12 @@
 #include <cstdlib>
 #include <limits>
 #include <map>
+#include <memory>
 #include <stack>
 
 #include <final/final.h>
 
-const lDouble PI = 3.141592653589793238L;
+constexpr lDouble PI = 3.141592653589793238L;
 
 
 //----------------------------------------------------------------------
@@ -49,7 +50,7 @@ class Button : public finalcut::FButton
     void setChecked(bool);
 
     // Event handler
-    virtual void onKeyPress (finalcut::FKeyEvent*);
+    virtual void onKeyPress (finalcut::FKeyEvent*) override;
 
   private:
     // Data Member
@@ -63,12 +64,12 @@ Button::Button (finalcut::FWidget* parent)
 { }
 
 //----------------------------------------------------------------------
-void Button::setChecked (bool on)
+void Button::setChecked (bool enable)
 {
-  if ( checked == on )
+  if ( checked == enable )
     return;
 
-  checked = on;
+  checked = enable;
 
   if ( checked )
   {
@@ -117,12 +118,12 @@ class Calc : public finalcut::FDialog
     ~Calc();
 
     // Event handlers
-    virtual void   onKeyPress (finalcut::FKeyEvent*);
-    virtual void   onAccel (finalcut::FAccelEvent*);
-    virtual void   onClose (finalcut::FCloseEvent*);
+    virtual void   onKeyPress (finalcut::FKeyEvent*) override;
+    virtual void   onAccel (finalcut::FAccelEvent*) override;
+    virtual void   onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
-    void           cb_buttonClicked (finalcut::FWidget*, data_ptr);
+    void           cb_buttonClicked (finalcut::FWidget*, FDataPtr);
 
   private:
     // Typedef and Enumeration
@@ -169,7 +170,7 @@ class Calc : public finalcut::FDialog
 
     // Methods
     void           drawDispay();
-    virtual void   draw();
+    virtual void   draw() override;
     void           clear (lDouble&);
     void           zero (lDouble&);
     void           one (lDouble&);
@@ -211,8 +212,8 @@ class Calc : public finalcut::FDialog
     void           setInfixOperator (char);
     void           clearInfixOperator();
     void           calcInfixOperator();
-    virtual void   adjustSize();
-    const wchar_t* getButtonText (int);
+    virtual void   adjustSize() override;
+    const wchar_t* getButtonText (std::size_t);
     void           mapKeyFunctions();
 
     // Data Members
@@ -227,7 +228,7 @@ class Calc : public finalcut::FDialog
     char              infix_operator{'\0'};
     char              last_infix_operator{'\0'};
     finalcut::FString input{""};
-    int               button_no[Calc::NUM_OF_BUTTONS]{};
+    std::size_t       button_no[Calc::NUM_OF_BUTTONS]{};
 
     struct stack_data
     {
@@ -236,7 +237,7 @@ class Calc : public finalcut::FDialog
     };
 
     std::stack<stack_data> bracket_stack{};
-    std::map<Calc::button, Button*> calculator_buttons{};
+    std::map<Calc::button, std::shared_ptr<Button> > calculator_buttons{};
     std::map<Calc::button, keyFunction> key_map{};
 };
 #pragma pack(pop)
@@ -252,19 +253,20 @@ Calc::Calc (FWidget* parent)
   setGeometry (19, 6, 37, 18);
   addAccelerator('q');  // Press 'q' to quit
 
-  for (int key = 0; key < Calc::NUM_OF_BUTTONS; key++)
+  for (std::size_t key = 0; key < Calc::NUM_OF_BUTTONS; key++)
   {
-    auto btn = new Button(this);
+    auto btn = std::make_shared<Button>(this);
     button_no[key] = key;
 
     if ( key == Equals )
       btn->setGeometry(30, 15, 5, 3);
     else
     {
-      int x, y, n;
+      int x, y;
+      std::size_t n;
       ( key <= Three ) ? n = 0 : n = 1;
-      x = (key + n) % 5 * 7 + 2;
-      y = (key + n) / 5 * 2 + 3;
+      x = int(key + n) % 5 * 7 + 2;
+      y = int(key + n) / 5 * 2 + 3;
       btn->setGeometry(x, y, 5, 1);
     }
 
@@ -1052,7 +1054,7 @@ void Calc::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Calc::cb_buttonClicked (finalcut::FWidget*, data_ptr data)
+void Calc::cb_buttonClicked (finalcut::FWidget*, FDataPtr data)
 {
   lDouble& x = getValue();
   Calc::button key = *(static_cast<Calc::button*>(data));
@@ -1094,7 +1096,7 @@ void Calc::adjustSize()
 }
 
 //----------------------------------------------------------------------
-const wchar_t* Calc::getButtonText (int key)
+const wchar_t* Calc::getButtonText (std::size_t key)
 {
   static const wchar_t* const button_text[Calc::NUM_OF_BUTTONS] =
   {

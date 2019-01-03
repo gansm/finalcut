@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -21,7 +21,7 @@
 ***********************************************************************/
 
 #include <algorithm>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -140,39 +140,42 @@ void FTerm::setTermType (const char term_name[])
 }
 
 //----------------------------------------------------------------------
-void FTerm::setInsertCursor (bool on)
+void FTerm::setInsertCursor (bool enable)
 {
-  if ( on )
+  if ( enable )
     setInsertCursorStyle();
   else
     setOverwriteCursorStyle();
 }
 
 //----------------------------------------------------------------------
-void FTerm::redefineDefaultColors (bool on)
+void FTerm::redefineDefaultColors (bool enable)
 {
-  xterm->redefineDefaultColors (on);
+  if ( isNewFont() )  // NewFont need the reverse-video attribute
+    return;
+
+  xterm->redefineDefaultColors (enable);
 }
 
 //----------------------------------------------------------------------
-void FTerm::setDblclickInterval (const long timeout)
+void FTerm::setDblclickInterval (const uInt64 timeout)
 {
   mouse->setDblclickInterval(timeout);
 }
 
 //----------------------------------------------------------------------
-bool FTerm::setUTF8 (bool on)  // UTF-8 (Unicode)
+bool FTerm::setUTF8 (bool enable)  // UTF-8 (Unicode)
 {
-  if ( on == data->isUTF8() )
-    return on;
+  if ( data->isUTF8() == enable )
+    return enable;
 
-  if ( on )
+  if ( enable )
     data->setUTF8(true);
   else
     data->setUTF8(false);
 
 #if defined(__linux__)
-  linux->setUTF8 (on);
+  linux->setUTF8 (enable);
 #endif
 
   return data->isUTF8();
@@ -278,7 +281,7 @@ bool FTerm::setOldFont()
   if ( isXTerminal() || isScreenTerm()
     || isUrxvtTerminal() || FTermcap::osc_support )
   {
-    const FString& font = data->getXtermFont();
+    const auto& font = data->getXtermFont();
 
     if ( font.getLength() > 2 )
     {
@@ -380,16 +383,16 @@ char* FTerm::moveCursor (int xold, int yold, int xnew, int ynew)
 }
 
 //----------------------------------------------------------------------
-char* FTerm::cursorsVisibility (bool on)
+char* FTerm::cursorsVisibility (bool enable)
 {
   // Hides or shows the input cursor on the terminal
 
   char* visibility_str = nullptr;
 
-  if ( on == data->isCursorHidden() )
+  if ( data->isCursorHidden() == enable )
     return 0;
 
-  if ( on )
+  if ( enable )
   {
     visibility_str = disableCursor();
 
@@ -418,7 +421,7 @@ char* FTerm::enableCursor()
 {
   // Returns the cursor enable string
 
-  static const std::size_t SIZE = 32;
+  static constexpr std::size_t SIZE = 32;
   static char enable_str[SIZE] = { };
   const auto& vs = TCAP(fc::t_cursor_visible);
   const auto& ve = TCAP(fc::t_cursor_normal);
@@ -693,26 +696,69 @@ std::string FTerm::getEncodingString()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::charEncodable (uInt c)
+bool FTerm::charEncodable (wchar_t c)
 {
-  uInt ch = charEncode(c);
+  wchar_t ch = charEncode(c);
   return bool(ch > 0 && ch != c);
 }
 
 //----------------------------------------------------------------------
-uInt FTerm::charEncode (uInt c)
+wchar_t FTerm::charEncode (wchar_t c)
 {
   return charEncode (c, data->getTermEncoding());
 }
 
 //----------------------------------------------------------------------
-uInt FTerm::charEncode (uInt c, fc::encoding enc)
+wchar_t FTerm::charEncode (wchar_t c, fc::encoding enc)
 {
-  for (std::size_t i = 0; i <= uInt(fc::lastCharItem); i++)
+  wchar_t ch_enc = c;
+
+  for (std::size_t i = 0; i <= fc::lastCharItem; i++)
   {
-    if ( fc::character[i][fc::UTF8] == c )
+    if ( fc::character[i][fc::UTF8] == uInt(c) )
     {
-      c = fc::character[i][enc];
+      ch_enc = wchar_t(fc::character[i][enc]);
+      break;
+    }
+  }
+
+  if ( enc == fc::PC && ch_enc == c )
+    ch_enc = FTerm::unicode_to_cp437(c);
+
+  return ch_enc;
+}
+
+//----------------------------------------------------------------------
+wchar_t FTerm::cp437_to_unicode (uChar c)
+{
+  constexpr std::size_t CP437 = 0;
+  constexpr std::size_t UNICODE = 1;
+  wchar_t ucs = wchar_t(c);
+
+  for (std::size_t i = 0; i <= fc::lastCP437Item; i++)
+  {
+    if ( fc::cp437_to_ucs[i][CP437] == c )  // found
+    {
+      ucs = fc::cp437_to_ucs[UNICODE][1];
+      break;
+    }
+  }
+
+  return ucs;
+}
+
+//----------------------------------------------------------------------
+uChar FTerm::unicode_to_cp437 (wchar_t ucs)
+{
+  constexpr std::size_t CP437 = 0;
+  constexpr std::size_t UNICODE = 1;
+  uChar c = '?';
+
+  for (std::size_t i = 0; i <= fc::lastCP437Item; i++)
+  {
+    if ( fc::cp437_to_ucs[i][UNICODE] == ucs )  // found
+    {
+      c = uChar(fc::cp437_to_ucs[i][CP437]);
       break;
     }
   }
@@ -941,7 +987,7 @@ void FTerm::init_alt_charset()
 {
   // Read the used VT100 pairs
 
-  std::map <uChar,uChar> vt100_alt_char;
+  std::unordered_map<uChar, uChar> vt100_alt_char;
 
   if ( TCAP(fc::t_acs_chars) )
   {
@@ -1044,15 +1090,27 @@ void FTerm::init_pc_charset()
 //----------------------------------------------------------------------
 void FTerm::init_cygwin_charmap()
 {
-  // Replace don't printable characters in a Cygwin terminal
+  // Replace don't printable PC charset characters in a Cygwin terminal
 
   if ( ! isCygwinTerminal() )
     return;
 
   for (std::size_t i = 0; i <= fc::lastCharItem; i++ )
   {
-    if ( fc::character[i][fc::UTF8] == fc::BlackUpPointingTriangle    // ▲
-      || fc::character[i][fc::UTF8] == fc::BlackDownPointingTriangle  // ▼
+    if ( fc::character[i][fc::UTF8] == fc::BlackUpPointingTriangle )  // ▲
+      fc::character[i][fc::PC] = 0x18;
+
+    if ( fc::character[i][fc::UTF8] == fc::BlackDownPointingTriangle )  // ▼
+      fc::character[i][fc::PC] = 0x19;
+
+    if ( fc::character[i][fc::UTF8] == fc::InverseBullet  // ◘
+      || fc::character[i][fc::UTF8] == fc::InverseWhiteCircle  // ◙
+      || fc::character[i][fc::UTF8] == fc::UpDownArrow  // ↕
+      || fc::character[i][fc::UTF8] == fc::LeftRightArrow  // ↔
+      || fc::character[i][fc::UTF8] == fc::DoubleExclamationMark  // ‼
+      || fc::character[i][fc::UTF8] == fc::BlackRectangle  // ▬
+      || fc::character[i][fc::UTF8] == fc::RightwardsArrow  // →
+      || fc::character[i][fc::UTF8] == fc::Section  // §
       || fc::character[i][fc::UTF8] == fc::SquareRoot )  // SquareRoot √
       fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
   }
@@ -1350,7 +1408,7 @@ void FTerm::init_individual_term_encoding()
     data->setTermEncoding (fc::PC);
     Fputchar = &FTerm::putchar_ASCII;  // function pointer
 
-    if ( hasUTF8() )
+    if ( hasUTF8() && init_values.encoding == fc::UNKNOWN )
     {
       if ( isLinuxTerm() )
         setUTF8(false);
@@ -1405,8 +1463,8 @@ void FTerm::init_captureFontAndTitle()
   // Save the used xterm font and window title
 
   xterm->captureFontAndTitle();
-  const FString* font = xterm->getFont();
-  const FString* title = xterm->getTitle();
+  const auto font = xterm->getFont();
+  const auto title = xterm->getTitle();
 
   if ( font )
     data->setXtermFont(*font);
@@ -1543,8 +1601,8 @@ void FTerm::enableMouse()
     xterm_mouse = true;
 
   keyboard->enableMouseSequences();
-  mouse->setMaxWidth (short(getColumnNumber()));
-  mouse->setMaxHeight (short(getLineNumber()));
+  mouse->setMaxWidth (uInt16(getColumnNumber()));
+  mouse->setMaxHeight (uInt16(getLineNumber()));
   // Enable the linux general purpose mouse (gpm) server
   mouse->useGpmMouse (gpm_mouse);
   // Enable xterm mouse support
@@ -1844,6 +1902,7 @@ void FTerm::init (bool disable_alt_screen)
 void FTerm::initOSspecifics()
 {
 #if defined(__linux__)
+  linux->setFTermData(data);
   linux->setFTermDetection(term_detection);
   linux->init();    // Initialize Linux console
 
@@ -1904,7 +1963,7 @@ void FTerm::finish()
 {
   // Set default signal handler
 
-  const FString& title = data->getXtermTitle();
+  const auto& title = data->getXtermTitle();
   resetSignalHandler();
 
   if ( title && isXTerminal() && ! isRxvtTerminal() )
@@ -1990,23 +2049,6 @@ void FTerm::finish_encoding()
 }
 
 //----------------------------------------------------------------------
-uInt FTerm::cp437_to_unicode (uChar c)
-{
-  uInt ucs = uInt(c);
-
-  for (std::size_t i = 0; i <= fc::lastCP437Item; i++)
-  {
-    if ( fc::cp437_to_ucs[i][0] == c )  // found
-    {
-      ucs = fc::cp437_to_ucs[i][1];
-      break;
-    }
-  }
-
-  return ucs;
-}
-
-//----------------------------------------------------------------------
 void FTerm::setSignalHandler()
 {
   signal(SIGTERM,  FTerm::signal_handler);  // Termination signal
@@ -2060,7 +2102,6 @@ void FTerm::signal_handler (int signum)
                    , strsignal(signum) );
       std::terminate();
   }
-
 }
 
 // FTerm non-member functions

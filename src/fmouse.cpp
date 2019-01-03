@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <cstring>
+#include <algorithm>
 #include <iostream>
 #include <new>
 #include <stdio.h>
@@ -69,19 +70,19 @@ inline void FMouse::clearEvent()
 }
 
 //----------------------------------------------------------------------
-inline void FMouse::setMaxWidth (short x_max)
+inline void FMouse::setMaxWidth (uInt16 x_max)
 {
   max_width = x_max;
 }
 
 //----------------------------------------------------------------------
-inline void FMouse::setMaxHeight (short y_max)
+inline void FMouse::setMaxHeight (uInt16 y_max)
 {
   max_height = y_max;
 }
 
 //----------------------------------------------------------------------
-inline void FMouse::setDblclickInterval (const long timeout)
+inline void FMouse::setDblclickInterval (const uInt64 timeout)
 {
   dblclick_interval = timeout;
 }
@@ -321,11 +322,11 @@ void FMouseGPM::processEvent (struct timeval*)
 }
 
 //----------------------------------------------------------------------
-bool FMouseGPM::gpmMouse (bool on)
+bool FMouseGPM::gpmMouse (bool enable)
 {
   // activate/deactivate the gpm mouse support
 
-  if ( on )
+  if ( enable )
   {
     Gpm_Connect conn;
     conn.eventMask   = uInt16(~0);  // Get all including wheel event
@@ -351,8 +352,8 @@ bool FMouseGPM::gpmMouse (bool on)
     Gpm_Close();
   }
 
-  gpm_mouse_enabled = on;
-  return on;
+  gpm_mouse_enabled = enable;
+  return enable;
 }
 
 //----------------------------------------------------------------------
@@ -497,7 +498,7 @@ void FMouseX11::setRawData (FKeyboard::keybuffer& fifo_buf)
 {
   // Import the X11 xterm mouse protocol (SGR-Mode) raw mouse data
 
-  static const std::size_t len = 6;
+  static constexpr std::size_t len = 6;
   std::size_t fifo_buf_size = sizeof(fifo_buf);
   std::size_t n;
   x11_mouse[0] = fifo_buf[3];
@@ -523,7 +524,7 @@ void FMouseX11::processEvent (struct timeval* time)
 {
   // Parse and interpret the X11 xterm mouse string
 
-  const FPoint& mouse_position = getPos();
+  const auto& mouse_position = getPos();
   uChar x, y;
   int btn;
 
@@ -586,7 +587,7 @@ void FMouseX11::setButtonState (int btn, struct timeval* time)
 {
   // Get the x11 mouse button state
 
-  const FPoint& mouse_position = getPos();
+  const auto& mouse_position = getPos();
 
   switch ( btn )
   {
@@ -713,10 +714,10 @@ void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf)
 //----------------------------------------------------------------------
 void FMouseSGR::processEvent (struct timeval* time)
 {
-  const FPoint& mouse_position = getPos();
+  const auto& mouse_position = getPos();
   char* p;
   int btn;
-  short x, y;
+  uInt16 x, y;
 
   x = 0;
   y = 0;
@@ -747,7 +748,7 @@ void FMouseSGR::processEvent (struct timeval* time)
       return;
     }
 
-    x = short(10 * x + (*p - '0'));
+    x = uInt16(10 * x + (*p - '0'));
   }
 
   while ( *p++ && *p != 'M' && *p != 'm' )
@@ -759,7 +760,7 @@ void FMouseSGR::processEvent (struct timeval* time)
       return;
     }
 
-    y = short(10 * y + (*p - '0'));
+    y = uInt16(10 * y + (*p - '0'));
   }
 
   new_mouse_position.setPoint (x, y);
@@ -821,7 +822,7 @@ void FMouseSGR::setPressedButtonState (int btn, struct timeval* time)
 {
   // Gets the extended x11 mouse mode (SGR) status for pressed buttons
 
-  const FPoint& mouse_position = getPos();
+  const auto& mouse_position = getPos();
 
   switch ( btn )
   {
@@ -954,12 +955,12 @@ void FMouseUrxvt::processEvent (struct timeval* time)
 {
   // Parse and interpret the X11 xterm mouse string (Urxvt-Mode)
 
-  const FPoint& mouse_position = getPos();
+  const auto& mouse_position = getPos();
   char* p;
   bool x_neg;
   bool y_neg;
   int btn;
-  short x, y;
+  uInt16 x, y;
 
   x = 0;
   y = 0;
@@ -998,7 +999,7 @@ void FMouseUrxvt::processEvent (struct timeval* time)
       return;
     }
 
-    x = short(10 * x + (*p - '0'));
+    x = uInt16(10 * x + (*p - '0'));
     p++;
   }
 
@@ -1017,7 +1018,7 @@ void FMouseUrxvt::processEvent (struct timeval* time)
       return;
     }
 
-    y = short(10 * y + (*p - '0'));
+    y = uInt16(10 * y + (*p - '0'));
     p++;
   }
 
@@ -1088,7 +1089,7 @@ void FMouseUrxvt::setButtonState (int btn, struct timeval* time)
 {
   // Get the urxvt mouse button state
 
-  const FPoint& mouse_position = getPos();
+  const auto& mouse_position = getPos();
 
   switch ( btn )
   {
@@ -1226,19 +1227,19 @@ void FMouseControl::setStdinNo (int)
 #endif  // F_HAVE_LIBGPM
 
 //----------------------------------------------------------------------
-void FMouseControl::setMaxWidth (short x_max)
+void FMouseControl::setMaxWidth (uInt16 x_max)
 {
   mouse_protocol[FMouse::urxvt]->setMaxWidth(x_max);
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::setMaxHeight (short y_max)
+void FMouseControl::setMaxHeight (uInt16 y_max)
 {
   mouse_protocol[FMouse::urxvt]->setMaxHeight(y_max);
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::setDblclickInterval (const long timeout)
+void FMouseControl::setDblclickInterval (const uInt64 timeout)
 {
   for (auto&& m : mouse_protocol)
     if ( m.second )
@@ -1246,15 +1247,15 @@ void FMouseControl::setDblclickInterval (const long timeout)
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::useGpmMouse (bool on)
+void FMouseControl::useGpmMouse (bool enable)
 {
-  use_gpm_mouse = on;
+  use_gpm_mouse = enable;
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::useXtermMouse (bool on)
+void FMouseControl::useXtermMouse (bool enable)
 {
-  use_xterm_mouse = on;
+  use_xterm_mouse = enable;
 }
 
 //----------------------------------------------------------------------
@@ -1574,14 +1575,14 @@ FMouse* FMouseControl::getMouseWithEvent()
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::xtermMouse (bool on)
+void FMouseControl::xtermMouse (bool enable)
 {
   // activate/deactivate the xterm mouse support
 
   if ( ! use_xterm_mouse )
     return;
 
-  FTermXTerminal::setMouseSupport (on);
+  FTermXTerminal::setMouseSupport (enable);
 }
 
 }  // namespace finalcut

@@ -45,6 +45,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <list>
+#include <memory>
 #include <vector>
 
 #include "final/emptyfstring.h"
@@ -72,8 +73,10 @@ class FObject
 
     // Constructor
     explicit FObject (FObject* = nullptr);
+
     // Disable copy constructor
     FObject (const FObject&) = delete;
+
     // Destructor
     virtual ~FObject();
 
@@ -106,9 +109,12 @@ class FObject
     void                 addChild (FObject*);
     void                 delChild (FObject*);
 
+    // Event handler
+    virtual bool         event (FEvent*);
+
     // Timer methods
     static void          getCurrentTime (timeval*);
-    static bool          isTimeout (timeval*, long);
+    static bool          isTimeout (timeval*, uInt64);
     int                  addTimer (int);
     bool                 delTimer (int);
     bool                 delOwnTimer();
@@ -123,7 +129,7 @@ class FObject
       FObject*  object;
     };
 
-    // Typedef
+    // Typedefs
     typedef std::vector<timer_data> TimerList;
 
     // Accessor
@@ -136,20 +142,20 @@ class FObject
     uInt                 processTimerEvent();
 
     // Event handler
-    virtual bool         event (FEvent*);
     virtual void         onTimer (FTimerEvent*);
+    virtual void         onUserEvent (FUserEvent*);
 
   private:
     // Method
     virtual void performTimerAction (const FObject*, const FEvent*);
 
     // Data Members
-    FObject*          parent_obj{nullptr};
-    FObjectList       children_list{};  // no children yet
-    bool              has_parent{false};
-    bool              widget_object{false};
-    static bool       timer_modify_lock;
-    static TimerList* timer_list;
+    FObject*            parent_obj{nullptr};
+    FObjectList         children_list{};  // no children yet
+    bool                has_parent{false};
+    bool                widget_object{false};
+    static bool         timer_modify_lock;
+    static TimerList*   timer_list;
 };
 
 #pragma pack(pop)

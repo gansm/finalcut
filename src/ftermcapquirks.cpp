@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <string>
+
 #include "final/ftermcapquirks.h"
 
 namespace finalcut
@@ -503,7 +505,7 @@ void FTermcapQuirks::screen()
 //----------------------------------------------------------------------
 void FTermcapQuirks::general()
 {
-  static const int not_available = -1;
+  static constexpr int not_available = -1;
 
   if ( FTermcap::tabstop == not_available )
     FTermcap::tabstop = 8;

@@ -1,3 +1,35 @@
+2019-01-03  Markus Gans  <guru.mail@muenster.de>
+	* Improved PC encoding for Cygwin and Linux
+	* Integration of an output filter to replace missing characters
+	* Better Linux console support for UTF-8 encoding 
+	  (Default is PC charset encoding)
+
+2018-12-31  Markus Gans  <guru.mail@muenster.de>
+	* Use the override specifier
+
+2018-12-30  Markus Gans  <guru.mail@muenster.de>
+	* Cygwin compiled fix for C++11
+
+2018-12-29  Markus Gans  <guru.mail@muenster.de>
+	* Text scrolling in FTextView was broken since February 17th!
+	* Replace redundant FString code with templates
+
+2018-12-28  Markus Gans  <guru.mail@muenster.de>
+	* Add the assignment operator (=) for FButton to set the button text
+	* Corrected shortening of overlong texts in the title bar of FDialog
+	* Add a "signals and callbacks" chapter into the first steps document
+
+2018-12-25  Markus Gans  <guru.mail@muenster.de>
+	* Add a "event processing" chapter into the first steps document
+
+2018-12-24  Markus Gans  <guru.mail@muenster.de>
+	* Events can not only be sent to FWidgets, but also to FObjects
+	* New event FUserEvent for user-defined events
+
+2018-12-19  Markus Gans  <guru.mail@muenster.de>
+	* Use of smart pointers
+	* Add a "memory management" chapter into the first steps document
+
 2018-12-17  Markus Gans  <guru.mail@muenster.de>
 	* Improve FButton mouse click animation
 	* Minor data type corrections
@@ -5,7 +37,7 @@
 
 2018-12-15  Markus Gans  <guru.mail@muenster.de>
 	* Use of the C++11 auto specifier in the program code
-	* Code reduction by using of Range-based for loop
+	* Code reduction by using of range-based for loop
 	* The example program for video attributes now replaces 
 	  the switch statement with a vector of lambda expressions
 

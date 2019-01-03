@@ -75,8 +75,10 @@ class FCheckBox : public FToggleButton
     // Constructors
     explicit FCheckBox (FWidget* = nullptr);
     explicit FCheckBox (const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FCheckBox (const FCheckBox&) = delete;
+
     // Destructor
     virtual ~FCheckBox();
 
@@ -84,13 +86,13 @@ class FCheckBox : public FToggleButton
     FCheckBox& operator = (const FCheckBox&) = delete;
 
     // Accessor
-    const char* getClassName() const;
+    virtual const char* getClassName() const override;
 
   private:
     // Methods
-    void         init();
-    virtual void draw();
-    void         drawCheckButton();
+    void                init();
+    virtual void        draw() override;
+    void                drawCheckButton();
 };
 #pragma pack(pop)
 

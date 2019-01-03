@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
 #include <vector>
 
 #include "final/fapplication.h"
@@ -53,7 +54,7 @@ FMenu::FMenu (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FMenu::~FMenu()  // destructor
 {
-  auto fapp = static_cast<FApplication*>(getRootWidget());
+  auto fapp = FApplication::getApplicationObject();
 
   if ( ! fapp->isQuit() )
     switchToPrevWindow(this);  // Switch to previous window
@@ -62,12 +63,12 @@ FMenu::~FMenu()  // destructor
 
 // public methods of FMenu
 //----------------------------------------------------------------------
-bool FMenu::setMenuWidget (bool on)
+bool FMenu::setMenuWidget (bool enable)
 {
-  if ( isMenuWidget() == on )
+  if ( isMenuWidget() == enable )
     return true;
 
-  return (flags.menu_widget = on);
+  return (flags.menu_widget = enable);
 }
 
 //----------------------------------------------------------------------
@@ -93,7 +94,7 @@ void FMenu::hide()
     return;
 
   FWindow::hide();
-  const FRect& t_geometry = getTermGeometryWithShadow();
+  const auto& t_geometry = getTermGeometryWithShadow();
   restoreVTerm (t_geometry);
   updateTerminal();
   flush_out();
@@ -312,7 +313,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::cb_menuitem_toggled (FWidget* widget, data_ptr)
+void FMenu::cb_menuitem_toggled (FWidget* widget, FDataPtr)
 {
   auto menuitem = static_cast<FMenuItem*>(widget);
 
@@ -392,7 +393,7 @@ bool FMenu::isMouseOverSubMenu (const FPoint& termpos)
 {
   if ( opened_sub_menu )
   {
-    const FRect& submenu_geometry = opened_sub_menu->getTermGeometry();
+    const auto& submenu_geometry = opened_sub_menu->getTermGeometry();
 
     if ( submenu_geometry.contains(termpos) )
       return true;
@@ -404,7 +405,7 @@ bool FMenu::isMouseOverSubMenu (const FPoint& termpos)
 //----------------------------------------------------------------------
 bool FMenu::isMouseOverSuperMenu (const FPoint& termpos)
 {
-  auto smenu = superMenuAt (termpos);
+  const auto smenu = superMenuAt (termpos);
 
   if ( smenu )
     return true;
@@ -893,8 +894,8 @@ void FMenu::mouseMoveOverBorder (mouseStates& ms)
 
   if ( getStatusBar() )
   {
-    const FString& msg = getStatusbarMessage();
-    const FString& curMsg = getStatusBar()->getMessage();
+    const auto& msg = getStatusbarMessage();
+    const auto& curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {
@@ -912,17 +913,17 @@ void FMenu::passEventToSubMenu (FMouseEvent*& ev)
 {
   // Mouse event handover to sub-menu
 
-  const FPoint& t = ev->getTermPos();
-  const FPoint& p = opened_sub_menu->termToWidgetPos(t);
+  const auto& t = ev->getTermPos();
+  const auto& p = opened_sub_menu->termToWidgetPos(t);
   int b = ev->getButton();
 
   try
   {
-    auto _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+    const auto& _ev = \
+        std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
     opened_sub_menu->mouse_down = true;
     setClickedWidget(opened_sub_menu);
-    opened_sub_menu->onMouseMove(_ev);
-    delete _ev;
+    opened_sub_menu->onMouseMove(_ev.get());
   }
   catch (const std::bad_alloc& ex)
   {
@@ -935,18 +936,18 @@ void FMenu::passEventToSuperMenu (FMouseEvent*& ev)
 {
   // Mouse event handover to super-menu
 
-  auto smenu = superMenuAt (ev->getTermPos());
-  const FPoint& t = ev->getTermPos();
-  const FPoint& p = smenu->termToWidgetPos(t);
+  const auto& smenu = superMenuAt (ev->getTermPos());
+  const auto& t = ev->getTermPos();
+  const auto& p = smenu->termToWidgetPos(t);
   int b = ev->getButton();
 
   try
   {
-    auto _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+    const auto& _ev = \
+        std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
     smenu->mouse_down = true;
     setClickedWidget(smenu);
-    smenu->onMouseMove(_ev);
-    delete _ev;
+    smenu->onMouseMove(_ev.get());
   }
   catch (const std::bad_alloc& ex)
   {
@@ -959,19 +960,19 @@ void FMenu::passEventToMenuBar (FMouseEvent*& ev)
 {
   // Mouse event handover to the menu bar
 
-  auto menu_bar = getMenuBar();
-  const FPoint& t = ev->getTermPos();
-  const FPoint& p = menu_bar->termToWidgetPos(t);
+  const auto& menu_bar = getMenuBar();
+  const auto& t = ev->getTermPos();
+  const auto& p = menu_bar->termToWidgetPos(t);
   int b = ev->getButton();
 
   try
   {
-    auto _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+    const auto& _ev = \
+        std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
     setClickedWidget(menu_bar);
-    auto mbar = static_cast<FMenuBar*>(menu_bar);
-    mbar->mouse_down = true;
-    mbar->onMouseMove(_ev);
-    delete _ev;
+    auto& mbar = *(static_cast<FMenuBar*>(menu_bar));
+    mbar.mouse_down = true;
+    mbar.onMouseMove(_ev.get());
   }
   catch (const std::bad_alloc& ex)
   {
@@ -1357,7 +1358,7 @@ inline void FMenu::drawCheckMarkPrefix (FMenuItem* menuitem)
         if ( isNewFont() )
           print (fc::NF_Bullet);  // NF_Bullet ●
         else
-          print (fc::Bullet);     // Bullet ●
+          print (fc::BlackCircle);     // BlackCircle ●
       }
       else
       {
@@ -1395,7 +1396,7 @@ inline void FMenu::drawMenuText (menuText& data)
       if ( ! isNewFont()
         && ( int(data.text[z]) < fc::NF_rev_left_arrow2
           || int(data.text[z]) > fc::NF_check_mark )
-        && ! charEncodable(uInt(data.text[z])) )
+        && ! charEncodable(wchar_t(data.text[z])) )
       {
         data.text[z] = L' ';
       }

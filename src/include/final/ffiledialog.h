@@ -108,6 +108,7 @@ class FFileDialog : public FDialog
                 , const FString&
                 , DialogType = FFileDialog::Open
                 , FWidget* = nullptr );
+
     // Destructor
     virtual ~FFileDialog();
 
@@ -115,21 +116,21 @@ class FFileDialog : public FDialog
     FFileDialog& operator = (const FFileDialog&);
 
     // Accessors
-    const char*   getClassName() const;
-    const FString getPath() const;
-    const FString getFilter() const;
-    const FString getSelectedFile() const;
-    bool          getShowHiddenFiles();
+    virtual const char*  getClassName() const override;
+    const FString        getPath() const;
+    const FString        getFilter() const;
+    const FString        getSelectedFile() const;
+    bool                 getShowHiddenFiles();
 
     // Mutators
-    void          setPath (const FString&);
-    void          setFilter (const FString&);
-    bool          setShowHiddenFiles(bool);
-    bool          setShowHiddenFiles();
-    bool          unsetShowHiddenFiles();
+    void                 setPath (const FString&);
+    void                 setFilter (const FString&);
+    bool                 setShowHiddenFiles(bool);
+    bool                 setShowHiddenFiles();
+    bool                 unsetShowHiddenFiles();
 
     // Event handler
-    virtual void  onKeyPress (FKeyEvent*);
+    virtual void         onKeyPress (FKeyEvent*) override;
 
     // Methods
     static const FString fileOpenChooser ( FWidget*
@@ -141,7 +142,7 @@ class FFileDialog : public FDialog
 
   protected:
     // Method
-    virtual void adjustSize();
+    virtual void adjustSize() override;
 
   private:
     // Typedef
@@ -162,42 +163,42 @@ class FFileDialog : public FDialog
     typedef std::vector<dir_entry> dirEntries;
 
     // Method
-    void          init();
-    void          widgetSettings (int, int);
-    void          initCallbacks();
-    bool          pattern_match (const char* const, char[]);
-    void          clear();
-    int           numOfDirs();
-    void          sortDir();
-    int           readDir();
-    void          getEntry (const char* const, struct dirent*);
-    void          followSymLink (const char* const, dir_entry&);
-    void          dirEntriesToList();
-    void          selectDirectoryEntry (const char* const);
-    int           changeDir (const FString&);
-    void          printPath (const FString&);
+    void                 init();
+    void                 widgetSettings (int, int);
+    void                 initCallbacks();
+    bool                 pattern_match (const char* const, char[]);
+    void                 clear();
+    int                  numOfDirs();
+    void                 sortDir();
+    int                  readDir();
+    void                 getEntry (const char* const, struct dirent*);
+    void                 followSymLink (const char* const, dir_entry&);
+    void                 dirEntriesToList();
+    void                 selectDirectoryEntry (const char* const);
+    int                  changeDir (const FString&);
+    void                 printPath (const FString&);
     static const FString getHomeDir();
 
     // Callback methods
-    void          cb_processActivate (FWidget*, data_ptr);
-    void          cb_processRowChanged (FWidget*, data_ptr);
-    void          cb_processClicked (FWidget*, data_ptr);
-    void          cb_processCancel (FWidget*, data_ptr);
-    void          cb_processOpen (FWidget*, data_ptr);
-    void          cb_processShowHidden (FWidget*, data_ptr);
+    void                 cb_processActivate (FWidget*, FDataPtr);
+    void                 cb_processRowChanged (FWidget*, FDataPtr);
+    void                 cb_processClicked (FWidget*, FDataPtr);
+    void                 cb_processCancel (FWidget*, FDataPtr);
+    void                 cb_processOpen (FWidget*, FDataPtr);
+    void                 cb_processShowHidden (FWidget*, FDataPtr);
 
     // Data Members
-    DIR*          directory_stream{nullptr};
-    dirEntries    dir_entries{};
-    FString       directory{};
-    FString       filter_pattern{};
-    FLineEdit     filename{this};
-    FListBox      filebrowser{this};
-    FCheckBox     hidden{this};
-    FButton       cancel{this};
-    FButton       open{this};
-    DialogType    dlg_type{FFileDialog::Open};
-    bool          show_hidden{false};
+    DIR*        directory_stream{nullptr};
+    dirEntries  dir_entries{};
+    FString     directory{};
+    FString     filter_pattern{};
+    FLineEdit   filename{this};
+    FListBox    filebrowser{this};
+    FCheckBox   hidden{this};
+    FButton     cancel{this};
+    FButton     open{this};
+    DialogType  dlg_type{FFileDialog::Open};
+    bool        show_hidden{false};
 
     // Friend functions
     friend bool sortByName ( const FFileDialog::dir_entry&

@@ -31,16 +31,12 @@ namespace finalcut
 // class FEvent
 //----------------------------------------------------------------------
 
-FEvent::FEvent(int ev_type)  // constructor
+FEvent::FEvent (fc::events ev_type)  // constructor
   : t{ev_type}
 { }
 
 //----------------------------------------------------------------------
-FEvent::~FEvent()  // destructor
-{ }
-
-//----------------------------------------------------------------------
-int FEvent::type() const
+fc::events FEvent::type() const
 { return t; }
 
 
@@ -48,7 +44,7 @@ int FEvent::type() const
 // class FKeyEvent
 //----------------------------------------------------------------------
 
-FKeyEvent::FKeyEvent (int ev_type, FKey key_num)  // constructor
+FKeyEvent::FKeyEvent (fc::events ev_type, FKey key_num)  // constructor
   : FEvent(ev_type)
   , k{key_num}
 { }
@@ -78,7 +74,7 @@ void FKeyEvent::ignore()
 // class FMouseEvent
 //----------------------------------------------------------------------
 
-FMouseEvent::FMouseEvent ( int ev_type         // constructor
+FMouseEvent::FMouseEvent ( fc::events ev_type  // constructor
                          , const FPoint& pos
                          , const FPoint& termPos
                          , int button )
@@ -89,7 +85,7 @@ FMouseEvent::FMouseEvent ( int ev_type         // constructor
 { }
 
 //----------------------------------------------------------------------
-FMouseEvent::FMouseEvent ( int ev_type         // constructor
+FMouseEvent::FMouseEvent ( fc::events ev_type  // constructor
                          , const FPoint& pos
                          , int button )
   : FMouseEvent(ev_type, pos, FPoint(), button)
@@ -132,7 +128,7 @@ int FMouseEvent::getButton() const
 // class FWheelEvent
 //----------------------------------------------------------------------
 
-FWheelEvent::FWheelEvent ( int ev_type         // constructor
+FWheelEvent::FWheelEvent ( fc::events ev_type  // constructor
                          , const FPoint& pos
                          , const FPoint& termPos
                          , int wheel )
@@ -143,7 +139,7 @@ FWheelEvent::FWheelEvent ( int ev_type         // constructor
 { }
 
 //----------------------------------------------------------------------
-FWheelEvent::FWheelEvent ( int ev_type         // constructor
+FWheelEvent::FWheelEvent ( fc::events ev_type  // constructor
                          , const FPoint& pos
                          , int wheel )
   : FWheelEvent(ev_type, pos, FPoint(), wheel)
@@ -186,7 +182,7 @@ int FWheelEvent::getWheel() const
 // class FFocusEvent
 //----------------------------------------------------------------------
 
-FFocusEvent::FFocusEvent (int ev_type)  // constructor
+FFocusEvent::FFocusEvent (fc::events ev_type)  // constructor
   : FEvent(ev_type)
 { }
 
@@ -231,7 +227,7 @@ void FFocusEvent::ignore()
 // class FAccelEvent
 //----------------------------------------------------------------------
 
-FAccelEvent::FAccelEvent(int ev_type, void* focused)  // constructor
+FAccelEvent::FAccelEvent (fc::events ev_type, void* focused)  // constructor
   : FEvent(ev_type)
   , focus_widget{focused}
 { }
@@ -261,7 +257,7 @@ void FAccelEvent::ignore()
 // class FResizeEvent
 //----------------------------------------------------------------------
 
-FResizeEvent::FResizeEvent(int ev_type)  // constructor
+FResizeEvent::FResizeEvent (fc::events ev_type)  // constructor
   : FEvent(ev_type)
 { }
 
@@ -286,7 +282,7 @@ void FResizeEvent::ignore()
 // class FShowEvent
 //----------------------------------------------------------------------
 
-FShowEvent::FShowEvent(int ev_type)  // constructor
+FShowEvent::FShowEvent (fc::events ev_type)  // constructor
   : FEvent(ev_type)
 { }
 
@@ -294,11 +290,12 @@ FShowEvent::FShowEvent(int ev_type)  // constructor
 FShowEvent::~FShowEvent()  // destructor
 { }
 
+
 //----------------------------------------------------------------------
 // class FHideEvent
 //----------------------------------------------------------------------
 
-FHideEvent::FHideEvent(int ev_type)  // constructor
+FHideEvent::FHideEvent (fc::events ev_type)  // constructor
   : FEvent(ev_type)
 { }
 
@@ -306,11 +303,12 @@ FHideEvent::FHideEvent(int ev_type)  // constructor
 FHideEvent::~FHideEvent()  // destructor
 { }
 
+
 //----------------------------------------------------------------------
 // class FCloseEvent
 //----------------------------------------------------------------------
 
-FCloseEvent::FCloseEvent(int ev_type)  // constructor
+FCloseEvent::FCloseEvent (fc::events ev_type)  // constructor
   : FEvent(ev_type)
 { }
 
@@ -335,7 +333,7 @@ void FCloseEvent::ignore()
 // class FTimerEvent
 //----------------------------------------------------------------------
 
-FTimerEvent::FTimerEvent(int ev_type, int timer_id)  // constructor
+FTimerEvent::FTimerEvent (fc::events ev_type, int timer_id)  // constructor
   : FEvent(ev_type)
   , id{timer_id}
 { }
@@ -345,7 +343,33 @@ FTimerEvent::~FTimerEvent()  // destructor
 { }
 
 //----------------------------------------------------------------------
-int FTimerEvent::timerId() const
+int FTimerEvent::getTimerId() const
 { return id; }
+
+
+//----------------------------------------------------------------------
+// class FUserEvent
+//----------------------------------------------------------------------
+
+FUserEvent::FUserEvent (fc::events ev_type, int user_event_id)  // constructor
+  : FEvent(ev_type)
+  , uid{user_event_id}
+{ }
+
+//----------------------------------------------------------------------
+FUserEvent::~FUserEvent()  // destructor
+{ }
+
+//----------------------------------------------------------------------
+int FUserEvent::getUserId() const
+{ return uid; }
+
+//----------------------------------------------------------------------
+FDataPtr FUserEvent::getData() const
+{ return data_pointer; }
+
+//----------------------------------------------------------------------
+void FUserEvent::setData (FDataPtr data)
+{ data_pointer = data; }
 
 }  // namespace finalcut

@@ -20,6 +20,11 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__CYGWIN__)
+  #include <strings.h>  // need for strcasecmp
+#endif
+
+#include <memory>
 #include <vector>
 
 #include "final/fapplication.h"
@@ -35,7 +40,7 @@ namespace finalcut
 FObject::FObjectIterator FListView::null_iter;
 
 // Function prototypes
-long firstNumberFromString (const FString&);
+uInt64 firstNumberFromString (const FString&);
 bool sortAscendingByName (const FObject*, const FObject*);
 bool sortDescendingByName (const FObject*, const FObject*);
 bool sortAscendingByNumber (const FObject*, const FObject*);
@@ -43,13 +48,13 @@ bool sortDescendingByNumber (const FObject*, const FObject*);
 
 // non-member functions
 //----------------------------------------------------------------------
-long firstNumberFromString (const FString& str)
+uInt64 firstNumberFromString (const FString& str)
 {
   auto last = str.end();
   auto iter = str.begin();
   std::size_t pos;
   std::size_t length;
-  long number;
+  uInt64 number;
 
   while ( iter != last )
   {
@@ -88,7 +93,7 @@ long firstNumberFromString (const FString& str)
 
   try
   {
-    number = num_str.toLong();
+    number = uInt64(num_str.toLong());
   }
   catch (const std::exception&)
   {
@@ -186,7 +191,7 @@ FListViewItem::FListViewItem (FObjectIterator parent_iter)
 
 //----------------------------------------------------------------------
 FListViewItem::FListViewItem ( const FStringList& cols
-                             , FWidget::data_ptr data
+                             , FDataPtr data
                              , FObjectIterator parent_iter )
   : FObject(0)
   , column_list(cols)
@@ -393,9 +398,9 @@ std::size_t FListViewItem::getVisibleLines()
 }
 
 //----------------------------------------------------------------------
-void FListViewItem::setCheckable (bool on)
+void FListViewItem::setCheckable (bool enable)
 {
-  checkable = on;
+  checkable = enable;
 
   if ( *root )
   {
@@ -581,8 +586,6 @@ FListView::FListView (FWidget* parent)
 FListView::~FListView()  // destructor
 {
   delOwnTimer();
-  delete vbar;
-  delete hbar;
 }
 
 // public methods of FListView
@@ -790,7 +793,7 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
 
 //----------------------------------------------------------------------
 FObject::FObjectIterator FListView::insert ( const FStringList& cols
-                                           , data_ptr d
+                                           , FDataPtr d
                                            , FObjectIterator parent_iter )
 {
   FListViewItem* item;
@@ -816,8 +819,8 @@ FObject::FObjectIterator FListView::insert ( const FStringList& cols
 }
 
 //----------------------------------------------------------------------
-FObject::FObjectIterator FListView::insert ( const std::vector<long>& cols
-                                           , data_ptr d
+FObject::FObjectIterator FListView::insert ( const std::vector<uInt64>& cols
+                                           , FDataPtr d
                                            , FObjectIterator parent_iter )
 {
   FStringList str_cols;
@@ -1390,12 +1393,12 @@ void FListView::init()
 
   try
   {
-    vbar = new FScrollbar(fc::vertical, this);
+    vbar = std::make_shared<FScrollbar>(fc::vertical, this);
     vbar->setMinimum(0);
     vbar->setValue(0);
     vbar->hide();
 
-    hbar = new FScrollbar(fc::horizontal, this);
+    hbar = std::make_shared<FScrollbar>(fc::horizontal, this);
     hbar->setMinimum(0);
     hbar->setValue(0);
     hbar->hide();
@@ -1507,8 +1510,8 @@ void FListView::draw()
 
   if ( flags.focus && getStatusBar() )
   {
-    const FString& msg = getStatusbarMessage();
-    const FString& curMsg = getStatusBar()->getMessage();
+    const auto& msg = getStatusbarMessage();
+    const auto& curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {
@@ -1537,7 +1540,7 @@ void FListView::drawHeadlines()
 
   while ( iter != header.end() )
   {
-    const FString& text = iter->name;
+    const auto& text = iter->name;
 
     if ( text.isNull() || text.isEmpty() )
     {
@@ -1634,11 +1637,11 @@ void FListView::drawListLine ( const FListViewItem* item
   {
     for (std::size_t col = 0; col < item->column_list.size(); )
     {
-      static const std::size_t leading_space = 1;
-      static const std::size_t checkbox_space = 4;
-      static const std::size_t ellipsis_length = 2;
+      static constexpr std::size_t leading_space = 1;
+      static constexpr std::size_t checkbox_space = 4;
+      static constexpr std::size_t ellipsis_length = 2;
 
-      const FString& text = item->column_list[col];
+      const auto& text = item->column_list[col];
       std::size_t width = std::size_t(header[col].width);
       std::size_t txt_length = text.getLength();
       // Increment the value of i for the column position
@@ -1818,11 +1821,11 @@ inline void FListView::drawHeaderBorder (std::size_t length)
 }
 
 //----------------------------------------------------------------------
-void FListView::drawHeadlineLabel (headerItems::const_iterator& iter)
+void FListView::drawHeadlineLabel (const headerItems::const_iterator& iter)
 {
   // Print lable text
-  static const std::size_t leading_space = 1;
-  const FString& text = iter->name;
+  static constexpr std::size_t leading_space = 1;
+  const auto& text = iter->name;
   FString txt = " " + text;
   std::size_t width = std::size_t(iter->width);
   std::size_t txt_length = txt.getLength();
@@ -1865,11 +1868,11 @@ void FListView::drawHeadlineLabel (headerItems::const_iterator& iter)
 }
 
 //----------------------------------------------------------------------
-void FListView::drawColumnEllipsis ( headerItems::const_iterator& iter
+void FListView::drawColumnEllipsis ( const headerItems::const_iterator& iter
                                    , const FString& text )
 {
   // Print lable ellipsis
-  static const int ellipsis_length = 2;
+  static constexpr int ellipsis_length = 2;
   int width = iter->width;
 
   headerline << ' ';
@@ -1904,7 +1907,7 @@ void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
 //----------------------------------------------------------------------
 std::size_t FListView::determineLineWidth (FListViewItem* item)
 {
-  static const std::size_t padding_space = 1;
+  static constexpr std::size_t padding_space = 1;
   std::size_t line_width = padding_space;  // leading space
   uInt column_idx = 0;
   uInt entries = uInt(item->column_list.size());
@@ -2009,7 +2012,7 @@ void FListView::mouseHeaderClicked()
 
   while ( iter != header.end() )
   {
-    static const int leading_space = 1;
+    static constexpr int leading_space = 1;
     bool has_sort_indicator = bool( column == sort_column );
     int click_width = int(iter->name.getLength());
 
@@ -2506,7 +2509,7 @@ void FListView::scrollBy (int dx, int dy)
 }
 
 //----------------------------------------------------------------------
-void FListView::cb_VBarChange (FWidget*, data_ptr)
+void FListView::cb_VBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
   int distance = 1
@@ -2566,7 +2569,7 @@ void FListView::cb_VBarChange (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void FListView::cb_HBarChange (FWidget*, data_ptr)
+void FListView::cb_HBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
   int distance = 1

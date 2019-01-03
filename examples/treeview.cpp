@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -29,19 +29,20 @@
 
 
 // Function prototypes
-long StringToLong (const finalcut::FString&);
+sInt64 StringToNumber (const finalcut::FString&);
 bool sortAscending (const finalcut::FObject*, const finalcut::FObject*);
 bool sortDescending (const finalcut::FObject*, const finalcut::FObject*);
 
 
 // non-member functions
 //----------------------------------------------------------------------
-long StringToLong (const finalcut::FString& str)
+sInt64 StringToNumber (const finalcut::FString& str)
 {
-  auto NumString = str;
+  // Cut off one character (because LONG_MAX = 2147483647)
+  auto NumString = str.left(str.getLength() - 1);
   NumString = NumString.replace(",", "");
   NumString = NumString.replace('.', "");
-  long number = NumString.toLong();
+  sInt64 number = sInt64(NumString.toLong());
   return number;
 }
 
@@ -57,8 +58,8 @@ bool sortAscending ( const finalcut::FObject* lhs
   {
     case 2:
     {
-      const long l_number = StringToLong(l_item->getText(column));
-      const long r_number = StringToLong(r_item->getText(column));
+      const sInt64 l_number = StringToNumber(l_item->getText(column));
+      const sInt64 r_number = StringToNumber(r_item->getText(column));
       return bool( l_number < r_number );  // lhs < rhs
     }
     case 3:
@@ -85,8 +86,8 @@ bool sortDescending ( const finalcut::FObject* lhs
   {
     case 2:
     {
-      const long l_number = StringToLong(l_item->getText(column));
-      const long r_number = StringToLong(r_item->getText(column));
+      const sInt64 l_number = StringToNumber(l_item->getText(column));
+      const sInt64 r_number = StringToNumber(r_item->getText(column));
       return bool( l_number > r_number );  // lhs > rhs
     }
 
@@ -115,8 +116,10 @@ class Treeview : public finalcut::FDialog
   public:
     // Constructor
     explicit Treeview (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     Treeview (const Treeview&) = delete;
+
     // Destructor
     ~Treeview();
 
@@ -128,10 +131,10 @@ class Treeview : public finalcut::FDialog
     struct TreeItem;  // forward declaration
 
     // Methods
-    virtual void adjustSize();
+    virtual void adjustSize() override;
 
     // Event handler
-    void onClose (finalcut::FCloseEvent*);
+    void onClose (finalcut::FCloseEvent*) override;
 
     // Data Members
     bool                initialized{false};
@@ -338,10 +341,10 @@ Treeview::Treeview (finalcut::FWidget* parent)
 
   while ( continent_list->name )
   {
-    auto country_list = continent_list->child_element;
+    auto& country_list = continent_list->child_element;
     finalcut::FStringList continent_line ( continent_list->begin()
                                          , continent_list->end() );
-    auto iter = listView.insert (continent_line);
+    const auto& iter = listView.insert (continent_line);
 
     while ( country_list && country_list->name )
     {

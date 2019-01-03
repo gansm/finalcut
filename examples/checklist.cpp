@@ -40,8 +40,10 @@ class CheckList : public finalcut::FDialog
   public:
     // Constructor
     explicit CheckList (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     CheckList (const CheckList&) = delete;
+
     // Destructor
     ~CheckList();
 
@@ -53,11 +55,11 @@ class CheckList : public finalcut::FDialog
     void populate();
 
     // Event handlers
-    virtual void onKeyPress (finalcut::FKeyEvent*);
-    virtual void onClose (finalcut::FCloseEvent*);
+    virtual void onKeyPress (finalcut::FKeyEvent*) override;
+    virtual void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
-    void cb_showList (finalcut::FWidget*, data_ptr);
+    void cb_showList (finalcut::FWidget*, FDataPtr);
 
     // Data Members
     finalcut::FListView  listView{this};
@@ -123,7 +125,7 @@ void CheckList::populate()
     { "Lemons", "Low" }
   };
 
-  const int lastItem = int(sizeof(list) / sizeof(list[0])) - 1;
+  constexpr int lastItem = int(sizeof(list) / sizeof(list[0])) - 1;
 
   for (int i = 0; i <= lastItem; i++)
   {
@@ -158,7 +160,7 @@ void CheckList::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void CheckList::cb_showList (finalcut::FWidget*, data_ptr)
+void CheckList::cb_showList (finalcut::FWidget*, FDataPtr)
 {
   auto iter = listView.beginOfList();
   finalcut::FString shopping_list;

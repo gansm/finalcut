@@ -168,6 +168,7 @@ class FTermDetection
 
   private:
     // Methods
+    static void           deallocation();
     static void           getSystemTermType();
     static bool           getTTYtype();
 #if F_HAVE_GETTTYNAM
@@ -377,84 +378,84 @@ inline bool FTermDetection::hasTerminalDetection()
 { return terminal_detection; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setXTerminal (bool on)
-{ terminal_type.xterm = on; }
+inline void FTermDetection::setXTerminal (bool enable)
+{ terminal_type.xterm = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setAnsiTerminal (bool on)
-{ terminal_type.ansi = on; }
+inline void FTermDetection::setAnsiTerminal (bool enable)
+{ terminal_type.ansi = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setRxvtTerminal (bool on)
-{ terminal_type.rxvt = on; }
+inline void FTermDetection::setRxvtTerminal (bool enable)
+{ terminal_type.rxvt = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setUrxvtTerminal (bool on)
-{ terminal_type.urxvt = on; }
+inline void FTermDetection::setUrxvtTerminal (bool enable)
+{ terminal_type.urxvt = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setMltermTerminal (bool on)
-{ terminal_type.mlterm = on; }
+inline void FTermDetection::setMltermTerminal (bool enable)
+{ terminal_type.mlterm = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setPuttyTerminal (bool on)
-{ terminal_type.putty = on; }
+inline void FTermDetection::setPuttyTerminal (bool enable)
+{ terminal_type.putty = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setKdeTerminal (bool on)
-{ terminal_type.kde_konsole = on; }
+inline void FTermDetection::setKdeTerminal (bool enable)
+{ terminal_type.kde_konsole = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setGnomeTerminal (bool on)
-{ terminal_type.gnome_terminal = on; }
+inline void FTermDetection::setGnomeTerminal (bool enable)
+{ terminal_type.gnome_terminal = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setKtermTerminal (bool on)
-{ terminal_type.kterm = on; }
+inline void FTermDetection::setKtermTerminal (bool enable)
+{ terminal_type.kterm = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setTeraTerm (bool on)
-{ terminal_type.tera_term = on; }
+inline void FTermDetection::setTeraTerm (bool enable)
+{ terminal_type.tera_term = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setCygwinTerminal (bool on)
-{ terminal_type.cygwin = on; }
+inline void FTermDetection::setCygwinTerminal (bool enable)
+{ terminal_type.cygwin = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setMinttyTerm (bool on)
-{ terminal_type.mintty = on; }
+inline void FTermDetection::setMinttyTerm (bool enable)
+{ terminal_type.mintty = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setLinuxTerm (bool on)
-{ terminal_type.linux_con = on; }
+inline void FTermDetection::setLinuxTerm (bool enable)
+{ terminal_type.linux_con = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setFreeBSDTerm (bool on)
-{ terminal_type.freebsd_con = on; }
+inline void FTermDetection::setFreeBSDTerm (bool enable)
+{ terminal_type.freebsd_con = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setNetBSDTerm (bool on)
-{ terminal_type.netbsd_con = on; }
+inline void FTermDetection::setNetBSDTerm (bool enable)
+{ terminal_type.netbsd_con = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setOpenBSDTerm (bool on)
-{ terminal_type.openbsd_con = on; }
+inline void FTermDetection::setOpenBSDTerm (bool enable)
+{ terminal_type.openbsd_con = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setSunTerminal (bool on)
-{ terminal_type.sun_con = on; }
+inline void FTermDetection::setSunTerminal (bool enable)
+{ terminal_type.sun_con = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setScreenTerm (bool on)
-{ terminal_type.screen = on; }
+inline void FTermDetection::setScreenTerm (bool enable)
+{ terminal_type.screen = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setTmuxTerm (bool on)
-{ terminal_type.tmux = on; }
+inline void FTermDetection::setTmuxTerm (bool enable)
+{ terminal_type.tmux = enable; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setTerminalDetection (bool on)
-{ terminal_detection = on; }
+inline void FTermDetection::setTerminalDetection (bool enable)
+{ terminal_detection = enable; }
 
 }  // namespace finalcut
 

@@ -35,8 +35,10 @@ class Menu : public finalcut::FDialog
   public:
     // Constructor
     explicit Menu (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     Menu (const Menu&) = delete;
+
     // Destructor
     ~Menu();
 
@@ -52,13 +54,13 @@ class Menu : public finalcut::FDialog
     void configureStyleMenuItems();
     void configureBorderMenuItems();
     void defaultCallback (finalcut::FMenuList*);
-    virtual void adjustSize();
+    virtual void adjustSize() override;
 
     // Event handler
-    virtual void onClose (finalcut::FCloseEvent*);
+    virtual void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
-    void cb_message (finalcut::FWidget*, data_ptr);
+    void cb_message (finalcut::FWidget*, FDataPtr);
 
     // Data Members
     finalcut::FString        line{13, finalcut::fc::BoxDrawingsHorizontal};
@@ -300,7 +302,7 @@ void Menu::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Menu::cb_message (finalcut::FWidget* widget, data_ptr)
+void Menu::cb_message (finalcut::FWidget* widget, FDataPtr)
 {
   auto menuitem = static_cast<finalcut::FMenuItem*>(widget);
   auto text = menuitem->getText();

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -156,13 +156,16 @@ class FTerm
   public:
     // Typedefs
     typedef FOptiAttr::charData  charData;
+    typedef FTermData::characterSub  characterSub;
 
     struct initializationValues;  // forward declaration
 
     // Constructor
     explicit FTerm (bool = false);
+
     // Disable copy constructor
     FTerm (const FTerm&) = delete;
+
     // Destructor
     virtual ~FTerm();
 
@@ -183,6 +186,7 @@ class FTerm
     static int             getTabstop();
     static int             getMaxColor();
     initializationValues&  getInitValues();
+    characterSub&          getCharSubstitutionMap();
 
 #if DEBUG
     FTermDebugData&        getFTermDebugData();
@@ -223,9 +227,9 @@ class FTerm
 
     // Mutators
     static void            setTermType (const char[]);
-    static void            setInsertCursor (bool on);
+    static void            setInsertCursor (bool);
     static void            redefineDefaultColors (bool);
-    static void            setDblclickInterval (const long);
+    static void            setDblclickInterval (const uInt64);
     static bool            setUTF8 (bool);
     static bool            setUTF8();
     static bool            unsetUTF8();
@@ -255,9 +259,11 @@ class FTerm
     static void            setEncoding (fc::encoding);
     static fc::encoding    getEncoding();
     static std::string     getEncodingString();
-    static bool            charEncodable (uInt);
-    static uInt            charEncode (uInt);
-    static uInt            charEncode (uInt, fc::encoding);
+    static bool            charEncodable (wchar_t);
+    static wchar_t         charEncode (wchar_t);
+    static wchar_t         charEncode (wchar_t, fc::encoding);
+    static wchar_t         cp437_to_unicode (uChar);
+    static uChar           unicode_to_cp437 (wchar_t);
 
     static bool            scrollTermForward();
     static bool            scrollTermReverse();
@@ -381,7 +387,6 @@ class FTerm
     void                   finish();
     void                   finishOSspecifics1();
     void                   finish_encoding();
-    static uInt            cp437_to_unicode (uChar);
     static void            setSignalHandler();
     static void            resetSignalHandler();
     static void            signal_handler (int);
@@ -448,6 +453,10 @@ inline int FTerm::getMaxColor()
 //----------------------------------------------------------------------
 inline FTerm::initializationValues& FTerm::getInitValues()
 { return init_values; }
+
+//----------------------------------------------------------------------
+inline FTerm::characterSub& FTerm::getCharSubstitutionMap()
+{ return data->getCharSubstitutionMap(); }
 
 #if DEBUG
 //----------------------------------------------------------------------

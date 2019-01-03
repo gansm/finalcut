@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 #include "final/ftermcap.h"
@@ -81,8 +82,8 @@ void FTermcap::init()
 void FTermcap::termcap()
 {
   std::vector<std::string> terminals;
-  static const int success = 1;
-  static const int uninitialized = -2;
+  static constexpr int success = 1;
+  static constexpr int uninitialized = -2;
   static char term_buffer[2048];
   static char string_buf[2048];
   char* buffer = string_buf;
@@ -128,9 +129,9 @@ void FTermcap::termcap()
 //----------------------------------------------------------------------
 void FTermcap::termcapError (int status)
 {
-  static const int no_entry = 0;
-  static const int db_not_found = -1;
-  static const int uninitialized = -2;
+  static constexpr int no_entry = 0;
+  static constexpr int db_not_found = -1;
+  static constexpr int uninitialized = -2;
 
   if ( status == no_entry || status == uninitialized )
   {

@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
+
 #include "final/fapplication.h"
 #include "final/flabel.h"
 #include "final/fstatusbar.h"
@@ -180,34 +182,34 @@ void FLabel::setAlignment (fc::text_alignment align)
 }
 
 //----------------------------------------------------------------------
-bool FLabel::setEmphasis (bool on)
+bool FLabel::setEmphasis (bool enable)
 {
-  if ( emphasis != on )
-    emphasis = on;
+  if ( emphasis != enable )
+    emphasis = enable;
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FLabel::setReverseMode (bool on)
+bool FLabel::setReverseMode (bool enable)
 {
-  if ( reverse_mode != on )
-    reverse_mode = on;
+  if ( reverse_mode != enable )
+    reverse_mode = enable;
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FLabel::setEnable (bool on)
+bool FLabel::setEnable (bool enable)
 {
-  FWidget::setEnable(on);
+  FWidget::setEnable(enable);
 
-  if ( on )
+  if ( enable )
     setHotkeyAccelerator();
   else
     delAccelerator();
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
@@ -272,14 +274,14 @@ void FLabel::onMouseDown (FMouseEvent* ev)
     if ( auto parent = getParentWidget() )
     {
       int b = ev->getButton();
-      const FPoint& tp = ev->getTermPos();
-      const FPoint& p = parent->termToWidgetPos(tp);
+      const auto& tp = ev->getTermPos();
+      const auto& p = parent->termToWidgetPos(tp);
 
       try
       {
-        auto _ev = new FMouseEvent (fc::MouseDown_Event, p, tp, b);
-        FApplication::sendEvent (parent, _ev);
-        delete _ev;
+        const auto& _ev = \
+            std::make_shared<FMouseEvent>(fc::MouseDown_Event, p, tp, b);
+        FApplication::sendEvent (parent, _ev.get());
       }
       catch (const std::bad_alloc& ex)
       {
@@ -342,7 +344,7 @@ void FLabel::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FLabel::cb_accel_widget_destroyed (FWidget*, data_ptr)
+void FLabel::cb_accel_widget_destroyed (FWidget*, FDataPtr)
 {
   accel_widget = nullptr;
   delAccelerator();

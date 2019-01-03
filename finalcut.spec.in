@@ -1,7 +1,7 @@
 #
 # spec file for package finalcut
 #
-# Copyright (c) 2018 by Markus Gans
+# Copyright (c) 2019 by Markus Gans
 #
 
 %define sover   0
@@ -21,7 +21,7 @@ BuildRequires:  libtool
 BuildRequires:  ncurses-devel
 
 %description
-The Final Cut is a class library and widget toolkit with full mouse
+FINAL CUT is a class library and widget toolkit with full mouse
 support for creating a text-based user interface. The library supports
 the programmer to develop an application for the text console. It allows
 the simultaneous handling of multiple windows on the screen.
@@ -30,7 +30,7 @@ common controls like dialog windows, push buttons, check boxes,
 radio buttons, input lines, list boxes, status bars and so on.
 
 %package -n libfinal-devel
-Summary:        Development files for The Final Cut text widget library
+Summary:        Development files for the FINAL CUT text widget library
 Group:          Development/Libraries/C and C++
 Requires:       libfinal%{sover} = %{version}
 Requires:       bdftopcf
@@ -44,7 +44,7 @@ Provides:       libfinal-devel = %{version}
 Recommends:     libfinal-examples = %{version}
 
 %description -n libfinal-devel
-The Final Cut is a class library and widget toolkit with full mouse
+FINAL CUT is a class library and widget toolkit with full mouse
 support for creating a text-based user interface. The library supports
 the programmer to develop an application for the text console. It allows
 the simultaneous handling of multiple windows on the screen.
@@ -53,12 +53,12 @@ common controls like dialog windows, push buttons, check boxes,
 radio buttons, input lines, list boxes, status bars and so on.
 
 %package -n libfinal-examples
-Summary:        Example files for The Final Cut library
+Summary:        Example files for the FINAL CUT library
 Group:          Development/Languages/C and C++
 BuildArch:      noarch
 
 %description -n libfinal-examples
-The Final Cut is a class library and widget toolkit with full mouse
+FINAL CUT is a class library and widget toolkit with full mouse
 support for creating a text-based user interface. The library supports
 the programmer to develop an application for the text console. It allows
 the simultaneous handling of multiple windows on the screen.
@@ -71,7 +71,7 @@ Summary:        Console widget toolkit
 Group:          System/Libraries
 
 %description -n libfinal%{sover}
-The Final Cut is a class library and widget toolkit with full mouse
+FINAL CUT is a class library and widget toolkit with full mouse
 support for creating a text-based user interface. The library supports
 the programmer to develop an application for the text console. It allows
 the simultaneous handling of multiple windows on the screen.
@@ -84,7 +84,7 @@ Summary:        Console widget toolkit
 Group:          System/Libraries
 
 %description -n libfinal-static
-The Final Cut is a class library and widget toolkit with full mouse
+FINAL CUT is a class library and widget toolkit with full mouse
 support for creating a text-based user interface. The library supports
 the programmer to develop an application for the text console. It allows
 the simultaneous handling of multiple windows on the screen.

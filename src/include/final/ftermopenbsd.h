@@ -57,8 +57,10 @@ class FTermOpenBSD
   public:
     // Constructors
     FTermOpenBSD() = default;
+
     // Disable copy constructor
     FTermOpenBSD (const FTermOpenBSD&) = delete;
+
     // Destructor
     virtual ~FTermOpenBSD() = default;
 

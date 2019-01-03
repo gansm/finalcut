@@ -20,15 +20,18 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
+
 #include "final/fobject.h"
 
 namespace finalcut
 {
 
 // static class attributes
-bool                FObject::timer_modify_lock;
+bool FObject::timer_modify_lock;
 FObject::TimerList* FObject::timer_list = nullptr;
 const FString* fc::emptyFString::empty_string = nullptr;
+
 
 //----------------------------------------------------------------------
 // class FObject
@@ -52,7 +55,7 @@ FObject::FObject (FObject* parent)
     {
       try
       {
-        timer_list = new TimerList();
+        timer_list = new TimerList;
       }
       catch (const std::bad_alloc& ex)
       {
@@ -169,6 +172,26 @@ void FObject::delChild (FObject* obj)
 }
 
 //----------------------------------------------------------------------
+bool FObject::event (FEvent* ev)
+{
+  // Receives events on this object
+
+  if ( ev->type() == fc::Timer_Event )
+  {
+    onTimer ( static_cast<FTimerEvent*>(ev) );
+    return true;
+  }
+
+  if ( ev->type() == fc::User_Event )
+  {
+    onUserEvent ( static_cast<FUserEvent*>(ev) );
+    return true;
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
 void FObject::getCurrentTime (timeval* time)
 {
   // Get the current time as timeval struct
@@ -198,11 +221,11 @@ void FObject::getCurrentTime (timeval* time)
 }
 
 //----------------------------------------------------------------------
-bool FObject::isTimeout (timeval* time, long timeout)
+bool FObject::isTimeout (timeval* time, uInt64 timeout)
 {
   // Checks whether the specified time span (timeout in µs) has elapse
 
-  long diff_usec;
+  uInt64 diff_usec;
   struct timeval now;
   struct timeval diff;
 
@@ -216,7 +239,7 @@ bool FObject::isTimeout (timeval* time, long timeout)
     diff.tv_usec += 1000000;
   }
 
-  diff_usec = (diff.tv_sec * 1000000) + diff.tv_usec;
+  diff_usec = uInt64((diff.tv_sec * 1000000) + diff.tv_usec);
   return ( diff_usec > timeout );
 }
 
@@ -343,21 +366,11 @@ bool FObject::delAllTimer()
 
 // protected methods of FObject
 //----------------------------------------------------------------------
-bool FObject::event (FEvent* ev)
-{
-  // Receives events on this object
-
-  if ( ev->type() == fc::Timer_Event )
-  {
-    onTimer ( const_cast<FTimerEvent*>(static_cast<const FTimerEvent*>(ev)) );
-    return true;
-  }
-
-  return false;
-}
+void FObject::onTimer (FTimerEvent*)
+{ }
 
 //----------------------------------------------------------------------
-void FObject::onTimer (FTimerEvent*)
+void FObject::onUserEvent (FUserEvent*)
 { }
 
 //----------------------------------------------------------------------

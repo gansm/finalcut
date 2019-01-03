@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------
-# Makefile.am  -  the Final Cut library
+# Makefile.am  -  FINAL CUT library
 #----------------------------------------------------------------------
 
 docdir = ${datadir}/doc/${PACKAGE}

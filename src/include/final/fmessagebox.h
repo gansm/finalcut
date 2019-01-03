@@ -107,56 +107,51 @@ class FMessageBox : public FDialog
     FMessageBox& operator = (const FMessageBox&);
 
     // Accessor
-    const char*   getClassName() const;
-    const FString getTitlebarText() const;
-    const FString getHeadline() const;
-    const FString getText() const;
+    virtual const char* getClassName() const override;
+    const FString       getTitlebarText() const;
+    const FString       getHeadline() const;
+    const FString       getText() const;
 
     // Mutator
-    void          setTitlebarText (const FString&);
-    void          setHeadline (const FString&);
-    bool          setCenterText(bool);
-    bool          setCenterText();
-    bool          unsetCenterText();
-    void          setText (const FString&);
+    void                setTitlebarText (const FString&);
+    void                setHeadline (const FString&);
+    bool                setCenterText(bool);
+    bool                setCenterText();
+    bool                unsetCenterText();
+    void                setText (const FString&);
 
     // Methods
-    static int    info ( FWidget*
-                       , const FString&
-                       , const FString&
-                       , int = FMessageBox::Ok
-                       , int = 0
-                       , int = 0 );
+    template <typename messageType>
+    static int          info ( FWidget*
+                             , const FString&
+                             , const messageType&
+                             , int = FMessageBox::Ok
+                             , int = 0
+                             , int = 0 );
 
-    static int    info ( FWidget*
-                       , const FString&
-                       , int
-                       , int = FMessageBox::Ok
-                       , int = 0
-                       , int = 0 );
-
-    static int    error ( FWidget*
-                        , const FString&
-                        , int = FMessageBox::Ok
-                        , int = 0
-                        , int = 0 );
+    template <typename messageType>
+    static int          error ( FWidget*
+                              , const messageType&
+                              , int = FMessageBox::Ok
+                              , int = 0
+                              , int = 0 );
    protected:
     // Method
-    virtual void  adjustSize();
+    virtual void        adjustSize() override;
 
     // Callback method
-    void          cb_processClick (FWidget*, data_ptr);
+    void                cb_processClick (FWidget*, FDataPtr);
 
   private:
     // Methods
-    void          init (int, int, int);
-    void          allocation (int, int, int);
-    void          deallocation();
-    void          initCallbacks();
-    void          calculateDimensions();
-    virtual void  draw();
-    void          resizeButtons();
-    void          adjustButtons();
+    void                init (int, int, int);
+    void                allocation (int, int, int);
+    void                deallocation();
+    void                initCallbacks();
+    void                calculateDimensions();
+    virtual void        draw() override;
+    void                resizeButtons();
+    void                adjustButtons();
 
     // Data Members
     FString       headline_text{};
@@ -196,8 +191,8 @@ inline void FMessageBox::setTitlebarText (const FString& txt)
 { return FDialog::setText(txt); }
 
 //----------------------------------------------------------------------
-inline bool FMessageBox::setCenterText(bool on)
-{ return (center_text = on); }
+inline bool FMessageBox::setCenterText(bool enable)
+{ return (center_text = enable); }
 
 //----------------------------------------------------------------------
 inline bool FMessageBox::setCenterText()
@@ -206,6 +201,48 @@ inline bool FMessageBox::setCenterText()
 //----------------------------------------------------------------------
 inline bool FMessageBox::unsetCenterText()
 { return setCenterText(false); }
+
+//----------------------------------------------------------------------
+template <typename messageType>
+int FMessageBox::info ( FWidget* parent
+                      , const FString& caption
+                      , const messageType& message
+                      , int button0
+                      , int button1
+                      , int button2 )
+{
+  int reply;
+  FMessageBox mbox ( caption
+                   , FString() << message
+                   , button0, button1, button2
+                   , parent );
+  reply = mbox.exec();
+  return reply;
+}
+
+//----------------------------------------------------------------------
+template <typename messageType>
+int FMessageBox::error ( FWidget* parent
+                       , const messageType& message
+                       , int button0
+                       , int button1
+                       , int button2 )
+{
+  int reply;
+  const FString& caption = "Error message";
+  FMessageBox mbox ( caption
+                   , FString() << message
+                   , button0, button1, button2
+                   , parent );
+  mbox.beep();
+  mbox.setHeadline("Warning:");
+  mbox.setCenterText();
+  mbox.setForegroundColor(mbox.wc.error_box_fg);
+  mbox.setBackgroundColor(mbox.wc.error_box_bg);
+  mbox.emphasis_color  = mbox.wc.error_box_emphasis_fg;
+  reply = mbox.exec();
+  return reply;
+}
 
 }  // namespace finalcut
 

@@ -85,15 +85,17 @@ class FKeyboard
 {
   public:
     // Constants
-    static const std::size_t FIFO_BUF_SIZE{512};
+    static constexpr std::size_t FIFO_BUF_SIZE{512};
 
     // Typedef
     typedef char keybuffer[FIFO_BUF_SIZE];
 
     // Constructor
     FKeyboard();
+
     // Disable copy constructor
     FKeyboard (const FKeyboard&) = delete;
+
     // Destructor
     virtual ~FKeyboard();
 
@@ -109,7 +111,7 @@ class FKeyboard
 
     // Mutators
     void                setTermcapMap (fc::fkeymap*);
-    void                setKeypressTimeout (const long);
+    void                setKeypressTimeout (const uInt64);
     void                enableUTF8();
     void                disableUTF8();
     void                enableMouseSequences();
@@ -136,8 +138,8 @@ class FKeyboard
 
   private:
     // Constants
-    static const std::size_t READ_BUF_SIZE{1024};
-    static const FKey NOT_SET = static_cast<FKey>(-1);
+    static constexpr std::size_t READ_BUF_SIZE{1024};
+    static constexpr FKey NOT_SET = static_cast<FKey>(-1);
 
     // Accessors
     FKey                getMouseProtocolKey();
@@ -171,7 +173,7 @@ class FKeyboard
     int                 fifo_offset{0};
     bool                fifo_in_use{false};
     int                 stdin_status_flags{0};
-    static long         key_timeout;
+    static uInt64       key_timeout;
     bool                input_data_pending{false};
     bool                utf8_input{false};
     bool                mouse_support{true};
@@ -208,7 +210,7 @@ inline timeval* FKeyboard::getKeyPressedTime()
 { return &time_keypressed; }
 
 //----------------------------------------------------------------------
-inline void FKeyboard::setKeypressTimeout (const long timeout)
+inline void FKeyboard::setKeypressTimeout (const uInt64 timeout)
 { key_timeout = timeout; }
 
 //----------------------------------------------------------------------

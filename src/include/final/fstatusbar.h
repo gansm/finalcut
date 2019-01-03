@@ -82,8 +82,10 @@ class FStatusKey : public FWidget
     // Constructors
     explicit FStatusKey (FWidget* = nullptr);
     FStatusKey (FKey, const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FStatusKey (const FStatusKey&) = delete;
+
     // Destructor
     virtual ~FStatusKey();
 
@@ -91,7 +93,7 @@ class FStatusKey : public FWidget
     FStatusKey& operator = (const FStatusKey&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const;
+    virtual const char* getClassName() const override;
     virtual FKey        getKey() const;
     virtual FString     getText() const;
 
@@ -109,7 +111,7 @@ class FStatusKey : public FWidget
     bool                hasMouseFocus() const;
 
     // Event handler
-    virtual void        onAccel (FAccelEvent*);
+    virtual void        onAccel (FAccelEvent*) override;
 
   private:
     // Methods
@@ -193,8 +195,10 @@ class FStatusBar : public FWindow
   public:
     // Constructor
     explicit FStatusBar (FWidget* = nullptr);
+
     // Disable copy constructor
     FStatusBar (const FStatusBar&) = delete;
+
     // Destructor
     virtual ~FStatusBar();
 
@@ -202,7 +206,7 @@ class FStatusBar : public FWindow
     FStatusBar& operator = (const FStatusBar&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const;
+    virtual const char* getClassName() const override;
     FStatusKey*         getStatusKey (int) const;
     FString             getMessage() const;
     std::size_t         getCount() const;
@@ -217,22 +221,22 @@ class FStatusBar : public FWindow
     bool                hasActivatedKey();
 
     // Methods
-    virtual void        hide();
+    virtual void        hide() override;
     void                drawMessage();
     void                clearMessage();
     void                insert (FStatusKey*);
     void                remove (FStatusKey*);
     void                remove (int);
     void                clear();
-    virtual void        adjustSize();
+    virtual void        adjustSize() override;
 
     // Event handlers
-    virtual void        onMouseDown (FMouseEvent*);
-    virtual void        onMouseUp (FMouseEvent*);
-    virtual void        onMouseMove (FMouseEvent*);
+    virtual void        onMouseDown (FMouseEvent*) override;
+    virtual void        onMouseUp (FMouseEvent*) override;
+    virtual void        onMouseMove (FMouseEvent*) override;
 
     // Callback method
-    void                cb_statuskey_activated (FWidget*, data_ptr);
+    void                cb_statuskey_activated (FWidget*, FDataPtr);
 
   private:
     // Typedef
@@ -240,7 +244,7 @@ class FStatusBar : public FWindow
 
     // Methods
     void                init();
-    virtual void        draw();
+    virtual void        draw() override;
     void                drawKeys();
     void                drawKey (keyList::const_iterator);
     void                drawActiveKey (keyList::const_iterator);

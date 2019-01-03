@@ -70,89 +70,94 @@ class FButton : public FWidget
     // Constructors
     explicit FButton (FWidget* = nullptr);
     explicit FButton (const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FButton (const FButton&) = delete;
+
     // Destructor
     virtual ~FButton();
 
     // Disable assignment operator (=)
     FButton& operator = (const FButton&) = delete;
 
+    // Overloaded operator
+    FButton& operator = (const FString&);
+
     // Accessors
-    const char*  getClassName() const;
-    FString&     getText();
+    virtual const char* getClassName() const override;
+    FString&            getText();
 
     // Mutators
-    void         setForegroundColor (FColor);
-    void         setBackgroundColor (FColor);
-    void         setHotkeyForegroundColor (FColor);
-    void         setFocusForegroundColor (FColor);
-    void         setFocusBackgroundColor (FColor);
-    void         setInactiveForegroundColor (FColor);
-    void         setInactiveBackgroundColor (FColor);
-    bool         setNoUnderline(bool);
-    bool         setNoUnderline();
-    bool         unsetNoUnderline();
-    virtual bool setEnable(bool);
-    virtual bool setEnable();
-    virtual bool unsetEnable();
-    virtual bool setDisable();
-    virtual bool setFocus(bool);
-    virtual bool setFocus();
-    virtual bool unsetFocus();
-    bool         setFlat(bool);
-    bool         setFlat();
-    bool         unsetFlat();
-    bool         setShadow(bool);
-    bool         setShadow();
-    bool         unsetShadow();
-    bool         setDown(bool);
-    bool         setDown();
-    bool         setUp();
-    bool         setClickAnimation(bool);
-    bool         setClickAnimation();
-    bool         unsetClickAnimation();
-    void         setText (const FString&);
+    void                setForegroundColor (FColor);
+    void                setBackgroundColor (FColor);
+    void                setHotkeyForegroundColor (FColor);
+    void                setFocusForegroundColor (FColor);
+    void                setFocusBackgroundColor (FColor);
+    void                setInactiveForegroundColor (FColor);
+    void                setInactiveBackgroundColor (FColor);
+    bool                setNoUnderline(bool);
+    bool                setNoUnderline();
+    bool                unsetNoUnderline();
+    virtual bool        setEnable(bool) override;
+    virtual bool        setEnable() override;
+    virtual bool        unsetEnable() override;
+    virtual bool        setDisable() override;
+    virtual bool        setFocus(bool) override;
+    virtual bool        setFocus() override;
+    virtual bool        unsetFocus() override;
+    bool                setFlat(bool);
+    bool                setFlat();
+    bool                unsetFlat();
+    bool                setShadow(bool);
+    bool                setShadow();
+    bool                unsetShadow();
+    bool                setDown(bool);
+    bool                setDown();
+    bool                setUp();
+    bool                setClickAnimation(bool);
+    bool                setClickAnimation();
+    bool                unsetClickAnimation();
+    void                setText (const FString&);
 
     // Inquiries
-    bool         isFlat() const;
-    bool         isDown() const;
-    bool         hasShadow() const;
-    bool         hasClickAnimation();
+    bool                isFlat() const;
+    bool                isDown() const;
+    bool                hasShadow() const;
+    bool                hasClickAnimation();
 
     // Methods
-    virtual void hide();
+    virtual void        hide() override;
 
     // Event handlers
-    virtual void onKeyPress (FKeyEvent*);
-    virtual void onMouseDown (FMouseEvent*);
-    virtual void onMouseUp (FMouseEvent*);
-    virtual void onMouseMove (FMouseEvent*);
-    virtual void onTimer (FTimerEvent*);
-    virtual void onAccel (FAccelEvent*);
-    virtual void onFocusIn (FFocusEvent*);
-    virtual void onFocusOut (FFocusEvent*);
+    virtual void        onKeyPress (FKeyEvent*) override;
+    virtual void        onMouseDown (FMouseEvent*) override;
+    virtual void        onMouseUp (FMouseEvent*) override;
+    virtual void        onMouseMove (FMouseEvent*) override;
+    virtual void        onTimer (FTimerEvent*) override;
+    virtual void        onAccel (FAccelEvent*) override;
+    virtual void        onFocusIn (FFocusEvent*) override;
+    virtual void        onFocusOut (FFocusEvent*) override;
 
   private:
     // Constants
-    static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
     // Methods
-    void         init();
-    uChar        getHotkey();
-    void         setHotkeyAccelerator();
-    void         detectHotkey();
-    std::size_t  getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
-    std::size_t  clickAnimationIndent (FWidget*);
-    void         clearRightMargin (FWidget*);
-    void         drawMarginLeft();
-    void         drawMarginRight();
-    void         drawTopBottomBackground();
-    void         drawButtonTextLine (wchar_t[]);
-    virtual void draw();
-    void         updateStatusBar();
-    void         updateButtonColor();
-    void         processClick();
+    void                init();
+    uChar               getHotkey();
+    void                setHotkeyAccelerator();
+    void                detectHotkey();
+    std::size_t         getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
+    std::size_t         clickAnimationIndent (FWidget*);
+    void                clearRightMargin (FWidget*);
+    void                drawMarginLeft();
+    void                drawMarginRight();
+    void                drawTopBottomBackground();
+    void                drawButtonTextLine (wchar_t[]);
+    virtual void        draw() override;
+    void                updateStatusBar();
+    void                updateButtonColor();
+    void                processClick();
 
     // Data Members
     FString      text{};
@@ -239,8 +244,8 @@ inline bool FButton::setUp()
 { return setDown(false); }
 
 //----------------------------------------------------------------------
-inline bool FButton::setClickAnimation(bool on)
-{ return (click_animation = on); }
+inline bool FButton::setClickAnimation(bool enable)
+{ return (click_animation = enable); }
 
 //----------------------------------------------------------------------
 inline bool FButton::setClickAnimation()

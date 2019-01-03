@@ -77,8 +77,10 @@ class FToolTip : public FWindow
     // Constructor
     explicit FToolTip (FWidget* = nullptr);
     explicit FToolTip (const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FToolTip (const FToolTip&) = delete;
+
     // Destructor
     virtual ~FToolTip ();
 
@@ -86,25 +88,25 @@ class FToolTip : public FWindow
     FToolTip& operator = (const FToolTip&) = delete;
 
     // Accessors
-    const char*   getClassName() const;
-    const FString getText() const;
+    virtual const char* getClassName() const override;
+    const FString       getText() const;
 
     // Mutators
-    void          setText (const FString&);
+    void                setText (const FString&);
 
     // Methods
-    virtual void  draw();
-    virtual void  show();
-    virtual void  hide();
+    virtual void        draw() override;
+    virtual void        show() override;
+    virtual void        hide() override;
 
     // Event handler
-    virtual void  onMouseDown (FMouseEvent*);
+    virtual void        onMouseDown (FMouseEvent*) override;
 
   private:
     // Methods
-    void          init();
-    void          calculateDimensions();
-    virtual void  adjustSize();
+    void                init();
+    void                calculateDimensions();
+    virtual void        adjustSize() override;
 
     // Data Members
     FString       text{};

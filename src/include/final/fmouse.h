@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -112,9 +112,9 @@ class FMouse
     void                clearEvent();
 
     // Mutators
-    void                setMaxWidth (short);
-    void                setMaxHeight (short);
-    void                setDblclickInterval (const long);
+    void                setMaxWidth (uInt16);
+    void                setMaxHeight (uInt16);
+    void                setDblclickInterval (const uInt64);
 
     // Inquiries
     virtual bool        hasData() = 0;
@@ -173,9 +173,9 @@ class FMouse
     button              b_state{};
     bool                mouse_event_occurred{false};
     bool                input_data_pending{false};
-    long                dblclick_interval{500000};  // 500 ms
-    short               max_width{80};
-    short               max_height{25};
+    uInt64              dblclick_interval{500000};  // 500 ms
+    uInt16              max_width{80};
+    uInt16              max_height{25};
     struct timeval      time_mousepressed{};
     FPoint              zero_point{0, 0};  // zero point (x=0, y=0)
     FPoint              mouse{0, 0};       // mouse click position
@@ -202,18 +202,18 @@ class FMouseGPM : public FMouse
     virtual ~FMouseGPM();
 
     // Accessors
-    virtual const char*  getClassName() const;
+    virtual const char*  getClassName() const override;
 
     // Mutators
     void                 setStdinNo(int);
 
     // Inquiry
-    virtual bool         hasData();
+    virtual bool         hasData() override;
     bool                 isGpmMouseEnabled();
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&);
-    virtual void         processEvent (struct timeval*);
+    virtual void         setRawData (FKeyboard::keybuffer&) override;
+    virtual void         processEvent (struct timeval*) override;
     bool                 gpmMouse (bool);
     bool                 enableGpmMouse();
     bool                 disableGpmMouse();
@@ -274,14 +274,14 @@ class FMouseX11 : public FMouse
     virtual ~FMouseX11() = default;
 
     // Accessors
-    virtual const char*  getClassName() const;
+    virtual const char*  getClassName() const override;
 
     // Inquiry
-    virtual bool         hasData();
+    virtual bool         hasData() override;
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&);
-    virtual void         processEvent (struct timeval*);
+    virtual void         setRawData (FKeyboard::keybuffer&) override;
+    virtual void         processEvent (struct timeval*) override;
 
   private:
     // Enumeration
@@ -306,7 +306,7 @@ class FMouseX11 : public FMouse
     };
 
     // Constant
-    static const std::size_t MOUSE_BUF_SIZE = 4;
+    static constexpr std::size_t MOUSE_BUF_SIZE = 4;
 
     // Method
     void         setKeyState (int);
@@ -337,14 +337,14 @@ class FMouseSGR : public FMouse
     virtual ~FMouseSGR() = default;
 
     // Accessors
-    virtual const char*  getClassName() const;
+    virtual const char*  getClassName() const override;
 
     // Inquiry
-    virtual bool         hasData();
+    virtual bool         hasData() override;
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&);
-    virtual void         processEvent (struct timeval*);
+    virtual void         setRawData (FKeyboard::keybuffer&) override;
+    virtual void         processEvent (struct timeval*) override;
 
   private:
     // Enumeration
@@ -368,7 +368,7 @@ class FMouseSGR : public FMouse
     };
 
     // Constant
-    static const std::size_t MOUSE_BUF_SIZE = 13;
+    static constexpr std::size_t MOUSE_BUF_SIZE = 13;
 
     // Methods
     void         setKeyState (int);
@@ -400,14 +400,14 @@ class FMouseUrxvt : public FMouse
     virtual ~FMouseUrxvt() = default;
 
     // Accessors
-    virtual const char*  getClassName() const;
+    virtual const char*  getClassName() const override;
 
     // Inquiry
-    virtual bool         hasData();
+    virtual bool         hasData() override;
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&);
-    virtual void         processEvent (struct timeval*);
+    virtual void         setRawData (FKeyboard::keybuffer&) override;
+    virtual void         processEvent (struct timeval*) override;
 
   private:
     // Enumeration
@@ -432,7 +432,7 @@ class FMouseUrxvt : public FMouse
     };
 
     // Constant
-    static const std::size_t MOUSE_BUF_SIZE = 13;
+    static constexpr std::size_t MOUSE_BUF_SIZE = 13;
 
     // Methods
     void         setKeyState (int);
@@ -468,9 +468,9 @@ class FMouseControl
 
     // Mutators
     void                setStdinNo (int);
-    void                setMaxWidth (short);
-    void                setMaxHeight (short);
-    void                setDblclickInterval (const long);
+    void                setMaxWidth (uInt16);
+    void                setMaxHeight (uInt16);
+    void                setDblclickInterval (const uInt64);
     void                useGpmMouse (bool = true);
     void                useXtermMouse (bool = true);
 

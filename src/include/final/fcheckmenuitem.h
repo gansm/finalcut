@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -75,8 +75,10 @@ class FCheckMenuItem : public FMenuItem
     // Constructors
     explicit FCheckMenuItem (FWidget* = nullptr);
     explicit FCheckMenuItem (const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FCheckMenuItem (const FCheckMenuItem&) = delete;
+
     // Destructor
     virtual ~FCheckMenuItem();
 
@@ -84,13 +86,13 @@ class FCheckMenuItem : public FMenuItem
     FCheckMenuItem& operator = (const FCheckMenuItem&) = delete;
 
     // Accessor
-    const char* getClassName() const;
+    virtual const char* getClassName() const override;
 
   private:
     // Methods
-    void init (FWidget*);
-    void processToggle();
-    void processClicked();
+    void                init (FWidget*);
+    void                processToggle();
+    virtual void        processClicked() override;
 };
 #pragma pack(pop)
 

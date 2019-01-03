@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2019 Markus Gans                                           *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -44,6 +44,7 @@ namespace finalcut
   bool   FTermLinux::half_block_character = true;
   bool   FTermLinux::has_saved_palette = false;
 
+  FTermData*                  FTermLinux::fterm_data = nullptr;
   FTermDetection*             FTermLinux::term_detection = nullptr;
   fc::linuxConsoleCursorStyle FTermLinux::linux_console_cursor_style;
   FTermLinux::ColorMap        FTermLinux::saved_color_map;
@@ -100,12 +101,12 @@ char* FTermLinux::setCursorStyle ( fc::linuxConsoleCursorStyle style
 }
 
 //----------------------------------------------------------------------
-void FTermLinux::setUTF8 (bool on)
+void FTermLinux::setUTF8 (bool enable)
 {
   if ( ! FTerm::isLinuxTerm() )
     return;
 
-  if ( on )
+  if ( enable )
     FTerm::putstring (ESC "%G");
   else
     FTerm::putstring (ESC "%@");
@@ -191,7 +192,7 @@ void FTermLinux::init()
 //----------------------------------------------------------------------
 void FTermLinux::initCharMap (uInt char_map[][fc::NUM_OF_ENCODINGS])
 {
-  uInt c1, c2, c3, c4, c5;
+  constexpr sInt16 NOT_FOUND = -1;
 
   if ( new_font || vga_font )
     return;
@@ -200,43 +201,31 @@ void FTermLinux::initCharMap (uInt char_map[][fc::NUM_OF_ENCODINGS])
   {
     for (std::size_t i = 0; i <= fc::lastCharItem; i++ )
     {
-      bool known_unicode = false;
+      auto ucs = wchar_t(char_map[i][fc::UTF8]);
+      sInt16 fontpos = getFontPos(ucs);
 
-      for (std::size_t n = 0; n < screen_unicode_map.entry_ct; n++)
-      {
-        if ( char_map[i][fc::UTF8] == screen_unicode_map.entries[n].unicode )
-        {
-          if ( screen_unicode_map.entries[n].fontpos < 256 )
-            known_unicode = true;
-
-          break;
-        }
-      }
-
-      if ( ! known_unicode )
+      // Fix for a non-cp437 Linux console with PC charset encoding
+      if ( fontpos > 255 || fontpos == NOT_FOUND )
         char_map[i][fc::PC] = char_map[i][fc::ASCII];
+
+      // Character substitutions for missing characters
+      if ( fontpos == NOT_FOUND )
+      {
+        characterFallback (ucs, { L'▲', L'↑', L'^' });
+        characterFallback (ucs, { L'▼', L'↓', L'v' });
+        characterFallback (ucs, { L'►', L'▶', L'→', L'>' });
+        characterFallback (ucs, { L'◄', L'◀', L'←', L'<' });
+        characterFallback (ucs, { L'●', L'◆', L'⬤', L'*' });
+        characterFallback (ucs, { L'•', L'●', L'◆', L'⬤', L'*' });
+        characterFallback (ucs, { L'×', L'❌', L'x' });
+        characterFallback (ucs, { L'÷', L'➗', L'/' });
+        characterFallback (ucs, { L'√', L'✓', L'x' });
+        characterFallback (ucs, { L'ˣ', L'ⁿ', L'ˆ', L'`' });
+      }
     }
   }
 
-  c1 = fc::UpperHalfBlock;
-  c2 = fc::LowerHalfBlock;
-  c3 = fc::FullBlock;
-
-  if ( FTerm::charEncode(c1, fc::PC) == FTerm::charEncode(c1, fc::ASCII)
-    || FTerm::charEncode(c2, fc::PC) == FTerm::charEncode(c2, fc::ASCII)
-    || FTerm::charEncode(c3, fc::PC) == FTerm::charEncode(c3, fc::ASCII) )
-  {
-    shadow_character = false;
-  }
-
-  c4 = fc::RightHalfBlock;
-  c5 = fc::LeftHalfBlock;
-
-  if ( FTerm::charEncode(c4, fc::PC) == FTerm::charEncode(c4, fc::ASCII)
-    || FTerm::charEncode(c5, fc::PC) == FTerm::charEncode(c5, fc::ASCII) )
-  {
-    half_block_character = false;
-  }
+  initSpecialCharacter();
 }
 
 //----------------------------------------------------------------------
@@ -515,7 +504,7 @@ int FTermLinux::getFramebuffer_bpp()
 //----------------------------------------------------------------------
 bool FTermLinux::getScreenFont()
 {
-  static const std::size_t data_size = 4 * 32 * 512;
+  static constexpr std::size_t data_size = 4 * 32 * 512;
   struct console_font_op font;
   int fd_tty = FTerm::getTTYFileDescriptor();
 
@@ -737,7 +726,7 @@ inline uInt16 FTermLinux::getInputStatusRegisterOne()
   // Gets the VGA input-status-register-1
 
   // Miscellaneous output (read port)
-  static const uInt16 misc_read = 0x3cc;
+  static constexpr uInt16 misc_read = 0x3cc;
   const uInt16 io_base = ( inb(misc_read) & 0x01 ) ? 0x3d0 : 0x3b0;
   // 0x3ba : Input status 1 MDA (read port)
   // 0x3da : Input status 1 CGA (read port)
@@ -751,9 +740,9 @@ uChar FTermLinux::readAttributeController (uChar index)
 
   uChar res;
   // Attribute controller (write port)
-  static const uInt16 attrib_cntlr_write = 0x3c0;
+  static constexpr uInt16 attrib_cntlr_write = 0x3c0;
   // Attribute controller (read port)
-  static const uInt16 attrib_cntlr_read  = 0x3c1;
+  static constexpr uInt16 attrib_cntlr_read  = 0x3c1;
   const uInt16 input_status_1 = getInputStatusRegisterOne();
 
   inb (input_status_1);  // switch to index mode
@@ -773,7 +762,7 @@ void FTermLinux::writeAttributeController (uChar index, uChar data)
   // Writes a byte from the attribute controller from a given index
 
   // Attribute controller (write port)
-  static const uInt16 attrib_cntlr_write = 0x3c0;
+  static constexpr uInt16 attrib_cntlr_write = 0x3c0;
   const uInt16 input_status_1 = getInputStatusRegisterOne();
 
   inb (input_status_1);  // switch to index mode
@@ -790,7 +779,7 @@ void FTermLinux::writeAttributeController (uChar index, uChar data)
 inline uChar FTermLinux::getAttributeMode()
 {
   // Gets the attribute mode value from the vga attribute controller
-  static const uChar attrib_mode = 0x10;
+  static constexpr uChar attrib_mode = 0x10;
   return readAttributeController(attrib_mode);
 }
 
@@ -798,12 +787,12 @@ inline uChar FTermLinux::getAttributeMode()
 inline void FTermLinux::setAttributeMode (uChar data)
 {
   // Sets the attribute mode value from the vga attribute controller
-  static const uChar attrib_mode = 0x10;
+  static constexpr uChar attrib_mode = 0x10;
   writeAttributeController (attrib_mode, data);
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::setBlinkAsIntensity (bool on)
+int FTermLinux::setBlinkAsIntensity (bool enable)
 {
   // Uses blink-bit as background intensity.
   // That permits 16 colors for background
@@ -824,7 +813,7 @@ int FTermLinux::setBlinkAsIntensity (bool on)
   if ( ioctl(fd_tty, KDENABIO, 0) < 0 )
     return -1;  // error on KDENABIO
 
-  if ( on )
+  if ( enable )
     setAttributeMode (getAttributeMode() & 0xF7);  // clear bit 3
   else
     setAttributeMode (getAttributeMode() | 0x08);  // set bit 3
@@ -883,14 +872,14 @@ bool FTermLinux::resetVGAPalette()
   {
     rgb defaultColor[16] =
     {
-      {0x00, 0x00, 0x00}, {0xAA, 0x00, 0x00},
-      {0x00, 0xAA, 0x00}, {0xAA, 0x55, 0x00},
-      {0x00, 0x00, 0xAA}, {0xAA, 0x00, 0xAA},
-      {0x00, 0xAA, 0xAA}, {0xAA, 0xAA, 0xAA},
-      {0x55, 0x55, 0x55}, {0xFF, 0x55, 0x55},
-      {0x55, 0xFF, 0x55}, {0xFF, 0xFF, 0x55},
-      {0x55, 0x55, 0xFF}, {0xFF, 0x55, 0xFF},
-      {0x55, 0xFF, 0xFF}, {0xFF, 0xFF, 0xFF}
+      {0x00, 0x00, 0x00}, {0xaa, 0x00, 0x00},
+      {0x00, 0xaa, 0x00}, {0xaa, 0x55, 0x00},
+      {0x00, 0x00, 0xaa}, {0xaa, 0x00, 0xaa},
+      {0x00, 0xaa, 0xaa}, {0xaa, 0xaa, 0xaa},
+      {0x55, 0x55, 0x55}, {0xff, 0x55, 0x55},
+      {0x55, 0xff, 0x55}, {0xff, 0xff, 0x55},
+      {0x55, 0x55, 0xff}, {0xff, 0x55, 0xff},
+      {0x55, 0xff, 0xff}, {0xff, 0xff, 0xff}
     };
 
     for (std::size_t index = 0; index < 16; index++)
@@ -1187,6 +1176,65 @@ FKey FTermLinux::shiftCtrlAltKeyCorrection (const FKey& key_id)
       return key_id;
   }
 }
+
+//----------------------------------------------------------------------
+inline void FTermLinux::initSpecialCharacter()
+{
+  wchar_t c1 = fc::UpperHalfBlock;
+  wchar_t c2 = fc::LowerHalfBlock;
+  wchar_t c3 = fc::FullBlock;
+
+  if ( FTerm::charEncode(c1, fc::PC) == FTerm::charEncode(c1, fc::ASCII)
+    || FTerm::charEncode(c2, fc::PC) == FTerm::charEncode(c2, fc::ASCII)
+    || FTerm::charEncode(c3, fc::PC) == FTerm::charEncode(c3, fc::ASCII) )
+  {
+    shadow_character = false;
+  }
+
+  wchar_t c4 = fc::RightHalfBlock;
+  wchar_t c5 = fc::LeftHalfBlock;
+
+  if ( FTerm::charEncode(c4, fc::PC) == FTerm::charEncode(c4, fc::ASCII)
+    || FTerm::charEncode(c5, fc::PC) == FTerm::charEncode(c5, fc::ASCII) )
+  {
+    half_block_character = false;
+  }
+}
+
+//----------------------------------------------------------------------
+sInt16 FTermLinux::getFontPos (wchar_t ucs)
+{
+  for (std::size_t n = 0; n < screen_unicode_map.entry_ct; n++)
+  {
+    if ( screen_unicode_map.entries[n].unicode == ucs )
+      return sInt16(screen_unicode_map.entries[n].fontpos);
+  }
+
+  return -1;
+}
+
+//----------------------------------------------------------------------
+void FTermLinux::characterFallback ( wchar_t ucs
+                                   , std::vector<wchar_t> fallback )
+{
+  constexpr sInt16 NOT_FOUND = -1;
+  characterSub& sub_map = fterm_data->getCharSubstitutionMap();
+
+  if ( fallback.size() < 2 || ucs != fallback[0] )
+    return;
+
+  for (auto iter = fallback.begin() + 1; iter != fallback.end(); iter++)
+  {
+    sInt16 pos = getFontPos(*iter);
+
+    if ( pos != NOT_FOUND )
+    {
+      sub_map[ucs] = *iter;
+      return;
+    }
+  }
+}
+
 #endif  // defined(__linux__)
 
 }  // namespace finalcut

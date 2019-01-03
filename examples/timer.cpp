@@ -35,11 +35,11 @@ class Timer : public finalcut::FWidget
 
   protected:
     // Method
-    virtual void draw();
+    virtual void draw() override;
 
     // Event handlers
-    virtual void onTimer (finalcut::FTimerEvent*);
-    virtual void onAccel (finalcut::FAccelEvent*);
+    virtual void onTimer (finalcut::FTimerEvent*) override;
+    virtual void onAccel (finalcut::FAccelEvent*) override;
 };
 
 //----------------------------------------------------------------------
@@ -70,7 +70,7 @@ void Timer::draw()
 void Timer::onTimer (finalcut::FTimerEvent* ev)
 {
   bool is_last_line = false;
-  int timer_id = ev->timerId();
+  int timer_id = ev->getTimerId();
 
   if ( getPrintPos().getY() == int(getDesktopHeight()) )
     is_last_line = true;

@@ -78,8 +78,10 @@ class FMenuBar : public FWindow, public FMenuList
   public:
     // Constructor
     explicit FMenuBar (FWidget* = nullptr);
+
     // Disable copy constructor
     FMenuBar (const FMenuBar&) = delete;
+
     // Destructor
     virtual ~FMenuBar();
 
@@ -87,26 +89,26 @@ class FMenuBar : public FWindow, public FMenuList
     FMenuBar& operator = (const FMenuBar&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const;
+    virtual const char* getClassName() const override;
 
     // Methods
     void         resetMenu();
-    virtual void hide();
-    virtual void adjustSize();
+    virtual void hide() override;
+    virtual void adjustSize() override;
 
     // Event handlers
-    virtual void onKeyPress (FKeyEvent*);
-    virtual void onMouseDown (FMouseEvent*);
-    virtual void onMouseUp (FMouseEvent*);
-    virtual void onMouseMove (FMouseEvent*);
-    virtual void onAccel (FAccelEvent*);
+    virtual void onKeyPress (FKeyEvent*) override;
+    virtual void onMouseDown (FMouseEvent*) override;
+    virtual void onMouseUp (FMouseEvent*) override;
+    virtual void onMouseMove (FMouseEvent*) override;
+    virtual void onAccel (FAccelEvent*) override;
 
     // Callback methods
-    void         cb_item_deactivated (FWidget*, data_ptr);
+    void         cb_item_deactivated (FWidget*, FDataPtr);
 
   private:
     // Constants
-    static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
     // Typedef
     typedef struct
@@ -128,12 +130,12 @@ class FMenuBar : public FWindow, public FMenuList
     bool         selectPrevItem();
     bool         hotkeyMenu (FKeyEvent*&);
     std::size_t  getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
-    virtual void draw();
+    virtual void draw() override;
     void         drawItems();
     void         drawItem (FMenuItem*, std::size_t&);
     void         setLineAttributes (FMenuItem*);
     void         drawMenuText (menuText&);
-    void         drawEllipsis (menuText&, std::size_t);
+    void         drawEllipsis (const menuText&, std::size_t);
     void         drawLeadingSpace (std::size_t&);
     void         drawTrailingSpace (std::size_t&);
     void         adjustItems();
@@ -141,10 +143,10 @@ class FMenuBar : public FWindow, public FMenuList
     bool         clickItem (FMenuItem*);
     void         unselectMenuItem (FMenuItem*);
     void         selectMenuItem (FMenuItem*);
-    void         mouseDownOverList (FMouseEvent*);
-    void         mouseUpOverList (FMouseEvent*);
-    void         mouseMoveOverList (FMouseEvent*);
-    void         passEventToMenu (FMouseEvent*&);
+    void         mouseDownOverList (const FMouseEvent*);
+    void         mouseUpOverList (const FMouseEvent*);
+    void         mouseMoveOverList (const FMouseEvent*);
+    void         passEventToMenu (const FMouseEvent*&);
     void         leaveMenuBar();
 
     // Friend classes

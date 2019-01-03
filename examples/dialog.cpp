@@ -23,16 +23,16 @@
 #include <final/final.h>
 
 // function prototype
-void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr);
+void cb_quit (finalcut::FWidget*, FDataPtr);
 
 
 //----------------------------------------------------------------------
 // callback function
 //----------------------------------------------------------------------
-void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr data)
+void cb_quit (finalcut::FWidget*, FDataPtr data)
 {
-  auto app = static_cast<finalcut::FApplication*>(data);
-  app->quit();
+  auto& app = *(static_cast<finalcut::FApplication*>(data));
+  app.quit();
 }
 
 

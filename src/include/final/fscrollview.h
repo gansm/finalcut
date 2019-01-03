@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -53,6 +53,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <memory>
+
 #include "final/fscrollbar.h"
 #include "final/fwidget.h"
 
@@ -76,8 +78,10 @@ class FScrollView : public FWidget
 
     // Constructor
     explicit FScrollView (FWidget* = nullptr);
+
     // Disable copy constructor
     FScrollView (const FScrollView&) = delete;
+
     // Destructor
     virtual ~FScrollView();
 
@@ -85,100 +89,103 @@ class FScrollView : public FWidget
     FScrollView& operator = (const FScrollView&) = delete;
 
     // Accessors
-    const char*       getClassName() const;
-    std::size_t       getViewportWidth() const;
-    std::size_t       getViewportHeight() const;
-    std::size_t       getScrollWidth() const;
-    std::size_t       getScrollHeight() const;
-    const FPoint      getScrollPos() const;
-    int               getScrollX() const;
-    int               getScrollY() const;
+    virtual const char* getClassName() const override;
+    std::size_t         getViewportWidth() const;
+    std::size_t         getViewportHeight() const;
+    std::size_t         getScrollWidth() const;
+    std::size_t         getScrollHeight() const;
+    const FPoint        getScrollPos() const;
+    int                 getScrollX() const;
+    int                 getScrollY() const;
 
     // Mutator
-    virtual void      setScrollWidth (std::size_t);
-    virtual void      setScrollHeight (std::size_t);
-    virtual void      setScrollSize (std::size_t, std::size_t);
-    virtual void      setX (int, bool = true);
-    virtual void      setY (int, bool = true);
-    virtual void      setPos (int, int, bool = true);
-    virtual void      setWidth (std::size_t, bool = true);
-    virtual void      setHeight (std::size_t, bool = true);
-    virtual void      setSize (std::size_t, std::size_t, bool = true);
-    virtual void      setGeometry ( int, int
-                                  , std::size_t, std::size_t
-                                  , bool = true );
-    void              setCursorPos (int, int);
-    void              setPrintPos (int, int);
-    bool              setViewportPrint (bool);
-    bool              setViewportPrint();
-    bool              unsetViewportPrint();
-    bool              setBorder (bool);
-    bool              setBorder();
-    bool              unsetBorder();
-    void              setHorizontalScrollBarMode (fc::scrollBarMode);
-    void              setVerticalScrollBarMode (fc::scrollBarMode);
+    virtual void        setScrollWidth (std::size_t);
+    virtual void        setScrollHeight (std::size_t);
+    virtual void        setScrollSize (std::size_t, std::size_t);
+    virtual void        setX (int, bool = true) override;
+    virtual void        setY (int, bool = true) override;
+    virtual void        setPos (int, int, bool = true) override;
+    virtual void        setWidth (std::size_t, bool = true) override;
+    virtual void        setHeight (std::size_t, bool = true) override;
+    virtual void        setSize (std::size_t, std::size_t, bool = true) override;
+    virtual void        setGeometry ( int, int
+                                    , std::size_t, std::size_t
+                                    , bool = true ) override;
+    void                setCursorPos (int, int);
+    void                setPrintPos (int, int);
+    bool                setViewportPrint (bool);
+    bool                setViewportPrint();
+    bool                unsetViewportPrint();
+    bool                setBorder (bool);
+    bool                setBorder();
+    bool                unsetBorder();
+    void                setHorizontalScrollBarMode (fc::scrollBarMode);
+    void                setVerticalScrollBarMode (fc::scrollBarMode);
 
     // Inquiries
-    bool              hasBorder();
-    bool              isViewportPrint();
+    bool                hasBorder();
+    bool                isViewportPrint();
 
     // Method
-    virtual void      clearArea (int = ' ');
-    void              scrollToX (int);
-    void              scrollToY (int);
-    void              scrollTo (const FPoint&);
-    void              scrollTo (int, int);
-    void              scrollBy (int, int);
-    virtual void      draw();
+    virtual void        clearArea (int = ' ') override;
+    void                scrollToX (int);
+    void                scrollToY (int);
+    void                scrollTo (const FPoint&);
+    void                scrollTo (int, int);
+    void                scrollBy (int, int);
+    virtual void        draw() override;
 
     // Event handlers
-    virtual void      onKeyPress (FKeyEvent*);
-    virtual void      onWheel (FWheelEvent*);
-    virtual void      onFocusIn (FFocusEvent*);
-    virtual void      onChildFocusIn (FFocusEvent*);
-    virtual void      onChildFocusOut (FFocusEvent*);
+    virtual void        onKeyPress (FKeyEvent*) override;
+    virtual void        onWheel (FWheelEvent*) override;
+    virtual void        onFocusIn (FFocusEvent*) override;
+    virtual void        onChildFocusIn (FFocusEvent*) override;
+    virtual void        onChildFocusOut (FFocusEvent*) override;
 
   protected:
     // Using-declaration
     using FVTerm::clearArea;
 
     // Accessor
-    term_area*        getPrintArea();
+    virtual term_area*  getPrintArea() override;
 
     // Method
-    virtual void      adjustSize();
-    void              copy2area();
+    virtual void        adjustSize() override;
+    void                copy2area();
 
   private:
+    // Typedef
+    typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
+
     // Constants
-    static const int vertical_border_spacing = 2;
-    static const int horizontal_border_spacing = 2;
+    static constexpr int vertical_border_spacing = 2;
+    static constexpr int horizontal_border_spacing = 2;
 
     // Accessors
-    FPoint            getViewportCursorPos();
+    FPoint              getViewportCursorPos();
 
     // Methods
-    void              init (FWidget*);
-    void              init_scrollbar();
-    void              calculateScrollbarPos();
-    void              setHorizontalScrollBarVisibility();
-    void              setVerticalScrollBarVisibility();
-    void              setViewportCursor();
-    void              redrawHBar();
-    void              redrawVBar();
-    void              drawHBar();
-    void              drawVBar();
+    void                init (FWidget*);
+    void                init_scrollbar();
+    void                calculateScrollbarPos();
+    void                setHorizontalScrollBarVisibility();
+    void                setVerticalScrollBarVisibility();
+    void                setViewportCursor();
+    void                redrawHBar();
+    void                redrawVBar();
+    void                drawHBar();
+    void                drawVBar();
 
     // Callback methods
-    void              cb_VBarChange (FWidget*, data_ptr);
-    void              cb_HBarChange (FWidget*, data_ptr);
+    void                cb_VBarChange (FWidget*, FDataPtr);
+    void                cb_HBarChange (FWidget*, FDataPtr);
 
     // Data Members
     FRect             scroll_geometry{1, 1, 1, 1};
     FRect             viewport_geometry{};
     term_area*        viewport{nullptr};  // virtual scroll content
-    FScrollbar*       vbar{nullptr};
-    FScrollbar*       hbar{nullptr};
+    FScrollbarPtr     vbar{nullptr};
+    FScrollbarPtr     hbar{nullptr};
     uInt8             nf_offset{0};
     bool              border{true};
     bool              use_own_print_area{false};

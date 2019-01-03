@@ -51,7 +51,7 @@ FWindow::FWindow(FWidget* parent)
 //----------------------------------------------------------------------
 FWindow::~FWindow()  // destructor
 {
-  auto fapp = static_cast<FApplication*>(getRootWidget());
+  auto fapp = FApplication::getApplicationObject();
 
   if ( previous_window == this )
     previous_window = nullptr;
@@ -67,7 +67,7 @@ FWindow::~FWindow()  // destructor
 
   if ( ! fapp->isQuit() )
   {
-    const FRect& t_geometry = getTermGeometryWithShadow();
+    const auto& t_geometry = getTermGeometryWithShadow();
     restoreVTerm (t_geometry);
   }
 
@@ -84,19 +84,19 @@ FWidget* FWindow::getWindowFocusWidget() const
 }
 
 //----------------------------------------------------------------------
-bool FWindow::setWindowWidget (bool on)
+bool FWindow::setWindowWidget (bool enable)
 {
-  if ( isWindowWidget() == on )
+  if ( isWindowWidget() == enable )
     return true;
 
-  flags.window_widget = on;
+  flags.window_widget = enable;
 
-  if ( on )
+  if ( enable )
     setTermOffset();
   else
     setParentOffset();
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
@@ -148,16 +148,16 @@ void FWindow::setWindowFocusWidget (const FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-bool FWindow::activateWindow (bool on)
+bool FWindow::activateWindow (bool enable)
 {
   // activate/deactivate this window
-  if ( on )
+  if ( enable )
   {
     FWidget::setActiveWindow (this);
     active_area = getVWin();
   }
 
-  return (window_active = on);
+  return (window_active = enable);
 }
 
 //----------------------------------------------------------------------
@@ -168,31 +168,31 @@ void FWindow::unsetActiveWindow()
 }
 
 //----------------------------------------------------------------------
-bool FWindow::setResizeable (bool on)
+bool FWindow::setResizeable (bool enable)
 {
-  return (flags.resizeable = on);
+  return (flags.resizeable = enable);
 }
 
 //----------------------------------------------------------------------
-bool FWindow::setTransparentShadow (bool on)
+bool FWindow::setTransparentShadow (bool enable)
 {
-  flags.shadow = flags.trans_shadow = on;
+  flags.shadow = flags.trans_shadow = enable;
 
-  if ( on )
+  if ( enable )
     setShadowSize (2, 1);
   else
     setShadowSize (0, 0);
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FWindow::setShadow (bool on)
+bool FWindow::setShadow (bool enable)
 {
   if ( isMonochron() )
     return false;
 
-  if ( on )
+  if ( enable )
   {
     flags.shadow = true;
     flags.trans_shadow = false;
@@ -205,18 +205,18 @@ bool FWindow::setShadow (bool on)
     setShadowSize (0, 0);
   }
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FWindow::setAlwaysOnTop (bool on)
+bool FWindow::setAlwaysOnTop (bool enable)
 {
-  if ( isAlwaysOnTop() == on )
+  if ( isAlwaysOnTop() == enable )
     return true;
 
-  flags.always_on_top = on;
+  flags.always_on_top = enable;
 
-  if ( on )
+  if ( enable )
   {
     if ( always_on_top_list )
     {
@@ -227,7 +227,7 @@ bool FWindow::setAlwaysOnTop (bool on)
   else
     deleteFromAlwaysOnTopList (this);
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
@@ -810,7 +810,7 @@ void FWindow::adjustSize()
 //----------------------------------------------------------------------
 bool FWindow::event (FEvent* ev)
 {
-  switch ( ev->type() )
+  switch ( uInt(ev->type()) )
   {
     case fc::WindowActive_Event:
       onWindowActive (ev);

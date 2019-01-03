@@ -81,8 +81,10 @@ class FDialogListMenu : public FMenu
     // Constructors
     explicit FDialogListMenu (FWidget* = nullptr);
     explicit FDialogListMenu (const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FDialogListMenu (const FDialogListMenu&) = delete;
+
     // Destructor
     virtual ~FDialogListMenu();
 
@@ -90,7 +92,7 @@ class FDialogListMenu : public FMenu
     FDialogListMenu& operator = (const FDialogListMenu&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const;
+    virtual const char* getClassName() const override;
 
   private:
     // Method

@@ -63,8 +63,10 @@ class FMenuList
   public:
     // Constructor
     FMenuList() = default;
+
     // Disable copy constructor
     FMenuList (const FMenuList&) = delete;
+
     // Destructor
     virtual ~FMenuList();
 

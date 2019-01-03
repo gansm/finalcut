@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -35,8 +35,10 @@ class ColorChooser : public finalcut::FWidget
   public:
     // Constructor
     explicit ColorChooser (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     ColorChooser (const ColorChooser&) = delete;
+
     // Destructor
     ~ColorChooser();
 
@@ -49,10 +51,10 @@ class ColorChooser : public finalcut::FWidget
 
   private:
     // Method
-    virtual void draw();
+    virtual void draw() override;
 
     // Event handler
-    virtual void onMouseDown (finalcut::FMouseEvent*);
+    virtual void onMouseDown (finalcut::FMouseEvent*) override;
 
     // Data Members
     FColor fg_color{finalcut::fc::White};
@@ -171,8 +173,10 @@ class Brushes : public finalcut::FWidget
   public:
     // Constructor
     explicit Brushes (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     Brushes (const Brushes&) = delete;
+
     // Destructor
     ~Brushes();
 
@@ -188,10 +192,10 @@ class Brushes : public finalcut::FWidget
 
   private:
     // Method
-    virtual void draw();
+    virtual void draw() override;
 
     // Event handler
-    virtual void onMouseDown (finalcut::FMouseEvent*);
+    virtual void onMouseDown (finalcut::FMouseEvent*) override;
 
     // Data Members
     wchar_t brush{L' '};
@@ -309,8 +313,10 @@ class MouseDraw : public finalcut::FDialog
 
     // Constructor
     explicit MouseDraw (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     MouseDraw (const MouseDraw&) = delete;
+
     // Destructor
     ~MouseDraw();
 
@@ -318,25 +324,25 @@ class MouseDraw : public finalcut::FDialog
     MouseDraw& operator = (const MouseDraw&) = delete;
 
     // Methods
-    void setGeometry (int, int, std::size_t, std::size_t, bool = true);
+    void setGeometry (int, int, std::size_t, std::size_t, bool = true) override;
 
     // Event handlers
-    virtual void onAccel (finalcut::FAccelEvent*);
-    virtual void onClose (finalcut::FCloseEvent*);
+    virtual void onAccel (finalcut::FAccelEvent*) override;
+    virtual void onClose (finalcut::FCloseEvent*) override;
 
   private:
     // Methods
-    virtual void draw();
+    virtual void draw() override;
     void drawBrush (int, int, bool = false);
     void drawCanvas();
-    virtual void adjustSize();
+    virtual void adjustSize() override;
 
     // Event handler
-    virtual void onMouseDown (finalcut::FMouseEvent*);
-    virtual void onMouseMove (finalcut::FMouseEvent*);
+    virtual void onMouseDown (finalcut::FMouseEvent*) override;
+    virtual void onMouseMove (finalcut::FMouseEvent*) override;
 
     // Callback methods
-    void cb_colorChanged (finalcut::FWidget*, data_ptr);
+    void cb_colorChanged (finalcut::FWidget*, FDataPtr);
 
     // Data Members
     term_area*   canvas{nullptr};
@@ -483,10 +489,10 @@ void MouseDraw::drawCanvas()
     winchar = &print_area->text[(ay + y) * w_line_len + ax];
     std::memcpy (winchar, canvaschar, sizeof(charData) * unsigned(x_end));
 
-    if ( short(print_area->changes[ay + y].xmin) > ax )
+    if ( int(print_area->changes[ay + y].xmin) > ax )
       print_area->changes[ay + y].xmin = uInt(ax);
 
-    if ( short(print_area->changes[ay + y].xmax) < ax + x_end - 1 )
+    if ( int(print_area->changes[ay + y].xmax) < ax + x_end - 1 )
       print_area->changes[ay + y].xmax = uInt(ax + x_end - 1);
   }
 
@@ -532,7 +538,7 @@ void MouseDraw::onMouseMove (finalcut::FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void MouseDraw::cb_colorChanged (finalcut::FWidget*, data_ptr)
+void MouseDraw::cb_colorChanged (finalcut::FWidget*, FDataPtr)
 {
   brush.setForeground (c_chooser.getForeground());
   brush.setBackground (c_chooser.getBackground());

@@ -20,6 +20,11 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__CYGWIN__)
+  #undef __STRICT_ANSI__  // need for realpath and strdup
+  #include <strings.h>    // need for strcasecmp
+#endif
+
 #include <vector>
 
 #include "final/ffiledialog.h"
@@ -178,12 +183,12 @@ void FFileDialog::setFilter (const FString& filter)
 }
 
 //----------------------------------------------------------------------
-bool FFileDialog::setShowHiddenFiles (bool on)
+bool FFileDialog::setShowHiddenFiles (bool enable)
 {
-  if ( on == show_hidden )
+  if ( show_hidden == enable )
     return show_hidden;
 
-  show_hidden = on;
+  show_hidden = enable;
   readDir();
   filebrowser.redraw();
   return show_hidden;
@@ -220,7 +225,6 @@ const FString FFileDialog::fileOpenChooser ( FWidget* parent
                                            , const FString& dirname
                                            , const FString& filter )
 {
-  FFileDialog* fileopen;
   FString ret;
   FString path = dirname;
   FString file_filter = filter;
@@ -236,25 +240,16 @@ const FString FFileDialog::fileOpenChooser ( FWidget* parent
   if ( file_filter.isNull() || file_filter.isEmpty() )
     file_filter = FString("*");
 
-  try
-  {
-    fileopen = new FFileDialog ( path
-                               , file_filter
-                               , FFileDialog::Open
-                               , parent );
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return FString();
-  }
+  FFileDialog fileopen ( path
+                       , file_filter
+                       , FFileDialog::Open
+                       , parent );
 
-  if ( fileopen->exec() == FDialog::Accept )
-    ret = fileopen->getPath() + fileopen->getSelectedFile();
+  if ( fileopen.exec() == FDialog::Accept )
+    ret = fileopen.getPath() + fileopen.getSelectedFile();
   else
     ret = FString();
 
-  delete fileopen;
   return ret;
 }
 
@@ -263,7 +258,6 @@ const FString FFileDialog::fileSaveChooser ( FWidget* parent
                                            , const FString& dirname
                                            , const FString& filter )
 {
-  FFileDialog* fileopen;
   FString ret;
   FString path = dirname;
   FString file_filter = filter;
@@ -279,25 +273,16 @@ const FString FFileDialog::fileSaveChooser ( FWidget* parent
   if ( file_filter.isNull() || file_filter.isEmpty() )
     file_filter = FString("*");
 
-  try
-  {
-    fileopen = new FFileDialog ( path
-                               , file_filter
-                               , FFileDialog::Save
-                               , parent );
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return FString();
-  }
+  FFileDialog fileopen ( path
+                       , file_filter
+                       , FFileDialog::Save
+                       , parent );
 
-  if ( fileopen->exec() == FDialog::Accept )
-    ret = fileopen->getPath() + fileopen->getSelectedFile();
+  if ( fileopen.exec() == FDialog::Accept )
+    ret = fileopen.getPath() + fileopen.getSelectedFile();
   else
     ret = FString();
 
-  delete fileopen;
   return ret;
 }
 
@@ -349,8 +334,8 @@ void FFileDialog::adjustSize()
 //----------------------------------------------------------------------
 void FFileDialog::init()
 {
-  static const std::size_t w = 42;
-  static const std::size_t h = 15;
+  static constexpr std::size_t w = 42;
+  static constexpr std::size_t h = 15;
   int x, y;
 
   setGeometry(1, 1, w, h, false);
@@ -744,7 +729,7 @@ int FFileDialog::changeDir (const FString& dirname)
 //----------------------------------------------------------------------
 void FFileDialog::printPath (const FString& txt)
 {
-  const FString& path = txt;
+  const auto& path = txt;
   const uInt max_width = uInt(filebrowser.getWidth()) - 4;
 
   if ( path.getLength() > max_width )
@@ -767,7 +752,7 @@ const FString FFileDialog::getHomeDir()
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processActivate (FWidget*, data_ptr)
+void FFileDialog::cb_processActivate (FWidget*, FDataPtr)
 {
   if ( filename.getText().includes('*')
     || filename.getText().includes('?') )
@@ -794,7 +779,7 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
 
     if ( ! dir_entries.empty() )
     {
-      const FString& input = filename.getText().trim();
+      const auto& input = filename.getText().trim();
 
       for (auto&& entry : dir_entries)
       {
@@ -815,14 +800,14 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processRowChanged (FWidget*, data_ptr)
+void FFileDialog::cb_processRowChanged (FWidget*, FDataPtr)
 {
   const std::size_t n = filebrowser.currentItem();
 
   if ( n == 0 )
     return;
 
-  const FString& name = dir_entries[n - 1].name;
+  const auto& name = FString(dir_entries[n - 1].name);
 
   if ( dir_entries[n - 1].directory )
     filename.setText( name + '/' );
@@ -833,7 +818,7 @@ void FFileDialog::cb_processRowChanged (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processClicked (FWidget*, data_ptr)
+void FFileDialog::cb_processClicked (FWidget*, FDataPtr)
 {
   const uLong n = uLong(filebrowser.currentItem() - 1);
 
@@ -844,19 +829,19 @@ void FFileDialog::cb_processClicked (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processCancel (FWidget*, data_ptr)
+void FFileDialog::cb_processCancel (FWidget*, FDataPtr)
 {
   done (FDialog::Reject);
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processOpen (FWidget*, data_ptr)
+void FFileDialog::cb_processOpen (FWidget*, FDataPtr)
 {
   done (FDialog::Accept);
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processShowHidden (FWidget*, data_ptr)
+void FFileDialog::cb_processShowHidden (FWidget*, FDataPtr)
 {
   setShowHiddenFiles(! show_hidden);
 }

@@ -36,8 +36,10 @@ class Watch : public finalcut::FDialog
   public:
     // Constructor
     explicit Watch (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     Watch (const Watch&) = delete;
+
     // Destructor
     ~Watch();
 
@@ -48,16 +50,16 @@ class Watch : public finalcut::FDialog
     void printTime();
 
     // Event handlers
-    virtual void onTimer (finalcut::FTimerEvent*);
-    virtual void onClose (finalcut::FCloseEvent*);
+    virtual void onTimer (finalcut::FTimerEvent*) override;
+    virtual void onClose (finalcut::FCloseEvent*) override;
 
     // Callback methods
-    void cb_clock (finalcut::FWidget*, data_ptr);
-    void cb_seconds (finalcut::FWidget*, data_ptr);
+    void cb_clock (finalcut::FWidget*, FDataPtr);
+    void cb_seconds (finalcut::FWidget*, FDataPtr);
 
   protected:
     // Method
-    virtual void adjustSize();
+    virtual void adjustSize() override;
 
   private:
     // Data Members
@@ -151,7 +153,7 @@ void Watch::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Watch::cb_clock (finalcut::FWidget*, data_ptr)
+void Watch::cb_clock (finalcut::FWidget*, FDataPtr)
 {
   if ( clock_sw.isChecked() )
   {
@@ -167,7 +169,7 @@ void Watch::cb_clock (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Watch::cb_seconds (finalcut::FWidget*, data_ptr)
+void Watch::cb_seconds (finalcut::FWidget*, FDataPtr)
 {
   if ( seconds_sw.isChecked() )
     sec = true;

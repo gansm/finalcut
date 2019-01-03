@@ -21,6 +21,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
+
 #include "final/fscrollview.h"
 #include "final/fwindow.h"
 
@@ -42,8 +44,6 @@ FScrollView::FScrollView (FWidget* parent)
 //----------------------------------------------------------------------
 FScrollView::~FScrollView()  // destructor
 {
-  delete vbar;
-  delete hbar;
   removeArea (viewport);
   child_print_area = viewport = nullptr;
 }
@@ -275,15 +275,15 @@ void FScrollView::setPrintPos (int x, int y)
 }
 
 //----------------------------------------------------------------------
-bool FScrollView::setViewportPrint (bool on)
+bool FScrollView::setViewportPrint (bool enable)
 {
-  return (use_own_print_area = ! on);
+  return (use_own_print_area = ! enable);
 }
 
 //----------------------------------------------------------------------
-bool FScrollView::setBorder (bool on)
+bool FScrollView::setBorder (bool enable)
 {
-  return (border = on);
+  return (border = enable);
 }
 
 //----------------------------------------------------------------------
@@ -764,12 +764,12 @@ void FScrollView::init_scrollbar()
 {
   try
   {
-    vbar = new FScrollbar(fc::vertical, this);
+    vbar = std::make_shared<FScrollbar>(fc::vertical, this);
     vbar->setMinimum(0);
     vbar->setValue(0);
     vbar->hide();
 
-    hbar = new FScrollbar(fc::horizontal, this);
+    hbar = std::make_shared<FScrollbar>(fc::horizontal, this);
     hbar->setMinimum(0);
     hbar->setValue(0);
     hbar->hide();
@@ -878,7 +878,7 @@ void FScrollView::setViewportCursor()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::cb_VBarChange (FWidget*, data_ptr)
+void FScrollView::cb_VBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
   int distance = 1;
@@ -930,7 +930,7 @@ void FScrollView::cb_VBarChange (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::cb_HBarChange (FWidget*, data_ptr)
+void FScrollView::cb_HBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
   int distance = 1;

@@ -165,8 +165,8 @@ inline void FTermXTerminal::setFTermDetection (FTermDetection* td)
 { term_detection = td; }
 
 //----------------------------------------------------------------------
-inline void FTermXTerminal::redefineDefaultColors (bool on)
-{ xterm_default_colors = on; }
+inline void FTermXTerminal::redefineDefaultColors (bool enable)
+{ xterm_default_colors = enable; }
 
 //----------------------------------------------------------------------
 inline fc::xtermCursorStyle FTermXTerminal::getCursorStyle()

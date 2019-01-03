@@ -38,7 +38,7 @@ FTermBuffer::~FTermBuffer()  // destructor
 //----------------------------------------------------------------------
 int FTermBuffer::writef (const FString format, ...)
 {
-  static const int BUFSIZE = 4096;
+  static constexpr int BUFSIZE = 4096;
   wchar_t buffer[BUFSIZE];
   va_list args;
 

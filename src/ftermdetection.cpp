@@ -79,11 +79,7 @@ FTermDetection::FTermDetection()
 //----------------------------------------------------------------------
 FTermDetection::~FTermDetection()  // destructor
 {
-  if ( sec_da )
-    delete sec_da;
-
-  if ( answer_back )
-    delete answer_back;
+  deallocation();
 }
 
 
@@ -107,6 +103,8 @@ void FTermDetection::setTtyTypeFileName (char ttytype_filename[])
 //----------------------------------------------------------------------
 void FTermDetection::detect()
 {
+  deallocation();
+
   // Set the variable 'termtype' to the predefined type of the terminal
   getSystemTermType();
 
@@ -119,6 +117,16 @@ void FTermDetection::detect()
 
 
 // private methods of FTermDetection
+//----------------------------------------------------------------------
+void FTermDetection::deallocation()
+{
+  if ( sec_da )
+    delete sec_da;
+
+  if ( answer_back )
+    delete answer_back;
+}
+
 //----------------------------------------------------------------------
 void FTermDetection::getSystemTermType()
 {
@@ -515,7 +523,7 @@ const FString FTermDetection::getXTermColorName (int color)
   int stdin_no = FTermios::getStdIn();
 
   char temp[512] = { };
-  std::fprintf (stdout, OSC "4;%3d;?" BEL, color);  // get color
+  std::fprintf (stdout, OSC "4;%d;?" BEL, color);  // get color
   std::fflush(stdout);
 
   FD_ZERO(&ifds);

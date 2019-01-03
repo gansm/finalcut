@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
 #include <string>
 
 #include "final/fapplication.h"
@@ -51,7 +52,7 @@ int            FApplication::loop_level      = 0;  // event loop level
 int            FApplication::quit_code       = 0;
 bool           FApplication::quit_now        = false;
 
-FApplication::eventQueuePtr FApplication::event_queue = nullptr;
+FApplication::eventQueue* FApplication::event_queue = nullptr;
 
 
 //----------------------------------------------------------------------
@@ -67,8 +68,10 @@ FApplication::FApplication ( const int& _argc
   , app_argc{_argc}
   , app_argv{_argv}
 {
-  assert ( ! app_object
-        && "FApplication: There should be only one application object" );
+  if ( app_object )
+    throw std::runtime_error( "FApplication: There should be "
+                              "only one application object" );
+
   app_object = this;
 
   if ( ! (_argc && _argv) )
@@ -84,8 +87,8 @@ FApplication::FApplication ( const int& _argc
 //----------------------------------------------------------------------
 FApplication::~FApplication()  // destructor
 {
-  //if ( event_queue )
-  //  delete event_queue;
+  if ( event_queue )
+    delete event_queue;
 
   app_object = nullptr;
 }
@@ -93,9 +96,9 @@ FApplication::~FApplication()  // destructor
 
 // public methods of FApplication
 //----------------------------------------------------------------------
-FWidget* FApplication::getApplicationObject()
+FApplication* FApplication::getApplicationObject()
 {
-  return static_cast<FWidget*>(app_object);
+  return app_object;
 }
 
 //----------------------------------------------------------------------
@@ -170,59 +173,56 @@ bool FApplication::sendEvent ( const FObject* receiver
   if ( ! receiver )
     return false;
 
-  if ( ! receiver->isWidget() )
-    return false;
-
-  const auto r_widget = static_cast<const FWidget*>(receiver);
-  auto widget = const_cast<FWidget*>(r_widget);
-
-  if ( modal_dialogs > 0 )
+  if ( receiver->isWidget() )
   {
-    const FWidget* window;
+    const auto r_widget = static_cast<const FWidget*>(receiver);
+    auto widget = const_cast<FWidget*>(r_widget);
 
-    if ( widget->isWindowWidget() )
-      window = widget;
-    else
-      window = FWindow::getWindowWidget(widget);
-
-    // block events for widgets in non modal windows
-    if ( window
-      && ! window->getFlags().modal
-      && ! window->isMenuWidget() )
+    if ( modal_dialogs > 0 )
     {
-      switch ( event->type() )
-      {
-        case fc::KeyPress_Event:
-        case fc::KeyUp_Event:
-        case fc::KeyDown_Event:
-        case fc::MouseDown_Event:
-        case fc::MouseUp_Event:
-        case fc::MouseDoubleClick_Event:
-        case fc::MouseWheel_Event:
-        case fc::MouseMove_Event:
-        case fc::FocusIn_Event:
-        case fc::FocusOut_Event:
-        case fc::Accelerator_Event:
-          return false;
+      const FWidget* window;
 
-        default:
-          break;
+      if ( widget->isWindowWidget() )
+        window = widget;
+      else
+        window = FWindow::getWindowWidget(widget);
+
+      // block events for widgets in non modal windows
+      if ( window
+        && ! window->getFlags().modal
+        && ! window->isMenuWidget() )
+      {
+        switch ( uInt(event->type()) )
+        {
+          case fc::KeyPress_Event:
+          case fc::KeyUp_Event:
+          case fc::KeyDown_Event:
+          case fc::MouseDown_Event:
+          case fc::MouseUp_Event:
+          case fc::MouseDoubleClick_Event:
+          case fc::MouseWheel_Event:
+          case fc::MouseMove_Event:
+          case fc::FocusIn_Event:
+          case fc::FocusOut_Event:
+          case fc::Accelerator_Event:
+            return false;
+
+          default:
+            break;
+        }
       }
     }
+
+    // Throw away mouse events for disabled widgets
+    if ( event->type() >= fc::MouseDown_Event
+      && event->type() <= fc::MouseMove_Event
+      && ! widget->isEnabled() )
+      return false;
   }
 
-  // Throw away mouse events for disabled widgets
-  if ( event->type() >= fc::MouseDown_Event
-    && event->type() <= fc::MouseMove_Event
-    && ! widget->isEnabled() )
-    return false;
-
-  // For access to a protected base class member
-  auto const_w = static_cast<const FApplication*>(widget);
-  auto w = const_cast<FApplication*>(const_w);
-
   // Sends event event directly to receiver
-  return w->event(const_cast<FEvent*>(event));
+  auto r = const_cast<FObject*>(receiver);
+  return r->event(const_cast<FEvent*>(event));
 }
 
 //----------------------------------------------------------------------
@@ -359,10 +359,10 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 
 // private methods of FApplication
 //----------------------------------------------------------------------
-void FApplication::init (long key_time, long dblclick_time)
+void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
 {
   // Initialize keyboard
-  keyboard = getKeyboard();
+  keyboard = FVTerm::getKeyboard();
 
   // Set the keyboard keypress timeout
   if ( keyboard )
@@ -377,7 +377,7 @@ void FApplication::init (long key_time, long dblclick_time)
   }
 
   // Initialize mouse control
-  mouse = getMouseControl();
+  mouse = FVTerm::getMouseControl();
 
   // Set stdin number for a gpm-mouse
   if ( mouse )
@@ -389,8 +389,7 @@ void FApplication::init (long key_time, long dblclick_time)
 
   try
   {
-    //event_queue = new eventQueue;
-    event_queue = std::make_shared<eventQueue>();
+    event_queue = new eventQueue;
   }
   catch (const std::bad_alloc& ex)
   {
@@ -630,7 +629,7 @@ inline bool FApplication::sendKeyUpEvent (FWidget* widget)
 //----------------------------------------------------------------------
 inline void FApplication::sendKeyboardAccelerator()
 {
-  if ( getOpenMenu() )
+  if ( FWidget::getOpenMenu() )
     return;
 
   // Switch to a specific dialog with Meta + 1..9
@@ -764,7 +763,7 @@ bool FApplication::getMouseEvent()
 //----------------------------------------------------------------------
 FWidget*& FApplication::determineClickedWidget()
 {
-  FWidget*& clicked = getClickedWidget();
+  FWidget*& clicked = FWidget::getClickedWidget();
 
   if ( clicked )
     return clicked;
@@ -780,7 +779,7 @@ FWidget*& FApplication::determineClickedWidget()
     && ! mouse->isWheelDown() )
     return clicked;
 
-  const FPoint& mouse_position = mouse->getPos();
+  const auto& mouse_position = mouse->getPos();
 
   // Determine the window object on the current click position
   auto window = FWindow::getWindowWidgetAt (mouse_position);
@@ -816,7 +815,7 @@ void FApplication::closeOpenMenu()
 {
   // Close the open menu
 
-  auto openmenu = getOpenMenu();
+  auto openmenu = FWidget::getOpenMenu();
   auto menu = static_cast<FMenu*>(openmenu);
 
   if ( ! openmenu || ( mouse && mouse->isMoved()) )
@@ -824,7 +823,7 @@ void FApplication::closeOpenMenu()
 
   if ( mouse )
   {
-    const FPoint& mouse_position = mouse->getPos();
+    const auto& mouse_position = mouse->getPos();
 
     if ( menu->containsMenuStructure(mouse_position) )
       return;
@@ -844,11 +843,11 @@ void FApplication::closeOpenMenu()
   menu->hideSuperMenus();
 
   // No widget was been clicked and the menu is no dialog menu
-  if ( ! (getClickedWidget() || is_window_menu) )
+  if ( ! (FWidget::getClickedWidget() || is_window_menu) )
     FWindow::switchToPrevWindow(this);
 
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  if ( FWidget::getStatusBar() )
+    FWidget::getStatusBar()->drawMessage();
 
   updateTerminal();
   flush_out();
@@ -859,8 +858,8 @@ void FApplication::unselectMenubarItems()
 {
   // Unselect the menu bar items
 
-  auto openmenu = getOpenMenu();
-  auto menu_bar = getMenuBar();
+  auto openmenu = FWidget::getOpenMenu();
+  auto menu_bar = FWidget::getMenuBar();
 
   if ( openmenu || (mouse && mouse->isMoved()) )
     return;
@@ -874,22 +873,22 @@ void FApplication::unselectMenubarItems()
   if ( ! mouse )
     return;
 
-  const FPoint& mouse_position = mouse->getPos();
+  const auto& mouse_position = mouse->getPos();
 
-  if ( ! getMenuBar()->getTermGeometry().contains(mouse_position) )
+  if ( ! menu_bar->getTermGeometry().contains(mouse_position) )
   {
-    if ( getStatusBar() )
-      getStatusBar()->clearMessage();
+    if ( FWidget::getStatusBar() )
+      FWidget::getStatusBar()->clearMessage();
 
-    getMenuBar()->resetMenu();
-    getMenuBar()->redraw();
+    menu_bar->resetMenu();
+    menu_bar->redraw();
 
     // No widget was been clicked
-    if ( ! getClickedWidget() )
+    if ( ! FWidget::getClickedWidget() )
       FWindow::switchToPrevWindow(this);
 
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
+    if ( FWidget::getStatusBar() )
+      FWidget::getStatusBar()->drawMessage();
 
     updateTerminal();
     flush_out();
@@ -899,7 +898,7 @@ void FApplication::unselectMenubarItems()
 //----------------------------------------------------------------------
 void FApplication::sendMouseEvent()
 {
-  auto clicked = getClickedWidget();
+  auto clicked = FWidget::getClickedWidget();
 
   if ( ! clicked )
     return;
@@ -907,8 +906,7 @@ void FApplication::sendMouseEvent()
   if ( ! mouse )
     return;
 
-  FPoint widgetMousePos;
-  const FPoint& mouse_position = mouse->getPos();
+  const auto& mouse_position = mouse->getPos();
   int key_state = 0;
 
   if ( mouse->isShiftKeyPressed() )
@@ -920,7 +918,7 @@ void FApplication::sendMouseEvent()
   if ( mouse->isMetaKeyPressed() )
     key_state |= fc::MetaButton;
 
-  widgetMousePos = clicked->termToWidgetPos(mouse_position);
+  auto widgetMousePos = clicked->termToWidgetPos(mouse_position);
 
   if ( mouse->isMoved() )
   {
@@ -945,7 +943,7 @@ void FApplication::sendMouseMoveEvent ( const FPoint& widgetMousePos
   if ( ! mouse )
     return;
 
-  auto clicked = getClickedWidget();
+  auto clicked = FWidget::getClickedWidget();
 
   if ( mouse->isLeftButtonPressed() )
   {
@@ -983,7 +981,7 @@ void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
   if ( ! mouse )
     return;
 
-  auto clicked = getClickedWidget();
+  auto clicked = FWidget::getClickedWidget();
 
   if ( mouse->isLeftButtonDoubleClick() )
   {
@@ -1025,7 +1023,7 @@ void FApplication::sendMouseRightClickEvent ( const FPoint& widgetMousePos
   if ( ! mouse )
     return;
 
-  auto clicked = getClickedWidget();
+  auto clicked = FWidget::getClickedWidget();
 
   if ( mouse->isRightButtonPressed() )
   {
@@ -1059,7 +1057,7 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
   if ( ! mouse )
     return;
 
-  auto clicked = getClickedWidget();
+  auto clicked = FWidget::getClickedWidget();
 
   if ( mouse->isMiddleButtonPressed() )
   {
@@ -1098,7 +1096,7 @@ void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
   if ( ! mouse )
     return;
 
-  auto clicked = getClickedWidget();
+  auto clicked = FWidget::getClickedWidget();
 
   if ( mouse->isWheelUp() )
   {

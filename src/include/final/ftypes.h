@@ -58,6 +58,7 @@ typedef long double    lDouble;
 
 typedef uInt16         FColor;
 typedef uInt32         FKey;
+typedef void*          FDataPtr;
 
 }  // namespace
 
@@ -78,7 +79,7 @@ struct is_negative
 };
 
 template <typename T>
-struct is_negative<T,false>
+struct is_negative<T, false>
 {
   inline bool operator () (const T&)
   {
@@ -91,6 +92,15 @@ inline bool isNegative (const T& x)
 {
   return is_negative<T, std::numeric_limits<T>::is_signed>()(x);
 }
+
+template <typename T>
+struct getPrecision
+{
+  operator int ()
+  {
+    return std::numeric_limits<T>::digits10;
+  }
+};
 
 namespace fc
 {

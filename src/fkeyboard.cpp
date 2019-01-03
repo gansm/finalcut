@@ -22,6 +22,12 @@
 
 #include <fcntl.h>
 
+#if defined(__CYGWIN__)
+  #include <sys/select.h>  // need for FD_ZERO, FD_SET, FD_CLR, ...
+#endif
+
+#include <string>
+
 #include "final/fkeyboard.h"
 #include "final/fkey_map.h"
 #include "final/ftermios.h"
@@ -30,7 +36,7 @@ namespace finalcut
 {
 
 // static class attributes
-long FKeyboard::key_timeout = 100000;  // 100 ms (default timeout for keypress)
+uInt64 FKeyboard::key_timeout = 100000;  // 100 ms (default timeout for keypress)
 struct timeval FKeyboard::time_keypressed{};
 
 #if defined(__linux__)
@@ -321,12 +327,12 @@ inline FKey FKeyboard::getSingleKey()
 }
 
 //----------------------------------------------------------------------
-bool FKeyboard::setNonBlockingInput (bool on)
+bool FKeyboard::setNonBlockingInput (bool enable)
 {
-  if ( on == non_blocking_stdin )
+  if ( enable == non_blocking_stdin )
     return non_blocking_stdin;
 
-  if ( on )  // make stdin non-blocking
+  if ( enable )  // make stdin non-blocking
   {
     stdin_status_flags |= O_NONBLOCK;
 
@@ -354,7 +360,7 @@ bool FKeyboard::isKeypressTimeout()
 FKey FKeyboard::UTF8decode (const char utf8[])
 {
   FKey ucs = 0;  // Universal coded character
-  const std::size_t max = 4;
+  constexpr std::size_t max = 4;
   std::size_t len = std::strlen(utf8);
 
   if ( len > max )

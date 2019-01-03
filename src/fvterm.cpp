@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2018 Markus Gans                                      *
+* Copyright 2016-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -135,11 +135,11 @@ void FVTerm::setTermXY (int x, int y)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::hideCursor (bool on)
+void FVTerm::hideCursor (bool enable)
 {
   // Hides or shows the input cursor on the terminal
 
-  const char* visibility_str = FTerm::cursorsVisibility (on);
+  const char* visibility_str = FTerm::cursorsVisibility (enable);
 
   if ( visibility_str )
     appendOutputBuffer(visibility_str);
@@ -240,7 +240,7 @@ void FVTerm::updateTerminal()
   // Updates pending changes to the terminal
 
   if ( stop_terminal_updates
-    || static_cast<FApplication*>(init_object)->isQuit() )
+    || FApplication::getApplicationObject()->isQuit() )
     return;
 
   if ( ! force_terminal_update )
@@ -303,7 +303,7 @@ void FVTerm::delPreprocessingHandler (FVTerm* instance)
 //----------------------------------------------------------------------
 int FVTerm::printf (const FString format, ...)
 {
-  static const int BUFSIZE = 4096;
+  static constexpr int BUFSIZE = 4096;
   wchar_t buffer[BUFSIZE];
   va_list args;
 
@@ -412,11 +412,11 @@ int FVTerm::print (term_area* area, const std::vector<charData>& term_string)
         break;
 
       case '\t':
-        area->cursor_x = short ( uInt(area->cursor_x)
-                               + tabstop
-                               - uInt(area->cursor_x)
-                               + 1
-                               % tabstop );
+        area->cursor_x = int ( uInt(area->cursor_x)
+                             + tabstop
+                             - uInt(area->cursor_x)
+                             + 1
+                             % tabstop );
         break;
 
       case '\b':
@@ -539,10 +539,10 @@ int FVTerm::print (term_area* area, charData& term_char)
       // copy character to area
       std::memcpy (ac, &nc, sizeof(*ac));
 
-      if ( ax < short(area->changes[ay].xmin) )
+      if ( ax < int(area->changes[ay].xmin) )
         area->changes[ay].xmin = uInt(ax);
 
-      if ( ax > short(area->changes[ay].xmax) )
+      if ( ax > int(area->changes[ay].xmax) )
         area->changes[ay].xmax = uInt(ax);
     }
   }
@@ -845,10 +845,10 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
       std::memcpy (tc, &sc, sizeof(*tc));
     }
 
-    if ( short(vterm->changes[ypos].xmin) > x )
+    if ( int(vterm->changes[ypos].xmin) > x )
       vterm->changes[ypos].xmin = uInt(x);
 
-    if ( short(vterm->changes[ypos].xmax) < x + w - 1 )
+    if ( int(vterm->changes[ypos].xmax) < x + w - 1 )
       vterm->changes[ypos].xmax = uInt(x + w - 1);
   }
 }
@@ -873,11 +873,10 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
 
   bool found = bool(area == vdesktop);
   auto is_covered = non_covered;
-  auto w = static_cast<FWidget*>(area->widget);
 
-  if ( w->window_list && ! w->window_list->empty() )
+  if ( FWidget::window_list && ! FWidget::window_list->empty() )
   {
-    for (auto&& win_obj : *w->window_list)
+    for (auto& win_obj : *FWidget::window_list)
     {
       auto win = win_obj->getVWin();
 
@@ -1231,13 +1230,13 @@ void FVTerm::updateVTerm (term_area* area)
     _xmin = ax + line_xmin - ol;
     _xmax = ax + line_xmax;
 
-    if ( _xmin < short(vterm->changes[ay + y].xmin) )
+    if ( _xmin < int(vterm->changes[ay + y].xmin) )
       vterm->changes[ay + y].xmin = uInt(_xmin);
 
     if ( _xmax >= vterm->width )
       _xmax = vterm->width - 1;
 
-    if ( _xmax > short(vterm->changes[ay + y].xmax) )
+    if ( _xmax > int(vterm->changes[ay + y].xmax) )
       vterm->changes[ay + y].xmax = uInt(_xmax);
 
     area->changes[y].xmin = uInt(aw + rsh);
@@ -1359,10 +1358,10 @@ void FVTerm::getArea (int ax, int ay, term_area* area)
     auto ac = &area->text[y * area->width];  // area character
     std::memcpy (ac, tc, sizeof(*ac) * unsigned(length));
 
-    if ( short(area->changes[y].xmin) > 0 )
+    if ( int(area->changes[y].xmin) > 0 )
       area->changes[y].xmin = 0;
 
-    if ( short(area->changes[y].xmax) < length - 1 )
+    if ( int(area->changes[y].xmax) < length - 1 )
       area->changes[y].xmax = uInt(length - 1);
   }
 }
@@ -1413,10 +1412,10 @@ void FVTerm::getArea (int x, int y, int w, int h, term_area* area)
     auto ac = &area->text[(dy + _y) * line_len + dx];  // area character
     std::memcpy (ac, tc, sizeof(*ac) * unsigned(length));
 
-    if ( short(area->changes[dy + _y].xmin) > dx )
+    if ( int(area->changes[dy + _y].xmin) > dx )
       area->changes[dy + _y].xmin = uInt(dx);
 
-    if ( short(area->changes[dy + _y].xmax) < dx + length - 1 )
+    if ( int(area->changes[dy + _y].xmax) < dx + length - 1 )
       area->changes[dy + _y].xmax = uInt(dx + length - 1);
   }
 }
@@ -1503,10 +1502,10 @@ void FVTerm::putArea (int ax, int ay, term_area* area)
       }
     }
 
-    if ( ax < short(vterm->changes[ay + y].xmin) )
+    if ( ax < int(vterm->changes[ay + y].xmin) )
       vterm->changes[ay + y].xmin = uInt(ax);
 
-    if ( ax + length - 1 > short(vterm->changes[ay + y].xmax) )
+    if ( ax + length - 1 > int(vterm->changes[ay + y].xmax) )
       vterm->changes[ay + y].xmax = uInt(ax + length - 1);
   }
 }
@@ -1696,13 +1695,12 @@ FVTerm::charData FVTerm::generateCharacter (int x, int y)
 {
   // Generates characters for a given position considering all areas
 
-  auto widget = static_cast<FWidget*>(vterm->widget);
   auto sc = &vdesktop->text[y * vdesktop->width + x];  // shown character
 
-  if ( ! widget->window_list || widget->window_list->empty() )
+  if ( ! FWidget::window_list || FWidget::window_list->empty() )
     return *sc;
 
-  for (auto&& win_obj : *widget->window_list)
+  for (auto& win_obj : *FWidget::window_list)
   {
     auto win = win_obj->getVWin();
 
@@ -1794,15 +1792,15 @@ FVTerm::charData FVTerm::getCharacter ( character_type char_type
     yy = vterm->height - 1;
 
   auto cc = &vdesktop->text[yy * vdesktop->width + xx];  // covered character
-  auto w = static_cast<FWidget*>(obj);
 
-  if ( ! w->window_list || w->window_list->empty() )
+  if ( ! FWidget::window_list || FWidget::window_list->empty() )
     return *cc;
 
   // Get the window layer of this object
+  auto w = static_cast<FWidget*>(obj);
   int layer = FWindow::getWindowLayer(w);
 
-  for (auto&& win_obj : *w->window_list)
+  for (auto&& win_obj : *FWidget::window_list)
   {
     bool significant_char;
 
@@ -1874,7 +1872,7 @@ FVTerm::charData FVTerm::getOverlappedCharacter ( int x
 void FVTerm::processTerminalUpdate()
 {
   // Retains terminal updates if there are unprocessed inputs
-  static const int max_skip = 8;
+  static constexpr int max_skip = 8;
 
   if ( ! terminal_update_pending )
     return;
@@ -2509,7 +2507,7 @@ FVTerm::exit_state FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y)
       charsetChanges (print_char);
       appendAttributes (print_char);
       appendOutputBuffer (tparm(rp, print_char->code, repetitions, 0, 0, 0, 0, 0, 0, 0));
-      term_pos->x_ref() += short(repetitions);
+      term_pos->x_ref() += int(repetitions);
       x = x + repetitions - 1;
     }
     else
@@ -2727,8 +2725,8 @@ inline void FVTerm::newFontChanges (charData*& next_char)
       case fc::NF_rev_down_pointing_triangle2:
       case fc::NF_rev_menu_button3:
       case fc::NF_rev_border_line_right_and_left:
-        // swap foreground and background color
-        std::swap (next_char->fg_color, next_char->bg_color);
+        // Show in reverse video
+        next_char->attr.bit.reverse = true;
         break;
 
       default:
@@ -2740,22 +2738,24 @@ inline void FVTerm::newFontChanges (charData*& next_char)
 //----------------------------------------------------------------------
 inline void FVTerm::charsetChanges (charData*& next_char)
 {
+  wchar_t& code = next_char->code;
+  next_char->encoded_code = code;
+
   if ( getEncoding() == fc::UTF8 )
     return;
 
-  uInt code = uInt(next_char->code);
-  uInt ch_enc = FTerm::charEncode(code);
+  wchar_t ch_enc = FTerm::charEncode(code);
 
   if ( ch_enc == code )
     return;
 
   if ( ch_enc == 0 )
   {
-    next_char->code = int(FTerm::charEncode(code, fc::ASCII));
+    next_char->encoded_code = wchar_t(FTerm::charEncode(code, fc::ASCII));
     return;
   }
 
-  next_char->code = int(ch_enc);
+  next_char->encoded_code = ch_enc;
 
   if ( getEncoding() == fc::VT100 )
     next_char->attr.bit.alt_charset = true;
@@ -2769,10 +2769,10 @@ inline void FVTerm::charsetChanges (charData*& next_char)
     if ( isXTerminal() && ch_enc < 0x20 )  // Character 0x00..0x1f
     {
       if ( hasUTF8() )
-        next_char->code = int(FTerm::charEncode(code, fc::ASCII));
+        next_char->encoded_code = int(FTerm::charEncode(code, fc::ASCII));
       else
       {
-        next_char->code += 0x5f;
+        next_char->encoded_code += 0x5f;
         next_char->attr.bit.alt_charset = true;
       }
     }
@@ -2799,9 +2799,9 @@ inline void FVTerm::appendChar (charData*& next_char)
 {
   newFontChanges (next_char);
   charsetChanges (next_char);
-
   appendAttributes (next_char);
-  appendOutputBuffer (next_char->code);
+  characterFilter (next_char);
+  appendOutputBuffer (next_char->encoded_code);
 }
 
 //----------------------------------------------------------------------
@@ -2876,6 +2876,15 @@ int FVTerm::appendLowerRight (charData*& screen_char)
   }
 
   return screen_char->code;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::characterFilter (charData*& next_char)
+{
+  FTerm::characterSub& sub_map = fterm->getCharSubstitutionMap();
+
+  if ( sub_map[next_char->encoded_code] )
+    next_char->encoded_code = sub_map[next_char->encoded_code];
 }
 
 //----------------------------------------------------------------------

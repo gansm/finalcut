@@ -169,7 +169,7 @@ class FOptiMove
 
   private:
     // Constant
-    static const std::size_t BUF_SIZE{512};
+    static constexpr std::size_t BUF_SIZE{512};
 
     // Typedef
     typedef struct
@@ -180,9 +180,9 @@ class FOptiMove
     } capability;
 
     // Constants
-    static const int LONG_DURATION{INT_MAX};
+    static constexpr int LONG_DURATION{INT_MAX};
     // value for a long capability waiting time
-    static const int MOVE_LIMIT{7};
+    static constexpr int MOVE_LIMIT{7};
     // maximum character distance to avoid direct cursor addressing
 
     // Methods

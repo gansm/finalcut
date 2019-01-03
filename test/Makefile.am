@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------
-# Makefile.am  -  The Final Cut unit tests programs
+# Makefile.am  -  FINAL CUT unit tests programs
 #----------------------------------------------------------------------
 
 if CPPUNIT_TEST

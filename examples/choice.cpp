@@ -23,38 +23,40 @@
 #include <vector>
 #include <final/final.h>
 
+// Typedef
+typedef std::shared_ptr<finalcut::FRadioButton> FRadioButtonPtr;
 
-// function prototypes
-void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr);
-void populateChoice (std::vector<finalcut::FRadioButton*>&, finalcut::FButtonGroup*);
-void preset (std::vector<finalcut::FRadioButton*>&);
+// Function prototypes
+void cb_quit (finalcut::FWidget*, FDataPtr);
+void populateChoice (std::vector<FRadioButtonPtr>&, finalcut::FButtonGroup&);
+void preset (std::vector<FRadioButtonPtr>&);
 
 //----------------------------------------------------------------------
-// callback functions
+// Callback functions
 //----------------------------------------------------------------------
-void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr data)
+void cb_quit (finalcut::FWidget*, FDataPtr data)
 {
   auto dlg = static_cast<finalcut::FDialog*>(data);
   dlg->close();
 }
 
 //----------------------------------------------------------------------
-void populateChoice ( std::vector<finalcut::FRadioButton*>& os
-                    , finalcut::FButtonGroup* group )
+void populateChoice ( std::vector<FRadioButtonPtr>& os
+                    , finalcut::FButtonGroup& group )
 {
-  os[0] = new finalcut::FRadioButton("AIX", group);
-  os[1] = new finalcut::FRadioButton("Cygwin", group);
-  os[2] = new finalcut::FRadioButton("FreeBSD", group);
-  os[3] = new finalcut::FRadioButton("HP-UX", group);
-  os[4] = new finalcut::FRadioButton("Linux", group);
-  os[5] = new finalcut::FRadioButton("Mac OS X", group);
-  os[6] = new finalcut::FRadioButton("NetBSD", group);
-  os[7] = new finalcut::FRadioButton("OpenBSD", group);
-  os[8] = new finalcut::FRadioButton("Solaris", group);
+  os[0] = std::make_shared<finalcut::FRadioButton>("AIX", &group);
+  os[1] = std::make_shared<finalcut::FRadioButton>("Cygwin", &group);
+  os[2] = std::make_shared<finalcut::FRadioButton>("FreeBSD", &group);
+  os[3] = std::make_shared<finalcut::FRadioButton>("HP-UX", &group);
+  os[4] = std::make_shared<finalcut::FRadioButton>("Linux", &group);
+  os[5] = std::make_shared<finalcut::FRadioButton>("Mac OS X", &group);
+  os[6] = std::make_shared<finalcut::FRadioButton>("NetBSD", &group);
+  os[7] = std::make_shared<finalcut::FRadioButton>("OpenBSD", &group);
+  os[8] = std::make_shared<finalcut::FRadioButton>("Solaris", &group);
 }
 
 //----------------------------------------------------------------------
-void preset (std::vector<finalcut::FRadioButton*>& os)
+void preset (std::vector<FRadioButtonPtr>& os)
 {
 #if defined(_AIX)
   os[0]->setChecked();
@@ -111,8 +113,8 @@ int main (int argc, char* argv[])
     checkButtonGroup.setGeometry (2, 1, 16, 7);
 
     // Create radio buttons
-    std::vector<finalcut::FRadioButton*> os (9);
-    populateChoice (os, &checkButtonGroup);
+    std::vector<FRadioButtonPtr> os(9);
+    populateChoice (os, checkButtonGroup);
 
     // Set the radio button geometry
     // => checkButtonGroup.setScrollSize(...) is not required

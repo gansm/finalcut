@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2018 Markus Gans                                      *
+* Copyright 2016-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -118,8 +118,10 @@ class FVTerm
 
     // Constructor
     explicit FVTerm (bool, bool = false);
+
     // Disable copy constructor
     FVTerm (const FVTerm&) = delete;
+
     // Destructor
     virtual ~FVTerm();
 
@@ -313,13 +315,13 @@ class FVTerm
     virtual term_area*    getPrintArea();
     std::size_t           getLineNumber();
     std::size_t           getColumnNumber();
-    static bool           charEncodable (uInt);
+    static bool           charEncodable (wchar_t);
     static FKeyboard*     getKeyboard();
     static FMouseControl* getMouseControl();
     FTerm::initializationValues& getInitValues();
 
     // Mutators
-    static void           setInsertCursor (bool on);
+    static void           setInsertCursor (bool);
     static void           setInsertCursor();
     static void           unsetInsertCursor();
     static bool           setUTF8 (bool);
@@ -446,7 +448,7 @@ class FVTerm
     };
 
     // Constants
-    static const uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
+    static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
     // Buffer size for character output on the terminal
 
     // Mutators
@@ -484,6 +486,7 @@ class FVTerm
     void                  appendChar (charData*&);
     void                  appendAttributes (charData*&);
     int                   appendLowerRight (charData*&);
+    static void           characterFilter (charData*&);
     static void           appendOutputBuffer (const std::string&);
     static void           appendOutputBuffer (const char[]);
 
@@ -500,7 +503,7 @@ class FVTerm
     static charData         s_ch;      // shadow character
     static charData         i_ch;      // inherit background character
     static FPoint*          term_pos;  // terminal cursor position
-    static FTermcap::tcap_map*     tcap;
+    static FTermcap::tcap_map* tcap;
     static FKeyboard*       keyboard;
     static bool             terminal_update_complete;
     static bool             terminal_update_pending;
@@ -669,8 +672,8 @@ inline void FVTerm::setNormal()
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setBold (bool on)
-{ return (next_attribute.attr.bit.bold = on); }
+inline bool FVTerm::setBold (bool enable)
+{ return (next_attribute.attr.bit.bold = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setBold()
@@ -681,8 +684,8 @@ inline bool FVTerm::unsetBold()
 { return setBold(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setDim (bool on)
-{ return (next_attribute.attr.bit.dim = on); }
+inline bool FVTerm::setDim (bool enable)
+{ return (next_attribute.attr.bit.dim = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setDim()
@@ -693,8 +696,8 @@ inline bool FVTerm::unsetDim()
 { return setDim(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setItalic (bool on)
-{ return (next_attribute.attr.bit.italic = on); }
+inline bool FVTerm::setItalic (bool enable)
+{ return (next_attribute.attr.bit.italic = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setItalic()
@@ -705,8 +708,8 @@ inline bool FVTerm::unsetItalic()
 { return setItalic(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setUnderline (bool on)
-{ return (next_attribute.attr.bit.underline = on); }
+inline bool FVTerm::setUnderline (bool enable)
+{ return (next_attribute.attr.bit.underline = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setUnderline()
@@ -717,8 +720,8 @@ inline bool FVTerm::unsetUnderline()
 { return setUnderline(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setBlink (bool on)
-{ return (next_attribute.attr.bit.blink = on); }
+inline bool FVTerm::setBlink (bool enable)
+{ return (next_attribute.attr.bit.blink = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setBlink()
@@ -729,8 +732,8 @@ inline bool FVTerm::unsetBlink()
 { return setBlink(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setReverse (bool on)
-{ return (next_attribute.attr.bit.reverse = on); }
+inline bool FVTerm::setReverse (bool enable)
+{ return (next_attribute.attr.bit.reverse = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setReverse()
@@ -741,8 +744,8 @@ inline bool FVTerm::unsetReverse()
 { return setReverse(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setStandout (bool on)
-{ return (next_attribute.attr.bit.standout = on); }
+inline bool FVTerm::setStandout (bool enable)
+{ return (next_attribute.attr.bit.standout = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setStandout()
@@ -753,8 +756,8 @@ inline bool FVTerm::unsetStandout()
 { return setStandout(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setInvisible (bool on)
-{ return (next_attribute.attr.bit.invisible = on); }
+inline bool FVTerm::setInvisible (bool enable)
+{ return (next_attribute.attr.bit.invisible = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setInvisible()
@@ -765,8 +768,8 @@ inline bool FVTerm::unsetInvisible()
 { return setInvisible(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setProtected (bool on)
-{ return (next_attribute.attr.bit.protect = on); }
+inline bool FVTerm::setProtected (bool enable)
+{ return (next_attribute.attr.bit.protect = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setProtected()
@@ -777,8 +780,8 @@ inline bool FVTerm::unsetProtected()
 { return setProtected(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setCrossedOut (bool on)
-{ return (next_attribute.attr.bit.crossed_out = on); }
+inline bool FVTerm::setCrossedOut (bool enable)
+{ return (next_attribute.attr.bit.crossed_out = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setCrossedOut()
@@ -789,8 +792,8 @@ inline bool FVTerm::unsetCrossedOut()
 { return setCrossedOut(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setDoubleUnderline (bool on)
-{ return (next_attribute.attr.bit.dbl_underline = on); }
+inline bool FVTerm::setDoubleUnderline (bool enable)
+{ return (next_attribute.attr.bit.dbl_underline = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setDoubleUnderline()
@@ -801,8 +804,8 @@ inline bool FVTerm::unsetDoubleUnderline()
 { return setDoubleUnderline(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setAltCharset (bool on)
-{ return (next_attribute.attr.bit.alt_charset = on); }
+inline bool FVTerm::setAltCharset (bool enable)
+{ return (next_attribute.attr.bit.alt_charset = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setAltCharset()
@@ -813,8 +816,8 @@ inline bool FVTerm::unsetAltCharset()
 { return setAltCharset(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setPCcharset (bool on)
-{ return (next_attribute.attr.bit.pc_charset = on); }
+inline bool FVTerm::setPCcharset (bool enable)
+{ return (next_attribute.attr.bit.pc_charset = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setPCcharset()
@@ -825,8 +828,8 @@ inline bool FVTerm::unsetPCcharset()
 { return setPCcharset(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setTransparent (bool on)
-{ return (next_attribute.attr.bit.transparent = on); }
+inline bool FVTerm::setTransparent (bool enable)
+{ return (next_attribute.attr.bit.transparent = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setTransparent()
@@ -837,8 +840,8 @@ inline bool FVTerm::unsetTransparent()
 { return setTransparent(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setTransShadow (bool on)
-{ return (next_attribute.attr.bit.trans_shadow = on); }
+inline bool FVTerm::setTransShadow (bool enable)
+{ return (next_attribute.attr.bit.trans_shadow = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setTransShadow()
@@ -849,8 +852,8 @@ inline bool FVTerm::unsetTransShadow()
 { return setTransShadow(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setInheritBackground (bool on)
-{ return (next_attribute.attr.bit.inherit_bg = on); }
+inline bool FVTerm::setInheritBackground (bool enable)
+{ return (next_attribute.attr.bit.inherit_bg = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setInheritBackground()
@@ -1049,8 +1052,8 @@ inline void FVTerm::beep()
 { FTerm::beep(); }
 
 //----------------------------------------------------------------------
-inline void FVTerm::redefineDefaultColors (bool on)
-{ FTerm::redefineDefaultColors(on); }
+inline void FVTerm::redefineDefaultColors (bool enable)
+{ FTerm::redefineDefaultColors(enable); }
 
 //----------------------------------------------------------------------
 inline char* FVTerm::moveCursor (int xold, int yold, int xnew, int ynew)
@@ -1069,7 +1072,7 @@ inline std::size_t FVTerm::getColumnNumber()
 { return FTerm::getColumnNumber(); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::charEncodable (uInt c)
+inline bool FVTerm::charEncodable (wchar_t c)
 { return FTerm::charEncodable(c); }
 
 //----------------------------------------------------------------------
@@ -1085,8 +1088,8 @@ inline FTerm::initializationValues& FVTerm::getInitValues()
 { return FTerm::init_values; }
 
 //----------------------------------------------------------------------
-inline void FVTerm::setInsertCursor (bool on)
-{ return FTerm::setInsertCursor(on); }
+inline void FVTerm::setInsertCursor (bool enable)
+{ return FTerm::setInsertCursor(enable); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setInsertCursor()
@@ -1097,8 +1100,8 @@ inline void FVTerm::unsetInsertCursor()
 { return FTerm::setInsertCursor(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setUTF8 (bool on)
-{ return FTerm::setUTF8(on); }
+inline bool FVTerm::setUTF8 (bool enable)
+{ return FTerm::setUTF8(enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setUTF8()

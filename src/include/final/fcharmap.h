@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -45,6 +45,17 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   //  |     |     |    |
   {0x20ac,   0, 0xee, 'E'},  // €  -  Euro
   {0x00a3, '}', 0x9c, 'P'},  // £  -  Pound
+  {0x00a7, '$', 0x15, '$'},  // §  -  Section
+  {0x25d8, '*', 0x08, '*'},  // ◘  -  InverseBullet
+  {0x25d9, '*', 0x0a, '*'},  // ◙  -  InverseWhiteCircle
+  {0x203c, '!', 0x13, '!'},  // ‼  -  DoubleExclamationMark
+  {0x2195, 'I', 0x12, 'I'},  // ↕  -  UpDownArrow
+  {0x2194, '-', 0x1d, '-'},  // ↔  -  LeftRightArrow
+  {0x25ac, '_', 0x16, '_'},  // ▬  -  BlackRectangle
+  {0x2191, '^', 0x18, '^'},  // ↑  -  UpwardsArrow
+  {0x2193, 'v', 0x19, 'v'},  // ↓  -  DownwardsArrow
+  {0x2192, '>', 0x1a, '>'},  // →  -  RightwardsArrow
+  {0x2190, '<', 0x1b, '<'},  // ←  -  LeftwardsArrow
   {0x03c0, '{', 0xe3, 'n'},  // π  -  Pi
   {0x207F, 'I', 0xfc, ' '},  // ⁿ  -  SuperscriptLatinSmallLetterN
   {0x2265, 'z', 0xf2, '>'},  // ≥  -  GreaterThanOrEqualTo
@@ -57,6 +68,7 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   {0x00b0, 'f', 0xb0, 'o'},  // °  -  Degree
   {0x2022, '`', 0x04, '*'},  // •  -  Bullet
   {0x00b7, '`', 0xfa, '.'},  // ·  -  small Bullet
+  {0x25cf, '`', 0x04, '*'},  // ●  -  BlackCircle
   {0x2666, '`', 0x04, '*'},  // ◆  -  BlackDiamondSuit
   {0x2424, 'h',  ' ', ' '},  // ␤  -  SymbolForNewline (1)
   {0x240b, 'i',  ' ', ' '},  // ␋  -  SymbolForVerticalTab (1)
@@ -67,10 +79,10 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   {0x2592, 'a', 0xb0, '#'},  // ▒  -  MediumShade
   {0x2588, '0', 0xdb, '#'},  // █  -  FullBlock
   {0x25ae, '_', 0xfe, '#'},  // ▮  -  BlackVerticalRectangle (1)
-  {0x258c,  0 , 0xdd, ' '},  // ▌  -  LeftHalfBlock
-  {0x2590,  0 , 0xde, ' '},  // ▐  -  RightHalfBlock
-  {0x2584,  0 , 0xdc, ' '},  // ▄  -  LowerHalfBlock
-  {0x2580,  0 , 0xdf, ' '},  // ▀  -  UpperHalfBlock
+  {0x258c,   0, 0xdd, ' '},  // ▌  -  LeftHalfBlock
+  {0x2590,   0, 0xde, ' '},  // ▐  -  RightHalfBlock
+  {0x2584,   0, 0xdc, ' '},  // ▄  -  LowerHalfBlock
+  {0x2580,   0, 0xdf, ' '},  // ▀  -  UpperHalfBlock
   {0x2500, 'q', 0xc4, '-'},  // ─  -  BoxDrawingsHorizontal
   {0x2502, 'x', 0xb3, '|'},  // │  -  BoxDrawingsVertical
   {0x250c, 'l', 0xda, '.'},  // ┌  -  BoxDrawingsDownAndRight
@@ -144,7 +156,8 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
  * (2) Only supported in use with newfont
  */
 
-const int lastCharItem = int(sizeof(character) / sizeof(character[0])) - 1;
+constexpr auto lastCharItem = \
+    std::size_t((sizeof(character) / sizeof(character[0])) - 1);
 
 
 static int vt100_key_to_utf8[][2] =
@@ -190,12 +203,140 @@ static int vt100_key_to_utf8[][2] =
   {fc::vt100_key_diamond  , fc::Bullet}                         // ◆
 };
 
-const int lastKeyItem = int ( sizeof(vt100_key_to_utf8)
-                            / sizeof(vt100_key_to_utf8[0]) ) - 1;
+constexpr auto lastKeyItem = \
+    std::size_t((sizeof(vt100_key_to_utf8) / sizeof(vt100_key_to_utf8[0])) - 1);
 
 
-static uInt cp437_to_ucs[][2] =
+static wchar_t cp437_to_ucs[][2] =
 {
+  {0x00, 0x0000},  // null
+  {0x01, 0x263a},  // white smiling face
+  {0x02, 0x263b},  // black smiling face
+  {0x03, 0x2665},  // black heart suit
+  {0x04, 0x2666},  // black diamond suit
+  {0x05, 0x2663},  // black club suit
+  {0x06, 0x2660},  // black spade suit
+  {0x07, 0x2022},  // bullet
+  {0x08, 0x25d8},  // inverse bullet
+  {0x09, 0x25cb},  // white circle
+  {0x0a, 0x25d9},  // inverse white circle
+  {0x0b, 0x2642},  // male sign
+  {0x0c, 0x2640},  // female sign
+  {0x0d, 0x266a},  // eighth note
+  {0x0e, 0x266b},  // beamed eighth notes
+  {0x0f, 0x263c},  // white sun with rays
+  {0x10, 0x25ba},  // black right-pointing pointer
+  {0x11, 0x25c4},  // black left-pointing pointer
+  {0x12, 0x2195},  // up down arrow
+  {0x13, 0x203c},  // double exclamation mark
+  {0x14, 0x00b6},  // pilcrow sign
+  {0x15, 0x00a7},  // section sign
+  {0x16, 0x25ac},  // black rectangle
+  {0x17, 0x21a8},  // up down arrow with base
+  {0x18, 0x2191},  // upwards arrow
+  {0x19, 0x2193},  // downwards arrow
+  {0x1a, 0x2192},  // rightwards arrow
+  {0x1b, 0x2190},  // leftwards arrow
+  {0x1c, 0x221f},  // right angle
+  {0x1d, 0x2194},  // left right arrow
+  {0x1e, 0x25b2},  // black up-pointing triangle
+  {0x1f, 0x25bc},  // black down-pointing triangle
+  {0x20, 0x0020},  // space
+  {0x21, 0x0021},  // exclamation mark
+  {0x22, 0x0022},  // quotation mark
+  {0x23, 0x0023},  // number sign
+  {0x24, 0x0024},  // dollar sign
+  {0x25, 0x0025},  // percent sign
+  {0x26, 0x0026},  // ampersand
+  {0x27, 0x0027},  // apostrophe
+  {0x28, 0x0028},  // left parenthesis
+  {0x29, 0x0029},  // right parenthesis
+  {0x2a, 0x002a},  // asterisk
+  {0x2b, 0x002b},  // plus sign
+  {0x2c, 0x002c},  // comma
+  {0x2d, 0x002d},  // hyphen-minus
+  {0x2e, 0x002e},  // full stop
+  {0x2f, 0x002f},  // solidus
+  {0x30, 0x0030},  // digit zero
+  {0x31, 0x0031},  // digit one
+  {0x32, 0x0032},  // digit two
+  {0x33, 0x0033},  // digit three
+  {0x34, 0x0034},  // digit four
+  {0x35, 0x0035},  // digit five
+  {0x36, 0x0036},  // digit six
+  {0x37, 0x0037},  // digit seven
+  {0x38, 0x0038},  // digit eight
+  {0x39, 0x0039},  // digit nine
+  {0x3a, 0x003a},  // colon
+  {0x3b, 0x003b},  // semicolon
+  {0x3c, 0x003c},  // less-than sign
+  {0x3d, 0x003d},  // equals sign
+  {0x3e, 0x003e},  // greater-than sign
+  {0x3f, 0x003f},  // question mark
+  {0x40, 0x0040},  // commercial at
+  {0x41, 0x0041},  // latin capital letter a
+  {0x42, 0x0042},  // latin capital letter b
+  {0x43, 0x0043},  // latin capital letter c
+  {0x44, 0x0044},  // latin capital letter d
+  {0x45, 0x0045},  // latin capital letter e
+  {0x46, 0x0046},  // latin capital letter f
+  {0x47, 0x0047},  // latin capital letter g
+  {0x48, 0x0048},  // latin capital letter h
+  {0x49, 0x0049},  // latin capital letter i
+  {0x4a, 0x004a},  // latin capital letter j
+  {0x4b, 0x004b},  // latin capital letter k
+  {0x4c, 0x004c},  // latin capital letter l
+  {0x4d, 0x004d},  // latin capital letter m
+  {0x4e, 0x004e},  // latin capital letter n
+  {0x4f, 0x004f},  // latin capital letter o
+  {0x50, 0x0050},  // latin capital letter p
+  {0x51, 0x0051},  // latin capital letter q
+  {0x52, 0x0052},  // latin capital letter r
+  {0x53, 0x0053},  // latin capital letter s
+  {0x54, 0x0054},  // latin capital letter t
+  {0x55, 0x0055},  // latin capital letter u
+  {0x56, 0x0056},  // latin capital letter v
+  {0x57, 0x0057},  // latin capital letter w
+  {0x58, 0x0058},  // latin capital letter x
+  {0x59, 0x0059},  // latin capital letter y
+  {0x5a, 0x005a},  // latin capital letter z
+  {0x5b, 0x005b},  // left square bracket
+  {0x5c, 0x005c},  // reverse solidus
+  {0x5d, 0x005d},  // right square bracket
+  {0x5e, 0x005e},  // circumflex accent
+  {0x5f, 0x005f},  // low line
+  {0x60, 0x0060},  // grave accent
+  {0x61, 0x0061},  // latin small letter a
+  {0x62, 0x0062},  // latin small letter b
+  {0x63, 0x0063},  // latin small letter c
+  {0x64, 0x0064},  // latin small letter d
+  {0x65, 0x0065},  // latin small letter e
+  {0x66, 0x0066},  // latin small letter f
+  {0x67, 0x0067},  // latin small letter g
+  {0x68, 0x0068},  // latin small letter h
+  {0x69, 0x0069},  // latin small letter i
+  {0x6a, 0x006a},  // latin small letter j
+  {0x6b, 0x006b},  // latin small letter k
+  {0x6c, 0x006c},  // latin small letter l
+  {0x6d, 0x006d},  // latin small letter m
+  {0x6e, 0x006e},  // latin small letter n
+  {0x6f, 0x006f},  // latin small letter o
+  {0x70, 0x0070},  // latin small letter p
+  {0x71, 0x0071},  // latin small letter q
+  {0x72, 0x0072},  // latin small letter r
+  {0x73, 0x0073},  // latin small letter s
+  {0x74, 0x0074},  // latin small letter t
+  {0x75, 0x0075},  // latin small letter u
+  {0x76, 0x0076},  // latin small letter v
+  {0x77, 0x0077},  // latin small letter w
+  {0x78, 0x0078},  // latin small letter x
+  {0x79, 0x0079},  // latin small letter y
+  {0x7a, 0x007a},  // latin small letter z
+  {0x7b, 0x007b},  // left curly bracket
+  {0x7c, 0x007c},  // vertical line
+  {0x7d, 0x007d},  // right curly bracket
+  {0x7e, 0x007e},  // tilde
+  {0x7f, 0x007f},  // house
   {0x80, 0x00c7},  // latin capital letter c with cedilla
   {0x81, 0x00fc},  // latin small letter u with diaeresis
   {0x82, 0x00e9},  // latin small letter e with acute
@@ -326,8 +467,9 @@ static uInt cp437_to_ucs[][2] =
   {0xff, 0x00a0}   // no-break space
 };
 
-const uInt lastCP437Item = uInt ( sizeof(cp437_to_ucs)
-                                / sizeof(cp437_to_ucs[0]) ) - 1;
+constexpr auto lastCP437Item = \
+    std::size_t((sizeof(cp437_to_ucs) / sizeof(cp437_to_ucs[0])) - 1);
+
 }  // namespace fc
 
 }  // namespace finalcut

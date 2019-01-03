@@ -76,8 +76,10 @@ class FToggleButton : public FWidget
     // Constructors
     explicit FToggleButton (FWidget* = nullptr);
     explicit FToggleButton (const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FToggleButton (const FToggleButton&) = delete;
+
     // Destructor
     virtual ~FToggleButton();
 
@@ -85,61 +87,63 @@ class FToggleButton : public FWidget
     FToggleButton& operator = (const FToggleButton&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const;
-    FString&      getText();
+    virtual const char* getClassName() const override;
+    FString&            getText();
 
     // Mutators
-    virtual void  setGeometry (int, int, std::size_t, std::size_t, bool = true);
-    bool          setNoUnderline (bool);
-    bool          setNoUnderline();
-    bool          unsetNoUnderline();
-    virtual bool  setEnable (bool);
-    virtual bool  setEnable();
-    virtual bool  unsetEnable();
-    virtual bool  setDisable();
-    virtual bool  setFocus (bool);
-    virtual bool  setFocus();
-    virtual bool  unsetFocus();
-    bool          setChecked (bool);
-    bool          setChecked();
-    bool          unsetChecked();
-    virtual void  setText (const FString&);
+    virtual void        setGeometry ( int, int
+                                    , std::size_t, std::size_t
+                                    , bool = true) override;
+    bool                setNoUnderline (bool);
+    bool                setNoUnderline();
+    bool                unsetNoUnderline();
+    virtual bool        setEnable (bool) override;
+    virtual bool        setEnable() override;
+    virtual bool        unsetEnable() override;
+    virtual bool        setDisable() override;
+    virtual bool        setFocus (bool) override;
+    virtual bool        setFocus() override;
+    virtual bool        unsetFocus() override;
+    bool                setChecked (bool);
+    bool                setChecked();
+    bool                unsetChecked();
+    virtual void        setText (const FString&);
 
     // Inquiries
-    bool          isChecked();
+    bool                isChecked();
 
     // Methods
-    virtual void  hide();
+    virtual void        hide() override;
 
     // Event handlers
-    virtual void  onMouseDown (FMouseEvent*);
-    virtual void  onMouseUp (FMouseEvent*);
-    virtual void  onWheel (FWheelEvent*);
-    virtual void  onAccel (FAccelEvent*);
-    virtual void  onFocusIn (FFocusEvent*);
-    virtual void  onFocusOut (FFocusEvent*);
+    virtual void        onMouseDown (FMouseEvent*) override;
+    virtual void        onMouseUp (FMouseEvent*) override;
+    virtual void        onWheel (FWheelEvent*) override;
+    virtual void        onAccel (FAccelEvent*) override;
+    virtual void        onFocusIn (FFocusEvent*) override;
+    virtual void        onFocusOut (FFocusEvent*) override;
 
   protected:
     // Accessor
-    uChar         getHotkey();
-    FButtonGroup* getGroup() const;
+    uChar               getHotkey();
+    FButtonGroup*       getGroup() const;
 
     // Mutator
-    void          setHotkeyAccelerator();
+    void                setHotkeyAccelerator();
 
     // Inquiries
-    bool          isRadioButton() const;
-    bool          isCheckboxButton() const;
-    bool          hasGroup() const;
+    bool                isRadioButton() const;
+    bool                isCheckboxButton() const;
+    bool                hasGroup() const;
 
     // Methods
-    virtual void  draw();
-    void          drawLabel();
-    void          processClick();
-    void          processToggle();
+    virtual void        draw() override;
+    void                drawLabel();
+    void                processClick();
+    void                processToggle();
 
     // Event handler
-    virtual void onKeyPress (FKeyEvent*);
+    virtual void        onKeyPress (FKeyEvent*) override;
 
     // Data Members
     bool          checked{false};
@@ -148,15 +152,15 @@ class FToggleButton : public FWidget
 
   private:
     // Constants
-    static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
     // Mutator
-    void          setGroup (FButtonGroup*);
+    void                setGroup (FButtonGroup*);
 
     // Methods
-    void          init();
-    std::size_t   getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
-    void          drawText (wchar_t[], std::size_t , std::size_t);
+    void                init();
+    std::size_t         getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
+    void                drawText (wchar_t[], std::size_t , std::size_t);
 
     // Friend classes
     friend class FButtonGroup;

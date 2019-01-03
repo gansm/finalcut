@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -19,6 +19,8 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
+
+#include <memory>
 
 #include "final/fdialog.h"
 #include "final/fstatusbar.h"
@@ -41,10 +43,7 @@ FTextView::FTextView(FWidget* parent)
 
 //----------------------------------------------------------------------
 FTextView::~FTextView()  // destructor
-{
-  delete vbar;
-  delete hbar;
-}
+{ }
 
 
 // public methods of FTextView
@@ -144,7 +143,7 @@ void FTextView::scrollTo (int x, int y)
   if ( ! isVisible() || ! (changeX || changeY) )
     return;
 
-  if ( xoffset != x )
+  if ( changeX && isHorizontallyScrollable() )
   {
     int xoffset_end = int(maxLineWidth - getTextWidth());
     xoffset = x;
@@ -162,7 +161,7 @@ void FTextView::scrollTo (int x, int y)
     }
   }
 
-  if ( yoffset != y )
+  if ( changeY && isVerticallyScrollable() )
   {
     int yoffset_end = int(getRows() - getTextHeight());
     yoffset = y;
@@ -417,15 +416,15 @@ void FTextView::onMouseDown (FMouseEvent* ev)
     && ! dialog->isZoomed() )
   {
     int b = ev->getButton();
-    const FPoint& tp = ev->getTermPos();
-    const FPoint& p = parent->termToWidgetPos(tp);
+    const auto& tp = ev->getTermPos();
+    const auto& p = parent->termToWidgetPos(tp);
     parent->setFocus();
 
     try
     {
-      auto _ev = new FMouseEvent (fc::MouseDown_Event, p, tp, b);
-      FApplication::sendEvent (parent, _ev);
-      delete _ev;
+      const auto& _ev = \
+         std::make_shared<FMouseEvent>(fc::MouseDown_Event, p, tp, b);
+      FApplication::sendEvent (parent, _ev.get());
     }
     catch (const std::bad_alloc& ex)
     {
@@ -446,15 +445,15 @@ void FTextView::onMouseUp (FMouseEvent* ev)
     if ( dialog->isResizeable() && ! dialog->isZoomed() )
     {
       int b = ev->getButton();
-      const FPoint& tp = ev->getTermPos();
-      const FPoint& p = parent->termToWidgetPos(tp);
+      const auto& tp = ev->getTermPos();
+      const auto& p = parent->termToWidgetPos(tp);
       parent->setFocus();
 
       try
       {
-        auto _ev = new FMouseEvent (fc::MouseUp_Event, p, tp, b);
-        FApplication::sendEvent (parent, _ev);
-        delete _ev;
+        const auto& _ev = \
+            std::make_shared<FMouseEvent>(fc::MouseUp_Event, p, tp, b);
+        FApplication::sendEvent (parent, _ev.get());
       }
       catch (const std::bad_alloc& ex)
       {
@@ -482,15 +481,15 @@ void FTextView::onMouseMove (FMouseEvent* ev)
     if ( dialog->isResizeable() && ! dialog->isZoomed() )
     {
       int b = ev->getButton();
-      const FPoint& tp = ev->getTermPos();
-      const FPoint& p = parent->termToWidgetPos(tp);
+      const auto& tp = ev->getTermPos();
+      const auto& p = parent->termToWidgetPos(tp);
       parent->setFocus();
 
       try
       {
-        auto _ev = new FMouseEvent (fc::MouseMove_Event, p, tp, b);
-        FApplication::sendEvent (parent, _ev);
-        delete _ev;
+        const auto& _ev = \
+            std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, tp, b);
+        FApplication::sendEvent (parent, _ev.get());
       }
       catch (const std::bad_alloc& ex)
       {
@@ -624,12 +623,12 @@ void FTextView::init()
 
   try
   {
-    vbar = new FScrollbar(fc::vertical, this);
+    vbar = std::make_shared<FScrollbar>(fc::vertical, this);
     vbar->setMinimum(0);
     vbar->setValue(0);
     vbar->hide();
 
-    hbar = new FScrollbar(fc::horizontal, this);
+    hbar = std::make_shared<FScrollbar>(fc::horizontal, this);
     hbar->setMinimum(0);
     hbar->setValue(0);
     hbar->hide();
@@ -698,8 +697,8 @@ void FTextView::draw()
 
   if ( hasFocus() && getStatusBar() )
   {
-    const FString& msg = getStatusbarMessage();
-    const FString& curMsg = getStatusBar()->getMessage();
+    const auto& msg = getStatusbarMessage();
+    const auto& curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {
@@ -746,7 +745,7 @@ void FTextView::drawText()
 
       // only printable and 1 column per character
       if ( ( (utf8 && std::iswprint(wint_t(ch)))
-          || (!utf8 && ch < 256 && std::isprint(ch)) )
+          || (!utf8 && std::isprint(ch)) )
           && wcwidth(ch) == 1 )
       {
         print (ch);
@@ -784,7 +783,7 @@ inline void FTextView::drawVBar()
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_VBarChange (FWidget*, data_ptr)
+void FTextView::cb_VBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
   int distance = 1;
@@ -840,7 +839,7 @@ void FTextView::cb_VBarChange (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_HBarChange (FWidget*, data_ptr)
+void FTextView::cb_HBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
   int distance = 1;

@@ -97,17 +97,17 @@ void FToggleButton::setGeometry ( int x, int y
 }
 
 //----------------------------------------------------------------------
-bool FToggleButton::setNoUnderline (bool on)
+bool FToggleButton::setNoUnderline (bool enable)
 {
-  return (flags.no_underline = on);
+  return (flags.no_underline = enable);
 }
 
 //----------------------------------------------------------------------
-bool FToggleButton::setEnable (bool on)
+bool FToggleButton::setEnable (bool enable)
 {
-  FWidget::setEnable(on);
+  FWidget::setEnable(enable);
 
-  if ( on )
+  if ( enable )
   {
     setHotkeyAccelerator();
 
@@ -129,15 +129,15 @@ bool FToggleButton::setEnable (bool on)
     setBackgroundColor (wc.toggle_button_inactive_bg);
   }
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FToggleButton::setFocus (bool on)
+bool FToggleButton::setFocus (bool enable)
 {
-  FWidget::setFocus(on);
+  FWidget::setFocus(enable);
 
-  if ( on )
+  if ( enable )
   {
     if ( isEnabled() )
     {
@@ -149,8 +149,8 @@ bool FToggleButton::setFocus (bool on)
 
       if ( getStatusBar() )
       {
-        const FString& msg = getStatusbarMessage();
-        const FString& curMsg = getStatusBar()->getMessage();
+        const auto& msg = getStatusbarMessage();
+        const auto& curMsg = getStatusBar()->getMessage();
 
         if ( curMsg != msg )
           getStatusBar()->setMessage(msg);
@@ -169,15 +169,15 @@ bool FToggleButton::setFocus (bool on)
     }
   }
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FToggleButton::setChecked (bool on)
+bool FToggleButton::setChecked (bool enable)
 {
-  if ( checked != on )
+  if ( checked != enable )
   {
-    checked = on;
+    checked = enable;
     processToggle();
   }
 
@@ -447,8 +447,8 @@ void FToggleButton::draw()
 {
   if ( flags.focus && getStatusBar() )
   {
-    const FString& msg = getStatusbarMessage();
-    const FString& curMsg = getStatusBar()->getMessage();
+    const auto& msg = getStatusbarMessage();
+    const auto& curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {

@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -74,8 +74,10 @@ class FButtonGroup : public FScrollView
     // Constructors
     explicit FButtonGroup (FWidget* = nullptr);
     explicit FButtonGroup (const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FButtonGroup (const FButtonGroup&) = delete;
+
     // Destructor
     virtual ~FButtonGroup();
 
@@ -83,63 +85,63 @@ class FButtonGroup : public FScrollView
     FButtonGroup& operator = (const FButtonGroup&) = delete;
 
     // Accessor
-    const char*    getClassName() const;
-    FToggleButton* getFirstButton();
-    FToggleButton* getLastButton();
-    FToggleButton* getButton (int) const;
-    std::size_t    getCount() const;
-    FString&       getText();
+    virtual const char* getClassName() const override;
+    FToggleButton*      getFirstButton();
+    FToggleButton*      getLastButton();
+    FToggleButton*      getButton (int) const;
+    std::size_t         getCount() const;
+    FString&            getText();
 
     // Mutator
-    virtual bool   setEnable(bool);
-    virtual bool   setEnable();
-    virtual bool   unsetEnable();
-    virtual bool   setDisable();
-    void           setText (const FString&);
+    virtual bool        setEnable(bool) override;
+    virtual bool        setEnable() override;
+    virtual bool        unsetEnable() override;
+    virtual bool        setDisable() override;
+    void                setText (const FString&);
 
     // Inquiries
-    bool           isChecked(int) const;
-    bool           hasFocusedButton() const;
-    bool           hasCheckedButton() const;
+    bool                isChecked(int) const;
+    bool                hasFocusedButton() const;
+    bool                hasCheckedButton() const;
 
     // Methods
-    virtual void   hide();
-    void           insert (FToggleButton*);
-    void           remove (FToggleButton*);
-    void           checkScrollSize (FToggleButton*);
-    void           checkScrollSize (const FRect&);
+    virtual void        hide() override;
+    void                insert (FToggleButton*);
+    void                remove (FToggleButton*);
+    void                checkScrollSize (FToggleButton*);
+    void                checkScrollSize (const FRect&);
 
     // Event handlers
-    virtual void   onMouseDown (FMouseEvent*);
-    virtual void   onAccel (FAccelEvent*);
-    virtual void   onFocusIn (FFocusEvent*);
-
-    // Callback method
-    void           cb_buttonToggled (FWidget*, data_ptr);
+    virtual void        onMouseDown (FMouseEvent*) override;
+    virtual void        onAccel (FAccelEvent*) override;
+    virtual void        onFocusIn (FFocusEvent*) override;
 
   protected:
     // Accessor
-    uChar          getHotkey();
+    uChar               getHotkey();
 
     // Mutator
-    void           setHotkeyAccelerator();
+    void                setHotkeyAccelerator();
 
     // Methods
-    virtual void   draw();
-    void           drawLabel();
+    virtual void        draw() override;
+    void                drawLabel();
 
   private:
     // Constants
-    static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
     // Inquiries
-    bool           isRadioButton (FToggleButton*) const;
+    bool                isRadioButton (FToggleButton*) const;
 
     // Methods
-    void           init();
-    std::size_t    getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
-    void           drawText (wchar_t[], std::size_t, std::size_t);
-    void           directFocus();
+    void                init();
+    std::size_t         getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
+    void                drawText (wchar_t[], std::size_t, std::size_t);
+    void                directFocus();
+
+    // Callback method
+    void                cb_buttonToggled (FWidget*, FDataPtr);
 
     // Data Members
     FString        text{};

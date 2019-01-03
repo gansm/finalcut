@@ -54,6 +54,13 @@ FButton::~FButton()  // destructor
   delOwnTimer();
 }
 
+// FButton operator
+//----------------------------------------------------------------------
+FButton& FButton::operator = (const FString& s)
+{
+  setText(s);
+  return *this;
+}
 
 // public methods of FButton
 //----------------------------------------------------------------------
@@ -119,38 +126,38 @@ void FButton::setInactiveBackgroundColor (FColor color)
 }
 
 //----------------------------------------------------------------------
-bool FButton::setNoUnderline (bool on)
+bool FButton::setNoUnderline (bool enable)
 {
-  return (flags.no_underline = on);
+  return (flags.no_underline = enable);
 }
 
 //----------------------------------------------------------------------
-bool FButton::setEnable (bool on)
+bool FButton::setEnable (bool enable)
 {
-  FWidget::setEnable(on);
+  FWidget::setEnable(enable);
 
-  if ( on )
+  if ( enable )
     setHotkeyAccelerator();
   else
     delAccelerator();
 
   updateButtonColor();
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FButton::setFocus (bool on)
+bool FButton::setFocus (bool enable)
 {
-  FWidget::setFocus(on);
+  FWidget::setFocus(enable);
 
-  if ( on )
+  if ( enable )
   {
     if ( isEnabled() )
     {
       if ( getStatusBar() )
       {
-        const FString& msg = getStatusbarMessage();
-        const FString& curMsg = getStatusBar()->getMessage();
+        const auto& msg = getStatusbarMessage();
+        const auto& curMsg = getStatusBar()->getMessage();
 
         if ( curMsg != msg )
           getStatusBar()->setMessage(msg);
@@ -164,19 +171,19 @@ bool FButton::setFocus (bool on)
   }
 
   updateButtonColor();
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FButton::setFlat (bool on)
+bool FButton::setFlat (bool enable)
 {
-  return (flags.flat = on);
+  return (flags.flat = enable);
 }
 
 //----------------------------------------------------------------------
-bool FButton::setShadow (bool on)
+bool FButton::setShadow (bool enable)
 {
-  if ( on
+  if ( enable
     && getEncoding() != fc::VT100
     && getEncoding() != fc::ASCII )
   {
@@ -193,15 +200,15 @@ bool FButton::setShadow (bool on)
 }
 
 //----------------------------------------------------------------------
-bool FButton::setDown (bool on)
+bool FButton::setDown (bool enable)
 {
-  if ( button_down != on )
+  if ( button_down != enable )
   {
-    button_down = on;
+    button_down = enable;
     redraw();
   }
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
@@ -342,7 +349,7 @@ void FButton::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FButton::onTimer (FTimerEvent* ev)
 {
-  delTimer(ev->timerId());
+  delTimer(ev->getTimerId());
   setUp();
 }
 
@@ -747,8 +754,8 @@ void FButton::updateStatusBar()
   if ( ! flags.focus || ! getStatusBar() )
     return;
 
-  const FString& msg = getStatusbarMessage();
-  const FString& curMsg = getStatusBar()->getMessage();
+  const auto& msg = getStatusbarMessage();
+  const auto& curMsg = getStatusBar()->getMessage();
 
   if ( curMsg != msg )
   {

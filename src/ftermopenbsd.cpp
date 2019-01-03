@@ -107,7 +107,7 @@ bool FTermOpenBSD::setBSDConsoleEncoding (kbd_t k_encoding)
 //----------------------------------------------------------------------
 bool FTermOpenBSD::setBSDConsoleMetaEsc()
 {
-  static const kbd_t meta_esc = 0x20;  // generate ESC prefix on ALT-key
+  static constexpr kbd_t meta_esc = 0x20;  // generate ESC prefix on ALT-key
 
   return setBSDConsoleEncoding (bsd_keyboard_encoding | meta_esc);
 }

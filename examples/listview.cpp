@@ -40,8 +40,10 @@ class Listview : public finalcut::FDialog
   public:
     // Constructor
     explicit Listview (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     Listview (const Listview&) = delete;
+
     // Destructor
     ~Listview();
 
@@ -53,10 +55,10 @@ class Listview : public finalcut::FDialog
     void populate();
 
     // Event handlers
-    virtual void onClose (finalcut::FCloseEvent*);
+    virtual void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
-    void cb_showInMessagebox (finalcut::FWidget*, data_ptr);
+    void cb_showInMessagebox (finalcut::FWidget*, FDataPtr);
 
     // Data Members
     finalcut::FListView listView{this};
@@ -171,7 +173,7 @@ void Listview::populate()
     { "Zurich", "Mostly Cloudy", "23°C", "44%", "1023.7 mb" }
   };
 
-  const int lastItem = int(sizeof(weather) / sizeof(weather[0])) - 1;
+  constexpr int lastItem = int(sizeof(weather) / sizeof(weather[0])) - 1;
 
   for (int i = 0; i <= lastItem; i++)
   {
@@ -187,9 +189,9 @@ void Listview::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Listview::cb_showInMessagebox (finalcut::FWidget*, data_ptr)
+void Listview::cb_showInMessagebox (finalcut::FWidget*, FDataPtr)
 {
-  auto item = listView.getCurrentItem();
+  const auto& item = listView.getCurrentItem();
   finalcut::FMessageBox info ( "Weather in " + item->getText(1)
                              , "  Condition: " + item->getText(2) + "\n"
                                "Temperature: " + item->getText(3) + "\n"

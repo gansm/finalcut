@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <algorithm>
+#include <memory>
 
 #include "final/fapplication.h"
 #include "final/flistbox.h"
@@ -48,7 +49,7 @@ FListBoxItem::FListBoxItem (const FListBoxItem& item)
 { }
 
 //----------------------------------------------------------------------
-FListBoxItem::FListBoxItem (const FString& txt, FWidget::data_ptr data)
+FListBoxItem::FListBoxItem (const FString& txt, FDataPtr data)
   : text(txt)
   , data_pointer(data)
 { }
@@ -92,8 +93,6 @@ FListBox::FListBox (FWidget* parent)
 FListBox::~FListBox()  // destructor
 {
   delOwnTimer();
-  delete vbar;
-  delete hbar;
 }
 
 
@@ -163,7 +162,9 @@ void FListBox::showInsideBrackets ( std::size_t index
 }
 
 //----------------------------------------------------------------------
-void FListBox::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
+void FListBox::setGeometry ( int x, int y
+                           , std::size_t w, std::size_t h
+                           , bool adjust )
 {
   // Set the widget geometry
 
@@ -182,16 +183,16 @@ void FListBox::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adj
 }
 
 //----------------------------------------------------------------------
-bool FListBox::setFocus (bool on)
+bool FListBox::setFocus (bool enable)
 {
-  FWidget::setFocus(on);
+  FWidget::setFocus(enable);
 
-  if ( on )
+  if ( enable )
   {
     if ( getStatusBar() )
     {
-      const FString& msg = getStatusbarMessage();
-      const FString& curMsg = getStatusBar()->getMessage();
+      const auto& msg = getStatusbarMessage();
+      const auto& curMsg = getStatusBar()->getMessage();
 
       if ( curMsg != msg )
         getStatusBar()->setMessage(msg);
@@ -203,7 +204,7 @@ bool FListBox::setFocus (bool on)
       getStatusBar()->clearMessage();
   }
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
@@ -260,27 +261,6 @@ void FListBox::insert (FListBoxItem listItem)
 
   std::size_t element_count = getCount();
   recalculateVerticalBar (element_count);
-}
-
-//----------------------------------------------------------------------
-void FListBox::insert ( const FString& item
-                      , fc::brackets_type b
-                      , bool s
-                      , data_ptr d )
-{
-  FListBoxItem listItem (item, d);
-  listItem.brackets = b;
-  listItem.selected = s;
-  insert (listItem);
-}
-
-//----------------------------------------------------------------------
-void FListBox::insert ( long item
-                      , fc::brackets_type b
-                      , bool s
-                      , data_ptr d )
-{
-  insert (FString() << item, b, s, d);
 }
 
 //----------------------------------------------------------------------
@@ -817,12 +797,12 @@ void FListBox::init()
 
   try
   {
-    vbar = new FScrollbar(fc::vertical, this);
+    vbar = std::make_shared<FScrollbar>(fc::vertical, this);
     vbar->setMinimum(0);
     vbar->setValue(0);
     vbar->hide();
 
-    hbar = new FScrollbar(fc::horizontal, this);
+    hbar = std::make_shared<FScrollbar>(fc::horizontal, this);
     hbar->setMinimum(0);
     hbar->setValue(0);
     hbar->hide();
@@ -896,8 +876,8 @@ void FListBox::draw()
 
   if ( flags.focus && getStatusBar() )
   {
-    const FString& msg = getStatusbarMessage();
-    const FString& curMsg = getStatusBar()->getMessage();
+    const auto& msg = getStatusbarMessage();
+    const auto& curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {
@@ -1512,7 +1492,7 @@ void FListBox::nextListItem (int distance)
 //----------------------------------------------------------------------
 void FListBox::scrollToX (int val)
 {
-  static const std::size_t padding_space = 2;  // 1 leading + 1 trailing space
+  static constexpr std::size_t padding_space = 2;  // 1 leading + 1 trailing space
   std::size_t xoffset_end = max_line_width - getClientWidth() + padding_space;
 
   if ( xoffset == val )
@@ -1569,7 +1549,7 @@ void FListBox::scrollLeft (int distance)
 //----------------------------------------------------------------------
 void FListBox::scrollRight (int distance)
 {
-  static const std::size_t padding_space = 2;  // 1 leading + 1 trailing space
+  static constexpr std::size_t padding_space = 2;  // 1 leading + 1 trailing space
   std::size_t xoffset_end = max_line_width - getClientWidth() + padding_space;
   xoffset += distance;
 
@@ -1848,7 +1828,7 @@ void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_VBarChange (FWidget*, data_ptr)
+void FListBox::cb_VBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType;
   std::size_t current_before = current;
@@ -1915,9 +1895,9 @@ void FListBox::cb_VBarChange (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_HBarChange (FWidget*, data_ptr)
+void FListBox::cb_HBarChange (FWidget*, FDataPtr)
 {
-  static const int padding_space = 2;  // 1 leading space + 1 trailing space
+  static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
   FScrollbar::sType scrollType;
   int distance = 1
     , pagesize = 4

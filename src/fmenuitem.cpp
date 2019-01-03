@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
+
 #include "final/fapplication.h"
 #include "final/fdialog.h"
 #include "final/fmenu.h"
@@ -81,12 +83,12 @@ FMenuItem::~FMenuItem()  // destructor
 
 // public methods of FMenuItem
 //----------------------------------------------------------------------
-bool FMenuItem::setEnable (bool on)
+bool FMenuItem::setEnable (bool enable)
 {
-  FWidget::setEnable(on);
+  FWidget::setEnable(enable);
   auto super = getSuperMenu();
 
-  if ( on )
+  if ( enable )
   {
     if ( super && isMenuBar(super) )
     {
@@ -101,15 +103,15 @@ bool FMenuItem::setEnable (bool on)
       super->delAccelerator (this);
   }
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FMenuItem::setFocus (bool on)
+bool FMenuItem::setFocus (bool enable)
 {
-  FWidget::setFocus(on);
+  FWidget::setFocus(enable);
 
-  if ( on )
+  if ( enable )
   {
     if ( isEnabled() )
     {
@@ -147,8 +149,8 @@ bool FMenuItem::setFocus (bool on)
 
       if ( getStatusBar() )
       {
-        const FString& msg = getStatusbarMessage();
-        const FString& curMsg = getStatusBar()->getMessage();
+        const auto& msg = getStatusbarMessage();
+        const auto& curMsg = getStatusBar()->getMessage();
 
         if ( curMsg != msg )
           getStatusBar()->setMessage(msg);
@@ -161,7 +163,7 @@ bool FMenuItem::setFocus (bool on)
       getStatusBar()->clearMessage();
   }
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
@@ -633,7 +635,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
         FMenuItem* win_item;
         uInt32 n = uInt32(std::distance(first, iter));
         // get the dialog title
-        const FString& name = win->getText();
+        const auto& name = win->getText();
 
         try
         {
@@ -653,7 +655,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
         (
           "clicked",
           F_METHOD_CALLBACK (win_item, &FMenuItem::cb_switchToDialog),
-          static_cast<FWidget::data_ptr>(win)
+          static_cast<FDataPtr>(win)
         );
 
         win->addCallback
@@ -680,14 +682,14 @@ void FMenuItem::passMouseEvent ( T widget, FMouseEvent* ev
   if ( ! widget )
     return;
 
-  FMouseEvent* _ev;
-  const FPoint& t = ev->getTermPos();
-  const FPoint& p2 = widget->termToWidgetPos(t);
+  const auto& t = ev->getTermPos();
+  const auto& p2 = widget->termToWidgetPos(t);
   int b = ev->getButton();
+  std::shared_ptr<FMouseEvent> _ev;
 
   try
   {
-    _ev = new FMouseEvent (ev_type, p2, t, b);
+    _ev = std::make_shared<FMouseEvent>(ev_type, p2, t, b);
   }
   catch (const std::bad_alloc& ex)
   {
@@ -698,27 +700,25 @@ void FMenuItem::passMouseEvent ( T widget, FMouseEvent* ev
   switch ( int(ev_type) )
   {
     case fc::MouseDoubleClick_Event:
-      widget->onMouseDoubleClick(_ev);
+      widget->onMouseDoubleClick(_ev.get());
       break;
 
     case fc::MouseDown_Event:
-      widget->onMouseDown(_ev);
+      widget->onMouseDown(_ev.get());
       break;
 
     case fc::MouseUp_Event:
-      widget->onMouseUp(_ev);
+      widget->onMouseUp(_ev.get());
       break;
 
     case fc::MouseMove_Event:
-      widget->onMouseMove(_ev);
+      widget->onMouseMove(_ev.get());
       break;
   }
-
-  delete _ev;
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::cb_switchToDialog (FWidget*, data_ptr data)
+void FMenuItem::cb_switchToDialog (FWidget*, FDataPtr data)
 {
   auto win = static_cast<FDialog*>(data);
 
@@ -731,10 +731,10 @@ void FMenuItem::cb_switchToDialog (FWidget*, data_ptr data)
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::cb_destroyDialog (FWidget* widget, data_ptr)
+void FMenuItem::cb_destroyDialog (FWidget* widget, FDataPtr)
 {
   auto win = static_cast<FDialog*>(widget);
-  auto fapp = static_cast<FApplication*>(getRootWidget());
+  auto fapp = FApplication::getApplicationObject();
 
   if ( win && fapp )
   {

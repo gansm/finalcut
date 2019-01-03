@@ -144,7 +144,7 @@ bool FTermFreeBSD::saveFreeBSDAltKey()
 {
   // Saving the current mapping for the alt key
 
-  static const int left_alt = 0x38;
+  static constexpr int left_alt = 0x38;
   int ret;
   keymap_t keymap;
 
@@ -163,7 +163,7 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
 {
   // Remapping the alt key
 
-  static const int left_alt = 0x38;
+  static constexpr int left_alt = 0x38;
   int ret;
   keymap_t keymap;
 

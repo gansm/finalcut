@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -159,11 +159,11 @@ const FLineEdit& FLineEdit::operator >> (FString& s)
 
 // public methods of FLineEdit
 //----------------------------------------------------------------------
-bool FLineEdit::setEnable (bool on)
+bool FLineEdit::setEnable (bool enable)
 {
-  FWidget::setEnable(on);
+  FWidget::setEnable(enable);
 
-  if ( on )
+  if ( enable )
   {
     if ( hasFocus() )
     {
@@ -182,15 +182,15 @@ bool FLineEdit::setEnable (bool on)
     setBackgroundColor (wc.inputfield_inactive_bg);
   }
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FLineEdit::setFocus (bool on)
+bool FLineEdit::setFocus (bool enable)
 {
-  FWidget::setFocus(on);
+  FWidget::setFocus(enable);
 
-  if ( on )
+  if ( enable )
   {
     if ( isEnabled() )
     {
@@ -199,8 +199,8 @@ bool FLineEdit::setFocus (bool on)
 
       if ( getStatusBar() )
       {
-        const FString& msg = getStatusbarMessage();
-        const FString& curMsg = getStatusBar()->getMessage();
+        const auto& msg = getStatusbarMessage();
+        const auto& curMsg = getStatusBar()->getMessage();
 
         if ( curMsg != msg )
           getStatusBar()->setMessage(msg);
@@ -219,13 +219,13 @@ bool FLineEdit::setFocus (bool on)
     }
   }
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FLineEdit::setShadow (bool on)
+bool FLineEdit::setShadow (bool enable)
 {
-  if ( on
+  if ( enable
     && getEncoding() != fc::VT100
     && getEncoding() != fc::ASCII )
   {
@@ -690,8 +690,8 @@ void FLineEdit::draw()
 
   if ( flags.focus && getStatusBar() )
   {
-    const FString& msg = getStatusbarMessage();
-    const FString& curMsg = getStatusBar()->getMessage();
+    const auto& msg = getStatusbarMessage();
+    const auto& curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {
@@ -730,16 +730,7 @@ void FLineEdit::drawInputField()
 
   show_text = text.mid(1 + text_offset, getWidth() - 2);
 
-  if ( isLinuxTerm() && hasUTF8() )
-  {
-    setUTF8(true);
-
-    if ( show_text )
-      print (show_text);
-
-    setUTF8(false);
-  }
-  else if ( show_text )
+  if ( show_text )
     print (show_text);
 
   x = show_text.getLength();

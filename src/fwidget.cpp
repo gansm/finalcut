@@ -69,9 +69,9 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
 
   if ( ! parent )
   {
-    assert ( ! rootObject
-          && "FTerm: There should be only one root object" );
-
+    if  ( rootObject )
+      throw std::runtime_error( "FWidget: No parent defined! "
+                                "There should be only one root object" );
     rootObject = this;
     show_root_widget = nullptr;
     redraw_root_widget = nullptr;
@@ -248,24 +248,24 @@ void FWidget::setMainWidget (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setEnable (bool on)
+bool FWidget::setEnable (bool enable)
 {
-  return (flags.active = on);
+  return (flags.active = enable);
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setFocus (bool on)
+bool FWidget::setFocus (bool enable)
 {
   if ( ! isEnabled() )
     return false;
 
-  if ( flags.focus == on )
+  if ( flags.focus == enable )
     return true;
 
   auto last_focus = FWidget::getFocusWidget();
 
   // set widget focus
-  if ( on && ! flags.focus )
+  if ( enable && ! flags.focus )
   {
     int focusable_children = numOfFocusableChildren();
 
@@ -282,7 +282,7 @@ bool FWidget::setFocus (bool on)
   auto window = FWindow::getWindowWidget(this);
 
   // set window focus
-  if ( on && window )
+  if ( enable && window )
   {
     if ( ! window->isWindowActive() )
     {
@@ -295,7 +295,7 @@ bool FWidget::setFocus (bool on)
     window->setWindowFocusWidget(this);
   }
 
-  return (flags.focus = on);
+  return (flags.focus = enable);
 }
 
 //----------------------------------------------------------------------
@@ -826,7 +826,7 @@ bool FWidget::close()
 //----------------------------------------------------------------------
 void FWidget::addCallback ( const FString& cb_signal
                           , FCallback cb_handler
-                          , data_ptr data )
+                          , FDataPtr data )
 {
   // add a (normal) function pointer as callback
   callback_data obj = { cb_signal, cb_handler, data };
@@ -837,7 +837,7 @@ void FWidget::addCallback ( const FString& cb_signal
 void FWidget::addCallback ( const FString& cb_signal
                           , FWidget* cb_instance
                           , FMemberCallback cb_handler
-                          , data_ptr data )
+                          , FDataPtr data )
 {
   // add a member function pointer as callback
   member_callback_data obj = { cb_signal, cb_instance, cb_handler, data };
@@ -1436,8 +1436,7 @@ void FWidget::drawBorder (int x1, int y1, int x2, int y2)
 //----------------------------------------------------------------------
 void FWidget::quit()
 {
-  auto app_object = FApplication::getApplicationObject();
-  auto fapp = static_cast<FApplication*>(app_object);
+  auto fapp = FApplication::getApplicationObject();
   fapp->exit(0);
 }
 
@@ -1735,7 +1734,7 @@ bool FWidget::focusPrevChild()
 //----------------------------------------------------------------------
 bool FWidget::event (FEvent* ev)
 {
-  switch ( ev->type() )
+  switch ( uInt(ev->type()) )
   {
     case fc::KeyPress_Event:
       KeyPressEvent (static_cast<FKeyEvent*>(ev));
@@ -2340,7 +2339,7 @@ void FWidget::setColorTheme()
     wc.set16ColorTheme();
 
     if ( isKdeTerminal() )
-      wc.term_bg = fc::SteelBlue3;
+      wc.term_bg = fc::SkyBlue2;
   }
 }
 
