@@ -21,7 +21,7 @@
 ***********************************************************************/
 
 #include <algorithm>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -758,7 +758,7 @@ uChar FTerm::unicode_to_cp437 (wchar_t ucs)
   {
     if ( fc::cp437_to_ucs[i][UNICODE] == ucs )  // found
     {
-      c = fc::cp437_to_ucs[i][CP437];
+      c = uChar(fc::cp437_to_ucs[i][CP437]);
       break;
     }
   }
@@ -987,7 +987,7 @@ void FTerm::init_alt_charset()
 {
   // Read the used VT100 pairs
 
-  std::map<uChar, uChar> vt100_alt_char;
+  std::unordered_map<uChar, uChar> vt100_alt_char;
 
   if ( TCAP(fc::t_acs_chars) )
   {
@@ -1902,6 +1902,7 @@ void FTerm::init (bool disable_alt_screen)
 void FTerm::initOSspecifics()
 {
 #if defined(__linux__)
+  linux->setFTermData(data);
   linux->setFTermDetection(term_detection);
   linux->init();    // Initialize Linux console
 

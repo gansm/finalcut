@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -152,6 +152,20 @@ void FTermDataTest::dataTest()
   CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::fc::ASCII );
   data.setTermEncoding(finalcut::fc::UNKNOWN);
   CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::fc::UNKNOWN );
+
+  CPPUNIT_ASSERT ( data.getCharSubstitutionMap().size() == 0 );
+  auto& character_map = data.getCharSubstitutionMap();
+  character_map[L'€'] = 'E';
+  character_map[L'µ'] = L'u';
+  character_map[finalcut::fc::Bullet] = '*';
+  character_map[finalcut::fc::FullBlock] = finalcut::fc::MediumShade;
+  auto& char_map = data.getCharSubstitutionMap();
+  CPPUNIT_ASSERT ( char_map.size() == 4 );
+  CPPUNIT_ASSERT ( char_map[L'€'] == 'E' );
+  CPPUNIT_ASSERT ( char_map[L'µ'] == L'u' );
+  CPPUNIT_ASSERT ( char_map[finalcut::fc::Bullet] == '*' );
+  CPPUNIT_ASSERT ( char_map[finalcut::fc::FullBlock]
+                   == finalcut::fc::MediumShade );
 
   CPPUNIT_ASSERT ( data.getTermGeometry() == finalcut::FRect() );
   data.getTermGeometry().setSize(10, 10);

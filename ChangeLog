@@ -1,5 +1,8 @@
-2019-01-02  Markus Gans  <guru.mail@muenster.de>
+2019-01-03  Markus Gans  <guru.mail@muenster.de>
 	* Improved PC encoding for Cygwin and Linux
+	* Integration of an output filter to replace missing characters
+	* Better Linux console support for UTF-8 encoding 
+	  (Default is PC charset encoding)
 
 2018-12-31  Markus Gans  <guru.mail@muenster.de>
 	* Use the override specifier

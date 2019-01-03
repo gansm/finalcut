@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -1358,7 +1358,7 @@ inline void FMenu::drawCheckMarkPrefix (FMenuItem* menuitem)
         if ( isNewFont() )
           print (fc::NF_Bullet);  // NF_Bullet ●
         else
-          print (fc::Bullet);     // Bullet ●
+          print (fc::BlackCircle);     // BlackCircle ●
       }
       else
       {
@@ -1396,7 +1396,7 @@ inline void FMenu::drawMenuText (menuText& data)
       if ( ! isNewFont()
         && ( int(data.text[z]) < fc::NF_rev_left_arrow2
           || int(data.text[z]) > fc::NF_check_mark )
-        && ! charEncodable(uInt(data.text[z])) )
+        && ! charEncodable(wchar_t(data.text[z])) )
       {
         data.text[z] = L' ';
       }

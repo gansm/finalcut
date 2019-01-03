@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -24,7 +24,7 @@
   #undef __STRICT_ANSI__  // need for fileno
 #endif
 
-#include <map>
+#include <unordered_map>
 
 #include "final/ftermios.h"
 #include "final/fterm.h"
@@ -209,7 +209,7 @@ bool FTermios::setRawMode (bool enable)
 //----------------------------------------------------------------------
 uInt FTermios::getBaudRate()
 {
-  std::map<speed_t, uInt> outspeed;
+  std::unordered_map<speed_t, uInt> outspeed;
   outspeed[B0]      = 0;       // hang up
   outspeed[B50]     = 50;      //      50 baud
   outspeed[B75]     = 75;      //      75 baud

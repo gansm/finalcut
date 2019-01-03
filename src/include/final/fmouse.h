@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -202,7 +202,7 @@ class FMouseGPM : public FMouse
     virtual ~FMouseGPM();
 
     // Accessors
-    virtual const char*  getClassName() const;
+    virtual const char*  getClassName() const override;
 
     // Mutators
     void                 setStdinNo(int);
@@ -274,7 +274,7 @@ class FMouseX11 : public FMouse
     virtual ~FMouseX11() = default;
 
     // Accessors
-    virtual const char*  getClassName() const;
+    virtual const char*  getClassName() const override;
 
     // Inquiry
     virtual bool         hasData() override;
@@ -337,7 +337,7 @@ class FMouseSGR : public FMouse
     virtual ~FMouseSGR() = default;
 
     // Accessors
-    virtual const char*  getClassName() const;
+    virtual const char*  getClassName() const override;
 
     // Inquiry
     virtual bool         hasData() override;
@@ -400,7 +400,7 @@ class FMouseUrxvt : public FMouse
     virtual ~FMouseUrxvt() = default;
 
     // Accessors
-    virtual const char*  getClassName() const;
+    virtual const char*  getClassName() const override;
 
     // Inquiry
     virtual bool         hasData() override;

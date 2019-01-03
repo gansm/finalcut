@@ -156,6 +156,7 @@ class FTerm
   public:
     // Typedefs
     typedef FOptiAttr::charData  charData;
+    typedef FTermData::characterSub  characterSub;
 
     struct initializationValues;  // forward declaration
 
@@ -185,6 +186,7 @@ class FTerm
     static int             getTabstop();
     static int             getMaxColor();
     initializationValues&  getInitValues();
+    characterSub&          getCharSubstitutionMap();
 
 #if DEBUG
     FTermDebugData&        getFTermDebugData();
@@ -451,6 +453,10 @@ inline int FTerm::getMaxColor()
 //----------------------------------------------------------------------
 inline FTerm::initializationValues& FTerm::getInitValues()
 { return init_values; }
+
+//----------------------------------------------------------------------
+inline FTerm::characterSub& FTerm::getCharSubstitutionMap()
+{ return data->getCharSubstitutionMap(); }
 
 #if DEBUG
 //----------------------------------------------------------------------

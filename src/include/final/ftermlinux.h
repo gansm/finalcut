@@ -87,6 +87,7 @@ class FTermLinux
     static int           getFramebufferBpp();
 
     // Mutators
+    static void          setFTermData (FTermData*);
     static void          setFTermDetection (FTermDetection*);
     static char*         setCursorStyle (fc::linuxConsoleCursorStyle, bool);
     static bool          setPalette (FColor, int, int, int);
@@ -136,6 +137,8 @@ class FTermLinux
       rgb color[16];
     } ColorMap;
 
+    typedef FTermData::characterSub  characterSub;
+
     // Accessors
     static int           getFramebuffer_bpp();
     static bool          getScreenFont();
@@ -168,6 +171,7 @@ class FTermLinux
     static FKey          shiftCtrlAltKeyCorrection (const FKey&);
     static sInt16        getFontPos (wchar_t ucs);
     static void          initSpecialCharacter();
+    static void          characterFallback (wchar_t, std::vector<wchar_t>);
 
     // Data Members
 #if defined(__linux__)
@@ -176,6 +180,7 @@ class FTermLinux
     static bool                   shadow_character;
     static bool                   half_block_character;
     static bool                   has_saved_palette;
+    static FTermData*             fterm_data;
     static FTermDetection*        term_detection;
     static fc::linuxConsoleCursorStyle
                                   linux_console_cursor_style;
@@ -197,6 +202,10 @@ inline const char* FTermLinux::getClassName() const
 #if defined(__linux__)
 inline int FTermLinux::getFramebufferBpp()
 { return framebuffer_bpp; }
+
+//----------------------------------------------------------------------
+inline void FTermLinux::setFTermData (FTermData* data)
+{ fterm_data = data; }
 
 //----------------------------------------------------------------------
 inline void FTermLinux::setFTermDetection (FTermDetection* td)

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -35,7 +35,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <map>
+#include <unordered_map>
 #include <string>
 
 #include "final/fc.h"
@@ -57,7 +57,8 @@ class FTermData
 {
   public:
     // Typedefs
-    typedef std::map<std::string, fc::encoding> encodingMap;
+    typedef std::unordered_map<std::string, fc::encoding> encodingMap;
+    typedef std::unordered_map<wchar_t, wchar_t> characterSub;
 
     // Constructors
     FTermData() = default;
@@ -74,6 +75,7 @@ class FTermData
     // Accessors
     const char*     getClassName() const;
     encodingMap&    getEncodingList();
+    characterSub&   getCharSubstitutionMap();
     fc::encoding    getTermEncoding() const;
     FRect&          getTermGeometry();
     int             getTTYFileDescriptor() const;
@@ -129,6 +131,7 @@ class FTermData
   private:
     // Data Members
     encodingMap     encoding_list{};
+    characterSub    char_substitution_map{};
     fc::encoding    term_encoding{fc::UNKNOWN};
     FRect           term_geometry{};  // current terminal geometry
     int             fd_tty{-1};  // Teletype (tty) file descriptor is still undefined
@@ -165,6 +168,10 @@ inline const char* FTermData::getClassName() const
 //----------------------------------------------------------------------
 inline FTermData::encodingMap& FTermData::getEncodingList()
 { return encoding_list; }
+
+//----------------------------------------------------------------------
+inline FTermData::characterSub& FTermData::getCharSubstitutionMap()
+{ return char_substitution_map; }
 
 //----------------------------------------------------------------------
 inline fc::encoding FTermData::getTermEncoding() const

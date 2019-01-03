@@ -163,6 +163,7 @@ enum SpecialCharacter : wchar_t
   BlackVerticalRectangle              = 0x25ae,  // ▮ (1)
   SmallBullet                         = 0x00b7,  // ·
   BlackDiamondSuit                    = 0x2666,  // ◆
+  BlackCircle                         = 0x25cf,  // ●
   SymbolForNewline                    = 0x2424,  // ␤ (1)
   SymbolForVerticalTab                = 0x240b,  // ␋ (1)
   SymbolForHorizontalTab              = 0x2409,  // ␉ (1)

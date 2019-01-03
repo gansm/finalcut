@@ -315,7 +315,7 @@ class FVTerm
     virtual term_area*    getPrintArea();
     std::size_t           getLineNumber();
     std::size_t           getColumnNumber();
-    static bool           charEncodable (uInt);
+    static bool           charEncodable (wchar_t);
     static FKeyboard*     getKeyboard();
     static FMouseControl* getMouseControl();
     FTerm::initializationValues& getInitValues();
@@ -486,6 +486,7 @@ class FVTerm
     void                  appendChar (charData*&);
     void                  appendAttributes (charData*&);
     int                   appendLowerRight (charData*&);
+    static void           characterFilter (charData*&);
     static void           appendOutputBuffer (const std::string&);
     static void           appendOutputBuffer (const char[]);
 
@@ -1071,7 +1072,7 @@ inline std::size_t FVTerm::getColumnNumber()
 { return FTerm::getColumnNumber(); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::charEncodable (uInt c)
+inline bool FVTerm::charEncodable (wchar_t c)
 { return FTerm::charEncodable(c); }
 
 //----------------------------------------------------------------------

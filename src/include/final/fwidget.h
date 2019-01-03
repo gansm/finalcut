@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -362,10 +362,10 @@ class FWidget : public FVTerm, public FObject
     typedef std::vector<member_callback_data> MemberCallbackObjects;
 
     // Accessor
-    term_area*          getPrintArea();
-    void                addPreprocessingHandler ( FVTerm*
-                                                , FPreprocessingHandler );
-    void                delPreprocessingHandler (FVTerm*);
+    virtual term_area*  getPrintArea() override;
+    virtual void        addPreprocessingHandler ( FVTerm*
+                                                , FPreprocessingHandler ) override;
+    virtual void        delPreprocessingHandler (FVTerm*) override;
 
     // Inquiry
     bool                isChildPrintArea() const;
@@ -381,7 +381,7 @@ class FWidget : public FVTerm, public FObject
     virtual bool        focusPrevChild();  // ...focus
 
     // Event handlers
-    virtual bool        event (FEvent*);
+    virtual bool        event (FEvent*) override;
     virtual void        onKeyPress (FKeyEvent*);
     virtual void        onKeyUp (FKeyEvent*);
     virtual void        onKeyDown (FKeyEvent*);

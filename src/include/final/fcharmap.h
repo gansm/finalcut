@@ -68,6 +68,7 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   {0x00b0, 'f', 0xb0, 'o'},  // °  -  Degree
   {0x2022, '`', 0x04, '*'},  // •  -  Bullet
   {0x00b7, '`', 0xfa, '.'},  // ·  -  small Bullet
+  {0x25cf, '`', 0x04, '*'},  // ●  -  BlackCircle
   {0x2666, '`', 0x04, '*'},  // ◆  -  BlackDiamondSuit
   {0x2424, 'h',  ' ', ' '},  // ␤  -  SymbolForNewline (1)
   {0x240b, 'i',  ' ', ' '},  // ␋  -  SymbolForVerticalTab (1)

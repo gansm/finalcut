@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -324,7 +324,7 @@ class MouseDraw : public finalcut::FDialog
     MouseDraw& operator = (const MouseDraw&) = delete;
 
     // Methods
-    void setGeometry (int, int, std::size_t, std::size_t, bool = true);
+    void setGeometry (int, int, std::size_t, std::size_t, bool = true) override;
 
     // Event handlers
     virtual void onAccel (finalcut::FAccelEvent*) override;

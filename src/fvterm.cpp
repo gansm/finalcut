@@ -2799,8 +2799,8 @@ inline void FVTerm::appendChar (charData*& next_char)
 {
   newFontChanges (next_char);
   charsetChanges (next_char);
-
   appendAttributes (next_char);
+  characterFilter (next_char);
   appendOutputBuffer (next_char->encoded_code);
 }
 
@@ -2876,6 +2876,15 @@ int FVTerm::appendLowerRight (charData*& screen_char)
   }
 
   return screen_char->code;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::characterFilter (charData*& next_char)
+{
+  FTerm::characterSub& sub_map = fterm->getCharSubstitutionMap();
+
+  if ( sub_map[next_char->encoded_code] )
+    next_char->encoded_code = sub_map[next_char->encoded_code];
 }
 
 //----------------------------------------------------------------------

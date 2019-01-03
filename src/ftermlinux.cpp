@@ -44,6 +44,7 @@ namespace finalcut
   bool   FTermLinux::half_block_character = true;
   bool   FTermLinux::has_saved_palette = false;
 
+  FTermData*                  FTermLinux::fterm_data = nullptr;
   FTermDetection*             FTermLinux::term_detection = nullptr;
   fc::linuxConsoleCursorStyle FTermLinux::linux_console_cursor_style;
   FTermLinux::ColorMap        FTermLinux::saved_color_map;
@@ -200,12 +201,27 @@ void FTermLinux::initCharMap (uInt char_map[][fc::NUM_OF_ENCODINGS])
   {
     for (std::size_t i = 0; i <= fc::lastCharItem; i++ )
     {
-      wchar_t ucs = char_map[i][fc::UTF8];
+      auto ucs = wchar_t(char_map[i][fc::UTF8]);
       sInt16 fontpos = getFontPos(ucs);
 
       // Fix for a non-cp437 Linux console with PC charset encoding
       if ( fontpos > 255 || fontpos == NOT_FOUND )
         char_map[i][fc::PC] = char_map[i][fc::ASCII];
+
+      // Character substitutions for missing characters
+      if ( fontpos == NOT_FOUND )
+      {
+        characterFallback (ucs, { L'▲', L'↑', L'^' });
+        characterFallback (ucs, { L'▼', L'↓', L'v' });
+        characterFallback (ucs, { L'►', L'▶', L'→', L'>' });
+        characterFallback (ucs, { L'◄', L'◀', L'←', L'<' });
+        characterFallback (ucs, { L'●', L'◆', L'⬤', L'*' });
+        characterFallback (ucs, { L'•', L'●', L'◆', L'⬤', L'*' });
+        characterFallback (ucs, { L'×', L'❌', L'x' });
+        characterFallback (ucs, { L'÷', L'➗', L'/' });
+        characterFallback (ucs, { L'√', L'✓', L'x' });
+        characterFallback (ucs, { L'ˣ', L'ⁿ', L'ˆ', L'`' });
+      }
     }
   }
 
@@ -856,14 +872,14 @@ bool FTermLinux::resetVGAPalette()
   {
     rgb defaultColor[16] =
     {
-      {0x00, 0x00, 0x00}, {0xAA, 0x00, 0x00},
-      {0x00, 0xAA, 0x00}, {0xAA, 0x55, 0x00},
-      {0x00, 0x00, 0xAA}, {0xAA, 0x00, 0xAA},
-      {0x00, 0xAA, 0xAA}, {0xAA, 0xAA, 0xAA},
-      {0x55, 0x55, 0x55}, {0xFF, 0x55, 0x55},
-      {0x55, 0xFF, 0x55}, {0xFF, 0xFF, 0x55},
-      {0x55, 0x55, 0xFF}, {0xFF, 0x55, 0xFF},
-      {0x55, 0xFF, 0xFF}, {0xFF, 0xFF, 0xFF}
+      {0x00, 0x00, 0x00}, {0xaa, 0x00, 0x00},
+      {0x00, 0xaa, 0x00}, {0xaa, 0x55, 0x00},
+      {0x00, 0x00, 0xaa}, {0xaa, 0x00, 0xaa},
+      {0x00, 0xaa, 0xaa}, {0xaa, 0xaa, 0xaa},
+      {0x55, 0x55, 0x55}, {0xff, 0x55, 0x55},
+      {0x55, 0xff, 0x55}, {0xff, 0xff, 0x55},
+      {0x55, 0x55, 0xff}, {0xff, 0x55, 0xff},
+      {0x55, 0xff, 0xff}, {0xff, 0xff, 0xff}
     };
 
     for (std::size_t index = 0; index < 16; index++)
@@ -1164,9 +1180,9 @@ FKey FTermLinux::shiftCtrlAltKeyCorrection (const FKey& key_id)
 //----------------------------------------------------------------------
 inline void FTermLinux::initSpecialCharacter()
 {
-  uInt c1 = fc::UpperHalfBlock;
-  uInt c2 = fc::LowerHalfBlock;
-  uInt c3 = fc::FullBlock;
+  wchar_t c1 = fc::UpperHalfBlock;
+  wchar_t c2 = fc::LowerHalfBlock;
+  wchar_t c3 = fc::FullBlock;
 
   if ( FTerm::charEncode(c1, fc::PC) == FTerm::charEncode(c1, fc::ASCII)
     || FTerm::charEncode(c2, fc::PC) == FTerm::charEncode(c2, fc::ASCII)
@@ -1175,8 +1191,8 @@ inline void FTermLinux::initSpecialCharacter()
     shadow_character = false;
   }
 
-  uInt c4 = fc::RightHalfBlock;
-  uInt c5 = fc::LeftHalfBlock;
+  wchar_t c4 = fc::RightHalfBlock;
+  wchar_t c5 = fc::LeftHalfBlock;
 
   if ( FTerm::charEncode(c4, fc::PC) == FTerm::charEncode(c4, fc::ASCII)
     || FTerm::charEncode(c5, fc::PC) == FTerm::charEncode(c5, fc::ASCII) )
@@ -1191,10 +1207,32 @@ sInt16 FTermLinux::getFontPos (wchar_t ucs)
   for (std::size_t n = 0; n < screen_unicode_map.entry_ct; n++)
   {
     if ( screen_unicode_map.entries[n].unicode == ucs )
-      return screen_unicode_map.entries[n].fontpos;
+      return sInt16(screen_unicode_map.entries[n].fontpos);
   }
 
   return -1;
+}
+
+//----------------------------------------------------------------------
+void FTermLinux::characterFallback ( wchar_t ucs
+                                   , std::vector<wchar_t> fallback )
+{
+  constexpr sInt16 NOT_FOUND = -1;
+  characterSub& sub_map = fterm_data->getCharSubstitutionMap();
+
+  if ( fallback.size() < 2 || ucs != fallback[0] )
+    return;
+
+  for (auto iter = fallback.begin() + 1; iter != fallback.end(); iter++)
+  {
+    sInt16 pos = getFontPos(*iter);
+
+    if ( pos != NOT_FOUND )
+    {
+      sub_map[ucs] = *iter;
+      return;
+    }
+  }
 }
 
 #endif  // defined(__linux__)
