@@ -51,7 +51,7 @@ namespace finalcut
 #pragma pack(push)
 #pragma pack(1)
 
-class FTermcapQuirks
+class FTermcapQuirks final
 {
   public:
     // Constructors

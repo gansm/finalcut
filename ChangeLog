@@ -1,3 +1,6 @@
+2019-01-04  Markus Gans  <guru.mail@muenster.de>
+	* Use the final specifier
+
 2019-01-03  Markus Gans  <guru.mail@muenster.de>
 	* Improved PC encoding for Cygwin and Linux
 	* Integration of an output filter to replace missing characters

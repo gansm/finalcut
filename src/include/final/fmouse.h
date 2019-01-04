@@ -192,7 +192,7 @@ class FMouse
 #pragma pack(push)
 #pragma pack(1)
 
-class FMouseGPM : public FMouse
+class FMouseGPM final : public FMouse
 {
   public:
     // Constructor
@@ -264,7 +264,7 @@ inline bool FMouseGPM::isGpmMouseEnabled()
 #pragma pack(push)
 #pragma pack(1)
 
-class FMouseX11 : public FMouse
+class FMouseX11 final : public FMouse
 {
   public:
     // Constructor
@@ -327,7 +327,7 @@ class FMouseX11 : public FMouse
 #pragma pack(push)
 #pragma pack(1)
 
-class FMouseSGR : public FMouse
+class FMouseSGR final : public FMouse
 {
   public:
     // Constructor
@@ -390,7 +390,7 @@ class FMouseSGR : public FMouse
 #pragma pack(push)
 #pragma pack(1)
 
-class FMouseUrxvt : public FMouse
+class FMouseUrxvt final : public FMouse
 {
   public:
     // Constructor

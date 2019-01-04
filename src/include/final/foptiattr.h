@@ -71,7 +71,7 @@ namespace finalcut
 #pragma pack(push)
 #pragma pack(1)
 
-class FOptiAttr
+class FOptiAttr final
 {
   public:
     // Typedefs
