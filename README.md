@@ -4,6 +4,8 @@
 ### Building and code analysis
 *Latest release:*<br />
 &#160;&#160;&#160;&#160;&#160;[![Latest Release](https://img.shields.io/github/release/gansm/finalcut.svg)](https://github.com/gansm/finalcut/releases) <br />
+*License:*<br />
+&#160;&#160;&#160;&#160;&#160;[![license](https://img.shields.io/github/license/gansm/finalcut.svg?colorA=#333)](COPYING) <br />
 *Travis CI:*<br />
 &#160;&#160;&#160;&#160;&#160;[![Build Status](https://travis-ci.org/gansm/finalcut.svg?branch=master)](https://travis-ci.org/gansm/finalcut) <br />
 *Coverity Scan:*<br />

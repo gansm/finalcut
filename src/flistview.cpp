@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -816,24 +816,6 @@ FObject::FObjectIterator FListView::insert ( const FStringList& cols
 
   item->replaceControlCodes();
   return insert(item, parent_iter);
-}
-
-//----------------------------------------------------------------------
-FObject::FObjectIterator FListView::insert ( const std::vector<uInt64>& cols
-                                           , FDataPtr d
-                                           , FObjectIterator parent_iter )
-{
-  FStringList str_cols;
-
-  if ( ! cols.empty() )
-  {
-    for (uInt i = 0; i < cols.size(); i++)
-      str_cols.push_back (FString().setNumber(cols[i]));
-  }
-
-  auto item_iter = insert (str_cols, d, parent_iter);
-
-  return item_iter;
 }
 
 //----------------------------------------------------------------------

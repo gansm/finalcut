@@ -1,3 +1,6 @@
+2019-01-05  Markus Gans  <guru.mail@muenster.de>
+	* Use of initializer_list for FListBox, FListView and FTextView
+
 2019-01-04  Markus Gans  <guru.mail@muenster.de>
 	* Use the final specifier
 

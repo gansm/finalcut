@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -109,7 +109,11 @@ class FTextView : public FWidget
 
     // Methods
     virtual void        hide() override;
+    template<typename T>
+    void                append (const std::initializer_list<T>&);
     void                append (const FString&);
+    template<typename T>
+    void                insert (const std::initializer_list<T>&, int);
     void                insert (const FString&, int);
     void                replaceRange (const FString&, int, int);
     void                deleteRange (int, int);
@@ -186,6 +190,25 @@ inline const FStringList& FTextView::getLines() const
 //----------------------------------------------------------------------
 inline void FTextView::scrollTo (const FPoint& pos)
 { scrollTo(pos.getX(), pos.getY()); }
+
+//----------------------------------------------------------------------
+template<typename T>
+void FTextView::append (const std::initializer_list<T>& list)
+{
+  for (auto& str : list)
+    insert(str, -1);
+}
+
+//----------------------------------------------------------------------
+template<typename T>
+void FTextView::insert (const std::initializer_list<T>& list, int pos)
+{
+  for (auto& str : list)
+  {
+    insert(str, pos);
+    pos++;
+  }
+}
 
 //----------------------------------------------------------------------
 inline void FTextView::deleteRange (int from, int to)

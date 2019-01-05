@@ -324,13 +324,27 @@ class FListView : public FWidget
     FObjectIterator      insert ( const FStringList&
                                 , FDataPtr
                                 , FObjectIterator );
-    FObjectIterator      insert ( const std::vector<uInt64>&
+    template <typename T>
+    FObjectIterator      insert ( const std::initializer_list<T>&
                                 , FDataPtr = nullptr );
-    FObjectIterator      insert ( const std::vector<uInt64>&
+    template <typename T>
+    FObjectIterator      insert ( const std::initializer_list<T>&
                                 , FObjectIterator );
-    FObjectIterator      insert ( const std::vector<uInt64>&
+    template <typename T>
+    FObjectIterator      insert ( const std::initializer_list<T>&
                                 , FDataPtr
                                 , FObjectIterator );
+    template <typename ColT>
+    FObjectIterator      insert ( const std::vector<ColT>&
+                                , FDataPtr = nullptr );
+    template <typename ColT>
+    FObjectIterator      insert ( const std::vector<ColT>&
+                                , FObjectIterator );
+    template <typename ColT>
+    FObjectIterator      insert ( const std::vector<ColT>&
+                                , FDataPtr
+                                , FObjectIterator );
+
     FObjectIterator      beginOfList();
     FObjectIterator      endOfList();
     virtual void         sort();
@@ -537,15 +551,62 @@ inline FObject::FObjectIterator
 { return insert (cols, 0, parent_iter); }
 
 //----------------------------------------------------------------------
+template<typename T>
 inline FObject::FObjectIterator
-    FListView::insert (const std::vector<uInt64>& cols, FDataPtr d)
+    FListView::insert (const std::initializer_list<T>& list, FDataPtr d)
+{ return insert (list, d, root); }
+
+//----------------------------------------------------------------------
+template<typename T>
+inline FObject::FObjectIterator
+    FListView::insert ( const std::initializer_list<T>& list
+                      , FObjectIterator parent_iter )
+{ return insert (list, 0, parent_iter); }
+
+//----------------------------------------------------------------------
+template<typename T>
+FObject::FObjectIterator
+    FListView::insert ( const std::initializer_list<T>& list
+                      , FDataPtr d
+                      , FObjectIterator parent_iter )
+{
+  FStringList str_cols;
+
+  for (auto& col : list)
+    str_cols.push_back (FString() << col);
+
+  auto item_iter = insert (str_cols, d, parent_iter);
+  return item_iter;
+}
+
+//----------------------------------------------------------------------
+template <typename ColT>
+inline FObject::FObjectIterator
+    FListView::insert (const std::vector<ColT>& cols, FDataPtr d)
 { return insert (cols, d, root); }
 
 //----------------------------------------------------------------------
+template <typename ColT>
 inline FObject::FObjectIterator
-    FListView::insert ( const std::vector<uInt64>& cols
+    FListView::insert ( const std::vector<ColT>& cols
                       , FObjectIterator parent_iter )
 { return insert (cols, 0, parent_iter); }
+
+//----------------------------------------------------------------------
+template <typename ColT>
+FObject::FObjectIterator
+    FListView::insert ( const std::vector<ColT>& cols
+                      , FDataPtr d
+                      , FObjectIterator parent_iter )
+{
+  FStringList str_cols;
+
+  for (auto& col : cols)
+    str_cols.push_back (FString() << col);
+
+  auto item_iter = insert (str_cols, d, parent_iter);
+  return item_iter;
+}
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator FListView::beginOfList()

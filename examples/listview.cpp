@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -128,7 +128,7 @@ Listview::~Listview()  // destructor
 //----------------------------------------------------------------------
 void Listview::populate()
 {
-  std::string weather[][5] =
+  const std::string weather[][5] =
   {
     { "Alexandria", "Sunny", "31°C", "61%", "1006.4 mb" },
     { "Amsterdam", "Cloudy", "21°C", "82%", "1021.3 mb" },

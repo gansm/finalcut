@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+e Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -211,6 +211,11 @@ class FListBox : public FWidget
     template <typename Container, typename LazyConverter>
     void                insert (Container, LazyConverter);
     void                insert (FListBoxItem);
+    template <typename T>
+    void                insert ( const std::initializer_list<T>& list
+                               , fc::brackets_type = fc::NoBrackets
+                               , bool = false
+                               , FDataPtr = nullptr );
     template <typename ItemT>
     void                insert ( const ItemT&
                                , fc::brackets_type = fc::NoBrackets
@@ -487,6 +492,22 @@ void FListBox::insert (Container container, LazyConverter convert)
     itemlist.resize(size);
 
   recalculateVerticalBar(size);
+}
+
+//----------------------------------------------------------------------
+template <typename T>
+void FListBox::insert ( const std::initializer_list<T>& list
+                      , fc::brackets_type b
+                      , bool s
+                      , FDataPtr d )
+{
+  for (auto& item : list)
+  {
+    FListBoxItem listItem (FString() << item, d);
+    listItem.brackets = b;
+    listItem.selected = s;
+    insert (listItem);
+  }
 }
 
 //----------------------------------------------------------------------
