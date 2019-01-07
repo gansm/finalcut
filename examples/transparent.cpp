@@ -131,10 +131,8 @@ void Transparent::onKeyPress (finalcut::FKeyEvent* ev)
 
   if ( ev->key() == 'q' && getParentWidget() )
   {
-    if ( getParentWidget()->close() )
-      ev->accept();
-    else
-      ev->ignore();
+    getParentWidget()->close();
+    ev->accept();
   }
   else
     finalcut::FDialog::onKeyPress(ev);
@@ -224,7 +222,6 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   // Statusbar at the bottom
   status_bar.setMessage("Press Q to quit");
 
-  addAccelerator('q');
   unsetTransparentShadow();
   activateDialog();
 }

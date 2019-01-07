@@ -267,16 +267,10 @@ bool FWidget::setFocus (bool enable)
   // set widget focus
   if ( enable && ! flags.focus )
   {
-    int focusable_children = numOfFocusableChildren();
-
     if ( last_focus )
       last_focus->unsetFocus();
 
-    if ( (!isDialogWidget() && focusable_children == 0)
-      || (isDialogWidget() && focusable_children == 1) )
-    {
-      FWidget::setFocusWidget(this);
-    }
+    FWidget::setFocusWidget(this);
   }
 
   auto window = FWindow::getWindowWidget(this);
@@ -292,6 +286,7 @@ bool FWidget::setFocus (bool enable)
       if ( has_raised && window->isVisible() && window->isShown() )
         window->redraw();
     }
+
     window->setWindowFocusWidget(this);
   }
 
@@ -790,7 +785,9 @@ int FWidget::numOfFocusableChildren()
     {
       auto widget = static_cast<FWidget*>(*iter);
 
-      if ( widget->acceptFocus() )
+      if ( widget->isVisible()
+        && widget->acceptFocus()
+        && ! widget->isWindowWidget() )
         num++;
     }
 

@@ -1192,7 +1192,7 @@ bool FApplication::processNextEvent()
 void FApplication::performTimerAction ( const FObject* receiver
                                       , const FEvent* event )
 {
-  sendEvent(receiver, event);
+  sendEvent (receiver, event);
 }
 
 }  // namespace finalcut
