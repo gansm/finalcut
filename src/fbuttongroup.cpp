@@ -651,7 +651,7 @@ void FButtonGroup::cb_buttonToggled (FWidget* widget, FDataPtr)
     {
       toggle_button->unsetChecked();
 
-      if ( toggle_button->isVisible() && toggle_button->isShown() )
+      if ( toggle_button->isShown() )
         toggle_button->redraw();
     }
 

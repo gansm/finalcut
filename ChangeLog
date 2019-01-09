@@ -1,3 +1,7 @@
+2019-01-09  Markus Gans  <guru.mail@muenster.de>
+	* Improvement in widget focusing
+	* Better widget visibility handling with the methods hide() and show()
+
 2019-01-05  Markus Gans  <guru.mail@muenster.de>
 	* Use of initializer_list for FListBox, FListView and FTextView
 

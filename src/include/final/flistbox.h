@@ -255,6 +255,10 @@ class FListBox : public FWidget
     // Accessors
     static FString&     getString (listBoxItems::iterator);
 
+    // Inquiry
+    bool                isHorizontallyScrollable();
+    bool                isVerticallyScrollable();
+
     // Methods
     void                init();
     virtual void        draw() override;
@@ -522,6 +526,14 @@ void FListBox::insert ( const ItemT& item
   listItem.selected = s;
   insert (listItem);
 }
+
+//----------------------------------------------------------------------
+inline bool FListBox::isHorizontallyScrollable()
+{ return bool( max_line_width >= getClientWidth() - 1 ); }
+
+//----------------------------------------------------------------------
+inline bool FListBox::isVerticallyScrollable()
+{ return bool( getCount() > getClientHeight() ); }
 
 //----------------------------------------------------------------------
 inline FListBox::listBoxItems::iterator \

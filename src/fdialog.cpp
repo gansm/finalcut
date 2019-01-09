@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -350,7 +350,7 @@ void FDialog::setSize (std::size_t w, std::size_t h, bool adjust)
   // set the cursor to the focus widget
   auto focus = FWidget::getFocusWidget();
   if ( focus
-    && focus->isVisible()
+    && focus->isShown()
     && focus->hasVisibleCursor() )
   {
     FPoint cursor_pos = focus->getCursorPos();
@@ -511,7 +511,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
   {
     // Click on titlebar menu button
     if ( ms.mouse_x < 4 && ms.mouse_y == 1
-      && dialog_menu->isVisible() )
+      && dialog_menu->isShown() )
       leaveMenu();  // close menu
 
     cancelMouseResize();  // Cancel resize
@@ -561,7 +561,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
     // Click on titlebar menu button
     if ( ms.mouse_x < 4
       && ms.mouse_y == 1
-      && dialog_menu->isVisible()
+      && dialog_menu->isShown()
       && ! dialog_menu->hasSelectedItem() )
     {
       // Sets focus to the first item
@@ -679,7 +679,7 @@ void FDialog::onAccel (FAccelEvent*)
 //----------------------------------------------------------------------
 void FDialog::onWindowActive (FEvent*)
 {
-  if ( isVisible() && isShown() )
+  if ( isShown() )
     drawTitleBar();
 
   if ( ! FWidget::getFocusWidget() )
@@ -687,7 +687,6 @@ void FDialog::onWindowActive (FEvent*)
     auto win_focus = getWindowFocusWidget();
 
     if ( win_focus
-      && win_focus->isVisible()
       && win_focus->isShown() )
     {
       win_focus->setFocus();
@@ -706,10 +705,10 @@ void FDialog::onWindowActive (FEvent*)
 //----------------------------------------------------------------------
 void FDialog::onWindowInactive (FEvent*)
 {
-  if ( dialog_menu && ! dialog_menu->isVisible() )
+  if ( dialog_menu && ! dialog_menu->isShown() )
     FWindow::setPreviousWindow(this);
 
-  if ( isVisible() && isEnabled() )
+  if ( isShown() && isEnabled() )
     drawTitleBar();
 
   if ( hasFocus() )
@@ -719,7 +718,7 @@ void FDialog::onWindowInactive (FEvent*)
 //----------------------------------------------------------------------
 void FDialog::onWindowRaised (FEvent*)
 {
-  if ( ! (isVisible() && isShown()) )
+  if ( ! (isShown() && isShown()) )
     return;
 
   putArea (getTermPos(), vwin);
@@ -1016,7 +1015,7 @@ void FDialog::drawBarButton()
   // Print the title button
   setPrintPos (1, 1);
 
-  if ( dialog_menu && dialog_menu->isVisible() )
+  if ( dialog_menu && dialog_menu->isShown() )
     setColor (wc.titlebar_button_focus_fg, wc.titlebar_button_focus_bg);
   else
     setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
@@ -1138,7 +1137,7 @@ void FDialog::drawTextBar()
   if ( getMaxColor() < 16 )
     setBold();
 
-  if ( isWindowActive() || (dialog_menu && dialog_menu->isVisible()) )
+  if ( isWindowActive() || (dialog_menu && dialog_menu->isShown()) )
     setColor (wc.titlebar_active_fg, wc.titlebar_active_bg);
   else
     setColor (wc.titlebar_inactive_fg, wc.titlebar_inactive_bg);
@@ -1202,7 +1201,7 @@ void FDialog::setCursorToFocusWidget()
   auto focus = FWidget::getFocusWidget();
 
   if ( focus
-    && focus->isVisible()
+    && focus->isShown()
     && focus->hasVisibleCursor() )
   {
     FPoint cursor_pos = focus->getCursorPos();
@@ -1238,7 +1237,7 @@ void FDialog::openMenu()
   if ( ! dialog_menu )
     return;
 
-  if ( dialog_menu->isVisible() )
+  if ( dialog_menu->isShown() )
   {
     leaveMenu();
     drawTitleBar();
@@ -1248,10 +1247,10 @@ void FDialog::openMenu()
     setOpenMenu(dialog_menu);
     dialog_menu->setPos (getX(), getY() + 1);
     dialog_menu->setVisible();
-    drawTitleBar();
     dialog_menu->show();
     dialog_menu->raiseWindow();
     dialog_menu->redraw();
+    drawTitleBar();
   }
 }
 
@@ -1372,7 +1371,6 @@ inline void FDialog::passEventToSubMenu ( const mouseStates& ms
 {
   // Mouse event handover to the dialog menu
   if ( ! ms.mouse_over_menu
-    || ! dialog_menu->isVisible()
     || ! dialog_menu->isShown() )
     return;
 

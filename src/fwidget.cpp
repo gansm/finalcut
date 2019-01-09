@@ -248,6 +248,12 @@ void FWidget::setMainWidget (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
+bool FWidget::setVisible (bool enable)
+{
+  return (flags.visible = enable);
+}
+
+//----------------------------------------------------------------------
 bool FWidget::setEnable (bool enable)
 {
   return (flags.active = enable);
@@ -754,7 +760,7 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
       auto widget = static_cast<FWidget*>(*iter);
 
       if ( widget->isEnabled()
-        && widget->isVisible()
+        && widget->isShown()
         && ! widget->isWindowWidget()
         && widget->getTermGeometry().contains(x, y) )
       {
@@ -785,7 +791,7 @@ int FWidget::numOfFocusableChildren()
     {
       auto widget = static_cast<FWidget*>(*iter);
 
-      if ( widget->isVisible()
+      if ( widget->isShown()
         && widget->acceptFocus()
         && ! widget->isWindowWidget() )
         num++;
@@ -981,7 +987,7 @@ void FWidget::redraw()
     setColor (wc.term_fg, wc.term_bg);
     clearArea (vdesktop);
   }
-  else if ( ! isVisible() )
+  else if ( ! isShown() )
     return;
 
   draw();
@@ -1050,6 +1056,7 @@ void FWidget::show()
   }
 
   draw();
+  flags.hidden = false;
   flags.shown = true;
 
   if ( hasChildren() )
@@ -1062,7 +1069,9 @@ void FWidget::show()
       if ( (*iter)->isWidget() )
       {
         auto widget = static_cast<FWidget*>(*iter);
-        widget->show();
+
+        if ( ! widget->flags.hidden )
+          widget->show();
       }
 
       ++iter;
@@ -1084,9 +1093,10 @@ void FWidget::show()
 //----------------------------------------------------------------------
 void FWidget::hide()
 {
+  flags.hidden = true;
+
   if ( isVisible() )
   {
-    flags.visible = false;
     flags.shown = false;
 
     if ( ! isDialogWidget()
@@ -1652,7 +1662,7 @@ bool FWidget::focusNextChild()
     } while ( ! next
            || ! next->isEnabled()
            || ! next->acceptFocus()
-           || ! next->isVisible()
+           || ! next->isShown()
            || next->isWindowWidget() );
 
     bool accpt = changeFocus (next, parent, fc::FocusNextWidget);
@@ -1713,7 +1723,7 @@ bool FWidget::focusPrevChild()
     } while ( ! prev
            || ! prev->isEnabled()
            || ! prev->acceptFocus()
-           || ! prev->isVisible()
+           || ! prev->isShown()
            || prev->isWindowWidget() );
 
     bool accpt = changeFocus (prev, parent, fc::FocusPreviousWidget);
@@ -2137,7 +2147,7 @@ void FWidget::drawWindows()
 
   while ( iter != last )
   {
-    if ( (*iter)->isVisible() )
+    if ( (*iter)->isShown() )
     {
       auto win = (*iter)->getVWin();
       int w = win->width  + win->right_shadow;
@@ -2167,7 +2177,7 @@ void FWidget::drawChildren()
     {
       auto widget = static_cast<FWidget*>(*iter);
 
-      if ( widget->isVisible() && ! widget->isWindowWidget() )
+      if ( widget->isShown() && ! widget->isWindowWidget() )
         widget->redraw();
     }
 

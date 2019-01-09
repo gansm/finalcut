@@ -140,7 +140,7 @@ void FTextView::scrollTo (int x, int y)
   bool changeX = bool(x != xoffset);
   bool changeY = bool(y != yoffset);
 
-  if ( ! isVisible() || ! (changeX || changeY) )
+  if ( ! isShown() || ! (changeX || changeY) )
     return;
 
   if ( changeX && isHorizontallyScrollable() )
@@ -157,7 +157,7 @@ void FTextView::scrollTo (int x, int y)
     if ( update_scrollbar )
     {
       hbar->setValue (xoffset);
-      drawHBar();
+      hbar->drawBar();;
     }
   }
 
@@ -175,7 +175,7 @@ void FTextView::scrollTo (int x, int y)
     if ( update_scrollbar )
     {
       vbar->setValue (yoffset);
-      drawVBar();
+      vbar->drawBar();
     }
   }
 
@@ -264,8 +264,8 @@ void FTextView::insert (const FString& str, int pos)
         hbar->setPageSize (int(maxLineWidth), int(getTextWidth()));
         hbar->calculateSliderValues();
 
-        if ( ! hbar->isVisible() )
-          hbar->setVisible();
+        if ( ! hbar->isShown() )
+          hbar->show();
       }
     }
   }
@@ -278,10 +278,10 @@ void FTextView::insert (const FString& str, int pos)
   vbar->setPageSize (int(getRows()), int(getTextHeight()));
   vbar->calculateSliderValues();
 
-  if ( ! vbar->isVisible() && getRows() > getTextHeight() )
-    vbar->setVisible();
+  if ( ! vbar->isShown() && getRows() > getTextHeight() )
+    vbar->show();
 
-  if ( vbar->isVisible() && getRows() <= getTextHeight() )
+  if ( vbar->isShown() && getRows() <= getTextHeight() )
     vbar->hide();
 
   processChanged();
@@ -462,11 +462,8 @@ void FTextView::onMouseUp (FMouseEvent* ev)
     }
   }
 
-  if ( vbar->isVisible() )
-    vbar->redraw();
-
-  if ( hbar->isVisible() )
-    hbar->redraw();
+  vbar->redraw();
+  hbar->redraw();
 }
 
 //----------------------------------------------------------------------
@@ -518,7 +515,7 @@ void FTextView::onWheel (FWheelEvent* ev)
       break;
   }
 
-  if ( isVisible() )
+  if ( isShown() )
     drawText();
 
   updateTerminal();
@@ -593,12 +590,12 @@ void FTextView::adjustSize()
   if ( last_line < int(height) + nf_offset - 1 )
     vbar->hide();
   else
-    vbar->setVisible();
+    vbar->show();
 
   if ( max_width < int(width) - nf_offset - 1 )
     hbar->hide();
   else
-    hbar->setVisible();
+    hbar->show();
 }
 
 
@@ -618,26 +615,24 @@ std::size_t FTextView::getTextWidth()
 //----------------------------------------------------------------------
 void FTextView::init()
 {
-  setForegroundColor (wc.dialog_fg);
-  setBackgroundColor (wc.dialog_bg);
-
   try
   {
     vbar = std::make_shared<FScrollbar>(fc::vertical, this);
-    vbar->setMinimum(0);
-    vbar->setValue(0);
-    vbar->hide();
-
     hbar = std::make_shared<FScrollbar>(fc::horizontal, this);
-    hbar->setMinimum(0);
-    hbar->setValue(0);
-    hbar->hide();
   }
   catch (const std::bad_alloc& ex)
   {
     std::cerr << bad_alloc_str << ex.what() << std::endl;
     return;
   }
+
+  vbar->setMinimum(0);
+  vbar->setValue(0);
+  vbar->hide();
+
+  hbar->setMinimum(0);
+  hbar->setValue(0);
+  hbar->hide();
 
   vbar->addCallback
   (
@@ -651,6 +646,8 @@ void FTextView::init()
     F_METHOD_CALLBACK (this, &FTextView::cb_HBarChange)
   );
 
+  setForegroundColor (wc.dialog_fg);
+  setBackgroundColor (wc.dialog_bg);
   nf_offset = isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);
@@ -687,10 +684,10 @@ void FTextView::draw()
   if ( isMonochron() )
     setReverse(false);
 
-  if ( vbar->isVisible() )
+  if ( vbar->isShown() )
     vbar->redraw();
 
-  if ( hbar->isVisible() )
+  if ( hbar->isShown() )
     hbar->redraw();
 
   drawText();
@@ -766,20 +763,6 @@ void FTextView::drawText()
 void FTextView::processChanged()
 {
   emitCallback("changed");
-}
-
-//----------------------------------------------------------------------
-inline void FTextView::drawHBar()
-{
-  if ( hbar->isVisible() )
-    hbar->drawBar();
-}
-
-//----------------------------------------------------------------------
-inline void FTextView::drawVBar()
-{
-  if ( vbar->isVisible() )
-    vbar->drawBar();
 }
 
 //----------------------------------------------------------------------

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -56,7 +56,7 @@ void FProgressbar::setPercentage (std::size_t percentage_value)
   else
     percentage = percentage_value;
 
-  if ( isVisible() )
+  if ( isShown() )
   {
     drawPercentage();
     drawBar();
@@ -139,7 +139,7 @@ void FProgressbar::reset()
 {
   percentage = NOT_SET;
 
-  if ( isVisible() )
+  if ( isShown() )
   {
     drawPercentage();
     drawBar();

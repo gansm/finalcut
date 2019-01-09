@@ -150,8 +150,6 @@ class FTextView : public FWidget
     virtual void        draw() override;
     void                drawText();
     void                processChanged();
-    void                drawHBar();
-    void                drawVBar();
 
     // Callback methods
     void                cb_VBarChange (FWidget*, FDataPtr);

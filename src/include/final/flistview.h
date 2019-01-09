@@ -378,6 +378,10 @@ class FListView : public FWidget
     // Constants
     static constexpr int USE_MAX_SIZE = -1;
 
+    // Inquiry
+    bool                 isHorizontallyScrollable();
+    bool                 isVerticallyScrollable();
+
     // Methods
     void                 init();
     template <typename Compare>
@@ -615,6 +619,14 @@ inline FObject::FObjectIterator FListView::beginOfList()
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator FListView::endOfList()
 { return itemlist.end(); }
+
+//----------------------------------------------------------------------
+inline bool FListView::isHorizontallyScrollable()
+{ return bool( max_line_width > getClientWidth() ); }
+
+//----------------------------------------------------------------------
+inline bool FListView::isVerticallyScrollable()
+{ return bool( getCount() > getClientHeight() ); }
 
 //----------------------------------------------------------------------
 inline void FListView::scrollTo (const FPoint& pos)

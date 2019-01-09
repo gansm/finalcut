@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -118,9 +118,7 @@ void FListBox::setCurrentItem (std::size_t index)
   yoffset = 0;
   adjustSize();
   vbar->setValue(yoffset);
-
-  if ( isVisible() )
-    redraw();
+  redraw();
 }
 
 //----------------------------------------------------------------------
@@ -155,8 +153,8 @@ void FListBox::showInsideBrackets ( std::size_t index
       hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset - 4));
       hbar->setValue (xoffset);
 
-      if ( ! hbar->isVisible() )
-        hbar->setVisible();
+      if ( ! hbar->isShown() )
+        hbar->show();
     }
   }
 }
@@ -289,7 +287,7 @@ void FListBox::remove (std::size_t item)
   hbar->setMaximum (hmax);
   hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset - 4));
 
-  if ( hbar->isVisible() && max_line_width < getWidth() - nf_offset - 3 )
+  if ( hbar->isShown() && isHorizontallyScrollable() )
     hbar->hide();
 
   int vmax = ( element_count > getHeight() - 2 )
@@ -298,7 +296,7 @@ void FListBox::remove (std::size_t item)
   vbar->setMaximum (vmax);
   vbar->setPageSize (int(element_count), int(getHeight()) - 2);
 
-  if ( vbar->isVisible() && element_count < getHeight() - 1 )
+  if ( vbar->isShown() && isVerticallyScrollable() )
     vbar->hide();
 
   if ( current >= item && current > 1 )
@@ -490,12 +488,12 @@ void FListBox::onMouseDown (FMouseEvent* ev)
     if ( ev->getButton() == fc::RightButton )
       multiSelection(current);
 
-    if ( isVisible() )
+    if ( isShown() )
       drawList();
 
     vbar->setValue (yoffset);
 
-    if ( vbar->isVisible() && yoffset_before != yoffset )
+    if ( yoffset_before != yoffset )
       vbar->drawBar();
 
     updateTerminal();
@@ -558,12 +556,12 @@ void FListBox::onMouseMove (FMouseEvent* ev)
       multiSelectionUpTo(current);
     }
 
-    if ( isVisible() )
+    if ( isShown() )
       drawList();
 
     vbar->setValue (yoffset);
 
-    if ( vbar->isVisible() && yoffset_before != yoffset )
+    if ( yoffset_before != yoffset )
       vbar->drawBar();
 
     updateTerminal();
@@ -637,12 +635,12 @@ void FListBox::onTimer (FTimerEvent*)
       multiSelectionUpTo(current);
   }
 
-  if ( isVisible() )
+  if ( isShown() )
     drawList();
 
   vbar->setValue (yoffset);
 
-  if ( vbar->isVisible() && yoffset_before != yoffset )
+  if ( yoffset_before != yoffset )
     vbar->drawBar();
 
   updateTerminal();
@@ -685,12 +683,12 @@ void FListBox::onWheel (FWheelEvent* ev)
       processSelect();
   }
 
-  if ( isVisible() )
+  if ( isShown() )
     drawList();
 
   vbar->setValue (yoffset);
 
-  if ( vbar->isVisible() && yoffset_before != yoffset )
+  if ( yoffset_before != yoffset )
     vbar->drawBar();
 
   updateTerminal();
@@ -770,15 +768,15 @@ void FListBox::adjustSize()
   hbar->setWidth (width + nf_offset, false);
   hbar->resize();
 
-  if ( element_count <= height )
-    vbar->hide();
+  if ( isHorizontallyScrollable() )
+    hbar->show();
   else
-    vbar->setVisible();
-
-  if ( max_line_width < width - 1 )
     hbar->hide();
+
+  if ( isVerticallyScrollable() )
+    vbar->show();
   else
-    hbar->setVisible();
+    vbar->hide();
 }
 
 
@@ -792,20 +790,10 @@ inline FString& FListBox::getString (listBoxItems::iterator iter)
 //----------------------------------------------------------------------
 void FListBox::init()
 {
-  setForegroundColor (wc.dialog_fg);
-  setBackgroundColor (wc.dialog_bg);
-
   try
   {
     vbar = std::make_shared<FScrollbar>(fc::vertical, this);
-    vbar->setMinimum(0);
-    vbar->setValue(0);
-    vbar->hide();
-
     hbar = std::make_shared<FScrollbar>(fc::horizontal, this);
-    hbar->setMinimum(0);
-    hbar->setValue(0);
-    hbar->hide();
   }
   catch (const std::bad_alloc& ex)
   {
@@ -813,7 +801,13 @@ void FListBox::init()
     return;
   }
 
-  setGeometry (1, 1, 5, 4, false);  // initialize geometry values
+  vbar->setMinimum(0);
+  vbar->setValue(0);
+  vbar->hide();
+
+  hbar->setMinimum(0);
+  hbar->setValue(0);
+  hbar->hide();
 
   vbar->addCallback
   (
@@ -827,6 +821,9 @@ void FListBox::init()
     F_METHOD_CALLBACK (this, &FListBox::cb_HBarChange)
   );
 
+  setGeometry (1, 1, 5, 4, false);  // initialize geometry values
+  setForegroundColor (wc.dialog_fg);
+  setBackgroundColor (wc.dialog_bg);
   nf_offset = isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);
@@ -850,7 +847,7 @@ void FListBox::draw()
   else
     drawBorder();
 
-  if ( isNewFont() && ! vbar->isVisible() )
+  if ( isNewFont() && ! vbar->isShown() )
   {
     setColor();
 
@@ -866,12 +863,8 @@ void FListBox::draw()
   if ( isMonochron() )
     setReverse(false);
 
-  if ( vbar->isVisible() )
-    vbar->redraw();
-
-  if ( hbar->isVisible() )
-    hbar->redraw();
-
+  vbar->redraw();
+  hbar->redraw();
   drawList();
 
   if ( flags.focus && getStatusBar() )
@@ -1185,17 +1178,17 @@ inline void FListBox::unsetAttributes()
 //----------------------------------------------------------------------
 inline void FListBox::updateDrawing (bool draw_vbar, bool draw_hbar)
 {
-  if ( isVisible() )
+  if ( isShown() )
     drawList();
 
   vbar->setValue (yoffset);
 
-  if ( vbar->isVisible() && draw_vbar )
+  if ( draw_vbar )
     vbar->drawBar();
 
   hbar->setValue (xoffset);
 
-  if ( hbar->isVisible() && draw_hbar )
+  if ( draw_hbar )
     hbar->drawBar();
 
   updateTerminal();
@@ -1222,8 +1215,10 @@ void FListBox::recalculateHorizontalBar (std::size_t len, bool has_brackets)
     hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset - 4));
     hbar->calculateSliderValues();
 
-    if ( ! hbar->isVisible() )
-      hbar->setVisible();
+    if ( isHorizontallyScrollable() )
+      hbar->show();
+    else
+      hbar->hide();
   }
 }
 
@@ -1237,8 +1232,10 @@ void FListBox::recalculateVerticalBar (std::size_t element_count)
   vbar->setPageSize (int(element_count), int(getHeight()) - 2);
   vbar->calculateSliderValues();
 
-  if ( ! vbar->isVisible() && element_count >= getHeight() - 1 )
-    vbar->setVisible();
+  if ( isVerticallyScrollable() )
+    vbar->show();
+  else
+    vbar->hide();
 }
 
 //----------------------------------------------------------------------
@@ -1823,7 +1820,7 @@ void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
   std::size_t len = iter->text.getLength();
   recalculateHorizontalBar (len, hasBrackets(iter));
 
-  if ( hbar->isVisible() )
+  if ( hbar->isShown() )
     hbar->redraw();
 }
 
@@ -1878,7 +1875,7 @@ void FListBox::cb_VBarChange (FWidget*, FDataPtr)
       processSelect();
   }
 
-  if ( isVisible() )
+  if ( isShown() )
     drawList();
 
   if ( scrollType >= FScrollbar::scrollStepBackward
@@ -1886,7 +1883,7 @@ void FListBox::cb_VBarChange (FWidget*, FDataPtr)
   {
     vbar->setValue (yoffset);
 
-    if ( vbar->isVisible() && yoffset_before != yoffset )
+    if ( yoffset_before != yoffset )
       vbar->drawBar();
 
     updateTerminal();
@@ -1939,7 +1936,7 @@ void FListBox::cb_HBarChange (FWidget*, FDataPtr)
   if ( xoffset_before != xoffset )
     inc_search.clear();
 
-  if ( isVisible() )
+  if ( isShown() )
   {
     drawList();
     updateTerminal();
@@ -1951,7 +1948,7 @@ void FListBox::cb_HBarChange (FWidget*, FDataPtr)
   {
     hbar->setValue (xoffset);
 
-    if ( hbar->isVisible() && xoffset_before != xoffset )
+    if ( xoffset_before != xoffset )
       hbar->drawBar();
 
     updateTerminal();

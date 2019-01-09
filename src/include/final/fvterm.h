@@ -321,6 +321,7 @@ class FVTerm
     FTerm::initializationValues& getInitValues();
 
     // Mutators
+    void                  setPrintArea (term_area*);
     static void           setInsertCursor (bool);
     static void           setInsertCursor();
     static void           unsetInsertCursor();
@@ -450,9 +451,6 @@ class FVTerm
     // Constants
     static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
     // Buffer size for character output on the terminal
-
-    // Mutators
-    void                  setPrintArea (term_area*);
 
     // Methods
     void                  init (bool);
@@ -1064,6 +1062,10 @@ inline void FVTerm::printMoveDurations()
 { return FTerm::printMoveDurations(); }
 
 //----------------------------------------------------------------------
+inline void FVTerm::setPrintArea (term_area* area)
+{ print_area = area; }
+
+//----------------------------------------------------------------------
 inline std::size_t FVTerm::getLineNumber()
 { return FTerm::getLineNumber(); }
 
@@ -1142,10 +1144,6 @@ inline void FVTerm::changeTermSizeFinished()
 //----------------------------------------------------------------------
 inline void FVTerm::exitWithMessage (const FString& message)
 { FTerm::exitWithMessage(message); }
-
-//----------------------------------------------------------------------
-inline void FVTerm::setPrintArea (term_area* area)
-{ print_area = area; }
 
 }  // namespace finalcut
 

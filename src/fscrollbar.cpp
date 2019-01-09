@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -188,7 +188,8 @@ void FScrollbar::resize()
 //----------------------------------------------------------------------
 void FScrollbar::redraw()
 {
-  draw();
+  if ( isShown() )
+    draw();
 }
 
 //----------------------------------------------------------------------
@@ -348,6 +349,9 @@ void FScrollbar::drawHorizontalBar()
 //----------------------------------------------------------------------
 void FScrollbar::drawBar()
 {
+  if ( ! isShown() )
+    return;
+
   if ( slider_pos == current_slider_pos || length < 3 )
     return;
 

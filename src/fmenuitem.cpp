@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -258,7 +258,7 @@ void FMenuItem::openMenu()
 
   auto dd_menu = getMenu();  // Drop-down menu
 
-  if ( dd_menu->isVisible() )
+  if ( dd_menu->isShown() )
     return;
 
   auto openmenu = static_cast<FMenu*>(getOpenMenu());
@@ -273,7 +273,7 @@ void FMenuItem::openMenu()
     createDialogList (dd_menu);
 
   setOpenMenu(dd_menu);
-  dd_menu->setVisible();
+  //dd_menu->setVisible();
   dd_menu->show();
   dd_menu->raiseWindow();
   dd_menu->redraw();

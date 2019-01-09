@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -301,7 +301,7 @@ bool FMenuBar::selectNextItem()
         next = static_cast<FMenuItem*>(*next_element);
       } while ( ! next->isEnabled()
              || ! next->acceptFocus()
-             || ! next->isVisible()
+             || ! next->isShown()
              || next->isSeparator() );
 
       if ( next == *iter )
@@ -365,7 +365,7 @@ bool FMenuBar::selectPrevItem()
       }
       while ( ! prev->isEnabled()
            || ! prev->acceptFocus()
-           || ! prev->isVisible()
+           || ! prev->isShown()
            || prev->isSeparator() );
 
       if ( prev == *iter )
@@ -737,6 +737,7 @@ void FMenuBar::selectMenuItem (FMenuItem* item)
     return;
 
   auto focused_widget = getFocusWidget();
+  unselectItem();
   item->setSelected();
   item->setFocus();
 

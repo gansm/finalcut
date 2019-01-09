@@ -437,6 +437,7 @@ void FMenu::init(FWidget* parent)
   setTransparentShadow();
   setMenuWidget();
   hide();
+  //unsetVisible();
 
   setForegroundColor (wc.menu_active_fg);
   setBackgroundColor (wc.menu_active_bg);
@@ -574,7 +575,7 @@ void FMenu::openSubMenu (FMenu* sub_menu, bool select)
   if ( ! sub_menu )
     return;
 
-  if ( sub_menu->isVisible() )
+  if ( sub_menu->isShown() )
     return;
 
   if ( select )
@@ -585,7 +586,7 @@ void FMenu::openSubMenu (FMenu* sub_menu, bool select)
       sub_menu->getSelectedItem()->setFocus();
   }
 
-  sub_menu->setVisible();
+  //sub_menu->setVisible();
   sub_menu->show();
   opened_sub_menu = sub_menu;
   raiseWindow (sub_menu);
@@ -737,7 +738,7 @@ void FMenu::mouseDownSelection (FMenuItem* m_item, bool& focus_changed)
   if ( m_item->hasMenu() )
   {
     auto sub_menu = m_item->getMenu();
-    if ( ! sub_menu->isVisible() )
+    if ( ! sub_menu->isShown() )
       shown_sub_menu = sub_menu;
   }
 }
@@ -766,7 +767,7 @@ bool FMenu::mouseUpOverList (FPoint mouse_pos)
       if ( (*iter)->hasMenu() )
       {
         auto sub_menu = (*iter)->getMenu();
-        if ( ! sub_menu->isVisible() )
+        if ( ! sub_menu->isShown() )
           openSubMenu (sub_menu, SELECT_ITEM);
         else if ( opened_sub_menu )
         {
@@ -851,7 +852,7 @@ void FMenu::mouseMoveSelection (FMenuItem* m_item, mouseStates& ms)
   {
     auto sub_menu = m_item->getMenu();
 
-    if ( ! sub_menu->isVisible() )
+    if ( ! sub_menu->isShown() )
       shown_sub_menu = sub_menu;
   }
   else if ( opened_sub_menu )
@@ -1045,7 +1046,7 @@ bool FMenu::selectNextItem()
       }
       while ( ! next->isEnabled()
            || ! next->acceptFocus()
-           || ! next->isVisible()
+           || ! next->isShown()
            || next->isSeparator() );
 
       if ( next == *iter )
@@ -1095,7 +1096,7 @@ bool FMenu::selectPrevItem()
       }
       while ( ! prev->isEnabled()
            || ! prev->acceptFocus()
-           || ! prev->isVisible()
+           || ! prev->isShown()
            || prev->isSeparator() );
 
       if ( prev == *iter )
@@ -1575,7 +1576,7 @@ inline void FMenu::keyRight (FKeyEvent* ev)
   {
     auto sub_menu = getSelectedItem()->getMenu();
 
-    if ( ! sub_menu->isVisible() )
+    if ( ! sub_menu->isShown() )
       openSubMenu (sub_menu, SELECT_ITEM);
     else
       keypressMenuBar(ev);  // select next menu

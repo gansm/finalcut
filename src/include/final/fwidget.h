@@ -149,6 +149,7 @@ class FWidget : public FVTerm, public FObject
       uInt32 active         : 1;
       uInt32 visible        : 1;
       uInt32 shown          : 1;
+      uInt32 hidden         : 1;
       uInt32 focus          : 1;
       uInt32 focusable      : 1;
       uInt32 scrollable     : 1;
@@ -161,7 +162,7 @@ class FWidget : public FVTerm, public FObject
       uInt32 always_on_top  : 1;
       uInt32 flat           : 1;
       uInt32 no_underline   : 1;
-      uInt32                : 15;  // padding bits
+      uInt32                : 14;  // padding bits
     };
 
     // Constructor
@@ -229,7 +230,9 @@ class FWidget : public FVTerm, public FObject
     static void         setActiveWindow (FWidget*);
     static void         setOpenMenu (FWidget*);
     virtual void        setStatusbarMessage (const FString&);
+    bool                setVisible (bool);
     bool                setVisible();
+    bool                unsetVisible();
     virtual bool        setEnable (bool);
     virtual bool        setEnable();
     virtual bool        unsetEnable();
@@ -721,7 +724,11 @@ inline void FWidget::setStatusbarMessage (const FString& msg)
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisible()
-{ return (flags.visible = true); }
+{ return setVisible(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetVisible()
+{ return setVisible(false); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setEnable()
