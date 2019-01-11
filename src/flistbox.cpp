@@ -214,38 +214,8 @@ void FListBox::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FListBox::hide()
 {
-  std::size_t n, size;
-  FColor fg, bg;
-  auto parent_widget = getParentWidget();
   FWidget::hide();
-
-  if ( parent_widget )
-  {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
-  }
-  else
-  {
-    fg = wc.dialog_fg;
-    bg = wc.dialog_bg;
-  }
-
-  setColor (fg, bg);
-  n = isNewFont() ? 1 : 0;
-  size = getWidth() + n;
-
-  if ( size == 0 )
-    return;
-
-  auto blank = createBlankArray(size + 1);
-
-  for (int y = 0; y < int(getHeight()); y++)
-  {
-    setPrintPos (1, 1 + y);
-    print (blank);
-  }
-
-  destroyBlankArray (blank);
+  hideSize (getWidth(), getHeight());
 }
 
 //----------------------------------------------------------------------

@@ -157,7 +157,7 @@ void FTextView::scrollTo (int x, int y)
     if ( update_scrollbar )
     {
       hbar->setValue (xoffset);
-      hbar->drawBar();;
+      hbar->drawBar();
     }
   }
 
@@ -186,38 +186,8 @@ void FTextView::scrollTo (int x, int y)
 //----------------------------------------------------------------------
 void FTextView::hide()
 {
-  FColor fg, bg;
-  auto parent_widget = getParentWidget();
   FWidget::hide();
-
-  if ( parent_widget )
-  {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
-  }
-  else
-  {
-    fg = wc.dialog_fg;
-    bg = wc.dialog_bg;
-  }
-
-  setColor (fg, bg);
-  std::size_t n = isNewFont() ? 1 : 0;
-  auto size = getWidth() + n;
-
-  if ( size == 0 )
-    return;
-
-  auto blank = createBlankArray(size + 1);
-
-  for (std::size_t y = 0; y < getHeight(); y++)
-  {
-    setPrintPos (1, 1 + int(y));
-    print (blank);
-  }
-
-  destroyBlankArray (blank);
-  flush_out();
+  hideSize (getWidth(), getHeight());
 }
 
 //----------------------------------------------------------------------

@@ -753,6 +753,13 @@ int FListView::addColumn (const FString& label, int width)
 }
 
 //----------------------------------------------------------------------
+void FListView::hide()
+{
+  FWidget::hide();
+  hideSize (getWidth(), getHeight());
+}
+
+//----------------------------------------------------------------------
 FObject::FObjectIterator FListView::insert ( FListViewItem* item
                                            , FObjectIterator parent_iter )
 {

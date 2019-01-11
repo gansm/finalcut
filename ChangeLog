@@ -1,3 +1,6 @@
+2019-01-11  Markus Gans  <guru.mail@muenster.de>
+	* Generalize hide() method
+
 2019-01-09  Markus Gans  <guru.mail@muenster.de>
 	* Improvement in widget focusing
 	* Better widget visibility handling with the methods hide() and show()

@@ -1614,6 +1614,42 @@ void FWidget::adjustSizeGlobal()
 }
 
 //----------------------------------------------------------------------
+void FWidget::hideSize (std::size_t width, std::size_t height)
+{
+  if ( width == 0 || height == 0 )
+    return;
+
+  FColor fg, bg;
+  auto parent_widget = getParentWidget();
+
+  if ( parent_widget )
+  {
+    fg = parent_widget->getForegroundColor();
+    bg = parent_widget->getBackgroundColor();
+  }
+  else
+  {
+    fg = wc.dialog_fg;
+    bg = wc.dialog_bg;
+  }
+
+  setColor (fg, bg);
+  auto blank = createBlankArray(width);
+
+  if ( blank == 0 )
+    return;
+
+  for (int y = 0; y < int(height); y++)
+  {
+    setPrintPos (1, 1 + y);
+    print (blank);
+  }
+
+  destroyBlankArray (blank);
+  flush_out();
+}
+
+//----------------------------------------------------------------------
 bool FWidget::focusNextChild()
 {
   if ( isDialogWidget() || ! hasParent() )

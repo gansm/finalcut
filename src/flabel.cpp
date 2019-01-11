@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -233,33 +233,8 @@ void FLabel::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FLabel::hide()
 {
-  FColor fg, bg;
-  std::size_t size;
-  auto parent_widget = getParentWidget();
-
   FWidget::hide();
-
-  if ( parent_widget )
-  {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
-  }
-  else
-  {
-    fg = wc.dialog_fg;
-    bg = wc.dialog_bg;
-  }
-
-  setColor (fg, bg);
-  size = getWidth();
-
-  if ( size == 0 )
-    return;
-
-  auto blank = createBlankArray(size + 1);
-  setPrintPos (1, 1);
-  print (blank);
-  destroyBlankArray (blank);
+  hideSize (getWidth(), getHeight());
 }
 
 //----------------------------------------------------------------------

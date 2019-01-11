@@ -315,6 +315,7 @@ class FListView : public FWidget
 
     // Methods
     virtual int          addColumn (const FString&, int = USE_MAX_SIZE);
+    virtual void         hide() override;
     FObjectIterator      insert (FListViewItem*);
     FObjectIterator      insert (FListViewItem*, FObjectIterator);
     FObjectIterator      insert ( const FStringList&

@@ -437,7 +437,6 @@ void FMenu::init(FWidget* parent)
   setTransparentShadow();
   setMenuWidget();
   hide();
-  //unsetVisible();
 
   setForegroundColor (wc.menu_active_fg);
   setBackgroundColor (wc.menu_active_bg);
@@ -586,7 +585,6 @@ void FMenu::openSubMenu (FMenu* sub_menu, bool select)
       sub_menu->getSelectedItem()->setFocus();
   }
 
-  //sub_menu->setVisible();
   sub_menu->show();
   opened_sub_menu = sub_menu;
   raiseWindow (sub_menu);

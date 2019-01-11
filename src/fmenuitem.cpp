@@ -273,7 +273,6 @@ void FMenuItem::openMenu()
     createDialogList (dd_menu);
 
   setOpenMenu(dd_menu);
-  //dd_menu->setVisible();
   dd_menu->show();
   dd_menu->raiseWindow();
   dd_menu->redraw();

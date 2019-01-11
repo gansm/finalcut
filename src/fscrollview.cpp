@@ -368,7 +368,7 @@ void FScrollView::scrollTo (int x, int y)
     if ( update_scrollbar )
     {
       hbar->setValue (xoffset);
-      drawHBar();
+      hbar->drawBar();
     }
   }
 
@@ -381,7 +381,7 @@ void FScrollView::scrollTo (int x, int y)
     if ( update_scrollbar )
     {
       vbar->setValue (yoffset);
-      drawVBar();
+      vbar->drawBar();
     }
   }
 
@@ -422,8 +422,8 @@ void FScrollView::draw()
 
   setViewportPrint();
   copy2area();
-  redrawVBar();
-  redrawHBar();
+  vbar->redraw();
+  hbar->redraw();
 }
 
 //----------------------------------------------------------------------
@@ -979,38 +979,6 @@ void FScrollView::cb_HBarChange (FWidget*, FDataPtr)
   }
 
   update_scrollbar = true;
-}
-
-//----------------------------------------------------------------------
-inline void FScrollView::redrawHBar()
-{
-  child_print_area = nullptr;
-  hbar->redraw();
-  child_print_area = viewport;
-}
-
-//----------------------------------------------------------------------
-inline void FScrollView::redrawVBar()
-{
-  child_print_area = nullptr;
-  vbar->redraw();
-  child_print_area = viewport;
-}
-
-//----------------------------------------------------------------------
-inline void FScrollView::drawHBar()
-{
-  child_print_area = nullptr;
-  hbar->drawBar();
-  child_print_area = viewport;
-}
-
-//----------------------------------------------------------------------
-inline void FScrollView::drawVBar()
-{
-  child_print_area = nullptr;
-  vbar->drawBar();
-  child_print_area = viewport;
 }
 
 }  // namespace finalcut

@@ -380,6 +380,7 @@ class FWidget : public FVTerm, public FObject
     // Methods
     virtual void        adjustSize();
     void                adjustSizeGlobal();
+    void                hideSize (std::size_t, std::size_t);
     virtual bool        focusNextChild();  // Change child...
     virtual bool        focusPrevChild();  // ...focus
 
@@ -1018,6 +1019,9 @@ const wchar_t CHECKED_RADIO_BUTTON[4] =
 inline char* createBlankArray (std::size_t size)
 {
   char* blank;
+
+  if ( size == 0 )
+    return 0;
 
   try
   {

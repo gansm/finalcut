@@ -98,40 +98,11 @@ bool FProgressbar::setShadow (bool enable)
 //----------------------------------------------------------------------
 void FProgressbar::hide()
 {
-  FColor fg, bg;
-  auto parent_widget = getParentWidget();
-
   FWidget::hide();
-
-  if ( parent_widget )
-  {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
-  }
-  else
-  {
-    fg = wc.dialog_fg;
-    bg = wc.dialog_bg;
-  }
-
-  setColor (fg, bg);
   std::size_t s = hasShadow() ? 1 : 0;
-  auto size = getWidth() + s;
-
-  if ( size == 0 )
-    return;
-
-  auto blank = createBlankArray(size + 1);
-
-  for (std::size_t y = 0; y < getHeight() + s; y++)
-  {
-    setPrintPos (1, 1 + int(y));
-    print (blank);
-  }
-
-  destroyBlankArray (blank);
+  hideSize (getWidth() + s, getHeight() + s);
   setPrintPos (int(getWidth()) - 4, 0);
-  print ("     ");  // hide percentage
+  print ("      ");  // hide percentage
 }
 
 //----------------------------------------------------------------------

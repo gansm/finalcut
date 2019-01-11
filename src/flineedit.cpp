@@ -271,42 +271,12 @@ void FLineEdit::setLabelOrientation(const label_o o)
 //----------------------------------------------------------------------
 void FLineEdit::hide()
 {
-  std::size_t s, size;
-  FColor fg, bg;
-  auto parent_widget = getParentWidget();
-
-  FWidget::hide();
-
-  if ( parent_widget )
-  {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
-  }
-  else
-  {
-    fg = wc.dialog_fg;
-    bg = wc.dialog_bg;
-  }
-
-  setColor (fg, bg);
-  s = hasShadow() ? 1 : 0;
-  size = getWidth() + s;
-
-  if ( size == 0 )
-    return;
-
-  auto blank = createBlankArray(size + 1);
-
-  for (std::size_t y = 0; y < getHeight() + s; y++)
-  {
-    setPrintPos (1, 1 + int(y));
-    print (blank);
-  }
-
-  destroyBlankArray(blank);
-
   if ( label )
     label->hide();
+
+  FWidget::hide();
+  std::size_t s = hasShadow() ? 1 : 0;
+  hideSize (getWidth() + s, getHeight() + s);
 }
 
 //----------------------------------------------------------------------

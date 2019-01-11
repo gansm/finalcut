@@ -171,10 +171,6 @@ class FScrollView : public FWidget
     void                setHorizontalScrollBarVisibility();
     void                setVerticalScrollBarVisibility();
     void                setViewportCursor();
-    void                redrawHBar();
-    void                redrawVBar();
-    void                drawHBar();
-    void                drawVBar();
 
     // Callback methods
     void                cb_VBarChange (FWidget*, FDataPtr);
