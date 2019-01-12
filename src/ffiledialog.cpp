@@ -52,6 +52,40 @@ bool sortDirFirst ( const FFileDialog::dir_entry& lhs
     return false;
 }
 
+//----------------------------------------------------------------------
+const FString fileChooser ( FWidget* parent
+                          , const FString& dirname
+                          , const FString& filter
+                          , FFileDialog::DialogType type )
+{
+  FString ret;
+  FString path = dirname;
+  FString file_filter = filter;
+
+  if ( path.isNull() || path.isEmpty() )
+  {
+    path = FFileDialog::getHomeDir();
+
+    if ( path.isNull() || path.isEmpty() )
+      path = FString("/");
+  }
+
+  if ( file_filter.isNull() || file_filter.isEmpty() )
+    file_filter = FString("*");
+
+  FFileDialog fileopen ( path
+                       , file_filter
+                       , type
+                       , parent );
+
+  if ( fileopen.exec() == FDialog::Accept )
+    ret = fileopen.getPath() + fileopen.getSelectedFile();
+  else
+    ret = FString();
+
+  return ret;
+}
+
 
 //----------------------------------------------------------------------
 // class FFileDialog
@@ -225,32 +259,7 @@ const FString FFileDialog::fileOpenChooser ( FWidget* parent
                                            , const FString& dirname
                                            , const FString& filter )
 {
-  FString ret;
-  FString path = dirname;
-  FString file_filter = filter;
-
-  if ( path.isNull() || path.isEmpty() )
-  {
-    path = getHomeDir();
-
-    if ( path.isNull() || path.isEmpty() )
-      path = FString("/");
-  }
-
-  if ( file_filter.isNull() || file_filter.isEmpty() )
-    file_filter = FString("*");
-
-  FFileDialog fileopen ( path
-                       , file_filter
-                       , FFileDialog::Open
-                       , parent );
-
-  if ( fileopen.exec() == FDialog::Accept )
-    ret = fileopen.getPath() + fileopen.getSelectedFile();
-  else
-    ret = FString();
-
-  return ret;
+  return fileChooser (parent, dirname, filter, FFileDialog::Open);
 }
 
 //----------------------------------------------------------------------
@@ -258,32 +267,7 @@ const FString FFileDialog::fileSaveChooser ( FWidget* parent
                                            , const FString& dirname
                                            , const FString& filter )
 {
-  FString ret;
-  FString path = dirname;
-  FString file_filter = filter;
-
-  if ( path.isNull() || path.isEmpty() )
-  {
-    path = getHomeDir();
-
-    if ( path.isNull() || path.isEmpty() )
-      path = FString("/");
-  }
-
-  if ( file_filter.isNull() || file_filter.isEmpty() )
-    file_filter = FString("*");
-
-  FFileDialog fileopen ( path
-                       , file_filter
-                       , FFileDialog::Save
-                       , parent );
-
-  if ( fileopen.exec() == FDialog::Accept )
-    ret = fileopen.getPath() + fileopen.getSelectedFile();
-  else
-    ret = FString();
-
-  return ret;
+  return fileChooser (parent, dirname, filter, FFileDialog::Save);
 }
 
 

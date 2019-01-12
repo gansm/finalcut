@@ -760,37 +760,8 @@ inline FString& FListBox::getString (listBoxItems::iterator iter)
 //----------------------------------------------------------------------
 void FListBox::init()
 {
-  try
-  {
-    vbar = std::make_shared<FScrollbar>(fc::vertical, this);
-    hbar = std::make_shared<FScrollbar>(fc::horizontal, this);
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
-
-  vbar->setMinimum(0);
-  vbar->setValue(0);
-  vbar->hide();
-
-  hbar->setMinimum(0);
-  hbar->setValue(0);
-  hbar->hide();
-
-  vbar->addCallback
-  (
-    "change-value",
-    F_METHOD_CALLBACK (this, &FListBox::cb_VBarChange)
-  );
-
-  hbar->addCallback
-  (
-    "change-value",
-    F_METHOD_CALLBACK (this, &FListBox::cb_HBarChange)
-  );
-
+  initScrollbar (vbar, fc::vertical, &FListBox::cb_VBarChange);
+  initScrollbar (hbar, fc::horizontal, &FListBox::cb_HBarChange);
   setGeometry (1, 1, 5, 4, false);  // initialize geometry values
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
@@ -799,6 +770,32 @@ void FListBox::init()
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1 + int(nf_offset));
+}
+
+//----------------------------------------------------------------------
+void FListBox::initScrollbar ( FScrollbarPtr& bar
+                             , fc::orientation o
+                             , FListBoxCallback callback )
+{
+  try
+  {
+    bar = std::make_shared<FScrollbar>(o, this);
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    return;
+  }
+
+  bar->setMinimum(0);
+  bar->setValue(0);
+  bar->hide();
+
+  bar->addCallback
+  (
+    "change-value",
+    F_METHOD_CALLBACK (this, callback)
+  );
 }
 
 //----------------------------------------------------------------------

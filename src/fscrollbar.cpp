@@ -42,7 +42,7 @@ FScrollbar::FScrollbar(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FScrollbar::FScrollbar(int o, FWidget* parent)
+FScrollbar::FScrollbar(fc::orientation o, FWidget* parent)
   : FWidget(parent)
 {
   setOrientation (o);
@@ -124,7 +124,7 @@ void FScrollbar::setPageSize (int document_size, int page_size)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::setOrientation (int o)
+void FScrollbar::setOrientation (fc::orientation o)
 {
   std::size_t nf = 0;
   length = ( getHeight() > getWidth() ) ? getHeight() : getWidth();

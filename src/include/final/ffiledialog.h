@@ -139,6 +139,11 @@ class FFileDialog : public FDialog
     static const FString fileSaveChooser ( FWidget*
                                          , const FString& = FString()
                                          , const FString& = FString() );
+    // Friend function
+    friend const FString fileChooser ( FWidget*
+                                     , const FString&
+                                     , const FString&
+                                     , FFileDialog::DialogType);
 
   protected:
     // Method

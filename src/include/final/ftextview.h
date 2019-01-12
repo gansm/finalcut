@@ -136,6 +136,7 @@ class FTextView : public FWidget
   private:
     // Typedef
     typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
+    typedef void (FTextView::*FTextViewCallback)(FWidget*, FDataPtr);
 
     // Accessors
     std::size_t         getTextHeight();
@@ -147,6 +148,9 @@ class FTextView : public FWidget
 
     // Methods
     void                init();
+    void                initScrollbar ( FScrollbarPtr&
+                                      , fc::orientation
+                                      , FTextViewCallback );
     virtual void        draw() override;
     void                drawText();
     void                processChanged();

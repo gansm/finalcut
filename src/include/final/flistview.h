@@ -375,6 +375,7 @@ class FListView : public FWidget
     typedef std::vector<Header> headerItems;
     typedef std::vector<fc::sorting_type> sortTypes;
     typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
+    typedef void (FListView::*FListViewCallback)(FWidget*, FDataPtr);
 
     // Constants
     static constexpr int USE_MAX_SIZE = -1;
@@ -385,6 +386,9 @@ class FListView : public FWidget
 
     // Methods
     void                 init();
+    void                 initScrollbar ( FScrollbarPtr&
+                                       , fc::orientation
+                                       , FListViewCallback );
     template <typename Compare>
     void                 sort (Compare);
     std::size_t          getAlignOffset ( fc::text_alignment

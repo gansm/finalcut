@@ -1,3 +1,16 @@
+2019-01-12  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring FFileDialog::fileOpenChooser
+	* Refactoring FFileDialog::fileSaveChooser
+	* Refactoring FListBox::init()
+	* Refactoring FListView::init()
+	* Refactoring FTextView::init()
+	* Refactoring FTermXTerminal::resetXTermForeground()
+	* Refactoring FTermXTerminal::resetXTermBackground()
+	* Refactoring FTermXTerminal::resetXTermCursorColor()
+	* Refactoring FTermXTerminal::resetXTermMouseForeground()
+	* Refactoring FTermXTerminal::resetXTermMouseBackground()
+	* Refactoring FTermXTerminal::resetXTermHighlightBackground()
+
 2019-01-11  Markus Gans  <guru.mail@muenster.de>
 	* Generalize hide() method
 

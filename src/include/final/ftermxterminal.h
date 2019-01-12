@@ -126,6 +126,7 @@ class FTermXTerminal final
     static void           resetXTermMouseForeground();
     static void           resetXTermMouseBackground();
     static void           resetXTermHighlightBackground();
+    static bool           canResetColor();
     static void           oscPrefix();
     static void           oscPostfix();
     static const FString* captureXTermFont();

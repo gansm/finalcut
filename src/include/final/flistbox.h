@@ -243,6 +243,7 @@ class FListBox : public FWidget
   private:
     // Typedef
     typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
+    typedef void (FListBox::*FListBoxCallback)(FWidget*, FDataPtr);
 
     // Enumeration
     enum convert_type
@@ -261,6 +262,9 @@ class FListBox : public FWidget
 
     // Methods
     void                init();
+    void                initScrollbar ( FScrollbarPtr&
+                                      , fc::orientation
+                                      , FListBoxCallback );
     virtual void        draw() override;
     void                drawHeadline();
     void                drawList();

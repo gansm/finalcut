@@ -1369,37 +1369,8 @@ void FListView::adjustSize()
 //----------------------------------------------------------------------
 void FListView::init()
 {
-  try
-  {
-    vbar = std::make_shared<FScrollbar>(fc::vertical, this);
-    hbar = std::make_shared<FScrollbar>(fc::horizontal, this);
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
-
-  vbar->setMinimum(0);
-  vbar->setValue(0);
-  vbar->hide();
-
-  hbar->setMinimum(0);
-  hbar->setValue(0);
-  hbar->hide();
-
-  vbar->addCallback
-  (
-    "change-value",
-    F_METHOD_CALLBACK (this, &FListView::cb_VBarChange)
-  );
-
-  hbar->addCallback
-  (
-    "change-value",
-    F_METHOD_CALLBACK (this, &FListView::cb_HBarChange)
-  );
-
+  initScrollbar (vbar, fc::vertical, &FListView::cb_VBarChange);
+  initScrollbar (hbar, fc::horizontal, &FListView::cb_HBarChange);
   selflist.push_back(this);
   root = selflist.begin();
   null_iter = selflist.end();
@@ -1411,6 +1382,32 @@ void FListView::init()
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1 + int(nf_offset));
+}
+
+//----------------------------------------------------------------------
+void FListView::initScrollbar ( FScrollbarPtr& bar
+                              , fc::orientation o
+                              , FListViewCallback callback )
+{
+  try
+  {
+    bar = std::make_shared<FScrollbar>(o, this);
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    return;
+  }
+
+  bar->setMinimum(0);
+  bar->setValue(0);
+  bar->hide();
+
+  bar->addCallback
+  (
+    "change-value",
+    F_METHOD_CALLBACK (this, callback)
+  );
 }
 
 //----------------------------------------------------------------------

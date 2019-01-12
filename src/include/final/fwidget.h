@@ -513,7 +513,7 @@ class FWidget : public FVTerm, public FObject
     static bool        init_desktop;
     static bool        hideable;
 
-    // Friend class
+    // Friend classes
     friend class FToggleButton;
     friend class FScrollView;
 };

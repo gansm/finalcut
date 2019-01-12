@@ -85,7 +85,7 @@ class FScrollbar : public FWidget
 
     // Constructors
     explicit FScrollbar (FWidget* = nullptr);
-    explicit FScrollbar (int = fc::vertical, FWidget* = nullptr);
+    explicit FScrollbar (fc::orientation = fc::vertical, FWidget* = nullptr);
 
     // Disable copy constructor
     FScrollbar (const FScrollbar&) = delete;
@@ -108,7 +108,7 @@ class FScrollbar : public FWidget
     void                setValue (int);
     void                setSteps (double);
     void                setPageSize (int, int);
-    void                setOrientation (int);
+    void                setOrientation (fc::orientation);
     virtual void        setGeometry ( int, int
                                     , std::size_t, std::size_t
                                     , bool = true) override;
@@ -143,24 +143,24 @@ class FScrollbar : public FWidget
     void                processScroll();
 
     // Data Members
-    sType        scroll_type{FScrollbar::noScroll};
-    bool         threshold_reached{false};
-    int          threshold_time{500};
-    int          repeat_time{10};
-    int          slider_click_pos{-1};
-    int          slider_click_stop_pos{-1};
-    int          current_slider_pos{-1};
-    int          slider_pos{0};
-    std::size_t  slider_length{18};  // = bar_length
-    std::size_t  bar_length{18};     // = length - 2
-    int          val{0};
-    int          min{0};
-    int          max{99};
-    double       steps{1};
-    int          pagesize{0};
-    std::size_t  length{20};
-    int          bar_orientation{fc::vertical};
-    int          max_color{getMaxColor()};
+    sType           scroll_type{FScrollbar::noScroll};
+    bool            threshold_reached{false};
+    int             threshold_time{500};
+    int             repeat_time{10};
+    int             slider_click_pos{-1};
+    int             slider_click_stop_pos{-1};
+    int             current_slider_pos{-1};
+    int             slider_pos{0};
+    std::size_t     slider_length{18};  // = bar_length
+    std::size_t     bar_length{18};     // = length - 2
+    int             val{0};
+    int             min{0};
+    int             max{99};
+    double          steps{1};
+    int             pagesize{0};
+    std::size_t     length{20};
+    fc::orientation bar_orientation{fc::vertical};
+    int             max_color{getMaxColor()};
 };
 #pragma pack(pop)
 
