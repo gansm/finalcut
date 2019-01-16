@@ -177,7 +177,6 @@ class FMouse
     uInt16              max_width{80};
     uInt16              max_height{25};
     struct timeval      time_mousepressed{};
-    FPoint              zero_point{0, 0};  // zero point (x=0, y=0)
     FPoint              mouse{0, 0};       // mouse click position
     FPoint              new_mouse_position{};
 };

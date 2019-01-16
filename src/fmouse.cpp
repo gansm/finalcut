@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -576,7 +576,7 @@ void FMouseX11::setMoveState (const FPoint& mouse_position, int btn)
 {
   if ( (btn & button_mask) >= button1_pressed_move
     && (btn & button_mask) <= button3_pressed_move
-    && mouse_position != zero_point )
+    && ! mouse_position.isOrigin() )
   {
     b_state.mouse_moved = true;
   }
@@ -811,7 +811,7 @@ void FMouseSGR::setMoveState (const FPoint& mouse_position, int btn)
 {
   if ( (btn & button_mask) >= button1_move
     && (btn & button_mask) <= button3_move
-    && mouse_position != zero_point )
+    && ! mouse_position.isOrigin() )
   {
     b_state.mouse_moved = true;
   }
@@ -1078,7 +1078,7 @@ void FMouseUrxvt::setMoveState (const FPoint& mouse_position, int btn)
 {
   if ( (btn & button_mask) >= button1_pressed_move
     && (btn & button_mask) <= button3_pressed_move
-    && mouse_position != zero_point )
+    && ! mouse_position.isOrigin() )
   {
     b_state.mouse_moved = true;
   }

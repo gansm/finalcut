@@ -338,7 +338,7 @@ class FVTerm
 
     // Methods
     void                  createArea ( const FRect&
-                                     , const FPoint&
+                                     , const FSize&
                                      , term_area*& );
 
     void                  createArea ( int, int, int, int
@@ -346,7 +346,7 @@ class FVTerm
                                      , term_area*& );
 
     void                  resizeArea ( const FRect&
-                                     , const FPoint&
+                                     , const FSize&
                                      , term_area* );
 
     void                  resizeArea ( int, int, int, int

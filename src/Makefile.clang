@@ -34,6 +34,7 @@ INCLUDE_HEADERS = \
 	foptimove.h \
 	ftermbuffer.h \
 	fpoint.h \
+	fsize.h \
 	fprogressbar.h \
 	fradiobutton.h \
 	frect.h \
@@ -74,6 +75,7 @@ LIB = libfinal.so
 OBJS = \
 	fstring.o \
 	fpoint.o \
+	fsize.o \
 	frect.o \
 	fscrollbar.o \
 	fprogressbar.o \

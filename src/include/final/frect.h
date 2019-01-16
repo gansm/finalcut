@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -24,8 +24,12 @@
  *  ════════════════
  *
  * ▕▔▔▔▔▔▔▔▏1     *▕▔▔▔▔▔▔▔▔▏
- * ▕ FRect ▏- - - -▕ FPoint ▏
- * ▕▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▏
+ * ▕ FRect ▏-┬- - -▕ FPoint ▏
+ * ▕▁▁▁▁▁▁▁▏ :     ▕▁▁▁▁▁▁▁▁▏
+ *           :
+ *           :    1▕▔▔▔▔▔▔▔▏
+ *           └- - -▕ FSize ▏
+ *                 ▕▁▁▁▁▁▁▁▏
  */
 
 #ifndef FRECT_H
@@ -37,6 +41,7 @@
 
 #include <algorithm>
 #include "final/fpoint.h"
+#include "final/fsize.h"
 
 namespace finalcut
 {
@@ -55,6 +60,7 @@ class FRect
     FRect () = default;
     FRect (const FRect&);  // copy constructor
     FRect (int, int, std::size_t, std::size_t);
+    FRect (const FPoint&, const FSize&);
     FRect (const FPoint&, const FPoint&);
 
     // Destructor
@@ -63,8 +69,8 @@ class FRect
     // Overloaded operators
     FRect& operator = (const FRect&);
 
-    friend FRect operator +  (const FRect&, const FPoint&);
-    friend FRect operator -  (const FRect&, const FPoint&);
+    friend FRect operator +  (const FRect&, const FSize&);
+    friend FRect operator -  (const FRect&, const FSize&);
     friend bool  operator == (const FRect&, const FRect&);
     friend bool  operator != (const FRect&, const FRect&);
     friend std::ostream& operator << (std::ostream&, const FRect&);
@@ -85,6 +91,7 @@ class FRect
     FPoint              getLowerRightPos() const;
     std::size_t         getWidth() const;
     std::size_t         getHeight() const;
+    FSize               getSize() const;
 
     // Mutators
     void                setX1 (int);
@@ -98,13 +105,14 @@ class FRect
     void                setWidth (std::size_t);
     void                setHeight (std::size_t);
     void                setSize (std::size_t, std::size_t);
+    void                setSize (const FSize&);
     void                setRect (const FRect&);
     void                setRect (int, int, std::size_t, std::size_t);
     void                setCoordinates (const FPoint&, const FPoint&);
     void                setCoordinates (int, int, int, int);
 
     // Inquiry
-    bool                isNull() const;
+    bool                isEmpty() const;
 
     // Coordinate references
     int&                x1_ref();
@@ -210,6 +218,10 @@ inline std::size_t FRect::getHeight() const
   int h = Y2 - Y1 + 1;
   return ( h < 0 ) ? 0 : std::size_t(h);
 }
+
+//----------------------------------------------------------------------
+inline FSize FRect::getSize() const
+{ return FSize(getWidth(), getHeight()); }
 
 //----------------------------------------------------------------------
 inline int& FRect::x1_ref()

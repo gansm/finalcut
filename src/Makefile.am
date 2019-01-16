@@ -11,6 +11,7 @@ lib_LTLIBRARIES = libfinal.la
 libfinal_la_SOURCES = \
 	fstring.cpp \
 	fpoint.cpp \
+	fsize.cpp \
 	frect.cpp \
 	fscrollbar.cpp \
 	fprogressbar.cpp \
@@ -99,6 +100,7 @@ finalcutinclude_HEADERS = \
 	include/final/ftooltip.h \
 	include/final/fobject.h \
 	include/final/fpoint.h \
+	include/final/fsize.h \
 	include/final/foptiattr.h \
 	include/final/foptimove.h \
 	include/final/ftermbuffer.h \

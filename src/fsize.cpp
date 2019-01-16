@@ -1,9 +1,9 @@
 /***********************************************************************
-* fpoint.cpp - Point with an x and y coordinate                        *
+* fsize.cpp - Height and width of a two-dimensional surface            *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,82 +20,90 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include "final/fpoint.h"
+#include "final/fsize.h"
 
 namespace finalcut
 {
 
 //----------------------------------------------------------------------
-// class FPoint
+// class FSize
 //----------------------------------------------------------------------
 
-FPoint::~FPoint()  // destructor
+FSize::~FSize()  // destructor
 { }
 
-// public methods of FPoint
+// public methods of FSize
 //----------------------------------------------------------------------
-FPoint& FPoint::operator = (const FPoint& p)
+FSize& FSize::operator = (const FSize& s)
 {
-  xpos = p.xpos;
-  ypos = p.ypos;
+  width = s.width;
+  height = s.height;
   return *this;
 }
 
 //----------------------------------------------------------------------
-FPoint& FPoint::operator += (const FPoint& p)
+FSize& FSize::operator += (const FSize& s)
 {
-  xpos = xpos + p.xpos;
-  ypos = ypos + p.ypos;
+  std::size_t max = std::numeric_limits<std::size_t>::max();
+  width = ( width < max - s.width) ? width + s.width : max;
+  height = ( height < max - s.height) ? height + s.height : max;
   return *this;
 }
 
 //----------------------------------------------------------------------
-FPoint& FPoint::operator -= (const FPoint& p)
+FSize& FSize::operator -= (const FSize& s)
 {
-  xpos = xpos - p.xpos;
-  ypos = ypos - p.ypos;
+  width = ( width >= s.width ) ? width - s.width : 0;
+  height = ( height >= s.height ) ? height - s.height : 0;
   return *this;
 }
 
 //----------------------------------------------------------------------
-void FPoint::setX (int x)
+void FSize::setWidth (std::size_t w)
 {
-  xpos = x;
+  width = w;
 }
 
 //----------------------------------------------------------------------
-void FPoint::setY (int y)
+void FSize::setHeight (std::size_t h)
 {
-  ypos = y;
+  height = h;
 }
 
 //----------------------------------------------------------------------
-void FPoint::setPoint (int x, int y)
+void FSize::setSize (FSize s)
 {
-  xpos = x;
-  ypos = y;
+  width = s.width;
+  height = s.height;
 }
 
 //----------------------------------------------------------------------
-bool FPoint::isOrigin() const
+void FSize::setSize (std::size_t w, std::size_t h)
 {
-  return xpos == 0 && ypos == 0;
+  width = w;
+  height = h;
 }
 
 //----------------------------------------------------------------------
-std::ostream& operator << (std::ostream& outstr, const FPoint& p)
+bool FSize::isEmpty() const
 {
-  outstr << p.getX() << " " << p.getY();
+  return width == 0 && height == 0;
+}
+
+//----------------------------------------------------------------------
+std::ostream& operator << (std::ostream& outstr, const FSize& s)
+{
+  outstr << s.getWidth() << " " << s.getHeight();
   return outstr;
 }
 
 //----------------------------------------------------------------------
-std::istream& operator >> (std::istream& instr, FPoint& p)
+std::istream& operator >> (std::istream& instr, FSize& s)
 {
-  int x, y;
-  instr >> x;
-  instr >> y;
-  p.setPoint (x, y);
+  std::size_t w, h;
+  instr >> w;
+  instr >> h;
+  s.setSize (w, h);
   return instr;
 }
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -767,15 +767,15 @@ bool FWindow::activatePrevWindow()
 }
 
 //----------------------------------------------------------------------
-void FWindow::setShadowSize (int right, int bottom)
+void FWindow::setShadowSize (std::size_t right, std::size_t bottom)
 {
-  int old_right  = getShadow().getX()
-    , old_bottom = getShadow().getY();
+  std::size_t old_right  = getShadow().getWidth();
+  std::size_t old_bottom = getShadow().getHeight();
 
   FWidget::setShadowSize (right, bottom);
 
-  int new_right  = getShadow().getX()
-    , new_bottom = getShadow().getY();
+  std::size_t new_right  = getShadow().getWidth();
+  std::size_t new_bottom = getShadow().getHeight();
 
   if ( isVirtualWindow()
     && (new_right != old_right || new_bottom != old_bottom) )

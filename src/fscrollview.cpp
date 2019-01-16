@@ -61,7 +61,7 @@ void FScrollView::setScrollWidth (std::size_t width)
 
   if ( viewport )
   {
-    FPoint no_shadow(0, 0);
+    FSize no_shadow(0, 0);
     scroll_geometry.setWidth (width);
     resizeArea (scroll_geometry, no_shadow, viewport);
 
@@ -89,7 +89,7 @@ void FScrollView::setScrollHeight (std::size_t height)
 
   if ( viewport )
   {
-    FPoint no_shadow(0, 0);
+    FSize no_shadow(0, 0);
     scroll_geometry.setHeight (height);
     resizeArea (scroll_geometry, no_shadow, viewport);
     addPreprocessingHandler
@@ -122,7 +122,7 @@ void FScrollView::setScrollSize (std::size_t width, std::size_t height)
 
   if ( viewport )
   {
-    FPoint no_shadow(0, 0);
+    FSize no_shadow(0, 0);
     scroll_geometry.setSize (width, height);
     resizeArea (scroll_geometry, no_shadow, viewport);
     addPreprocessingHandler
@@ -722,9 +722,10 @@ void FScrollView::init (FWidget* parent)
   assert ( parent != 0 );
   assert ( ! parent->isInstanceOf("FScrollView") );
 
+  initScrollbar (vbar, fc::vertical, &FScrollView::cb_VBarChange);
+  initScrollbar (hbar, fc::horizontal, &FScrollView::cb_HBarChange);
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
-  init_scrollbar();
   setGeometry (1, 1, 4, 4);
   setMinimumSize (4, 4);
   int xoffset_end = int(getScrollWidth() - getViewportWidth());
@@ -734,7 +735,7 @@ void FScrollView::init (FWidget* parent)
   setLeftPadding (1 - getScrollX());
   setBottomPadding (1 - (yoffset_end - getScrollY()));
   setRightPadding (1 - (xoffset_end - getScrollX()) + nf_offset);
-  FPoint no_shadow(0, 0);
+  FSize no_shadow(0, 0);
   std::size_t w = getViewportWidth();
   std::size_t h = getViewportHeight();
 
@@ -756,12 +757,13 @@ void FScrollView::init (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::init_scrollbar()
+void FScrollView::initScrollbar ( FScrollbarPtr& bar
+                                , fc::orientation o
+                                , FScrollViewCallback callback )
 {
   try
   {
-    vbar = std::make_shared<FScrollbar>(fc::vertical, this);
-    hbar = std::make_shared<FScrollbar>(fc::horizontal, this);
+    bar = std::make_shared<FScrollbar>(o, this);
   }
   catch (const std::bad_alloc& ex)
   {
@@ -770,26 +772,15 @@ void FScrollView::init_scrollbar()
   }
 
   term_area* area = getPrintArea();
-  vbar->setPrintArea(area);
-  vbar->setMinimum(0);
-  vbar->setValue(0);
-  vbar->hide();
+  bar->setPrintArea(area);
+  bar->setMinimum(0);
+  bar->setValue(0);
+  bar->hide();
 
-  hbar->setPrintArea(area);
-  hbar->setMinimum(0);
-  hbar->setValue(0);
-  hbar->hide();
-
-  vbar->addCallback
+  bar->addCallback
   (
     "change-value",
-    F_METHOD_CALLBACK (this, &FScrollView::cb_VBarChange)
-  );
-
-  hbar->addCallback
-  (
-    "change-value",
-    F_METHOD_CALLBACK (this, &FScrollView::cb_HBarChange)
+    F_METHOD_CALLBACK (this, callback)
   );
 }
 

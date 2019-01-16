@@ -156,6 +156,7 @@ class FScrollView : public FWidget
   private:
     // Typedef
     typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
+    typedef void (FScrollView::*FScrollViewCallback)(FWidget*, FDataPtr);
 
     // Constants
     static constexpr int vertical_border_spacing = 2;
@@ -166,7 +167,9 @@ class FScrollView : public FWidget
 
     // Methods
     void                init (FWidget*);
-    void                init_scrollbar();
+    void                initScrollbar ( FScrollbarPtr&
+                                      , fc::orientation
+                                      , FScrollViewCallback );
     void                calculateScrollbarPos();
     void                setHorizontalScrollBarVisibility();
     void                setVerticalScrollBarVisibility();

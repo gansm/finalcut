@@ -383,44 +383,21 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 
 // protected methods of FButtonGroup
 //----------------------------------------------------------------------
-uChar FButtonGroup::getHotkey()
-{
-  if ( text.isEmpty() )
-    return 0;
-
-  std::size_t length = text.getLength();
-
-  for (std::size_t i = 0; i < length; i++)
-  {
-    try
-    {
-      if ( i + 1 < length && text[i] == '&' )
-        return uChar(text[++i]);
-    }
-    catch (const std::out_of_range&)
-    {
-      return 0;
-    }
-  }
-  return 0;
-}
-
-//----------------------------------------------------------------------
 void FButtonGroup::setHotkeyAccelerator()
 {
-  uChar hotkey = getHotkey();
+  FKey hotkey = getHotkey(text);
 
   if ( hotkey )
   {
-    if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
+    if ( std::isalpha(int(hotkey)) || std::isdigit(int(hotkey)) )
     {
-      addAccelerator (FKey(std::tolower(hotkey)));
-      addAccelerator (FKey(std::toupper(hotkey)));
+      addAccelerator (FKey(std::tolower(int(hotkey))));
+      addAccelerator (FKey(std::toupper(int(hotkey))));
       // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(hotkey)));
+      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(int(hotkey))));
     }
     else
-      addAccelerator (getHotkey());
+      addAccelerator (hotkey);
   }
   else
     delAccelerator();

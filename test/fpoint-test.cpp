@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -98,7 +98,7 @@ void FPointTest::noArgumentTest()
   const finalcut::FPoint point{};
   CPPUNIT_ASSERT ( point.getX() == 0 );
   CPPUNIT_ASSERT ( point.getY() == 0 );
-  CPPUNIT_ASSERT ( point.isNull() );
+  CPPUNIT_ASSERT ( point.isOrigin() );
 }
 
 //----------------------------------------------------------------------
@@ -156,7 +156,7 @@ void FPointTest::additionAssignmentTest()
   p1 += finalcut::FPoint (-4,-3);
   CPPUNIT_ASSERT ( p1.getX() == 0 );
   CPPUNIT_ASSERT ( p1.getY() == 0 );
-  CPPUNIT_ASSERT ( p1.isNull() );
+  CPPUNIT_ASSERT ( p1.isOrigin() );
 
   // Value limit
   finalcut::FPoint p2 ( std::numeric_limits<int>::max()
@@ -164,9 +164,9 @@ void FPointTest::additionAssignmentTest()
   CPPUNIT_ASSERT ( p2.getX() == std::numeric_limits<int>::max() );
   CPPUNIT_ASSERT ( p2.getY() == std::numeric_limits<int>::min() );
   p2 += finalcut::FPoint ( -std::numeric_limits<int>::max()
-                         , -std::numeric_limits<int>::min() );
+                         , std::numeric_limits<int>::max() );
   CPPUNIT_ASSERT ( p2.getX() == 0 );
-  CPPUNIT_ASSERT ( p2.getY() == 0 );
+  CPPUNIT_ASSERT ( p2.getY() == std::numeric_limits<int>::min() + std::numeric_limits<int>::max() );
 }
 
 //----------------------------------------------------------------------
@@ -180,32 +180,32 @@ void FPointTest::subtractionAssignmentTest()
   p1 -= finalcut::FPoint (-5,20);
   CPPUNIT_ASSERT ( p1.getX() == 10 );
   CPPUNIT_ASSERT ( p1.getY() == -5 );
-  CPPUNIT_ASSERT ( ! p1.isNull() );
+  CPPUNIT_ASSERT ( ! p1.isOrigin() );
 
   p1 -= finalcut::FPoint (-10,0);
   CPPUNIT_ASSERT ( p1.getX() == 20 );
   CPPUNIT_ASSERT ( p1.getY() == -5 );
-  CPPUNIT_ASSERT ( ! p1.isNull() );
+  CPPUNIT_ASSERT ( ! p1.isOrigin() );
 
   p1 -= finalcut::FPoint (20,0);
   CPPUNIT_ASSERT ( p1.getX() == 0 );
   CPPUNIT_ASSERT ( p1.getY() == -5 );
-  CPPUNIT_ASSERT ( ! p1.isNull() );
+  CPPUNIT_ASSERT ( ! p1.isOrigin() );
 
   p1 -= finalcut::FPoint (0,-6);
   CPPUNIT_ASSERT ( p1.getX() == 0 );
   CPPUNIT_ASSERT ( p1.getY() == 1 );
-  CPPUNIT_ASSERT ( ! p1.isNull() );
+  CPPUNIT_ASSERT ( ! p1.isOrigin() );
 
   p1 -= finalcut::FPoint (1,0);
   CPPUNIT_ASSERT ( p1.getX() == -1 );
   CPPUNIT_ASSERT ( p1.getY() == 1 );
-  CPPUNIT_ASSERT ( ! p1.isNull() );
+  CPPUNIT_ASSERT ( ! p1.isOrigin() );
 
   p1 -= (finalcut::FPoint (0,1) + finalcut::FPoint (-1,0));
   CPPUNIT_ASSERT ( p1.getX() == 0 );
   CPPUNIT_ASSERT ( p1.getY() == 0 );
-  CPPUNIT_ASSERT ( p1.isNull() );
+  CPPUNIT_ASSERT ( p1.isOrigin() );
 
   // Value limit
   finalcut::FPoint p2 ( std::numeric_limits<int>::max()

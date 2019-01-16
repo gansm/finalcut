@@ -180,7 +180,7 @@ void FVTerm::clearArea (int fillchar)
 void FVTerm::createVTerm (const FRect& r)
 {
   // initialize virtual terminal
-  const FPoint shadow(0, 0);
+  const FSize shadow(0, 0);
   createArea (r, shadow, vterm);
 }
 
@@ -194,7 +194,7 @@ void FVTerm::createVTerm (int width, int height)
 //----------------------------------------------------------------------
 void FVTerm::resizeVTerm (const FRect& r)
 {
-  const FPoint shadow(0, 0);
+  const FSize shadow(0, 0);
   resizeArea (r, shadow, vterm);
 }
 
@@ -594,15 +594,15 @@ FVTerm::term_area* FVTerm::getPrintArea()
 
 //----------------------------------------------------------------------
 void FVTerm::createArea ( const FRect& r
-                        , const FPoint& p
+                        , const FSize& s
                         , term_area*& area )
 {
   createArea ( r.getX()
              , r.getY()
              , int(r.getWidth())
              , int(r.getHeight())
-             , p.getX()
-             , p.getY()
+             , int(s.getWidth())
+             , int(s.getHeight())
              , area );
 }
 
@@ -630,15 +630,15 @@ void FVTerm::createArea ( int offset_left, int offset_top
 
 //----------------------------------------------------------------------
 void FVTerm::resizeArea ( const FRect& r
-                        , const FPoint& p
+                        , const FSize& s
                         , term_area* area )
 {
   resizeArea ( r.getX()
              , r.getY()
              , int(r.getWidth())
              , int(r.getHeight())
-             , p.getX()
-             , p.getY()
+             , int(s.getWidth())
+             , int(s.getHeight())
              , area );
 }
 
@@ -1966,7 +1966,7 @@ void FVTerm::init (bool disable_alt_screen)
   createVTerm (term_geometry);
 
   // Create virtual desktop area
-  FPoint shadow_size(0, 0);
+  FSize shadow_size(0, 0);
   createArea (term_geometry, shadow_size, vdesktop);
   vdesktop->visible = true;
   active_area = vdesktop;

@@ -1,3 +1,6 @@
+2019-01-16  Markus Gans  <guru.mail@muenster.de>
+	* New class FSize for storing dimensions
+
 2019-01-12  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FFileDialog::fileOpenChooser
 	* Refactoring FFileDialog::fileSaveChooser

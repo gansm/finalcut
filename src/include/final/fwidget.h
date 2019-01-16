@@ -210,7 +210,7 @@ class FWidget : public FVTerm, public FObject
     std::size_t         getClientHeight() const;
     std::size_t         getMaxWidth() const;
     std::size_t         getMaxHeight() const;
-    const FPoint&       getShadow() const;
+    const FSize&        getShadow() const;
     const FRect&        getGeometry() const;
     const FRect&        getGeometryWithShadow();
     const FRect&        getTermGeometry();
@@ -257,6 +257,7 @@ class FWidget : public FVTerm, public FObject
     virtual void        setPos (int, int, bool = true);
     virtual void        setWidth (std::size_t, bool = true);
     virtual void        setHeight (std::size_t, bool = true);
+    virtual void        setSize (FSize, bool = true);
     virtual void        setSize (std::size_t, std::size_t, bool = true);
     void                setTopPadding (int, bool = true);
     void                setLeftPadding (int, bool = true);
@@ -267,10 +268,11 @@ class FWidget : public FVTerm, public FObject
     void                setTermOffsetWithPadding();
     void                setTermSize (std::size_t, std::size_t);
     virtual void        setGeometry (const FRect&, bool = true);
+    virtual void        setGeometry (const FPoint&, const FSize&, bool = true);
     virtual void        setGeometry ( int, int
                                     , std::size_t, std::size_t
                                     , bool = true );
-    virtual void        setShadowSize (int, int);
+    virtual void        setShadowSize (std::size_t, std::size_t);
     void                setMinimumWidth (std::size_t);
     void                setMinimumHeight (std::size_t);
     void                setMinimumSize (std::size_t, std::size_t);
@@ -493,7 +495,7 @@ class FWidget : public FVTerm, public FObject
     // offset of the widget client area
     FRect              client_offset{};
     // widget shadow size (on the right and bottom side)
-    FPoint             wshadow{0, 0};
+    FSize              wshadow{0, 0};
 
     // default widget foreground and background color
     FColor             foreground_color{fc::Default};
@@ -634,7 +636,7 @@ inline std::size_t FWidget::getMaxHeight() const
 { return offset.getHeight(); }
 
 //----------------------------------------------------------------------
-inline const FPoint& FWidget::getShadow() const
+inline const FSize& FWidget::getShadow() const
 { return wshadow; }
 
 //----------------------------------------------------------------------
@@ -648,8 +650,8 @@ inline const FRect& FWidget::getGeometryWithShadow()
   (
     adjust_wsize.x1_ref(),
     adjust_wsize.y1_ref(),
-    adjust_wsize.x2_ref() + wshadow.x_ref(),
-    adjust_wsize.y2_ref() + wshadow.y_ref()
+    adjust_wsize.x2_ref() + int(wshadow.width_ref()),
+    adjust_wsize.y2_ref() + int(wshadow.height_ref())
   );
 
   return adjust_wsize_shadow;
@@ -676,8 +678,8 @@ inline const FRect& FWidget::getTermGeometryWithShadow()
   (
     adjust_wsize.x1_ref() + offset.x1_ref(),
     adjust_wsize.y1_ref() + offset.y1_ref(),
-    adjust_wsize.x2_ref() + offset.x1_ref() + wshadow.x_ref(),
-    adjust_wsize.y2_ref() + offset.y1_ref() + wshadow.y_ref()
+    adjust_wsize.x2_ref() + offset.x1_ref() + int(wshadow.width_ref()),
+    adjust_wsize.y2_ref() + offset.y1_ref() + int(wshadow.height_ref())
   );
 
   return adjust_wsize_term_shadow;
@@ -807,6 +809,10 @@ inline void FWidget::setPos (const FPoint& p, bool adjust)
 { setPos (p.getX(), p.getY(), adjust); }
 
 //----------------------------------------------------------------------
+inline void FWidget::setSize (FSize s, bool adjust)
+{ setSize(s.getWidth(), s.getHeight(), adjust); }
+
+//----------------------------------------------------------------------
 inline void FWidget::setGeometry (const FRect& box, bool adjust)
 {
   setGeometry ( box.getX()
@@ -817,8 +823,18 @@ inline void FWidget::setGeometry (const FRect& box, bool adjust)
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::setShadowSize (int right, int bottom)
-{ wshadow.setPoint (right, bottom); }
+inline void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
+{
+  setGeometry ( p.getX()
+              , p.getY()
+              , s.getWidth()
+              , s.getHeight()
+              , adjust );
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::setShadowSize (std::size_t right, std::size_t bottom)
+{ wshadow.setSize (right, bottom); }
 
 //----------------------------------------------------------------------
 inline void FWidget::setMinimumWidth (std::size_t min_width)
@@ -1042,6 +1058,29 @@ inline char* createBlankArray (std::size_t size)
 inline void destroyBlankArray (char blank[])
 {
   delete[] blank;
+}
+
+//----------------------------------------------------------------------
+inline FKey getHotkey (const FString& text)
+{
+  if ( text.isEmpty() )
+    return 0;
+
+  std::size_t length = text.getLength();
+
+  for (std::size_t i = 0; i < length; i++)
+  {
+    try
+    {
+      if ( i + 1 < length && text[i] == '&' )
+        return FKey(text[++i]);
+    }
+    catch (const std::out_of_range&)
+    {
+      return 0;
+    }
+  }
+  return 0;
 }
 
 }  // namespace finalcut

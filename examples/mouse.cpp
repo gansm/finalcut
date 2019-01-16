@@ -365,7 +365,7 @@ MouseDraw::MouseDraw (finalcut::FWidget* parent)
 
   brush.setPos (1, 12);
 
-  finalcut::FPoint no_shadow(0, 0);
+  finalcut::FSize no_shadow(0, 0);
   finalcut::FRect scroll_geometry(0, 0, 1, 1);
   createArea (scroll_geometry, no_shadow, canvas);
 }
@@ -381,7 +381,7 @@ void MouseDraw::setGeometry ( int x, int y
 {
   int old_w, old_h;
   finalcut::FDialog::setGeometry (x, y, w, h, adjust);
-  finalcut::FPoint no_shadow(0, 0);
+  finalcut::FSize no_shadow(0, 0);
   finalcut::FRect scroll_geometry (0, 0, w - 11, h - 3);
   old_w = canvas->width;
   old_h = canvas->height;

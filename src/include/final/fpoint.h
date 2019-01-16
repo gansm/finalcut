@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -64,8 +64,8 @@ class FPoint
     FPoint& operator += (const FPoint&);
     FPoint& operator -= (const FPoint&);
 
-    friend bool   operator == (const FPoint&, const FPoint&);
-    friend bool   operator != (const FPoint&, const FPoint&);
+    friend bool operator == (const FPoint&, const FPoint&);
+    friend bool operator != (const FPoint&, const FPoint&);
     friend FPoint operator +  (const FPoint&, const FPoint&);
     friend FPoint operator -  (const FPoint&, const FPoint&);
     friend FPoint operator -  (const FPoint&);
@@ -81,7 +81,7 @@ class FPoint
     void                setPoint (int, int);
 
     // Inquiry
-    bool                isNull() const;
+    bool                isOrigin() const;
 
     // Point references
     int&                x_ref();

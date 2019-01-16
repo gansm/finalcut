@@ -16,6 +16,7 @@ noinst_PROGRAMS = \
 	foptimove_test \
 	foptiattr_test \
 	fstring_test \
+	fsize_test \
 	fpoint_test \
 	frect_test
 
@@ -28,6 +29,7 @@ ftermcapquirks_test_SOURCES = ftermcapquirks-test.cpp
 foptimove_test_SOURCES = foptimove-test.cpp
 foptiattr_test_SOURCES = foptiattr-test.cpp
 fstring_test_SOURCES = fstring-test.cpp
+fsize_test_SOURCES = fsize-test.cpp
 fpoint_test_SOURCES = fpoint-test.cpp
 frect_test_SOURCES = frect-test.cpp
 
@@ -40,6 +42,7 @@ TESTS = fobject_test \
 	foptimove_test \
 	foptiattr_test \
 	fstring_test \
+	fsize_test \
 	fpoint_test \
 	frect_test
 

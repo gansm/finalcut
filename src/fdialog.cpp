@@ -197,8 +197,8 @@ void FDialog::setPos (int x, int y, bool)
     , old_x = getTermX()
     , old_y = getTermY();
   const auto& shadow = getShadow();
-  rsw = shadow.getX();  // right shadow width;
-  bsh = shadow.getY();  // bottom shadow height
+  rsw = int(shadow.getWidth());   // right shadow width;
+  bsh = int(shadow.getHeight());  // bottom shadow height
   old_geometry = getTermGeometryWithShadow();
 
   // move to the new position
@@ -307,8 +307,8 @@ void FDialog::setSize (std::size_t w, std::size_t h, bool adjust)
     , dw = old_width - int(w)
     , dh = old_height - int(h);
   const auto& shadow = getShadow();
-  int rsw = shadow.getX();  // right shadow width;
-  int bsh = shadow.getY();  // bottom shadow height
+  int rsw = int(shadow.getWidth());   // right shadow width;
+  int bsh = int(shadow.getHeight());  // bottom shadow height
 
   FWindow::setSize (w, h, adjust);
 
@@ -548,7 +548,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
     int titlebar_x = titlebar_click_pos.getX()
       , titlebar_y = titlebar_click_pos.getY();
 
-    if ( ! titlebar_click_pos.isNull()
+    if ( ! titlebar_click_pos.isOrigin()
       && titlebar_x > int(getTermX()) + 3
       && titlebar_x < getTermX() + int(getWidth())
       && titlebar_y == int(getTermY()) )
@@ -595,7 +595,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  if ( ! titlebar_click_pos.isNull() )
+  if ( ! titlebar_click_pos.isOrigin() )
   {
     FPoint deltaPos = ms.termPos - titlebar_click_pos;
     move (deltaPos);
@@ -951,7 +951,7 @@ void FDialog::drawBorder()
     , y1 = 2
     , y2 = 1 + int(getHeight()) - 1;
 
-  if ( (getMoveSizeWidget() == this || ! resize_click_pos.isNull() )
+  if ( (getMoveSizeWidget() == this || ! resize_click_pos.isOrigin() )
     && ! isZoomed() )
     setColor (wc.dialog_resize_fg, getBackgroundColor());
   else
@@ -1527,7 +1527,7 @@ void FDialog::resizeMouseDown (const mouseStates& ms)
 void FDialog::resizeMouseUpMove (const mouseStates& ms, bool mouse_up)
 {
   // Resize the dialog
-  if ( isResizeable() && ! resize_click_pos.isNull() )
+  if ( isResizeable() && ! resize_click_pos.isOrigin() )
   {
     auto r = getRootWidget();
     resize_click_pos = ms.termPos;
@@ -1578,7 +1578,7 @@ void FDialog::cancelMouseResize()
 {
   // Cancel resize by mouse
 
-  if ( resize_click_pos.isNull() )
+  if ( resize_click_pos.isOrigin() )
     return;
 
   resize_click_pos.setPoint (0, 0);
