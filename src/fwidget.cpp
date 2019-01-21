@@ -339,25 +339,27 @@ void FWidget::setY (int y, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setPos (int x, int y, bool adjust)
+void FWidget::setPos (const FPoint& p, bool adjust)
 {
-  if ( getX() == x && wsize.getX() == x
-    && getY() == y && wsize.getY() == y )
+  FPoint pos = p;
+
+  if ( getX() == pos.getX() && wsize.getX() == pos.getX()
+    && getY() == pos.getY() && wsize.getY() == pos.getY() )
   {
     return;
   }
 
   if ( ! isWindowWidget() )
   {
-    if ( x < 1 )
-      x = 1;
+    if ( pos.getX() < 1 )
+      pos.setX(1);
 
-    if ( y < 1 )
-      y = 1;
+    if ( pos.getY() < 1 )
+      pos.setY(1);
   }
 
-  wsize.setPos(x, y);
-  adjust_wsize.setPos(x, y);
+  wsize.setPos(pos);
+  adjust_wsize.setPos(pos);
 
   if ( adjust )
     adjustSize();
@@ -408,8 +410,10 @@ void FWidget::setHeight (std::size_t height, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setSize (std::size_t width, std::size_t height, bool adjust)
+void FWidget::setSize (const FSize& size, bool adjust)
 {
+  std::size_t width = size.getWidth();
+  std::size_t height = size.getHeight();
   width  = std::min (width,  size_hints.max_width);
   width  = std::max (width,  size_hints.min_width);
   height = std::min (height, size_hints.max_height);
@@ -552,34 +556,34 @@ void FWidget::setTermOffsetWithPadding()
 }
 
 //----------------------------------------------------------------------
-void FWidget::setTermSize (std::size_t w, std::size_t h)
+void FWidget::setTermSize (const FSize& size)
 {
-  // Set xterm size to w x h
+  // Set xterm size to width x height
 
   if ( isXTerminal() )
   {
-    rootObject->wsize.setRect(1, 1, w, h);
+    rootObject->wsize.setRect(FPoint(1, 1), size);
     rootObject->adjust_wsize = rootObject->wsize;
-    FTerm::setTermSize (w, h);  // w = columns / h = lines
+    FTerm::setTermSize(size);  // width = columns / height = lines
     detectTermSize();
   }
 }
 
 //----------------------------------------------------------------------
-void FWidget::setGeometry ( int x, int y
-                          , std::size_t w, std::size_t h
-                          , bool adjust )
+void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
 {
   // Sets the geometry of the widget relative to its parent
 
-  int term_x, term_y;
-
+  int x = p.getX();
+  int y = p.getY();
+  std::size_t w = s.getWidth();
+  std::size_t h = s.getHeight();
   w = std::min (w, size_hints.max_width);
   w = std::max (w, size_hints.min_width);
   h = std::min (h, size_hints.max_height);
   h = std::max (h, size_hints.min_height);
 
-  if ( getX() == x && getY() == y && getWidth() == w && getHeight() == h )
+  if ( getPos() == p && getWidth() == w && getHeight() == h )
     return;
 
   if ( ! isWindowWidget() )
@@ -597,8 +601,8 @@ void FWidget::setGeometry ( int x, int y
   ( h < 1 ) ? wsize.setHeight(1) : wsize.setHeight(h);
 
   adjust_wsize = wsize;
-  term_x = getTermX();
-  term_y = getTermY();
+  int term_x = getTermX();
+  int term_y = getTermY();
 
   client_offset.setCoordinates ( term_x - 1 + padding.left
                                , term_y - 1 + padding.top
@@ -615,11 +619,11 @@ void FWidget::setGeometry ( int x, int y
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setCursorPos (int x, int y)
+bool FWidget::setCursorPos (const FPoint& pos)
 {
   // sets the input cursor position
 
-  widget_cursor_position.setPoint(x, y);
+  widget_cursor_position.setPoint(pos);
 
   if ( ! flags.focus || isWindowWidget() )
     return false;
@@ -640,8 +644,8 @@ bool FWidget::setCursorPos (int x, int y)
       widget_offsetY += (1 - area->widget->getTopPadding());
     }
 
-    setAreaCursor ( widget_offsetX + x
-                  , widget_offsetY + y
+    setAreaCursor ( FPoint ( widget_offsetX + pos.getX()
+                           , widget_offsetY + pos.getY() )
                   , flags.visible_cursor
                   , area );
     return true;
@@ -651,10 +655,11 @@ bool FWidget::setCursorPos (int x, int y)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setPrintPos (int x, int y)
+void FWidget::setPrintPos (const FPoint& pos)
 {
-  setPrintCursor ( offset.getX1() + getX() + x - 1,
-                   offset.getY1() + getY() + y - 1 );
+  FPoint p{ offset.getX1() + getX() + pos.getX() - 1,
+            offset.getY1() + getY() + pos.getY() - 1 };
+  setPrintCursor(p);
 }
 
 //----------------------------------------------------------------------
@@ -742,7 +747,7 @@ void FWidget::setDoubleFlatLine (fc::sides side, int pos, bool bit)
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
+FWidget* FWidget::childWidgetAt (FWidget* p, const FPoint& pos)
 {
   if ( p && p->hasChildren() )
   {
@@ -762,9 +767,9 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
       if ( widget->isEnabled()
         && widget->isShown()
         && ! widget->isWindowWidget()
-        && widget->getTermGeometry().contains(x, y) )
+        && widget->getTermGeometry().contains(pos) )
       {
-        auto child = childWidgetAt(widget, x, y);
+        auto child = childWidgetAt(widget, pos);
         return ( child != 0 ) ? child : widget;
       }
 
@@ -1017,7 +1022,7 @@ void FWidget::resize()
     FRect term_geometry = getTermGeometry();
     term_geometry.move (-1, -1);
 
-    resizeVTerm (term_geometry);
+    resizeVTerm (term_geometry.getSize());
     resizeArea (term_geometry, getShadow(), vdesktop);
     adjustSizeGlobal();
   }
@@ -1211,10 +1216,10 @@ void FWidget::detectTermSize()
 }
 
 //----------------------------------------------------------------------
-void FWidget::move (int dx, int dy)
+void FWidget::move (const FPoint& pos)
 {
-  wsize.move(dx, dy);
-  adjust_wsize.move(dx, dy);
+  wsize.move(pos);
+  adjust_wsize.move(pos);
 }
 
 //----------------------------------------------------------------------
@@ -1268,14 +1273,14 @@ void FWidget::clearShadow()
   {
     for (std::size_t y = 1; y <= getHeight(); y++)
     {
-      setPrintPos (w + 1, int(y));
+      setPrintPos (FPoint(w + 1, int(y)));
       print  (' ');  // clear █
     }
   }
 
   if ( h <= offset.getY2() )
   {
-    setPrintPos (2, h + 1);
+    setPrintPos (FPoint(2, h + 1));
 
     for (std::size_t i = 1; i <= getWidth(); i++)
       print (' ');  // clear ▀
@@ -1303,7 +1308,7 @@ void FWidget::drawFlatBorder()
 
   for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (x1 - 1, y1 + int(y) + 1);
+    setPrintPos (FPoint(x1 - 1, y1 + int(y) + 1));
 
     if ( double_flatline_mask.left[uLong(y)] )
       // left+right line (on left side)
@@ -1313,7 +1318,7 @@ void FWidget::drawFlatBorder()
       print (fc::NF_rev_border_line_right);
   }
 
-  setPrintPos (x2, y1 + 1);
+  setPrintPos (FPoint(x2, y1 + 1));
 
   for (std::size_t y = 0; y < getHeight(); y++)
   {
@@ -1324,10 +1329,10 @@ void FWidget::drawFlatBorder()
       // left line (on right side)
       print (fc::NF_border_line_left);
 
-    setPrintPos (x2, y1 + int(y) + 2);
+    setPrintPos (FPoint(x2, y1 + int(y) + 2));
   }
 
-  setPrintPos (x1, y1);
+  setPrintPos (FPoint(x1, y1));
 
   for (std::size_t x = 0; x < getWidth(); x++)
   {
@@ -1339,7 +1344,7 @@ void FWidget::drawFlatBorder()
       print (fc::NF_border_line_bottom);
   }
 
-  setPrintPos (x1, y2);
+  setPrintPos (FPoint(x1, y2));
 
   for (std::size_t x = 0; x < getWidth(); x++)
   {
@@ -1371,7 +1376,7 @@ void FWidget::clearFlatBorder()
   // clear on left side
   for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (x1 - 1, y1 + int(y) + 1);
+    setPrintPos (FPoint(x1 - 1, y1 + int(y) + 1));
 
     if ( double_flatline_mask.left[y] )
       print (fc::NF_border_line_left);
@@ -1382,7 +1387,7 @@ void FWidget::clearFlatBorder()
   // clear on right side
   for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (x2, y1 + int(y) + 1);
+    setPrintPos (FPoint(x2, y1 + int(y) + 1));
 
     if ( double_flatline_mask.right[y] )
       print (fc::NF_rev_border_line_right);
@@ -1391,7 +1396,7 @@ void FWidget::clearFlatBorder()
   }
 
   // clear at top
-  setPrintPos (x1, y1);
+  setPrintPos (FPoint(x1, y1));
 
   for (std::size_t x = 0; x < getWidth(); x++)
   {
@@ -1402,7 +1407,7 @@ void FWidget::clearFlatBorder()
   }
 
   // clear at bottom
-  setPrintPos (x1, y2);
+  setPrintPos (FPoint(x1, y2));
 
   for (std::size_t x = 0; x < getWidth(); x++)
   {
@@ -1614,9 +1619,9 @@ void FWidget::adjustSizeGlobal()
 }
 
 //----------------------------------------------------------------------
-void FWidget::hideSize (std::size_t width, std::size_t height)
+void FWidget::hideSize (const FSize& size)
 {
-  if ( width == 0 || height == 0 )
+  if ( size.isEmpty() )
     return;
 
   FColor fg, bg;
@@ -1634,14 +1639,14 @@ void FWidget::hideSize (std::size_t width, std::size_t height)
   }
 
   setColor (fg, bg);
-  auto blank = createBlankArray(width);
+  auto blank = createBlankArray(size.getWidth());
 
   if ( blank == 0 )
     return;
 
-  for (int y = 0; y < int(height); y++)
+  for (int y = 0; y < int(size.getWidth()); y++)
   {
-    setPrintPos (1, 1 + y);
+    setPrintPos (FPoint(1, 1 + y));
     print (blank);
   }
 
@@ -2225,7 +2230,7 @@ void FWidget::drawChildren()
 void FWidget::drawTransparentShadow (int x1, int y1, int x2, int y2)
 {
   // transparent shadow
-  setPrintPos (x2 + 1, y1);
+  setPrintPos (FPoint(x2 + 1, y1));
   setTransparent();
   print ("  ");
   unsetTransparent();
@@ -2235,12 +2240,12 @@ void FWidget::drawTransparentShadow (int x1, int y1, int x2, int y2)
 
   for (std::size_t y = 1; y < getHeight(); y++)
   {
-    setPrintPos (x2 + 1, y1 + int(y));
+    setPrintPos (FPoint(x2 + 1, y1 + int(y)));
     print ("  ");
   }
 
   unsetTransShadow();
-  setPrintPos (x1, y2 + 1);
+  setPrintPos (FPoint(x1, y2 + 1));
   setTransparent();
   print ("  ");
   unsetTransparent();
@@ -2266,7 +2271,7 @@ void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
   if ( ! hasShadowCharacter() )
     return;
 
-  setPrintPos (x2 + 1, y1);
+  setPrintPos (FPoint(x2 + 1, y1));
 
   if ( isWindowWidget() )
   {
@@ -2284,11 +2289,11 @@ void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
 
   for (std::size_t y = 1; y < getHeight(); y++)
   {
-    setPrintPos (x2 + 1, y1 + int(y));
+    setPrintPos (FPoint(x2 + 1, y1 + int(y)));
     print (block);  // █
   }
 
-  setPrintPos (x1 + 1, y2 + 1);
+  setPrintPos (FPoint(x1 + 1, y2 + 1));
 
   if ( isWindowWidget() )
     setInheritBackground();
@@ -2305,7 +2310,7 @@ inline void FWidget::drawBox (int x1, int y1, int x2, int y2)
 {
   // Use box-drawing characters to draw a border
 
-  setPrintPos (x1, y1);
+  setPrintPos (FPoint(x1, y1));
   print (fc::BoxDrawingsDownAndRight);  // ┌
 
   for (int x = x1 + 1; x < x2; x++)
@@ -2315,13 +2320,13 @@ inline void FWidget::drawBox (int x1, int y1, int x2, int y2)
 
   for (int y = y1 + 1; y < y2; y++)
   {
-    setPrintPos (x1, y);
+    setPrintPos (FPoint(x1, y));
     print (fc::BoxDrawingsVertical);  // │
-    setPrintPos (x2, y);
+    setPrintPos (FPoint(x2, y));
     print (fc::BoxDrawingsVertical);  // │
   }
 
-  setPrintPos (x1, y2);
+  setPrintPos (FPoint(x1, y2));
   print (fc::BoxDrawingsUpAndRight);  // └
 
   for (int x = x1 + 1; x < x2; x++)
@@ -2331,9 +2336,9 @@ inline void FWidget::drawBox (int x1, int y1, int x2, int y2)
 
   for (int x = x1 + 1; x < x2; x++)
   {
-    setPrintPos (x, y1);
+    setPrintPos (FPoint(x, y1));
     print (fc::BoxDrawingsHorizontal);  // ─
-    setPrintPos (x, y2);
+    setPrintPos (FPoint(x, y2));
     print (fc::BoxDrawingsHorizontal);  // ─
   }
 }
@@ -2343,7 +2348,7 @@ inline void FWidget::drawNewFontBox (int x1, int y1, int x2, int y2)
 {
   // Use new graphical font characters to draw a border
 
-  setPrintPos (x1, y1);
+  setPrintPos (FPoint(x1, y1));
   print (fc::NF_border_corner_middle_upper_left);  // ┌
 
   for (int x = x1 + 1; x < x2; x++)
@@ -2353,13 +2358,13 @@ inline void FWidget::drawNewFontBox (int x1, int y1, int x2, int y2)
 
   for (int y = y1 + 1; y <= y2; y++)
   {
-    setPrintPos (x1, y);
+    setPrintPos (FPoint(x1, y));
     print (fc::NF_border_line_left);  // border left ⎸
-    setPrintPos (x2, y);
+    setPrintPos (FPoint(x2, y));
     print (fc::NF_rev_border_line_right);  // border right⎹
   }
 
-  setPrintPos (x1, y2);
+  setPrintPos (FPoint(x1, y2));
   print (fc::NF_border_corner_middle_lower_left);  // └
 
   for (int x = x1 + 1; x < x2; x++)

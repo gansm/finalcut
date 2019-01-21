@@ -194,7 +194,7 @@ void FMenuItem::setText (const FString& txt)
   if ( hotkey )
     text_length--;
 
-  setWidth(text_length);
+  updateSuperMenuDimensions();
 }
 
 //----------------------------------------------------------------------
@@ -209,13 +209,7 @@ void FMenuItem::addAccelerator (FKey key, FWidget* obj)
     root->accelerator_list->push_back(accel);
   }
 
-  if ( isMenu(super_menu) )
-  {
-    auto menu_ptr = static_cast<FMenu*>(super_menu);
-
-    if ( menu_ptr )
-      menu_ptr->calculateDimensions();
-  }
+  updateSuperMenuDimensions();
 }
 
 //----------------------------------------------------------------------
@@ -241,13 +235,7 @@ void FMenuItem::delAccelerator (FWidget* obj)
     }
   }
 
-  if ( isMenu(super_menu) )
-  {
-    auto menu_ptr = static_cast<FMenu*>(super_menu);
-
-    if ( menu_ptr )
-      menu_ptr->calculateDimensions();
-  }
+  updateSuperMenuDimensions();
 }
 
 //----------------------------------------------------------------------
@@ -540,7 +528,7 @@ void FMenuItem::init (FWidget* parent)
   if ( hotkey )
     text_length--;
 
-  setGeometry (1, 1, text_length + 2, 1, false);
+  setGeometry (FPoint(1, 1), FSize(text_length + 2, 1), false);
 
   if ( ! parent )
     return;
@@ -601,6 +589,18 @@ uChar FMenuItem::hotKey()
   }
 
   return 0;
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::updateSuperMenuDimensions()
+{
+  if ( ! super_menu || ! isMenu(super_menu) )
+    return;
+
+  auto menu_ptr = static_cast<FMenu*>(super_menu);
+
+  if ( menu_ptr )
+    menu_ptr->calculateDimensions();
 }
 
 //----------------------------------------------------------------------

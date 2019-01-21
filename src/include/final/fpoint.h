@@ -78,6 +78,7 @@ class FPoint
     int                 getY() const;
     void                setX (int);
     void                setY (int);
+    void                setPoint (const FPoint&);
     void                setPoint (int, int);
 
     // Inquiry
@@ -139,6 +140,10 @@ inline int FPoint::getX() const
 //----------------------------------------------------------------------
 inline int FPoint::getY() const
 { return ypos; }
+
+//----------------------------------------------------------------------
+inline void FPoint::setPoint (const FPoint& p)
+{ setPoint(p.xpos, p.ypos); }
 
 //----------------------------------------------------------------------
 inline int& FPoint::x_ref()

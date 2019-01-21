@@ -27,6 +27,9 @@
 
 #include <final/final.h>
 
+using finalcut::FPoint;
+using finalcut::FSize;
+
 
 //----------------------------------------------------------------------
 // class Listview
@@ -71,7 +74,7 @@ Listview::Listview (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
   // Set FListView geometry
-  listView.setGeometry(2, 1, 33, 14);
+  listView.setGeometry(FPoint(2, 1), FSize(33, 14));
 
   // Add columns to the view
   listView.addColumn ("City");
@@ -104,7 +107,7 @@ Listview::Listview (finalcut::FWidget* parent)
   populate();
 
   // Quit button
-  Quit.setGeometry(24, 16, 10, 1);
+  Quit.setGeometry(FPoint(24, 16), FSize(10, 1));
   Quit.setText (L"&Quit");
 
   // Add some function callbacks
@@ -214,7 +217,8 @@ int main (int argc, char* argv[])
   // Create main dialog object
   Listview d(&app);
   d.setText (L"Weather data");
-  d.setGeometry (int(1 + (app.getWidth() - 37) / 2), 3, 37, 20);
+  d.setGeometry ( FPoint(int(1 + (app.getWidth() - 37) / 2), 3)
+                , FSize(37, 20) );
   d.setShadow();
 
   // Set dialog d as main widget

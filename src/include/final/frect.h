@@ -107,6 +107,7 @@ class FRect
     void                setSize (std::size_t, std::size_t);
     void                setSize (const FSize&);
     void                setRect (const FRect&);
+    void                setRect (const FPoint&, const FSize&);
     void                setRect (int, int, std::size_t, std::size_t);
     void                setCoordinates (const FPoint&, const FPoint&);
     void                setCoordinates (int, int, int, int);

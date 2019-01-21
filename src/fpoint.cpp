@@ -85,7 +85,7 @@ bool FPoint::isOrigin() const
 //----------------------------------------------------------------------
 std::ostream& operator << (std::ostream& outstr, const FPoint& p)
 {
-  outstr << p.getX() << " " << p.getY();
+  outstr << p.xpos << " " << p.ypos;
   return outstr;
 }
 

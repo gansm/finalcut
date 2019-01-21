@@ -247,7 +247,7 @@ class FTerm final
     static char*           enableCursor();
     static char*           disableCursor();
     static void            detectTermSize();
-    static void            setTermSize (std::size_t, std::size_t);
+    static void            setTermSize (const FSize&);
     static void            setTermTitle (const FString&);
     static void            setKDECursor (fc::kdeKonsoleCursorShape);
     static void            saveColorMap();

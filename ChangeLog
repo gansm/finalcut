@@ -1,3 +1,7 @@
+2019-01-21  Markus Gans  <guru.mail@muenster.de>
+	* More accurate interfaces through the strict use of FPoint() 
+	  and FSize()
+
 2019-01-16  Markus Gans  <guru.mail@muenster.de>
 	* New class FSize for storing dimensions
 

@@ -650,23 +650,22 @@ fc::sorting_type FListView::getColumnSortType (int column) const
 }
 
 //----------------------------------------------------------------------
-void FListView::setGeometry ( int x, int y
-                            , std::size_t w, std::size_t h
-                            , bool adjust )
+void FListView::setGeometry ( const FPoint& pos, const FSize& size
+                            , bool adjust)
 {
   // Set the widget geometry
 
-  FWidget::setGeometry(x, y, w, h, adjust);
+  FWidget::setGeometry(pos, size, adjust);
 
   if ( isNewFont() )
   {
-    vbar->setGeometry (int(getWidth()), 2, 2, getHeight() - 2);
-    hbar->setGeometry (1, int(getHeight()), getWidth() - 2, 1);
+    vbar->setGeometry (FPoint(int(getWidth()), 2), FSize(2, getHeight() - 2));
+    hbar->setGeometry (FPoint(1, int(getHeight())), FSize(getWidth() - 2, 1));
   }
   else
   {
-    vbar->setGeometry (int(getWidth()), 2, 1, getHeight() - 2);
-    hbar->setGeometry (2, int(getHeight()), getWidth() - 2, 1);
+    vbar->setGeometry (FPoint(int(getWidth()), 2), FSize(1, getHeight() - 2));
+    hbar->setGeometry (FPoint(2, int(getHeight())), FSize(getWidth() - 2, 1));
   }
 }
 
@@ -756,7 +755,7 @@ int FListView::addColumn (const FString& label, int width)
 void FListView::hide()
 {
   FWidget::hide();
-  hideSize (getWidth(), getHeight());
+  hideSize (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -1374,7 +1373,7 @@ void FListView::init()
   selflist.push_back(this);
   root = selflist.begin();
   null_iter = selflist.end();
-  setGeometry (1, 1, 5, 4, false);  // initialize geometry values
+  setGeometry (FPoint(1, 1), FSize(5, 4), false);  // initialize geometry values
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
   nf_offset = isNewFont() ? 1 : 0;
@@ -1470,7 +1469,7 @@ void FListView::draw()
 
     for (int y = 2; y < int(getHeight()); y++)
     {
-      setPrintPos (int(getWidth()), y);
+      setPrintPos (FPoint(int(getWidth()), y));
       print (' ');  // clear right side of the scrollbar
     }
   }
@@ -1544,7 +1543,7 @@ void FListView::drawHeadlines()
     last = h.begin() + len;
   }
 
-  setPrintPos (2, 1);
+  setPrintPos (FPoint(2, 1));
   print() << std::vector<charData>(first, last);
 }
 
@@ -1564,7 +1563,7 @@ void FListView::drawList()
     const auto item = static_cast<FListViewItem*>(*iter);
     int tree_offset = ( tree_view ) ? int(item->getDepth() << 1) + 1 : 0;
     int checkbox_offset = ( item->isCheckable() ) ? 1 : 0;
-    setPrintPos (2, 2 + int(y));
+    setPrintPos (FPoint(2, 2 + int(y)));
 
     // Draw one FListViewItem
     drawListLine (item, flags.focus, is_current_line);
@@ -1572,8 +1571,8 @@ void FListView::drawList()
     if ( flags.focus && is_current_line )
     {
       setVisibleCursor (item->isCheckable());
-      setCursorPos ( 3 + tree_offset + checkbox_offset - xoffset
-                   , 2 + int(y));  // first character
+      setCursorPos (FPoint ( 3 + tree_offset + checkbox_offset - xoffset
+                           , 2 + int(y) ));  // first character
     }
 
     last_visible_line = iter;
@@ -1590,7 +1589,7 @@ void FListView::drawList()
   // Clean empty space after last element
   while ( y < uInt(getClientHeight()) )
   {
-    setPrintPos (2, 2 + int(y));
+    setPrintPos (FPoint(2, 2 + int(y)));
     print (FString(std::size_t(getClientWidth()), ' '));
     y++;
   }

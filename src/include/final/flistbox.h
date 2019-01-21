@@ -185,8 +185,7 @@ class FListBox : public FWidget
     void                showInsideBrackets (std::size_t, fc::brackets_type);
     void                showNoBrackets (std::size_t);
     void                showNoBrackets (listBoxItems::iterator);
-    virtual void        setGeometry ( int, int
-                                    , std::size_t, std::size_t
+    virtual void        setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     void                setMultiSelection (bool);
     void                setMultiSelection ();

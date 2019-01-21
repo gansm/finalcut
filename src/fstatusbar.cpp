@@ -99,7 +99,7 @@ bool FStatusKey::setMouseFocus(bool enable)
 //----------------------------------------------------------------------
 void FStatusKey::init (FWidget* parent)
 {
-  setGeometry (1, 1, 1, 1);
+  setGeometry (FPoint(1, 1), FSize(1, 1));
 
   if ( parent && parent->isInstanceOf("FStatusBar") )
   {
@@ -178,7 +178,7 @@ void FStatusBar::hide()
   setColor (fg, bg);
   screenWidth = getDesktopWidth();
   auto blank = createBlankArray(screenWidth + 1);
-  setPrintPos (1, 1);
+  setPrintPos (FPoint(1, 1));
   print (blank);
   destroyBlankArray (blank);
 }
@@ -214,7 +214,7 @@ void FStatusBar::drawMessage()
     space_offset = 0;
 
   setColor (wc.statusbar_fg, wc.statusbar_bg);
-  setPrintPos (x, 1);
+  setPrintPos (FPoint(x, 1));
 
   if ( isMonochron() )
     setReverse(true);
@@ -312,7 +312,8 @@ void FStatusBar::clear()
 //----------------------------------------------------------------------
 void FStatusBar::adjustSize()
 {
-  setGeometry (1, int(getDesktopHeight()), getDesktopWidth(), 1, false);
+  setGeometry ( FPoint(1, int(getDesktopHeight()))
+              , FSize(getDesktopWidth(), 1), false );
 }
 
 //----------------------------------------------------------------------
@@ -507,7 +508,7 @@ void FStatusBar::init()
   std::size_t w = r->getWidth();
   int h = int(r->getHeight());
   // initialize geometry values
-  setGeometry (1, h, w, 1, false);
+  setGeometry (FPoint(1, h), FSize(w, 1), false);
   setAlwaysOnTop();
   setStatusBar(this);
   ignorePadding();
@@ -540,7 +541,7 @@ void FStatusBar::drawKeys()
     return;
   }
 
-  setPrintPos (1, 1);
+  setPrintPos (FPoint(1, 1));
 
   if ( isMonochron() )
     setReverse(true);

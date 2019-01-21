@@ -22,6 +22,9 @@
 
 #include <final/final.h>
 
+using finalcut::FPoint;
+using finalcut::FSize;
+
 
 //----------------------------------------------------------------------
 // class Scrollview
@@ -46,7 +49,7 @@ class Scrollview : public finalcut::FScrollView
     Scrollview& operator = (const Scrollview&) = delete;
 
     // Mutator
-    void setScrollSize (std::size_t, std::size_t) override;
+    void setScrollSize (const FSize&) override;
 
   private:
     // Method
@@ -75,11 +78,14 @@ Scrollview::Scrollview (finalcut::FWidget* parent)
   : finalcut::FScrollView(parent)
 {
   // Sets the navigation button geometry
-  go_east.setGeometry (1, 1, 5, 1);
-  go_south.setGeometry (int(getScrollWidth()) - 5, 1, 5, 1);
-  go_west.setGeometry ( int(getScrollWidth()) - 5
-                      , int(getScrollHeight()) - 2, 5, 1);
-  go_north.setGeometry (1, int(getScrollHeight()) - 2, 5, 1);
+  go_east.setGeometry (FPoint(1, 1), FSize(5, 1));
+  go_south.setGeometry ( FPoint(int(getScrollWidth()) - 5, 1)
+                       , FSize(5, 1) );
+  go_west.setGeometry ( FPoint( int(getScrollWidth()) - 5
+                              , int(getScrollHeight()) - 2 )
+                      , FSize(5, 1) );
+  go_north.setGeometry ( FPoint(1, int(getScrollHeight()) - 2)
+                       , FSize(5, 1) );
 
   // Add scroll function callbacks to the buttons
   go_east.addCallback
@@ -112,12 +118,14 @@ Scrollview::~Scrollview()
 { }
 
 //----------------------------------------------------------------------
-void Scrollview::setScrollSize (std::size_t width, std::size_t height)
+void Scrollview::setScrollSize (const FSize& size)
 {
-  FScrollView::setScrollSize (width, height);
-  go_south.setPos (int(width) - 5, 1);
-  go_west.setPos (int(width) - 5, int(height) - 1);
-  go_north.setPos (1, int(height) - 1);
+  FScrollView::setScrollSize (size);
+  auto width = int(size.getWidth());
+  auto height = int(size.getHeight());
+  go_south.setPos (FPoint(width - 5, 1));
+  go_west.setPos (FPoint(width - 5, height - 1));
+  go_north.setPos (FPoint(1, height - 1));
 }
 
 //----------------------------------------------------------------------
@@ -131,7 +139,7 @@ void Scrollview::draw()
 
   for (int y = 0; y < int(getScrollHeight()); y++)
   {
-    setPrintPos (1, 1 + y);
+    setPrintPos (FPoint(1, 1 + y));
 
     for (int x = 0; x < int(getScrollWidth()); x++)
       print (32 + ((x + y) % 0x5f));
@@ -214,15 +222,15 @@ class Scrollviewdemo : public finalcut::FDialog
 Scrollviewdemo::Scrollviewdemo (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
-  setGeometry (16, 3, 50, 19);
+  setGeometry (FPoint(16, 3), FSize(50, 19));
   setText ("Scrolling viewport example");
 
   // The scrolling viewport widget
-  sview.setGeometry(3, 2, 44, 12);
-  sview.setScrollSize(188, 124);
+  sview.setGeometry(FPoint(3, 2), FSize(44, 12));
+  sview.setScrollSize(FSize(188, 124));
 
   // Quit button
-  quit_btn.setGeometry(37, 15, 10, 1);
+  quit_btn.setGeometry(FPoint(37, 15), FSize(10, 1));
 
   // Add function callback
   quit_btn.addCallback
@@ -232,7 +240,7 @@ Scrollviewdemo::Scrollviewdemo (finalcut::FWidget* parent)
   );
 
   // Text label
-  label.setGeometry(2, 1, 46, 1);
+  label.setGeometry(FPoint(2, 1), FSize(46, 1));
   label.setEmphasis();
   label << L"Use scrollbars to change the viewport position";
 }

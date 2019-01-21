@@ -26,6 +26,9 @@
 
 #include <final/final.h>
 
+using finalcut::FPoint;
+using finalcut::FSize;
+
 
 //----------------------------------------------------------------------
 // class ProgressDialog
@@ -71,25 +74,26 @@ class ProgressDialog : public finalcut::FDialog
 ProgressDialog::ProgressDialog (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
-  setGeometry (int((getParentWidget()->getWidth() - 40) / 2), 7, 40, 10);
+  setGeometry ( FPoint(int((getParentWidget()->getWidth() - 40) / 2), 7)
+              , FSize(40, 10) );
   setText("Progress bar");
   //setModal();
 
   reset.setText("&Reset");
   reset.setStatusbarMessage ("Reset the progress bar");
-  reset.setGeometry(2, 6, 8, 1, false);
+  reset.setGeometry(FPoint(2, 6), FSize(8, 1), false);
   reset.setDisable();
 
   more.setText("&More");
   more.setStatusbarMessage ("Increases the progress bar position");
-  more.setGeometry(15, 6, 8, 1, false);
+  more.setGeometry(FPoint(15, 6), FSize(8, 1), false);
   more.setDisable();
 
   quit.setText("E&xit");
-  quit.setGeometry(28, 6, 8, 1, false);
+  quit.setGeometry(FPoint(28, 6), FSize(8, 1), false);
   quit.setDisable();
 
-  progressBar.setGeometry(2, 3, 34, 1, false);
+  progressBar.setGeometry(FPoint(2, 3), FSize(34, 1), false);
   //progressBar.setPercentage(78);
 
   reset.addCallback
@@ -211,8 +215,8 @@ TextWindow::TextWindow (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
   scrollText.ignorePadding();
-  scrollText.setGeometry (1, 2, getWidth(), getHeight() - 1);
-  setMinimumSize (51, 6);
+  scrollText.setGeometry (FPoint(1, 2), FSize(getWidth(), getHeight() - 1));
+  setMinimumSize (FSize(51, 6));
   scrollText.setFocus();
   scrollText.insert(" -----------------------------------------------\n"
                     " line 1\n"
@@ -238,7 +242,7 @@ void TextWindow::append (const finalcut::FString& str)
 void TextWindow::adjustSize()
 {
   finalcut::FDialog::adjustSize();
-  scrollText.setGeometry (1, 2, getWidth(), getHeight() - 1);
+  scrollText.setGeometry (FPoint(1, 2), FSize(getWidth(), getHeight() - 1));
 }
 
 
@@ -550,7 +554,7 @@ void MyDialog::initWidgets()
   initToggleButtons();
 
   // A text input field
-  myLineEdit.setGeometry(22, 1, 10, 1);
+  myLineEdit.setGeometry(FPoint(22, 1), FSize(10, 1));
   myLineEdit.setLabelText (L"&Input");
   myLineEdit.setStatusbarMessage ("Press Enter to set the title");
   myLineEdit << finalcut::FString("EnTry").toLower();
@@ -559,7 +563,7 @@ void MyDialog::initWidgets()
   initButtons();
 
   // A multiple selection listbox
-  myList.setGeometry(38, 1, 14, 17);
+  myList.setGeometry(FPoint(38, 1), FSize(14, 17));
   myList.setText ("Items");
   myList.setStatusbarMessage ("99 items in a list");
   myList.setMultiSelection();
@@ -575,21 +579,21 @@ void MyDialog::initWidgets()
 void MyDialog::initFlatButtons()
 {
   // Flat buttons
-  MyButton1.setGeometry(3, 3, 5, 1);
+  MyButton1.setGeometry(FPoint(3, 3), FSize(5, 1));
   MyButton1.setText (L"&SIN");
   MyButton1.setStatusbarMessage ("Sine function");
   MyButton1.setNoUnderline();
   MyButton1.setFlat();
   MyButton1.setDoubleFlatLine (finalcut::fc::bottom);
 
-  MyButton2.setGeometry(3, 5, 5, 1);
+  MyButton2.setGeometry(FPoint(3, 5), FSize(5, 1));
   MyButton2.setText (L"&COS");
   MyButton2.setStatusbarMessage ("Cosine function");
   MyButton2.setNoUnderline();
   MyButton2.setFlat();
   MyButton2.setDoubleFlatLine (finalcut::fc::top);
 
-  MyButton3.setGeometry(10, 3, 5, 3);
+  MyButton3.setGeometry(FPoint(10, 3), FSize(5, 3));
   MyButton3.setText (L"&=");
   MyButton3.setStatusbarMessage ("Equal");
   MyButton3.setNoUnderline();
@@ -619,25 +623,25 @@ void MyDialog::initFlatButtons()
 void MyDialog::initToggleButtons()
 {
   // Radio buttons in a group
-  radioButtonGroup.setGeometry(3, 8, 14, 4);
+  radioButtonGroup.setGeometry(FPoint(3, 8), FSize(14, 4));
   //radioButtonGroup->unsetBorder();
 
-  radio1.setGeometry(1, 1, 10, 1);
+  radio1.setGeometry(FPoint(1, 1), FSize(10, 1));
   radio1.setStatusbarMessage ("Enable button Test");
 
-  radio2.setGeometry(1, 2, 11, 1);
+  radio2.setGeometry(FPoint(1, 2), FSize(11, 1));
   radio2.setText ("&Disable");
   radio2.setStatusbarMessage ("Disable button Test");
   radio2.setChecked();
   //radio2.setDisable();
 
   // Checkboxes in a group
-  checkButtonGroup.setGeometry(3, 12, 14, 4);
+  checkButtonGroup.setGeometry(FPoint(3, 12), FSize(14, 4));
 
-  check1.setGeometry(1, 1, 11, 1);
+  check1.setGeometry(FPoint(1, 1), FSize(11, 1));
   check1.setNoUnderline();
 
-  check2.setGeometry(1, 2, 9, 1);
+  check2.setGeometry(FPoint(1, 2), FSize(9, 1));
   check2.setChecked();
   check2.setNoUnderline();
 }
@@ -646,17 +650,17 @@ void MyDialog::initToggleButtons()
 void MyDialog::initButtons()
 {
   // Buttons
-  MyButton4.setGeometry(20, 8, 12, 1);
+  MyButton4.setGeometry(FPoint(20, 8), FSize(12, 1));
   MyButton4.setText (L"&Get input");
   MyButton4.setStatusbarMessage ("Take text from input field");
   MyButton4.setFocus();
 
-  MyButton5.setGeometry(20, 11, 12, 1);
+  MyButton5.setGeometry(FPoint(20, 11), FSize(12, 1));
   MyButton5.setText (L"&Test");
   MyButton5.setStatusbarMessage ("Progressbar testing dialog");
   MyButton5.setDisable();
 
-  MyButton6.setGeometry(20, 14, 12, 1);
+  MyButton6.setGeometry(FPoint(20, 14), FSize(12, 1));
   MyButton6.setText (L"&Quit");
   MyButton6.setStatusbarMessage ("Exit the program");
   MyButton6.addAccelerator('x');
@@ -686,20 +690,20 @@ void MyDialog::initButtons()
 void MyDialog::initLabels()
 {
   // Text labels
-  headline.setGeometry(21, 3, 10, 1);
+  headline.setGeometry(FPoint(21, 3), FSize(10, 1));
   headline.setEmphasis();
   headline.setAlignment (finalcut::fc::alignCenter);
   headline = L"List items";
 
-  tagged.setGeometry(21, 4, 7, 1);
+  tagged.setGeometry(FPoint(21, 4), FSize(7, 1));
 
-  tagged_count.setGeometry(29, 4, 5, 1);
+  tagged_count.setGeometry(FPoint(29, 4), FSize(5, 1));
   tagged_count << 0;
 
-  sum.setGeometry(21, 5, 7, 3);
+  sum.setGeometry(FPoint(21, 5), FSize(7, 3));
   sum.setAlignment (finalcut::fc::alignRight);
 
-  sum_count.setGeometry(29, 5, 5, 3);
+  sum_count.setGeometry(FPoint(29, 5), FSize(5, 3));
   sum_count << myList.getCount();
 }
 
@@ -822,21 +826,21 @@ void MyDialog::cb_drives (finalcut::FWidget*, FDataPtr)
   if ( isNewFont() )
   {
     finalcut::FLabel drive (finalcut::NF_Drive, &info2);
-    drive.setGeometry (11, 2, 4, 1);
+    drive.setGeometry (FPoint(11, 2), FSize(4, 1));
     finalcut::FLabel net (finalcut::NF_Net_Drive, &info2);
-    net.setGeometry (11, 4, 4, 1);
+    net.setGeometry (FPoint(11, 4), FSize(4, 1));
     finalcut::FLabel cd (finalcut::NF_CD_ROM, &info2);
-    cd.setGeometry (11, 6, 4, 1);
+    cd.setGeometry (FPoint(11, 6), FSize(4, 1));
     info2.exec();
   }
   else
   {
     finalcut::FLabel drive ("  - ", &info2);
-    drive.setGeometry (11, 2, 4, 1);
+    drive.setGeometry (FPoint(11, 2), FSize(4, 1));
     finalcut::FLabel net ("  N ", &info2);
-    net.setGeometry (11, 4, 4, 1);
+    net.setGeometry (FPoint(11, 4), FSize(4, 1));
     finalcut::FLabel cd (" CD ", &info2);
-    cd.setGeometry (11, 6, 4, 1);
+    cd.setGeometry (FPoint(11, 6), FSize(4, 1));
 
     if ( isMonochron() )
     {
@@ -962,10 +966,9 @@ void MyDialog::cb_view (finalcut::FWidget*, FDataPtr data)
   const auto& view = new TextWindow(this);
   finalcut::FString filename(basename(const_cast<char*>(file.c_str())));
   view->setText ("Viewer: " + filename);
-  view->setGeometry ( 1 + int((getRootWidget()->getWidth() - 60) / 2),
-                      int(getRootWidget()->getHeight() / 6),
-                      60,
-                      getRootWidget()->getHeight() * 3 / 4 );
+  view->setGeometry ( FPoint ( 1 + int((getRootWidget()->getWidth() - 60) / 2),
+                               int(getRootWidget()->getHeight() / 6) )
+                    , FSize(60, getRootWidget()->getHeight() * 3 / 4) );
   view->setResizeable();
   std::string line = "";
   std::ifstream infile;
@@ -1021,7 +1024,8 @@ int main (int argc, char* argv[])
   // Create main dialog object d
   MyDialog d(&app);
   d.setText (title);
-  d.setGeometry (int((app.getWidth() - 56) / 2), 2, 56, app.getHeight() - 4);
+  d.setGeometry ( FPoint(int((app.getWidth() - 56) / 2), 2)
+                , FSize(56, app.getHeight() - 4) );
   d.setShadow();
 
   // Set the dialog object d as the main widget of the application.

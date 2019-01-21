@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -126,12 +126,12 @@ void FTermXTerminal::setTitle (const FString& title)
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::setTermSize (std::size_t width, std::size_t height)
+void FTermXTerminal::setTermSize (const FSize& size)
 {
   // Set xterm size to {term_width} x {term_height}
 
-  term_width = width;
-  term_height = height;
+  term_width = size.getWidth();
+  term_height = size.getHeight();
   setXTermSize();
 }
 

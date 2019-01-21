@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -76,8 +76,6 @@ class FDialog : public FWindow
   public:
      // Using-declaration
     using FWindow::setResizeable;
-    using FWindow::move;
-    using FWindow::setPos;
 
     // Enumeration
     enum DialogCode
@@ -124,13 +122,13 @@ class FDialog : public FWindow
     virtual void        show() override;
     virtual void        hide() override;
     int                 exec();
-    virtual void        setPos (int, int, bool = true) override;
-    virtual void        move (int, int) override;
+    virtual void        setPos (const FPoint&, bool = true) override;
+    virtual void        move (const FPoint&) override;
     bool                moveUp (int);
     bool                moveDown (int);
     bool                moveLeft (int);
     bool                moveRight (int);
-    virtual void        setSize (std::size_t, std::size_t, bool = true) override;
+    virtual void        setSize (const FSize&, bool = true) override;
     bool                reduceHeight (int);
     bool                expandHeight (int);
     bool                reduceWidth (int);

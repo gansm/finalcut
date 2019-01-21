@@ -220,7 +220,7 @@ void FButtonGroup::hide()
 
   for (int y = 0; y < int(getHeight()); y++)
   {
-    FWidget::setPrintPos (1, 1 + y);
+    FWidget::setPrintPos (FPoint(1, 1 + y));
     print (blank);
   }
 
@@ -296,8 +296,8 @@ void FButtonGroup::checkScrollSize (const FRect& r)
 
   if ( ! scrollgeometry.contains(r) )
   {
-    FRect new_size = scrollgeometry.combined(r);
-    setScrollSize (new_size.getWidth(), new_size.getHeight());
+    FRect r_combined = scrollgeometry.combined(r);
+    setScrollSize (r_combined.getSize());
   }
 }
 
@@ -449,9 +449,9 @@ void FButtonGroup::drawLabel()
     length--;
 
   if ( hasBorder() )
-    FWidget::setPrintPos (2, 1);
+    FWidget::setPrintPos (FPoint(2, 1));
   else
-    FWidget::setPrintPos (0, 1);
+    FWidget::setPrintPos (FPoint(0, 1));
 
   drawText (LabelText, hotkeypos, length);
   setViewportPrint();
@@ -475,7 +475,7 @@ void FButtonGroup::init()
 {
   setForegroundColor (wc.label_fg);
   setBackgroundColor (wc.label_bg);
-  setMinimumSize (7, 4);
+  setMinimumSize (FSize(7, 4));
   buttonlist.clear();  // no buttons yet
 }
 

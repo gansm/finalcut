@@ -295,8 +295,7 @@ class FListView : public FWidget
     FListViewItem*       getCurrentItem();
 
     // Mutators
-    virtual void         setGeometry ( int, int
-                                     , std::size_t, std::size_t
+    virtual void         setGeometry ( const FPoint&, const FSize&
                                      , bool = true ) override;
     void                 setColumnAlignment (int, fc::text_alignment);
     void                 setColumnText (int, const FString&);

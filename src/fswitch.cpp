@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -127,7 +127,7 @@ void FSwitch::drawCheckButton()
   if ( ! isVisible() )
     return;
 
-  setPrintPos (1 + int(switch_offset_pos), 1);
+  setPrintPos (FPoint(1 + int(switch_offset_pos), 1));
 
   if ( checked )
     drawChecked();
@@ -181,7 +181,7 @@ void FSwitch::drawChecked()
   if ( isMonochron() )
     setReverse(false);
 
-  setCursorPos (3 + int(switch_offset_pos), 1);
+  setCursorPos (FPoint(3 + int(switch_offset_pos), 1));
 }
 
 //----------------------------------------------------------------------
@@ -228,7 +228,7 @@ void FSwitch::drawUnchecked()
   if ( isMonochron() || getMaxColor() < 16 )
     setBold(false);
 
-  setCursorPos (7 + int(switch_offset_pos), 1);
+  setCursorPos (FPoint(7 + int(switch_offset_pos), 1));
 }
 
 }  // namespace finalcut

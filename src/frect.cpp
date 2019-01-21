@@ -151,10 +151,19 @@ void FRect::setSize (const FSize& s)
 //----------------------------------------------------------------------
 void FRect::setRect (const FRect& r)
 {
-  setRect ( r.X1
-          , r.Y1
-          , std::size_t(r.X2 - r.X1 + 1)
-          , std::size_t(r.Y2 - r.Y1 + 1) );
+  X1 = r.X1;
+  Y1 = r.Y1;
+  X2 = r.X2;
+  Y2 = r.Y2;
+}
+
+//----------------------------------------------------------------------
+void FRect::setRect (const FPoint& p, const FSize& s)
+{
+  X1 = p.getX();
+  Y1 = p.getY();
+  X2 = p.getX() + int(s.getWidth()) - 1;
+  Y2 = p.getY() + int(s.getHeight()) - 1;
 }
 
 //----------------------------------------------------------------------
@@ -300,10 +309,10 @@ bool operator != (const FRect& r1, const FRect& r2)
 //----------------------------------------------------------------------
 std::ostream& operator << (std::ostream& outstr, const FRect& r)
 {
-  outstr << r.getX1() << " "
-         << r.getY1() << " "
-         << r.getX2() << " "
-         << r.getY2();
+  outstr << r.X1 << " "
+         << r.Y1 << " "
+         << r.X2 << " "
+         << r.Y2;
   return outstr;
 }
 

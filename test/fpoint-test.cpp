@@ -166,7 +166,8 @@ void FPointTest::additionAssignmentTest()
   p2 += finalcut::FPoint ( -std::numeric_limits<int>::max()
                          , std::numeric_limits<int>::max() );
   CPPUNIT_ASSERT ( p2.getX() == 0 );
-  CPPUNIT_ASSERT ( p2.getY() == std::numeric_limits<int>::min() + std::numeric_limits<int>::max() );
+  CPPUNIT_ASSERT ( p2.getY() == std::numeric_limits<int>::min()
+                              + std::numeric_limits<int>::max() );
 }
 
 //----------------------------------------------------------------------

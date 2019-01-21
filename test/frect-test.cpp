@@ -188,6 +188,15 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getHeight() == 6 );
   CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(6, 6) );
 
+  r3.setRect(finalcut::FPoint(34, 8), finalcut::FSize(40, 12));
+  CPPUNIT_ASSERT ( r3.getX1() == 34 );
+  CPPUNIT_ASSERT ( r3.getY1() == 8 );
+  CPPUNIT_ASSERT ( r3.getX2() == 73 );
+  CPPUNIT_ASSERT ( r3.getY2() == 19 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 40 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 12 );
+  CPPUNIT_ASSERT ( r3.getSize() == finalcut::FSize(40, 12) );
+
   r3.setRect(r1);
   CPPUNIT_ASSERT ( r3 == r1 );
   CPPUNIT_ASSERT ( r3.getX1() == 3 );

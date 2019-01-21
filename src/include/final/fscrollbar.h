@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -109,9 +109,8 @@ class FScrollbar : public FWidget
     void                setSteps (double);
     void                setPageSize (int, int);
     void                setOrientation (fc::orientation);
-    virtual void        setGeometry ( int, int
-                                    , std::size_t, std::size_t
-                                    , bool = true) override;
+    virtual void        setGeometry ( const FPoint&, const FSize&
+                                    , bool = true ) override;
 
     // Methods
     virtual void        resize() override;

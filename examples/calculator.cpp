@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2018 Markus Gans                                      *
+* Copyright 2016-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -29,6 +29,9 @@
 #include <stack>
 
 #include <final/final.h>
+
+using finalcut::FPoint;
+using finalcut::FSize;
 
 constexpr lDouble PI = 3.141592653589793238L;
 
@@ -119,7 +122,6 @@ class Calc : public finalcut::FDialog
 
     // Event handlers
     virtual void   onKeyPress (finalcut::FKeyEvent*) override;
-    virtual void   onAccel (finalcut::FAccelEvent*) override;
     virtual void   onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
@@ -250,8 +252,7 @@ Calc::Calc (FWidget* parent)
   clearInfixOperator();
   std::setlocale(LC_NUMERIC, "C");
   setText ("Calculator");
-  setGeometry (19, 6, 37, 18);
-  addAccelerator('q');  // Press 'q' to quit
+  setGeometry (FPoint(19, 6), FSize(37, 18));
 
   for (std::size_t key = 0; key < Calc::NUM_OF_BUTTONS; key++)
   {
@@ -259,7 +260,7 @@ Calc::Calc (FWidget* parent)
     button_no[key] = key;
 
     if ( key == Equals )
-      btn->setGeometry(30, 15, 5, 3);
+      btn->setGeometry(FPoint(30, 15), FSize(5, 3));
     else
     {
       int x, y;
@@ -267,7 +268,7 @@ Calc::Calc (FWidget* parent)
       ( key <= Three ) ? n = 0 : n = 1;
       x = int(key + n) % 5 * 7 + 2;
       y = int(key + n) / 5 * 2 + 3;
-      btn->setGeometry(x, y, 5, 1);
+      btn->setGeometry(FPoint(x, y), FSize(5, 1));
     }
 
     btn->setFlat();
@@ -337,7 +338,7 @@ void Calc::drawDispay()
   if ( isMonochron() )
     setReverse(false);
 
-  setPrintPos (3, 3);
+  setPrintPos (FPoint(3, 3));
   print(display);
   print(L' ');
   setColor(wc.dialog_fg, wc.dialog_bg);
@@ -352,13 +353,13 @@ void Calc::drawDispay()
     wchar_t top_line        = finalcut::fc::NF_border_line_upper;
     wchar_t right_line      = finalcut::fc::NF_rev_border_line_right;
     wchar_t left_line       = finalcut::fc::NF_border_line_left;
-    setPrintPos (3, 2);
+    setPrintPos (FPoint(3, 2));
     print (finalcut::FString(33, bottom_line));
-    setPrintPos (2, 3);
+    setPrintPos (FPoint(2, 3));
     print (right_line);
-    setPrintPos (36, 3);
+    setPrintPos (FPoint(36, 3));
     print (left_line);
-    setPrintPos (3, 4);
+    setPrintPos (FPoint(3, 4));
     finalcut::FString top_bottom_line_5 (5, top_bottom_line);
     finalcut::FString top_line_2 (2, top_line);
     print ( top_bottom_line_5 + top_line_2
@@ -375,7 +376,7 @@ void Calc::drawDispay()
     finalcut::FString separator = finalcut::FString(vertical_and_right)
                                 + finalcut::FString(35, horizontal)
                                 + finalcut::FString(vertical_and_left);
-    setPrintPos (1, 4);
+    setPrintPos (FPoint(1, 4));
     print(separator);
   }
 }
@@ -1034,17 +1035,15 @@ void Calc::onKeyPress (finalcut::FKeyEvent* ev)
       ev->accept();
       break;
 
+    case 'q':
+      close();
+      ev->accept();
+      break;
+
     default:
       finalcut::FDialog::onKeyPress(ev);
       break;
   }
-}
-
-//----------------------------------------------------------------------
-void Calc::onAccel (finalcut::FAccelEvent* ev)
-{
-  close();
-  ev->accept();
 }
 
 //----------------------------------------------------------------------

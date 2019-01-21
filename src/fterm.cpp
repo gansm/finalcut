@@ -527,11 +527,11 @@ void FTerm::detectTermSize()
 }
 
 //----------------------------------------------------------------------
-void FTerm::setTermSize (std::size_t width, std::size_t height)
+void FTerm::setTermSize (const FSize& size)
 {
-  // Set xterm size to {width} x {height}
+  // Set xterm size
 
-  xterm->setTermSize (width, height);
+  xterm->setTermSize (size);
 }
 
 //----------------------------------------------------------------------

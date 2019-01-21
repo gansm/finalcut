@@ -230,12 +230,12 @@ bool FLineEdit::setShadow (bool enable)
     && getEncoding() != fc::ASCII )
   {
     flags.shadow = true;
-    setShadowSize(1, 1);
+    setShadowSize(FSize(1, 1));
   }
   else
   {
     flags.shadow = false;
-    setShadowSize(0, 0);
+    setShadowSize(FSize(0, 0));
   }
 
   return flags.shadow;
@@ -275,8 +275,8 @@ void FLineEdit::hide()
     label->hide();
 
   FWidget::hide();
-  std::size_t s = hasShadow() ? 1 : 0;
-  hideSize (getWidth() + s, getHeight() + s);
+  FSize shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
+  hideSize (getSize() + shadow);
 }
 
 //----------------------------------------------------------------------
@@ -598,12 +598,13 @@ void FLineEdit::adjustLabel()
   switch ( label_orientation )
   {
     case label_above:
-      label->setGeometry(getX(), getY() - 1, label_length, 1);
+      label->setGeometry ( FPoint(getX(), getY() - 1)
+                         , FSize(label_length, 1) );
       break;
 
     case label_left:
-      label->setGeometry(getX() - int(label_length) - 1, getY()
-                        , label_length, 1);
+      label->setGeometry ( FPoint(getX() - int(label_length) - 1, getY())
+                         , FSize(label_length, 1) );
       break;
   }
 }
@@ -677,7 +678,7 @@ void FLineEdit::drawInputField()
   std::size_t x;
   FString show_text;
   bool isActiveFocus = flags.active && flags.focus;
-  setPrintPos (1, 1);
+  setPrintPos (FPoint(1, 1));
 
   if ( isMonochron() )
   {
@@ -724,7 +725,7 @@ void FLineEdit::drawInputField()
     drawShadow ();
 
   // set the cursor to the first pos.
-  setCursorPos (int(2 + cursor_pos - text_offset), 1);
+  setCursorPos (FPoint(int(2 + cursor_pos - text_offset), 1));
 }
 
 //----------------------------------------------------------------------

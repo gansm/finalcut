@@ -66,14 +66,13 @@ void FProgressbar::setPercentage (std::size_t percentage_value)
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::setGeometry ( int x, int y
-                               , std::size_t w, std::size_t h
+void FProgressbar::setGeometry ( const FPoint& pos, const FSize& size
                                , bool adjust )
 {
   // Set the progress bar geometry
 
-  FWidget::setGeometry (x, y, w, h, adjust);
-  bar_length = w;
+  FWidget::setGeometry (pos, size, adjust);
+  bar_length = size.getWidth();
 }
 
 //----------------------------------------------------------------------
@@ -84,12 +83,12 @@ bool FProgressbar::setShadow (bool enable)
     && getEncoding() != fc::ASCII )
   {
     flags.shadow = true;
-    setShadowSize(1, 1);
+    setShadowSize(FSize(1, 1));
   }
   else
   {
     flags.shadow = false;
-    setShadowSize(0, 0);
+    setShadowSize(FSize(0, 0));
   }
 
   return enable;
@@ -99,9 +98,9 @@ bool FProgressbar::setShadow (bool enable)
 void FProgressbar::hide()
 {
   FWidget::hide();
-  std::size_t s = hasShadow() ? 1 : 0;
-  hideSize (getWidth() + s, getHeight() + s);
-  setPrintPos (int(getWidth()) - 4, 0);
+  FSize shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
+  hideSize (getSize() + shadow);
+  setPrintPos (FPoint(int(getWidth()) - 4, 0));
   print ("      ");  // hide percentage
 }
 
@@ -147,7 +146,7 @@ void FProgressbar::drawPercentage()
   if ( isMonochron() )
     setReverse(true);
 
-  setPrintPos (int(getWidth()) - 3, 0);
+  setPrintPos (FPoint(int(getWidth()) - 3, 0));
 
   if ( percentage > 100 )
     print ("--- %");
@@ -163,7 +162,7 @@ void FProgressbar::drawBar()
 {
   std::size_t i = 0;
   double length;
-  setPrintPos (1, 1);
+  setPrintPos (FPoint(1, 1));
   setColor ( wc.progressbar_bg
            , wc.progressbar_fg );
 

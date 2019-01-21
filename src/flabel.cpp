@@ -234,7 +234,7 @@ void FLabel::setText (const FString& txt)
 void FLabel::hide()
 {
   FWidget::hide();
-  hideSize (getWidth(), getHeight());
+  hideSize (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -480,7 +480,7 @@ void FLabel::drawMultiLine()
     else
       std::wcsncpy(dest, src, length);
 
-    setPrintPos (1, 1 + int(y));
+    setPrintPos (FPoint(1, 1 + int(y)));
 
     if ( hotkeypos != NOT_SET )
     {
@@ -522,7 +522,7 @@ void FLabel::drawSingleLine()
   if ( hotkeypos != NOT_SET )
     length--;
 
-  setPrintPos (1, 1);
+  setPrintPos (FPoint(1, 1));
   align_offset = getAlignOffset(length);
   printLine (label_text, length, hotkeypos, align_offset);
   delete[] label_text;

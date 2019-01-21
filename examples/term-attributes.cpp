@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -22,6 +22,9 @@
 
 #include <functional>
 #include <final/final.h>
+
+using finalcut::FPoint;
+using finalcut::FSize;
 
 
 //----------------------------------------------------------------------
@@ -47,7 +50,7 @@ class AttribDlg : public finalcut::FDialog
     AttribDlg& operator = (const AttribDlg&) = delete;
 
     // Event handlers
-    virtual void onAccel (finalcut::FAccelEvent*) override;
+    virtual void onKeyPress (finalcut::FKeyEvent*) override;
     virtual void onWheel (finalcut::FWheelEvent*) override;
     virtual void onClose (finalcut::FCloseEvent*) override;
 
@@ -77,10 +80,12 @@ AttribDlg::AttribDlg (finalcut::FWidget* parent)
           + finalcut::FString(getTermType())
           + ")");
 
-  next_button.setGeometry(int(getWidth()) - 13, int(getHeight()) - 4, 10, 1);
-  next_button.addAccelerator(finalcut::fc::Fkey_right);
-  back_button.setGeometry(int(getWidth()) - 25, int(getHeight()) - 4, 10, 1);
-  back_button.addAccelerator(finalcut::fc::Fkey_left);
+  next_button.setGeometry ( FPoint(int(getWidth()) - 13, int(getHeight()) - 4)
+                          , FSize(10, 1) );
+  next_button.addAccelerator (finalcut::fc::Fkey_right);
+  back_button.setGeometry ( FPoint(int(getWidth()) - 25, int(getHeight()) - 4)
+                          , FSize(10, 1) );
+  back_button.addAccelerator (finalcut::fc::Fkey_left);
 
   // Add function callbacks
   next_button.addCallback
@@ -101,10 +106,18 @@ AttribDlg::~AttribDlg()
 { }
 
 //----------------------------------------------------------------------
-void AttribDlg::onAccel (finalcut::FAccelEvent* ev)
+void AttribDlg::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  close();
-  ev->accept();
+  if ( ! ev )
+    return;
+
+  if ( ev->key() == 'q' )
+  {
+    close();
+    ev->accept();
+  }
+  else
+    finalcut::FDialog::onKeyPress(ev);
 }
 
 //----------------------------------------------------------------------
@@ -168,11 +181,11 @@ void AttribDlg::adjustSize()
   if ( y < 1 )
     y = 1;
 
-  setGeometry(x, y, 69, 21, false);
-  next_button.setGeometry ( int(getWidth()) - 13, int(getHeight()) - 4
-                          , 10, 1, false );
-  back_button.setGeometry ( int(getWidth()) - 25, int(getHeight()) - 4
-                          , 10, 1, false );
+  setGeometry(FPoint(x, y), FSize(69, 21), false);
+  next_button.setGeometry ( FPoint(int(getWidth()) - 13, int(getHeight()) - 4)
+                          , FSize(10, 1), false );
+  back_button.setGeometry ( FPoint(int(getWidth()) - 25, int(getHeight()) - 4)
+                          , FSize(10, 1), false );
   finalcut::FDialog::adjustSize();
 }
 
@@ -260,7 +273,7 @@ void AttribDemo::printAltCharset()
   if ( ! isMonochron() )
     setColor (wc.label_fg, wc.label_bg);
 
-  setPrintPos (1, 1);
+  setPrintPos (FPoint(1, 1));
   print("alternate charset: ");
 
   if ( parent->bgcolor == finalcut::fc::Default )
@@ -427,7 +440,7 @@ void AttribDemo::draw()
 
   for (std::size_t y = 0; y < getParentWidget()->getHeight() - 7; y++)
   {
-    setPrintPos (1, 2 + int(y));
+    setPrintPos (FPoint(1, 2 + int(y)));
 
     if ( ! isMonochron() )
       setColor (wc.label_fg, wc.label_bg);
@@ -439,7 +452,7 @@ void AttribDemo::draw()
   if ( ! isMonochron() )
     setColor(wc.label_fg, wc.label_bg);
 
-  setPrintPos (1, 15);
+  setPrintPos (FPoint(1, 15));
   FColor bg = static_cast<AttribDlg*>(getParent())->bgcolor;
   print (" Background color:");
 
@@ -448,7 +461,7 @@ void AttribDemo::draw()
   else
     printf ( " %d", bg);
 
-  setPrintPos (16, 17);
+  setPrintPos (FPoint(16, 17));
   print ("Change background color ->");
 }
 
@@ -466,13 +479,12 @@ int main (int argc, char* argv[])
   // the parent object "app" (FObject destructor).
   AttribDlg dialog(&app);
 
-  dialog.setGeometry (6, 2, 69, 21);
-  dialog.addAccelerator('q');  // press 'q' to quit
+  dialog.setGeometry (FPoint(6, 2), FSize(69, 21));
   dialog.setShadow();
 
   // Create the attribute demo widget as a child object from the dialog
   AttribDemo demo(&dialog);
-  demo.setGeometry (1, 1, 67, 19);
+  demo.setGeometry (FPoint(1, 1), FSize(67, 19));
 
   // Set the dialog object as main widget
   app.setMainWidget(&dialog);

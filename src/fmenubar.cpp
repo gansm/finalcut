@@ -66,7 +66,7 @@ void FMenuBar::hide()
   setColor (fg, bg);
   screenWidth = getDesktopWidth();
   auto blank = createBlankArray (screenWidth + 1);
-  setPrintPos (1, 1);
+  setPrintPos (FPoint(1, 1));
   print (blank);
   destroyBlankArray (blank);
 }
@@ -74,7 +74,7 @@ void FMenuBar::hide()
 //----------------------------------------------------------------------
 void FMenuBar::adjustSize()
 {
-  setGeometry (1, 1, getDesktopWidth(), 1, false);
+  setGeometry (FPoint(1, 1), FSize(getDesktopWidth(), 1), false);
   adjustItems();
 }
 
@@ -236,7 +236,7 @@ void FMenuBar::init()
   auto r = getRootWidget();
   auto w = r->getWidth();
   // initialize geometry values
-  setGeometry (1, 1, w, 1, false);
+  setGeometry (FPoint(1, 1), FSize(w, 1), false);
   setAlwaysOnTop();
   setMenuBar(this);
   ignorePadding();
@@ -254,8 +254,7 @@ void FMenuBar::init()
 //----------------------------------------------------------------------
 void FMenuBar::calculateDimensions()
 {
-  int item_X = 1;
-  int item_Y = 1;
+  FPoint item_pos (1, 1);
   auto iter = item_list.begin();
   auto last = item_list.end();
 
@@ -266,13 +265,13 @@ void FMenuBar::calculateDimensions()
     int item_width = int(len) + 2;
 
     // set item geometry
-    (*iter)->setGeometry (item_X, item_Y, std::size_t(item_width), 1, false);
+    (*iter)->setGeometry (item_pos, FSize(std::size_t(item_width), 1), false);
 
     // set menu position
     if ( (*iter)->hasMenu() )
-      (*iter)->getMenu()->setPos (item_X, item_Y, false);
+      (*iter)->getMenu()->setPos (item_pos, false);
 
-    item_X += item_width;
+    item_pos.x_ref() += item_width;
 
     ++iter;
   }
@@ -502,7 +501,7 @@ void FMenuBar::drawItems()
   if ( item_list.empty() )
     return;
 
-  setPrintPos (1, 1);
+  setPrintPos (FPoint(1, 1));
 
   if ( isMonochron() )
     setReverse(true);
@@ -665,13 +664,13 @@ inline void FMenuBar::drawEllipsis (const menuText& txtdata, std::size_t x)
     if ( txtdata.startpos < screenWidth )
     {
       // Print ellipsis
-      setPrintPos (int(screenWidth) - 1, 1);
+      setPrintPos (FPoint(int(screenWidth) - 1, 1));
       print ("..");
     }
     else if ( txtdata.startpos - 1 <= screenWidth )
     {
       // Hide first character from text
-      setPrintPos (int(screenWidth), 1);
+      setPrintPos (FPoint(int(screenWidth), 1));
       print (' ');
     }
     }
@@ -719,7 +718,7 @@ void FMenuBar::adjustItems()
       auto menu = (*iter)->getMenu();
 
       // set menu position
-      menu->setPos (menu->adjustX(item_X), item_Y);
+      menu->setPos (FPoint(menu->adjustX(item_X), item_Y));
 
       // call menu adjustItems()
       menu->adjustItems();

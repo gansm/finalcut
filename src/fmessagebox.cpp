@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -165,7 +165,6 @@ void FMessageBox::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FMessageBox::adjustSize()
 {
-  int X, Y;
   std::size_t max_width;
   std::size_t max_height;
   auto root_widget = getRootWidget();
@@ -182,9 +181,9 @@ void FMessageBox::adjustSize()
     max_height = 24;
   }
 
-  X = 1 + int((max_width - getWidth()) / 2);
-  Y = 1 + int((max_height - getHeight()) / 3);
-  setPos(X, Y, false);
+  int x = 1 + int((max_width - getWidth()) / 2);
+  int y = 1 + int((max_height - getHeight()) / 3);
+  setPos(FPoint(x, y), false);
   FDialog::adjustSize();
 }
 
@@ -235,7 +234,7 @@ inline void FMessageBox::allocation (int button0, int button1, int button2)
   {
     button[0] = new FButton (this);
     button[0]->setText(button_text[button0]);
-    button[0]->setPos(3, int(getHeight()) - 4, false);
+    button[0]->setPos(FPoint(3, int(getHeight()) - 4), false);
     button[0]->setWidth(1, false);
     button[0]->setHeight(1, false);
     button[0]->setFocus();
@@ -244,7 +243,7 @@ inline void FMessageBox::allocation (int button0, int button1, int button2)
     {
       button[1] = new FButton(this);
       button[1]->setText(button_text[button1]);
-      button[1]->setPos(17, int(getHeight()) - 4, false);
+      button[1]->setPos(FPoint(17, int(getHeight()) - 4), false);
       button[1]->setWidth(0, false);
       button[1]->setHeight(1, false);
     }
@@ -253,7 +252,7 @@ inline void FMessageBox::allocation (int button0, int button1, int button2)
     {
       button[2] = new FButton(this);
       button[2]->setText(button_text[button2]);
-      button[2]->setPos(32, int(getHeight()) - 4, false);
+      button[2]->setPos(FPoint(32, int(getHeight()) - 4), false);
       button[2]->setWidth(0, false);
       button[2]->setHeight(1, false);
     }
@@ -309,8 +308,8 @@ inline void FMessageBox::initCallbacks()
 //----------------------------------------------------------------------
 void FMessageBox::calculateDimensions()
 {
-  std::size_t w, h;
-  std::size_t headline_height = 0;
+  FSize size;
+  std::size_t headline_height{0};
   text_split = text.split("\n");
   max_line_width = 0;
   text_num_lines = uInt(text_split.size());
@@ -330,13 +329,13 @@ void FMessageBox::calculateDimensions()
       max_line_width = len;
   }
 
-  h = text_num_lines + 8 + headline_height;
-  w = max_line_width + 4;
+  size.setHeight (text_num_lines + 8 + headline_height);
+  size.setWidth (max_line_width + 4);
 
-  if ( w < 20 )
-    w = 20;
+  if ( size.getWidth() < 20 )
+    size.setWidth(20);
 
-  setSize (w, h);
+  setSize(size);
 }
 
 //----------------------------------------------------------------------
@@ -360,7 +359,7 @@ void FMessageBox::draw()
     if ( center_text )  // center one line
       center_x = int((max_line_width - headline_length) / 2);
 
-    setPrintPos (1 + msg_x + center_x, 4);
+    setPrintPos (FPoint(1 + msg_x + center_x, 4));
     print (headline_text);
     head_offset = 2;
   }
@@ -374,7 +373,7 @@ void FMessageBox::draw()
     if ( center_text )  // center one line
       center_x = int((max_line_width - line_length) / 2);
 
-    setPrintPos (1 + msg_x + center_x, 4 + head_offset + i);
+    setPrintPos (FPoint(1 + msg_x + center_x, 4 + head_offset + i));
     print(text_components[i]);
   }
 

@@ -158,7 +158,6 @@ class FVTerm
     void                  hideCursor();
     void                  showCursor();
     void                  setPrintCursor (const FPoint&);
-    void                  setPrintCursor (int, int);
     FColor                rgb2ColorIndex (uInt8, uInt8, uInt8);
     void                  setColor (FColor, FColor);
     static void           setNormal();
@@ -277,10 +276,8 @@ class FVTerm
 
     // Methods
     virtual void          clearArea (int = ' ');
-    void                  createVTerm (const FRect&);
-    void                  createVTerm (int, int);
-    void                  resizeVTerm (const FRect&);
-    void                  resizeVTerm (int, int);
+    void                  createVTerm (const FSize&);
+    void                  resizeVTerm (const FSize&);
     void                  putVTerm();
     void                  updateTerminal (terminal_update);
     void                  updateTerminal();
@@ -340,83 +337,56 @@ class FVTerm
     void                  createArea ( const FRect&
                                      , const FSize&
                                      , term_area*& );
-
-    void                  createArea ( int, int, int, int
-                                     , int, int
-                                     , term_area*& );
-
     void                  resizeArea ( const FRect&
                                      , const FSize&
                                      , term_area* );
-
-    void                  resizeArea ( int, int, int, int
-                                     , int, int
-                                     , term_area* );
-
     static void           removeArea (term_area*&);
     static void           restoreVTerm (const FRect&);
-    static void           restoreVTerm (int, int, int, int);
-    void                  setTextToDefault (term_area*, int, int);
+    void                  setTextToDefault (term_area*, const FSize&);
     static bool           reallocateTextArea ( term_area*
                                              , std::size_t
                                              , std::size_t );
     static bool           reallocateTextArea ( term_area*
                                              , std::size_t );
 
-    static covered_state  isCovered ( const FPoint&
-                                    , term_area* );
-
-    static covered_state  isCovered ( int, int
-                                    , term_area* );
+    static covered_state  isCovered (const FPoint&, term_area*);
 
     static void           updateOverlappedColor ( term_area*
-                                                , int, int, int, int );
-    static void           updateOverlappedCharacter (term_area*, int, int);
+                                                , const FPoint&
+                                                , const FPoint& );
+    static void           updateOverlappedCharacter ( term_area*
+                                                    , const FPoint& );
     static void           updateShadedCharacter ( term_area*
-                                                , int, int, int, int );
+                                                , const FPoint&
+                                                , const FPoint& );
     static void           updateInheritBackground ( term_area*
-                                                  , int, int, int, int );
+                                                  , const FPoint&
+                                                  , const FPoint& );
     static void           updateCharacter ( term_area*
-                                          , int, int, int, int );
+                                          , const FPoint&
+                                          , const FPoint& );
     static bool           updateVTermCharacter ( term_area*
-                                               , int, int, int, int );
+                                               , const FPoint&
+                                               , const FPoint& );
     static void           callPreprocessingHandler (term_area*);
     void                  updateVTerm();
     void                  updateVTerm (term_area*);
     bool                  updateVTermCursor (term_area*);
-    static bool           isInsideArea (int, int, term_area*);
-
+    static bool           isInsideArea (const FPoint&, term_area*);
     static void           setAreaCursor ( const FPoint&
                                         , bool, term_area* );
-
-    static void           setAreaCursor ( int, int
-                                        , bool, term_area*);
-
     static void           getArea (const FPoint&, term_area*);
-    static void           getArea (int, int, term_area*);
     static void           getArea (const FRect&, term_area*);
-    static void           getArea (int, int, int, int, term_area*);
     static void           putArea (const FPoint&, term_area*);
-    static void           putArea (int, int, term_area*);
     void                  scrollAreaForward (term_area*);
     void                  scrollAreaReverse (term_area*);
     void                  clearArea (term_area*, int = ' ');
-
     static charData       generateCharacter (const FPoint&);
-    static charData       generateCharacter (int, int);
-
     static charData       getCharacter ( character_type
                                        , const FPoint&
                                        , FVTerm* );
-
-    static charData       getCharacter ( character_type
-                                       , int
-                                       , int, FVTerm* );
-
     static charData       getCoveredCharacter (const FPoint&, FVTerm*);
-    static charData       getCoveredCharacter (int, int, FVTerm*);
     static charData       getOverlappedCharacter (const FPoint&, FVTerm*);
-    static charData       getOverlappedCharacter (int, int, FVTerm*);
     void                  processTerminalUpdate();
     static void           startTerminalUpdate();
     static void           finishTerminalUpdate();
@@ -457,9 +427,9 @@ class FVTerm
     static void           init_characterLengths (FOptiMove*);
     void                  finish();
     static void           putAreaLine (charData*, charData*, int);
-    static void           putAreaCharacter ( int, int, FVTerm*
+    static void           putAreaCharacter ( const FPoint&, FVTerm*
                                            , charData*, charData* );
-    static void           getAreaCharacter ( int, int, term_area*
+    static void           getAreaCharacter ( const FPoint&, term_area*
                                            , charData*& );
     bool                  clearTerm (int = ' ');
     bool                  clearFullArea (term_area*, charData&);
@@ -475,7 +445,7 @@ class FVTerm
     bool                  printWrap (term_area*);
     void                  updateTerminalLine (uInt);
     bool                  updateTerminalCursor();
-    bool                  isInsideTerminal (int, int);
+    bool                  isInsideTerminal (const FPoint&);
     static void           markAsPrinted (uInt, uInt);
     static void           markAsPrinted (uInt, uInt, uInt);
     static void           newFontChanges (charData*&);
@@ -645,10 +615,6 @@ inline void FVTerm::hideCursor()
 //----------------------------------------------------------------------
 inline void FVTerm::showCursor()
 { return hideCursor(false); }
-
-//----------------------------------------------------------------------
-inline void FVTerm::setPrintCursor (const FPoint& pos)
-{ setPrintCursor (pos.getX(), pos.getY()); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setColor (FColor fg, FColor bg)

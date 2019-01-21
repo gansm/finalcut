@@ -65,7 +65,7 @@ class FTermXTerminal final
     static void           setCursorStyle (fc::xtermCursorStyle);
     static void           setFont (const FString&);
     static void           setTitle (const FString&);
-    static void           setTermSize (std::size_t, std::size_t);
+    static void           setTermSize (const FSize&);
     static void           setForeground (const FString&);
     static void           setBackground (const FString&);
     static void           setCursorColor (const FString&);

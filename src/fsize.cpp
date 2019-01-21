@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -93,7 +93,7 @@ bool FSize::isEmpty() const
 //----------------------------------------------------------------------
 std::ostream& operator << (std::ostream& outstr, const FSize& s)
 {
-  outstr << s.getWidth() << " " << s.getHeight();
+  outstr << s.width << " " << s.height;
   return outstr;
 }
 

@@ -27,6 +27,9 @@
 
 #include <final/final.h>
 
+using finalcut::FPoint;
+using finalcut::FSize;
+
 
 //----------------------------------------------------------------------
 // class CheckList
@@ -73,9 +76,10 @@ CheckList::CheckList (finalcut::FWidget* parent)
 {
   setText (L"Shopping list");
   setShadow();
-  setGeometry (int(1 + (parent->getWidth() - 30) / 2), 5, 30, 13);
+  setGeometry ( FPoint(int(1 + (parent->getWidth() - 30) / 2), 5)
+              , FSize(30, 13) );
   listView.ignorePadding();
-  listView.setGeometry (1, 2, getWidth(), getHeight() - 1);
+  listView.setGeometry (FPoint(1, 2), FSize(getWidth(), getHeight() - 1));
 
   // Add columns to the view
   listView.addColumn ("Item");

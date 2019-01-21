@@ -84,25 +84,24 @@ const FString FTextView::getText() const
 }
 
 //----------------------------------------------------------------------
-void FTextView::setGeometry ( int x, int y
-                            , std::size_t w, std::size_t h
-                            , bool adjust )
+void FTextView::setGeometry ( const FPoint& pos, const FSize& size
+                            , bool adjust)
 {
   // Set the text view geometry
 
-  FWidget::setGeometry(x, y, w, h, adjust);
+  FWidget::setGeometry(pos, size, adjust);
   std::size_t width  = getWidth();
   std::size_t height = getHeight();
 
   if ( isNewFont() )
   {
-    vbar->setGeometry (int(width), 1, 2, height - 1);
-    hbar->setGeometry (1, int(height), width - 2, 1);
+    vbar->setGeometry (FPoint(int(width), 1), FSize(2, height - 1));
+    hbar->setGeometry (FPoint(1, int(height)), FSize(width - 2, 1));
   }
   else
   {
-    vbar->setGeometry (int(width), 2, 1, height - 2);
-    hbar->setGeometry (2, int(height), width - 2, 1);
+    vbar->setGeometry (FPoint(int(width), 2), FSize(1, height - 2));
+    hbar->setGeometry (FPoint(2, int(height)), FSize(width - 2, 1));
   }
 
   vbar->resize();
@@ -187,7 +186,7 @@ void FTextView::scrollTo (int x, int y)
 void FTextView::hide()
 {
   FWidget::hide();
-  hideSize (getWidth(), getHeight());
+  hideSize (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -298,7 +297,7 @@ void FTextView::clear()
 
   for (int y = 0; y < int(getTextHeight()); y++)
   {
-    setPrintPos (2, 2 - nf_offset + y);
+    setPrintPos (FPoint(2, 2 - nf_offset + y));
     print (blank);
   }
 
@@ -671,7 +670,7 @@ void FTextView::draw()
     }
   }
 
-  setCursorPos (int(getWidth()), int(getHeight()));
+  setCursorPos (FPoint(int(getWidth()), int(getHeight())));
   updateTerminal();
   flush_out();
 }
@@ -696,7 +695,7 @@ void FTextView::drawText()
   {
     std::size_t i;
     FString line;
-    setPrintPos (2, 2 - nf_offset + int(y));
+    setPrintPos (FPoint(2, 2 - nf_offset + int(y)));
     line = data[y + std::size_t(yoffset)].mid ( std::size_t(1 + xoffset)
                                               , getTextWidth() );
     const auto line_str = line.wc_str();

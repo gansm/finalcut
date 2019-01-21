@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2018 Markus Gans                                      *
+* Copyright 2016-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -22,6 +22,9 @@
 
 #include <vector>
 #include <final/final.h>
+
+using finalcut::FPoint;
+using finalcut::FSize;
 
 
 //----------------------------------------------------------------------
@@ -75,24 +78,24 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   left_arrow.setForegroundColor (wc.label_inactive_fg);
   left_arrow.setEmphasis();
   left_arrow.ignorePadding();
-  left_arrow.setGeometry (2, 2, 1, 1);
+  left_arrow.setGeometry (FPoint(2, 2), FSize(1, 1));
 
   right_arrow = arrow_up;
   right_arrow.setForegroundColor (wc.label_inactive_fg);
   right_arrow.setEmphasis();
   right_arrow.ignorePadding();
-  right_arrow.setGeometry (int(getWidth()) - 1, 2, 1, 1);
+  right_arrow.setGeometry (FPoint(int(getWidth()) - 1, 2), FSize(1, 1));
 
   top_left_label = "menu";
   top_left_label.setForegroundColor (wc.label_inactive_fg);
   top_left_label.setEmphasis();
-  top_left_label.setGeometry (1, 1, 6, 1);
+  top_left_label.setGeometry (FPoint(1, 1), FSize(6, 1));
 
   top_right_label = "zoom";
   top_right_label.setAlignment (finalcut::fc::alignRight);
   top_right_label.setForegroundColor (wc.label_inactive_fg);
   top_right_label.setEmphasis();
-  top_right_label.setGeometry (int(getClientWidth()) - 5, 1, 6, 1);
+  top_right_label.setGeometry (FPoint(int(getClientWidth()) - 5, 1), FSize(6, 1));
 
   finalcut::FString bottom_label_text = "resize\n"
                                         "corner\n";
@@ -101,7 +104,7 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   bottom_label.setAlignment (finalcut::fc::alignRight);
   bottom_label.setForegroundColor (wc.label_inactive_fg);
   bottom_label.setEmphasis();
-  bottom_label.setGeometry (13, 3, 6, 3);
+  bottom_label.setGeometry (FPoint(13, 3), FSize(6, 3));
 }
 
 //----------------------------------------------------------------------
@@ -126,9 +129,12 @@ void SmallWindow::adjustSize()
   }
 
   finalcut::FDialog::adjustSize();
-  right_arrow.setGeometry (int(getWidth()) - 1, 2, 1, 1);
-  top_right_label.setGeometry (int(getClientWidth()) - 5, 1, 6, 1);
-  bottom_label.setGeometry (1, int(getClientHeight()) - 2, getClientWidth(), 3);
+  right_arrow.setGeometry ( FPoint(int(getWidth()) - 1, 2)
+                          , FSize(1, 1) );
+  top_right_label.setGeometry ( FPoint(int(getClientWidth()) - 5, 1)
+                              , FSize(6, 1) );
+  bottom_label.setGeometry ( FPoint(1, int(getClientHeight()) - 2)
+                          , FSize(getClientWidth(), 3) );
 }
 
 //----------------------------------------------------------------------
@@ -309,11 +315,11 @@ void Window::configureFileMenuItems()
 void Window::configureDialogButtons()
 {
   // Dialog buttons
-  CreateButton.setGeometry (2, 2, 9, 1);
+  CreateButton.setGeometry (FPoint(2, 2), FSize(9, 1));
   CreateButton.setText (L"&Create");
-  CloseButton.setGeometry (15, 2, 9, 1);
+  CloseButton.setGeometry (FPoint(15, 2), FSize(9, 1));
   CloseButton.setText (L"C&lose");
-  QuitButton.setGeometry (28, 2, 9, 1);
+  QuitButton.setGeometry (FPoint(28, 2), FSize(9, 1));
   QuitButton.setText (L"&Quit");
 
   // Add button callback
@@ -350,7 +356,7 @@ void Window::adjustSize()
   if ( Y < 2 )
     Y = 2;
 
-  setPos (X, Y);
+  setPos (FPoint(X, Y));
   auto first = windows.begin();
   auto iter = first;
 
@@ -361,7 +367,7 @@ void Window::adjustSize()
       int n = int(std::distance(first, iter))
         , x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3
         , y = dy + 11 + int(n / 3) * 3;
-      (*iter)->dgl->setPos (x, y);
+      (*iter)->dgl->setPos (FPoint(x, y));
     }
 
     ++iter;
@@ -426,8 +432,8 @@ void Window::cb_createWindows (finalcut::FWidget*, FDataPtr)
       int n = int(std::distance(first, iter))
         , x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3
         , y = dy + 11 + int(n / 3) * 3;
-      win->setGeometry (x, y, 20, 8);
-      win->setMinimumSize (20, 8);
+      win->setGeometry (FPoint(x, y), FSize(20, 8));
+      win->setMinimumSize (FSize(20, 8));
       win->setResizeable();
       win->show();
 
@@ -563,7 +569,8 @@ int main (int argc, char* argv[])
   // Create main dialog object
   Window main_dlg (&app);
   main_dlg.setText ("Main window");
-  main_dlg.setGeometry (int(1 + (app.getWidth() - 40) / 2), 2, 40, 6);
+  main_dlg.setGeometry ( FPoint(int(1 + (app.getWidth() - 40) / 2), 2)
+                       , FSize(40, 6) );
 
   // Set dialog main_dlg as main widget
   app.setMainWidget (&main_dlg);

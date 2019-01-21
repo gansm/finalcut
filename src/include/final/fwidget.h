@@ -202,6 +202,7 @@ class FWidget : public FVTerm, public FObject
     const FPoint        getTermPos() const;
     std::size_t         getWidth() const;
     std::size_t         getHeight() const;
+    const FSize         getSize() const;
     int                 getTopPadding() const;
     int                 getLeftPadding() const;
     int                 getBottomPadding() const;
@@ -254,11 +255,9 @@ class FWidget : public FVTerm, public FObject
     virtual void        setX (int, bool = true);  // positioning
     virtual void        setY (int, bool = true);
     virtual void        setPos (const FPoint&, bool = true);
-    virtual void        setPos (int, int, bool = true);
     virtual void        setWidth (std::size_t, bool = true);
     virtual void        setHeight (std::size_t, bool = true);
-    virtual void        setSize (FSize, bool = true);
-    virtual void        setSize (std::size_t, std::size_t, bool = true);
+    virtual void        setSize (const FSize&, bool = true);
     void                setTopPadding (int, bool = true);
     void                setLeftPadding (int, bool = true);
     void                setBottomPadding (int, bool = true);
@@ -266,25 +265,20 @@ class FWidget : public FVTerm, public FObject
     void                setParentOffset();
     void                setTermOffset();
     void                setTermOffsetWithPadding();
-    void                setTermSize (std::size_t, std::size_t);
+    void                setTermSize (const FSize&);
     virtual void        setGeometry (const FRect&, bool = true);
     virtual void        setGeometry (const FPoint&, const FSize&, bool = true);
-    virtual void        setGeometry ( int, int
-                                    , std::size_t, std::size_t
-                                    , bool = true );
-    virtual void        setShadowSize (std::size_t, std::size_t);
+    virtual void        setShadowSize (const FSize&);
     void                setMinimumWidth (std::size_t);
     void                setMinimumHeight (std::size_t);
-    void                setMinimumSize (std::size_t, std::size_t);
+    void                setMinimumSize (const FSize&);
     void                setMaximumWidth (std::size_t);
-    void                setMaximumHeight (std::size_t);
+    void                setMaximumHeight (const FSize&);
     void                setMaximumSize (std::size_t, std::size_t);
-    void                setFixedSize (std::size_t, std::size_t);
+    void                setFixedSize (const FSize&);
     bool                setCursorPos (const FPoint&);
-    bool                setCursorPos (int, int);
     void                unsetCursorPos();
     void                setPrintPos (const FPoint&);
-    void                setPrintPos (int, int);
     void                setDoubleFlatLine (fc::sides, bool = true);
     void                unsetDoubleFlatLine (fc::sides);
     void                setDoubleFlatLine (fc::sides, int, bool = true);
@@ -305,7 +299,6 @@ class FWidget : public FVTerm, public FObject
 
     // Methods
     static FWidget*     childWidgetAt (FWidget*, const FPoint&);
-    static FWidget*     childWidgetAt (FWidget*, int, int);
     int                 numOfFocusableChildren();
     virtual bool        close();
     void                clearStatusbarMessage();
@@ -333,7 +326,6 @@ class FWidget : public FVTerm, public FObject
     FPoint              termToWidgetPos (const FPoint&);
     void                detectTermSize();
     virtual void        move (const FPoint&);
-    virtual void        move (int, int);
     void                drawShadow();
     void                clearShadow();
     void                drawFlatBorder();
@@ -382,7 +374,7 @@ class FWidget : public FVTerm, public FObject
     // Methods
     virtual void        adjustSize();
     void                adjustSizeGlobal();
-    void                hideSize (std::size_t, std::size_t);
+    void                hideSize (const FSize&);
     virtual bool        focusNextChild();  // Change child...
     virtual bool        focusPrevChild();  // ...focus
 
@@ -442,16 +434,16 @@ class FWidget : public FVTerm, public FObject
       widget_size_hints() = default;
       ~widget_size_hints() = default;
 
-      void setMinimum (std::size_t w, std::size_t h)
+      void setMinimum (const FSize& s)
       {
-        min_width = w;
-        min_height = h;
+        min_width = s.getWidth();
+        min_height = s.getHeight();
       }
 
-      void setMaximum (std::size_t w, std::size_t h)
+      void setMaximum (const FSize& s)
       {
-        max_width = w;
-        max_height = h;
+        max_width = s.getWidth();
+        max_height = s.getHeight();
       }
 
       std::size_t min_width{0};
@@ -602,6 +594,10 @@ inline std::size_t FWidget::getWidth() const
 //----------------------------------------------------------------------
 inline std::size_t FWidget::getHeight() const
 { return adjust_wsize.getHeight(); }
+
+//----------------------------------------------------------------------
+inline const FSize FWidget::getSize() const
+{ return adjust_wsize.getSize(); }
 
 //----------------------------------------------------------------------
 inline int FWidget::getTopPadding() const
@@ -805,81 +801,53 @@ inline void FWidget::setBackgroundColor (FColor color)
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::setPos (const FPoint& p, bool adjust)
-{ setPos (p.getX(), p.getY(), adjust); }
-
-//----------------------------------------------------------------------
-inline void FWidget::setSize (FSize s, bool adjust)
-{ setSize(s.getWidth(), s.getHeight(), adjust); }
-
-//----------------------------------------------------------------------
 inline void FWidget::setGeometry (const FRect& box, bool adjust)
 {
-  setGeometry ( box.getX()
-              , box.getY()
-              , std::size_t(box.getWidth())
-              , std::size_t(box.getHeight())
-              , adjust );
+  setGeometry (box.getPos(), box.getSize(), adjust);
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
+inline void FWidget::setShadowSize (const FSize& size)
 {
-  setGeometry ( p.getX()
-              , p.getY()
-              , s.getWidth()
-              , s.getHeight()
-              , adjust );
+  // width = right shadow  /  height = bottom shadow
+  wshadow.setSize (size);
 }
-
-//----------------------------------------------------------------------
-inline void FWidget::setShadowSize (std::size_t right, std::size_t bottom)
-{ wshadow.setSize (right, bottom); }
 
 //----------------------------------------------------------------------
 inline void FWidget::setMinimumWidth (std::size_t min_width)
-{ size_hints.setMinimum (min_width, size_hints.min_height); }
+{ size_hints.setMinimum (FSize(min_width, size_hints.min_height)); }
 
 //----------------------------------------------------------------------
 inline void FWidget::setMinimumHeight (std::size_t min_height)
-{ size_hints.setMinimum (size_hints.min_width, min_height); }
+{ size_hints.setMinimum (FSize(size_hints.min_width, min_height)); }
 
 //----------------------------------------------------------------------
-inline void FWidget::setMinimumSize ( std::size_t min_width
-                                    , std::size_t min_height )
-{ size_hints.setMinimum (min_width, min_height); }
+inline void FWidget::setMinimumSize (const FSize& size)
+{ size_hints.setMinimum (size); }
 
 //----------------------------------------------------------------------
 inline void FWidget::setMaximumWidth (std::size_t max_width)
-{ size_hints.setMaximum (max_width, size_hints.max_height); }
+{ size_hints.setMaximum (FSize(max_width, size_hints.max_height)); }
 
 //----------------------------------------------------------------------
-inline void FWidget::setMaximumHeight (std::size_t max_height)
-{ size_hints.setMaximum (size_hints.max_width, max_height); }
+inline void FWidget::setMaximumHeight (const FSize& size)
+{ size_hints.setMaximum (size); }
 
 //----------------------------------------------------------------------
 inline void FWidget::setMaximumSize ( std::size_t max_width
                                     , std::size_t max_height )
-{ size_hints.setMaximum (max_width, max_height); }
+{ size_hints.setMaximum (FSize(max_width, max_height)); }
 
 //----------------------------------------------------------------------
-inline void FWidget::setFixedSize (std::size_t width, std::size_t height)
+inline void FWidget::setFixedSize (const FSize& size)
 {
-  size_hints.setMinimum (width, height);
-  size_hints.setMaximum (width, height);
+  size_hints.setMinimum (size);
+  size_hints.setMaximum (size);
 }
 
 //----------------------------------------------------------------------
-inline bool FWidget::setCursorPos (const FPoint& pos)
-{ return setCursorPos (pos.getX(), pos.getY()); }
-
-//----------------------------------------------------------------------
 inline void FWidget::unsetCursorPos()
-{ setCursorPos(-1, -1); }
-
-//----------------------------------------------------------------------
-inline void FWidget::setPrintPos (const FPoint& pos)
-{ setPrintPos (pos.getX(), pos.getY()); }
+{ setCursorPos (FPoint(-1, -1)); }
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetDoubleFlatLine (fc::sides side)
@@ -934,10 +902,6 @@ inline bool FWidget::isPaddingIgnored()
 { return ignore_padding; }
 
 //----------------------------------------------------------------------
-inline FWidget* FWidget::childWidgetAt (FWidget* p, const FPoint& pos)
-{ return childWidgetAt (p, pos.getX(), pos.getY()); }
-
-//----------------------------------------------------------------------
 inline void FWidget::clearStatusbarMessage()
 { statusbar_message.clear(); }
 
@@ -955,10 +919,6 @@ inline FPoint FWidget::termToWidgetPos (const FPoint& tPos)
   return FPoint ( tPos.getX() + 1 - offset.getX1() - adjust_wsize.getX()
                 , tPos.getY() + 1 - offset.getY1() - adjust_wsize.getY() );
 }
-
-//----------------------------------------------------------------------
-inline void FWidget::move (const FPoint& pos)
-{ move(pos.getX(), pos.getY()); }
 
 //----------------------------------------------------------------------
 inline void FWidget::drawBorder()

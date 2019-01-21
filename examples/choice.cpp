@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -22,6 +22,9 @@
 
 #include <vector>
 #include <final/final.h>
+
+using finalcut::FPoint;
+using finalcut::FSize;
 
 // Typedef
 typedef std::shared_ptr<finalcut::FRadioButton> FRadioButtonPtr;
@@ -106,11 +109,11 @@ int main (int argc, char* argv[])
     std::size_t h = 13;
     int x = int(app.getDesktopWidth() - w) / 2;
     int y = int(app.getDesktopHeight() - h) / 2;
-    dgl.setGeometry (x, y, w, h);
+    dgl.setGeometry (FPoint(x, y), FSize(w, h));
 
     // Create a button group
     finalcut::FButtonGroup checkButtonGroup("choice", &dgl);
-    checkButtonGroup.setGeometry (2, 1, 16, 7);
+    checkButtonGroup.setGeometry (FPoint(2, 1), FSize(16, 7));
 
     // Create radio buttons
     std::vector<FRadioButtonPtr> os(9);
@@ -120,7 +123,7 @@ int main (int argc, char* argv[])
     // => checkButtonGroup.setScrollSize(...) is not required
     //    because a FButtonGroup is self-adjusting
     for (uInt i = 0; i < os.size(); i++)
-      os[i]->setGeometry(1, int(1 + i), 12, 1);
+      os[i]->setGeometry(FPoint(1, int(1 + i)), FSize(12, 1));
 
     preset(os);
 
@@ -130,7 +133,7 @@ int main (int argc, char* argv[])
 
     // Create a OK button
     finalcut::FButton ok("&OK", &dgl);
-    ok.setGeometry (10, 9, 8, 1);
+    ok.setGeometry (FPoint(10, 9), FSize(8, 1));
 
     // Connect the button signal "clicked" with the callback function
     ok.addCallback

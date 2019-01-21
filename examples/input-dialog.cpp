@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -22,10 +22,13 @@
 
 #include <final/final.h>
 
+using finalcut::FPoint;
+using finalcut::FSize;
 
 // function prototypes
 void cb_quit (finalcut::FWidget*, FDataPtr);
 void cb_publish (finalcut::FWidget*, FDataPtr);
+
 
 //----------------------------------------------------------------------
 // callback functions
@@ -62,7 +65,7 @@ int main (int argc, char* argv[])
   // Create a simple dialog box
   finalcut::FDialog dgl(&app);
   dgl.setText ("Data input");
-  dgl.setGeometry (4, 2, 37, 22);
+  dgl.setGeometry (FPoint(4, 2), FSize(37, 22));
   dgl.setShadow();
 
   // Create input fields
@@ -80,37 +83,37 @@ int main (int argc, char* argv[])
   st_field.setLabelText (L"&State");
   c_field.setLabelText (L"&Country");
 
-  name_field.setGeometry (15, 1, 19, 1);
-  email_field.setGeometry (15, 3, 19, 1);
-  org_field.setGeometry (15, 5, 19, 1);
-  city_field.setGeometry (15, 7, 19, 1);
-  st_field.setGeometry (15, 9, 19, 1);
-  c_field.setGeometry (15, 11, 4, 1);
+  name_field.setGeometry (FPoint(15, 1), FSize(19, 1));
+  email_field.setGeometry (FPoint(15, 3), FSize(19, 1));
+  org_field.setGeometry (FPoint(15, 5), FSize(19, 1));
+  city_field.setGeometry (FPoint(15, 7), FSize(19, 1));
+  st_field.setGeometry (FPoint(15, 9), FSize(19, 1));
+  c_field.setGeometry (FPoint(15, 11), FSize(4, 1));
 
   // Create the button group
   finalcut::FButtonGroup radioButtonGroup ("Sex", &dgl);
-  radioButtonGroup.setGeometry(2, 13, 13, 4);
+  radioButtonGroup.setGeometry(FPoint(2, 13), FSize(13, 4));
 
   // Create radio buttons
   finalcut::FRadioButton male ("&Male", &radioButtonGroup);
   finalcut::FRadioButton female ("&Female", &radioButtonGroup);
-  male.setGeometry (1, 1, 8, 1);
-  female.setGeometry (1, 2, 10, 1);
+  male.setGeometry (FPoint(1, 1), FSize(8, 1));
+  female.setGeometry (FPoint(1, 2), FSize(10, 1));
 
   // Create another button group
   finalcut::FButtonGroup checkButtonGroup ("&Data options", &dgl);
-  checkButtonGroup.setGeometry(16, 13, 19, 4);
+  checkButtonGroup.setGeometry(FPoint(16, 13), FSize(19, 4));
 
   // Create checkbox buttons
   finalcut::FCheckBox check1 ("Save data", &checkButtonGroup);
   finalcut::FCheckBox check2 ("Encrypt data", &checkButtonGroup);
-  check1.setGeometry (1, 1, 13, 1);
-  check2.setGeometry (1, 2, 16, 1);
+  check1.setGeometry (FPoint(1, 1), FSize(13, 1));
+  check2.setGeometry (FPoint(1, 2), FSize(16, 1));
   check2.setDisable();
 
   // Create a OK button
   finalcut::FButton btn("&OK", &dgl);
-  btn.setGeometry (24, 18, 10, 1);
+  btn.setGeometry (FPoint(24, 18), FSize(10, 1));
 
   // Connect checkbox signal "clicked" with a callback function
   check1.addCallback

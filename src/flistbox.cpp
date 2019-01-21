@@ -160,23 +160,22 @@ void FListBox::showInsideBrackets ( std::size_t index
 }
 
 //----------------------------------------------------------------------
-void FListBox::setGeometry ( int x, int y
-                           , std::size_t w, std::size_t h
-                           , bool adjust )
+void FListBox::setGeometry ( const FPoint& pos, const FSize& size
+                           , bool adjust)
 {
   // Set the widget geometry
 
-  FWidget::setGeometry(x, y, w, h, adjust);
+  FWidget::setGeometry(pos, size, adjust);
 
   if ( isNewFont() )
   {
-    vbar->setGeometry (int(getWidth()), 2, 2, getHeight() - 2);
-    hbar->setGeometry (1, int(getHeight()), getWidth() - 2 - nf_offset, 1);
+    vbar->setGeometry (FPoint(int(getWidth()), 2), FSize(2, getHeight() - 2));
+    hbar->setGeometry (FPoint(1, int(getHeight())), FSize(getWidth() - 2 - nf_offset, 1));
   }
   else
   {
-    vbar->setGeometry (int(getWidth()), 2, 1, getHeight() - 2);
-    hbar->setGeometry (2, int(getHeight()), getWidth() - 2, 1);
+    vbar->setGeometry (FPoint(int(getWidth()), 2), FSize(1, getHeight() - 2));
+    hbar->setGeometry (FPoint(2, int(getHeight())), FSize(getWidth() - 2, 1));
   }
 }
 
@@ -215,7 +214,7 @@ void FListBox::setText (const FString& txt)
 void FListBox::hide()
 {
   FWidget::hide();
-  hideSize (getWidth(), getHeight());
+  hideSize (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -316,7 +315,7 @@ void FListBox::clear()
 
   for (int y = 0; y < int(getHeight()) - 2; y++)
   {
-    setPrintPos (2, 2 + y);
+    setPrintPos (FPoint(2, 2 + y));
     print (blank);
   }
 
@@ -762,7 +761,7 @@ void FListBox::init()
 {
   initScrollbar (vbar, fc::vertical, &FListBox::cb_VBarChange);
   initScrollbar (hbar, fc::horizontal, &FListBox::cb_HBarChange);
-  setGeometry (1, 1, 5, 4, false);  // initialize geometry values
+  setGeometry (FPoint(1, 1), FSize(5, 4), false);  // initialize geometry values
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
   nf_offset = isNewFont() ? 1 : 0;
@@ -820,7 +819,7 @@ void FListBox::draw()
 
     for (int y = 2; y < int(getHeight()); y++)
     {
-      setPrintPos (int(getWidth()), y);
+      setPrintPos (FPoint(int(getWidth()), y));
       print (' ');  // clear right side of the scrollbar
     }
   }
@@ -855,7 +854,7 @@ void FListBox::drawHeadline()
 
   FString txt = " " + text + " ";
   std::size_t length = txt.getLength();
-  setPrintPos (2, 1);
+  setPrintPos (FPoint(2, 1));
 
   if ( isEnabled() )
     setColor(wc.label_emphasis_fg, wc.label_bg);
@@ -1061,7 +1060,7 @@ inline void FListBox::setLineAttributes ( int y
 {
   bool isCurrentLine = bool(y + yoffset + 1 == int(current));
   std::size_t inc_len = inc_search.getLength();
-  setPrintPos (2, 2 + int(y));
+  setPrintPos (FPoint(2, 2 + int(y)));
 
   if ( isLineSelected )
   {
@@ -1094,7 +1093,7 @@ inline void FListBox::setLineAttributes ( int y
         setColor ( wc.selected_current_element_fg
                  , wc.selected_current_element_bg );
 
-      setCursorPos (3, 2 + int(y));  // first character
+      setCursorPos (FPoint(3, 2 + int(y)));  // first character
     }
     else
     {
@@ -1111,10 +1110,10 @@ inline void FListBox::setLineAttributes ( int y
         {
           serach_mark = true;
           // Place the cursor on the last found character
-          setCursorPos (2 + b + int(inc_len), 2 + int(y));
+          setCursorPos (FPoint(2 + b + int(inc_len), 2 + int(y)));
         }
         else  // only highlighted
-          setCursorPos (3 + b, 2 + int(y));  // first character
+          setCursorPos (FPoint(3 + b, 2 + int(y)));  // first character
       }
       else
         setColor ( wc.current_element_fg

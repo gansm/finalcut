@@ -76,24 +76,24 @@ FToggleButton::~FToggleButton()  // destructor
 
 // public methods of FToggleButton
 //----------------------------------------------------------------------
-void FToggleButton::setGeometry ( int x, int y
-                                , std::size_t w, std::size_t h
+void FToggleButton::setGeometry ( const FPoint& pos, const FSize& s
                                 , bool adjust )
 {
   // Set the toggle button geometry
 
+  FSize size = s;
   std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
   std::size_t min_width = button_width + text.getLength() - hotkey_mark;
 
-  if ( w < min_width )
-    w = min_width;
+  if ( size.getWidth() < min_width )
+    size.setWidth(min_width);
 
-  const FRect geometry(x, y, w, h);
+  const FRect geometry(pos, size);
 
   if ( hasGroup() )
     getGroup()->checkScrollSize(geometry);
 
-  FWidget::setGeometry(x, y, w, h, adjust);
+  FWidget::setGeometry(pos, size, adjust);
 }
 
 //----------------------------------------------------------------------
@@ -203,7 +203,7 @@ void FToggleButton::setText (const FString& txt)
 void FToggleButton::hide()
 {
   FWidget::hide();
-  hideSize (getWidth(), getHeight());
+  hideSize (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -411,7 +411,7 @@ void FToggleButton::draw()
 
   // set the cursor to the button
   if ( isRadioButton() || isCheckboxButton() )
-    setCursorPos (2, 1);
+    setCursorPos (FPoint(2, 1));
 }
 
 //----------------------------------------------------------------------
@@ -445,7 +445,7 @@ void FToggleButton::drawLabel()
   if ( hotkeypos != NOT_SET )
     length--;
 
-  setPrintPos (1 + int(label_offset_pos), 1);
+  setPrintPos (FPoint(1 + int(label_offset_pos), 1));
   drawText (LabelText, hotkeypos, length);
   delete[] LabelText;
 }
@@ -528,7 +528,7 @@ void FToggleButton::setGroup (FButtonGroup* btngroup)
 //----------------------------------------------------------------------
 void FToggleButton::init()
 {
-  setGeometry (1, 1, 4, 1, false);  // initialize geometry values
+  setGeometry (FPoint(1, 1), FSize(4, 1), false);  // initialize geometry values
 
   if ( isEnabled() )
   {

@@ -106,10 +106,11 @@ void FScrollView::setScrollHeight (std::size_t height)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setScrollSize (std::size_t width, std::size_t height)
+void FScrollView::setScrollSize (const FSize& size)
 {
-  int xoffset_end
-    , yoffset_end;
+  int xoffset_end, yoffset_end;
+  std::size_t width = size.getWidth();
+  std::size_t height = size.getHeight();
 
   if ( width < getViewportWidth() )
     width = getViewportWidth();
@@ -185,9 +186,9 @@ void FScrollView::setY (int y, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setPos (int x, int y, bool adjust)
+void FScrollView::setPos (const FPoint& p, bool adjust)
 {
-  FWidget::setPos (x, y, adjust);
+  FWidget::setPos (p, adjust);
   scroll_geometry.setPos ( getTermX() + getLeftPadding() - 1
                          , getTermY() + getTopPadding() - 1 );
 
@@ -224,26 +225,29 @@ void FScrollView::setHeight (std::size_t h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setSize (std::size_t w, std::size_t h, bool adjust)
+void FScrollView::setSize (const FSize& size, bool adjust)
 {
-  FWidget::setSize (w, h, adjust);
+  std::size_t w = size.getWidth();
+  std::size_t h = size.getHeight();
+  FWidget::setSize (size, adjust);
   viewport_geometry.setSize ( w - vertical_border_spacing - nf_offset
                             , h - horizontal_border_spacing );
   calculateScrollbarPos();
 
   if ( getScrollWidth() < getViewportWidth()
     || getScrollHeight() < getViewportHeight() )
-    setScrollSize (getViewportWidth(), getViewportHeight());
+    setScrollSize (getViewportSize());
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setGeometry ( int x, int y
-                              , std::size_t w, std::size_t h
+void FScrollView::setGeometry ( const FPoint& pos, const FSize& size
                               , bool adjust )
 {
   // Set the scroll view geometry
 
-  FWidget::setGeometry (x, y, w, h, adjust);
+  FWidget::setGeometry (pos, size, adjust);
+  std::size_t w = size.getWidth();
+  std::size_t h = size.getHeight();
   scroll_geometry.setPos ( getTermX() + getLeftPadding() - 1
                          , getTermY() + getTopPadding() - 1 );
   viewport_geometry.setSize ( w - vertical_border_spacing - nf_offset
@@ -253,7 +257,7 @@ void FScrollView::setGeometry ( int x, int y
   if ( getScrollWidth() < getViewportWidth()
     || getScrollHeight() < getViewportHeight() )
   {
-    setScrollSize (getViewportWidth(), getViewportHeight());
+    setScrollSize (getViewportSize());
   }
   else if ( ! adjust && viewport )
   {
@@ -263,15 +267,17 @@ void FScrollView::setGeometry ( int x, int y
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setCursorPos (int x, int y)
+void FScrollView::setCursorPos (const FPoint& p)
 {
-  FWidget::setCursorPos (x + getLeftPadding(), y + getTopPadding());
+  FWidget::setCursorPos (FPoint ( p.getX() + getLeftPadding()
+                                , p.getY() + getTopPadding() ));
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setPrintPos (int x, int y)
+void FScrollView::setPrintPos (const FPoint& p)
 {
-  FWidget::setPrintPos (x + getLeftPadding(), y + getTopPadding());
+  FWidget::setPrintPos (FPoint( p.getX() + getLeftPadding()
+                              , p.getY() + getTopPadding() ));
 }
 
 //----------------------------------------------------------------------
@@ -726,8 +732,8 @@ void FScrollView::init (FWidget* parent)
   initScrollbar (hbar, fc::horizontal, &FScrollView::cb_HBarChange);
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
-  setGeometry (1, 1, 4, 4);
-  setMinimumSize (4, 4);
+  setGeometry (FPoint(1, 1), FSize(4, 4));
+  setMinimumSize (FSize(4, 4));
   int xoffset_end = int(getScrollWidth() - getViewportWidth());
   int yoffset_end = int(getScrollHeight() - getViewportHeight());
   nf_offset = isNewFont() ? 1 : 0;
@@ -792,13 +798,13 @@ void FScrollView::calculateScrollbarPos()
 
   if ( isNewFont() )
   {
-    vbar->setGeometry (int(width), 2, 2, height - 2);
-    hbar->setGeometry (1, int(height), width - 2, 1);
+    vbar->setGeometry (FPoint(int(width), 2), FSize(2, height - 2));
+    hbar->setGeometry (FPoint(1, int(height)), FSize(width - 2, 1));
   }
   else
   {
-    vbar->setGeometry (int(width), 2, 1, height - 2);
-    hbar->setGeometry (2, int(height), width - 2, 1);
+    vbar->setGeometry (FPoint(int(width), 2), FSize(1, height - 2));
+    hbar->setGeometry (FPoint(2, int(height)), FSize(width - 2, 1));
   }
 
   vbar->resize();

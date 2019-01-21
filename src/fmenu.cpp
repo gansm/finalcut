@@ -433,7 +433,7 @@ void FMenu::init(FWidget* parent)
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1);
-  setGeometry (1, 1, 10, 2, false);  // initialize geometry values
+  setGeometry (FPoint(1, 1), FSize(10, 2), false);  // initialize geometry values
   setTransparentShadow();
   setMenuWidget();
   hide();
@@ -498,7 +498,8 @@ void FMenu::calculateDimensions()
   adjust_X = adjustX(getX());
 
   // set widget geometry
-  setGeometry (adjust_X, getY(), max_item_width + 2, getCount() + 2);
+  setGeometry ( FPoint(adjust_X, getY())
+              , FSize(max_item_width + 2, getCount() + 2) );
 
   // set geometry of all items
   iter = item_list.begin();
@@ -507,14 +508,14 @@ void FMenu::calculateDimensions()
 
   while ( iter != last )
   {
-    (*iter)->setGeometry (item_X, item_Y, max_item_width, 1);
+    (*iter)->setGeometry (FPoint(item_X, item_Y), FSize(max_item_width, 1));
 
     if ( (*iter)->hasMenu() )
     {
       int menu_X = getTermX() + int(max_item_width) + 1;
       int menu_Y = (*iter)->getTermY() - 2;
       // set sub-menu position
-      (*iter)->getMenu()->setPos (menu_X, menu_Y, false);
+      (*iter)->getMenu()->setPos (FPoint(menu_X, menu_Y), false);
     }
 
     item_Y++;
@@ -540,7 +541,7 @@ void FMenu::adjustItems()
       menu_Y = (*iter)->getTermY() - 2;
 
       // set sub-menu position
-      menu->setPos (menu_X, menu_Y);
+      menu->setPos (FPoint(menu_X, menu_Y));
 
       // call sub-menu adjustItems()
       if ( menu->getCount() > 0 )
@@ -1250,7 +1251,7 @@ void FMenu::drawItems()
 //----------------------------------------------------------------------
 inline void FMenu::drawSeparator (int y)
 {
-  setPrintPos (1, 2 + y);
+  setPrintPos (FPoint(1, 2 + y));
   setColor (wc.menu_active_fg, wc.menu_active_bg);
 
   if ( isMonochron() )
@@ -1497,7 +1498,7 @@ inline void FMenu::setLineAttributes (FMenuItem* menuitem, int y)
       setReverse(true);
   }
 
-  setPrintPos (2, 2 + y);
+  setPrintPos (FPoint(2, 2 + y));
   setColor();
 }
 
@@ -1513,9 +1514,9 @@ inline void FMenu::setCursorToHotkeyPosition (FMenuItem* menuitem)
     if ( is_selected )
     {
       if ( is_checkable )
-        menuitem->setCursorPos (3, 1);
+        menuitem->setCursorPos (FPoint(3, 1));
       else
-        menuitem->setCursorPos (2, 1);
+        menuitem->setCursorPos (FPoint(2, 1));
     }
   }
   else
@@ -1524,9 +1525,9 @@ inline void FMenu::setCursorToHotkeyPosition (FMenuItem* menuitem)
     {
       // set cursor to the hotkey position
       if ( is_checkable )
-        menuitem->setCursorPos (3 + int(hotkeypos), 1);
+        menuitem->setCursorPos (FPoint(3 + int(hotkeypos), 1));
       else
-        menuitem->setCursorPos (2 + int(hotkeypos), 1);
+        menuitem->setCursorPos (FPoint(2 + int(hotkeypos), 1));
     }
   }
 }

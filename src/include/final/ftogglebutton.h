@@ -91,9 +91,8 @@ class FToggleButton : public FWidget
     FString&            getText();
 
     // Mutators
-    virtual void        setGeometry ( int, int
-                                    , std::size_t, std::size_t
-                                    , bool = true) override;
+    virtual void        setGeometry ( const FPoint&, const FSize&
+                                    , bool = true ) override;
     bool                setNoUnderline (bool);
     bool                setNoUnderline();
     bool                unsetNoUnderline();
