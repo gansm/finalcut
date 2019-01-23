@@ -163,44 +163,24 @@ int FDialog::exec()
 //----------------------------------------------------------------------
 void FDialog::setPos (const FPoint& pos, bool)
 {
-  int rsw, bsh, width, height;
-  int x = pos.getX();
-  int y = pos.getY();
-  FRect old_geometry;
+  FRect old_geometry, restore;
   setPos_error = false;
 
-  if ( getX() == x && getY() == y )
-  {
-    setPos_error = true;
-    return;
-  }
-
-  width = int(getWidth());
-  height = int(getHeight());
-
   // Avoid to move widget completely outside the terminal
-  if ( x + width <= 1
-    || x > int(getMaxWidth())
-    || y < 1
-    || y > int(getMaxHeight()) )
+  // or moving a zoomed dialog or a motionless dialog
+  if ( isOutsideTerminal(pos) || isZoomed() || getPos() == pos )
   {
     setPos_error = true;
     return;
   }
 
-  if ( isZoomed() )
-  {
-    setPos_error = true;
-    return;
-  }
-
-  int dx = getX() - x
-    , dy = getY() - y
-    , old_x = getTermX()
-    , old_y = getTermY();
+  int dx = getX() - pos.getX();
+  int dy = getY() - pos.getY();
+  int old_x = getTermX();
+  int old_y = getTermY();
   const auto& shadow = getShadow();
-  rsw = int(shadow.getWidth());   // right shadow width;
-  bsh = int(shadow.getHeight());  // bottom shadow height
+  std::size_t width = getWidth() + shadow.getWidth();  // width + right shadow
+  std::size_t height = getHeight() + shadow.getHeight();  // height + bottom shadow
   old_geometry = getTermGeometryWithShadow();
 
   // move to the new position
@@ -217,28 +197,34 @@ void FDialog::setPos (const FPoint& pos, bool)
     // dy = 0 : move horizontal
     // dy < 0 : move down
 
+    std::size_t d_width = std::size_t(std::abs(dx));
+    std::size_t d_height = std::size_t(std::abs(dy));
+
     if ( dx > 0 )
     {
       if ( dy > 0 )
-        restoreVTerm (FRect ( old_x + width + rsw - dx, old_y
-                            , std::size_t(dx), std::size_t(height + bsh - dy) ));
+        restore.setRect ( old_x + int(width) - dx, old_y
+                        , d_width, height - d_height );
       else
-        restoreVTerm (FRect ( old_x + width + rsw - dx, old_y + std::abs(dy)
-                            , std::size_t(dx), std::size_t(height + bsh - std::abs(dy)) ));
+        restore.setRect ( old_x + int(width) - dx, old_y - dy
+                        , d_width, height - d_height );
     }
     else
     {
       if ( dy > 0 )
-        restoreVTerm (FRect(old_x, old_y, std::size_t(std::abs(dx)), std::size_t(height + bsh - dy)));
+        restore.setRect (old_x, old_y, d_width, height - d_height);
       else
-        restoreVTerm (FRect ( old_x, old_y + std::abs(dy)
-                            , std::size_t(std::abs(dx)), std::size_t(height + bsh - std::abs(dy)) ));
+        restore.setRect (old_x, old_y - dy, d_width, height - d_height);
     }
 
+    restoreVTerm (restore);
+
     if ( dy > 0 )
-      restoreVTerm (FRect(old_x, old_y + height + bsh - dy, std::size_t(width + rsw), std::size_t(dy)));
+      restore.setRect ( old_x, old_y + int(height) - dy, width, d_height);
     else
-      restoreVTerm (FRect(old_x, old_y, std::size_t(width + rsw), std::size_t(std::abs(dy))));
+      restore.setRect ( old_x, old_y, width, d_height);
+
+    restoreVTerm (restore);
   }
   else
   {
@@ -290,33 +276,22 @@ void FDialog::setSize (const FSize& size, bool adjust)
 {
   setSize_error = false;
 
-  if ( getSize() == size )
+  if ( getSize() == size || isZoomed() )
   {
     setSize_error = true;
     return;
   }
 
-  if ( isZoomed() )
-  {
-    setSize_error = true;
-    return;
-  }
-
-  int x = getTermX()
-    , y = getTermY()
-    , old_width = int(getWidth())
-    , old_height = int(getHeight())
-    , dw = old_width - int(size.getWidth())
-    , dh = old_height - int(size.getHeight());
+  int x = getTermX();
+  int y = getTermY();
+  int dw = int(getWidth()) - int(size.getWidth());
+  int dh = int(getHeight()) - int(size.getHeight());
   const auto& shadow = getShadow();
-  int rsw = int(shadow.getWidth());   // right shadow width;
-  int bsh = int(shadow.getHeight());  // bottom shadow height
-
   FWindow::setSize (size, adjust);
 
   // get adjust width and height
-  std::size_t w = getWidth();
-  std::size_t h = getHeight();
+  std::size_t w = getWidth() + shadow.getWidth();
+  std::size_t h = getHeight()+ shadow.getHeight();
 
   // dw > 0 : scale down width
   // dw = 0 : scale only height
@@ -325,39 +300,23 @@ void FDialog::setSize (const FSize& size, bool adjust)
   // dh = 0 : scale only width
   // dh < 0 : scale up height
 
+  std::size_t d_width = std::size_t(dw);
+  std::size_t d_height = std::size_t(dh);
+
   // restoring the non-covered terminal areas
   if ( dw > 0 )
-    restoreVTerm (FRect(x + int(w) + rsw, y, std::size_t(dw), h + std::size_t(bsh + dh)));  // restore right
+    restoreVTerm (FRect(x + int(w), y, d_width, h + d_height));  // restore right
 
   if ( dh > 0 )
-    restoreVTerm (FRect(x, y + int(h) + bsh, w + std::size_t(rsw + dw), std::size_t(dh)));  // restore bottom
+    restoreVTerm (FRect(x, y + int(h), w + d_width, d_height));  // restore bottom
 
   redraw();
 
   // handle overlaid windows
-  if ( window_list && ! window_list->empty() )
-  {
-    bool overlaid = false;
-
-    for (auto&& win : *window_list)
-    {
-      if ( overlaid )
-        putArea (win->getTermPos(), win->getVWin());
-
-      if ( vwin == win->getVWin() )
-        overlaid = true;
-    }
-  }
+  restoreOverlaidWindows();
 
   // set the cursor to the focus widget
-  auto focus = FWidget::getFocusWidget();
-  if ( focus
-    && focus->isShown()
-    && focus->hasVisibleCursor() )
-  {
-    FPoint cursor_pos = focus->getCursorPos();
-    focus->setCursorPos(cursor_pos);
-  }
+  setCursorToFocusWidget();
 }
 
 //----------------------------------------------------------------------
@@ -1484,6 +1443,18 @@ inline void FDialog::lowerActivateDialog()
     activateDialog();
   else if ( has_lowered )
     updateTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FDialog::isOutsideTerminal (const FPoint& pos)
+{
+  if ( pos.getX() + int(getWidth()) <= 1
+    || pos.getX() > int(getMaxWidth())
+    || pos.getY() < 1
+    || pos.getY() > int(getMaxHeight()) )
+    return true;
+
+  return false;
 }
 
 //----------------------------------------------------------------------

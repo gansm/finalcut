@@ -2,6 +2,21 @@
 First steps with the Final Cut widget toolkit 
 =============================================
 
+Table of Contents
+-----------------
+
+<!-- TOC -->
+- [How to use the library](#how-to-use-the-library)
+- [Memory Management](#memory-management)
+- [Event Processing](#event-processing)
+  - [Event handler reimplementation](#event-handler-reimplementation)
+- [Signals and Callbacks](#signals-and-callbacks)
+  - [Default signals](#the-final-cut-widgets-emit-the-following-default-signals)
+- [Callback function](#example-of-a-callback-function)
+- [Callback method](#example-of-a-callback-function)
+- [Custom signals](#send-custom-signals)
+<!-- /TOC -->
+
 
 How to use the library
 ----------------------
@@ -20,7 +35,9 @@ int main (int argc, char* argv[])
   finalcut::FApplication app(argc, argv);
   finalcut::FDialog dialog(&app);
   dialog.setText ("A dialog");
-  dialog.setGeometry (25, 5, 30, 10);
+  const finalcut::FPoint position(25, 5);
+  const finalcut::FSize size(30, 10);
+  dialog.setGeometry (position, size);
   app.setMainWidget(&dialog);
   dialog.show();
   return app.exec();
@@ -69,7 +86,9 @@ dialog.setText ("A dialog");
 The title bar of the dialog box gets the text "A dialog".
 
 ```cpp
-dialog.setGeometry (25, 5, 30, 10);
+finalcut::FPoint position(25, 5);
+finalcut::FSize size(30, 10);
+dialog.setGeometry (position, size);
 ```
 The dialog window gets a width of 30 and a height of 10 characters.
 The position of the window in the terminal is at x=25 and
@@ -147,11 +166,11 @@ int main (int argc, char* argv[])
   // The object dialog is managed by app
   FDialog* dialog = new FDialog(&app);
   dialog->setText ("Window Title");
-  dialog->setGeometry (25, 5, 40, 8);
+  dialog->setGeometry (FPoint(25, 5), FSize(40, 8));
 
   // The object input is managed by dialog
   FLineEdit* input = new FLineEdit("predefined text", dialog);
-  input->setGeometry(8, 2, 29, 1);
+  input->setGeometry(FPoint(8, 2), FSize(29, 1));
   input->setLabelText (L"&Input");
 
   // The object label is managed by dialog
@@ -159,7 +178,7 @@ int main (int argc, char* argv[])
                                "adipiscing elit, sed do eiusmod tempor "
                                "incididunt ut labore et dolore magna aliqua."
                              , dialog );
-  label->setGeometry (2, 4, 36, 1);
+  label->setGeometry (FPoint(2, 4), FSize(36, 1));
   app.setMainWidget(dialog);
   dialog->show();
   return app.exec();
@@ -260,10 +279,10 @@ class dialogWidget : public FDialog
       : FDialog(parent)
     {
       setText ("Dialog");
-      setGeometry (25, 5, 23, 4);
-      label.setGeometry (1, 1, 10, 1);
+      setGeometry (FPoint(25, 5), FSize(23, 4));
+      label.setGeometry (FPoint(1, 1), FSize(10, 1));
       label.setAlignment (fc::alignRight);
-      value.setGeometry (11, 1, 10, 1);
+      value.setGeometry (FPoint(11, 1), FSize(10, 1));
       id = addTimer(100);
     }
 
@@ -300,7 +319,7 @@ int main (int argc, char* argv[])
 After entering the source code in *timer.cpp* you can compile
 the above program with gcc:
 ```cpp
-g++ -O2 -std=c++11 -lfinal timer.cpp -o timer
+g++ -O2 -lfinal -std=c++11 timer.cpp -o timer
 ```
 
 
@@ -396,6 +415,9 @@ use `delCallbacks()` to remove all existing callbacks from an object.
 
   <dt>FToggleButton</dt>
   <dd>"clicked"<br />"toggled"</dd>
+
+  <dt>FWidget</dt>
+  <dd>"destroy"</dd>
 </dl>
 
 &nbsp;
@@ -423,14 +445,14 @@ int main (int argc, char* argv[])
   FApplication app(argc, argv);
   FDialog dialog(&app);
   dialog.setText ("A dialog with callback function");
-  dialog.setGeometry (25, 5, 45, 9);
+  dialog.setGeometry (FRect(25, 5, 45, 9));
   FLabel label (&dialog);
   label = "The button has never been pressed before";
-  label.setGeometry (2, 2, 41, 1);
+  label.setGeometry (FPoint(2, 2), FSize(41, 1));
   FButton button (&dialog);
   // Character follows '&' will be used as the accelerator key
   button = "&Click me";
-  button.setGeometry (15, 5, 14, 1);
+  button.setGeometry (FPoint(15, 5), FSize(14, 1));
 
   // Connect the button signal "clicked" with the callback function
   button.addCallback
@@ -472,8 +494,8 @@ class dialogWidget : public FDialog
       : FDialog(parent)
     {
       setText ("Callback method");
-      setGeometry (25, 5, 25, 7);
-      button.setGeometry (7, 3, 10, 1);
+      setGeometry (FPoint(25, 5), FSize(25, 7));
+      button.setGeometry (FPoint(7, 3), FSize(10, 1));
 
       // Connect the button signal "clicked" with the callback method
       button.addCallback
@@ -504,7 +526,7 @@ int main (int argc, char* argv[])
 After entering the source code in *callback-method.cpp* you can compile
 the above program with gcc:
 ```cpp
-g++ -O2 -std=c++11 -lfinal callback-method.cpp -o callback-method
+g++ -O2 -lfinal -std=c++11 callback-method.cpp -o callback-method
 ```
 &nbsp;
 
@@ -527,13 +549,14 @@ class dialogWidget : public FDialog
     explicit dialogWidget (FWidget* parent = nullptr)
       : FDialog(parent)
     {
-      setGeometry (25, 5, 22, 7);
+      setGeometry (FPoint(25, 5), FSize(22, 7));
       setText ("Emit signal");
-      label.setGeometry (8, 1, 5, 1);
+      FSize size(5, 1);
+      label.setGeometry (FPoint(8, 1), size);
       label.setAlignment (fc::alignRight);
       label.setForegroundColor (fc::Black);
-      plus.setGeometry (3, 3, 5, 1);
-      minus.setGeometry (13, 3, 5, 1);
+      plus.setGeometry (FPoint(3, 3), size);
+      minus.setGeometry (FPoint(13, 3), size);
       plus.setNoUnderline();
       minus.setNoUnderline();
 
@@ -641,6 +664,6 @@ int main (int argc, char* argv[])
 After entering the source code in *emit-signal.cpp* you can compile
 the above program with gcc:
 ```cpp
-g++ -O2 -std=c++11 -lfinal emit-signal.cpp -o emit-signal
+g++ -O2 -lfinal -std=c++11 emit-signal.cpp -o emit-signal
 ```
 The FINAL CUT widgets emit the following default signals:

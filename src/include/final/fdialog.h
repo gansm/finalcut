@@ -205,6 +205,7 @@ class FDialog : public FWindow
     void                moveSizeKey (FKeyEvent*);
     void                raiseActivateDialog();
     void                lowerActivateDialog();
+    bool                isOutsideTerminal (const FPoint&);
     bool                isLowerRightResizeCorner (const mouseStates&);
     void                resizeMouseDown (const mouseStates&);
     void                resizeMouseUpMove (const mouseStates&, bool = false);
