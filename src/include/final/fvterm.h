@@ -132,6 +132,7 @@ class FVTerm
     template <typename type>
     FVTerm& operator << (const type&);
     FVTerm& operator << (const std::vector<charData>&);
+    FVTerm& operator << (const FPoint&);
 
     // Accessors
     virtual const char*   getClassName() const;
@@ -294,7 +295,8 @@ class FVTerm
     int                   print (term_area*, wchar_t);
     int                   print (charData&);
     int                   print (term_area*, charData&);
-    FVTerm&               print();
+    virtual void          print (const FPoint&);
+    virtual FVTerm&       print();
     static void           beep();
     static void           redefineDefaultColors (bool);
     static char*          moveCursor (int, int, int, int);
@@ -547,6 +549,13 @@ inline FVTerm& FVTerm::operator << \
     (const std::vector<FVTerm::charData>& termString)
 {
   print (termString);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FVTerm& FVTerm::operator << (const FPoint& pos)
+{
+  print (pos);
   return *this;
 }
 

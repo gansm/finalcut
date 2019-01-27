@@ -131,7 +131,7 @@ void ColorChooser::draw()
 
   for (FColor c = 0; c < 16; c++)
   {
-    setPrintPos (FPoint(2 + (c / 8) * 3, 3 + c % 8));
+    print() << FPoint(2 + (c / 8) * 3, 3 + c % 8);
 
     if ( c < 6 )
       setColor (finalcut::fc::LightGray, c);
@@ -245,9 +245,8 @@ void Brushes::draw()
   setColor();
   finalcut::FWidget::drawBorder (1, 2, 8, 4);
   setColor (fg_color, bg_color);
-  setPrintPos (FPoint(2, 3));
-  print("   ");
-  print(finalcut::FString(3, finalcut::fc::MediumShade));
+  print() << FPoint(2, 3) << "   "
+          << finalcut::FString(3, finalcut::fc::MediumShade);
 
   if ( brush == L' ' )
     pos = 0;
@@ -255,10 +254,10 @@ void Brushes::draw()
     pos = 3;
 
   setColor();
-  setPrintPos (FPoint(3 + pos, 2));
-  print(finalcut::fc::BlackDownPointingTriangle);
-  setPrintPos (FPoint(3 + pos, 4));
-  print(finalcut::fc::BlackUpPointingTriangle);
+  print() << FPoint(3 + pos, 2)
+          << finalcut::fc::BlackDownPointingTriangle
+          << FPoint(3 + pos, 4)
+          << finalcut::fc::BlackUpPointingTriangle;
 }
 
 //----------------------------------------------------------------------
@@ -428,26 +427,25 @@ void MouseDraw::draw()
   {
     for (int y = 2; y < y_max; y++)
     {
-      setPrintPos (FPoint(10, y));
-      print (finalcut::fc::NF_rev_border_line_right);
+      print() << FPoint(10, y)
+              << finalcut::fc::NF_rev_border_line_right;
     }
 
-    setPrintPos (FPoint(10, y_max));
-    print (finalcut::fc::NF_rev_border_corner_lower_right);
+    print() << FPoint(10, y_max)
+            << finalcut::fc::NF_rev_border_corner_lower_right;
   }
   else
   {
-    setPrintPos (FPoint(10, 2));
-    print (finalcut::fc::BoxDrawingsDownAndHorizontal);
+    print() << FPoint(10, 2)
+            << finalcut::fc::BoxDrawingsDownAndHorizontal;
 
     for (int y = 3; y < y_max; y++)
     {
-      setPrintPos (FPoint(10, y));
-      print (finalcut::fc::BoxDrawingsVertical);
+      print() << FPoint(10, y) << finalcut::fc::BoxDrawingsVertical;
     }
 
-    setPrintPos (FPoint(10, y_max));
-    print (finalcut::fc::BoxDrawingsUpAndHorizontal);
+    print() << FPoint(10, y_max)
+            << finalcut::fc::BoxDrawingsUpAndHorizontal;
   }
 
   drawCanvas();

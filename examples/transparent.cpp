@@ -111,8 +111,7 @@ void Transparent::draw()
 
   for (int n = 1; n <= int(getClientHeight()); n++)
   {
-    setPrintPos (FPoint(2, 2 + n));
-    print(line);
+    print() << FPoint(2, 2 + n) << line;
   }
 
   if ( type == shadow )
@@ -242,10 +241,8 @@ void MainWindow::draw()
     setReverse(true);
 
   setColor();
-  setPrintPos (FPoint(2, 4));
-  print(line1);
-  setPrintPos (FPoint(2, 5));
-  print(line2);
+  print() << FPoint(2, 4) << line1;
+  print() << FPoint(2, 5) << line2;
 
   if ( isMonochron() )
     setReverse(false);

@@ -273,8 +273,7 @@ void AttribDemo::printAltCharset()
   if ( ! isMonochron() )
     setColor (wc.label_fg, wc.label_bg);
 
-  setPrintPos (FPoint(1, 1));
-  print("alternate charset: ");
+  print() << FPoint(1, 1) << "alternate charset: ";
 
   if ( parent->bgcolor == finalcut::fc::Default )
   {
@@ -440,7 +439,7 @@ void AttribDemo::draw()
 
   for (std::size_t y = 0; y < getParentWidget()->getHeight() - 7; y++)
   {
-    setPrintPos (FPoint(1, 2 + int(y)));
+    print() << FPoint(1, 2 + int(y));
 
     if ( ! isMonochron() )
       setColor (wc.label_fg, wc.label_bg);
@@ -452,7 +451,7 @@ void AttribDemo::draw()
   if ( ! isMonochron() )
     setColor(wc.label_fg, wc.label_bg);
 
-  setPrintPos (FPoint(1, 15));
+  print() << FPoint(1, 15);
   FColor bg = static_cast<AttribDlg*>(getParent())->bgcolor;
   print (" Background color:");
 
@@ -461,8 +460,7 @@ void AttribDemo::draw()
   else
     printf ( " %d", bg);
 
-  setPrintPos (FPoint(16, 17));
-  print ("Change background color ->");
+  print() << FPoint(16, 17) << "Change background color ->";
 }
 
 

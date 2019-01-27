@@ -178,8 +178,7 @@ void FStatusBar::hide()
   setColor (fg, bg);
   screenWidth = getDesktopWidth();
   auto blank = createBlankArray(screenWidth + 1);
-  setPrintPos (FPoint(1, 1));
-  print (blank);
+  print() << FPoint(1, 1) << blank;
   destroyBlankArray (blank);
 }
 
@@ -541,7 +540,7 @@ void FStatusBar::drawKeys()
     return;
   }
 
-  setPrintPos (FPoint(1, 1));
+  print() << FPoint(1, 1);
 
   if ( isMonochron() )
     setReverse(true);

@@ -480,7 +480,7 @@ void FLabel::drawMultiLine()
     else
       std::wcsncpy(dest, src, length);
 
-    setPrintPos (FPoint(1, 1 + int(y)));
+    print() << FPoint(1, 1 + int(y));
 
     if ( hotkeypos != NOT_SET )
     {
@@ -522,7 +522,7 @@ void FLabel::drawSingleLine()
   if ( hotkeypos != NOT_SET )
     length--;
 
-  setPrintPos (FPoint(1, 1));
+  print() << FPoint(1, 1);
   align_offset = getAlignOffset(length);
   printLine (label_text, length, hotkeypos, align_offset);
   delete[] label_text;

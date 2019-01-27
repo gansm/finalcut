@@ -51,6 +51,7 @@ void cb_publish (finalcut::FWidget* widget, FDataPtr data)
     cbox2->unsetChecked();
     cbox2->setDisable();
   }
+
   cbox2->redraw();
 }
 

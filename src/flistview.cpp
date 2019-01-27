@@ -1469,8 +1469,8 @@ void FListView::draw()
 
     for (int y = 2; y < int(getHeight()); y++)
     {
-      setPrintPos (FPoint(int(getWidth()), y));
-      print (' ');  // clear right side of the scrollbar
+      print() << FPoint(int(getWidth()), y)
+              << ' ';  // clear right side of the scrollbar
     }
   }
 
@@ -1543,8 +1543,7 @@ void FListView::drawHeadlines()
     last = h.begin() + len;
   }
 
-  setPrintPos (FPoint(2, 1));
-  print() << std::vector<charData>(first, last);
+  print() << FPoint(2, 1) << std::vector<charData>(first, last);
 }
 
 //----------------------------------------------------------------------
@@ -1563,7 +1562,7 @@ void FListView::drawList()
     const auto item = static_cast<FListViewItem*>(*iter);
     int tree_offset = ( tree_view ) ? int(item->getDepth() << 1) + 1 : 0;
     int checkbox_offset = ( item->isCheckable() ) ? 1 : 0;
-    setPrintPos (FPoint(2, 2 + int(y)));
+    print() << FPoint(2, 2 + int(y));
 
     // Draw one FListViewItem
     drawListLine (item, flags.focus, is_current_line);
@@ -1589,8 +1588,8 @@ void FListView::drawList()
   // Clean empty space after last element
   while ( y < uInt(getClientHeight()) )
   {
-    setPrintPos (FPoint(2, 2 + int(y)));
-    print (FString(std::size_t(getClientWidth()), ' '));
+    print() << FPoint(2, 2 + int(y))
+            << FString(std::size_t(getClientWidth()), ' ');
     y++;
   }
 }
@@ -1667,7 +1666,7 @@ void FListView::drawListLine ( const FListViewItem* item
   std::size_t i;
 
   for (i = 0; i < len; i++)
-    *this << element_str[i];
+    print() << element_str[i];
 
   for (; i < getWidth() - nf_offset - 2; i++)
     print (' ');

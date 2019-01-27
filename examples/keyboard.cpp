@@ -79,8 +79,8 @@ void Keyboard::onAccel (finalcut::FAccelEvent* ev)
 //----------------------------------------------------------------------
 void Keyboard::draw()
 {
-  setPrintPos (finalcut::FPoint(1, 1));
-  print() << "---------------\n"
+  print() << finalcut::FPoint(1, 1)
+          << "---------------\n"
           << "Press Q to quit\n"
           << "---------------\n";
   setAreaCursor (finalcut::FPoint(1, 4), true, vdesktop);

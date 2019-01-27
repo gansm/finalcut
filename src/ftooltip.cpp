@@ -87,8 +87,7 @@ void FToolTip::draw()
 
   for (std::size_t i = 0; i < text_num_lines; i++)
   {
-    setPrintPos (FPoint(3, 2 + int(i)));
-    print(text_components[i]);
+    print() << FPoint(3, 2 + int(i)) << text_components[i];
   }
 
   unsetBold();

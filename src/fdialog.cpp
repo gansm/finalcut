@@ -924,24 +924,20 @@ void FDialog::drawBorder()
   {
     for (int y = y1; y < y2; y++)
     {
-      setPrintPos (FPoint(x1, y));
-      // Border left ⎸
-      print (fc::NF_border_line_left);
-      setPrintPos (FPoint(x2, y));
-      // Border right⎹
-      print (fc::NF_rev_border_line_right);
+      print() << FPoint(x1, y)  // Border left ⎸
+              << fc::NF_border_line_left;
+      print() << FPoint(x2, y)  // Border right⎹
+              << fc::NF_rev_border_line_right;
     }
 
-    setPrintPos (FPoint(x1, y2));
-    // Lower left corner border ⎣
-    print (fc::NF_border_corner_lower_left);
+    print() << FPoint(x1, y2)  // Lower left corner border ⎣
+            << fc::NF_border_corner_lower_left;
 
     for (std::size_t x = 1; x < getWidth() - 1; x++)  // low line _
       print (fc::NF_border_line_bottom);
 
-    setPrintPos (FPoint(x2, y2));
-    // Lower right corner border ⎦
-    print (fc::NF_rev_border_corner_lower_right);
+    print() << FPoint(x2, y2)  // Lower right corner border ⎦
+            << fc::NF_rev_border_corner_lower_right;
   }
   else
   {
@@ -966,7 +962,7 @@ void FDialog::drawTitleBar()
   if ( PRINT_WIN_NUMBER )
   {
     // Print the number of window in stack
-    setPrintPos (FPoint(int(getWidth()) - 2, 1));
+    print() << FPoint(int(getWidth()) - 2, 1);
     printf ("(%d)", getWindowLayer(this));
   }
 #endif  // DEBUG
@@ -976,7 +972,7 @@ void FDialog::drawTitleBar()
 void FDialog::drawBarButton()
 {
   // Print the title button
-  setPrintPos (FPoint(1, 1));
+  print() << FPoint(1, 1);
 
   if ( dialog_menu && dialog_menu->isShown() )
     setColor (wc.titlebar_button_focus_fg, wc.titlebar_button_focus_bg);

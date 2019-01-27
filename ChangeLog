@@ -1,3 +1,8 @@
+2019-01-27  Markus Gans  <guru.mail@muenster.de>
+	* The print command can now have an FPoint object as a parameter 
+	  to set the cursor position
+	* Refactoring of the FProgressbar drawing methods
+
 2019-01-24  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring of some methods in FVTerm and FDialog
 

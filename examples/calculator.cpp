@@ -338,9 +338,7 @@ void Calc::drawDispay()
   if ( isMonochron() )
     setReverse(false);
 
-  setPrintPos (FPoint(3, 3));
-  print(display);
-  print(L' ');
+  print() << FPoint(3, 3) << display << ' ';
   setColor(wc.dialog_fg, wc.dialog_bg);
 
   if ( isMonochron() )
@@ -353,13 +351,10 @@ void Calc::drawDispay()
     wchar_t top_line        = finalcut::fc::NF_border_line_upper;
     wchar_t right_line      = finalcut::fc::NF_rev_border_line_right;
     wchar_t left_line       = finalcut::fc::NF_border_line_left;
-    setPrintPos (FPoint(3, 2));
-    print (finalcut::FString(33, bottom_line));
-    setPrintPos (FPoint(2, 3));
-    print (right_line);
-    setPrintPos (FPoint(36, 3));
-    print (left_line);
-    setPrintPos (FPoint(3, 4));
+    print() << FPoint(3, 2) << finalcut::FString(33, bottom_line);
+    print() << FPoint(2, 3) << right_line;
+    print() << FPoint(36, 3) << left_line;
+    print() << FPoint(3, 4);
     finalcut::FString top_bottom_line_5 (5, top_bottom_line);
     finalcut::FString top_line_2 (2, top_line);
     print ( top_bottom_line_5 + top_line_2
@@ -376,8 +371,7 @@ void Calc::drawDispay()
     finalcut::FString separator = finalcut::FString(vertical_and_right)
                                 + finalcut::FString(35, horizontal)
                                 + finalcut::FString(vertical_and_left);
-    setPrintPos (FPoint(1, 4));
-    print(separator);
+    print() << FPoint(1, 4) << separator;
   }
 }
 

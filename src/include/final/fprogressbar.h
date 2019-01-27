@@ -101,8 +101,10 @@ class FProgressbar : public FWidget
 
     // Methods
     virtual void        draw() override;
-    void                drawPercentage();
-    void                drawBar();
+    void                drawProgressLabel();
+    void                drawProgressBar();
+    std::size_t         drawProgressIndicator();
+    void                drawProgressBackground (std::size_t);
 
     // Data Members
     std::size_t  percentage{NOT_SET};

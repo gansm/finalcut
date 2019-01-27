@@ -240,7 +240,7 @@ void FScrollbar::drawVerticalBar()
 
   for (z = 1; z <= slider_pos; z++)
   {
-    setPrintPos (FPoint(1, 1 + z));
+    print() << FPoint(1, 1 + z);
 
     if ( isNewFont() )
     {
@@ -263,7 +263,7 @@ void FScrollbar::drawVerticalBar()
 
   for (z = 1; z <= int(slider_length); z++)
   {
-    setPrintPos (FPoint(1, 1 + slider_pos + z));
+    print() << FPoint(1, 1 + slider_pos + z);
 
     if ( isNewFont() )
       print (' ');
@@ -278,7 +278,7 @@ void FScrollbar::drawVerticalBar()
 
   for (z = slider_pos + int(slider_length) + 1; z <= int(bar_length); z++)
   {
-    setPrintPos (FPoint(1, 1 + z));
+    print() << FPoint(1, 1 + z);
 
     if ( isNewFont() )
     {
@@ -305,9 +305,9 @@ void FScrollbar::drawHorizontalBar()
   setColor (wc.scrollbar_fg, wc.scrollbar_bg);
 
   if ( isNewFont() )
-    setPrintPos (FPoint(3, 1));
+    print() << FPoint(3, 1);
   else
-    setPrintPos (FPoint(2, 1));
+    print() << FPoint(2, 1);
 
   for (z = 0; z < slider_pos; z++)
   {
@@ -590,43 +590,43 @@ void FScrollbar::drawButtons()
 
   if ( isNewFont() )
   {
-    setPrintPos (FPoint(1, 1));
+    print() << FPoint(1, 1);
 
     if ( bar_orientation == fc::vertical )
     {
-      print (fc::NF_rev_up_arrow1);
-      print (fc::NF_rev_up_arrow2);
-      setPrintPos (FPoint(1, int(length)));
-      print (fc::NF_rev_down_arrow1);
-      print (fc::NF_rev_down_arrow2);
+      print() << fc::NF_rev_up_arrow1
+              << fc::NF_rev_up_arrow2
+              << FPoint(1, int(length))
+              << fc::NF_rev_down_arrow1
+              << fc::NF_rev_down_arrow2;
     }
     else  // horizontal
     {
-      print (fc::NF_rev_left_arrow1);
-      print (fc::NF_rev_left_arrow2);
-      setPrintPos (FPoint(int(length) - 1, 1));
-      print (fc::NF_rev_right_arrow1);
-      print (fc::NF_rev_right_arrow2);
+      print() << fc::NF_rev_left_arrow1
+              << fc::NF_rev_left_arrow2
+              << FPoint(int(length) - 1, 1)
+              << fc::NF_rev_right_arrow1
+              << fc::NF_rev_right_arrow2;
     }
   }
   else
   {
-    setPrintPos (FPoint(1, 1));
+    print() << FPoint(1, 1);
 
     if ( isMonochron() )
       setReverse(true);
 
     if ( bar_orientation == fc::vertical )
     {
-      print (fc::BlackUpPointingTriangle);    // ▲
-      setPrintPos (FPoint(1, int(length)));
-      print (fc::BlackDownPointingTriangle);  // ▼
+      print() << fc::BlackUpPointingTriangle     // ▲
+              << FPoint(1, int(length))
+              << fc::BlackDownPointingTriangle;  // ▼
     }
     else  // horizontal
     {
-      print (fc::BlackLeftPointingPointer);   // ◄
-      setPrintPos (FPoint(int(length), 1));
-      print (fc::BlackRightPointingPointer);  // ►
+      print() << fc::BlackLeftPointingPointer    // ◄
+              << FPoint(int(length), 1)
+              << fc::BlackRightPointingPointer;  // ►
     }
 
     if ( isMonochron() )

@@ -297,8 +297,7 @@ void FTextView::clear()
 
   for (int y = 0; y < int(getTextHeight()); y++)
   {
-    setPrintPos (FPoint(2, 2 - nf_offset + y));
-    print (blank);
+    print() << FPoint(2, 2 - nf_offset + y) << blank;
   }
 
   destroyBlankArray (blank);
@@ -695,7 +694,7 @@ void FTextView::drawText()
   {
     std::size_t i;
     FString line;
-    setPrintPos (FPoint(2, 2 - nf_offset + int(y)));
+    print() << FPoint(2, 2 - nf_offset + int(y));
     line = data[y + std::size_t(yoffset)].mid ( std::size_t(1 + xoffset)
                                               , getTextWidth() );
     const auto line_str = line.wc_str();

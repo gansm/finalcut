@@ -66,8 +66,7 @@ void FMenuBar::hide()
   setColor (fg, bg);
   screenWidth = getDesktopWidth();
   auto blank = createBlankArray (screenWidth + 1);
-  setPrintPos (FPoint(1, 1));
-  print (blank);
+  print() << FPoint(1, 1) << blank;
   destroyBlankArray (blank);
 }
 
@@ -501,7 +500,7 @@ void FMenuBar::drawItems()
   if ( item_list.empty() )
     return;
 
-  setPrintPos (FPoint(1, 1));
+  print() << FPoint(1, 1);
 
   if ( isMonochron() )
     setReverse(true);
@@ -664,16 +663,14 @@ inline void FMenuBar::drawEllipsis (const menuText& txtdata, std::size_t x)
     if ( txtdata.startpos < screenWidth )
     {
       // Print ellipsis
-      setPrintPos (FPoint(int(screenWidth) - 1, 1));
-      print ("..");
+      print() << FPoint(int(screenWidth) - 1, 1) << "..";
     }
     else if ( txtdata.startpos - 1 <= screenWidth )
     {
       // Hide first character from text
-      setPrintPos (FPoint(int(screenWidth), 1));
-      print (' ');
+      print() << FPoint(int(screenWidth), 1) << ' ';
     }
-    }
+  }
 }
 
 //----------------------------------------------------------------------

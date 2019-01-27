@@ -92,7 +92,7 @@ void Mandelbrot::draw()
   for (y0 = y_min; y0 < y_max && current_line < Lines; y0 += dY)
   {
     current_line++;
-    setPrintPos (FPoint(xoffset, yoffset + current_line));
+    print() << FPoint(xoffset, yoffset + current_line);
 
     for (x0 = x_min; x0 < x_max; x0 += dX)
     {

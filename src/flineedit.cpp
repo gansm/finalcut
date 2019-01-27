@@ -678,7 +678,7 @@ void FLineEdit::drawInputField()
   std::size_t x;
   FString show_text;
   bool isActiveFocus = flags.active && flags.focus;
-  setPrintPos (FPoint(1, 1));
+  print() << FPoint(1, 1);
 
   if ( isMonochron() )
   {

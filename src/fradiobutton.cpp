@@ -73,7 +73,7 @@ void FRadioButton::drawRadioButton()
   if ( ! isVisible() )
     return;
 
-  setPrintPos (FPoint(1, 1));
+  print() << FPoint(1, 1);
   setColor();
 
   if ( isMonochron() )

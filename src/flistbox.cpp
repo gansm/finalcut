@@ -315,8 +315,7 @@ void FListBox::clear()
 
   for (int y = 0; y < int(getHeight()) - 2; y++)
   {
-    setPrintPos (FPoint(2, 2 + y));
-    print (blank);
+    print() << FPoint(2, 2 + y) << blank;
   }
 
   destroyBlankArray (blank);
@@ -819,8 +818,8 @@ void FListBox::draw()
 
     for (int y = 2; y < int(getHeight()); y++)
     {
-      setPrintPos (FPoint(int(getWidth()), y));
-      print (' ');  // clear right side of the scrollbar
+      print() << FPoint(int(getWidth()), y)
+              << ' ';  // clear right side of the scrollbar
     }
   }
 
@@ -854,7 +853,7 @@ void FListBox::drawHeadline()
 
   FString txt = " " + text + " ";
   std::size_t length = txt.getLength();
-  setPrintPos (FPoint(2, 1));
+  print() << FPoint(2, 1);
 
   if ( isEnabled() )
     setColor(wc.label_emphasis_fg, wc.label_bg);
@@ -1060,7 +1059,7 @@ inline void FListBox::setLineAttributes ( int y
 {
   bool isCurrentLine = bool(y + yoffset + 1 == int(current));
   std::size_t inc_len = inc_search.getLength();
-  setPrintPos (FPoint(2, 2 + int(y)));
+  print() << FPoint(2, 2 + int(y));
 
   if ( isLineSelected )
   {

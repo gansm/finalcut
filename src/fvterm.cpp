@@ -150,14 +150,10 @@ void FVTerm::hideCursor (bool enable)
 //----------------------------------------------------------------------
 void FVTerm::setPrintCursor (const FPoint& pos)
 {
-  int x = pos.getX();
-  int y = pos.getY();
-  auto win = getPrintArea();
-
-  if ( win )
+  if ( auto win = getPrintArea() )
   {
-    win->cursor_x = x - win->offset_left;
-    win->cursor_y = y - win->offset_top;
+    win->cursor_x = pos.getX() - win->offset_left;
+    win->cursor_y = pos.getY() - win->offset_top;
   }
 }
 
@@ -315,7 +311,9 @@ int FVTerm::printf (const FString format, ...)
 //----------------------------------------------------------------------
 int FVTerm::print (const FString& s)
 {
-  assert ( ! s.isNull() );
+  if ( s.isNull() )
+    return -1;
+
   auto area = getPrintArea();
 
   if ( ! area )
@@ -332,9 +330,7 @@ int FVTerm::print (const FString& s)
 //----------------------------------------------------------------------
 int FVTerm::print (term_area* area, const FString& s)
 {
-  assert ( ! s.isNull() );
-
-  if ( ! area )
+  if ( s.isNull() || ! area )
     return -1;
 
   std::vector<charData> term_string;
@@ -560,6 +556,13 @@ int FVTerm::print (term_area* area, charData& term_char)
 
   return 1;
 }
+
+//----------------------------------------------------------------------
+void FVTerm::print (const FPoint& p)
+{
+  setPrintCursor (p);
+}
+
 
 // protected methods of FVTerm
 //----------------------------------------------------------------------

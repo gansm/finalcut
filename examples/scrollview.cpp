@@ -139,7 +139,7 @@ void Scrollview::draw()
 
   for (int y = 0; y < int(getScrollHeight()); y++)
   {
-    setPrintPos (FPoint(1, 1 + y));
+    print() << FPoint(1, 1 + y);
 
     for (int x = 0; x < int(getScrollWidth()); x++)
       print (32 + ((x + y) % 0x5f));

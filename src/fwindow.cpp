@@ -251,8 +251,7 @@ void FWindow::drawBorder()
       , y1 = 1
       , y2 = 1 + int(getHeight()) - 1;
 
-    setPrintPos (FPoint(x1, y1));
-    print (fc::NF_border_corner_upper_left);  // ⎡
+    print() << FPoint(x1, y1) << fc::NF_border_corner_upper_left;  // ⎡
 
     for (int x = x1 + 1; x < x2; x++)
       print (fc::NF_border_line_upper);  // ¯
@@ -261,24 +260,20 @@ void FWindow::drawBorder()
 
     for (int y = y1 + 1; y < y2; y++)
     {
-      setPrintPos (FPoint(x1, y));
-      // border left ⎸
-      print (fc::NF_border_line_left);
-      setPrintPos (FPoint(x2, y));
-      // border right⎹
-      print (fc::NF_rev_border_line_right);
+      print() << FPoint(x1, y)  // border left ⎸
+              << fc::NF_border_line_left
+              << FPoint(x2, y)  // border right⎹
+              << fc::NF_rev_border_line_right;
     }
 
-    setPrintPos (FPoint(x1, y2));
-    // lower left corner border ⎣
-    print (fc::NF_border_corner_lower_left);
+    print() << FPoint(x1, y2)  // lower left corner border ⎣
+            << fc::NF_border_corner_lower_left;
 
     for (std::size_t x = 2; x < getWidth(); x++)  // low line _
       print (fc::NF_border_line_bottom);
 
-    setPrintPos (FPoint(x2, y2));
-    // lower right corner border ⎦
-    print (fc::NF_rev_border_corner_lower_right);
+    print() << FPoint(x2, y2)  // lower right corner border ⎦
+            << fc::NF_rev_border_corner_lower_right;
   }
   else
   {

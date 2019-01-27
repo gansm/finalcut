@@ -445,7 +445,7 @@ void FToggleButton::drawLabel()
   if ( hotkeypos != NOT_SET )
     length--;
 
-  setPrintPos (FPoint(1 + int(label_offset_pos), 1));
+  print() << FPoint(1 + int(label_offset_pos), 1);
   drawText (LabelText, hotkeypos, length);
   delete[] LabelText;
 }

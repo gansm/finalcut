@@ -127,7 +127,7 @@ void FSwitch::drawCheckButton()
   if ( ! isVisible() )
     return;
 
-  setPrintPos (FPoint(1 + int(switch_offset_pos), 1));
+  print() << FPoint(1 + int(switch_offset_pos), 1);
 
   if ( checked )
     drawChecked();

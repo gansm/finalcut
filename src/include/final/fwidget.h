@@ -129,6 +129,7 @@ class FWidget : public FVTerm, public FObject
   public:
      // Using-declaration
     using FVTerm::setColor;
+    using FVTerm::print;
 
     struct accelerator
     {
@@ -325,6 +326,7 @@ class FWidget : public FVTerm, public FObject
     virtual bool        focusLastChild();
     FPoint              termToWidgetPos (const FPoint&);
     void                detectTermSize();
+    virtual void        print (const FPoint& p) override;
     virtual void        move (const FPoint&);
     void                drawShadow();
     void                clearShadow();
@@ -918,6 +920,12 @@ inline FPoint FWidget::termToWidgetPos (const FPoint& tPos)
 {
   return FPoint ( tPos.getX() + 1 - offset.getX1() - adjust_wsize.getX()
                 , tPos.getY() + 1 - offset.getY1() - adjust_wsize.getY() );
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::print (const FPoint& pos)
+{
+  setPrintPos (pos);
 }
 
 //----------------------------------------------------------------------

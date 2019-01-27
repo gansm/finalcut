@@ -253,8 +253,7 @@ void FButton::hide()
 
   for (std::size_t y = 0; y < getHeight() + s + (f << 1); y++)
   {
-    setPrintPos (FPoint(1 - int(f), 1 + int(y - f)));
-    print (blank);
+    print() << FPoint(1 - int(f), 1 + int(y - f)) << blank;
   }
 
   destroyBlankArray (blank);
@@ -491,8 +490,7 @@ inline std::size_t FButton::clickAnimationIndent (FWidget* parent_widget)
 
   for (std::size_t  y = 1; y <= getHeight(); y++)
   {
-    setPrintPos (FPoint(1, int(y)));
-    print (' ');  // clear one left █
+    print() << FPoint(1, int(y)) << ' ';  // clear one left █
   }
 
   return 1;
@@ -514,8 +512,7 @@ inline void FButton::clearRightMargin (FWidget* parent_widget)
     if ( isMonochron() )
       setReverse(true);  // Light background
 
-    setPrintPos (FPoint(1 + int(getWidth()), y));
-    print (' ');  // clear right
+    print() << FPoint(1 + int(getWidth()), y) << ' ';  // clear right
 
     if ( flags.active && isMonochron() )
       setReverse(false);  // Dark background
@@ -531,7 +528,7 @@ inline void FButton::drawMarginLeft()
 
   for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (FPoint(1 + int(indent), 1 + int(y)));
+    print() << FPoint(1 + int(indent), 1 + int(y));
 
     if ( isMonochron() && active_focus && y == vcenter_offset )
       print (fc::BlackRightPointingPointer);  // ►
@@ -547,7 +544,7 @@ inline void FButton::drawMarginRight()
 
   for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (FPoint(int(getWidth() + indent), 1 + int(y)));
+    print() << FPoint(int(getWidth() + indent), 1 + int(y));
 
     if ( isMonochron() && active_focus && y == vcenter_offset )
       print (fc::BlackLeftPointingPointer);   // ◄
@@ -566,7 +563,7 @@ inline void FButton::drawTopBottomBackground()
 
   for (std::size_t y = 0; y < vcenter_offset; y++)
   {
-    setPrintPos (FPoint(2 + int(indent), 1 + int(y)));
+    print() << FPoint(2 + int(indent), 1 + int(y));
 
     for (std::size_t x = 1; x < getWidth() - 1; x++)
       print (space_char);  // █
@@ -574,7 +571,7 @@ inline void FButton::drawTopBottomBackground()
 
   for (std::size_t y = vcenter_offset + 1; y < getHeight(); y++)
   {
-    setPrintPos (FPoint(2 + int(indent), 1 + int(y)));
+    print() << FPoint(2 + int(indent), 1 + int(y));
 
     for (std::size_t x = 1; x < getWidth() - 1; x++)
       print (space_char);  // █
@@ -585,7 +582,7 @@ inline void FButton::drawTopBottomBackground()
 inline void FButton::drawButtonTextLine (wchar_t button_text[])
 {
   std::size_t pos;
-  setPrintPos (FPoint(2 + int(indent), 1 + int(vcenter_offset)));
+  print() << FPoint(2 + int(indent), 1 + int(vcenter_offset));
   setColor (button_fg, button_bg);
 
   if ( getWidth() < txtlength + 1 )
@@ -643,8 +640,7 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
   if ( txtlength >= getWidth() - 1 )
   {
     // Print ellipsis
-    setPrintPos (FPoint(int(getWidth() + indent) - 2, 1));
-    print (L"..");
+    print() << FPoint(int(getWidth() + indent) - 2, 1) << "..";
   }
 
   if ( active_focus && (isMonochron() || getMaxColor() < 16) )

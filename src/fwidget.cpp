@@ -1273,14 +1273,13 @@ void FWidget::clearShadow()
   {
     for (std::size_t y = 1; y <= getHeight(); y++)
     {
-      setPrintPos (FPoint(w + 1, int(y)));
-      print  (' ');  // clear █
+      print() << FPoint(w + 1, int(y)) << ' ';  // clear █
     }
   }
 
   if ( h <= offset.getY2() )
   {
-    setPrintPos (FPoint(2, h + 1));
+    print() << FPoint(2, h + 1);
 
     for (std::size_t i = 1; i <= getWidth(); i++)
       print (' ');  // clear ▀
@@ -1308,7 +1307,7 @@ void FWidget::drawFlatBorder()
 
   for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (FPoint(x1 - 1, y1 + int(y) + 1));
+    print() << FPoint(x1 - 1, y1 + int(y) + 1);
 
     if ( double_flatline_mask.left[uLong(y)] )
       // left+right line (on left side)
@@ -1318,7 +1317,7 @@ void FWidget::drawFlatBorder()
       print (fc::NF_rev_border_line_right);
   }
 
-  setPrintPos (FPoint(x2, y1 + 1));
+  print() << FPoint(x2, y1 + 1);
 
   for (std::size_t y = 0; y < getHeight(); y++)
   {
@@ -1329,10 +1328,10 @@ void FWidget::drawFlatBorder()
       // left line (on right side)
       print (fc::NF_border_line_left);
 
-    setPrintPos (FPoint(x2, y1 + int(y) + 2));
+    print() << FPoint(x2, y1 + int(y) + 2);
   }
 
-  setPrintPos (FPoint(x1, y1));
+  print() << FPoint(x1, y1);
 
   for (std::size_t x = 0; x < getWidth(); x++)
   {
@@ -1344,7 +1343,7 @@ void FWidget::drawFlatBorder()
       print (fc::NF_border_line_bottom);
   }
 
-  setPrintPos (FPoint(x1, y2));
+  print() << FPoint(x1, y2);
 
   for (std::size_t x = 0; x < getWidth(); x++)
   {
@@ -1376,7 +1375,7 @@ void FWidget::clearFlatBorder()
   // clear on left side
   for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (FPoint(x1 - 1, y1 + int(y) + 1));
+    print() << FPoint(x1 - 1, y1 + int(y) + 1);
 
     if ( double_flatline_mask.left[y] )
       print (fc::NF_border_line_left);
@@ -1387,7 +1386,7 @@ void FWidget::clearFlatBorder()
   // clear on right side
   for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (FPoint(x2, y1 + int(y) + 1));
+    print() << FPoint(x2, y1 + int(y) + 1);
 
     if ( double_flatline_mask.right[y] )
       print (fc::NF_rev_border_line_right);
@@ -1396,7 +1395,7 @@ void FWidget::clearFlatBorder()
   }
 
   // clear at top
-  setPrintPos (FPoint(x1, y1));
+  print() << FPoint(x1, y1);
 
   for (std::size_t x = 0; x < getWidth(); x++)
   {
@@ -1407,7 +1406,7 @@ void FWidget::clearFlatBorder()
   }
 
   // clear at bottom
-  setPrintPos (FPoint(x1, y2));
+  print() << FPoint(x1, y2);
 
   for (std::size_t x = 0; x < getWidth(); x++)
   {
@@ -1646,8 +1645,7 @@ void FWidget::hideSize (const FSize& size)
 
   for (int y = 0; y < int(size.getWidth()); y++)
   {
-    setPrintPos (FPoint(1, 1 + y));
-    print (blank);
+    print() << FPoint(1, 1 + y) << blank;
   }
 
   destroyBlankArray (blank);
@@ -2230,9 +2228,9 @@ void FWidget::drawChildren()
 void FWidget::drawTransparentShadow (int x1, int y1, int x2, int y2)
 {
   // transparent shadow
-  setPrintPos (FPoint(x2 + 1, y1));
+
   setTransparent();
-  print ("  ");
+  print() << FPoint(x2 + 1, y1) << "  ";
   unsetTransparent();
 
   setColor (wc.shadow_bg, wc.shadow_fg);
@@ -2240,14 +2238,12 @@ void FWidget::drawTransparentShadow (int x1, int y1, int x2, int y2)
 
   for (std::size_t y = 1; y < getHeight(); y++)
   {
-    setPrintPos (FPoint(x2 + 1, y1 + int(y)));
-    print ("  ");
+    print() << FPoint(x2 + 1, y1 + int(y)) << "  ";
   }
 
   unsetTransShadow();
-  setPrintPos (FPoint(x1, y2 + 1));
   setTransparent();
-  print ("  ");
+  print() << FPoint(x1, y2 + 1) << "  ";
   unsetTransparent();
 
   setColor (wc.shadow_bg, wc.shadow_fg);
@@ -2266,12 +2262,12 @@ void FWidget::drawTransparentShadow (int x1, int y1, int x2, int y2)
 void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
 {
   // non-transparent shadow
-  int block;
+  wchar_t block;
 
   if ( ! hasShadowCharacter() )
     return;
 
-  setPrintPos (FPoint(x2 + 1, y1));
+  print() << FPoint(x2 + 1, y1);
 
   if ( isWindowWidget() )
   {
@@ -2289,11 +2285,10 @@ void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
 
   for (std::size_t y = 1; y < getHeight(); y++)
   {
-    setPrintPos (FPoint(x2 + 1, y1 + int(y)));
-    print (block);  // █
+    print() << FPoint(x2 + 1, y1 + int(y)) << block;  // █
   }
 
-  setPrintPos (FPoint(x1 + 1, y2 + 1));
+  print() << FPoint(x1 + 1, y2 + 1);
 
   if ( isWindowWidget() )
     setInheritBackground();
@@ -2310,36 +2305,34 @@ inline void FWidget::drawBox (int x1, int y1, int x2, int y2)
 {
   // Use box-drawing characters to draw a border
 
-  setPrintPos (FPoint(x1, y1));
-  print (fc::BoxDrawingsDownAndRight);  // ┌
+  print() << FPoint(x1, y1) << fc::BoxDrawingsDownAndRight;  // ┌
 
   for (int x = x1 + 1; x < x2; x++)
-    print (fc::BoxDrawingsHorizontal);  // ─
+    print (fc::BoxDrawingsHorizontal);     // ─
 
-  print (fc::BoxDrawingsDownAndLeft);  // ┐
+  print (fc::BoxDrawingsDownAndLeft);      // ┐
 
   for (int y = y1 + 1; y < y2; y++)
   {
-    setPrintPos (FPoint(x1, y));
-    print (fc::BoxDrawingsVertical);  // │
-    setPrintPos (FPoint(x2, y));
-    print (fc::BoxDrawingsVertical);  // │
+    print() << FPoint(x1, y)
+            << fc::BoxDrawingsVertical     // │
+            << FPoint(x2, y)
+            << fc::BoxDrawingsVertical;    // │
   }
 
-  setPrintPos (FPoint(x1, y2));
-  print (fc::BoxDrawingsUpAndRight);  // └
+  print() << FPoint(x1, y2) << fc::BoxDrawingsUpAndRight;  // └
 
   for (int x = x1 + 1; x < x2; x++)
-    print (fc::BoxDrawingsHorizontal);  // ─
+    print (fc::BoxDrawingsHorizontal);     // ─
 
-  print (fc::BoxDrawingsUpAndLeft);  // ┘
+  print (fc::BoxDrawingsUpAndLeft);        // ┘
 
   for (int x = x1 + 1; x < x2; x++)
   {
-    setPrintPos (FPoint(x, y1));
-    print (fc::BoxDrawingsHorizontal);  // ─
-    setPrintPos (FPoint(x, y2));
-    print (fc::BoxDrawingsHorizontal);  // ─
+    print() << FPoint(x, y1)
+            << fc::BoxDrawingsHorizontal   // ─
+            << FPoint(x, y2)
+            << fc::BoxDrawingsHorizontal;  // ─
   }
 }
 
@@ -2348,24 +2341,24 @@ inline void FWidget::drawNewFontBox (int x1, int y1, int x2, int y2)
 {
   // Use new graphical font characters to draw a border
 
-  setPrintPos (FPoint(x1, y1));
-  print (fc::NF_border_corner_middle_upper_left);  // ┌
+  print() << FPoint(x1, y1)
+          << fc::NF_border_corner_middle_upper_left;  // ┌
 
   for (int x = x1 + 1; x < x2; x++)
-    print (fc::BoxDrawingsHorizontal);  // ─
+    print (fc::BoxDrawingsHorizontal);                // ─
 
-  print (fc::NF_border_corner_middle_upper_right);  // ┐
+  print (fc::NF_border_corner_middle_upper_right);    // ┐
 
   for (int y = y1 + 1; y <= y2; y++)
   {
-    setPrintPos (FPoint(x1, y));
-    print (fc::NF_border_line_left);  // border left ⎸
-    setPrintPos (FPoint(x2, y));
-    print (fc::NF_rev_border_line_right);  // border right⎹
+    print() << FPoint(x1, y)
+            << fc::NF_border_line_left        // border left ⎸
+            << FPoint(x2, y)
+            << fc::NF_rev_border_line_right;  // border right⎹
   }
 
-  setPrintPos (FPoint(x1, y2));
-  print (fc::NF_border_corner_middle_lower_left);  // └
+  print() << FPoint(x1, y2)
+          << fc::NF_border_corner_middle_lower_left;  // └
 
   for (int x = x1 + 1; x < x2; x++)
     print (fc::BoxDrawingsHorizontal);  // ─
