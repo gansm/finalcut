@@ -367,7 +367,7 @@ inline void FFileDialog::widgetSettings (const FPoint& pos)
     open.setText ("&Open");
 
   open.setGeometry(FPoint(30, 10), FSize(9, 1));
-  setPos (pos);
+  setGeometry (pos, getSize());
 }
 
 //----------------------------------------------------------------------
