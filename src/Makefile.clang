@@ -12,6 +12,7 @@ INCLUDE_HEADERS = \
 	fapplication.h \
 	fbuttongroup.h \
 	fbutton.h \
+	fcolorpair.h \
 	ftogglebutton.h \
 	fcheckbox.h \
 	fswitch.h \

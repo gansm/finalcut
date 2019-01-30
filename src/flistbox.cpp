@@ -865,9 +865,8 @@ void FListBox::drawHeadline()
   else
   {
     // Print ellipsis
-    print (text.left(uInt(getClientWidth() - 2)));
-    setColor (wc.label_ellipsis_fg, wc.label_bg);
-    print("..");
+    print() << text.left(uInt(getClientWidth() - 2))
+            << FColorPair (wc.label_ellipsis_fg, wc.label_bg) << "..";
   }
 }
 

@@ -563,6 +563,12 @@ void FVTerm::print (const FPoint& p)
   setPrintCursor (p);
 }
 
+//----------------------------------------------------------------------
+void FVTerm::print (const FColorPair& pair)
+{
+  setColor (pair.fg_color, pair.bg_color);
+}
+
 
 // protected methods of FVTerm
 //----------------------------------------------------------------------

@@ -583,8 +583,7 @@ void FLabel::printLine ( wchar_t line[]
   if ( length > width )
   {
     // Print ellipsis
-    setColor (ellipsis_color, getBackgroundColor());
-    print ("..");
+    print() << FColorPair(ellipsis_color, getBackgroundColor()) << "..";
     setColor();
   }
   else if ( align_offset + to_char < width )

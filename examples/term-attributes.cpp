@@ -25,6 +25,7 @@
 
 using finalcut::FPoint;
 using finalcut::FSize;
+using finalcut::FColorPair;
 
 
 //----------------------------------------------------------------------
@@ -260,8 +261,7 @@ void AttribDemo::printColorLine()
 
   for (FColor color = 0; color < colors; color++)
   {
-    setColor (color, parent->bgcolor);
-    print (" # ");
+    print() << FColorPair(color, parent->bgcolor) << " # ";
   }
 }
 

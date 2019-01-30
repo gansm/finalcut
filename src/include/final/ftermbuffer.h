@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -67,6 +67,8 @@ class FTermBuffer
     // Overloaded operators
     template <typename type>
     FTermBuffer& operator << (const type&);
+    FTermBuffer& operator << (const FColorPair&);
+
     // Non-member operators
     friend std::vector<charData>& operator << ( std::vector<charData>&
                                               , const FTermBuffer& );
@@ -82,7 +84,8 @@ class FTermBuffer
     void                   clear();
     int                    writef (const FString, ...);
     int                    write (const FString&);
-    int                    write (int);
+    int                    write (wchar_t);
+    void                   write (const FColorPair&);
     FTermBuffer&           write ();
     std::vector<charData>  getBuffer();
 
@@ -101,6 +104,13 @@ inline FTermBuffer& FTermBuffer::operator << (const type& s)
   std::wostringstream outstream;
   outstream << str;
   write (outstream.str());
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FTermBuffer& FTermBuffer::operator << (const FColorPair& pair)
+{
+  write (pair);
   return *this;
 }
 

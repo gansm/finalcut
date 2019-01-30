@@ -300,7 +300,7 @@ bool FWidget::setFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setColor ()
+void FWidget::setColor()
 {
   // Changes colors to the widget default colors
   setColor (foreground_color, background_color);

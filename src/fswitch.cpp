@@ -175,8 +175,8 @@ void FSwitch::drawChecked()
   if ( isMonochron() || getMaxColor() < 16 )
     setBold(false);
 
-  setColor (wc.button_inactive_fg, wc.button_inactive_bg);
-  print (off);
+  print() << FColorPair(wc.button_inactive_fg, wc.button_inactive_bg)
+          << off;
 
   if ( isMonochron() )
     setReverse(false);

@@ -32,6 +32,7 @@
 
 using finalcut::FPoint;
 using finalcut::FSize;
+using finalcut::FColorPair;
 
 constexpr lDouble PI = 3.141592653589793238L;
 
@@ -333,13 +334,12 @@ void Calc::drawDispay()
   if ( error )
     display = " Error                          ";
 
-  setColor(finalcut::fc::Black, finalcut::fc::LightGray);
-
   if ( isMonochron() )
     setReverse(false);
 
-  print() << FPoint(3, 3) << display << ' ';
-  setColor(wc.dialog_fg, wc.dialog_bg);
+  print() << FColorPair(finalcut::fc::Black, finalcut::fc::LightGray)
+          << FPoint(3, 3) << display << ' '
+          << FColorPair(wc.dialog_fg, wc.dialog_bg);
 
   if ( isMonochron() )
     setReverse(true);

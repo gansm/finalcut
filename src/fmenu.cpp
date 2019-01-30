@@ -1251,8 +1251,8 @@ void FMenu::drawItems()
 //----------------------------------------------------------------------
 inline void FMenu::drawSeparator (int y)
 {
-  print() << FPoint(1, 2 + y);
-  setColor (wc.menu_active_fg, wc.menu_active_bg);
+  print() << FPoint(1, 2 + y)
+          << FColorPair(wc.menu_active_fg, wc.menu_active_bg);
 
   if ( isMonochron() )
     setReverse(true);

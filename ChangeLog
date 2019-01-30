@@ -1,3 +1,7 @@
+2019-01-30  Markus Gans  <guru.mail@muenster.de>
+	* Printing an FColorPair object can change the foreground and 
+	  background colors
+
 2019-01-27  Markus Gans  <guru.mail@muenster.de>
 	* The print command can now have an FPoint object as a parameter 
 	  to set the cursor position

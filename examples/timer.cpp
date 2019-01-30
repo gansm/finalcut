@@ -75,8 +75,8 @@ void Timer::onTimer (finalcut::FTimerEvent* ev)
   if ( getPrintPos().getY() == int(getDesktopHeight()) )
     is_last_line = true;
 
-  setColor (FColor(1 + timer_id), finalcut::fc::Default);
-  print() << "Timer event, id " << timer_id << '\n';
+  print() << finalcut::FColorPair (FColor(1 + timer_id))
+          << "Timer event, id " << timer_id << '\n';
 
   if ( is_last_line )
     scrollAreaForward (vdesktop);

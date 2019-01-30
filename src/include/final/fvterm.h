@@ -58,6 +58,7 @@
 #include <vector>
 
 #include "final/fterm.h"
+#include "final/fcolorpair.h"
 
 
 // Preprocessing handler macro
@@ -133,6 +134,7 @@ class FVTerm
     FVTerm& operator << (const type&);
     FVTerm& operator << (const std::vector<charData>&);
     FVTerm& operator << (const FPoint&);
+    FVTerm& operator << (const FColorPair&);
 
     // Accessors
     virtual const char*   getClassName() const;
@@ -296,6 +298,7 @@ class FVTerm
     int                   print (charData&);
     int                   print (term_area*, charData&);
     virtual void          print (const FPoint&);
+    virtual void          print (const FColorPair&);
     virtual FVTerm&       print();
     static void           beep();
     static void           redefineDefaultColors (bool);
@@ -556,6 +559,13 @@ inline FVTerm& FVTerm::operator << \
 inline FVTerm& FVTerm::operator << (const FPoint& pos)
 {
   print (pos);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FVTerm& FVTerm::operator << (const FColorPair& pair)
+{
+  print (pair);
   return *this;
 }
 

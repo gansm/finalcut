@@ -582,8 +582,8 @@ inline void FButton::drawTopBottomBackground()
 inline void FButton::drawButtonTextLine (wchar_t button_text[])
 {
   std::size_t pos;
-  print() << FPoint(2 + int(indent), 1 + int(vcenter_offset));
-  setColor (button_fg, button_bg);
+  print() << FPoint(2 + int(indent), 1 + int(vcenter_offset))
+          << FColorPair (button_fg, button_bg);
 
   if ( getWidth() < txtlength + 1 )
     center_offset = 0;

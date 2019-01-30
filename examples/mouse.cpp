@@ -24,6 +24,7 @@
 
 using finalcut::FPoint;
 using finalcut::FSize;
+using finalcut::FColorPair;
 
 
 //----------------------------------------------------------------------
@@ -142,9 +143,7 @@ void ColorChooser::draw()
 
     if ( c == bg_color )
     {
-      print (' ');
-      print (finalcut::fc::Times);
-      print (' ');
+      print() << ' ' << finalcut::fc::Times << ' ';
     }
     else
       print ("   ");
@@ -244,8 +243,8 @@ void Brushes::draw()
   int pos;
   setColor();
   finalcut::FWidget::drawBorder (1, 2, 8, 4);
-  setColor (fg_color, bg_color);
-  print() << FPoint(2, 3) << "   "
+  print() << FPoint(2, 3)
+          << FColorPair(fg_color, bg_color) << "   "
           << finalcut::FString(3, finalcut::fc::MediumShade);
 
   if ( brush == L' ' )

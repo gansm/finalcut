@@ -1849,10 +1849,10 @@ void FListView::drawColumnEllipsis ( const headerItems::const_iterator& iter
   static constexpr int ellipsis_length = 2;
   int width = iter->width;
 
-  headerline << ' ';
-  headerline << text.left(uInt(width - ellipsis_length));
-  setColor (wc.label_ellipsis_fg, wc.label_bg);
-  headerline << "..";
+  headerline << ' '
+             << text.left(uInt(width - ellipsis_length))
+             << FColorPair (wc.label_ellipsis_fg, wc.label_bg)
+             << "..";
 
   if ( iter == header.end() - 1 )  // Last element
     headerline << ' ';
