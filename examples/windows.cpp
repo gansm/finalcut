@@ -346,8 +346,8 @@ void Window::activateWindow (finalcut::FDialog* win)
 //----------------------------------------------------------------------
 void Window::adjustSize()
 {
-  std::size_t w  = getRootWidget()->getWidth();
-  std::size_t h  = getRootWidget()->getHeight();
+  std::size_t w  = getDesktopWidth();
+  std::size_t h  = getDesktopHeight();
   int X  = int(1 + (w - 40) / 2)
     , Y  = int(1 + (h - 22) / 2)
     , dx = ( w > 80 ) ? int(w - 80) / 2 : 0

@@ -173,8 +173,8 @@ void AttribDlg::cb_back (finalcut::FWidget*, FDataPtr)
 //----------------------------------------------------------------------
 void AttribDlg::adjustSize()
 {
-  int x = int((getParentWidget()->getWidth() - getWidth()) / 2);
-  int y = int((getParentWidget()->getHeight() - getHeight()) / 2) + 1;
+  int x = int((getDesktopWidth() - getWidth()) / 2);
+  int y = int((getDesktopHeight() - getHeight()) / 2) + 1;
 
   if ( x < 1 )
     x = 1;

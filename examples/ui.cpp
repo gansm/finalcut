@@ -745,7 +745,7 @@ void MyDialog::adjustSize()
 {
   auto h = getParentWidget()->getHeight() - 4;
   setHeight (h, false);
-  auto X = int((getParentWidget()->getWidth() - getWidth()) / 2);
+  auto X = int((getDesktopWidth() - getWidth()) / 2);
 
   if ( X < 1 )
     X = 1;

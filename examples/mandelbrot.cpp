@@ -142,8 +142,8 @@ void Mandelbrot::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Mandelbrot::adjustSize()
 {
-  std::size_t h = getParentWidget()->getHeight() - 1;
-  std::size_t w = getParentWidget()->getWidth() - 10;
+  std::size_t h = getDesktopHeight() - 1;
+  std::size_t w = getDesktopWidth() - 10;
   setGeometry(FPoint(6, 1), FSize(w, h), false);
   finalcut::FDialog::adjustSize();
 }

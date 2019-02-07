@@ -291,8 +291,8 @@ void Menu::defaultCallback (finalcut::FMenuList* mb)
 //----------------------------------------------------------------------
 void Menu::adjustSize()
 {
-  int pw = int(getParentWidget()->getWidth());
-  int ph = int(getParentWidget()->getHeight());
+  int pw = int(getDesktopWidth());
+  int ph = int(getDesktopHeight());
   setX (1 + (pw - int(getWidth())) / 2, false);
   setY (1 + (ph - int(getHeight())) / 4, false);
   finalcut::FDialog::adjustSize();

@@ -388,9 +388,8 @@ void FWindow::setGeometry ( const FPoint& p, const FSize& size, bool adjust)
 
   int old_x = getX();
   int old_y = getY();
-  std::size_t old_width = getWidth();
-  std::size_t old_height = getHeight();
   FPoint pos = p;
+  FSize old_size = getSize();
 
   if ( pos.getY() < 1 )
     pos.setY(1);
@@ -400,7 +399,7 @@ void FWindow::setGeometry ( const FPoint& p, const FSize& size, bool adjust)
   if ( ! isVirtualWindow() )
     return;
 
-  if ( getWidth() != old_width || getHeight() != old_height )
+  if ( getSize() != old_size )
   {
     FRect geometry = getTermGeometry();
     geometry.move(-1, -1);

@@ -381,9 +381,9 @@ Treeview::~Treeview()  // destructor
 //----------------------------------------------------------------------
 void Treeview::adjustSize()
 {
-  std::size_t h = getParentWidget()->getHeight() - 4;
+  std::size_t h = getDesktopHeight() - 4;
   setHeight (h, false);
-  int X = int((getParentWidget()->getWidth() - getWidth()) / 2);
+  int X = int((getDesktopWidth() - getWidth()) / 2);
 
   if ( X < 1 )
     X = 1;

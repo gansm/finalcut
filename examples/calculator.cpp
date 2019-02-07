@@ -1081,8 +1081,8 @@ void Calc::cb_buttonClicked (finalcut::FWidget*, FDataPtr data)
 //----------------------------------------------------------------------
 void Calc::adjustSize()
 {
-  std::size_t pw = getParentWidget()->getWidth();
-  std::size_t ph = getParentWidget()->getHeight();
+  std::size_t pw = getDesktopWidth();
+  std::size_t ph = getDesktopHeight();
   setX (1 + int(pw - getWidth()) / 2, false);
   setY (1 + int(ph - getHeight()) / 2, false);
   finalcut::FDialog::adjustSize();

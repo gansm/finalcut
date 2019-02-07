@@ -15,6 +15,7 @@ Table of Contents
 - [Callback function](#example-of-a-callback-function)
 - [Callback method](#example-of-a-callback-function)
 - [Custom signals](#send-custom-signals)
+- [Dynamic layout](#dynamic-layout)
 <!-- /TOC -->
 
 
@@ -287,7 +288,7 @@ class dialogWidget : public FDialog
     }
 
   private:
-    virtual void onTimer (FTimerEvent* ev)
+    virtual void onTimer (FTimerEvent* ev) override
     {
       if ( id == ev->getTimerId() && n < 9999999999 )
       {
@@ -666,4 +667,123 @@ the above program with gcc:
 ```cpp
 g++ -O2 -lfinal -std=c++11 emit-signal.cpp -o emit-signal
 ```
-The FINAL CUT widgets emit the following default signals:
+
+
+Dynamic layout
+--------------
+
+A modern terminal emulation like xterm has no fixed resolution. 
+They offer the possibility to change the height and width of the 
+terminal at any time. That triggers a resize-event that calls 
+the `adjustSize()` method. This method allows adapting the widget 
+to a changed terminal size. You can override the `adjustSize()` 
+method to adjust the size and position of the widget. The method 
+`adjustSize()` will also be called indirectly via calling methods 
+`setGeometry()`, `setX()`, `setY()`, `setPos()`, `setWidth()`, 
+`setHeight()`, `setSize()`, `setTopPadding()`, `setLeftPadding()`, 
+`setBottomPadding()`, `setRightPadding()`, or `setDoubleFlatLine()`.
+
+Scalable dialogs derived from FDialog can change the dialog size by 
+clicking on the lower right corner of the window.  You can intercept 
+a scaling action by overriding the `setSize()` method and adjusting 
+the client widgets.
+
+**File:** *size-adjustment.cpp*
+```cpp
+#include <final/final.h>
+
+using namespace finalcut;
+
+class dialogWidget : public FDialog
+{
+  public:
+    explicit dialogWidget (FWidget* parent = nullptr)
+      : FDialog(parent)
+    {
+      setText ("Dialog");
+      setResizeable();
+      btn.setGeometry (FPoint(1, 1), FSize(12, 1), false);
+      line.setGeometry (FPoint(2, 3), FSize(12, 1), false);
+      // Set dialog geometry and calling adjustSize()
+      setGeometry (FPoint(25, 5), FSize(40, 12));
+      setMinimumSize (FSize(25, 9));
+    }
+
+  private:
+    inline void checkMinValue (int& n)
+    {
+      if ( n < 1 )  // Checks and corrects the minimum value
+        n = 1;
+    }
+
+    void centerDialog()
+    {
+      auto x = int((getDesktopWidth() - getWidth()) / 2);
+      auto y = int((getDesktopHeight() - getHeight()) / 2);
+      checkMinValue(x);
+      checkMinValue(y);
+      setPos (FPoint(x, y), false);
+    }
+
+    void adjustWidgets()
+    {
+      auto bx = int(getWidth() - btn.getWidth() - 3);
+      auto by = int(getHeight() - 4);
+      btn.setPos (FPoint(bx, by), false);
+      line.setWidth (getWidth() - 4);
+      auto ly = int(getHeight() / 2) - 1;
+      line.setY (ly, false);
+    }
+
+    virtual void adjustSize() override
+    {
+      // Calling super class method adjustSize()
+      FDialog::adjustSize();
+      // Centers the dialog in the terminal
+      centerDialog();
+    }
+
+    virtual void setSize (const FSize& size, bool) override
+    {
+      // Calling super class methods setSize() + adjustSize()
+      FDialog::setSize (size, false);
+      FDialog::adjustSize();
+    }
+
+    virtual void draw() override
+    {
+      adjustWidgets();  // Adjust widgets before drawing 
+
+      // Calling super class method draw()
+      FDialog::draw();
+
+      print() << FPoint (3, 3)
+              << FColorPair (fc::Black, fc::White)
+              << "Text on "
+              << FColorPair (fc::Blue, fc::Yellow)
+              << "top";
+    }
+
+    FLineEdit line{"Middle", this};
+    FButton btn{"&Bottom", this};
+};
+
+int main (int argc, char* argv[])
+{
+  FApplication app(argc, argv);
+  dialogWidget dialog(&app);
+  app.setMainWidget(&dialog);
+  dialog.show();
+  return app.exec();
+}
+```
+*(Note: You can close the window with the mouse, 
+<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+
+
+After entering the source code in *size-adjustment.cpp* you can compile
+the above program with gcc:
+```cpp
+g++ -O2 -lfinal -std=c++11 size-adjustment.cpp -o size-adjustment
+```
+
