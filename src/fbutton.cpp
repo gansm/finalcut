@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -188,12 +188,12 @@ bool FButton::setShadow (bool enable)
     && getEncoding() != fc::ASCII )
   {
     flags.shadow = true;
-    setShadowSize(1, 1);
+    setShadowSize(FSize(1, 1));
   }
   else
   {
     flags.shadow = false;
-    setShadowSize(0, 0);
+    setShadowSize(FSize(0, 0));
   }
 
   return flags.shadow;
@@ -253,8 +253,7 @@ void FButton::hide()
 
   for (std::size_t y = 0; y < getHeight() + s + (f << 1); y++)
   {
-    setPrintPos (1 - int(f), 1 + int(y - f));
-    print (blank);
+    print() << FPoint(1 - int(f), 1 + int(y - f)) << blank;
   }
 
   destroyBlankArray (blank);
@@ -418,45 +417,21 @@ void FButton::init()
 }
 
 //----------------------------------------------------------------------
-uChar FButton::getHotkey()
-{
-  if ( text.isEmpty() )
-    return 0;
-
-  std::size_t length = text.getLength();
-
-  for (std::size_t i = 0; i < length; i++)
-  {
-    try
-    {
-      if ( i + 1 < length && text[i] == '&' )
-        return uChar(text[++i]);
-    }
-    catch (const std::out_of_range&)
-    {
-      return 0;
-    }
-  }
-
-  return 0;
-}
-
-//----------------------------------------------------------------------
 void FButton::setHotkeyAccelerator()
 {
-  uChar hotkey = getHotkey();
+  FKey hotkey = getHotkey(text);
 
   if ( hotkey )
   {
-    if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
+    if ( std::isalpha(int(hotkey)) || std::isdigit(int(hotkey)) )
     {
-      addAccelerator (FKey(std::tolower(hotkey)));
-      addAccelerator (FKey(std::toupper(hotkey)));
+      addAccelerator (FKey(std::tolower(int(hotkey))));
+      addAccelerator (FKey(std::toupper(int(hotkey))));
       // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(hotkey)));
+      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(int(hotkey))));
     }
     else
-      addAccelerator (getHotkey());
+      addAccelerator (hotkey);
   }
   else
     delAccelerator();
@@ -515,8 +490,7 @@ inline std::size_t FButton::clickAnimationIndent (FWidget* parent_widget)
 
   for (std::size_t  y = 1; y <= getHeight(); y++)
   {
-    setPrintPos (1, int(y));
-    print (' ');  // clear one left █
+    print() << FPoint(1, int(y)) << ' ';  // clear one left █
   }
 
   return 1;
@@ -538,8 +512,7 @@ inline void FButton::clearRightMargin (FWidget* parent_widget)
     if ( isMonochron() )
       setReverse(true);  // Light background
 
-    setPrintPos (1 + int(getWidth()), y);
-    print (' ');  // clear right
+    print() << FPoint(1 + int(getWidth()), y) << ' ';  // clear right
 
     if ( flags.active && isMonochron() )
       setReverse(false);  // Dark background
@@ -555,7 +528,7 @@ inline void FButton::drawMarginLeft()
 
   for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (1 + int(indent), 1 + int(y));
+    print() << FPoint(1 + int(indent), 1 + int(y));
 
     if ( isMonochron() && active_focus && y == vcenter_offset )
       print (fc::BlackRightPointingPointer);  // ►
@@ -571,7 +544,7 @@ inline void FButton::drawMarginRight()
 
   for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (int(getWidth() + indent), 1 + int(y));
+    print() << FPoint(int(getWidth() + indent), 1 + int(y));
 
     if ( isMonochron() && active_focus && y == vcenter_offset )
       print (fc::BlackLeftPointingPointer);   // ◄
@@ -590,7 +563,7 @@ inline void FButton::drawTopBottomBackground()
 
   for (std::size_t y = 0; y < vcenter_offset; y++)
   {
-    setPrintPos (2 + int(indent), 1 + int(y));
+    print() << FPoint(2 + int(indent), 1 + int(y));
 
     for (std::size_t x = 1; x < getWidth() - 1; x++)
       print (space_char);  // █
@@ -598,7 +571,7 @@ inline void FButton::drawTopBottomBackground()
 
   for (std::size_t y = vcenter_offset + 1; y < getHeight(); y++)
   {
-    setPrintPos (2 + int(indent), 1 + int(y));
+    print() << FPoint(2 + int(indent), 1 + int(y));
 
     for (std::size_t x = 1; x < getWidth() - 1; x++)
       print (space_char);  // █
@@ -609,8 +582,8 @@ inline void FButton::drawTopBottomBackground()
 inline void FButton::drawButtonTextLine (wchar_t button_text[])
 {
   std::size_t pos;
-  setPrintPos (2 + int(indent), 1 + int(vcenter_offset));
-  setColor (button_fg, button_bg);
+  print() << FPoint(2 + int(indent), 1 + int(vcenter_offset))
+          << FColorPair (button_fg, button_bg);
 
   if ( getWidth() < txtlength + 1 )
     center_offset = 0;
@@ -622,11 +595,11 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
     print (space_char);  // █
 
   if ( hotkeypos == NOT_SET )
-    setCursorPos ( 2 + int(center_offset)
-                 , 1 + int(vcenter_offset) );  // first character
+    setCursorPos (FPoint ( 2 + int(center_offset)
+                         , 1 + int(vcenter_offset) ));  // first character
   else
-    setCursorPos ( 2 + int(center_offset + hotkeypos)
-                 , 1 + int(vcenter_offset) );  // hotkey
+    setCursorPos (FPoint ( 2 + int(center_offset + hotkeypos)
+                         , 1 + int(vcenter_offset) ));  // hotkey
 
   if ( ! flags.active && isMonochron() )
     setReverse(true);  // Light background
@@ -667,8 +640,7 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
   if ( txtlength >= getWidth() - 1 )
   {
     // Print ellipsis
-    setPrintPos (int(getWidth() + indent) - 2, 1);
-    print (L"..");
+    print() << FPoint(int(getWidth() + indent) - 2, 1) << "..";
   }
 
   if ( active_focus && (isMonochron() || getMaxColor() < 16) )

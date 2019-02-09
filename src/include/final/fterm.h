@@ -151,7 +151,7 @@ namespace finalcut
 #pragma pack(push)
 #pragma pack(1)
 
-class FTerm
+class FTerm final
 {
   public:
     // Typedefs
@@ -224,6 +224,7 @@ class FTerm
     static bool            hasShadowCharacter();
     static bool            hasHalfBlockCharacter();
     static bool            hasAlternateScreen();
+    static bool            canChangeColorPalette();
 
     // Mutators
     static void            setTermType (const char[]);
@@ -246,7 +247,7 @@ class FTerm
     static char*           enableCursor();
     static char*           disableCursor();
     static void            detectTermSize();
-    static void            setTermSize (std::size_t, std::size_t);
+    static void            setTermSize (const FSize&);
     static void            setTermTitle (const FString&);
     static void            setKDECursor (fc::kdeKonsoleCursorShape);
     static void            saveColorMap();
@@ -364,7 +365,6 @@ class FTerm
     static void            init_tab_quirks();
     static void            init_captureFontAndTitle();
     static bool            hasNoFontSettingOption();
-    static bool            canChangeColorPalette();
     static void            redefineColorPalette();
     static void            restoreColorPalette();
     static void            setInsertCursorStyle();

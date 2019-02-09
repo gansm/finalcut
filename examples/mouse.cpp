@@ -22,6 +22,10 @@
 
 #include <final/final.h>
 
+using finalcut::FPoint;
+using finalcut::FSize;
+using finalcut::FColorPair;
+
 
 //----------------------------------------------------------------------
 // class ColorChooser
@@ -67,8 +71,8 @@ class ColorChooser : public finalcut::FWidget
 ColorChooser::ColorChooser (finalcut::FWidget* parent)
   : FWidget(parent)
 {
-  setSize (8, 12);
-  setFixedSize (8, 12);
+  setSize (FSize(8, 12));
+  setFixedSize (FSize(8, 12));
   unsetFocusable();
 
   if ( parent )
@@ -82,7 +86,7 @@ ColorChooser::ColorChooser (finalcut::FWidget* parent)
   }
 
   // Text label
-  headline.setGeometry (1, 1, 8, 1);
+  headline.setGeometry (FPoint(1, 1), FSize(8, 1));
   headline.setEmphasis();
   headline.setAlignment (finalcut::fc::alignCenter);
   headline << "Color";
@@ -128,7 +132,7 @@ void ColorChooser::draw()
 
   for (FColor c = 0; c < 16; c++)
   {
-    setPrintPos (2 + (c / 8) * 3, 3 + c % 8);
+    print() << FPoint(2 + (c / 8) * 3, 3 + c % 8);
 
     if ( c < 6 )
       setColor (finalcut::fc::LightGray, c);
@@ -139,9 +143,7 @@ void ColorChooser::draw()
 
     if ( c == bg_color )
     {
-      print (' ');
-      print (finalcut::fc::Times);
-      print (' ');
+      print() << ' ' << finalcut::fc::Times << ' ';
     }
     else
       print ("   ");
@@ -209,8 +211,8 @@ class Brushes : public finalcut::FWidget
 Brushes::Brushes (finalcut::FWidget* parent)
   : FWidget(parent)
 {
-  setSize (8, 4);
-  setFixedSize (8, 4);
+  setSize (FSize(8, 4));
+  setFixedSize (FSize(8, 4));
   unsetFocusable();
 
   if ( parent )
@@ -224,7 +226,7 @@ Brushes::Brushes (finalcut::FWidget* parent)
   }
 
   // Text label
-  headline.setGeometry(1, 1, 8, 1);
+  headline.setGeometry(FPoint(1, 1), FSize(8, 1));
   headline.setEmphasis();
   headline.setAlignment (finalcut::fc::alignCenter);
   headline << "Brush";
@@ -241,10 +243,9 @@ void Brushes::draw()
   int pos;
   setColor();
   finalcut::FWidget::drawBorder (1, 2, 8, 4);
-  setColor (fg_color, bg_color);
-  setPrintPos (2, 3);
-  print("   ");
-  print(finalcut::FString(3, finalcut::fc::MediumShade));
+  print() << FPoint(2, 3)
+          << FColorPair(fg_color, bg_color) << "   "
+          << finalcut::FString(3, finalcut::fc::MediumShade);
 
   if ( brush == L' ' )
     pos = 0;
@@ -252,10 +253,10 @@ void Brushes::draw()
     pos = 3;
 
   setColor();
-  setPrintPos (3 + pos, 2);
-  print(finalcut::fc::BlackDownPointingTriangle);
-  setPrintPos (3 + pos, 4);
-  print(finalcut::fc::BlackUpPointingTriangle);
+  print() << FPoint(3 + pos, 2)
+          << finalcut::fc::BlackDownPointingTriangle
+          << FPoint(3 + pos, 4)
+          << finalcut::fc::BlackUpPointingTriangle;
 }
 
 //----------------------------------------------------------------------
@@ -324,10 +325,10 @@ class MouseDraw : public finalcut::FDialog
     MouseDraw& operator = (const MouseDraw&) = delete;
 
     // Methods
-    void setGeometry (int, int, std::size_t, std::size_t, bool = true) override;
+    void setGeometry (const FPoint&, const FSize&, bool = true) override;
 
     // Event handlers
-    virtual void onAccel (finalcut::FAccelEvent*) override;
+    virtual void onKeyPress (finalcut::FKeyEvent*) override;
     virtual void onClose (finalcut::FCloseEvent*) override;
 
   private:
@@ -356,16 +357,16 @@ MouseDraw::MouseDraw (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
   setText ("Drawing with the mouse");
-  c_chooser.setPos (1, 1);
+  c_chooser.setPos (FPoint(1, 1));
   c_chooser.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &MouseDraw::cb_colorChanged)
   );
 
-  brush.setPos (1, 12);
+  brush.setPos (FPoint(1, 12));
 
-  finalcut::FPoint no_shadow(0, 0);
+  FSize no_shadow(0, 0);
   finalcut::FRect scroll_geometry(0, 0, 1, 1);
   createArea (scroll_geometry, no_shadow, canvas);
 }
@@ -375,16 +376,15 @@ MouseDraw::~MouseDraw()
 { }
 
 //----------------------------------------------------------------------
-void MouseDraw::setGeometry ( int x, int y
-                            , std::size_t w, std::size_t h
-                            , bool adjust )
+void MouseDraw::setGeometry ( const FPoint& p, const FSize& s, bool adjust)
 {
-  int old_w, old_h;
-  finalcut::FDialog::setGeometry (x, y, w, h, adjust);
-  finalcut::FPoint no_shadow(0, 0);
-  finalcut::FRect scroll_geometry (0, 0, w - 11, h - 3);
-  old_w = canvas->width;
-  old_h = canvas->height;
+  finalcut::FDialog::setGeometry (p, s, adjust);
+  std::size_t w = s.getWidth();
+  std::size_t h = s.getHeight();
+  finalcut::FRect scroll_geometry (FPoint(0, 0), FSize(w - 11, h - 3));
+  FSize no_shadow(0, 0);
+  int old_w = canvas->width;
+  int old_h = canvas->height;
   resizeArea (scroll_geometry, no_shadow, canvas);
 
   if ( old_w != canvas->width || old_h != canvas->height )
@@ -395,10 +395,18 @@ void MouseDraw::setGeometry ( int x, int y
 }
 
 //----------------------------------------------------------------------
-void MouseDraw::onAccel (finalcut::FAccelEvent* ev)
+void MouseDraw::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  close();
-  ev->accept();
+  if ( ! ev )
+    return;
+
+  if ( ev->key() == 'q' )
+  {
+    close();
+    ev->accept();
+  }
+  else
+    finalcut::FDialog::onKeyPress(ev);
 }
 
 //----------------------------------------------------------------------
@@ -418,26 +426,25 @@ void MouseDraw::draw()
   {
     for (int y = 2; y < y_max; y++)
     {
-      setPrintPos (10, y);
-      print (finalcut::fc::NF_rev_border_line_right);
+      print() << FPoint(10, y)
+              << finalcut::fc::NF_rev_border_line_right;
     }
 
-    setPrintPos (10, y_max);
-    print (finalcut::fc::NF_rev_border_corner_lower_right);
+    print() << FPoint(10, y_max)
+            << finalcut::fc::NF_rev_border_corner_lower_right;
   }
   else
   {
-    setPrintPos (10, 2);
-    print (finalcut::fc::BoxDrawingsDownAndHorizontal);
+    print() << FPoint(10, 2)
+            << finalcut::fc::BoxDrawingsDownAndHorizontal;
 
     for (int y = 3; y < y_max; y++)
     {
-      setPrintPos (10, y);
-      print (finalcut::fc::BoxDrawingsVertical);
+      print() << FPoint(10, y) << finalcut::fc::BoxDrawingsVertical;
     }
 
-    setPrintPos (10, y_max);
-    print (finalcut::fc::BoxDrawingsUpAndHorizontal);
+    print() << FPoint(10, y_max)
+            << finalcut::fc::BoxDrawingsUpAndHorizontal;
   }
 
   drawCanvas();
@@ -505,7 +512,7 @@ void MouseDraw::adjustSize()
   std::size_t w = 60, h = 18;
   int x = 1 + int((getParentWidget()->getWidth() - w) / 2);
   int y = 1 + int((getParentWidget()->getHeight() - h) / 2);
-  setGeometry (x, y, w, h, false);
+  setGeometry (FPoint(x, y), FSize(w, h), false);
   finalcut::FDialog::adjustSize();
 }
 
@@ -556,8 +563,7 @@ int main (int argc, char* argv[])
 
   // Create a simple dialog box
   MouseDraw mouse_draw(&app);
-  mouse_draw.setGeometry (12, 4, 60, 18);
-  mouse_draw.addAccelerator('q');  // press 'q' to quit
+  mouse_draw.setGeometry (FPoint(12, 4), FSize(60, 18));
 
   // Set dialog object mouse_draw as main widget
   app.setMainWidget(&mouse_draw);

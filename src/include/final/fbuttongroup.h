@@ -117,9 +117,6 @@ class FButtonGroup : public FScrollView
     virtual void        onFocusIn (FFocusEvent*) override;
 
   protected:
-    // Accessor
-    uChar               getHotkey();
-
     // Mutator
     void                setHotkeyAccelerator();
 

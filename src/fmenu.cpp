@@ -433,7 +433,7 @@ void FMenu::init(FWidget* parent)
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1);
-  setGeometry (1, 1, 10, 2, false);  // initialize geometry values
+  setGeometry (FPoint(1, 1), FSize(10, 2), false);  // initialize geometry values
   setTransparentShadow();
   setMenuWidget();
   hide();
@@ -498,7 +498,8 @@ void FMenu::calculateDimensions()
   adjust_X = adjustX(getX());
 
   // set widget geometry
-  setGeometry (adjust_X, getY(), max_item_width + 2, getCount() + 2);
+  setGeometry ( FPoint(adjust_X, getY())
+              , FSize(max_item_width + 2, getCount() + 2) );
 
   // set geometry of all items
   iter = item_list.begin();
@@ -507,14 +508,14 @@ void FMenu::calculateDimensions()
 
   while ( iter != last )
   {
-    (*iter)->setGeometry (item_X, item_Y, max_item_width, 1);
+    (*iter)->setGeometry (FPoint(item_X, item_Y), FSize(max_item_width, 1));
 
     if ( (*iter)->hasMenu() )
     {
       int menu_X = getTermX() + int(max_item_width) + 1;
       int menu_Y = (*iter)->getTermY() - 2;
       // set sub-menu position
-      (*iter)->getMenu()->setPos (menu_X, menu_Y, false);
+      (*iter)->getMenu()->setPos (FPoint(menu_X, menu_Y), false);
     }
 
     item_Y++;
@@ -540,7 +541,7 @@ void FMenu::adjustItems()
       menu_Y = (*iter)->getTermY() - 2;
 
       // set sub-menu position
-      menu->setPos (menu_X, menu_Y);
+      menu->setPos (FPoint(menu_X, menu_Y));
 
       // call sub-menu adjustItems()
       if ( menu->getCount() > 0 )
@@ -574,7 +575,7 @@ void FMenu::openSubMenu (FMenu* sub_menu, bool select)
   if ( ! sub_menu )
     return;
 
-  if ( sub_menu->isVisible() )
+  if ( sub_menu->isShown() )
     return;
 
   if ( select )
@@ -585,7 +586,6 @@ void FMenu::openSubMenu (FMenu* sub_menu, bool select)
       sub_menu->getSelectedItem()->setFocus();
   }
 
-  sub_menu->setVisible();
   sub_menu->show();
   opened_sub_menu = sub_menu;
   raiseWindow (sub_menu);
@@ -737,7 +737,7 @@ void FMenu::mouseDownSelection (FMenuItem* m_item, bool& focus_changed)
   if ( m_item->hasMenu() )
   {
     auto sub_menu = m_item->getMenu();
-    if ( ! sub_menu->isVisible() )
+    if ( ! sub_menu->isShown() )
       shown_sub_menu = sub_menu;
   }
 }
@@ -766,7 +766,7 @@ bool FMenu::mouseUpOverList (FPoint mouse_pos)
       if ( (*iter)->hasMenu() )
       {
         auto sub_menu = (*iter)->getMenu();
-        if ( ! sub_menu->isVisible() )
+        if ( ! sub_menu->isShown() )
           openSubMenu (sub_menu, SELECT_ITEM);
         else if ( opened_sub_menu )
         {
@@ -851,7 +851,7 @@ void FMenu::mouseMoveSelection (FMenuItem* m_item, mouseStates& ms)
   {
     auto sub_menu = m_item->getMenu();
 
-    if ( ! sub_menu->isVisible() )
+    if ( ! sub_menu->isShown() )
       shown_sub_menu = sub_menu;
   }
   else if ( opened_sub_menu )
@@ -1045,7 +1045,7 @@ bool FMenu::selectNextItem()
       }
       while ( ! next->isEnabled()
            || ! next->acceptFocus()
-           || ! next->isVisible()
+           || ! next->isShown()
            || next->isSeparator() );
 
       if ( next == *iter )
@@ -1095,7 +1095,7 @@ bool FMenu::selectPrevItem()
       }
       while ( ! prev->isEnabled()
            || ! prev->acceptFocus()
-           || ! prev->isVisible()
+           || ! prev->isShown()
            || prev->isSeparator() );
 
       if ( prev == *iter )
@@ -1251,8 +1251,8 @@ void FMenu::drawItems()
 //----------------------------------------------------------------------
 inline void FMenu::drawSeparator (int y)
 {
-  setPrintPos (1, 2 + y);
-  setColor (wc.menu_active_fg, wc.menu_active_bg);
+  print() << FPoint(1, 2 + y)
+          << FColorPair(wc.menu_active_fg, wc.menu_active_bg);
 
   if ( isMonochron() )
     setReverse(true);
@@ -1498,7 +1498,7 @@ inline void FMenu::setLineAttributes (FMenuItem* menuitem, int y)
       setReverse(true);
   }
 
-  setPrintPos (2, 2 + y);
+  print() << FPoint(2, 2 + y);
   setColor();
 }
 
@@ -1514,9 +1514,9 @@ inline void FMenu::setCursorToHotkeyPosition (FMenuItem* menuitem)
     if ( is_selected )
     {
       if ( is_checkable )
-        menuitem->setCursorPos (3, 1);
+        menuitem->setCursorPos (FPoint(3, 1));
       else
-        menuitem->setCursorPos (2, 1);
+        menuitem->setCursorPos (FPoint(2, 1));
     }
   }
   else
@@ -1525,9 +1525,9 @@ inline void FMenu::setCursorToHotkeyPosition (FMenuItem* menuitem)
     {
       // set cursor to the hotkey position
       if ( is_checkable )
-        menuitem->setCursorPos (3 + int(hotkeypos), 1);
+        menuitem->setCursorPos (FPoint(3 + int(hotkeypos), 1));
       else
-        menuitem->setCursorPos (2 + int(hotkeypos), 1);
+        menuitem->setCursorPos (FPoint(2 + int(hotkeypos), 1));
     }
   }
 }
@@ -1575,7 +1575,7 @@ inline void FMenu::keyRight (FKeyEvent* ev)
   {
     auto sub_menu = getSelectedItem()->getMenu();
 
-    if ( ! sub_menu->isVisible() )
+    if ( ! sub_menu->isShown() )
       openSubMenu (sub_menu, SELECT_ITEM);
     else
       keypressMenuBar(ev);  // select next menu

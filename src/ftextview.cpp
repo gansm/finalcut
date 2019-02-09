@@ -84,25 +84,24 @@ const FString FTextView::getText() const
 }
 
 //----------------------------------------------------------------------
-void FTextView::setGeometry ( int x, int y
-                            , std::size_t w, std::size_t h
-                            , bool adjust )
+void FTextView::setGeometry ( const FPoint& pos, const FSize& size
+                            , bool adjust)
 {
   // Set the text view geometry
 
-  FWidget::setGeometry(x, y, w, h, adjust);
+  FWidget::setGeometry(pos, size, adjust);
   std::size_t width  = getWidth();
   std::size_t height = getHeight();
 
   if ( isNewFont() )
   {
-    vbar->setGeometry (int(width), 1, 2, height - 1);
-    hbar->setGeometry (1, int(height), width - 2, 1);
+    vbar->setGeometry (FPoint(int(width), 1), FSize(2, height - 1));
+    hbar->setGeometry (FPoint(1, int(height)), FSize(width - 2, 1));
   }
   else
   {
-    vbar->setGeometry (int(width), 2, 1, height - 2);
-    hbar->setGeometry (2, int(height), width - 2, 1);
+    vbar->setGeometry (FPoint(int(width), 2), FSize(1, height - 2));
+    hbar->setGeometry (FPoint(2, int(height)), FSize(width - 2, 1));
   }
 
   vbar->resize();
@@ -140,7 +139,7 @@ void FTextView::scrollTo (int x, int y)
   bool changeX = bool(x != xoffset);
   bool changeY = bool(y != yoffset);
 
-  if ( ! isVisible() || ! (changeX || changeY) )
+  if ( ! isShown() || ! (changeX || changeY) )
     return;
 
   if ( changeX && isHorizontallyScrollable() )
@@ -157,7 +156,7 @@ void FTextView::scrollTo (int x, int y)
     if ( update_scrollbar )
     {
       hbar->setValue (xoffset);
-      drawHBar();
+      hbar->drawBar();
     }
   }
 
@@ -175,7 +174,7 @@ void FTextView::scrollTo (int x, int y)
     if ( update_scrollbar )
     {
       vbar->setValue (yoffset);
-      drawVBar();
+      vbar->drawBar();
     }
   }
 
@@ -186,38 +185,8 @@ void FTextView::scrollTo (int x, int y)
 //----------------------------------------------------------------------
 void FTextView::hide()
 {
-  FColor fg, bg;
-  auto parent_widget = getParentWidget();
   FWidget::hide();
-
-  if ( parent_widget )
-  {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
-  }
-  else
-  {
-    fg = wc.dialog_fg;
-    bg = wc.dialog_bg;
-  }
-
-  setColor (fg, bg);
-  std::size_t n = isNewFont() ? 1 : 0;
-  auto size = getWidth() + n;
-
-  if ( size == 0 )
-    return;
-
-  auto blank = createBlankArray(size + 1);
-
-  for (std::size_t y = 0; y < getHeight(); y++)
-  {
-    setPrintPos (1, 1 + int(y));
-    print (blank);
-  }
-
-  destroyBlankArray (blank);
-  flush_out();
+  hideSize (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -264,8 +233,8 @@ void FTextView::insert (const FString& str, int pos)
         hbar->setPageSize (int(maxLineWidth), int(getTextWidth()));
         hbar->calculateSliderValues();
 
-        if ( ! hbar->isVisible() )
-          hbar->setVisible();
+        if ( ! hbar->isShown() )
+          hbar->show();
       }
     }
   }
@@ -278,10 +247,10 @@ void FTextView::insert (const FString& str, int pos)
   vbar->setPageSize (int(getRows()), int(getTextHeight()));
   vbar->calculateSliderValues();
 
-  if ( ! vbar->isVisible() && getRows() > getTextHeight() )
-    vbar->setVisible();
+  if ( ! vbar->isShown() && getRows() > getTextHeight() )
+    vbar->show();
 
-  if ( vbar->isVisible() && getRows() <= getTextHeight() )
+  if ( vbar->isShown() && getRows() <= getTextHeight() )
     vbar->hide();
 
   processChanged();
@@ -328,8 +297,7 @@ void FTextView::clear()
 
   for (int y = 0; y < int(getTextHeight()); y++)
   {
-    setPrintPos (2, 2 - nf_offset + y);
-    print (blank);
+    print() << FPoint(2, 2 - nf_offset + y) << blank;
   }
 
   destroyBlankArray (blank);
@@ -462,11 +430,8 @@ void FTextView::onMouseUp (FMouseEvent* ev)
     }
   }
 
-  if ( vbar->isVisible() )
-    vbar->redraw();
-
-  if ( hbar->isVisible() )
-    hbar->redraw();
+  vbar->redraw();
+  hbar->redraw();
 }
 
 //----------------------------------------------------------------------
@@ -518,7 +483,7 @@ void FTextView::onWheel (FWheelEvent* ev)
       break;
   }
 
-  if ( isVisible() )
+  if ( isShown() )
     drawText();
 
   updateTerminal();
@@ -593,12 +558,12 @@ void FTextView::adjustSize()
   if ( last_line < int(height) + nf_offset - 1 )
     vbar->hide();
   else
-    vbar->setVisible();
+    vbar->show();
 
   if ( max_width < int(width) - nf_offset - 1 )
     hbar->hide();
   else
-    hbar->setVisible();
+    hbar->show();
 }
 
 
@@ -618,20 +583,25 @@ std::size_t FTextView::getTextWidth()
 //----------------------------------------------------------------------
 void FTextView::init()
 {
+  initScrollbar (vbar, fc::vertical, &FTextView::cb_VBarChange);
+  initScrollbar (hbar, fc::horizontal, &FTextView::cb_HBarChange);
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
+  nf_offset = isNewFont() ? 1 : 0;
+  setTopPadding(1);
+  setLeftPadding(1);
+  setBottomPadding(1);
+  setRightPadding(1 + nf_offset);
+}
 
+//----------------------------------------------------------------------
+void FTextView::initScrollbar ( FScrollbarPtr& bar
+                              , fc::orientation o
+                              , FTextViewCallback callback )
+{
   try
   {
-    vbar = std::make_shared<FScrollbar>(fc::vertical, this);
-    vbar->setMinimum(0);
-    vbar->setValue(0);
-    vbar->hide();
-
-    hbar = std::make_shared<FScrollbar>(fc::horizontal, this);
-    hbar->setMinimum(0);
-    hbar->setValue(0);
-    hbar->hide();
+    bar = std::make_shared<FScrollbar>(o, this);
   }
   catch (const std::bad_alloc& ex)
   {
@@ -639,23 +609,15 @@ void FTextView::init()
     return;
   }
 
-  vbar->addCallback
+  bar->setMinimum(0);
+  bar->setValue(0);
+  bar->hide();
+
+  bar->addCallback
   (
     "change-value",
-    F_METHOD_CALLBACK (this, &FTextView::cb_VBarChange)
+    F_METHOD_CALLBACK (this, callback)
   );
-
-  hbar->addCallback
-  (
-    "change-value",
-    F_METHOD_CALLBACK (this, &FTextView::cb_HBarChange)
-  );
-
-  nf_offset = isNewFont() ? 1 : 0;
-  setTopPadding(1);
-  setLeftPadding(1);
-  setBottomPadding(1);
-  setRightPadding(1 + nf_offset);
 }
 
 //----------------------------------------------------------------------
@@ -687,10 +649,10 @@ void FTextView::draw()
   if ( isMonochron() )
     setReverse(false);
 
-  if ( vbar->isVisible() )
+  if ( vbar->isShown() )
     vbar->redraw();
 
-  if ( hbar->isVisible() )
+  if ( hbar->isShown() )
     hbar->redraw();
 
   drawText();
@@ -707,7 +669,7 @@ void FTextView::draw()
     }
   }
 
-  setCursorPos (int(getWidth()), int(getHeight()));
+  setCursorPos (FPoint(int(getWidth()), int(getHeight())));
   updateTerminal();
   flush_out();
 }
@@ -732,7 +694,7 @@ void FTextView::drawText()
   {
     std::size_t i;
     FString line;
-    setPrintPos (2, 2 - nf_offset + int(y));
+    print() << FPoint(2, 2 - nf_offset + int(y));
     line = data[y + std::size_t(yoffset)].mid ( std::size_t(1 + xoffset)
                                               , getTextWidth() );
     const auto line_str = line.wc_str();
@@ -766,20 +728,6 @@ void FTextView::drawText()
 void FTextView::processChanged()
 {
   emitCallback("changed");
-}
-
-//----------------------------------------------------------------------
-inline void FTextView::drawHBar()
-{
-  if ( hbar->isVisible() )
-    hbar->drawBar();
-}
-
-//----------------------------------------------------------------------
-inline void FTextView::drawVBar()
-{
-  if ( vbar->isVisible() )
-    vbar->drawBar();
 }
 
 //----------------------------------------------------------------------

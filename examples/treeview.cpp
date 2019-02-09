@@ -27,6 +27,9 @@
 
 #include <final/final.h>
 
+using finalcut::FPoint;
+using finalcut::FSize;
+
 
 // Function prototypes
 sInt64 StringToNumber (const finalcut::FString&);
@@ -303,7 +306,7 @@ Treeview::Treeview (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
   // Set FListView geometry
-  listView.setGeometry(2, 1, 53, 14);
+  listView.setGeometry(FPoint(2, 1), FSize(53, 14));
 
   // Add columns to the view
   listView.addColumn ("Name", 23);
@@ -358,7 +361,7 @@ Treeview::Treeview (finalcut::FWidget* parent)
   }
 
   // Quit button
-  Quit.setGeometry(24, 16, 10, 1);
+  Quit.setGeometry(FPoint(24, 16), FSize(10, 1));
   Quit.setText (L"&Quit");
 
   // Add some function callbacks
@@ -378,9 +381,9 @@ Treeview::~Treeview()  // destructor
 //----------------------------------------------------------------------
 void Treeview::adjustSize()
 {
-  std::size_t h = getParentWidget()->getHeight() - 4;
+  std::size_t h = getDesktopHeight() - 4;
   setHeight (h, false);
-  int X = int((getParentWidget()->getWidth() - getWidth()) / 2);
+  int X = int((getDesktopWidth() - getWidth()) / 2);
 
   if ( X < 1 )
     X = 1;
@@ -415,7 +418,8 @@ int main (int argc, char* argv[])
   // Create main dialog object
   Treeview d(&app);
   d.setText (L"Continents");
-  d.setGeometry (int(1 + (app.getWidth() - 57) / 2), 3, 57, 20);
+  d.setGeometry ( FPoint(int(1 + (app.getWidth() - 57) / 2), 3)
+                , FSize(57, 20) );
   d.setShadow();
 
   // Set dialog d as main widget

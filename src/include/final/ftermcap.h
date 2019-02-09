@@ -75,7 +75,7 @@ namespace finalcut
 #pragma pack(push)
 #pragma pack(1)
 
-class FTermcap
+class FTermcap final
 {
   public:
     // Typedef

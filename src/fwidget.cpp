@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -248,6 +248,12 @@ void FWidget::setMainWidget (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
+bool FWidget::setVisible (bool enable)
+{
+  return (flags.visible = enable);
+}
+
+//----------------------------------------------------------------------
 bool FWidget::setEnable (bool enable)
 {
   return (flags.active = enable);
@@ -267,16 +273,10 @@ bool FWidget::setFocus (bool enable)
   // set widget focus
   if ( enable && ! flags.focus )
   {
-    int focusable_children = numOfFocusableChildren();
-
     if ( last_focus )
       last_focus->unsetFocus();
 
-    if ( (!isDialogWidget() && focusable_children == 0)
-      || (isDialogWidget() && focusable_children == 1) )
-    {
-      FWidget::setFocusWidget(this);
-    }
+    FWidget::setFocusWidget(this);
   }
 
   auto window = FWindow::getWindowWidget(this);
@@ -292,6 +292,7 @@ bool FWidget::setFocus (bool enable)
       if ( has_raised && window->isVisible() && window->isShown() )
         window->redraw();
     }
+
     window->setWindowFocusWidget(this);
   }
 
@@ -299,7 +300,7 @@ bool FWidget::setFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setColor ()
+void FWidget::setColor()
 {
   // Changes colors to the widget default colors
   setColor (foreground_color, background_color);
@@ -338,25 +339,27 @@ void FWidget::setY (int y, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setPos (int x, int y, bool adjust)
+void FWidget::setPos (const FPoint& p, bool adjust)
 {
-  if ( getX() == x && wsize.getX() == x
-    && getY() == y && wsize.getY() == y )
+  FPoint pos = p;
+
+  if ( getX() == pos.getX() && wsize.getX() == pos.getX()
+    && getY() == pos.getY() && wsize.getY() == pos.getY() )
   {
     return;
   }
 
   if ( ! isWindowWidget() )
   {
-    if ( x < 1 )
-      x = 1;
+    if ( pos.getX() < 1 )
+      pos.setX(1);
 
-    if ( y < 1 )
-      y = 1;
+    if ( pos.getY() < 1 )
+      pos.setY(1);
   }
 
-  wsize.setPos(x, y);
-  adjust_wsize.setPos(x, y);
+  wsize.setPos(pos);
+  adjust_wsize.setPos(pos);
 
   if ( adjust )
     adjustSize();
@@ -407,8 +410,10 @@ void FWidget::setHeight (std::size_t height, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setSize (std::size_t width, std::size_t height, bool adjust)
+void FWidget::setSize (const FSize& size, bool adjust)
 {
+  std::size_t width = size.getWidth();
+  std::size_t height = size.getHeight();
   width  = std::min (width,  size_hints.max_width);
   width  = std::max (width,  size_hints.min_width);
   height = std::min (height, size_hints.max_height);
@@ -551,34 +556,34 @@ void FWidget::setTermOffsetWithPadding()
 }
 
 //----------------------------------------------------------------------
-void FWidget::setTermSize (std::size_t w, std::size_t h)
+void FWidget::setTermSize (const FSize& size)
 {
-  // Set xterm size to w x h
+  // Set xterm size to width x height
 
   if ( isXTerminal() )
   {
-    rootObject->wsize.setRect(1, 1, w, h);
+    rootObject->wsize.setRect(FPoint(1, 1), size);
     rootObject->adjust_wsize = rootObject->wsize;
-    FTerm::setTermSize (w, h);  // w = columns / h = lines
+    FTerm::setTermSize(size);  // width = columns / height = lines
     detectTermSize();
   }
 }
 
 //----------------------------------------------------------------------
-void FWidget::setGeometry ( int x, int y
-                          , std::size_t w, std::size_t h
-                          , bool adjust )
+void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
 {
   // Sets the geometry of the widget relative to its parent
 
-  int term_x, term_y;
-
+  int x = p.getX();
+  int y = p.getY();
+  std::size_t w = s.getWidth();
+  std::size_t h = s.getHeight();
   w = std::min (w, size_hints.max_width);
   w = std::max (w, size_hints.min_width);
   h = std::min (h, size_hints.max_height);
   h = std::max (h, size_hints.min_height);
 
-  if ( getX() == x && getY() == y && getWidth() == w && getHeight() == h )
+  if ( getPos() == p && getWidth() == w && getHeight() == h )
     return;
 
   if ( ! isWindowWidget() )
@@ -596,8 +601,8 @@ void FWidget::setGeometry ( int x, int y
   ( h < 1 ) ? wsize.setHeight(1) : wsize.setHeight(h);
 
   adjust_wsize = wsize;
-  term_x = getTermX();
-  term_y = getTermY();
+  int term_x = getTermX();
+  int term_y = getTermY();
 
   client_offset.setCoordinates ( term_x - 1 + padding.left
                                , term_y - 1 + padding.top
@@ -614,11 +619,11 @@ void FWidget::setGeometry ( int x, int y
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setCursorPos (int x, int y)
+bool FWidget::setCursorPos (const FPoint& pos)
 {
   // sets the input cursor position
 
-  widget_cursor_position.setPoint(x, y);
+  widget_cursor_position.setPoint(pos);
 
   if ( ! flags.focus || isWindowWidget() )
     return false;
@@ -639,8 +644,8 @@ bool FWidget::setCursorPos (int x, int y)
       widget_offsetY += (1 - area->widget->getTopPadding());
     }
 
-    setAreaCursor ( widget_offsetX + x
-                  , widget_offsetY + y
+    setAreaCursor ( FPoint ( widget_offsetX + pos.getX()
+                           , widget_offsetY + pos.getY() )
                   , flags.visible_cursor
                   , area );
     return true;
@@ -650,10 +655,11 @@ bool FWidget::setCursorPos (int x, int y)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setPrintPos (int x, int y)
+void FWidget::setPrintPos (const FPoint& pos)
 {
-  setPrintCursor ( offset.getX1() + getX() + x - 1,
-                   offset.getY1() + getY() + y - 1 );
+  FPoint p{ offset.getX1() + getX() + pos.getX() - 1,
+            offset.getY1() + getY() + pos.getY() - 1 };
+  setPrintCursor(p);
 }
 
 //----------------------------------------------------------------------
@@ -741,7 +747,7 @@ void FWidget::setDoubleFlatLine (fc::sides side, int pos, bool bit)
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
+FWidget* FWidget::childWidgetAt (FWidget* p, const FPoint& pos)
 {
   if ( p && p->hasChildren() )
   {
@@ -759,11 +765,11 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
       auto widget = static_cast<FWidget*>(*iter);
 
       if ( widget->isEnabled()
-        && widget->isVisible()
+        && widget->isShown()
         && ! widget->isWindowWidget()
-        && widget->getTermGeometry().contains(x, y) )
+        && widget->getTermGeometry().contains(pos) )
       {
-        auto child = childWidgetAt(widget, x, y);
+        auto child = childWidgetAt(widget, pos);
         return ( child != 0 ) ? child : widget;
       }
 
@@ -790,7 +796,9 @@ int FWidget::numOfFocusableChildren()
     {
       auto widget = static_cast<FWidget*>(*iter);
 
-      if ( widget->acceptFocus() )
+      if ( widget->isShown()
+        && widget->acceptFocus()
+        && ! widget->isWindowWidget() )
         num++;
     }
 
@@ -984,7 +992,7 @@ void FWidget::redraw()
     setColor (wc.term_fg, wc.term_bg);
     clearArea (vdesktop);
   }
-  else if ( ! isVisible() )
+  else if ( ! isShown() )
     return;
 
   draw();
@@ -1014,7 +1022,7 @@ void FWidget::resize()
     FRect term_geometry = getTermGeometry();
     term_geometry.move (-1, -1);
 
-    resizeVTerm (term_geometry);
+    resizeVTerm (term_geometry.getSize());
     resizeArea (term_geometry, getShadow(), vdesktop);
     adjustSizeGlobal();
   }
@@ -1053,6 +1061,7 @@ void FWidget::show()
   }
 
   draw();
+  flags.hidden = false;
   flags.shown = true;
 
   if ( hasChildren() )
@@ -1065,7 +1074,9 @@ void FWidget::show()
       if ( (*iter)->isWidget() )
       {
         auto widget = static_cast<FWidget*>(*iter);
-        widget->show();
+
+        if ( ! widget->flags.hidden )
+          widget->show();
       }
 
       ++iter;
@@ -1087,9 +1098,10 @@ void FWidget::show()
 //----------------------------------------------------------------------
 void FWidget::hide()
 {
+  flags.hidden = true;
+
   if ( isVisible() )
   {
-    flags.visible = false;
     flags.shown = false;
 
     if ( ! isDialogWidget()
@@ -1204,10 +1216,10 @@ void FWidget::detectTermSize()
 }
 
 //----------------------------------------------------------------------
-void FWidget::move (int dx, int dy)
+void FWidget::move (const FPoint& pos)
 {
-  wsize.move(dx, dy);
-  adjust_wsize.move(dx, dy);
+  wsize.move(pos);
+  adjust_wsize.move(pos);
 }
 
 //----------------------------------------------------------------------
@@ -1261,14 +1273,13 @@ void FWidget::clearShadow()
   {
     for (std::size_t y = 1; y <= getHeight(); y++)
     {
-      setPrintPos (w + 1, int(y));
-      print  (' ');  // clear █
+      print() << FPoint(w + 1, int(y)) << ' ';  // clear █
     }
   }
 
   if ( h <= offset.getY2() )
   {
-    setPrintPos (2, h + 1);
+    print() << FPoint(2, h + 1);
 
     for (std::size_t i = 1; i <= getWidth(); i++)
       print (' ');  // clear ▀
@@ -1296,7 +1307,7 @@ void FWidget::drawFlatBorder()
 
   for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (x1 - 1, y1 + int(y) + 1);
+    print() << FPoint(x1 - 1, y1 + int(y) + 1);
 
     if ( double_flatline_mask.left[uLong(y)] )
       // left+right line (on left side)
@@ -1306,7 +1317,7 @@ void FWidget::drawFlatBorder()
       print (fc::NF_rev_border_line_right);
   }
 
-  setPrintPos (x2, y1 + 1);
+  print() << FPoint(x2, y1 + 1);
 
   for (std::size_t y = 0; y < getHeight(); y++)
   {
@@ -1317,10 +1328,10 @@ void FWidget::drawFlatBorder()
       // left line (on right side)
       print (fc::NF_border_line_left);
 
-    setPrintPos (x2, y1 + int(y) + 2);
+    print() << FPoint(x2, y1 + int(y) + 2);
   }
 
-  setPrintPos (x1, y1);
+  print() << FPoint(x1, y1);
 
   for (std::size_t x = 0; x < getWidth(); x++)
   {
@@ -1332,7 +1343,7 @@ void FWidget::drawFlatBorder()
       print (fc::NF_border_line_bottom);
   }
 
-  setPrintPos (x1, y2);
+  print() << FPoint(x1, y2);
 
   for (std::size_t x = 0; x < getWidth(); x++)
   {
@@ -1364,7 +1375,7 @@ void FWidget::clearFlatBorder()
   // clear on left side
   for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (x1 - 1, y1 + int(y) + 1);
+    print() << FPoint(x1 - 1, y1 + int(y) + 1);
 
     if ( double_flatline_mask.left[y] )
       print (fc::NF_border_line_left);
@@ -1375,7 +1386,7 @@ void FWidget::clearFlatBorder()
   // clear on right side
   for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (x2, y1 + int(y) + 1);
+    print() << FPoint(x2, y1 + int(y) + 1);
 
     if ( double_flatline_mask.right[y] )
       print (fc::NF_rev_border_line_right);
@@ -1384,7 +1395,7 @@ void FWidget::clearFlatBorder()
   }
 
   // clear at top
-  setPrintPos (x1, y1);
+  print() << FPoint(x1, y1);
 
   for (std::size_t x = 0; x < getWidth(); x++)
   {
@@ -1395,7 +1406,7 @@ void FWidget::clearFlatBorder()
   }
 
   // clear at bottom
-  setPrintPos (x1, y2);
+  print() << FPoint(x1, y2);
 
   for (std::size_t x = 0; x < getWidth(); x++)
   {
@@ -1607,6 +1618,41 @@ void FWidget::adjustSizeGlobal()
 }
 
 //----------------------------------------------------------------------
+void FWidget::hideSize (const FSize& size)
+{
+  if ( size.isEmpty() )
+    return;
+
+  FColor fg, bg;
+  auto parent_widget = getParentWidget();
+
+  if ( parent_widget )
+  {
+    fg = parent_widget->getForegroundColor();
+    bg = parent_widget->getBackgroundColor();
+  }
+  else
+  {
+    fg = wc.dialog_fg;
+    bg = wc.dialog_bg;
+  }
+
+  setColor (fg, bg);
+  auto blank = createBlankArray(size.getWidth());
+
+  if ( blank == 0 )
+    return;
+
+  for (int y = 0; y < int(size.getWidth()); y++)
+  {
+    print() << FPoint(1, 1 + y) << blank;
+  }
+
+  destroyBlankArray (blank);
+  flush_out();
+}
+
+//----------------------------------------------------------------------
 bool FWidget::focusNextChild()
 {
   if ( isDialogWidget() || ! hasParent() )
@@ -1655,7 +1701,7 @@ bool FWidget::focusNextChild()
     } while ( ! next
            || ! next->isEnabled()
            || ! next->acceptFocus()
-           || ! next->isVisible()
+           || ! next->isShown()
            || next->isWindowWidget() );
 
     bool accpt = changeFocus (next, parent, fc::FocusNextWidget);
@@ -1716,7 +1762,7 @@ bool FWidget::focusPrevChild()
     } while ( ! prev
            || ! prev->isEnabled()
            || ! prev->acceptFocus()
-           || ! prev->isVisible()
+           || ! prev->isShown()
            || prev->isWindowWidget() );
 
     bool accpt = changeFocus (prev, parent, fc::FocusPreviousWidget);
@@ -2140,7 +2186,7 @@ void FWidget::drawWindows()
 
   while ( iter != last )
   {
-    if ( (*iter)->isVisible() )
+    if ( (*iter)->isShown() )
     {
       auto win = (*iter)->getVWin();
       int w = win->width  + win->right_shadow;
@@ -2170,7 +2216,7 @@ void FWidget::drawChildren()
     {
       auto widget = static_cast<FWidget*>(*iter);
 
-      if ( widget->isVisible() && ! widget->isWindowWidget() )
+      if ( widget->isShown() && ! widget->isWindowWidget() )
         widget->redraw();
     }
 
@@ -2182,9 +2228,9 @@ void FWidget::drawChildren()
 void FWidget::drawTransparentShadow (int x1, int y1, int x2, int y2)
 {
   // transparent shadow
-  setPrintPos (x2 + 1, y1);
+
   setTransparent();
-  print ("  ");
+  print() << FPoint(x2 + 1, y1) << "  ";
   unsetTransparent();
 
   setColor (wc.shadow_bg, wc.shadow_fg);
@@ -2192,14 +2238,12 @@ void FWidget::drawTransparentShadow (int x1, int y1, int x2, int y2)
 
   for (std::size_t y = 1; y < getHeight(); y++)
   {
-    setPrintPos (x2 + 1, y1 + int(y));
-    print ("  ");
+    print() << FPoint(x2 + 1, y1 + int(y)) << "  ";
   }
 
   unsetTransShadow();
-  setPrintPos (x1, y2 + 1);
   setTransparent();
-  print ("  ");
+  print() << FPoint(x1, y2 + 1) << "  ";
   unsetTransparent();
 
   setColor (wc.shadow_bg, wc.shadow_fg);
@@ -2218,12 +2262,12 @@ void FWidget::drawTransparentShadow (int x1, int y1, int x2, int y2)
 void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
 {
   // non-transparent shadow
-  int block;
+  wchar_t block;
 
   if ( ! hasShadowCharacter() )
     return;
 
-  setPrintPos (x2 + 1, y1);
+  print() << FPoint(x2 + 1, y1);
 
   if ( isWindowWidget() )
   {
@@ -2241,11 +2285,10 @@ void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
 
   for (std::size_t y = 1; y < getHeight(); y++)
   {
-    setPrintPos (x2 + 1, y1 + int(y));
-    print (block);  // █
+    print() << FPoint(x2 + 1, y1 + int(y)) << block;  // █
   }
 
-  setPrintPos (x1 + 1, y2 + 1);
+  print() << FPoint(x1 + 1, y2 + 1);
 
   if ( isWindowWidget() )
     setInheritBackground();
@@ -2262,36 +2305,34 @@ inline void FWidget::drawBox (int x1, int y1, int x2, int y2)
 {
   // Use box-drawing characters to draw a border
 
-  setPrintPos (x1, y1);
-  print (fc::BoxDrawingsDownAndRight);  // ┌
+  print() << FPoint(x1, y1) << fc::BoxDrawingsDownAndRight;  // ┌
 
   for (int x = x1 + 1; x < x2; x++)
-    print (fc::BoxDrawingsHorizontal);  // ─
+    print (fc::BoxDrawingsHorizontal);     // ─
 
-  print (fc::BoxDrawingsDownAndLeft);  // ┐
+  print (fc::BoxDrawingsDownAndLeft);      // ┐
 
   for (int y = y1 + 1; y < y2; y++)
   {
-    setPrintPos (x1, y);
-    print (fc::BoxDrawingsVertical);  // │
-    setPrintPos (x2, y);
-    print (fc::BoxDrawingsVertical);  // │
+    print() << FPoint(x1, y)
+            << fc::BoxDrawingsVertical     // │
+            << FPoint(x2, y)
+            << fc::BoxDrawingsVertical;    // │
   }
 
-  setPrintPos (x1, y2);
-  print (fc::BoxDrawingsUpAndRight);  // └
+  print() << FPoint(x1, y2) << fc::BoxDrawingsUpAndRight;  // └
 
   for (int x = x1 + 1; x < x2; x++)
-    print (fc::BoxDrawingsHorizontal);  // ─
+    print (fc::BoxDrawingsHorizontal);     // ─
 
-  print (fc::BoxDrawingsUpAndLeft);  // ┘
+  print (fc::BoxDrawingsUpAndLeft);        // ┘
 
   for (int x = x1 + 1; x < x2; x++)
   {
-    setPrintPos (x, y1);
-    print (fc::BoxDrawingsHorizontal);  // ─
-    setPrintPos (x, y2);
-    print (fc::BoxDrawingsHorizontal);  // ─
+    print() << FPoint(x, y1)
+            << fc::BoxDrawingsHorizontal   // ─
+            << FPoint(x, y2)
+            << fc::BoxDrawingsHorizontal;  // ─
   }
 }
 
@@ -2300,24 +2341,24 @@ inline void FWidget::drawNewFontBox (int x1, int y1, int x2, int y2)
 {
   // Use new graphical font characters to draw a border
 
-  setPrintPos (x1, y1);
-  print (fc::NF_border_corner_middle_upper_left);  // ┌
+  print() << FPoint(x1, y1)
+          << fc::NF_border_corner_middle_upper_left;  // ┌
 
   for (int x = x1 + 1; x < x2; x++)
-    print (fc::BoxDrawingsHorizontal);  // ─
+    print (fc::BoxDrawingsHorizontal);                // ─
 
-  print (fc::NF_border_corner_middle_upper_right);  // ┐
+  print (fc::NF_border_corner_middle_upper_right);    // ┐
 
   for (int y = y1 + 1; y <= y2; y++)
   {
-    setPrintPos (x1, y);
-    print (fc::NF_border_line_left);  // border left ⎸
-    setPrintPos (x2, y);
-    print (fc::NF_rev_border_line_right);  // border right⎹
+    print() << FPoint(x1, y)
+            << fc::NF_border_line_left        // border left ⎸
+            << FPoint(x2, y)
+            << fc::NF_rev_border_line_right;  // border right⎹
   }
 
-  setPrintPos (x1, y2);
-  print (fc::NF_border_corner_middle_lower_left);  // └
+  print() << FPoint(x1, y2)
+          << fc::NF_border_corner_middle_lower_left;  // └
 
   for (int x = x1 + 1; x < x2; x++)
     print (fc::BoxDrawingsHorizontal);  // ─
@@ -2331,16 +2372,9 @@ void FWidget::setColorTheme()
   // Sets the default color theme
 
   if ( getMaxColor() < 16 )  // for 8 color mode
-  {
     wc.set8ColorTheme();
-  }
   else
-  {
     wc.set16ColorTheme();
-
-    if ( isKdeTerminal() )
-      wc.term_bg = fc::SkyBlue2;
-  }
 }
 
 }  // namespace finalcut

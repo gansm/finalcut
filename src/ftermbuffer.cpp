@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -81,7 +81,7 @@ int FTermBuffer::write (const FString& s)
 }
 
 //----------------------------------------------------------------------
-int FTermBuffer::write (int c)
+int FTermBuffer::write (wchar_t c)
 {
   charData nc;  // next character
   nc = FVTerm::getAttribute();
@@ -91,6 +91,15 @@ int FTermBuffer::write (int c)
 
   data.push_back(nc);
   return 1;
+}
+
+//----------------------------------------------------------------------
+void FTermBuffer::write (const FColorPair& pair)
+{
+  charData nc;  // next character
+  nc = FVTerm::getAttribute();
+  nc.fg_color = pair.fg_color;
+  nc.bg_color = pair.bg_color;
 }
 
 

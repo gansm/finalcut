@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -144,7 +144,6 @@ class FButton : public FWidget
 
     // Methods
     void                init();
-    uChar               getHotkey();
     void                setHotkeyAccelerator();
     void                detectHotkey();
     std::size_t         getHotkeyPos (wchar_t[], wchar_t[], std::size_t);

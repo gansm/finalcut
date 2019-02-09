@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -50,6 +50,40 @@ bool sortDirFirst ( const FFileDialog::dir_entry& lhs
     return true;
   else
     return false;
+}
+
+//----------------------------------------------------------------------
+const FString fileChooser ( FWidget* parent
+                          , const FString& dirname
+                          , const FString& filter
+                          , FFileDialog::DialogType type )
+{
+  FString ret;
+  FString path = dirname;
+  FString file_filter = filter;
+
+  if ( path.isNull() || path.isEmpty() )
+  {
+    path = FFileDialog::getHomeDir();
+
+    if ( path.isNull() || path.isEmpty() )
+      path = FString("/");
+  }
+
+  if ( file_filter.isNull() || file_filter.isEmpty() )
+    file_filter = FString("*");
+
+  FFileDialog fileopen ( path
+                       , file_filter
+                       , type
+                       , parent );
+
+  if ( fileopen.exec() == FDialog::Accept )
+    ret = fileopen.getPath() + fileopen.getSelectedFile();
+  else
+    ret = FString();
+
+  return ret;
 }
 
 
@@ -225,32 +259,7 @@ const FString FFileDialog::fileOpenChooser ( FWidget* parent
                                            , const FString& dirname
                                            , const FString& filter )
 {
-  FString ret;
-  FString path = dirname;
-  FString file_filter = filter;
-
-  if ( path.isNull() || path.isEmpty() )
-  {
-    path = getHomeDir();
-
-    if ( path.isNull() || path.isEmpty() )
-      path = FString("/");
-  }
-
-  if ( file_filter.isNull() || file_filter.isEmpty() )
-    file_filter = FString("*");
-
-  FFileDialog fileopen ( path
-                       , file_filter
-                       , FFileDialog::Open
-                       , parent );
-
-  if ( fileopen.exec() == FDialog::Accept )
-    ret = fileopen.getPath() + fileopen.getSelectedFile();
-  else
-    ret = FString();
-
-  return ret;
+  return fileChooser (parent, dirname, filter, FFileDialog::Open);
 }
 
 //----------------------------------------------------------------------
@@ -258,32 +267,7 @@ const FString FFileDialog::fileSaveChooser ( FWidget* parent
                                            , const FString& dirname
                                            , const FString& filter )
 {
-  FString ret;
-  FString path = dirname;
-  FString file_filter = filter;
-
-  if ( path.isNull() || path.isEmpty() )
-  {
-    path = getHomeDir();
-
-    if ( path.isNull() || path.isEmpty() )
-      path = FString("/");
-  }
-
-  if ( file_filter.isNull() || file_filter.isEmpty() )
-    file_filter = FString("*");
-
-  FFileDialog fileopen ( path
-                       , file_filter
-                       , FFileDialog::Save
-                       , parent );
-
-  if ( fileopen.exec() == FDialog::Accept )
-    ret = fileopen.getPath() + fileopen.getSelectedFile();
-  else
-    ret = FString();
-
-  return ret;
+  return fileChooser (parent, dirname, filter, FFileDialog::Save);
 }
 
 
@@ -320,7 +304,7 @@ void FFileDialog::adjustSize()
   setHeight (h, false);
   X = 1 + int((max_width - getWidth()) / 2);
   Y = 1 + int((max_height - getHeight()) / 3);
-  setPos(X, Y, false);
+  setPos(FPoint(X, Y), false);
   filebrowser.setHeight (h - 8, false);
   hidden.setY (int(h) - 4, false);
   cancel.setY (int(h) - 4, false);
@@ -338,7 +322,7 @@ void FFileDialog::init()
   static constexpr std::size_t h = 15;
   int x, y;
 
-  setGeometry(1, 1, w, h, false);
+  setGeometry(FPoint(1, 1), FSize(w, h), false);
   auto parent_widget = getParentWidget();
 
   if ( parent_widget )
@@ -354,36 +338,36 @@ void FFileDialog::init()
   else
     FDialog::setText("Open file");
 
-  widgetSettings (x, y);  // Create widgets
+  widgetSettings (FPoint(x, y));  // Create widgets
   initCallbacks();
   setModal();
   readDir();
 }
 
 //----------------------------------------------------------------------
-inline void FFileDialog::widgetSettings (int x, int y)
+inline void FFileDialog::widgetSettings (const FPoint& pos)
 {
   filename.setLabelText ("File&name");
   filename.setText (filter_pattern);
-  filename.setGeometry (11, 1, 28, 1);
+  filename.setGeometry (FPoint(11, 1), FSize(28, 1));
   filename.setFocus();
 
-  filebrowser.setGeometry (2, 3, 38, 6);
+  filebrowser.setGeometry (FPoint(2, 3), FSize(38, 6));
   printPath (directory);
 
   hidden.setText ("&hidden files");
-  hidden.setGeometry (2, 10, 16, 1);
+  hidden.setGeometry (FPoint(2, 10), FSize(16, 1));
 
   cancel.setText ("&Cancel");
-  cancel.setGeometry(19, 10, 9, 1);
+  cancel.setGeometry(FPoint(19, 10), FSize(9, 1));
 
   if ( dlg_type == FFileDialog::Save )
     open.setText ("&Save");
   else
     open.setText ("&Open");
 
-  open.setGeometry(30, 10, 9, 1);
-  setGeometry (x, y, getWidth(), getHeight());
+  open.setGeometry(FPoint(30, 10), FSize(9, 1));
+  setGeometry (pos, getSize());
 }
 
 //----------------------------------------------------------------------

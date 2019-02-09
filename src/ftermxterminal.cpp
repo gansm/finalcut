@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -126,12 +126,12 @@ void FTermXTerminal::setTitle (const FString& title)
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::setTermSize (std::size_t width, std::size_t height)
+void FTermXTerminal::setTermSize (const FSize& size)
 {
   // Set xterm size to {term_width} x {term_height}
 
-  term_width = width;
-  term_height = height;
+  term_width = size.getWidth();
+  term_height = size.getHeight();
   setXTermSize();
 }
 
@@ -605,23 +605,18 @@ void FTermXTerminal::resetXTermColorMap()
 {
   // Reset the entire color table
 
-  if ( term_detection->isGnomeTerminal()
-    && term_detection->getGnomeTerminalID() < 3502 )
-    return;
-
-  if ( term_detection->isPuttyTerminal()
-    || term_detection->isMltermTerminal() )
-    return;
-
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
-    || FTermcap::osc_support )
+  if ( term_detection->isMinttyTerm() )
+  {
+    FTerm::putstringf (ESC "c");  // Full Reset (RIS)
+  }
+  else if ( canResetColor() )
   {
     oscPrefix();
     FTerm::putstringf (OSC "104" BEL);
     oscPostfix();
     std::fflush(stdout);
   }
+
 }
 
 //----------------------------------------------------------------------
@@ -629,17 +624,7 @@ void FTermXTerminal::resetXTermForeground()
 {
   // Reset the XTerm text foreground color
 
-  if ( term_detection->isGnomeTerminal()
-    && term_detection->getGnomeTerminalID() < 3502 )
-    return;
-
-  if ( term_detection->isPuttyTerminal()
-    || term_detection->isMltermTerminal() )
-    return;
-
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
-    || FTermcap::osc_support )
+  if ( canResetColor() )
   {
     oscPrefix();
     FTerm::putstring (OSC "110" BEL);
@@ -653,17 +638,7 @@ void FTermXTerminal::resetXTermBackground()
 {
   // Reset the XTerm text background color
 
-  if ( term_detection->isGnomeTerminal()
-    && term_detection->getGnomeTerminalID() < 3502 )
-    return;
-
-  if ( term_detection->isPuttyTerminal()
-    || term_detection->isMltermTerminal() )
-    return;
-
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
-    || FTermcap::osc_support )
+  if ( canResetColor() )
   {
     oscPrefix();
     FTerm::putstring (OSC "111" BEL);
@@ -677,16 +652,7 @@ void FTermXTerminal::resetXTermCursorColor()
 {
   // Reset the text cursor color
 
-  if ( term_detection->isGnomeTerminal()
-    && term_detection->getGnomeTerminalID() < 3502 )
-    return;
-
-  if ( term_detection->isPuttyTerminal() )
-    return;
-
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
-    || FTermcap::osc_support )
+  if ( canResetColor() )
   {
     oscPrefix();
     FTerm::putstring (OSC "112" BEL);
@@ -700,16 +666,7 @@ void FTermXTerminal::resetXTermMouseForeground()
 {
   // Reset the mouse foreground color
 
-  if ( term_detection->isGnomeTerminal()
-    && term_detection->getGnomeTerminalID() < 3502 )
-    return;
-
-  if ( term_detection->isPuttyTerminal() )
-    return;
-
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
-    || FTermcap::osc_support )
+  if ( canResetColor() )
   {
     oscPrefix();
     FTerm::putstring (OSC "113" BEL);
@@ -723,16 +680,7 @@ void FTermXTerminal::resetXTermMouseBackground()
 {
   // Reset the mouse background color
 
-  if ( term_detection->isGnomeTerminal()
-    && term_detection->getGnomeTerminalID() < 3502 )
-    return;
-
-  if ( term_detection->isPuttyTerminal() )
-    return;
-
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
-    || FTermcap::osc_support )
+  if ( canResetColor() )
   {
     oscPrefix();
     FTerm::putstring (OSC "114" BEL);
@@ -746,23 +694,32 @@ void FTermXTerminal::resetXTermHighlightBackground()
 {
   // Reset the highlight background color
 
-  if ( term_detection->isGnomeTerminal()
-    && term_detection->getGnomeTerminalID() < 3502 )
-    return;
-
-  if ( term_detection->isPuttyTerminal() )
-    return;
-
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
-    || term_detection->isUrxvtTerminal()
-    || FTermcap::osc_support )
+  if ( canResetColor() )
   {
     oscPrefix();
     FTerm::putstringf (OSC "117" BEL);
     oscPostfix();
     std::fflush(stdout);
   }
+}
+
+//----------------------------------------------------------------------
+bool FTermXTerminal::canResetColor()
+{
+  if ( term_detection->isGnomeTerminal()
+    && term_detection->getGnomeTerminalID() < 3502 )
+    return false;
+
+  if ( term_detection->isPuttyTerminal()
+    || term_detection->isMltermTerminal() )
+    return false;
+
+  if ( term_detection->isXTerminal()
+    || term_detection->isScreenTerm()
+    || FTermcap::osc_support )
+    return true;
+
+  return false;
 }
 
 //----------------------------------------------------------------------

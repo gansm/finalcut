@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -336,7 +336,7 @@ class FTimerEvent : public FEvent  // timer event
     int getTimerId() const;
 
   protected:
-    int id;
+    int id{0};
 };
 
 #pragma pack(pop)
@@ -353,15 +353,22 @@ class FUserEvent : public FEvent  // timer event
 {
   public:
     FUserEvent() = default;
+
+    // Disable copy constructor
+    FUserEvent (const FUserEvent&) = delete;
     FUserEvent (fc::events, int);
+
     ~FUserEvent();
+
+    // Disable assignment operator (=)
+    FUserEvent& operator = (const FUserEvent&) = delete;
 
     int getUserId() const;
     FDataPtr getData() const;
     void setData (FDataPtr);
 
   protected:
-    int uid;
+    int uid{0};
     FDataPtr data_pointer{nullptr};
 };
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -233,33 +233,8 @@ void FLabel::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FLabel::hide()
 {
-  FColor fg, bg;
-  std::size_t size;
-  auto parent_widget = getParentWidget();
-
   FWidget::hide();
-
-  if ( parent_widget )
-  {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
-  }
-  else
-  {
-    fg = wc.dialog_fg;
-    bg = wc.dialog_bg;
-  }
-
-  setColor (fg, bg);
-  size = getWidth();
-
-  if ( size == 0 )
-    return;
-
-  auto blank = createBlankArray(size + 1);
-  setPrintPos (1, 1);
-  print (blank);
-  destroyBlankArray (blank);
+  hideSize (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -371,30 +346,6 @@ void FLabel::init()
 }
 
 //----------------------------------------------------------------------
-uChar FLabel::getHotkey()
-{
-  if ( text.isEmpty() )
-    return 0;
-
-  std::size_t length = text.getLength();
-
-  for (std::size_t i = 0; i < length; i++)
-  {
-    try
-    {
-      if ( i + 1 < length && text[i] == '&' )
-        return uChar(text[++i]);
-    }
-    catch (const std::out_of_range&)
-    {
-      return 0;
-    }
-  }
-
-  return 0;
-}
-
-//----------------------------------------------------------------------
 std::size_t FLabel::getHotkeyPos ( wchar_t src[]
                                  , wchar_t dest[]
                                  , std::size_t length )
@@ -422,19 +373,19 @@ std::size_t FLabel::getHotkeyPos ( wchar_t src[]
 //----------------------------------------------------------------------
 void FLabel::setHotkeyAccelerator()
 {
-  uChar hotkey = getHotkey();
+  FKey hotkey = getHotkey(text);
 
   if ( hotkey )
   {
-    if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
+    if ( std::isalpha(int(hotkey)) || std::isdigit(int(hotkey)) )
     {
-      addAccelerator (FKey(std::tolower(hotkey)));
-      addAccelerator (FKey(std::toupper(hotkey)));
+      addAccelerator (FKey(std::tolower(int(hotkey))));
+      addAccelerator (FKey(std::toupper(int(hotkey))));
       // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(hotkey)));
+      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(int(hotkey))));
     }
     else
-      addAccelerator (getHotkey());
+      addAccelerator (hotkey);
   }
   else
     delAccelerator();
@@ -529,7 +480,7 @@ void FLabel::drawMultiLine()
     else
       std::wcsncpy(dest, src, length);
 
-    setPrintPos (1, 1 + int(y));
+    print() << FPoint(1, 1 + int(y));
 
     if ( hotkeypos != NOT_SET )
     {
@@ -571,7 +522,7 @@ void FLabel::drawSingleLine()
   if ( hotkeypos != NOT_SET )
     length--;
 
-  setPrintPos (1, 1);
+  print() << FPoint(1, 1);
   align_offset = getAlignOffset(length);
   printLine (label_text, length, hotkeypos, align_offset);
   delete[] label_text;
@@ -632,8 +583,7 @@ void FLabel::printLine ( wchar_t line[]
   if ( length > width )
   {
     // Print ellipsis
-    setColor (ellipsis_color, getBackgroundColor());
-    print ("..");
+    print() << FColorPair(ellipsis_color, getBackgroundColor()) << "..";
     setColor();
   }
   else if ( align_offset + to_char < width )

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -76,24 +76,24 @@ FToggleButton::~FToggleButton()  // destructor
 
 // public methods of FToggleButton
 //----------------------------------------------------------------------
-void FToggleButton::setGeometry ( int x, int y
-                                , std::size_t w, std::size_t h
+void FToggleButton::setGeometry ( const FPoint& pos, const FSize& s
                                 , bool adjust )
 {
   // Set the toggle button geometry
 
-  std::size_t hotkey_mark = ( getHotkey() ) ? 1 : 0;
+  FSize size = s;
+  std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
   std::size_t min_width = button_width + text.getLength() - hotkey_mark;
 
-  if ( w < min_width )
-    w = min_width;
+  if ( size.getWidth() < min_width )
+    size.setWidth(min_width);
 
-  const FRect geometry(x, y, w, h);
+  const FRect geometry(pos, size);
 
   if ( hasGroup() )
     getGroup()->checkScrollSize(geometry);
 
-  FWidget::setGeometry(x, y, w, h, adjust);
+  FWidget::setGeometry(pos, size, adjust);
 }
 
 //----------------------------------------------------------------------
@@ -188,7 +188,7 @@ bool FToggleButton::setChecked (bool enable)
 void FToggleButton::setText (const FString& txt)
 {
   text = txt;
-  std::size_t hotkey_mark = ( getHotkey() ) ? 1 : 0;
+  std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
 
   setWidth(button_width + text.getLength() - hotkey_mark);
 
@@ -202,32 +202,8 @@ void FToggleButton::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FToggleButton::hide()
 {
-  std::size_t size;
-  FColor fg, bg;
-  auto parent_widget = getParentWidget();
   FWidget::hide();
-
-  if ( parent_widget )
-  {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
-  }
-  else
-  {
-    fg = wc.dialog_fg;
-    bg = wc.dialog_bg;
-  }
-
-  setColor (fg, bg);
-  size = getWidth();
-
-  if ( size == 0 )
-    return;
-
-  auto blank = createBlankArray(size + 1);
-  setPrintPos (1, 1);
-  print (blank);
-  destroyBlankArray (blank);
+  hideSize (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -386,45 +362,21 @@ void FToggleButton::onFocusOut (FFocusEvent* out_ev)
 
 // protected methods of FToggleButton
 //----------------------------------------------------------------------
-uChar FToggleButton::getHotkey()
-{
-  if ( text.isEmpty() )
-    return 0;
-
-  std::size_t length = text.getLength();
-
-  for (std::size_t i = 0; i < length; i++)
-  {
-    try
-    {
-      if ( i + 1 < length && text[i] == '&' )
-        return uChar(text[++i]);
-    }
-    catch (const std::out_of_range&)
-    {
-      return 0;
-    }
-  }
-
-  return 0;
-}
-
-//----------------------------------------------------------------------
 void FToggleButton::setHotkeyAccelerator()
 {
-  uChar hotkey = getHotkey();
+  FKey hotkey = getHotkey(text);
 
   if ( hotkey )
   {
-    if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
+    if ( std::isalpha(int(hotkey)) || std::isdigit(int(hotkey)) )
     {
-      addAccelerator (FKey(std::tolower(hotkey)));
-      addAccelerator (FKey(std::toupper(hotkey)));
+      addAccelerator (FKey(std::tolower(int(hotkey))));
+      addAccelerator (FKey(std::toupper(int(hotkey))));
       // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(hotkey)));
+      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(int(hotkey))));
     }
     else
-      addAccelerator (getHotkey());
+      addAccelerator (hotkey);
   }
   else
     delAccelerator();
@@ -459,7 +411,7 @@ void FToggleButton::draw()
 
   // set the cursor to the button
   if ( isRadioButton() || isCheckboxButton() )
-    setCursorPos (2, 1);
+    setCursorPos (FPoint(2, 1));
 }
 
 //----------------------------------------------------------------------
@@ -493,7 +445,7 @@ void FToggleButton::drawLabel()
   if ( hotkeypos != NOT_SET )
     length--;
 
-  setPrintPos (1 + int(label_offset_pos), 1);
+  print() << FPoint(1 + int(label_offset_pos), 1);
   drawText (LabelText, hotkeypos, length);
   delete[] LabelText;
 }
@@ -576,7 +528,7 @@ void FToggleButton::setGroup (FButtonGroup* btngroup)
 //----------------------------------------------------------------------
 void FToggleButton::init()
 {
-  setGeometry (1, 1, 4, 1, false);  // initialize geometry values
+  setGeometry (FPoint(1, 1), FSize(4, 1), false);  // initialize geometry values
 
   if ( isEnabled() )
   {

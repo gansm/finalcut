@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -28,6 +28,8 @@
 #include <final/final.h>
 
 using namespace finalcut;
+using finalcut::FPoint;
+using finalcut::FSize;
 
 // Global application object
 static std::weak_ptr<FString> temp_str;
@@ -113,7 +115,7 @@ Listbox::Listbox (FWidget* parent)
 
   // listbox 1
   //----------
-  list1.setGeometry(2, 1, 18, 10);
+  list1.setGeometry(FPoint(2, 1), FSize(18, 10));
   list1.setText ("FListBoxItem");
 
   for (int i = 1; i < 30; i++)
@@ -124,7 +126,7 @@ Listbox::Listbox (FWidget* parent)
   for (double i = 1; i<=15; i++)
     double_list.push_back(2 * i + (i / 100));
 
-  list2.setGeometry(21, 1, 10, 10);
+  list2.setGeometry(FPoint(21, 1), FSize(10, 10));
   list2.setText ("double");
 
   //
@@ -147,11 +149,11 @@ Listbox::Listbox (FWidget* parent)
   TLD["gov"] = "Government";
 
   list3.insert (TLD.begin(), TLD.end(), mapToString);
-  list3.setGeometry(32, 1, 21, 10);
+  list3.setGeometry(FPoint(32, 1), FSize(21, 10));
   list3.setText ("key: value");
 
   // Quit button
-  Quit.setGeometry(42, 12, 10, 1);
+  Quit.setGeometry(FPoint(42, 12), FSize(10, 1));
   Quit.setText (L"&Quit");
 
   // Add quit button function callback
@@ -185,7 +187,8 @@ int main (int argc, char* argv[])
   // Create main dialog object
   Listbox d(&app);
   d.setText (L"Listbox");
-  d.setGeometry (int(1 + (app.getWidth() - 56) / 2), 5, 56, 16);
+  d.setGeometry ( FPoint(int(1 + (app.getWidth() - 56) / 2), 5)
+                , FSize(56, 16) );
   d.setShadow();
 
   // Set dialog d as main widget

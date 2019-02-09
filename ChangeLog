@@ -1,8 +1,57 @@
+2019-02-07  Markus Gans  <guru.mail@muenster.de>
+	* Add a "dynamic layout" Chapter into the first steps document
+
+2019-01-30  Markus Gans  <guru.mail@muenster.de>
+	* Printing an FColorPair object can change the foreground and 
+	  background color
+
+2019-01-27  Markus Gans  <guru.mail@muenster.de>
+	* The print command can now have an FPoint object as a parameter 
+	  to set the cursor position
+	* Refactoring of the FProgressbar drawing methods
+
+2019-01-24  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring of some methods in FVTerm and FDialog
+
+2019-01-21  Markus Gans  <guru.mail@muenster.de>
+	* More accurate interfaces through the strict use of FPoint() 
+	  and FSize()
+
+2019-01-16  Markus Gans  <guru.mail@muenster.de>
+	* New class FSize for storing dimensions
+
+2019-01-12  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring FFileDialog::fileOpenChooser
+	* Refactoring FFileDialog::fileSaveChooser
+	* Refactoring FListBox::init()
+	* Refactoring FListView::init()
+	* Refactoring FTextView::init()
+	* Refactoring FTermXTerminal::resetXTermForeground()
+	* Refactoring FTermXTerminal::resetXTermBackground()
+	* Refactoring FTermXTerminal::resetXTermCursorColor()
+	* Refactoring FTermXTerminal::resetXTermMouseForeground()
+	* Refactoring FTermXTerminal::resetXTermMouseBackground()
+	* Refactoring FTermXTerminal::resetXTermHighlightBackground()
+
+2019-01-11  Markus Gans  <guru.mail@muenster.de>
+	* Generalize hide() method
+
+2019-01-09  Markus Gans  <guru.mail@muenster.de>
+	* Improvement in widget focusing
+	* Better widget visibility handling with the methods hide() and show()
+
+2019-01-05  Markus Gans  <guru.mail@muenster.de>
+	* Use of initializer_list for FListBox, FListView and FTextView
+
+2019-01-04  Markus Gans  <guru.mail@muenster.de>
+	* Use the final specifier
+
 2019-01-03  Markus Gans  <guru.mail@muenster.de>
 	* Improved PC encoding for Cygwin and Linux
 	* Integration of an output filter to replace missing characters
 	* Better Linux console support for UTF-8 encoding 
 	  (Default is PC charset encoding)
+	* Better background color for all terminals with a fixed color palette
 
 2018-12-31  Markus Gans  <guru.mail@muenster.de>
 	* Use the override specifier

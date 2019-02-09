@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -59,11 +59,11 @@ Timer::Timer (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 void Timer::draw()
 {
-  setPrintPos (1, 1);
-  print() << "---------------\n"
+  print() << finalcut::FPoint(1, 1)
+          << "---------------\n"
           << "Press Q to quit\n"
           << "---------------\n";
-  setAreaCursor (1, 4, true, vdesktop);
+  setAreaCursor (finalcut::FPoint(1, 4), true, vdesktop);
 }
 
 //----------------------------------------------------------------------
@@ -75,13 +75,14 @@ void Timer::onTimer (finalcut::FTimerEvent* ev)
   if ( getPrintPos().getY() == int(getDesktopHeight()) )
     is_last_line = true;
 
-  setColor (FColor(1 + timer_id), finalcut::fc::Default);
-  print() << "Timer event, id " << timer_id << '\n';
+  print() << finalcut::FColorPair (FColor(1 + timer_id))
+          << "Timer event, id " << timer_id << '\n';
 
   if ( is_last_line )
     scrollAreaForward (vdesktop);
 
-  setAreaCursor (1, getPrintPos().getY(), true, vdesktop);
+  setAreaCursor ( finalcut::FPoint(1, getPrintPos().getY())
+                , true, vdesktop );
 }
 
 //----------------------------------------------------------------------

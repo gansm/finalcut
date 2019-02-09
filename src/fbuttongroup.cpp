@@ -220,7 +220,7 @@ void FButtonGroup::hide()
 
   for (int y = 0; y < int(getHeight()); y++)
   {
-    FWidget::setPrintPos (1, 1 + y);
+    FWidget::setPrintPos (FPoint(1, 1 + y));
     print (blank);
   }
 
@@ -296,8 +296,8 @@ void FButtonGroup::checkScrollSize (const FRect& r)
 
   if ( ! scrollgeometry.contains(r) )
   {
-    FRect new_size = scrollgeometry.combined(r);
-    setScrollSize (new_size.getWidth(), new_size.getHeight());
+    FRect r_combined = scrollgeometry.combined(r);
+    setScrollSize (r_combined.getSize());
   }
 }
 
@@ -383,44 +383,21 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 
 // protected methods of FButtonGroup
 //----------------------------------------------------------------------
-uChar FButtonGroup::getHotkey()
-{
-  if ( text.isEmpty() )
-    return 0;
-
-  std::size_t length = text.getLength();
-
-  for (std::size_t i = 0; i < length; i++)
-  {
-    try
-    {
-      if ( i + 1 < length && text[i] == '&' )
-        return uChar(text[++i]);
-    }
-    catch (const std::out_of_range&)
-    {
-      return 0;
-    }
-  }
-  return 0;
-}
-
-//----------------------------------------------------------------------
 void FButtonGroup::setHotkeyAccelerator()
 {
-  uChar hotkey = getHotkey();
+  FKey hotkey = getHotkey(text);
 
   if ( hotkey )
   {
-    if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
+    if ( std::isalpha(int(hotkey)) || std::isdigit(int(hotkey)) )
     {
-      addAccelerator (FKey(std::tolower(hotkey)));
-      addAccelerator (FKey(std::toupper(hotkey)));
+      addAccelerator (FKey(std::tolower(int(hotkey))));
+      addAccelerator (FKey(std::toupper(int(hotkey))));
       // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(hotkey)));
+      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(int(hotkey))));
     }
     else
-      addAccelerator (getHotkey());
+      addAccelerator (hotkey);
   }
   else
     delAccelerator();
@@ -472,9 +449,9 @@ void FButtonGroup::drawLabel()
     length--;
 
   if ( hasBorder() )
-    FWidget::setPrintPos (2, 1);
+    FWidget::setPrintPos (FPoint(2, 1));
   else
-    FWidget::setPrintPos (0, 1);
+    FWidget::setPrintPos (FPoint(0, 1));
 
   drawText (LabelText, hotkeypos, length);
   setViewportPrint();
@@ -498,7 +475,7 @@ void FButtonGroup::init()
 {
   setForegroundColor (wc.label_fg);
   setBackgroundColor (wc.label_bg);
-  setMinimumSize (7, 4);
+  setMinimumSize (FSize(7, 4));
   buttonlist.clear();  // no buttons yet
 }
 
@@ -651,7 +628,7 @@ void FButtonGroup::cb_buttonToggled (FWidget* widget, FDataPtr)
     {
       toggle_button->unsetChecked();
 
-      if ( toggle_button->isVisible() && toggle_button->isShown() )
+      if ( toggle_button->isShown() )
         toggle_button->redraw();
     }
 

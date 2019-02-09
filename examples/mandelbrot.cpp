@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -21,6 +21,9 @@
 ***********************************************************************/
 
 #include <final/final.h>
+
+using finalcut::FPoint;
+using finalcut::FSize;
 
 
 //----------------------------------------------------------------------
@@ -40,7 +43,7 @@ class Mandelbrot : public finalcut::FDialog
     ~Mandelbrot();
 
     // Event handlers
-    virtual void onAccel (finalcut::FAccelEvent*) override;
+    virtual void onKeyPress (finalcut::FKeyEvent*) override;
     virtual void onClose (finalcut::FCloseEvent*) override;
 
   private:
@@ -89,7 +92,7 @@ void Mandelbrot::draw()
   for (y0 = y_min; y0 < y_max && current_line < Lines; y0 += dY)
   {
     current_line++;
-    setPrintPos (xoffset, yoffset + current_line);
+    print() << FPoint(xoffset, yoffset + current_line);
 
     for (x0 = x_min; x0 < x_max; x0 += dX)
     {
@@ -116,10 +119,18 @@ void Mandelbrot::draw()
 }
 
 //----------------------------------------------------------------------
-void Mandelbrot::onAccel (finalcut::FAccelEvent* ev)
+void Mandelbrot::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  close();
-  ev->accept();
+  if ( ! ev )
+    return;
+
+  if ( ev->key() == 'q' )
+  {
+    close();
+    ev->accept();
+  }
+  else
+    finalcut::FDialog::onKeyPress(ev);
 }
 
 //----------------------------------------------------------------------
@@ -131,9 +142,9 @@ void Mandelbrot::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Mandelbrot::adjustSize()
 {
-  std::size_t h = getParentWidget()->getHeight() - 1;
-  std::size_t w = getParentWidget()->getWidth() - 10;
-  setGeometry(6, 1, w, h, false);
+  std::size_t h = getDesktopHeight() - 1;
+  std::size_t w = getDesktopWidth() - 10;
+  setGeometry(FPoint(6, 1), FSize(w, h), false);
   finalcut::FDialog::adjustSize();
 }
 
@@ -147,8 +158,7 @@ int main (int argc, char* argv[])
 
   // Create a simple dialog box
   Mandelbrot mb(&app);
-  mb.setGeometry (6, 1, 70, 23);
-  mb.addAccelerator('q');  // press 'q' to quit
+  mb.setGeometry (FPoint(6, 1), FSize(70, 23));
   mb.setShadow();
 
   // Set the mandelbrot object as main widget

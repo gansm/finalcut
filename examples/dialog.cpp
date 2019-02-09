@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -21,6 +21,9 @@
 ***********************************************************************/
 
 #include <final/final.h>
+
+using finalcut::FPoint;
+using finalcut::FSize;
 
 // function prototype
 void cb_quit (finalcut::FWidget*, FDataPtr);
@@ -47,7 +50,7 @@ int main (int argc, char* argv[])
   // Create a simple dialog box
   finalcut::FDialog dgl(&app);
   dgl.setText ("FDialog");
-  dgl.setGeometry (4, 3, 41, 11);
+  dgl.setGeometry (FPoint(4, 3), FSize(41, 11));
 
   // Create text labels
   finalcut::FLabel label_1(&dgl);
@@ -62,12 +65,12 @@ int main (int argc, char* argv[])
           << "or push the button below to exit\n"
           << "the program.";
 
-  label_1.setGeometry (1, 1, 38, 2);
-  label_2.setGeometry (5, 3, 34, 3);
+  label_1.setGeometry (FPoint(1, 1), FSize(38, 2));
+  label_2.setGeometry (FPoint(5, 3), FSize(34, 3));
 
   // Create the quit button
   finalcut::FButton btn("&Quit", &dgl);
-  btn.setGeometry (16, 7, 9, 1);
+  btn.setGeometry (FPoint(16, 7), FSize(9, 1));
 
   // Connect the button signal "clicked" with the callback function
   btn.addCallback

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -65,7 +65,8 @@ void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
   if ( is_last_line )
     scrollAreaForward (vdesktop);
 
-  setAreaCursor (1, getPrintPos().getY(), true, vdesktop);
+  setAreaCursor ( finalcut::FPoint(1, getPrintPos().getY())
+                , true, vdesktop );
 }
 
 //----------------------------------------------------------------------
@@ -78,11 +79,11 @@ void Keyboard::onAccel (finalcut::FAccelEvent* ev)
 //----------------------------------------------------------------------
 void Keyboard::draw()
 {
-  setPrintPos (1, 1);
-  print() << "---------------\n"
+  print() << finalcut::FPoint(1, 1)
+          << "---------------\n"
           << "Press Q to quit\n"
           << "---------------\n";
-  setAreaCursor (1, 4, true, vdesktop);
+  setAreaCursor (finalcut::FPoint(1, 4), true, vdesktop);
 }
 
 //----------------------------------------------------------------------

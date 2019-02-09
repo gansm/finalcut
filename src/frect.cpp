@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -33,6 +33,14 @@ namespace finalcut
 
 // constructor and destructor
 //----------------------------------------------------------------------
+FRect::FRect (const FPoint& p, const FSize& s)
+  : X1(p.getX())
+  , Y1(p.getY())
+  , X2(p.getX() + int(s.getWidth()) - 1)
+  , Y2(p.getY() + int(s.getHeight()) - 1)
+{ }
+
+//----------------------------------------------------------------------
 FRect::FRect (const FPoint& p1, const FPoint& p2)
   : X1(p1.getX())
   , Y1(p1.getY())
@@ -47,7 +55,7 @@ FRect::~FRect()  // destructor
 
 // public methods of FRect
 //----------------------------------------------------------------------
-bool FRect::isNull() const
+bool FRect::isEmpty() const
 {
   return X2 == X1 - 1 && Y2 == Y1 - 1;
 }
@@ -134,12 +142,28 @@ void FRect::setSize (std::size_t w, std::size_t h)
 }
 
 //----------------------------------------------------------------------
+void FRect::setSize (const FSize& s)
+{
+  X2 = X1 + int(s.getWidth()) - 1;
+  Y2 = Y1 + int(s.getHeight()) - 1;
+}
+
+//----------------------------------------------------------------------
 void FRect::setRect (const FRect& r)
 {
-  setRect ( r.X1
-          , r.Y1
-          , std::size_t(r.X2 - r.X1 + 1)
-          , std::size_t(r.Y2 - r.Y1 + 1) );
+  X1 = r.X1;
+  Y1 = r.Y1;
+  X2 = r.X2;
+  Y2 = r.Y2;
+}
+
+//----------------------------------------------------------------------
+void FRect::setRect (const FPoint& p, const FSize& s)
+{
+  X1 = p.getX();
+  Y1 = p.getY();
+  X2 = p.getX() + int(s.getWidth()) - 1;
+  Y2 = p.getY() + int(s.getHeight()) - 1;
 }
 
 //----------------------------------------------------------------------
@@ -247,21 +271,21 @@ FRect& FRect::operator = (const FRect& r)
 }
 
 //----------------------------------------------------------------------
-FRect operator + (const FRect& r, const FPoint& p)
+FRect operator + (const FRect& r, const FSize& s)
 {
   return FRect ( r.X1
                , r.Y1
-               , std::size_t(r.X2 - r.X1 + 1 + p.getX())
-               , std::size_t(r.Y2 - r.Y1 + 1 + p.getY()) );
+               , std::size_t(r.X2 - r.X1) + 1 + s.getWidth()
+               , std::size_t(r.Y2 - r.Y1) + 1 + s.getHeight() );
 }
 
 //----------------------------------------------------------------------
-FRect operator - (const FRect& r, const FPoint& p)
+FRect operator - (const FRect& r, const FSize& s)
 {
   return FRect ( r.X1
                , r.Y1
-               , std::size_t(r.X2 - r.X1 + 1 - p.getX())
-               , std::size_t(r.Y2 - r.Y1 + 1 - p.getY()) );
+               , std::size_t(r.X2 - r.X1 + 1) - s.getWidth()
+               , std::size_t(r.Y2 - r.Y1 + 1) - s.getHeight() );
 }
 
 //----------------------------------------------------------------------
@@ -285,10 +309,10 @@ bool operator != (const FRect& r1, const FRect& r2)
 //----------------------------------------------------------------------
 std::ostream& operator << (std::ostream& outstr, const FRect& r)
 {
-  outstr << r.getX1() << " "
-         << r.getY1() << " "
-         << r.getX2() << " "
-         << r.getY2();
+  outstr << r.X1 << " "
+         << r.Y1 << " "
+         << r.X2 << " "
+         << r.Y2;
   return outstr;
 }
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2018 Markus Gans                                      *
+* Copyright 2016-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -87,8 +87,7 @@ void FToolTip::draw()
 
   for (std::size_t i = 0; i < text_num_lines; i++)
   {
-    setPrintPos (3, 2 + int(i));
-    print(text_components[i]);
+    print() << FPoint(3, 2 + int(i)) << text_components[i];
   }
 
   unsetBold();
@@ -124,8 +123,8 @@ void FToolTip::init()
   setAlwaysOnTop();
   ignorePadding();
   // initialize geometry values
-  setGeometry (1, 1, 3, 3, false);
-  setMinimumSize (3, 3);
+  setGeometry (FPoint(1, 1), FSize(3, 3), false);
+  setMinimumSize (FSize(3, 3));
   setForegroundColor (wc.tooltip_fg);
   setBackgroundColor (wc.tooltip_bg);
   calculateDimensions();
@@ -164,7 +163,7 @@ void FToolTip::calculateDimensions()
   else
     x = y = 1;
 
-  setGeometry (x, y, w, h);
+  setGeometry (FPoint(x, y), FSize(w, h));
 }
 
 //----------------------------------------------------------------------

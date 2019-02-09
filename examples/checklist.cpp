@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -26,6 +26,9 @@
 #include <vector>
 
 #include <final/final.h>
+
+using finalcut::FPoint;
+using finalcut::FSize;
 
 
 //----------------------------------------------------------------------
@@ -73,9 +76,10 @@ CheckList::CheckList (finalcut::FWidget* parent)
 {
   setText (L"Shopping list");
   setShadow();
-  setGeometry (int(1 + (parent->getWidth() - 30) / 2), 5, 30, 13);
+  setGeometry ( FPoint(int(1 + (parent->getWidth() - 30) / 2), 5)
+              , FSize(30, 13) );
   listView.ignorePadding();
-  listView.setGeometry (1, 2, getWidth(), getHeight() - 1);
+  listView.setGeometry (FPoint(1, 2), FSize(getWidth(), getHeight() - 1));
 
   // Add columns to the view
   listView.addColumn ("Item");
@@ -111,7 +115,7 @@ CheckList::~CheckList()  // destructor
 //----------------------------------------------------------------------
 void CheckList::populate()
 {
-  std::string list[][2] =
+  const std::string list[][2] =
   {
     { "Milk", "Highest" },
     { "Cheese", "High" },

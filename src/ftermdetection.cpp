@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -457,7 +457,10 @@ char* FTermDetection::termtype_256color_quirks()
 
   if ( (color_env.string5 && std::strlen(color_env.string5) > 0)
     || (color_env.string6 && std::strlen(color_env.string6) > 0) )
+  {
     terminal_type.kde_konsole = true;
+    new_termtype = C_STR("konsole-256color");
+  }
 
   if ( color_env.string3 && std::strlen(color_env.string3) > 0 )
     decscusr_support = true;

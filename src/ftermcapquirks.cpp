@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -67,7 +67,7 @@ void FTermcapQuirks::setFTermDetection (FTermDetection* td)
 //----------------------------------------------------------------------
 void FTermcapQuirks::terminalFixup()
 {
-  auto td = term_detection;
+  auto& td = term_detection;
 
   if ( td->isCygwinTerminal() )
   {
@@ -114,6 +114,8 @@ void FTermcapQuirks::terminalFixup()
 
   // Fixes general quirks
   general();
+  // ECMA-48 (ANSI X3.64) compatible terminal
+  ecma48();
 }
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
@@ -548,42 +550,46 @@ void FTermcapQuirks::general()
   if ( ! TCAP(fc::t_cursor_address) )
     TCAP(fc::t_cursor_address) = \
         C_STR(CSI "%i%p1%d;%p2%dH");
+}
 
+//----------------------------------------------------------------------
+void FTermcapQuirks::ecma48()
+{
   // Test for standard ECMA-48 (ANSI X3.64) terminal
-  if ( TCAP(fc::t_exit_underline_mode)
-    && std::strncmp(TCAP(fc::t_exit_underline_mode), CSI "24m", 5) == 0 )
-  {
-    // Seems to be a ECMA-48 (ANSI X3.64) compatible terminal
-    TCAP(fc::t_enter_dbl_underline_mode) = \
-        C_STR(CSI "21m");  // Exit single underline, too
+  if ( ! TCAP(fc::t_exit_underline_mode)
+    || std::strncmp(TCAP(fc::t_exit_underline_mode), CSI "24m", 5) != 0 )
+  return;
 
-    TCAP(fc::t_exit_dbl_underline_mode) = \
-        C_STR(CSI "24m");
+  // Seems to be a ECMA-48 (ANSI X3.64) compatible terminal
+  TCAP(fc::t_enter_dbl_underline_mode) = \
+      C_STR(CSI "21m");  // Exit single underline, too
 
-    TCAP(fc::t_exit_bold_mode) = \
-        C_STR(CSI "22m");  // Exit dim, too
+  TCAP(fc::t_exit_dbl_underline_mode) = \
+      C_STR(CSI "24m");
 
-    TCAP(fc::t_exit_dim_mode) = \
-        C_STR(CSI "22m");
+  TCAP(fc::t_exit_bold_mode) = \
+      C_STR(CSI "22m");  // Exit dim, too
 
-    TCAP(fc::t_exit_underline_mode) = \
-        C_STR(CSI "24m");
+  TCAP(fc::t_exit_dim_mode) = \
+      C_STR(CSI "22m");
 
-    TCAP(fc::t_exit_blink_mode) = \
-        C_STR(CSI "25m");
+  TCAP(fc::t_exit_underline_mode) = \
+      C_STR(CSI "24m");
 
-    TCAP(fc::t_exit_reverse_mode) = \
-        C_STR(CSI "27m");
+  TCAP(fc::t_exit_blink_mode) = \
+      C_STR(CSI "25m");
 
-    TCAP(fc::t_exit_secure_mode) = \
-        C_STR(CSI "28m");
+  TCAP(fc::t_exit_reverse_mode) = \
+      C_STR(CSI "27m");
 
-    TCAP(fc::t_enter_crossed_out_mode) = \
-        C_STR(CSI "9m");
+  TCAP(fc::t_exit_secure_mode) = \
+      C_STR(CSI "28m");
 
-    TCAP(fc::t_exit_crossed_out_mode) = \
-        C_STR(CSI "29m");
-  }
+  TCAP(fc::t_enter_crossed_out_mode) = \
+      C_STR(CSI "9m");
+
+  TCAP(fc::t_exit_crossed_out_mode) = \
+      C_STR(CSI "29m");
 }
 
 }  // namespace finalcut

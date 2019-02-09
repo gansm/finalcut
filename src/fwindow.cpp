@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -179,9 +179,9 @@ bool FWindow::setTransparentShadow (bool enable)
   flags.shadow = flags.trans_shadow = enable;
 
   if ( enable )
-    setShadowSize (2, 1);
+    setShadowSize (FSize(2, 1));
   else
-    setShadowSize (0, 0);
+    setShadowSize (FSize(0, 0));
 
   return enable;
 }
@@ -196,13 +196,13 @@ bool FWindow::setShadow (bool enable)
   {
     flags.shadow = true;
     flags.trans_shadow = false;
-    setShadowSize (1, 1);
+    setShadowSize (FSize(1, 1));
   }
   else
   {
     flags.shadow = false;
     flags.trans_shadow = false;
-    setShadowSize (0, 0);
+    setShadowSize (FSize(0, 0));
   }
 
   return enable;
@@ -251,8 +251,7 @@ void FWindow::drawBorder()
       , y1 = 1
       , y2 = 1 + int(getHeight()) - 1;
 
-    setPrintPos (x1, y1);
-    print (fc::NF_border_corner_upper_left);  // ⎡
+    print() << FPoint(x1, y1) << fc::NF_border_corner_upper_left;  // ⎡
 
     for (int x = x1 + 1; x < x2; x++)
       print (fc::NF_border_line_upper);  // ¯
@@ -261,24 +260,20 @@ void FWindow::drawBorder()
 
     for (int y = y1 + 1; y < y2; y++)
     {
-      setPrintPos (x1, y);
-      // border left ⎸
-      print (fc::NF_border_line_left);
-      setPrintPos (x2, y);
-      // border right⎹
-      print (fc::NF_rev_border_line_right);
+      print() << FPoint(x1, y)  // border left ⎸
+              << fc::NF_border_line_left
+              << FPoint(x2, y)  // border right⎹
+              << fc::NF_rev_border_line_right;
     }
 
-    setPrintPos (x1, y2);
-    // lower left corner border ⎣
-    print (fc::NF_border_corner_lower_left);
+    print() << FPoint(x1, y2)  // lower left corner border ⎣
+            << fc::NF_border_corner_lower_left;
 
     for (std::size_t x = 2; x < getWidth(); x++)  // low line _
       print (fc::NF_border_line_bottom);
 
-    setPrintPos (x2, y2);
-    // lower right corner border ⎦
-    print (fc::NF_rev_border_corner_lower_right);
+    print() << FPoint(x2, y2)  // lower right corner border ⎦
+            << fc::NF_rev_border_corner_lower_right;
   }
   else
   {
@@ -326,12 +321,14 @@ void FWindow::setY (int y, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWindow::setPos (int x, int y, bool adjust)
+void FWindow::setPos (const FPoint& p, bool adjust)
 {
-  if ( y < 1 )
-    y = 1;
+  FPoint pos = p;
 
-  FWidget::setPos (x, y, adjust);
+  if ( pos.getY() < 1 )
+    pos.setY(1);
+
+  FWidget::setPos (pos, adjust);
 
   if ( isVirtualWindow() )
   {
@@ -369,11 +366,11 @@ void FWindow::setHeight (std::size_t h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWindow::setSize (std::size_t w, std::size_t h, bool adjust)
+void FWindow::setSize (const FSize& size, bool adjust)
 {
   std::size_t old_width = getWidth();
   std::size_t old_height = getHeight();
-  FWidget::setSize (w, h, adjust);
+  FWidget::setSize (size, adjust);
 
   if ( isVirtualWindow()
     && (getWidth() != old_width || getHeight() != old_height) )
@@ -385,26 +382,24 @@ void FWindow::setSize (std::size_t w, std::size_t h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWindow::setGeometry ( int x, int y
-                          , std::size_t w, std::size_t h
-                          , bool adjust )
+void FWindow::setGeometry ( const FPoint& p, const FSize& size, bool adjust)
 {
   // Sets the geometry of the widget
 
   int old_x = getX();
   int old_y = getY();
-  std::size_t old_width = getWidth();
-  std::size_t old_height = getHeight();
+  FPoint pos = p;
+  FSize old_size = getSize();
 
-  if ( y < 1 )
-    y = 1;
+  if ( pos.getY() < 1 )
+    pos.setY(1);
 
-  FWidget::setGeometry (x, y, w, h, adjust);
+  FWidget::setGeometry (pos, size, adjust);
 
   if ( ! isVirtualWindow() )
     return;
 
-  if ( getWidth() != old_width || getHeight() != old_height )
+  if ( getSize() != old_size )
   {
     FRect geometry = getTermGeometry();
     geometry.move(-1, -1);
@@ -421,9 +416,9 @@ void FWindow::setGeometry ( int x, int y
 }
 
 //----------------------------------------------------------------------
-void FWindow::move (int dx, int dy)
+void FWindow::move (const FPoint& pos)
 {
-  FWidget::move (dx, dy);
+  FWidget::move(pos);
 
   if ( isVirtualWindow() )
   {
@@ -676,7 +671,7 @@ bool FWindow::zoomWindow()
     // save the current geometry
     normalGeometry = getGeometry();
     FRect oldGeometry = getTermGeometryWithShadow();
-    setGeometry (1, 1, getMaxWidth(), getMaxHeight());
+    setGeometry (FPoint(1, 1), FSize(getMaxWidth(), getMaxHeight()));
     restoreVTerm (oldGeometry);
     redraw();
   }
@@ -767,18 +762,13 @@ bool FWindow::activatePrevWindow()
 }
 
 //----------------------------------------------------------------------
-void FWindow::setShadowSize (int right, int bottom)
+void FWindow::setShadowSize (const FSize& size)
 {
-  int old_right  = getShadow().getX()
-    , old_bottom = getShadow().getY();
+  const FSize& old_shadow = getShadow();
+  FWidget::setShadowSize (size);
+  const FSize& new_shadow = getShadow();
 
-  FWidget::setShadowSize (right, bottom);
-
-  int new_right  = getShadow().getX()
-    , new_bottom = getShadow().getY();
-
-  if ( isVirtualWindow()
-    && (new_right != old_right || new_bottom != old_bottom) )
+  if ( isVirtualWindow() && (new_shadow != old_shadow) )
   {
     auto geometry = getTermGeometry();
     geometry.move(-1, -1);
@@ -796,7 +786,7 @@ void FWindow::adjustSize()
   FWidget::adjustSize();
 
   if ( zoomed )
-    setGeometry (1, 1, getMaxWidth(), getMaxHeight(), false);
+    setGeometry (FPoint(1, 1), FSize(getMaxWidth(), getMaxHeight()), false);
   else if ( isVirtualWindow() )
   {
     if ( getX() != old_x )

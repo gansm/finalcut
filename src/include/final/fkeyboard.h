@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -56,7 +56,7 @@ class FApplication;
 #pragma pack(push)
 #pragma pack(1)
 
-class FKeyboardCommand
+class FKeyboardCommand final
 {
   public:
     // Constructor
@@ -81,7 +81,7 @@ class FKeyboardCommand
 #pragma pack(push)
 #pragma pack(1)
 
-class FKeyboard
+class FKeyboard final
 {
   public:
     // Constants

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -26,6 +26,9 @@
 #include <vector>
 
 #include <final/final.h>
+
+using finalcut::FPoint;
+using finalcut::FSize;
 
 
 //----------------------------------------------------------------------
@@ -71,7 +74,7 @@ Listview::Listview (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
   // Set FListView geometry
-  listView.setGeometry(2, 1, 33, 14);
+  listView.setGeometry(FPoint(2, 1), FSize(33, 14));
 
   // Add columns to the view
   listView.addColumn ("City");
@@ -104,7 +107,7 @@ Listview::Listview (finalcut::FWidget* parent)
   populate();
 
   // Quit button
-  Quit.setGeometry(24, 16, 10, 1);
+  Quit.setGeometry(FPoint(24, 16), FSize(10, 1));
   Quit.setText (L"&Quit");
 
   // Add some function callbacks
@@ -128,7 +131,7 @@ Listview::~Listview()  // destructor
 //----------------------------------------------------------------------
 void Listview::populate()
 {
-  std::string weather[][5] =
+  const std::string weather[][5] =
   {
     { "Alexandria", "Sunny", "31°C", "61%", "1006.4 mb" },
     { "Amsterdam", "Cloudy", "21°C", "82%", "1021.3 mb" },
@@ -214,7 +217,8 @@ int main (int argc, char* argv[])
   // Create main dialog object
   Listview d(&app);
   d.setText (L"Weather data");
-  d.setGeometry (int(1 + (app.getWidth() - 37) / 2), 3, 37, 20);
+  d.setGeometry ( FPoint(int(1 + (app.getWidth() - 37) / 2), 3)
+                , FSize(37, 20) );
   d.setShadow();
 
   // Set dialog d as main widget

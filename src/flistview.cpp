@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -650,23 +650,22 @@ fc::sorting_type FListView::getColumnSortType (int column) const
 }
 
 //----------------------------------------------------------------------
-void FListView::setGeometry ( int x, int y
-                            , std::size_t w, std::size_t h
-                            , bool adjust )
+void FListView::setGeometry ( const FPoint& pos, const FSize& size
+                            , bool adjust)
 {
   // Set the widget geometry
 
-  FWidget::setGeometry(x, y, w, h, adjust);
+  FWidget::setGeometry(pos, size, adjust);
 
   if ( isNewFont() )
   {
-    vbar->setGeometry (int(getWidth()), 2, 2, getHeight() - 2);
-    hbar->setGeometry (1, int(getHeight()), getWidth() - 2, 1);
+    vbar->setGeometry (FPoint(int(getWidth()), 2), FSize(2, getHeight() - 2));
+    hbar->setGeometry (FPoint(1, int(getHeight())), FSize(getWidth() - 2, 1));
   }
   else
   {
-    vbar->setGeometry (int(getWidth()), 2, 1, getHeight() - 2);
-    hbar->setGeometry (2, int(getHeight()), getWidth() - 2, 1);
+    vbar->setGeometry (FPoint(int(getWidth()), 2), FSize(1, getHeight() - 2));
+    hbar->setGeometry (FPoint(2, int(getHeight())), FSize(getWidth() - 2, 1));
   }
 }
 
@@ -753,6 +752,13 @@ int FListView::addColumn (const FString& label, int width)
 }
 
 //----------------------------------------------------------------------
+void FListView::hide()
+{
+  FWidget::hide();
+  hideSize (getSize());
+}
+
+//----------------------------------------------------------------------
 FObject::FObjectIterator FListView::insert ( FListViewItem* item
                                            , FObjectIterator parent_iter )
 {
@@ -816,24 +822,6 @@ FObject::FObjectIterator FListView::insert ( const FStringList& cols
 
   item->replaceControlCodes();
   return insert(item, parent_iter);
-}
-
-//----------------------------------------------------------------------
-FObject::FObjectIterator FListView::insert ( const std::vector<uInt64>& cols
-                                           , FDataPtr d
-                                           , FObjectIterator parent_iter )
-{
-  FStringList str_cols;
-
-  if ( ! cols.empty() )
-  {
-    for (uInt i = 0; i < cols.size(); i++)
-      str_cols.push_back (FString().setNumber(cols[i]));
-  }
-
-  auto item_iter = insert (str_cols, d, parent_iter);
-
-  return item_iter;
 }
 
 //----------------------------------------------------------------------
@@ -1036,13 +1024,12 @@ void FListView::onMouseDown (FMouseEvent* ev)
         }
       }
 
-      if ( isVisible() )
+      if ( isShown() )
         drawList();
 
       vbar->setValue (first_visible_line.getPosition());
 
-      if ( vbar->isVisible()
-        && first_line_position_before != first_visible_line.getPosition() )
+      if ( first_line_position_before != first_visible_line.getPosition() )
         vbar->drawBar();
 
       updateTerminal();
@@ -1087,7 +1074,7 @@ void FListView::onMouseUp (FMouseEvent* ev)
 
             adjustSize();
 
-            if ( isVisible() )
+            if ( isShown() )
               draw();
           }
         }
@@ -1103,7 +1090,7 @@ void FListView::onMouseUp (FMouseEvent* ev)
           {
             item->setChecked(! item->isChecked());
 
-            if ( isVisible() )
+            if ( isShown() )
               draw();
           }
         }
@@ -1139,13 +1126,12 @@ void FListView::onMouseMove (FMouseEvent* ev)
     if ( new_pos < int(getCount()) )
       setRelativePosition (mouse_y - 2);
 
-    if ( isVisible() )
+    if ( isShown() )
       drawList();
 
     vbar->setValue (first_visible_line.getPosition());
 
-    if ( vbar->isVisible()
-      && first_line_position_before != first_visible_line.getPosition() )
+    if ( first_line_position_before != first_visible_line.getPosition() )
       vbar->drawBar();
 
     updateTerminal();
@@ -1189,7 +1175,7 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
 
       adjustSize();
 
-      if ( isVisible() )
+      if ( isShown() )
         draw();
     }
 
@@ -1226,13 +1212,12 @@ void FListView::onTimer (FTimerEvent*)
       break;
   }
 
-  if ( isVisible() )
+  if ( isShown() )
     drawList();
 
   vbar->setValue (first_visible_line.getPosition());
 
-  if ( vbar->isVisible()
-    && first_line_position_before != first_visible_line.getPosition() )
+  if ( first_line_position_before != first_visible_line.getPosition() )
     vbar->drawBar();
 
   updateTerminal();
@@ -1266,13 +1251,12 @@ void FListView::onWheel (FWheelEvent* ev)
   if ( position_before != current_iter.getPosition() )
     processChanged();
 
-  if ( isVisible() )
+  if ( isShown() )
     drawList();
 
   vbar->setValue (first_visible_line.getPosition());
 
-  if ( vbar->isVisible()
-    && first_line_position_before != first_visible_line.getPosition() )
+  if ( first_line_position_before != first_visible_line.getPosition() )
     vbar->drawBar();
 
   updateTerminal();
@@ -1368,15 +1352,15 @@ void FListView::adjustSize()
   hbar->setWidth (width, false);
   hbar->resize();
 
-  if ( element_count <= height )
-    vbar->hide();
+  if ( isHorizontallyScrollable() )
+    hbar->show();
   else
-    vbar->setVisible();
-
-  if ( max_line_width <= width )
     hbar->hide();
+
+  if ( isVerticallyScrollable() )
+    vbar->show();
   else
-    hbar->setVisible();
+    vbar->hide();
 }
 
 
@@ -1384,24 +1368,29 @@ void FListView::adjustSize()
 //----------------------------------------------------------------------
 void FListView::init()
 {
+  initScrollbar (vbar, fc::vertical, &FListView::cb_VBarChange);
+  initScrollbar (hbar, fc::horizontal, &FListView::cb_HBarChange);
   selflist.push_back(this);
   root = selflist.begin();
   null_iter = selflist.end();
-
+  setGeometry (FPoint(1, 1), FSize(5, 4), false);  // initialize geometry values
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
+  nf_offset = isNewFont() ? 1 : 0;
+  setTopPadding(1);
+  setLeftPadding(1);
+  setBottomPadding(1);
+  setRightPadding(1 + int(nf_offset));
+}
 
+//----------------------------------------------------------------------
+void FListView::initScrollbar ( FScrollbarPtr& bar
+                              , fc::orientation o
+                              , FListViewCallback callback )
+{
   try
   {
-    vbar = std::make_shared<FScrollbar>(fc::vertical, this);
-    vbar->setMinimum(0);
-    vbar->setValue(0);
-    vbar->hide();
-
-    hbar = std::make_shared<FScrollbar>(fc::horizontal, this);
-    hbar->setMinimum(0);
-    hbar->setValue(0);
-    hbar->hide();
+    bar = std::make_shared<FScrollbar>(o, this);
   }
   catch (const std::bad_alloc& ex)
   {
@@ -1409,25 +1398,15 @@ void FListView::init()
     return;
   }
 
-  setGeometry (1, 1, 5, 4, false);  // initialize geometry values
+  bar->setMinimum(0);
+  bar->setValue(0);
+  bar->hide();
 
-  vbar->addCallback
+  bar->addCallback
   (
     "change-value",
-    F_METHOD_CALLBACK (this, &FListView::cb_VBarChange)
+    F_METHOD_CALLBACK (this, callback)
   );
-
-  hbar->addCallback
-  (
-    "change-value",
-    F_METHOD_CALLBACK (this, &FListView::cb_HBarChange)
-  );
-
-  nf_offset = isNewFont() ? 1 : 0;
-  setTopPadding(1);
-  setLeftPadding(1);
-  setBottomPadding(1);
-  setRightPadding(1 + int(nf_offset));
 }
 
 //----------------------------------------------------------------------
@@ -1484,14 +1463,14 @@ void FListView::draw()
   else
     drawBorder();
 
-  if ( isNewFont() && ! vbar->isVisible() )
+  if ( isNewFont() && ! vbar->isShown() )
   {
     setColor();
 
     for (int y = 2; y < int(getHeight()); y++)
     {
-      setPrintPos (int(getWidth()), y);
-      print (' ');  // clear right side of the scrollbar
+      print() << FPoint(int(getWidth()), y)
+              << ' ';  // clear right side of the scrollbar
     }
   }
 
@@ -1500,12 +1479,8 @@ void FListView::draw()
   if ( isMonochron() )
     setReverse(false);
 
-  if ( vbar->isVisible() )
-    vbar->redraw();
-
-  if ( hbar->isVisible() )
-    hbar->redraw();
-
+  vbar->redraw();
+  hbar->redraw();
   drawList();
 
   if ( flags.focus && getStatusBar() )
@@ -1568,8 +1543,7 @@ void FListView::drawHeadlines()
     last = h.begin() + len;
   }
 
-  setPrintPos (2, 1);
-  print() << std::vector<charData>(first, last);
+  print() << FPoint(2, 1) << std::vector<charData>(first, last);
 }
 
 //----------------------------------------------------------------------
@@ -1588,7 +1562,7 @@ void FListView::drawList()
     const auto item = static_cast<FListViewItem*>(*iter);
     int tree_offset = ( tree_view ) ? int(item->getDepth() << 1) + 1 : 0;
     int checkbox_offset = ( item->isCheckable() ) ? 1 : 0;
-    setPrintPos (2, 2 + int(y));
+    print() << FPoint(2, 2 + int(y));
 
     // Draw one FListViewItem
     drawListLine (item, flags.focus, is_current_line);
@@ -1596,8 +1570,8 @@ void FListView::drawList()
     if ( flags.focus && is_current_line )
     {
       setVisibleCursor (item->isCheckable());
-      setCursorPos ( 3 + tree_offset + checkbox_offset - xoffset
-                   , 2 + int(y));  // first character
+      setCursorPos (FPoint ( 3 + tree_offset + checkbox_offset - xoffset
+                           , 2 + int(y) ));  // first character
     }
 
     last_visible_line = iter;
@@ -1614,8 +1588,8 @@ void FListView::drawList()
   // Clean empty space after last element
   while ( y < uInt(getClientHeight()) )
   {
-    setPrintPos (2, 2 + int(y));
-    print (FString(std::size_t(getClientWidth()), ' '));
+    print() << FPoint(2, 2 + int(y))
+            << FString(std::size_t(getClientWidth()), ' ');
     y++;
   }
 }
@@ -1692,7 +1666,7 @@ void FListView::drawListLine ( const FListViewItem* item
   std::size_t i;
 
   for (i = 0; i < len; i++)
-    *this << element_str[i];
+    print() << element_str[i];
 
   for (; i < getWidth() - nf_offset - 2; i++)
     print (' ');
@@ -1875,10 +1849,10 @@ void FListView::drawColumnEllipsis ( const headerItems::const_iterator& iter
   static constexpr int ellipsis_length = 2;
   int width = iter->width;
 
-  headerline << ' ';
-  headerline << text.left(uInt(width - ellipsis_length));
-  setColor (wc.label_ellipsis_fg, wc.label_bg);
-  headerline << "..";
+  headerline << ' '
+             << text.left(uInt(width - ellipsis_length))
+             << FColorPair (wc.label_ellipsis_fg, wc.label_bg)
+             << "..";
 
   if ( iter == header.end() - 1 )  // Last element
     headerline << ' ';
@@ -1887,17 +1861,17 @@ void FListView::drawColumnEllipsis ( const headerItems::const_iterator& iter
 //----------------------------------------------------------------------
 void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
 {
-  if ( isVisible() )
+  if ( isShown() )
     draw();
 
   vbar->setValue (first_visible_line.getPosition());
 
-  if ( vbar->isVisible() && draw_vbar )
+  if ( draw_vbar )
     vbar->drawBar();
 
   hbar->setValue (xoffset);
 
-  if ( hbar->isVisible() && draw_hbar )
+  if ( draw_hbar )
     hbar->drawBar();
 
   updateTerminal();
@@ -1982,8 +1956,10 @@ void FListView::recalculateHorizontalBar (std::size_t len)
     hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset) - 4);
     hbar->calculateSliderValues();
 
-    if ( ! hbar->isVisible() )
-      hbar->setVisible();
+    if ( isHorizontallyScrollable() )
+      hbar->show();
+    else
+      hbar->hide();
   }
 }
 
@@ -1997,8 +1973,10 @@ void FListView::recalculateVerticalBar (std::size_t element_count)
   vbar->setPageSize (int(element_count), int(getHeight()) - 2);
   vbar->calculateSliderValues();
 
-  if ( ! vbar->isVisible() && element_count >= getHeight() - 1 )
-    vbar->setVisible();
+  if ( isVerticallyScrollable() )
+    vbar->show();
+  else
+    vbar->hide();
 }
 
 //----------------------------------------------------------------------
@@ -2032,7 +2010,7 @@ void FListView::mouseHeaderClicked()
 
       sort();
 
-      if ( isVisible() )
+      if ( isShown() )
         updateDrawing (true, false);
 
       break;
@@ -2551,7 +2529,7 @@ void FListView::cb_VBarChange (FWidget*, FDataPtr)
     break;
   }
 
-  if ( isVisible() )
+  if ( isShown() )
     drawList();
 
   if ( scrollType >= FScrollbar::scrollStepBackward
@@ -2559,8 +2537,7 @@ void FListView::cb_VBarChange (FWidget*, FDataPtr)
   {
     vbar->setValue (first_visible_line.getPosition());
 
-    if ( vbar->isVisible()
-      && first_line_position_before != first_visible_line.getPosition() )
+    if ( first_line_position_before != first_visible_line.getPosition() )
       vbar->drawBar();
 
     updateTerminal();
@@ -2611,7 +2588,7 @@ void FListView::cb_HBarChange (FWidget*, FDataPtr)
       break;
   }
 
-  if ( isVisible() )
+  if ( isShown() )
   {
     drawHeadlines();
     drawList();
@@ -2624,7 +2601,7 @@ void FListView::cb_HBarChange (FWidget*, FDataPtr)
   {
     hbar->setValue (xoffset);
 
-    if ( hbar->isVisible() && xoffset_before != xoffset )
+    if ( xoffset_before != xoffset )
       hbar->drawBar();
 
     updateTerminal();

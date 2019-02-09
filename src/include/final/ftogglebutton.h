@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -91,9 +91,8 @@ class FToggleButton : public FWidget
     FString&            getText();
 
     // Mutators
-    virtual void        setGeometry ( int, int
-                                    , std::size_t, std::size_t
-                                    , bool = true) override;
+    virtual void        setGeometry ( const FPoint&, const FSize&
+                                    , bool = true ) override;
     bool                setNoUnderline (bool);
     bool                setNoUnderline();
     bool                unsetNoUnderline();
@@ -125,7 +124,6 @@ class FToggleButton : public FWidget
 
   protected:
     // Accessor
-    uChar               getHotkey();
     FButtonGroup*       getGroup() const;
 
     // Mutator

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -66,15 +66,14 @@ void FMenuBar::hide()
   setColor (fg, bg);
   screenWidth = getDesktopWidth();
   auto blank = createBlankArray (screenWidth + 1);
-  setPrintPos (1, 1);
-  print (blank);
+  print() << FPoint(1, 1) << blank;
   destroyBlankArray (blank);
 }
 
 //----------------------------------------------------------------------
 void FMenuBar::adjustSize()
 {
-  setGeometry (1, 1, getDesktopWidth(), 1, false);
+  setGeometry (FPoint(1, 1), FSize(getDesktopWidth(), 1), false);
   adjustItems();
 }
 
@@ -236,7 +235,7 @@ void FMenuBar::init()
   auto r = getRootWidget();
   auto w = r->getWidth();
   // initialize geometry values
-  setGeometry (1, 1, w, 1, false);
+  setGeometry (FPoint(1, 1), FSize(w, 1), false);
   setAlwaysOnTop();
   setMenuBar(this);
   ignorePadding();
@@ -254,8 +253,7 @@ void FMenuBar::init()
 //----------------------------------------------------------------------
 void FMenuBar::calculateDimensions()
 {
-  int item_X = 1;
-  int item_Y = 1;
+  FPoint item_pos (1, 1);
   auto iter = item_list.begin();
   auto last = item_list.end();
 
@@ -266,13 +264,13 @@ void FMenuBar::calculateDimensions()
     int item_width = int(len) + 2;
 
     // set item geometry
-    (*iter)->setGeometry (item_X, item_Y, std::size_t(item_width), 1, false);
+    (*iter)->setGeometry (item_pos, FSize(std::size_t(item_width), 1), false);
 
     // set menu position
     if ( (*iter)->hasMenu() )
-      (*iter)->getMenu()->setPos (item_X, item_Y, false);
+      (*iter)->getMenu()->setPos (item_pos, false);
 
-    item_X += item_width;
+    item_pos.x_ref() += item_width;
 
     ++iter;
   }
@@ -301,7 +299,7 @@ bool FMenuBar::selectNextItem()
         next = static_cast<FMenuItem*>(*next_element);
       } while ( ! next->isEnabled()
              || ! next->acceptFocus()
-             || ! next->isVisible()
+             || ! next->isShown()
              || next->isSeparator() );
 
       if ( next == *iter )
@@ -365,7 +363,7 @@ bool FMenuBar::selectPrevItem()
       }
       while ( ! prev->isEnabled()
            || ! prev->acceptFocus()
-           || ! prev->isVisible()
+           || ! prev->isShown()
            || prev->isSeparator() );
 
       if ( prev == *iter )
@@ -502,7 +500,7 @@ void FMenuBar::drawItems()
   if ( item_list.empty() )
     return;
 
-  setPrintPos (1, 1);
+  print() << FPoint(1, 1);
 
   if ( isMonochron() )
     setReverse(true);
@@ -665,16 +663,14 @@ inline void FMenuBar::drawEllipsis (const menuText& txtdata, std::size_t x)
     if ( txtdata.startpos < screenWidth )
     {
       // Print ellipsis
-      setPrintPos (int(screenWidth) - 1, 1);
-      print ("..");
+      print() << FPoint(int(screenWidth) - 1, 1) << "..";
     }
     else if ( txtdata.startpos - 1 <= screenWidth )
     {
       // Hide first character from text
-      setPrintPos (int(screenWidth), 1);
-      print (' ');
+      print() << FPoint(int(screenWidth), 1) << ' ';
     }
-    }
+  }
 }
 
 //----------------------------------------------------------------------
@@ -719,7 +715,7 @@ void FMenuBar::adjustItems()
       auto menu = (*iter)->getMenu();
 
       // set menu position
-      menu->setPos (menu->adjustX(item_X), item_Y);
+      menu->setPos (FPoint(menu->adjustX(item_X), item_Y));
 
       // call menu adjustItems()
       menu->adjustItems();
@@ -737,6 +733,7 @@ void FMenuBar::selectMenuItem (FMenuItem* item)
     return;
 
   auto focused_widget = getFocusWidget();
+  unselectItem();
   item->setSelected();
   item->setFocus();
 

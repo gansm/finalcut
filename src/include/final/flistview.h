@@ -295,8 +295,7 @@ class FListView : public FWidget
     FListViewItem*       getCurrentItem();
 
     // Mutators
-    virtual void         setGeometry ( int, int
-                                     , std::size_t, std::size_t
+    virtual void         setGeometry ( const FPoint&, const FSize&
                                      , bool = true ) override;
     void                 setColumnAlignment (int, fc::text_alignment);
     void                 setColumnText (int, const FString&);
@@ -315,6 +314,7 @@ class FListView : public FWidget
 
     // Methods
     virtual int          addColumn (const FString&, int = USE_MAX_SIZE);
+    virtual void         hide() override;
     FObjectIterator      insert (FListViewItem*);
     FObjectIterator      insert (FListViewItem*, FObjectIterator);
     FObjectIterator      insert ( const FStringList&
@@ -324,13 +324,27 @@ class FListView : public FWidget
     FObjectIterator      insert ( const FStringList&
                                 , FDataPtr
                                 , FObjectIterator );
-    FObjectIterator      insert ( const std::vector<uInt64>&
+    template <typename T>
+    FObjectIterator      insert ( const std::initializer_list<T>&
                                 , FDataPtr = nullptr );
-    FObjectIterator      insert ( const std::vector<uInt64>&
+    template <typename T>
+    FObjectIterator      insert ( const std::initializer_list<T>&
                                 , FObjectIterator );
-    FObjectIterator      insert ( const std::vector<uInt64>&
+    template <typename T>
+    FObjectIterator      insert ( const std::initializer_list<T>&
                                 , FDataPtr
                                 , FObjectIterator );
+    template <typename ColT>
+    FObjectIterator      insert ( const std::vector<ColT>&
+                                , FDataPtr = nullptr );
+    template <typename ColT>
+    FObjectIterator      insert ( const std::vector<ColT>&
+                                , FObjectIterator );
+    template <typename ColT>
+    FObjectIterator      insert ( const std::vector<ColT>&
+                                , FDataPtr
+                                , FObjectIterator );
+
     FObjectIterator      beginOfList();
     FObjectIterator      endOfList();
     virtual void         sort();
@@ -360,12 +374,20 @@ class FListView : public FWidget
     typedef std::vector<Header> headerItems;
     typedef std::vector<fc::sorting_type> sortTypes;
     typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
+    typedef void (FListView::*FListViewCallback)(FWidget*, FDataPtr);
 
     // Constants
     static constexpr int USE_MAX_SIZE = -1;
 
+    // Inquiry
+    bool                 isHorizontallyScrollable();
+    bool                 isVerticallyScrollable();
+
     // Methods
     void                 init();
+    void                 initScrollbar ( FScrollbarPtr&
+                                       , fc::orientation
+                                       , FListViewCallback );
     template <typename Compare>
     void                 sort (Compare);
     std::size_t          getAlignOffset ( fc::text_alignment
@@ -537,15 +559,62 @@ inline FObject::FObjectIterator
 { return insert (cols, 0, parent_iter); }
 
 //----------------------------------------------------------------------
+template<typename T>
 inline FObject::FObjectIterator
-    FListView::insert (const std::vector<uInt64>& cols, FDataPtr d)
+    FListView::insert (const std::initializer_list<T>& list, FDataPtr d)
+{ return insert (list, d, root); }
+
+//----------------------------------------------------------------------
+template<typename T>
+inline FObject::FObjectIterator
+    FListView::insert ( const std::initializer_list<T>& list
+                      , FObjectIterator parent_iter )
+{ return insert (list, 0, parent_iter); }
+
+//----------------------------------------------------------------------
+template<typename T>
+FObject::FObjectIterator
+    FListView::insert ( const std::initializer_list<T>& list
+                      , FDataPtr d
+                      , FObjectIterator parent_iter )
+{
+  FStringList str_cols;
+
+  for (auto& col : list)
+    str_cols.push_back (FString() << col);
+
+  auto item_iter = insert (str_cols, d, parent_iter);
+  return item_iter;
+}
+
+//----------------------------------------------------------------------
+template <typename ColT>
+inline FObject::FObjectIterator
+    FListView::insert (const std::vector<ColT>& cols, FDataPtr d)
 { return insert (cols, d, root); }
 
 //----------------------------------------------------------------------
+template <typename ColT>
 inline FObject::FObjectIterator
-    FListView::insert ( const std::vector<uInt64>& cols
+    FListView::insert ( const std::vector<ColT>& cols
                       , FObjectIterator parent_iter )
 { return insert (cols, 0, parent_iter); }
+
+//----------------------------------------------------------------------
+template <typename ColT>
+FObject::FObjectIterator
+    FListView::insert ( const std::vector<ColT>& cols
+                      , FDataPtr d
+                      , FObjectIterator parent_iter )
+{
+  FStringList str_cols;
+
+  for (auto& col : cols)
+    str_cols.push_back (FString() << col);
+
+  auto item_iter = insert (str_cols, d, parent_iter);
+  return item_iter;
+}
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator FListView::beginOfList()
@@ -554,6 +623,14 @@ inline FObject::FObjectIterator FListView::beginOfList()
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator FListView::endOfList()
 { return itemlist.end(); }
+
+//----------------------------------------------------------------------
+inline bool FListView::isHorizontallyScrollable()
+{ return bool( max_line_width > getClientWidth() ); }
+
+//----------------------------------------------------------------------
+inline bool FListView::isVerticallyScrollable()
+{ return bool( getCount() > getClientHeight() ); }
 
 //----------------------------------------------------------------------
 inline void FListView::scrollTo (const FPoint& pos)

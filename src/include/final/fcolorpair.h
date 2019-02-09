@@ -1,9 +1,9 @@
 /***********************************************************************
-* ftermcapquirks.h - Termcap quirks for some well-known terminals      *
+* fcolorpair.h - Foreground and background color of a character        *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2019 Markus Gans                                           *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -23,82 +23,74 @@
 /*  Standalone class
  *  ════════════════
  *
- * ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- * ▕ FTermcapQuirks ▏
- * ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ * ▕▔▔▔▔▔▔▔▔▔▔▔▔▏
+ * ▕ FClassName ▏
+ * ▕▁▁▁▁▁▁▁▁▁▁▁▁▏
  */
 
-#ifndef FTERMCAPQUIRKS_H
-#define FTERMCAPQUIRKS_H
+#ifndef FCOLORPAIR_H
+#define FCOLORPAIR_H
 
 #if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/fc.h"
-#include "final/fterm.h"
-#include "final/ftermcap.h"
-#include "final/ftermdata.h"
-#include "final/ftermdetection.h"
+//#include ...
 
 namespace finalcut
 {
 
 //----------------------------------------------------------------------
-// class FTermcapsQuirks
+// class FColorPair
 //----------------------------------------------------------------------
 
 #pragma pack(push)
 #pragma pack(1)
 
-class FTermcapQuirks final
+class FColorPair
 {
   public:
     // Constructors
-    FTermcapQuirks();
+    FColorPair (FColor fg = fc::Default, FColor bg = fc::Default)
+      : fg_color(fg)
+      , bg_color(bg)
+    { }
+
+    // Copy constructor
+    FColorPair (const FColorPair& pair)
+      : fg_color(pair.fg_color)
+      , bg_color(pair.bg_color)
+    { }
 
     // Destructor
-    virtual ~FTermcapQuirks();
+    ~FColorPair() = default;
+
+    // Assignment operator (=)
+    FColorPair& operator = (const FColorPair& pair)
+    {
+      fg_color = pair.fg_color;
+      bg_color = pair.bg_color;
+      return *this;
+    }
 
     // Accessor
-    virtual const char* getClassName() const;
-
-    // Mutator
-    static void setFTermData (FTermData*);
-    static void setFTermDetection (FTermDetection*);
+    const char* getClassName() const
+    { return "FColorPair"; }
 
     // Methods
-    static void terminalFixup();
-
-  private:
-    // Methods
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-    static void freebsd();
-#endif
-    static void cygwin();
-    static void linux();
-    static void xterm();
-    static void rxvt();
-    static void vte();
-    static void putty();
-    static void teraterm();
-    static void sunConsole();
-    static void screen();
-    static void general();
-    static void ecma48();
+    void swap()
+    {
+      std::swap (fg_color, bg_color);
+    }
 
     // Data Members
-    static FTermcap::tcap_map* tcap;
-    static FTermData*          fterm_data;
-    static FTermDetection*     term_detection;
+    FColor fg_color;  // Foreground color
+    FColor bg_color;  // Background color
 };
 #pragma pack(pop)
 
-// FTermcapQuirks inline functions
-//----------------------------------------------------------------------
-inline const char* FTermcapQuirks::getClassName() const
-{ return "FTermcapQuirks"; }
-
 }  // namespace finalcut
 
-#endif  // FTERMCAPQUIRKS_H
+#endif  // FCOLORPAIR_H
+
+

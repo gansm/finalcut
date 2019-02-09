@@ -1,5 +1,5 @@
 /***********************************************************************
-* fcheckbox.cpp - Widget FCheckBox                                     *
+* fsize.cpp - Height and width of a two-dimensional surface            *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
@@ -20,94 +20,91 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include "final/fcheckbox.h"
+#include "final/fsize.h"
 
 namespace finalcut
 {
 
 //----------------------------------------------------------------------
-// class FCheckBox
+// class FSize
 //----------------------------------------------------------------------
 
-// constructor and destructor
-//----------------------------------------------------------------------
-FCheckBox::FCheckBox(FWidget* parent)
-  : FToggleButton(parent)
-{
-  init();
-}
-
-//----------------------------------------------------------------------
-FCheckBox::FCheckBox (const FString& txt, FWidget* parent)
-  : FToggleButton(txt, parent)
-{
-  init();
-}
-
-//----------------------------------------------------------------------
-FCheckBox::~FCheckBox()  // destructor
+FSize::~FSize()  // destructor
 { }
 
-
-// private methods of FCheckBox
+// public methods of FSize
 //----------------------------------------------------------------------
-void FCheckBox::init()
+FSize& FSize::operator = (const FSize& s)
 {
-  label_offset_pos = 4;
-  button_width = 4;
-  setVisibleCursor();
+  width = s.width;
+  height = s.height;
+  return *this;
 }
 
 //----------------------------------------------------------------------
-void FCheckBox::draw()
+FSize& FSize::operator += (const FSize& s)
 {
-  drawCheckButton();
-  drawLabel();
-  FToggleButton::draw();
+  std::size_t max = std::numeric_limits<std::size_t>::max();
+  width = ( width < max - s.width) ? width + s.width : max;
+  height = ( height < max - s.height) ? height + s.height : max;
+  return *this;
 }
 
 //----------------------------------------------------------------------
-void FCheckBox::drawCheckButton()
+FSize& FSize::operator -= (const FSize& s)
 {
-  if ( ! isVisible() )
-    return;
+  width = ( width >= s.width ) ? width - s.width : 0;
+  height = ( height >= s.height ) ? height - s.height : 0;
+  return *this;
+}
 
-  print() << FPoint(1, 1);
-  setColor();
+//----------------------------------------------------------------------
+void FSize::setWidth (std::size_t w)
+{
+  width = w;
+}
 
-  if ( isMonochron() )
-  {
-    if ( hasFocus() )
-      setReverse(false);
-    else
-      setReverse(true);
-  }
+//----------------------------------------------------------------------
+void FSize::setHeight (std::size_t h)
+{
+  height = h;
+}
 
-  if ( checked )
-  {
-    if ( isNewFont() )
-      print (CHECKBOX_ON);
-    else
-    {
-      print ('[');
-      print (fc::Times);  // Times ×
-      print (']');
-    }
-  }
-  else
-  {
-    if ( isNewFont() )
-      print (CHECKBOX);
-    else
-    {
-      print ('[');
-      print (' ');
-      print (']');
-    }
-  }
+//----------------------------------------------------------------------
+void FSize::setSize (FSize s)
+{
+  width = s.width;
+  height = s.height;
+}
 
-  if ( isMonochron() )
-    setReverse(false);
+//----------------------------------------------------------------------
+void FSize::setSize (std::size_t w, std::size_t h)
+{
+  width = w;
+  height = h;
+}
+
+//----------------------------------------------------------------------
+bool FSize::isEmpty() const
+{
+  return width == 0 && height == 0;
+}
+
+//----------------------------------------------------------------------
+std::ostream& operator << (std::ostream& outstr, const FSize& s)
+{
+  outstr << s.width << " " << s.height;
+  return outstr;
+}
+
+//----------------------------------------------------------------------
+std::istream& operator >> (std::istream& instr, FSize& s)
+{
+  std::size_t w, h;
+  instr >> w;
+  instr >> h;
+  s.setSize (w, h);
+  return instr;
 }
 
 }  // namespace finalcut

@@ -134,6 +134,22 @@ bool FTerm::isCursorHideable()
 }
 
 //----------------------------------------------------------------------
+bool FTerm::canChangeColorPalette()
+{
+  if ( isCygwinTerminal()
+    || isKdeTerminal()
+    || isTeraTerm()
+    || isMltermTerminal()
+    || isNetBSDTerm()
+    || isOpenBSDTerm()
+    || isSunTerminal()
+    || isAnsiTerminal() )
+  return false;
+
+  return FTermcap::can_change_color_palette;
+}
+
+//----------------------------------------------------------------------
 void FTerm::setTermType (const char term_name[])
 {
   data->setTermType(term_name);
@@ -511,11 +527,11 @@ void FTerm::detectTermSize()
 }
 
 //----------------------------------------------------------------------
-void FTerm::setTermSize (std::size_t width, std::size_t height)
+void FTerm::setTermSize (const FSize& size)
 {
-  // Set xterm size to {width} x {height}
+  // Set xterm size
 
-  xterm->setTermSize (width, height);
+  xterm->setTermSize (size);
 }
 
 //----------------------------------------------------------------------
@@ -1095,6 +1111,7 @@ void FTerm::init_cygwin_charmap()
   if ( ! isCygwinTerminal() )
     return;
 
+  // PC encoding changes
   for (std::size_t i = 0; i <= fc::lastCharItem; i++ )
   {
     if ( fc::character[i][fc::UTF8] == fc::BlackUpPointingTriangle )  // ▲
@@ -1114,6 +1131,17 @@ void FTerm::init_cygwin_charmap()
       || fc::character[i][fc::UTF8] == fc::SquareRoot )  // SquareRoot √
       fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
   }
+
+  // General encoding changes
+  characterSub& sub_map = data->getCharSubstitutionMap();
+  sub_map[L'•'] = L'*';
+  sub_map[L'●'] = L'*';
+  sub_map[L'◘'] = L'*';
+  sub_map[L'○'] = L'*';
+  sub_map[L'◙'] = L'*';
+  sub_map[L'♪'] = L'♫';
+  sub_map[L'√'] = L'x';
+  sub_map[L'ˣ'] = L'`';
 }
 
 //----------------------------------------------------------------------
@@ -1485,22 +1513,6 @@ inline bool FTerm::hasNoFontSettingOption()
     return true;
 
   return false;
-}
-
-//----------------------------------------------------------------------
-inline bool FTerm::canChangeColorPalette()
-{
-  if ( isCygwinTerminal()
-    || isKdeTerminal()
-    || isTeraTerm()
-    || isMltermTerminal()
-    || isNetBSDTerm()
-    || isOpenBSDTerm()
-    || isSunTerminal()
-    || isAnsiTerminal() )
-  return false;
-
-  return FTermcap::can_change_color_palette;
 }
 
 //----------------------------------------------------------------------

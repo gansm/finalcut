@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+e Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -73,7 +73,7 @@ void FRadioButton::drawRadioButton()
   if ( ! isVisible() )
     return;
 
-  setPrintPos (1, 1);
+  print() << FPoint(1, 1);
   setColor();
 
   if ( isMonochron() )

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+e Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -185,8 +185,7 @@ class FListBox : public FWidget
     void                showInsideBrackets (std::size_t, fc::brackets_type);
     void                showNoBrackets (std::size_t);
     void                showNoBrackets (listBoxItems::iterator);
-    virtual void        setGeometry ( int, int
-                                    , std::size_t, std::size_t
+    virtual void        setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     void                setMultiSelection (bool);
     void                setMultiSelection ();
@@ -211,6 +210,11 @@ class FListBox : public FWidget
     template <typename Container, typename LazyConverter>
     void                insert (Container, LazyConverter);
     void                insert (FListBoxItem);
+    template <typename T>
+    void                insert ( const std::initializer_list<T>& list
+                               , fc::brackets_type = fc::NoBrackets
+                               , bool = false
+                               , FDataPtr = nullptr );
     template <typename ItemT>
     void                insert ( const ItemT&
                                , fc::brackets_type = fc::NoBrackets
@@ -238,6 +242,7 @@ class FListBox : public FWidget
   private:
     // Typedef
     typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
+    typedef void (FListBox::*FListBoxCallback)(FWidget*, FDataPtr);
 
     // Enumeration
     enum convert_type
@@ -250,8 +255,15 @@ class FListBox : public FWidget
     // Accessors
     static FString&     getString (listBoxItems::iterator);
 
+    // Inquiry
+    bool                isHorizontallyScrollable();
+    bool                isVerticallyScrollable();
+
     // Methods
     void                init();
+    void                initScrollbar ( FScrollbarPtr&
+                                      , fc::orientation
+                                      , FListBoxCallback );
     virtual void        draw() override;
     void                drawHeadline();
     void                drawList();
@@ -490,6 +502,22 @@ void FListBox::insert (Container container, LazyConverter convert)
 }
 
 //----------------------------------------------------------------------
+template <typename T>
+void FListBox::insert ( const std::initializer_list<T>& list
+                      , fc::brackets_type b
+                      , bool s
+                      , FDataPtr d )
+{
+  for (auto& item : list)
+  {
+    FListBoxItem listItem (FString() << item, d);
+    listItem.brackets = b;
+    listItem.selected = s;
+    insert (listItem);
+  }
+}
+
+//----------------------------------------------------------------------
 template <typename ItemT>
 void FListBox::insert ( const ItemT& item
                       , fc::brackets_type b
@@ -501,6 +529,14 @@ void FListBox::insert ( const ItemT& item
   listItem.selected = s;
   insert (listItem);
 }
+
+//----------------------------------------------------------------------
+inline bool FListBox::isHorizontallyScrollable()
+{ return bool( max_line_width >= getClientWidth() - 1 ); }
+
+//----------------------------------------------------------------------
+inline bool FListBox::isVerticallyScrollable()
+{ return bool( getCount() > getClientHeight() ); }
 
 //----------------------------------------------------------------------
 inline FListBox::listBoxItems::iterator \

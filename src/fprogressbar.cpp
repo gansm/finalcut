@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -56,24 +56,23 @@ void FProgressbar::setPercentage (std::size_t percentage_value)
   else
     percentage = percentage_value;
 
-  if ( isVisible() )
+  if ( isShown() )
   {
-    drawPercentage();
-    drawBar();
+    drawProgressLabel();
+    drawProgressBar();
   }
 
   updateTerminal();
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::setGeometry ( int x, int y
-                               , std::size_t w, std::size_t h
+void FProgressbar::setGeometry ( const FPoint& pos, const FSize& size
                                , bool adjust )
 {
   // Set the progress bar geometry
 
-  FWidget::setGeometry (x, y, w, h, adjust);
-  bar_length = w;
+  FWidget::setGeometry (pos, size, adjust);
+  bar_length = size.getWidth();
 }
 
 //----------------------------------------------------------------------
@@ -84,12 +83,12 @@ bool FProgressbar::setShadow (bool enable)
     && getEncoding() != fc::ASCII )
   {
     flags.shadow = true;
-    setShadowSize(1, 1);
+    setShadowSize(FSize(1, 1));
   }
   else
   {
     flags.shadow = false;
-    setShadowSize(0, 0);
+    setShadowSize(FSize(0, 0));
   }
 
   return enable;
@@ -98,40 +97,11 @@ bool FProgressbar::setShadow (bool enable)
 //----------------------------------------------------------------------
 void FProgressbar::hide()
 {
-  FColor fg, bg;
-  auto parent_widget = getParentWidget();
-
   FWidget::hide();
-
-  if ( parent_widget )
-  {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
-  }
-  else
-  {
-    fg = wc.dialog_fg;
-    bg = wc.dialog_bg;
-  }
-
-  setColor (fg, bg);
-  std::size_t s = hasShadow() ? 1 : 0;
-  auto size = getWidth() + s;
-
-  if ( size == 0 )
-    return;
-
-  auto blank = createBlankArray(size + 1);
-
-  for (std::size_t y = 0; y < getHeight() + s; y++)
-  {
-    setPrintPos (1, 1 + int(y));
-    print (blank);
-  }
-
-  destroyBlankArray (blank);
-  setPrintPos (int(getWidth()) - 4, 0);
-  print ("     ");  // hide percentage
+  FSize shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
+  hideSize (getSize() + shadow);
+  print() << FPoint(int(getWidth()) - 4, 0)
+          << ("      ");  // hide percentage
 }
 
 //----------------------------------------------------------------------
@@ -139,10 +109,10 @@ void FProgressbar::reset()
 {
   percentage = NOT_SET;
 
-  if ( isVisible() )
+  if ( isShown() )
   {
-    drawPercentage();
-    drawBar();
+    drawProgressLabel();
+    drawProgressBar();
   }
 
   updateTerminal();
@@ -153,8 +123,8 @@ void FProgressbar::reset()
 //----------------------------------------------------------------------
 void FProgressbar::draw()
 {
-  drawPercentage();
-  drawBar();
+  drawProgressLabel();
+  drawProgressBar();
 
   if ( flags.shadow )
     drawShadow ();
@@ -163,7 +133,7 @@ void FProgressbar::draw()
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::drawPercentage()
+void FProgressbar::drawProgressLabel()
 {
   auto parent_widget = getParentWidget();
 
@@ -176,7 +146,7 @@ void FProgressbar::drawPercentage()
   if ( isMonochron() )
     setReverse(true);
 
-  setPrintPos (int(getWidth()) - 3, 0);
+  print() << FPoint(int(getWidth()) - 3, 0);
 
   if ( percentage > 100 )
     print ("--- %");
@@ -188,68 +158,74 @@ void FProgressbar::drawPercentage()
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::drawBar()
+void FProgressbar::drawProgressBar()
 {
-  std::size_t i = 0;
-  double length;
-  setPrintPos (1, 1);
-  setColor ( wc.progressbar_bg
-           , wc.progressbar_fg );
+  std::size_t len = 0;
+  print() << FPoint(1, 1)
+          << FColorPair(wc.progressbar_bg, wc.progressbar_fg);
 
-  if ( percentage == NOT_SET )
-    length = double(-0/100);
-  else
-    length = double(bar_length * percentage) / 100;
+  if ( percentage > 0 && percentage <= 100 )
+    len = drawProgressIndicator();
 
-  if ( isMonochron() )
-    setReverse(false);
-
-  for (; i < trunc(length); i++)
-    print (' ');
-
-  if ( isMonochron() )
-    setReverse(true);
-
-  if ( percentage > 0 && percentage <= 100 && trunc(length) < bar_length )
-  {
-    if ( round(length) > trunc(length) || getMaxColor() < 16 )
-    {
-      if ( isMonochron() )
-      {
-        setReverse(false);
-        print (' ');
-        setReverse(true);
-      }
-      else
-        print (' ');
-    }
-    else
-    {
-      setColor (wc.progressbar_fg, wc.progressbar_bg);
-      print (fc::LeftHalfBlock);  // ▌
-    }
-
-    i++;
-  }
-
-  setColor (wc.progressbar_fg, wc.progressbar_bg);
-
-  if ( getMaxColor() < 16 )
-  {
-    for (; i < bar_length; i++)
-      print (fc::MediumShade);  // ▒
-  }
-  else
-  {
-    for (; i < bar_length; i++)
-      print (' ');
-  }
+  drawProgressBackground(len);
 
   if ( isMonochron() )
     setReverse(false);
 
   updateTerminal();
   flush_out();
+}
+
+//----------------------------------------------------------------------
+std::size_t FProgressbar::drawProgressIndicator()
+{
+  // Draw the progress indicator
+
+  if ( isMonochron() )
+    setReverse(false);
+
+  double length = double(bar_length * percentage) / 100;
+  auto len = std::size_t(trunc(length));
+  print() << FString (len, L' ');
+
+  if ( isMonochron() )
+    setReverse(true);
+
+  if ( len >= bar_length )
+    return len;
+
+  if ( round(length) > len || getMaxColor() < 16 )
+  {
+    if ( isMonochron() )
+      setReverse(false);
+
+    print(' ');
+
+    if ( isMonochron() )
+      setReverse(true);
+  }
+  else
+  {
+    print() << FColorPair(wc.progressbar_fg, wc.progressbar_bg)
+            << fc::LeftHalfBlock;  // ▌
+  }
+
+  len++;
+  return len;
+}
+
+//----------------------------------------------------------------------
+void FProgressbar::drawProgressBackground (std::size_t len)
+{
+  // Draw the progress background
+
+  std::size_t bg_len = bar_length - len;
+  setColor (wc.progressbar_fg, wc.progressbar_bg);
+
+  if ( getMaxColor() < 16 )
+    print() << FString (bg_len, fc::MediumShade);  // ▒
+  else
+    print() << FString (bg_len, L' ');
 }
 
 }  // namespace finalcut

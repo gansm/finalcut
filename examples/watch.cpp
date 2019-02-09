@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -22,6 +22,9 @@
 
 #include <ctime>
 #include <final/final.h>
+
+using finalcut::FPoint;
+using finalcut::FSize;
 
 
 //----------------------------------------------------------------------
@@ -78,20 +81,20 @@ Watch::Watch (FWidget* parent)
 {
   setText ("Watch");
   int pw = int(getParentWidget()->getWidth());
-  setGeometry (1 + (pw - 22) / 2, 3, 22, 13);
+  setGeometry (FPoint(1 + (pw - 22) / 2, 3), FSize(22, 13));
 
   // Labels
-  time_label.setGeometry(5, 2, 5, 1);
+  time_label.setGeometry(FPoint(5, 2), FSize(5, 1));
   time_label.setEmphasis();
-  time_str.setGeometry(10, 2, 8, 1);
+  time_str.setGeometry(FPoint(10, 2), FSize(8, 1));
 
   // Checkbox buttons
-  clock_sw.setGeometry(4, 4, 9, 1);
-  seconds_sw.setGeometry(2, 6, 11, 1);
+  clock_sw.setGeometry(FPoint(4, 4), FSize(9, 1));
+  seconds_sw.setGeometry(FPoint(2, 6), FSize(11, 1));
   sec = seconds_sw.setChecked();
 
   // Quit button
-  quit_btn.setGeometry(6, 9, 9, 1);
+  quit_btn.setGeometry(FPoint(6, 9), FSize(9, 1));
 
   // Connect switch signal "toggled" with a callback member function
   clock_sw.addCallback

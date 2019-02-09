@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -77,9 +77,7 @@ class FWindow : public FWidget
   public:
     // Using-declaration
     using FWidget::drawBorder;
-    using FWidget::setPos;
     using FWidget::setGeometry;
-    using FWidget::move;
 
     // Constructor
     explicit FWindow (FWidget* = nullptr);
@@ -137,14 +135,13 @@ class FWindow : public FWidget
     virtual void        hide() override;
     virtual void        setX (int, bool = true) override;
     virtual void        setY (int, bool = true) override;
-    virtual void        setPos (int, int, bool = true) override;
+    virtual void        setPos (const FPoint&, bool = true) override;
     virtual void        setWidth (std::size_t, bool = true) override;
     virtual void        setHeight (std::size_t, bool = true) override;
-    virtual void        setSize (std::size_t, std::size_t, bool = true) override;
-    virtual void        setGeometry ( int, int
-                                    , std::size_t, std::size_t
+    virtual void        setSize (const FSize&, bool = true) override;
+    virtual void        setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
-    virtual void        move (int, int) override;
+    virtual void        move (const FPoint&) override;
     static FWindow*     getWindowWidgetAt (const FPoint&);
     static FWindow*     getWindowWidgetAt (int, int);
     static void         addWindow (FWidget*);
@@ -157,7 +154,7 @@ class FWindow : public FWidget
     bool                zoomWindow ();
     static void         switchToPrevWindow (FWidget*);
     static bool         activatePrevWindow();
-    virtual void        setShadowSize (int, int) override;
+    virtual void        setShadowSize (const FSize&) override;
 
   protected:
     // Method

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -37,12 +37,12 @@ FScrollbar::FScrollbar(FWidget* parent)
   : FWidget(parent)
 {
   // The default scrollbar orientation is vertical
-  setGeometry(1, 1, 1, length, false);
+  setGeometry(FPoint(1, 1), FSize(1, length), false);
   init();
 }
 
 //----------------------------------------------------------------------
-FScrollbar::FScrollbar(int o, FWidget* parent)
+FScrollbar::FScrollbar(fc::orientation o, FWidget* parent)
   : FWidget(parent)
 {
   setOrientation (o);
@@ -124,7 +124,7 @@ void FScrollbar::setPageSize (int document_size, int page_size)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::setOrientation (int o)
+void FScrollbar::setOrientation (fc::orientation o)
 {
   std::size_t nf = 0;
   length = ( getHeight() > getWidth() ) ? getHeight() : getWidth();
@@ -148,15 +148,16 @@ void FScrollbar::setOrientation (int o)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::setGeometry ( int x, int y
-                             , std::size_t w, std::size_t h
+void FScrollbar::setGeometry ( const FPoint& pos, const FSize& size
                              , bool adjust )
 {
   // Set the scrollbar geometry
 
-  FWidget::setGeometry (x, y, w, h, adjust);
+  FWidget::setGeometry (pos, size, adjust);
 
   std::size_t nf = 0;
+  std::size_t w = size.getWidth();
+  std::size_t h = size.getHeight();
   length = ( h > w ) ? h : w;
 
   if ( bar_orientation == fc::vertical )
@@ -188,7 +189,8 @@ void FScrollbar::resize()
 //----------------------------------------------------------------------
 void FScrollbar::redraw()
 {
-  draw();
+  if ( isShown() )
+    draw();
 }
 
 //----------------------------------------------------------------------
@@ -238,7 +240,7 @@ void FScrollbar::drawVerticalBar()
 
   for (z = 1; z <= slider_pos; z++)
   {
-    setPrintPos (1, 1 + z);
+    print() << FPoint(1, 1 + z);
 
     if ( isNewFont() )
     {
@@ -261,7 +263,7 @@ void FScrollbar::drawVerticalBar()
 
   for (z = 1; z <= int(slider_length); z++)
   {
-    setPrintPos (1, 1 + slider_pos + z);
+    print() << FPoint(1, 1 + slider_pos + z);
 
     if ( isNewFont() )
       print (' ');
@@ -276,7 +278,7 @@ void FScrollbar::drawVerticalBar()
 
   for (z = slider_pos + int(slider_length) + 1; z <= int(bar_length); z++)
   {
-    setPrintPos (1, 1 + z);
+    print() << FPoint(1, 1 + z);
 
     if ( isNewFont() )
     {
@@ -303,9 +305,9 @@ void FScrollbar::drawHorizontalBar()
   setColor (wc.scrollbar_fg, wc.scrollbar_bg);
 
   if ( isNewFont() )
-    setPrintPos (3, 1);
+    print() << FPoint(3, 1);
   else
-    setPrintPos (2, 1);
+    print() << FPoint(2, 1);
 
   for (z = 0; z < slider_pos; z++)
   {
@@ -348,6 +350,9 @@ void FScrollbar::drawHorizontalBar()
 //----------------------------------------------------------------------
 void FScrollbar::drawBar()
 {
+  if ( ! isShown() )
+    return;
+
   if ( slider_pos == current_slider_pos || length < 3 )
     return;
 
@@ -564,7 +569,7 @@ void FScrollbar::init()
 {
   unsetFocusable();
   ignorePadding();
-  setGeometry(1, 1, getWidth(), getHeight());
+  setGeometry(FPoint(1, 1), FSize(getWidth(), getHeight()));
 }
 
 //----------------------------------------------------------------------
@@ -585,43 +590,43 @@ void FScrollbar::drawButtons()
 
   if ( isNewFont() )
   {
-    setPrintPos (1, 1);
+    print() << FPoint(1, 1);
 
     if ( bar_orientation == fc::vertical )
     {
-      print (fc::NF_rev_up_arrow1);
-      print (fc::NF_rev_up_arrow2);
-      setPrintPos (1, int(length));
-      print (fc::NF_rev_down_arrow1);
-      print (fc::NF_rev_down_arrow2);
+      print() << fc::NF_rev_up_arrow1
+              << fc::NF_rev_up_arrow2
+              << FPoint(1, int(length))
+              << fc::NF_rev_down_arrow1
+              << fc::NF_rev_down_arrow2;
     }
     else  // horizontal
     {
-      print (fc::NF_rev_left_arrow1);
-      print (fc::NF_rev_left_arrow2);
-      setPrintPos (int(length) - 1, 1);
-      print (fc::NF_rev_right_arrow1);
-      print (fc::NF_rev_right_arrow2);
+      print() << fc::NF_rev_left_arrow1
+              << fc::NF_rev_left_arrow2
+              << FPoint(int(length) - 1, 1)
+              << fc::NF_rev_right_arrow1
+              << fc::NF_rev_right_arrow2;
     }
   }
   else
   {
-    setPrintPos (1, 1);
+    print() << FPoint(1, 1);
 
     if ( isMonochron() )
       setReverse(true);
 
     if ( bar_orientation == fc::vertical )
     {
-      print (fc::BlackUpPointingTriangle);    // ▲
-      setPrintPos (1, int(length));
-      print (fc::BlackDownPointingTriangle);  // ▼
+      print() << fc::BlackUpPointingTriangle     // ▲
+              << FPoint(1, int(length))
+              << fc::BlackDownPointingTriangle;  // ▼
     }
     else  // horizontal
     {
-      print (fc::BlackLeftPointingPointer);   // ◄
-      setPrintPos (int(length), 1);
-      print (fc::BlackRightPointingPointer);  // ►
+      print() << fc::BlackLeftPointingPointer    // ◄
+              << FPoint(int(length), 1)
+              << fc::BlackRightPointingPointer;  // ►
     }
 
     if ( isMonochron() )

@@ -73,8 +73,6 @@ class FScrollView : public FWidget
   public:
     // Using-declaration
     using FWidget::setGeometry;
-    using FWidget::setPrintPos;
-    using FWidget::setPos;
 
     // Constructor
     explicit FScrollView (FWidget* = nullptr);
@@ -92,8 +90,10 @@ class FScrollView : public FWidget
     virtual const char* getClassName() const override;
     std::size_t         getViewportWidth() const;
     std::size_t         getViewportHeight() const;
+    const FSize         getViewportSize();
     std::size_t         getScrollWidth() const;
     std::size_t         getScrollHeight() const;
+    const FSize         getScrollSize() const;
     const FPoint        getScrollPos() const;
     int                 getScrollX() const;
     int                 getScrollY() const;
@@ -101,18 +101,17 @@ class FScrollView : public FWidget
     // Mutator
     virtual void        setScrollWidth (std::size_t);
     virtual void        setScrollHeight (std::size_t);
-    virtual void        setScrollSize (std::size_t, std::size_t);
+    virtual void        setScrollSize (const FSize&);
     virtual void        setX (int, bool = true) override;
     virtual void        setY (int, bool = true) override;
-    virtual void        setPos (int, int, bool = true) override;
+    virtual void        setPos (const FPoint&, bool = true) override;
     virtual void        setWidth (std::size_t, bool = true) override;
     virtual void        setHeight (std::size_t, bool = true) override;
-    virtual void        setSize (std::size_t, std::size_t, bool = true) override;
-    virtual void        setGeometry ( int, int
-                                    , std::size_t, std::size_t
+    virtual void        setSize (const FSize&, bool = true) override;
+    virtual void        setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
-    void                setCursorPos (int, int);
-    void                setPrintPos (int, int);
+    void                setCursorPos (const FPoint&);
+    void                setPrintPos (const FPoint&);
     bool                setViewportPrint (bool);
     bool                setViewportPrint();
     bool                unsetViewportPrint();
@@ -156,6 +155,7 @@ class FScrollView : public FWidget
   private:
     // Typedef
     typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
+    typedef void (FScrollView::*FScrollViewCallback)(FWidget*, FDataPtr);
 
     // Constants
     static constexpr int vertical_border_spacing = 2;
@@ -166,15 +166,13 @@ class FScrollView : public FWidget
 
     // Methods
     void                init (FWidget*);
-    void                init_scrollbar();
+    void                initScrollbar ( FScrollbarPtr&
+                                      , fc::orientation
+                                      , FScrollViewCallback );
     void                calculateScrollbarPos();
     void                setHorizontalScrollBarVisibility();
     void                setVerticalScrollBarVisibility();
     void                setViewportCursor();
-    void                redrawHBar();
-    void                redrawVBar();
-    void                drawHBar();
-    void                drawVBar();
 
     // Callback methods
     void                cb_VBarChange (FWidget*, FDataPtr);
@@ -210,12 +208,20 @@ inline std::size_t FScrollView::getViewportHeight() const
 { return getHeight() - horizontal_border_spacing; }
 
 //----------------------------------------------------------------------
+inline const FSize FScrollView::getViewportSize()
+{ return FSize(getViewportWidth(), getViewportHeight()); }
+
+//----------------------------------------------------------------------
 inline std::size_t FScrollView::getScrollWidth() const
 { return scroll_geometry.getWidth(); }
 
 //----------------------------------------------------------------------
 inline std::size_t FScrollView::getScrollHeight() const
 { return scroll_geometry.getHeight(); }
+
+//----------------------------------------------------------------------
+inline const FSize FScrollView::getScrollSize() const
+{ return scroll_geometry.getSize(); }
 
 //----------------------------------------------------------------------
 inline const FPoint FScrollView::getScrollPos() const

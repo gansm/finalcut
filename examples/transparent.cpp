@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2018 Markus Gans                                      *
+* Copyright 2016-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -21,6 +21,9 @@
 ***********************************************************************/
 
 #include <final/final.h>
+
+using finalcut::FPoint;
+using finalcut::FSize;
 
 
 //----------------------------------------------------------------------
@@ -108,8 +111,7 @@ void Transparent::draw()
 
   for (int n = 1; n <= int(getClientHeight()); n++)
   {
-    setPrintPos (2, 2 + n);
-    print(line);
+    print() << FPoint(2, 2 + n) << line;
   }
 
   if ( type == shadow )
@@ -131,10 +133,8 @@ void Transparent::onKeyPress (finalcut::FKeyEvent* ev)
 
   if ( ev->key() == 'q' && getParentWidget() )
   {
-    if ( getParentWidget()->close() )
-      ev->accept();
-    else
-      ev->ignore();
+    getParentWidget()->close();
+    ev->accept();
   }
   else
     finalcut::FDialog::onKeyPress(ev);
@@ -208,23 +208,22 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   // is not required in this class and would result in a double free.
   transpwin = new Transparent(this);
   transpwin->setText("transparent");
-  transpwin->setGeometry (6, 3, 29, 12);
+  transpwin->setGeometry (FPoint(6, 3), FSize(29, 12));
   transpwin->unsetTransparentShadow();
 
   shadowwin = new Transparent(this, Transparent::shadow);
   shadowwin->setText("shadow");
-  shadowwin->setGeometry (46, 11, 29, 12);
+  shadowwin->setGeometry (FPoint(46, 11), FSize(29, 12));
   shadowwin->unsetTransparentShadow();
 
   ibg = new Transparent(this, Transparent::inherit_background);
   ibg->setText("inherit background");
-  ibg->setGeometry (42, 3, 29, 7);
+  ibg->setGeometry (FPoint(42, 3), FSize(29, 7));
   ibg->unsetTransparentShadow();
 
   // Statusbar at the bottom
   status_bar.setMessage("Press Q to quit");
 
-  addAccelerator('q');
   unsetTransparentShadow();
   activateDialog();
 }
@@ -242,10 +241,8 @@ void MainWindow::draw()
     setReverse(true);
 
   setColor();
-  setPrintPos (2, 4);
-  print(line1);
-  setPrintPos (2, 5);
-  print(line2);
+  print() << FPoint(2, 4) << line1;
+  print() << FPoint(2, 5) << line2;
 
   if ( isMonochron() )
     setReverse(false);
@@ -290,7 +287,7 @@ int main (int argc, char* argv[])
   // Create main dialog object
   MainWindow main_dlg (&app);
   main_dlg.setText ("non-transparent");
-  main_dlg.setGeometry (8, 16, 26, 7);
+  main_dlg.setGeometry (FPoint(8, 16), FSize(26, 7));
 
   // Set dialog main_dlg as main widget
   app.setMainWidget (&main_dlg);

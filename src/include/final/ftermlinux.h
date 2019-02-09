@@ -66,7 +66,7 @@ namespace finalcut
 #pragma pack(push)
 #pragma pack(1)
 
-class FTermLinux
+class FTermLinux final
 {
   public:
     // Constructors
