@@ -57,6 +57,7 @@ class FTermBuffer
   public:
     // Typedef
     typedef FOptiAttr::charData  charData;
+    typedef std::vector<charData>  charDataVector;
 
     // Constructor
     FTermBuffer() = default;
@@ -65,17 +66,20 @@ class FTermBuffer
     virtual ~FTermBuffer();
 
     // Overloaded operators
-    template <typename type>
-    FTermBuffer& operator << (const type&);
+    template <typename typeT>
+    FTermBuffer& operator << (const typeT&);
+    FTermBuffer& operator << (const std::string&);
+    FTermBuffer& operator << (const std::wstring&);
     FTermBuffer& operator << (const FColorPair&);
 
     // Non-member operators
-    friend std::vector<charData>& operator << ( std::vector<charData>&
-                                              , const FTermBuffer& );
+    friend charDataVector& operator << ( charDataVector&
+                                       , const FTermBuffer& );
 
     // Accessors
     virtual const char*    getClassName() const;
     std::size_t            getLength() const;
+    const charDataVector&  getBuffer() const;
 
     // Inquiry
     bool                   isEmpty() const;
@@ -87,23 +91,38 @@ class FTermBuffer
     int                    write (wchar_t);
     void                   write (const FColorPair&);
     FTermBuffer&           write ();
-    std::vector<charData>  getBuffer();
 
   private:
-    std::vector<charData> data{};
+    charDataVector         data{};
 };
 #pragma pack(pop)
 
 
 // FTermBuffer inline functions
 //----------------------------------------------------------------------
-template <typename type>
-inline FTermBuffer& FTermBuffer::operator << (const type& s)
+template <typename typeT>
+inline FTermBuffer& FTermBuffer::operator << (const typeT& s)
 {
-  FString str(s);
   std::wostringstream outstream;
-  outstream << str;
-  write (outstream.str());
+  outstream << s;
+
+  if ( ! outstream.str().empty() )
+    write (outstream.str());
+
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FTermBuffer& FTermBuffer::operator << (const std::string& string)
+{
+  write (string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FTermBuffer& FTermBuffer::operator << (const std::wstring& wstring)
+{
+  write (wstring);
   return *this;
 }
 
@@ -123,6 +142,10 @@ inline std::size_t FTermBuffer::getLength() const
 { return data.size(); }
 
 //----------------------------------------------------------------------
+inline const FTermBuffer::charDataVector& FTermBuffer::getBuffer() const
+{ return data; }
+
+//----------------------------------------------------------------------
 inline bool FTermBuffer::isEmpty() const
 { return data.empty(); }
 
@@ -133,10 +156,6 @@ inline void FTermBuffer::clear()
 //----------------------------------------------------------------------
 inline FTermBuffer& FTermBuffer::write()
 { return *this; }
-
-//----------------------------------------------------------------------
-inline std::vector<FTermBuffer::charData> FTermBuffer::getBuffer()
-{ return data; }
 
 }  // namespace finalcut
 

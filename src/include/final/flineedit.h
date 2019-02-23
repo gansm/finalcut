@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -105,10 +105,16 @@ class FLineEdit : public FWidget
     // Accessors
     virtual const char* getClassName() const override;
     FString             getText() const;
+    std::size_t         getMaxLength() const;
+    std::size_t         getCursorPosition() const;
     int                 getLabelOrientation();
 
     // Mutators
     void                setText (const FString&);
+    void                setInputFilter (const FString&);
+    void                clearInputFilter();
+    void                setMaxLength (std::size_t);
+    void                setCursorPosition (std::size_t);
     void                setLabelText (const FString&);
     void                setLabelOrientation(const label_o);
     virtual bool        setEnable(bool) override;
@@ -167,6 +173,7 @@ class FLineEdit : public FWidget
     void                keyInsert();
     void                keyEnter();
     bool                keyInput (FKey);
+    wchar_t             characterFilter (const wchar_t);
     void                processActivate();
     void                processChanged();
 
@@ -175,12 +182,14 @@ class FLineEdit : public FWidget
     FString      label_text{""};
     FLabel*      label{};
     label_o      label_orientation{FLineEdit::label_left};
+    std::wstring input_filter{};
     dragScroll   drag_scroll{FLineEdit::noScroll};
     bool         scroll_timer{false};
     int          scroll_repeat{100};
     bool         insert_mode{true};
     std::size_t  cursor_pos{0};
     std::size_t  text_offset{0};
+    std::size_t  max_length{std::numeric_limits<std::size_t>::max()};
 };
 #pragma pack(pop)
 
@@ -195,8 +204,24 @@ inline FString FLineEdit::getText() const
 { return text; }
 
 //----------------------------------------------------------------------
+inline std::size_t FLineEdit::getMaxLength() const
+{ return max_length; }
+
+//----------------------------------------------------------------------
+inline std::size_t FLineEdit::getCursorPosition() const
+{ return cursor_pos; }
+
+//----------------------------------------------------------------------
 inline int FLineEdit::getLabelOrientation()
 { return int(label_orientation); }
+
+//----------------------------------------------------------------------
+inline void FLineEdit::setInputFilter (const FString& regex_string)
+{ input_filter = regex_string.wc_str(); }
+
+//----------------------------------------------------------------------
+inline void FLineEdit::clearInputFilter()
+{ input_filter.clear(); }
 
 //----------------------------------------------------------------------
 inline bool FLineEdit::setEnable()

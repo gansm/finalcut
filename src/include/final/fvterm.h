@@ -70,7 +70,9 @@ namespace finalcut
 {
 
 // class forward declaration
+class FTermBuffer;
 class FWidget;
+
 
 //----------------------------------------------------------------------
 // class FVTerm
@@ -130,8 +132,10 @@ class FVTerm
     FVTerm& operator = (const FVTerm&) = delete;
 
     // Overloaded operators
-    template <typename type>
-    FVTerm& operator << (const type&);
+    template <typename typeT>
+    FVTerm& operator << (const typeT&);
+    FVTerm& operator << (const std::string&);
+    FVTerm& operator << (const FTermBuffer&);
     FVTerm& operator << (const std::vector<charData>&);
     FVTerm& operator << (const FPoint&);
     FVTerm& operator << (const FColorPair&);
@@ -162,7 +166,7 @@ class FVTerm
     void                  showCursor();
     void                  setPrintCursor (const FPoint&);
     FColor                rgb2ColorIndex (uInt8, uInt8, uInt8);
-    void                  setColor (FColor, FColor);
+    static void           setColor (FColor, FColor);
     static void           setNormal();
 
     static bool           setBold (bool);
@@ -291,6 +295,8 @@ class FVTerm
     int                   printf (const FString, ...);
     int                   print (const FString&);
     int                   print (term_area*, const FString&);
+    int                   print (const FTermBuffer&);
+    int                   print (term_area*, const FTermBuffer&);
     int                   print (const std::vector<charData>&);
     int                   print (term_area*, const std::vector<charData>&);
     int                   print (wchar_t);
@@ -535,8 +541,8 @@ struct FVTerm::term_area  // define virtual terminal character properties
 
 // FVTerm inline functions
 //----------------------------------------------------------------------
-template <typename type>
-inline FVTerm& FVTerm::operator << (const type& s)
+template <typename typeT>
+inline FVTerm& FVTerm::operator << (const typeT& s)
 {
   std::wostringstream outstream;
   outstream << s;
@@ -544,6 +550,13 @@ inline FVTerm& FVTerm::operator << (const type& s)
   if ( ! outstream.str().empty() )
     print (outstream.str());
 
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FVTerm& FVTerm::operator << (const std::string& string)
+{
+  print (string);
   return *this;
 }
 

@@ -1,3 +1,9 @@
+2019-02-24  Markus Gans  <guru.mail@muenster.de>
+	* FLineEdit now has the ability to define a character input filter 
+	  via regular expression (regex)
+	* Now FLineEdit can define a maximum character length for the input
+	* The cursor position can now be set directly in FLineEdit
+
 2019-02-07  Markus Gans  <guru.mail@muenster.de>
 	* Add a "dynamic layout" Chapter into the first steps document
 

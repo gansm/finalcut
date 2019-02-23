@@ -44,7 +44,7 @@ FSize& FSize::operator = (const FSize& s)
 //----------------------------------------------------------------------
 FSize& FSize::operator += (const FSize& s)
 {
-  std::size_t max = std::numeric_limits<std::size_t>::max();
+  constexpr std::size_t max = std::numeric_limits<std::size_t>::max();
   width = ( width < max - s.width) ? width + s.width : max;
   height = ( height < max - s.height) ? height + s.height : max;
   return *this;

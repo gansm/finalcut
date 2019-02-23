@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -313,7 +313,7 @@ int main (int argc, char* argv[])
   // Pointer to the global virtual terminal object
   terminal = static_cast<finalcut::FVTerm*>(&TermApp);
 
-  finalcut::FTermcap::tcap_map* tcap = nullptr;
+  finalcut::FTermcap::tcap_map* tcap;
   tcap = finalcut::FTermcap::getTermcapMap();
 
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";

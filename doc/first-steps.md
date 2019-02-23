@@ -702,8 +702,8 @@ class dialogWidget : public FDialog
     {
       setText ("Dialog");
       setResizeable();
-      btn.setGeometry (FPoint(1, 1), FSize(12, 1), false);
-      line.setGeometry (FPoint(2, 3), FSize(12, 1), false);
+      button.setGeometry (FPoint(1, 1), FSize(12, 1), false);
+      input.setGeometry (FPoint(2, 3), FSize(12, 1), false);
       // Set dialog geometry and calling adjustSize()
       setGeometry (FPoint(25, 5), FSize(40, 12));
       setMinimumSize (FSize(25, 9));
@@ -727,12 +727,12 @@ class dialogWidget : public FDialog
 
     void adjustWidgets()
     {
-      auto bx = int(getWidth() - btn.getWidth() - 3);
+      auto bx = int(getWidth() - button.getWidth() - 3);
       auto by = int(getHeight() - 4);
-      btn.setPos (FPoint(bx, by), false);
-      line.setWidth (getWidth() - 4);
+      button.setPos (FPoint(bx, by), false);
+      input.setWidth (getWidth() - 4);
       auto ly = int(getHeight() / 2) - 1;
-      line.setY (ly, false);
+      input.setY (ly, false);
     }
 
     virtual void adjustSize() override
@@ -764,8 +764,8 @@ class dialogWidget : public FDialog
               << "top";
     }
 
-    FLineEdit line{"Middle", this};
-    FButton btn{"&Bottom", this};
+    FLineEdit input{"Middle", this};
+    FButton button{"&Bottom", this};
 };
 
 int main (int argc, char* argv[])

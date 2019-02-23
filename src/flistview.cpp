@@ -1611,10 +1611,7 @@ void FListView::drawListLine ( const FListViewItem* item
   {
     for (std::size_t col = 0; col < item->column_list.size(); )
     {
-      static constexpr std::size_t leading_space = 1;
-      static constexpr std::size_t checkbox_space = 4;
       static constexpr std::size_t ellipsis_length = 2;
-
       const auto& text = item->column_list[col];
       std::size_t width = std::size_t(header[col].width);
       std::size_t txt_length = text.getLength();
@@ -1626,6 +1623,7 @@ void FListView::drawListLine ( const FListViewItem* item
 
       if ( tree_view && col == 1 )
       {
+        static constexpr std::size_t checkbox_space = 4;
         width -= (indent + 1);
 
         if ( item->isCheckable() )
@@ -1639,6 +1637,7 @@ void FListView::drawListLine ( const FListViewItem* item
       if ( align_offset + txt_length <= width )
       {
         // Insert text and trailing space
+        static constexpr std::size_t leading_space = 1;
         line += text.left(width);
         line += FString ( leading_space + width
                         - align_offset - txt_length, L' ');

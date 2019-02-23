@@ -269,7 +269,7 @@ class MyDialog : public finalcut::FDialog
     MyDialog& operator = (const MyDialog&) = delete;
 
   private:
-    // Method
+    // Methods
     void initMenu();
     void initMenuCallbacks();
     void initFileMenuCallbacks();

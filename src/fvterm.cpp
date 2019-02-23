@@ -26,6 +26,7 @@
 
 #include "final/fapplication.h"
 #include "final/fterm.h"
+#include "final/ftermbuffer.h"
 #include "final/fvterm.h"
 #include "final/fwidget.h"
 #include "final/fwindow.h"
@@ -79,11 +80,17 @@ FVTerm::FVTerm (bool initialize, bool disable_alt_screen)
 FVTerm::~FVTerm()  // destructor
 {
   if ( init_object == this )
-  {
     finish();
-  }
 }
 
+
+// Overloaded operators
+//----------------------------------------------------------------------
+FVTerm& FVTerm::operator << (const FTermBuffer& term_buffer)
+{
+  print (term_buffer);
+  return *this;
+}
 
 // public methods of FVTerm
 //----------------------------------------------------------------------
@@ -317,12 +324,7 @@ int FVTerm::print (const FString& s)
   auto area = getPrintArea();
 
   if ( ! area )
-  {
-    if ( vdesktop )
-      area = vdesktop;
-    else
-      return -1;
-  }
+    return -1;
 
   return print (area, s);
 }
@@ -358,6 +360,27 @@ int FVTerm::print (term_area* area, const FString& s)
 }
 
 //----------------------------------------------------------------------
+int FVTerm::print (const FTermBuffer& term_buffer)
+{
+  if ( term_buffer.isEmpty() )
+    return -1;
+
+  auto area = getPrintArea();
+
+  if ( ! area )
+    return -1;
+
+  return print (area, term_buffer);
+}
+
+//----------------------------------------------------------------------
+int FVTerm::print (term_area* area, const FTermBuffer& term_buffer)
+{
+  const auto& term_string = term_buffer.getBuffer();
+  return print (area, term_string);
+}
+
+//----------------------------------------------------------------------
 int FVTerm::print (const std::vector<charData>& term_string)
 {
   if ( term_string.empty() )
@@ -366,12 +389,7 @@ int FVTerm::print (const std::vector<charData>& term_string)
   auto area = getPrintArea();
 
   if ( ! area )
-  {
-    if ( vdesktop )
-      area = vdesktop;
-    else
-      return -1;
-  }
+    return -1;
 
   return print (area, term_string);
 }
@@ -440,12 +458,7 @@ int FVTerm::print (wchar_t c)
   auto area = getPrintArea();
 
   if ( ! area )
-  {
-    if ( vdesktop )
-      area = vdesktop;
-    else
-      return -1;
-  }
+    return -1;
 
   return print (area, c);
 }
@@ -474,12 +487,7 @@ int FVTerm::print (charData& term_char)
   auto area = getPrintArea();
 
   if ( ! area )
-  {
-    if ( vdesktop )
-      area = vdesktop;
-    else
-      return -1;
-  }
+    return -1;
 
   return print (area, term_char);
 }

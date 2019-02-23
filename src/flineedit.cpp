@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <regex>
+
 #include "final/fapplication.h"
 #include "final/flineedit.h"
 #include "final/fstatusbar.h"
@@ -244,13 +246,41 @@ bool FLineEdit::setShadow (bool enable)
 //----------------------------------------------------------------------
 void FLineEdit::setText (const FString& txt)
 {
-  text_offset = 0;
-  cursor_pos = 0;
-
   if ( txt )
-    text = txt;
+  {
+    if ( txt.getLength() > max_length )
+      text = txt.left(max_length);
+    else
+      text = txt;
+  }
   else
     text = "";
+
+  keyEnd();
+}
+
+//----------------------------------------------------------------------
+void FLineEdit::setMaxLength (std::size_t max)
+{
+  max_length = max;
+
+  if ( text.getLength() > max_length )
+    text = text.left(max_length);
+
+  keyEnd();
+}
+
+//----------------------------------------------------------------------
+void FLineEdit::setCursorPosition (std::size_t pos)
+{
+  cursor_pos = pos;
+
+  if ( cursor_pos > text.getLength() )
+    keyEnd();
+  else if ( cursor_pos >= getWidth() - 1 )
+    text_offset = text.getLength() - getWidth() + 2;
+  else
+    text_offset = 0;
 }
 
 //----------------------------------------------------------------------
@@ -766,6 +796,8 @@ inline void FLineEdit::keyEnd()
 
   if ( cursor_pos >= getWidth() - 1 )
     text_offset = len - getWidth() + 2;
+  else
+    text_offset = 0;
 }
 
 //----------------------------------------------------------------------
@@ -792,11 +824,12 @@ inline void FLineEdit::keyBackspace()
   if ( text.getLength() > 0 && cursor_pos > 0 )
   {
     text.remove(cursor_pos - 1, 1);
-    processChanged();
     cursor_pos--;
 
     if ( text_offset > 0 )
       text_offset--;
+
+    processChanged();
   }
 }
 
@@ -820,39 +853,55 @@ inline void FLineEdit::keyEnter()
 //----------------------------------------------------------------------
 inline bool FLineEdit::keyInput (FKey key)
 {
+  if ( text.getLength() >= max_length )
+  {
+    beep();
+    return true;
+  }
+
   if ( key >= 0x20 && key <= 0x10fff )
   {
     std::size_t len = text.getLength();
+    wchar_t c = characterFilter(wchar_t(key));
 
-    if ( cursor_pos == len )
-    {
-      text += wchar_t(key);
-      processChanged();
-    }
+    if ( c == L'\0' )
+      return false;
+    else if ( cursor_pos == len )
+      text += c;
     else if ( len > 0 )
     {
       if ( insert_mode )
-        text.insert(wchar_t(key), cursor_pos);
+        text.insert(c, cursor_pos);
       else
-        text.overwrite(wchar_t(key), cursor_pos);
-
-      processChanged();
+        text.overwrite(c, cursor_pos);
     }
     else
-    {
-      text = wchar_t(key);
-      processChanged();
-    }
+      text = c;
 
     cursor_pos++;
 
     if ( cursor_pos >= getWidth() - 1 )
       text_offset++;
 
+    processChanged();
     return true;
   }
   else
     return false;
+}
+
+//----------------------------------------------------------------------
+inline wchar_t FLineEdit::characterFilter (const wchar_t c)
+{
+  if ( input_filter.empty() )
+    return c;
+
+  wchar_t character[2]{c, L'\0'};
+
+  if ( regex_match(character, std::wregex(input_filter)) )
+    return c;
+  else
+    return L'\0';
 }
 
 //----------------------------------------------------------------------

@@ -504,7 +504,6 @@ int FTermLinux::getFramebuffer_bpp()
 //----------------------------------------------------------------------
 bool FTermLinux::getScreenFont()
 {
-  static constexpr std::size_t data_size = 4 * 32 * 512;
   struct console_font_op font;
   int fd_tty = FTerm::getTTYFileDescriptor();
 
@@ -525,6 +524,7 @@ bool FTermLinux::getScreenFont()
   // initialize with 0
   try
   {
+    static constexpr std::size_t data_size = 4 * 32 * 512;
     font.data = new uChar[data_size]();
   }
   catch (const std::bad_alloc& ex)

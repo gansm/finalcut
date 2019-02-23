@@ -96,18 +96,14 @@ int FTermBuffer::write (wchar_t c)
 //----------------------------------------------------------------------
 void FTermBuffer::write (const FColorPair& pair)
 {
-  charData nc;  // next character
-  nc = FVTerm::getAttribute();
-  nc.fg_color = pair.fg_color;
-  nc.bg_color = pair.bg_color;
+  FVTerm::setColor(pair.fg_color, pair.bg_color);
 }
 
 
 // FTermBuffer non-member operators
 //----------------------------------------------------------------------
-std::vector<FTermBuffer::charData>& operator << \
-  ( std::vector<FTermBuffer::charData>& termString
-  , const FTermBuffer& buf )
+FTermBuffer::charDataVector& operator << ( FTermBuffer::charDataVector& termString
+                                         , const FTermBuffer& buf )
 {
   if ( ! buf.data.empty() )
     termString.assign(buf.data.begin(), buf.data.end());
