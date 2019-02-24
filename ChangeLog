@@ -3,6 +3,8 @@
 	  via regular expression (regex)
 	* Now FLineEdit can define a maximum character length for the input
 	* The cursor position can now be set directly in FLineEdit
+	* Added the 7-segment example to demonstrate the use of FTermBuffer
+	  and FLineEdit input filters
 
 2019-02-07  Markus Gans  <guru.mail@muenster.de>
 	* Add a "dynamic layout" Chapter into the first steps document

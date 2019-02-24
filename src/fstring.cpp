@@ -1091,7 +1091,7 @@ bool FString::operator == (const FString& s) const
   if ( ! (string || s.string) )
     return true;
 
-  if ( bool(string) != bool(s.string) )
+  if ( bool(string) != bool(s.string) || length != s.length )
     return false;
 
   return ( std::wcscmp(string, s.string) == 0 );
@@ -1103,7 +1103,7 @@ bool FString::operator != (const FString& s) const
   if ( ! (string || s.string) )
     return false;
 
-  if ( bool(string) != bool(s.string) )
+  if ( bool(string) != bool(s.string) || length != s.length )
     return true;
 
   return ( std::wcscmp(string, s.string) != 0 );
