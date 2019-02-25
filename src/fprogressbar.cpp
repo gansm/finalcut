@@ -161,8 +161,7 @@ void FProgressbar::drawProgressLabel()
 void FProgressbar::drawProgressBar()
 {
   std::size_t len = 0;
-  print() << FPoint(1, 1)
-          << FColorPair(wc.progressbar_bg, wc.progressbar_fg);
+  print() << FPoint(1, 1);
 
   if ( percentage > 0 && percentage <= 100 )
     len = drawProgressIndicator();
@@ -182,14 +181,12 @@ std::size_t FProgressbar::drawProgressIndicator()
   // Draw the progress indicator
 
   if ( isMonochron() )
-    setReverse(false);
+    setReverse(true);
 
   double length = double(bar_length * percentage) / 100;
   auto len = std::size_t(trunc(length));
-  print() << FString (len, L' ');
-
-  if ( isMonochron() )
-    setReverse(true);
+  print() << FColorPair (wc.progressbar_fg, wc.progressbar_fg)
+          << FString (len, fc::FullBlock);  // █
 
   if ( len >= bar_length )
     return len;
