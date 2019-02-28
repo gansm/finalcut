@@ -13,6 +13,7 @@ Table of Contents
 - [Signals and Callbacks](#signals-and-callbacks)
   - [Default signals](#the-final-cut-widgets-emit-the-following-default-signals)
 - [Callback function](#example-of-a-callback-function)
+- [Callback lambda expression](#example-of-an-lambda-expression-callback)
 - [Callback method](#example-of-a-callback-function)
 - [Custom signals](#send-custom-signals)
 - [Dynamic layout](#dynamic-layout)
@@ -479,6 +480,64 @@ g++ -O2 -lfinal callback-function.cpp -o callback-function
 ```
 &nbsp;
 
+### Example of an lambda expression callback: ###
+
+**File:** *callback-lambda.cpp*
+
+```cpp
+#include <final/final.h>
+
+using namespace finalcut;
+
+int main (int argc, char* argv[])
+{
+  FApplication app(argc, argv);
+  FDialog dialog(&app);
+  dialog.setText ("Lambda expression as callback");
+  dialog.setGeometry (FRect(25, 5, 45, 9));
+  FButton button ("&bottom", &dialog);
+  button.setGeometry (FPoint(15, 5), FSize(14, 1));
+
+  // Connect the button signal "clicked" with the lambda expression
+  button.addCallback
+  (
+    "clicked",
+    [] (FWidget* w, FDataPtr d)
+    {
+      FButton& button = *(static_cast<FButton*>(w));
+
+      if ( button.getY() != 2 )
+      {
+        button.setPos (FPoint(15, 2));
+        button.setText("&top");
+      }
+      else
+      {
+        button.setPos (FPoint(15, 5));
+        button.setText("&bottom");
+      }
+
+      static_cast<FDialog*>(d)->redraw();
+    },
+    &dialog
+  );
+
+  app.setMainWidget(&dialog);
+  dialog.show();
+  return app.exec();
+}
+```
+*(Note: You can close the dialog with the mouse, 
+<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+
+
+After entering the source code in *callback-lambda.cpp* you can compile
+the above program with gcc:
+```cpp
+g++ -O2 -lfinal callback-lambda.cpp -o callback-lambda
+```
+&nbsp;
+
 ### Example of a callback method: ###
 
 **File:** *callback-method.cpp*
@@ -786,4 +845,3 @@ the above program with gcc:
 ```cpp
 g++ -O2 -lfinal -std=c++11 size-adjustment.cpp -o size-adjustment
 ```
-
