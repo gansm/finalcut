@@ -17,6 +17,7 @@ Table of Contents
 - [Callback method](#example-of-a-callback-function)
 - [Custom signals](#send-custom-signals)
 - [Dynamic layout](#dynamic-layout)
+- [Scroll view](#scroll-view)
 <!-- /TOC -->
 
 
@@ -857,8 +858,8 @@ requires it. You can controll this behavior by the two methods
 `setHorizontalScrollBarMode()` and `setVerticalScrollBarMode()`.
 
 ```cpp
-setHorizontalScrollBarMode (fc::scrollBarMode)
-setVerticalScrollBarMode (fc::scrollBarMode)
+setHorizontalScrollBarMode (fc::scrollBarMode);
+setVerticalScrollBarMode (fc::scrollBarMode);
 ```
 
 You pass the scroll bar visibility mode as a value of the enum type 
