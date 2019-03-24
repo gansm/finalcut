@@ -292,12 +292,19 @@ void FLineEdit::setLabelText (const FString& ltxt)
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::setLabelOrientation(const label_o o)
+void FLineEdit::setLabelOrientation (const label_o o)
 {
   label_orientation = o;
   adjustLabel();
 }
 
+//----------------------------------------------------------------------
+void FLineEdit::setGeometry ( const FPoint& pos, const FSize& size
+                            , bool adjust )
+{
+  FWidget::setGeometry(pos, size, adjust);
+  keyEnd();
+}
 //----------------------------------------------------------------------
 void FLineEdit::hide()
 {

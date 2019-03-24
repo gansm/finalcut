@@ -1,3 +1,6 @@
+2019-03-24  Markus Gans  <guru.mail@muenster.de>
+	* Add a "scroll view" chapter to the first steps document
+
 2019-02-28  Markus Gans  <guru.mail@muenster.de>
 	* Add an lambda expression callback example to the first steps document
 
@@ -10,7 +13,7 @@
 	  and FLineEdit input filters
 
 2019-02-07  Markus Gans  <guru.mail@muenster.de>
-	* Add a "dynamic layout" Chapter into the first steps document
+	* Add a "dynamic layout" chapter into the first steps document
 
 2019-01-30  Markus Gans  <guru.mail@muenster.de>
 	* Printing an FColorPair object can change the foreground and 

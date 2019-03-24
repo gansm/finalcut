@@ -9,7 +9,9 @@ EXTRA_DIST = \
 	class-diagram.txt \
 	console_codes-manual.sh \
 	console_ioctl-manual.sh \
+	faq.md \
 	fileopen-dialog.png \
+	first-steps.md \
 	ncurses.supp \
 	newfont1.png \
 	newfont2.png \
@@ -29,7 +31,9 @@ doc_DATA = \
 	class-diagram.txt \
 	console_codes-manual.sh \
 	console_ioctl-manual.sh \
+	faq.md \
 	fileopen-dialog.png \
+	first-steps.md \
 	ncurses.supp \
 	newfont1.png \
 	newfont2.png \

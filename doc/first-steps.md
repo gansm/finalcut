@@ -534,7 +534,7 @@ int main (int argc, char* argv[])
 After entering the source code in *callback-lambda.cpp* you can compile
 the above program with gcc:
 ```cpp
-g++ -O2 -lfinal callback-lambda.cpp -o callback-lambda
+g++ -O2 -lfinal -std=c++11 callback-lambda.cpp -o callback-lambda
 ```
 &nbsp;
 
@@ -844,4 +844,125 @@ After entering the source code in *size-adjustment.cpp* you can compile
 the above program with gcc:
 ```cpp
 g++ -O2 -lfinal -std=c++11 size-adjustment.cpp -o size-adjustment
+```
+
+
+Scroll view
+-----------
+
+The scroll view of the `FScrollView` class allows users to view content 
+that is larger than the visible area. The `FScrollView` widget displays 
+the horizontal and vertical scroll bar by default, only if the content size 
+requires it. You can controll this behavior by the two methods 
+`setHorizontalScrollBarMode()` and `setVerticalScrollBarMode()`.
+
+```cpp
+setHorizontalScrollBarMode (fc::scrollBarMode)
+setVerticalScrollBarMode (fc::scrollBarMode)
+```
+
+You pass the scroll bar visibility mode as a value of the enum type 
+`fc::scrollBarMode`.
+
+```cpp
+enum scrollBarMode
+{
+  Auto   = 0,  // Shows a scroll bar when area is larger than viewport
+  Hidden = 1,  // Never shows a scroll bar
+  Scroll = 2   // Always shows a scroll bar
+};
+```
+
+You can add widgets to an `FScrollView` object as child objects and place 
+them (with a widget positioning method) on the scrollable area. If a client 
+widget gets the focus, it automatically scrolls the viewport to the focused 
+widget. You can use the methods `scrollTo()`, `scrollToX()`, `scrollToY()` 
+and `scrollBy()` to set the scroll position of the viewport directly.
+
+The `FButtonGroup` widget uses `FScrollView` to display more buttons 
+in the frame than the height allows.
+
+**File:** *scrollview.cpp*
+```cpp
+#include <utility>
+#include <final/final.h>
+
+using namespace finalcut;
+
+class dialogWidget : public FDialog
+{
+  public:
+    explicit dialogWidget (FWidget* parent = nullptr)
+      : FDialog(parent)
+    {
+      setText ("Dialog");
+      setGeometry (FPoint(28, 2), FSize(24, 21));
+      scrollview.setGeometry(FPoint(1, 1), FSize(22, 11));
+      scrollview.setScrollSize(FSize(60, 27));
+      setColor (wc.label_inactive_fg, wc.dialog_bg);
+      scrollview.clearArea();
+      FColorPair red (fc::LightRed, wc.dialog_bg);
+      FColorPair black (fc::Black, wc.dialog_bg);
+      FColorPair cyan (fc::Cyan, wc.dialog_bg);
+
+      static std::vector<direction> d
+      {
+        {"NW", FPoint(3,  13), FPoint(1,  1),  black},
+        {"N",  FPoint(10, 13), FPoint(21, 1),  red},
+        {"NE", FPoint(17, 13), FPoint(41, 1),  black},
+        {"W",  FPoint(3,  15), FPoint(1,  10), black},
+        {"*",  FPoint(10, 15), FPoint(21, 10), black},
+        {"E",  FPoint(17, 15), FPoint(41, 10), black},
+        {"SW", FPoint(3,  17), FPoint(1,  19), black},
+        {"S",  FPoint(10, 17), FPoint(21, 19), cyan},
+        {"SE", FPoint(17, 17), FPoint(41, 19), black}
+      };
+
+      for (auto&& b : d)
+      {
+        scrollview.print() << std::get<2>(b) + FPoint(10, 5)
+                           << std::get<3>(b) << std::get<0>(b);
+        auto edit = new FLineEdit("direction " + std::get<0>(b), &scrollview);
+        edit->setGeometry(std::get<2>(b) + FPoint(1, 1), FSize(17, 1));
+        auto btn = new FButton(std::get<0>(b), this);
+        btn->setGeometry(std::get<1>(b), FSize(4, 1));
+        btn->unsetShadow();
+        btn->addCallback
+        (
+          "clicked",
+          F_METHOD_CALLBACK (this, &dialogWidget::cb_button),
+          static_cast<FDataPtr>(&std::get<2>(b))
+        );
+      };
+    }
+
+  private:
+    typedef std::tuple<FString, FPoint, FPoint, FColorPair> direction;
+
+    void cb_button (FWidget*, FDataPtr data)
+    {
+      FPoint* p = static_cast<FPoint*>(data);
+      scrollview.scrollTo(*p);
+    }
+
+    FScrollView scrollview{this};
+};
+
+int main (int argc, char* argv[])
+{
+  FApplication app(argc, argv);
+  dialogWidget dialog(&app);
+  app.setMainWidget(&dialog);
+  dialog.show();
+  return app.exec();
+}
+```
+*(Note: You can close the window with the mouse, 
+<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+
+
+After entering the source code in *scrollview.cpp* you can compile
+the above program with gcc:
+```cpp
+g++ -O2 -lfinal -std=c++11 scrollview.cpp -o scrollview
 ```

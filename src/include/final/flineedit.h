@@ -75,6 +75,9 @@ class FLineEdit : public FWidget
       label_left = 1
     };
 
+    // Using-declaration
+    using FWidget::setGeometry;
+
     // Constructor
     explicit FLineEdit (FWidget* = nullptr);
     explicit FLineEdit (const FString&, FWidget* = nullptr);
@@ -116,7 +119,9 @@ class FLineEdit : public FWidget
     void                setMaxLength (std::size_t);
     void                setCursorPosition (std::size_t);
     void                setLabelText (const FString&);
-    void                setLabelOrientation(const label_o);
+    void                setLabelOrientation (const label_o);
+    virtual void        setGeometry ( const FPoint&, const FSize&
+                                    , bool = true ) override;
     virtual bool        setEnable(bool) override;
     virtual bool        setEnable() override;
     virtual bool        unsetEnable() override;

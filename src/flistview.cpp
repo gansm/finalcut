@@ -1623,11 +1623,13 @@ void FListView::drawListLine ( const FListViewItem* item
 
       if ( tree_view && col == 1 )
       {
-        static constexpr std::size_t checkbox_space = 4;
         width -= (indent + 1);
 
         if ( item->isCheckable() )
+        {
+          static constexpr std::size_t checkbox_space = 4;
           width -= checkbox_space;
+        }
       }
 
       // Insert alignment spaces

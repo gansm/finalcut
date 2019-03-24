@@ -161,7 +161,7 @@ void FListBox::showInsideBrackets ( std::size_t index
 
 //----------------------------------------------------------------------
 void FListBox::setGeometry ( const FPoint& pos, const FSize& size
-                           , bool adjust)
+                           , bool adjust )
 {
   // Set the widget geometry
 
