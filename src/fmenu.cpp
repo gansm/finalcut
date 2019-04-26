@@ -345,25 +345,25 @@ void FMenu::cb_menuitem_toggled (FWidget* widget, FDataPtr)
 
 // private methods of FMenu
 //----------------------------------------------------------------------
-bool FMenu::isWindowsMenu (FWidget* w) const
+bool FMenu::isWindowsMenu (const FWidget* w) const
 {
   return w->isDialogWidget();
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isMenuBar (FWidget* w) const
+bool FMenu::isMenuBar (const FWidget* w) const
 {
   return w->isInstanceOf("FMenuBar");
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isMenu (FWidget* w) const
+bool FMenu::isMenu (const FWidget* w) const
 {
   return w->isInstanceOf("FMenu");
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isRadioMenuItem (FWidget* w) const
+bool FMenu::isRadioMenuItem (const FWidget* w) const
 {
   return w->isInstanceOf("FRadioMenuItem");
 }

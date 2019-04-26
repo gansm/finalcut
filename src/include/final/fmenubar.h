@@ -121,7 +121,7 @@ class FMenuBar : public FWindow, public FMenuList
     } menuText;
 
     // Inquiry
-    bool         isMenu (FMenuItem*) const;
+    bool         isMenu (const FMenuItem*) const;
 
     // Methods
     void         init();
@@ -168,7 +168,7 @@ inline const char* FMenuBar::getClassName() const
 { return "FMenuBar"; }
 
 //----------------------------------------------------------------------
-inline bool FMenuBar::isMenu (FMenuItem* mi) const
+inline bool FMenuBar::isMenu (const FMenuItem* mi) const
 { return mi->hasMenu(); }
 
 }  // namespace finalcut

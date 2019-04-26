@@ -161,10 +161,10 @@ class FMenu : public FWindow, public FMenuList
     void         setSuperMenu (FWidget*);
 
     // Inquiries
-    bool         isWindowsMenu (FWidget*) const;
-    bool         isMenuBar (FWidget*) const;
-    bool         isMenu (FWidget*) const;
-    bool         isRadioMenuItem (FWidget*) const;
+    bool         isWindowsMenu (const FWidget*) const;
+    bool         isMenuBar (const FWidget*) const;
+    bool         isMenu (const FWidget*) const;
+    bool         isRadioMenuItem (const FWidget*) const;
     bool         isSubMenu() const;
     bool         isMouseOverMenu (const FPoint&);
     bool         isMouseOverSubMenu (const FPoint&);

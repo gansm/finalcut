@@ -113,7 +113,7 @@ FObject* FObject::getChild (int index) const
 }
 
 //----------------------------------------------------------------------
-bool FObject::isChild (FObject* obj) const
+bool FObject::isChild (const FObject* obj) const
 {
   // Find out if obj is a child object of mine
 

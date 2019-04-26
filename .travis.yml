@@ -60,6 +60,9 @@ matrix:
       - uname -a
       - whoami
       - sudo apt-get install gpm libgpm-dev libcppunit-dev autoconf-archive
+      # Work around broken certificate of scan.coverity.com
+      - sudo curl -s -L https://entrust.com/root-certificates/entrust_l1k.cer -o /usr/local/share/ca-certificates/entrust_l1k.crt
+      - sudo update-ca-certificates
     script:
       - autoreconf -v --install --force
       - ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG" --with-unit-test

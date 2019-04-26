@@ -461,7 +461,7 @@ void FButtonGroup::drawLabel()
 
 // private methods of FButtonGroup
 //----------------------------------------------------------------------
-bool FButtonGroup::isRadioButton (FToggleButton* button) const
+bool FButtonGroup::isRadioButton (const FToggleButton* button) const
 {
   if ( ! button )
     return false;
