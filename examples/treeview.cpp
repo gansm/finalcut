@@ -27,6 +27,7 @@
 
 #include <final/final.h>
 
+namespace fc = finalcut::fc;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -314,13 +315,13 @@ Treeview::Treeview (finalcut::FWidget* parent)
   listView.addColumn ("Density/km²");
 
   // Set right alignment for the second and third column
-  listView.setColumnAlignment (2, finalcut::fc::alignRight);
-  listView.setColumnAlignment (3, finalcut::fc::alignRight);
+  listView.setColumnAlignment (2, fc::alignRight);
+  listView.setColumnAlignment (3, fc::alignRight);
 
   // Set the type of sorting
-  listView.setColumnSortType (1, finalcut::fc::by_name);
-  listView.setColumnSortType (2, finalcut::fc::user_defined);
-  listView.setColumnSortType (3, finalcut::fc::user_defined);
+  listView.setColumnSortType (1, fc::by_name);
+  listView.setColumnSortType (2, fc::user_defined);
+  listView.setColumnSortType (3, fc::user_defined);
   listView.setUserAscendingCompare(sortAscending);
   listView.setUserDescendingCompare(sortDescending);
 

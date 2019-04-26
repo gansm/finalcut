@@ -23,6 +23,7 @@
 #include <vector>
 #include <final/final.h>
 
+namespace fc = finalcut::fc;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -71,8 +72,8 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
   wchar_t arrow_up, arrow_down;
-  arrow_up = finalcut::fc::BlackUpPointingTriangle;
-  arrow_down = finalcut::fc::BlackDownPointingTriangle;
+  arrow_up = fc::BlackUpPointingTriangle;
+  arrow_down = fc::BlackDownPointingTriangle;
 
   left_arrow = arrow_up;
   left_arrow.setForegroundColor (wc.label_inactive_fg);
@@ -92,7 +93,7 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   top_left_label.setGeometry (FPoint(1, 1), FSize(6, 1));
 
   top_right_label = "zoom";
-  top_right_label.setAlignment (finalcut::fc::alignRight);
+  top_right_label.setAlignment (fc::alignRight);
   top_right_label.setForegroundColor (wc.label_inactive_fg);
   top_right_label.setEmphasis();
   top_right_label.setGeometry (FPoint(int(getClientWidth()) - 5, 1), FSize(6, 1));
@@ -101,7 +102,7 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
                                         "corner\n";
   bottom_label_text += arrow_down;
   bottom_label = bottom_label_text;
-  bottom_label.setAlignment (finalcut::fc::alignRight);
+  bottom_label.setAlignment (fc::alignRight);
   bottom_label.setForegroundColor (wc.label_inactive_fg);
   bottom_label.setEmphasis();
   bottom_label.setGeometry (FPoint(13, 3), FSize(6, 3));
@@ -224,7 +225,7 @@ class Window : public finalcut::FDialog
 
     // Data Members
     std::vector<win_data*>    windows{};
-    finalcut::FString         drop_down_symbol{finalcut::fc::BlackDownPointingTriangle};
+    finalcut::FString         drop_down_symbol{fc::BlackDownPointingTriangle};
     finalcut::FMenuBar        Menubar{this};
     finalcut::FMenu           File{"&File", &Menubar};
     finalcut::FDialogListMenu DglList{drop_down_symbol, &Menubar};
@@ -295,12 +296,12 @@ void Window::configureFileMenuItems()
   New.setStatusbarMessage ("Create the windows");
   Close.setStatusbarMessage ("Close the windows");
   Line1.setSeparator();
-  Next.addAccelerator (finalcut::fc::Fmkey_npage);  // Meta/Alt + PgDn
+  Next.addAccelerator (fc::Fmkey_npage);  // Meta/Alt + PgDn
   Next.setStatusbarMessage ("Switch to the next window");
-  Previous.addAccelerator (finalcut::fc::Fmkey_ppage);  // Meta/Alt + PgUp
+  Previous.addAccelerator (fc::Fmkey_ppage);  // Meta/Alt + PgUp
   Previous.setStatusbarMessage ("Switch to the previous window");
   Line2.setSeparator();
-  Quit.addAccelerator (finalcut::fc::Fmkey_x);  // Meta/Alt + X
+  Quit.addAccelerator (fc::Fmkey_x);  // Meta/Alt + X
   Quit.setStatusbarMessage ("Exit the program");
 
   // Add menu item callback

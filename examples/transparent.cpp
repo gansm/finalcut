@@ -22,6 +22,7 @@
 
 #include <final/final.h>
 
+namespace fc = finalcut::fc;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -98,9 +99,9 @@ void Transparent::draw()
   else if ( type == inherit_background )
   {
     if ( getMaxColor() > 8 )
-      setColor(finalcut::fc::Blue, finalcut::fc::Black);
+      setColor(fc::Blue, fc::Black);
     else
-      setColor(finalcut::fc::Green, finalcut::fc::Black);
+      setColor(fc::Green, fc::Black);
 
     setInheritBackground();
   }

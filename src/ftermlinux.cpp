@@ -600,7 +600,7 @@ FTermLinux::modifier_key& FTermLinux::getModifierKey()
   // fill bit field with 0
   std::memset (&mod_key, 0x00, sizeof(mod_key));
 
-  // TIOCLINUX, subcode = 6
+  // TIOCLINUX, subcode = 6 (TIOCL_GETSHIFTSTATE)
   if ( ioctl(0, TIOCLINUX, &subcode) >= 0 )
   {
     if ( subcode & (1 << KG_SHIFT) )
@@ -728,8 +728,8 @@ inline uInt16 FTermLinux::getInputStatusRegisterOne()
   // Miscellaneous output (read port)
   static constexpr uInt16 misc_read = 0x3cc;
   const uInt16 io_base = ( inb(misc_read) & 0x01 ) ? 0x3d0 : 0x3b0;
-  // 0x3ba : Input status 1 MDA (read port)
-  // 0x3da : Input status 1 CGA (read port)
+  // 0x3ba : Input status 1 mono/MDA (read port)
+  // 0x3da : Input status 1 color/CGA (read port)
   return io_base + 0x0a;
 }
 

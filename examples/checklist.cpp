@@ -27,6 +27,7 @@
 
 #include <final/final.h>
 
+namespace fc = finalcut::fc;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -86,12 +87,12 @@ CheckList::CheckList (finalcut::FWidget* parent)
   listView.addColumn ("Priority", 12);
 
   // Set the type of sorting
-  listView.setColumnSortType (1, finalcut::fc::by_name);
-  listView.setColumnSortType (2, finalcut::fc::by_name);
+  listView.setColumnSortType (1, fc::by_name);
+  listView.setColumnSortType (2, fc::by_name);
 
   // Statusbar at the bottom
   finalcut::FString separator;
-  separator << ' ' << finalcut::fc::BoxDrawingsVertical << ' ';
+  separator << ' ' << fc::BoxDrawingsVertical << ' ';
   listView.setStatusbarMessage ( finalcut::FString()
                                  << "<Q> exit" << separator
                                  << "<Space> select an item" << separator
@@ -147,8 +148,8 @@ void CheckList::onKeyPress (finalcut::FKeyEvent* ev)
     return;
 
   if ( ev->key() == 'q'
-    || ev->key() == finalcut::fc::Fkey_escape
-    || ev->key() == finalcut::fc::Fkey_escape_mintty )
+    || ev->key() == fc::Fkey_escape
+    || ev->key() == fc::Fkey_escape_mintty )
   {
     close();
     ev->accept();
@@ -174,7 +175,7 @@ void CheckList::cb_showList (finalcut::FWidget*, FDataPtr)
     const auto item = static_cast<finalcut::FListViewItem*>(*iter);
 
     if ( item->isChecked() )
-      shopping_list << finalcut::fc::Bullet << ' '
+      shopping_list << fc::Bullet << ' '
                     << item->getText(1) << '\n';
 
     ++iter;

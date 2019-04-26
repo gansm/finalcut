@@ -22,6 +22,7 @@
 
 #include <final/final.h>
 
+namespace fc = finalcut::fc;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -62,10 +63,10 @@ class Scrollview : public finalcut::FScrollView
     void cb_go_north (finalcut::FWidget*, FDataPtr);
 
     // Data Members
-    wchar_t pointer_right{finalcut::fc::BlackRightPointingPointer};
-    wchar_t pointer_down{finalcut::fc::BlackDownPointingTriangle};
-    wchar_t pointer_left{finalcut::fc::BlackLeftPointingPointer};
-    wchar_t pointer_up{finalcut::fc::BlackUpPointingTriangle};
+    wchar_t pointer_right{fc::BlackRightPointingPointer};
+    wchar_t pointer_down{fc::BlackDownPointingTriangle};
+    wchar_t pointer_left{fc::BlackLeftPointingPointer};
+    wchar_t pointer_up{fc::BlackUpPointingTriangle};
     finalcut::FButton go_east{pointer_right, this};
     finalcut::FButton go_south{pointer_down, this};
     finalcut::FButton go_west{pointer_left, this};

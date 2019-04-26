@@ -22,6 +22,7 @@
 
 #include <final/final.h>
 
+namespace fc = finalcut::fc;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -109,9 +110,9 @@ void Mandelbrot::draw()
       }
 
       if ( iter < max_iter )
-        setColor(finalcut::fc::Black, iter % 16);
+        setColor(fc::Black, iter % 16);
       else
-        setColor(finalcut::fc::Black, 0);
+        setColor(fc::Black, 0);
 
       print(' ');
     }

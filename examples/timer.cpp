@@ -22,6 +22,8 @@
 
 #include <final/final.h>
 
+namespace fc = finalcut::fc;
+
 
 //----------------------------------------------------------------------
 // class Timer
@@ -52,8 +54,8 @@ Timer::Timer (finalcut::FWidget* parent)
   delTimer (id);
   addTimer (250);          // 250-millisecond timer
 
-  wc.term_fg = finalcut::fc::Default;
-  wc.term_bg = finalcut::fc::Default;
+  wc.term_fg = fc::Default;
+  wc.term_bg = fc::Default;
 }
 
 //----------------------------------------------------------------------
@@ -100,8 +102,8 @@ int main (int argc, char* argv[])
 {
   // Create the application object
   finalcut::FApplication app(argc, argv);
-  app.setForegroundColor(finalcut::fc::Default);
-  app.setBackgroundColor(finalcut::fc::Default);
+  app.setForegroundColor(fc::Default);
+  app.setBackgroundColor(fc::Default);
 
   // Create a timer object t
   Timer t(&app);

@@ -26,6 +26,7 @@
 
 #include <final/final.h>
 
+namespace fc = finalcut::fc;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -325,21 +326,21 @@ class MyDialog : public finalcut::FDialog
     finalcut::FMenuItem       File2{"/etc/fstab", &Recent};
     finalcut::FMenuItem       File3{"/etc/passwd", &Recent};
     // "Edit" menu items
-    finalcut::FMenuItem       Undo{finalcut::fc::Fckey_z, "Undo", &Edit};
-    finalcut::FMenuItem       Redo{finalcut::fc::Fckey_y, "Redo", &Edit};
+    finalcut::FMenuItem       Undo{fc::Fckey_z, "Undo", &Edit};
+    finalcut::FMenuItem       Redo{fc::Fckey_y, "Redo", &Edit};
     finalcut::FMenuItem       Line2{&Edit};
-    finalcut::FMenuItem       Cut{finalcut::fc::Fckey_x, "Cu&t", &Edit};
-    finalcut::FMenuItem       Copy{finalcut::fc::Fckey_c, "&Copy", &Edit};
-    finalcut::FMenuItem       Paste{finalcut::fc::Fckey_v, "&Paste", &Edit};
-    finalcut::FMenuItem       Clear{finalcut::fc::Fkey_dc, "C&lear", &Edit};
+    finalcut::FMenuItem       Cut{fc::Fckey_x, "Cu&t", &Edit};
+    finalcut::FMenuItem       Copy{fc::Fckey_c, "&Copy", &Edit};
+    finalcut::FMenuItem       Paste{fc::Fckey_v, "&Paste", &Edit};
+    finalcut::FMenuItem       Clear{fc::Fkey_dc, "C&lear", &Edit};
     // "View" menu items
     finalcut::FMenuItem       Env{"&Terminal...", &View};
     finalcut::FMenuItem       Drive{"&Drive symbols...", &View};
     // Statusbar
     finalcut::FStatusBar      Statusbar{this};
-    finalcut::FStatusKey      key_F1{finalcut::fc::Fkey_f1, "About", &Statusbar};
-    finalcut::FStatusKey      key_F2{finalcut::fc::Fkey_f2, "View", &Statusbar};
-    finalcut::FStatusKey      key_F3{finalcut::fc::Fkey_f3, "Quit", &Statusbar};
+    finalcut::FStatusKey      key_F1{fc::Fkey_f1, "About", &Statusbar};
+    finalcut::FStatusKey      key_F2{fc::Fkey_f2, "View", &Statusbar};
+    finalcut::FStatusKey      key_F3{fc::Fkey_f3, "Quit", &Statusbar};
     // Dialog widgets
     finalcut::FButton         MyButton1{this};
     finalcut::FButton         MyButton2{this};
@@ -393,11 +394,11 @@ void MyDialog::initMenu()
   Help.setStatusbarMessage ("Show version and copyright information");
 
   // "File" menu items
-  Open.addAccelerator (finalcut::fc::Fckey_o);  // Ctrl + O
+  Open.addAccelerator (fc::Fckey_o);  // Ctrl + O
   Open.setStatusbarMessage ("Locate and open a text file");
   Recent.setStatusbarMessage ("View text file");
   Line1.setSeparator();
-  Quit.addAccelerator (finalcut::fc::Fmkey_x);  // Meta/Alt + X
+  Quit.addAccelerator (fc::Fmkey_x);  // Meta/Alt + X
   Quit.setStatusbarMessage ("Exit the program");
 
   // "Edit" menu items
@@ -584,14 +585,14 @@ void MyDialog::initFlatButtons()
   MyButton1.setStatusbarMessage ("Sine function");
   MyButton1.setNoUnderline();
   MyButton1.setFlat();
-  MyButton1.setDoubleFlatLine (finalcut::fc::bottom);
+  MyButton1.setDoubleFlatLine (fc::bottom);
 
   MyButton2.setGeometry(FPoint(3, 5), FSize(5, 1));
   MyButton2.setText (L"&COS");
   MyButton2.setStatusbarMessage ("Cosine function");
   MyButton2.setNoUnderline();
   MyButton2.setFlat();
-  MyButton2.setDoubleFlatLine (finalcut::fc::top);
+  MyButton2.setDoubleFlatLine (fc::top);
 
   MyButton3.setGeometry(FPoint(10, 3), FSize(5, 3));
   MyButton3.setText (L"&=");
@@ -692,7 +693,7 @@ void MyDialog::initLabels()
   // Text labels
   headline.setGeometry(FPoint(21, 3), FSize(10, 1));
   headline.setEmphasis();
-  headline.setAlignment (finalcut::fc::alignCenter);
+  headline.setAlignment (fc::alignCenter);
   headline = L"List items";
 
   tagged.setGeometry(FPoint(21, 4), FSize(7, 1));
@@ -701,7 +702,7 @@ void MyDialog::initLabels()
   tagged_count << 0;
 
   sum.setGeometry(FPoint(21, 5), FSize(7, 3));
-  sum.setAlignment (finalcut::fc::alignRight);
+  sum.setAlignment (fc::alignRight);
 
   sum_count.setGeometry(FPoint(29, 5), FSize(5, 3));
   sum_count << myList.getCount();
@@ -779,7 +780,7 @@ void MyDialog::cb_noFunctionMsg (finalcut::FWidget* widget, FDataPtr)
 void MyDialog::cb_about (finalcut::FWidget*, FDataPtr)
 {
   constexpr char libver[] = F_VERSION;
-  const finalcut::FString line(2, finalcut::fc::BoxDrawingsHorizontal);
+  const finalcut::FString line(2, fc::BoxDrawingsHorizontal);
 
   finalcut::FMessageBox info ( "About"
                              , line + L" The Final Cut " + line + "\n\n"
@@ -802,7 +803,7 @@ void MyDialog::cb_terminfo (finalcut::FWidget*, FDataPtr)
       << "  Type: " << getTermType() << "\n"
       << "  Name: " << getTermFileName() << "\n"
       << "  Mode: " << getEncodingString() << "\n"
-      << "  Size: " << x << finalcut::fc::Times
+      << "  Size: " << x << fc::Times
                     << y << "\n"
       << "Colors: " << getMaxColor()
     , finalcut::FMessageBox::Ok, 0, 0, this
@@ -850,12 +851,12 @@ void MyDialog::cb_drives (finalcut::FWidget*, FDataPtr)
     }
     else
     {
-      net.setForegroundColor (finalcut::fc::White);
-      net.setBackgroundColor (finalcut::fc::DarkGray);
-      drive.setForegroundColor (finalcut::fc::White);
-      drive.setBackgroundColor (finalcut::fc::DarkGray);
-      cd.setForegroundColor (finalcut::fc::White);
-      cd.setBackgroundColor (finalcut::fc::DarkGray);
+      net.setForegroundColor (fc::White);
+      net.setBackgroundColor (fc::DarkGray);
+      drive.setForegroundColor (fc::White);
+      drive.setBackgroundColor (fc::DarkGray);
+      cd.setForegroundColor (fc::White);
+      cd.setBackgroundColor (fc::DarkGray);
     }
 
     info2.exec();

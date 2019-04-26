@@ -1,5 +1,6 @@
 #include <final/final.h>
 
+namespace fc = finalcut::fc;
 using finalcut::FColorPair;
 using finalcut::FPoint;
 using finalcut::FSize;
@@ -169,12 +170,12 @@ void SegmentView::draw()
   finalcut::FTermBuffer left_space{};
 
   FDialog::draw();
-  setColor(finalcut::fc::LightGray, finalcut::fc::Black);
+  setColor(fc::LightGray, fc::Black);
   FWidget::drawBorder(3, 6, 40, 11);
 
   for (auto&& ch : Input.getText().toUpper())
   {
-    FColorPair color(finalcut::fc::LightRed, finalcut::fc::Black);
+    FColorPair color(fc::LightRed, fc::Black);
     get7Segment(ch);
 
     for (std::size_t i = 0; i < 3; i++)

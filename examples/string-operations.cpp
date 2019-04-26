@@ -534,7 +534,7 @@ void convertNumberToStringExample()
 {
   // Test: convert integer and double value to a string
   finalcut::FString num1, num2, num3;
-  num1.setNumber(137);
+  num1.setNumber(137u);
   num2.setNumber(-512);
   num3.setNumber(3.141592653589793238L, 12);
   std::cout << " setNumber:  "
@@ -553,11 +553,11 @@ void formatedNumberExample()
   finalcut::FString fnum1, fnum2;
 #if defined(__LP64__) || defined(_LP64)
   // 64-bit architecture
-  fnum1.setFormatedNumber(0xffffffffffffffff, '\'');
+  fnum1.setFormatedNumber(0xffffffffffffffffu, '\'');
   fnum2.setFormatedNumber(-9223372036854775807);
 #else
   // 32-bit architecture
-  fnum1.setFormatedNumber(0xffffffff, '\'');
+  fnum1.setFormatedNumber(0xffffffffu, '\'');
   fnum2.setFormatedNumber(-2147483647);
 #endif
   std::cout << "setFormatedNumber: "
