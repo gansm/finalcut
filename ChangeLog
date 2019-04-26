@@ -1,3 +1,6 @@
+2019-04-27  Markus Gans  <guru.mail@muenster.de>
+	* Add the reserve() method to FListBox to increase the capacity of the list
+
 2019-03-24  Markus Gans  <guru.mail@muenster.de>
 	* Add a "scroll view" chapter to the first steps document
 

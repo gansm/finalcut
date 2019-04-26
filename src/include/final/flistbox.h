@@ -221,6 +221,7 @@ class FListBox : public FWidget
                                , bool = false
                                , FDataPtr = nullptr );
     void                remove (std::size_t);
+    void                reserve (std::size_t);
     void                clear();
 
     // Event handlers
@@ -470,6 +471,10 @@ inline bool FListBox::hasBrackets(std::size_t index)
 //----------------------------------------------------------------------
 inline bool FListBox::hasBrackets(listBoxItems::iterator iter) const
 { return bool(iter->brackets > 0); }
+
+//----------------------------------------------------------------------
+inline void FListBox::reserve (std::size_t new_cap)
+{ itemlist.reserve(new_cap); }
 
 //----------------------------------------------------------------------
 template <typename Iterator, typename InsertConverter>

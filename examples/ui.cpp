@@ -568,6 +568,7 @@ void MyDialog::initWidgets()
   myList.setText ("Items");
   myList.setStatusbarMessage ("99 items in a list");
   myList.setMultiSelection();
+  myList.reserve(100);
 
   for (int z = 1; z < 100; z++)
     myList.insert (finalcut::FString() << z << L" placeholder");
