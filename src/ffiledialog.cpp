@@ -444,6 +444,7 @@ void FFileDialog::clear()
     std::free (entry.name);
 
   dir_entries.clear();
+  dir_entries.shrink_to_fit();
 }
 
 //----------------------------------------------------------------------

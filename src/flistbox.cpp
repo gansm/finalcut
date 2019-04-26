@@ -286,6 +286,7 @@ void FListBox::clear()
 {
   std::size_t size;
   itemlist.clear();
+  itemlist.shrink_to_fit();
   current = 0;
   xoffset = 0;
   yoffset = 0;

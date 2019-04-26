@@ -274,6 +274,7 @@ void FTextView::clear()
 {
   std::size_t size;
   data.clear();
+  data.shrink_to_fit();
   xoffset = 0;
   yoffset = 0;
   maxLineWidth = 0;

@@ -151,7 +151,10 @@ inline bool FTermBuffer::isEmpty() const
 
 //----------------------------------------------------------------------
 inline void FTermBuffer::clear()
-{ data.clear(); }
+{
+  data.clear();
+  data.shrink_to_fit();
+}
 
 //----------------------------------------------------------------------
 inline FTermBuffer& FTermBuffer::write()

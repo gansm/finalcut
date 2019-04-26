@@ -93,6 +93,7 @@ void FMenuList::remove (int pos)
 void FMenuList::clear()
 {
   item_list.clear();
+  item_list.shrink_to_fit();
 }
 
 //----------------------------------------------------------------------

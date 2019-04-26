@@ -306,6 +306,7 @@ void FStatusBar::remove (int pos)
 void FStatusBar::clear()
 {
   key_list.clear();
+  key_list.shrink_to_fit();
 }
 
 //----------------------------------------------------------------------

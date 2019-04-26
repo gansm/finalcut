@@ -359,6 +359,7 @@ bool FObject::delAllTimer()
 
   timer_modify_lock = true;
   timer_list->clear();
+  timer_list->shrink_to_fit();
   timer_modify_lock = false;
   return true;
 }
