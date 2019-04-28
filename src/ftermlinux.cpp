@@ -746,13 +746,15 @@ uChar FTermLinux::readAttributeController (uChar index)
   const uInt16 input_status_1 = getInputStatusRegisterOne();
 
   inb (input_status_1);  // switch to index mode
-  outb (index & 0x1f, attrib_cntlr_write);
-  res = inb (attrib_cntlr_read);
+  outb (index & 0x1f, attrib_cntlr_write);  // selects address register
+  res = inb (attrib_cntlr_read);  // read from data register
 
-  inb (input_status_1);  // switch to data mode
+  // Disable access to the palette and unblank the display
+  inb (input_status_1);  // switch to index mode
   index = (index & 0x1f) | 0x20;  // set bit 5 (enable display)
   outb (index, attrib_cntlr_write);
   inb (attrib_cntlr_read);
+
   return res;
 }
 
@@ -766,10 +768,11 @@ void FTermLinux::writeAttributeController (uChar index, uChar data)
   const uInt16 input_status_1 = getInputStatusRegisterOne();
 
   inb (input_status_1);  // switch to index mode
-  outb (index & 0x1f, attrib_cntlr_write);
-  outb (data, attrib_cntlr_write);
+  outb (index & 0x1f, attrib_cntlr_write); // selects address register
+  outb (data, attrib_cntlr_write); // write to data register
 
-  inb (input_status_1);  // switch to data mode
+  // Disable access to the palette and unblank the display
+  inb (input_status_1);  // switch to index mode
   index = (index & 0x1f) | 0x20;  // set bit 5 (enable display)
   outb (index, attrib_cntlr_write);
   outb (data, attrib_cntlr_write);
