@@ -74,12 +74,20 @@ class FSystemImpl : public FSystem
     // Methods
     virtual uChar inPortByte (uShort port)
     {
+#if defined(__linux__)
+#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
       return ::inb (port);
+#endif
+#endif
     }
 
     virtual void outPortByte (uChar value, uShort port)
     {
+#if defined(__linux__)
+#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
       ::outb (value, port);
+#endif
+#endif
     }
 
     virtual int isTTY (int fd)
@@ -101,7 +109,7 @@ class FSystemImpl : public FSystem
     {
       va_list args;
       va_start (args, flags);
-      mode_t mode = va_arg (args, mode_t);
+      mode_t mode = static_cast<mode_t>(va_arg (args, int));
       int ret = ::open (pathname, flags, mode);
       va_end (args);
       return ret;
