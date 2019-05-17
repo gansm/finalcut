@@ -77,7 +77,11 @@ class FSystemImpl : public FSystem
 #if defined(__linux__)
 #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
       return ::inb (port);
+#else
+      return 0;
 #endif
+#else
+      return 0;
 #endif
     }
 
