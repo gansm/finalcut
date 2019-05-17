@@ -35,13 +35,19 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#if defined(__linux__)
+  #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
+    #include <sys/io.h>        // <asm/io.h> is deprecated
+  #endif  // defined(__x86_64__) || defined(__i386) || defined(__arm__)
+#endif  // defined(__linux__)
+
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include <fcntl.h>
 #include <stdarg.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
-#include <sys/io.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 
 #include "final/fc.h"
 #include "final/fsystem.h"
