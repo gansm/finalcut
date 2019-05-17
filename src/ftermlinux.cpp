@@ -45,6 +45,7 @@ namespace finalcut
   bool   FTermLinux::has_saved_palette = false;
 
   FTermData*                  FTermLinux::fterm_data = nullptr;
+  FSystem*                    FTermLinux::fsystem = nullptr;
   FTermDetection*             FTermLinux::term_detection = nullptr;
   fc::linuxConsoleCursorStyle FTermLinux::linux_console_cursor_style;
   FTermLinux::ColorMap        FTermLinux::saved_color_map;
@@ -135,12 +136,15 @@ bool FTermLinux::isLinuxConsole()
 {
   // Check if it's a Linux console
 
+  if ( ! fsystem )
+    return false;
+
   char arg = 0;
   int fd_tty = FTerm::getTTYFileDescriptor();
 
   // get keyboard type an compare
-  return ( isatty (fd_tty)
-        && ioctl(fd_tty, KDGKBTYPE, &arg) == 0
+  return ( fsystem->isTTY(fd_tty)
+        && fsystem->ioControl(fd_tty, KDGKBTYPE, &arg) == 0
         && ((arg == KB_101) || (arg == KB_84)) );
 }
 
@@ -471,31 +475,33 @@ FKey FTermLinux::modifierKeyCorrection (const FKey& key_id)
 int FTermLinux::getFramebuffer_bpp()
 {
   int fd = -1;
+  const char* fb = C_STR("/dev/fb/0");
   struct fb_var_screeninfo fb_var;
   struct fb_fix_screeninfo fb_fix;
 
-  const char* fb = C_STR("/dev/fb/0");
+  if ( ! fsystem )
+    return -1;
 
-  if ( (fd = open(fb, O_RDWR)) < 0 )
+  if ( (fd = fsystem->open(fb, O_RDWR)) < 0 )
   {
     if ( errno != ENOENT && errno != ENOTDIR )
       return -1;
 
     fb = C_STR("/dev/fb0");
 
-    if ( (fd = open(fb, O_RDWR)) < 0 )
+    if ( (fd = fsystem->open(fb, O_RDWR)) < 0 )
       return -1;
   }
 
-  if ( ! ioctl(fd, FBIOGET_VSCREENINFO, &fb_var)
-    && ! ioctl(fd, FBIOGET_FSCREENINFO, &fb_fix) )
+  if ( ! fsystem->ioControl(fd, FBIOGET_VSCREENINFO, &fb_var)
+    && ! fsystem->ioControl(fd, FBIOGET_FSCREENINFO, &fb_fix) )
   {
-    ::close(fd);
+    fsystem->close(fd);
     return int(fb_var.bits_per_pixel);
   }
   else
   {
-    ::close(fd);
+    fsystem->close(fd);
   }
 
   return -1;
@@ -506,8 +512,7 @@ bool FTermLinux::getScreenFont()
 {
   struct console_font_op font;
   int fd_tty = FTerm::getTTYFileDescriptor();
-
-  int ret;
+  int ret = -1;
 
   if ( fd_tty < 0 )
     return false;
@@ -534,7 +539,8 @@ bool FTermLinux::getScreenFont()
   }
 
   // font operation
-  ret = ioctl (fd_tty, KDFONTOP, &font);
+  if ( fsystem )
+    ret = fsystem->ioControl (fd_tty, KDFONTOP, &font);
 
   if ( ret == 0 )
   {
@@ -551,7 +557,7 @@ bool FTermLinux::getScreenFont()
 //----------------------------------------------------------------------
 bool FTermLinux::getUnicodeMap()
 {
-  int ret;
+  int ret = -1;
   int fd_tty = FTerm::getTTYFileDescriptor();
 
   if ( fd_tty < 0 )
@@ -561,7 +567,8 @@ bool FTermLinux::getUnicodeMap()
   screen_unicode_map.entries = nullptr;
 
   // get count
-  ret = ioctl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
+  if ( fsystem )
+    ret = fsystem->ioControl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
 
   if ( ret != 0 )
   {
@@ -581,7 +588,8 @@ bool FTermLinux::getUnicodeMap()
     }
 
     // get unicode-to-font mapping from kernel
-    ret = ioctl(fd_tty, GIO_UNIMAP, &screen_unicode_map);
+    if ( fsystem )
+      ret = fsystem->ioControl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
 
     if ( ret != 0 )
       return false;
@@ -601,7 +609,7 @@ FTermLinux::modifier_key& FTermLinux::getModifierKey()
   std::memset (&mod_key, 0x00, sizeof(mod_key));
 
   // TIOCLINUX, subcode = 6 (TIOCL_GETSHIFTSTATE)
-  if ( ioctl(0, TIOCLINUX, &subcode) >= 0 )
+  if ( fsystem && fsystem->ioControl(0, TIOCLINUX, &subcode) >= 0 )
   {
     if ( subcode & (1 << KG_SHIFT) )
       mod_key.shift = true;
@@ -625,8 +633,8 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
                               , bool direct)
 {
   struct console_font_op font;
-  int ret;
   int fd_tty = FTerm::getTTYFileDescriptor();
+  int ret = -1;
 
   if ( fd_tty < 0 )
     return -1;
@@ -664,7 +672,8 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
   }
 
   // font operation
-  ret = ioctl (fd_tty, KDFONTOP, &font);
+  if ( fsystem )
+    ret = fsystem->ioControl (fd_tty, KDFONTOP, &font);
 
   if ( ret != 0 && errno != ENOSYS && errno != EINVAL )
   {
@@ -687,8 +696,8 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
 int FTermLinux::setUnicodeMap (struct unimapdesc* unimap)
 {
   struct unimapinit advice;
-  int ret;
   int fd_tty = FTerm::getTTYFileDescriptor();
+  int ret = -1;
 
   if ( fd_tty < 0 )
     return -1;
@@ -700,13 +709,15 @@ int FTermLinux::setUnicodeMap (struct unimapdesc* unimap)
   do
   {
     // clear the unicode-to-font table
-    ret = ioctl(fd_tty, PIO_UNIMAPCLR, &advice);
+    if ( fsystem )
+      ret = fsystem->ioControl (fd_tty, PIO_UNIMAPCLR, &advice);
 
     if ( ret != 0 )
       return -1;
 
     // put the new unicode-to-font mapping in kernel
-    ret = ioctl(fd_tty, PIO_UNIMAP, unimap);
+    if ( fsystem )
+      ret = fsystem->ioControl (fd_tty, PIO_UNIMAP, unimap);
 
     if ( ret != 0 )
       advice.advised_hashlevel++;
@@ -725,9 +736,13 @@ inline uInt16 FTermLinux::getInputStatusRegisterOne()
 {
   // Gets the VGA input-status-register-1
 
+  if ( ! fsystem )
+    return 0x3da;
+
   // Miscellaneous output (read port)
   static constexpr uInt16 misc_read = 0x3cc;
-  const uInt16 io_base = ( inb(misc_read) & 0x01 ) ? 0x3d0 : 0x3b0;
+  uChar misc_value = fsystem->inPortByte(misc_read);
+  const uInt16 io_base = ( misc_value & 0x01 ) ? 0x3d0 : 0x3b0;
   // 0x3ba : Input status 1 mono/MDA (read port)
   // 0x3da : Input status 1 color/CGA (read port)
   return io_base + 0x0a;
@@ -738,6 +753,9 @@ uChar FTermLinux::readAttributeController (uChar index)
 {
   // Reads a byte from the attribute controller from a given index
 
+  if ( ! fsystem )
+    return 0;
+
   uChar res;
   // Attribute controller (write port)
   static constexpr uInt16 attrib_cntlr_write = 0x3c0;
@@ -745,15 +763,15 @@ uChar FTermLinux::readAttributeController (uChar index)
   static constexpr uInt16 attrib_cntlr_read  = 0x3c1;
   const uInt16 input_status_1 = getInputStatusRegisterOne();
 
-  inb (input_status_1);  // switch to index mode
-  outb (index & 0x1f, attrib_cntlr_write);  // selects address register
-  res = inb (attrib_cntlr_read);  // read from data register
+  fsystem->inPortByte (input_status_1);  // switch to index mode
+  fsystem->outPortByte (index & 0x1f, attrib_cntlr_write);  // selects address register
+  res = fsystem->inPortByte (attrib_cntlr_read);  // read from data register
 
   // Disable access to the palette and unblank the display
-  inb (input_status_1);  // switch to index mode
+  fsystem->inPortByte (input_status_1);  // switch to index mode
   index = (index & 0x1f) | 0x20;  // set bit 5 (enable display)
-  outb (index, attrib_cntlr_write);
-  inb (attrib_cntlr_read);
+  fsystem->outPortByte (index, attrib_cntlr_write);
+  fsystem->inPortByte (attrib_cntlr_read);
 
   return res;
 }
@@ -763,19 +781,22 @@ void FTermLinux::writeAttributeController (uChar index, uChar data)
 {
   // Writes a byte from the attribute controller from a given index
 
+  if ( ! fsystem )
+    return;
+
   // Attribute controller (write port)
   static constexpr uInt16 attrib_cntlr_write = 0x3c0;
   const uInt16 input_status_1 = getInputStatusRegisterOne();
 
-  inb (input_status_1);  // switch to index mode
-  outb (index & 0x1f, attrib_cntlr_write); // selects address register
-  outb (data, attrib_cntlr_write); // write to data register
+  fsystem->inPortByte (input_status_1);  // switch to index mode
+  fsystem->outPortByte (index & 0x1f, attrib_cntlr_write); // selects address register
+  fsystem->outPortByte (data, attrib_cntlr_write); // write to data register
 
   // Disable access to the palette and unblank the display
-  inb (input_status_1);  // switch to index mode
+  fsystem->inPortByte (input_status_1);  // switch to index mode
   index = (index & 0x1f) | 0x20;  // set bit 5 (enable display)
-  outb (index, attrib_cntlr_write);
-  outb (data, attrib_cntlr_write);
+  fsystem->outPortByte (index, attrib_cntlr_write);
+  fsystem->outPortByte (data, attrib_cntlr_write);
 }
 
 //----------------------------------------------------------------------
@@ -800,6 +821,9 @@ int FTermLinux::setBlinkAsIntensity (bool enable)
   // Uses blink-bit as background intensity.
   // That permits 16 colors for background
 
+  if ( ! fsystem )
+    return -1;
+
   int fd_tty = FTerm::getTTYFileDescriptor();
 
   // Test if the blink-bit is used by the screen font (512 characters)
@@ -813,7 +837,7 @@ int FTermLinux::setBlinkAsIntensity (bool enable)
     return -1;
 
   // Enable access to VGA I/O ports  (from 0x3B4 with num = 0x2C)
-  if ( ioctl(fd_tty, KDENABIO, 0) < 0 )
+  if ( fsystem->ioControl(fd_tty, KDENABIO, 0) < 0 )
     return -1;  // error on KDENABIO
 
   if ( enable )
@@ -822,7 +846,7 @@ int FTermLinux::setBlinkAsIntensity (bool enable)
     setAttributeMode (getAttributeMode() | 0x08);  // set bit 3
 
   // Disable access to VGA I/O ports
-  if ( ioctl(fd_tty, KDDISABIO, 0) < 0 )
+  if ( fsystem->ioControl(fd_tty, KDDISABIO, 0) < 0 )
     return -1;  // error on KDDISABIO
 
   return 0;
@@ -842,7 +866,7 @@ bool FTermLinux::setVGAPalette (FColor index, int r, int g, int b)
     cmap.color[index].blue  = uChar(b);
   }
 
-  if ( ioctl (0, PIO_CMAP, &cmap) )
+  if ( fsystem && fsystem->ioControl (0, PIO_CMAP, &cmap) )
     return false;
   else
     return true;
@@ -853,7 +877,7 @@ bool FTermLinux::saveVGAPalette()
 {
   // Save the current vga color map
 
-  if ( ioctl (0, GIO_CMAP, &saved_color_map) )
+  if ( fsystem && fsystem->ioControl (0, GIO_CMAP, &saved_color_map) )
     has_saved_palette = false;
   else
     has_saved_palette = true;
@@ -866,14 +890,17 @@ bool FTermLinux::resetVGAPalette()
 {
   // Reset the vga color map
 
+  if ( ! fsystem )
+    return false;
+
   if ( has_saved_palette )
   {
-    if ( ioctl (0, PIO_CMAP, &saved_color_map) )
+    if ( fsystem->ioControl (0, PIO_CMAP, &saved_color_map) )
       return false;
   }
   else
   {
-    rgb defaultColor[16] =
+    constexpr rgb defaultColor[16] =
     {
       {0x00, 0x00, 0x00}, {0xaa, 0x00, 0x00},
       {0x00, 0xaa, 0x00}, {0xaa, 0x55, 0x00},
@@ -892,7 +919,7 @@ bool FTermLinux::resetVGAPalette()
       cmap.color[index].blue  = defaultColor[index].blue;
     }
 
-    if ( ioctl (0, PIO_CMAP, &cmap) )
+    if ( fsystem->ioControl (0, PIO_CMAP, &cmap) )
       return false;
   }
 

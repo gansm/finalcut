@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 DIR="$PWD"
 cd ../examples/.libs/ || exit

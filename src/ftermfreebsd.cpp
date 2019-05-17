@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -32,6 +32,7 @@ namespace finalcut
   FTermFreeBSD::CursorStyle FTermFreeBSD::cursor_style = fc::normal_cursor;
   bool                      FTermFreeBSD::change_cursorstyle = true;
   bool                      FTermFreeBSD::meta_sends_escape = true;
+  FSystem*                  FTermFreeBSD::fsystem = nullptr;
 #endif
 
 
@@ -52,10 +53,7 @@ void FTermFreeBSD::setCursorStyle (CursorStyle style, bool hidden)
 {
   // Set cursor style in a BSD console
 
-  if ( ! isFreeBSDConsole() )
-    return;
-
-  if ( ! change_cursorstyle )
+  if ( ! fsysten || ! isFreeBSDConsole() || ! change_cursorstyle )
     return;
 
   cursor_style = style;
@@ -63,7 +61,7 @@ void FTermFreeBSD::setCursorStyle (CursorStyle style, bool hidden)
   if ( hidden )
     return;
 
-  ioctl(0, CONS_CURSORTYPE, &style);
+  fsysten->ioControl (0, CONS_CURSORTYPE, &style);
 }
 
 //----------------------------------------------------------------------
@@ -73,7 +71,7 @@ bool FTermFreeBSD::isFreeBSDConsole()
 
   keymap_t keymap;
 
-  if ( ioctl(0, GIO_KEYMAP, &keymap) == 0 )
+  if ( fsysten && fsysten->ioControl(0, GIO_KEYMAP, &keymap) == 0 )
     return true;
   else
     return false;
@@ -145,10 +143,11 @@ bool FTermFreeBSD::saveFreeBSDAltKey()
   // Saving the current mapping for the alt key
 
   static constexpr int left_alt = 0x38;
-  int ret;
+  int ret = -1;
   keymap_t keymap;
 
-  ret = ioctl(0, GIO_KEYMAP, &keymap);
+  if ( fsystem )
+    ret = fsysten->ioControl (0, GIO_KEYMAP, &keymap);
 
   if ( ret < 0 )
     return false;
@@ -164,10 +163,11 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
   // Remapping the alt key
 
   static constexpr int left_alt = 0x38;
-  int ret;
+  int ret = -1;
   keymap_t keymap;
 
-  ret = ioctl(0, GIO_KEYMAP, &keymap);
+  if ( fsystem )
+    ret = fsysten->ioControl (0, GIO_KEYMAP, &keymap);
 
   if ( ret < 0 )
     return false;
@@ -175,7 +175,8 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
   // map to meta key
   keymap.key[left_alt].map[0] = key;
 
-  if ( (keymap.n_keys > 0) && (ioctl(0, PIO_KEYMAP, &keymap) < 0) )
+  if ( (keymap.n_keys > 0)
+    && fsystem && (fsysten->ioControl(0, PIO_KEYMAP, &keymap) < 0) )
     return false;
   else
     return true;

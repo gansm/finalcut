@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -40,6 +40,7 @@ namespace
 {
 
 typedef unsigned char  uChar;
+typedef unsigned short uShort;
 typedef unsigned int   uInt;
 typedef unsigned long  uLong;
 typedef uint8_t        uInt8;

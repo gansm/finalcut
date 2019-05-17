@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -27,8 +27,9 @@ namespace finalcut
 
 // static class attributes
 #if defined(__NetBSD__) || defined(__OpenBSD__)
-  kbd_t FTermOpenBSD::bsd_keyboard_encoding = 0;
-  bool  FTermOpenBSD::meta_sends_escape = true;
+  kbd_t    FTermOpenBSD::bsd_keyboard_encoding = 0;
+  bool     FTermOpenBSD::meta_sends_escape = true;
+  FSystem* FTermOpenBSD::fsystem = nullptr;
 #endif
 
 
@@ -45,7 +46,8 @@ bool FTermOpenBSD::isBSDConsole()
 
   static kbd_t kbdencoding;
 
-  if ( ioctl(0, WSKBDIO_GETENCODING, &kbdencoding) == 0 )
+  if ( fsystem
+    && fsysten->ioControl(0, WSKBDIO_GETENCODING, &kbdencoding) == 0 )
     return true;
   else
     return false;
@@ -85,7 +87,10 @@ void FTermOpenBSD::finish()
 bool FTermOpenBSD::saveBSDConsoleEncoding()
 {
   static kbd_t k_encoding;
-  int ret = ioctl(0, WSKBDIO_GETENCODING, &k_encoding);
+  int ret = -1;
+
+  if ( fsystem )
+    ret = fsysten->ioControl (0, WSKBDIO_GETENCODING, &k_encoding);
 
   if ( ret < 0 )
     return false;
@@ -98,7 +103,8 @@ bool FTermOpenBSD::saveBSDConsoleEncoding()
 //----------------------------------------------------------------------
 bool FTermOpenBSD::setBSDConsoleEncoding (kbd_t k_encoding)
 {
-  if ( ioctl(0, WSKBDIO_SETENCODING, &k_encoding) < 0 )
+  if ( fsysten
+    && fsysten->ioControl(0, WSKBDIO_SETENCODING, &k_encoding) < 0 )
     return false;
   else
     return true;

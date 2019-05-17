@@ -32,6 +32,7 @@ FTermDetection::terminalType FTermDetection::terminal_type = \
 FTermDetection::colorEnv     FTermDetection::color_env;
 FTermDetection::secondaryDA  FTermDetection::secondary_da;
 FTermData*     FTermDetection::fterm_data = nullptr;
+FSystem*       FTermDetection::fsystem = nullptr;
 char           FTermDetection::termtype[256] = { };
 char           FTermDetection::ttytypename[256] = { };
 bool           FTermDetection::decscusr_support;
@@ -88,6 +89,12 @@ FTermDetection::~FTermDetection()  // destructor
 void FTermDetection::setFTermData (FTermData* data)
 {
   fterm_data = data;
+}
+
+//----------------------------------------------------------------------
+void FTermDetection::setFSystem (FSystem* fsys)
+{
+  fsystem = fsys;
 }
 
 //----------------------------------------------------------------------
@@ -180,7 +187,7 @@ bool FTermDetection::getTTYtype()
 
   std::FILE *fp;
 
-  if ( (fp = std::fopen(ttytypename, "r")) != 0 )
+  if ( fsystem && (fp = fsystem->fopen(ttytypename, "r")) != 0 )
   {
     char* p;
     char  str[BUFSIZ];
@@ -210,12 +217,12 @@ bool FTermDetection::getTTYtype()
         // Save name in termtype
         std::strncpy (termtype, type, sizeof(termtype));
         termtype[sizeof(termtype) - 1] = '\0';
-        std::fclose(fp);
+        fsystem->fclose(fp);
         return true;
       }
     }
 
-    std::fclose(fp);
+    fsystem->fclose(fp);
   }
 
   return false;

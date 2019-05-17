@@ -306,9 +306,9 @@ void FFileDialog::adjustSize()
   Y = 1 + int((max_height - getHeight()) / 3);
   setPos(FPoint(X, Y), false);
   filebrowser.setHeight (h - 8, false);
-  hidden.setY (int(h) - 4, false);
-  cancel.setY (int(h) - 4, false);
-  open.setY (int(h) - 4, false);
+  hidden_check.setY (int(h) - 4, false);
+  cancel_btn.setY (int(h) - 4, false);
+  open_btn.setY (int(h) - 4, false);
   FDialog::adjustSize();
   printPath(directory);
 }
@@ -355,18 +355,18 @@ inline void FFileDialog::widgetSettings (const FPoint& pos)
   filebrowser.setGeometry (FPoint(2, 3), FSize(38, 6));
   printPath (directory);
 
-  hidden.setText ("&hidden files");
-  hidden.setGeometry (FPoint(2, 10), FSize(16, 1));
+  hidden_check.setText ("&hidden files");
+  hidden_check.setGeometry (FPoint(2, 10), FSize(16, 1));
 
-  cancel.setText ("&Cancel");
-  cancel.setGeometry(FPoint(19, 10), FSize(9, 1));
+  cancel_btn.setText ("&Cancel");
+  cancel_btn.setGeometry(FPoint(19, 10), FSize(9, 1));
 
   if ( dlg_type == FFileDialog::Save )
-    open.setText ("&Save");
+    open_btn.setText ("&Save");
   else
-    open.setText ("&Open");
+    open_btn.setText ("&Open");
 
-  open.setGeometry(FPoint(30, 10), FSize(9, 1));
+  open_btn.setGeometry(FPoint(30, 10), FSize(9, 1));
   setGeometry (pos, getSize());
 }
 
@@ -391,19 +391,19 @@ void FFileDialog::initCallbacks()
     F_METHOD_CALLBACK (this, &FFileDialog::cb_processClicked)
   );
 
-  hidden.addCallback
+  hidden_check.addCallback
   (
     "toggled",
     F_METHOD_CALLBACK (this, &FFileDialog::cb_processShowHidden)
   );
 
-  cancel.addCallback
+  cancel_btn.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &FFileDialog::cb_processCancel)
   );
 
-  open.addCallback
+  open_btn.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &FFileDialog::cb_processOpen)

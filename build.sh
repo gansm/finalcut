@@ -35,7 +35,7 @@ then
       autoreconf --install --force
     else
       echo "Build failed, please install autoconf first"
-      exit -1
+      exit 255
     fi
   fi
 fi
@@ -46,7 +46,7 @@ case "$1" in
     if ! ./configure --prefix="$PREFIX" CXXFLAGS="-O2" # "-O3 -fno-rtti"
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
-      exit -1
+      exit 255
     fi
     ;;
 
@@ -54,7 +54,7 @@ case "$1" in
     if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -pedantic"
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
-      exit -1
+      exit 255
     fi
     ;;
 
@@ -62,7 +62,7 @@ case "$1" in
     if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -Weffc++ -pedantic -pedantic-errors -Wextra -Wformat-nonliteral -Wformat-security -Wformat-y2k -Wimport -Winit-self -Winvalid-pch -Wlong-long -Wmissing-braces -Wmissing-field-initializers -Wmissing-format-attribute -Wmissing-include-dirs -Wmissing-noreturn -Wpacked -Wpadded -Wparentheses -Wpointer-arith -Wredundant-decls -Wreturn-type -Wsequence-point -Wshadow -Wsign-compare -fstack-protector -Wstrict-aliasing -Wstrict-aliasing=3 -Wswitch -Wswitch-enum -Wtrigraphs -Wuninitialized -Wunknown-pragmas -Wunreachable-code -Wunused -Wunused-function -Wunused-label -Wunused-parameter -Wunused-value -Wunused-variable -Wvariadic-macros -Wvolatile-register-var -Wwrite-strings -Wsign-promo -Woverloaded-virtual -Wstrict-null-sentinel -fext-numeric-literals -Wreorder -Wnoexcept -Wnarrowing -Wliteral-suffix -Wctor-dtor-privacy -ftree-loop-distribute-patterns -Wmemset-transposed-args"
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
-      exit -1
+      exit 255
     fi
     ;;
 
@@ -70,7 +70,7 @@ case "$1" in
     if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -pg -O0 -DDEBUG -W -Wall -pedantic"
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
-      exit -1
+      exit 255
     fi
     ;;
 
@@ -78,7 +78,7 @@ case "$1" in
     if ! ./configure --prefix="$PREFIX" --with-profiler
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
-      exit -1
+      exit 255
     fi
     ;;
 
@@ -86,7 +86,7 @@ case "$1" in
     if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG" --with-unit-test
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
-      exit -1
+      exit 255
     fi
     ;;
 
@@ -94,7 +94,7 @@ case "$1" in
     if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG" --with-unit-test --with-gcov
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
-      exit -1
+      exit 255
     fi
     ;;
 

@@ -43,6 +43,8 @@ INCLUDE_HEADERS = \
 	fscrollview.h \
 	fstatusbar.h \
 	fstring.h \
+	fsystem.h \
+	fsystemimpl.h \
 	fmouse.h \
 	fkeyboard.h \
 	ftermcap.h \
@@ -107,6 +109,8 @@ OBJS = \
 	ftextview.o \
 	fstatusbar.o \
 	fmouse.o \
+	fsystem.o \
+	fsystemimpl.o \
 	fkeyboard.o \
 	ftermcap.o \
 	fterm.o \

@@ -36,6 +36,7 @@
 #endif
 
 #include <sys/ioctl.h>
+#include "final/fsystem.h"
 
 #if defined(__NetBSD__) || defined(__OpenBSD__)
   #include <sys/time.h>
@@ -74,6 +75,7 @@ class FTermOpenBSD final
     static bool        isBSDConsole();
 
     // Mutators
+    static void        setFSystem (FSystem*);
     static void        disableMetaSendsEscape();
     static void        enableMetaSendsEscape();
 
@@ -92,6 +94,7 @@ class FTermOpenBSD final
     // Data Members
     static kbd_t       bsd_keyboard_encoding;
     static bool        meta_sends_escape;
+    static FSystem*    fsystem;
 #endif  // defined(__NetBSD__) || defined(__OpenBSD__)
 };
 #pragma pack(pop)
@@ -103,6 +106,10 @@ inline const char* FTermOpenBSD::getClassName() const
 
 //----------------------------------------------------------------------
 #if defined(__NetBSD__) || defined(__OpenBSD__)
+inline void FTermOpenBSD::setFSystem (FSystem* fsys)
+{ fsystem = fsys; }
+
+//----------------------------------------------------------------------
 inline void FTermOpenBSD::enableMetaSendsEscape()
 { meta_sends_escape = true; }
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 find ../src/ \
      ../src/include/final/ \

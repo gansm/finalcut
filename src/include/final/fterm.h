@@ -1,5 +1,5 @@
 /***********************************************************************
-* fterm.h - Base class for terminal detection and control              *
+* fterm.h - Base class for terminal control                            *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
@@ -124,6 +124,8 @@
 #include "final/fpoint.h"
 #include "final/frect.h"
 #include "final/fstring.h"
+#include "final/fsystem.h"
+#include "final/fsystemimpl.h"
 #include "final/ftermcap.h"
 #include "final/ftermcapquirks.h"
 #include "final/ftermdata.h"
@@ -189,6 +191,8 @@ class FTerm final
     characterSub&          getCharSubstitutionMap();
 
 #if DEBUG
+    static FTermData*      getFTermData();
+    static FTermDetection* getFTermDetection();
     FTermDebugData&        getFTermDebugData();
 #endif
 
@@ -393,6 +397,7 @@ class FTerm final
 
     // Data Members
     static FTermData*      data;
+    static FSystem*        fsys;
     static FTermcap::tcap_map* tcap;
     static FOptiMove*      opti_move;
     static FOptiAttr*      opti_attr;
@@ -459,6 +464,14 @@ inline FTerm::characterSub& FTerm::getCharSubstitutionMap()
 { return data->getCharSubstitutionMap(); }
 
 #if DEBUG
+//----------------------------------------------------------------------
+inline FTermData* FTerm::getFTermData()
+{ return data; }
+
+//----------------------------------------------------------------------
+inline FTermDetection* FTerm::getFTermDetection()
+{ return term_detection; }
+
 //----------------------------------------------------------------------
 inline FTermDebugData& FTerm::getFTermDebugData()
 { return *debug_data; }

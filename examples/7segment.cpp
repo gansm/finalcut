@@ -38,7 +38,7 @@ class SegmentView : public finalcut::FDialog
     virtual void draw() override;
 
     // Data Members
-    std::map<wchar_t, sevenSegment> code;
+    std::map<wchar_t, sevenSegment> code{};
     finalcut::FString line[3];
     finalcut::FLineEdit Input{"0123", this};
     finalcut::FButton Exit{"E&xit", this};

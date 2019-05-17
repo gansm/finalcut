@@ -36,6 +36,7 @@
 #endif
 
 #include "final/fc.h"
+#include "final/fsystem.h"
 #include "final/ftypes.h"
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
@@ -82,6 +83,7 @@ class FTermFreeBSD final
     static bool        isFreeBSDConsole();
 
     // Mutators
+    static void        setFSystem (FSystem*);
     static void        setCursorStyle (CursorStyle, bool);
     static void        enableChangeCursorStyle();
     static void        disableChangeCursorStyle();
@@ -106,6 +108,7 @@ class FTermFreeBSD final
     static CursorStyle cursor_style;
     static bool        change_cursorstyle;
     static bool        meta_sends_escape;
+    static FSystem*    fsystem;
 };
 #pragma pack(pop)
 
@@ -116,6 +119,10 @@ inline const char* FTermFreeBSD::getClassName() const
 
 //----------------------------------------------------------------------
 #if defined(__FreeBSD__) || defined(__DragonFly__)
+inline void FTermFreeBSD::setFSystem (FSystem* fsys)
+{ fsystem = fsys; }
+
+//----------------------------------------------------------------------
 inline void FTermFreeBSD::enableChangeCursorStyle()
 { change_cursorstyle = true; }
 

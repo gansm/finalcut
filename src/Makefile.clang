@@ -39,6 +39,8 @@ INCLUDE_HEADERS = \
 	fprogressbar.h \
 	fradiobutton.h \
 	frect.h \
+	fsystem.h \
+	fsystemimpl.h \
 	fscrollbar.h \
 	fscrollview.h \
 	fstatusbar.h \
@@ -107,6 +109,8 @@ OBJS = \
 	ftextview.o \
 	fstatusbar.o \
 	fmouse.o \
+	fsystem.o \
+	fsystemimpl.o \
 	fkeyboard.o \
 	ftermcap.o \
 	fterm.o \

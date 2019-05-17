@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 test -f 8x16graph.pcf.gz && rm 8x16graph.pcf.gz
 bdftopcf -o 8x16graph.pcf 8x16graph.bdf

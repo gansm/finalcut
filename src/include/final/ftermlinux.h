@@ -53,6 +53,7 @@
 
 #include "final/fc.h"
 #include "final/fcharmap.h"
+#include "final/fsystem.h"
 #include "final/ftermdetection.h"
 #include "final/ftypes.h"
 
@@ -88,6 +89,7 @@ class FTermLinux final
 
     // Mutators
     static void          setFTermData (FTermData*);
+    static void          setFSystem (FSystem*);
     static void          setFTermDetection (FTermDetection*);
     static char*         setCursorStyle (fc::linuxConsoleCursorStyle, bool);
     static bool          setPalette (FColor, int, int, int);
@@ -181,6 +183,7 @@ class FTermLinux final
     static bool                   half_block_character;
     static bool                   has_saved_palette;
     static FTermData*             fterm_data;
+    static FSystem*               fsystem;
     static FTermDetection*        term_detection;
     static fc::linuxConsoleCursorStyle
                                   linux_console_cursor_style;
@@ -206,6 +209,10 @@ inline int FTermLinux::getFramebufferBpp()
 //----------------------------------------------------------------------
 inline void FTermLinux::setFTermData (FTermData* data)
 { fterm_data = data; }
+
+//----------------------------------------------------------------------
+inline void FTermLinux::setFSystem (FSystem* fsys)
+{ fsystem = fsys; }
 
 //----------------------------------------------------------------------
 inline void FTermLinux::setFTermDetection (FTermDetection* td)

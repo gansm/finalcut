@@ -27,6 +27,8 @@ libfinal_la_SOURCES = \
 	flistview.cpp \
 	fmenu.cpp \
 	fmouse.cpp \
+	fsystem.cpp \
+	fsystemimpl.cpp \
 	fkeyboard.cpp \
 	fdialoglistmenu.cpp \
 	fmenubar.cpp \
@@ -112,6 +114,8 @@ finalcutinclude_HEADERS = \
 	include/final/fscrollview.h \
 	include/final/fstatusbar.h \
 	include/final/fstring.h \
+	include/final/fsystem.h \
+	include/final/fsystemimpl.h \
 	include/final/ftermcap.h \
 	include/final/ftermcapquirks.h \
 	include/final/ftermxterminal.h \

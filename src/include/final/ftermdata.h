@@ -61,13 +61,13 @@ class FTermData final
     typedef std::unordered_map<wchar_t, wchar_t> characterSub;
 
     // Constructors
-    FTermData() = default;
+    FTermData() {}
 
     // Disable copy constructor
     FTermData (const FTermData&) = delete;
 
     // Destructor
-    ~FTermData() = default;
+    ~FTermData() {}
 
     // Disable assignment operator (=)
     FTermData& operator = (const FTermData&) = delete;

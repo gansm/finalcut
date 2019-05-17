@@ -1,5 +1,5 @@
 /***********************************************************************
-* fterm.cpp - Base class for terminal detection and control            *
+* fterm.cpp - Base class for terminal control                          *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
@@ -43,6 +43,7 @@ int (*FTerm::Fputchar)(int);
 // static class attributes
 FTerm::initializationValues FTerm::init_values;
 FTermData*          FTerm::data           = nullptr;
+FSystem*            FTerm::fsys           = nullptr;
 FTermcap::tcap_map* FTerm::tcap           = nullptr;
 FOptiMove*          FTerm::opti_move      = nullptr;
 FOptiAttr*          FTerm::opti_attr      = nullptr;
@@ -354,12 +355,12 @@ int FTerm::openConsole()
   if ( fd >= 0 )  // console is already opened
     return 0;
 
-  if ( ! *termfilename )
+  if ( ! *termfilename || ! fsys )
     return 0;
 
   for (std::size_t i = 0; terminal_devices[i] != 0; i++)
   {
-    fd = open(terminal_devices[i], O_RDWR, 0);
+    fd = fsys->open(terminal_devices[i], O_RDWR, 0);
     data->setTTYFileDescriptor(fd);
 
     if ( fd >= 0 )
@@ -373,12 +374,14 @@ int FTerm::openConsole()
 int FTerm::closeConsole()
 {
   int fd = data->getTTYFileDescriptor();
+  int ret = -1;
 
   if ( fd < 0 )  // console is already closed
     return 0;
 
-  // use 'close' from the global namespace
-  int ret = ::close (fd);
+  if ( fsys )
+    ret = fsys->close(fd);  // close console
+
   data->setTTYFileDescriptor(-1);
 
   if ( ret == 0 )
@@ -502,7 +505,11 @@ void FTerm::detectTermSize()
   }
 
   auto& term_geometry = data->getTermGeometry();
-  ret = ioctl (fd, TIOCGWINSZ, &win_size);
+
+  if ( fsys )
+    ret = fsys->ioControl (fd, TIOCGWINSZ, &win_size);
+  else
+    ret = -1;
 
   if ( ret != 0 || win_size.ws_col == 0 || win_size.ws_row == 0 )
   {
@@ -519,8 +526,9 @@ void FTerm::detectTermSize()
     term_geometry.setRect(1, 1, win_size.ws_col, win_size.ws_row);
   }
 
-  opti_move->setTermSize ( term_geometry.getWidth()
-                         , term_geometry.getHeight() );
+  if ( opti_move )
+    opti_move->setTermSize ( term_geometry.getWidth()
+                           , term_geometry.getHeight() );
 
   if ( close_after_detect )
     closeConsole();
@@ -1398,7 +1406,7 @@ void FTerm::init_term_encoding()
   int stdout_no = FTermios::getStdOut();
   const char* termtype = data->getTermType();
 
-  if ( isatty(stdout_no)
+  if ( fsys->isTTY(stdout_no)
     && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
   {
     data->setUTF8Console(true);
@@ -1408,7 +1416,7 @@ void FTerm::init_term_encoding()
     setUTF8(true);
     keyboard->enableUTF8();
   }
-  else if ( isatty(stdout_no)
+  else if ( fsys->isTTY(stdout_no)
          && (std::strlen(termtype) > 0)
          && (TCAP(fc::t_exit_alt_charset_mode) != 0) )
   {
@@ -1733,6 +1741,7 @@ inline void FTerm::allocationValues()
   try
   {
     data           = new FTermData();
+    fsys           = new FSystemImpl;
     opti_move      = new FOptiMove();
     opti_attr      = new FOptiAttr();
     term_detection = new FTermDetection();
@@ -1796,6 +1805,9 @@ inline void FTerm::deallocationValues()
   if ( opti_move )
     delete opti_move;
 
+  if ( fsys )
+    delete fsys;
+
   if ( data )
     delete data;
 }
@@ -1826,6 +1838,7 @@ void FTerm::init (bool disable_alt_screen)
 
   // Terminal detection
   term_detection->setFTermData(data);
+  term_detection->setFSystem(fsys);
   term_detection->detect();
   setTermType (term_detection->getTermType());
 
@@ -1915,6 +1928,7 @@ void FTerm::initOSspecifics()
 {
 #if defined(__linux__)
   linux->setFTermData(data);
+  linux->setFSystem(fsys);
   linux->setFTermDetection(term_detection);
   linux->init();    // Initialize Linux console
 
@@ -1925,6 +1939,8 @@ void FTerm::initOSspecifics()
 #endif  // defined(__linux__)
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
+  freebsd->setFSystem(fsys);
+
   if ( init_values.meta_sends_escape )
     freebsd->enableMetaSendsEscape();
   else
@@ -1937,6 +1953,8 @@ void FTerm::initOSspecifics()
 
   freebsd->init();  // Initialize BSD console
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
+  openbsd->setFSystem(fsys);
+
   if ( init_values.meta_sends_escape )
     openbsd->enableMetaSendsEscape();
   else
@@ -1966,7 +1984,7 @@ void FTerm::initBaudRate()
   uInt baud = FTermios::getBaudRate();
   data->setBaudrate(baud);
 
-  if ( isatty(stdout_no) )
+  if ( fsys->isTTY(stdout_no) )
     opti_move->setBaudRate(int(baud));
 }
 
@@ -2120,7 +2138,7 @@ void FTerm::signal_handler (int signum)
 //----------------------------------------------------------------------
 uInt env2uint (const char* env)
 {
-  FString str(env);
+  FString str(getenv(env));
 
   if ( str.isEmpty() )
     return 0;

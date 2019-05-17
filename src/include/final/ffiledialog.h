@@ -199,9 +199,9 @@ class FFileDialog : public FDialog
     FString     filter_pattern{};
     FLineEdit   filename{this};
     FListBox    filebrowser{this};
-    FCheckBox   hidden{this};
-    FButton     cancel{this};
-    FButton     open{this};
+    FCheckBox   hidden_check{this};
+    FButton     cancel_btn{this};
+    FButton     open_btn{this};
     DialogType  dlg_type{FFileDialog::Open};
     bool        show_hidden{false};
 

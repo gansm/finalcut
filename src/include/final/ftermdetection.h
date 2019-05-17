@@ -43,6 +43,7 @@
 
 #include "final/fc.h"
 #include "final/fconfig.h"
+#include "final/fsystem.h"
 #include "final/ftermdata.h"
 #include "final/ftermios.h"
 #include "final/ftypes.h"
@@ -154,6 +155,7 @@ class FTermDetection final
     static void           setTmuxTerm (bool);
     static void           setTerminalDetection (bool);
     static void           setFTermData (FTermData*);
+    static void           setFSystem (FSystem*);
     static void           setTtyTypeFileName (char[]);
 
     // Methods
@@ -210,6 +212,7 @@ class FTermDetection final
     static const FString* answer_back;
     static const FString* sec_da;
     static FTermData*     fterm_data;
+    static FSystem*       fsystem;
     static terminalType   terminal_type;
 
     static struct colorEnv
