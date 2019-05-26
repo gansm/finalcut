@@ -995,6 +995,9 @@ void FListView::onMouseDown (FMouseEvent* ev)
     }
     else if ( mouse_y > 1 && mouse_y < int(getHeight()) )  // List
     {
+      if ( itemlist.empty () )
+        return;
+
       int indent = 0;
       int new_pos = first_visible_line.getPosition() + mouse_y - 2;
 
@@ -1057,6 +1060,9 @@ void FListView::onMouseUp (FMouseEvent* ev)
       }
       else if ( mouse_y > 1 && mouse_y < int(getHeight()) )  // List
       {
+        if (itemlist.empty ())
+          return;
+
         int indent = 0;
         auto item = getCurrentItem();
 
@@ -1162,6 +1168,9 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
     && mouse_y > 1 && mouse_y < int(getHeight()) )
   {
     if ( first_visible_line.getPosition() + mouse_y - 1 > int(getCount()) )
+      return;
+
+    if ( itemlist.empty () )
       return;
 
     auto item = getCurrentItem();
@@ -2184,6 +2193,9 @@ void FListView::processChanged()
 //----------------------------------------------------------------------
 inline void FListView::keySpace()
 {
+  if ( itemlist.empty () )
+    return;
+
   auto item = getCurrentItem();
 
   if ( item->isCheckable() )
@@ -2193,6 +2205,9 @@ inline void FListView::keySpace()
 //----------------------------------------------------------------------
 inline void FListView::keyLeft (int& first_line_position_before)
 {
+  if ( itemlist.empty () )
+    return;
+
   int position_before = current_iter.getPosition();
   auto item = getCurrentItem();
 
@@ -2247,6 +2262,9 @@ inline void FListView::keyLeft (int& first_line_position_before)
 //----------------------------------------------------------------------
 inline void FListView::keyRight (int& first_line_position_before)
 {
+  if ( itemlist.empty () )
+    return;
+
   int xoffset_end = int(max_line_width) - int(getClientWidth());
   auto item = getCurrentItem();
 
@@ -2291,6 +2309,9 @@ inline void FListView::keyEnd()
 //----------------------------------------------------------------------
 inline bool FListView::keyPlus()
 {
+  if ( itemlist.empty () )
+    return false;
+
   auto item = getCurrentItem();
 
   if ( tree_view && item->isExpandable() && ! item->isExpand() )
@@ -2306,6 +2327,9 @@ inline bool FListView::keyPlus()
 //----------------------------------------------------------------------
 inline bool FListView::keyMinus()
 {
+  if ( itemlist.empty () )
+    return false;
+
   auto item = getCurrentItem();
 
   if ( tree_view && item->isExpandable() && item->isExpand() )
