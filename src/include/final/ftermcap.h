@@ -64,7 +64,6 @@
 
 
 // FTermcap string macro
-//#define TCAP(...)  tcap_strings[__VA_ARGS__].string
 #define TCAP(...)  FTermcap::strings[__VA_ARGS__].string
 
 namespace finalcut
