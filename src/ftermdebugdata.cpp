@@ -27,7 +27,8 @@
 
 namespace finalcut
 {
-
+  
+#if DEBUG
 // static class attributes
 FTermData*      FTermDebugData::data           = nullptr;
 FTermDetection* FTermDebugData::term_detection = nullptr;
@@ -43,6 +44,7 @@ void FTermDebugData::init()
   data = FTerm::getFTermData();
   term_detection = FTerm::getFTermDetection();
 }
+#endif  // DEBUG
 
 }  // namespace finalcut
 
