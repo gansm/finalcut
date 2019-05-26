@@ -60,7 +60,6 @@ class FTermXTerminal final
     virtual ~FTermXTerminal();
 
     // Mutators
-    static void           setFTermDetection (FTermDetection*);
     static void           redefineDefaultColors (bool);
     static void           setCursorStyle (fc::xtermCursorStyle);
     static void           setFont (const FString&);
@@ -94,6 +93,7 @@ class FTermXTerminal final
     static bool           hasTitle();
 
     // Methods
+    static void           init();
     static void           setDefaults();
     static void           resetColorMap();
     static void           resetForeground();
@@ -150,7 +150,6 @@ class FTermXTerminal final
     static const FString*       mouse_foreground_color;
     static const FString*       mouse_background_color;
     static const FString*       highlight_background_color;
-    static FTermcap::tcap_map*  tcap;
     static FTermDetection*      term_detection;
     static fc::xtermCursorStyle cursor_style;
 };
@@ -160,10 +159,6 @@ class FTermXTerminal final
 //----------------------------------------------------------------------
 inline const char* FTermXTerminal::getClassName() const
 { return "FTermXTerminal"; }
-
-//----------------------------------------------------------------------
-inline void FTermXTerminal::setFTermDetection (FTermDetection* td)
-{ term_detection = td; }
 
 //----------------------------------------------------------------------
 inline void FTermXTerminal::redefineDefaultColors (bool enable)

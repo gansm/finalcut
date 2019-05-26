@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2018 Markus Gans                                      *
+* Copyright 2013-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -362,7 +362,7 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
 {
   // Initialize keyboard
-  keyboard = FVTerm::getKeyboard();
+  keyboard = FVTerm::getFKeyboard();
 
   // Set the keyboard keypress timeout
   if ( keyboard )
@@ -377,7 +377,7 @@ void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
   }
 
   // Initialize mouse control
-  mouse = FVTerm::getMouseControl();
+  mouse = FVTerm::getFMouseControl();
 
   // Set stdin number for a gpm-mouse
   if ( mouse )

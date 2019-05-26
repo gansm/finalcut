@@ -75,7 +75,6 @@ class FTermOpenBSD final
     static bool        isBSDConsole();
 
     // Mutators
-    static void        setFSystem (FSystem*);
     static void        disableMetaSendsEscape();
     static void        enableMetaSendsEscape();
 
@@ -106,10 +105,6 @@ inline const char* FTermOpenBSD::getClassName() const
 
 //----------------------------------------------------------------------
 #if defined(__NetBSD__) || defined(__OpenBSD__)
-inline void FTermOpenBSD::setFSystem (FSystem* fsys)
-{ fsystem = fsys; }
-
-//----------------------------------------------------------------------
 inline void FTermOpenBSD::enableMetaSendsEscape()
 { meta_sends_escape = true; }
 

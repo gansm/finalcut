@@ -41,7 +41,6 @@ const FString*       FTermXTerminal::cursor_color = nullptr;
 const FString*       FTermXTerminal::mouse_foreground_color = nullptr;
 const FString*       FTermXTerminal::mouse_background_color = nullptr;
 const FString*       FTermXTerminal::highlight_background_color = nullptr;
-FTermcap::tcap_map*  FTermXTerminal::tcap = nullptr;
 FTermDetection*      FTermXTerminal::term_detection = nullptr;
 fc::xtermCursorStyle FTermXTerminal::cursor_style = fc::unknown_cursor_style;
 
@@ -58,8 +57,6 @@ FTermXTerminal::FTermXTerminal()
   mouse_support        = \
   meta_sends_esc       = \
   xterm_default_colors = false;
-
-  tcap = FTermcap::getTermcapMap();
 }
 
 //----------------------------------------------------------------------
@@ -227,6 +224,12 @@ void FTermXTerminal::metaSendsESC (bool enable)
     enableXTermMetaSendsESC();
   else
     disableXTermMetaSendsESC();
+}
+
+//----------------------------------------------------------------------
+void FTermXTerminal::init()
+{
+  term_detection = FTerm::getFTermDetection();
 }
 
 //----------------------------------------------------------------------

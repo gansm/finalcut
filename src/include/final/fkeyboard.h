@@ -116,11 +116,6 @@ class FKeyboard final
     void                disableUTF8();
     void                enableMouseSequences();
     void                disableMouseSequences();
-
-#if defined(__linux__)
-    void                setFTermLinux (FTermLinux*);
-#endif
-
     void                setPressCommand (FKeyboardCommand);
     void                setReleaseCommand (FKeyboardCommand);
     void                setEscPressedCommand (FKeyboardCommand);
@@ -129,6 +124,7 @@ class FKeyboard final
     bool                isInputDataPending();
 
     // Methods
+    static void         init();
     bool&               unprocessedInput();
     bool                isKeyPressed();
     void                clearKeyBuffer();
@@ -228,12 +224,6 @@ inline void FKeyboard::enableMouseSequences()
 //----------------------------------------------------------------------
 inline void FKeyboard::disableMouseSequences()
 { mouse_support = false; }
-
-#if defined(__linux__)
-//----------------------------------------------------------------------
-inline void FKeyboard::setFTermLinux (FTermLinux* linux_obj)
-{ linux = linux_obj; }
-#endif
 
 //----------------------------------------------------------------------
 inline void FKeyboard::setPressCommand (FKeyboardCommand cmd)

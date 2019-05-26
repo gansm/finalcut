@@ -137,7 +137,7 @@ bool FTermLinux::isLinuxConsole()
   // Check if it's a Linux console
 
   if ( ! fsystem )
-    return false;
+    fsystem = FTerm::getFSystem();
 
   char arg = 0;
   int fd_tty = FTerm::getTTYFileDescriptor();
@@ -153,6 +153,9 @@ void FTermLinux::init()
 {
   // initialize Linux console
 
+  fterm_data = FTerm::getFTermData();
+  fsystem = FTerm::getFSystem();
+  term_detection = FTerm::getFTermDetection();
   screen_unicode_map.entries = nullptr;
   screen_font.data = nullptr;
 
@@ -480,7 +483,7 @@ int FTermLinux::getFramebuffer_bpp()
   struct fb_fix_screeninfo fb_fix;
 
   if ( ! fsystem )
-    return -1;
+    fsystem = FTerm::getFSystem();
 
   if ( (fd = fsystem->open(fb, O_RDWR)) < 0 )
   {
@@ -737,7 +740,7 @@ inline uInt16 FTermLinux::getInputStatusRegisterOne()
   // Gets the VGA input-status-register-1
 
   if ( ! fsystem )
-    return 0x3da;
+    fsystem = FTerm::getFSystem();
 
   // Miscellaneous output (read port)
   static constexpr uInt16 misc_read = 0x3cc;
@@ -754,7 +757,7 @@ uChar FTermLinux::readAttributeController (uChar index)
   // Reads a byte from the attribute controller from a given index
 
   if ( ! fsystem )
-    return 0;
+    fsystem = FTerm::getFSystem();
 
   uChar res;
   // Attribute controller (write port)
@@ -782,7 +785,7 @@ void FTermLinux::writeAttributeController (uChar index, uChar data)
   // Writes a byte from the attribute controller from a given index
 
   if ( ! fsystem )
-    return;
+    fsystem = FTerm::getFSystem();
 
   // Attribute controller (write port)
   static constexpr uInt16 attrib_cntlr_write = 0x3c0;
@@ -822,7 +825,7 @@ int FTermLinux::setBlinkAsIntensity (bool enable)
   // That permits 16 colors for background
 
   if ( ! fsystem )
-    return -1;
+    fsystem = FTerm::getFSystem();
 
   int fd_tty = FTerm::getTTYFileDescriptor();
 
@@ -891,7 +894,7 @@ bool FTermLinux::resetVGAPalette()
   // Reset the vga color map
 
   if ( ! fsystem )
-    return false;
+    fsystem = FTerm::getFSystem();
 
   if ( has_saved_palette )
   {

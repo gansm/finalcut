@@ -1,3 +1,7 @@
+2019-05-27  Markus Gans  <guru.mail@muenster.de>
+	* Use the Singleton design pattern to get a single object instance 
+	  via FTerm
+
 2019-05-17  Markus Gans  <guru.mail@muenster.de>
 	* Move system calls to the new class FSystem
 

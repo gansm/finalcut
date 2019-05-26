@@ -324,8 +324,8 @@ class FVTerm
     std::size_t           getLineNumber();
     std::size_t           getColumnNumber();
     static bool           charEncodable (wchar_t);
-    static FKeyboard*     getKeyboard();
-    static FMouseControl* getMouseControl();
+    static FKeyboard*     getFKeyboard();
+    static FMouseControl* getFMouseControl();
     FTerm::initializationValues& getInitValues();
 
     // Mutators
@@ -482,7 +482,6 @@ class FVTerm
     static charData         s_ch;      // shadow character
     static charData         i_ch;      // inherit background character
     static FPoint*          term_pos;  // terminal cursor position
-    static FTermcap::tcap_map* tcap;
     static FKeyboard*       keyboard;
     static bool             terminal_update_complete;
     static bool             terminal_update_pending;
@@ -1076,12 +1075,12 @@ inline bool FVTerm::charEncodable (wchar_t c)
 { return FTerm::charEncodable(c); }
 
 //----------------------------------------------------------------------
-inline FKeyboard* FVTerm::getKeyboard()
-{ return FTerm::getKeyboard(); }
+inline FKeyboard* FVTerm::getFKeyboard()
+{ return FTerm::getFKeyboard(); }
 
 //----------------------------------------------------------------------
-inline FMouseControl* FVTerm::getMouseControl()
-{ return FTerm::getMouseControl(); }
+inline FMouseControl* FVTerm::getFMouseControl()
+{ return FTerm::getFMouseControl(); }
 
 //----------------------------------------------------------------------
 inline FTerm::initializationValues& FVTerm::getInitValues()

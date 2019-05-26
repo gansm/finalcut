@@ -54,7 +54,6 @@ FTerm*               FVTerm::fterm         = nullptr;
 FVTerm::term_area*   FVTerm::vterm         = nullptr;
 FVTerm::term_area*   FVTerm::vdesktop      = nullptr;
 FVTerm::term_area*   FVTerm::active_area   = nullptr;
-FTermcap::tcap_map*  FVTerm::tcap          = nullptr;
 FKeyboard*           FVTerm::keyboard      = nullptr;
 FVTerm::charData     FVTerm::term_attribute;
 FVTerm::charData     FVTerm::next_attribute;
@@ -1873,9 +1872,6 @@ void FVTerm::init (bool disable_alt_screen)
   // next_attribute contains the state of the next printed character
   std::memcpy (&next_attribute, &term_attribute, sizeof(next_attribute));
 
-  // Receive the terminal capabilities
-  tcap = FTermcap::getTermcapMap();
-
   // Create virtual terminal
   FRect term_geometry (0, 0, getColumnNumber(), getLineNumber());
   createVTerm (term_geometry.getSize());
@@ -1886,8 +1882,8 @@ void FVTerm::init (bool disable_alt_screen)
   vdesktop->visible = true;
   active_area = vdesktop;
 
-  // Initialize keyboard
-  keyboard = FTerm::getKeyboard();
+  // Get FKeyboard object
+  keyboard = FTerm::getFKeyboard();
 
   // Hide the input cursor
   hideCursor();

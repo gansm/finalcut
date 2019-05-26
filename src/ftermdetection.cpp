@@ -86,18 +86,6 @@ FTermDetection::~FTermDetection()  // destructor
 
 // public methods of FTermDetection
 //----------------------------------------------------------------------
-void FTermDetection::setFTermData (FTermData* data)
-{
-  fterm_data = data;
-}
-
-//----------------------------------------------------------------------
-void FTermDetection::setFSystem (FSystem* fsys)
-{
-  fsystem = fsys;
-}
-
-//----------------------------------------------------------------------
 void FTermDetection::setTtyTypeFileName (char ttytype_filename[])
 {
   if ( ! ttytype_filename )
@@ -110,6 +98,8 @@ void FTermDetection::setTtyTypeFileName (char ttytype_filename[])
 //----------------------------------------------------------------------
 void FTermDetection::detect()
 {
+  fterm_data = FTerm::getFTermData();
+  fsystem = FTerm::getFSystem();
   deallocation();
 
   // Set the variable 'termtype' to the predefined type of the terminal

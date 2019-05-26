@@ -50,6 +50,7 @@ INCLUDE_HEADERS = \
 	ftermcap.h \
 	fterm.h \
 	ftermdata.h \
+	ftermdebugdata.h \
 	ftermios.h \
 	ftermdetection.h \
 	ftermcapquirks.h \
@@ -114,6 +115,7 @@ OBJS = \
 	fkeyboard.o \
 	ftermcap.o \
 	fterm.o \
+	ftermdebugdata.o \
 	ftermios.o \
 	ftermdetection.o \
 	ftermcapquirks.o \

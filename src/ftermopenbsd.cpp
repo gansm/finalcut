@@ -61,6 +61,8 @@ void FTermOpenBSD::init()
   if ( ! isBSDConsole() )
     return;
 
+  fsystem = FTerm::getFSystem();
+
   if ( meta_sends_escape )
   {
     // save current left alt key mapping

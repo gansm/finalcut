@@ -38,6 +38,9 @@
 namespace finalcut
 {
 
+// class forward declaration
+class FTerm;
+
 #if DEBUG
 //----------------------------------------------------------------------
 // class FTermDebugData
@@ -67,24 +70,15 @@ class FTermDebugData final
 #if defined(__linux__)
     int            getFramebufferBpp();
 #endif
-    // Mutators
-    void           setFTermDetection (FTermDetection*);
-    void           setFTermData (FTermData*);
+
+    // Methods
+    static void    init();
 
   private:
     // Data Members
-    FTermDetection* term_detection{nullptr};
-    FTermData*      data{nullptr};
+    static FTermData*      data;
+    static FTermDetection* term_detection;
 };
-
-// FTermDebugData inline functions
-//----------------------------------------------------------------------
-inline void FTermDebugData::setFTermDetection (FTermDetection* obj)
-{ term_detection = obj; }
-
-//----------------------------------------------------------------------
-inline void FTermDebugData::setFTermData (FTermData* obj)
-{ data = obj; }
 
 //----------------------------------------------------------------------
 inline const FString& FTermDebugData::getAnswerbackString()

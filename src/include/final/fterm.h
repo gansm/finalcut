@@ -176,12 +176,9 @@ class FTerm final
 
     // Accessors
     virtual const char*    getClassName() const;
-    static FKeyboard*      getKeyboard();
-    static FMouseControl*  getMouseControl();
     static std::size_t     getLineNumber();
     static std::size_t     getColumnNumber();
     static const FString   getKeyName (FKey);
-    static FOptiMove*      getFOptiMove();
     static int             getTTYFileDescriptor();
     static char*           getTermType();
     static char*           getTermFileName();
@@ -190,9 +187,24 @@ class FTerm final
     initializationValues&  getInitValues();
     characterSub&          getCharSubstitutionMap();
 
-#if DEBUG
     static FTermData*      getFTermData();
+    static FSystem*        getFSystem();
+    static FOptiMove*      getFOptiMove();
+    static FOptiAttr*      getFOptiAttr();
     static FTermDetection* getFTermDetection();
+    static FTermXTerminal* getFTermXTerminal();
+    static FKeyboard*      getFKeyboard();
+    static FMouseControl*  getFMouseControl();
+
+#if defined(__linux__)
+    static FTermLinux*     getFTermLinux();
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
+    static FTermFreeBSD*   getFTermFreeBSD();
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
+    static FTermOpenBSD*   getFTermOpenBSD();
+#endif
+
+#if DEBUG
     FTermDebugData&        getFTermDebugData();
 #endif
 
@@ -231,6 +243,7 @@ class FTerm final
     static bool            canChangeColorPalette();
 
     // Mutators
+    static void            setFSystem (FSystem*);
     static void            setTermType (const char[]);
     static void            setInsertCursor (bool);
     static void            redefineDefaultColors (bool);
@@ -398,7 +411,6 @@ class FTerm final
     // Data Members
     static FTermData*      data;
     static FSystem*        fsys;
-    static FTermcap::tcap_map* tcap;
     static FOptiMove*      opti_move;
     static FOptiAttr*      opti_attr;
     static FTermDetection* term_detection;
@@ -428,16 +440,8 @@ inline const char* FTerm::getClassName() const
 { return "FTerm"; }
 
 //----------------------------------------------------------------------
-inline FKeyboard* FTerm::getKeyboard()
-{ return ( keyboard ) ? keyboard : 0; }
-
-//----------------------------------------------------------------------
-inline FMouseControl* FTerm::getMouseControl()
-{ return ( mouse ) ? mouse : 0; }
-
-//----------------------------------------------------------------------
 inline int FTerm::getTTYFileDescriptor()
-{ return data->getTTYFileDescriptor(); }
+{ return ( data ) ? data->getTTYFileDescriptor() : 0; }
 
 //----------------------------------------------------------------------
 inline char* FTerm::getTermType()
@@ -463,18 +467,235 @@ inline FTerm::initializationValues& FTerm::getInitValues()
 inline FTerm::characterSub& FTerm::getCharSubstitutionMap()
 { return data->getCharSubstitutionMap(); }
 
-#if DEBUG
 //----------------------------------------------------------------------
 inline FTermData* FTerm::getFTermData()
-{ return data; }
+{
+  if ( data == 0 )
+  {
+    try
+    {
+      data = new FTermData;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return data;
+}
+
+//----------------------------------------------------------------------
+inline FSystem* FTerm::getFSystem()
+{
+  if ( fsys == 0 )
+  {
+    try
+    {
+      fsys = new FSystemImpl;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return fsys;
+}
+
+//----------------------------------------------------------------------
+inline FOptiMove* FTerm::getFOptiMove()
+{
+  if ( opti_move == 0 )
+  {
+    try
+    {
+      opti_move = new FOptiMove;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return opti_move;
+}
+
+//----------------------------------------------------------------------
+inline FOptiAttr* FTerm::getFOptiAttr()
+{
+  if ( opti_attr == 0 )
+  {
+    try
+    {
+      opti_attr = new FOptiAttr;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return opti_attr;
+}
 
 //----------------------------------------------------------------------
 inline FTermDetection* FTerm::getFTermDetection()
-{ return term_detection; }
+{
+  if ( term_detection == 0 )
+  {
+    try
+    {
+      term_detection = new FTermDetection;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
 
+  return term_detection;
+}
+//----------------------------------------------------------------------
+inline FTermXTerminal* FTerm::getFTermXTerminal()
+{
+  if ( xterm == 0 )
+  {
+    try
+    {
+      xterm = new FTermXTerminal;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return xterm;
+}
+//----------------------------------------------------------------------
+inline FKeyboard* FTerm::getFKeyboard()
+{
+  if ( keyboard == 0 )
+  {
+    try
+    {
+      keyboard = new FKeyboard;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return keyboard;
+}
+//----------------------------------------------------------------------
+inline FMouseControl* FTerm::getFMouseControl()
+{
+  if ( mouse == 0 )
+  {
+    try
+    {
+      mouse = new FMouseControl;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return mouse;
+}
+
+#if defined(__linux__)
+//----------------------------------------------------------------------
+inline FTermLinux* FTerm::getFTermLinux()
+{
+  if ( linux == 0 )
+  {
+    try
+    {
+      linux = new FTermLinux;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return linux;
+}
+
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
+//----------------------------------------------------------------------
+inline FTermFreeBSD* FTerm::getFTermFreeBSD()
+{
+  if ( freebsd == 0 )
+  {
+    try
+    {
+      freebsd = new FTermFreeBSD;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return freebsd;
+}
+
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
+//----------------------------------------------------------------------
+inline FTermOpenBSD* FTerm::getFTermOpenBSD()
+{
+  if ( openbsd == 0 )
+  {
+    try
+    {
+      openbsd = new FTermOpenBSD;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return openbsd;
+}
+#endif
+
+#if DEBUG
 //----------------------------------------------------------------------
 inline FTermDebugData& FTerm::getFTermDebugData()
-{ return *debug_data; }
+{
+  if ( debug_data == 0 )
+  {
+    try
+    {
+      debug_data = new FTermDebugData;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return *debug_data;
+}
 #endif  // DEBUG
 
 //----------------------------------------------------------------------
@@ -582,16 +803,16 @@ inline bool FTerm::hasAlternateScreen()
 { return data->hasAlternateScreen(); }
 
 //----------------------------------------------------------------------
+inline void FTerm::setFSystem (FSystem* fsystem)
+{ fsys = fsystem; }
+
+//----------------------------------------------------------------------
 inline bool FTerm::setUTF8()
 { return setUTF8(true); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::unsetUTF8()
 { return setUTF8(false); }
-
-//----------------------------------------------------------------------
-inline FOptiMove* FTerm::getFOptiMove()
-{ return opti_move; }
 
 //----------------------------------------------------------------------
 inline void FTerm::changeTermSizeFinished()

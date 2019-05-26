@@ -44,7 +44,6 @@ int (*FTerm::Fputchar)(int);
 FTerm::initializationValues FTerm::init_values;
 FTermData*          FTerm::data           = nullptr;
 FSystem*            FTerm::fsys           = nullptr;
-FTermcap::tcap_map* FTerm::tcap           = nullptr;
 FOptiMove*          FTerm::opti_move      = nullptr;
 FOptiAttr*          FTerm::opti_attr      = nullptr;
 FTermDetection*     FTerm::term_detection = nullptr;
@@ -338,6 +337,9 @@ bool FTerm::setOldFont()
 //----------------------------------------------------------------------
 int FTerm::openConsole()
 {
+  if ( ! data )
+    data = FTerm::getFTermData();
+
   int fd = data->getTTYFileDescriptor();
   const char* termfilename = data->getTermFileName();
 
@@ -373,6 +375,9 @@ int FTerm::openConsole()
 //----------------------------------------------------------------------
 int FTerm::closeConsole()
 {
+  if ( ! data )
+    data = FTerm::getFTermData();
+
   int fd = data->getTTYFileDescriptor();
   int ret = -1;
 
@@ -489,6 +494,9 @@ char* FTerm::disableCursor()
 void FTerm::detectTermSize()
 {
   // Detect the terminal width and height
+
+  if ( ! data )
+    data = FTerm::getFTermData();
 
   struct winsize win_size;
   bool close_after_detect = false;
@@ -958,14 +966,13 @@ void FTerm::init_global_values (bool disable_alt_screen)
   data->useAlternateScreen(! disable_alt_screen);
 
   // Initialize xterm object
-  xterm->setFTermDetection(term_detection);
+  xterm->init();
 
   if ( ! init_values.terminal_detection )
     term_detection->setTerminalDetection (false);
 
 #if DEBUG
-  debug_data->setFTermDetection(term_detection);
-  debug_data->setFTermData(data);
+  debug_data->init();
 #endif
 }
 
@@ -1182,9 +1189,7 @@ void FTerm::init_teraterm_charmap()
 //----------------------------------------------------------------------
 void FTerm::init_keyboard()
 {
-#if defined(__linux__)
-  keyboard->setFTermLinux (linux);
-#endif
+  keyboard->init();
 }
 
 //----------------------------------------------------------------------
@@ -1192,13 +1197,7 @@ void FTerm::init_termcap()
 {
   // Initialize the terminal capabilities
 
-  FTermcap termcap;
-  termcap.setFTermData(data);
-  termcap.setFTermDetection(term_detection);
-  termcap.init();
-
-  // Share the terminal capabilities
-  tcap = termcap.getTermcapMap();
+  FTermcap::init();
 }
 
 //----------------------------------------------------------------------
@@ -1207,8 +1206,6 @@ void FTerm::init_quirks()
   // Initialize terminal quirks
 
   FTermcapQuirks quirks;
-  quirks.setFTermData (data);
-  quirks.setFTermDetection (term_detection);
   quirks.terminalFixup();  // Fix terminal quirks
 }
 
@@ -1837,8 +1834,6 @@ void FTerm::init (bool disable_alt_screen)
   initBaudRate();
 
   // Terminal detection
-  term_detection->setFTermData(data);
-  term_detection->setFSystem(fsys);
   term_detection->detect();
   setTermType (term_detection->getTermType());
 
@@ -1927,9 +1922,6 @@ void FTerm::init (bool disable_alt_screen)
 void FTerm::initOSspecifics()
 {
 #if defined(__linux__)
-  linux->setFTermData(data);
-  linux->setFSystem(fsys);
-  linux->setFTermDetection(term_detection);
   linux->init();    // Initialize Linux console
 
 #if DEBUG
@@ -1939,8 +1931,6 @@ void FTerm::initOSspecifics()
 #endif  // defined(__linux__)
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-  freebsd->setFSystem(fsys);
-
   if ( init_values.meta_sends_escape )
     freebsd->enableMetaSendsEscape();
   else
@@ -1953,8 +1943,6 @@ void FTerm::initOSspecifics()
 
   freebsd->init();  // Initialize BSD console
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
-  openbsd->setFSystem(fsys);
-
   if ( init_values.meta_sends_escape )
     openbsd->enableMetaSendsEscape();
   else

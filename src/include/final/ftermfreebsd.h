@@ -83,7 +83,6 @@ class FTermFreeBSD final
     static bool        isFreeBSDConsole();
 
     // Mutators
-    static void        setFSystem (FSystem*);
     static void        setCursorStyle (CursorStyle, bool);
     static void        enableChangeCursorStyle();
     static void        disableChangeCursorStyle();
@@ -119,10 +118,6 @@ inline const char* FTermFreeBSD::getClassName() const
 
 //----------------------------------------------------------------------
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-inline void FTermFreeBSD::setFSystem (FSystem* fsys)
-{ fsystem = fsys; }
-
-//----------------------------------------------------------------------
 inline void FTermFreeBSD::enableChangeCursorStyle()
 { change_cursorstyle = true; }
 

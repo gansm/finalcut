@@ -51,6 +51,7 @@ libfinal_la_SOURCES = \
 	ftermfreebsd.cpp \
 	ftermopenbsd.cpp \
 	ftermlinux.cpp \
+	ftermdebugdata.cpp \
 	ftermdetection.cpp \
 	ftermios.cpp \
 	fterm.cpp \

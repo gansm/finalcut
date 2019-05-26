@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -227,20 +227,16 @@ void FTermcapQuirksTest::classNameTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::generalTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapStrings();
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData data;
   finalcut::FTermcap::tabstop = -1;
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcap::can_change_color_palette = false;
   finalcut::FTermcapQuirks quirks;
-  finalcut::FTermDetection detect;
-  quirks.setFTermData(&data);
-  quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::tabstop == 8 );
@@ -294,20 +290,18 @@ void FTermcapQuirksTest::generalTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::xtermTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapStrings();
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData data;
+  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
   finalcut::FTermcapQuirks quirks;
-  finalcut::FTermDetection detect;
   finalcut::FTermcap::can_change_color_palette = false;
   detect.setXTerminal (true);
   data.setTermType ("xterm");
-  quirks.setFTermData(&data);
-  quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
@@ -327,16 +321,16 @@ void FTermcapQuirksTest::xtermTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::freebsdTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapStrings();
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData data;
+  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
-  finalcut::FTermDetection detect;
   detect.setFreeBSDTerm (true);
   data.setTermType ("xterm-16color");
   quirks.setFTermData(&data);
@@ -366,20 +360,18 @@ void FTermcapQuirksTest::freebsdTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::cygwinTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapStrings();
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData data;
+  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
   finalcut::FTermcap::background_color_erase = false;
   finalcut::FTermcapQuirks quirks;
-  finalcut::FTermDetection detect;
   detect.setCygwinTerminal (true);
   data.setTermType ("cygwin");
-  quirks.setFTermData(&data);
-  quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::background_color_erase == true );
@@ -393,21 +385,19 @@ void FTermcapQuirksTest::cygwinTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::linuxTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapStrings();
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData data;
+  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
   finalcut::FTermcap::max_color = 8;
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
-  finalcut::FTermDetection detect;
   detect.setLinuxTerm (true);
   data.setTermType ("linux");
-  quirks.setFTermData(&data);
-  quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
   // 8 colors
@@ -467,19 +457,17 @@ void FTermcapQuirksTest::linuxTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::rxvtTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapStrings();
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData data;
+  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
   finalcut::FTermcapQuirks quirks;
-  finalcut::FTermDetection detect;
   detect.setRxvtTerminal (true);
   data.setTermType ("rxvt");
-  quirks.setFTermData(&data);
-  quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
   // rxvt
@@ -510,20 +498,18 @@ void FTermcapQuirksTest::rxvtTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::vteTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapStrings();
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData data;
+  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
-  finalcut::FTermDetection detect;
   detect.setGnomeTerminal (true);
   data.setTermType ("gnome-256color");
-  quirks.setFTermData(&data);
-  quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 0 );
@@ -536,23 +522,21 @@ void FTermcapQuirksTest::vteTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::puttyTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapStrings();
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData data;
+  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
   finalcut::FTermcap::background_color_erase = false;
   finalcut::FTermcap::can_change_color_palette = false;
   finalcut::FTermcap::osc_support = false;
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
-  finalcut::FTermDetection detect;
   detect.setPuttyTerminal (true);
   data.setTermType ("putty");
-  quirks.setFTermData(&data);
-  quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::background_color_erase == true );
@@ -628,20 +612,18 @@ void FTermcapQuirksTest::puttyTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::teratermTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapStrings();
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData data;
+  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
   finalcut::FTermcap::eat_nl_glitch = false;
   finalcut::FTermcapQuirks quirks;
-  finalcut::FTermDetection detect;
   detect.setTeraTerm (true);
   data.setTermType ("teraterm");
-  quirks.setFTermData(&data);
-  quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::eat_nl_glitch == true );
@@ -660,20 +642,18 @@ void FTermcapQuirksTest::teratermTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::sunTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapStrings();
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData data;
+  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
   finalcut::FTermcap::eat_nl_glitch = false;
   finalcut::FTermcapQuirks quirks;
-  finalcut::FTermDetection detect;
   detect.setSunTerminal (true);
   data.setTermType ("sun-color");
-  quirks.setFTermData(&data);
-  quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::eat_nl_glitch == true );
@@ -780,20 +760,18 @@ void FTermcapQuirksTest::sunTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::screenTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapStrings();
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData data;
+  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
   finalcut::FTermcapQuirks quirks;
-  finalcut::FTermDetection detect;
   finalcut::FTermcap::can_change_color_palette = false;
   detect.setScreenTerm (true);
   data.setTermType ("screen-256color");
-  quirks.setFTermData(&data);
-  quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );

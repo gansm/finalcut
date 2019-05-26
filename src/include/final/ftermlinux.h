@@ -88,9 +88,6 @@ class FTermLinux final
     static int           getFramebufferBpp();
 
     // Mutators
-    static void          setFTermData (FTermData*);
-    static void          setFSystem (FSystem*);
-    static void          setFTermDetection (FTermDetection*);
     static char*         setCursorStyle (fc::linuxConsoleCursorStyle, bool);
     static bool          setPalette (FColor, int, int, int);
     static void          setUTF8 (bool);
@@ -205,18 +202,6 @@ inline const char* FTermLinux::getClassName() const
 #if defined(__linux__)
 inline int FTermLinux::getFramebufferBpp()
 { return framebuffer_bpp; }
-
-//----------------------------------------------------------------------
-inline void FTermLinux::setFTermData (FTermData* data)
-{ fterm_data = data; }
-
-//----------------------------------------------------------------------
-inline void FTermLinux::setFSystem (FSystem* fsys)
-{ fsystem = fsys; }
-
-//----------------------------------------------------------------------
-inline void FTermLinux::setFTermDetection (FTermDetection* td)
-{ term_detection = td; }
 
 //----------------------------------------------------------------------
 inline bool FTermLinux::hasShadowCharacter()

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include "final/fterm.h"
 #include "final/ftermcap.h"
 
 namespace finalcut
@@ -60,20 +61,10 @@ FTermDetection* FTermcap::term_detection           = nullptr;
 
 // public methods of FTermcap
 //----------------------------------------------------------------------
-void FTermcap::setFTermData (FTermData* data)
-{
-  fterm_data = data;
-}
-
-//----------------------------------------------------------------------
-void FTermcap::setFTermDetection (FTermDetection* td)
-{
-  term_detection = td;
-}
-
-//----------------------------------------------------------------------
 void FTermcap::init()
 {
+  fterm_data = FTerm::getFTermData();
+  term_detection = FTerm::getFTermDetection();
   termcap();
 }
 
@@ -225,8 +216,8 @@ void FTermcap::termcapStrings (char*& buffer)
   // Get termcap strings
 
   // Read termcap output strings
-  for (std::size_t i = 0; tcap[i].tname[0] != 0; i++)
-    tcap[i].string = tgetstr(tcap[i].tname, &buffer);
+  for (std::size_t i = 0; strings[i].tname[0] != 0; i++)
+    strings[i].string = tgetstr(strings[i].tname, &buffer);
 }
 
 //----------------------------------------------------------------------
@@ -326,7 +317,7 @@ void FTermcap::termcapKeysVt100 (char*& buffer)
 
 // private Data Member of FTermcap - termcap capabilities
 //----------------------------------------------------------------------
-FTermcap::tcap_map FTermcap::tcap[] =
+FTermcap::tcap_map FTermcap::strings[] =
 {
 //  .------------- term string
 //  |    .-------- Tcap-code

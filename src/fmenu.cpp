@@ -558,7 +558,7 @@ int FMenu::adjustX (int x_pos)
   // Is menu outside on the right of the screen?
   if ( x_pos + int(max_item_width) >= int(getDesktopWidth() - 1) )
   {
-    x_pos = int(getDesktopWidth() - max_item_width + 1);
+    x_pos = int(getDesktopWidth() - max_item_width - 1);
     // Menu to large for the screen
     if ( x_pos < 1 )
       x_pos = 1;

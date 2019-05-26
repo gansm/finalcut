@@ -38,7 +38,7 @@ void tcapString (const std::string&, const char[]);
 void debug (finalcut::FApplication&);
 void booleans();
 void numeric();
-void string(finalcut::FTermcap::tcap_map*&);
+void string();
 
 
 //----------------------------------------------------------------------
@@ -291,15 +291,17 @@ void numeric()
 }
 
 //----------------------------------------------------------------------
-void string(finalcut::FTermcap::tcap_map*& tcap)
+void string()
 {
   std::cout << "\r\n[String]\r\n";
+  finalcut::FTermcap::tcap_map (&tcap_strings)[] \
+      = finalcut::FTermcap::strings;
 
   for (int n = 0; n <= data::getNumberOfItems(); n++ )
   {
     const std::string name = data::strings[n].name;
     const fc::termcaps cap = data::strings[n].cap;
-    tcapString (name, tcap[cap].string);
+    tcapString (name, tcap_strings[cap].string);
   }
 }
 
@@ -314,9 +316,6 @@ int main (int argc, char* argv[])
   // Pointer to the global virtual terminal object
   terminal = static_cast<finalcut::FVTerm*>(&TermApp);
 
-  finalcut::FTermcap::tcap_map* tcap;
-  tcap = finalcut::FTermcap::getTermcapMap();
-
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";
   std::cout << "Terminal: " << TermApp.getTermType() << "\r\n";
 
@@ -324,5 +323,5 @@ int main (int argc, char* argv[])
 
   booleans();
   numeric();
-  string(tcap);
+  string();
 }

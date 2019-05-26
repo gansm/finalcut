@@ -1,9 +1,9 @@
 /***********************************************************************
-* ftermcapquirks.h - Termcap quirks for some well-known terminals      *
+* ftermdebugdata.cpp - Debug data class for FTerm                      *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2019 Markus Gans                                           *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,80 +20,29 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-/*  Standalone class
- *  ════════════════
- *
- * ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- * ▕ FTermcapQuirks ▏
- * ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
- */
-
-#ifndef FTERMCAPQUIRKS_H
-#define FTERMCAPQUIRKS_H
-
-#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
-  #error "Only <final/final.h> can be included directly."
-#endif
-
-#include "final/fc.h"
 #include "final/fterm.h"
-#include "final/ftermcap.h"
 #include "final/ftermdata.h"
 #include "final/ftermdetection.h"
+#include "final/ftermdebugdata.h"
 
 namespace finalcut
 {
 
+// static class attributes
+FTermData*      FTermDebugData::data           = nullptr;
+FTermDetection* FTermDebugData::term_detection = nullptr;
+
 //----------------------------------------------------------------------
-// class FTermcapsQuirks
+// class FClassName
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
-class FTermcapQuirks final
+// public methods of FClassName
+//----------------------------------------------------------------------
+void FTermDebugData::init()
 {
-  public:
-    // Constructors
-    FTermcapQuirks();
-
-    // Destructor
-    virtual ~FTermcapQuirks();
-
-    // Accessor
-    virtual const char* getClassName() const;
-
-    // Methods
-    static void terminalFixup();
-
-  private:
-    // Methods
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-    static void freebsd();
-#endif
-    static void cygwin();
-    static void linux();
-    static void xterm();
-    static void rxvt();
-    static void vte();
-    static void putty();
-    static void teraterm();
-    static void sunConsole();
-    static void screen();
-    static void general();
-    static void ecma48();
-
-    // Data Members
-    static FTermData*          fterm_data;
-    static FTermDetection*     term_detection;
-};
-#pragma pack(pop)
-
-// FTermcapQuirks inline functions
-//----------------------------------------------------------------------
-inline const char* FTermcapQuirks::getClassName() const
-{ return "FTermcapQuirks"; }
+  data = FTerm::getFTermData();
+  term_detection = FTerm::getFTermDetection();
+}
 
 }  // namespace finalcut
 
-#endif  // FTERMCAPQUIRKS_H

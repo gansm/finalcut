@@ -28,7 +28,6 @@ namespace finalcut
 {
 
 // static class attributes
-FTermcap::tcap_map* FTermcapQuirks::tcap           = nullptr;
 FTermData*          FTermcapQuirks::fterm_data     = nullptr;
 FTermDetection*     FTermcapQuirks::term_detection = nullptr;
 
@@ -40,9 +39,7 @@ FTermDetection*     FTermcapQuirks::term_detection = nullptr;
 // constructors and destructor
 //----------------------------------------------------------------------
 FTermcapQuirks::FTermcapQuirks()
-{
-  tcap = FTermcap::getTermcapMap();
-}
+{ }
 
 //----------------------------------------------------------------------
 FTermcapQuirks::~FTermcapQuirks()  // destructor
@@ -51,22 +48,10 @@ FTermcapQuirks::~FTermcapQuirks()  // destructor
 
 // public methods of FTermcapQuirks
 //----------------------------------------------------------------------
-void FTermcapQuirks::setFTermData (FTermData* data)
-{
-  fterm_data = data;
-}
-
-//----------------------------------------------------------------------
-void FTermcapQuirks::setFTermDetection (FTermDetection* td)
-{
-  term_detection = td;
-}
-
-
-// private methods of FTermcapQuirks
-//----------------------------------------------------------------------
 void FTermcapQuirks::terminalFixup()
 {
+  fterm_data = FTerm::getFTermData();
+  term_detection = FTerm::getFTermDetection();
   auto& td = term_detection;
 
   if ( td->isCygwinTerminal() )
@@ -118,8 +103,10 @@ void FTermcapQuirks::terminalFixup()
   ecma48();
 }
 
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+
+// private methods of FTermcapQuirks
 //----------------------------------------------------------------------
+#if defined(__FreeBSD__) || defined(__DragonFly__)
 void FTermcapQuirks::freebsd()
 {
   // FreeBSD console fixes

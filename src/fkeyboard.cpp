@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -30,6 +30,7 @@
 
 #include "final/fkeyboard.h"
 #include "final/fkey_map.h"
+#include "final/fterm.h"
 #include "final/ftermios.h"
 
 namespace finalcut
@@ -110,6 +111,14 @@ const FString FKeyboard::getKeyName (FKey keynum)
 void FKeyboard::setTermcapMap (fc::fkeymap* keymap)
 {
   key_map = keymap;
+}
+
+//----------------------------------------------------------------------
+void FKeyboard::init()
+{
+#if defined(__linux__)
+  linux = FTerm::getFTermLinux();
+#endif
 }
 
 //----------------------------------------------------------------------
