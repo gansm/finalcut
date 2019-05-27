@@ -995,7 +995,7 @@ void FListView::onMouseDown (FMouseEvent* ev)
     }
     else if ( mouse_y > 1 && mouse_y < int(getHeight()) )  // List
     {
-      if ( itemlist.empty () )
+      if ( itemlist.empty() )
         return;
 
       int indent = 0;
@@ -1060,7 +1060,7 @@ void FListView::onMouseUp (FMouseEvent* ev)
       }
       else if ( mouse_y > 1 && mouse_y < int(getHeight()) )  // List
       {
-        if (itemlist.empty ())
+        if ( itemlist.empty() )
           return;
 
         int indent = 0;
@@ -1170,7 +1170,7 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
     if ( first_visible_line.getPosition() + mouse_y - 1 > int(getCount()) )
       return;
 
-    if ( itemlist.empty () )
+    if ( itemlist.empty() )
       return;
 
     auto item = getCurrentItem();
@@ -2035,7 +2035,7 @@ void FListView::mouseHeaderClicked()
 //----------------------------------------------------------------------
 void FListView::wheelUp (int pagesize)
 {
-  if ( current_iter.getPosition() == 0 )
+  if ( itemlist.empty() || current_iter.getPosition() == 0 )
     return;
 
   if ( first_visible_line.getPosition() >= pagesize )
@@ -2059,6 +2059,9 @@ void FListView::wheelUp (int pagesize)
 //----------------------------------------------------------------------
 void FListView::wheelDown (int pagesize)
 {
+  if ( itemlist.empty() )
+    return;
+
   int element_count = int(getCount());
 
   if ( current_iter.getPosition() + 1 == element_count )
@@ -2181,6 +2184,9 @@ FObject::FObjectIterator FListView::appendItem (FListViewItem* item)
 //----------------------------------------------------------------------
 void FListView::processClick()
 {
+  if ( itemlist.empty() )
+    return;
+
   emitCallback("clicked");
 }
 
@@ -2193,7 +2199,7 @@ void FListView::processChanged()
 //----------------------------------------------------------------------
 inline void FListView::keySpace()
 {
-  if ( itemlist.empty () )
+  if ( itemlist.empty() )
     return;
 
   auto item = getCurrentItem();
@@ -2205,7 +2211,7 @@ inline void FListView::keySpace()
 //----------------------------------------------------------------------
 inline void FListView::keyLeft (int& first_line_position_before)
 {
-  if ( itemlist.empty () )
+  if ( itemlist.empty() )
     return;
 
   int position_before = current_iter.getPosition();
@@ -2262,7 +2268,7 @@ inline void FListView::keyLeft (int& first_line_position_before)
 //----------------------------------------------------------------------
 inline void FListView::keyRight (int& first_line_position_before)
 {
-  if ( itemlist.empty () )
+  if ( itemlist.empty() )
     return;
 
   int xoffset_end = int(max_line_width) - int(getClientWidth());
@@ -2290,6 +2296,9 @@ inline void FListView::keyRight (int& first_line_position_before)
 //----------------------------------------------------------------------
 inline void FListView::keyHome()
 {
+  if ( itemlist.empty() )
+    return;
+
   current_iter -= current_iter.getPosition();
   int difference = first_visible_line.getPosition();
   first_visible_line -= difference;
@@ -2299,6 +2308,9 @@ inline void FListView::keyHome()
 //----------------------------------------------------------------------
 inline void FListView::keyEnd()
 {
+  if ( itemlist.empty() )
+    return;
+
   int element_count = int(getCount());
   current_iter += element_count - current_iter.getPosition() - 1;
   int difference = element_count - last_visible_line.getPosition() - 1;
@@ -2309,7 +2321,7 @@ inline void FListView::keyEnd()
 //----------------------------------------------------------------------
 inline bool FListView::keyPlus()
 {
-  if ( itemlist.empty () )
+  if ( itemlist.empty() )
     return false;
 
   auto item = getCurrentItem();
@@ -2327,7 +2339,7 @@ inline bool FListView::keyPlus()
 //----------------------------------------------------------------------
 inline bool FListView::keyMinus()
 {
-  if ( itemlist.empty () )
+  if ( itemlist.empty() )
     return false;
 
   auto item = getCurrentItem();
@@ -2352,6 +2364,9 @@ void FListView::setRelativePosition (int ry)
 //----------------------------------------------------------------------
 void FListView::stepForward()
 {
+  if ( itemlist.empty() )
+    return;
+
   if ( current_iter == last_visible_line )
   {
     ++last_visible_line;
@@ -2371,6 +2386,9 @@ void FListView::stepForward()
 //----------------------------------------------------------------------
 void FListView::stepBackward()
 {
+  if ( itemlist.empty() )
+    return;
+
   if ( current_iter == first_visible_line
     && current_iter != itemlist.begin() )
   {
@@ -2385,6 +2403,9 @@ void FListView::stepBackward()
 //----------------------------------------------------------------------
 void FListView::stepForward (int distance)
 {
+  if ( itemlist.empty() )
+    return;
+
   int element_count = int(getCount());
 
   if ( current_iter.getPosition() + 1 == element_count )
@@ -2418,7 +2439,7 @@ void FListView::stepForward (int distance)
 //----------------------------------------------------------------------
 void FListView::stepBackward (int distance)
 {
-  if ( current_iter.getPosition() == 0 )
+  if ( itemlist.empty() || current_iter.getPosition() == 0 )
     return;
 
   if ( current_iter.getPosition() - distance >= 0 )
