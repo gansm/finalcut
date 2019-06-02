@@ -556,15 +556,18 @@ void FTextView::adjustSize()
   hbar->setValue (xoffset);
   hbar->resize();
 
-  if ( last_line < int(height) + nf_offset - 1 )
-    vbar->hide();
-  else
-    vbar->show();
+  if ( isShown() )
+  {
+    if ( last_line < int(height) + nf_offset - 1 )
+      vbar->hide();
+    else
+      vbar->show();
 
-  if ( max_width < int(width) - nf_offset - 1 )
-    hbar->hide();
-  else
-    hbar->show();
+    if ( max_width < int(width) - nf_offset - 1 )
+      hbar->hide();
+    else
+      hbar->show();
+  }
 }
 
 
