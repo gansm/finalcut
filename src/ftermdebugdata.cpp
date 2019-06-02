@@ -27,7 +27,7 @@
 
 namespace finalcut
 {
-  
+
 #if DEBUG
 // static class attributes
 FTermData*      FTermDebugData::data           = nullptr;

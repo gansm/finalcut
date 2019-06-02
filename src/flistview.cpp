@@ -1361,15 +1361,18 @@ void FListView::adjustSize()
   hbar->setWidth (width, false);
   hbar->resize();
 
-  if ( isHorizontallyScrollable() )
-    hbar->show();
-  else
-    hbar->hide();
+  if ( isShown() )
+  {
+    if ( isHorizontallyScrollable() )
+      hbar->show();
+    else
+      hbar->hide();
 
-  if ( isVerticallyScrollable() )
-    vbar->show();
-  else
-    vbar->hide();
+    if ( isVerticallyScrollable() )
+      vbar->show();
+    else
+      vbar->hide();
+  }
 }
 
 
@@ -1966,10 +1969,13 @@ void FListView::recalculateHorizontalBar (std::size_t len)
     hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset) - 4);
     hbar->calculateSliderValues();
 
-    if ( isHorizontallyScrollable() )
-      hbar->show();
-    else
-      hbar->hide();
+    if ( isShown() )
+    {
+      if ( isHorizontallyScrollable() )
+        hbar->show();
+      else
+        hbar->hide();
+    }
   }
 }
 
@@ -1983,10 +1989,13 @@ void FListView::recalculateVerticalBar (std::size_t element_count)
   vbar->setPageSize (int(element_count), int(getHeight()) - 2);
   vbar->calculateSliderValues();
 
-  if ( isVerticallyScrollable() )
-    vbar->show();
-  else
-    vbar->hide();
+  if ( isShown() )
+  {
+    if ( isVerticallyScrollable() )
+      vbar->show();
+    else
+      vbar->hide();
+  }
 }
 
 //----------------------------------------------------------------------

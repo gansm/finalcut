@@ -814,6 +814,9 @@ void FScrollView::calculateScrollbarPos()
 //----------------------------------------------------------------------
 void FScrollView::setHorizontalScrollBarVisibility()
 {
+  if ( ! isShown() )
+    return;
+
   switch ( hMode )
   {
     case fc::Auto:
@@ -836,6 +839,9 @@ void FScrollView::setHorizontalScrollBarVisibility()
 //----------------------------------------------------------------------
 void FScrollView::setVerticalScrollBarVisibility()
 {
+  if ( ! isShown() )
+    return;
+
   switch ( vMode )
   {
     case fc::Auto:

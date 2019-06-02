@@ -1237,13 +1237,15 @@ inline void FTermLinux::initSpecialCharacter()
 //----------------------------------------------------------------------
 sInt16 FTermLinux::getFontPos (wchar_t ucs)
 {
+  constexpr sInt16 NOT_FOUND = -1;
+
   for (std::size_t n = 0; n < screen_unicode_map.entry_ct; n++)
   {
     if ( screen_unicode_map.entries[n].unicode == ucs )
       return sInt16(screen_unicode_map.entries[n].fontpos);
   }
 
-  return -1;
+  return NOT_FOUND;
 }
 
 //----------------------------------------------------------------------

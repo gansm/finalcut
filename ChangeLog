@@ -1,3 +1,6 @@
+2019-06-02  Markus Gans  <guru.mail@muenster.de>
+	* Avoid drawing the scroll bars if the widget is non-visible
+
 2019-05-27  Markus Gans  <guru.mail@muenster.de>
 	* Use the Singleton design pattern to get a single object instance 
 	  via FTerm
@@ -120,7 +123,7 @@
 	  the switch statement with a vector of lambda expressions
 
 2018-12-09  Markus Gans  <guru.mail@muenster.de>
-	* Better handling of the scrollbar maximum
+	* Better handling of the scroll bar maximum
 	* Deactivate copy constructor and assignment operator with "= delete"
 	* Use nullptr instead of 0 to initialize a pointer values
 
@@ -136,7 +139,7 @@
 	* Fix compile in optimization level 2 for newer gcc
 
 2018-11-27  Markus Gans  <guru.mail@muenster.de>
-	* Correct vertical scrollbar position after sorting in FListView
+	* Correct vertical scroll bar position after sorting in FListView
 
 2018-11-25  Markus Gans  <guru.mail@muenster.de>
 	* Version 0.5.0
