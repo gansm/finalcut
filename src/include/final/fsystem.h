@@ -60,7 +60,7 @@ class FSystem
     virtual uChar inPortByte (uShort) = 0;
     virtual void outPortByte (uChar, uShort) = 0;
     virtual int isTTY (int) = 0;
-    virtual int ioControl (int, uLong, ...) = 0;
+    virtual int ioctl (int, uLong, ...) = 0;
     virtual int open (const char*, int, ...) = 0;
     virtual int close (int) = 0;
     virtual FILE* fopen (const char*, const char*) = 0;

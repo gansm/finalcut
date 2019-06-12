@@ -832,8 +832,16 @@ void FListBox::draw()
   if ( isMonochron() )
     setReverse(false);
 
-  vbar->redraw();
-  hbar->redraw();
+  if ( ! hbar->isShown() && isHorizontallyScrollable() )
+    hbar->show();
+  else
+    vbar->redraw();
+
+  if ( ! vbar->isShown() && isVerticallyScrollable() )
+    vbar->show();
+  else
+    hbar->redraw();
+
   drawList();
 
   if ( flags.focus && getStatusBar() )

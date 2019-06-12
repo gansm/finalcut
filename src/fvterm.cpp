@@ -2797,7 +2797,7 @@ inline void FVTerm::characterFilter (charData*& next_char)
 {
   FTerm::characterSub& sub_map = fterm->getCharSubstitutionMap();
 
-  if ( sub_map[next_char->encoded_code] )
+  if ( sub_map.find(next_char->encoded_code) != sub_map.end() )
     next_char->encoded_code = sub_map[next_char->encoded_code];
 }
 

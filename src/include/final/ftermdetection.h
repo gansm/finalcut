@@ -159,13 +159,6 @@ class FTermDetection final
     // Methods
     static void           detect();
 
-    // Data Members
-#if DEBUG
-    static char           termtype_256color[256];
-    static char           termtype_Answerback[256];
-    static char           termtype_SecDA[256];
-#endif
-
   private:
     // Methods
     static void           deallocation();
@@ -201,6 +194,11 @@ class FTermDetection final
     static char*          secDA_Analysis_vte (char[]);
 
     // Data Members
+#if DEBUG
+    static char           termtype_256color[256];
+    static char           termtype_Answerback[256];
+    static char           termtype_SecDA[256];
+#endif
     static char           termtype[256];
     static char           ttytypename[256];
     static bool           decscusr_support;

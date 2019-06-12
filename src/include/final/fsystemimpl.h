@@ -99,7 +99,7 @@ class FSystemImpl : public FSystem
       return ::isatty(fd);
     }
 
-    virtual int ioControl (int fd, uLong request, ...)
+    virtual int ioctl (int fd, uLong request, ...)
     {
       va_list args;
       va_start (args, request);

@@ -511,7 +511,6 @@ class FMouseControl
 
     // Data Member
     std::map<FMouse::mouse_type, FMouse*> mouse_protocol{};
-    std::map<FMouse::mouse_type, FMouse*>::iterator iter{};
     FPoint zero_point{0, 0};
     bool   use_gpm_mouse{false};
     bool   use_xterm_mouse{false};

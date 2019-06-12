@@ -47,7 +47,7 @@ bool FTermOpenBSD::isBSDConsole()
   static kbd_t kbdencoding;
 
   if ( fsystem
-    && fsysten->ioControl(0, WSKBDIO_GETENCODING, &kbdencoding) == 0 )
+    && fsysten->ioctl(0, WSKBDIO_GETENCODING, &kbdencoding) == 0 )
     return true;
   else
     return false;
@@ -92,7 +92,7 @@ bool FTermOpenBSD::saveBSDConsoleEncoding()
   int ret = -1;
 
   if ( fsystem )
-    ret = fsysten->ioControl (0, WSKBDIO_GETENCODING, &k_encoding);
+    ret = fsysten->ioctl (0, WSKBDIO_GETENCODING, &k_encoding);
 
   if ( ret < 0 )
     return false;
@@ -106,7 +106,7 @@ bool FTermOpenBSD::saveBSDConsoleEncoding()
 bool FTermOpenBSD::setBSDConsoleEncoding (kbd_t k_encoding)
 {
   if ( fsysten
-    && fsysten->ioControl(0, WSKBDIO_SETENCODING, &k_encoding) < 0 )
+    && fsysten->ioctl(0, WSKBDIO_SETENCODING, &k_encoding) < 0 )
     return false;
   else
     return true;

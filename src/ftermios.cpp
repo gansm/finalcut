@@ -230,7 +230,10 @@ uInt FTermios::getBaudRate()
   outspeed[B115200] = 115200;  // 115,200 baud
   outspeed[B230400] = 230400;  // 230,400 baud
 
-  return outspeed[cfgetospeed(&term_init)];
+  if ( outspeed.find(cfgetospeed(&term_init)) != outspeed.end() )
+    return outspeed[cfgetospeed(&term_init)];
+
+  return 0;
 }
 
 }  // namespace finalcut

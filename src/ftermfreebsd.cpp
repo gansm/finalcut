@@ -61,7 +61,7 @@ void FTermFreeBSD::setCursorStyle (CursorStyle style, bool hidden)
   if ( hidden )
     return;
 
-  fsysten->ioControl (0, CONS_CURSORTYPE, &style);
+  fsysten->ioctl (0, CONS_CURSORTYPE, &style);
 }
 
 //----------------------------------------------------------------------
@@ -71,7 +71,7 @@ bool FTermFreeBSD::isFreeBSDConsole()
 
   keymap_t keymap;
 
-  if ( fsysten && fsysten->ioControl(0, GIO_KEYMAP, &keymap) == 0 )
+  if ( fsysten && fsysten->ioctl(0, GIO_KEYMAP, &keymap) == 0 )
     return true;
   else
     return false;
@@ -149,7 +149,7 @@ bool FTermFreeBSD::saveFreeBSDAltKey()
   keymap_t keymap;
 
   if ( fsystem )
-    ret = fsysten->ioControl (0, GIO_KEYMAP, &keymap);
+    ret = fsysten->ioctl (0, GIO_KEYMAP, &keymap);
 
   if ( ret < 0 )
     return false;
@@ -169,7 +169,7 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
   keymap_t keymap;
 
   if ( fsystem )
-    ret = fsysten->ioControl (0, GIO_KEYMAP, &keymap);
+    ret = fsysten->ioctl (0, GIO_KEYMAP, &keymap);
 
   if ( ret < 0 )
     return false;
@@ -178,7 +178,7 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
   keymap.key[left_alt].map[0] = key;
 
   if ( (keymap.n_keys > 0)
-    && fsystem && (fsysten->ioControl(0, PIO_KEYMAP, &keymap) < 0) )
+    && fsystem && (fsysten->ioctl(0, PIO_KEYMAP, &keymap) < 0) )
     return false;
   else
     return true;

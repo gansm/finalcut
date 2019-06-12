@@ -144,7 +144,7 @@ bool FTermLinux::isLinuxConsole()
 
   // get keyboard type an compare
   return ( fsystem->isTTY(fd_tty)
-        && fsystem->ioControl(fd_tty, KDGKBTYPE, &arg) == 0
+        && fsystem->ioctl(fd_tty, KDGKBTYPE, &arg) == 0
         && ((arg == KB_101) || (arg == KB_84)) );
 }
 
@@ -496,8 +496,8 @@ int FTermLinux::getFramebuffer_bpp()
       return -1;
   }
 
-  if ( ! fsystem->ioControl(fd, FBIOGET_VSCREENINFO, &fb_var)
-    && ! fsystem->ioControl(fd, FBIOGET_FSCREENINFO, &fb_fix) )
+  if ( ! fsystem->ioctl(fd, FBIOGET_VSCREENINFO, &fb_var)
+    && ! fsystem->ioctl(fd, FBIOGET_FSCREENINFO, &fb_fix) )
   {
     fsystem->close(fd);
     return int(fb_var.bits_per_pixel);
@@ -543,7 +543,7 @@ bool FTermLinux::getScreenFont()
 
   // font operation
   if ( fsystem )
-    ret = fsystem->ioControl (fd_tty, KDFONTOP, &font);
+    ret = fsystem->ioctl (fd_tty, KDFONTOP, &font);
 
   if ( ret == 0 )
   {
@@ -571,7 +571,7 @@ bool FTermLinux::getUnicodeMap()
 
   // get count
   if ( fsystem )
-    ret = fsystem->ioControl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
+    ret = fsystem->ioctl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
 
   if ( ret != 0 )
   {
@@ -592,7 +592,7 @@ bool FTermLinux::getUnicodeMap()
 
     // get unicode-to-font mapping from kernel
     if ( fsystem )
-      ret = fsystem->ioControl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
+      ret = fsystem->ioctl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
 
     if ( ret != 0 )
       return false;
@@ -612,7 +612,7 @@ FTermLinux::modifier_key& FTermLinux::getModifierKey()
   std::memset (&mod_key, 0x00, sizeof(mod_key));
 
   // TIOCLINUX, subcode = 6 (TIOCL_GETSHIFTSTATE)
-  if ( fsystem && fsystem->ioControl(0, TIOCLINUX, &subcode) >= 0 )
+  if ( fsystem && fsystem->ioctl(0, TIOCLINUX, &subcode) >= 0 )
   {
     if ( subcode & (1 << KG_SHIFT) )
       mod_key.shift = true;
@@ -676,7 +676,7 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
 
   // font operation
   if ( fsystem )
-    ret = fsystem->ioControl (fd_tty, KDFONTOP, &font);
+    ret = fsystem->ioctl (fd_tty, KDFONTOP, &font);
 
   if ( ret != 0 && errno != ENOSYS && errno != EINVAL )
   {
@@ -713,14 +713,14 @@ int FTermLinux::setUnicodeMap (struct unimapdesc* unimap)
   {
     // clear the unicode-to-font table
     if ( fsystem )
-      ret = fsystem->ioControl (fd_tty, PIO_UNIMAPCLR, &advice);
+      ret = fsystem->ioctl (fd_tty, PIO_UNIMAPCLR, &advice);
 
     if ( ret != 0 )
       return -1;
 
     // put the new unicode-to-font mapping in kernel
     if ( fsystem )
-      ret = fsystem->ioControl (fd_tty, PIO_UNIMAP, unimap);
+      ret = fsystem->ioctl (fd_tty, PIO_UNIMAP, unimap);
 
     if ( ret != 0 )
       advice.advised_hashlevel++;
@@ -840,7 +840,7 @@ int FTermLinux::setBlinkAsIntensity (bool enable)
     return -1;
 
   // Enable access to VGA I/O ports  (from 0x3B4 with num = 0x2C)
-  if ( fsystem->ioControl(fd_tty, KDENABIO, 0) < 0 )
+  if ( fsystem->ioctl(fd_tty, KDENABIO, 0) < 0 )
     return -1;  // error on KDENABIO
 
   if ( enable )
@@ -849,7 +849,7 @@ int FTermLinux::setBlinkAsIntensity (bool enable)
     setAttributeMode (getAttributeMode() | 0x08);  // set bit 3
 
   // Disable access to VGA I/O ports
-  if ( fsystem->ioControl(fd_tty, KDDISABIO, 0) < 0 )
+  if ( fsystem->ioctl(fd_tty, KDDISABIO, 0) < 0 )
     return -1;  // error on KDDISABIO
 
   return 0;
@@ -869,7 +869,7 @@ bool FTermLinux::setVGAPalette (FColor index, int r, int g, int b)
     cmap.color[index].blue  = uChar(b);
   }
 
-  if ( fsystem && fsystem->ioControl (0, PIO_CMAP, &cmap) )
+  if ( fsystem && fsystem->ioctl (0, PIO_CMAP, &cmap) )
     return false;
   else
     return true;
@@ -880,7 +880,7 @@ bool FTermLinux::saveVGAPalette()
 {
   // Save the current vga color map
 
-  if ( fsystem && fsystem->ioControl (0, GIO_CMAP, &saved_color_map) )
+  if ( fsystem && fsystem->ioctl (0, GIO_CMAP, &saved_color_map) )
     has_saved_palette = false;
   else
     has_saved_palette = true;
@@ -898,7 +898,7 @@ bool FTermLinux::resetVGAPalette()
 
   if ( has_saved_palette )
   {
-    if ( fsystem->ioControl (0, PIO_CMAP, &saved_color_map) )
+    if ( fsystem->ioctl (0, PIO_CMAP, &saved_color_map) )
       return false;
   }
   else
@@ -922,7 +922,7 @@ bool FTermLinux::resetVGAPalette()
       cmap.color[index].blue  = defaultColor[index].blue;
     }
 
-    if ( fsystem->ioControl (0, PIO_CMAP, &cmap) )
+    if ( fsystem->ioctl (0, PIO_CMAP, &cmap) )
       return false;
   }
 

@@ -1,3 +1,6 @@
+2019-06-12  Markus Gans  <guru.mail@muenster.de>
+	* Fixes problem with scroll bar view after first draw
+
 2019-06-02  Markus Gans  <guru.mail@muenster.de>
 	* Avoid drawing the scroll bars if the widget is non-visible
 

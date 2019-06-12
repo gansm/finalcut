@@ -515,7 +515,7 @@ void FTerm::detectTermSize()
   auto& term_geometry = data->getTermGeometry();
 
   if ( fsys )
-    ret = fsys->ioControl (fd, TIOCGWINSZ, &win_size);
+    ret = fsys->ioctl (fd, TIOCGWINSZ, &win_size);
   else
     ret = -1;
 
@@ -962,7 +962,7 @@ void FTerm::init_global_values (bool disable_alt_screen)
   // Preset to false
   data->setNewFont(false);
 
-  // Sets alternative screen usage
+  // Sets alternate screen usage
   data->useAlternateScreen(! disable_alt_screen);
 
   // Initialize xterm object
@@ -1693,6 +1693,8 @@ inline void FTerm::disableApplicationEscKey()
 //----------------------------------------------------------------------
 void FTerm::useAlternateScreenBuffer()
 {
+  // Switch to the alternate screen
+
   if ( ! hasAlternateScreen() )
     return;
 
@@ -1714,6 +1716,8 @@ void FTerm::useAlternateScreenBuffer()
 //----------------------------------------------------------------------
 void FTerm::useNormalScreenBuffer()
 {
+  // Switch to the normal screen
+
   if ( ! hasAlternateScreen() )
     return;
 
@@ -1880,6 +1884,7 @@ void FTerm::init (bool disable_alt_screen)
   // Enter 'keyboard_transmit' mode
   enableKeypad();
 
+  // Switch to the alternate screen
   useAlternateScreenBuffer();
 
   // Enable alternate charset
@@ -2032,6 +2037,7 @@ void FTerm::finish()
   if ( isXTerminal() )
     xterm->metaSendsESC(false);
 
+  // Switch to the normal screen
   useNormalScreenBuffer();
 
   // leave 'keyboard_transmit' mode

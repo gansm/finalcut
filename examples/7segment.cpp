@@ -110,10 +110,6 @@ void SegmentView::hexEncoding()
 //----------------------------------------------------------------------
 void SegmentView::get7Segment (const wchar_t c)
 {
-  sevenSegment& s = code[c];
-  constexpr char h[2]{' ', '_'};
-  constexpr char v[2]{' ', '|'};
-
   for (int i = 0; i < 3; i++)
     line[i].clear();
 
@@ -157,9 +153,16 @@ void SegmentView::get7Segment (const wchar_t c)
 
     default:
       // Hexadecimal digit from 0 up to f
-      line[0] <<   ' '  << h[s.a] <<   ' ';
-      line[1] << v[s.f] << h[s.g] << v[s.b];
-      line[2] << v[s.e] << h[s.d] << v[s.c];
+      if ( code.find(c) != code.end() )
+      {
+        sevenSegment& s = code[c];
+        constexpr char h[2]{' ', '_'};
+        constexpr char v[2]{' ', '|'};
+
+        line[0] <<   ' '  << h[s.a] <<   ' ';
+        line[1] << v[s.f] << h[s.g] << v[s.b];
+        line[2] << v[s.e] << h[s.d] << v[s.c];
+      }
   }
 }
 

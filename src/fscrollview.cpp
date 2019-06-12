@@ -75,7 +75,9 @@ void FScrollView::setScrollWidth (std::size_t width)
   hbar->setMaximum (int(width - getViewportWidth()));
   hbar->setPageSize (int(width), int(getViewportWidth()));
   hbar->calculateSliderValues();
-  setHorizontalScrollBarVisibility();
+
+  if ( isShown() )
+    setHorizontalScrollBarVisibility();
 }
 
 //----------------------------------------------------------------------
@@ -102,7 +104,9 @@ void FScrollView::setScrollHeight (std::size_t height)
   vbar->setMaximum (int(height - getViewportHeight()));
   vbar->setPageSize (int(height), int(getViewportHeight()));
   vbar->calculateSliderValues();
-  setVerticalScrollBarVisibility();
+
+  if ( isShown() )
+    setVerticalScrollBarVisibility();
 }
 
 //----------------------------------------------------------------------
@@ -143,12 +147,16 @@ void FScrollView::setScrollSize (const FSize& size)
   hbar->setMaximum (int(width - getViewportWidth()));
   hbar->setPageSize (int(width), int(getViewportWidth()));
   hbar->calculateSliderValues();
-  setHorizontalScrollBarVisibility();
 
   vbar->setMaximum (int(height - getViewportHeight()));
   vbar->setPageSize (int(height), int(getViewportHeight()));
   vbar->calculateSliderValues();
-  setVerticalScrollBarVisibility();
+
+  if ( isShown() )
+  {
+    setHorizontalScrollBarVisibility();
+    setVerticalScrollBarVisibility();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -296,14 +304,18 @@ bool FScrollView::setBorder (bool enable)
 void FScrollView::setHorizontalScrollBarMode (fc::scrollBarMode mode)
 {
   hMode = mode;
-  setHorizontalScrollBarVisibility();
+
+  if ( isShown() )
+    setHorizontalScrollBarVisibility();
 }
 
 //----------------------------------------------------------------------
 void FScrollView::setVerticalScrollBarMode (fc::scrollBarMode mode)
 {
   vMode = mode;
-  setVerticalScrollBarVisibility();
+
+  if ( isShown() )
+    setVerticalScrollBarVisibility();
 }
 
 //----------------------------------------------------------------------
@@ -428,6 +440,13 @@ void FScrollView::draw()
 
   setViewportPrint();
   copy2area();
+
+  if ( ! hbar->isShown() )
+    setHorizontalScrollBarVisibility();
+
+  if ( ! vbar->isShown() )
+    setVerticalScrollBarVisibility();
+
   vbar->redraw();
   hbar->redraw();
 }
@@ -639,7 +658,6 @@ void FScrollView::adjustSize()
   hbar->setWidth (width - 2, false);
   hbar->setValue (xoffset);
   hbar->resize();
-  setHorizontalScrollBarVisibility();
 
   vbar->setMaximum (int(getScrollHeight() - getViewportHeight()));
   vbar->setPageSize (int(getScrollHeight()), int(getViewportHeight()));
@@ -647,7 +665,12 @@ void FScrollView::adjustSize()
   vbar->setHeight (height - 2, false);
   vbar->setValue (yoffset);
   vbar->resize();
-  setVerticalScrollBarVisibility();
+
+  if ( isShown() )
+  {
+    setHorizontalScrollBarVisibility();
+    setVerticalScrollBarVisibility();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -814,9 +837,6 @@ void FScrollView::calculateScrollbarPos()
 //----------------------------------------------------------------------
 void FScrollView::setHorizontalScrollBarVisibility()
 {
-  if ( ! isShown() )
-    return;
-
   switch ( hMode )
   {
     case fc::Auto:
@@ -839,9 +859,6 @@ void FScrollView::setHorizontalScrollBarVisibility()
 //----------------------------------------------------------------------
 void FScrollView::setVerticalScrollBarVisibility()
 {
-  if ( ! isShown() )
-    return;
-
   switch ( vMode )
   {
     case fc::Auto:
