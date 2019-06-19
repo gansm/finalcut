@@ -1,3 +1,7 @@
+2019-06-19  Markus Gans  <guru.mail@muenster.de>
+	* Add a unit test for FTermLinux with a Linux console emulation 
+	  and a dedicated FSystem test instance
+
 2019-06-12  Markus Gans  <guru.mail@muenster.de>
 	* Fixes problem with scroll bar view after first draw
 

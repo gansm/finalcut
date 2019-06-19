@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -30,6 +30,8 @@
 
 #include <final/final.h>
 
+namespace test
+{
 
 //----------------------------------------------------------------------
 // class FObject_protected
@@ -138,6 +140,8 @@ class FObject_userEvent : public finalcut::FObject
 };
 #pragma pack(pop)
 
+}  // namespace test
+
 
 //----------------------------------------------------------------------
 // class FObjectTest
@@ -219,7 +223,7 @@ void FObjectTest::noArgumentTest()
   CPPUNIT_ASSERT ( o1.isInstanceOf("FObject") );
   CPPUNIT_ASSERT ( ! o1.isTimerInUpdating() );
 
-  FObject_protected t;
+  test::FObject_protected t;
   auto ev = new finalcut::FEvent(finalcut::fc::None_Event);
   CPPUNIT_ASSERT ( ! t.event(ev) );
   delete ev;
@@ -294,7 +298,7 @@ void FObjectTest::childObjectTest()
 //----------------------------------------------------------------------
 void FObjectTest::widgetObjectTest()
 {
-  FObject_protected o;
+  test::FObject_protected o;
   CPPUNIT_ASSERT ( ! o.isWidget() );
   o.setWidgetProperty (true);
   CPPUNIT_ASSERT ( o.isWidget() );
@@ -451,8 +455,8 @@ void FObjectTest::timerTest()
   using finalcut::operator +=;
   using finalcut::operator <;
 
-  FObject_protected t1;
-  FObject_protected t2;
+  test::FObject_protected t1;
+  test::FObject_protected t2;
   int id1, id2;
   CPPUNIT_ASSERT ( t1.getTimerList()->empty() );
   id1 = t1.addTimer(300);
@@ -552,7 +556,7 @@ void FObjectTest::timerTest()
 //----------------------------------------------------------------------
 void FObjectTest::performTimerActionTest()
 {
-  FObject_protected t1;
+  test::FObject_protected t1;
   uInt num_events = 0;
   uInt loop = 0;
   t1.addTimer(100);
@@ -569,7 +573,7 @@ void FObjectTest::performTimerActionTest()
   CPPUNIT_ASSERT ( num_events == 9 );
   CPPUNIT_ASSERT ( t1.count == 9 );
 
-  FObject_timer t2;
+  test::FObject_timer t2;
   CPPUNIT_ASSERT ( t2.getValue() == 0 );
   finalcut::FTimerEvent timer_ev (finalcut::fc::Timer_Event, 1);
 
@@ -582,7 +586,7 @@ void FObjectTest::performTimerActionTest()
 //----------------------------------------------------------------------
 void FObjectTest::userEventTest()
 {
-  FObject_userEvent user;
+  test::FObject_userEvent user;
   CPPUNIT_ASSERT ( user.getValue() == 0 );
 
   int n = 9;

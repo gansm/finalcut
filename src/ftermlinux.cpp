@@ -40,8 +40,6 @@ namespace finalcut
 
   bool   FTermLinux::new_font;
   bool   FTermLinux::vga_font;
-  bool   FTermLinux::shadow_character = true;
-  bool   FTermLinux::half_block_character = true;
   bool   FTermLinux::has_saved_palette = false;
 
   FTermData*                  FTermLinux::fterm_data = nullptr;
@@ -158,6 +156,8 @@ void FTermLinux::init()
   term_detection = FTerm::getFTermDetection();
   screen_unicode_map.entries = nullptr;
   screen_font.data = nullptr;
+  fterm_data->supportShadowCharacter (true);
+  fterm_data->supportHalfBlockCharacter (true);
 
   if ( FTerm::openConsole() == 0 )
   {
@@ -279,7 +279,10 @@ bool FTermLinux::loadVGAFont()
     vga_font = false;
 
   if ( vga_font )
-    shadow_character = half_block_character = true;
+  {
+    fterm_data->supportShadowCharacter (true);
+    fterm_data->supportHalfBlockCharacter (true);
+  }
 
   return vga_font;
 }
@@ -316,7 +319,10 @@ bool FTermLinux::loadNewFont()
     new_font = false;
 
   if ( vga_font )
-    shadow_character = half_block_character = true;
+  {
+    fterm_data->supportShadowCharacter (true);
+    fterm_data->supportHalfBlockCharacter (true);
+  }
 
   return new_font;
 }
@@ -1221,7 +1227,7 @@ inline void FTermLinux::initSpecialCharacter()
     || FTerm::charEncode(c2, fc::PC) == FTerm::charEncode(c2, fc::ASCII)
     || FTerm::charEncode(c3, fc::PC) == FTerm::charEncode(c3, fc::ASCII) )
   {
-    shadow_character = false;
+    fterm_data->supportShadowCharacter (false);
   }
 
   wchar_t c4 = fc::RightHalfBlock;
@@ -1230,7 +1236,7 @@ inline void FTermLinux::initSpecialCharacter()
   if ( FTerm::charEncode(c4, fc::PC) == FTerm::charEncode(c4, fc::ASCII)
     || FTerm::charEncode(c5, fc::PC) == FTerm::charEncode(c5, fc::ASCII) )
   {
-    half_block_character = false;
+    fterm_data->supportHalfBlockCharacter (false);
   }
 }
 

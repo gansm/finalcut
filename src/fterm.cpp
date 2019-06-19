@@ -316,12 +316,6 @@ bool FTerm::setOldFont()
   else if ( isLinuxTerm() )
   {
     retval = linux->loadOldFont(fc::character);
-
-    if ( retval )
-    {
-      data->supportShadowCharacter (linux->hasShadowCharacter());
-      data->supportHalfBlockCharacter (linux->hasHalfBlockCharacter());
-    }
   }
 #endif  // defined(__linux__)
 
@@ -916,8 +910,6 @@ void FTerm::initScreenSettings()
   // Important: Do not use setNewFont() or setVGAFont() after
   //            the console character mapping has been initialized
   linux->initCharMap (fc::character);
-  data->supportShadowCharacter (linux->hasShadowCharacter());
-  data->supportHalfBlockCharacter (linux->hasHalfBlockCharacter());
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
   freebsd->initCharMap (fc::character);
 #endif

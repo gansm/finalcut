@@ -94,8 +94,6 @@ class FTermLinux final
 
     // Inquiries
     static bool          isLinuxConsole();
-    static bool          hasShadowCharacter();
-    static bool          hasHalfBlockCharacter();
     static bool          isVGAFontUsed();
     static bool          isNewFontUsed();
 
@@ -176,8 +174,6 @@ class FTermLinux final
 #if defined(__linux__)
     static bool                   vga_font;
     static bool                   new_font;
-    static bool                   shadow_character;
-    static bool                   half_block_character;
     static bool                   has_saved_palette;
     static FTermData*             fterm_data;
     static FSystem*               fsystem;
@@ -202,14 +198,6 @@ inline const char* FTermLinux::getClassName() const
 #if defined(__linux__)
 inline int FTermLinux::getFramebufferBpp()
 { return framebuffer_bpp; }
-
-//----------------------------------------------------------------------
-inline bool FTermLinux::hasShadowCharacter()
-{ return shadow_character; }
-
-//----------------------------------------------------------------------
-inline bool FTermLinux::hasHalfBlockCharacter()
-{ return half_block_character; }
 
 //----------------------------------------------------------------------
 inline bool FTermLinux::isVGAFontUsed()

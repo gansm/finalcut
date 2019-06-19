@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -30,6 +30,8 @@
 
 #include <final/final.h>
 
+namespace test
+{
 
 //----------------------------------------------------------------------
 // class FMouse_protected
@@ -76,6 +78,8 @@ class FMouse_protected : public finalcut::FMouse
     }
 };
 #pragma pack(pop)
+
+}  // namespace test
 
 
 //----------------------------------------------------------------------
@@ -129,7 +133,7 @@ class FMouseTest : public CPPUNIT_NS::TestFixture
 //----------------------------------------------------------------------
 void FMouseTest::classNameTest()
 {
-  FMouse_protected m;
+  test::FMouse_protected m;
   const char* const classname1 = m.getClassName();
   CPPUNIT_ASSERT ( std::strcmp(classname1, "FMouse") == 0 );
 
@@ -159,7 +163,7 @@ void FMouseTest::classNameTest()
 //----------------------------------------------------------------------
 void FMouseTest::noArgumentTest()
 {
-  FMouse_protected mouse;
+  test::FMouse_protected mouse;
   CPPUNIT_ASSERT ( mouse.getPos() == finalcut::FPoint(0, 0) );
   CPPUNIT_ASSERT ( mouse.getNewMousePosition() == finalcut::FPoint(0, 0) );
   CPPUNIT_ASSERT ( ! mouse.hasEvent() );
@@ -201,7 +205,7 @@ void FMouseTest::doubleClickTest()
 {
   using finalcut::operator -;
 
-  FMouse_protected mouse;
+  test::FMouse_protected mouse;
   CPPUNIT_ASSERT ( mouse.getDblclickInterval() == 500000 );  // 500 ms
   timeval tv = { 0, 0 };
   CPPUNIT_ASSERT ( mouse.isDblclickTimeout(&tv) );
@@ -226,7 +230,7 @@ void FMouseTest::doubleClickTest()
 //----------------------------------------------------------------------
 void FMouseTest::workspaceSizeTest()
 {
-  FMouse_protected mouse;
+  test::FMouse_protected mouse;
   CPPUNIT_ASSERT ( mouse.getMaxWidth() == 80 );
   CPPUNIT_ASSERT ( mouse.getMaxHeight() == 25 );
 
