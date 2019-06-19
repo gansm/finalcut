@@ -12,6 +12,7 @@ addons:
      - autoconf
      - autoconf-archive
      - libtool
+     - pkg-config
      - libglib2.0-dev
      - libncurses5-dev
      - gpm
