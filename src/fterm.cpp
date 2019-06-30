@@ -823,42 +823,27 @@ void FTerm::putstringf (const char format[], ...)
 {
   assert ( format != 0 );
   char  buf[512];
-  char* buffer;
+  char* str;
   va_list args;
 
-  buffer = buf;
+  str = buf;
   va_start (args, format);
-  vsnprintf (buffer, sizeof(buf), format, args);
+  vsnprintf (str, sizeof(buf), format, args);
   va_end (args);
 
-  tputs (buffer, 1, FTerm::putchar_ASCII);
+  fsys->tputs (str, 1, FTerm::putchar_ASCII);
 }
 
 //----------------------------------------------------------------------
-void FTerm::putstring (const char s[], int affcnt)
+void FTerm::putstring (const char str[], int affcnt)
 {
-#if defined(__sun) && defined(__SVR4)
-  tputs (C_STR(s), affcnt, FTerm::putchar_ASCII);
-#else
-  tputs (s, affcnt, FTerm::putchar_ASCII);
-#endif
+  fsys->tputs (str, affcnt, FTerm::putchar_ASCII);
 }
-
-#if defined(__sun) && defined(__SVR4)
-//----------------------------------------------------------------------
-int FTerm::putchar_ASCII (char c)
-{
-  if ( std::putchar(c) == EOF )
-    return 0;
-  else
-    return 1;
-}
-#endif  // defined(__sun) && defined(__SVR4)
 
 //----------------------------------------------------------------------
 int FTerm::putchar_ASCII (int c)
 {
-  if ( std::putchar(char(c)) == EOF )
+  if ( fsys->putchar(char(c)) == EOF )
     return 0;
   else
     return 1;
@@ -870,31 +855,31 @@ int FTerm::putchar_UTF8 (int c)
   if ( c < 0x80 )
   {
     // 1 Byte (7-bit): 0xxxxxxx
-    std::putchar (c);
+    fsys->putchar (c);
     return 1;
   }
   else if ( c < 0x800 )
   {
     // 2 byte (11-bit): 110xxxxx 10xxxxxx
-    std::putchar (0xc0 | (c >> 6) );
-    std::putchar (0x80 | (c & 0x3f) );
+    fsys->putchar (0xc0 | (c >> 6) );
+    fsys->putchar (0x80 | (c & 0x3f) );
     return 2;
   }
   else if ( c < 0x10000 )
   {
     // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
-    std::putchar (0xe0 | (c >> 12) );
-    std::putchar (0x80 | ((c >> 6) & 0x3f) );
-    std::putchar (0x80 | (c & 0x3f) );
+    fsys->putchar (0xe0 | (c >> 12) );
+    fsys->putchar (0x80 | ((c >> 6) & 0x3f) );
+    fsys->putchar (0x80 | (c & 0x3f) );
     return 3;
   }
   else if ( c < 0x200000 )
   {
     // 4 byte (21-bit): 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-    std::putchar (0xf0 | (c >> 18) );
-    std::putchar (0x80 | ((c >> 12) & 0x3f) );
-    std::putchar (0x80 | ((c >> 6) & 0x3f) );
-    std::putchar (0x80 | (c & 0x3f));
+    fsys->putchar (0xf0 | (c >> 18) );
+    fsys->putchar (0x80 | ((c >> 12) & 0x3f) );
+    fsys->putchar (0x80 | ((c >> 6) & 0x3f) );
+    fsys->putchar (0x80 | (c & 0x3f));
     return 4;
   }
   else

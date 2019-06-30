@@ -38,6 +38,24 @@
 #include <conemu.h>
 #include <final/final.h>
 
+#define CPPUNIT_ASSERT_CSTRING(expected, actual) \
+            check_c_string (expected, actual, CPPUNIT_SOURCELINE())
+
+//----------------------------------------------------------------------
+void check_c_string ( const char* s1
+                    , const char* s2
+                    , CppUnit::SourceLine sourceLine )
+{
+  if ( s1 == 0 && s2 == 0 )  // Strings are equal
+    return;
+
+  if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
+      return;
+
+  ::CppUnit::Asserter::fail ("Strings are not equal", sourceLine);
+}
+
+
 namespace test
 {
 
@@ -50,21 +68,22 @@ namespace test
 
 class FSystemTest : public finalcut::FSystem
 {
+  public:
     // Typedefs and Enumerations
     typedef struct
     {
-      unsigned char shift  : 1;
-      unsigned char alt_gr : 1;
-      unsigned char ctrl   : 1;
-      unsigned char alt    : 1;
-      unsigned char        : 4;  // padding bits
+      uChar shift  : 1;
+      uChar alt_gr : 1;
+      uChar ctrl   : 1;
+      uChar alt    : 1;
+      uChar        : 4;  // padding bits
     } shiftstate;
 
     typedef struct
     {
-      unsigned char red;
-      unsigned char green;
-      unsigned char blue;
+      uChar red;
+      uChar green;
+      uChar blue;
     } rgb;
 
     typedef struct
@@ -78,7 +97,6 @@ class FSystemTest : public finalcut::FSystem
       data_mode
     };
 
-  public:
     // Constructor
     FSystemTest();
 
@@ -86,14 +104,21 @@ class FSystemTest : public finalcut::FSystem
     virtual ~FSystemTest();
 
     // Methods
-    virtual uChar inPortByte (uShort);
-    virtual void outPortByte (uChar, uShort);
-    virtual int isTTY (int);
-    virtual int ioctl (int, uLong, ...);
-    virtual int open (const char*, int, ...);
-    virtual int close (int);
-    virtual FILE* fopen (const char*, const char*);
-    virtual int fclose (FILE*);
+    virtual uChar    inPortByte (uShort);
+    virtual void     outPortByte (uChar, uShort);
+    virtual int      isTTY (int);
+    virtual int      ioctl (int, uLong, ...);
+    virtual int      open (const char*, int, ...);
+    virtual int      close (int);
+    virtual FILE*    fopen (const char*, const char*);
+    virtual int      fclose (FILE*);
+    virtual int      putchar (int);
+    virtual int      tputs (const char*, int, int (*)(int));
+    rgb&             getRGB (std::size_t);
+    console_font_op& getConsoleFont();
+
+    // Data Members
+    std::string characters;
 
   private:
     // Methods
@@ -104,24 +129,26 @@ class FSystemTest : public finalcut::FSystem
     static shiftstate shift_state;
     static rgb terminal_color[16];
     static rgb defaultColor[16];
+    static struct console_font_op terminal_font;
     static unimapdesc terminal_unicode_map;
     static struct fb_var_screeninfo fb_terminal_info;
     static struct fb_fix_screeninfo fb_terminal_fix_info;
     static bool vga_port_access;
 
     ac_mode attribute_controller_mode = index_mode;
-    unsigned char ac_address_register[21] = \
+    uChar ac_address_register[21] = \
     {
       0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
       0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d,
       0x0e, 0x0f, 0x0c, 0x00, 0x0f, 0x08, 0x00
     };
-    unsigned char ac_index = 0;
+    uChar ac_index = 0;
     bool palette_addr_source_field = true;
-    unsigned char port_3cc = 0x67;  // Miscellaneous output
-    unsigned char port_3da = 0;     // Input status 1
+    uChar port_3cc = 0x67;  // Miscellaneous output
+    uChar port_3da = 0;     // Input status 1
     static uChar vga8x16[];
     static struct unipair unicode_cp437_pairs[];
+
 };
 #pragma pack(pop)
 
@@ -649,7 +676,6 @@ struct unipair FSystemTest::unicode_cp437_pairs[] =
   //  .----------- unicode
   //  |      .---- fontpos
   //  |      |
-  {0x0000, 0x00},
   {0x0020, 0x20},
   {0x0021, 0x21},
   {0x0022, 0x22},
@@ -749,65 +775,34 @@ struct unipair FSystemTest::unicode_cp437_pairs[] =
   {0x00a1, 0xad},
   {0x00a2, 0x9b},
   {0x00a3, 0x9c},
-  {0x00a4, 0x0f},
   {0x00a5, 0x9d},
-  {0x00a6, 0x7c},
   {0x00a7, 0x15},
-  {0x00a8, 0x22},
-  {0x00a9, 0x43},
   {0x00aa, 0xa6},
   {0x00ab, 0xae},
   {0x00ac, 0xaa},
-  {0x00ad, 0x2d},
-  {0x00ae, 0x52},
   {0x00b0, 0xf8},
   {0x00b1, 0xf1},
   {0x00b2, 0xfd},
-  {0x00b4, 0x27},
   {0x00b5, 0xe6},
   {0x00b6, 0x14},
   {0x00b7, 0xfa},
-  {0x00b8, 0x2c},
   {0x00ba, 0xa7},
   {0x00bb, 0xaf},
   {0x00bc, 0xac},
   {0x00bd, 0xab},
   {0x00bf, 0xa8},
-  {0x00c0, 0x41},
-  {0x00c1, 0x41},
-  {0x00c2, 0x41},
-  {0x00c3, 0x41},
   {0x00c4, 0x8e},
   {0x00c5, 0x8f},
   {0x00c6, 0x92},
   {0x00c7, 0x80},
-  {0x00c8, 0x45},
   {0x00c9, 0x90},
-  {0x00ca, 0x45},
-  {0x00cb, 0x45},
-  {0x00cc, 0x49},
-  {0x00cd, 0x49},
-  {0x00ce, 0x49},
-  {0x00cf, 0x49},
-  {0x00d0, 0x44},
   {0x00d1, 0xa5},
-  {0x00d2, 0x4f},
-  {0x00d3, 0x4f},
-  {0x00d4, 0x4f},
-  {0x00d5, 0x4f},
   {0x00d6, 0x99},
-  {0x00d7, 0x78},
-  {0x00d8, 0xe8},
-  {0x00d9, 0x55},
-  {0x00da, 0x55},
-  {0x00db, 0x55},
   {0x00dc, 0x9a},
-  {0x00dd, 0x59},
   {0x00df, 0xe1},
   {0x00e0, 0x85},
   {0x00e1, 0xa0},
   {0x00e2, 0x83},
-  {0x00e3, 0x61},
   {0x00e4, 0x84},
   {0x00e5, 0x86},
   {0x00e6, 0x91},
@@ -820,20 +815,16 @@ struct unipair FSystemTest::unicode_cp437_pairs[] =
   {0x00ed, 0xa1},
   {0x00ee, 0x8c},
   {0x00ef, 0x8b},
-  {0x00f0, 0xeb},
   {0x00f1, 0xa4},
   {0x00f2, 0x95},
   {0x00f3, 0xa2},
   {0x00f4, 0x93},
-  {0x00f5, 0x6f},
   {0x00f6, 0x94},
   {0x00f7, 0xf6},
-  {0x00f8, 0xed},
   {0x00f9, 0x97},
   {0x00fa, 0xa3},
   {0x00fb, 0x96},
   {0x00fc, 0x81},
-  {0x00fd, 0x79},
   {0x00ff, 0x98},
   {0x0192, 0x9f},
   {0x0393, 0xe2},
@@ -850,12 +841,12 @@ struct unipair FSystemTest::unicode_cp437_pairs[] =
   {0x03c3, 0xe5},
   {0x03c4, 0xe7},
   {0x03c6, 0xed},
+  {0x2008, 0x00},
   {0x2022, 0x07},
   {0x203c, 0x13},
   {0x207f, 0xfc},
   {0x20a7, 0x9e},
   {0x2126, 0xea},
-  {0x212a, 0x4b},
   {0x212b, 0x8f},
   {0x2190, 0x1b},
   {0x2191, 0x18},
@@ -864,7 +855,9 @@ struct unipair FSystemTest::unicode_cp437_pairs[] =
   {0x2194, 0x1d},
   {0x2195, 0x12},
   {0x21a8, 0x17},
+  {0x2205, 0xed},
   {0x2208, 0xee},
+  {0x220e, 0xfe},
   {0x2219, 0xf9},
   {0x221a, 0xfb},
   {0x221e, 0xec},
@@ -874,11 +867,13 @@ struct unipair FSystemTest::unicode_cp437_pairs[] =
   {0x2261, 0xf0},
   {0x2264, 0xf3},
   {0x2265, 0xf2},
+  {0x22c5, 0xf9},
+  {0x2300, 0xed},
   {0x2302, 0x7f},
   {0x2310, 0xa9},
+  {0x2319, 0x1c},
   {0x2320, 0xf4},
   {0x2321, 0xf5},
-  {0x23bd, 0x5f},
   {0x2500, 0xc4},
   {0x2502, 0xb3},
   {0x250c, 0xda},
@@ -935,7 +930,6 @@ struct unipair FSystemTest::unicode_cp437_pairs[] =
   {0x25bc, 0x1f},
   {0x25c0, 0x11},
   {0x25c4, 0x11},
-  {0x25c6, 0x04},
   {0x25cb, 0x09},
   {0x25d8, 0x08},
   {0x25d9, 0x0a},
@@ -950,8 +944,7 @@ struct unipair FSystemTest::unicode_cp437_pairs[] =
   {0x2666, 0x04},
   {0x266a, 0x0d},
   {0x266b, 0x0e},
-  {0xf804, 0x5f},
-  {0xfffd, 0xfe}
+  {0x266c, 0x0e}
 };
 
 FSystemTest::rgb FSystemTest::terminal_color[16] { };
@@ -971,11 +964,12 @@ FSystemTest::rgb FSystemTest::defaultColor[16]
 
 // static class attributes
 //----------------------------------------------------------------------
-FSystemTest::shiftstate FSystemTest::shift_state;
-unimapdesc FSystemTest::terminal_unicode_map;
-struct fb_var_screeninfo FSystemTest::fb_terminal_info;
-struct fb_fix_screeninfo FSystemTest::fb_terminal_fix_info;
-bool FSystemTest::vga_port_access = false;
+FSystemTest::shiftstate   FSystemTest::shift_state;
+struct console_font_op    FSystemTest::terminal_font;
+unimapdesc                FSystemTest::terminal_unicode_map;
+struct fb_var_screeninfo  FSystemTest::fb_terminal_info;
+struct fb_fix_screeninfo  FSystemTest::fb_terminal_fix_info;
+bool                      FSystemTest::vga_port_access = false;
 
 
 // constructors and destructor
@@ -984,7 +978,11 @@ FSystemTest::FSystemTest()  // constructor
 {
   // fill bit field with 0
   memset (&shift_state, 0x00, sizeof(shift_state));
+  memset (&terminal_font, 0x00, sizeof(terminal_font));
   memset (&terminal_unicode_map, 0x00, sizeof(terminal_unicode_map));
+
+  constexpr std::size_t font_data_size = 4 * 32 * 512;
+  terminal_font.data = new uChar[font_data_size]{ };
 
   // init framebuffer
   initVScreenInfo();
@@ -994,6 +992,9 @@ FSystemTest::FSystemTest()  // constructor
 //----------------------------------------------------------------------
 FSystemTest::~FSystemTest()  // destructor
 {
+  if ( terminal_font.data )
+    delete[] terminal_font.data;
+
   if ( terminal_unicode_map.entries )
     delete[] terminal_unicode_map.entries;
 }
@@ -1074,7 +1075,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     {
       req_string = "TIOCLINUX";
       char* subcode = static_cast<char*>(argp);
-      unsigned char* state = reinterpret_cast<unsigned char*>(&shift_state);
+      uChar* state = reinterpret_cast<uChar*>(&shift_state);
 
       if ( *subcode == 6 )
         *subcode = static_cast<char>(*state);
@@ -1086,13 +1087,45 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     case KDFONTOP:
     {
       req_string = "KDFONTOP";
+      constexpr std::size_t font_data_size = 4 * 32 * 512;
       struct console_font_op* fn = static_cast<console_font_op*>(argp);
-      fn->width = 8;
-      fn->height = 16;
-      fn->charcount = 256;
 
-      if ( fn->data )
-        memcpy (fn->data, &vga8x16, sizeof(vga8x16));
+      // Set Default
+      if ( terminal_font.data && terminal_font.data[219 * 32] == 0 )
+      {
+        terminal_font.width = 8;
+        terminal_font.height = 16;
+        terminal_font.charcount = 256;
+
+        if ( fn->data )
+          std::memcpy (terminal_font.data, &vga8x16, sizeof(vga8x16));
+      }
+
+      if ( fn->op == KD_FONT_OP_GET )
+      {
+        fn->flags     = terminal_font.flags;
+        fn->width     = terminal_font.width;
+        fn->height    = terminal_font.height;
+        fn->charcount = terminal_font.charcount;
+
+        if ( fn->data )
+          std::memcpy (fn->data, terminal_font.data, font_data_size);
+
+        terminal_font.op = KD_FONT_OP_GET;
+      }
+
+      if ( fn->op == KD_FONT_OP_SET )
+      {
+        terminal_font.flags     = fn->flags;
+        terminal_font.width     = fn->width;
+        terminal_font.height    = fn->height;
+        terminal_font.charcount = fn->charcount;
+
+        if ( fn->data )
+          std::memcpy (terminal_font.data, fn->data, font_data_size);
+
+        terminal_font.op = KD_FONT_OP_SET;
+      }
 
       ret_val = 0;
       break;
@@ -1116,7 +1149,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
         && terminal_color[15].green == 0
         && terminal_color[15].blue  == 0 )
       {
-        for (size_t index = 0; index < 16; index++)
+        for (std::size_t index = 0; index < 16; index++)
         {
           terminal_color[index].red   = defaultColor[index].red;
           terminal_color[index].green = defaultColor[index].green;
@@ -1124,7 +1157,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
         }
       }
 
-      for (size_t index = 0; index < 16; index++)
+      for (std::size_t index = 0; index < 16; index++)
       {
         cmap->color[index].red   = terminal_color[index].red;
         cmap->color[index].green = terminal_color[index].green;
@@ -1140,7 +1173,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
       req_string = "PIO_CMAP";
       ColorMap* cmap = static_cast<ColorMap*>(argp);
 
-      for (size_t index = 0; index < 16; index++)
+      for (std::size_t index = 0; index < 16; index++)
       {
         terminal_color[index].red   = cmap->color[index].red;
         terminal_color[index].green = cmap->color[index].green;
@@ -1155,26 +1188,30 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     {
       req_string = "GIO_UNIMAP";
       unimapdesc* umap = static_cast<unimapdesc*>(argp);
-      size_t pairs = sizeof(unicode_cp437_pairs) / sizeof(unipair);
-      size_t pairs_size = pairs * sizeof(unipair);
+      std::size_t pairs = sizeof(unicode_cp437_pairs) / sizeof(unipair);
+      std::size_t pairs_size = pairs * sizeof(unipair);
 
       // Sets the default unicode map of the terminal on the first call
       if ( terminal_unicode_map.entries == 0 )
       {
         terminal_unicode_map.entry_ct = pairs;
         terminal_unicode_map.entries = new unipair[pairs]();
-        memcpy (terminal_unicode_map.entries, &unicode_cp437_pairs, pairs_size);
+        std::memcpy (terminal_unicode_map.entries, &unicode_cp437_pairs, pairs_size);
       }
 
       umap->entry_ct = terminal_unicode_map.entry_ct;
 
       if ( umap->entries && terminal_unicode_map.entries )
       {
-        memcpy (umap->entries, &terminal_unicode_map.entries, pairs_size);
+        std::memcpy (umap->entries, terminal_unicode_map.entries, pairs_size);
+        errno = 0;
         ret_val = 0;
       }
       else
+      {
+        errno = ENOMEM;
         ret_val = -1;
+      }
 
       break;
     }
@@ -1183,7 +1220,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     {
       req_string = "PIO_UNIMAP";
       unimapdesc* umap = static_cast<unimapdesc*>(argp);
-      memcpy (&terminal_unicode_map, umap, sizeof(*umap));
+      std::memcpy (&terminal_unicode_map, umap, sizeof(*umap));
       ret_val = 0;
       break;
     }
@@ -1198,7 +1235,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
       req_string = "FBIOGET_VSCREENINFO";
       struct fb_var_screeninfo* fb_var \
           = static_cast<fb_var_screeninfo*>(argp);
-      memcpy (fb_var, &fb_terminal_info, sizeof(fb_terminal_info));
+      std::memcpy (fb_var, &fb_terminal_info, sizeof(fb_terminal_info));
       ret_val = 0;
       break;
     }
@@ -1208,7 +1245,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
       req_string = "FBIOGET_FSCREENINFO";
       struct fb_fix_screeninfo* fb_fix
           = static_cast<fb_fix_screeninfo*>(argp);
-      memcpy (fb_fix, &fb_terminal_fix_info, sizeof(fb_terminal_fix_info));
+      std::memcpy (fb_fix, &fb_terminal_fix_info, sizeof(fb_terminal_fix_info));
       ret_val = 0;
       break;
     }
@@ -1289,6 +1326,36 @@ int FSystemTest::fclose (FILE* fp)
   std::cerr << "Call: fclose (fp=" << fp << ")\n";
   return 0;
 }
+
+//----------------------------------------------------------------------
+int FSystemTest::putchar (int c)
+{
+  std::cerr << "Call: putchar (" << c << ")\n";
+  characters.push_back(c);
+  return 1;
+}
+
+//----------------------------------------------------------------------
+int FSystemTest::tputs (const char* str, int affcnt, int (*putc)(int))
+{
+  return ::tputs (str, affcnt, putc);
+}
+
+//----------------------------------------------------------------------
+FSystemTest::rgb& FSystemTest::getRGB (std::size_t i)
+{
+  if ( i < 16 )
+    return terminal_color[i];
+  else
+    return terminal_color[0];
+}
+
+//----------------------------------------------------------------------
+console_font_op& FSystemTest::getConsoleFont()
+{
+  return terminal_font;
+}
+
 
 // private methods of FSystemTest
 //----------------------------------------------------------------------
@@ -1380,6 +1447,9 @@ class FTermLinuxTest : public CPPUNIT_NS::TestFixture, test::ConEmu
   protected:
     void classNameTest();
     void linuxConsoleTest();
+    void linuxCursorStyleTest();
+    void linuxColorPaletteTest();
+    void linuxFontTest();
 
   private:
     // Adds code needed to register the test suite
@@ -1388,6 +1458,9 @@ class FTermLinuxTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (linuxConsoleTest);
+    CPPUNIT_TEST (linuxCursorStyleTest);
+    CPPUNIT_TEST (linuxColorPaletteTest);
+    CPPUNIT_TEST (linuxFontTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -1427,12 +1500,6 @@ void FTermLinuxTest::linuxConsoleTest()
   encoding_list["ASCII"] = finalcut::fc::ASCII;
 
   data->setTermEncoding(finalcut::fc::PC);
-
-  auto& character_map = data->getCharSubstitutionMap();
-  character_map[finalcut::fc::BlackCircle] = L'*';
-  character_map[finalcut::fc::Times] = L'x';
-  character_map[L'ˣ'] = finalcut::fc::SuperscriptLatinSmallLetterN;
-
   data->setBaudrate(38400);
   data->setTermType("linux");
   data->setTermFileName("/dev/tty2");
@@ -1488,20 +1555,34 @@ void FTermLinuxTest::linuxConsoleTest()
     CPPUNIT_ASSERT ( data->hasHalfBlockCharacter() );
     CPPUNIT_ASSERT ( linux.getFramebufferBpp() == 32 );
 
+    test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
+    linux.setUTF8 (false);
+    CPPUNIT_ASSERT ( fsystest->characters == ESC "%@" );
+    fsystest->characters.clear();
 
-    // linux->setUTF8 (enable);
-    // linux->loadVGAFont()
-    // linux->loadNewFont()
-    // linux->loadOldFont(fc::character);
-    // linux->initCharMap (fc::character);
-    // linux->restoreCursorStyle();
-    // linux->saveColorMap();
-    // linux->resetColorMap();
-    // linux->setPalette(index, r, g, b);
-    // linux->setBeep (Hz, ms);
-    // linux->resetBeep();
-    // const char* cstyle = linux->setCursorStyle ( fc::underscore_cursor
-    //                                            , data->isCursorHidden() );
+    linux.setUTF8 (true);
+    CPPUNIT_ASSERT ( fsystest->characters == ESC "%G" );
+    fsystest->characters.clear();
+
+
+    linux.setBeep (200, 100);
+    CPPUNIT_ASSERT ( fsystest->characters == CSI "10;200]" CSI "11;100]" );
+    fsystest->characters.clear();
+    linux.resetBeep();
+    CPPUNIT_ASSERT ( fsystest->characters == CSI "10;750]" CSI "11;125]" );
+    fsystest->characters.clear();
+
+    linux.initCharMap (finalcut::fc::character);
+    auto& character_map = data->getCharSubstitutionMap();
+    CPPUNIT_ASSERT ( character_map.size() == 3 );
+    CPPUNIT_ASSERT ( character_map[finalcut::fc::BlackCircle] == L'*' );
+    CPPUNIT_ASSERT ( character_map[finalcut::fc::Times] == L'x' );
+    CPPUNIT_ASSERT ( character_map[L'ˣ'] == L'ⁿ' );
+
+    // linux.loadVGAFont()
+    // linux.loadNewFont()
+    // linux.loadOldFont(finalcut::fc::character);
+
     closeConEmuStdStreams();
     exit(EXIT_SUCCESS);
   }
@@ -1517,6 +1598,552 @@ void FTermLinuxTest::linuxConsoleTest()
   linux.finish();
 }
 
+//----------------------------------------------------------------------
+void FTermLinuxTest::linuxCursorStyleTest()
+{
+  finalcut::FTermData* data;
+  finalcut::FSystem* fsys;
+  fsys = new test::FSystemTest();
+  finalcut::FTerm::setFSystem(fsys);
+  finalcut::FTermDetection* term_detection;
+  std::cout << "\n";
+  data = finalcut::FTerm::getFTermData();
+
+  auto& encoding_list = data->getEncodingList();
+  encoding_list["UTF-8"] = finalcut::fc::UTF8;
+  encoding_list["UTF8"]  = finalcut::fc::UTF8;
+  encoding_list["VT100"] = finalcut::fc::VT100;
+  encoding_list["PC"]    = finalcut::fc::PC;
+  encoding_list["ASCII"] = finalcut::fc::ASCII;
+
+  data->setTermEncoding(finalcut::fc::PC);
+  data->setBaudrate(38400);
+  data->setTermType("linux");
+  data->setTermFileName("/dev/tty2");
+
+#if DEBUG
+  data->setFramebufferBpp(32);
+#endif
+
+  data->supportShadowCharacter (false);
+  data->supportHalfBlockCharacter (false);
+  data->supportCursorOptimisation (true);
+  data->setCursorHidden (true);
+  data->useAlternateScreen (false);
+  data->setASCIIConsole (true);
+  data->setVT100Console (false);
+  data->setUTF8Console (false);
+  data->setUTF8 (false);
+  data->setNewFont (false);
+  data->setVGAFont (false);
+  data->setMonochron (false);
+  data->setTermResized (false);
+
+  term_detection = finalcut::FTerm::getFTermDetection();
+  finalcut::FTermLinux linux;
+
+  term_detection->setLinuxTerm(true);
+
+  pid_t pid = forkConEmu();
+
+  if ( isConEmuChildProcess(pid) )
+  {
+    setenv ("TERM", "linux", 1);
+    setenv ("COLUMNS", "90", 1);
+    setenv ("LINES", "30", 1);
+    unsetenv("TERMCAP");
+    unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
+    unsetenv("VTE_VERSION");
+    unsetenv("XTERM_VERSION");
+    unsetenv("ROXTERM_ID");
+    unsetenv("KONSOLE_DBUS_SESSION");
+    unsetenv("KONSOLE_DCOP");
+    unsetenv("TMUX");
+
+    term_detection->detect();
+    linux.init();
+
+    char* cursorstyle;
+    cursorstyle = linux.setCursorStyle (finalcut::fc::default_cursor, false);
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle, CSI "?0c" );
+    CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::default_cursor );
+    cursorstyle = linux.setCursorStyle (finalcut::fc::invisible_cursor, false);
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle, CSI "?1c" );
+    CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::invisible_cursor );
+    cursorstyle = linux.setCursorStyle (finalcut::fc::underscore_cursor, false);
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle, CSI "?2c" );
+    CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::underscore_cursor );
+    cursorstyle = linux.setCursorStyle (finalcut::fc::lower_third_cursor, false);
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle, CSI "?3c" );
+    CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::lower_third_cursor );
+    cursorstyle = linux.setCursorStyle (finalcut::fc::lower_half_cursor, false);
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle, CSI "?4c" );
+    CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::lower_half_cursor );
+    cursorstyle = linux.setCursorStyle (finalcut::fc::two_thirds_cursor, false);
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle, CSI "?5c" );
+    CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::two_thirds_cursor );
+    cursorstyle = linux.setCursorStyle (finalcut::fc::full_block_cursor, false);
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle, CSI "?6c" );
+    CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::full_block_cursor );
+
+    cursorstyle = linux.setCursorStyle (finalcut::fc::default_cursor, true);
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle,  "" );
+    CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::default_cursor );
+    cursorstyle = linux.restoreCursorStyle();
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle, CSI "?0c" );
+    CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::default_cursor );
+    cursorstyle = linux.setCursorStyle (finalcut::fc::invisible_cursor, true);
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle,  "" );
+    CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::invisible_cursor );
+    cursorstyle = linux.restoreCursorStyle();
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle, CSI "?1c" );
+    cursorstyle = linux.setCursorStyle (finalcut::fc::underscore_cursor, true);
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle,  "" );
+    CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::underscore_cursor );
+    cursorstyle = linux.restoreCursorStyle();
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle, CSI "?2c" );
+    cursorstyle = linux.setCursorStyle (finalcut::fc::lower_third_cursor, true);
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle,  "" );
+    CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::lower_third_cursor );
+    cursorstyle = linux.restoreCursorStyle();
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle, CSI "?3c" );
+    cursorstyle = linux.setCursorStyle (finalcut::fc::lower_half_cursor, true);
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle,  "" );
+    CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::lower_half_cursor );
+    cursorstyle = linux.restoreCursorStyle();
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle, CSI "?4c" );
+    cursorstyle = linux.setCursorStyle (finalcut::fc::two_thirds_cursor, true);
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle,  "" );
+    CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::two_thirds_cursor );
+    cursorstyle = linux.restoreCursorStyle();
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle, CSI "?5c" );
+    cursorstyle = linux.setCursorStyle (finalcut::fc::full_block_cursor, true);
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle,  "" );
+    CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::full_block_cursor );
+    cursorstyle = linux.restoreCursorStyle();
+    CPPUNIT_ASSERT_CSTRING ( cursorstyle, CSI "?6c" );
+
+    closeConEmuStdStreams();
+    exit(EXIT_SUCCESS);
+  }
+  else  // Parent
+  {
+    // Start the terminal emulation
+    startConEmuTerminal (ConEmu::linux_con);
+
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
+      std::cerr << "waitpid error" << std::endl;
+  }
+
+  linux.finish();
+}
+
+//----------------------------------------------------------------------
+void FTermLinuxTest::linuxColorPaletteTest()
+{
+  finalcut::FTermData* data;
+  finalcut::FSystem* fsys;
+  fsys = new test::FSystemTest();
+  finalcut::FTerm::setFSystem(fsys);
+  finalcut::FTermDetection* term_detection;
+  std::cout << "\n";
+  data = finalcut::FTerm::getFTermData();
+
+  auto& encoding_list = data->getEncodingList();
+  encoding_list["UTF-8"] = finalcut::fc::UTF8;
+  encoding_list["UTF8"]  = finalcut::fc::UTF8;
+  encoding_list["VT100"] = finalcut::fc::VT100;
+  encoding_list["PC"]    = finalcut::fc::PC;
+  encoding_list["ASCII"] = finalcut::fc::ASCII;
+
+  data->setTermEncoding(finalcut::fc::PC);
+  data->setBaudrate(38400);
+  data->setTermType("linux");
+  data->setTermFileName("/dev/tty2");
+
+#if DEBUG
+  data->setFramebufferBpp(32);
+#endif
+
+  data->supportShadowCharacter (false);
+  data->supportHalfBlockCharacter (false);
+  data->supportCursorOptimisation (true);
+  data->setCursorHidden (true);
+  data->useAlternateScreen (false);
+  data->setASCIIConsole (true);
+  data->setVT100Console (false);
+  data->setUTF8Console (false);
+  data->setUTF8 (false);
+  data->setNewFont (false);
+  data->setVGAFont (false);
+  data->setMonochron (false);
+  data->setTermResized (false);
+
+  term_detection = finalcut::FTerm::getFTermDetection();
+  finalcut::FTermLinux linux;
+
+  term_detection->setLinuxTerm(true);
+
+  pid_t pid = forkConEmu();
+
+  if ( isConEmuChildProcess(pid) )
+  {
+    setenv ("TERM", "linux", 1);
+    setenv ("COLUMNS", "90", 1);
+    setenv ("LINES", "30", 1);
+    unsetenv("TERMCAP");
+    unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
+    unsetenv("VTE_VERSION");
+    unsetenv("XTERM_VERSION");
+    unsetenv("ROXTERM_ID");
+    unsetenv("KONSOLE_DBUS_SESSION");
+    unsetenv("KONSOLE_DCOP");
+    unsetenv("TMUX");
+
+    term_detection->detect();
+    linux.init();
+    test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
+
+    CPPUNIT_ASSERT ( linux.resetColorMap() == true );
+    CPPUNIT_ASSERT ( linux.saveColorMap() == true );
+    FColor index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Black);
+    test::FSystemTest::rgb& RGB0 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB0.red   == 0x00 );
+    CPPUNIT_ASSERT ( RGB0.green == 0x00 );
+    CPPUNIT_ASSERT ( RGB0.blue  == 0x00 );
+    linux.setPalette (index, 0x01, 0x02, 0x03);
+    CPPUNIT_ASSERT ( RGB0.red   == 0x01 );
+    CPPUNIT_ASSERT ( RGB0.green == 0x02 );
+    CPPUNIT_ASSERT ( RGB0.blue  == 0x03 );
+
+    index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Blue);
+    test::FSystemTest::rgb& RGB1 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB1.red   == 0x00 );
+    CPPUNIT_ASSERT ( RGB1.green == 0x00 );
+    CPPUNIT_ASSERT ( RGB1.blue  == 0xaa );
+    linux.setPalette (index, 0x04, 0x05, 0x06);
+    CPPUNIT_ASSERT ( RGB1.red   == 0x04 );
+    CPPUNIT_ASSERT ( RGB1.green == 0x05 );
+    CPPUNIT_ASSERT ( RGB1.blue  == 0x06 );
+
+    index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Green);
+    test::FSystemTest::rgb& RGB2 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB2.red   == 0x00 );
+    CPPUNIT_ASSERT ( RGB2.green == 0xaa );
+    CPPUNIT_ASSERT ( RGB2.blue  == 0x00 );
+    linux.setPalette (index, 0x07, 0x08, 0x09);
+    CPPUNIT_ASSERT ( RGB2.red   == 0x07 );
+    CPPUNIT_ASSERT ( RGB2.green == 0x08 );
+    CPPUNIT_ASSERT ( RGB2.blue  == 0x09 );
+
+    index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Cyan);
+    test::FSystemTest::rgb& RGB3 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB3.red   == 0x00 );
+    CPPUNIT_ASSERT ( RGB3.green == 0xaa );
+    CPPUNIT_ASSERT ( RGB3.blue  == 0xaa );
+    linux.setPalette (index, 0x0a, 0x0b, 0x0c);
+    CPPUNIT_ASSERT ( RGB3.red   == 0x0a );
+    CPPUNIT_ASSERT ( RGB3.green == 0x0b );
+    CPPUNIT_ASSERT ( RGB3.blue  == 0x0c );
+
+    index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Red);
+    test::FSystemTest::rgb& RGB4 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB4.red   == 0xaa );
+    CPPUNIT_ASSERT ( RGB4.green == 0x00 );
+    CPPUNIT_ASSERT ( RGB4.blue  == 0x00 );
+    linux.setPalette (index, 0x0d, 0x0e, 0x0f);
+    CPPUNIT_ASSERT ( RGB4.red   == 0x0d );
+    CPPUNIT_ASSERT ( RGB4.green == 0x0e );
+    CPPUNIT_ASSERT ( RGB4.blue  == 0x0f );
+
+    index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Magenta);
+    test::FSystemTest::rgb& RGB5 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB5.red   == 0xaa );
+    CPPUNIT_ASSERT ( RGB5.green == 0x00 );
+    CPPUNIT_ASSERT ( RGB5.blue  == 0xaa );
+    linux.setPalette (index, 0x10, 0x11, 0x12);
+    CPPUNIT_ASSERT ( RGB5.red   == 0x10 );
+    CPPUNIT_ASSERT ( RGB5.green == 0x11 );
+    CPPUNIT_ASSERT ( RGB5.blue  == 0x12 );
+
+    index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Brown);
+    test::FSystemTest::rgb& RGB6 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB6.red   == 0xaa );
+    CPPUNIT_ASSERT ( RGB6.green == 0x55 );
+    CPPUNIT_ASSERT ( RGB6.blue  == 0x00 );
+    linux.setPalette (index, 0x13, 0x14, 0x15);
+    CPPUNIT_ASSERT ( RGB6.red   == 0x13 );
+    CPPUNIT_ASSERT ( RGB6.green == 0x14 );
+    CPPUNIT_ASSERT ( RGB6.blue  == 0x15 );
+
+    index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::LightGray);
+    test::FSystemTest::rgb& RGB7 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB7.red   == 0xaa );
+    CPPUNIT_ASSERT ( RGB7.green == 0xaa );
+    CPPUNIT_ASSERT ( RGB7.blue  == 0xaa );
+    linux.setPalette (index, 0x16, 0x17, 0x18);
+    CPPUNIT_ASSERT ( RGB7.red   == 0x16 );
+    CPPUNIT_ASSERT ( RGB7.green == 0x17 );
+    CPPUNIT_ASSERT ( RGB7.blue  == 0x18 );
+
+    index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::DarkGray);
+    test::FSystemTest::rgb& RGB8 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB8.red   == 0x55 );
+    CPPUNIT_ASSERT ( RGB8.green == 0x55 );
+    CPPUNIT_ASSERT ( RGB8.blue  == 0x55 );
+    linux.setPalette (index, 0x19, 0x20, 0x21);
+    CPPUNIT_ASSERT ( RGB8.red   == 0x19 );
+    CPPUNIT_ASSERT ( RGB8.green == 0x20 );
+    CPPUNIT_ASSERT ( RGB8.blue  == 0x21 );
+
+    index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::LightBlue);
+    test::FSystemTest::rgb& RGB9 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB9.red   == 0x55 );
+    CPPUNIT_ASSERT ( RGB9.green == 0x55 );
+    CPPUNIT_ASSERT ( RGB9.blue  == 0xff );
+    linux.setPalette (index, 0x22, 0x23, 0x24);
+    CPPUNIT_ASSERT ( RGB9.red   == 0x22 );
+    CPPUNIT_ASSERT ( RGB9.green == 0x23 );
+    CPPUNIT_ASSERT ( RGB9.blue  == 0x24 );
+
+    index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::LightGreen);
+    test::FSystemTest::rgb& RGB10 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB10.red   == 0x55 );
+    CPPUNIT_ASSERT ( RGB10.green == 0xff );
+    CPPUNIT_ASSERT ( RGB10.blue  == 0x55 );
+    linux.setPalette (index, 0x25, 0x26, 0x27);
+    CPPUNIT_ASSERT ( RGB10.red   == 0x25 );
+    CPPUNIT_ASSERT ( RGB10.green == 0x26 );
+    CPPUNIT_ASSERT ( RGB10.blue  == 0x27 );
+
+    index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::LightCyan);
+    test::FSystemTest::rgb& RGB11 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB11.red   == 0x55 );
+    CPPUNIT_ASSERT ( RGB11.green == 0xff );
+    CPPUNIT_ASSERT ( RGB11.blue  == 0xff );
+    linux.setPalette (index, 0x28, 0x29, 0x30);
+    CPPUNIT_ASSERT ( RGB11.red   == 0x28 );
+    CPPUNIT_ASSERT ( RGB11.green == 0x29 );
+    CPPUNIT_ASSERT ( RGB11.blue  == 0x30 );
+
+    index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::LightRed);
+    test::FSystemTest::rgb& RGB12 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB12.red   == 0xff );
+    CPPUNIT_ASSERT ( RGB12.green == 0x55 );
+    CPPUNIT_ASSERT ( RGB12.blue  == 0x55 );
+    linux.setPalette (index, 0x31, 0x32, 0x33);
+    CPPUNIT_ASSERT ( RGB12.red   == 0x31 );
+    CPPUNIT_ASSERT ( RGB12.green == 0x32 );
+    CPPUNIT_ASSERT ( RGB12.blue  == 0x33 );
+
+    index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::LightMagenta);
+    test::FSystemTest::rgb& RGB13 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB13.red   == 0xff );
+    CPPUNIT_ASSERT ( RGB13.green == 0x55 );
+    CPPUNIT_ASSERT ( RGB13.blue  == 0xff );
+    linux.setPalette (index, 0x34, 0x35, 0x36);
+    CPPUNIT_ASSERT ( RGB13.red   == 0x34 );
+    CPPUNIT_ASSERT ( RGB13.green == 0x35 );
+    CPPUNIT_ASSERT ( RGB13.blue  == 0x36 );
+
+    index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Yellow);
+    test::FSystemTest::rgb& RGB14 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB14.red   == 0xff );
+    CPPUNIT_ASSERT ( RGB14.green == 0xff );
+    CPPUNIT_ASSERT ( RGB14.blue  == 0x55 );
+    linux.setPalette (index, 0x37, 0x38, 0x39);
+    CPPUNIT_ASSERT ( RGB14.red   == 0x37 );
+    CPPUNIT_ASSERT ( RGB14.green == 0x38 );
+    CPPUNIT_ASSERT ( RGB14.blue  == 0x39 );
+
+    index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::White);
+    test::FSystemTest::rgb& RGB15 = fsystest->getRGB(index);
+    CPPUNIT_ASSERT ( RGB15.red   == 0xff );
+    CPPUNIT_ASSERT ( RGB15.green == 0xff );
+    CPPUNIT_ASSERT ( RGB15.blue  == 0xff );
+    linux.setPalette (index, 0x40, 0x41, 0x42);
+    CPPUNIT_ASSERT ( RGB15.red   == 0x40 );
+    CPPUNIT_ASSERT ( RGB15.green == 0x41 );
+    CPPUNIT_ASSERT ( RGB15.blue  == 0x42 );
+    linux.setPalette (index, -1, 0, 0);  // Out of range -> no change
+    CPPUNIT_ASSERT ( RGB15.red   == 0x40 );
+    CPPUNIT_ASSERT ( RGB15.green == 0x41 );
+    CPPUNIT_ASSERT ( RGB15.blue  == 0x42 );
+    linux.setPalette (index, 0, -1, 0);  // Out of range -> no change
+    CPPUNIT_ASSERT ( RGB15.red   == 0x40 );
+    CPPUNIT_ASSERT ( RGB15.green == 0x41 );
+    CPPUNIT_ASSERT ( RGB15.blue  == 0x42 );
+    linux.setPalette (index, 0, 0, -1);  // Out of range -> no change
+    CPPUNIT_ASSERT ( RGB15.red   == 0x40 );
+    CPPUNIT_ASSERT ( RGB15.green == 0x41 );
+    CPPUNIT_ASSERT ( RGB15.blue  == 0x42 );
+    linux.setPalette (index, 256, 0, 0);  // Out of range -> no change
+    CPPUNIT_ASSERT ( RGB15.red   == 0x40 );
+    CPPUNIT_ASSERT ( RGB15.green == 0x41 );
+    CPPUNIT_ASSERT ( RGB15.blue  == 0x42 );
+    linux.setPalette (index, 0, 256, 0);  // Out of range -> no change
+    CPPUNIT_ASSERT ( RGB15.red   == 0x40 );
+    CPPUNIT_ASSERT ( RGB15.green == 0x41 );
+    CPPUNIT_ASSERT ( RGB15.blue  == 0x42 );
+    linux.setPalette (index, 0, 0, 256);  // Out of range -> no change
+    CPPUNIT_ASSERT ( RGB15.red   == 0x40 );
+    CPPUNIT_ASSERT ( RGB15.green == 0x41 );
+    CPPUNIT_ASSERT ( RGB15.blue  == 0x42 );
+
+    closeConEmuStdStreams();
+    exit(EXIT_SUCCESS);
+  }
+  else  // Parent
+  {
+    // Start the terminal emulation
+    startConEmuTerminal (ConEmu::linux_con);
+
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
+      std::cerr << "waitpid error" << std::endl;
+  }
+
+  linux.finish();
+}
+
+//----------------------------------------------------------------------
+void FTermLinuxTest::linuxFontTest()
+{
+  finalcut::FTermData* data;
+  finalcut::FSystem* fsys;
+  fsys = new test::FSystemTest();
+  finalcut::FTerm::setFSystem(fsys);
+  finalcut::FTermDetection* term_detection;
+  std::cout << "\n";
+  data = finalcut::FTerm::getFTermData();
+
+  auto& encoding_list = data->getEncodingList();
+  encoding_list["UTF-8"] = finalcut::fc::UTF8;
+  encoding_list["UTF8"]  = finalcut::fc::UTF8;
+  encoding_list["VT100"] = finalcut::fc::VT100;
+  encoding_list["PC"]    = finalcut::fc::PC;
+  encoding_list["ASCII"] = finalcut::fc::ASCII;
+
+  data->setTermEncoding(finalcut::fc::PC);
+  data->setBaudrate(38400);
+  data->setTermType("linux");
+  data->setTermFileName("/dev/tty2");
+
+#if DEBUG
+  data->setFramebufferBpp(32);
+#endif
+
+  data->supportShadowCharacter (false);
+  data->supportHalfBlockCharacter (false);
+  data->supportCursorOptimisation (true);
+  data->setCursorHidden (true);
+  data->useAlternateScreen (false);
+  data->setASCIIConsole (true);
+  data->setVT100Console (false);
+  data->setUTF8Console (false);
+  data->setUTF8 (false);
+  data->setNewFont (false);
+  data->setVGAFont (false);
+  data->setMonochron (false);
+  data->setTermResized (false);
+
+  term_detection = finalcut::FTerm::getFTermDetection();
+  finalcut::FTermLinux linux;
+
+  term_detection->setLinuxTerm(true);
+
+  pid_t pid = forkConEmu();
+
+  if ( isConEmuChildProcess(pid) )
+  {
+    setenv ("TERM", "linux", 1);
+    setenv ("COLUMNS", "90", 1);
+    setenv ("LINES", "30", 1);
+    unsetenv("TERMCAP");
+    unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
+    unsetenv("VTE_VERSION");
+    unsetenv("XTERM_VERSION");
+    unsetenv("ROXTERM_ID");
+    unsetenv("KONSOLE_DBUS_SESSION");
+    unsetenv("KONSOLE_DCOP");
+    unsetenv("TMUX");
+
+    term_detection->detect();
+    linux.init();
+    test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
+    console_font_op& font = fsystest->getConsoleFont();
+    CPPUNIT_ASSERT ( font.op == KD_FONT_OP_GET );
+
+    linux.loadVGAFont();
+    CPPUNIT_ASSERT ( data->hasShadowCharacter() );
+    CPPUNIT_ASSERT ( data->hasHalfBlockCharacter() );
+    CPPUNIT_ASSERT ( font.op == KD_FONT_OP_SET );
+
+    // Full block character test
+    for (std::size_t i = 0; i < 16 ; i++)
+      CPPUNIT_ASSERT ( font.data[219 * 32 + i] == 0xff );
+
+    linux.loadNewFont();
+
+    // Full block character test
+    for (std::size_t i = 0; i < 16 ; i++)
+      CPPUNIT_ASSERT ( font.data[219 * 32 + i] == 0xff );
+
+
+    // New font bullet
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 0] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 1] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 2] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 3] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 4] == 0x38 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 5] == 0x7c );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 6] == 0xfe );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 7] == 0xfe );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 8] == 0xfe );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 9] == 0x7c );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 10] == 0x38 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 11] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 12] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 13] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 14] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 15] == 0x00 );
+
+    linux.loadOldFont(finalcut::fc::character);
+
+    // cp437 bullet operator
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 0] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 1] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 2] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 3] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 4] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 5] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 6] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 7] == 0x18 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 8] == 0x18 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 9] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 10] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 11] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 12] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 13] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 14] == 0x00 );
+    CPPUNIT_ASSERT ( font.data[249 * 32 + 15] == 0x00 );
+
+    closeConEmuStdStreams();
+    exit(EXIT_SUCCESS);
+  }
+  else  // Parent
+  {
+    // Start the terminal emulation
+    startConEmuTerminal (ConEmu::linux_con);
+
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
+      std::cerr << "waitpid error" << std::endl;
+  }
+
+  linux.finish();
+}
 
 // Put the test suite in the registry
 CPPUNIT_TEST_SUITE_REGISTRATION (FTermLinuxTest);

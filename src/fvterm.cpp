@@ -50,6 +50,7 @@ uInt                 FVTerm::clr_eol_length;
 uInt                 FVTerm::cursor_address_length;
 std::queue<int>*     FVTerm::output_buffer = nullptr;
 FPoint*              FVTerm::term_pos      = nullptr;
+FSystem*             FVTerm::fsystem       = nullptr;
 FTerm*               FVTerm::fterm         = nullptr;
 FVTerm::term_area*   FVTerm::vterm         = nullptr;
 FVTerm::term_area*   FVTerm::vdesktop      = nullptr;
@@ -1843,6 +1844,7 @@ void FVTerm::init (bool disable_alt_screen)
   init_object = this;
   vterm       = nullptr;
   vdesktop    = nullptr;
+  fsystem     = FTerm::getFSystem();
 
   try
   {
@@ -2804,38 +2806,15 @@ inline void FVTerm::characterFilter (charData*& next_char)
 //----------------------------------------------------------------------
 inline void FVTerm::appendOutputBuffer (const std::string& s)
 {
-#if defined(__sun) && defined(__SVR4)
-  char* c_string = C_STR(s.c_str());
-#else
   const char* const& c_string = s.c_str();
-#endif
-
-  tputs (c_string, 1, appendOutputBuffer);
+  fsystem->tputs (c_string, 1, appendOutputBuffer);
 }
 
 //----------------------------------------------------------------------
 inline void FVTerm::appendOutputBuffer (const char s[])
 {
-#if defined(__sun) && defined(__SVR4)
-  tputs (C_STR(s), 1, appendOutputBuffer);
-#else
-  tputs (s, 1, appendOutputBuffer);
-#endif
+  fsystem->tputs (s, 1, appendOutputBuffer);
 }
-
-#if defined(__sun) && defined(__SVR4)
-//----------------------------------------------------------------------
-int FVTerm::appendOutputBuffer (char ch)
-{
-  // This method is required by tputs under Solaris
-  output_buffer->push(ch);
-
-  if ( output_buffer->size() >= TERMINAL_OUTPUT_BUFFER_SIZE )
-    flush_out();
-
-  return ch;
-}
-#endif  // defined(__sun) && defined(__SVR4)
 
 //----------------------------------------------------------------------
 int FVTerm::appendOutputBuffer (int ch)

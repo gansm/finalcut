@@ -41,6 +41,7 @@ const FString*       FTermXTerminal::cursor_color = nullptr;
 const FString*       FTermXTerminal::mouse_foreground_color = nullptr;
 const FString*       FTermXTerminal::mouse_background_color = nullptr;
 const FString*       FTermXTerminal::highlight_background_color = nullptr;
+FSystem*             FTermXTerminal::fsystem = nullptr;
 FTermDetection*      FTermXTerminal::term_detection = nullptr;
 fc::xtermCursorStyle FTermXTerminal::cursor_style = fc::unknown_cursor_style;
 
@@ -57,6 +58,8 @@ FTermXTerminal::FTermXTerminal()
   mouse_support        = \
   meta_sends_esc       = \
   xterm_default_colors = false;
+  // Get FSystem object
+  fsystem = FTerm::getFSystem();
 }
 
 //----------------------------------------------------------------------
@@ -866,6 +869,9 @@ void FTermXTerminal::enableXTermMouse()
 
   if ( mouse_support )
     return;
+
+  if ( ! fsystem )
+    fsystem = FTerm::getFSystem();
 
   FTerm::putstring (CSI "?1001s"    // save old highlight mouse tracking
                     CSI "?1000h"    // enable x11 mouse tracking

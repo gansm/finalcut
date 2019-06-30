@@ -134,6 +134,7 @@ class FVTerm
     // Overloaded operators
     template <typename typeT>
     FVTerm& operator << (const typeT&);
+    FVTerm& operator << (fc::SpecialCharacter);
     FVTerm& operator << (const std::string&);
     FVTerm& operator << (const FTermBuffer&);
     FVTerm& operator << (const std::vector<charData>&);
@@ -468,13 +469,10 @@ class FVTerm
     static void           characterFilter (charData*&);
     static void           appendOutputBuffer (const std::string&);
     static void           appendOutputBuffer (const char[]);
-
-#if defined(__sun) && defined(__SVR4)
-    static int            appendOutputBuffer (char);
-#endif
     static int            appendOutputBuffer (int);
 
     // Data Members
+    static FSystem*         fsystem;
     static FTerm*           fterm;
     static std::queue<int>* output_buffer;
     static charData         term_attribute;
@@ -549,6 +547,13 @@ inline FVTerm& FVTerm::operator << (const typeT& s)
   if ( ! outstream.str().empty() )
     print (outstream.str());
 
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FVTerm& FVTerm::operator << (fc::SpecialCharacter c)
+{
+  print (static_cast<wchar_t>(c));  // Required under Solaris
   return *this;
 }
 

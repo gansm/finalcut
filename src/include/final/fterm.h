@@ -297,11 +297,6 @@ class FTerm final
 #endif
                            ;
     static void            putstring (const char[], int = 1);
-
-#if defined(__sun) && defined(__SVR4)
-    static int             putchar_ASCII (char);
-#endif
-
     static int             putchar_ASCII (int);
     static int             putchar_UTF8  (int);
 

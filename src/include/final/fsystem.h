@@ -65,6 +65,8 @@ class FSystem
     virtual int close (int) = 0;
     virtual FILE* fopen (const char*, const char*) = 0;
     virtual int fclose (FILE*) = 0;
+    virtual int putchar (int) = 0;
+    virtual int tputs (const char*, int, int (*)(int)) = 0;
 };
 #pragma pack(pop)
 

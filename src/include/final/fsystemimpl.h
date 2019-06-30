@@ -41,6 +41,26 @@
   #endif  // defined(__x86_64__) || defined(__i386) || defined(__arm__)
 #endif  // defined(__linux__)
 
+#if defined(__sun) && defined(__SVR4)
+  #include <termio.h>
+  typedef struct termio SGTTY;
+  typedef struct termios SGTTYS;
+
+  #ifdef _LP64
+    typedef unsigned int chtype;
+  #else
+    typedef unsigned long chtype;
+  #endif  // _LP64
+
+  #include <term.h>  // termcap
+#else
+  #include <term.h>  // termcap
+#endif  // defined(__sun) && defined(__SVR4)
+
+#ifdef F_HAVE_LIBGPM
+  #undef buttons  // from term.h
+#endif
+
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -72,27 +92,41 @@ class FSystemImpl : public FSystem
     virtual ~FSystemImpl();
 
     // Methods
+#if defined(__linux__)
+#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
     virtual uChar inPortByte (uShort port)
     {
+      return ::inb (port);
+    }
+#else
+    virtual uChar inPortByte (uShort)
+    {
+      return 0;
+    }
+#endif
+#else
+    virtual uChar inPortByte (uShort)
+    {
+      return 0;
+    }
+#endif
+
+
 #if defined(__linux__)
 #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
-      return ::inb (port);
-#else
-      return 0;
-#endif
-#else
-      return 0;
-#endif
-    }
-
     virtual void outPortByte (uChar value, uShort port)
     {
-#if defined(__linux__)
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
       ::outb (value, port);
-#endif
-#endif
     }
+#else
+    virtual void outPortByte (uChar, uShort)
+    { }
+#endif
+#else
+    virtual void outPortByte (uChar, uShort)
+    { }
+#endif
+
 
     virtual int isTTY (int fd)
     {
@@ -133,6 +167,25 @@ class FSystemImpl : public FSystem
     {
       return std::fclose (fp);
     }
+
+    virtual int putchar (int c)
+    {
+#if defined(__sun) && defined(__SVR4)
+      return std::putchar(char(c));
+#else
+      return std::putchar(c);
+#endif
+    }
+
+    virtual int tputs (const char* str, int affcnt, int (*putc)(int))
+    {
+#if defined(__sun) && defined(__SVR4)
+      return ::tputs (C_STR(str), affcnt, reinterpret_cast<int (*)(char)>(putc));
+#else
+      return ::tputs (str, affcnt, putc);
+#endif
+    }
+
 };
 #pragma pack(pop)
 

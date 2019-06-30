@@ -86,6 +86,7 @@ char* FTermLinux::setCursorStyle ( fc::linuxConsoleCursorStyle style
   // Set cursor style in linux console
 
   static char buf[16] = { };
+  std::fill (std::begin(buf), std::end(buf), '\0');
 
   if ( ! FTerm::isLinuxTerm() )
     return buf;
@@ -204,7 +205,7 @@ void FTermLinux::initCharMap (uInt char_map[][fc::NUM_OF_ENCODINGS])
   if ( new_font || vga_font )
     return;
 
-  if ( screen_unicode_map.entry_ct != 0 )
+  if ( screen_unicode_map.entry_ct > 0 && screen_unicode_map.entries )
   {
     for (std::size_t i = 0; i <= fc::lastCharItem; i++ )
     {
@@ -318,7 +319,7 @@ bool FTermLinux::loadNewFont()
   else
     new_font = false;
 
-  if ( vga_font )
+  if ( new_font )
   {
     fterm_data->supportShadowCharacter (true);
     fterm_data->supportHalfBlockCharacter (true);

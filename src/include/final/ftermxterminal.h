@@ -150,6 +150,7 @@ class FTermXTerminal final
     static const FString*       mouse_foreground_color;
     static const FString*       mouse_background_color;
     static const FString*       highlight_background_color;
+    static FSystem*             fsystem;
     static FTermDetection*      term_detection;
     static fc::xtermCursorStyle cursor_style;
 };
