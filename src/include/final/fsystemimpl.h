@@ -186,6 +186,10 @@ class FSystemImpl : public FSystem
 #endif
     }
 
+    virtual uid_t getuid()
+    {
+      return ::getuid();
+    }
 };
 #pragma pack(pop)
 

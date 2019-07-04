@@ -139,6 +139,7 @@ if [ "$1" = "--unit-test" ] \
 || [ "$1" = "--coverage" ] \
 || [ "$1" = "coverage" ]
 then
+  rm test/*.log 2>/dev/null
   cd test && make check-TESTS
   cat ./*.log 2>/dev/null
   cd .. || exit

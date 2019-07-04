@@ -252,6 +252,7 @@ void FTermLinux::finish()
 bool FTermLinux::loadVGAFont()
 {
   vga_font = true;
+  new_font = false;
 
   if ( FTerm::openConsole() == 0 )
   {
@@ -292,6 +293,7 @@ bool FTermLinux::loadVGAFont()
 bool FTermLinux::loadNewFont()
 {
   new_font = true;
+  vga_font = false;
 
   if ( FTerm::openConsole() == 0 )
   {
@@ -840,7 +842,7 @@ int FTermLinux::setBlinkAsIntensity (bool enable)
   if ( screen_font.charcount > 256 )
     return -1;
 
-  if ( getuid() != 0 )  // Direct hardware access requires root privileges
+  if ( fsystem->getuid() != 0 )  // Direct hardware access requires root privileges
     return -2;
 
   if ( fd_tty < 0 )
@@ -1109,10 +1111,10 @@ FKey FTermLinux::shiftAltKeyCorrection (const FKey& key_id)
       return fc::Fmkey_sdown;   // Shift+Meta+Down
 
     case fc::Fkey_left:
-      return fc::Fmkey_sright;  // Shift+Meta+Left
+      return fc::Fmkey_sleft;  // Shift+Meta+Left
 
     case fc::Fkey_right:
-      return fc::Fmkey_sleft;   // Shift+Meta+Right
+      return fc::Fmkey_sright;   // Shift+Meta+Right
 
     case fc::Fkey_ic:
       return fc::Fmkey_sic;     // Shift+Meta+Ins

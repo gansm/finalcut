@@ -1,5 +1,5 @@
 2019-06-30  Markus Gans  <guru.mail@muenster.de>
-	* Expanding the Unit Test for FTermLinux
+	* Expanding the unit test for FTermLinux
 	* Update the cp437 unicode map
 	* Reducing the special cases for Solaris
 

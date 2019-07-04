@@ -114,11 +114,11 @@ class FSystemTest : public finalcut::FSystem
     virtual int      fclose (FILE*);
     virtual int      putchar (int);
     virtual int      tputs (const char*, int, int (*)(int));
+    virtual uid_t    getuid();
     rgb&             getRGB (std::size_t);
     console_font_op& getConsoleFont();
-
-    // Data Members
-    std::string characters;
+    shiftstate&      getShiftState();
+    std::string&     getCharacters();
 
   private:
     // Methods
@@ -126,6 +126,7 @@ class FSystemTest : public finalcut::FSystem
     static void initFScreenInfo();
 
     // Data Members
+    std::string characters;
     static shiftstate shift_state;
     static rgb terminal_color[16];
     static rgb defaultColor[16];
@@ -148,7 +149,6 @@ class FSystemTest : public finalcut::FSystem
     uChar port_3da = 0;     // Input status 1
     static uChar vga8x16[];
     static struct unipair unicode_cp437_pairs[];
-
 };
 #pragma pack(pop)
 
@@ -1342,6 +1342,12 @@ int FSystemTest::tputs (const char* str, int affcnt, int (*putc)(int))
 }
 
 //----------------------------------------------------------------------
+uid_t FSystemTest::getuid()
+{
+  return 0;
+}
+
+//----------------------------------------------------------------------
 FSystemTest::rgb& FSystemTest::getRGB (std::size_t i)
 {
   if ( i < 16 )
@@ -1356,6 +1362,17 @@ console_font_op& FSystemTest::getConsoleFont()
   return terminal_font;
 }
 
+//----------------------------------------------------------------------
+FSystemTest::shiftstate& FSystemTest::getShiftState()
+{
+  return shift_state;
+}
+
+//----------------------------------------------------------------------
+std::string& FSystemTest::getCharacters()
+{
+  return characters;
+}
 
 // private methods of FSystemTest
 //----------------------------------------------------------------------
@@ -1450,6 +1467,7 @@ class FTermLinuxTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     void linuxCursorStyleTest();
     void linuxColorPaletteTest();
     void linuxFontTest();
+    void modifierKeyTest();
 
   private:
     // Adds code needed to register the test suite
@@ -1461,6 +1479,7 @@ class FTermLinuxTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     CPPUNIT_TEST (linuxCursorStyleTest);
     CPPUNIT_TEST (linuxColorPaletteTest);
     CPPUNIT_TEST (linuxFontTest);
+    CPPUNIT_TEST (modifierKeyTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -1556,21 +1575,22 @@ void FTermLinuxTest::linuxConsoleTest()
     CPPUNIT_ASSERT ( linux.getFramebufferBpp() == 32 );
 
     test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
+    std::string& characters = fsystest->getCharacters();
     linux.setUTF8 (false);
-    CPPUNIT_ASSERT ( fsystest->characters == ESC "%@" );
-    fsystest->characters.clear();
+    CPPUNIT_ASSERT ( characters == ESC "%@" );
+    characters.clear();
 
     linux.setUTF8 (true);
-    CPPUNIT_ASSERT ( fsystest->characters == ESC "%G" );
-    fsystest->characters.clear();
+    CPPUNIT_ASSERT ( characters == ESC "%G" );
+    characters.clear();
 
 
     linux.setBeep (200, 100);
-    CPPUNIT_ASSERT ( fsystest->characters == CSI "10;200]" CSI "11;100]" );
-    fsystest->characters.clear();
+    CPPUNIT_ASSERT ( characters == CSI "10;200]" CSI "11;100]" );
+    characters.clear();
     linux.resetBeep();
-    CPPUNIT_ASSERT ( fsystest->characters == CSI "10;750]" CSI "11;125]" );
-    fsystest->characters.clear();
+    CPPUNIT_ASSERT ( characters == CSI "10;750]" CSI "11;125]" );
+    characters.clear();
 
     linux.initCharMap (finalcut::fc::character);
     auto& character_map = data->getCharSubstitutionMap();
@@ -1578,10 +1598,6 @@ void FTermLinuxTest::linuxConsoleTest()
     CPPUNIT_ASSERT ( character_map[finalcut::fc::BlackCircle] == L'*' );
     CPPUNIT_ASSERT ( character_map[finalcut::fc::Times] == L'x' );
     CPPUNIT_ASSERT ( character_map[L'ˣ'] == L'ⁿ' );
-
-    // linux.loadVGAFont()
-    // linux.loadNewFont()
-    // linux.loadOldFont(finalcut::fc::character);
 
     closeConEmuStdStreams();
     exit(EXIT_SUCCESS);
@@ -2075,22 +2091,27 @@ void FTermLinuxTest::linuxFontTest()
     test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
     console_font_op& font = fsystest->getConsoleFont();
     CPPUNIT_ASSERT ( font.op == KD_FONT_OP_GET );
+    CPPUNIT_ASSERT ( ! linux.isVGAFontUsed() );
+    CPPUNIT_ASSERT ( ! linux.isNewFontUsed() );
 
     linux.loadVGAFont();
     CPPUNIT_ASSERT ( data->hasShadowCharacter() );
     CPPUNIT_ASSERT ( data->hasHalfBlockCharacter() );
     CPPUNIT_ASSERT ( font.op == KD_FONT_OP_SET );
+    CPPUNIT_ASSERT ( linux.isVGAFontUsed() );
+    CPPUNIT_ASSERT ( ! linux.isNewFontUsed() );
 
     // Full block character test
     for (std::size_t i = 0; i < 16 ; i++)
       CPPUNIT_ASSERT ( font.data[219 * 32 + i] == 0xff );
 
     linux.loadNewFont();
+    CPPUNIT_ASSERT ( ! linux.isVGAFontUsed() );
+    CPPUNIT_ASSERT ( linux.isNewFontUsed() );
 
     // Full block character test
     for (std::size_t i = 0; i < 16 ; i++)
       CPPUNIT_ASSERT ( font.data[219 * 32 + i] == 0xff );
-
 
     // New font bullet
     CPPUNIT_ASSERT ( font.data[249 * 32 + 0] == 0x00 );
@@ -2111,6 +2132,8 @@ void FTermLinuxTest::linuxFontTest()
     CPPUNIT_ASSERT ( font.data[249 * 32 + 15] == 0x00 );
 
     linux.loadOldFont(finalcut::fc::character);
+    CPPUNIT_ASSERT ( ! linux.isVGAFontUsed() );
+    CPPUNIT_ASSERT ( ! linux.isNewFontUsed() );
 
     // cp437 bullet operator
     CPPUNIT_ASSERT ( font.data[249 * 32 + 0] == 0x00 );
@@ -2143,6 +2166,435 @@ void FTermLinuxTest::linuxFontTest()
   }
 
   linux.finish();
+}
+
+//----------------------------------------------------------------------
+void FTermLinuxTest::modifierKeyTest()
+{
+  FKey keycode;
+  FKey mod_keycode;
+  const finalcut::FTermLinux linux;
+  finalcut::FSystem* fsys;
+  fsys = new test::FSystemTest();
+  test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
+  test::FSystemTest::shiftstate& mod_key = fsystest->getShiftState();
+
+  // Up key
+  keycode = finalcut::fc::Fkey_up;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_up );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_sr );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_up );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_up );
+
+  mod_key.shift = 1;
+  mod_key.ctrl = 1;
+  mod_key.alt = 0;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_sup );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_sup );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_up );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_sup );
+
+  // Down key
+  mod_key.shift = 0;
+  mod_key.ctrl = 0;
+  mod_key.alt = 0;
+  keycode = finalcut::fc::Fkey_down;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_down );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_sf );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_down );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_down );
+
+  mod_key.shift = 1;
+  mod_key.ctrl = 1;
+  mod_key.alt = 0;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_sdown );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_sdown );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_down );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_sdown );
+
+  // Left key
+  mod_key.shift = 0;
+  mod_key.ctrl = 0;
+  mod_key.alt = 0;
+  keycode = finalcut::fc::Fkey_left;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_left );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_sleft );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_left );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_left );
+
+  mod_key.shift = 1;
+  mod_key.ctrl = 1;
+  mod_key.alt = 0;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_sleft );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_sleft );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_left );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_sleft );
+
+  // Right key
+  mod_key.shift = 0;
+  mod_key.ctrl = 0;
+  mod_key.alt = 0;
+  keycode = finalcut::fc::Fkey_right;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_right );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_sright );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_right );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_right );
+
+  mod_key.shift = 1;
+  mod_key.ctrl = 1;
+  mod_key.alt = 0;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_sright );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_sright );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_right );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_sright );
+
+  // Insert key
+  mod_key.shift = 0;
+  mod_key.ctrl = 0;
+  mod_key.alt = 0;
+  keycode = finalcut::fc::Fkey_ic;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_ic );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_sic );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_ic );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_ic );
+
+  mod_key.shift = 1;
+  mod_key.ctrl = 1;
+  mod_key.alt = 0;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_sic );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_sic );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_ic );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_sic );
+
+  // Delete key
+  mod_key.shift = 0;
+  mod_key.ctrl = 0;
+  mod_key.alt = 0;
+  keycode = finalcut::fc::Fkey_dc;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_dc );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_sdc );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_dc );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_dc );
+
+  mod_key.shift = 1;
+  mod_key.ctrl = 1;
+  mod_key.alt = 0;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_sdc );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_sdc );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_dc );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_sdc );
+
+  // Home key
+  mod_key.shift = 0;
+  mod_key.ctrl = 0;
+  mod_key.alt = 0;
+  keycode = finalcut::fc::Fkey_home;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_home );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_shome );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_home );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_home );
+
+  mod_key.shift = 1;
+  mod_key.ctrl = 1;
+  mod_key.alt = 0;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_shome );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_shome );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_home );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_shome );
+
+  // End key
+  mod_key.shift = 0;
+  mod_key.ctrl = 0;
+  mod_key.alt = 0;
+  keycode = finalcut::fc::Fkey_end;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_end );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_send );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_end );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_end );
+
+  mod_key.shift = 1;
+  mod_key.ctrl = 1;
+  mod_key.alt = 0;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_send );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_send );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_end );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_send );
+
+  // Page Up key
+  mod_key.shift = 0;
+  mod_key.ctrl = 0;
+  mod_key.alt = 0;
+  keycode = finalcut::fc::Fkey_ppage;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_ppage );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_sprevious );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_ppage );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_ppage );
+
+  mod_key.shift = 1;
+  mod_key.ctrl = 1;
+  mod_key.alt = 0;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_sppage );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_sppage );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_ppage );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_sppage );
+
+  // Page Down key
+  mod_key.shift = 0;
+  mod_key.ctrl = 0;
+  mod_key.alt = 0;
+  keycode = finalcut::fc::Fkey_npage;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_npage );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_snext );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_npage );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_npage );
+
+  mod_key.shift = 1;
+  mod_key.ctrl = 1;
+  mod_key.alt = 0;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fckey_snpage );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fmkey_snpage );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_npage );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_snpage );
 }
 
 // Put the test suite in the registry
