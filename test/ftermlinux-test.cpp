@@ -1585,7 +1585,15 @@ void FTermLinuxTest::linuxConsoleTest()
     characters.clear();
 
 
-    linux.setBeep (200, 100);
+    linux.setBeep (20, 100);    // Hz < 21
+    CPPUNIT_ASSERT ( characters.empty() );
+    linux.setBeep (32767, 100); // Hz > 32766
+    CPPUNIT_ASSERT ( characters.empty() );
+    linux.setBeep (200, -1);    // ms < 0
+    CPPUNIT_ASSERT ( characters.empty() );
+    linux.setBeep (200, 2000);  // ms > 1999
+    CPPUNIT_ASSERT ( characters.empty() );
+    linux.setBeep (200, 100);   // 200 Hz - 100 ms
     CPPUNIT_ASSERT ( characters == CSI "10;200]" CSI "11;100]" );
     characters.clear();
     linux.resetBeep();
@@ -2595,6 +2603,48 @@ void FTermLinuxTest::modifierKeyTest()
   mod_key.shift = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fcmkey_snpage );
+
+  // Space key
+  mod_key.shift = 0;
+  mod_key.ctrl = 0;
+  mod_key.alt = 0;
+  keycode = finalcut::fc::Fkey_space;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_space );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_space );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_space );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_space );
+
+  mod_key.shift = 1;
+  mod_key.ctrl = 1;
+  mod_key.alt = 0;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_space );
+
+  mod_key.ctrl = 0;
+  mod_key.alt = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_space );
+
+  mod_key.shift = 0;
+  mod_key.ctrl = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_space );
+
+  mod_key.shift = 1;
+  mod_keycode = linux.modifierKeyCorrection(keycode);
+  CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_space );
 }
 
 // Put the test suite in the registry
