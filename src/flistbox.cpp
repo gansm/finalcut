@@ -309,7 +309,7 @@ void FListBox::clear()
   if ( size == 0 )
     return;
 
-  auto blank = createBlankArray(size + 1);
+  char* blank = createBlankArray(size + 1);
 
   std::memset (blank, ' ', size);
   blank[size] = '\0';

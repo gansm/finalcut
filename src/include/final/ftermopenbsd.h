@@ -38,7 +38,11 @@
 #include <sys/ioctl.h>
 #include "final/fsystem.h"
 
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#if defined(UNIT_TEST)
+  #define WSKBDIO_GETENCODING uInt32(0x4004570F)
+  #define WSKBDIO_SETENCODING uInt32(0x80045710)
+  typedef uInt32 kbd_t;
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
   #include <sys/time.h>
   #include <dev/wscons/wsconsio.h>
 #endif
@@ -83,7 +87,7 @@ class FTermOpenBSD final
     static void        finish();
 
   private:
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
     // Methods
     static bool        saveBSDConsoleEncoding();
     static bool        setBSDConsoleEncoding (kbd_t);
@@ -94,7 +98,7 @@ class FTermOpenBSD final
     static kbd_t       bsd_keyboard_encoding;
     static bool        meta_sends_escape;
     static FSystem*    fsystem;
-#endif  // defined(__NetBSD__) || defined(__OpenBSD__)
+#endif  // defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 };
 #pragma pack(pop)
 
@@ -104,14 +108,14 @@ inline const char* FTermOpenBSD::getClassName() const
 { return "FTermOpenBSD"; }
 
 //----------------------------------------------------------------------
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 inline void FTermOpenBSD::enableMetaSendsEscape()
 { meta_sends_escape = true; }
 
 //----------------------------------------------------------------------
 inline void FTermOpenBSD::disableMetaSendsEscape()
 { meta_sends_escape = false; }
-#endif  // defined(__NetBSD__) || defined(__OpenBSD__)
+#endif  // defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 
 }  // namespace finalcut
 

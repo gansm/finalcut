@@ -788,8 +788,8 @@ inline char* ConEmu::getSEC_DA (console con)
     C_STR("\033[>77;20402;0c"),   // Mintty
     0,                            // Linux console
     0,                            // FreeBSD console
-    0,                            // NetBSD console
-    0,                            // OpenBSD console
+    C_STR("\033[>24;20;0c"),      // NetBSD console
+    C_STR("\033[>24;20;0c"),      // OpenBSD console
     0,                            // Sun console
     C_STR("\033[>83;40201;0c"),   // screen
     C_STR("\033[>84;0;0c")        // tmux

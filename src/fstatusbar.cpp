@@ -177,7 +177,7 @@ void FStatusBar::hide()
   FColor bg = wc.term_bg;
   setColor (fg, bg);
   screenWidth = getDesktopWidth();
-  auto blank = createBlankArray(screenWidth + 1);
+  char* blank = createBlankArray(screenWidth + 1);
   print() << FPoint(1, 1) << blank;
   destroyBlankArray (blank);
 }

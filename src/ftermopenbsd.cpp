@@ -20,13 +20,14 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fterm.h"
 #include "final/ftermopenbsd.h"
 
 namespace finalcut
 {
 
 // static class attributes
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
   kbd_t    FTermOpenBSD::bsd_keyboard_encoding = 0;
   bool     FTermOpenBSD::meta_sends_escape = true;
   FSystem* FTermOpenBSD::fsystem = nullptr;
@@ -39,7 +40,7 @@ namespace finalcut
 
 // public methods of FTermOpenBSD
 //----------------------------------------------------------------------
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 bool FTermOpenBSD::isBSDConsole()
 {
   // Check if it's a NetBSD/OpenBSD workstation console
@@ -47,7 +48,7 @@ bool FTermOpenBSD::isBSDConsole()
   static kbd_t kbdencoding;
 
   if ( fsystem
-    && fsysten->ioctl(0, WSKBDIO_GETENCODING, &kbdencoding) == 0 )
+    && fsystem->ioctl(0, WSKBDIO_GETENCODING, &kbdencoding) == 0 )
     return true;
   else
     return false;
@@ -58,10 +59,10 @@ void FTermOpenBSD::init()
 {
   // initialize BSD workstation console
 
+  fsystem = FTerm::getFSystem();
+
   if ( ! isBSDConsole() )
     return;
-
-  fsystem = FTerm::getFSystem();
 
   if ( meta_sends_escape )
   {
@@ -92,7 +93,7 @@ bool FTermOpenBSD::saveBSDConsoleEncoding()
   int ret = -1;
 
   if ( fsystem )
-    ret = fsysten->ioctl (0, WSKBDIO_GETENCODING, &k_encoding);
+    ret = fsystem->ioctl (0, WSKBDIO_GETENCODING, &k_encoding);
 
   if ( ret < 0 )
     return false;
@@ -105,8 +106,8 @@ bool FTermOpenBSD::saveBSDConsoleEncoding()
 //----------------------------------------------------------------------
 bool FTermOpenBSD::setBSDConsoleEncoding (kbd_t k_encoding)
 {
-  if ( fsysten
-    && fsysten->ioctl(0, WSKBDIO_SETENCODING, &k_encoding) < 0 )
+  if ( fsystem
+    && fsystem->ioctl(0, WSKBDIO_SETENCODING, &k_encoding) < 0 )
     return false;
   else
     return true;
@@ -125,6 +126,6 @@ bool FTermOpenBSD::resetBSDConsoleEncoding()
 {
   return setBSDConsoleEncoding (bsd_keyboard_encoding);
 }
-#endif  // defined(__NetBSD__) || defined(__OpenBSD__)
+#endif  // defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 
 }  // namespace finalcut

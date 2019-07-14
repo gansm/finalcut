@@ -249,7 +249,7 @@ void FButton::hide()
   if ( size == 0 )
     return;
 
-  auto blank = createBlankArray(size + 1);
+  char* blank = createBlankArray(size + 1);
 
   for (std::size_t y = 0; y < getHeight() + s + (f << 1); y++)
   {

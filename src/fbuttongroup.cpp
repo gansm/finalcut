@@ -216,7 +216,7 @@ void FButtonGroup::hide()
   if ( size == 0 )
     return;
 
-  auto blank = createBlankArray(size + 1);
+  char* blank = createBlankArray(size + 1);
 
   for (int y = 0; y < int(getHeight()); y++)
   {

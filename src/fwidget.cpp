@@ -1638,7 +1638,7 @@ void FWidget::hideSize (const FSize& size)
   }
 
   setColor (fg, bg);
-  auto blank = createBlankArray(size.getWidth());
+  char* blank = createBlankArray(size.getWidth());
 
   if ( blank == 0 )
     return;

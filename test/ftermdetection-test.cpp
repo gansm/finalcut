@@ -144,7 +144,7 @@ void FTermDetectionTest::ansiTest()
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   setenv ("TERM", "ansi", 1);
-  data.setTermFileName(C_STR("ansi"));
+  data.setTermType(C_STR("ansi"));
 
   pid_t pid = forkConEmu();
 
@@ -212,7 +212,7 @@ void FTermDetectionTest::xtermTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("xterm"));
+  data.setTermType(C_STR("xterm"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -273,7 +273,7 @@ void FTermDetectionTest::rxvtTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("rxvt-cygwin-native"));
+  data.setTermType(C_STR("rxvt-cygwin-native"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -335,7 +335,7 @@ void FTermDetectionTest::urxvtTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("rxvt-unicode-256color"));
+  data.setTermType(C_STR("rxvt-unicode-256color"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -396,7 +396,7 @@ void FTermDetectionTest::mltermTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("mlterm"));
+  data.setTermType(C_STR("mlterm"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -465,7 +465,7 @@ void FTermDetectionTest::puttyTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("xterm"));
+  data.setTermType(C_STR("xterm"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -527,7 +527,7 @@ void FTermDetectionTest::kdeKonsoleTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("xterm-256color"));
+  data.setTermType(C_STR("xterm-256color"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -588,7 +588,7 @@ void FTermDetectionTest::gnomeTerminalTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("xterm-256color"));
+  data.setTermType(C_STR("xterm-256color"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -650,7 +650,7 @@ void FTermDetectionTest::newerVteTerminalTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("xterm-256color"));
+  data.setTermType(C_STR("xterm-256color"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -712,7 +712,7 @@ void FTermDetectionTest::ktermTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("kterm"));
+  data.setTermType(C_STR("kterm"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -781,7 +781,7 @@ void FTermDetectionTest::teraTermTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("xterm"));
+  data.setTermType(C_STR("xterm"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -843,7 +843,7 @@ void FTermDetectionTest::cygwinTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("cygwin"));
+  data.setTermType(C_STR("cygwin"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -905,7 +905,7 @@ void FTermDetectionTest::minttyTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("xterm-256color"));
+  data.setTermType(C_STR("xterm-256color"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -967,7 +967,7 @@ void FTermDetectionTest::linuxTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("linux"));
+  data.setTermType(C_STR("linux"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -1036,7 +1036,7 @@ void FTermDetectionTest::freebsdTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("xterm"));
+  data.setTermType(C_STR("xterm"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -1108,7 +1108,7 @@ void FTermDetectionTest::netbsdTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("wsvt25"));
+  data.setTermType(C_STR("wsvt25"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -1178,7 +1178,7 @@ void FTermDetectionTest::openbsdTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("vt220"));
+  data.setTermType(C_STR("vt220"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -1248,7 +1248,7 @@ void FTermDetectionTest::sunTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("sun-color"));
+  data.setTermType(C_STR("sun-color"));
 
   pid_t pid = forkConEmu();
 
@@ -1316,7 +1316,7 @@ void FTermDetectionTest::screenTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("screen"));
+  data.setTermType(C_STR("screen"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -1384,7 +1384,7 @@ void FTermDetectionTest::tmuxTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermFileName(C_STR("screen"));
+  data.setTermType(C_STR("screen"));
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();

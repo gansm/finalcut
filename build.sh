@@ -83,7 +83,7 @@ case "$1" in
     ;;
 
   "--unit-test"|"unit-test")
-    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG" --with-unit-test
+    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -DUNIT_TEST" --with-unit-test
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
       exit 255

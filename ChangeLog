@@ -1,5 +1,7 @@
 2019-07-14  Markus Gans  <guru.mail@muenster.de>
 	* Reduces the use of raw loops 
+	* Add a unit test for FTermOpenBSD to test the OpenBSD 
+	  and NetBSD console
 
 2019-06-30  Markus Gans  <guru.mail@muenster.de>
 	* Expanding the unit test for FTermLinux
