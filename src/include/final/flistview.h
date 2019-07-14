@@ -586,7 +586,7 @@ FObject::FObjectIterator
                  , [] (const T& col) -> const FString
                    {
                      const FString s = FString() << col;
-                     return std::move(s);
+                     return s;
                    }
                  );
 
@@ -622,7 +622,7 @@ FObject::FObjectIterator
                  , [] (const ColT& col) -> const FString
                    {
                      const FString s = FString() << col;
-                     return std::move(s);
+                     return s;
                    }
                  );
 

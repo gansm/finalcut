@@ -91,7 +91,7 @@ case "$1" in
     ;;
 
   "--coverage"|"coverage")
-    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG" --with-unit-test --with-gcov
+    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -DUNIT_TEST" --with-unit-test --with-gcov
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
       exit 255

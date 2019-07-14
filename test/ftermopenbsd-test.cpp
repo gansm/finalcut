@@ -434,7 +434,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
     CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
     CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
     CPPUNIT_ASSERT_CSTRING ( term_detection->getTermType(), C_STR("pccon") );
-    
+
     closeConEmuStdStreams();
     exit(EXIT_SUCCESS);
   }
