@@ -51,7 +51,11 @@ FTermXTerminal*     FTerm::xterm          = nullptr;
 FKeyboard*          FTerm::keyboard       = nullptr;
 FMouseControl*      FTerm::mouse          = nullptr;
 
-#if defined(__linux__)
+#if defined(UNIT_TEST)
+  FTermLinux* FTerm::linux = nullptr;
+  FTermFreeBSD* FTerm::freebsd = nullptr;
+  FTermOpenBSD* FTerm::openbsd = nullptr;
+#elif defined(__linux__)
   FTermLinux* FTerm::linux = nullptr;
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
   FTermFreeBSD* FTerm::freebsd = nullptr;
@@ -1731,7 +1735,7 @@ inline void FTerm::allocationValues()
     linux          = new FTermLinux();
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
     freebsd        = new FTermFreeBSD();
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
+#elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
     openbsd        = new FTermOpenBSD();
 #endif
 
@@ -1754,7 +1758,7 @@ inline void FTerm::deallocationValues()
     delete debug_data;
 #endif
 
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
   if ( openbsd )
     delete openbsd;
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
@@ -1924,7 +1928,7 @@ void FTerm::initOSspecifics()
     freebsd->disableChangeCursorStyle();
 
   freebsd->init();  // Initialize BSD console
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
+#elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
   if ( init_values.meta_sends_escape )
     openbsd->enableMetaSendsEscape();
   else
@@ -2035,7 +2039,7 @@ void FTerm::finishOSspecifics1()
   linux->finish();
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
   freebsd->finish();
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
+#elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
   openbsd->finish();
 #endif
 }

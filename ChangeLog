@@ -1,3 +1,6 @@
+2019-07-14  Markus Gans  <guru.mail@muenster.de>
+	* Reduces the use of raw loops 
+
 2019-06-30  Markus Gans  <guru.mail@muenster.de>
 	* Expanding the unit test for FTermLinux
 	* Update the cp437 unicode map

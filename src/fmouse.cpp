@@ -1426,11 +1426,14 @@ bool FMouseControl::isMoved()
 //----------------------------------------------------------------------
 bool FMouseControl::isInputDataPending()
 {
-  for (auto&& m : mouse_protocol)
-    if ( m.second && m.second->isInputDataPending() )
-      return true;
-
-  return false;
+  return std::any_of ( std::begin(mouse_protocol)
+                     , std::end(mouse_protocol)
+                     , [] (FMouseProtocol::const_reference m)
+                       {
+                         return m.second
+                             && m.second->isInputDataPending();
+                       }
+                     );
 }
 
 //----------------------------------------------------------------------
@@ -1557,21 +1560,33 @@ void FMouseControl::drawGpmPointer()
 //----------------------------------------------------------------------
 FMouse* FMouseControl::getMouseWithData()
 {
-  for (auto&& m : mouse_protocol)
-    if ( m.second && m.second->hasData() )
-      return m.second;
+   const auto& iter = \
+       std::find_if ( std::begin(mouse_protocol)
+                    , std::end(mouse_protocol)
+                    , [] (FMouseProtocol::const_reference m)
+                      {
+                        return m.second
+                            && m.second->hasData();
+                      }
+                    );
 
-  return 0;
+  return ( iter != mouse_protocol.end() ) ? iter->second : 0;
 }
 
 //----------------------------------------------------------------------
 FMouse* FMouseControl::getMouseWithEvent()
 {
-  for (auto&& m : mouse_protocol)
-    if ( m.second && m.second->hasEvent() )
-      return m.second;
+   const auto& iter = \
+       std::find_if ( std::begin(mouse_protocol)
+                    , std::end(mouse_protocol)
+                    , [] (FMouseProtocol::const_reference m)
+                      {
+                        return m.second
+                            && m.second->hasEvent();
+                      }
+                    );
 
-  return 0;
+  return ( iter != mouse_protocol.end() ) ? iter->second : 0;
 }
 
 //----------------------------------------------------------------------

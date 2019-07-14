@@ -92,7 +92,7 @@ class FListViewItem : public FObject
     FListViewItem& operator = (const FListViewItem&);
 
     // Accessors
-    virtual const char* getClassName() const;
+    virtual const char* getClassName() const override;
     uInt                getColumnCount() const;
     int                 getSortColumn() const;
     FString             getText (int) const;
@@ -580,8 +580,15 @@ FObject::FObjectIterator
 {
   FStringList str_cols;
 
-  for (auto& col : list)
-    str_cols.push_back (FString() << col);
+  std::transform ( std::begin(list)
+                 , std::end(list)
+                 , std::back_inserter(str_cols)
+                 , [] (const T& col) -> const FString
+                   {
+                     const FString s = FString() << col;
+                     return std::move(s);
+                   }
+                 );
 
   auto item_iter = insert (str_cols, d, parent_iter);
   return item_iter;
@@ -609,8 +616,15 @@ FObject::FObjectIterator
 {
   FStringList str_cols;
 
-  for (auto& col : cols)
-    str_cols.push_back (FString() << col);
+  std::transform ( std::begin(cols)
+                 , std::end(cols)
+                 , std::back_inserter(str_cols)
+                 , [] (const ColT& col) -> const FString
+                   {
+                     const FString s = FString() << col;
+                     return std::move(s);
+                   }
+                 );
 
   auto item_iter = insert (str_cols, d, parent_iter);
   return item_iter;

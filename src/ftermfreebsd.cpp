@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include "final/fcharmap.h"
+#include "final/fterm.h"
 #include "final/ftermfreebsd.h"
 
 namespace finalcut
@@ -53,7 +54,7 @@ void FTermFreeBSD::setCursorStyle (CursorStyle style, bool hidden)
 {
   // Set cursor style in a BSD console
 
-  if ( ! fsysten || ! isFreeBSDConsole() || ! change_cursorstyle )
+  if ( ! fsystem || ! isFreeBSDConsole() || ! change_cursorstyle )
     return;
 
   cursor_style = style;
@@ -61,7 +62,7 @@ void FTermFreeBSD::setCursorStyle (CursorStyle style, bool hidden)
   if ( hidden )
     return;
 
-  fsysten->ioctl (0, CONS_CURSORTYPE, &style);
+  fsystem->ioctl (0, CONS_CURSORTYPE, &style);
 }
 
 //----------------------------------------------------------------------
@@ -71,7 +72,7 @@ bool FTermFreeBSD::isFreeBSDConsole()
 
   keymap_t keymap;
 
-  if ( fsysten && fsysten->ioctl(0, GIO_KEYMAP, &keymap) == 0 )
+  if ( fsystem && fsystem->ioctl(0, GIO_KEYMAP, &keymap) == 0 )
     return true;
   else
     return false;
@@ -149,7 +150,7 @@ bool FTermFreeBSD::saveFreeBSDAltKey()
   keymap_t keymap;
 
   if ( fsystem )
-    ret = fsysten->ioctl (0, GIO_KEYMAP, &keymap);
+    ret = fsystem->ioctl (0, GIO_KEYMAP, &keymap);
 
   if ( ret < 0 )
     return false;
@@ -169,7 +170,7 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
   keymap_t keymap;
 
   if ( fsystem )
-    ret = fsysten->ioctl (0, GIO_KEYMAP, &keymap);
+    ret = fsystem->ioctl (0, GIO_KEYMAP, &keymap);
 
   if ( ret < 0 )
     return false;
@@ -178,7 +179,7 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
   keymap.key[left_alt].map[0] = key;
 
   if ( (keymap.n_keys > 0)
-    && fsystem && (fsysten->ioctl(0, PIO_KEYMAP, &keymap) < 0) )
+    && fsystem && (fsystem->ioctl(0, PIO_KEYMAP, &keymap) < 0) )
     return false;
   else
     return true;

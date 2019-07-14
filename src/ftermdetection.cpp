@@ -846,7 +846,7 @@ inline char* FTermDetection::secDA_Analysis_24 (char current_termtype[])
 
   char* new_termtype = current_termtype;
 
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 
   if ( secondary_da.terminal_id_version == 20
      && FTermOpenBSD::isBSDConsole() )
@@ -861,7 +861,7 @@ inline char* FTermDetection::secDA_Analysis_24 (char current_termtype[])
     }
   }
 
-#endif  // defined(__NetBSD__) || defined(__OpenBSD__)
+#endif  // defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 
   return new_termtype;
 }

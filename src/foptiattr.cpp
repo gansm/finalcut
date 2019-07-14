@@ -1546,12 +1546,13 @@ inline void FOptiAttr::reset (charData*& attr)
 bool FOptiAttr::caused_reset_attributes (char cap[], uChar test)
 {
   // test if "cap" reset all attributes
-  auto& ue = F_exit_underline_mode.cap;
-  auto& se = F_exit_standout_mode.cap;
-  auto& me = F_exit_attribute_mode.cap;
 
   if ( cap )
   {
+    auto& ue = F_exit_underline_mode.cap;
+    auto& se = F_exit_standout_mode.cap;
+    auto& me = F_exit_attribute_mode.cap;
+
     if ( (test & test_ansi_reset) && std::strncmp (cap, CSI "m", 3) == 0 )
       return true;
 

@@ -104,17 +104,17 @@ class FSystemTest : public finalcut::FSystem
     virtual ~FSystemTest();
 
     // Methods
-    virtual uChar    inPortByte (uShort);
-    virtual void     outPortByte (uChar, uShort);
-    virtual int      isTTY (int);
-    virtual int      ioctl (int, uLong, ...);
-    virtual int      open (const char*, int, ...);
-    virtual int      close (int);
-    virtual FILE*    fopen (const char*, const char*);
-    virtual int      fclose (FILE*);
-    virtual int      putchar (int);
-    virtual int      tputs (const char*, int, int (*)(int));
-    virtual uid_t    getuid();
+    virtual uChar    inPortByte (uShort) override;
+    virtual void     outPortByte (uChar, uShort) override;
+    virtual int      isTTY (int) override;
+    virtual int      ioctl (int, uLong, ...) override;
+    virtual int      open (const char*, int, ...) override;
+    virtual int      close (int) override;
+    virtual FILE*    fopen (const char*, const char*) override;
+    virtual int      fclose (FILE*) override;
+    virtual int      putchar (int) override;
+    virtual int      tputs (const char*, int, int (*)(int)) override;
+    virtual uid_t    getuid() override;
     rgb&             getRGB (std::size_t);
     console_font_op& getConsoleFont();
     shiftstate&      getShiftState();
@@ -1282,7 +1282,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
   std::cerr << "Call: ioctl (fd=" << fd
             << ", request=" << req_string
             << "(0x" << std::hex << request << ")"
-            << ", argp=" << argp << ")\n";
+            << ", argp=" << argp << std::dec << ")\n";
   return ret_val;
 }
 
@@ -1837,7 +1837,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB0.red   == 0x00 );
     CPPUNIT_ASSERT ( RGB0.green == 0x00 );
     CPPUNIT_ASSERT ( RGB0.blue  == 0x00 );
-    linux.setPalette (index, 0x01, 0x02, 0x03);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x01, 0x02, 0x03) );
     CPPUNIT_ASSERT ( RGB0.red   == 0x01 );
     CPPUNIT_ASSERT ( RGB0.green == 0x02 );
     CPPUNIT_ASSERT ( RGB0.blue  == 0x03 );
@@ -1847,7 +1847,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB1.red   == 0x00 );
     CPPUNIT_ASSERT ( RGB1.green == 0x00 );
     CPPUNIT_ASSERT ( RGB1.blue  == 0xaa );
-    linux.setPalette (index, 0x04, 0x05, 0x06);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x04, 0x05, 0x06) );
     CPPUNIT_ASSERT ( RGB1.red   == 0x04 );
     CPPUNIT_ASSERT ( RGB1.green == 0x05 );
     CPPUNIT_ASSERT ( RGB1.blue  == 0x06 );
@@ -1857,7 +1857,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB2.red   == 0x00 );
     CPPUNIT_ASSERT ( RGB2.green == 0xaa );
     CPPUNIT_ASSERT ( RGB2.blue  == 0x00 );
-    linux.setPalette (index, 0x07, 0x08, 0x09);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x07, 0x08, 0x09) );
     CPPUNIT_ASSERT ( RGB2.red   == 0x07 );
     CPPUNIT_ASSERT ( RGB2.green == 0x08 );
     CPPUNIT_ASSERT ( RGB2.blue  == 0x09 );
@@ -1867,7 +1867,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB3.red   == 0x00 );
     CPPUNIT_ASSERT ( RGB3.green == 0xaa );
     CPPUNIT_ASSERT ( RGB3.blue  == 0xaa );
-    linux.setPalette (index, 0x0a, 0x0b, 0x0c);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x0a, 0x0b, 0x0c) );
     CPPUNIT_ASSERT ( RGB3.red   == 0x0a );
     CPPUNIT_ASSERT ( RGB3.green == 0x0b );
     CPPUNIT_ASSERT ( RGB3.blue  == 0x0c );
@@ -1877,7 +1877,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB4.red   == 0xaa );
     CPPUNIT_ASSERT ( RGB4.green == 0x00 );
     CPPUNIT_ASSERT ( RGB4.blue  == 0x00 );
-    linux.setPalette (index, 0x0d, 0x0e, 0x0f);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x0d, 0x0e, 0x0f) );
     CPPUNIT_ASSERT ( RGB4.red   == 0x0d );
     CPPUNIT_ASSERT ( RGB4.green == 0x0e );
     CPPUNIT_ASSERT ( RGB4.blue  == 0x0f );
@@ -1887,7 +1887,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB5.red   == 0xaa );
     CPPUNIT_ASSERT ( RGB5.green == 0x00 );
     CPPUNIT_ASSERT ( RGB5.blue  == 0xaa );
-    linux.setPalette (index, 0x10, 0x11, 0x12);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x10, 0x11, 0x12) );
     CPPUNIT_ASSERT ( RGB5.red   == 0x10 );
     CPPUNIT_ASSERT ( RGB5.green == 0x11 );
     CPPUNIT_ASSERT ( RGB5.blue  == 0x12 );
@@ -1897,7 +1897,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB6.red   == 0xaa );
     CPPUNIT_ASSERT ( RGB6.green == 0x55 );
     CPPUNIT_ASSERT ( RGB6.blue  == 0x00 );
-    linux.setPalette (index, 0x13, 0x14, 0x15);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x13, 0x14, 0x15) );
     CPPUNIT_ASSERT ( RGB6.red   == 0x13 );
     CPPUNIT_ASSERT ( RGB6.green == 0x14 );
     CPPUNIT_ASSERT ( RGB6.blue  == 0x15 );
@@ -1907,7 +1907,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB7.red   == 0xaa );
     CPPUNIT_ASSERT ( RGB7.green == 0xaa );
     CPPUNIT_ASSERT ( RGB7.blue  == 0xaa );
-    linux.setPalette (index, 0x16, 0x17, 0x18);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x16, 0x17, 0x18) );
     CPPUNIT_ASSERT ( RGB7.red   == 0x16 );
     CPPUNIT_ASSERT ( RGB7.green == 0x17 );
     CPPUNIT_ASSERT ( RGB7.blue  == 0x18 );
@@ -1917,7 +1917,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB8.red   == 0x55 );
     CPPUNIT_ASSERT ( RGB8.green == 0x55 );
     CPPUNIT_ASSERT ( RGB8.blue  == 0x55 );
-    linux.setPalette (index, 0x19, 0x20, 0x21);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x19, 0x20, 0x21) );
     CPPUNIT_ASSERT ( RGB8.red   == 0x19 );
     CPPUNIT_ASSERT ( RGB8.green == 0x20 );
     CPPUNIT_ASSERT ( RGB8.blue  == 0x21 );
@@ -1927,7 +1927,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB9.red   == 0x55 );
     CPPUNIT_ASSERT ( RGB9.green == 0x55 );
     CPPUNIT_ASSERT ( RGB9.blue  == 0xff );
-    linux.setPalette (index, 0x22, 0x23, 0x24);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x22, 0x23, 0x24) );
     CPPUNIT_ASSERT ( RGB9.red   == 0x22 );
     CPPUNIT_ASSERT ( RGB9.green == 0x23 );
     CPPUNIT_ASSERT ( RGB9.blue  == 0x24 );
@@ -1937,7 +1937,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB10.red   == 0x55 );
     CPPUNIT_ASSERT ( RGB10.green == 0xff );
     CPPUNIT_ASSERT ( RGB10.blue  == 0x55 );
-    linux.setPalette (index, 0x25, 0x26, 0x27);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x25, 0x26, 0x27) );
     CPPUNIT_ASSERT ( RGB10.red   == 0x25 );
     CPPUNIT_ASSERT ( RGB10.green == 0x26 );
     CPPUNIT_ASSERT ( RGB10.blue  == 0x27 );
@@ -1947,7 +1947,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB11.red   == 0x55 );
     CPPUNIT_ASSERT ( RGB11.green == 0xff );
     CPPUNIT_ASSERT ( RGB11.blue  == 0xff );
-    linux.setPalette (index, 0x28, 0x29, 0x30);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x28, 0x29, 0x30) );
     CPPUNIT_ASSERT ( RGB11.red   == 0x28 );
     CPPUNIT_ASSERT ( RGB11.green == 0x29 );
     CPPUNIT_ASSERT ( RGB11.blue  == 0x30 );
@@ -1957,7 +1957,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB12.red   == 0xff );
     CPPUNIT_ASSERT ( RGB12.green == 0x55 );
     CPPUNIT_ASSERT ( RGB12.blue  == 0x55 );
-    linux.setPalette (index, 0x31, 0x32, 0x33);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x31, 0x32, 0x33) );
     CPPUNIT_ASSERT ( RGB12.red   == 0x31 );
     CPPUNIT_ASSERT ( RGB12.green == 0x32 );
     CPPUNIT_ASSERT ( RGB12.blue  == 0x33 );
@@ -1967,7 +1967,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB13.red   == 0xff );
     CPPUNIT_ASSERT ( RGB13.green == 0x55 );
     CPPUNIT_ASSERT ( RGB13.blue  == 0xff );
-    linux.setPalette (index, 0x34, 0x35, 0x36);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x34, 0x35, 0x36) );
     CPPUNIT_ASSERT ( RGB13.red   == 0x34 );
     CPPUNIT_ASSERT ( RGB13.green == 0x35 );
     CPPUNIT_ASSERT ( RGB13.blue  == 0x36 );
@@ -1977,7 +1977,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB14.red   == 0xff );
     CPPUNIT_ASSERT ( RGB14.green == 0xff );
     CPPUNIT_ASSERT ( RGB14.blue  == 0x55 );
-    linux.setPalette (index, 0x37, 0x38, 0x39);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x37, 0x38, 0x39) );
     CPPUNIT_ASSERT ( RGB14.red   == 0x37 );
     CPPUNIT_ASSERT ( RGB14.green == 0x38 );
     CPPUNIT_ASSERT ( RGB14.blue  == 0x39 );
@@ -1987,34 +1987,42 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB15.red   == 0xff );
     CPPUNIT_ASSERT ( RGB15.green == 0xff );
     CPPUNIT_ASSERT ( RGB15.blue  == 0xff );
-    linux.setPalette (index, 0x40, 0x41, 0x42);
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0x40, 0x41, 0x42) );
     CPPUNIT_ASSERT ( RGB15.red   == 0x40 );
     CPPUNIT_ASSERT ( RGB15.green == 0x41 );
     CPPUNIT_ASSERT ( RGB15.blue  == 0x42 );
-    linux.setPalette (index, -1, 0, 0);  // Out of range -> no change
+    // Out of range -> no change
+    CPPUNIT_ASSERT ( linux.setPalette (index, -1, 0, 0) );
     CPPUNIT_ASSERT ( RGB15.red   == 0x40 );
     CPPUNIT_ASSERT ( RGB15.green == 0x41 );
     CPPUNIT_ASSERT ( RGB15.blue  == 0x42 );
-    linux.setPalette (index, 0, -1, 0);  // Out of range -> no change
+    // Out of range -> no change
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0, -1, 0) );
     CPPUNIT_ASSERT ( RGB15.red   == 0x40 );
     CPPUNIT_ASSERT ( RGB15.green == 0x41 );
     CPPUNIT_ASSERT ( RGB15.blue  == 0x42 );
-    linux.setPalette (index, 0, 0, -1);  // Out of range -> no change
+    // Out of range -> no change
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0, 0, -1) );
     CPPUNIT_ASSERT ( RGB15.red   == 0x40 );
     CPPUNIT_ASSERT ( RGB15.green == 0x41 );
     CPPUNIT_ASSERT ( RGB15.blue  == 0x42 );
-    linux.setPalette (index, 256, 0, 0);  // Out of range -> no change
+    // Out of range -> no change
+    CPPUNIT_ASSERT ( linux.setPalette (index, 256, 0, 0) );
     CPPUNIT_ASSERT ( RGB15.red   == 0x40 );
     CPPUNIT_ASSERT ( RGB15.green == 0x41 );
     CPPUNIT_ASSERT ( RGB15.blue  == 0x42 );
-    linux.setPalette (index, 0, 256, 0);  // Out of range -> no change
+    // Out of range -> no change
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0, 256, 0) );
     CPPUNIT_ASSERT ( RGB15.red   == 0x40 );
     CPPUNIT_ASSERT ( RGB15.green == 0x41 );
     CPPUNIT_ASSERT ( RGB15.blue  == 0x42 );
-    linux.setPalette (index, 0, 0, 256);  // Out of range -> no change
+    // Out of range -> no change
+    CPPUNIT_ASSERT ( linux.setPalette (index, 0, 0, 256) );
     CPPUNIT_ASSERT ( RGB15.red   == 0x40 );
     CPPUNIT_ASSERT ( RGB15.green == 0x41 );
     CPPUNIT_ASSERT ( RGB15.blue  == 0x42 );
+
+    CPPUNIT_ASSERT ( linux.resetColorMap() == true );
 
     closeConEmuStdStreams();
     exit(EXIT_SUCCESS);

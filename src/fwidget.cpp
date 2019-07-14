@@ -2063,7 +2063,7 @@ inline void FWidget::insufficientSpaceAdjust()
   if ( getHeight() < size_hints.min_height )
     adjust_wsize.setWidth(size_hints.min_height);
 
-  if ( getHeight() <= 0 )
+  if ( getHeight() == 0 )
     adjust_wsize.setHeight(1);
 }
 

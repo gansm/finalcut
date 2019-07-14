@@ -155,6 +155,8 @@ class FTermLinux final
     static uChar         getAttributeMode();
     static void          setAttributeMode (uChar);
     static int           setBlinkAsIntensity (bool);
+    static void          getVGAPalette();
+    static void          setVGADefaultPalette();
     static bool          setVGAPalette (FColor, int, int, int);
     static bool          saveVGAPalette();
     static bool          resetVGAPalette();

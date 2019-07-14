@@ -46,8 +46,8 @@ namespace finalcut
   FSystem*                    FTermLinux::fsystem = nullptr;
   FTermDetection*             FTermLinux::term_detection = nullptr;
   fc::linuxConsoleCursorStyle FTermLinux::linux_console_cursor_style;
-  FTermLinux::ColorMap        FTermLinux::saved_color_map;
-  FTermLinux::ColorMap        FTermLinux::cmap;
+  FTermLinux::ColorMap        FTermLinux::saved_color_map{};
+  FTermLinux::ColorMap        FTermLinux::cmap{};
   int                         FTermLinux::framebuffer_bpp = -1;
 #endif  // defined(__linux__)
 
@@ -152,6 +152,9 @@ void FTermLinux::init()
 {
   // initialize Linux console
 
+  if ( ! fsystem )
+    fsystem = FTerm::getFSystem();
+
   fterm_data = FTerm::getFTermData();
   fsystem = FTerm::getFSystem();
   term_detection = FTerm::getFTermDetection();
@@ -159,6 +162,7 @@ void FTermLinux::init()
   screen_font.data = nullptr;
   fterm_data->supportShadowCharacter (true);
   fterm_data->supportHalfBlockCharacter (true);
+  getVGAPalette();
 
   if ( FTerm::openConsole() == 0 )
   {
@@ -505,8 +509,8 @@ int FTermLinux::getFramebuffer_bpp()
       return -1;
   }
 
-  if ( ! fsystem->ioctl(fd, FBIOGET_VSCREENINFO, &fb_var)
-    && ! fsystem->ioctl(fd, FBIOGET_FSCREENINFO, &fb_fix) )
+  if ( fsystem->ioctl(fd, FBIOGET_VSCREENINFO, &fb_var) == 0
+    && fsystem->ioctl(fd, FBIOGET_FSCREENINFO, &fb_fix) == 0 )
   {
     fsystem->close(fd);
     return int(fb_var.bits_per_pixel);
@@ -865,6 +869,36 @@ int FTermLinux::setBlinkAsIntensity (bool enable)
 }
 
 //----------------------------------------------------------------------
+void FTermLinux::getVGAPalette()
+{
+  if ( fsystem && fsystem->ioctl(0, GIO_CMAP, &cmap) != 0 )
+    setVGADefaultPalette();  // Fallback, if GIO_CMAP does not work
+}
+
+//----------------------------------------------------------------------
+void FTermLinux::setVGADefaultPalette()
+{
+  constexpr rgb defaultColor[16] =
+  {
+    {0x00, 0x00, 0x00}, {0xaa, 0x00, 0x00},
+    {0x00, 0xaa, 0x00}, {0xaa, 0x55, 0x00},
+    {0x00, 0x00, 0xaa}, {0xaa, 0x00, 0xaa},
+    {0x00, 0xaa, 0xaa}, {0xaa, 0xaa, 0xaa},
+    {0x55, 0x55, 0x55}, {0xff, 0x55, 0x55},
+    {0x55, 0xff, 0x55}, {0xff, 0xff, 0x55},
+    {0x55, 0x55, 0xff}, {0xff, 0x55, 0xff},
+    {0x55, 0xff, 0xff}, {0xff, 0xff, 0xff}
+  };
+
+  for (std::size_t index = 0; index < 16; index++)
+  {
+    cmap.color[index].red   = defaultColor[index].red;
+    cmap.color[index].green = defaultColor[index].green;
+    cmap.color[index].blue  = defaultColor[index].blue;
+  }
+}
+
+//----------------------------------------------------------------------
 bool FTermLinux::setVGAPalette (FColor index, int r, int g, int b)
 {
   // Set the vga color map
@@ -878,10 +912,10 @@ bool FTermLinux::setVGAPalette (FColor index, int r, int g, int b)
     cmap.color[index].blue  = uChar(b);
   }
 
-  if ( fsystem && fsystem->ioctl (0, PIO_CMAP, &cmap) )
-    return false;
-  else
+  if ( fsystem && fsystem->ioctl(0, PIO_CMAP, &cmap) == 0 )
     return true;
+  else
+    return false;
 }
 
 //----------------------------------------------------------------------
@@ -889,10 +923,10 @@ bool FTermLinux::saveVGAPalette()
 {
   // Save the current vga color map
 
-  if ( fsystem && fsystem->ioctl (0, GIO_CMAP, &saved_color_map) )
-    has_saved_palette = false;
-  else
+  if ( fsystem && fsystem->ioctl(0, GIO_CMAP, &saved_color_map) == 0 )
     has_saved_palette = true;
+  else
+    has_saved_palette = false;
 
   return has_saved_palette;
 }
@@ -902,36 +936,16 @@ bool FTermLinux::resetVGAPalette()
 {
   // Reset the vga color map
 
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
-
   if ( has_saved_palette )
   {
-    if ( fsystem->ioctl (0, PIO_CMAP, &saved_color_map) )
+    if ( fsystem && fsystem->ioctl (0, PIO_CMAP, &saved_color_map) )
       return false;
   }
   else
   {
-    constexpr rgb defaultColor[16] =
-    {
-      {0x00, 0x00, 0x00}, {0xaa, 0x00, 0x00},
-      {0x00, 0xaa, 0x00}, {0xaa, 0x55, 0x00},
-      {0x00, 0x00, 0xaa}, {0xaa, 0x00, 0xaa},
-      {0x00, 0xaa, 0xaa}, {0xaa, 0xaa, 0xaa},
-      {0x55, 0x55, 0x55}, {0xff, 0x55, 0x55},
-      {0x55, 0xff, 0x55}, {0xff, 0xff, 0x55},
-      {0x55, 0x55, 0xff}, {0xff, 0x55, 0xff},
-      {0x55, 0xff, 0xff}, {0xff, 0xff, 0xff}
-    };
+    setVGADefaultPalette();
 
-    for (std::size_t index = 0; index < 16; index++)
-    {
-      cmap.color[index].red   = defaultColor[index].red;
-      cmap.color[index].green = defaultColor[index].green;
-      cmap.color[index].blue  = defaultColor[index].blue;
-    }
-
-    if ( fsystem->ioctl (0, PIO_CMAP, &cmap) )
+    if ( fsystem && fsystem->ioctl(0, PIO_CMAP, &cmap) != 0 )
       return false;
   }
 

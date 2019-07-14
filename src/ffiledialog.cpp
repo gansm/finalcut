@@ -453,12 +453,14 @@ int FFileDialog::numOfDirs()
   if ( dir_entries.empty() )
     return 0;
 
-  int n = 0;
-
-  for (auto&& entry : dir_entries)
-    if ( entry.directory && std::strcmp(entry.name, ".") != 0 )
-      n++;
-
+  int n = std::count_if ( std::begin(dir_entries)
+                        , std::end(dir_entries)
+                        , [] (dir_entry& entry)
+                          {
+                            return entry.directory
+                                && std::strcmp(entry.name, ".") != 0;
+                          }
+                        );
   return n;
 }
 
@@ -761,25 +763,26 @@ void FFileDialog::cb_processActivate (FWidget*, FDataPtr)
   else
   {
     bool found = false;
+    const auto& input = filename.getText().trim();
 
     if ( ! dir_entries.empty() )
     {
-      const auto& input = filename.getText().trim();
-
-      for (auto&& entry : dir_entries)
-      {
-        if ( entry.name && input && ! input.isNull()
-          && std::strcmp(entry.name, input) == 0
-          && entry.directory )
-        {
-          found = true;
-          changeDir(input);
-          break;
-        }
-      }
+      found = std::any_of ( std::begin(dir_entries)
+                          , std::end(dir_entries)
+                          , [&input] (dir_entry& entry)
+                            {
+                              return entry.name
+                                  && input
+                                  && ! input.isNull()
+                                  && std::strcmp(entry.name, input) == 0
+                                  && entry.directory;
+                            }
+                          );
     }
 
-    if ( ! found )
+    if ( found )
+      changeDir(input);
+    else
       done (FDialog::Accept);
   }
 }

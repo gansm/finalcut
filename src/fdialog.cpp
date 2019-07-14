@@ -679,7 +679,7 @@ void FDialog::onWindowInactive (FEvent*)
 //----------------------------------------------------------------------
 void FDialog::onWindowRaised (FEvent*)
 {
-  if ( ! (isShown() && isShown()) )
+  if ( ! isShown() )
     return;
 
   putArea (getTermPos(), vwin);

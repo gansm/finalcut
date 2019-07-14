@@ -502,6 +502,9 @@ class FMouseControl
     void                drawGpmPointer();
 
   private:
+    // Typedef
+    typedef std::map<FMouse::mouse_type, FMouse*> FMouseProtocol;
+
     // Accessor
     FMouse*             getMouseWithData();
     FMouse*             getMouseWithEvent();
@@ -510,10 +513,10 @@ class FMouseControl
     void                disableXTermMouse();
 
     // Data Member
-    std::map<FMouse::mouse_type, FMouse*> mouse_protocol{};
-    FPoint zero_point{0, 0};
-    bool   use_gpm_mouse{false};
-    bool   use_xterm_mouse{false};
+    FMouseProtocol mouse_protocol{};
+    FPoint         zero_point{0, 0};
+    bool           use_gpm_mouse{false};
+    bool           use_xterm_mouse{false};
 };
 #pragma pack(pop)
 

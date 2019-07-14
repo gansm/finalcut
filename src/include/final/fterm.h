@@ -132,7 +132,11 @@
 #include "final/ftermdebugdata.h"
 #include "final/ftermdetection.h"
 
-#if defined(__linux__)
+#if defined(UNIT_TEST)
+  #include "final/ftermlinux.h"
+  #include "final/ftermfreebsd.h"
+  #include "final/ftermopenbsd.h"
+#elif defined(__linux__)
   #include "final/ftermlinux.h"
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
   #include "final/ftermfreebsd.h"
@@ -196,7 +200,11 @@ class FTerm final
     static FKeyboard*      getFKeyboard();
     static FMouseControl*  getFMouseControl();
 
-#if defined(__linux__)
+#if defined(UNIT_TEST)
+    static FTermLinux*     getFTermLinux();
+    static FTermFreeBSD*   getFTermFreeBSD();
+    static FTermOpenBSD*   getFTermOpenBSD();
+#elif defined(__linux__)
     static FTermLinux*     getFTermLinux();
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
     static FTermFreeBSD*   getFTermFreeBSD();
@@ -323,7 +331,7 @@ class FTerm final
           newfont = false;
           encoding = fc::UNKNOWN;
 
-        #if defined(__FreeBSD__) || defined(__DragonFly__)
+        #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
           meta_sends_escape = true;
           change_cursorstyle = true;
         #elif defined(__NetBSD__) || defined(__OpenBSD__)
@@ -340,7 +348,7 @@ class FTerm final
         uInt8                     : 2;  // padding bits
         fc::encoding encoding;
 
-      #if defined(__FreeBSD__) || defined(__DragonFly__)
+      #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
         uInt8 meta_sends_escape  : 1;
         uInt8 change_cursorstyle : 1;
         uInt8                    : 6;  // padding bits
@@ -413,7 +421,12 @@ class FTerm final
     static FKeyboard*      keyboard;
     static FMouseControl*  mouse;
 
-#if defined(__linux__)
+#if defined(UNIT_TEST)
+    #undef linux
+    static FTermLinux*     linux;
+    static FTermFreeBSD*   freebsd;
+    static FTermOpenBSD*   openbsd;
+#elif defined(__linux__)
     #undef linux
     static FTermLinux*     linux;
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
@@ -631,7 +644,7 @@ inline FTermLinux* FTerm::getFTermLinux()
   return linux;
 }
 
-#elif defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 //----------------------------------------------------------------------
 inline FTermFreeBSD* FTerm::getFTermFreeBSD()
 {
@@ -651,7 +664,7 @@ inline FTermFreeBSD* FTerm::getFTermFreeBSD()
   return freebsd;
 }
 
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
+#elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 //----------------------------------------------------------------------
 inline FTermOpenBSD* FTerm::getFTermOpenBSD()
 {
