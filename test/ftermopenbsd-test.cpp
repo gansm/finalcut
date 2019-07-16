@@ -318,14 +318,12 @@ void ftermopenbsdTest::netbsdConsoleTest()
 
   term_detection = finalcut::FTerm::getFTermDetection();
   term_detection->setTerminalDetection(true);
-  finalcut::FTermOpenBSD netbsd;
-
-  //term_detection->setNetBSDTerm(true);
-
   pid_t pid = forkConEmu();
 
   if ( isConEmuChildProcess(pid) )
   {
+    finalcut::FTermOpenBSD netbsd;
+
     setenv ("TERM", "wsvt25", 1);
     setenv ("COLUMNS", "80", 1);
     setenv ("LINES", "25", 1);
@@ -339,16 +337,33 @@ void ftermopenbsdTest::netbsdConsoleTest()
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
 
+    netbsd.disableMetaSendsEscape();
     netbsd.init();
     term_detection->detect();
     finalcut::FTerm::detectTermSize();
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
+    CPPUNIT_ASSERT ( ! term_detection->isOpenBSDTerm() );
     CPPUNIT_ASSERT ( term_detection->isNetBSDTerm() );
     CPPUNIT_ASSERT ( data->getTermGeometry().getWidth() == 80 );
     CPPUNIT_ASSERT ( data->getTermGeometry().getHeight() == 25 );
     CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
     CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
+
+    netbsd.finish();
+
+    netbsd.enableMetaSendsEscape();
+    netbsd.init();
+
+    CPPUNIT_ASSERT ( isatty(0) == 1 );
+    CPPUNIT_ASSERT ( ! term_detection->isOpenBSDTerm() );
+    CPPUNIT_ASSERT ( term_detection->isNetBSDTerm() );
+    CPPUNIT_ASSERT ( data->getTermGeometry().getWidth() == 80 );
+    CPPUNIT_ASSERT ( data->getTermGeometry().getHeight() == 25 );
+    CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
+    CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
+
+    netbsd.finish();
 
     closeConEmuStdStreams();
     exit(EXIT_SUCCESS);
@@ -361,8 +376,6 @@ void ftermopenbsdTest::netbsdConsoleTest()
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
-
-  netbsd.finish();
 }
 
 //----------------------------------------------------------------------
@@ -404,12 +417,12 @@ void ftermopenbsdTest::openbsdConsoleTest()
 
   term_detection = finalcut::FTerm::getFTermDetection();
   term_detection->setTerminalDetection(true);
-  finalcut::FTermOpenBSD openbsd;
-
   pid_t pid = forkConEmu();
 
   if ( isConEmuChildProcess(pid) )
   {
+    finalcut::FTermOpenBSD openbsd;
+
     setenv ("TERM", "vt220", 1);
     setenv ("COLUMNS", "80", 1);
     setenv ("LINES", "25", 1);
@@ -423,17 +436,34 @@ void ftermopenbsdTest::openbsdConsoleTest()
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
 
+    openbsd.disableMetaSendsEscape();
     openbsd.init();
     term_detection->detect();
     finalcut::FTerm::detectTermSize();
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
     CPPUNIT_ASSERT ( term_detection->isOpenBSDTerm() );
+    CPPUNIT_ASSERT ( ! term_detection->isNetBSDTerm() );
     CPPUNIT_ASSERT ( data->getTermGeometry().getWidth() == 80 );
     CPPUNIT_ASSERT ( data->getTermGeometry().getHeight() == 25 );
     CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
     CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
     CPPUNIT_ASSERT_CSTRING ( term_detection->getTermType(), C_STR("pccon") );
+
+    openbsd.finish();
+
+    openbsd.enableMetaSendsEscape();
+    openbsd.init();
+
+    CPPUNIT_ASSERT ( isatty(0) == 1 );
+    CPPUNIT_ASSERT ( term_detection->isOpenBSDTerm() );
+    CPPUNIT_ASSERT ( ! term_detection->isNetBSDTerm() );
+    CPPUNIT_ASSERT ( data->getTermGeometry().getWidth() == 80 );
+    CPPUNIT_ASSERT ( data->getTermGeometry().getHeight() == 25 );
+    CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
+    CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
+
+    openbsd.finish();
 
     closeConEmuStdStreams();
     exit(EXIT_SUCCESS);
@@ -446,8 +476,6 @@ void ftermopenbsdTest::openbsdConsoleTest()
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
-
-  openbsd.finish();
 }
 
 
