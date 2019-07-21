@@ -24,9 +24,14 @@
 #include <string>
 
 #include "final/fapplication.h"
+#include "final/fevent.h"
 #include "final/fmenu.h"
+#include "final/fmenubar.h"
 #include "final/fmessagebox.h"
+#include "final/fmouse.h"
 #include "final/fstatusbar.h"
+#include "final/ftermios.h"
+#include "final/fwidgetcolors.h"
 #include "final/fwindow.h"
 
 namespace finalcut

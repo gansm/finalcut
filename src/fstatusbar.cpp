@@ -22,7 +22,9 @@
 
 #include <vector>
 
+#include "final/fevent.h"
 #include "final/fstatusbar.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {

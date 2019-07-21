@@ -58,9 +58,6 @@
 
 #include <algorithm>  // need for std::swap
 
-#include "final/fc.h"
-#include "final/ftypes.h"
-
 namespace finalcut
 {
 
@@ -74,46 +71,7 @@ namespace finalcut
 class FOptiAttr final
 {
   public:
-    // Typedefs
-    typedef struct
-    {
-      wchar_t code;          // character code
-      wchar_t encoded_code;  // encoded output character
-      FColor  fg_color;      // foreground color
-      FColor  bg_color;      // background color
-
-      union attribute
-      {
-        struct
-        {
-          // Attribute byte #0
-          uInt8 bold          : 1;  // bold
-          uInt8 dim           : 1;  // dim
-          uInt8 italic        : 1;  // italic
-          uInt8 underline     : 1;  // underline
-          uInt8 blink         : 1;  // blink
-          uInt8 reverse       : 1;  // reverse
-          uInt8 standout      : 1;  // standout
-          uInt8 invisible     : 1;  // invisible
-          // Attribute byte #1
-          uInt8 protect       : 1;  // protect mode
-          uInt8 crossed_out   : 1;  // crossed out
-          uInt8 dbl_underline : 1;  // double underline
-          uInt8 alt_charset   : 1;  // alternate character set (vt100)
-          uInt8 pc_charset    : 1;  // pc character set (CP437)
-          uInt8 transparent   : 1;  // transparent
-          uInt8 trans_shadow  : 1;  // transparent shadow
-          uInt8 inherit_bg    : 1;  // inherit background
-          // Attribute byte #2
-          uInt8 no_changes    : 1;  // no changes required
-          uInt8 printed       : 1;  // is printed to VTerm
-          uInt8               : 6;  // padding bits
-        } bit;
-
-        uInt8 byte[3];
-      } attr;
-    } charData;
-
+    // Typedef
     typedef struct
     {
       bool  ansi_default_color;
@@ -381,8 +339,8 @@ class FOptiAttr final
 
 // FOptiAttr inline functions
 //----------------------------------------------------------------------
-inline bool operator == ( const FOptiAttr::charData& lhs,
-                          const FOptiAttr::charData& rhs )
+inline bool operator == ( const charData& lhs,
+                          const charData& rhs )
 {
   return lhs.code         == rhs.code
       && lhs.fg_color     == rhs.fg_color
@@ -392,8 +350,8 @@ inline bool operator == ( const FOptiAttr::charData& lhs,
 }
 
 //----------------------------------------------------------------------
-inline bool operator != ( const FOptiAttr::charData& lhs,
-                          const FOptiAttr::charData& rhs )
+inline bool operator != ( const charData& lhs,
+                          const charData& rhs )
 { return ! ( lhs == rhs ); }
 
 //----------------------------------------------------------------------

@@ -24,6 +24,7 @@
 
 #include "final/fapplication.h"
 #include "final/fdialog.h"
+#include "final/fevent.h"
 #include "final/fmenu.h"
 #include "final/fmenubar.h"
 #include "final/fmenulist.h"

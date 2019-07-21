@@ -35,14 +35,12 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/fc.h"
-#include "final/fterm.h"
-#include "final/ftermcap.h"
-#include "final/ftermdata.h"
-#include "final/ftermdetection.h"
-
 namespace finalcut
 {
+
+// class forward declaration
+class FTermData;
+class FTermDetection;
 
 //----------------------------------------------------------------------
 // class FTermcapsQuirks

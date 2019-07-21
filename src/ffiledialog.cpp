@@ -27,6 +27,7 @@
 
 #include <vector>
 
+#include "final/fevent.h"
 #include "final/ffiledialog.h"
 
 namespace finalcut

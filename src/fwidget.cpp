@@ -23,9 +23,12 @@
 #include <vector>
 
 #include "final/fapplication.h"
+#include "final/fevent.h"
 #include "final/fmenubar.h"
 #include "final/fstatusbar.h"
+#include "final/fstring.h"
 #include "final/fwidget.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {
@@ -46,7 +49,6 @@ FWidgetColors        FWidget::wc;
 bool                 FWidget::init_desktop;
 bool                 FWidget::hideable;
 uInt                 FWidget::modal_dialogs;
-
 
 //----------------------------------------------------------------------
 // class FWidget
@@ -2171,7 +2173,7 @@ void FWidget::draw()
 void FWidget::drawWindows()
 {
   // redraw windows
-  FOptiAttr::charData default_char;
+  charData default_char;
   default_char.code         = ' ';
   default_char.fg_color     = fc::Black;
   default_char.bg_color     = fc::Black;

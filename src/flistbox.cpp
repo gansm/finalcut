@@ -24,9 +24,13 @@
 #include <memory>
 
 #include "final/fapplication.h"
+#include "final/fcolorpair.h"
+#include "final/fevent.h"
 #include "final/flistbox.h"
 #include "final/fscrollbar.h"
+#include "final/fstring.h"
 #include "final/fstatusbar.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {

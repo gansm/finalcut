@@ -23,8 +23,13 @@
 #include <regex>
 
 #include "final/fapplication.h"
+#include "final/fevent.h"
+#include "final/flabel.h"
 #include "final/flineedit.h"
+#include "final/fpoint.h"
+#include "final/fsize.h"
 #include "final/fstatusbar.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {

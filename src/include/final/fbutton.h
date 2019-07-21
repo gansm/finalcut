@@ -53,6 +53,7 @@
 #endif
 
 #include "final/fwidget.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {

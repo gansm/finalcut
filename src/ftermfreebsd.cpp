@@ -21,8 +21,10 @@
 ***********************************************************************/
 
 #include "final/fcharmap.h"
+#include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermfreebsd.h"
+#include "final/ftypes.h"
 
 namespace finalcut
 {

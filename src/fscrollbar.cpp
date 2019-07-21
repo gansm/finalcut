@@ -22,7 +22,10 @@
 
 #include <algorithm>
 
+#include "final/fevent.h"
 #include "final/fscrollbar.h"
+#include "final/fsize.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {

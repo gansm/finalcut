@@ -491,11 +491,13 @@ void MouseDraw::drawCanvas()
 
   for (int y = 0; y < y_end; y++)  // line loop
   {
-    charData* canvaschar;  // canvas character
-    charData* winchar;     // window character
+    finalcut::charData* canvaschar;  // canvas character
+    finalcut::charData* winchar;     // window character
     canvaschar = &canvas->text[y * x_end];
     winchar = &print_area->text[(ay + y) * w_line_len + ax];
-    std::memcpy (winchar, canvaschar, sizeof(charData) * unsigned(x_end));
+    std::memcpy ( winchar
+                , canvaschar
+                , sizeof(finalcut::charData) * unsigned(x_end) );
 
     if ( int(print_area->changes[ay + y].xmin) > ax )
       print_area->changes[ay + y].xmin = uInt(ax);

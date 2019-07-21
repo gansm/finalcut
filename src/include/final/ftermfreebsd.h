@@ -36,8 +36,6 @@
 #endif
 
 #include "final/fc.h"
-#include "final/fsystem.h"
-#include "final/ftypes.h"
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
   #undef mouse_info  // consio.h
@@ -49,6 +47,9 @@
 
 namespace finalcut
 {
+
+// class forward declaration
+class FSystem;
 
 //----------------------------------------------------------------------
 // class FTermFreeBSD

@@ -40,11 +40,13 @@
 #endif
 
 #include <algorithm>
-#include "final/fpoint.h"
-#include "final/fsize.h"
 
 namespace finalcut
 {
+
+// class forward declaration
+class FPoint;
+class FSize;
 
 //----------------------------------------------------------------------
 // class FRect
@@ -187,26 +189,6 @@ inline int FRect::getY() const
 { return Y1; }
 
 //----------------------------------------------------------------------
-inline FPoint FRect::getPos() const
-{ return FPoint(X1, Y1); }
-
-//----------------------------------------------------------------------
-inline FPoint FRect::getUpperLeftPos() const
-{ return FPoint(X1, Y1); }
-
-//----------------------------------------------------------------------
-inline FPoint FRect::getUpperRightPos() const
-{ return FPoint(X2, Y1); }
-
-//----------------------------------------------------------------------
-inline FPoint FRect::getLowerLeftPos() const
-{ return FPoint(X1, Y2); }
-
-//----------------------------------------------------------------------
-inline FPoint FRect::getLowerRightPos() const
-{ return FPoint(X2, Y2); }
-
-//----------------------------------------------------------------------
 inline std::size_t FRect::getWidth() const
 {
   int w = X2 - X1 + 1;
@@ -219,10 +201,6 @@ inline std::size_t FRect::getHeight() const
   int h = Y2 - Y1 + 1;
   return ( h < 0 ) ? 0 : std::size_t(h);
 }
-
-//----------------------------------------------------------------------
-inline FSize FRect::getSize() const
-{ return FSize(getWidth(), getHeight()); }
 
 //----------------------------------------------------------------------
 inline int& FRect::x1_ref()

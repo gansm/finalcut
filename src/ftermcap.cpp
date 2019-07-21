@@ -24,26 +24,31 @@
 #include <string>
 #include <vector>
 
+#include "final/emptyfstring.h"
+#include "final/fc.h"
+#include "final/fkey_map.h"
 #include "final/fterm.h"
+#include "final/ftermdata.h"
 #include "final/ftermcap.h"
+#include "final/ftermdetection.h"
 
 namespace finalcut
 {
 
 // static class attributes
-bool            FTermcap::background_color_erase   = false;
-bool            FTermcap::can_change_color_palette = false;
-bool            FTermcap::automatic_left_margin    = false;
-bool            FTermcap::automatic_right_margin   = false;
-bool            FTermcap::eat_nl_glitch            = false;
-bool            FTermcap::ansi_default_color       = false;
-bool            FTermcap::osc_support              = false;
-bool            FTermcap::no_utf8_acs_chars        = false;
-int             FTermcap::max_color                = 1;
-int             FTermcap::tabstop                  = 8;
-int             FTermcap::attr_without_color       = 0;
-FTermData*      FTermcap::fterm_data               = nullptr;
-FTermDetection* FTermcap::term_detection           = nullptr;
+bool             FTermcap::background_color_erase   = false;
+bool             FTermcap::can_change_color_palette = false;
+bool             FTermcap::automatic_left_margin    = false;
+bool             FTermcap::automatic_right_margin   = false;
+bool             FTermcap::eat_nl_glitch            = false;
+bool             FTermcap::ansi_default_color       = false;
+bool             FTermcap::osc_support              = false;
+bool             FTermcap::no_utf8_acs_chars        = false;
+int              FTermcap::max_color                = 1;
+int              FTermcap::tabstop                  = 8;
+int              FTermcap::attr_without_color       = 0;
+FTermData*       FTermcap::fterm_data               = nullptr;
+FTermDetection*  FTermcap::term_detection           = nullptr;
 
 
 //----------------------------------------------------------------------

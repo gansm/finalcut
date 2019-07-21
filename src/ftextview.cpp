@@ -22,9 +22,15 @@
 
 #include <memory>
 
+#include "final/fapplication.h"
+#include "final/fc.h"
 #include "final/fdialog.h"
+#include "final/fevent.h"
+#include "final/fstring.h"
+#include "final/fscrollbar.h"
 #include "final/fstatusbar.h"
 #include "final/ftextview.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {

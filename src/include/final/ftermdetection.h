@@ -41,13 +41,6 @@
 #include <cstdio>
 #include <cstring>
 
-#include "final/fc.h"
-#include "final/fconfig.h"
-#include "final/fsystem.h"
-#include "final/ftermdata.h"
-#include "final/ftermios.h"
-#include "final/ftypes.h"
-
 namespace finalcut
 {
 
@@ -267,14 +260,6 @@ inline FTermDetection::terminalType& FTermDetection::getTermTypeStruct()
 { return terminal_type; }
 
 #if DEBUG
-//----------------------------------------------------------------------
-inline const FString& FTermDetection::getAnswerbackString()
-{ return ( answer_back ) ? *answer_back : fc::emptyFString::get(); }
-
-//----------------------------------------------------------------------
-inline const FString& FTermDetection::getSecDAString()
-{ return ( sec_da ) ? *sec_da : fc::emptyFString::get(); }
-
 //----------------------------------------------------------------------
 inline const char* FTermDetection::getTermType_256color()
 { return termtype_256color; }

@@ -24,7 +24,11 @@
 
 #include "final/fapplication.h"
 #include "final/fdialog.h"
+#include "final/fevent.h"
+#include "final/fmenuitem.h"
 #include "final/fstatusbar.h"
+#include "final/ftooltip.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {

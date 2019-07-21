@@ -20,9 +20,15 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fc.h"
+#include "final/fstring.h"
 #include "final/fterm.h"
+#include "final/ftermcap.h"
+#include "final/ftermdetection.h"
 #include "final/ftermfreebsd.h"
+#include "final/ftermios.h"
 #include "final/ftermxterminal.h"
+#include "final/fsize.h"
 
 namespace finalcut
 {

@@ -56,12 +56,14 @@ e Copyright 2014-2019 Markus Gans                                      *
 #include <memory>
 #include <vector>
 
-#include "final/fscrollbar.h"
-#include "final/fstring.h"
 #include "final/fwidget.h"
 
 namespace finalcut
 {
+
+// class forward declaration
+class FScrollbar;
+class FString;
 
 //----------------------------------------------------------------------
 // class FListBoxItem

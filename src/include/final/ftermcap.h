@@ -58,16 +58,15 @@
 #include <string>
 #include <vector>
 
-#include "final/emptyfstring.h"
-#include "final/fkey_map.h"
-#include "final/ftermdetection.h"
-
-
 // FTermcap string macro
 #define TCAP(...)  FTermcap::strings[__VA_ARGS__].string
 
 namespace finalcut
 {
+
+// class forward declaration
+class FTermData;
+class FTermDetection;
 
 //----------------------------------------------------------------------
 // class FTermcap

@@ -23,6 +23,8 @@
 #include <memory>
 
 #include "final/fapplication.h"
+#include "final/fcolorpair.h"
+#include "final/fevent.h"
 #include "final/flabel.h"
 #include "final/fstatusbar.h"
 

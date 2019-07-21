@@ -63,10 +63,8 @@
 #include <cstddef>
 #include <map>
 
-#include "final/fconfig.h"
 #include "final/fkeyboard.h"
 #include "final/fpoint.h"
-#include "final/ftypes.h"
 
 #if defined(__linux__)
   #include <linux/keyboard.h>  // need for gpm keyboard modifiers

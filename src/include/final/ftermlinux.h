@@ -51,14 +51,15 @@
 #include <cstdio>  // need for sprintf
 #include <cstring>
 
-#include "final/fc.h"
-#include "final/fcharmap.h"
-#include "final/fsystem.h"
-#include "final/ftermdetection.h"
-#include "final/ftypes.h"
+#include "final/ftermdata.h"
 
 namespace finalcut
 {
+
+// class forward declaration
+class FSystem;
+class FTermData;
+class FTermDetection;
 
 //----------------------------------------------------------------------
 // class FTermLinux
@@ -133,8 +134,6 @@ class FTermLinux final
     {
       rgb color[16];
     } ColorMap;
-
-    typedef FTermData::characterSub  characterSub;
 
     // Accessors
     static int           getFramebuffer_bpp();

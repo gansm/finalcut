@@ -23,8 +23,10 @@
 
 #include <memory>
 
+#include "final/fevent.h"
 #include "final/fscrollview.h"
 #include "final/fwindow.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {

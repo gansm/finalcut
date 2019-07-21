@@ -57,9 +57,8 @@
 #include <string>
 #include <vector>
 
+#include "final/fc.h"
 #include "final/fterm.h"
-#include "final/fcolorpair.h"
-
 
 // Preprocessing handler macro
 #define F_PREPROC_HANDLER(i,h) \
@@ -70,9 +69,18 @@ namespace finalcut
 {
 
 // class forward declaration
+class FColorPair;
+class FKeyboard;
+class FMouseControl;
+class FPoint;
+class FRect;
+class FSize;
+class FString;
+class FSystem;
+class FTerm;
 class FTermBuffer;
+class FTermDebugData;
 class FWidget;
-
 
 //----------------------------------------------------------------------
 // class FVTerm
@@ -92,7 +100,6 @@ class FVTerm
       uInt trans_count;    // Number of transparent characters
     } line_changes;
 
-    typedef FOptiAttr::charData  charData;
     typedef void (FVTerm::*FPreprocessingHandler)();
 
     struct term_area;  // forward declaration
@@ -420,9 +427,7 @@ class FVTerm
     term_area* vwin{nullptr};              // virtual window
 
   private:
-    // Typedef and Enumeration
-    typedef FTermcap::tcap_map termcap_map;
-
+    // Enumeration
     enum exit_state
     {
       not_used,
@@ -431,8 +436,8 @@ class FVTerm
     };
 
     // Constants
+    //   Buffer size for character output on the terminal
     static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
-    // Buffer size for character output on the terminal
 
     // Methods
     void                  init (bool);
@@ -566,7 +571,7 @@ inline FVTerm& FVTerm::operator << (const std::string& string)
 
 //----------------------------------------------------------------------
 inline FVTerm& FVTerm::operator << \
-    (const std::vector<FVTerm::charData>& termString)
+    (const std::vector<charData>& termString)
 {
   print (termString);
   return *this;
@@ -603,7 +608,7 @@ inline FVTerm::term_area* FVTerm::getVWin() const
 { return vwin; }
 
 //----------------------------------------------------------------------
-inline FVTerm::charData FVTerm::getAttribute()
+inline charData FVTerm::getAttribute()
 { return next_attribute; }
 
 //----------------------------------------------------------------------

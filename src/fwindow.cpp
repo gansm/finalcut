@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include "final/fapplication.h"
+#include "final/fevent.h"
 #include "final/fmenubar.h"
 #include "final/fstatusbar.h"
 #include "final/fwindow.h"

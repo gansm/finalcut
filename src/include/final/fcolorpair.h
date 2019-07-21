@@ -35,7 +35,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-//#include ...
+#include "final/fc.h"
+#include "final/ftypes.h"
 
 namespace finalcut
 {

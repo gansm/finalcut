@@ -20,8 +20,19 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/emptyfstring.h"
+#include "final/fc.h"
+#include "final/fconfig.h"
+#include "final/fsystem.h"
 #include "final/fterm.h"
+#include "final/ftermdata.h"
 #include "final/ftermdetection.h"
+#include "final/ftermios.h"
+#include "final/ftypes.h"
+
+#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
+  #include "final/ftermopenbsd.h"
+#endif
 
 namespace finalcut
 {
@@ -85,6 +96,20 @@ FTermDetection::~FTermDetection()  // destructor
 
 
 // public methods of FTermDetection
+//----------------------------------------------------------------------
+#if DEBUG
+const FString& FTermDetection::getAnswerbackString()
+{
+  return ( answer_back ) ? *answer_back : fc::emptyFString::get();
+}
+
+//----------------------------------------------------------------------
+const FString& FTermDetection::getSecDAString()
+{
+  return ( sec_da ) ? *sec_da : fc::emptyFString::get();
+}
+#endif
+
 //----------------------------------------------------------------------
 void FTermDetection::setTtyTypeFileName (char ttytype_filename[])
 {

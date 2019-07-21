@@ -22,14 +22,20 @@
 
 #include <string>
 
+#include "final/fc.h"
+#include "final/fkey_map.h"
+#include "final/fterm.h"
+#include "final/ftermcap.h"
 #include "final/ftermcapquirks.h"
+#include "final/ftermdata.h"
+#include "final/ftermdetection.h"
 
 namespace finalcut
 {
 
 // static class attributes
-FTermData*          FTermcapQuirks::fterm_data     = nullptr;
-FTermDetection*     FTermcapQuirks::term_detection = nullptr;
+FTermData*       FTermcapQuirks::fterm_data     = nullptr;
+FTermDetection*  FTermcapQuirks::term_detection = nullptr;
 
 
 //----------------------------------------------------------------------

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -59,12 +59,14 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/fmenu.h"
 #include "final/fmenulist.h"
 #include "final/fwindow.h"
 
 namespace finalcut
 {
+
+// class forward declaration
+class FMenu;
 
 //----------------------------------------------------------------------
 // class FMenuBar

@@ -53,10 +53,12 @@
 #endif
 
 #include "final/fwidget.h"
-#include "final/flabel.h"
 
 namespace finalcut
 {
+
+// class forward declaration
+class FLabel;
 
 //----------------------------------------------------------------------
 // class FLineEdit

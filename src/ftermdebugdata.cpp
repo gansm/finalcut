@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fc.h"
 #include "final/fterm.h"
 #include "final/ftermdata.h"
 #include "final/ftermdetection.h"
@@ -44,6 +45,45 @@ void FTermDebugData::init()
   data = FTerm::getFTermData();
   term_detection = FTerm::getFTermDetection();
 }
+
+//----------------------------------------------------------------------
+const FString& FTermDebugData::getAnswerbackString()
+{
+  return term_detection->getAnswerbackString();
+}
+
+//----------------------------------------------------------------------
+const FString& FTermDebugData::getSecDAString()
+{
+  return term_detection->getSecDAString();
+}
+
+//----------------------------------------------------------------------
+const char* FTermDebugData::getTermType_256color()
+{
+  return term_detection->getTermType_256color();
+}
+
+//----------------------------------------------------------------------
+const char* FTermDebugData::getTermType_Answerback()
+{
+  return term_detection->getTermType_Answerback();
+}
+
+//----------------------------------------------------------------------
+const char* FTermDebugData::getTermType_SecDA()
+{
+  return term_detection->getTermType_SecDA();
+}
+
+//----------------------------------------------------------------------
+#if defined(__linux__)
+int FTermDebugData::getFramebufferBpp()
+{
+  return data->getFramebufferBpp();
+}
+#endif  // defined(__linux__)
+
 #endif  // DEBUG
 
 }  // namespace finalcut

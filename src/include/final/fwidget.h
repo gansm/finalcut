@@ -99,8 +99,11 @@
 #include <vector>
 
 #include "final/fvterm.h"
-#include "final/fwidgetcolors.h"
-
+#include "final/fobject.h"
+#include "final/fpoint.h"
+#include "final/frect.h"
+#include "final/fsize.h"
+#include "final/ftypes.h"
 
 // Callback macros
 #define F_FUNCTION_CALLBACK(h) \
@@ -114,8 +117,12 @@ namespace finalcut
 {
 
 // class forward declaration
-class FStatusBar;
 class FMenuBar;
+class FRect;
+class FResizeEvent;
+class FSize;
+class FStatusBar;
+class FWidgetColors;
 
 //----------------------------------------------------------------------
 // class FWidget

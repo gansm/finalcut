@@ -63,8 +63,6 @@
 #include <cstring>
 #include <iostream>
 
-#include "final/ftypes.h"
-
 namespace finalcut
 {
 

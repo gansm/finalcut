@@ -27,9 +27,13 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include "final/fconfig.h"
+#include "final/fkeyboard.h"
 #include "final/fmouse.h"
+#include "final/fobject.h"
 #include "final/fterm.h"
 #include "final/ftermxterminal.h"
+#include "final/ftypes.h"
 
 namespace finalcut
 {

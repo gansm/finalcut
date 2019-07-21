@@ -57,12 +57,13 @@
 #endif
 
 #include "final/fmenu.h"
-#include "final/fmenuitem.h"
-#include "final/ftooltip.h"
 #include "final/fwindow.h"
 
 namespace finalcut
 {
+
+// class forward declaration
+class FToolTip;
 
 //----------------------------------------------------------------------
 // class FDialog

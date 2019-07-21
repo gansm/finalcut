@@ -36,7 +36,6 @@
 #endif
 
 #include <iostream>
-#include "final/ftypes.h"
 
 namespace finalcut
 {

@@ -22,7 +22,9 @@
 
 #include <algorithm>
 
+#include "final/fpoint.h"
 #include "final/frect.h"
+#include "final/fsize.h"
 
 namespace finalcut
 {
@@ -58,6 +60,40 @@ FRect::~FRect()  // destructor
 bool FRect::isEmpty() const
 {
   return X2 == X1 - 1 && Y2 == Y1 - 1;
+}
+
+//----------------------------------------------------------------------
+FPoint FRect::getPos() const
+{
+  return FPoint(X1, Y1);
+}
+
+//----------------------------------------------------------------------
+FPoint FRect::getUpperLeftPos() const
+{
+  return FPoint(X1, Y1);
+}
+
+//----------------------------------------------------------------------
+FPoint FRect::getUpperRightPos() const
+{
+  return FPoint(X2, Y1);
+}
+
+//----------------------------------------------------------------------
+FPoint FRect::getLowerLeftPos() const
+{ return FPoint(X1, Y2); }
+
+//----------------------------------------------------------------------
+FPoint FRect::getLowerRightPos() const
+{
+  return FPoint(X2, Y2);
+}
+
+//----------------------------------------------------------------------
+FSize FRect::getSize() const
+{
+  return FSize(getWidth(), getHeight());
 }
 
 //----------------------------------------------------------------------

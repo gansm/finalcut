@@ -23,7 +23,12 @@
 #include <string>
 #include <vector>
 
+#include "final/fc.h"
+#include "final/fcolorpair.h"
+#include "final/fstring.h"
 #include "final/ftermbuffer.h"
+#include "final/fvterm.h"
+#include "final/ftypes.h"
 
 namespace finalcut
 {

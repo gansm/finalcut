@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2018 Markus Gans                                      *
+* Copyright 2013-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -66,12 +66,25 @@
 #include <string>
 #include <utility>
 
-#include "final/fevent.h"
+#include "final/ftypes.h"
 #include "final/fwidget.h"
-#include "final/fwindow.h"
 
 namespace finalcut
 {
+
+// class forward declaration
+class FEvent;
+class FAccelEvent;
+class FCloseEvent;
+class FFocusEvent;
+class FKeyEvent;
+class FMouseEvent;
+class FTimerEvent;
+class FWheelEvent;
+class FMouseControl;
+class FKeyboard;
+class FPoint;
+class FObject;
 
 //----------------------------------------------------------------------
 // class FApplication

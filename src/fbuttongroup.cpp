@@ -23,6 +23,8 @@
 
 #include "final/fapplication.h"
 #include "final/fbuttongroup.h"
+#include "final/fevent.h"
+#include "final/fsize.h"
 #include "final/fstatusbar.h"
 #include "final/ftogglebutton.h"
 

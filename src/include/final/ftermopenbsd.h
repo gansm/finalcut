@@ -36,7 +36,6 @@
 #endif
 
 #include <sys/ioctl.h>
-#include "final/fsystem.h"
 
 #if defined(UNIT_TEST)
   #define WSKBDIO_GETENCODING uInt32(0x4004570F)
@@ -49,6 +48,9 @@
 
 namespace finalcut
 {
+
+// class forward declaration
+class FSystem;
 
 //----------------------------------------------------------------------
 // class FTermOpenBSD

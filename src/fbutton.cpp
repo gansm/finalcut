@@ -21,6 +21,8 @@
 ***********************************************************************/
 
 #include "final/fapplication.h"
+#include "final/fcolorpair.h"
+#include "final/fevent.h"
 #include "final/fbutton.h"
 #include "final/fstatusbar.h"
 

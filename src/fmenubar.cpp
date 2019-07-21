@@ -24,8 +24,12 @@
 #include <vector>
 
 #include "final/fapplication.h"
+#include "final/fevent.h"
+#include "final/fmenu.h"
 #include "final/fmenubar.h"
+#include "final/fmenuitem.h"
 #include "final/fstatusbar.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {

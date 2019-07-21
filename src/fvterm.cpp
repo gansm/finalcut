@@ -25,8 +25,16 @@
 #include <vector>
 
 #include "final/fapplication.h"
+#include "final/fcolorpair.h"
+#include "final/fkeyboard.h"
+#include "final/foptiattr.h"
+#include "final/foptimove.h"
+#include "final/fsystem.h"
 #include "final/fterm.h"
+#include "final/ftermdata.h"
 #include "final/ftermbuffer.h"
+#include "final/ftermcap.h"
+#include "final/ftypes.h"
 #include "final/fvterm.h"
 #include "final/fwidget.h"
 #include "final/fwindow.h"
@@ -56,10 +64,10 @@ FVTerm::term_area*   FVTerm::vterm         = nullptr;
 FVTerm::term_area*   FVTerm::vdesktop      = nullptr;
 FVTerm::term_area*   FVTerm::active_area   = nullptr;
 FKeyboard*           FVTerm::keyboard      = nullptr;
-FVTerm::charData     FVTerm::term_attribute;
-FVTerm::charData     FVTerm::next_attribute;
-FVTerm::charData     FVTerm::s_ch;
-FVTerm::charData     FVTerm::i_ch;
+charData             FVTerm::term_attribute;
+charData             FVTerm::next_attribute;
+charData             FVTerm::s_ch;
+charData             FVTerm::i_ch;
 
 
 //----------------------------------------------------------------------
@@ -1632,7 +1640,7 @@ void FVTerm::clearArea (term_area* area, int fillchar)
 }
 
 //----------------------------------------------------------------------
-FVTerm::charData FVTerm::generateCharacter (const FPoint& pos)
+charData FVTerm::generateCharacter (const FPoint& pos)
 {
   // Generates characters for a given position considering all areas
 
@@ -1701,9 +1709,9 @@ FVTerm::charData FVTerm::generateCharacter (const FPoint& pos)
 }
 
 //----------------------------------------------------------------------
-FVTerm::charData FVTerm::getCharacter ( character_type char_type
-                                      , const FPoint& pos
-                                      , FVTerm* obj )
+charData FVTerm::getCharacter ( character_type char_type
+                              , const FPoint& pos
+                              , FVTerm* obj )
 {
   // Gets the overlapped or the covered character for a given position
 
@@ -1768,16 +1776,14 @@ FVTerm::charData FVTerm::getCharacter ( character_type char_type
 }
 
 //----------------------------------------------------------------------
-FVTerm::charData FVTerm::getCoveredCharacter ( const FPoint& pos
-                                             , FVTerm* obj )
+charData FVTerm::getCoveredCharacter (const FPoint& pos, FVTerm* obj)
 {
   // Gets the covered character for a given position
   return getCharacter (covered_character, pos, obj);
 }
 
 //----------------------------------------------------------------------
-FVTerm::charData FVTerm::getOverlappedCharacter ( const FPoint& pos
-                                                , FVTerm* obj )
+charData FVTerm::getOverlappedCharacter (const FPoint& pos, FVTerm* obj)
 {
   // Gets the overlapped character for a given position
   return getCharacter (overlapped_character, pos, obj);
@@ -2797,7 +2803,7 @@ int FVTerm::appendLowerRight (charData*& screen_char)
 //----------------------------------------------------------------------
 inline void FVTerm::characterFilter (charData*& next_char)
 {
-  FTerm::characterSub& sub_map = fterm->getCharSubstitutionMap();
+  charSubstitution& sub_map = fterm->getCharSubstitutionMap();
 
   if ( sub_map.find(next_char->encoded_code) != sub_map.end() )
     next_char->encoded_code = sub_map[next_char->encoded_code];

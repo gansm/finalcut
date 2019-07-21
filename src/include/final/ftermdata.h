@@ -58,7 +58,6 @@ class FTermData final
   public:
     // Typedefs
     typedef std::unordered_map<std::string, fc::encoding> encodingMap;
-    typedef std::unordered_map<wchar_t, wchar_t> characterSub;
 
     // Constructors
     FTermData() {}
@@ -73,89 +72,88 @@ class FTermData final
     FTermData& operator = (const FTermData&) = delete;
 
     // Accessors
-    const char*     getClassName() const;
-    encodingMap&    getEncodingList();
-    characterSub&   getCharSubstitutionMap();
-    fc::encoding    getTermEncoding() const;
-    FRect&          getTermGeometry();
-    int             getTTYFileDescriptor() const;
-    uInt            getBaudrate() const;
-    char*           getTermType();
-    char*           getTermFileName();
-    const FString&  getXtermFont() const;
-    const FString&  getXtermTitle() const;
+    const char*       getClassName() const;
+    encodingMap&      getEncodingList();
+    charSubstitution& getCharSubstitutionMap();
+    fc::encoding      getTermEncoding() const;
+    FRect&            getTermGeometry();
+    int               getTTYFileDescriptor() const;
+    uInt              getBaudrate() const;
+    char*             getTermType();
+    char*             getTermFileName();
+    const FString&    getXtermFont() const;
+    const FString&    getXtermTitle() const;
 #if DEBUG
-    int             getFramebufferBpp() const;
+    int               getFramebufferBpp() const;
 #endif
 
     // Inquiries
-    bool            hasShadowCharacter() const;
-    bool            hasHalfBlockCharacter() const;
-    bool            hasCursorOptimisation() const;
-    bool            isCursorHidden() const;
-    bool            hasAlternateScreen() const;
-    bool            hasASCIIConsole() const;
-    bool            hasVT100Console() const;
-    bool            hasUTF8Console() const;
-    bool            isUTF8() const;
-    bool            isNewFont() const;
-    bool            isVGAFont() const;
-    bool            isMonochron() const;
-    bool            hasTermResized() const;
+    bool              hasShadowCharacter() const;
+    bool              hasHalfBlockCharacter() const;
+    bool              hasCursorOptimisation() const;
+    bool              isCursorHidden() const;
+    bool              hasAlternateScreen() const;
+    bool              hasASCIIConsole() const;
+    bool              hasVT100Console() const;
+    bool              hasUTF8Console() const;
+    bool              isUTF8() const;
+    bool              isNewFont() const;
+    bool              isVGAFont() const;
+    bool              isMonochron() const;
+    bool              hasTermResized() const;
 
     // Mutators
-    void            setTermEncoding(fc::encoding);
-    void            setTTYFileDescriptor (int);
-    void            setBaudrate (uInt);
-    void            supportShadowCharacter (bool);
-    void            supportHalfBlockCharacter (bool);
-    void            supportCursorOptimisation (bool);
-    void            setCursorHidden (bool);
-    void            useAlternateScreen (bool);
-    void            setASCIIConsole (bool);
-    void            setVT100Console (bool);
-    void            setUTF8Console (bool);
-    void            setUTF8 (bool);
-    void            setNewFont (bool);
-    void            setVGAFont (bool);
-    void            setMonochron (bool);
-    void            setTermResized (bool);
-    void            setTermType (const char[]);
-    void            setTermFileName (const char[]);
-    void            setXtermFont (const FString&);
-    void            setXtermTitle (const FString&);
+    void              setTermEncoding(fc::encoding);
+    void              setTTYFileDescriptor (int);
+    void              setBaudrate (uInt);
+    void              supportShadowCharacter (bool);
+    void              supportHalfBlockCharacter (bool);
+    void              supportCursorOptimisation (bool);
+    void              setCursorHidden (bool);
+    void              useAlternateScreen (bool);
+    void              setASCIIConsole (bool);
+    void              setVT100Console (bool);
+    void              setUTF8Console (bool);
+    void              setUTF8 (bool);
+    void              setNewFont (bool);
+    void              setVGAFont (bool);
+    void              setMonochron (bool);
+    void              setTermResized (bool);
+    void              setTermType (const char[]);
+    void              setTermFileName (const char[]);
+    void              setXtermFont (const FString&);
+    void              setXtermTitle (const FString&);
 #if DEBUG
-    void            setFramebufferBpp (int);
+    void              setFramebufferBpp (int);
 #endif
 
   private:
     // Data Members
-    encodingMap     encoding_list{};
-    characterSub    char_substitution_map{};
-    fc::encoding    term_encoding{fc::UNKNOWN};
-    FRect           term_geometry{};  // current terminal geometry
-    int             fd_tty{-1};  // Teletype (tty) file descriptor is still undefined
-    uInt            baudrate{0};
-    bool            shadow_character{true};
-    bool            half_block_character{true};
-    bool            cursor_optimisation{true};
-    bool            hidden_cursor{false};  // Global cursor hidden state
-    bool            use_alternate_screen{true};
-    bool            ascii_console{false};
-    bool            vt100_console{false};
-    bool            utf8_console{false};
-    bool            utf8_state{false};
-    bool            new_font{false};
-    bool            vga_font{false};
-    bool            monochron{false};
-    bool            resize_term{false};
-    char            termtype[256]{'\0'};
-    char            termfilename[256]{'\0'};
-    FString         xterm_font{};
-    FString         xterm_title{};
-
+    encodingMap       encoding_list{};
+    charSubstitution  char_substitution_map{};
+    fc::encoding      term_encoding{fc::UNKNOWN};
+    FRect             term_geometry{};  // current terminal geometry
+    int               fd_tty{-1};  // Teletype (tty) file descriptor is still undefined
+    uInt              baudrate{0};
+    bool              shadow_character{true};
+    bool              half_block_character{true};
+    bool              cursor_optimisation{true};
+    bool              hidden_cursor{false};  // Global cursor hidden state
+    bool              use_alternate_screen{true};
+    bool              ascii_console{false};
+    bool              vt100_console{false};
+    bool              utf8_console{false};
+    bool              utf8_state{false};
+    bool              new_font{false};
+    bool              vga_font{false};
+    bool              monochron{false};
+    bool              resize_term{false};
+    char              termtype[256]{'\0'};
+    char              termfilename[256]{'\0'};
+    FString           xterm_font{};
+    FString           xterm_title{};
 #if DEBUG
-    int             framebuffer_bpp{-1};
+    int               framebuffer_bpp{-1};
 #endif
 };
 #pragma pack(pop)
@@ -170,7 +168,7 @@ inline FTermData::encodingMap& FTermData::getEncodingList()
 { return encoding_list; }
 
 //----------------------------------------------------------------------
-inline FTermData::characterSub& FTermData::getCharSubstitutionMap()
+inline charSubstitution& FTermData::getCharSubstitutionMap()
 { return char_substitution_map; }
 
 //----------------------------------------------------------------------

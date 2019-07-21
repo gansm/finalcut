@@ -1,3 +1,6 @@
+2019-07-21  Markus Gans  <guru.mail@muenster.de>
+	* Reduce include entries in the header files
+
 2019-07-14  Markus Gans  <guru.mail@muenster.de>
 	* Reduces the use of raw loops 
 	* Add a unit test for FTermOpenBSD to test the OpenBSD 

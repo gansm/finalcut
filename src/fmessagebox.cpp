@@ -23,6 +23,7 @@
 #include <algorithm>
 
 #include "final/fapplication.h"
+#include "final/fbutton.h"
 #include "final/fmessagebox.h"
 
 namespace finalcut

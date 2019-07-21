@@ -63,11 +63,13 @@
 #endif
 
 #include <sys/param.h>
+#include <sys/types.h>
 
 #include <dirent.h>
 #include <fnmatch.h>
 #include <libgen.h>
 #include <pwd.h>
+#include <unistd.h>
 
 #include <string>
 #include <vector>

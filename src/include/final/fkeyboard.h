@@ -35,19 +35,15 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/fobject.h"
 #include "final/ftypes.h"
-
-#if defined(__linux__)
-  #include "final/ftermlinux.h"
-#endif
 
 namespace finalcut
 {
 
 // class forward declaration
 class FApplication;
-
+class FString;
+class FTermLinux;
 
 //----------------------------------------------------------------------
 // class FKeyboardCommand

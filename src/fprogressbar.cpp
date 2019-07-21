@@ -20,7 +20,11 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fevent.h"
+#include "final/fcolorpair.h"
 #include "final/fprogressbar.h"
+#include "final/fstring.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {

@@ -20,10 +20,17 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fc.h"
+#include "final/fcharmap.h"
+#include "final/fsystem.h"
 #include "final/fterm.h"
+#include "final/ftermcap.h"
+#include "final/ftermdetection.h"
 #include "final/ftermlinux.h"
+#include "final/ftypes.h"
 
 #if defined(__linux__)
+  #include <linux/keyboard.h>  // need keyboard modifiers
   #include "../fonts/newfont.h"
   #include "../fonts/unicodemap.h"
   #include "../fonts/vgafont.h"
@@ -1276,7 +1283,7 @@ void FTermLinux::characterFallback ( wchar_t ucs
                                    , std::vector<wchar_t> fallback )
 {
   constexpr sInt16 NOT_FOUND = -1;
-  characterSub& sub_map = fterm_data->getCharSubstitutionMap();
+  charSubstitution& sub_map = fterm_data->getCharSubstitutionMap();
 
   if ( fallback.size() < 2 || ucs != fallback[0] )
     return;

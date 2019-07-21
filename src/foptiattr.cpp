@@ -22,6 +22,7 @@
 
 #include <cstring>
 
+#include "final/fc.h"
 #include "final/foptiattr.h"
 
 namespace finalcut

@@ -39,11 +39,11 @@
 #include <string>
 #include <vector>
 
-#include "final/fvterm.h"
-#include "final/fstring.h"
-
 namespace finalcut
 {
+
+// class forward declaration
+class FColorPair;
 
 //----------------------------------------------------------------------
 // class FTermBuffer
@@ -56,7 +56,6 @@ class FTermBuffer
 {
   public:
     // Typedef
-    typedef FOptiAttr::charData  charData;
     typedef std::vector<charData>  charDataVector;
 
     // Constructor

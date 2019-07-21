@@ -30,8 +30,13 @@
 
 #include "final/fkeyboard.h"
 #include "final/fkey_map.h"
+#include "final/fobject.h"
 #include "final/fterm.h"
 #include "final/ftermios.h"
+
+#if defined(__linux__)
+  #include "final/ftermlinux.h"
+#endif
 
 namespace finalcut
 {

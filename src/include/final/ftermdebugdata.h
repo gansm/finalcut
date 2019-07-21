@@ -40,6 +40,8 @@ namespace finalcut
 
 // class forward declaration
 class FTerm;
+class FTermData;
+class FTermDetection;
 
 #if DEBUG
 //----------------------------------------------------------------------
@@ -79,33 +81,6 @@ class FTermDebugData final
     static FTermData*      data;
     static FTermDetection* term_detection;
 };
-
-//----------------------------------------------------------------------
-inline const FString& FTermDebugData::getAnswerbackString()
-{ return term_detection->getAnswerbackString(); }
-
-//----------------------------------------------------------------------
-inline const FString& FTermDebugData::getSecDAString()
-{ return term_detection->getSecDAString(); }
-
-//----------------------------------------------------------------------
-inline const char* FTermDebugData::getTermType_256color()
-{ return term_detection->getTermType_256color(); }
-
-//----------------------------------------------------------------------
-inline const char* FTermDebugData::getTermType_Answerback()
-{ return term_detection->getTermType_Answerback(); }
-
-//----------------------------------------------------------------------
-inline const char* FTermDebugData::getTermType_SecDA()
-{ return term_detection->getTermType_SecDA(); }
-
-//----------------------------------------------------------------------
-#if defined(__linux__)
-inline int FTermDebugData::getFramebufferBpp()
-{ return data->getFramebufferBpp(); }
-#endif  // defined(__linux__)
-
 #endif  // DEBUG
 
 }  // namespace finalcut

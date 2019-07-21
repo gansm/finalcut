@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermopenbsd.h"
 

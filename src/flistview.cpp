@@ -27,11 +27,16 @@
 #include <memory>
 #include <vector>
 
+#include "final/emptyfstring.h"
 #include "final/fapplication.h"
+#include "final/fcolorpair.h"
+#include "final/fevent.h"
 #include "final/flistview.h"
 #include "final/fscrollbar.h"
 #include "final/fstatusbar.h"
+#include "final/fstring.h"
 #include "final/ftermbuffer.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {

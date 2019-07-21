@@ -54,6 +54,7 @@
 #endif
 
 #include "final/fscrollview.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {

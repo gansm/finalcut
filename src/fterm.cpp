@@ -25,8 +25,37 @@
 #include <string>
 #include <vector>
 
-#include "final/fterm.h"
+#include "final/fc.h"
 #include "final/fcharmap.h"
+#include "final/fcolorpalette.h"
+#include "final/fkey_map.h"
+#include "final/fkeyboard.h"
+#include "final/fmouse.h"
+#include "final/foptiattr.h"
+#include "final/foptimove.h"
+#include "final/fstring.h"
+#include "final/fsystem.h"
+#include "final/fsystemimpl.h"
+#include "final/fterm.h"
+#include "final/ftermcap.h"
+#include "final/ftermcapquirks.h"
+#include "final/ftermdata.h"
+#include "final/ftermdebugdata.h"
+#include "final/ftermdetection.h"
+#include "final/ftermios.h"
+#include "final/ftermxterminal.h"
+
+#if defined(UNIT_TEST)
+  #include "final/ftermlinux.h"
+  #include "final/ftermfreebsd.h"
+  #include "final/ftermopenbsd.h"
+#elif defined(__linux__)
+  #include "final/ftermlinux.h"
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
+  #include "final/ftermfreebsd.h"
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
+  #include "final/ftermopenbsd.h"
+#endif
 
 namespace finalcut
 {
@@ -42,34 +71,33 @@ int (*FTerm::Fputchar)(int);
 
 // static class attributes
 FTerm::initializationValues FTerm::init_values;
-FTermData*          FTerm::data           = nullptr;
-FSystem*            FTerm::fsys           = nullptr;
-FOptiMove*          FTerm::opti_move      = nullptr;
-FOptiAttr*          FTerm::opti_attr      = nullptr;
-FTermDetection*     FTerm::term_detection = nullptr;
-FTermXTerminal*     FTerm::xterm          = nullptr;
-FKeyboard*          FTerm::keyboard       = nullptr;
-FMouseControl*      FTerm::mouse          = nullptr;
+FTermData*      FTerm::data           = nullptr;
+FSystem*        FTerm::fsys           = nullptr;
+FOptiMove*      FTerm::opti_move      = nullptr;
+FOptiAttr*      FTerm::opti_attr      = nullptr;
+FTermDetection* FTerm::term_detection = nullptr;
+FTermXTerminal* FTerm::xterm          = nullptr;
+FKeyboard*      FTerm::keyboard       = nullptr;
+FMouseControl*  FTerm::mouse          = nullptr;
 
 #if defined(UNIT_TEST)
-  FTermLinux* FTerm::linux = nullptr;
-  FTermFreeBSD* FTerm::freebsd = nullptr;
-  FTermOpenBSD* FTerm::openbsd = nullptr;
+  FTermLinux*   FTerm::linux          = nullptr;
+  FTermFreeBSD* FTerm::freebsd        = nullptr;
+  FTermOpenBSD* FTerm::openbsd        = nullptr;
 #elif defined(__linux__)
-  FTermLinux* FTerm::linux = nullptr;
+  FTermLinux*   FTerm::linux          = nullptr;
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
-  FTermFreeBSD* FTerm::freebsd = nullptr;
+  FTermFreeBSD* FTerm::freebsd        = nullptr;
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
-  FTermOpenBSD* FTerm::openbsd = nullptr;
+  FTermOpenBSD* FTerm::openbsd        = nullptr;
 #endif
 
 #if DEBUG
-  FTermDebugData* FTerm::debug_data = nullptr;
+  FTermDebugData* FTerm::debug_data   = nullptr;
 #endif
 
 // function prototypes
 uInt env2uint (const char*);
-
 
 //----------------------------------------------------------------------
 // class FTerm
@@ -121,9 +149,411 @@ const FString FTerm::getKeyName (FKey keynum)
 }
 
 //----------------------------------------------------------------------
+charSubstitution& FTerm::getCharSubstitutionMap()
+{
+  return data->getCharSubstitutionMap();
+}
+
+//----------------------------------------------------------------------
+int FTerm::getTTYFileDescriptor()
+{
+  return ( data ) ? data->getTTYFileDescriptor() : 0;
+}
+
+//----------------------------------------------------------------------
+char* FTerm::getTermType()
+{
+  return data->getTermType();
+}
+
+//----------------------------------------------------------------------
+char* FTerm::getTermFileName()
+{
+  return data->getTermFileName();
+}
+
+//----------------------------------------------------------------------
+int FTerm::getTabstop()
+{
+  return FTermcap::tabstop;
+}
+
+//----------------------------------------------------------------------
+int FTerm::getMaxColor()
+{
+  return FTermcap::max_color;
+}
+
+//----------------------------------------------------------------------
+FTermData* FTerm::getFTermData()
+{
+  if ( data == 0 )
+  {
+    try
+    {
+      data = new FTermData;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return data;
+}
+
+//----------------------------------------------------------------------
+FSystem* FTerm::getFSystem()
+{
+  if ( fsys == 0 )
+  {
+    try
+    {
+      fsys = new FSystemImpl;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return fsys;
+}
+
+//----------------------------------------------------------------------
+FOptiMove* FTerm::getFOptiMove()
+{
+  if ( opti_move == 0 )
+  {
+    try
+    {
+      opti_move = new FOptiMove;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return opti_move;
+}
+
+//----------------------------------------------------------------------
+FOptiAttr* FTerm::getFOptiAttr()
+{
+  if ( opti_attr == 0 )
+  {
+    try
+    {
+      opti_attr = new FOptiAttr;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return opti_attr;
+}
+
+//----------------------------------------------------------------------
+FTermDetection* FTerm::getFTermDetection()
+{
+  if ( term_detection == 0 )
+  {
+    try
+    {
+      term_detection = new FTermDetection;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return term_detection;
+}
+
+//----------------------------------------------------------------------
+FTermXTerminal* FTerm::getFTermXTerminal()
+{
+  if ( xterm == 0 )
+  {
+    try
+    {
+      xterm = new FTermXTerminal;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return xterm;
+}
+
+//----------------------------------------------------------------------
+FKeyboard* FTerm::getFKeyboard()
+{
+  if ( keyboard == 0 )
+  {
+    try
+    {
+      keyboard = new FKeyboard;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return keyboard;
+}
+
+//----------------------------------------------------------------------
+FMouseControl* FTerm::getFMouseControl()
+{
+  if ( mouse == 0 )
+  {
+    try
+    {
+      mouse = new FMouseControl;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return mouse;
+}
+
+#if defined(__linux__)
+//----------------------------------------------------------------------
+FTermLinux* FTerm::getFTermLinux()
+{
+  if ( linux == 0 )
+  {
+    try
+    {
+      linux = new FTermLinux;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return linux;
+}
+
+#elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
+//----------------------------------------------------------------------
+FTermFreeBSD* FTerm::getFTermFreeBSD()
+{
+  if ( freebsd == 0 )
+  {
+    try
+    {
+      freebsd = new FTermFreeBSD;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return freebsd;
+}
+
+#elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
+//----------------------------------------------------------------------
+FTermOpenBSD* FTerm::getFTermOpenBSD()
+{
+  if ( openbsd == 0 )
+  {
+    try
+    {
+      openbsd = new FTermOpenBSD;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return openbsd;
+}
+#endif
+
+#if DEBUG
+//----------------------------------------------------------------------
+FTermDebugData& FTerm::getFTermDebugData()
+{
+  if ( debug_data == 0 )
+  {
+    try
+    {
+      debug_data = new FTermDebugData;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return *debug_data;
+}
+#endif  // DEBUG
+
+//----------------------------------------------------------------------
 bool FTerm::isNormal (charData*& ch)
 {
   return opti_attr->isNormal(ch);
+}
+
+//----------------------------------------------------------------------
+bool FTerm::hasUTF8()
+{
+  return data->hasUTF8Console();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isMonochron()
+{
+  return data->isMonochron();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isXTerminal()
+{
+  return term_detection->isXTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isAnsiTerminal()
+{
+  return term_detection->isAnsiTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isRxvtTerminal()
+{
+  return term_detection->isRxvtTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isUrxvtTerminal()
+{
+  return term_detection->isUrxvtTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isMltermTerminal()
+{
+  return term_detection->isMltermTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isPuttyTerminal()
+{
+  return term_detection->isPuttyTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isKdeTerminal()
+{
+  return term_detection->isKdeTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isGnomeTerminal()
+{
+  return term_detection->isGnomeTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isKtermTerminal()
+{
+  return term_detection->isKtermTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isTeraTerm()
+{
+  return term_detection->isTeraTerm();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isSunTerminal()
+{
+  return term_detection->isSunTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isCygwinTerminal()
+{
+  return term_detection->isCygwinTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isMinttyTerm()
+{
+  return term_detection->isMinttyTerm();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isLinuxTerm()
+{
+  return term_detection->isLinuxTerm();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isFreeBSDTerm()
+{
+  return term_detection->isFreeBSDTerm();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isNetBSDTerm()
+{
+  return term_detection->isNetBSDTerm();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isOpenBSDTerm()
+{
+  return term_detection->isOpenBSDTerm();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isScreenTerm()
+{
+  return term_detection->isScreenTerm();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isTmuxTerm()
+{
+  return term_detection->isTmuxTerm();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isNewFont()
+{
+  return data->isNewFont();
 }
 
 //----------------------------------------------------------------------
@@ -135,6 +565,30 @@ bool FTerm::isCursorHideable()
     return true;
 
   return false;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::hasChangedTermSize()
+{
+  return data->hasTermResized();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::hasShadowCharacter()
+{
+  return data->hasShadowCharacter();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::hasHalfBlockCharacter()
+{
+  return data->hasHalfBlockCharacter();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::hasAlternateScreen()
+{
+  return data->hasAlternateScreen();
 }
 
 //----------------------------------------------------------------------
@@ -918,6 +1372,12 @@ char* FTerm::changeAttribute ( charData*& term_attr
 }
 
 //----------------------------------------------------------------------
+void FTerm::changeTermSizeFinished()
+{
+  data->setTermResized(false);
+}
+
+//----------------------------------------------------------------------
 void FTerm::exitWithMessage (const FString& message)
 {
   // Exit the programm
@@ -1129,7 +1589,7 @@ void FTerm::init_cygwin_charmap()
   }
 
   // General encoding changes
-  characterSub& sub_map = data->getCharSubstitutionMap();
+  charSubstitution& sub_map = data->getCharSubstitutionMap();
   sub_map[L'•'] = L'*';
   sub_map[L'●'] = L'*';
   sub_map[L'◘'] = L'*';

@@ -57,8 +57,6 @@
 #include <stack>
 #include <vector>
 
-#include "final/fscrollbar.h"
-#include "final/fstring.h"
 #include "final/ftermbuffer.h"
 #include "final/fwidget.h"
 
@@ -67,6 +65,8 @@ namespace finalcut
 
 // class forward declaration
 class FListView;
+class FScrollbar;
+class FString;
 
 //----------------------------------------------------------------------
 // class FListViewItem

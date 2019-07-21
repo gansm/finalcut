@@ -55,14 +55,13 @@
 #include <memory>
 #include <vector>
 
-#include "final/fapplication.h"
-#include "final/fscrollbar.h"
-#include "final/fstatusbar.h"
-#include "final/fstring.h"
 #include "final/fwidget.h"
 
 namespace finalcut
 {
+
+// class forward declaration
+class FString;
 
 //----------------------------------------------------------------------
 // class FTextView
