@@ -204,7 +204,7 @@ class FTerm final
 #endif
 
 #if DEBUG
-    FTermDebugData&        getFTermDebugData();
+    static FTermDebugData& getFTermDebugData();
 #endif
 
     // Inquiries

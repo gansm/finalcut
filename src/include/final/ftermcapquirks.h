@@ -66,7 +66,7 @@ class FTermcapQuirks final
 
   private:
     // Methods
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
     static void freebsd();
 #endif
     static void cygwin();

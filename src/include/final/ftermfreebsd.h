@@ -37,7 +37,27 @@
 
 #include "final/fc.h"
 
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(UNIT_TEST)
+  #define CONS_CURSORTYPE 0x80046307
+  #define GIO_KEYMAP      0x20006b06
+  #define PIO_KEYMAP      0x20006b07
+  #define META            0x84  // Meta key
+  #define NUM_KEYS        256   // Number of keys in table
+  #define NUM_STATES      8     // States per key
+
+  struct keyent_t
+  {
+    int map[NUM_STATES];
+    int spcl;
+    int flgs;
+  };
+
+  struct keymap_t
+  {
+    int n_keys;
+    struct keyent_t key[NUM_KEYS];
+  };
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
   #undef mouse_info  // consio.h
   #undef buttons     // consio.h
 
@@ -89,6 +109,8 @@ class FTermFreeBSD final
     static void        disableChangeCursorStyle();
     static void        enableMetaSendsEscape();
     static void        disableMetaSendsEscape();
+    static void        setBeep (int, int);
+    static void        resetBeep();
 
     // Methods
     static void        init();
@@ -118,7 +140,7 @@ inline const char* FTermFreeBSD::getClassName() const
 { return "FTermFreeBSD"; }
 
 //----------------------------------------------------------------------
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 inline void FTermFreeBSD::enableChangeCursorStyle()
 { change_cursorstyle = true; }
 
@@ -133,7 +155,7 @@ inline void FTermFreeBSD::enableMetaSendsEscape()
 //----------------------------------------------------------------------
 inline void FTermFreeBSD::disableMetaSendsEscape()
 { meta_sends_escape = false; }
-#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 
 }  // namespace finalcut
 

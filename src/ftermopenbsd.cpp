@@ -46,7 +46,7 @@ bool FTermOpenBSD::isBSDConsole()
 {
   // Check if it's a NetBSD/OpenBSD workstation console
 
-  static kbd_t kbdencoding;
+  static kbd_t kbdencoding{};
 
   if ( fsystem
     && fsystem->ioctl(0, WSKBDIO_GETENCODING, &kbdencoding) == 0 )
@@ -90,7 +90,7 @@ void FTermOpenBSD::finish()
 //----------------------------------------------------------------------
 bool FTermOpenBSD::saveBSDConsoleEncoding()
 {
-  static kbd_t k_encoding;
+  static kbd_t k_encoding{};
   int ret = -1;
 
   if ( fsystem )

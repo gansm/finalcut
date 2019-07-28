@@ -384,7 +384,7 @@ void FTermXTerminal::setXTermCursorStyle()
 {
   // Set the xterm cursor style
 
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   if ( FTermFreeBSD::isFreeBSDConsole() )
     return;
 #endif

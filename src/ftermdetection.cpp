@@ -30,6 +30,10 @@
 #include "final/ftermios.h"
 #include "final/ftypes.h"
 
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
+  #include "final/ftermfreebsd.h"
+#endif
+
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
   #include "final/ftermopenbsd.h"
 #endif
@@ -846,7 +850,7 @@ inline char* FTermDetection::secDA_Analysis_0 (char current_termtype[])
   else if ( secondary_da.terminal_id_version == 136 )
     terminal_type.putty = true;  // PuTTY
 
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   if ( FTermFreeBSD::isFreeBSDConsole() )
     terminal_type.freebsd_con = true;
 #endif

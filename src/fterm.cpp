@@ -918,13 +918,13 @@ char* FTerm::enableCursor()
 
   enable_str[SIZE - 1] = '\0';
 
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   if ( isFreeBSDTerm() )
   {
     // Restore the last used FreeBSD console cursor style
     freebsd->restoreCursorStyle();
   }
-#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 
   return enable_str;
 }
@@ -1093,6 +1093,11 @@ void FTerm::setBeep (int Hz, int ms)
 {
   linux->setBeep (Hz, ms);
 }
+#elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
+void FTerm::setBeep (int Hz, int ms)
+{
+  freebsd->setBeep (Hz, ms);
+}
 #else
 void FTerm::setBeep (int, int)
 { }
@@ -1103,6 +1108,8 @@ void FTerm::resetBeep()
 {
 #if defined(__linux__)
   linux->resetBeep();
+#elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
+  freebsd->resetBeep();
 #endif
 }
 
@@ -1353,7 +1360,7 @@ void FTerm::initScreenSettings()
   // Important: Do not use setNewFont() or setVGAFont() after
   //            the console character mapping has been initialized
   linux->initCharMap (fc::character);
-#elif defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   freebsd->initCharMap (fc::character);
 #endif
 
@@ -2005,7 +2012,7 @@ void FTerm::setInsertCursorStyle()
                                              , data->isCursorHidden() );
   putstring (cstyle);
   std::fflush(stdout);
-#elif defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   freebsd->setCursorStyle ( fc::destructive_cursor
                           , data->isCursorHidden() );
 #endif
@@ -2025,7 +2032,7 @@ void FTerm::setOverwriteCursorStyle()
                                        , data->isCursorHidden() );
   putstring (cstyle);
   std::fflush(stdout);
-#elif defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   freebsd->setCursorStyle ( fc::normal_cursor
                           , data->isCursorHidden() );
 #endif
@@ -2193,7 +2200,7 @@ inline void FTerm::allocationValues()
 
 #if defined(__linux__)
     linux          = new FTermLinux();
-#elif defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
     freebsd        = new FTermFreeBSD();
 #elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
     openbsd        = new FTermOpenBSD();
@@ -2221,7 +2228,7 @@ inline void FTerm::deallocationValues()
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
   if ( openbsd )
     delete openbsd;
-#elif defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   if ( freebsd )
     delete freebsd;
 #elif defined(__linux__)
@@ -2376,7 +2383,7 @@ void FTerm::initOSspecifics()
 
 #endif  // defined(__linux__)
 
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   if ( init_values.meta_sends_escape )
     freebsd->enableMetaSendsEscape();
   else
@@ -2497,7 +2504,7 @@ void FTerm::finishOSspecifics1()
 {
 #if defined(__linux__)
   linux->finish();
-#elif defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   freebsd->finish();
 #elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
   openbsd->finish();

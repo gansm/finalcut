@@ -787,7 +787,7 @@ inline char* ConEmu::getSEC_DA (console con)
     C_STR("\033[>67;200502;0c"),  // Cygwin
     C_STR("\033[>77;20402;0c"),   // Mintty
     0,                            // Linux console
-    0,                            // FreeBSD console
+    C_STR("\033[>0;10;0c"),       // FreeBSD console
     C_STR("\033[>24;20;0c"),      // NetBSD console
     C_STR("\033[>24;20;0c"),      // OpenBSD console
     0,                            // Sun console

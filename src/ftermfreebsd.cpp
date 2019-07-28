@@ -30,7 +30,7 @@ namespace finalcut
 {
 
 // static class attributes
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   uInt                      FTermFreeBSD::bsd_alt_keymap = 0;
   FTermFreeBSD::CursorStyle FTermFreeBSD::cursor_style = fc::normal_cursor;
   bool                      FTermFreeBSD::change_cursorstyle = true;
@@ -45,7 +45,7 @@ namespace finalcut
 
 // public methods of FTermFreeBSD
 //----------------------------------------------------------------------
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 FTermFreeBSD::CursorStyle FTermFreeBSD::getCursorStyle()
 {
   return cursor_style;
@@ -72,7 +72,7 @@ bool FTermFreeBSD::isFreeBSDConsole()
 {
   // Check if it's a FreeBSD console
 
-  keymap_t keymap;
+  keymap_t keymap{};
 
   if ( fsystem && fsystem->ioctl(0, GIO_KEYMAP, &keymap) == 0 )
     return true;
@@ -81,14 +81,47 @@ bool FTermFreeBSD::isFreeBSDConsole()
 }
 
 //----------------------------------------------------------------------
+void FTermFreeBSD::setBeep (int Hz, int ms)
+{
+  if ( ! FTerm::isFreeBSDTerm() )
+    return;
+
+  // range for frequency: 21-32766
+  if ( Hz < 21 || Hz > 32766 )
+    return;
+
+  // range for duration:  0-1999
+  if ( ms < 0 || ms > 1999 )
+    return;
+
+  constexpr int timer_frequency = 1193182;
+  int period = timer_frequency / Hz;
+  ms /= 10;
+  FTerm::putstringf ( CSI "=%d;%dB", period, ms );
+  std::fflush(stdout);
+}
+
+//----------------------------------------------------------------------
+void FTermFreeBSD::resetBeep()
+{
+  if ( ! FTerm::isFreeBSDTerm() )
+    return;
+
+  // default frequency: 1491 Hz
+  // default duration:  50 ms
+  FTerm::putstring ( CSI "=800;5B" );
+  std::fflush(stdout);
+}
+
+//----------------------------------------------------------------------
 void FTermFreeBSD::init()
 {
   // initialize BSD console
 
+  fsystem = FTerm::getFSystem();
+
   if ( ! isFreeBSDConsole() )
     return;
-
-  fsystem = FTerm::getFSystem();
 
   if ( meta_sends_escape )
   {
@@ -149,7 +182,7 @@ bool FTermFreeBSD::saveFreeBSDAltKey()
 
   static constexpr int left_alt = 0x38;
   int ret = -1;
-  keymap_t keymap;
+  keymap_t keymap{};
 
   if ( fsystem )
     ret = fsystem->ioctl (0, GIO_KEYMAP, &keymap);
@@ -169,7 +202,7 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
 
   static constexpr int left_alt = 0x38;
   int ret = -1;
-  keymap_t keymap;
+  keymap_t keymap{};
 
   if ( fsystem )
     ret = fsystem->ioctl (0, GIO_KEYMAP, &keymap);
@@ -177,7 +210,7 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
   if ( ret < 0 )
     return false;
 
-  // map to meta key
+  // Mapping "key" on the left alt key
   keymap.key[left_alt].map[0] = key;
 
   if ( (keymap.n_keys > 0)
@@ -202,6 +235,6 @@ bool FTermFreeBSD::resetFreeBSDAlt2Meta()
 
   return setFreeBSDAltKey (bsd_alt_keymap);
 }
-#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 
 }  // namespace finalcut

@@ -2083,8 +2083,6 @@ void FTermLinuxTest::linuxFontTest()
   term_detection = finalcut::FTerm::getFTermDetection();
   finalcut::FTermLinux linux;
 
-  term_detection->setLinuxTerm(true);
-
   pid_t pid = forkConEmu();
 
   if ( isConEmuChildProcess(pid) )

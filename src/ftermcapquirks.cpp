@@ -92,12 +92,12 @@ void FTermcapQuirks::terminalFixup()
   {
     screen();
   }
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   else if ( td->isFreeBSDTerm() )
   {
     freebsd();
   }
-#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 
   // xterm and compatible terminals
   if ( td->isXTerminal() && ! td->isPuttyTerminal() )
@@ -112,7 +112,7 @@ void FTermcapQuirks::terminalFixup()
 
 // private methods of FTermcapQuirks
 //----------------------------------------------------------------------
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 void FTermcapQuirks::freebsd()
 {
   // FreeBSD console fixes
@@ -136,7 +136,7 @@ void FTermcapQuirks::freebsd()
 
   FTermcap::attr_without_color = 18;
 }
-#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 
 //----------------------------------------------------------------------
 void FTermcapQuirks::cygwin()

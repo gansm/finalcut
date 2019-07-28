@@ -153,14 +153,12 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     }
 
     case TIOCGWINSZ:
-    {
       req_string = "TIOCGWINSZ";
       struct winsize* win_size = static_cast<winsize*>(argp);
       win_size->ws_col = 80;
       win_size->ws_row = 25;
       ret_val = 0;
       break;
-    }
   }
 
   va_end (args);
@@ -342,6 +340,12 @@ void ftermopenbsdTest::netbsdConsoleTest()
     term_detection->detect();
     finalcut::FTerm::detectTermSize();
 
+#if DEBUG
+    const finalcut::FString& sec_da = \
+        finalcut::FTerm::getFTermDebugData().getSecDAString();
+    CPPUNIT_ASSERT ( sec_da == "\033[>24;20;0c" );
+#endif
+
     CPPUNIT_ASSERT ( isatty(0) == 1 );
     CPPUNIT_ASSERT ( ! term_detection->isOpenBSDTerm() );
     CPPUNIT_ASSERT ( term_detection->isNetBSDTerm() );
@@ -440,6 +444,12 @@ void ftermopenbsdTest::openbsdConsoleTest()
     openbsd.init();
     term_detection->detect();
     finalcut::FTerm::detectTermSize();
+
+#if DEBUG
+    const finalcut::FString& sec_da = \
+        finalcut::FTerm::getFTermDebugData().getSecDAString();
+    CPPUNIT_ASSERT ( sec_da == "\033[>24;20;0c" );
+#endif
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
     CPPUNIT_ASSERT ( term_detection->isOpenBSDTerm() );
