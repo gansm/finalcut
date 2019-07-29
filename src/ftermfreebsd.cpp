@@ -52,19 +52,22 @@ FTermFreeBSD::CursorStyle FTermFreeBSD::getCursorStyle()
 }
 
 //----------------------------------------------------------------------
-void FTermFreeBSD::setCursorStyle (CursorStyle style, bool hidden)
+bool FTermFreeBSD::setCursorStyle (CursorStyle style, bool hidden)
 {
   // Set cursor style in a BSD console
 
   if ( ! fsystem || ! isFreeBSDConsole() || ! change_cursorstyle )
-    return;
+    return false;
 
   cursor_style = style;
 
   if ( hidden )
-    return;
+    return false;
 
-  fsystem->ioctl (0, CONS_CURSORTYPE, &style);
+  if ( fsystem->ioctl(0, CONS_CURSORTYPE, &style) == 0 )
+    return true;
+  else
+    return false;
 }
 
 //----------------------------------------------------------------------

@@ -64,10 +64,10 @@ FVTerm::term_area*   FVTerm::vterm         = nullptr;
 FVTerm::term_area*   FVTerm::vdesktop      = nullptr;
 FVTerm::term_area*   FVTerm::active_area   = nullptr;
 FKeyboard*           FVTerm::keyboard      = nullptr;
-charData             FVTerm::term_attribute;
-charData             FVTerm::next_attribute;
-charData             FVTerm::s_ch;
-charData             FVTerm::i_ch;
+charData             FVTerm::term_attribute{};
+charData             FVTerm::next_attribute{};
+charData             FVTerm::s_ch{};
+charData             FVTerm::i_ch{};
 
 
 //----------------------------------------------------------------------
@@ -1676,7 +1676,9 @@ charData FVTerm::generateCharacter (const FPoint& pos)
         if ( tmp->attr.bit.trans_shadow )  // Transparent shadow
         {
           // Keep the current vterm character
-          std::memcpy (&s_ch, sc, sizeof(s_ch));
+          if ( sc != &s_ch )
+            std::memcpy (&s_ch, sc, sizeof(s_ch));
+
           s_ch.fg_color = tmp->fg_color;
           s_ch.bg_color = tmp->bg_color;
           s_ch.attr.bit.reverse  = false;

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -67,6 +67,13 @@ FString::FString (const FString& s)  // copy constructor
 {
   if ( ! s.isNull() )
     _assign (s.string);
+}
+
+//----------------------------------------------------------------------
+FString::FString (FString&& s)  // move constructor
+{
+  if ( ! s.isNull() )
+    _assign (std::move(s.string));
 }
 
 //----------------------------------------------------------------------
@@ -157,6 +164,13 @@ FString::~FString()  // destructor
 FString& FString::operator = (const FString& s)
 {
   _assign (s.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::operator = (FString&& s)
+{
+  _assign (std::move(s.string));
   return *this;
 }
 

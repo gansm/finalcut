@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -89,6 +89,7 @@ class FString
     explicit FString (std::size_t);
     FString (std::size_t, wchar_t);
     FString (const FString&);        // implicit conversion copy constructor
+    FString (FString&&);             // implicit conversion move constructor
     FString (const std::wstring&);   // implicit conversion constructor
     FString (const wchar_t[]);       // implicit conversion constructor
     FString (const std::string&);    // implicit conversion constructor
@@ -102,6 +103,7 @@ class FString
 
     // Overloaded operators
     FString& operator = (const FString&);
+    FString& operator = (FString&&);
 
     const FString& operator += (const FString&);
 

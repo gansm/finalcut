@@ -380,6 +380,8 @@ void ftermopenbsdTest::netbsdConsoleTest()
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
+
+  delete fsys;
 }
 
 //----------------------------------------------------------------------
@@ -486,6 +488,8 @@ void ftermopenbsdTest::openbsdConsoleTest()
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
+
+  delete fsys;
 }
 
 

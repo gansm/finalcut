@@ -716,6 +716,8 @@ void ftermfreebsdTest::freebsdConsoleTest()
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
+
+  delete fsys;
 }
 
 

@@ -1108,7 +1108,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
         fn->height    = terminal_font.height;
         fn->charcount = terminal_font.charcount;
 
-        if ( fn->data )
+        if ( fn->data && terminal_font.data )
           std::memcpy (fn->data, terminal_font.data, font_data_size);
 
         terminal_font.op = KD_FONT_OP_GET;
@@ -1121,7 +1121,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
         terminal_font.height    = fn->height;
         terminal_font.charcount = fn->charcount;
 
-        if ( fn->data )
+        if ( fn->data && terminal_font.data )
           std::memcpy (terminal_font.data, fn->data, font_data_size);
 
         terminal_font.op = KD_FONT_OP_SET;
@@ -1620,6 +1620,7 @@ void FTermLinuxTest::linuxConsoleTest()
   }
 
   linux.finish();
+  delete fsys;
 }
 
 //----------------------------------------------------------------------
@@ -1761,6 +1762,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
   }
 
   linux.finish();
+  delete fsys;
 }
 
 //----------------------------------------------------------------------
@@ -2037,6 +2039,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
   }
 
   linux.finish();
+  delete fsys;
 }
 
 //----------------------------------------------------------------------
@@ -2180,6 +2183,7 @@ void FTermLinuxTest::linuxFontTest()
   }
 
   linux.finish();
+  delete fsys;
 }
 
 //----------------------------------------------------------------------
@@ -2651,6 +2655,7 @@ void FTermLinuxTest::modifierKeyTest()
   mod_key.shift = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_space );
+  delete fsys;
 }
 
 // Put the test suite in the registry

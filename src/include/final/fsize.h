@@ -62,6 +62,7 @@ class FSize
 
     // Overloaded operators
     FSize& operator =  (const FSize&);
+    FSize& operator =  (FSize&&);
     FSize& operator += (const FSize&);
     FSize& operator -= (const FSize&);
 

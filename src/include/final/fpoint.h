@@ -60,6 +60,7 @@ class FPoint
 
     // Overloaded operators
     FPoint& operator =  (const FPoint&);
+    FPoint& operator =  (FPoint&&);
     FPoint& operator += (const FPoint&);
     FPoint& operator -= (const FPoint&);
 

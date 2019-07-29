@@ -70,6 +70,7 @@ class FRect
 
     // Overloaded operators
     FRect& operator = (const FRect&);
+    FRect& operator = (FRect&&);
 
     friend FRect operator +  (const FRect&, const FSize&);
     friend FRect operator -  (const FRect&, const FSize&);

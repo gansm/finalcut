@@ -307,6 +307,16 @@ FRect& FRect::operator = (const FRect& r)
 }
 
 //----------------------------------------------------------------------
+FRect& FRect::operator = (FRect&& r)
+{
+  X1 = std::move(r.getX1());
+  Y1 = std::move(r.getY1());
+  X2 = std::move(r.getX2());
+  Y2 = std::move(r.getY2());
+  return *this;
+}
+
+//----------------------------------------------------------------------
 FRect operator + (const FRect& r, const FSize& s)
 {
   return FRect ( r.X1

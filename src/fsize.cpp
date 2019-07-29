@@ -42,6 +42,14 @@ FSize& FSize::operator = (const FSize& s)
 }
 
 //----------------------------------------------------------------------
+FSize& FSize::operator = (FSize&& s)
+{
+  width = std::move(s.width);
+  height = std::move(s.height);
+  return *this;
+}
+
+//----------------------------------------------------------------------
 FSize& FSize::operator += (const FSize& s)
 {
   constexpr std::size_t max = std::numeric_limits<std::size_t>::max();

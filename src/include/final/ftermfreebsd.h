@@ -104,7 +104,7 @@ class FTermFreeBSD final
     static bool        isFreeBSDConsole();
 
     // Mutators
-    static void        setCursorStyle (CursorStyle, bool);
+    static bool        setCursorStyle (CursorStyle, bool);
     static void        enableChangeCursorStyle();
     static void        disableChangeCursorStyle();
     static void        enableMetaSendsEscape();
