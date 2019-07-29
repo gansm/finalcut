@@ -77,6 +77,9 @@ bool FTermFreeBSD::isFreeBSDConsole()
 
   keymap_t keymap{};
 
+  if ( ! fsystem )
+    fsystem = FTerm::getFSystem();
+
   if ( fsystem && fsystem->ioctl(0, GIO_KEYMAP, &keymap) == 0 )
     return true;
   else

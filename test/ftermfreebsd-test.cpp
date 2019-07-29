@@ -67,6 +67,7 @@ class FSystemTest : public finalcut::FSystem
     virtual uid_t    getuid() override;
     std::string&     getCharacters();
     int&             getCursorType();
+    struct keymap_t& getTerminalKeymap();
 
   private:
     // Data Members
@@ -544,7 +545,11 @@ int& FSystemTest::getCursorType()
   return cursor_type;
 }
 
-
+//----------------------------------------------------------------------
+struct keymap_t& FSystemTest::getTerminalKeymap()
+{
+  return terminal_keymap;
+}
 
 
 }  // namespace test
@@ -641,7 +646,10 @@ void ftermfreebsdTest::freebsdConsoleTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    static constexpr int left_alt = 0x38;
     finalcut::FTermFreeBSD freebsd;
+    test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
+    struct keymap_t& keymap = fsystest->getTerminalKeymap();
 
     setenv ("TERM", "xterm", 1);
     setenv ("COLUMNS", "80", 1);
@@ -657,10 +665,73 @@ void ftermfreebsdTest::freebsdConsoleTest()
     unsetenv("TMUX");
 
     finalcut::FTerm::detectTermSize();
+    CPPUNIT_ASSERT ( keymap.key[left_alt].map[0] == 0 );
+    CPPUNIT_ASSERT ( freebsd.isFreeBSDConsole() );
+    CPPUNIT_ASSERT ( keymap.key[left_alt].map[0] == 7 );
+    CPPUNIT_ASSERT ( freebsd.getCursorStyle() == finalcut::fc::normal_cursor );
+    freebsd.disableMetaSendsEscape();
+    freebsd.disableChangeCursorStyle();
+    freebsd.init();
+    CPPUNIT_ASSERT ( keymap.key[left_alt].map[0] == 7 );
+    std::cerr << "cursur style: " << freebsd.getCursorStyle() << "\n";
+    CPPUNIT_ASSERT ( freebsd.getCursorStyle() == finalcut::fc::normal_cursor );
     freebsd.enableMetaSendsEscape();
     freebsd.enableChangeCursorStyle();
     freebsd.init();
+    CPPUNIT_ASSERT ( keymap.key[left_alt].map[0] == META );
+    CPPUNIT_ASSERT ( freebsd.getCursorStyle() == finalcut::fc::destructive_cursor );
+    freebsd.setCursorStyle(finalcut::fc::blink_cursor, false);
+    freebsd.restoreCursorStyle();
+    CPPUNIT_ASSERT ( freebsd.getCursorStyle() == finalcut::fc::blink_cursor );
+
+
+    for (std::size_t i = 0; i <= finalcut::fc::lastCharItem; i++)
+      if ( finalcut::fc::character[i][finalcut::fc::PC] < 0x1c )
+        std::cerr << i << ":" << finalcut::fc::character[i][finalcut::fc::PC] << ", ";
+
+    for (std::size_t i = 0; i <= finalcut::fc::lastCharItem; i++)
+      if ( finalcut::fc::character[i][finalcut::fc::PC] < 0x1c )
+        std::cerr << i << ":" << finalcut::fc::character[i][finalcut::fc::ASCII] << ", ";
+
+    CPPUNIT_ASSERT ( finalcut::fc::character[2][finalcut::fc::PC] == 21 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[3][finalcut::fc::PC] == 8 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[4][finalcut::fc::PC] == 10 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[5][finalcut::fc::PC] == 19 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[6][finalcut::fc::PC] == 18 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[8][finalcut::fc::PC] == 22 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[9][finalcut::fc::PC] == 24 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[10][finalcut::fc::PC] == 25 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[11][finalcut::fc::PC] == 26 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[12][finalcut::fc::PC] == 27 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[23][finalcut::fc::PC] == 4 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[25][finalcut::fc::PC] == 4 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[26][finalcut::fc::PC] == 4 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[57][finalcut::fc::PC] == 16 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[58][finalcut::fc::PC] == 17 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[59][finalcut::fc::PC] == 16 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[60][finalcut::fc::PC] == 17 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[105][finalcut::fc::PC] == 4 );
+    freebsd.initCharMap (finalcut::fc::character);
     term_detection->detect();
+
+    CPPUNIT_ASSERT ( finalcut::fc::character[2][finalcut::fc::PC] == 36 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[3][finalcut::fc::PC] == 42 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[4][finalcut::fc::PC] == 42 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[5][finalcut::fc::PC] == 33 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[6][finalcut::fc::PC] == 73 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[8][finalcut::fc::PC] == 95 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[9][finalcut::fc::PC] == 94 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[10][finalcut::fc::PC] == 118 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[11][finalcut::fc::PC] == 62 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[12][finalcut::fc::PC] == 60 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[23][finalcut::fc::PC] == 42 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[25][finalcut::fc::PC] == 42 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[26][finalcut::fc::PC] == 42 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[57][finalcut::fc::PC] == 62 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[58][finalcut::fc::PC] == 60 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[59][finalcut::fc::PC] == 62 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[60][finalcut::fc::PC] == 60 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[105][finalcut::fc::PC] == 42 );
 
 #if DEBUG
     const finalcut::FString& sec_da = \
@@ -675,7 +746,6 @@ void ftermfreebsdTest::freebsdConsoleTest()
     CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
     CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
 
-    test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
     freebsd.setCursorStyle (finalcut::fc::normal_cursor, false);
     CPPUNIT_ASSERT ( fsystest->getCursorType() == finalcut::fc::normal_cursor );
 

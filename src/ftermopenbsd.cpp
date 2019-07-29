@@ -48,6 +48,9 @@ bool FTermOpenBSD::isBSDConsole()
 
   static kbd_t kbdencoding{};
 
+  if ( ! fsystem )
+    fsystem = FTerm::getFSystem();
+
   if ( fsystem
     && fsystem->ioctl(0, WSKBDIO_GETENCODING, &kbdencoding) == 0 )
     return true;
