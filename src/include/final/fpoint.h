@@ -53,6 +53,7 @@ class FPoint
     // Constructors
     FPoint () = default;
     FPoint (const FPoint&);  // copy constructor
+    FPoint (FPoint&&);       // move constructor
     FPoint (int, int);
 
     // Destructor
@@ -102,6 +103,12 @@ inline FPoint::FPoint (const FPoint& p)  // copy constructor
   : xpos(p.xpos)
   , ypos(p.ypos)
 { }
+
+//----------------------------------------------------------------------
+inline FPoint::FPoint (FPoint&& p)  // move constructor
+  : xpos(p.xpos)
+  , ypos(p.ypos)
+{ p.xpos = p.ypos = 0; }
 
 //----------------------------------------------------------------------
 inline FPoint::FPoint (int x, int y)

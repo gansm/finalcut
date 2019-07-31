@@ -49,6 +49,7 @@ class FSizeTest : public CPPUNIT_NS::TestFixture
     void classNameTest();
     void noArgumentTest();
     void copyConstructorTest();
+    void moveConstructorTest();
     void assignmentTest();
     void additionAssignmentTest();
     void subtractionAssignmentTest();
@@ -71,6 +72,7 @@ class FSizeTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (copyConstructorTest);
+    CPPUNIT_TEST (moveConstructorTest);
     CPPUNIT_TEST (assignmentTest);
     CPPUNIT_TEST (additionAssignmentTest);
     CPPUNIT_TEST (subtractionAssignmentTest);
@@ -117,6 +119,18 @@ void FSizeTest::copyConstructorTest()
 }
 
 //----------------------------------------------------------------------
+void FSizeTest::moveConstructorTest()
+{
+  finalcut::FSize s1 (120, 36);
+  const finalcut::FSize s2 (std::move(s1));
+  CPPUNIT_ASSERT ( s1.getWidth() == 0 );
+  CPPUNIT_ASSERT ( s1.getHeight() == 0 );
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+  CPPUNIT_ASSERT ( s2.getWidth() == 120 );
+  CPPUNIT_ASSERT ( s2.getHeight() == 36 );
+}
+
+//----------------------------------------------------------------------
 void FSizeTest::assignmentTest()
 {
   const finalcut::FSize s1 (0,100);
@@ -145,11 +159,20 @@ void FSizeTest::assignmentTest()
   CPPUNIT_ASSERT ( s2.getWidth() == 5 );
   CPPUNIT_ASSERT ( s2.getHeight() == 4 );
 
+  // Move assignment operator
+  finalcut::FSize s3;
+  s3 = std::move(s2);
+  CPPUNIT_ASSERT ( s2.getWidth() == 0 );
+  CPPUNIT_ASSERT ( s2.getHeight() == 0 );
+  CPPUNIT_ASSERT ( s2.isEmpty() );
+  CPPUNIT_ASSERT ( s3.getWidth() == 5 );
+  CPPUNIT_ASSERT ( s3.getHeight() == 4 );
+
   // Value limit
-  const finalcut::FSize s3 ( std::numeric_limits<std::size_t>::min()
+  const finalcut::FSize s4 ( std::numeric_limits<std::size_t>::min()
                            , std::numeric_limits<std::size_t>::max() );
-  CPPUNIT_ASSERT ( s3.getWidth() == std::numeric_limits<std::size_t>::min() );
-  CPPUNIT_ASSERT ( s3.getHeight() == std::numeric_limits<std::size_t>::max() );
+  CPPUNIT_ASSERT ( s4.getWidth() == std::numeric_limits<std::size_t>::min() );
+  CPPUNIT_ASSERT ( s4.getHeight() == std::numeric_limits<std::size_t>::max() );
 }
 
 //----------------------------------------------------------------------

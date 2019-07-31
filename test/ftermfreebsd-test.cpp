@@ -684,15 +684,6 @@ void ftermfreebsdTest::freebsdConsoleTest()
     freebsd.restoreCursorStyle();
     CPPUNIT_ASSERT ( freebsd.getCursorStyle() == finalcut::fc::blink_cursor );
 
-
-    for (std::size_t i = 0; i <= finalcut::fc::lastCharItem; i++)
-      if ( finalcut::fc::character[i][finalcut::fc::PC] < 0x1c )
-        std::cerr << i << ":" << finalcut::fc::character[i][finalcut::fc::PC] << ", ";
-
-    for (std::size_t i = 0; i <= finalcut::fc::lastCharItem; i++)
-      if ( finalcut::fc::character[i][finalcut::fc::PC] < 0x1c )
-        std::cerr << i << ":" << finalcut::fc::character[i][finalcut::fc::ASCII] << ", ";
-
     CPPUNIT_ASSERT ( finalcut::fc::character[2][finalcut::fc::PC] == 21 );
     CPPUNIT_ASSERT ( finalcut::fc::character[3][finalcut::fc::PC] == 8 );
     CPPUNIT_ASSERT ( finalcut::fc::character[4][finalcut::fc::PC] == 10 );
@@ -711,8 +702,8 @@ void ftermfreebsdTest::freebsdConsoleTest()
     CPPUNIT_ASSERT ( finalcut::fc::character[59][finalcut::fc::PC] == 16 );
     CPPUNIT_ASSERT ( finalcut::fc::character[60][finalcut::fc::PC] == 17 );
     CPPUNIT_ASSERT ( finalcut::fc::character[105][finalcut::fc::PC] == 4 );
+
     freebsd.initCharMap (finalcut::fc::character);
-    term_detection->detect();
 
     CPPUNIT_ASSERT ( finalcut::fc::character[2][finalcut::fc::PC] == 36 );
     CPPUNIT_ASSERT ( finalcut::fc::character[3][finalcut::fc::PC] == 42 );
@@ -732,6 +723,8 @@ void ftermfreebsdTest::freebsdConsoleTest()
     CPPUNIT_ASSERT ( finalcut::fc::character[59][finalcut::fc::PC] == 62 );
     CPPUNIT_ASSERT ( finalcut::fc::character[60][finalcut::fc::PC] == 60 );
     CPPUNIT_ASSERT ( finalcut::fc::character[105][finalcut::fc::PC] == 42 );
+
+    term_detection->detect();
 
 #if DEBUG
     const finalcut::FString& sec_da = \

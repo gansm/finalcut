@@ -61,6 +61,7 @@ class FRect
     // Constructors
     FRect () = default;
     FRect (const FRect&);  // copy constructor
+    FRect (FRect&&);       // move constructor
     FRect (int, int, std::size_t, std::size_t);
     FRect (const FPoint&, const FSize&);
     FRect (const FPoint&, const FPoint&);
@@ -152,6 +153,17 @@ inline FRect::FRect (const FRect& r)  // copy constructor
   , X2(r.X2)
   , Y2(r.Y2)
 { }
+
+//----------------------------------------------------------------------
+inline FRect::FRect (FRect&& r)  // move constructor
+  : X1(r.X1)
+  , Y1(r.Y1)
+  , X2(r.X2)
+  , Y2(r.Y2)
+{
+  r.X1 = r.Y1 = 0;
+  r.X2 = r.Y2 = -1;
+}
 
 //----------------------------------------------------------------------
 inline FRect::FRect (int x, int y, std::size_t width, std::size_t height)

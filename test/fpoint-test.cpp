@@ -49,6 +49,7 @@ class FPointTest : public CPPUNIT_NS::TestFixture
     void classNameTest();
     void noArgumentTest();
     void copyConstructorTest();
+    void moveConstructorTest();
     void assignmentTest();
     void additionAssignmentTest();
     void subtractionAssignmentTest();
@@ -68,6 +69,7 @@ class FPointTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (copyConstructorTest);
+    CPPUNIT_TEST (moveConstructorTest);
     CPPUNIT_TEST (assignmentTest);
     CPPUNIT_TEST (additionAssignmentTest);
     CPPUNIT_TEST (subtractionAssignmentTest);
@@ -111,6 +113,17 @@ void FPointTest::copyConstructorTest()
 }
 
 //----------------------------------------------------------------------
+void FPointTest::moveConstructorTest()
+{
+  finalcut::FPoint p1 (25,16);
+  const finalcut::FPoint p2 (std::move(p1));
+  CPPUNIT_ASSERT ( p1.getX() == 0 );
+  CPPUNIT_ASSERT ( p1.getY() == 0 );
+  CPPUNIT_ASSERT ( p2.getX() == 25 );
+  CPPUNIT_ASSERT ( p2.getY() == 16 );
+}
+
+//----------------------------------------------------------------------
 void FPointTest::assignmentTest()
 {
   const finalcut::FPoint p1 (-99,100);
@@ -138,11 +151,19 @@ void FPointTest::assignmentTest()
   CPPUNIT_ASSERT ( p2.getX() == 40 );
   CPPUNIT_ASSERT ( p2.getY() == 12 );
 
+  // Move assignment operator
+  finalcut::FPoint p3 = std::move(p2);
+  CPPUNIT_ASSERT ( p2.getX() == 0 );
+  CPPUNIT_ASSERT ( p2.getY() == 0 );
+  CPPUNIT_ASSERT ( p2.isOrigin() );
+  CPPUNIT_ASSERT ( p3.getX() == 40 );
+  CPPUNIT_ASSERT ( p3.getY() == 12 );
+
   // Value limit
-  const finalcut::FPoint p3 ( std::numeric_limits<int>::min()
+  const finalcut::FPoint p4 ( std::numeric_limits<int>::min()
                             , std::numeric_limits<int>::max() );
-  CPPUNIT_ASSERT ( p3.getX() == std::numeric_limits<int>::min() );
-  CPPUNIT_ASSERT ( p3.getY() == std::numeric_limits<int>::max() );
+  CPPUNIT_ASSERT ( p4.getX() == std::numeric_limits<int>::min() );
+  CPPUNIT_ASSERT ( p4.getY() == std::numeric_limits<int>::max() );
 }
 
 //----------------------------------------------------------------------

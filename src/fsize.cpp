@@ -44,8 +44,9 @@ FSize& FSize::operator = (const FSize& s)
 //----------------------------------------------------------------------
 FSize& FSize::operator = (FSize&& s)
 {
-  width = std::move(s.width);
-  height = std::move(s.height);
+  width = s.width;
+  height = s.height;
+  s.width = s.height = 0; std::cerr << " move operator\n";
   return *this;
 }
 

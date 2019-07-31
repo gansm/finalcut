@@ -299,20 +299,22 @@ FRect FRect::combined (const FRect& r) const
 //----------------------------------------------------------------------
 FRect& FRect::operator = (const FRect& r)
 {
-  X1 = r.getX1();
-  Y1 = r.getY1();
-  X2 = r.getX2();
-  Y2 = r.getY2();
+  X1 = r.X1;
+  Y1 = r.Y1;
+  X2 = r.X2;
+  Y2 = r.Y2;
   return *this;
 }
 
 //----------------------------------------------------------------------
 FRect& FRect::operator = (FRect&& r)
 {
-  X1 = std::move(r.getX1());
-  Y1 = std::move(r.getY1());
-  X2 = std::move(r.getX2());
-  Y2 = std::move(r.getY2());
+  X1 = r.X1;
+  Y1 = r.Y1;
+  X2 = r.X2;
+  Y2 = r.Y2;
+  r.X1 = r.Y1 = 0;
+  r.X2 = r.Y2 = -1;
   return *this;
 }
 
