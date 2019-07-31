@@ -109,13 +109,13 @@ class FSize
 inline FSize::FSize (const FSize& s)  // copy constructor
   : width(s.width)
   , height(s.height)
-{ std::cerr << " copy ctor\n";}
+{ }
 
 //----------------------------------------------------------------------
 inline FSize::FSize (FSize&& s)  // move constructor
   : width(s.width)
   , height(s.height)
-{ s.width = s.height = 0; std::cerr << " move ctor\n";}
+{ s.width = s.height = 0; }
 
 //----------------------------------------------------------------------
 inline FSize::FSize (std::size_t w, std::size_t h)
