@@ -71,6 +71,9 @@ class FTermDetection;
 class FTermLinux final
 {
   public:
+    // Typedef
+    typedef fc::linuxConsoleCursorStyle  CursorStyle;
+
     // Constructors
     FTermLinux() = default;
 
@@ -86,10 +89,11 @@ class FTermLinux final
     // Accessors
     const char*          getClassName() const;
     static fc::linuxConsoleCursorStyle getCursorStyle();
+    static char*         getCursorStyleString();
     static int           getFramebufferBpp();
 
     // Mutators
-    static char*         setCursorStyle (fc::linuxConsoleCursorStyle, bool);
+    static bool          setCursorStyle (CursorStyle);
     static bool          setPalette (FColor, int, int, int);
     static void          setUTF8 (bool);
 
@@ -100,16 +104,16 @@ class FTermLinux final
 
     // Methods
     static void          init();
-    static void          initCharMap (uInt[][fc::NUM_OF_ENCODINGS]);
+    static void          initCharMap();
     static void          finish();
     static bool          loadVGAFont();
     static bool          loadNewFont();
-    static bool          loadOldFont (uInt[][fc::NUM_OF_ENCODINGS]);
+    static bool          loadOldFont();
     static bool          saveColorMap();
     static bool          resetColorMap();
     static void          setBeep (int, int);
     static void          resetBeep();
-    static char*         restoreCursorStyle();
+
     static FKey          modifierKeyCorrection (const FKey&);
 
   private:
@@ -145,6 +149,7 @@ class FTermLinux final
     static int           setScreenFont ( uChar[], uInt, uInt, uInt
                                        , bool = false );
     static int           setUnicodeMap (struct unimapdesc*);
+    static void          setLinuxCursorStyle (fc::linuxConsoleCursorStyle);
 
     // Methods
 #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
@@ -179,8 +184,7 @@ class FTermLinux final
     static FTermData*             fterm_data;
     static FSystem*               fsystem;
     static FTermDetection*        term_detection;
-    static fc::linuxConsoleCursorStyle
-                                  linux_console_cursor_style;
+    static CursorStyle            linux_console_cursor_style;
     static console_font_op        screen_font;
     static unimapdesc             screen_unicode_map;
     static ColorMap               saved_color_map;

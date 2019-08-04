@@ -107,6 +107,7 @@ OBJS = \
 	ftooltip.o \
 	ffiledialog.o \
 	fkey_map.o \
+	fcharmap.o \
 	ftextview.o \
 	fstatusbar.o \
 	fmouse.o \

@@ -31,9 +31,9 @@
 #include <final/fapplication.h>
 #include <final/fbuttongroup.h>
 #include <final/fbutton.h>
-#include "final/fc.h"
-#include "final/fcolorpair.h"
-#include "final/fcharmap.h"
+#include <final/fc.h>
+#include <final/fcolorpair.h>
+#include <final/fcharmap.h>
 #include <final/fcheckbox.h>
 #include <final/fcheckmenuitem.h>
 #include <final/fdialog.h>
@@ -75,15 +75,15 @@
 #include <final/fwidget.h>
 
 #if defined(UNIT_TEST)
-  #include "final/ftermlinux.h"
-  #include "final/ftermfreebsd.h"
-  #include "final/ftermopenbsd.h"
+  #include <final/ftermlinux.h>
+  #include <final/ftermfreebsd.h>
+  #include <final/ftermopenbsd.h>
 #elif defined(__linux__)
-  #include "final/ftermlinux.h"
+  #include <final/ftermlinux.h>
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
-  #include "final/ftermfreebsd.h"
+  #include <final/ftermfreebsd.h>
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
-  #include "final/ftermopenbsd.h"
+  #include <final/ftermopenbsd.h>
 #endif
 
 #undef USE_FINAL_H

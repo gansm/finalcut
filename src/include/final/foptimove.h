@@ -336,47 +336,9 @@ inline void FOptiMove::set_eat_newline_glitch (const bool& bcap)
 { eat_nl_glitch = bcap; }
 
 
-// FOptiMove non-member function
+// FOptiMove non-member function forward declaration
 //----------------------------------------------------------------------
-inline void printDurations (const FOptiMove& om)
-{
-  std::cout << "            speed: "
-            << om.baudrate << " baud\r\n";
-  std::cout << "    char_duration: "
-            << om.char_duration << " ms\r\n";
-  std::cout << "      cursor_home: "
-            << om.F_cursor_home.duration << " ms\r\n";
-  std::cout << "     cursor_to_ll: "
-            << om.F_cursor_to_ll.duration << " ms\r\n";
-  std::cout << "  carriage_return: "
-            << om.F_carriage_return.duration << " ms\r\n";
-  std::cout << "              tab: "
-            << om.F_tab.duration << " ms\r\n";
-  std::cout << "         back_tab: "
-            << om.F_back_tab.duration << " ms\r\n";
-  std::cout << "        cursor_up: "
-            << om.F_cursor_up.duration << " ms\r\n";
-  std::cout << "      cursor_down: "
-            << om.F_cursor_down.duration << " ms\r\n";
-  std::cout << "      cursor_left: "
-            << om.F_cursor_left.duration << " ms\r\n";
-  std::cout << "     cursor_right: "
-            << om.F_cursor_right.duration << " ms\r\n";
-  std::cout << "   cursor_address: "
-            << om.F_cursor_address.duration << " ms\r\n";
-  std::cout << "   column_address: "
-            << om.F_column_address.duration << " ms\r\n";
-  std::cout << "      row_address: "
-            << om.F_row_address.duration << " ms\r\n";
-  std::cout << "   parm_up_cursor: "
-            << om.F_parm_up_cursor.duration << " ms\r\n";
-  std::cout << " parm_down_cursor: "
-            << om.F_parm_down_cursor.duration << " ms\r\n";
-  std::cout << " parm_left_cursor: "
-            << om.F_parm_left_cursor.duration << " ms\r\n";
-  std::cout << "parm_right_cursor: "
-            << om.F_parm_right_cursor.duration << " ms\r\n";
-}
+void printDurations (const FOptiMove&);
 
 }  // namespace finalcut
 

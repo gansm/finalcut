@@ -43,6 +43,7 @@ libfinal_la_SOURCES = \
 	ftooltip.cpp \
 	ffiledialog.cpp \
 	fkey_map.cpp \
+	fcharmap.cpp \
 	ftextview.cpp \
 	fstatusbar.cpp \
 	ftermcap.cpp \
@@ -87,6 +88,7 @@ finalcutinclude_HEADERS = \
 	include/final/ffiledialog.h \
 	include/final/final.h \
 	include/final/fkey_map.h \
+	include/final/fcharmap.h \
 	include/final/flabel.h \
 	include/final/flineedit.h \
 	include/final/flistbox.h \

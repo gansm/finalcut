@@ -559,7 +559,7 @@ bool FTerm::isNewFont()
 //----------------------------------------------------------------------
 bool FTerm::isCursorHideable()
 {
-  const char* cursor_off_str = disableCursor();
+  const char* cursor_off_str = disableCursorString();
 
   if ( cursor_off_str && std::strlen(cursor_off_str) > 0 )
     return true;
@@ -773,7 +773,7 @@ bool FTerm::setOldFont()
 #if defined(__linux__)
   else if ( isLinuxTerm() )
   {
-    retval = linux->loadOldFont(fc::character);
+    retval = linux->loadOldFont();
   }
 #endif  // defined(__linux__)
 
@@ -848,7 +848,7 @@ int FTerm::closeConsole()
 }
 
 //----------------------------------------------------------------------
-char* FTerm::moveCursor (int xold, int yold, int xnew, int ynew)
+char* FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
 {
   // Returns the cursor move string
 
@@ -859,7 +859,7 @@ char* FTerm::moveCursor (int xold, int yold, int xnew, int ynew)
 }
 
 //----------------------------------------------------------------------
-char* FTerm::cursorsVisibility (bool enable)
+char* FTerm::cursorsVisibilityString (bool enable)
 {
   // Hides or shows the input cursor on the terminal
 
@@ -870,76 +870,20 @@ char* FTerm::cursorsVisibility (bool enable)
 
   if ( enable )
   {
-    visibility_str = disableCursor();
+    visibility_str = disableCursorString();
 
     if ( visibility_str )
       data->setCursorHidden (true);  // Global state
   }
   else
   {
-    visibility_str = enableCursor();
+    visibility_str = enableCursorString();
 
     if ( visibility_str )
       data->setCursorHidden (false);  // Global state
   }
 
   return visibility_str;
-}
-
-//----------------------------------------------------------------------
-void FTerm::printMoveDurations()
-{
-  finalcut::printDurations(*opti_move);
-}
-
-//----------------------------------------------------------------------
-char* FTerm::enableCursor()
-{
-  // Returns the cursor enable string
-
-  static constexpr std::size_t SIZE = 32;
-  static char enable_str[SIZE] = { };
-  const auto& vs = TCAP(fc::t_cursor_visible);
-  const auto& ve = TCAP(fc::t_cursor_normal);
-
-  if ( ve )
-    std::strncpy (enable_str, ve, SIZE - 1);
-  else if ( vs )
-    std::strncpy (enable_str, vs, SIZE - 1);
-
-#if defined(__linux__)
-  if ( isLinuxTerm() )
-  {
-    // Restore the last used Linux console cursor style
-    const char* cstyle = linux->restoreCursorStyle();
-    std::strncat (enable_str, cstyle, SIZE - std::strlen(enable_str) - 1);
-  }
-#endif  // defined(__linux__)
-
-  enable_str[SIZE - 1] = '\0';
-
-#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  if ( isFreeBSDTerm() )
-  {
-    // Restore the last used FreeBSD console cursor style
-    freebsd->restoreCursorStyle();
-  }
-#endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-
-  return enable_str;
-}
-
-//----------------------------------------------------------------------
-char* FTerm::disableCursor()
-{
-  // Returns the cursor disable string
-
-  const auto& vi = TCAP(fc::t_cursor_invisible);
-
-  if ( vi )
-    return vi;
-
-  return 0;
 }
 
 //----------------------------------------------------------------------
@@ -1359,9 +1303,9 @@ void FTerm::initScreenSettings()
 #if defined(__linux__)
   // Important: Do not use setNewFont() or setVGAFont() after
   //            the console character mapping has been initialized
-  linux->initCharMap (fc::character);
+  linux->initCharMap();
 #elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  freebsd->initCharMap (fc::character);
+  freebsd->initCharMap();
 #endif
 
   // set xterm underline cursor
@@ -2008,13 +1952,9 @@ void FTerm::setInsertCursorStyle()
   setKDECursor(fc::UnderlineCursor);
 
 #if defined(__linux__)
-  const char* cstyle = linux->setCursorStyle ( fc::underscore_cursor
-                                             , data->isCursorHidden() );
-  putstring (cstyle);
-  std::fflush(stdout);
+  linux->setCursorStyle (fc::underscore_cursor);
 #elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  freebsd->setCursorStyle ( fc::destructive_cursor
-                          , data->isCursorHidden() );
+  freebsd->setCursorStyle (fc::destructive_cursor);
 #endif
 
   if ( isUrxvtTerminal() )
@@ -2028,17 +1968,63 @@ void FTerm::setOverwriteCursorStyle()
   setKDECursor(fc::BlockCursor);
 
 #if defined(__linux__)
-  char* cstyle = linux->setCursorStyle ( fc::full_block_cursor
-                                       , data->isCursorHidden() );
-  putstring (cstyle);
-  std::fflush(stdout);
+  linux->setCursorStyle (fc::full_block_cursor);
 #elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  freebsd->setCursorStyle ( fc::normal_cursor
-                          , data->isCursorHidden() );
+  freebsd->setCursorStyle (fc::normal_cursor);
 #endif
 
   if ( isUrxvtTerminal() )
     xterm->setCursorColor ("rgb:eeee/0000/0000");
+}
+
+//----------------------------------------------------------------------
+char* FTerm::enableCursorString()
+{
+  // Returns the cursor enable string
+
+  static constexpr std::size_t SIZE = 32;
+  static char enable_str[SIZE] = { };
+  const auto& vs = TCAP(fc::t_cursor_visible);
+  const auto& ve = TCAP(fc::t_cursor_normal);
+
+  if ( ve )
+    std::strncpy (enable_str, ve, SIZE - 1);
+  else if ( vs )
+    std::strncpy (enable_str, vs, SIZE - 1);
+
+#if defined(__linux__)
+  if ( isLinuxTerm() )
+  {
+    // Restore the last used Linux console cursor style
+    const char* cstyle = linux->getCursorStyleString();
+    std::strncat (enable_str, cstyle, SIZE - std::strlen(enable_str) - 1);
+  }
+#endif  // defined(__linux__)
+
+  enable_str[SIZE - 1] = '\0';
+
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
+  if ( isFreeBSDTerm() )
+  {
+    // Restore the last used FreeBSD console cursor style
+    freebsd->setCursorStyle (freebsd->getCursorStyle());
+  }
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
+
+  return enable_str;
+}
+
+//----------------------------------------------------------------------
+char* FTerm::disableCursorString()
+{
+  // Returns the cursor disable string
+
+  const auto& vi = TCAP(fc::t_cursor_invisible);
+
+  if ( vi )
+    return vi;
+
+  return 0;
 }
 
 //----------------------------------------------------------------------
@@ -2187,34 +2173,27 @@ void FTerm::useNormalScreenBuffer()
 //----------------------------------------------------------------------
 inline void FTerm::allocationValues()
 {
-  try
-  {
-    data           = new FTermData();
-    fsys           = new FSystemImpl;
-    opti_move      = new FOptiMove();
-    opti_attr      = new FOptiAttr();
-    term_detection = new FTermDetection();
-    xterm          = new FTermXTerminal();
-    keyboard       = new FKeyboard();
-    mouse          = new FMouseControl();
+  getFTermData();
+  getFSystem();
+  getFOptiMove();
+  getFOptiAttr();
+  getFTermDetection();
+  getFTermXTerminal();
+  getFKeyboard();
+  getFMouseControl();
 
 #if defined(__linux__)
-    linux          = new FTermLinux();
+  getFTermLinux();
 #elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-    freebsd        = new FTermFreeBSD();
+  getFTermFreeBSD();
 #elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
-    openbsd        = new FTermOpenBSD();
+  getFTermOpenBSD();
 #endif
 
 #if DEBUG
-    debug_data     = new FTermDebugData();
+  getFTermDebugData();
 #endif
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    std::abort();
-  }
+
 }
 
 //----------------------------------------------------------------------

@@ -25,6 +25,8 @@
 #include <vector>
 
 #include "final/fapplication.h"
+#include "final/fc.h"
+#include "final/fcharmap.h"
 #include "final/fcolorpair.h"
 #include "final/fkeyboard.h"
 #include "final/foptiattr.h"
@@ -140,7 +142,7 @@ void FVTerm::setTermXY (int x, int y)
   term_x = term_pos->getX();
   term_y = term_pos->getY();
 
-  const char* move_str = FTerm::moveCursor (term_x, term_y, x, y);
+  const char* move_str = FTerm::moveCursorString (term_x, term_y, x, y);
 
   if ( move_str )
     appendOutputBuffer(move_str);
@@ -154,7 +156,7 @@ void FVTerm::hideCursor (bool enable)
 {
   // Hides or shows the input cursor on the terminal
 
-  const char* visibility_str = FTerm::cursorsVisibility (enable);
+  const char* visibility_str = FTerm::cursorsVisibilityString (enable);
 
   if ( visibility_str )
     appendOutputBuffer(visibility_str);
@@ -350,7 +352,7 @@ int FVTerm::print (term_area* area, const FString& s)
   {
     while ( *p )
     {
-      charData nc;  // next character
+      charData nc{};  // next character
       nc.code         = *p;
       nc.fg_color     = next_attribute.fg_color;
       nc.bg_color     = next_attribute.bg_color;

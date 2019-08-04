@@ -87,24 +87,34 @@ fc::linuxConsoleCursorStyle FTermLinux::getCursorStyle()
 }
 
 //----------------------------------------------------------------------
-char* FTermLinux::setCursorStyle ( fc::linuxConsoleCursorStyle style
-                                 , bool hidden )
+char* FTermLinux::getCursorStyleString()
 {
-  // Set cursor style in linux console
+  // Gets the current cursor style string of the Linux console
 
   static char buf[16] = { };
   std::fill (std::begin(buf), std::end(buf), '\0');
+  std::sprintf (buf, CSI "?%dc", getCursorStyle());
+  return buf;
+}
+
+//----------------------------------------------------------------------
+bool FTermLinux::setCursorStyle (fc::linuxConsoleCursorStyle style)
+{
+  // Set cursor style in linux console
+
+  if ( ! fterm_data )
+    fterm_data = FTerm::getFTermData();
 
   if ( ! FTerm::isLinuxTerm() )
-    return buf;
+    return false;
 
   linux_console_cursor_style = style;
 
-  if ( hidden )
-    return buf;
+  if ( fterm_data->isCursorHidden() )
+    return false;
 
-  std::sprintf (buf, CSI "?%dc", style);
-  return buf;
+  setLinuxCursorStyle(style);
+  return true;
 }
 
 //----------------------------------------------------------------------
@@ -162,7 +172,9 @@ void FTermLinux::init()
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
 
-  fterm_data = FTerm::getFTermData();
+  if ( ! fterm_data )
+    fterm_data = FTerm::getFTermData();
+
   fsystem = FTerm::getFSystem();
   term_detection = FTerm::getFTermDetection();
   screen_unicode_map.entries = nullptr;
@@ -188,7 +200,7 @@ void FTermLinux::init()
         FTermcap::max_color = 8;
 #endif
       // Underline cursor
-      setCursorStyle (fc::underscore_cursor, true);
+      setCursorStyle (fc::underscore_cursor);
 
       // Framebuffer color depth in bits per pixel
       framebuffer_bpp = getFramebuffer_bpp();
@@ -209,7 +221,7 @@ void FTermLinux::init()
 }
 
 //----------------------------------------------------------------------
-void FTermLinux::initCharMap (uInt char_map[][fc::NUM_OF_ENCODINGS])
+void FTermLinux::initCharMap()
 {
   constexpr sInt16 NOT_FOUND = -1;
 
@@ -220,12 +232,12 @@ void FTermLinux::initCharMap (uInt char_map[][fc::NUM_OF_ENCODINGS])
   {
     for (std::size_t i = 0; i <= fc::lastCharItem; i++ )
     {
-      auto ucs = wchar_t(char_map[i][fc::UTF8]);
+      auto ucs = wchar_t(fc::character[i][fc::UTF8]);
       sInt16 fontpos = getFontPos(ucs);
 
       // Fix for a non-cp437 Linux console with PC charset encoding
       if ( fontpos > 255 || fontpos == NOT_FOUND )
-        char_map[i][fc::PC] = char_map[i][fc::ASCII];
+        fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
 
       // Character substitutions for missing characters
       if ( fontpos == NOT_FOUND )
@@ -255,7 +267,7 @@ void FTermLinux::finish()
 #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
     setBlinkAsIntensity (false);
 #endif
-    setCursorStyle (fc::default_cursor, false);
+    setLinuxCursorStyle (fc::default_cursor);
   }
 }
 
@@ -342,7 +354,7 @@ bool FTermLinux::loadNewFont()
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::loadOldFont (uInt char_map[][fc::NUM_OF_ENCODINGS])
+bool FTermLinux::loadOldFont()
 {
   bool retval = false;
 
@@ -367,7 +379,7 @@ bool FTermLinux::loadOldFont (uInt char_map[][fc::NUM_OF_ENCODINGS])
       if ( screen_unicode_map.entries )
       {
         setUnicodeMap (&screen_unicode_map);
-        initCharMap(char_map);
+        initCharMap();
         delete[] screen_unicode_map.entries;
         screen_unicode_map.entries = nullptr;
       }
@@ -443,17 +455,13 @@ void FTermLinux::resetBeep()
 }
 
 //----------------------------------------------------------------------
-char* FTermLinux::restoreCursorStyle()
-{
-  // Reset to the last used Linux console cursor style
-
-  return setCursorStyle (getCursorStyle(), false);
-}
-
-//----------------------------------------------------------------------
 FKey FTermLinux::modifierKeyCorrection (const FKey& key_id)
 {
   // Get the current modifier key state
+
+  if ( ! fsystem )
+    fsystem = FTerm::getFSystem();
+
   modifier_key& m = getModifierKey();
 
   if ( ! (m.shift || m.ctrl || m.alt) )
@@ -751,6 +759,12 @@ int FTermLinux::setUnicodeMap (struct unimapdesc* unimap)
     return 0;
   else
     return -1;
+}
+
+//----------------------------------------------------------------------
+void FTermLinux::setLinuxCursorStyle (CursorStyle style)
+{
+  FTerm::putstringf (CSI "?%dc", style);
 }
 
 #if defined(__x86_64__) || defined(__i386) || defined(__arm__)

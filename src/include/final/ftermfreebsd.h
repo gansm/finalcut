@@ -70,6 +70,7 @@ namespace finalcut
 
 // class forward declaration
 class FSystem;
+class FTermData;
 
 //----------------------------------------------------------------------
 // class FTermFreeBSD
@@ -104,7 +105,7 @@ class FTermFreeBSD final
     static bool        isFreeBSDConsole();
 
     // Mutators
-    static bool        setCursorStyle (CursorStyle, bool);
+    static bool        setCursorStyle (CursorStyle);
     static void        enableChangeCursorStyle();
     static void        disableChangeCursorStyle();
     static void        enableMetaSendsEscape();
@@ -114,9 +115,8 @@ class FTermFreeBSD final
 
     // Methods
     static void        init();
-    static void        initCharMap (uInt[][fc::NUM_OF_ENCODINGS]);
+    static void        initCharMap();
     static void        finish();
-    static void        restoreCursorStyle();
 
   private:
     // Methods
@@ -124,6 +124,7 @@ class FTermFreeBSD final
     static bool        setFreeBSDAltKey (uInt);
     static bool        setFreeBSDAlt2Meta();
     static bool        resetFreeBSDAlt2Meta();
+    static bool        setFreeBSDCursorStyle (CursorStyle);
 
     // Data Members
     static uInt        bsd_alt_keymap;
@@ -131,6 +132,7 @@ class FTermFreeBSD final
     static bool        change_cursorstyle;
     static bool        meta_sends_escape;
     static FSystem*    fsystem;
+    static FTermData*  fterm_data;
 };
 #pragma pack(pop)
 

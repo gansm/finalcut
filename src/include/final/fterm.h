@@ -257,11 +257,8 @@ class FTerm final
     static bool            setOldFont();
     static int             openConsole();
     static int             closeConsole();
-    static char*           moveCursor (int, int, int, int);
-    static char*           cursorsVisibility (bool);
-    static void            printMoveDurations();
-    static char*           enableCursor();
-    static char*           disableCursor();
+    static char*           moveCursorString (int, int, int, int);
+    static char*           cursorsVisibilityString (bool);
     static void            detectTermSize();
     static void            setTermSize (const FSize&);
     static void            setTermTitle (const FString&);
@@ -380,6 +377,8 @@ class FTerm final
     static void            restoreColorPalette();
     static void            setInsertCursorStyle();
     static void            setOverwriteCursorStyle();
+    static char*           enableCursorString();
+    static char*           disableCursorString();
     static void            enableMouse();
     static void            disableMouse();
     static void            enableApplicationEscKey();

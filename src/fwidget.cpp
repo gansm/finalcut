@@ -2379,4 +2379,58 @@ void FWidget::setColorTheme()
     wc.set16ColorTheme();
 }
 
+
+// non-member functions
+//----------------------------------------------------------------------
+char* createBlankArray (std::size_t size)
+{
+  char* blank;
+
+  if ( size == 0 )
+    return 0;
+
+  try
+  {
+    blank = new char[size + 1];
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    return 0;
+  }
+
+  std::memset(blank, ' ', size);
+  blank[size] = '\0';
+  return blank;
+}
+
+//----------------------------------------------------------------------
+void destroyBlankArray (char blank[])
+{
+  delete[] blank;
+}
+
+//----------------------------------------------------------------------
+FKey getHotkey (const FString& text)
+{
+  if ( text.isEmpty() )
+    return 0;
+
+  std::size_t length = text.getLength();
+
+  for (std::size_t i = 0; i < length; i++)
+  {
+    try
+    {
+      if ( i + 1 < length && text[i] == '&' )
+        return FKey(text[++i]);
+    }
+    catch (const std::out_of_range&)
+    {
+      return 0;
+    }
+  }
+  return 0;
+}
+
 }  // namespace finalcut

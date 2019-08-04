@@ -22,6 +22,7 @@
 
 #include "final/fc.h"
 #include "final/fkey_map.h"
+#include "final/ftypes.h"
 
 namespace finalcut
 {

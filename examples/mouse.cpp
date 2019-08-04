@@ -144,7 +144,7 @@ void ColorChooser::draw()
 
     if ( c == bg_color )
     {
-      print() << L' ' << fc::Times << L' ';
+      print() << L' ' << wchar_t(fc::Times) << L' ';
     }
     else
       print ("   ");

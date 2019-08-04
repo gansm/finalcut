@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2018 Markus Gans                                      *
+* Copyright 2016-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -111,7 +111,7 @@ void move (int xold, int yold, int xnew, int ynew)
             << std::left << std::setw(10) << to
             << " ";
   // get the move string
-  buffer = terminal->moveCursor (xold, yold, xnew, ynew);
+  buffer = finalcut::FTerm::moveCursorString (xold, yold, xnew, ynew);
   len    = uInt(std::strlen(buffer));
 
   for (uInt i = 0; i < len; i++)
@@ -197,7 +197,8 @@ int main (int argc, char* argv[])
 
   // Show terminal speed and milliseconds for all cursor movement sequence
   std::cout << "\r" << line;
-  TermApp.printMoveDurations();
+  const finalcut::FOptiMove& opti_move = *TermApp.getFTerm().getFOptiMove();
+  finalcut::printDurations(opti_move);
 
   // Waiting for keypress
   keyPressed();

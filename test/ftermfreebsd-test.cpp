@@ -673,15 +673,14 @@ void ftermfreebsdTest::freebsdConsoleTest()
     freebsd.disableChangeCursorStyle();
     freebsd.init();
     CPPUNIT_ASSERT ( keymap.key[left_alt].map[0] == 7 );
-    std::cerr << "cursur style: " << freebsd.getCursorStyle() << "\n";
     CPPUNIT_ASSERT ( freebsd.getCursorStyle() == finalcut::fc::normal_cursor );
     freebsd.enableMetaSendsEscape();
     freebsd.enableChangeCursorStyle();
     freebsd.init();
     CPPUNIT_ASSERT ( keymap.key[left_alt].map[0] == META );
     CPPUNIT_ASSERT ( freebsd.getCursorStyle() == finalcut::fc::destructive_cursor );
-    freebsd.setCursorStyle(finalcut::fc::blink_cursor, false);
-    freebsd.restoreCursorStyle();
+    freebsd.setCursorStyle(finalcut::fc::blink_cursor);
+    freebsd.setCursorStyle(freebsd.getCursorStyle());
     CPPUNIT_ASSERT ( freebsd.getCursorStyle() == finalcut::fc::blink_cursor );
 
     CPPUNIT_ASSERT ( finalcut::fc::character[2][finalcut::fc::PC] == 21 );
@@ -703,7 +702,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
     CPPUNIT_ASSERT ( finalcut::fc::character[60][finalcut::fc::PC] == 17 );
     CPPUNIT_ASSERT ( finalcut::fc::character[105][finalcut::fc::PC] == 4 );
 
-    freebsd.initCharMap (finalcut::fc::character);
+    freebsd.initCharMap();
 
     CPPUNIT_ASSERT ( finalcut::fc::character[2][finalcut::fc::PC] == 36 );
     CPPUNIT_ASSERT ( finalcut::fc::character[3][finalcut::fc::PC] == 42 );
@@ -739,13 +738,14 @@ void ftermfreebsdTest::freebsdConsoleTest()
     CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
     CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
 
-    freebsd.setCursorStyle (finalcut::fc::normal_cursor, false);
+    data->setCursorHidden (false);
+    freebsd.setCursorStyle (finalcut::fc::normal_cursor);
     CPPUNIT_ASSERT ( fsystest->getCursorType() == finalcut::fc::normal_cursor );
 
-    freebsd.setCursorStyle (finalcut::fc::blink_cursor, false);
+    freebsd.setCursorStyle (finalcut::fc::blink_cursor);
     CPPUNIT_ASSERT ( fsystest->getCursorType() == finalcut::fc::blink_cursor );
 
-    freebsd.setCursorStyle (finalcut::fc::destructive_cursor, false);
+    freebsd.setCursorStyle (finalcut::fc::destructive_cursor);
     CPPUNIT_ASSERT ( fsystest->getCursorType() == finalcut::fc::destructive_cursor );
 
     std::string& characters = fsystest->getCharacters();

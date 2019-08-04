@@ -316,8 +316,6 @@ class FVTerm
     virtual FVTerm&       print();
     static void           beep();
     static void           redefineDefaultColors (bool);
-    static char*          moveCursor (int, int, int, int);
-    static void           printMoveDurations();
 
   protected:
     // Enumeration
@@ -1059,14 +1057,6 @@ inline void FVTerm::beep()
 //----------------------------------------------------------------------
 inline void FVTerm::redefineDefaultColors (bool enable)
 { FTerm::redefineDefaultColors(enable); }
-
-//----------------------------------------------------------------------
-inline char* FVTerm::moveCursor (int xold, int yold, int xnew, int ynew)
-{ return FTerm::moveCursor (xold, yold, xnew, ynew); }
-
-//----------------------------------------------------------------------
-inline void FVTerm::printMoveDurations()
-{ return FTerm::printMoveDurations(); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setPrintArea (term_area* area)

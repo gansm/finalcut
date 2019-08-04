@@ -1,3 +1,6 @@
+2019-08-04  Markus Gans  <guru.mail@muenster.de>
+	* Reduce the number of interface parameters
+
 2019-07-31  Markus Gans  <guru.mail@muenster.de>
 	* Unit test for the move assignment operator and move constructor 
 	  in FPoint, FSize and FRect
