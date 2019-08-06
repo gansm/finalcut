@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <vector>
+
 #include "final/fc.h"
 #include "final/fcharmap.h"
 #include "final/fsystem.h"
@@ -573,16 +575,19 @@ bool FTermLinux::getScreenFont()
   if ( fsystem )
     ret = fsystem->ioctl (fd_tty, KDFONTOP, &font);
 
-  if ( ret == 0 )
+  if ( ret != 0 )
   {
-    screen_font.width = font.width;
-    screen_font.height = font.height;
-    screen_font.charcount = font.charcount;
-    screen_font.data = font.data;
-    return true;
-  }
-  else
+    if ( font.data )
+      delete[] font.data;
+
     return false;
+  }
+
+  screen_font.width = font.width;
+  screen_font.height = font.height;
+  screen_font.charcount = font.charcount;
+  screen_font.data = font.data;
+  return true;
 }
 
 //----------------------------------------------------------------------

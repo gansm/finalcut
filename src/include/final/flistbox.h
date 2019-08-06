@@ -170,7 +170,7 @@ class FListBox : public FWidget
     FListBox& operator = (const FListBox&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     std::size_t         getCount() const;
     FListBoxItem        getItem (std::size_t);
     FListBoxItem        getItem (listBoxItems::iterator) const;
@@ -187,15 +187,15 @@ class FListBox : public FWidget
     void                showInsideBrackets (std::size_t, fc::brackets_type);
     void                showNoBrackets (std::size_t);
     void                showNoBrackets (listBoxItems::iterator);
-    virtual void        setGeometry ( const FPoint&, const FSize&
+    void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     void                setMultiSelection (bool);
     void                setMultiSelection ();
     void                unsetMultiSelection ();
-    virtual bool        setDisable() override;
-    virtual bool        setFocus (bool) override;
-    virtual bool        setFocus() override;
-    virtual bool        unsetFocus() override;
+    bool                setDisable() override;
+    bool                setFocus (bool) override;
+    bool                setFocus() override;
+    bool                unsetFocus() override;
     void                setText (const FString&);
 
     // Inquiries
@@ -206,7 +206,7 @@ class FListBox : public FWidget
     bool                hasBrackets (listBoxItems::iterator) const;
 
     // Methods
-    virtual void        hide() override;
+    void                hide() override;
     template <typename Iterator, typename InsertConverter>
     void                insert (Iterator, Iterator, InsertConverter);
     template <typename Container, typename LazyConverter>
@@ -227,20 +227,20 @@ class FListBox : public FWidget
     void                clear();
 
     // Event handlers
-    virtual void        onKeyPress (FKeyEvent*) override;
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
-    virtual void        onMouseMove (FMouseEvent*) override;
-    virtual void        onMouseDoubleClick (FMouseEvent*) override;
-    virtual void        onWheel (FWheelEvent*) override;
-    virtual void        onTimer (FTimerEvent*) override;
-    virtual void        onFocusIn (FFocusEvent*) override;
-    virtual void        onFocusOut (FFocusEvent*) override;
+    void                onKeyPress (FKeyEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
+    void                onMouseMove (FMouseEvent*) override;
+    void                onMouseDoubleClick (FMouseEvent*) override;
+    void                onWheel (FWheelEvent*) override;
+    void                onTimer (FTimerEvent*) override;
+    void                onFocusIn (FFocusEvent*) override;
+    void                onFocusOut (FFocusEvent*) override;
 
   protected:
     // Methods
     void                adjustYOffset (std::size_t);
-    virtual void        adjustSize() override;
+    void                adjustSize() override;
 
   private:
     // Typedef
@@ -267,7 +267,7 @@ class FListBox : public FWidget
     void                initScrollbar ( FScrollbarPtr&
                                       , fc::orientation
                                       , FListBoxCallback );
-    virtual void        draw() override;
+    void                draw() override;
     void                drawHeadline();
     void                drawList();
     void                drawListLine (int, listBoxItems::iterator, bool);

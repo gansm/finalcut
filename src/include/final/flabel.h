@@ -101,7 +101,7 @@ class FLabel : public FWidget
     const FLabel& operator >> (FString&);
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     FWidget*            getAccelWidget();
     fc::text_alignment  getAlignment();
     FString&            getText();
@@ -115,7 +115,7 @@ class FLabel : public FWidget
     bool                setReverseMode(bool);
     bool                setReverseMode();
     bool                unsetReverseMode();
-    virtual bool        setEnable (bool) override;
+    bool                setEnable (bool) override;
     void                setNumber (uLong);
     void                setNumber (long);
     void                setNumber (float, int = FLT_DIG);
@@ -128,12 +128,12 @@ class FLabel : public FWidget
     bool                hasReverseMode();
 
     // Methods
-    virtual void        hide() override;
+    void                hide() override;
     void                clear();
 
     // Event handlers
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onAccel (FAccelEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onAccel (FAccelEvent*) override;
 
     // Callback method
     void                cb_accel_widget_destroyed (FWidget*, FDataPtr);
@@ -147,7 +147,7 @@ class FLabel : public FWidget
     std::size_t         getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
     void                setHotkeyAccelerator();
     std::size_t         getAlignOffset (std::size_t);
-    virtual void        draw() override;
+    void                draw() override;
     void                drawMultiLine();
     void                drawSingleLine();
     void                printLine ( wchar_t[], std::size_t

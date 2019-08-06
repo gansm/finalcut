@@ -91,19 +91,19 @@ class FMenuBar : public FWindow, public FMenuList
     FMenuBar& operator = (const FMenuBar&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char* getClassName() const override;
 
     // Methods
     void         resetMenu();
-    virtual void hide() override;
-    virtual void adjustSize() override;
+    void         hide() override;
+    void         adjustSize() override;
 
     // Event handlers
-    virtual void onKeyPress (FKeyEvent*) override;
-    virtual void onMouseDown (FMouseEvent*) override;
-    virtual void onMouseUp (FMouseEvent*) override;
-    virtual void onMouseMove (FMouseEvent*) override;
-    virtual void onAccel (FAccelEvent*) override;
+    void         onKeyPress (FKeyEvent*) override;
+    void         onMouseDown (FMouseEvent*) override;
+    void         onMouseUp (FMouseEvent*) override;
+    void         onMouseMove (FMouseEvent*) override;
+    void         onAccel (FAccelEvent*) override;
 
     // Callback methods
     void         cb_item_deactivated (FWidget*, FDataPtr);
@@ -132,7 +132,7 @@ class FMenuBar : public FWindow, public FMenuList
     bool         selectPrevItem();
     bool         hotkeyMenu (FKeyEvent*&);
     std::size_t  getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
-    virtual void draw() override;
+    void         draw() override;
     void         drawItems();
     void         drawItem (FMenuItem*, std::size_t&);
     void         setLineAttributes (FMenuItem*);

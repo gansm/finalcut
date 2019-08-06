@@ -77,12 +77,12 @@ class FProgressbar : public FWidget
     virtual ~FProgressbar();
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     std::size_t         getPercentage();
 
     // Mutators
     void                setPercentage (std::size_t);
-    virtual void        setGeometry ( const FPoint&, const FSize&
+    void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     bool                setShadow (bool);
     bool                setShadow();
@@ -92,7 +92,7 @@ class FProgressbar : public FWidget
     bool                hasShadow();
 
     // Methods
-    virtual void        hide() override;
+    void                hide() override;
     void                reset();
 
   private:
@@ -100,7 +100,7 @@ class FProgressbar : public FWidget
     static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
     // Methods
-    virtual void        draw() override;
+    void                draw() override;
     void                drawProgressLabel();
     void                drawProgressBar();
     std::size_t         drawProgressIndicator();

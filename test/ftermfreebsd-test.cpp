@@ -20,8 +20,6 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include <limits>
-
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -31,7 +29,10 @@
 #include <cppunit/TestRunner.h>
 #include <unistd.h>
 
-#include <conemu.h>
+#include <limits>
+#include <string>
+
+#include "conemu.h"
 #include <final/final.h>
 
 namespace test
@@ -54,17 +55,17 @@ class FSystemTest : public finalcut::FSystem
     virtual ~FSystemTest();
 
     // Methods
-    virtual uChar    inPortByte (uShort) override;
-    virtual void     outPortByte (uChar, uShort) override;
-    virtual int      isTTY (int) override;
-    virtual int      ioctl (int, uLong, ...) override;
-    virtual int      open (const char*, int, ...) override;
-    virtual int      close (int) override;
-    virtual FILE*    fopen (const char*, const char*) override;
-    virtual int      fclose (FILE*) override;
-    virtual int      putchar (int) override;
-    virtual int      tputs (const char*, int, int (*)(int)) override;
-    virtual uid_t    getuid() override;
+    uChar            inPortByte (uShort) override;
+    void             outPortByte (uChar, uShort) override;
+    int              isTTY (int) override;
+    int              ioctl (int, uLong, ...) override;
+    int              open (const char*, int, ...) override;
+    int              close (int) override;
+    FILE*            fopen (const char*, const char*) override;
+    int              fclose (FILE*) override;
+    int              putchar (int) override;
+    int              tputs (const char*, int, int (*)(int)) override;
+    uid_t            getuid() override;
     std::string&     getCharacters();
     int&             getCursorType();
     struct keymap_t& getTerminalKeymap();
@@ -73,16 +74,16 @@ class FSystemTest : public finalcut::FSystem
     // Data Members
     std::string characters;
     int cursor_type = 0;
-    static struct keymap_t keymap;
-    static struct keymap_t terminal_keymap;
+    static keymap_t keymap;
+    static keymap_t terminal_keymap;
 };
 #pragma pack(pop)
 
 // private Data Member of FSystemTest
 //----------------------------------------------------------------------
-struct keymap_t FSystemTest::keymap =
+keymap_t FSystemTest::keymap =
 {
-  109, // Number of keys
+  109,  // Number of keys
   {
     //                     map                          spcl  flag
     //------------------------------------------------  ----  ----
@@ -363,7 +364,7 @@ struct keymap_t FSystemTest::keymap =
 
 // static class attributes
 //----------------------------------------------------------------------
-struct keymap_t  FSystemTest::terminal_keymap{};
+keymap_t  FSystemTest::terminal_keymap{};
 
 // constructors and destructor
 //----------------------------------------------------------------------
@@ -587,14 +588,12 @@ class ftermfreebsdTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 
 //----------------------------------------------------------------------
 ftermfreebsdTest::ftermfreebsdTest()
-{
-
-}
+{ }
 
 //----------------------------------------------------------------------
 void ftermfreebsdTest::classNameTest()
 {
-  const finalcut::FTermFreeBSD p;
+  const finalcut::FTermFreeBSD p{};
   const char* const classname = p.getClassName();
   CPPUNIT_ASSERT ( std::strcmp(classname, "FTermFreeBSD") == 0 );
 }
@@ -750,15 +749,15 @@ void ftermfreebsdTest::freebsdConsoleTest()
 
     std::string& characters = fsystest->getCharacters();
     characters.clear();
-    freebsd.setBeep (20, 100);    // Hz < 21
+    freebsd.setBeep (20, 100);     // Hz < 21
     CPPUNIT_ASSERT ( characters.empty() );
-    freebsd.setBeep (32767, 100); // Hz > 32766
+    freebsd.setBeep (32767, 100);  // Hz > 32766
     CPPUNIT_ASSERT ( characters.empty() );
-    freebsd.setBeep (200, -1);    // ms < 0
+    freebsd.setBeep (200, -1);     // ms < 0
     CPPUNIT_ASSERT ( characters.empty() );
-    freebsd.setBeep (200, 2000);  // ms > 1999
+    freebsd.setBeep (200, 2000);   // ms > 1999
     CPPUNIT_ASSERT ( characters.empty() );
-    freebsd.setBeep (200, 100);   // 200 Hz - 100 ms
+    freebsd.setBeep (200, 100);    // 200 Hz - 100 ms
 
     CPPUNIT_ASSERT ( characters == CSI "=5965;10B" );
     characters.clear();

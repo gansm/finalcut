@@ -628,7 +628,6 @@ void FTermXTerminal::resetXTermColorMap()
     oscPostfix();
     std::fflush(stdout);
   }
-
 }
 
 //----------------------------------------------------------------------

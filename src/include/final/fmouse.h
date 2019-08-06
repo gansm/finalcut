@@ -199,18 +199,18 @@ class FMouseGPM final : public FMouse
     virtual ~FMouseGPM();
 
     // Accessors
-    virtual const char*  getClassName() const override;
+    const char*          getClassName() const override;
 
     // Mutators
     void                 setStdinNo(int);
 
     // Inquiry
-    virtual bool         hasData() override;
+    bool                 hasData() override;
     bool                 isGpmMouseEnabled();
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&) override;
-    virtual void         processEvent (struct timeval*) override;
+    void                 setRawData (FKeyboard::keybuffer&) override;
+    void                 processEvent (struct timeval*) override;
     bool                 gpmMouse (bool);
     bool                 enableGpmMouse();
     bool                 disableGpmMouse();
@@ -271,14 +271,14 @@ class FMouseX11 final : public FMouse
     virtual ~FMouseX11() = default;
 
     // Accessors
-    virtual const char*  getClassName() const override;
+    const char*          getClassName() const override;
 
     // Inquiry
-    virtual bool         hasData() override;
+    bool                 hasData() override;
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&) override;
-    virtual void         processEvent (struct timeval*) override;
+    void                 setRawData (FKeyboard::keybuffer&) override;
+    void                 processEvent (struct timeval*) override;
 
   private:
     // Enumeration
@@ -334,14 +334,14 @@ class FMouseSGR final : public FMouse
     virtual ~FMouseSGR() = default;
 
     // Accessors
-    virtual const char*  getClassName() const override;
+    const char*  getClassName() const override;
 
     // Inquiry
-    virtual bool         hasData() override;
+    bool         hasData() override;
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&) override;
-    virtual void         processEvent (struct timeval*) override;
+    void         setRawData (FKeyboard::keybuffer&) override;
+    void         processEvent (struct timeval*) override;
 
   private:
     // Enumeration
@@ -397,14 +397,14 @@ class FMouseUrxvt final : public FMouse
     virtual ~FMouseUrxvt() = default;
 
     // Accessors
-    virtual const char*  getClassName() const override;
+    const char*  getClassName() const override;
 
     // Inquiry
-    virtual bool         hasData() override;
+    bool         hasData() override;
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&) override;
-    virtual void         processEvent (struct timeval*) override;
+    void         setRawData (FKeyboard::keybuffer&) override;
+    void         processEvent (struct timeval*) override;
 
   private:
     // Enumeration

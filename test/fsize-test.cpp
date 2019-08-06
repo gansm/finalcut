@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <limits>
+#include <utility>
 
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
@@ -133,7 +134,7 @@ void FSizeTest::moveConstructorTest()
 //----------------------------------------------------------------------
 void FSizeTest::assignmentTest()
 {
-  const finalcut::FSize s1 (0,100);
+  const finalcut::FSize s1 (0, 100);
   CPPUNIT_ASSERT ( s1.getWidth() == 0 );
   CPPUNIT_ASSERT ( s1.getHeight() == 100 );
 
@@ -178,8 +179,8 @@ void FSizeTest::assignmentTest()
 //----------------------------------------------------------------------
 void FSizeTest::additionAssignmentTest()
 {
-  finalcut::FSize s1 (1,2);
-  s1 += finalcut::FSize{3,1};
+  finalcut::FSize s1 (1, 2);
+  s1 += finalcut::FSize{3, 1};
   CPPUNIT_ASSERT ( s1.getWidth() == 4 );
   CPPUNIT_ASSERT ( s1.getHeight() == 3 );
 
@@ -256,11 +257,11 @@ void FSizeTest::subtractionAssignmentTest()
 //----------------------------------------------------------------------
 void FSizeTest::equalTest()
 {
-  const finalcut::FSize s1 (1,2);
-  const finalcut::FSize s2 (1,2);
+  const finalcut::FSize s1 (1, 2);
+  const finalcut::FSize s2 (1, 2);
   CPPUNIT_ASSERT ( s1 == s2 );
-  CPPUNIT_ASSERT ( finalcut::FSize(1,2) == s2 );
-  CPPUNIT_ASSERT ( s1 == finalcut::FSize(1,2) );
+  CPPUNIT_ASSERT ( finalcut::FSize(1, 2) == s2 );
+  CPPUNIT_ASSERT ( s1 == finalcut::FSize(1, 2) );
   const finalcut::FSize s3{};
   const finalcut::FSize s4{};
   CPPUNIT_ASSERT ( s3 == s4 );
@@ -269,11 +270,11 @@ void FSizeTest::equalTest()
 //----------------------------------------------------------------------
 void FSizeTest::notEqualTest()
 {
-  const finalcut::FSize s1 (3,5);
-  const finalcut::FSize s2 (2,4);
+  const finalcut::FSize s1 (3, 5);
+  const finalcut::FSize s2 (2, 4);
   CPPUNIT_ASSERT ( s1 != s2 );
-  CPPUNIT_ASSERT ( finalcut::FSize(1,2) != s2 );
-  CPPUNIT_ASSERT ( s1 != finalcut::FSize(2,4) );
+  CPPUNIT_ASSERT ( finalcut::FSize(1, 2) != s2 );
+  CPPUNIT_ASSERT ( s1 != finalcut::FSize(2, 4) );
   CPPUNIT_ASSERT ( finalcut::FSize() != s2 );
   CPPUNIT_ASSERT ( s1 != finalcut::FSize() );
 }
@@ -313,12 +314,12 @@ void FSizeTest::LessTest()
 //----------------------------------------------------------------------
 void FSizeTest::additionTest()
 {
-  const finalcut::FSize s1 (1 ,2);
-  const finalcut::FSize s2 (5 ,8);
+  const finalcut::FSize s1 (1, 2);
+  const finalcut::FSize s2 (5, 8);
   const finalcut::FSize s3 = s1 + s2;
   CPPUNIT_ASSERT ( s3.getWidth() == 6 );
   CPPUNIT_ASSERT ( s3.getHeight() == 10 );
-  CPPUNIT_ASSERT ( s1 + s2 == finalcut::FSize(6 ,10) );
+  CPPUNIT_ASSERT ( s1 + s2 == finalcut::FSize(6, 10) );
   CPPUNIT_ASSERT ( s1 + finalcut::FSize() == s1 );
   CPPUNIT_ASSERT ( finalcut::FSize() + s2 == s2 );
   CPPUNIT_ASSERT ( finalcut::FSize() + finalcut::FSize() == finalcut::FSize() );
@@ -355,7 +356,7 @@ void FSizeTest::areaTest()
 //----------------------------------------------------------------------
 void FSizeTest::referenceTest()
 {
-  finalcut::FSize s1 (1,1);
+  finalcut::FSize s1 (1, 1);
   CPPUNIT_ASSERT ( s1.getWidth() == 1 );
   CPPUNIT_ASSERT ( s1.getHeight() == 1 );
 

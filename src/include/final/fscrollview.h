@@ -87,7 +87,7 @@ class FScrollView : public FWidget
     FScrollView& operator = (const FScrollView&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     std::size_t         getViewportWidth() const;
     std::size_t         getViewportHeight() const;
     const FSize         getViewportSize();
@@ -102,13 +102,13 @@ class FScrollView : public FWidget
     virtual void        setScrollWidth (std::size_t);
     virtual void        setScrollHeight (std::size_t);
     virtual void        setScrollSize (const FSize&);
-    virtual void        setX (int, bool = true) override;
-    virtual void        setY (int, bool = true) override;
-    virtual void        setPos (const FPoint&, bool = true) override;
-    virtual void        setWidth (std::size_t, bool = true) override;
-    virtual void        setHeight (std::size_t, bool = true) override;
-    virtual void        setSize (const FSize&, bool = true) override;
-    virtual void        setGeometry ( const FPoint&, const FSize&
+    void                setX (int, bool = true) override;
+    void                setY (int, bool = true) override;
+    void                setPos (const FPoint&, bool = true) override;
+    void                setWidth (std::size_t, bool = true) override;
+    void                setHeight (std::size_t, bool = true) override;
+    void                setSize (const FSize&, bool = true) override;
+    void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     void                setCursorPos (const FPoint&);
     void                setPrintPos (const FPoint&);
@@ -126,30 +126,30 @@ class FScrollView : public FWidget
     bool                isViewportPrint();
 
     // Method
-    virtual void        clearArea (int = ' ') override;
+    void                clearArea (int = ' ') override;
     void                scrollToX (int);
     void                scrollToY (int);
     void                scrollTo (const FPoint&);
     void                scrollTo (int, int);
     void                scrollBy (int, int);
-    virtual void        draw() override;
+    void                draw() override;
 
     // Event handlers
-    virtual void        onKeyPress (FKeyEvent*) override;
-    virtual void        onWheel (FWheelEvent*) override;
-    virtual void        onFocusIn (FFocusEvent*) override;
-    virtual void        onChildFocusIn (FFocusEvent*) override;
-    virtual void        onChildFocusOut (FFocusEvent*) override;
+    void                onKeyPress (FKeyEvent*) override;
+    void                onWheel (FWheelEvent*) override;
+    void                onFocusIn (FFocusEvent*) override;
+    void                onChildFocusIn (FFocusEvent*) override;
+    void                onChildFocusOut (FFocusEvent*) override;
 
   protected:
     // Using-declaration
     using FVTerm::clearArea;
 
     // Accessor
-    virtual term_area*  getPrintArea() override;
+    term_area*          getPrintArea() override;
 
     // Method
-    virtual void        adjustSize() override;
+    void                adjustSize() override;
     void                copy2area();
 
   private:

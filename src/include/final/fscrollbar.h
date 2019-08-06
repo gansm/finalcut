@@ -97,7 +97,7 @@ class FScrollbar : public FWidget
     FScrollbar& operator = (const FScrollbar&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     int                 getValue() const;
     sType               getScrollType() const;
 
@@ -109,28 +109,28 @@ class FScrollbar : public FWidget
     void                setSteps (double);
     void                setPageSize (int, int);
     void                setOrientation (fc::orientation);
-    virtual void        setGeometry ( const FPoint&, const FSize&
+    void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
 
     // Methods
-    virtual void        resize() override;
-    virtual void        redraw() override;
+    void                resize() override;
+    void                redraw() override;
     void                calculateSliderValues();
     void                drawVerticalBar();
     void                drawHorizontalBar();
     void                drawBar();
 
     // Event handlers
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
-    virtual void        onMouseMove (FMouseEvent*) override;
-    virtual void        onWheel (FWheelEvent*) override;
-    virtual void        onTimer (FTimerEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
+    void                onMouseMove (FMouseEvent*) override;
+    void                onWheel (FWheelEvent*) override;
+    void                onTimer (FTimerEvent*) override;
 
   private:
     // Methods
     void                init();
-    virtual void        draw() override;
+    void                draw() override;
     void                drawButtons();
     sType               getClickedScrollType (int, int);
     sType               getVerticalClickedScrollType (int);

@@ -86,7 +86,7 @@ class FButtonGroup : public FScrollView
     FButtonGroup& operator = (const FButtonGroup&) = delete;
 
     // Accessor
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     FToggleButton*      getFirstButton();
     FToggleButton*      getLastButton();
     FToggleButton*      getButton (int) const;
@@ -94,10 +94,10 @@ class FButtonGroup : public FScrollView
     FString&            getText();
 
     // Mutator
-    virtual bool        setEnable(bool) override;
-    virtual bool        setEnable() override;
-    virtual bool        unsetEnable() override;
-    virtual bool        setDisable() override;
+    bool                setEnable(bool) override;
+    bool                setEnable() override;
+    bool                unsetEnable() override;
+    bool                setDisable() override;
     void                setText (const FString&);
 
     // Inquiries
@@ -106,23 +106,23 @@ class FButtonGroup : public FScrollView
     bool                hasCheckedButton() const;
 
     // Methods
-    virtual void        hide() override;
+    void                hide() override;
     void                insert (FToggleButton*);
     void                remove (FToggleButton*);
     void                checkScrollSize (FToggleButton*);
     void                checkScrollSize (const FRect&);
 
     // Event handlers
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onAccel (FAccelEvent*) override;
-    virtual void        onFocusIn (FFocusEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onAccel (FAccelEvent*) override;
+    void                onFocusIn (FFocusEvent*) override;
 
   protected:
     // Mutator
     void                setHotkeyAccelerator();
 
     // Methods
-    virtual void        draw() override;
+    void                draw() override;
     void                drawLabel();
 
   private:

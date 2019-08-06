@@ -201,7 +201,7 @@ const std::size_t lastKeyItem = \
     std::size_t((sizeof(vt100_key_to_utf8) / sizeof(vt100_key_to_utf8[0])) - 1);
 
 
- wchar_t cp437_to_ucs[][2] =
+wchar_t cp437_to_ucs[][2] =
 {
   {0x00, 0x0000},  // null
   {0x01, 0x263a},  // white smiling face

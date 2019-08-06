@@ -28,6 +28,7 @@
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
 
+#include <utility>
 #include <final/final.h>
 
 //----------------------------------------------------------------------

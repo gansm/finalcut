@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <limits>
 #include "final/fsize.h"
 
 namespace finalcut

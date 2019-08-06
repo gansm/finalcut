@@ -94,18 +94,18 @@ class FSystemImpl : public FSystem
     // Methods
 #if defined(__linux__)
 #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
-    virtual uChar inPortByte (uShort port) override
+    uChar inPortByte (uShort port) override
     {
       return ::inb (port);
     }
 #else
-    virtual uChar inPortByte (uShort) override
+    uChar inPortByte (uShort) override
     {
       return 0;
     }
 #endif
 #else
-    virtual uChar inPortByte (uShort) override
+    uChar inPortByte (uShort) override
     {
       return 0;
     }
@@ -114,26 +114,26 @@ class FSystemImpl : public FSystem
 
 #if defined(__linux__)
 #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
-    virtual void outPortByte (uChar value, uShort port) override
+    void outPortByte (uChar value, uShort port) override
     {
       ::outb (value, port);
     }
 #else
-    virtual void outPortByte (uChar, uShort) override
+    void outPortByte (uChar, uShort) override
     { }
 #endif
 #else
-    virtual void outPortByte (uChar, uShort) override
+    void outPortByte (uChar, uShort) override
     { }
 #endif
 
 
-    virtual int isTTY (int fd) override
+    int isTTY (int fd) override
     {
       return ::isatty(fd);
     }
 
-    virtual int ioctl (int fd, uLong request, ...) override
+    int ioctl (int fd, uLong request, ...) override
     {
       va_list args;
       va_start (args, request);
@@ -143,7 +143,7 @@ class FSystemImpl : public FSystem
       return ret;
     }
 
-    virtual int open (const char* pathname, int flags, ...) override
+    int open (const char* pathname, int flags, ...) override
     {
       va_list args;
       va_start (args, flags);
@@ -153,22 +153,22 @@ class FSystemImpl : public FSystem
       return ret;
     }
 
-    virtual int close (int fildes) override
+    int close (int fildes) override
     {
       return ::close(fildes);
     }
 
-    virtual FILE* fopen (const char* path, const char* mode) override
+    FILE* fopen (const char* path, const char* mode) override
     {
       return std::fopen (path, mode);
     }
 
-    virtual int fclose (FILE* fp) override
+    int fclose (FILE* fp) override
     {
       return std::fclose (fp);
     }
 
-    virtual int putchar (int c) override
+    int putchar (int c) override
     {
 #if defined(__sun) && defined(__SVR4)
       return std::putchar(char(c));
@@ -177,7 +177,7 @@ class FSystemImpl : public FSystem
 #endif
     }
 
-    virtual int tputs (const char* str, int affcnt, int (*putc)(int)) override
+    int tputs (const char* str, int affcnt, int (*putc)(int)) override
     {
 #if defined(__sun) && defined(__SVR4)
       return ::tputs (C_STR(str), affcnt, reinterpret_cast<int (*)(char)>(putc));
@@ -186,7 +186,7 @@ class FSystemImpl : public FSystem
 #endif
     }
 
-    virtual uid_t getuid() override
+    uid_t getuid() override
     {
       return ::getuid();
     }

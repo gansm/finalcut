@@ -89,14 +89,14 @@ class FTextView : public FWidget
     FTextView& operator = (const FTextView&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     std::size_t         getColumns() const;
     std::size_t         getRows() const;
     const FString       getText() const;
     const FStringList&  getLines() const;
 
     // Mutators
-    virtual void        setGeometry ( const FPoint&, const FSize&
+    void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     void                setText (const FString&);
     void                scrollToX (int);
@@ -106,7 +106,7 @@ class FTextView : public FWidget
     void                scrollBy (int, int);
 
     // Methods
-    virtual void        hide() override;
+    void                hide() override;
     template<typename T>
     void                append (const std::initializer_list<T>&);
     void                append (const FString&);
@@ -119,17 +119,17 @@ class FTextView : public FWidget
     void                clear();
 
     // Event handlers
-    virtual void        onKeyPress (FKeyEvent*) override;
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
-    virtual void        onMouseMove (FMouseEvent*) override;
-    virtual void        onWheel (FWheelEvent*) override;
-    virtual void        onFocusIn (FFocusEvent*) override;
-    virtual void        onFocusOut (FFocusEvent*) override;
+    void                onKeyPress (FKeyEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
+    void                onMouseMove (FMouseEvent*) override;
+    void                onWheel (FWheelEvent*) override;
+    void                onFocusIn (FFocusEvent*) override;
+    void                onFocusOut (FFocusEvent*) override;
 
   protected:
     // Method
-    virtual void        adjustSize() override;
+    void                adjustSize() override;
 
   private:
     // Typedef
@@ -149,7 +149,7 @@ class FTextView : public FWidget
     void                initScrollbar ( FScrollbarPtr&
                                       , fc::orientation
                                       , FTextViewCallback );
-    virtual void        draw() override;
+    void                draw() override;
     void                drawText();
     void                processChanged();
 

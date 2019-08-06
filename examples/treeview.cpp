@@ -135,7 +135,7 @@ class Treeview : public finalcut::FDialog
     struct TreeItem;  // forward declaration
 
     // Methods
-    virtual void adjustSize() override;
+    void adjustSize() override;
 
     // Event handler
     void onClose (finalcut::FCloseEvent*) override;

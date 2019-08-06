@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "final/fstring.h"

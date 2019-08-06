@@ -29,7 +29,7 @@ endif
 all: $(OBJS)
 
 debug:
-	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic"
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -DUNIT_TEST -Wall -Wextra -Wpedantic"
 
 check: test
 test: debug

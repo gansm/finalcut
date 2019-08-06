@@ -109,7 +109,7 @@ class FMessageBox : public FDialog
     FMessageBox& operator = (const FMessageBox&);
 
     // Accessor
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     const FString       getTitlebarText() const;
     const FString       getHeadline() const;
     const FString       getText() const;
@@ -139,7 +139,7 @@ class FMessageBox : public FDialog
                               , int = 0 );
    protected:
     // Method
-    virtual void        adjustSize() override;
+    void                adjustSize() override;
 
     // Callback method
     void                cb_processClick (FWidget*, FDataPtr);
@@ -151,7 +151,7 @@ class FMessageBox : public FDialog
     void                deallocation();
     void                initCallbacks();
     void                calculateDimensions();
-    virtual void        draw() override;
+    void                draw() override;
     void                resizeButtons();
     void                adjustButtons();
 

@@ -118,7 +118,7 @@ class FFileDialog : public FDialog
     FFileDialog& operator = (const FFileDialog&);
 
     // Accessors
-    virtual const char*  getClassName() const override;
+    const char*          getClassName() const override;
     const FString        getPath() const;
     const FString        getFilter() const;
     const FString        getSelectedFile() const;
@@ -132,7 +132,7 @@ class FFileDialog : public FDialog
     bool                 unsetShowHiddenFiles();
 
     // Event handler
-    virtual void         onKeyPress (FKeyEvent*) override;
+    void                 onKeyPress (FKeyEvent*) override;
 
     // Methods
     static const FString fileOpenChooser ( FWidget*
@@ -149,7 +149,7 @@ class FFileDialog : public FDialog
 
   protected:
     // Method
-    virtual void adjustSize() override;
+    void                 adjustSize() override;
 
   private:
     // Typedef
@@ -175,7 +175,7 @@ class FFileDialog : public FDialog
     void                 initCallbacks();
     bool                 pattern_match (const char* const, char[]);
     void                 clear();
-    int                  numOfDirs();
+    long                 numOfDirs();
     void                 sortDir();
     int                  readDir();
     void                 getEntry (const char* const, struct dirent*);

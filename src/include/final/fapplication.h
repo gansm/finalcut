@@ -109,7 +109,7 @@ class FApplication : public FWidget
     FApplication& operator = (const FApplication&) = delete;
 
     // Accessors
-    virtual const char*   getClassName() const override;
+    const char*           getClassName() const override;
     int                   getArgc() const;
     char**                getArgv() const;
     static FApplication*  getApplicationObject();
@@ -184,7 +184,7 @@ class FApplication : public FWidget
     void                  processResizeEvent();
     void                  processCloseWidget();
     bool                  processNextEvent();
-    virtual void          performTimerAction ( const FObject*
+    void                  performTimerAction ( const FObject*
                                              , const FEvent* ) override;
 
     // Data Members

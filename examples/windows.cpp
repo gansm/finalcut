@@ -52,11 +52,11 @@ class SmallWindow : public finalcut::FDialog
 
   private:
     // Method
-    virtual void adjustSize() override;
+    void adjustSize() override;
 
     // Event handlers
-    virtual void onShow (finalcut::FShowEvent*) override;
-    virtual void onTimer (finalcut::FTimerEvent*) override;
+    void onShow (finalcut::FShowEvent*) override;
+    void onTimer (finalcut::FTimerEvent*) override;
 
     // Data Members
     finalcut::FLabel left_arrow{this};
@@ -209,12 +209,12 @@ class Window : public finalcut::FDialog
     void configureFileMenuItems();
     void configureDialogButtons();
     void activateWindow (finalcut::FDialog*);
-    virtual void adjustSize() override;
+    void adjustSize() override;
     void addClickedCallback (finalcut::FWidget*, WindowCallback);
     void addClickedCallback (finalcut::FWidget*, FAppCallback);
 
     // Event handlers
-    virtual void onClose (finalcut::FCloseEvent*) override;
+    void onClose (finalcut::FCloseEvent*) override;
 
     // Callback methods
     void cb_createWindows (finalcut::FWidget*, FDataPtr);

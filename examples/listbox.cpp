@@ -23,6 +23,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <memory>
 #include <fstream>
 
 #include <final/final.h>
@@ -95,7 +96,7 @@ class Listbox : public FDialog
 
   private:
     // Event handlers
-    virtual void onClose (FCloseEvent*) override;
+    void onClose (FCloseEvent*) override;
 
     // Data Member
     std::list<double>  double_list{};

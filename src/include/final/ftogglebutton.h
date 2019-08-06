@@ -87,22 +87,22 @@ class FToggleButton : public FWidget
     FToggleButton& operator = (const FToggleButton&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     FString&            getText();
 
     // Mutators
-    virtual void        setGeometry ( const FPoint&, const FSize&
+    void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     bool                setNoUnderline (bool);
     bool                setNoUnderline();
     bool                unsetNoUnderline();
-    virtual bool        setEnable (bool) override;
-    virtual bool        setEnable() override;
-    virtual bool        unsetEnable() override;
-    virtual bool        setDisable() override;
-    virtual bool        setFocus (bool) override;
-    virtual bool        setFocus() override;
-    virtual bool        unsetFocus() override;
+    bool                setEnable (bool) override;
+    bool                setEnable() override;
+    bool                unsetEnable() override;
+    bool                setDisable() override;
+    bool                setFocus (bool) override;
+    bool                setFocus() override;
+    bool                unsetFocus() override;
     bool                setChecked (bool);
     bool                setChecked();
     bool                unsetChecked();
@@ -112,15 +112,15 @@ class FToggleButton : public FWidget
     bool                isChecked();
 
     // Methods
-    virtual void        hide() override;
+    void                hide() override;
 
     // Event handlers
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
-    virtual void        onWheel (FWheelEvent*) override;
-    virtual void        onAccel (FAccelEvent*) override;
-    virtual void        onFocusIn (FFocusEvent*) override;
-    virtual void        onFocusOut (FFocusEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
+    void                onWheel (FWheelEvent*) override;
+    void                onAccel (FAccelEvent*) override;
+    void                onFocusIn (FFocusEvent*) override;
+    void                onFocusOut (FFocusEvent*) override;
 
   protected:
     // Accessor
@@ -135,13 +135,13 @@ class FToggleButton : public FWidget
     bool                hasGroup() const;
 
     // Methods
-    virtual void        draw() override;
+    void                draw() override;
     void                drawLabel();
     void                processClick();
     void                processToggle();
 
     // Event handler
-    virtual void        onKeyPress (FKeyEvent*) override;
+    void                onKeyPress (FKeyEvent*) override;
 
     // Data Members
     bool          checked{false};

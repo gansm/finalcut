@@ -34,12 +34,12 @@ class Keyboard : public finalcut::FWidget
 
   protected:
     // Event handlers
-    virtual void onKeyPress (finalcut::FKeyEvent*) override;
-    virtual void onAccel (finalcut::FAccelEvent*) override;
+    void onKeyPress (finalcut::FKeyEvent*) override;
+    void onAccel (finalcut::FAccelEvent*) override;
 
   private:
     // Methods
-    virtual void draw() override;
+    void draw() override;
 };
 
 //----------------------------------------------------------------------

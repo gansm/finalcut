@@ -44,13 +44,13 @@ class Mandelbrot : public finalcut::FDialog
     ~Mandelbrot();
 
     // Event handlers
-    virtual void onKeyPress (finalcut::FKeyEvent*) override;
-    virtual void onClose (finalcut::FCloseEvent*) override;
+    void onKeyPress (finalcut::FKeyEvent*) override;
+    void onClose (finalcut::FCloseEvent*) override;
 
   private:
     // Methods
-    virtual void draw() override;
-    virtual void adjustSize() override;
+    void draw() override;
+    void adjustSize() override;
 };
 #pragma pack(pop)
 

@@ -27,7 +27,7 @@ How to use the library
 At the beginning of this introduction to the Final Cut
 we will start with a small example.
 
-The following example creates an empty 30×10 character dialog.
+The following example creates an empty 30??10 character dialog.
 
 **File:** *dialog.cpp*
 ```cpp
@@ -290,7 +290,7 @@ class dialogWidget : public FDialog
     }
 
   private:
-    virtual void onTimer (FTimerEvent* ev) override
+    void onTimer (FTimerEvent* ev) override
     {
       if ( id == ev->getTimerId() && n < 9999999999 )
       {
@@ -699,12 +699,12 @@ class dialogWidget : public FDialog
     void setTemperature()
     {
       label.clear();
-      label << t << "°C";
+      label << t << "??C";
       label.redraw();
     }
 
     int t = 20;
-    FLabel label{FString() << t << "°C", this};
+    FLabel label{FString() << t << "??C", this};
     FButton plus {"&+", this};
     FButton minus {"&-", this};
 };
@@ -795,7 +795,7 @@ class dialogWidget : public FDialog
       input.setY (ly, false);
     }
 
-    virtual void adjustSize() override
+    void adjustSize() override
     {
       // Calling super class method adjustSize()
       FDialog::adjustSize();
@@ -803,14 +803,14 @@ class dialogWidget : public FDialog
       centerDialog();
     }
 
-    virtual void setSize (const FSize& size, bool) override
+    void setSize (const FSize& size, bool) override
     {
       // Calling super class methods setSize() + adjustSize()
       FDialog::setSize (size, false);
       FDialog::adjustSize();
     }
 
-    virtual void draw() override
+    void draw() override
     {
       adjustWidgets();  // Adjust widgets before drawing 
 

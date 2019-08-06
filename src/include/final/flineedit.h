@@ -52,6 +52,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <limits>
 #include "final/fwidget.h"
 
 namespace finalcut
@@ -108,7 +109,7 @@ class FLineEdit : public FWidget
     const FLineEdit& operator >> (FString&);
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     FString             getText() const;
     std::size_t         getMaxLength() const;
     std::size_t         getCursorPosition() const;
@@ -122,15 +123,15 @@ class FLineEdit : public FWidget
     void                setCursorPosition (std::size_t);
     void                setLabelText (const FString&);
     void                setLabelOrientation (const label_o);
-    virtual void        setGeometry ( const FPoint&, const FSize&
+    void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
-    virtual bool        setEnable(bool) override;
-    virtual bool        setEnable() override;
-    virtual bool        unsetEnable() override;
-    virtual bool        setDisable() override;
-    virtual bool        setFocus(bool) override;
-    virtual bool        setFocus() override;
-    virtual bool        unsetFocus() override;
+    bool                setEnable(bool) override;
+    bool                setEnable() override;
+    bool                unsetEnable() override;
+    bool                setDisable() override;
+    bool                setFocus(bool) override;
+    bool                setFocus() override;
+    bool                unsetFocus() override;
     bool                setShadow(bool);
     bool                setShadow();
     bool                unsetShadow();
@@ -139,23 +140,23 @@ class FLineEdit : public FWidget
     bool                hasShadow();
 
     // Methods
-    virtual void        hide() override;
+    void                hide() override;
     void                clear();
 
     // Event handlers
-    virtual void        onKeyPress (FKeyEvent*) override;
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
-    virtual void        onMouseMove (FMouseEvent*) override;
-    virtual void        onTimer (FTimerEvent*) override;
-    virtual void        onAccel (FAccelEvent*) override;
-    virtual void        onHide (FHideEvent*) override;
-    virtual void        onFocusIn (FFocusEvent*) override;
-    virtual void        onFocusOut (FFocusEvent*) override;
+    void                onKeyPress (FKeyEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
+    void                onMouseMove (FMouseEvent*) override;
+    void                onTimer (FTimerEvent*) override;
+    void                onAccel (FAccelEvent*) override;
+    void                onHide (FHideEvent*) override;
+    void                onFocusIn (FFocusEvent*) override;
+    void                onFocusOut (FFocusEvent*) override;
 
   protected:
     void                adjustLabel();
-    virtual void        adjustSize() override;
+    void                adjustSize() override;
 
   private:
     // Enumeration
@@ -169,7 +170,7 @@ class FLineEdit : public FWidget
     // Methods
     void                init();
     bool                hasHotkey();
-    virtual void        draw() override;
+    void                draw() override;
     void                drawInputField();
     void                keyLeft();
     void                keyRight();

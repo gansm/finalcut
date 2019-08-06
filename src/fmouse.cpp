@@ -1564,15 +1564,15 @@ void FMouseControl::drawGpmPointer()
 //----------------------------------------------------------------------
 FMouse* FMouseControl::getMouseWithData()
 {
-   const auto& iter = \
-       std::find_if ( std::begin(mouse_protocol)
-                    , std::end(mouse_protocol)
-                    , [] (FMouseProtocol::const_reference m)
-                      {
-                        return m.second
-                            && m.second->hasData();
-                      }
-                    );
+  const auto& iter = \
+      std::find_if ( std::begin(mouse_protocol)
+                   , std::end(mouse_protocol)
+                   , [] (FMouseProtocol::const_reference m)
+                     {
+                       return m.second
+                           && m.second->hasData();
+                     }
+                   );
 
   return ( iter != mouse_protocol.end() ) ? iter->second : 0;
 }
@@ -1580,15 +1580,15 @@ FMouse* FMouseControl::getMouseWithData()
 //----------------------------------------------------------------------
 FMouse* FMouseControl::getMouseWithEvent()
 {
-   const auto& iter = \
-       std::find_if ( std::begin(mouse_protocol)
-                    , std::end(mouse_protocol)
-                    , [] (FMouseProtocol::const_reference m)
-                      {
-                        return m.second
-                            && m.second->hasEvent();
-                      }
-                    );
+  const auto& iter = \
+      std::find_if ( std::begin(mouse_protocol)
+                   , std::end(mouse_protocol)
+                   , [] (FMouseProtocol::const_reference m)
+                     {
+                       return m.second
+                           && m.second->hasEvent();
+                     }
+                   );
 
   return ( iter != mouse_protocol.end() ) ? iter->second : 0;
 }

@@ -56,10 +56,10 @@ class ColorChooser : public finalcut::FWidget
 
   private:
     // Method
-    virtual void draw() override;
+    void draw() override;
 
     // Event handler
-    virtual void onMouseDown (finalcut::FMouseEvent*) override;
+    void onMouseDown (finalcut::FMouseEvent*) override;
 
     // Data Members
     FColor fg_color{fc::White};
@@ -195,10 +195,10 @@ class Brushes : public finalcut::FWidget
 
   private:
     // Method
-    virtual void draw() override;
+    void draw() override;
 
     // Event handler
-    virtual void onMouseDown (finalcut::FMouseEvent*) override;
+    void onMouseDown (finalcut::FMouseEvent*) override;
 
     // Data Members
     wchar_t brush{L' '};
@@ -329,19 +329,19 @@ class MouseDraw : public finalcut::FDialog
     void setGeometry (const FPoint&, const FSize&, bool = true) override;
 
     // Event handlers
-    virtual void onKeyPress (finalcut::FKeyEvent*) override;
-    virtual void onClose (finalcut::FCloseEvent*) override;
+    void onKeyPress (finalcut::FKeyEvent*) override;
+    void onClose (finalcut::FCloseEvent*) override;
 
   private:
     // Methods
-    virtual void draw() override;
+    void draw() override;
     void drawBrush (int, int, bool = false);
     void drawCanvas();
-    virtual void adjustSize() override;
+    void adjustSize() override;
 
     // Event handler
-    virtual void onMouseDown (finalcut::FMouseEvent*) override;
-    virtual void onMouseMove (finalcut::FMouseEvent*) override;
+    void onMouseDown (finalcut::FMouseEvent*) override;
+    void onMouseMove (finalcut::FMouseEvent*) override;
 
     // Callback methods
     void cb_colorChanged (finalcut::FWidget*, FDataPtr);

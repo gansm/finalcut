@@ -96,17 +96,17 @@ class FMenuItem : public FWidget
     FMenuItem& operator = (const FMenuItem&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     uChar               getHotkey() const;
     FMenu*              getMenu() const;
     std::size_t         getTextLength() const;
     FString             getText() const;
 
     // Mutators
-    virtual bool        setEnable (bool) override;
-    virtual bool        setFocus (bool) override;
-    virtual bool        setFocus() override;
-    virtual bool        unsetFocus() override;
+    bool                setEnable (bool) override;
+    bool                setFocus (bool) override;
+    bool                setFocus() override;
+    bool                unsetFocus() override;
     void                setSelected();
     void                unsetSelected();
     void                setSeparator();
@@ -124,19 +124,19 @@ class FMenuItem : public FWidget
     bool                hasMenu() const;
 
     // Methods
-    virtual void        addAccelerator (FKey, FWidget*) override;
-    virtual void        delAccelerator (FWidget*) override;
+    void                addAccelerator (FKey, FWidget*) override;
+    void                delAccelerator (FWidget*) override;
     void                openMenu();
 
     // Event handlers
-    virtual void        onKeyPress (FKeyEvent*) override;
-    virtual void        onMouseDoubleClick (FMouseEvent*) override;
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
-    virtual void        onMouseMove (FMouseEvent*) override;
-    virtual void        onAccel (FAccelEvent*) override;
-    virtual void        onFocusIn (FFocusEvent*) override;
-    virtual void        onFocusOut (FFocusEvent*) override;
+    void                onKeyPress (FKeyEvent*) override;
+    void                onMouseDoubleClick (FMouseEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
+    void                onMouseMove (FMouseEvent*) override;
+    void                onAccel (FAccelEvent*) override;
+    void                onFocusIn (FFocusEvent*) override;
+    void                onFocusOut (FFocusEvent*) override;
 
   protected:
     // Accessor

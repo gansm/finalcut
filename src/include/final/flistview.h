@@ -92,7 +92,7 @@ class FListViewItem : public FObject
     FListViewItem& operator = (const FListViewItem&);
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     uInt                getColumnCount() const;
     int                 getSortColumn() const;
     FString             getText (int) const;
@@ -285,7 +285,7 @@ class FListView : public FWidget
     FListView& operator = (const FListView&) = delete;
 
     // Accessors
-    virtual const char*  getClassName() const override;
+    const char*          getClassName() const override;
     std::size_t          getCount();
     fc::text_alignment   getColumnAlignment (int) const;
     FString              getColumnText (int) const;
@@ -295,7 +295,7 @@ class FListView : public FWidget
     FListViewItem*       getCurrentItem();
 
     // Mutators
-    virtual void         setGeometry ( const FPoint&, const FSize&
+    void                 setGeometry ( const FPoint&, const FSize&
                                      , bool = true ) override;
     void                 setColumnAlignment (int, fc::text_alignment);
     void                 setColumnText (int, const FString&);
@@ -314,7 +314,7 @@ class FListView : public FWidget
 
     // Methods
     virtual int          addColumn (const FString&, int = USE_MAX_SIZE);
-    virtual void         hide() override;
+    void                 hide() override;
     FObjectIterator      insert (FListViewItem*);
     FObjectIterator      insert (FListViewItem*, FObjectIterator);
     FObjectIterator      insert ( const FStringList&
@@ -350,15 +350,15 @@ class FListView : public FWidget
     virtual void         sort();
 
     // Event handlers
-    virtual void         onKeyPress (FKeyEvent*) override;
-    virtual void         onMouseDown (FMouseEvent*) override;
-    virtual void         onMouseUp (FMouseEvent*) override;
-    virtual void         onMouseMove (FMouseEvent*) override;
-    virtual void         onMouseDoubleClick (FMouseEvent*) override;
-    virtual void         onWheel (FWheelEvent*) override;
-    virtual void         onTimer (FTimerEvent*) override;
-    virtual void         onFocusIn (FFocusEvent*) override;
-    virtual void         onFocusOut (FFocusEvent*) override;
+    void                 onKeyPress (FKeyEvent*) override;
+    void                 onMouseDown (FMouseEvent*) override;
+    void                 onMouseUp (FMouseEvent*) override;
+    void                 onMouseMove (FMouseEvent*) override;
+    void                 onMouseDoubleClick (FMouseEvent*) override;
+    void                 onWheel (FWheelEvent*) override;
+    void                 onTimer (FTimerEvent*) override;
+    void                 onFocusIn (FFocusEvent*) override;
+    void                 onFocusOut (FFocusEvent*) override;
 
     // Data Members
     static FObjectIterator null_iter;
@@ -366,7 +366,7 @@ class FListView : public FWidget
   protected:
     // Methods
     void                 adjustViewport (int);
-    virtual void         adjustSize() override;
+    void                 adjustSize() override;
 
   private:
     // Typedef
@@ -393,7 +393,7 @@ class FListView : public FWidget
     std::size_t          getAlignOffset ( fc::text_alignment
                                         , std::size_t
                                         , std::size_t );
-    virtual void         draw() override;
+    void                 draw() override;
     void                 drawHeadlines();
     void                 drawList();
     void                 drawListLine (const FListViewItem*, bool, bool);

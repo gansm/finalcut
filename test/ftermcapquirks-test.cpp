@@ -28,6 +28,7 @@
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
 
+#include <string>
 #include <final/final.h>
 
 #define CPPUNIT_ASSERT_CSTRING(expected, actual) \

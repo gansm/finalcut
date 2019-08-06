@@ -50,6 +50,7 @@
 
 #include <cstdio>  // need for sprintf
 #include <cstring>
+#include <vector>
 
 #include "final/ftermdata.h"
 

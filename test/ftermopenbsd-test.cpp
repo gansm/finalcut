@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <limits>
+#include <string>
 
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
@@ -72,17 +73,17 @@ class FSystemTest : public finalcut::FSystem
     virtual ~FSystemTest();
 
     // Methods
-    virtual uChar    inPortByte (uShort) override;
-    virtual void     outPortByte (uChar, uShort) override;
-    virtual int      isTTY (int) override;
-    virtual int      ioctl (int, uLong, ...) override;
-    virtual int      open (const char*, int, ...) override;
-    virtual int      close (int) override;
-    virtual FILE*    fopen (const char*, const char*) override;
-    virtual int      fclose (FILE*) override;
-    virtual int      putchar (int) override;
-    virtual int      tputs (const char*, int, int (*)(int)) override;
-    virtual uid_t    getuid() override;
+    uChar    inPortByte (uShort) override;
+    void     outPortByte (uChar, uShort) override;
+    int      isTTY (int) override;
+    int      ioctl (int, uLong, ...) override;
+    int      open (const char*, int, ...) override;
+    int      close (int) override;
+    FILE*    fopen (const char*, const char*) override;
+    int      fclose (FILE*) override;
+    int      putchar (int) override;
+    int      tputs (const char*, int, int (*)(int)) override;
+    uid_t    getuid() override;
 
   private:
     kbd_t kbdencoding = 512;
@@ -265,14 +266,12 @@ class ftermopenbsdTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 
 //----------------------------------------------------------------------
 ftermopenbsdTest::ftermopenbsdTest()
-{
-
-}
+{ }
 
 //----------------------------------------------------------------------
 void ftermopenbsdTest::classNameTest()
 {
-  const finalcut::FTermOpenBSD p;
+  const finalcut::FTermOpenBSD p{};
   const char* const classname = p.getClassName();
   CPPUNIT_ASSERT ( std::strcmp(classname, "FTermOpenBSD") == 0 );
 }

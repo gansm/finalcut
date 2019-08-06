@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2018 Markus Gans                                      *
+* Copyright 2016-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -92,7 +92,7 @@ class FDialogListMenu : public FMenu
     FDialogListMenu& operator = (const FDialogListMenu&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char* getClassName() const override;
 
   private:
     // Method

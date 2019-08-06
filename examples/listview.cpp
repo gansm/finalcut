@@ -59,7 +59,7 @@ class Listview : public finalcut::FDialog
     void populate();
 
     // Event handlers
-    virtual void onClose (finalcut::FCloseEvent*) override;
+    void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
     void cb_showInMessagebox (finalcut::FWidget*, FDataPtr);

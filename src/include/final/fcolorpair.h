@@ -52,7 +52,7 @@ class FColorPair
 {
   public:
     // Constructors
-    FColorPair (FColor fg = fc::Default, FColor bg = fc::Default)
+    explicit FColorPair (FColor fg = fc::Default, FColor bg = fc::Default)
       : fg_color(fg)
       , bg_color(bg)
     { }

@@ -85,7 +85,7 @@ class FButton : public FWidget
     FButton& operator = (const FString&);
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     FString&            getText();
 
     // Mutators
@@ -99,13 +99,13 @@ class FButton : public FWidget
     bool                setNoUnderline(bool);
     bool                setNoUnderline();
     bool                unsetNoUnderline();
-    virtual bool        setEnable(bool) override;
-    virtual bool        setEnable() override;
-    virtual bool        unsetEnable() override;
-    virtual bool        setDisable() override;
-    virtual bool        setFocus(bool) override;
-    virtual bool        setFocus() override;
-    virtual bool        unsetFocus() override;
+    bool                setEnable(bool) override;
+    bool                setEnable() override;
+    bool                unsetEnable() override;
+    bool                setDisable() override;
+    bool                setFocus(bool) override;
+    bool                setFocus() override;
+    bool                unsetFocus() override;
     bool                setFlat(bool);
     bool                setFlat();
     bool                unsetFlat();
@@ -127,17 +127,17 @@ class FButton : public FWidget
     bool                hasClickAnimation();
 
     // Methods
-    virtual void        hide() override;
+    void                hide() override;
 
     // Event handlers
-    virtual void        onKeyPress (FKeyEvent*) override;
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
-    virtual void        onMouseMove (FMouseEvent*) override;
-    virtual void        onTimer (FTimerEvent*) override;
-    virtual void        onAccel (FAccelEvent*) override;
-    virtual void        onFocusIn (FFocusEvent*) override;
-    virtual void        onFocusOut (FFocusEvent*) override;
+    void                onKeyPress (FKeyEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
+    void                onMouseMove (FMouseEvent*) override;
+    void                onTimer (FTimerEvent*) override;
+    void                onAccel (FAccelEvent*) override;
+    void                onFocusIn (FFocusEvent*) override;
+    void                onFocusOut (FFocusEvent*) override;
 
   private:
     // Constants
@@ -154,7 +154,7 @@ class FButton : public FWidget
     void                drawMarginRight();
     void                drawTopBottomBackground();
     void                drawButtonTextLine (wchar_t[]);
-    virtual void        draw() override;
+    void                draw() override;
     void                updateStatusBar();
     void                updateButtonColor();
     void                processClick();

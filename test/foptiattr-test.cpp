@@ -32,6 +32,7 @@
 #include <cppunit/TestAssert.h>
 
 #include <iomanip>
+#include <string>
 #include <final/final.h>
 
 

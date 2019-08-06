@@ -37,11 +37,11 @@ class Timer : public finalcut::FWidget
 
   protected:
     // Method
-    virtual void draw() override;
+    void draw() override;
 
     // Event handlers
-    virtual void onTimer (finalcut::FTimerEvent*) override;
-    virtual void onAccel (finalcut::FAccelEvent*) override;
+    void onTimer (finalcut::FTimerEvent*) override;
+    void onAccel (finalcut::FAccelEvent*) override;
 };
 
 //----------------------------------------------------------------------

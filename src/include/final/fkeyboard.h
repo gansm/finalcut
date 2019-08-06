@@ -35,6 +35,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <sys/time.h>
 #include "final/ftypes.h"
 
 namespace finalcut

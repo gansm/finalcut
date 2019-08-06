@@ -94,7 +94,7 @@ class FStatusKey : public FWidget
     FStatusKey& operator = (const FStatusKey&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     virtual FKey        getKey() const;
     virtual FString     getText() const;
 
@@ -112,7 +112,7 @@ class FStatusKey : public FWidget
     bool                hasMouseFocus() const;
 
     // Event handler
-    virtual void        onAccel (FAccelEvent*) override;
+    void                onAccel (FAccelEvent*) override;
 
   private:
     // Methods
@@ -207,7 +207,7 @@ class FStatusBar : public FWindow
     FStatusBar& operator = (const FStatusBar&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     FStatusKey*         getStatusKey (int) const;
     FString             getMessage() const;
     std::size_t         getCount() const;
@@ -222,19 +222,19 @@ class FStatusBar : public FWindow
     bool                hasActivatedKey();
 
     // Methods
-    virtual void        hide() override;
+    void                hide() override;
     void                drawMessage();
     void                clearMessage();
     void                insert (FStatusKey*);
     void                remove (FStatusKey*);
     void                remove (int);
     void                clear();
-    virtual void        adjustSize() override;
+    void                adjustSize() override;
 
     // Event handlers
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
-    virtual void        onMouseMove (FMouseEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
+    void                onMouseMove (FMouseEvent*) override;
 
     // Callback method
     void                cb_statuskey_activated (FWidget*, FDataPtr);
@@ -245,7 +245,7 @@ class FStatusBar : public FWindow
 
     // Methods
     void                init();
-    virtual void        draw() override;
+    void                draw() override;
     void                drawKeys();
     void                drawKey (keyList::const_iterator);
     void                drawActiveKey (keyList::const_iterator);

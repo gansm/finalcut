@@ -186,7 +186,7 @@ class FWidget : public FVTerm, public FObject
     FWidget& operator = (const FWidget&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     FWidget*            getRootWidget() const;
     FWidget*            getParentWidget() const;
     static FWidget*&    getMainWidget();
@@ -333,7 +333,7 @@ class FWidget : public FVTerm, public FObject
     virtual bool        focusLastChild();
     FPoint              termToWidgetPos (const FPoint&);
     void                detectTermSize();
-    virtual void        print (const FPoint& p) override;
+    void                print (const FPoint& p) override;
     virtual void        move (const FPoint&);
     void                drawShadow();
     void                clearShadow();
@@ -368,10 +368,10 @@ class FWidget : public FVTerm, public FObject
     typedef std::vector<member_callback_data> MemberCallbackObjects;
 
     // Accessor
-    virtual term_area*  getPrintArea() override;
-    virtual void        addPreprocessingHandler ( FVTerm*
+    term_area*          getPrintArea() override;
+    void                addPreprocessingHandler ( FVTerm*
                                                 , FPreprocessingHandler ) override;
-    virtual void        delPreprocessingHandler (FVTerm*) override;
+    void                delPreprocessingHandler (FVTerm*) override;
 
     // Inquiry
     bool                isChildPrintArea() const;
@@ -388,7 +388,7 @@ class FWidget : public FVTerm, public FObject
     virtual bool        focusPrevChild();  // ...focus
 
     // Event handlers
-    virtual bool        event (FEvent*) override;
+    bool                event (FEvent*) override;
     virtual void        onKeyPress (FKeyEvent*);
     virtual void        onKeyUp (FKeyEvent*);
     virtual void        onKeyDown (FKeyEvent*);

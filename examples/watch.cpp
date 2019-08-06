@@ -53,8 +53,8 @@ class Watch : public finalcut::FDialog
     void printTime();
 
     // Event handlers
-    virtual void onTimer (finalcut::FTimerEvent*) override;
-    virtual void onClose (finalcut::FCloseEvent*) override;
+    void onTimer (finalcut::FTimerEvent*) override;
+    void onClose (finalcut::FCloseEvent*) override;
 
     // Callback methods
     void cb_clock (finalcut::FWidget*, FDataPtr);
@@ -62,7 +62,7 @@ class Watch : public finalcut::FDialog
 
   protected:
     // Method
-    virtual void adjustSize() override;
+    void adjustSize() override;
 
   private:
     // Data Members

@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <limits>
+#include <utility>
 
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
@@ -106,7 +107,7 @@ void FPointTest::noArgumentTest()
 //----------------------------------------------------------------------
 void FPointTest::copyConstructorTest()
 {
-  const finalcut::FPoint p1 (15,10);
+  const finalcut::FPoint p1 (15, 10);
   const finalcut::FPoint p2 (p1);
   CPPUNIT_ASSERT ( p2.getX() == 15 );
   CPPUNIT_ASSERT ( p2.getY() == 10 );
@@ -115,7 +116,7 @@ void FPointTest::copyConstructorTest()
 //----------------------------------------------------------------------
 void FPointTest::moveConstructorTest()
 {
-  finalcut::FPoint p1 (25,16);
+  finalcut::FPoint p1 (25, 16);
   const finalcut::FPoint p2 (std::move(p1));
   CPPUNIT_ASSERT ( p1.getX() == 0 );
   CPPUNIT_ASSERT ( p1.getY() == 0 );
@@ -126,7 +127,7 @@ void FPointTest::moveConstructorTest()
 //----------------------------------------------------------------------
 void FPointTest::assignmentTest()
 {
-  const finalcut::FPoint p1 (-99,100);
+  const finalcut::FPoint p1 (-99, 100);
   CPPUNIT_ASSERT ( p1.getX() == -99 );
   CPPUNIT_ASSERT ( p1.getY() == 100 );
 
@@ -169,12 +170,12 @@ void FPointTest::assignmentTest()
 //----------------------------------------------------------------------
 void FPointTest::additionAssignmentTest()
 {
-  finalcut::FPoint p1 (1,2);
-  p1 += finalcut::FPoint (3,1);
+  finalcut::FPoint p1 (1, 2);
+  p1 += finalcut::FPoint (3, 1);
   CPPUNIT_ASSERT ( p1.getX() == 4 );
   CPPUNIT_ASSERT ( p1.getY() == 3 );
 
-  p1 += finalcut::FPoint (-4,-3);
+  p1 += finalcut::FPoint (-4, -3);
   CPPUNIT_ASSERT ( p1.getX() == 0 );
   CPPUNIT_ASSERT ( p1.getY() == 0 );
   CPPUNIT_ASSERT ( p1.isOrigin() );
@@ -194,37 +195,37 @@ void FPointTest::additionAssignmentTest()
 //----------------------------------------------------------------------
 void FPointTest::subtractionAssignmentTest()
 {
-  finalcut::FPoint p1 (10,20);
-  p1 -= finalcut::FPoint (5,5);
+  finalcut::FPoint p1 (10, 20);
+  p1 -= finalcut::FPoint (5, 5);
   CPPUNIT_ASSERT ( p1.getX() == 5 );
   CPPUNIT_ASSERT ( p1.getY() == 15 );
 
-  p1 -= finalcut::FPoint (-5,20);
+  p1 -= finalcut::FPoint (-5, 20);
   CPPUNIT_ASSERT ( p1.getX() == 10 );
   CPPUNIT_ASSERT ( p1.getY() == -5 );
   CPPUNIT_ASSERT ( ! p1.isOrigin() );
 
-  p1 -= finalcut::FPoint (-10,0);
+  p1 -= finalcut::FPoint (-10, 0);
   CPPUNIT_ASSERT ( p1.getX() == 20 );
   CPPUNIT_ASSERT ( p1.getY() == -5 );
   CPPUNIT_ASSERT ( ! p1.isOrigin() );
 
-  p1 -= finalcut::FPoint (20,0);
+  p1 -= finalcut::FPoint (20, 0);
   CPPUNIT_ASSERT ( p1.getX() == 0 );
   CPPUNIT_ASSERT ( p1.getY() == -5 );
   CPPUNIT_ASSERT ( ! p1.isOrigin() );
 
-  p1 -= finalcut::FPoint (0,-6);
+  p1 -= finalcut::FPoint (0, -6);
   CPPUNIT_ASSERT ( p1.getX() == 0 );
   CPPUNIT_ASSERT ( p1.getY() == 1 );
   CPPUNIT_ASSERT ( ! p1.isOrigin() );
 
-  p1 -= finalcut::FPoint (1,0);
+  p1 -= finalcut::FPoint (1, 0);
   CPPUNIT_ASSERT ( p1.getX() == -1 );
   CPPUNIT_ASSERT ( p1.getY() == 1 );
   CPPUNIT_ASSERT ( ! p1.isOrigin() );
 
-  p1 -= (finalcut::FPoint (0,1) + finalcut::FPoint (-1,0));
+  p1 -= (finalcut::FPoint (0, 1) + finalcut::FPoint (-1, 0));
   CPPUNIT_ASSERT ( p1.getX() == 0 );
   CPPUNIT_ASSERT ( p1.getY() == 0 );
   CPPUNIT_ASSERT ( p1.isOrigin() );
@@ -243,11 +244,11 @@ void FPointTest::subtractionAssignmentTest()
 //----------------------------------------------------------------------
 void FPointTest::equalTest()
 {
-  const finalcut::FPoint p1 (1,2);
-  const finalcut::FPoint p2 (1,2);
+  const finalcut::FPoint p1 (1, 2);
+  const finalcut::FPoint p2 (1, 2);
   CPPUNIT_ASSERT ( p1 == p2 );
-  CPPUNIT_ASSERT ( finalcut::FPoint(1,2) == p2 );
-  CPPUNIT_ASSERT ( p1 == finalcut::FPoint(1,2) );
+  CPPUNIT_ASSERT ( finalcut::FPoint(1, 2) == p2 );
+  CPPUNIT_ASSERT ( p1 == finalcut::FPoint(1, 2) );
   const finalcut::FPoint p3{};
   const finalcut::FPoint p4{};
   CPPUNIT_ASSERT ( p3 == p4 );
@@ -257,11 +258,11 @@ void FPointTest::equalTest()
 //----------------------------------------------------------------------
 void FPointTest::notEqualTest()
 {
-  const finalcut::FPoint p1 (1,2);
-  const finalcut::FPoint p2 (2,4);
+  const finalcut::FPoint p1 (1, 2);
+  const finalcut::FPoint p2 (2, 4);
   CPPUNIT_ASSERT ( p1 != p2 );
-  CPPUNIT_ASSERT ( finalcut::FPoint(1,2) != p2 );
-  CPPUNIT_ASSERT ( p1 != finalcut::FPoint(2,4) );
+  CPPUNIT_ASSERT ( finalcut::FPoint(1, 2) != p2 );
+  CPPUNIT_ASSERT ( p1 != finalcut::FPoint(2, 4) );
   CPPUNIT_ASSERT ( finalcut::FPoint() != p2 );
   CPPUNIT_ASSERT ( p1 != finalcut::FPoint() );
 }
@@ -269,12 +270,12 @@ void FPointTest::notEqualTest()
 //----------------------------------------------------------------------
 void FPointTest::additionTest()
 {
-  const finalcut::FPoint p1 (1,2);
-  const finalcut::FPoint p2 (5,8);
+  const finalcut::FPoint p1 (1, 2);
+  const finalcut::FPoint p2 (5, 8);
   const finalcut::FPoint p3 = p1 + p2;
   CPPUNIT_ASSERT ( p3.getX() == 6 );
   CPPUNIT_ASSERT ( p3.getY() == 10 );
-  CPPUNIT_ASSERT ( p1 + p2 == finalcut::FPoint(6,10) );
+  CPPUNIT_ASSERT ( p1 + p2 == finalcut::FPoint(6, 10) );
   CPPUNIT_ASSERT ( p1 + finalcut::FPoint() == p1 );
   CPPUNIT_ASSERT ( finalcut::FPoint() + p2 == p2 );
   CPPUNIT_ASSERT ( finalcut::FPoint() + finalcut::FPoint() == finalcut::FPoint() );
@@ -283,12 +284,12 @@ void FPointTest::additionTest()
 //----------------------------------------------------------------------
 void FPointTest::subtractionTest()
 {
-  const finalcut::FPoint p1 (-5,-20);
-  const finalcut::FPoint p2 (0,-30);
+  const finalcut::FPoint p1 (-5, -20);
+  const finalcut::FPoint p2 (0, -30);
   const finalcut::FPoint p3 = p1 - p2;
   CPPUNIT_ASSERT ( p3.getX() == -5 );
   CPPUNIT_ASSERT ( p3.getY() == 10 );
-  CPPUNIT_ASSERT ( p1 - p2 == finalcut::FPoint(-5,10) );
+  CPPUNIT_ASSERT ( p1 - p2 == finalcut::FPoint(-5, 10) );
   CPPUNIT_ASSERT ( p1 - finalcut::FPoint() == p1 );
   CPPUNIT_ASSERT ( finalcut::FPoint() - finalcut::FPoint() == finalcut::FPoint() );
 }
@@ -296,7 +297,7 @@ void FPointTest::subtractionTest()
 //----------------------------------------------------------------------
 void FPointTest::referenceTest()
 {
-  finalcut::FPoint p1 (1,1);
+  finalcut::FPoint p1 (1, 1);
   CPPUNIT_ASSERT ( p1.getX() == 1 );
   CPPUNIT_ASSERT ( p1.getY() == 1 );
 
