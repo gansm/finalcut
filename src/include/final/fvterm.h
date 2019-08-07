@@ -48,10 +48,6 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#if defined(__CYGWIN__)
-  #include "final/fconfig.h"  // includes _GNU_SOURCE for wcwidth()
-#endif
-
 #include <queue>
 #include <sstream>  // std::stringstream
 #include <string>

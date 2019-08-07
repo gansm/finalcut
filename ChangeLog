@@ -1,3 +1,6 @@
+2019-08-07  Markus Gans  <guru.mail@muenster.de>
+	* Fixes the Cygwin build
+
 2019-08-04  Markus Gans  <guru.mail@muenster.de>
 	* Reduce the number of interface parameters
 

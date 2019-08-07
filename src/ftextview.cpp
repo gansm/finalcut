@@ -20,6 +20,11 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__CYGWIN__)
+  #include "final/fconfig.h"  // includes _GNU_SOURCE for wcwidth()
+#endif
+
+#include <wchar.h>
 #include <memory>
 
 #include "final/fapplication.h"
