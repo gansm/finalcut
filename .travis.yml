@@ -73,7 +73,7 @@ matrix:
       - cat test/*.log
 
   #
-  # Coveralls
+  # Coveralls + Codecov
   #
   - os: linux
     env:
@@ -82,10 +82,12 @@ matrix:
       - lsb_release -a
       - uname -a
       - pip install --user cpp-coveralls
+      - sudo pip install codecov
     script:
       - ./build.sh coverage
     after_success:
       - coveralls --gcov-options '\-lp' -e debian -e doc -e icon -e logo -e m4 -e scripts -e examples
+      - bash <(curl -s https://codecov.io/bash)
 
   #
   # macOS
