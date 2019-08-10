@@ -160,7 +160,7 @@ bool FTermLinux::isLinuxConsole()
   char arg = 0;
   int fd_tty = FTerm::getTTYFileDescriptor();
 
-  // get keyboard type an compare
+  // Get keyboard type an compare
   return ( fsystem->isTTY(fd_tty)
         && fsystem->ioctl(fd_tty, KDGKBTYPE, &arg) == 0
         && ((arg == KB_101) || (arg == KB_84)) );
@@ -169,7 +169,7 @@ bool FTermLinux::isLinuxConsole()
 //----------------------------------------------------------------------
 void FTermLinux::init()
 {
-  // initialize Linux console
+  // Initialize Linux console
 
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
@@ -289,7 +289,7 @@ bool FTermLinux::loadVGAFont()
       if ( ret != 0 )
         vga_font = false;
 
-      // unicode character mapping
+      // Unicode character mapping
       struct unimapdesc unimap;
       unimap.entry_ct = uInt16 ( sizeof(fc::unicode_cp437_pairs)
                                / sizeof(unipair) );
@@ -330,7 +330,7 @@ bool FTermLinux::loadNewFont()
       if ( ret != 0 )
         new_font = false;
 
-      // unicode character mapping
+      // Unicode character mapping
       struct unimapdesc unimap;
       unimap.entry_ct = uInt16 ( sizeof(fc::unicode_cp437_pairs)
                                / sizeof(unipair) );
@@ -429,11 +429,11 @@ void FTermLinux::setBeep (int Hz, int ms)
   if ( ! FTerm::isLinuxTerm() )
     return;
 
-  // range for frequency: 21-32766
+  // Range for frequency: 21-32766
   if ( Hz < 21 || Hz > 32766 )
     return;
 
-  // range for duration:  0-1999
+  // Range for duration:  0-1999
   if ( ms < 0 || ms > 1999 )
     return;
 
@@ -449,8 +449,8 @@ void FTermLinux::resetBeep()
   if ( ! FTerm::isLinuxTerm() )
     return;
 
-  // default frequency: 750 Hz
-  // default duration:  125 ms
+  // Default frequency: 750 Hz
+  // Default duration:  125 ms
   FTerm::putstring ( CSI "10;750]"
                      CSI "11;125]" );
   std::fflush(stdout);
@@ -550,7 +550,7 @@ bool FTermLinux::getScreenFont()
   if ( fd_tty < 0 )
     return false;
 
-  // initialize unused padding bytes in struct
+  // Initialize unused padding bytes in struct
   std::memset (&font, 0, sizeof(console_font_op));
 
   font.op = KD_FONT_OP_GET;
@@ -559,7 +559,7 @@ bool FTermLinux::getScreenFont()
   font.height = 32;
   font.charcount = 512;
 
-  // initialize with 0
+  // Initialize with 0
   try
   {
     static constexpr std::size_t data_size = 4 * 32 * 512;
@@ -571,7 +571,7 @@ bool FTermLinux::getScreenFont()
     return false;
   }
 
-  // font operation
+  // Font operation
   if ( fsystem )
     ret = fsystem->ioctl (fd_tty, KDFONTOP, &font);
 
@@ -602,7 +602,7 @@ bool FTermLinux::getUnicodeMap()
   screen_unicode_map.entry_ct = 0;
   screen_unicode_map.entries = nullptr;
 
-  // get count
+  // Get count
   if ( fsystem )
     ret = fsystem->ioctl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
 
@@ -623,7 +623,7 @@ bool FTermLinux::getUnicodeMap()
       return false;
     }
 
-    // get unicode-to-font mapping from kernel
+    // Get unicode-to-font mapping from kernel
     if ( fsystem )
       ret = fsystem->ioctl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
 
@@ -641,7 +641,7 @@ FTermLinux::modifier_key& FTermLinux::getModifierKey()
 
   char subcode = 6;  // Shift state command + return value
 
-  // fill bit field with 0
+  // Fill bit field with 0
   std::memset (&mod_key, 0x00, sizeof(mod_key));
 
   // TIOCLINUX, subcode = 6 (TIOCL_GETSHIFTSTATE)
@@ -675,7 +675,7 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
   if ( fd_tty < 0 )
     return -1;
 
-  // initialize unused padding bytes in struct
+  // Initialize unused padding bytes in struct
   std::memset (&font, 0x00, sizeof(console_font_op));
 
   font.op = KD_FONT_OP_SET;
@@ -693,7 +693,7 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
 
     try
     {
-      font.data = new uChar[data_size]();  // initialize with 0
+      font.data = new uChar[data_size]();  // Initialize with 0
     }
     catch (const std::bad_alloc& ex)
     {
@@ -707,7 +707,7 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
                   , font.height);
   }
 
-  // font operation
+  // Font operation
   if ( fsystem )
     ret = fsystem->ioctl (fd_tty, KDFONTOP, &font);
 
@@ -744,14 +744,14 @@ int FTermLinux::setUnicodeMap (struct unimapdesc* unimap)
 
   do
   {
-    // clear the unicode-to-font table
+    // Clear the unicode-to-font table
     if ( fsystem )
       ret = fsystem->ioctl (fd_tty, PIO_UNIMAPCLR, &advice);
 
     if ( ret != 0 )
       return -1;
 
-    // put the new unicode-to-font mapping in kernel
+    // Put the new unicode-to-font mapping in kernel
     if ( fsystem )
       ret = fsystem->ioctl (fd_tty, PIO_UNIMAP, unimap);
 

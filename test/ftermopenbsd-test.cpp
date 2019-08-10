@@ -73,20 +73,22 @@ class FSystemTest : public finalcut::FSystem
     virtual ~FSystemTest();
 
     // Methods
-    uChar    inPortByte (uShort) override;
-    void     outPortByte (uChar, uShort) override;
-    int      isTTY (int) override;
-    int      ioctl (int, uLong, ...) override;
-    int      open (const char*, int, ...) override;
-    int      close (int) override;
-    FILE*    fopen (const char*, const char*) override;
-    int      fclose (FILE*) override;
-    int      putchar (int) override;
-    int      tputs (const char*, int, int (*)(int)) override;
-    uid_t    getuid() override;
+    uChar            inPortByte (uShort) override;
+    void             outPortByte (uChar, uShort) override;
+    int              isTTY (int) override;
+    int              ioctl (int, uLong, ...) override;
+    int              open (const char*, int, ...) override;
+    int              close (int) override;
+    FILE*            fopen (const char*, const char*) override;
+    int              fclose (FILE*) override;
+    int              putchar (int) override;
+    int              tputs (const char*, int, int (*)(int)) override;
+    uid_t            getuid() override;
+    wskbd_bell_data& getBell();
 
   private:
     kbd_t kbdencoding = 512;
+    wskbd_bell_data system_bell;
 };
 #pragma pack(pop)
 
@@ -95,6 +97,11 @@ class FSystemTest : public finalcut::FSystem
 //----------------------------------------------------------------------
 FSystemTest::FSystemTest()  // constructor
 {
+  // Initialize bell values
+  system_bell.which  = 0;
+  system_bell.pitch  = 1500;
+  system_bell.period = 100;
+  system_bell.volume = 50;
 }
 
 //----------------------------------------------------------------------
@@ -149,6 +156,43 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
       req_string = "WSKBDIO_SETENCODING";
       kbd_t* kbd_enc = static_cast<kbd_t*>(argp);
       kbdencoding = *kbd_enc;
+      ret_val = 0;
+      break;
+    }
+
+    case WSKBDIO_GETDEFAULTBELL:
+    {
+      req_string = "WSKBDIO_GETDEFAULTBELL";
+      wskbd_bell_data* spk = static_cast<wskbd_bell_data*>(argp);
+      spk->which = 0;
+      spk->pitch = 1500;
+      spk->period = 100;
+      spk->volume = 50;
+      ret_val = 0;
+      break;
+    }
+
+    case WSKBDIO_SETBELL:
+    {
+      req_string = "WSKBDIO_SETBELL";
+      wskbd_bell_data* spk = static_cast<wskbd_bell_data*>(argp);
+
+      if ( spk->which & WSKBD_BELL_DOPITCH )
+        system_bell.pitch = spk->pitch;
+      else
+        system_bell.pitch = 1500;
+
+      if ( spk->which & WSKBD_BELL_DOPERIOD )
+        system_bell.period = spk->period;
+      else
+        system_bell.period = 100;
+
+      if ( spk->which & WSKBD_BELL_DOVOLUME )
+        system_bell.volume = spk->volume;
+      else
+        system_bell.volume = 50;
+
+      spk->which = WSKBD_BELL_DOALL;
       ret_val = 0;
       break;
     }
@@ -228,6 +272,12 @@ int FSystemTest::tputs (const char* str, int affcnt, int (*putc)(int))
 uid_t FSystemTest::getuid()
 {
   return 0;
+}
+
+//----------------------------------------------------------------------
+wskbd_bell_data& FSystemTest::getBell()
+{
+  return system_bell;
 }
 
 }  // namespace test
@@ -441,6 +491,8 @@ void ftermopenbsdTest::openbsdConsoleTest()
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
 
+    test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
+    wskbd_bell_data& speaker = fsystest->getBell();
     openbsd.disableMetaSendsEscape();
     openbsd.init();
     term_detection->detect();
@@ -473,6 +525,34 @@ void ftermopenbsdTest::openbsdConsoleTest()
     CPPUNIT_ASSERT ( data->getTermGeometry().getHeight() == 25 );
     CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
     CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
+
+    CPPUNIT_ASSERT ( speaker.pitch  == 1500 );
+    CPPUNIT_ASSERT ( speaker.period == 100 );
+    CPPUNIT_ASSERT ( speaker.volume == 50 );
+    openbsd.setBeep (20, 100);     // Hz < 21
+    CPPUNIT_ASSERT ( speaker.pitch  == 1500 );
+    CPPUNIT_ASSERT ( speaker.period == 100 );
+    CPPUNIT_ASSERT ( speaker.volume == 50 );
+    openbsd.setBeep (32767, 100);  // Hz > 32766
+    CPPUNIT_ASSERT ( speaker.pitch  == 1500 );
+    CPPUNIT_ASSERT ( speaker.period == 100 );
+    CPPUNIT_ASSERT ( speaker.volume == 50 );
+    openbsd.setBeep (200, -1);     // ms < 0
+    CPPUNIT_ASSERT ( speaker.pitch  == 1500 );
+    CPPUNIT_ASSERT ( speaker.period == 100 );
+    CPPUNIT_ASSERT ( speaker.volume == 50 );
+    openbsd.setBeep (200, 2000);   // ms > 1999
+    CPPUNIT_ASSERT ( speaker.pitch  == 1500 );
+    CPPUNIT_ASSERT ( speaker.period == 100 );
+    CPPUNIT_ASSERT ( speaker.volume == 50 );
+    openbsd.setBeep (200, 100);    // 200 Hz - 100 ms
+    CPPUNIT_ASSERT ( speaker.pitch  == 200 );
+    CPPUNIT_ASSERT ( speaker.period == 100 );
+    CPPUNIT_ASSERT ( speaker.volume == 50 );
+    openbsd.resetBeep();
+    CPPUNIT_ASSERT ( speaker.pitch  == 1500 );
+    CPPUNIT_ASSERT ( speaker.period == 100 );
+    CPPUNIT_ASSERT ( speaker.volume == 50 );
 
     openbsd.finish();
 

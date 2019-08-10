@@ -40,7 +40,22 @@
 #if defined(UNIT_TEST)
   #define WSKBDIO_GETENCODING uInt32(0x4004570F)
   #define WSKBDIO_SETENCODING uInt32(0x80045710)
+  #define WSKBDIO_GETDEFAULTBELL uInt32(0x40105706)
+  #define WSKBDIO_SETBELL uInt32(0x80105703)
+  #define WSKBD_BELL_DOPITCH  0x1  // get/set pitch
+  #define WSKBD_BELL_DOPERIOD 0x2  // get/set period
+  #define WSKBD_BELL_DOVOLUME 0x4  // get/set volume
+  #define	WSKBD_BELL_DOALL    0x7  // all of the above
+
   typedef uInt32 kbd_t;
+
+  struct wskbd_bell_data
+  {
+    uInt which;   // values to get/set
+    uInt pitch;   // pitch, in Hz
+    uInt period;  // period, in milliseconds
+    uInt volume;  // percentage of max volume
+  };
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
   #include <sys/time.h>
   #include <dev/wscons/wsconsio.h>
@@ -87,6 +102,8 @@ class FTermOpenBSD final
     // Methods
     static void        init();
     static void        finish();
+    static bool        setBeep (int, int);
+    static bool        resetBeep();
 
   private:
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)

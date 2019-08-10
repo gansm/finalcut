@@ -94,11 +94,11 @@ void FTermFreeBSD::setBeep (int Hz, int ms)
   if ( ! FTerm::isFreeBSDTerm() )
     return;
 
-  // range for frequency: 21-32766
+  // Range for frequency: 21-32766
   if ( Hz < 21 || Hz > 32766 )
     return;
 
-  // range for duration:  0-1999
+  // Range for duration:  0-1999
   if ( ms < 0 || ms > 1999 )
     return;
 
@@ -115,8 +115,8 @@ void FTermFreeBSD::resetBeep()
   if ( ! FTerm::isFreeBSDTerm() )
     return;
 
-  // default frequency: 1491 Hz
-  // default duration:  50 ms
+  // Default frequency: 1491 Hz
+  // Default duration:  50 ms
   FTerm::putstring (CSI "=800;5B");
   std::fflush(stdout);
 }
@@ -124,7 +124,7 @@ void FTermFreeBSD::resetBeep()
 //----------------------------------------------------------------------
 void FTermFreeBSD::init()
 {
-  // initialize BSD console
+  // Initialize BSD console
 
   fsystem = FTerm::getFSystem();
   fterm_data = FTerm::getFTermData();
@@ -134,10 +134,10 @@ void FTermFreeBSD::init()
 
   if ( meta_sends_escape )
   {
-    // save current left alt key mapping
+    // Save current left alt key mapping
     saveFreeBSDAltKey();
 
-    // map meta key to left alt key
+    // Map meta key to left alt key
     setFreeBSDAlt2Meta();
   }
 
@@ -192,7 +192,7 @@ bool FTermFreeBSD::saveFreeBSDAltKey()
   if ( ret < 0 )
     return false;
 
-  // save current mapping
+  // Save current mapping
   bsd_alt_keymap = keymap.key[left_alt].map[0];
   return true;
 }

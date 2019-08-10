@@ -75,7 +75,6 @@ finalcutinclude_HEADERS = \
 	include/final/fapplication.h \
 	include/final/fbutton.h \
 	include/final/fbuttongroup.h \
-	include/final/fcharmap.h \
 	include/final/fcheckbox.h \
 	include/final/fcolorpair.h \
 	include/final/fconfig.h \

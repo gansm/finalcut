@@ -39,6 +39,24 @@
 #include <conemu.h>
 #include <final/final.h>
 
+#define CPPUNIT_ASSERT_CSTRING(expected, actual) \
+            check_c_string (expected, actual, CPPUNIT_SOURCELINE())
+
+//----------------------------------------------------------------------
+void check_c_string ( const char* s1
+                    , const char* s2
+                    , CppUnit::SourceLine sourceLine )
+{
+  if ( s1 == 0 && s2 == 0 )  // Strings are equal
+    return;
+
+  if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
+      return;
+
+  ::CppUnit::Asserter::fail ("Strings are not equal", sourceLine);
+}
+
+
 namespace test
 {
 
@@ -1675,38 +1693,47 @@ void FTermLinuxTest::linuxCursorStyleTest()
     linux.setCursorStyle (finalcut::fc::default_cursor);
     CPPUNIT_ASSERT ( characters == CSI "?0c" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::default_cursor );
+    CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?0c" );
     characters.clear();
     linux.setCursorStyle (finalcut::fc::invisible_cursor);
     CPPUNIT_ASSERT ( characters == CSI "?1c" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::invisible_cursor );
+    CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?1c" );
     characters.clear();
     linux.setCursorStyle (finalcut::fc::underscore_cursor);
     CPPUNIT_ASSERT ( characters == CSI "?2c" );
+    CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?2c" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::underscore_cursor );
     characters.clear();
     linux.setCursorStyle (finalcut::fc::lower_third_cursor);
     CPPUNIT_ASSERT ( characters == CSI "?3c" );
+    CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?3c" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::lower_third_cursor );
     characters.clear();
     linux.setCursorStyle (finalcut::fc::lower_half_cursor);
     CPPUNIT_ASSERT ( characters == CSI "?4c" );
+    CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?4c" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::lower_half_cursor );
     characters.clear();
     linux.setCursorStyle (finalcut::fc::two_thirds_cursor);
     CPPUNIT_ASSERT ( characters == CSI "?5c" );
+    CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?5c" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::two_thirds_cursor );
     characters.clear();
     linux.setCursorStyle (finalcut::fc::full_block_cursor);
     CPPUNIT_ASSERT ( characters == CSI "?6c" );
+    CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?6c" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::full_block_cursor );
     characters.clear();
 
     linux.setCursorStyle (finalcut::fc::default_cursor);
     CPPUNIT_ASSERT ( characters == CSI "?0c" );
+    CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?0c" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::default_cursor );
     characters.clear();
     linux.setCursorStyle (linux.getCursorStyle());
     CPPUNIT_ASSERT ( characters == CSI "?0c" );
+    CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?0c" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::fc::default_cursor );
     characters.clear();
     data->setCursorHidden (true);
@@ -1717,6 +1744,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
     characters.clear();
     linux.setCursorStyle (linux.getCursorStyle());
     CPPUNIT_ASSERT ( characters == CSI "?1c" );
+    CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?1c" );
     characters.clear();
     data->setCursorHidden (true);
     linux.setCursorStyle (finalcut::fc::underscore_cursor);
@@ -1726,6 +1754,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
     characters.clear();
     linux.setCursorStyle (linux.getCursorStyle());
     CPPUNIT_ASSERT ( characters == CSI "?2c" );
+    CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?2c" );
     characters.clear();
     data->setCursorHidden (true);
     linux.setCursorStyle (finalcut::fc::lower_third_cursor);
@@ -1735,6 +1764,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
     characters.clear();
     linux.setCursorStyle (linux.getCursorStyle());
     CPPUNIT_ASSERT ( characters == CSI "?3c" );
+    CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?3c" );
     characters.clear();
     data->setCursorHidden (true);
     linux.setCursorStyle (finalcut::fc::lower_half_cursor);
@@ -1744,6 +1774,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
     characters.clear();
     linux.setCursorStyle (linux.getCursorStyle());
     CPPUNIT_ASSERT ( characters == CSI "?4c" );
+    CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?4c" );
     characters.clear();
     data->setCursorHidden (true);
     linux.setCursorStyle (finalcut::fc::two_thirds_cursor);
@@ -1753,6 +1784,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
     characters.clear();
     linux.setCursorStyle (linux.getCursorStyle());
     CPPUNIT_ASSERT ( characters == CSI "?5c" );
+    CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?5c" );
     characters.clear();
     data->setCursorHidden (true);
     linux.setCursorStyle (finalcut::fc::full_block_cursor);
@@ -1762,6 +1794,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
     characters.clear();
     linux.setCursorStyle (linux.getCursorStyle());
     CPPUNIT_ASSERT ( characters == CSI "?6c" );
+    CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?6c" );
     characters.clear();
 
     linux.finish();

@@ -61,7 +61,7 @@ bool FTermOpenBSD::isBSDConsole()
 //----------------------------------------------------------------------
 void FTermOpenBSD::init()
 {
-  // initialize BSD workstation console
+  // Initialize BSD workstation console
 
   fsystem = FTerm::getFSystem();
 
@@ -70,10 +70,10 @@ void FTermOpenBSD::init()
 
   if ( meta_sends_escape )
   {
-    // save current left alt key mapping
+    // Save current left alt key mapping
     saveBSDConsoleEncoding();
 
-    // alt key generate ESC prefix
+    // Alt key generate ESC prefix
     setBSDConsoleMetaEsc();
   }
 }
@@ -86,6 +86,52 @@ void FTermOpenBSD::finish()
 
   if ( meta_sends_escape )
     resetBSDConsoleEncoding();
+}
+
+//----------------------------------------------------------------------
+bool FTermOpenBSD::setBeep (int Hz, int ms)
+{
+  if ( ! isBSDConsole() )
+    return false;
+
+  // Range for frequency: 21-32766
+  if ( Hz < 21 || Hz > 32766 )
+    return false;
+
+  // Range for duration:  0-1999
+  if ( ms < 0 || ms > 1999 )
+    return false;
+
+  wskbd_bell_data bell;
+  bell.which  = WSKBD_BELL_DOALL;
+  bell.pitch  = Hz;
+  bell.period = ms;
+  bell.volume = 50;  // 50% volume
+
+  if ( fsystem && fsystem->ioctl(0, WSKBDIO_SETBELL, &bell) < 0 )
+    return false;
+  else
+    return true;
+}
+
+//----------------------------------------------------------------------
+bool FTermOpenBSD::resetBeep()
+{
+  wskbd_bell_data default_bell;
+
+  // Gets the default setting for the bell
+  if ( fsystem
+    && fsystem->ioctl(0, WSKBDIO_GETDEFAULTBELL, &default_bell) < 0 )
+    return false;
+
+  default_bell.which  = WSKBD_BELL_DOALL;
+
+  // Sets the bell settings
+  if ( fsystem
+    && fsystem->ioctl(0, WSKBDIO_SETBELL, &default_bell) < 0 )
+    return false;
+  else
+    return true;
 }
 
 
@@ -102,7 +148,7 @@ bool FTermOpenBSD::saveBSDConsoleEncoding()
   if ( ret < 0 )
     return false;
 
-  // save current encoding
+  // Save current encoding
   bsd_keyboard_encoding = k_encoding;
   return true;
 }
@@ -120,7 +166,7 @@ bool FTermOpenBSD::setBSDConsoleEncoding (kbd_t k_encoding)
 //----------------------------------------------------------------------
 bool FTermOpenBSD::setBSDConsoleMetaEsc()
 {
-  static constexpr kbd_t meta_esc = 0x20;  // generate ESC prefix on ALT-key
+  static constexpr kbd_t meta_esc = 0x20;  // Generate ESC prefix on ALT-key
 
   return setBSDConsoleEncoding (bsd_keyboard_encoding | meta_esc);
 }

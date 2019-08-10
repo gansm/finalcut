@@ -1032,15 +1032,27 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
 }
 
 //----------------------------------------------------------------------
-#if defined(__linux__)
+#if defined(UNIT_TEST)
+void FTerm::setBeep (int Hz, int ms)
+{
+  linux->setBeep (Hz, ms);
+  freebsd->setBeep (Hz, ms);
+  openbsd->setBeep (Hz, ms);
+}
+#elif defined(__linux__)
 void FTerm::setBeep (int Hz, int ms)
 {
   linux->setBeep (Hz, ms);
 }
-#elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
 void FTerm::setBeep (int Hz, int ms)
 {
   freebsd->setBeep (Hz, ms);
+}
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
+void FTerm::setBeep (int Hz, int ms)
+{
+  openbsd->setBeep (Hz, ms);
 }
 #else
 void FTerm::setBeep (int, int)
@@ -1050,10 +1062,16 @@ void FTerm::setBeep (int, int)
 //----------------------------------------------------------------------
 void FTerm::resetBeep()
 {
-#if defined(__linux__)
+#if defined(UNIT_TEST)
   linux->resetBeep();
-#elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   freebsd->resetBeep();
+  openbsd->resetBeep();
+#elif defined(__linux__)
+  linux->resetBeep();
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
+  freebsd->resetBeep();
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
+  openbsd->resetBeep();
 #endif
 }
 
@@ -2327,8 +2345,8 @@ void FTerm::init (bool disable_alt_screen)
   if ( init_values.color_change )
     redefineColorPalette();
 
-  // Set 200 Hz beep (100 ms)
-  setBeep(200, 100);
+  // Set 220 Hz beep (100 ms)
+  setBeep(220, 100);
 
   // Set FTerm signal handler
   setSignalHandler();
