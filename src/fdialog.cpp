@@ -913,39 +913,38 @@ void FDialog::initCloseMenuItem (FMenu* menu)
 //----------------------------------------------------------------------
 void FDialog::drawBorder()
 {
-  int x1 = 1
-    , x2 = 1 + int(getWidth()) - 1
-    , y1 = 2
-    , y2 = 1 + int(getHeight()) - 1;
-
   if ( (getMoveSizeWidget() == this || ! resize_click_pos.isOrigin() )
     && ! isZoomed() )
     setColor (wc.dialog_resize_fg, getBackgroundColor());
   else
     setColor();
 
-  if ( isNewFont() )
+  if ( isNewFont() )  // Draw a newfont U-shaped frame
   {
-    for (int y = y1; y < y2; y++)
+    FRect r(FPoint(1, 1), getSize());
+
+    for (int y = r.getY1() + 1; y < r.getY2(); y++)
     {
-      print() << FPoint(x1, y)  // Border left ⎸
-              << fc::NF_border_line_left;
-      print() << FPoint(x2, y)  // Border right⎹
-              << fc::NF_rev_border_line_right;
+      print() << FPoint(r.getX1(), y)
+              << fc::NF_border_line_left        // border left ⎸
+              << FPoint(r.getX2(), y)
+              << fc::NF_rev_border_line_right;  // border right⎹
     }
 
-    print() << FPoint(x1, y2)  // Lower left corner border ⎣
+    print() << r.getLowerLeftPos()  // lower left corner border ⎣
             << fc::NF_border_corner_lower_left;
 
-    for (std::size_t x = 1; x < getWidth() - 1; x++)  // low line _
-      print (fc::NF_border_line_bottom);
+    for (int x = r.getX1() + 1; x < r.getX2(); x++)
+      print (fc::NF_border_line_bottom);  // low line _
 
-    print() << FPoint(x2, y2)  // Lower right corner border ⎦
-            << fc::NF_rev_border_corner_lower_right;
+    // lower right corner border ⎦
+    print (fc::NF_rev_border_corner_lower_right);
   }
   else
   {
-    FWidget::drawBorder(x1, y1, x2, y2);
+    FRect box(FPoint(1, 2), getSize());
+    box.scaleBy(0, -1);
+    finalcut::drawBorder(this, box);
   }
 }
 

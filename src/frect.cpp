@@ -171,10 +171,10 @@ void FRect::setHeight (std::size_t h)
 }
 
 //----------------------------------------------------------------------
-void FRect::setSize (std::size_t w, std::size_t h)
+void FRect::setSize (std::size_t width, std::size_t height)
 {
-  X2 = X1 + int(w) - 1;
-  Y2 = Y1 + int(h) - 1;
+  X2 = X1 + int(width) - 1;
+  Y2 = Y1 + int(height) - 1;
 }
 
 //----------------------------------------------------------------------
@@ -242,6 +242,20 @@ void FRect::move (const FPoint& d)
   Y1 = Y1 + d.getY();
   X2 = X2 + d.getX();
   Y2 = Y2 + d.getY();
+}
+
+//----------------------------------------------------------------------
+void FRect::scaleBy (int dx, int dy)
+{
+  X2 += dx;
+  Y2 += dy;
+}
+
+//----------------------------------------------------------------------
+void FRect::scaleBy (const FPoint& d)
+{
+  X2 += d.getX();
+  Y2 += d.getY();
 }
 
 //----------------------------------------------------------------------

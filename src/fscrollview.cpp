@@ -432,7 +432,11 @@ void FScrollView::draw()
   if ( border )
   {
     if ( isNewFont() )
-      drawBorder (1, 1, int(getWidth()) - 1, int(getHeight()));
+    {
+      FRect box(FPoint(1, 1), getSize());
+      box.scaleBy(-1, 0);
+      finalcut::drawBorder (this, box);
+    }
     else
       drawBorder();
   }

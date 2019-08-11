@@ -27,6 +27,7 @@
 
 namespace fc = finalcut::fc;
 using finalcut::FColorPair;
+using finalcut::FRect;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -199,7 +200,7 @@ void SegmentView::draw()
 
   FDialog::draw();
   setColor(fc::LightGray, fc::Black);
-  FWidget::drawBorder(3, 6, 40, 11);
+  finalcut::drawBorder(this, FRect(FPoint(3, 6), FPoint(40, 11)));
 
   for (auto&& ch : Input.getText().toUpper())
   {

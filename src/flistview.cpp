@@ -1476,7 +1476,11 @@ void FListView::draw()
     setReverse(true);
 
   if ( isNewFont() )
-    drawBorder (1, 1, int(getWidth()) - 1, int(getHeight()));
+  {
+    FRect box(FPoint(1, 1), getSize());
+    box.scaleBy(-1, 0);
+    finalcut::drawBorder (this, box);
+  }
   else
     drawBorder();
 
@@ -1496,16 +1500,7 @@ void FListView::draw()
   if ( isMonochron() )
     setReverse(false);
 
-  if ( ! hbar->isShown() && isHorizontallyScrollable() )
-    hbar->show();
-  else
-    vbar->redraw();
-
-  if ( ! vbar->isShown() && isVerticallyScrollable() )
-    vbar->show();
-  else
-    hbar->redraw();
-
+  drawScrollbars();
   drawList();
 
   if ( flags.focus && getStatusBar() )
@@ -1519,6 +1514,20 @@ void FListView::draw()
       getStatusBar()->drawMessage();
     }
   }
+}
+
+//----------------------------------------------------------------------
+void FListView::drawScrollbars()
+{
+  if ( ! hbar->isShown() && isHorizontallyScrollable() )
+    hbar->show();
+  else
+    vbar->redraw();
+
+  if ( ! vbar->isShown() && isVerticallyScrollable() )
+    vbar->show();
+  else
+    hbar->redraw();
 }
 
 //----------------------------------------------------------------------

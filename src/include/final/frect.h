@@ -128,6 +128,8 @@ class FRect
     // Methods
     void                move (int, int);
     void                move (const FPoint&);
+    void                scaleBy (int, int);
+    void                scaleBy (const FPoint&);
     bool                contains (int, int) const;
     bool                contains (const FPoint&) const;
     bool                contains (const FRect&) const;

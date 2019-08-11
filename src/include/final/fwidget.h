@@ -339,7 +339,6 @@ class FWidget : public FVTerm, public FObject
     void                clearShadow();
     void                drawFlatBorder();
     void                clearFlatBorder();
-    virtual void        drawBorder (int, int, int, int);
     virtual void        drawBorder();
     static void         quit();
 
@@ -431,8 +430,6 @@ class FWidget : public FVTerm, public FObject
     void                drawChildren();
     void                drawTransparentShadow (int, int, int, int);
     void                drawBlockShadow (int, int, int, int);
-    void                drawBox (int, int, int, int);
-    void                drawNewFontBox (int, int, int, int);
     static void         setColorTheme();
 
     // Data Members
@@ -522,6 +519,13 @@ class FWidget : public FVTerm, public FObject
 };
 
 #pragma pack(pop)
+
+// non-member function forward declarations
+//----------------------------------------------------------------------
+char* createBlankArray (std::size_t);
+void  destroyBlankArray (char[]);
+FKey  getHotkey (const FString&);
+void  drawBorder (FWidget*, FRect);
 
 // FWidget inline functions
 //----------------------------------------------------------------------
@@ -937,7 +941,9 @@ inline void FWidget::print (const FPoint& pos)
 
 //----------------------------------------------------------------------
 inline void FWidget::drawBorder()
-{ drawBorder (1, 1, int(getWidth()), int(getHeight())); }
+{
+  finalcut::drawBorder (this, FRect(FPoint(1, 1), getSize()));
+}
 
 //----------------------------------------------------------------------
 inline void FWidget::processDestroy()
@@ -1004,12 +1010,6 @@ const wchar_t CHECKED_RADIO_BUTTON[4] =
   fc::NF_radio_button3,
   '\0'
 };
-
-// non-member function forward declarations
-//----------------------------------------------------------------------
-char* createBlankArray (std::size_t);
-void destroyBlankArray (char[]);
-FKey getHotkey (const FString&);
 
 }  // namespace finalcut
 

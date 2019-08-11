@@ -56,6 +56,7 @@ class FRectTest : public CPPUNIT_NS::TestFixture
     void subtractionTest();
     void referenceTest();
     void moveTest();
+    void scaleTest();
     void containsTest();
     void overlapTest();
     void intersectTest();
@@ -79,6 +80,7 @@ class FRectTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (subtractionTest);
     CPPUNIT_TEST (referenceTest);
     CPPUNIT_TEST (moveTest);
+    CPPUNIT_TEST (scaleTest);
     CPPUNIT_TEST (containsTest);
     CPPUNIT_TEST (overlapTest);
     CPPUNIT_TEST (intersectTest);
@@ -478,7 +480,7 @@ void FRectTest::moveTest()
   CPPUNIT_ASSERT ( r1.getX2() == 10 );
   CPPUNIT_ASSERT ( r1.getY2() == 21 );
 
-  const finalcut::FPoint p1 (2,3);
+  const finalcut::FPoint p1 (2, 3);
   r1.move(p1);
   CPPUNIT_ASSERT ( r1.getX() == 3 );
   CPPUNIT_ASSERT ( r1.getY() == 5 );
@@ -496,6 +498,38 @@ void FRectTest::moveTest()
   CPPUNIT_ASSERT ( r1.getSize() == finalcut::FSize(10, 20) );
   CPPUNIT_ASSERT ( r1.getX2() == 7 );
   CPPUNIT_ASSERT ( r1.getY2() == 19 );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::scaleTest()
+{
+  finalcut::FRect r1 (finalcut::FPoint(5, 5), finalcut::FSize(15, 15));
+  CPPUNIT_ASSERT ( r1.getX() == 5 );
+  CPPUNIT_ASSERT ( r1.getY() == 5 );
+  CPPUNIT_ASSERT ( r1.getWidth() == 15 );
+  CPPUNIT_ASSERT ( r1.getHeight() == 15 );
+  CPPUNIT_ASSERT ( r1.getSize() == finalcut::FSize(15, 15) );
+  CPPUNIT_ASSERT ( r1.getX2() == 19 );
+  CPPUNIT_ASSERT ( r1.getY2() == 19 );
+
+  const finalcut::FPoint p1 (-2, -3);
+  r1.scaleBy(p1);
+  CPPUNIT_ASSERT ( r1.getX() == 5 );
+  CPPUNIT_ASSERT ( r1.getY() == 5 );
+  CPPUNIT_ASSERT ( r1.getWidth() == 13 );
+  CPPUNIT_ASSERT ( r1.getHeight() == 12 );
+  CPPUNIT_ASSERT ( r1.getSize() == finalcut::FSize(13, 12) );
+  CPPUNIT_ASSERT ( r1.getX2() == 17 );
+  CPPUNIT_ASSERT ( r1.getY2() == 16 );
+
+  r1.scaleBy(1, -1);
+  CPPUNIT_ASSERT ( r1.getX() == 5 );
+  CPPUNIT_ASSERT ( r1.getY() == 5 );
+  CPPUNIT_ASSERT ( r1.getWidth() == 14 );
+  CPPUNIT_ASSERT ( r1.getHeight() == 11 );
+  CPPUNIT_ASSERT ( r1.getSize() == finalcut::FSize(14, 11) );
+  CPPUNIT_ASSERT ( r1.getX2() == 18 );
+  CPPUNIT_ASSERT ( r1.getY2() == 15 );
 }
 
 //----------------------------------------------------------------------

@@ -23,9 +23,10 @@
 #include <final/final.h>
 
 namespace fc = finalcut::fc;
+using finalcut::FColorPair;
+using finalcut::FRect;
 using finalcut::FPoint;
 using finalcut::FSize;
-using finalcut::FColorPair;
 
 
 //----------------------------------------------------------------------
@@ -129,7 +130,7 @@ void ColorChooser::onMouseDown (finalcut::FMouseEvent* ev)
 void ColorChooser::draw()
 {
   setColor();
-  finalcut::FWidget::drawBorder (1, 2, 8, 11);
+  finalcut::drawBorder (this, FRect(FPoint(1, 2), FSize(8, 10)));
 
   for (FColor c = 0; c < 16; c++)
   {
@@ -243,7 +244,7 @@ void Brushes::draw()
 {
   int pos;
   setColor();
-  finalcut::FWidget::drawBorder (1, 2, 8, 4);
+  finalcut::drawBorder (this, FRect(FPoint(1, 2), FSize(8, 3)));
   print() << FPoint(2, 3)
           << FColorPair(fg_color, bg_color) << "   "
           << finalcut::FString(3, fc::MediumShade);

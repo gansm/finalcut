@@ -1420,33 +1420,6 @@ void FWidget::clearFlatBorder()
 }
 
 //----------------------------------------------------------------------
-void FWidget::drawBorder (int x1, int y1, int x2, int y2)
-{
-  if ( x1 > x2 )
-    std::swap (x1, x2);
-
-  if ( y1 > y2 )
-    std::swap (y1, y2);
-
-  if ( x1 < 1 )
-    x1 = 1;
-
-  if ( y1 < 1 )
-    y1 = 1;
-
-  if ( x2 > int(getWidth()) )
-    x2 = int(getWidth());
-
-  if ( y2 > int(getHeight()) )
-    y2 = int(getHeight());
-
-  if ( isNewFont() )
-    drawNewFontBox (x1, y1, x2, y2);
-  else
-    drawBox (x1, y1, x2, y2);
-}
-
-//----------------------------------------------------------------------
 void FWidget::quit()
 {
   auto fapp = FApplication::getApplicationObject();
@@ -2303,72 +2276,6 @@ void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::drawBox (int x1, int y1, int x2, int y2)
-{
-  // Use box-drawing characters to draw a border
-
-  print() << FPoint(x1, y1) << fc::BoxDrawingsDownAndRight;  // ┌
-
-  for (int x = x1 + 1; x < x2; x++)
-    print (fc::BoxDrawingsHorizontal);     // ─
-
-  print (fc::BoxDrawingsDownAndLeft);      // ┐
-
-  for (int y = y1 + 1; y < y2; y++)
-  {
-    print() << FPoint(x1, y)
-            << fc::BoxDrawingsVertical     // │
-            << FPoint(x2, y)
-            << fc::BoxDrawingsVertical;    // │
-  }
-
-  print() << FPoint(x1, y2) << fc::BoxDrawingsUpAndRight;  // └
-
-  for (int x = x1 + 1; x < x2; x++)
-    print (fc::BoxDrawingsHorizontal);     // ─
-
-  print (fc::BoxDrawingsUpAndLeft);        // ┘
-
-  for (int x = x1 + 1; x < x2; x++)
-  {
-    print() << FPoint(x, y1)
-            << fc::BoxDrawingsHorizontal   // ─
-            << FPoint(x, y2)
-            << fc::BoxDrawingsHorizontal;  // ─
-  }
-}
-
-//----------------------------------------------------------------------
-inline void FWidget::drawNewFontBox (int x1, int y1, int x2, int y2)
-{
-  // Use new graphical font characters to draw a border
-
-  print() << FPoint(x1, y1)
-          << fc::NF_border_corner_middle_upper_left;  // ┌
-
-  for (int x = x1 + 1; x < x2; x++)
-    print (fc::BoxDrawingsHorizontal);                // ─
-
-  print (fc::NF_border_corner_middle_upper_right);    // ┐
-
-  for (int y = y1 + 1; y <= y2; y++)
-  {
-    print() << FPoint(x1, y)
-            << fc::NF_border_line_left        // border left ⎸
-            << FPoint(x2, y)
-            << fc::NF_rev_border_line_right;  // border right⎹
-  }
-
-  print() << FPoint(x1, y2)
-          << fc::NF_border_corner_middle_lower_left;  // └
-
-  for (int x = x1 + 1; x < x2; x++)
-    print (fc::BoxDrawingsHorizontal);  // ─
-
-  print (fc::NF_border_corner_middle_lower_right);  // ┘
-}
-
-//----------------------------------------------------------------------
 void FWidget::setColorTheme()
 {
   // Sets the default color theme
@@ -2431,6 +2338,90 @@ FKey getHotkey (const FString& text)
     }
   }
   return 0;
+}
+
+//----------------------------------------------------------------------
+inline void drawBox (FWidget* w, const FRect& r)
+{
+  // Use box-drawing characters to draw a border
+
+  w->print() << r.getUpperLeftPos() << fc::BoxDrawingsDownAndRight;  // ┌
+
+  for (int x = r.getX1() + 1; x < r.getX2(); x++)
+    w->print (fc::BoxDrawingsHorizontal);     // ─
+
+  w->print (fc::BoxDrawingsDownAndLeft);      // ┐
+
+  for (int y = r.getY1() + 1; y < r.getY2(); y++)
+  {
+    w->print() << FPoint(r.getX1(), y)
+               << fc::BoxDrawingsVertical     // │
+               << FPoint(r.getX2(), y)
+               << fc::BoxDrawingsVertical;    // │
+  }
+
+  w->print() << r.getLowerLeftPos() << fc::BoxDrawingsUpAndRight;  // └
+
+  for (int x = r.getX1() + 1; x < r.getX2(); x++)
+    w->print (fc::BoxDrawingsHorizontal);     // ─
+
+  w->print (fc::BoxDrawingsUpAndLeft);        // ┘
+}
+
+//----------------------------------------------------------------------
+inline void drawNewFontBox (FWidget* w, const FRect& r)
+{
+  // Use new graphical font characters to draw a border
+
+  w->print() << r.getUpperLeftPos()
+             << fc::NF_border_corner_middle_upper_left;  // ┌
+  for (int x = r.getX1() + 1; x < r.getX2(); x++)
+    w->print (fc::BoxDrawingsHorizontal);                // ─
+
+  w->print (fc::NF_border_corner_middle_upper_right);    // ┐
+
+  for (int y = r.getY1() + 1; y < r.getY2(); y++)
+  {
+    w->print() << FPoint(r.getX1(), y)
+               << fc::NF_border_line_left        // border left ⎸
+               << FPoint(r.getX2(), y)
+               << fc::NF_rev_border_line_right;  // border right⎹
+  }
+
+  w->print() << r.getLowerLeftPos()
+             << fc::NF_border_corner_middle_lower_left;  // └
+
+  for (int x = r.getX1() + 1; x < r.getX2(); x++)
+    w->print (fc::BoxDrawingsHorizontal);  // ─
+
+  w->print (fc::NF_border_corner_middle_lower_right);  // ┘
+}
+
+//----------------------------------------------------------------------
+void drawBorder (FWidget* w, FRect r)
+{
+  if ( r.x1_ref() > r.x2_ref() )
+    std::swap (r.x1_ref(), r.x2_ref());
+
+  if ( r.y1_ref() > r.y2_ref() )
+    std::swap (r.y1_ref(), r.y2_ref());
+
+  if ( r.x1_ref() < 1 )
+    r.x1_ref() = 1;
+
+  if ( r.y1_ref() < 1 )
+    r.y1_ref() = 1;
+
+  if ( r.x2_ref() > int(w->getWidth()) )
+    r.x2_ref() = int(w->getWidth());
+
+  if ( r.y2_ref() > int(w->getHeight()) )
+    r.y2_ref() = int(w->getHeight());
+
+  if ( w->isNewFont() )
+    drawNewFontBox (w, r);
+  else
+    drawBox (w, r);
 }
 
 }  // namespace finalcut
