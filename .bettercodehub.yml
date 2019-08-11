@@ -5,33 +5,21 @@ languages:
     include:
       - /src/.*\.cpp
       - /src/.*\.h
-    exclude:
-      - /debian/.*
-      - /doc/.*
-      - /fonts/.*
-      - /icon/.*
-      - /logo/.*
-      - /m4/.*
-      - /scripts/.*
-      - /test/.*
-      - /build.sh
-      - /ltmain.sh
   test:
     include:
       - /test/.*\.cpp
       - /test/.*\.inc
       - /test/.*\.h
-    exclude:
-      - /debian/.*
-      - /doc/.*
-      - /fonts/.*
-      - /icon/.*
-      - /logo/.*
-      - /m4/.*
-      - /scripts/.*
-      - /src/.*
-      - /build.sh
-      - /ltmain.sh
 exclude:
-  - /examples/.*\.cpp
+  - /debian/.*
+  - /doc/.*
+  - /examples/.*
+  - /fonts/.*
+  - /icon/.*
+  - /logo/.*
+  - /m4/.*
+  - /scripts/.*
+  - /src/.*
+  - /build.sh
+  - /ltmain.sh
 
