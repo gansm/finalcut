@@ -32,19 +32,6 @@ languages:
       - /src/.*
       - /build.sh
       - /ltmain.sh
-  examples:
-    include:
-      - /examples/.*\.cpp
-    exclude:
-      - /debian/.*
-      - /doc/.*
-      - /fonts/.*
-      - /icon/.*
-      - /logo/.*
-      - /m4/.*
-      - /scripts/.*
-      - /src/.*
-      - /test/.*
-      - /build.sh
-      - /ltmain.sh
+exclude:
+  - /examples/.*\.cpp
 
