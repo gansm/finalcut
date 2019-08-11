@@ -1,12 +1,3 @@
-component_depth: 3
-languages:
-- cpp
-  production:
-    include:
-      - .*/src/.*
-  test:
-    include:
-      - .*/test/.*
 exclude:
   - /debian/.*
   - /doc/.*
@@ -19,4 +10,7 @@ exclude:
   - /src/.*
   - /build.sh
   - /ltmain.sh
+component_depth: 1
+languages:
+- cpp
 
