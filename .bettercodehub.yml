@@ -1,11 +1,50 @@
-exclude:
-- /fonts/.*
-- /scripts/.*
-- /doc/.*
-- /build.sh
-- /ltmain.sh
 component_depth: 1
 languages:
 - cpp
-- script
+  production:
+    include:
+      - /src/.*\.cpp
+      - /src/.*\.h
+    exclude:
+      - /debian/.*
+      - /doc/.*
+      - /fonts/.*
+      - /icon/.*
+      - /logo/.*
+      - /m4/.*
+      - /scripts/.*
+      - /test/.*
+      - /build.sh
+      - /ltmain.sh
+  test:
+    include:
+      - /test/.*\.cpp
+      - /test/.*\.inc
+      - /test/.*\.h
+    exclude:
+      - /debian/.*
+      - /doc/.*
+      - /fonts/.*
+      - /icon/.*
+      - /logo/.*
+      - /m4/.*
+      - /scripts/.*
+      - /src/.*
+      - /build.sh
+      - /ltmain.sh
+  examples:
+    include:
+      - /examples/.*\.cpp
+    exclude:
+      - /debian/.*
+      - /doc/.*
+      - /fonts/.*
+      - /icon/.*
+      - /logo/.*
+      - /m4/.*
+      - /scripts/.*
+      - /src/.*
+      - /test/.*
+      - /build.sh
+      - /ltmain.sh
 
