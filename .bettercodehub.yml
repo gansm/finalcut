@@ -7,7 +7,6 @@ exclude:
   - /logo/.*
   - /m4/.*
   - /scripts/.*
-  - /src/.*
   - /build.sh
   - /ltmain.sh
 component_depth: 1
