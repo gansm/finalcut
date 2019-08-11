@@ -235,120 +235,7 @@ void FScrollbar::calculateSliderValues()
     slider_pos = int(bar_length - slider_length);
 }
 
-//----------------------------------------------------------------------
-void FScrollbar::drawVerticalBar()
-{
-  int z;
-  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
 
-  for (z = 1; z <= slider_pos; z++)
-  {
-    print() << FPoint(1, 1 + z);
-
-    if ( isNewFont() )
-    {
-      if ( isMonochron() || max_color < 16 )
-        print (fc::MediumShade);  // ▒
-      else
-        print (fc::NF_border_line_left);  // ⎸
-    }
-
-    if ( isMonochron() || max_color < 16 )
-      print (fc::MediumShade);  // ▒
-    else
-      print (' ');
-  }
-
-  setColor (wc.scrollbar_bg, wc.scrollbar_fg);
-
-  if ( isMonochron() )
-    setReverse(false);
-
-  for (z = 1; z <= int(slider_length); z++)
-  {
-    print() << FPoint(1, 1 + slider_pos + z);
-
-    if ( isNewFont() )
-      print (' ');
-
-    print (' ');
-  }
-
-  if ( isMonochron() )
-    setReverse(true);
-
-  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-
-  for (z = slider_pos + int(slider_length) + 1; z <= int(bar_length); z++)
-  {
-    print() << FPoint(1, 1 + z);
-
-    if ( isNewFont() )
-    {
-      if ( isMonochron() || max_color < 16 )
-        print (fc::MediumShade);  // ▒
-      else
-        print (fc::NF_border_line_left);  // ⎸
-    }
-
-    if ( isMonochron() || max_color < 16 )
-      print (fc::MediumShade);
-    else
-      print (' ');
-  }
-
-  if ( isMonochron() )
-    setReverse(false);
-}
-
-//----------------------------------------------------------------------
-void FScrollbar::drawHorizontalBar()
-{
-  int z;
-  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-
-  if ( isNewFont() )
-    print() << FPoint(3, 1);
-  else
-    print() << FPoint(2, 1);
-
-  for (z = 0; z < slider_pos; z++)
-  {
-    if ( isNewFont() && max_color > 8 )
-      print (fc::NF_border_line_upper);  // ¯
-    else if ( isMonochron() || max_color < 16 )
-      print (fc::MediumShade);  // ▒
-    else
-      print (' ');
-  }
-
-  setColor (wc.scrollbar_bg, wc.scrollbar_fg);
-
-  if ( isMonochron() )
-    setReverse(false);
-
-  for (z = 0; z < int(slider_length); z++)
-    print (' ');
-
-  if ( isMonochron() )
-    setReverse(true);
-
-  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-  z = slider_pos + int(slider_length) + 1;
-
-  for (; z <= int(bar_length); z++)
-  {
-    if ( isNewFont() && max_color > 8 )
-      print (fc::NF_border_line_upper);  // ¯
-    else if ( isMonochron() || max_color < 16 )
-      print (fc::MediumShade);  // ▒
-    else
-      print (' ');
-  }
-
-  if ( isMonochron() )
-    setReverse(false);
-}
 
 //----------------------------------------------------------------------
 void FScrollbar::drawBar()
@@ -584,6 +471,111 @@ void FScrollbar::draw()
   drawButtons();
   current_slider_pos = -1;
   drawBar();
+}
+
+//----------------------------------------------------------------------
+void FScrollbar::drawVerticalBar()
+{
+  int z;
+  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+
+  for (z = 1; z <= slider_pos; z++)
+  {
+    print() << FPoint(1, 1 + z);
+    drawVerticalBackgroundLine();
+  }
+
+  setColor (wc.scrollbar_bg, wc.scrollbar_fg);
+
+  if ( isMonochron() )
+    setReverse(false);
+
+  for (z = 1; z <= int(slider_length); z++)  // Draw slider
+  {
+    print() << FPoint(1, 1 + slider_pos + z);
+
+    if ( isNewFont() )
+      print (' ');
+
+    print (' ');
+  }
+
+  if ( isMonochron() )
+    setReverse(true);
+
+  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+
+  for (z = slider_pos + int(slider_length) + 1; z <= int(bar_length); z++)
+  {
+    print() << FPoint(1, 1 + z);
+    drawVerticalBackgroundLine();
+  }
+
+  if ( isMonochron() )
+    setReverse(false);
+}
+
+//----------------------------------------------------------------------
+inline void FScrollbar::drawVerticalBackgroundLine()
+{
+  if ( isNewFont() )
+  {
+    if ( isMonochron() || max_color < 16 )
+      print (fc::MediumShade);  // ▒
+    else
+      print (fc::NF_border_line_left);  // ⎸
+  }
+
+  if ( isMonochron() || max_color < 16 )
+    print (fc::MediumShade);  // ▒
+  else
+    print (' ');
+}
+
+//----------------------------------------------------------------------
+void FScrollbar::drawHorizontalBar()
+{
+  int z;
+  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+
+  if ( isNewFont() )
+    print() << FPoint(3, 1);
+  else
+    print() << FPoint(2, 1);
+
+  for (z = 0; z < slider_pos; z++)
+    drawHorizontalBackgroundColumn();
+
+  setColor (wc.scrollbar_bg, wc.scrollbar_fg);
+
+  if ( isMonochron() )
+    setReverse(false);
+
+  for (z = 0; z < int(slider_length); z++)  // Draw slider
+    print (' ');
+
+  if ( isMonochron() )
+    setReverse(true);
+
+  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+  z = slider_pos + int(slider_length) + 1;
+
+  for (; z <= int(bar_length); z++)
+    drawHorizontalBackgroundColumn();
+
+  if ( isMonochron() )
+    setReverse(false);
+}
+
+//----------------------------------------------------------------------
+inline void FScrollbar::drawHorizontalBackgroundColumn()
+{
+  if ( isNewFont() && max_color > 8 )
+    print (fc::NF_border_line_upper);  // ¯
+  else if ( isMonochron() || max_color < 16 )
+    print (fc::MediumShade);  // ▒
+  else
+    print (' ');
 }
 
 //----------------------------------------------------------------------

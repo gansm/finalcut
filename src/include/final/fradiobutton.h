@@ -93,6 +93,8 @@ class FRadioButton : public FToggleButton
     void        init();
     void        draw() override;
     void        drawRadioButton();
+    void        drawChecked();
+    void        drawUnchecked();
 };
 #pragma pack(pop)
 

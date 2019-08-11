@@ -2341,6 +2341,30 @@ FKey getHotkey (const FString& text)
 }
 
 //----------------------------------------------------------------------
+std::size_t getHotkeyPos (wchar_t src[], wchar_t dest[], std::size_t length)
+{
+  // Find hotkey position in string
+  // + generate a new string without the '&'-sign
+  wchar_t* txt = src;
+  constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
+  std::size_t hotkeypos = NOT_SET;
+
+  for (std::size_t i = 0; i < length; i++)
+  {
+    if ( i < length && txt[i] == L'&' && hotkeypos == NOT_SET )
+    {
+      hotkeypos = i;
+      i++;
+      src++;
+    }
+
+    *dest++ = *src++;
+  }
+
+  return hotkeypos;
+}
+
+//----------------------------------------------------------------------
 inline void drawBox (FWidget* w, const FRect& r)
 {
   // Use box-drawing characters to draw a border

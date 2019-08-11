@@ -58,6 +58,7 @@ class ColorChooser : public finalcut::FWidget
   private:
     // Method
     void draw() override;
+    void drawBorder() override;
 
     // Event handler
     void onMouseDown (finalcut::FMouseEvent*) override;
@@ -130,7 +131,7 @@ void ColorChooser::onMouseDown (finalcut::FMouseEvent* ev)
 void ColorChooser::draw()
 {
   setColor();
-  finalcut::drawBorder (this, FRect(FPoint(1, 2), FSize(8, 10)));
+  drawBorder();
 
   for (FColor c = 0; c < 16; c++)
   {
@@ -150,6 +151,12 @@ void ColorChooser::draw()
     else
       print ("   ");
   }
+}
+
+//----------------------------------------------------------------------
+void ColorChooser::drawBorder()
+{
+  finalcut::drawBorder (this, FRect(FPoint(1, 2), FSize(8, 10)));
 }
 
 //----------------------------------------------------------------------
@@ -197,6 +204,7 @@ class Brushes : public finalcut::FWidget
   private:
     // Method
     void draw() override;
+    void drawBorder() override;
 
     // Event handler
     void onMouseDown (finalcut::FMouseEvent*) override;
@@ -238,13 +246,12 @@ Brushes::Brushes (finalcut::FWidget* parent)
 Brushes::~Brushes()
 { }
 
-
 //----------------------------------------------------------------------
 void Brushes::draw()
 {
   int pos;
   setColor();
-  finalcut::drawBorder (this, FRect(FPoint(1, 2), FSize(8, 3)));
+  drawBorder();
   print() << FPoint(2, 3)
           << FColorPair(fg_color, bg_color) << "   "
           << finalcut::FString(3, fc::MediumShade);
@@ -259,6 +266,12 @@ void Brushes::draw()
           << fc::BlackDownPointingTriangle
           << FPoint(3 + pos, 4)
           << fc::BlackUpPointingTriangle;
+}
+
+//----------------------------------------------------------------------
+void Brushes::drawBorder()
+{
+  finalcut::drawBorder (this, FRect(FPoint(1, 2), FSize(8, 3)));
 }
 
 //----------------------------------------------------------------------

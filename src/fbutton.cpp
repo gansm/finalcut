@@ -450,31 +450,6 @@ inline void FButton::detectHotkey()
 }
 
 //----------------------------------------------------------------------
-std::size_t FButton::getHotkeyPos ( wchar_t src[]
-                                  , wchar_t dest[]
-                                  , std::size_t length )
-{
-  // find hotkey position in string
-  // + generate a new string without the '&'-sign
-  wchar_t* txt = src;
-  std::size_t pos = NOT_SET;
-
-  for (std::size_t i = 0; i < length; i++)
-  {
-    if ( i < length && txt[i] == L'&' && pos == NOT_SET )
-    {
-      pos = i;
-      i++;
-      src++;
-    }
-
-    *dest++ = *src++;
-  }
-
-  return pos;
-}
-
-//----------------------------------------------------------------------
 inline std::size_t FButton::clickAnimationIndent (FWidget* parent_widget)
 {
   if ( ! button_down || ! click_animation )
@@ -689,7 +664,7 @@ void FButton::draw()
   if ( flags.flat && ! button_down )
     drawFlatBorder();
 
-  hotkeypos = getHotkeyPos(text.wc_str(), button_text, uInt(txtlength));
+  hotkeypos = finalcut::getHotkeyPos(text.wc_str(), button_text, uInt(txtlength));
 
   if ( hotkeypos != NOT_SET )
     txtlength--;

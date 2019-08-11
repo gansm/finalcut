@@ -1,6 +1,7 @@
 2019-08-11  Markus Gans  <guru.mail@muenster.de>
 	* FRect has now got a scaleBy() method
 	* Convert drawBorder() to a non-member function using FRect
+	* Converts getHotkeyPos() for sharing into a non-member function
 
 2019-08-10  Markus Gans  <guru.mail@muenster.de>
 	* Pitch and duration of system speaker can now be changed 

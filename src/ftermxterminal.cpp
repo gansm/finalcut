@@ -569,17 +569,9 @@ void FTermXTerminal::setXTerm8ColorDefaults()
   if ( term_detection->isPuttyTerminal() )
     return;
 
-  setMouseBackground("rgb:ffff/ffff/ffff");        // white
-  setMouseForeground ("rgb:0000/0000/0000");       // black
+  setXTermDefaultsMouseCursor();
 
-  if ( ! term_detection->isGnomeTerminal() )
-    setCursorColor("rgb:ffff/ffff/ffff");          // white
-
-  if ( xterm_default_colors
-    && ! (term_detection->isMinttyTerm()
-       || term_detection->isMltermTerminal()
-       || term_detection->isRxvtTerminal()
-       || term_detection->isScreenTerm()) )
+  if ( canSetXTermBackground() )
   {
     // mintty and rxvt can't reset these settings
     setBackground("rgb:2222/2222/b2b2");           // blue
@@ -597,23 +589,38 @@ void FTermXTerminal::setXTerm16ColorDefaults()
   if ( term_detection->isPuttyTerminal() )
     return;
 
-  setMouseBackground("rgb:ffff/ffff/ffff");        // white
-  setMouseForeground ("rgb:0000/0000/0000");       // black
+  setXTermDefaultsMouseCursor();
 
-  if ( ! term_detection->isGnomeTerminal() )
-    setCursorColor("rgb:ffff/ffff/ffff");          // white
-
-  if ( xterm_default_colors
-    && ! (term_detection->isMinttyTerm()
-       || term_detection->isMltermTerminal()
-       || term_detection->isRxvtTerminal()
-       || term_detection->isScreenTerm()) )
+  if ( canSetXTermBackground() )
   {
     // mintty and rxvt can't reset these settings
     setBackground("rgb:8080/a4a4/ecec");           // very light blue
     setForeground("rgb:0000/0000/0000");           // black
     setHighlightBackground("rgb:8787/8787/8787");  // gray53
   }
+}
+
+//----------------------------------------------------------------------
+inline void FTermXTerminal::setXTermDefaultsMouseCursor()
+{
+  setMouseBackground("rgb:ffff/ffff/ffff");        // white
+  setMouseForeground ("rgb:0000/0000/0000");       // black
+
+  if ( ! term_detection->isGnomeTerminal() )
+    setCursorColor("rgb:ffff/ffff/ffff");          // white
+}
+
+//----------------------------------------------------------------------
+inline bool FTermXTerminal::canSetXTermBackground()
+{
+  if ( xterm_default_colors
+    && ! (term_detection->isMinttyTerm()
+       || term_detection->isMltermTerminal()
+       || term_detection->isRxvtTerminal()
+       || term_detection->isScreenTerm()) )
+    return true;
+  else
+    return false;
 }
 
 //----------------------------------------------------------------------

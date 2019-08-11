@@ -430,16 +430,7 @@ void FScrollView::draw()
     setColor();
 
   if ( border )
-  {
-    if ( isNewFont() )
-    {
-      FRect box(FPoint(1, 1), getSize());
-      box.scaleBy(-1, 0);
-      finalcut::drawBorder (this, box);
-    }
-    else
-      drawBorder();
-  }
+    drawBorder();
 
   if ( isMonochron() )
     setReverse(false);
@@ -455,6 +446,19 @@ void FScrollView::draw()
 
   vbar->redraw();
   hbar->redraw();
+}
+
+//----------------------------------------------------------------------
+void FScrollView::drawBorder()
+{
+  if ( isNewFont() )
+  {
+    FRect box(FPoint(1, 1), getSize());
+    box.scaleBy(-1, 0);
+    finalcut::drawBorder (this, box);
+  }
+  else
+    FWidget::drawBorder();
 }
 
 //----------------------------------------------------------------------

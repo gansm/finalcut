@@ -268,6 +268,7 @@ class FListBox : public FWidget
                                       , fc::orientation
                                       , FListBoxCallback );
     void                draw() override;
+    void                drawBorder() override;
     void                drawScrollbars();
     void                drawHeadline();
     void                drawList();

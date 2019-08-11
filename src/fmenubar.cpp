@@ -468,31 +468,6 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 }
 
 //----------------------------------------------------------------------
-std::size_t FMenuBar::getHotkeyPos ( wchar_t src[]
-                                   , wchar_t dest[]
-                                   , std::size_t length )
-{
-  // find hotkey position in string
-  // + generate a new string without the '&'-sign
-  std::size_t hotkeypos = NOT_SET;
-  wchar_t* txt = src;
-
-  for (std::size_t i = 0; i < length; i++)
-  {
-    if ( i < length && txt[i] == L'&' && hotkeypos == NOT_SET )
-    {
-      hotkeypos = i;
-      i++;
-      src++;
-    }
-
-    *dest++ = *src++;
-  }
-
-  return hotkeypos;
-}
-
-//----------------------------------------------------------------------
 void FMenuBar::draw()
 {
   drawItems();
@@ -561,7 +536,7 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
   else
     to_char = txt_length - screenWidth - x - 1;
 
-  hotkeypos = getHotkeyPos (txt.wc_str(), txtdata.text, txt_length);
+  hotkeypos = finalcut::getHotkeyPos (txt.wc_str(), txtdata.text, txt_length);
 
   if ( hotkeypos != NOT_SET )
   {

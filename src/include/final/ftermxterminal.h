@@ -119,6 +119,8 @@ class FTermXTerminal final
     static void           setXTermHighlightBackground();
     static void           setXTerm8ColorDefaults();
     static void           setXTerm16ColorDefaults();
+    static void           setXTermDefaultsMouseCursor();
+    static bool           canSetXTermBackground();
     static void           resetXTermColorMap();
     static void           resetXTermForeground();
     static void           resetXTermBackground();

@@ -133,6 +133,7 @@ class FScrollView : public FWidget
     void                scrollTo (int, int);
     void                scrollBy (int, int);
     void                draw() override;
+    void                drawBorder() override;
 
     // Event handlers
     void                onKeyPress (FKeyEvent*) override;

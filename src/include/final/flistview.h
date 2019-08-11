@@ -394,6 +394,7 @@ class FListView : public FWidget
                                         , std::size_t
                                         , std::size_t );
     void                 draw() override;
+    void                 drawBorder() override;
     void                 drawScrollbars();
     void                 drawHeadlines();
     void                 drawList();

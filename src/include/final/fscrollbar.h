@@ -116,8 +116,6 @@ class FScrollbar : public FWidget
     void                resize() override;
     void                redraw() override;
     void                calculateSliderValues();
-    void                drawVerticalBar();
-    void                drawHorizontalBar();
     void                drawBar();
 
     // Event handlers
@@ -131,6 +129,10 @@ class FScrollbar : public FWidget
     // Methods
     void                init();
     void                draw() override;
+    void                drawVerticalBar();
+    void                drawVerticalBackgroundLine();
+    void                drawHorizontalBar();
+    void                drawHorizontalBackgroundColumn();
     void                drawButtons();
     sType               getClickedScrollType (int, int);
     sType               getVerticalClickedScrollType (int);

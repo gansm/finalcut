@@ -86,13 +86,15 @@ class FCheckBox : public FToggleButton
     FCheckBox& operator = (const FCheckBox&) = delete;
 
     // Accessor
-    const char*         getClassName() const override;
+    const char* getClassName() const override;
 
   private:
     // Methods
-    void                init();
-    void                draw() override;
-    void                drawCheckButton();
+    void        init();
+    void        draw() override;
+    void        drawCheckButton();
+    void        drawChecked();
+    void        drawUnchecked();
 };
 #pragma pack(pop)
 

@@ -117,6 +117,9 @@ void FSwitch::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FSwitch::draw()
 {
+  if ( ! isVisible() )
+    return;
+
   drawLabel();
   drawCheckButton();
   FToggleButton::draw();
@@ -127,9 +130,6 @@ void FSwitch::draw()
 //----------------------------------------------------------------------
 void FSwitch::drawCheckButton()
 {
-  if ( ! isVisible() )
-    return;
-
   print() << FPoint(1 + int(switch_offset_pos), 1);
 
   if ( checked )
@@ -139,7 +139,7 @@ void FSwitch::drawCheckButton()
 }
 
 //----------------------------------------------------------------------
-void FSwitch::drawChecked()
+inline void FSwitch::drawChecked()
 {
   wchar_t on[6] = L"  On ";
   wchar_t off[6] = L" Off ";
@@ -188,7 +188,7 @@ void FSwitch::drawChecked()
 }
 
 //----------------------------------------------------------------------
-void FSwitch::drawUnchecked()
+inline void FSwitch::drawUnchecked()
 {
   wchar_t on[6] = L"  On ";
   wchar_t off[6] = L" Off ";

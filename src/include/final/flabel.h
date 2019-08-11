@@ -144,7 +144,6 @@ class FLabel : public FWidget
 
     // Methods
     void                init();
-    std::size_t         getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
     void                setHotkeyAccelerator();
     std::size_t         getAlignOffset (std::size_t);
     void                draw() override;

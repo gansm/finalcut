@@ -131,7 +131,6 @@ class FMenuBar : public FWindow, public FMenuList
     bool         selectNextItem();
     bool         selectPrevItem();
     bool         hotkeyMenu (FKeyEvent*&);
-    std::size_t  getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
     void         draw() override;
     void         drawItems();
     void         drawItem (FMenuItem*, std::size_t&);

@@ -134,7 +134,6 @@ class FButtonGroup : public FScrollView
 
     // Methods
     void                init();
-    std::size_t         getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
     void                drawText (wchar_t[], std::size_t, std::size_t);
     void                directFocus();
 

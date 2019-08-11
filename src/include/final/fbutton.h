@@ -147,7 +147,6 @@ class FButton : public FWidget
     void                init();
     void                setHotkeyAccelerator();
     void                detectHotkey();
-    std::size_t         getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
     std::size_t         clickAnimationIndent (FWidget*);
     void                clearRightMargin (FWidget*);
     void                drawMarginLeft();

@@ -62,6 +62,9 @@ void FRadioButton::init()
 //----------------------------------------------------------------------
 void FRadioButton::draw()
 {
+  if ( ! isVisible() )
+    return;
+
   drawRadioButton();
   drawLabel();
   FToggleButton::draw();
@@ -70,9 +73,6 @@ void FRadioButton::draw()
 //----------------------------------------------------------------------
 void FRadioButton::drawRadioButton()
 {
-  if ( ! isVisible() )
-    return;
-
   print() << FPoint(1, 1);
   setColor();
 
@@ -85,30 +85,38 @@ void FRadioButton::drawRadioButton()
   }
 
   if ( checked )
-  {
-    if ( isNewFont() )
-      print (CHECKED_RADIO_BUTTON);
-    else
-    {
-      print ('(');
-      print (fc::Bullet);  // Bullet ●
-      print (')');
-    }
-  }
+    drawChecked();
   else
-  {
-    if ( isNewFont() )
-      print (RADIO_BUTTON);
-    else
-    {
-      print ('(');
-      print (' ');
-      print (')');
-    }
-  }
+    drawUnchecked();
 
   if ( isMonochron() )
     setReverse(false);
+}
+
+//----------------------------------------------------------------------
+inline void FRadioButton::drawChecked()
+{
+  if ( isNewFont() )
+    print (CHECKED_RADIO_BUTTON);
+  else
+  {
+    print ('(');
+    print (fc::Bullet);  // Bullet ●
+    print (')');
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FRadioButton::drawUnchecked()
+{
+  if ( isNewFont() )
+    print (RADIO_BUTTON);
+  else
+  {
+    print ('(');
+    print (' ');
+    print (')');
+  }
 }
 
 }  // namespace finalcut

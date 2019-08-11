@@ -348,31 +348,6 @@ void FLabel::init()
 }
 
 //----------------------------------------------------------------------
-std::size_t FLabel::getHotkeyPos ( wchar_t src[]
-                                 , wchar_t dest[]
-                                 , std::size_t length )
-{
-  // find hotkey position in string
-  // + generate a new string without the '&'-sign
-  std::size_t hotkeypos = NOT_SET;
-  wchar_t* txt = src;
-
-  for (std::size_t i = 0; i < length; i++)
-  {
-    if ( i < length && txt[i] == L'&' && hotkeypos == NOT_SET )
-    {
-      hotkeypos = i;
-      i++;
-      src++;
-    }
-
-    *dest++ = *src++;
-  }
-
-  return hotkeypos;
-}
-
-//----------------------------------------------------------------------
 void FLabel::setHotkeyAccelerator()
 {
   FKey hotkey = getHotkey(text);
@@ -478,7 +453,7 @@ void FLabel::drawMultiLine()
     auto dest = const_cast<wchar_t*>(label_text);
 
     if ( ! hotkey_printed )
-      hotkeypos = getHotkeyPos(src, dest, length);
+      hotkeypos = finalcut::getHotkeyPos(src, dest, length);
     else
       std::wcsncpy(dest, src, length);
 
@@ -519,7 +494,7 @@ void FLabel::drawSingleLine()
     return;
   }
 
-  hotkeypos = getHotkeyPos (text.wc_str(), label_text, length);
+  hotkeypos = finalcut::getHotkeyPos (text.wc_str(), label_text, length);
 
   if ( hotkeypos != NOT_SET )
     length--;

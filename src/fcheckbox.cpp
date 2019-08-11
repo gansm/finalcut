@@ -62,6 +62,9 @@ void FCheckBox::init()
 //----------------------------------------------------------------------
 void FCheckBox::draw()
 {
+  if ( ! isVisible() )
+    return;
+
   drawCheckButton();
   drawLabel();
   FToggleButton::draw();
@@ -70,9 +73,6 @@ void FCheckBox::draw()
 //----------------------------------------------------------------------
 void FCheckBox::drawCheckButton()
 {
-  if ( ! isVisible() )
-    return;
-
   print() << FPoint(1, 1);
   setColor();
 
@@ -85,30 +85,38 @@ void FCheckBox::drawCheckButton()
   }
 
   if ( checked )
-  {
-    if ( isNewFont() )
-      print (CHECKBOX_ON);
-    else
-    {
-      print ('[');
-      print (fc::Times);  // Times ×
-      print (']');
-    }
-  }
+    drawChecked();
   else
-  {
-    if ( isNewFont() )
-      print (CHECKBOX);
-    else
-    {
-      print ('[');
-      print (' ');
-      print (']');
-    }
-  }
+    drawUnchecked();
 
   if ( isMonochron() )
     setReverse(false);
+}
+
+//----------------------------------------------------------------------
+inline void FCheckBox::drawChecked()
+{
+  if ( isNewFont() )
+    print (CHECKBOX_ON);
+  else
+  {
+    print ('[');
+    print (fc::Times);  // Times ×
+    print (']');
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FCheckBox::drawUnchecked()
+{
+  if ( isNewFont() )
+    print (CHECKBOX);
+  else
+  {
+    print ('[');
+    print (' ');
+    print (']');
+  }
 }
 
 }  // namespace finalcut

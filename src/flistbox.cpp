@@ -815,14 +815,7 @@ void FListBox::draw()
   if ( isMonochron() )
     setReverse(true);
 
-  if ( isNewFont() )
-  {
-    FRect box(FPoint(1, 1), getSize());
-    box.scaleBy(-1, 0);
-    finalcut::drawBorder (this, box);
-  }
-  else
-    drawBorder();
+  drawBorder();
 
   if ( isNewFont() && ! vbar->isShown() )
   {
@@ -854,6 +847,19 @@ void FListBox::draw()
       getStatusBar()->drawMessage();
     }
   }
+}
+
+//----------------------------------------------------------------------
+void FListBox::drawBorder()
+{
+  if ( isNewFont() )
+  {
+    FRect box(FPoint(1, 1), getSize());
+    box.scaleBy(-1, 0);
+    finalcut::drawBorder (this, box);
+  }
+  else
+    FWidget::drawBorder();
 }
 
 //----------------------------------------------------------------------

@@ -174,9 +174,6 @@ class FDialog : public FWindow
     static constexpr std::size_t MENU_BTN = 3;
     static constexpr bool PRINT_WIN_NUMBER = false;  // Only for debug
 
-    // Using-declaration
-    using FWidget::drawBorder;
-
     // Methods
     void                init();
     void                initDialogMenu();

@@ -76,7 +76,6 @@ class FWindow : public FWidget
 {
   public:
     // Using-declaration
-    using FWidget::drawBorder;
     using FWidget::setGeometry;
 
     // Constructor
