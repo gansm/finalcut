@@ -200,7 +200,7 @@ class FSystemImpl : public FSystem
     }
 
     int getpwuid_r ( uid_t uid, struct passwd* pwd
-                   , char* buf, size_t buflen, struct passwd** result )
+                   , char* buf, size_t buflen, struct passwd** result ) override
     {
       return ::getpwuid_r (uid, pwd, buf, buflen, result);
     }
