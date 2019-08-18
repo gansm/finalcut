@@ -159,9 +159,6 @@ class FVTerm
     static char*          getTermType();
     static char*          getTermFileName();
     FTerm&                getFTerm();
-#if DEBUG
-    FTermDebugData&       getFTermDebugData();
-#endif
 
     // Mutators
     void                  setTermXY (int, int);
@@ -636,12 +633,6 @@ inline char* FVTerm::getTermFileName()
 //----------------------------------------------------------------------
 inline FTerm& FVTerm::getFTerm()
 { return *fterm; }
-
-//----------------------------------------------------------------------
-#if DEBUG
-inline FTermDebugData& FVTerm::getFTermDebugData()
-{ return getFTerm().getFTermDebugData(); }
-#endif
 
 //----------------------------------------------------------------------
 inline void FVTerm::hideCursor()

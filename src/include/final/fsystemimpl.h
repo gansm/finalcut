@@ -61,6 +61,10 @@
   #undef buttons  // from term.h
 #endif
 
+#if defined(__CYGWIN__)
+  #undef __STRICT_ANSI__  // need for realpath and strdup
+#endif
+
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -71,7 +75,6 @@
 
 #include "final/fc.h"
 #include "final/fsystem.h"
-
 namespace finalcut
 {
 
@@ -189,6 +192,22 @@ class FSystemImpl : public FSystem
     uid_t getuid() override
     {
       return ::getuid();
+    }
+
+    uid_t geteuid() override
+    {
+      return ::geteuid();
+    }
+
+    int getpwuid_r ( uid_t uid, struct passwd* pwd
+                   , char* buf, size_t buflen, struct passwd** result )
+    {
+      return ::getpwuid_r (uid, pwd, buf, buflen, result);
+    }
+
+    char* realpath (const char* path, char* resolved_path) override
+    {
+      return ::realpath(path, resolved_path);
     }
 };
 #pragma pack(pop)

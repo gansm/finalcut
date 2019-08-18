@@ -35,6 +35,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <pwd.h>
 #include "final/ftypes.h"
 
 namespace finalcut
@@ -68,6 +69,10 @@ class FSystem
     virtual int   putchar (int) = 0;
     virtual int   tputs (const char*, int, int (*)(int)) = 0;
     virtual uid_t getuid() = 0;
+    virtual uid_t geteuid() = 0;
+    virtual int   getpwuid_r ( uid_t, struct passwd*, char*, size_t ,
+                               struct passwd**) = 0;
+    virtual char* realpath (const char*, char*) = 0;
 };
 #pragma pack(pop)
 

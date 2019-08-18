@@ -262,6 +262,12 @@ void FVTerm::updateTerminal()
     }
   }
 
+  // Check terminal size has changed
+  auto data = getFTerm().getFTermData();
+
+  if ( data->hasTermResized() )
+    return;
+
   // Update data on VTerm
   updateVTerm();
 
@@ -2511,7 +2517,7 @@ void FVTerm::updateTerminalLine (uInt y)
   uInt& xmin = vt->changes[y].xmin;
   uInt& xmax = vt->changes[y].xmax;
 
-  if ( xmin <= xmax )
+  if ( xmin <= xmax )  // Line has changes
   {
     bool draw_leading_ws = false;
     bool draw_trailing_ws = false;

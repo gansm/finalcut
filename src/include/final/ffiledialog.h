@@ -68,7 +68,6 @@
 #include <dirent.h>
 #include <fnmatch.h>
 #include <libgen.h>
-#include <pwd.h>
 #include <unistd.h>
 
 #include <string>
@@ -85,6 +84,9 @@
 
 namespace finalcut
 {
+
+// class forward declaration
+class FSystem;
 
 //----------------------------------------------------------------------
 // class FFileDialog
@@ -195,17 +197,18 @@ class FFileDialog : public FDialog
     void                 cb_processShowHidden (FWidget*, FDataPtr);
 
     // Data Members
-    DIR*        directory_stream{nullptr};
-    dirEntries  dir_entries{};
-    FString     directory{};
-    FString     filter_pattern{};
-    FLineEdit   filename{this};
-    FListBox    filebrowser{this};
-    FCheckBox   hidden_check{this};
-    FButton     cancel_btn{this};
-    FButton     open_btn{this};
-    DialogType  dlg_type{FFileDialog::Open};
-    bool        show_hidden{false};
+    static FSystem*  fsystem;
+    DIR*             directory_stream{nullptr};
+    dirEntries       dir_entries{};
+    FString          directory{};
+    FString          filter_pattern{};
+    FLineEdit        filename{this};
+    FListBox         filebrowser{this};
+    FCheckBox        hidden_check{this};
+    FButton          cancel_btn{this};
+    FButton          open_btn{this};
+    DialogType       dlg_type{FFileDialog::Open};
+    bool             show_hidden{false};
 
     // Friend functions
     friend bool sortByName ( const FFileDialog::dir_entry&

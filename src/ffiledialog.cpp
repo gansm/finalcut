@@ -21,17 +21,22 @@
 ***********************************************************************/
 
 #if defined(__CYGWIN__)
-  #undef __STRICT_ANSI__  // need for realpath and strdup
+  #undef __STRICT_ANSI__  // need for strdup
   #include <strings.h>    // need for strcasecmp
 #endif
 
+#include <pwd.h>
 #include <vector>
 
 #include "final/fevent.h"
+#include "final/fsystem.h"
 #include "final/ffiledialog.h"
 
 namespace finalcut
 {
+
+// static class attributes
+FSystem*  FFileDialog::fsystem = nullptr;
 
 // non-member functions
 //----------------------------------------------------------------------
@@ -200,7 +205,7 @@ void FFileDialog::setPath (const FString& dir)
     return;
   }
 
-  if ( realpath(dir.c_str(), resolved_path) != 0 )
+  if ( fsystem->realpath(dir.c_str(), resolved_path) != 0 )
     r_dir = resolved_path;
   else
     r_dir = dir;
@@ -321,7 +326,10 @@ void FFileDialog::init()
 {
   static constexpr std::size_t w = 42;
   static constexpr std::size_t h = 15;
-  int x, y;
+  int x{}, y{};
+
+  if ( ! fsystem )
+    fsystem = FTerm::getFSystem();
 
   setGeometry(FPoint(1, 1), FSize(w, h), false);
   auto parent_widget = getParentWidget();
@@ -602,6 +610,9 @@ void FFileDialog::followSymLink (const char* const dir, dir_entry& entry)
   char symLink[MAXPATHLEN] = { };
   struct stat sb;
 
+  if ( ! fsystem )
+    fsystem = FTerm::getFSystem();
+
   std::strncpy (symLink, dir, sizeof(symLink));
   symLink[sizeof(symLink) - 1] = '\0';
   std::strncat ( symLink
@@ -609,7 +620,7 @@ void FFileDialog::followSymLink (const char* const dir, dir_entry& entry)
                , sizeof(symLink) - std::strlen(symLink) - 1);
   symLink[sizeof(symLink) - 1] = '\0';
 
-  if ( realpath(symLink, resolved_path) == 0 )
+  if ( fsystem->realpath(symLink, resolved_path) == 0 )
     return;  // Cannot follow the symlink
 
   if ( lstat(resolved_path, &sb) == -1 )
@@ -664,6 +675,9 @@ int FFileDialog::changeDir (const FString& dirname)
 {
   FString lastdir = directory;
   FString newdir = dirname;
+
+  if ( ! fsystem )
+    fsystem = FTerm::getFSystem();
 
   if ( newdir.includes('~') )
     newdir = newdir.replace('~', getHomeDir());
@@ -733,7 +747,12 @@ const FString FFileDialog::getHomeDir()
   struct passwd* pwd_ptr;
   char buf[1024];
 
-  if ( getpwuid_r (geteuid(), &pwd, buf, sizeof(buf), &pwd_ptr) )
+  if ( ! fsystem )
+    fsystem = FTerm::getFSystem();
+
+  uid_t euid = fsystem->geteuid();
+
+  if ( fsystem->getpwuid_r(euid, &pwd, buf, sizeof(buf), &pwd_ptr) )
     return FString("");
   else
     return FString(pwd.pw_dir);

@@ -84,6 +84,8 @@ class FSystemTest : public finalcut::FSystem
     int              putchar (int) override;
     int              tputs (const char*, int, int (*)(int)) override;
     uid_t            getuid() override;
+    uid_t            geteuid() override;
+    char*            realpath (const char*, char*) override;
     wskbd_bell_data& getBell();
 
   private:
@@ -272,6 +274,25 @@ int FSystemTest::tputs (const char* str, int affcnt, int (*putc)(int))
 uid_t FSystemTest::getuid()
 {
   return 0;
+}
+
+//----------------------------------------------------------------------
+uid_t FSystemTest::geteuid()
+{
+  return 0;
+}
+
+//----------------------------------------------------------------------
+int FSystemTest::getpwuid_r ( uid_t, struct passwd*, char*, size_t
+                            , struct passwd** )
+{
+  return 0;
+}
+
+//----------------------------------------------------------------------
+char* FSystemTest::realpath (const char*, char*);
+{
+  return "";
 }
 
 //----------------------------------------------------------------------

@@ -1,3 +1,6 @@
+2019-08-18  Markus Gans  <guru.mail@muenster.de>
+	* Solved problem detecting terminal size on quick changes
+
 2019-08-11  Markus Gans  <guru.mail@muenster.de>
 	* FRect has now got a scaleBy() method
 	* Convert drawBorder() to a non-member function using FRect

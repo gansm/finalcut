@@ -27,6 +27,7 @@
 #include "final/fmenubar.h"
 #include "final/fstatusbar.h"
 #include "final/fstring.h"
+#include "final/ftermdata.h"
 #include "final/fwidget.h"
 #include "final/fwidgetcolors.h"
 
@@ -1020,9 +1021,13 @@ void FWidget::resize()
 {
   if ( isRootWidget() )
   {
+    FRect old_term_geometry = getTermGeometry();
     detectTermSize();
     FRect term_geometry = getTermGeometry();
     term_geometry.move (-1, -1);
+
+    if ( old_term_geometry.getSize() == term_geometry.getSize() )
+      return;
 
     resizeVTerm (term_geometry.getSize());
     resizeArea (term_geometry, getShadow(), vdesktop);

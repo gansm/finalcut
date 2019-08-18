@@ -286,7 +286,7 @@ void FTermcap::termcapKeysVt100 (char*& buffer)
 
   const char* key_up_string = tgetstr(C_STR("ku"), &buffer);
 
-  if ( (key_up_string && (std::strcmp(key_up_string, CSI "A") == 0))
+  if ( (key_up_string && (std::strcmp(key_up_string, ESC "OA") == 0))
     || ( TCAP(fc::t_cursor_up)
       && (std::strcmp(TCAP(fc::t_cursor_up), CSI "A") == 0) ) )
   {

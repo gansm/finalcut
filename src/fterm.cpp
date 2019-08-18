@@ -895,25 +895,18 @@ void FTerm::detectTermSize()
     data = FTerm::getFTermData();
 
   struct winsize win_size;
-  bool close_after_detect = false;
-  int fd = data->getTTYFileDescriptor();
-  int ret;
-
-  if ( fd < 0 )  // console is closed
-  {
-    if ( openConsole() != 0 )
-      return;
-
-    fd = data->getTTYFileDescriptor();
-    close_after_detect = true;
-  }
-
   auto& term_geometry = data->getTermGeometry();
+  int ret;
+  errno = 0;
 
-  if ( fsys )
-    ret = fsys->ioctl (fd, TIOCGWINSZ, &win_size);
-  else
-    ret = -1;
+  do
+  {
+    if ( fsys )
+      ret = fsys->ioctl (FTermios::getStdOut(), TIOCGWINSZ, &win_size);
+    else
+      ret = -1;
+  }
+  while (errno == EINTR);
 
   if ( ret != 0 || win_size.ws_col == 0 || win_size.ws_row == 0 )
   {
@@ -933,9 +926,6 @@ void FTerm::detectTermSize()
   if ( opti_move )
     opti_move->setTermSize ( term_geometry.getWidth()
                            , term_geometry.getHeight() );
-
-  if ( close_after_detect )
-    closeConsole();
 }
 
 //----------------------------------------------------------------------
@@ -2549,7 +2539,8 @@ void FTerm::signal_handler (int signum)
     case SIGWINCH:
       if ( ! data )
         break;
-      else if ( data->hasTermResized() )
+
+      if ( data->hasTermResized() )
         break;
 
       // initialize a resize event to the root element

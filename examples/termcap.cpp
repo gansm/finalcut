@@ -226,7 +226,8 @@ void tcapString (const std::string& name, const char cap_str[])
 #if DEBUG
 void debug (finalcut::FApplication& TermApp)
 {
-  finalcut::FTermDebugData& debug_data = TermApp.getFTermDebugData();
+  auto& fterm = TermApp.getFTerm();
+  auto& debug_data = fterm.getFTermDebugData();
   const finalcut::FString& ab_s = debug_data.getAnswerbackString();
   const finalcut::FString& sec_da = debug_data.getSecDAString();
   std::cout << "\n.------------------- debug -------------------\r\n";
