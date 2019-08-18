@@ -73,6 +73,7 @@ class FScrollView : public FWidget
   public:
     // Using-declaration
     using FWidget::setGeometry;
+    using FWidget::print;
 
     // Constructor
     explicit FScrollView (FWidget* = nullptr);
@@ -132,6 +133,7 @@ class FScrollView : public FWidget
     void                scrollTo (const FPoint&);
     void                scrollTo (int, int);
     void                scrollBy (int, int);
+    void                print (const FPoint&) override;
     void                draw() override;
     void                drawBorder() override;
 
@@ -263,6 +265,15 @@ inline bool FScrollView::isViewportPrint()
 //----------------------------------------------------------------------
 inline void FScrollView::scrollTo (const FPoint& pos)
 { scrollTo(pos.getX(), pos.getY()); }
+
+//----------------------------------------------------------------------
+inline void FScrollView::print (const FPoint& pos)
+{
+  if ( use_own_print_area )
+    FWidget::setPrintPos(pos);
+  else
+    setPrintPos(pos);
+}
 
 }  // namespace finalcut
 

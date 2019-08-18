@@ -1,5 +1,7 @@
 2019-08-18  Markus Gans  <guru.mail@muenster.de>
 	* Solved problem detecting terminal size on quick changes
+	* Update VTerm information only in case of changes
+	* Fixes print() << FPoint() behavior in FScrollView
 
 2019-08-11  Markus Gans  <guru.mail@muenster.de>
 	* FRect has now got a scaleBy() method
