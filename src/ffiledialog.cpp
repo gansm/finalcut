@@ -35,9 +35,6 @@
 namespace finalcut
 {
 
-// static class attributes
-FSystem*  FFileDialog::fsystem = nullptr;
-
 // non-member functions
 //----------------------------------------------------------------------
 bool sortByName ( const FFileDialog::dir_entry& lhs
@@ -92,6 +89,8 @@ const FString fileChooser ( FWidget* parent
   return ret;
 }
 
+// static class attributes
+FSystem*  FFileDialog::fsystem = nullptr;
 
 //----------------------------------------------------------------------
 // class FFileDialog

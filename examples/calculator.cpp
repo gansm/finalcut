@@ -838,7 +838,7 @@ void Calc::tangent (lDouble& x)
 void Calc::draw()
 {
   setBold();
-  setColor (fc::Blue, fc::Cyan);
+  setColor (fc::LightBlue, fc::Cyan);
   clearArea (vdesktop, fc::MediumShade);
   unsetBold();
   finalcut::FDialog::draw();

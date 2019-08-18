@@ -333,7 +333,7 @@ class FWidget : public FVTerm, public FObject
     virtual bool        focusLastChild();
     FPoint              termToWidgetPos (const FPoint&);
     void                detectTermSize();
-    void                print (const FPoint& p) override;
+    void                print (const FPoint&) override;
     virtual void        move (const FPoint&);
     void                drawShadow();
     void                clearShadow();

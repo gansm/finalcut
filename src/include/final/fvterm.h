@@ -454,6 +454,7 @@ class FVTerm
     void                  updateTerminalLine (uInt);
     bool                  updateTerminalCursor();
     bool                  isInsideTerminal (const FPoint&);
+    bool                  isTermSizeChanged();
     static void           markAsPrinted (uInt, uInt);
     static void           markAsPrinted (uInt, uInt, uInt);
     static void           newFontChanges (charData*&);

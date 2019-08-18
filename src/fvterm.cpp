@@ -262,17 +262,30 @@ void FVTerm::updateTerminal()
     }
   }
 
-  // Check terminal size has changed
   auto data = getFTerm().getFTermData();
 
-  if ( data->hasTermResized() )
+  // Checks if the resizing of the terminal is not finished
+  if ( data && data->hasTermResized() )
     return;
+
+  // Monitor whether the terminal size has changed
+  if ( isTermSizeChanged() )
+  {
+    raise (SIGWINCH);  // Send SIGWINCH
+    return;
+  }
 
   // Update data on VTerm
   updateVTerm();
 
+  // Checks if VTerm has changes
+  if ( ! vterm->has_changes )
+    return;
+
   for (uInt y = 0; y < uInt(vterm->height); y++)
     updateTerminalLine (y);
+
+  vterm->has_changes = false;
 
   // sets the new input cursor position
   updateTerminalCursor();
@@ -852,6 +865,8 @@ void FVTerm::restoreVTerm (const FRect& box)
     if ( int(vterm->changes[ypos].xmax) < x + w - 1 )
       vterm->changes[ypos].xmax = uInt(x + w - 1);
   }
+
+  vterm->has_changes = true;
 }
 
 //----------------------------------------------------------------------
@@ -1251,6 +1266,7 @@ void FVTerm::updateVTerm (term_area* area)
     area->changes[y].xmax = 0;
   }
 
+  vterm->has_changes = true;
   updateVTermCursor(area);
 }
 
@@ -1286,6 +1302,7 @@ bool FVTerm::updateVTermCursor (term_area* area)
       vterm->input_cursor_x = x;
       vterm->input_cursor_y = y;
       vterm->input_cursor_visible = true;
+      vterm->has_changes = true;
       return true;
     }
   }
@@ -1472,6 +1489,8 @@ void FVTerm::putArea (const FPoint& pos, term_area* area)
     if ( ax + length - 1 > int(vterm->changes[ay + y].xmax) )
       vterm->changes[ay + y].xmax = uInt(ax + length - 1);
   }
+
+  vterm->has_changes = true;
 }
 
 //----------------------------------------------------------------------
@@ -2607,6 +2626,25 @@ bool FVTerm::isInsideTerminal (const FPoint& pos)
     return true;
   else
     return false;
+}
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isTermSizeChanged()
+{
+  auto data = getFTerm().getFTermData();
+
+  if ( ! data )
+    return false;
+
+  auto old_term_geometry = data->getTermGeometry();
+  getFTerm().detectTermSize();
+  auto term_geometry = data->getTermGeometry();
+  term_geometry.move (-1, -1);
+
+  if ( old_term_geometry.getSize() != term_geometry.getSize() )
+    return true;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
