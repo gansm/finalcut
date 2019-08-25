@@ -243,7 +243,7 @@ inline void FObject::setWidgetProperty (bool property)
 
 static inline timeval operator + (const timeval& t1, const timeval& t2)
 {
-  timeval tmp;
+  timeval tmp{};
   tmp.tv_sec = t1.tv_sec + t2.tv_sec;
 
   if ( (tmp.tv_usec = t1.tv_usec + t2.tv_usec) >= 1000000 )
@@ -258,7 +258,7 @@ static inline timeval operator + (const timeval& t1, const timeval& t2)
 //----------------------------------------------------------------------
 static inline timeval operator - (const timeval& t1, const timeval& t2)
 {
-  timeval tmp;
+  timeval tmp{};
   tmp.tv_sec = t1.tv_sec - t2.tv_sec;
 
   if ( (tmp.tv_usec = t1.tv_usec - t2.tv_usec) < 0 )

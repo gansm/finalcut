@@ -32,12 +32,12 @@ namespace finalcut
 
 // static class attributes
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  uInt                      FTermFreeBSD::bsd_alt_keymap = 0;
-  FTermFreeBSD::CursorStyle FTermFreeBSD::cursor_style = fc::normal_cursor;
-  bool                      FTermFreeBSD::change_cursorstyle = true;
-  bool                      FTermFreeBSD::meta_sends_escape = true;
-  FSystem*                  FTermFreeBSD::fsystem = nullptr;
-  FTermData*                FTermFreeBSD::fterm_data = nullptr;
+  uInt                      FTermFreeBSD::bsd_alt_keymap{0};
+  FTermFreeBSD::CursorStyle FTermFreeBSD::cursor_style{fc::normal_cursor};
+  bool                      FTermFreeBSD::change_cursorstyle{true};
+  bool                      FTermFreeBSD::meta_sends_escape{true};
+  FSystem*                  FTermFreeBSD::fsystem{nullptr};
+  FTermData*                FTermFreeBSD::fterm_data{nullptr};
 #endif
 
 
@@ -156,7 +156,7 @@ void FTermFreeBSD::initCharMap()
   if ( ! isFreeBSDConsole() )
     return;
 
-  for (std::size_t i = 0; i <= fc::lastCharItem; i++)
+  for (std::size_t i{0}; i <= fc::lastCharItem; i++)
     if ( fc::character[i][fc::PC] < 0x1c )
       fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
 }
@@ -183,7 +183,7 @@ bool FTermFreeBSD::saveFreeBSDAltKey()
   // Saving the current mapping for the alt key
 
   static constexpr int left_alt = 0x38;
-  int ret = -1;
+  int ret{-1};
   keymap_t keymap{};
 
   if ( fsystem )
@@ -203,7 +203,7 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
   // Remapping the alt key
 
   static constexpr int left_alt = 0x38;
-  int ret = -1;
+  int ret{-1};
   keymap_t keymap{};
 
   if ( fsystem )

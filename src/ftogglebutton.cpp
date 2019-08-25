@@ -84,7 +84,7 @@ void FToggleButton::setGeometry ( const FPoint& pos, const FSize& s
 {
   // Set the toggle button geometry
 
-  FSize size = s;
+  FSize size(s);
   std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
   std::size_t min_width = button_width + text.getLength() - hotkey_mark;
 
@@ -190,7 +190,7 @@ bool FToggleButton::setChecked (bool enable)
 //----------------------------------------------------------------------
 void FToggleButton::setText (const FString& txt)
 {
-  text = txt;
+  text.setString(txt);
   std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
 
   setWidth(button_width + text.getLength() - hotkey_mark);
@@ -440,7 +440,7 @@ void FToggleButton::drawLabel()
     return;
   }
 
-  FString txt = text;
+  FString txt(text);
   wchar_t* src = const_cast<wchar_t*>(txt.wc_str());
   wchar_t* dest = const_cast<wchar_t*>(LabelText);
   auto hotkeypos = finalcut::getHotkeyPos(src, dest, length);
@@ -566,7 +566,7 @@ void FToggleButton::drawText ( wchar_t LabelText[]
   else
     setColor (wc.label_inactive_fg, wc.label_inactive_bg);
 
-  for (std::size_t z = 0; z < length; z++)
+  for (std::size_t z{0}; z < length; z++)
   {
     if ( (z == hotkeypos) && flags.active )
     {

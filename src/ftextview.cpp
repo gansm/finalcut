@@ -61,21 +61,19 @@ FTextView::~FTextView()  // destructor
 //----------------------------------------------------------------------
 const FString FTextView::getText() const
 {
-  std::size_t len, rows, idx;
-
   if ( data.empty() )
     return FString("");
 
-  len = 0;
-  rows = getRows();
+  std::size_t len{0};
+  std::size_t rows = getRows();
 
-  for (std::size_t i = 0 ; i < rows; i++)
+  for (std::size_t i{0} ; i < rows; i++)
     len += data[i].getLength() + 1;
 
   FString s(len + 1);
-  idx = 0;
+  std::size_t idx{0};
 
-  for (std::size_t i = 0 ; i < rows; i++)
+  for (std::size_t i{0}; i < rows; i++)
   {
     const wchar_t* p = data[i].wc_str();
 
@@ -223,7 +221,7 @@ void FTextView::insert (const FString& str, int pos)
   auto text_split = s.split("\r\n");
   auto num = text_split.size();
 
-  for (std::size_t i = 0; i < num; i++)
+  for (std::size_t i{0}; i < num; i++)
   {
     text_split[i] = text_split[i].removeBackspaces()
                                  .removeDel()
@@ -283,7 +281,6 @@ void FTextView::replaceRange (const FString& str, int from, int to)
 //----------------------------------------------------------------------
 void FTextView::clear()
 {
-  std::size_t size;
   data.clear();
   data.shrink_to_fit();
   xoffset = 0;
@@ -300,14 +297,14 @@ void FTextView::clear()
 
   // clear list from screen
   setColor();
-  size = getWidth() - 2;
+  std::size_t size = getWidth() - 2;
 
   if ( size == 0 )
     return;
 
   char* blank = createBlankArray(size + 1);
 
-  for (int y = 0; y < int(getTextHeight()); y++)
+  for (int y{0}; y < int(getTextHeight()); y++)
   {
     print() << FPoint(2, 2 - nf_offset + y) << blank;
   }
@@ -479,7 +476,7 @@ void FTextView::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FTextView::onWheel (FWheelEvent* ev)
 {
-  int distance = 4;
+  int distance{4};
 
   switch ( ev->getWheel() )
   {
@@ -705,15 +702,15 @@ void FTextView::drawText()
   if ( isMonochron() )
     setReverse(true);
 
-  for (std::size_t y = 0; y < num; y++)
+  for (std::size_t y{0}; y < num; y++)
   {
-    std::size_t i;
-    FString line;
-    print() << FPoint(2, 2 - nf_offset + int(y));
-    line = data[y + std::size_t(yoffset)].mid ( std::size_t(1 + xoffset)
-                                              , getTextWidth() );
+    std::size_t i{};
+    std::size_t n = y + std::size_t(yoffset);
+    std::size_t x = std::size_t(1 + xoffset);
+    FString line(data[n].mid (x, getTextWidth()));
     const auto line_str = line.wc_str();
     const auto len = line.getLength();
+    print() << FPoint(2, 2 - nf_offset + int(y));
 
     for (i = 0; i < len; i++)
     {
@@ -749,8 +746,8 @@ void FTextView::processChanged()
 void FTextView::cb_VBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
-  int distance = 1;
-  int wheel_distance = 4;
+  int distance{1};
+  int wheel_distance{4};
 
   if ( scrollType >= FScrollbar::scrollStepBackward
     && scrollType <= FScrollbar::scrollWheelDown )
@@ -805,8 +802,8 @@ void FTextView::cb_VBarChange (FWidget*, FDataPtr)
 void FTextView::cb_HBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
-  int distance = 1;
-  int wheel_distance = 4;
+  int distance{1};
+  int wheel_distance{4};
 
   if ( scrollType >= FScrollbar::scrollStepBackward
     && scrollType <= FScrollbar::scrollWheelDown )

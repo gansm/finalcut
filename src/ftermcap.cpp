@@ -36,19 +36,19 @@ namespace finalcut
 {
 
 // static class attributes
-bool             FTermcap::background_color_erase   = false;
-bool             FTermcap::can_change_color_palette = false;
-bool             FTermcap::automatic_left_margin    = false;
-bool             FTermcap::automatic_right_margin   = false;
-bool             FTermcap::eat_nl_glitch            = false;
-bool             FTermcap::ansi_default_color       = false;
-bool             FTermcap::osc_support              = false;
-bool             FTermcap::no_utf8_acs_chars        = false;
-int              FTermcap::max_color                = 1;
-int              FTermcap::tabstop                  = 8;
-int              FTermcap::attr_without_color       = 0;
-FTermData*       FTermcap::fterm_data               = nullptr;
-FTermDetection*  FTermcap::term_detection           = nullptr;
+bool             FTermcap::background_color_erase  {false};
+bool             FTermcap::can_change_color_palette{false};
+bool             FTermcap::automatic_left_margin   {false};
+bool             FTermcap::automatic_right_margin  {false};
+bool             FTermcap::eat_nl_glitch           {false};
+bool             FTermcap::ansi_default_color      {false};
+bool             FTermcap::osc_support             {false};
+bool             FTermcap::no_utf8_acs_chars       {false};
+int              FTermcap::max_color               {1};
+int              FTermcap::tabstop                 {8};
+int              FTermcap::attr_without_color      {0};
+FTermData*       FTermcap::fterm_data              {nullptr};
+FTermDetection*  FTermcap::term_detection          {nullptr};
 
 
 //----------------------------------------------------------------------
@@ -77,11 +77,11 @@ void FTermcap::init()
 //----------------------------------------------------------------------
 void FTermcap::termcap()
 {
-  std::vector<std::string> terminals;
+  std::vector<std::string> terminals{};
   static constexpr int success = 1;
   static constexpr int uninitialized = -2;
-  static char term_buffer[2048];
-  static char string_buf[2048];
+  static char term_buffer[2048]{};
+  static char string_buf[2048]{};
   char* buffer = string_buf;
   int status = uninitialized;
   bool color256 = term_detection->canDisplay256Colors();
@@ -221,7 +221,7 @@ void FTermcap::termcapStrings (char*& buffer)
   // Get termcap strings
 
   // Read termcap output strings
-  for (std::size_t i = 0; strings[i].tname[0] != 0; i++)
+  for (std::size_t i{0}; strings[i].tname[0] != 0; i++)
     strings[i].string = tgetstr(strings[i].tname, &buffer);
 }
 
@@ -230,7 +230,7 @@ void FTermcap::termcapKeys (char*& buffer)
 {
   // Read termcap key strings
 
-  for (std::size_t i = 0; fc::Fkey[i].tname[0] != 0; i++)
+  for (std::size_t i{0}; fc::Fkey[i].tname[0] != 0; i++)
   {
     fc::Fkey[i].string = tgetstr(fc::Fkey[i].tname, &buffer);
 
@@ -290,7 +290,7 @@ void FTermcap::termcapKeysVt100 (char*& buffer)
     || ( TCAP(fc::t_cursor_up)
       && (std::strcmp(TCAP(fc::t_cursor_up), CSI "A") == 0) ) )
   {
-    for (std::size_t i = 0; fc::Fkey[i].tname[0] != 0; i++)
+    for (std::size_t i{0}; fc::Fkey[i].tname[0] != 0; i++)
     {
       if ( std::strncmp(fc::Fkey[i].tname, "kux", 3) == 0 )
         fc::Fkey[i].string = C_STR(CSI "A");  // Key up

@@ -275,7 +275,7 @@ inline bool FDialog::unsetScrollable()
 
 //----------------------------------------------------------------------
 inline void FDialog::setText (const FString& txt)
-{ tb_text = txt; }
+{ tb_text.setString(txt); }
 
 //----------------------------------------------------------------------
 inline bool FDialog::isModal()

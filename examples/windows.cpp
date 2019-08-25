@@ -98,8 +98,8 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   top_right_label.setEmphasis();
   top_right_label.setGeometry (FPoint(int(getClientWidth()) - 5, 1), FSize(6, 1));
 
-  finalcut::FString bottom_label_text = "resize\n"
-                                        "corner\n";
+  finalcut::FString bottom_label_text ( "resize\n"
+                                        "corner\n" );
   bottom_label_text += arrow_down;
   bottom_label = bottom_label_text;
   bottom_label.setAlignment (fc::alignRight);
@@ -263,7 +263,7 @@ Window::Window (finalcut::FWidget* parent)
   Statusbar.setMessage("Status bar message");
 
   // Generate data vector for the windows
-  for (int n = 1; n <= 6; n++)
+  for (int n{1}; n <= 6; n++)
   {
     auto win_dat = new win_data;
     win_dat->title.sprintf("Window %1d", n);

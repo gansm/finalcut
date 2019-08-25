@@ -114,7 +114,6 @@ void FScrollView::setScrollHeight (std::size_t height)
 //----------------------------------------------------------------------
 void FScrollView::setScrollSize (const FSize& size)
 {
-  int xoffset_end, yoffset_end;
   std::size_t width = size.getWidth();
   std::size_t height = size.getHeight();
 
@@ -139,8 +138,8 @@ void FScrollView::setScrollSize (const FSize& size)
     child_print_area = viewport;
   }
 
-  xoffset_end = int(getScrollWidth() - getViewportWidth());
-  yoffset_end = int(getScrollHeight() - getViewportHeight());
+  int xoffset_end = int(getScrollWidth() - getViewportWidth());
+  int yoffset_end = int(getScrollHeight() - getViewportHeight());
   setTopPadding (1 - getScrollY());
   setLeftPadding (1 - getScrollX());
   setBottomPadding (1 - (yoffset_end - getScrollY()));
@@ -350,8 +349,8 @@ void FScrollView::scrollTo (int x, int y)
   int  yoffset_end = int(getScrollHeight() - getViewportHeight());
   std::size_t save_width = viewport_geometry.getWidth();
   std::size_t save_height = viewport_geometry.getHeight();
-  bool changeX = false;
-  bool changeY = false;
+  bool changeX{false};
+  bool changeY{false};
   x--;
   y--;
 
@@ -516,7 +515,7 @@ void FScrollView::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FScrollView::onWheel (FWheelEvent* ev)
 {
-  int distance = 4;
+  int distance{4};
 
   switch ( ev->getWheel() )
   {
@@ -576,8 +575,8 @@ void FScrollView::onChildFocusIn (FFocusEvent*)
 
   if ( ! vp_geometry.contains(widget_geometry) )
   {
-    int x
-      , y
+    int x{}
+      , y{}
       , vx = vp_geometry.getX()
       , vy = vp_geometry.getY()
       , wx = widget_geometry.getX()
@@ -712,10 +711,10 @@ void FScrollView::copy2area()
   if ( print_area->height <= ay + y_end )
     y_end = print_area->height - ay;
 
-  for (int y = 0; y < y_end; y++)  // line loop
+  for (int y{0}; y < y_end; y++)  // line loop
   {
-    charData* vc;  // viewport character
-    charData* ac;  // area character
+    charData* vc{};  // viewport character
+    charData* ac{};  // area character
     int v_line_len = viewport->width;
     int a_line_len = print_area->width + print_area->right_shadow;
     vc = &viewport->text[(dy + y) * v_line_len + dx];
@@ -896,7 +895,7 @@ void FScrollView::setViewportCursor()
 
   FPoint cursor_pos ( viewport->input_cursor_x - 1
                     , viewport->input_cursor_y - 1 );
-  FPoint window_cursor_pos = getViewportCursorPos();
+  FPoint window_cursor_pos(getViewportCursorPos());
   print_area->input_cursor_x = window_cursor_pos.getX();
   print_area->input_cursor_y = window_cursor_pos.getY();
 
@@ -911,8 +910,8 @@ void FScrollView::setViewportCursor()
 void FScrollView::cb_VBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
-  int distance = 1;
-  int wheel_distance = 4;
+  int distance{1};
+  int wheel_distance{4};
 
   if ( scrollType >= FScrollbar::scrollStepBackward
     && scrollType <= FScrollbar::scrollWheelDown )
@@ -963,8 +962,8 @@ void FScrollView::cb_VBarChange (FWidget*, FDataPtr)
 void FScrollView::cb_HBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
-  int distance = 1;
-  int wheel_distance = 4;
+  int distance{1};
+  int wheel_distance{4};
 
   if ( scrollType >= FScrollbar::scrollStepBackward
     && scrollType <= FScrollbar::scrollWheelDown )

@@ -44,8 +44,8 @@ FTermBuffer::~FTermBuffer()  // destructor
 int FTermBuffer::writef (const FString format, ...)
 {
   static constexpr int BUFSIZE = 4096;
-  wchar_t buffer[BUFSIZE];
-  va_list args;
+  wchar_t buffer[BUFSIZE]{};
+  va_list args{};
 
   if ( format.isEmpty() )
     return 0;
@@ -62,7 +62,7 @@ int FTermBuffer::writef (const FString format, ...)
 int FTermBuffer::write (const FString& s)
 {
   assert ( ! s.isNull() );
-  int len = 0;
+  int len{0};
   const wchar_t* p = s.wc_str();
 
   if ( p )
@@ -88,8 +88,7 @@ int FTermBuffer::write (const FString& s)
 //----------------------------------------------------------------------
 int FTermBuffer::write (wchar_t c)
 {
-  charData nc;  // next character
-  nc = FVTerm::getAttribute();
+  charData nc = FVTerm::getAttribute();  // next character
   nc.code = c;
   nc.attr.bit.no_changes = false;
   nc.attr.bit.printed = false;

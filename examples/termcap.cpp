@@ -181,8 +181,7 @@ void tcapNumeric (const std::string& name, int cap_num)
 //----------------------------------------------------------------------
 void tcapString (const std::string& name, const char cap_str[])
 {
-  uInt len;
-  std::string sequence;
+  std::string sequence{};
   std::cout << name << ": ";
 
   if ( cap_str == 0 )
@@ -191,9 +190,9 @@ void tcapString (const std::string& name, const char cap_str[])
     return;
   }
 
-  len = uInt(std::strlen(cap_str));
+  uInt len = uInt(std::strlen(cap_str));
 
-  for (uInt i = 0; i < len; i++)
+  for (uInt i{0}; i < len; i++)
   {
     uChar c = uChar(cap_str[i]);
 
@@ -298,7 +297,7 @@ void string()
   finalcut::FTermcap::tcap_map (&tcap_strings)[] \
       = finalcut::FTermcap::strings;
 
-  for (int n = 0; n <= data::getNumberOfItems(); n++ )
+  for (int n{0}; n <= data::getNumberOfItems(); n++ )
   {
     const std::string name = data::strings[n].name;
     const fc::termcaps cap = data::strings[n].cap;
@@ -311,7 +310,7 @@ void string()
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
-  bool disable_alt_screen = true;
+  bool disable_alt_screen{true};
   finalcut::FApplication TermApp (argc, argv, disable_alt_screen);
 
   // Pointer to the global virtual terminal object

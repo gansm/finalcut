@@ -217,7 +217,7 @@ bool FLabel::setEnable (bool enable)
 //----------------------------------------------------------------------
 void FLabel::setText (const FString& txt)
 {
-  text = txt;
+  text.setString(txt);
   multiline_text = text.split("\r\n");
 
   if ( int(multiline_text.size()) > 1 )
@@ -428,15 +428,15 @@ void FLabel::draw()
 //----------------------------------------------------------------------
 void FLabel::drawMultiLine()
 {
-  std::size_t y = 0;
+  std::size_t y{0};
   std::size_t text_lines = multiline_text.size();
-  bool hotkey_printed = false;
+  bool hotkey_printed{false};
 
   while ( y < text_lines && y < std::size_t(getHeight()) )
   {
     wchar_t* label_text;
-    std::size_t hotkeypos = NOT_SET;
-    std::size_t align_offset;
+    std::size_t hotkeypos{NOT_SET};
+    std::size_t align_offset{};
     std::size_t length = multiline_text[y].getLength();
 
     try
@@ -480,8 +480,7 @@ void FLabel::drawMultiLine()
 void FLabel::drawSingleLine()
 {
   wchar_t* label_text;
-  std::size_t hotkeypos = NOT_SET;
-  std::size_t align_offset;
+  std::size_t hotkeypos{NOT_SET};
   std::size_t length = text.getLength();
 
   try
@@ -500,7 +499,7 @@ void FLabel::drawSingleLine()
     length--;
 
   print() << FPoint(1, 1);
-  align_offset = getAlignOffset(length);
+  std::size_t align_offset = getAlignOffset(length);
   printLine (label_text, length, hotkeypos, align_offset);
   delete[] label_text;
 }
@@ -511,7 +510,7 @@ void FLabel::printLine ( wchar_t line[]
                        , std::size_t hotkeypos
                        , std::size_t align_offset )
 {
-  std::size_t to_char;
+  std::size_t to_char{};
   std::size_t width = std::size_t(getWidth());
 
   if ( align_offset > 0 )
@@ -525,7 +524,7 @@ void FLabel::printLine ( wchar_t line[]
   if ( hasReverseMode() )
     setReverse(true);
 
-  for (std::size_t z = 0; z < to_char; z++)
+  for (std::size_t z{0}; z < to_char; z++)
   {
     if ( ! std::iswprint(wint_t(line[z])) )
     {

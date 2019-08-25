@@ -136,7 +136,7 @@ void SegmentView::hexEncoding()
 //----------------------------------------------------------------------
 void SegmentView::get7Segment (const wchar_t c)
 {
-  for (int i = 0; i < 3; i++)
+  for (int i{0}; i < 3; i++)
     line[i].clear();
 
   switch ( c )
@@ -207,7 +207,7 @@ void SegmentView::draw()
     FColorPair color(fc::LightRed, fc::Black);
     get7Segment(ch);
 
-    for (std::size_t i = 0; i < 3; i++)
+    for (std::size_t i{0}; i < 3; i++)
       tbuffer[i] << color << line[i] << " ";
   }
 

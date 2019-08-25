@@ -126,7 +126,7 @@ inline FDataPtr FListBoxItem::getData() const
 
 //----------------------------------------------------------------------
 inline void FListBoxItem::setText (const FString& txt)
-{ text = txt; }
+{ text.setString(txt); }
 
 //----------------------------------------------------------------------
 inline void FListBoxItem::setData (FDataPtr data)

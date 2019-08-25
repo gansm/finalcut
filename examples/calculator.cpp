@@ -35,7 +35,7 @@ using finalcut::FPoint;
 using finalcut::FSize;
 using finalcut::FColorPair;
 
-constexpr lDouble PI = 3.141592653589793238L;
+constexpr lDouble PI{3.141592653589793238L};
 
 
 //----------------------------------------------------------------------
@@ -255,7 +255,7 @@ Calc::Calc (FWidget* parent)
   setText ("Calculator");
   setGeometry (FPoint(19, 6), FSize(37, 18));
 
-  for (std::size_t key = 0; key < Calc::NUM_OF_BUTTONS; key++)
+  for (std::size_t key{0}; key < Calc::NUM_OF_BUTTONS; key++)
   {
     auto btn = std::make_shared<Button>(this);
     button_no[key] = key;
@@ -264,11 +264,9 @@ Calc::Calc (FWidget* parent)
       btn->setGeometry(FPoint(30, 15), FSize(5, 3));
     else
     {
-      int x, y;
-      std::size_t n;
-      ( key <= Three ) ? n = 0 : n = 1;
-      x = int(key + n) % 5 * 7 + 2;
-      y = int(key + n) / 5 * 2 + 3;
+      std::size_t n = ( key <= Three ) ? 0 : 1;
+      int x = int(key + n) % 5 * 7 + 2;
+      int y = int(key + n) / 5 * 2 + 3;
       btn->setGeometry(FPoint(x, y), FSize(5, 1));
     }
 
@@ -311,7 +309,7 @@ Calc::~Calc()
 //----------------------------------------------------------------------
 void Calc::drawDispay()
 {
-  finalcut::FString display = input;
+  finalcut::FString display(input);
 
   if ( display.isNull() || display.isEmpty()  )
     display = L'0';
@@ -346,11 +344,11 @@ void Calc::drawDispay()
 
   if ( isNewFont() )
   {
-    wchar_t bottom_line     = fc::NF_border_line_bottom;
-    wchar_t top_bottom_line = fc::NF_border_line_up_and_down;
-    wchar_t top_line        = fc::NF_border_line_upper;
-    wchar_t right_line      = fc::NF_rev_border_line_right;
-    wchar_t left_line       = fc::NF_border_line_left;
+    wchar_t bottom_line     {fc::NF_border_line_bottom};
+    wchar_t top_bottom_line {fc::NF_border_line_up_and_down};
+    wchar_t top_line        {fc::NF_border_line_upper};
+    wchar_t right_line      {fc::NF_rev_border_line_right};
+    wchar_t left_line       {fc::NF_border_line_left};
     print() << FPoint(3, 2) << finalcut::FString(33, bottom_line);
     print() << FPoint(2, 3) << right_line;
     print() << FPoint(36, 3) << left_line;
@@ -365,12 +363,12 @@ void Calc::drawDispay()
   }
   else
   {
-    wchar_t vertical_and_right  = fc::BoxDrawingsVerticalAndRight;
-    wchar_t horizontal          = fc::BoxDrawingsHorizontal;
-    wchar_t vertical_and_left   = fc::BoxDrawingsVerticalAndLeft;
-    finalcut::FString separator = finalcut::FString(vertical_and_right)
+    wchar_t vertical_and_right {fc::BoxDrawingsVerticalAndRight};
+    wchar_t horizontal         {fc::BoxDrawingsHorizontal};
+    wchar_t vertical_and_left  {fc::BoxDrawingsVerticalAndLeft};
+    finalcut::FString separator ( finalcut::FString(vertical_and_right)
                                 + finalcut::FString(35, horizontal)
-                                + finalcut::FString(vertical_and_left);
+                                + finalcut::FString(vertical_and_left) );
     print() << FPoint(1, 4) << separator;
   }
 }
@@ -609,7 +607,7 @@ void Calc::pi (lDouble& x)
 //----------------------------------------------------------------------
 void Calc::open_bracket (lDouble&)
 {
-  stack_data d = { a, infix_operator };
+  stack_data d{ a, infix_operator };
   bracket_stack.push(d);
   clearInfixOperator();
   input = "";
@@ -906,7 +904,7 @@ lDouble& Calc::getValue()
 //----------------------------------------------------------------------
 void Calc::setDisplay (lDouble d)
 {
-  char buffer[33];
+  char buffer[33]{};
   snprintf (buffer, sizeof(buffer), "%32.11Lg", d);
   input = buffer;
 }

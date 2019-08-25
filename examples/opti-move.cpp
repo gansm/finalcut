@@ -30,7 +30,7 @@
 static finalcut::FVTerm* terminal;
 
 // Global FApplication object
-static finalcut::FApplication* app = nullptr;
+static finalcut::FApplication* app{nullptr};
 
 // function prototype
 bool keyPressed();
@@ -44,12 +44,13 @@ void move (int, int, int, int);
 bool keyPressed()
 {
   // Waiting for keypress
-  struct termios save, t;
-  bool ret;
+
+  struct termios save{};
+  bool ret{false};
   std::cout << "\nPress any key to continue...";
   fflush(stdout);
   tcgetattr (STDIN_FILENO, &save);
-  t = save;
+  struct termios t = save;
   t.c_lflag &= uInt(~(ICANON | ECHO));
   tcsetattr (STDIN_FILENO, TCSANOW, &t);
 
@@ -89,10 +90,8 @@ void term_boundaries (int& x, int& y)
 void move (int xold, int yold, int xnew, int ynew)
 {
   // prints the cursor move escape sequence
-  std::string sequence;
-  char* buffer;
-  char  from[26], to[26], byte[20];
-  uInt  len;
+  std::string sequence{};
+  char  from[26]{}, to[26]{}, byte[20]{};
   const std::string ctrl_character[] =
   {
     "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL",
@@ -111,8 +110,8 @@ void move (int xold, int yold, int xnew, int ynew)
             << std::left << std::setw(10) << to
             << " ";
   // get the move string
-  buffer = finalcut::FTerm::moveCursorString (xold, yold, xnew, ynew);
-  len    = uInt(std::strlen(buffer));
+  char* buffer = finalcut::FTerm::moveCursorString (xold, yold, xnew, ynew);
+  uInt  len    = uInt(std::strlen(buffer));
 
   for (uInt i = 0; i < len; i++)
   {
@@ -142,8 +141,6 @@ void move (int xold, int yold, int xnew, int ynew)
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
-  int xmax, ymax;
-
   // Create the application object
   finalcut::FApplication TermApp(argc, argv);
 
@@ -152,8 +149,8 @@ int main (int argc, char* argv[])
   app = &TermApp;
 
   // Get screen dimension
-  xmax = int(TermApp.getDesktopWidth() - 1);
-  ymax = int(TermApp.getDesktopHeight() - 1);
+  int xmax = int(TermApp.getDesktopWidth() - 1);
+  int ymax = int(TermApp.getDesktopHeight() - 1);
   finalcut::FString line(std::size_t(xmax) + 1, '-');
 
   // Place the cursor in the upper left corner

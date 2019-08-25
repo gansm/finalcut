@@ -188,7 +188,7 @@ void FMenuItem::unsetSelected()
 //----------------------------------------------------------------------
 void FMenuItem::setText (const FString& txt)
 {
-  text = txt;
+  text.setString(txt);
   text_length = text.getLength();
   hotkey = hotKey();
 
@@ -502,7 +502,7 @@ bool FMenuItem::isMenu (FWidget* w) const
 //----------------------------------------------------------------------
 FMenuList* FMenuItem::getFMenuList (FWidget& widget)
 {
-  FMenuList* menu_list;
+  FMenuList* menu_list{};
 
   if ( isMenu(&widget) )
   {
@@ -569,14 +569,12 @@ void FMenuItem::init (FWidget* parent)
 //----------------------------------------------------------------------
 uChar FMenuItem::hotKey()
 {
-  std::size_t length;
-
   if ( text.isEmpty() )
     return 0;
 
-  length = text.getLength();
+  std::size_t length = text.getLength();
 
-  for (std::size_t i = 0; i < length; i++)
+  for (std::size_t i{0}; i < length; i++)
   {
     try
     {
@@ -632,7 +630,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 
       if ( win )
       {
-        FMenuItem* win_item;
+        FMenuItem* win_item{};
         uInt32 n = uInt32(std::distance(first, iter));
         // get the dialog title
         const auto& name = win->getText();

@@ -108,7 +108,7 @@ void ColorChooser::onMouseDown (finalcut::FMouseEvent* ev)
   if ( ev->getButton() == fc::MiddleButton )
     return;
 
-  for (int c = 0; c < 16; c++)
+  for (int c{0}; c < 16; c++)
   {
     int xmin = 2 + (c / 8) * 3;
     int xmax = 4 + (c / 8) * 3;
@@ -133,7 +133,7 @@ void ColorChooser::draw()
   setColor();
   drawBorder();
 
-  for (FColor c = 0; c < 16; c++)
+  for (FColor c{0}; c < 16; c++)
   {
     print() << FPoint(2 + (c / 8) * 3, 3 + c % 8);
 
@@ -249,7 +249,7 @@ Brushes::~Brushes()
 //----------------------------------------------------------------------
 void Brushes::draw()
 {
-  int pos;
+  int pos{};
   setColor();
   drawBorder();
   print() << FPoint(2, 3)
@@ -439,7 +439,7 @@ void MouseDraw::draw()
 
   if ( isNewFont() )
   {
-    for (int y = 2; y < y_max; y++)
+    for (int y{2}; y < y_max; y++)
     {
       print() << FPoint(10, y)
               << fc::NF_rev_border_line_right;
@@ -453,7 +453,7 @@ void MouseDraw::draw()
     print() << FPoint(10, 2)
             << fc::BoxDrawingsDownAndHorizontal;
 
-    for (int y = 3; y < y_max; y++)
+    for (int y{3}; y < y_max; y++)
     {
       print() << FPoint(10, y) << fc::BoxDrawingsVertical;
     }
@@ -503,10 +503,10 @@ void MouseDraw::drawCanvas()
     , x_end = canvas->width
     , w_line_len = print_area->width + print_area->right_shadow;
 
-  for (int y = 0; y < y_end; y++)  // line loop
+  for (int y{0}; y < y_end; y++)  // line loop
   {
-    finalcut::charData* canvaschar;  // canvas character
-    finalcut::charData* winchar;     // window character
+    finalcut::charData* canvaschar{};  // canvas character
+    finalcut::charData* winchar{};     // window character
     canvaschar = &canvas->text[y * x_end];
     winchar = &print_area->text[(ay + y) * w_line_len + ax];
     std::memcpy ( winchar
@@ -526,7 +526,7 @@ void MouseDraw::drawCanvas()
 //----------------------------------------------------------------------
 void MouseDraw::adjustSize()
 {
-  std::size_t w = 60, h = 18;
+  std::size_t w{60}, h{18};
   int x = 1 + int((getParentWidget()->getWidth() - w) / 2);
   int y = 1 + int((getParentWidget()->getHeight() - h) / 2);
   setGeometry (FPoint(x, y), FSize(w, h), false);

@@ -55,7 +55,7 @@ FToolTip::~FToolTip()  // destructor
   if ( fapp->isQuit() )
     return;
 
-  FWindow* parent_win = nullptr;
+  FWindow* parent_win{nullptr};
 
   if ( auto parent = getParentWidget() )
     parent_win = getWindowWidget(parent);
@@ -71,7 +71,7 @@ FToolTip::~FToolTip()  // destructor
 //----------------------------------------------------------------------
 void FToolTip::setText (const FString& txt)
 {
-  text = txt;
+  text.setString(txt);
   calculateDimensions();
 }
 
@@ -86,7 +86,7 @@ void FToolTip::draw()
   clearArea();
   drawBorder();
 
-  for (std::size_t i = 0; i < text_num_lines; i++)
+  for (std::size_t i{0}; i < text_num_lines; i++)
   {
     print() << FPoint(3, 2 + int(i)) << text_components[i];
   }
@@ -134,8 +134,7 @@ void FToolTip::init()
 //----------------------------------------------------------------------
 void FToolTip::calculateDimensions()
 {
-  int x, y;
-  std::size_t w, h;
+  int x{}, y{};
   auto r = getRootWidget();
   max_line_width = 0;
   text_split = text.split("\n");
@@ -144,7 +143,7 @@ void FToolTip::calculateDimensions()
   if ( text_num_lines == 0 )
     return;
 
-  for (std::size_t i = 0; i < text_num_lines; i++)
+  for (std::size_t i{0}; i < text_num_lines; i++)
   {
     text_components = &text_split[0];
     std::size_t len = text_components[i].getLength();
@@ -153,8 +152,8 @@ void FToolTip::calculateDimensions()
       max_line_width = len;
   }
 
-  h = text_num_lines + 2;
-  w = max_line_width + 4;
+  std::size_t h = text_num_lines + 2;
+  std::size_t w = max_line_width + 4;
 
   if ( r )
   {

@@ -153,7 +153,7 @@ inline void FStatusKey::setKey (FKey k)
 
 //----------------------------------------------------------------------
 inline void FStatusKey::setText (const FString& txt)
-{ text = txt; }
+{ text.setString(txt); }
 
 //----------------------------------------------------------------------
 inline void FStatusKey::unsetActive()

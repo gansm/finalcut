@@ -61,20 +61,20 @@ const FString fileChooser ( FWidget* parent
                           , const FString& filter
                           , FFileDialog::DialogType type )
 {
-  FString ret;
-  FString path = dirname;
-  FString file_filter = filter;
+  FString ret{};
+  FString path(dirname);
+  FString file_filter(filter);
 
   if ( path.isNull() || path.isEmpty() )
   {
-    path = FFileDialog::getHomeDir();
+    path.setString(FFileDialog::getHomeDir());
 
     if ( path.isNull() || path.isEmpty() )
-      path = FString("/");
+      path.setString("/");
   }
 
   if ( file_filter.isNull() || file_filter.isEmpty() )
-    file_filter = FString("*");
+    file_filter.setString("*");
 
   FFileDialog fileopen ( path
                        , file_filter
@@ -90,7 +90,7 @@ const FString fileChooser ( FWidget* parent
 }
 
 // static class attributes
-FSystem*  FFileDialog::fsystem = nullptr;
+FSystem*  FFileDialog::fsystem{nullptr};
 
 //----------------------------------------------------------------------
 // class FFileDialog
@@ -179,9 +179,9 @@ const FString FFileDialog::getSelectedFile() const
 void FFileDialog::setPath (const FString& dir)
 {
   const char* const dirname = dir.c_str();
-  char resolved_path[MAXPATHLEN];
-  FString r_dir;
-  struct stat sb;
+  char resolved_path[MAXPATHLEN]{};
+  FString r_dir{};
+  struct stat sb{};
 
   if ( stat(dirname, &sb) != 0 )
   {
@@ -205,9 +205,9 @@ void FFileDialog::setPath (const FString& dir)
   }
 
   if ( fsystem->realpath(dir.c_str(), resolved_path) != 0 )
-    r_dir = resolved_path;
+    r_dir.setString(resolved_path);
   else
-    r_dir = dir;
+    r_dir.setString(dir);
 
   if ( r_dir[r_dir.getLength() - 1] != '/' )
     directory = r_dir + "/";
@@ -280,10 +280,7 @@ const FString FFileDialog::fileSaveChooser ( FWidget* parent
 //----------------------------------------------------------------------
 void FFileDialog::adjustSize()
 {
-  int X, Y;
-  std::size_t max_width;
-  std::size_t max_height;
-  std::size_t h;
+  std::size_t max_width{}, max_height{};
   auto root_widget = getRootWidget();
 
   if ( root_widget )
@@ -298,7 +295,7 @@ void FFileDialog::adjustSize()
     max_height = 24;
   }
 
-  h = max_height - 6;
+  std::size_t h = max_height - 6;
 
   if ( h < 15 )  // minimum
     h = 15;
@@ -307,8 +304,8 @@ void FFileDialog::adjustSize()
     h = 30;
 
   setHeight (h, false);
-  X = 1 + int((max_width - getWidth()) / 2);
-  Y = 1 + int((max_height - getHeight()) / 3);
+  int X = 1 + int((max_width - getWidth()) / 2);
+  int Y = 1 + int((max_height - getHeight()) / 3);
   setPos(FPoint(X, Y), false);
   filebrowser.setHeight (h - 8, false);
   hidden_check.setY (int(h) - 4, false);
@@ -422,7 +419,7 @@ void FFileDialog::initCallbacks()
 inline bool FFileDialog::pattern_match ( const char* const pattern
                                        , char fname[] )
 {
-  char search[128] = { };
+  char search[128]{};
 
   if ( show_hidden && fname[0] == '.' && fname[1] != '\0' )  // hidden files
   {
@@ -475,14 +472,14 @@ long FFileDialog::numOfDirs()
 //----------------------------------------------------------------------
 void FFileDialog::sortDir()
 {
-  long start, dir_num;
+  long start{};
 
   if ( std::strcmp((*dir_entries.begin()).name, "..") == 0 )
     start = 1;
   else
     start = 0;
 
-  dir_num = numOfDirs();
+  long dir_num = numOfDirs();
   // directories first
   std::sort ( dir_entries.begin() + start
             , dir_entries.end()
@@ -565,7 +562,7 @@ int FFileDialog::readDir()
 void FFileDialog::getEntry (const char* const dir, struct dirent* d_entry)
 {
   const char* const filter = filter_pattern.c_str();
-  dir_entry entry;
+  dir_entry entry{};
 
   entry.name = strdup(d_entry->d_name);
 
@@ -578,7 +575,7 @@ void FFileDialog::getEntry (const char* const dir, struct dirent* d_entry)
   entry.symbolic_link    = (d_entry->d_type & DT_LNK ) == DT_LNK;
   entry.socket           = (d_entry->d_type & DT_SOCK) == DT_SOCK;
 #else
-  struct stat s;
+  struct stat s{};
   stat (entry.name, &s);
   entry.fifo             = S_ISFIFO (s.st_mode);
   entry.character_device = S_ISCHR (s.st_mode);
@@ -605,9 +602,9 @@ void FFileDialog::followSymLink (const char* const dir, dir_entry& entry)
   if ( ! entry.symbolic_link )
     return;  // No symbolic link
 
-  char resolved_path[MAXPATHLEN] = { };
-  char symLink[MAXPATHLEN] = { };
-  struct stat sb;
+  char resolved_path[MAXPATHLEN]{};
+  char symLink[MAXPATHLEN]{};
+  struct stat sb{};
 
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
@@ -654,7 +651,7 @@ void FFileDialog::selectDirectoryEntry (const char* const name)
   if ( dir_entries.empty() )
     return;
 
-  std::size_t i = 1;
+  std::size_t i{1};
 
   for (auto&& entry : dir_entries)
   {
@@ -672,8 +669,8 @@ void FFileDialog::selectDirectoryEntry (const char* const name)
 //----------------------------------------------------------------------
 int FFileDialog::changeDir (const FString& dirname)
 {
-  FString lastdir = directory;
-  FString newdir = dirname;
+  FString lastdir(directory);
+  FString newdir(dirname);
 
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
@@ -710,7 +707,7 @@ int FFileDialog::changeDir (const FString& dirname)
       }
       else
       {
-        FString firstname = dir_entries[0].name;
+        FString firstname(dir_entries[0].name);
 
         if ( dir_entries[0].directory )
           filename.setText(firstname + '/');
@@ -742,9 +739,9 @@ void FFileDialog::printPath (const FString& txt)
 //----------------------------------------------------------------------
 const FString FFileDialog::getHomeDir()
 {
-  struct passwd pwd;
-  struct passwd* pwd_ptr;
-  char buf[1024];
+  struct passwd pwd{};
+  struct passwd* pwd_ptr{};
+  char buf[1024]{};
 
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
@@ -781,7 +778,7 @@ void FFileDialog::cb_processActivate (FWidget*, FDataPtr)
   }
   else
   {
-    bool found = false;
+    bool found{false};
     const auto& input = filename.getText().trim();
 
     if ( ! dir_entries.empty() )
@@ -817,9 +814,9 @@ void FFileDialog::cb_processRowChanged (FWidget*, FDataPtr)
   const auto& name = FString(dir_entries[n - 1].name);
 
   if ( dir_entries[n - 1].directory )
-    filename.setText( name + '/' );
+    filename.setText(name + '/');
   else
-    filename.setText( name );
+    filename.setText(name);
 
   filename.redraw();
 }

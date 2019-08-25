@@ -485,8 +485,8 @@ void FOptiMove::check_boundaries ( int& xold, int& yold
 //----------------------------------------------------------------------
 char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
 {
-  int method = 0;
-  int move_time = LONG_DURATION;
+  int method{0};
+  int move_time{LONG_DURATION};
 
   check_boundaries (xold, yold, xnew, ynew);
 
@@ -558,10 +558,9 @@ int FOptiMove::capDuration (char cap[], int affcnt)
   if ( ! cap )
     return LONG_DURATION;
 
-  const char* p;
-  float ms = 0;
+  float ms{0};
 
-  for (p = cap; *p; p++)
+  for (const char* p = cap; *p; p++)
   {
     // check for delay with padding character
     if ( p[0] == '$' && p[1] == '<' && std::strchr(p, '>') )
@@ -601,13 +600,9 @@ int FOptiMove::repeatedAppend ( const capability& o
                               , volatile int count
                               , char* dst )
 {
-  std::size_t src_len;
-  std::size_t dst_len;
-  int total;
-
-  src_len = std::strlen(o.cap);
-  dst_len = ( dst != 0 ) ? std::strlen(dst) : 0;
-  total = 0;
+  std::size_t src_len = std::strlen(o.cap);
+  std::size_t dst_len = ( dst != 0 ) ? std::strlen(dst) : 0;
+  int total{0};
 
   if ( (dst_len + uInt(count) * src_len) < BUF_SIZE - 1 )
   {
@@ -637,8 +632,8 @@ int FOptiMove::relativeMove ( char move[]
                             , int from_x, int from_y
                             , int to_x, int to_y )
 {
-  int vtime = 0;
-  int htime = 0;
+  int vtime{0};
+  int htime{0};
 
   if ( move )
     move[0] = '\0';
@@ -653,7 +648,7 @@ int FOptiMove::relativeMove ( char move[]
 
   if ( to_x != from_x )  // horizontal move
   {
-    char hmove[BUF_SIZE] = { };
+    char hmove[BUF_SIZE]{};
     htime = horizontalMove (hmove, from_x, to_x);
 
     if ( htime >= LONG_DURATION )
@@ -676,7 +671,7 @@ int FOptiMove::relativeMove ( char move[]
 //----------------------------------------------------------------------
 inline int FOptiMove::verticalMove (char move[], int from_y, int to_y)
 {
-  int vtime = LONG_DURATION;
+  int vtime{LONG_DURATION};
 
   if ( F_row_address.cap )
   {
@@ -758,7 +753,7 @@ inline void FOptiMove::upMove ( char move[], int& vtime
 //----------------------------------------------------------------------
 inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x)
 {
-  int htime = LONG_DURATION;
+  int htime{LONG_DURATION};
 
   if ( F_column_address.cap )
   {
@@ -795,8 +790,8 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
 
   if ( F_cursor_right.cap )
   {
-    char str[BUF_SIZE] = { };
-    int htime_r = 0;
+    char str[BUF_SIZE]{};
+    int htime_r{0};
     str[0] = '\0';
 
     // try to use tab
@@ -850,8 +845,8 @@ inline void FOptiMove::leftMove ( char hmove[], int& htime
 
   if ( F_cursor_left.cap )
   {
-    char str[BUF_SIZE] = { };
-    int htime_l = 0;
+    char str[BUF_SIZE]{};
+    int htime_l{0};
     str[0] = '\0';
 
     // try to use backward tab

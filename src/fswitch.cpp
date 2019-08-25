@@ -141,8 +141,8 @@ void FSwitch::drawCheckButton()
 //----------------------------------------------------------------------
 inline void FSwitch::drawChecked()
 {
-  wchar_t on[6] = L"  On ";
-  wchar_t off[6] = L" Off ";
+  wchar_t on[6]{L"  On "};
+  wchar_t off[6]{L" Off "};
 
   if ( hasFocus() && ! button_pressed )
   {
@@ -190,8 +190,8 @@ inline void FSwitch::drawChecked()
 //----------------------------------------------------------------------
 inline void FSwitch::drawUnchecked()
 {
-  wchar_t on[6] = L"  On ";
-  wchar_t off[6] = L" Off ";
+  wchar_t on[6]{L"  On "};
+  wchar_t off[6]{L" Off "};
 
   setColor (wc.button_inactive_fg, wc.button_inactive_bg);
 

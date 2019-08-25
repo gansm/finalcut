@@ -1,3 +1,6 @@
+2019-08-25  Markus Gans  <guru.mail@muenster.de>
+	* More use of direct initializations
+
 2019-08-18  Markus Gans  <guru.mail@muenster.de>
 	* Solved problem detecting terminal size on quick changes
 	* Update VTerm information only in case of changes

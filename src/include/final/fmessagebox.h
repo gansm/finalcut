@@ -213,12 +213,11 @@ int FMessageBox::info ( FWidget* parent
                       , int button1
                       , int button2 )
 {
-  int reply;
   FMessageBox mbox ( caption
                    , FString() << message
                    , button0, button1, button2
                    , parent );
-  reply = mbox.exec();
+  int reply = mbox.exec();
   return reply;
 }
 
@@ -230,8 +229,7 @@ int FMessageBox::error ( FWidget* parent
                        , int button1
                        , int button2 )
 {
-  int reply;
-  const FString& caption = "Error message";
+  const FString caption{"Error message"};
   FMessageBox mbox ( caption
                    , FString() << message
                    , button0, button1, button2
@@ -241,8 +239,8 @@ int FMessageBox::error ( FWidget* parent
   mbox.setCenterText();
   mbox.setForegroundColor(mbox.wc.error_box_fg);
   mbox.setBackgroundColor(mbox.wc.error_box_bg);
-  mbox.emphasis_color  = mbox.wc.error_box_emphasis_fg;
-  reply = mbox.exec();
+  mbox.emphasis_color = mbox.wc.error_box_emphasis_fg;
+  int reply = mbox.exec();
   return reply;
 }
 

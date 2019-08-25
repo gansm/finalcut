@@ -110,7 +110,7 @@ void Transparent::draw()
 
   finalcut::FString line(getClientWidth(), '.');
 
-  for (int n = 1; n <= int(getClientHeight()); n++)
+  for (int n{1}; n <= int(getClientHeight()); n++)
   {
     print() << FPoint(2, 2 + n) << line;
   }

@@ -217,9 +217,9 @@ bool FButton::setDown (bool enable)
 void FButton::setText (const FString& txt)
 {
   if ( txt.isNull() )
-    text = "";
+    text.setString("");
   else
-    text = txt;
+    text.setString(txt);
 
   detectHotkey();
 }
@@ -227,8 +227,7 @@ void FButton::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FButton::hide()
 {
-  std::size_t s, f, size;
-  FColor fg, bg;
+  FColor fg{}, bg{};
   auto parent_widget = getParentWidget();
   FWidget::hide();
 
@@ -244,16 +243,16 @@ void FButton::hide()
   }
 
   setColor (fg, bg);
-  s = hasShadow() ? 1 : 0;
-  f = isFlat() ? 1 : 0;
-  size = getWidth() + s + (f << 1);
+  std::size_t s = hasShadow() ? 1 : 0;
+  std::size_t f = isFlat() ? 1 : 0;
+  std::size_t size = getWidth() + s + (f << 1);
 
   if ( size == 0 )
     return;
 
   char* blank = createBlankArray(size + 1);
 
-  for (std::size_t y = 0; y < getHeight() + s + (f << 1); y++)
+  for (std::size_t y{0}; y < getHeight() + s + (f << 1); y++)
   {
     print() << FPoint(1 - int(f), 1 + int(y - f)) << blank;
   }
@@ -309,7 +308,7 @@ void FButton::onMouseDown (FMouseEvent* ev)
       getStatusBar()->drawMessage();
   }
 
-  FPoint tPos = ev->getTermPos();
+  FPoint tPos(ev->getTermPos());
 
   if ( getTermGeometry().contains(tPos) )
     setDown();
@@ -336,7 +335,7 @@ void FButton::onMouseMove (FMouseEvent* ev)
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  FPoint tPos = ev->getTermPos();
+  FPoint tPos(ev->getTermPos());
 
   if ( click_animation )
   {
@@ -465,7 +464,7 @@ inline std::size_t FButton::clickAnimationIndent (FWidget* parent_widget)
     setColor ( parent_widget->getForegroundColor()
              , parent_widget->getBackgroundColor() );
 
-  for (std::size_t  y = 1; y <= getHeight(); y++)
+  for (std::size_t y{1}; y <= getHeight(); y++)
   {
     print() << FPoint(1, int(y)) << ' ';  // clear one left █
   }
@@ -484,7 +483,7 @@ inline void FButton::clearRightMargin (FWidget* parent_widget)
     setColor ( parent_widget->getForegroundColor()
              , parent_widget->getBackgroundColor() );
 
-  for (int y = 1; y <= int(getHeight()); y++)
+  for (int y{1}; y <= int(getHeight()); y++)
   {
     if ( isMonochron() )
       setReverse(true);  // Light background
@@ -503,7 +502,7 @@ inline void FButton::drawMarginLeft()
 
   setColor (getForegroundColor(), button_bg);
 
-  for (std::size_t y = 0; y < getHeight(); y++)
+  for (std::size_t y{0}; y < getHeight(); y++)
   {
     print() << FPoint(1 + int(indent), 1 + int(y));
 
@@ -519,7 +518,7 @@ inline void FButton::drawMarginRight()
 {
   // Print right margin
 
-  for (std::size_t y = 0; y < getHeight(); y++)
+  for (std::size_t y{0}; y < getHeight(); y++)
   {
     print() << FPoint(int(getWidth() + indent), 1 + int(y));
 
@@ -538,19 +537,19 @@ inline void FButton::drawTopBottomBackground()
   if ( getHeight() < 2 )
     return;
 
-  for (std::size_t y = 0; y < vcenter_offset; y++)
+  for (std::size_t y{0}; y < vcenter_offset; y++)
   {
     print() << FPoint(2 + int(indent), 1 + int(y));
 
-    for (std::size_t x = 1; x < getWidth() - 1; x++)
+    for (std::size_t x{1}; x < getWidth() - 1; x++)
       print (space_char);  // █
   }
 
-  for (std::size_t y = vcenter_offset + 1; y < getHeight(); y++)
+  for (std::size_t y{vcenter_offset + 1}; y < getHeight(); y++)
   {
     print() << FPoint(2 + int(indent), 1 + int(y));
 
-    for (std::size_t x = 1; x < getWidth() - 1; x++)
+    for (std::size_t x{1}; x < getWidth() - 1; x++)
       print (space_char);  // █
   }
 }
@@ -558,7 +557,7 @@ inline void FButton::drawTopBottomBackground()
 //----------------------------------------------------------------------
 inline void FButton::drawButtonTextLine (wchar_t button_text[])
 {
-  std::size_t pos;
+  std::size_t pos{};
   print() << FPoint(2 + int(indent), 1 + int(vcenter_offset))
           << FColorPair (button_fg, button_bg);
 
@@ -584,7 +583,7 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
   if ( active_focus && (isMonochron() || getMaxColor() < 16) )
     setBold();
 
-  for ( std::size_t z = 0
+  for ( std::size_t z{0}
       ; pos < center_offset + txtlength && z < getWidth() - 2
       ; z++, pos++)
   {
@@ -630,7 +629,7 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
 //----------------------------------------------------------------------
 void FButton::draw()
 {
-  wchar_t* button_text;
+  wchar_t* button_text{};
   auto parent_widget = getParentWidget();
   txtlength = text.getLength();
   space_char = int(' ');

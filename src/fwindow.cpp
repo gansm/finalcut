@@ -32,7 +32,7 @@ namespace finalcut
 {
 
 // static attributes
-FWindow* FWindow::previous_window = nullptr;
+FWindow* FWindow::previous_window{nullptr};
 
 
 //----------------------------------------------------------------------
@@ -45,7 +45,7 @@ FWindow::FWindow(FWidget* parent)
   : FWidget(parent)
 {
   setWindowWidget();
-  FRect geometry = getTermGeometry();
+  FRect geometry (getTermGeometry());
   geometry.move(-1, -1);
   createArea (geometry, getShadow(), vwin);
   addWindow (this);
@@ -322,7 +322,7 @@ void FWindow::setY (int y, bool adjust)
 //----------------------------------------------------------------------
 void FWindow::setPos (const FPoint& p, bool adjust)
 {
-  FPoint pos = p;
+  FPoint pos(p);
 
   if ( pos.getY() < 1 )
     pos.setY(1);
@@ -344,7 +344,7 @@ void FWindow::setWidth (std::size_t w, bool adjust)
 
   if ( isVirtualWindow() && getWidth() != old_width )
   {
-    FRect geometry = getTermGeometry();
+    FRect geometry (getTermGeometry());
     geometry.move(-1, -1);
     resizeArea (geometry, getShadow(), vwin);
   }
@@ -358,7 +358,7 @@ void FWindow::setHeight (std::size_t h, bool adjust)
 
   if ( isVirtualWindow() && getHeight() != old_height )
   {
-    FRect geometry = getTermGeometry();
+    FRect geometry (getTermGeometry());
     geometry.move(-1, -1);
     resizeArea (geometry, getShadow(), vwin);
   }
@@ -374,7 +374,7 @@ void FWindow::setSize (const FSize& size, bool adjust)
   if ( isVirtualWindow()
     && (getWidth() != old_width || getHeight() != old_height) )
   {
-    FRect geometry = getTermGeometry();
+    FRect geometry (getTermGeometry());
     geometry.move(-1, -1);
     resizeArea (geometry, getShadow(), vwin);
   }
@@ -387,8 +387,8 @@ void FWindow::setGeometry ( const FPoint& p, const FSize& size, bool adjust)
 
   int old_x = getX();
   int old_y = getY();
-  FPoint pos = p;
-  FSize old_size = getSize();
+  FPoint pos(p);
+  FSize old_size(getSize());
 
   if ( pos.getY() < 1 )
     pos.setY(1);
@@ -400,7 +400,7 @@ void FWindow::setGeometry ( const FPoint& p, const FSize& size, bool adjust)
 
   if ( getSize() != old_size )
   {
-    FRect geometry = getTermGeometry();
+    FRect geometry (getTermGeometry());
     geometry.move(-1, -1);
     resizeArea (geometry, getShadow(), vwin);
   }
@@ -659,7 +659,7 @@ bool FWindow::zoomWindow()
   if ( zoomed )
   {
     zoomed = false;
-    FRect oldGeometry = getTermGeometryWithShadow();
+    FRect oldGeometry (getTermGeometryWithShadow());
     setGeometry (normalGeometry);
     restoreVTerm (oldGeometry);
     redraw();
@@ -669,7 +669,7 @@ bool FWindow::zoomWindow()
     zoomed = true;
     // save the current geometry
     normalGeometry = getGeometry();
-    FRect oldGeometry = getTermGeometryWithShadow();
+    FRect oldGeometry (getTermGeometryWithShadow());
     setGeometry (FPoint(1, 1), FSize(getMaxWidth(), getMaxHeight()));
     restoreVTerm (oldGeometry);
     redraw();

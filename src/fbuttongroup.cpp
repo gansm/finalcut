@@ -116,7 +116,7 @@ bool FButtonGroup::setEnable (bool enable)
 //----------------------------------------------------------------------
 void FButtonGroup::setText (const FString& txt)
 {
-  text = txt;
+  text.setString(txt);
 
   if ( isEnabled() )
   {
@@ -183,8 +183,7 @@ bool FButtonGroup::hasCheckedButton() const
 //----------------------------------------------------------------------
 void FButtonGroup::hide()
 {
-  std::size_t size;
-  FColor fg, bg;
+  FColor fg{}, bg{};
   FWidget::hide();
   auto parent_widget = getParentWidget();
 
@@ -213,14 +212,14 @@ void FButtonGroup::hide()
   }
 
   setColor (fg, bg);
-  size = getWidth();
+  std::size_t size = getWidth();
 
   if ( size == 0 )
     return;
 
   char* blank = createBlankArray(size + 1);
 
-  for (int y = 0; y < int(getHeight()); y++)
+  for (int y{0}; y < int(getHeight()); y++)
   {
     FWidget::setPrintPos (FPoint(1, 1 + y));
     print (blank);
@@ -298,7 +297,7 @@ void FButtonGroup::checkScrollSize (const FRect& r)
 
   if ( ! scrollgeometry.contains(r) )
   {
-    FRect r_combined = scrollgeometry.combined(r);
+    FRect r_combined (scrollgeometry.combined(r));
     setScrollSize (r_combined.getSize());
   }
 }
@@ -424,12 +423,11 @@ void FButtonGroup::draw()
 //----------------------------------------------------------------------
 void FButtonGroup::drawLabel()
 {
-  wchar_t* LabelText;
-
   if ( text.isNull() || text.isEmpty() )
     return;
 
-  FString txt = " " + text + " ";
+  wchar_t* LabelText{};
+  FString txt{" " + text + " "};
   std::size_t length = txt.getLength();
 
   try
@@ -494,7 +492,7 @@ void FButtonGroup::drawText ( wchar_t LabelText[]
   else
     setColor(wc.label_inactive_fg, wc.label_inactive_bg);
 
-  for (std::size_t z = 0; z < length; z++)
+  for (std::size_t z{0}; z < length; z++)
   {
     if ( (z == hotkeypos) && flags.active )
     {
@@ -523,7 +521,7 @@ void FButtonGroup::directFocus()
 {
   if ( ! hasFocusedButton() )
   {
-    bool found_checked = false;
+    bool found_checked{false};
 
     if ( hasCheckedButton() && ! buttonlist.empty() )
     {

@@ -119,12 +119,12 @@ Listbox::Listbox (FWidget* parent)
   list1.setGeometry(FPoint(2, 1), FSize(18, 10));
   list1.setText ("FListBoxItem");
 
-  for (int i = 1; i < 30; i++)
+  for (int i{1}; i < 30; i++)
     list1.insert (L"----- " + (FString() << i) + L" -----");
 
   // listbox 2
   //----------
-  for (double i = 1; i<=15; i++)
+  for (double i{1.0}; i <= 15.0; i++)
     double_list.push_back(2 * i + (i / 100));
 
   list2.setGeometry(FPoint(21, 1), FSize(10, 10));

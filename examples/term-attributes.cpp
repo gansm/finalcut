@@ -261,7 +261,7 @@ void AttribDemo::printColorLine()
 {
   auto parent = static_cast<AttribDlg*>(getParent());
 
-  for (FColor color = 0; color < colors; color++)
+  for (FColor color{0}; color < colors; color++)
   {
     print() << FColorPair(color, parent->bgcolor) << " # ";
   }
@@ -439,7 +439,7 @@ void AttribDemo::draw()
     [&] { printProtected(); },
   };
 
-  for (std::size_t y = 0; y < getParentWidget()->getHeight() - 7; y++)
+  for (std::size_t y{0}; y < getParentWidget()->getHeight() - 7; y++)
   {
     print() << FPoint(1, 2 + int(y));
 

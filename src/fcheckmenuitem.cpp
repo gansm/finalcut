@@ -62,7 +62,7 @@ void FCheckMenuItem::init (FWidget* parent)
 
   if ( isMenu(parent) )  // Parent is menu
   {
-    auto menu_ptr = static_cast<FMenu*>(parent);
+    auto menu_ptr{static_cast<FMenu*>(parent)};
     menu_ptr->has_checkable_items = true;
   }
 }

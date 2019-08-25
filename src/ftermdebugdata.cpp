@@ -31,8 +31,8 @@ namespace finalcut
 
 #if DEBUG
 // static class attributes
-FTermData*      FTermDebugData::data           = nullptr;
-FTermDetection* FTermDebugData::term_detection = nullptr;
+FTermData*      FTermDebugData::data           {nullptr};
+FTermDetection* FTermDebugData::term_detection {nullptr};
 
 //----------------------------------------------------------------------
 // class FClassName

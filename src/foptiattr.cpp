@@ -1253,7 +1253,7 @@ inline void FOptiAttr::prevent_no_color_video_attributes ( charData*& attr
     || attr_without_color <= 0 )
     return;
 
-  for (int bit = 1; bit < no_mode; bit <<= 1)
+  for (int bit{1}; bit < no_mode; bit <<= 1)
   {
     switch ( bit & attr_without_color )
     {
@@ -1331,7 +1331,7 @@ inline void FOptiAttr::deactivateAttributes ( charData*& term
 inline void FOptiAttr::changeAttributeSGR ( charData*& term
                                           , charData*& next )
 {
-  bool pc_charset_usable = true;
+  bool pc_charset_usable{true};
 
   if ( ! (term && next) )
     return;
@@ -1393,8 +1393,6 @@ inline void FOptiAttr::changeAttributeSeparately ( charData*& term
 //----------------------------------------------------------------------
 void FOptiAttr::change_color (charData*& term, charData*& next)
 {
-  FColor fg, bg;
-
   if ( ! (term && next) )
     return;
 
@@ -1411,8 +1409,8 @@ void FOptiAttr::change_color (charData*& term, charData*& next)
   if ( next->bg_color != fc::Default )
     next->bg_color %= max_color;
 
-  fg = next->fg_color;
-  bg = next->bg_color;
+  FColor fg = next->fg_color;
+  FColor bg = next->bg_color;
 
   if ( fg == fc::Default || bg == fc::Default )
     change_to_default_color (term, next, fg, bg);
@@ -1449,7 +1447,7 @@ inline void FOptiAttr::change_to_default_color ( charData*& term
     }
     else if ( fg == fc::Default && term->fg_color != fc::Default )
     {
-      char sgr_39[] = CSI "39m";
+      char sgr_39[]{ CSI "39m" };
       append_sequence (sgr_39);
       term->fg_color = fc::Default;
     }
@@ -1479,7 +1477,7 @@ inline void FOptiAttr::change_to_default_color ( charData*& term
 inline void FOptiAttr::change_current_color ( charData*& term
                                             , FColor fg, FColor bg )
 {
-  char* color_str;
+  char* color_str{};
   auto& AF = F_set_a_foreground.cap;
   auto& AB = F_set_a_background.cap;
   auto& Sf = F_set_foreground.cap;

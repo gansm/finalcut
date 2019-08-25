@@ -32,8 +32,8 @@ namespace finalcut
 
 // static class attributes
 bool FObject::timer_modify_lock;
-FObject::TimerList* FObject::timer_list = nullptr;
-const FString* fc::emptyFString::empty_string = nullptr;
+FObject::TimerList* FObject::timer_list{nullptr};
+const FString* fc::emptyFString::empty_string{nullptr};
 
 
 //----------------------------------------------------------------------
@@ -120,7 +120,7 @@ bool FObject::isChild (const FObject* obj) const
 {
   // Find out if obj is a child object of mine
 
-  FObject* p_obj = nullptr;
+  FObject* p_obj{nullptr};
 
   while ( obj && (p_obj = obj->getParent()) )
   {
@@ -228,9 +228,8 @@ bool FObject::isTimeout (timeval* time, uInt64 timeout)
 {
   // Checks whether the specified time span (timeout in µs) has elapse
 
-  uInt64 diff_usec;
-  struct timeval now;
-  struct timeval diff;
+  struct timeval now{};
+  struct timeval diff{};
 
   FObject::getCurrentTime(&now);
   diff.tv_sec = now.tv_sec - time->tv_sec;
@@ -242,7 +241,7 @@ bool FObject::isTimeout (timeval* time, uInt64 timeout)
     diff.tv_usec += 1000000;
   }
 
-  diff_usec = uInt64((diff.tv_sec * 1000000) + diff.tv_usec);
+  uInt64 diff_usec = uInt64((diff.tv_sec * 1000000) + diff.tv_usec);
   return ( diff_usec > timeout );
 }
 
@@ -252,9 +251,9 @@ int FObject::addTimer (int interval)
   // Create a timer and returns the timer identifier number
   // (interval in ms)
 
-  timeval time_interval;
-  timeval currentTime;
-  int id = 1;
+  timeval time_interval{};
+  timeval currentTime{};
+  int id{1};
   timer_modify_lock = true;
 
   // find an unused timer id
@@ -282,7 +281,7 @@ int FObject::addTimer (int interval)
   time_interval.tv_usec = (interval % 1000) * 1000;
   getCurrentTime (&currentTime);
   timeval timeout = currentTime + time_interval;
-  timer_data t = { id, time_interval, timeout, this };
+  timer_data t{ id, time_interval, timeout, this };
 
   // insert in list sorted by timeout
   auto iter = timer_list->begin();
@@ -380,8 +379,8 @@ void FObject::onUserEvent (FUserEvent*)
 //----------------------------------------------------------------------
 uInt FObject::processTimerEvent()
 {
-  timeval currentTime;
-  uInt activated = 0;
+  timeval currentTime{};
+  uInt activated{0};
 
   getCurrentTime (&currentTime);
 

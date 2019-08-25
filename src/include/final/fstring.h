@@ -200,7 +200,7 @@ class FString
     wchar_t  back()  const;
 
     FString& sprintf (const FString, ...);
-    FString clear();
+    FString  clear();
 
     const wchar_t* wc_str() const;
     wchar_t* wc_str();

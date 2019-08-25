@@ -61,39 +61,39 @@ namespace finalcut
 {
 
 // global FTerm object
-static FTerm* init_term_object = nullptr;
+static FTerm* init_term_object{nullptr};
 
 // global init state
-static bool term_initialized = false;
+static bool term_initialized{false};
 
 // function pointer
 int (*FTerm::Fputchar)(int);
 
 // static class attributes
-FTerm::initializationValues FTerm::init_values;
-FTermData*      FTerm::data           = nullptr;
-FSystem*        FTerm::fsys           = nullptr;
-FOptiMove*      FTerm::opti_move      = nullptr;
-FOptiAttr*      FTerm::opti_attr      = nullptr;
-FTermDetection* FTerm::term_detection = nullptr;
-FTermXTerminal* FTerm::xterm          = nullptr;
-FKeyboard*      FTerm::keyboard       = nullptr;
-FMouseControl*  FTerm::mouse          = nullptr;
+FTerm::initializationValues FTerm::init_values{};
+FTermData*      FTerm::data          {nullptr};
+FSystem*        FTerm::fsys          {nullptr};
+FOptiMove*      FTerm::opti_move     {nullptr};
+FOptiAttr*      FTerm::opti_attr     {nullptr};
+FTermDetection* FTerm::term_detection{nullptr};
+FTermXTerminal* FTerm::xterm         {nullptr};
+FKeyboard*      FTerm::keyboard      {nullptr};
+FMouseControl*  FTerm::mouse         {nullptr};
 
 #if defined(UNIT_TEST)
-  FTermLinux*   FTerm::linux          = nullptr;
-  FTermFreeBSD* FTerm::freebsd        = nullptr;
-  FTermOpenBSD* FTerm::openbsd        = nullptr;
+  FTermLinux*   FTerm::linux         {nullptr};
+  FTermFreeBSD* FTerm::freebsd       {nullptr};
+  FTermOpenBSD* FTerm::openbsd       {nullptr};
 #elif defined(__linux__)
-  FTermLinux*   FTerm::linux          = nullptr;
+  FTermLinux*   FTerm::linux         {nullptr};
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
-  FTermFreeBSD* FTerm::freebsd        = nullptr;
+  FTermFreeBSD* FTerm::freebsd       {nullptr};
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
-  FTermOpenBSD* FTerm::openbsd        = nullptr;
+  FTermOpenBSD* FTerm::openbsd       {nullptr};
 #endif
 
 #if DEBUG
-  FTermDebugData* FTerm::debug_data   = nullptr;
+  FTermDebugData* FTerm::debug_data  {nullptr};
 #endif
 
 // function prototypes
@@ -743,12 +743,11 @@ bool FTerm::setNewFont()
 //----------------------------------------------------------------------
 bool FTerm::setOldFont()
 {
-  bool retval = false;
+  bool retval{false};
 
   if ( ! (data->isNewFont() || data->isVGAFont()) )
     return false;
 
-  retval  = false;
   data->setNewFont(false);
   data->setVGAFont(false);
 
@@ -812,7 +811,7 @@ int FTerm::openConsole()
   if ( ! *termfilename || ! fsys )
     return 0;
 
-  for (std::size_t i = 0; terminal_devices[i] != 0; i++)
+  for (std::size_t i{0}; terminal_devices[i] != 0; i++)
   {
     fd = fsys->open(terminal_devices[i], O_RDWR, 0);
     data->setTTYFileDescriptor(fd);
@@ -831,7 +830,7 @@ int FTerm::closeConsole()
     data = FTerm::getFTermData();
 
   int fd = data->getTTYFileDescriptor();
-  int ret = -1;
+  int ret{-1};
 
   if ( fd < 0 )  // console is already closed
     return 0;
@@ -863,7 +862,7 @@ char* FTerm::cursorsVisibilityString (bool enable)
 {
   // Hides or shows the input cursor on the terminal
 
-  char* visibility_str = nullptr;
+  char* visibility_str{nullptr};
 
   if ( data->isCursorHidden() == enable )
     return 0;
@@ -894,9 +893,9 @@ void FTerm::detectTermSize()
   if ( ! data )
     data = FTerm::getFTermData();
 
-  struct winsize win_size;
+  struct winsize win_size{};
   auto& term_geometry = data->getTermGeometry();
-  int ret;
+  int ret{};
   errno = 0;
 
   do
@@ -1110,7 +1109,7 @@ void FTerm::setEncoding (fc::encoding enc)
   {
     if ( enc == fc::VT100 || enc == fc::PC )
     {
-      char* empty = nullptr;
+      char* empty{nullptr};
       opti_move->set_tabular (empty);
     }
     else
@@ -1156,7 +1155,7 @@ wchar_t FTerm::charEncode (wchar_t c, fc::encoding enc)
 {
   wchar_t ch_enc = c;
 
-  for (std::size_t i = 0; i <= fc::lastCharItem; i++)
+  for (std::size_t i{0}; i <= fc::lastCharItem; i++)
   {
     if ( fc::character[i][fc::UTF8] == uInt(c) )
     {
@@ -1178,7 +1177,7 @@ wchar_t FTerm::cp437_to_unicode (uChar c)
   constexpr std::size_t UNICODE = 1;
   wchar_t ucs = wchar_t(c);
 
-  for (std::size_t i = 0; i <= fc::lastCP437Item; i++)
+  for (std::size_t i{0}; i <= fc::lastCP437Item; i++)
   {
     if ( fc::cp437_to_ucs[i][CP437] == c )  // found
     {
@@ -1197,7 +1196,7 @@ uChar FTerm::unicode_to_cp437 (wchar_t ucs)
   constexpr std::size_t UNICODE = 1;
   uChar c = '?';
 
-  for (std::size_t i = 0; i <= fc::lastCP437Item; i++)
+  for (std::size_t i{0}; i <= fc::lastCP437Item; i++)
   {
     if ( fc::cp437_to_ucs[i][UNICODE] == ucs )  // found
     {
@@ -1239,11 +1238,10 @@ bool FTerm::scrollTermReverse()
 void FTerm::putstringf (const char format[], ...)
 {
   assert ( format != 0 );
-  char  buf[512];
-  char* str;
-  va_list args;
+  char buf[512]{};
+  va_list args{};
 
-  str = buf;
+  char* str = buf;
   va_start (args, format);
   vsnprintf (str, sizeof(buf), format, args);
   va_end (args);
@@ -1379,7 +1377,7 @@ void FTerm::init_global_values (bool disable_alt_screen)
 //----------------------------------------------------------------------
 void FTerm::init_terminal_device_path()
 {
-  char termfilename[256] = { };
+  char termfilename[256]{};
   int  stdout_no = FTermios::getStdOut();
 
   if ( ttyname_r(stdout_no, termfilename, sizeof(termfilename)) )
@@ -1422,7 +1420,7 @@ void FTerm::init_alt_charset()
 
   if ( TCAP(fc::t_acs_chars) )
   {
-    for (std::size_t n = 0; TCAP(fc::t_acs_chars)[n]; n += 2)
+    for (std::size_t n{0}; TCAP(fc::t_acs_chars)[n]; n += 2)
     {
       // insert the VT100 key/value pairs into a map
       uChar p1 = uChar(TCAP(fc::t_acs_chars)[n]);
@@ -1438,7 +1436,7 @@ void FTerm::init_alt_charset()
   };
 
   // Update array 'character' with discovered VT100 pairs
-  for (std::size_t n = 0; n <= fc::lastKeyItem; n++ )
+  for (std::size_t n{0}; n <= fc::lastKeyItem; n++ )
   {
     uChar keyChar = uChar(fc::vt100_key_to_utf8[n][vt100_key]);
     uChar altChar = uChar(vt100_alt_char[keyChar]);
@@ -1463,7 +1461,7 @@ void FTerm::init_alt_charset()
 //----------------------------------------------------------------------
 void FTerm::init_pc_charset()
 {
-  bool reinit = false;
+  bool reinit{false};
 
   // rxvt does not support pc charset
   if ( isRxvtTerminal() || isUrxvtTerminal() )
@@ -1527,7 +1525,7 @@ void FTerm::init_cygwin_charmap()
     return;
 
   // PC encoding changes
-  for (std::size_t i = 0; i <= fc::lastCharItem; i++ )
+  for (std::size_t i{0}; i <= fc::lastCharItem; i++ )
   {
     if ( fc::character[i][fc::UTF8] == fc::BlackUpPointingTriangle )  // ▲
       fc::character[i][fc::PC] = 0x18;
@@ -1581,7 +1579,7 @@ void FTerm::init_teraterm_charmap()
   if ( ! isTeraTerm() )
     return;
 
-  for (std::size_t i = 0; i <= fc::lastCharItem; i++ )
+  for (std::size_t i{0}; i <= fc::lastCharItem; i++ )
     if ( fc::character[i][fc::PC] < 0x20 )
       fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
 }
@@ -1709,14 +1707,12 @@ void FTerm::init_locale()
 {
   // Init current locale
 
-  char* locale_name;
-  char* locale_xterm;
   const char* termtype = data->getTermType();
-  locale_name = std::setlocale (LC_ALL, "");
+  const char* locale_name = std::setlocale (LC_ALL, "");
   std::setlocale (LC_NUMERIC, "");
 
   // Get XTERM_LOCALE
-  locale_xterm = std::getenv("XTERM_LOCALE");
+  const char* locale_xterm = std::getenv("XTERM_LOCALE");
 
   // set LC_ALL to XTERM_LOCALE
   if ( locale_xterm )
@@ -1761,7 +1757,7 @@ void FTerm::init_encoding()
 {
   // detect encoding and set the Fputchar function pointer
 
-  bool force_vt100 = false;  // VT100 line drawing (G1 character set)
+  bool force_vt100{false};  // VT100 line drawing (G1 character set)
   init_encoding_set();
 
   if ( isRxvtTerminal() && ! isUrxvtTerminal() )
@@ -1885,7 +1881,7 @@ void FTerm::init_tab_quirks()
 
   if ( enc == fc::VT100 || enc == fc::PC )
   {
-    char* empty = nullptr;
+    char* empty{nullptr};
     opti_move->set_tabular (empty);
   }
 }
@@ -1991,7 +1987,7 @@ char* FTerm::enableCursorString()
   // Returns the cursor enable string
 
   static constexpr std::size_t SIZE = 32;
-  static char enable_str[SIZE] = { };
+  static char enable_str[SIZE]{};
   const auto& vs = TCAP(fc::t_cursor_visible);
   const auto& ve = TCAP(fc::t_cursor_normal);
 
@@ -2043,8 +2039,8 @@ void FTerm::enableMouse()
   if ( ! init_values.mouse_support )
     return;
 
-  bool gpm_mouse = false;
-  bool xterm_mouse = false;
+  bool gpm_mouse{false};
+  bool xterm_mouse{false};
 
 #if defined(__linux__)
   if ( isLinuxTerm() && openConsole() == 0 )

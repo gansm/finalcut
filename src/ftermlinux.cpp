@@ -43,21 +43,21 @@ namespace finalcut
 
 // static class attributes
 #if defined(__linux__)
-  FTermLinux::modifier_key  FTermLinux::mod_key;
-  console_font_op           FTermLinux::screen_font;
-  unimapdesc                FTermLinux::screen_unicode_map;
+  FTermLinux::modifier_key  FTermLinux::mod_key{};
+  console_font_op           FTermLinux::screen_font{};
+  unimapdesc                FTermLinux::screen_unicode_map{};
 
-  bool   FTermLinux::new_font;
-  bool   FTermLinux::vga_font;
-  bool   FTermLinux::has_saved_palette = false;
+  bool   FTermLinux::new_font{false};
+  bool   FTermLinux::vga_font{false};
+  bool   FTermLinux::has_saved_palette{false};
 
-  FTermData*                  FTermLinux::fterm_data = nullptr;
-  FSystem*                    FTermLinux::fsystem = nullptr;
-  FTermDetection*             FTermLinux::term_detection = nullptr;
-  fc::linuxConsoleCursorStyle FTermLinux::linux_console_cursor_style;
+  FTermData*                  FTermLinux::fterm_data{nullptr};
+  FSystem*                    FTermLinux::fsystem{nullptr};
+  FTermDetection*             FTermLinux::term_detection{nullptr};
+  fc::linuxConsoleCursorStyle FTermLinux::linux_console_cursor_style{};
   FTermLinux::ColorMap        FTermLinux::saved_color_map{};
   FTermLinux::ColorMap        FTermLinux::cmap{};
-  int                         FTermLinux::framebuffer_bpp = -1;
+  int                         FTermLinux::framebuffer_bpp{-1};
 #endif  // defined(__linux__)
 
 
@@ -93,7 +93,7 @@ char* FTermLinux::getCursorStyleString()
 {
   // Gets the current cursor style string of the Linux console
 
-  static char buf[16] = { };
+  static char buf[16]{};
   std::fill (std::begin(buf), std::end(buf), '\0');
   std::sprintf (buf, CSI "?%dc", getCursorStyle());
   return buf;
@@ -157,7 +157,7 @@ bool FTermLinux::isLinuxConsole()
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
 
-  char arg = 0;
+  char arg{0};
   int fd_tty = FTerm::getTTYFileDescriptor();
 
   // Get keyboard type an compare
@@ -232,7 +232,7 @@ void FTermLinux::initCharMap()
 
   if ( screen_unicode_map.entry_ct > 0 && screen_unicode_map.entries )
   {
-    for (std::size_t i = 0; i <= fc::lastCharItem; i++ )
+    for (std::size_t i{0}; i <= fc::lastCharItem; i++ )
     {
       auto ucs = wchar_t(fc::character[i][fc::UTF8]);
       sInt16 fontpos = getFontPos(ucs);
@@ -507,10 +507,10 @@ FKey FTermLinux::modifierKeyCorrection (const FKey& key_id)
 //----------------------------------------------------------------------
 int FTermLinux::getFramebuffer_bpp()
 {
-  int fd = -1;
+  int fd{-1};
   const char* fb = C_STR("/dev/fb/0");
-  struct fb_var_screeninfo fb_var;
-  struct fb_fix_screeninfo fb_fix;
+  struct fb_var_screeninfo fb_var{};
+  struct fb_fix_screeninfo fb_fix{};
 
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
@@ -543,9 +543,9 @@ int FTermLinux::getFramebuffer_bpp()
 //----------------------------------------------------------------------
 bool FTermLinux::getScreenFont()
 {
-  struct console_font_op font;
+  struct console_font_op font{};
   int fd_tty = FTerm::getTTYFileDescriptor();
-  int ret = -1;
+  int ret{-1};
 
   if ( fd_tty < 0 )
     return false;
@@ -593,8 +593,8 @@ bool FTermLinux::getScreenFont()
 //----------------------------------------------------------------------
 bool FTermLinux::getUnicodeMap()
 {
-  int ret = -1;
   int fd_tty = FTerm::getTTYFileDescriptor();
+  int ret{-1};
 
   if ( fd_tty < 0 )
     return false;
@@ -639,7 +639,7 @@ FTermLinux::modifier_key& FTermLinux::getModifierKey()
 {
   // Get Linux console shift state
 
-  char subcode = 6;  // Shift state command + return value
+  char subcode{6};  // Shift state command + return value
 
   // Fill bit field with 0
   std::memset (&mod_key, 0x00, sizeof(mod_key));
@@ -668,9 +668,9 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
                               , uInt fontwidth, uInt fontheight
                               , bool direct)
 {
-  struct console_font_op font;
+  struct console_font_op font{};
   int fd_tty = FTerm::getTTYFileDescriptor();
-  int ret = -1;
+  int ret{-1};
 
   if ( fd_tty < 0 )
     return -1;
@@ -701,7 +701,7 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
       return -1;
     }
 
-    for (std::size_t i = 0; i < count; i++)
+    for (std::size_t i{0}; i < count; i++)
       std::memcpy ( const_cast<uChar*>(font.data + bytes_per_line * 32 * i)
                   , &fontdata[i * font.height]
                   , font.height);
@@ -733,7 +733,7 @@ int FTermLinux::setUnicodeMap (struct unimapdesc* unimap)
 {
   struct unimapinit advice;
   int fd_tty = FTerm::getTTYFileDescriptor();
-  int ret = -1;
+  int ret{-1};
 
   if ( fd_tty < 0 )
     return -1;
@@ -798,7 +798,6 @@ uChar FTermLinux::readAttributeController (uChar index)
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
 
-  uChar res;
   // Attribute controller (write port)
   static constexpr uInt16 attrib_cntlr_write = 0x3c0;
   // Attribute controller (read port)
@@ -807,7 +806,7 @@ uChar FTermLinux::readAttributeController (uChar index)
 
   fsystem->inPortByte (input_status_1);  // switch to index mode
   fsystem->outPortByte (index & 0x1f, attrib_cntlr_write);  // selects address register
-  res = fsystem->inPortByte (attrib_cntlr_read);  // read from data register
+  uChar res = fsystem->inPortByte (attrib_cntlr_read);  // read from data register
 
   // Disable access to the palette and unblank the display
   fsystem->inPortByte (input_status_1);  // switch to index mode
@@ -916,7 +915,7 @@ void FTermLinux::setVGADefaultPalette()
     {0x55, 0xff, 0xff}, {0xff, 0xff, 0xff}
   };
 
-  for (std::size_t index = 0; index < 16; index++)
+  for (std::size_t index{0}; index < 16; index++)
   {
     cmap.color[index].red   = defaultColor[index].red;
     cmap.color[index].green = defaultColor[index].green;
@@ -1288,7 +1287,7 @@ sInt16 FTermLinux::getFontPos (wchar_t ucs)
 {
   constexpr sInt16 NOT_FOUND = -1;
 
-  for (std::size_t n = 0; n < screen_unicode_map.entry_ct; n++)
+  for (std::size_t n{0}; n < screen_unicode_map.entry_ct; n++)
   {
     if ( screen_unicode_map.entries[n].unicode == ucs )
       return sInt16(screen_unicode_map.entries[n].fontpos);

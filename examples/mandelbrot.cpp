@@ -68,42 +68,37 @@ Mandelbrot::~Mandelbrot()
 //----------------------------------------------------------------------
 void Mandelbrot::draw()
 {
-  int iter, max_iter;
-  int Cols, Lines, xoffset, yoffset, current_line;
-  double x, y, xtemp, x0, y0, dX, dY;
-  double x_min, x_max, y_min, y_max;
-
   finalcut::FDialog::draw();
 
-  x_min = -2.20;
-  x_max =  1.00;
-  y_min = -1.05;
-  y_max =  1.05;
-  max_iter = 99;
+  double x_min{-2.20};
+  double x_max{+1.00};
+  double y_min{-1.05};
+  double y_max{+1.05};
+  int max_iter{99};
 
-  xoffset = 2;
-  yoffset = 2;
-  current_line = 0;
-  Cols  = int(getClientWidth());
-  Lines = int(getClientHeight());
+  int xoffset{2};
+  int yoffset{2};
+  int current_line{0};
+  int Cols  = int(getClientWidth());
+  int Lines = int(getClientHeight());
 
-  dX = (x_max - x_min) / (Cols - 1);
-  dY = (y_max - y_min) / Lines;
+  double dX = (x_max - x_min) / (Cols - 1);
+  double dY = (y_max - y_min) / Lines;
 
-  for (y0 = y_min; y0 < y_max && current_line < Lines; y0 += dY)
+  for (double y0 = y_min; y0 < y_max && current_line < Lines; y0 += dY)
   {
     current_line++;
     print() << FPoint(xoffset, yoffset + current_line);
 
-    for (x0 = x_min; x0 < x_max; x0 += dX)
+    for (double x0 = x_min; x0 < x_max; x0 += dX)
     {
-      x = 0.0;
-      y = 0.0;
-      iter = 0;
+      double x{0.0};
+      double y{0.0};
+      int iter{0};
 
       while ( x * x + y * y < 4 && iter < max_iter )
       {
-        xtemp = x * x - y * y + x0;
+        double xtemp = x * x - y * y + x0;
         y = 2 * x * y + y0;
         x = xtemp;
         iter++;

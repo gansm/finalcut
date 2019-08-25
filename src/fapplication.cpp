@@ -38,26 +38,26 @@ namespace finalcut
 {
 
 // Global application object
-static FApplication* app_object = nullptr;
+static FApplication* app_object{nullptr};
 
 // Flag to exit the local event loop
-static bool app_exit_loop = false;
+static bool app_exit_loop{false};
 
 // Static attributes
-FWidget*       FWidget::main_widget          = nullptr;  // main application widget
-FWidget*       FWidget::active_window        = nullptr;  // the active window
-FWidget*       FWidget::focus_widget         = nullptr;  // has keyboard input focus
-FWidget*       FWidget::clicked_widget       = nullptr;  // is focused by click
-FWidget*       FWidget::open_menu            = nullptr;  // currently open menu
-FWidget*       FWidget::move_size_widget     = nullptr;  // move/size by keyboard
-FWidget*       FApplication::keyboard_widget = nullptr;  // has the keyboard focus
-FKeyboard*     FApplication::keyboard        = nullptr;  // keyboard access
-FMouseControl* FApplication::mouse           = nullptr;  // mouse control
-int            FApplication::loop_level      = 0;  // event loop level
-int            FApplication::quit_code       = 0;
-bool           FApplication::quit_now        = false;
+FWidget*       FWidget::main_widget          {nullptr};  // main application widget
+FWidget*       FWidget::active_window        {nullptr};  // the active window
+FWidget*       FWidget::focus_widget         {nullptr};  // has keyboard input focus
+FWidget*       FWidget::clicked_widget       {nullptr};  // is focused by click
+FWidget*       FWidget::open_menu            {nullptr};  // currently open menu
+FWidget*       FWidget::move_size_widget     {nullptr};  // move/size by keyboard
+FWidget*       FApplication::keyboard_widget {nullptr};  // has the keyboard focus
+FKeyboard*     FApplication::keyboard        {nullptr};  // keyboard access
+FMouseControl* FApplication::mouse           {nullptr};  // mouse control
+int            FApplication::loop_level      {0};  // event loop level
+int            FApplication::quit_code       {0};
+bool           FApplication::quit_now        {false};
 
-FApplication::eventQueue* FApplication::event_queue = nullptr;
+FApplication::eventQueue* FApplication::event_queue{nullptr};
 
 
 //----------------------------------------------------------------------
@@ -81,7 +81,7 @@ FApplication::FApplication ( const int& _argc
 
   if ( ! (_argc && _argv) )
   {
-    static char* empty = C_STR("");
+    static char* empty{C_STR("")};
     app_argc = 0;
     app_argv = static_cast<char**>(&empty);
   }
@@ -128,11 +128,10 @@ int FApplication::exec()  // run
 //----------------------------------------------------------------------
 int FApplication::enter_loop()  // event loop
 {
-  bool old_app_exit_loop;
   loop_level++;
   quit_now = false;
 
-  old_app_exit_loop = app_exit_loop;
+  bool old_app_exit_loop = app_exit_loop;
   app_exit_loop = false;
 
   while ( ! (quit_now || app_exit_loop) )
@@ -265,15 +264,13 @@ bool FApplication::eventInQueue()
 //----------------------------------------------------------------------
 bool FApplication::removeQueuedEvent (const FObject* receiver)
 {
-  bool retval;
-
   if ( ! eventInQueue() )
     return false;
 
   if ( ! receiver )
     return false;
 
-  retval = false;
+  bool retval{false};
   auto iter = event_queue->begin();
 
   while ( iter != event_queue->end() )
@@ -410,8 +407,6 @@ void FApplication::cmd_options (const int& argc, char* argv[])
 
   while ( true )
   {
-    int c, idx = 0;
-
     static struct option long_options[] =
     {
       {C_STR("encoding"),              required_argument, 0,  0 },
@@ -433,7 +428,8 @@ void FApplication::cmd_options (const int& argc, char* argv[])
     };
 
     opterr = 0;
-    c = getopt_long (argc, argv, "", long_options, &idx);
+    int idx{0};
+    int c = getopt_long (argc, argv, "", long_options, &idx);
 
     if ( c == -1 )
       break;
@@ -497,7 +493,7 @@ inline void FApplication::findKeyboardWidget()
 {
   // Find the widget that has the keyboard focus
 
-  FWidget* widget = nullptr;
+  FWidget* widget{nullptr};
   auto focus = getFocusWidget();
   auto move_size = getMoveSizeWidget();
 
@@ -710,7 +706,7 @@ bool FApplication::processDialogSwitchAccelerator()
 //----------------------------------------------------------------------
 bool FApplication::processAccelerator (const FWidget*& widget)
 {
-  bool accpt = false;
+  bool accpt{false};
 
   if ( widget
     && widget->accelerator_list
@@ -752,7 +748,7 @@ bool FApplication::processAccelerator (const FWidget*& widget)
 //----------------------------------------------------------------------
 bool FApplication::getMouseEvent()
 {
-  bool mouse_event_occurred = false;
+  bool mouse_event_occurred{false};
 
   if ( mouse && mouse->hasData() )
   {
@@ -834,7 +830,7 @@ void FApplication::closeOpenMenu()
       return;
   }
 
-  bool is_window_menu;
+  bool is_window_menu{false};
   auto super = menu->getSuperMenu();
 
   if ( super && menu->isWindowsMenu(super) )
@@ -912,7 +908,7 @@ void FApplication::sendMouseEvent()
     return;
 
   const auto& mouse_position = mouse->getPos();
-  int key_state = 0;
+  int key_state{0};
 
   if ( mouse->isShiftKeyPressed() )
     key_state |= fc::ShiftButton;
@@ -1179,7 +1175,7 @@ void FApplication::processCloseWidget()
 //----------------------------------------------------------------------
 bool FApplication::processNextEvent()
 {
-  uInt num_events = 0;
+  uInt num_events{0};
 
   processKeyboardEvent();
   processMouseEvent();

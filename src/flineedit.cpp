@@ -254,12 +254,12 @@ void FLineEdit::setText (const FString& txt)
   if ( txt )
   {
     if ( txt.getLength() > max_length )
-      text = txt.left(max_length);
+      text.setString(txt.left(max_length));
     else
-      text = txt;
+      text.setString(txt);
   }
   else
-    text = "";
+    text.setString("");
 
   keyEnd();
 }
@@ -270,7 +270,7 @@ void FLineEdit::setMaxLength (std::size_t max)
   max_length = max;
 
   if ( text.getLength() > max_length )
-    text = text.left(max_length);
+    text.setString(text.left(max_length));
 
   keyEnd();
 }
@@ -291,7 +291,7 @@ void FLineEdit::setCursorPosition (std::size_t pos)
 //----------------------------------------------------------------------
 void FLineEdit::setLabelText (const FString& ltxt)
 {
-  label_text = ltxt;
+  label_text.setString(ltxt);
   label->setText(label_text);
   adjustLabel();
 }
@@ -400,8 +400,6 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FLineEdit::onMouseDown (FMouseEvent* ev)
 {
-  int mouse_x, mouse_y;
-
   if ( ev->getButton() != fc::LeftButton )
     return;
 
@@ -419,8 +417,8 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
       getStatusBar()->drawMessage();
   }
 
-  mouse_x = ev->getX();
-  mouse_y = ev->getY();
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
 
   if ( mouse_x >= 2 && mouse_x <= int(getWidth()) && mouse_y == 1 )
   {
@@ -449,15 +447,12 @@ void FLineEdit::onMouseUp (FMouseEvent*)
 //----------------------------------------------------------------------
 void FLineEdit::onMouseMove (FMouseEvent* ev)
 {
-  std::size_t len;
-  int mouse_x, mouse_y;
-
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  len = text.getLength();
-  mouse_x = ev->getX();
-  mouse_y = ev->getY();
+  std::size_t len = text.getLength();
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
 
   if ( mouse_x >= 2 && mouse_x <= int(getWidth()) && mouse_y == 1 )
   {
@@ -717,8 +712,6 @@ void FLineEdit::draw()
 //----------------------------------------------------------------------
 void FLineEdit::drawInputField()
 {
-  std::size_t x;
-  FString show_text;
   bool isActiveFocus = flags.active && flags.focus;
   print() << FPoint(1, 1);
 
@@ -741,12 +734,12 @@ void FLineEdit::drawInputField()
   if ( isActiveFocus && getMaxColor() < 16 )
     setBold();
 
-  show_text = text.mid(1 + text_offset, getWidth() - 2);
+  FString show_text(text.mid(1 + text_offset, getWidth() - 2));
 
   if ( show_text )
     print (show_text);
 
-  x = show_text.getLength();
+  std::size_t x = show_text.getLength();
 
   while ( x < getWidth() - 1 )
   {
@@ -888,7 +881,7 @@ inline bool FLineEdit::keyInput (FKey key)
         text.overwrite(c, cursor_pos);
     }
     else
-      text = c;
+      text.setString(c);
 
     cursor_pos++;
 

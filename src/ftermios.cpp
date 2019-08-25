@@ -71,7 +71,7 @@ void FTermios::init()
 //----------------------------------------------------------------------
 termios FTermios::getTTY()
 {
-  struct termios t;
+  struct termios t{};
   tcgetattr (stdin_no, &t);
   return t;
 }
@@ -100,7 +100,7 @@ void FTermios::restoreTTYsettings()
 void FTermios::setHardwareEcho()
 {
   // Info under: man 3 termios
-  struct termios t;
+  struct termios t{};
   tcgetattr (stdin_no, &t);
 
   // local mode
@@ -120,7 +120,7 @@ void FTermios::setHardwareEcho()
 void FTermios::unsetHardwareEcho()
 {
   // Info under: man 3 termios
-  struct termios t;
+  struct termios t{};
   tcgetattr (stdin_no, &t);
 
   // local mode
@@ -139,7 +139,7 @@ void FTermios::unsetHardwareEcho()
 //----------------------------------------------------------------------
 void FTermios::setCaptureSendCharacters()
 {
-  struct termios t;
+  struct termios t{};
   tcgetattr (stdin_no, &t);
   t.c_lflag &= uInt(~(ICANON | ECHO));
   t.c_cc[VTIME] = 1;  // Timeout in deciseconds
@@ -150,7 +150,7 @@ void FTermios::setCaptureSendCharacters()
 //----------------------------------------------------------------------
 void FTermios::unsetCaptureSendCharacters()
 {
-  struct termios t;
+  struct termios t{};
   tcgetattr (stdin_no, &t);
   t.c_lflag |= uInt(ICANON | ECHO);
   t.c_cc[VTIME] = 0;  // Timeout in deciseconds
@@ -166,7 +166,7 @@ bool FTermios::setRawMode (bool enable)
     return raw_mode;
 
   // Info under: man 3 termios
-  struct termios t;
+  struct termios t{};
   tcgetattr (stdin_no, &t);
 
   if ( enable )

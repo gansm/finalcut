@@ -290,7 +290,7 @@ bool FRect::overlap (const FRect &r) const
 FRect FRect::intersect (const FRect& r) const
 {
   // intersection: this ∩ r
-  FRect new_rect;
+  FRect new_rect{};
   new_rect.X1 = std::max(X1, r.X1);
   new_rect.Y1 = std::max(Y1, r.Y1);
   new_rect.X2 = std::min(X2, r.X2);
@@ -302,7 +302,7 @@ FRect FRect::intersect (const FRect& r) const
 FRect FRect::combined (const FRect& r) const
 {
   // Union: this ∪ r
-  FRect new_rect;
+  FRect new_rect{};
   new_rect.X1 = std::min(X1, r.X1);
   new_rect.Y1 = std::min(Y1, r.Y1);
   new_rect.X2 = std::max(X2, r.X2);

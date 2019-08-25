@@ -29,9 +29,9 @@ namespace finalcut
 
 // static class attributes
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
-  kbd_t    FTermOpenBSD::bsd_keyboard_encoding = 0;
-  bool     FTermOpenBSD::meta_sends_escape = true;
-  FSystem* FTermOpenBSD::fsystem = nullptr;
+  kbd_t    FTermOpenBSD::bsd_keyboard_encoding{0};
+  bool     FTermOpenBSD::meta_sends_escape{true};
+  FSystem* FTermOpenBSD::fsystem{nullptr};
 #endif
 
 
@@ -124,7 +124,7 @@ bool FTermOpenBSD::resetBeep()
     && fsystem->ioctl(0, WSKBDIO_GETDEFAULTBELL, &default_bell) < 0 )
     return false;
 
-  default_bell.which  = WSKBD_BELL_DOALL;
+  default_bell.which = WSKBD_BELL_DOALL;
 
   // Sets the bell settings
   if ( fsystem
@@ -140,7 +140,7 @@ bool FTermOpenBSD::resetBeep()
 bool FTermOpenBSD::saveBSDConsoleEncoding()
 {
   static kbd_t k_encoding{};
-  int ret = -1;
+  int ret{-1};
 
   if ( fsystem )
     ret = fsystem->ioctl (0, WSKBDIO_GETENCODING, &k_encoding);

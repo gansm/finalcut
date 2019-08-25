@@ -127,11 +127,10 @@ Watch::~Watch()
 //----------------------------------------------------------------------
 void Watch::printTime()
 {
-  finalcut::FString str;
-  std::tm now;
-  std::time_t t;
+  finalcut::FString str{};
+  std::tm now{};
 
-  t = std::time(0);  // get current time
+  std::time_t t = std::time(0);  // get current time
   localtime_r(&t, &now);
 
   if ( sec )

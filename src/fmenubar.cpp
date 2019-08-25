@@ -487,7 +487,7 @@ void FMenuBar::drawItems()
   screenWidth = getDesktopWidth();
   auto iter = item_list.begin();
   auto last = item_list.end();
-  std::size_t x = 1;
+  std::size_t x{1};
 
   while ( iter != last )
   {
@@ -506,16 +506,14 @@ void FMenuBar::drawItems()
 //----------------------------------------------------------------------
 inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
 {
-  FString txt = menuitem->getText();
-  menuText txtdata;
-  std::size_t txt_length = txt.getLength();
-  std::size_t to_char;
-  std::size_t hotkeypos;
-  bool is_enabled  = menuitem->isEnabled();
-  bool is_selected = menuitem->isSelected();
-
+  menuText txtdata{};
   txtdata.startpos = x + 1;
   txtdata.no_underline = menuitem->getFlags().no_underline;
+  FString txt(menuitem->getText());
+  std::size_t to_char{};
+  std::size_t txt_length = txt.getLength();
+  bool is_enabled  = menuitem->isEnabled();
+  bool is_selected = menuitem->isSelected();
 
   // Set screen attributes
   setLineAttributes (menuitem);
@@ -536,7 +534,9 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
   else
     to_char = txt_length - screenWidth - x - 1;
 
-  hotkeypos = finalcut::getHotkeyPos (txt.wc_str(), txtdata.text, txt_length);
+  std::size_t hotkeypos = finalcut::getHotkeyPos ( txt.wc_str()
+                                                 , txtdata.text
+                                                 , txt_length );
 
   if ( hotkeypos != NOT_SET )
   {
@@ -600,7 +600,7 @@ inline void FMenuBar::drawMenuText (menuText& data)
 {
   // Print menu text
 
-  for (std::size_t z = 0; z < data.length; z++)
+  for (std::size_t z{0}; z < data.length; z++)
   {
     if ( data.startpos > screenWidth - z )
       break;
@@ -893,7 +893,7 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
     return;
 
   focus_changed = false;
-  bool mouse_over_menubar = false;
+  bool mouse_over_menubar{false};
   auto iter = item_list.begin();
   auto last = item_list.end();
   int mouse_x = ev->getX();

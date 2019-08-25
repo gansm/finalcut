@@ -138,7 +138,7 @@ class FSystemImpl : public FSystem
 
     int ioctl (int fd, uLong request, ...) override
     {
-      va_list args;
+      va_list args{};
       va_start (args, request);
       void* argp = va_arg (args, void*);
       int ret = ::ioctl (fd, request, argp);
@@ -148,7 +148,7 @@ class FSystemImpl : public FSystem
 
     int open (const char* pathname, int flags, ...) override
     {
-      va_list args;
+      va_list args{};
       va_start (args, flags);
       mode_t mode = static_cast<mode_t>(va_arg (args, int));
       int ret = ::open (pathname, flags, mode);

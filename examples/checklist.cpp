@@ -132,7 +132,7 @@ void CheckList::populate()
 
   constexpr int lastItem = int(sizeof(list) / sizeof(list[0])) - 1;
 
-  for (int i = 0; i <= lastItem; i++)
+  for (int i{0}; i <= lastItem; i++)
   {
     const finalcut::FStringList line (&list[i][0], &list[i][0] + 2);
     auto iter = listView.insert (line);

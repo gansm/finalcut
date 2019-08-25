@@ -449,17 +449,16 @@ void FMouseGPM::drawGpmPointer()
 //----------------------------------------------------------------------
 int FMouseGPM::gpmEvent (bool clear)
 {
-  int result;
   int max = ( gpm_fd > stdin_no ) ? gpm_fd : stdin_no;
-  fd_set ifds;
-  struct timeval tv;
+  fd_set ifds{};
+  struct timeval tv{};
 
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   FD_SET(gpm_fd, &ifds);
   tv.tv_sec  = 0;
   tv.tv_usec = 100000;  // 100 ms
-  result = select (max + 1, &ifds, 0, 0, &tv);
+  int result = select (max + 1, &ifds, 0, 0, &tv);
 
   if ( result > 0 && FD_ISSET(stdin_no, &ifds) )
   {
@@ -503,8 +502,8 @@ void FMouseX11::setRawData (FKeyboard::keybuffer& fifo_buf)
   // Import the X11 xterm mouse protocol (SGR-Mode) raw mouse data
 
   static constexpr std::size_t len = 6;
-  std::size_t fifo_buf_size = sizeof(fifo_buf);
-  std::size_t n;
+  std::size_t fifo_buf_size{sizeof(fifo_buf)};
+  std::size_t n{};
   x11_mouse[0] = fifo_buf[3];
   x11_mouse[1] = fifo_buf[4];
   x11_mouse[2] = fifo_buf[5];
@@ -529,12 +528,9 @@ void FMouseX11::processEvent (struct timeval* time)
   // Parse and interpret the X11 xterm mouse string
 
   const auto& mouse_position = getPos();
-  uChar x, y;
-  int btn;
-
-  x = uChar(x11_mouse[1] - 0x20);
-  y = uChar(x11_mouse[2] - 0x20);
-  btn = x11_mouse[0];
+  uChar x = uChar(x11_mouse[1] - 0x20);
+  uChar y = uChar(x11_mouse[2] - 0x20);
+  int btn = x11_mouse[0];
   new_mouse_position.setPoint (x, y);
   // Fill bit field with 0
   std::memset(&b_state, 0x00, sizeof(b_state));
@@ -691,7 +687,7 @@ void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf)
 
   std::size_t fifo_buf_size = sizeof(fifo_buf);
   std::size_t len = std::strlen(fifo_buf);
-  std::size_t n = 3;
+  std::size_t n{3};
 
   while ( n < len && n <= MOUSE_BUF_SIZE + 1 )
   {
@@ -719,16 +715,12 @@ void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf)
 void FMouseSGR::processEvent (struct timeval* time)
 {
   const auto& mouse_position = getPos();
-  char* p;
-  int btn;
-  uInt16 x, y;
-
-  x = 0;
-  y = 0;
-  btn = 0;
+  uInt16 x{0};
+  uInt16 y{0};
+  int btn{0};
 
   // parse the SGR mouse string
-  p = sgr_mouse;
+  char* p = sgr_mouse;
 
   while ( *p && *p != ';' )
   {
@@ -930,7 +922,7 @@ void FMouseUrxvt::setRawData (FKeyboard::keybuffer& fifo_buf)
 
   std::size_t fifo_buf_size = sizeof(fifo_buf);
   std::size_t len = std::strlen(fifo_buf);
-  std::size_t n = 2;
+  std::size_t n{2};
 
   while ( n < len && n <= MOUSE_BUF_SIZE )
   {
@@ -960,20 +952,14 @@ void FMouseUrxvt::processEvent (struct timeval* time)
   // Parse and interpret the X11 xterm mouse string (Urxvt-Mode)
 
   const auto& mouse_position = getPos();
-  char* p;
-  bool x_neg;
-  bool y_neg;
-  int btn;
-  uInt16 x, y;
-
-  x = 0;
-  y = 0;
-  btn = 0;
+  uInt16 x{0};
+  uInt16 y{0};
+  int btn{0};
 
   // Parse the Urxvt mouse string
-  p = urxvt_mouse;
-  x_neg = false;
-  y_neg = false;
+  char* p = urxvt_mouse;
+  bool x_neg{false};
+  bool y_neg{false};
 
   while ( *p && *p != ';' )
   {

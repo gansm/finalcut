@@ -587,7 +587,7 @@ FObject::FObjectIterator
                  , std::back_inserter(str_cols)
                  , [] (const T& col) -> const FString
                    {
-                     const FString s = FString() << col;
+                     const FString s(FString() << col);
                      return s;
                    }
                  );
@@ -623,7 +623,7 @@ FObject::FObjectIterator
                  , std::back_inserter(str_cols)
                  , [] (const ColT& col) -> const FString
                    {
-                     const FString s = FString() << col;
+                     const FString s(FString() << col);
                      return s;
                    }
                  );

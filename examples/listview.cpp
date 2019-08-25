@@ -179,7 +179,7 @@ void Listview::populate()
 
   constexpr int lastItem = int(sizeof(weather) / sizeof(weather[0])) - 1;
 
-  for (int i = 0; i <= lastItem; i++)
+  for (int i{0}; i <= lastItem; i++)
   {
     finalcut::FStringList line (&weather[i][0], &weather[i][0] + 5);
     listView.insert (line);

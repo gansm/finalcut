@@ -572,7 +572,7 @@ void MyDialog::initWidgets()
   myList.setMultiSelection();
   myList.reserve(100);
 
-  for (int z = 1; z < 100; z++)
+  for (int z{1}; z < 100; z++)
     myList.insert (finalcut::FString() << z << L" placeholder");
 
   // Text labels
@@ -930,7 +930,7 @@ void MyDialog::cb_updateNumber (finalcut::FWidget* widget, FDataPtr data)
   const auto& count = list.getCount();
   int select_num = 0;
 
-  for (std::size_t n = 1; n <= count; n++)
+  for (std::size_t n{1}; n <= count; n++)
     if ( list.isSelected(n) )
       select_num++;
 
@@ -1006,10 +1006,10 @@ void MyDialog::cb_setInput (finalcut::FWidget* widget, FDataPtr data)
 
 int main (int argc, char* argv[])
 {
-  const finalcut::FString ver = F_VERSION;  // Library version
-  const finalcut::FString title = "The FINAL CUT "
+  const finalcut::FString ver{F_VERSION};  // Library version
+  const finalcut::FString title { "The FINAL CUT "
                                 + ver
-                                + " (C) 2019 by Markus Gans";
+                                + " (C) 2019 by Markus Gans" };
 
   // Create the application object app
   finalcut::FApplication app(argc, argv);

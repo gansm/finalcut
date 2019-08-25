@@ -164,7 +164,7 @@ void FProgressbar::drawProgressLabel()
 //----------------------------------------------------------------------
 void FProgressbar::drawProgressBar()
 {
-  std::size_t len = 0;
+  std::size_t len{0};
   print() << FPoint(1, 1);
 
   if ( percentage > 0 && percentage <= 100 )

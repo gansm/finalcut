@@ -469,7 +469,6 @@ void FMenu::init(FWidget* parent)
 //----------------------------------------------------------------------
 void FMenu::calculateDimensions()
 {
-  int item_X, item_Y, adjust_X;
   auto iter = item_list.begin();
   auto last = item_list.end();
   max_item_width = 10;  // minimum width
@@ -500,7 +499,7 @@ void FMenu::calculateDimensions()
     ++iter;
   }
 
-  adjust_X = adjustX(getX());
+  int adjust_X = adjustX(getX());
 
   // set widget geometry
   setGeometry ( FPoint(adjust_X, getY())
@@ -508,8 +507,8 @@ void FMenu::calculateDimensions()
 
   // set geometry of all items
   iter = item_list.begin();
-  item_X = 1;
-  item_Y = 1;
+  int item_X = 1;
+  int item_Y = 1;
 
   while ( iter != last )
   {
@@ -538,12 +537,10 @@ void FMenu::adjustItems()
   {
     if ( (*iter)->hasMenu() )
     {
-      int menu_X, menu_Y;
       auto menu = (*iter)->getMenu();
-
-      menu_X = getTermX() + int(max_item_width) + 1;
+      int menu_X = getTermX() + int(max_item_width) + 1;
       menu_X = menu->adjustX(menu_X);
-      menu_Y = (*iter)->getTermY() - 2;
+      int menu_Y = (*iter)->getTermY() - 2;
 
       // set sub-menu position
       menu->setPos (FPoint(menu_X, menu_Y));
@@ -661,7 +658,7 @@ void FMenu::hideSuperMenus()
 //----------------------------------------------------------------------
 bool FMenu::mouseDownOverList (FPoint mouse_pos)
 {
-  bool focus_changed = false;
+  bool focus_changed{false};
   auto iter = item_list.begin();
   auto last = item_list.end();
   mouse_pos -= FPoint(getRightPadding(), getTopPadding());
@@ -1038,7 +1035,7 @@ bool FMenu::selectNextItem()
   {
     if ( (*iter)->isSelected() )
     {
-      FMenuItem* next;
+      FMenuItem* next{};
       auto next_element = iter;
 
       do
@@ -1144,7 +1141,7 @@ bool FMenu::hotkeyMenu (FKeyEvent* ev)
   {
     if ( (*iter)->hasHotkey() )
     {
-      bool found = false;
+      bool found{false};
       uChar hotkey = (*iter)->getHotkey();
       FKey key = ev->key();
 
@@ -1261,8 +1258,8 @@ inline void FMenu::drawSeparator (int y)
 //----------------------------------------------------------------------
 inline void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
 {
-  FString txt = menuitem->getText();
-  menuText txtdata;
+  FString txt(menuitem->getText());
+  menuText txtdata{};
   std::size_t txt_length = txt.getLength();
   std::size_t to_char = txt_length;
   FKey accel_key   = menuitem->accel_key;
@@ -1369,7 +1366,7 @@ inline void FMenu::drawMenuText (menuText& data)
 {
   // Print menu text
 
-  for (std::size_t z = 0; z < data.length; z++)
+  for (std::size_t z{0}; z < data.length; z++)
   {
     if ( ! std::iswprint(wint_t(data.text[z])) )
     {

@@ -206,38 +206,20 @@ class FTermDetection final
 
     static struct colorEnv
     {
-      void setDefault()
-      {
-        string1 = nullptr;
-        string2 = nullptr;
-        string3 = nullptr;
-        string4 = nullptr;
-        string5 = nullptr;
-        string6 = nullptr;
-        string7 = nullptr;
-      }
-
-      char* string1;
-      char* string2;
-      char* string3;
-      char* string4;
-      char* string5;
-      char* string6;
-      char* string7;
+      char* string1{nullptr};
+      char* string2{nullptr};
+      char* string3{nullptr};
+      char* string4{nullptr};
+      char* string5{nullptr};
+      char* string6{nullptr};
+      char* string7{nullptr};
     } color_env;
 
     static struct secondaryDA
     {
-      void setDefault()
-      {
-        terminal_id_type = -1;
-        terminal_id_version = -1;
-        terminal_id_hardware = -1;
-      }
-
-      int terminal_id_type;
-      int terminal_id_version;
-      int terminal_id_hardware;
+      int terminal_id_type{-1};
+      int terminal_id_version{-1};
+      int terminal_id_hardware{-1};
     } secondary_da;
 };
 #pragma pack(pop)
