@@ -73,6 +73,7 @@
 #include <final/ftooltip.h>
 #include <final/ftypes.h>
 #include <final/fwidget.h>
+#include "final/fwidgetcolors.h"
 
 #if defined(UNIT_TEST)
   #include <final/ftermlinux.h>

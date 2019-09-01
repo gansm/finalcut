@@ -77,7 +77,7 @@ class AttribDlg : public finalcut::FDialog
 //----------------------------------------------------------------------
 AttribDlg::AttribDlg (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , bgcolor(wc.label_bg)
+  , bgcolor(getFWidgetColors().label_bg)
 {
   setText ( "A terminal attributes test ("
           + finalcut::FString(getTermType())
@@ -270,6 +270,7 @@ void AttribDemo::printColorLine()
 //----------------------------------------------------------------------
 void AttribDemo::printAltCharset()
 {
+  const finalcut::FWidgetColors& wc = getFWidgetColors();
   auto parent = static_cast<AttribDlg*>(getParent());
 
   if ( ! isMonochron() )
@@ -420,6 +421,7 @@ void AttribDemo::printProtected()
 void AttribDemo::draw()
 {
   // test alternate character set
+  const finalcut::FWidgetColors& wc = getFWidgetColors();
   printAltCharset();
 
   std::vector<std::function<void()> > effect

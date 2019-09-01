@@ -55,8 +55,8 @@ FRadioMenuItem::~FRadioMenuItem()  // destructor
 //----------------------------------------------------------------------
 void FRadioMenuItem::init (FWidget* parent)
 {
-  checkable = true;
-  radio_button = true;
+  setCheckable();
+  setRadioButton();
 
   if ( ! parent )
     return;
@@ -83,9 +83,9 @@ void FRadioMenuItem::processToggle()
 //----------------------------------------------------------------------
 void FRadioMenuItem::processClicked()
 {
-  if ( ! checked )
+  if ( ! isChecked() )
   {
-    checked = true;
+    setChecked();
     processToggle();
   }
 

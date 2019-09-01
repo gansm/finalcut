@@ -497,30 +497,31 @@ void MouseDraw::drawCanvas()
   if ( ! (hasPrintArea() && canvas) )
     return;
 
-  int ax = 9 + getTermX() - print_area->offset_left
-    , ay = 1 + getTermY() - print_area->offset_top
+  auto printarea = getCurrentPrintArea();
+  int ax = 9 + getTermX() - printarea->offset_left
+    , ay = 1 + getTermY() - printarea->offset_top
     , y_end = canvas->height
     , x_end = canvas->width
-    , w_line_len = print_area->width + print_area->right_shadow;
+    , w_line_len = printarea->width + printarea->right_shadow;
 
   for (int y{0}; y < y_end; y++)  // line loop
   {
     finalcut::charData* canvaschar{};  // canvas character
     finalcut::charData* winchar{};     // window character
     canvaschar = &canvas->text[y * x_end];
-    winchar = &print_area->text[(ay + y) * w_line_len + ax];
+    winchar = &printarea->text[(ay + y) * w_line_len + ax];
     std::memcpy ( winchar
                 , canvaschar
                 , sizeof(finalcut::charData) * unsigned(x_end) );
 
-    if ( int(print_area->changes[ay + y].xmin) > ax )
-      print_area->changes[ay + y].xmin = uInt(ax);
+    if ( int(printarea->changes[ay + y].xmin) > ax )
+      printarea->changes[ay + y].xmin = uInt(ax);
 
-    if ( int(print_area->changes[ay + y].xmax) < ax + x_end - 1 )
-      print_area->changes[ay + y].xmax = uInt(ax + x_end - 1);
+    if ( int(printarea->changes[ay + y].xmax) < ax + x_end - 1 )
+      printarea->changes[ay + y].xmax = uInt(ax + x_end - 1);
   }
 
-  print_area->has_changes = true;
+  printarea->has_changes = true;
 }
 
 //----------------------------------------------------------------------

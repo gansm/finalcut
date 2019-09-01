@@ -216,7 +216,7 @@ void FListBox::setText (const FString& txt)
 void FListBox::hide()
 {
   FWidget::hide();
-  hideSize (getSize());
+  hideArea (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -303,6 +303,7 @@ void FListBox::clear()
   hbar->hide();
 
   // clear list from screen
+  const FWidgetColors& wc = getFWidgetColors();
   setColor (wc.list_fg, wc.list_bg);
   size = getWidth() - 2;
 
@@ -757,6 +758,7 @@ void FListBox::init()
   initScrollbar (vbar, fc::vertical, &FListBox::cb_VBarChange);
   initScrollbar (hbar, fc::horizontal, &FListBox::cb_HBarChange);
   setGeometry (FPoint(1, 1), FSize(5, 4), false);  // initialize geometry values
+  const FWidgetColors& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
   nf_offset = isNewFont() ? 1 : 0;
@@ -824,7 +826,7 @@ void FListBox::draw()
   drawScrollbars();
   drawList();
 
-  if ( flags.focus && getStatusBar() )
+  if ( getFlags().focus && getStatusBar() )
   {
     const auto& msg = getStatusbarMessage();
     const auto& curMsg = getStatusBar()->getMessage();
@@ -874,6 +876,7 @@ void FListBox::drawHeadline()
   FString txt(" " + text + " ");
   std::size_t length = txt.getLength();
   print() << FPoint(2, 1);
+  const FWidgetColors& wc = getFWidgetColors();
 
   if ( isEnabled() )
     setColor(wc.label_emphasis_fg, wc.label_bg);
@@ -951,13 +954,14 @@ inline void FListBox::drawListLine ( int y
                                    , bool serach_mark )
 {
   std::size_t inc_len = inc_search.getLength();
+  const FWidgetColors& wc = getFWidgetColors();
   bool isCurrentLine = bool(y + yoffset + 1 == int(current));
   FString element (getString(iter).mid ( std::size_t(1 + xoffset)
                                        , getWidth() - nf_offset - 4 ));
   const wchar_t* const& element_str = element.wc_str();
   std::size_t len = element.getLength();
 
-  if ( isMonochron() && isCurrentLine && flags.focus )
+  if ( isMonochron() && isCurrentLine && getFlags().focus )
     print (fc::BlackRightPointingPointer);  // ►
   else
     print (' ');
@@ -970,14 +974,14 @@ inline void FListBox::drawListLine ( int y
 
   for (i = 0; i < len; i++)
   {
-    if ( serach_mark && i == inc_len && flags.focus  )
+    if ( serach_mark && i == inc_len && getFlags().focus  )
       setColor ( wc.current_element_focus_fg
                , wc.current_element_focus_bg );
 
     print (element_str[i]);
   }
 
-  if ( isMonochron() && isCurrentLine  && flags.focus )
+  if ( isMonochron() && isCurrentLine  && getFlags().focus )
   {
     print (fc::BlackLeftPointingPointer);  // ◄
     i++;
@@ -1011,7 +1015,7 @@ inline void FListBox::drawListBracketsLine ( int y
             , b{0};
   bool isCurrentLine = bool(y + yoffset + 1 == int(current));
 
-  if ( isMonochron() && isCurrentLine && flags.focus )
+  if ( isMonochron() && isCurrentLine && getFlags().focus )
     print (fc::BlackRightPointingPointer);  // ►
   else
     print (' ');
@@ -1032,6 +1036,7 @@ inline void FListBox::drawListBracketsLine ( int y
   std::size_t full_length = getString(iter).getLength()
             , len = element.getLength()
             , i{0};
+  const FWidgetColors& wc = getFWidgetColors();
 
   for (; i < len; i++)
   {
@@ -1057,7 +1062,7 @@ inline void FListBox::drawListBracketsLine ( int y
     i++;
   }
 
-  if ( isMonochron() && isCurrentLine && flags.focus )
+  if ( isMonochron() && isCurrentLine && getFlags().focus )
   {
     print (fc::BlackLeftPointingPointer);   // ◄
     i++;
@@ -1075,6 +1080,7 @@ inline void FListBox::setLineAttributes ( int y
 {
   bool isCurrentLine = bool(y + yoffset + 1 == int(current));
   std::size_t inc_len = inc_search.getLength();
+  const FWidgetColors& wc = getFWidgetColors();
   print() << FPoint(2, 2 + int(y));
 
   if ( isLineSelected )
@@ -1094,14 +1100,14 @@ inline void FListBox::setLineAttributes ( int y
 
   if ( isCurrentLine )
   {
-    if ( flags.focus && getMaxColor() < 16 )
+    if ( getFlags().focus && getMaxColor() < 16 )
       setBold();
 
     if ( isLineSelected )
     {
       if ( isMonochron() )
         setBold();
-      else if ( flags.focus )
+      else if ( getFlags().focus )
         setColor ( wc.selected_current_element_focus_fg
                  , wc.selected_current_element_focus_bg );
       else
@@ -1115,7 +1121,7 @@ inline void FListBox::setLineAttributes ( int y
       if ( isMonochron() )
         unsetBold();
 
-      if ( flags.focus )
+      if ( getFlags().focus )
       {
         setColor ( wc.current_element_focus_fg
                  , wc.current_element_focus_bg );
@@ -1142,7 +1148,7 @@ inline void FListBox::setLineAttributes ( int y
   {
     if ( isMonochron() )
       setReverse(true);
-    else if ( flags.focus && getMaxColor() < 16 )
+    else if ( getFlags().focus && getMaxColor() < 16 )
       unsetBold();
   }
 }

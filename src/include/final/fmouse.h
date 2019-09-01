@@ -134,6 +134,7 @@ class FMouse
 
     // Methods
     static FMouse*      createMouseObject (mouse_type);
+    void                clearButtonState();
     virtual void        setRawData (FKeyboard::keybuffer&) = 0;
     virtual void        processEvent (struct timeval*) = 0;
 
@@ -161,19 +162,33 @@ class FMouse
       DoubleClick = 3
     };
 
+    // Accessors
+    button&             getButtonState();
+    FPoint&             getNewPos();
+    uInt16              getMaxWidth();
+    uInt16              getMaxHeight();
+    uInt64              getDblclickInterval();
+    timeval*            getMousePressedTime();
+
     // Mutator
     void                setPos (const FPoint&);
+    void                setNewPos (int, int);
+    void                setPending (bool);
+    void                setEvent();
+    void                setMousePressedTime (timeval*);
+    void                resetMousePressedTime();
 
-    // Method
+    // Inquiry
     bool                isDblclickTimeout (timeval*);
 
+  private:
     // Data Members
     button              b_state{};
     bool                mouse_event_occurred{false};
     bool                input_data_pending{false};
-    uInt64              dblclick_interval{500000};  // 500 ms
     uInt16              max_width{80};
     uInt16              max_height{25};
+    uInt64              dblclick_interval{500000};  // 500 ms
     struct timeval      time_mousepressed{};
     FPoint              mouse{0, 0};       // mouse click position
     FPoint              new_mouse_position{};

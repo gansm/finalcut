@@ -204,10 +204,10 @@ void FMenuItem::addAccelerator (FKey key, FWidget* obj)
   auto root = getRootWidget();
   accelerator accel = { key, obj };
 
-  if ( root && root->accelerator_list )
+  if ( root && root->getAcceleratorList() )
   {
     accel_key = key;
-    root->accelerator_list->push_back(accel);
+    root->getAcceleratorList()->push_back(accel);
   }
 
   updateSuperMenuDimensions();
@@ -219,17 +219,17 @@ void FMenuItem::delAccelerator (FWidget* obj)
   auto root = getRootWidget();
 
   if ( root
-    && root->accelerator_list
-    && ! root->accelerator_list->empty() )
+    && root->getAcceleratorList()
+    && ! root->getAcceleratorList()->empty() )
   {
-    auto iter = root->accelerator_list->begin();
+    auto iter = root->getAcceleratorList()->begin();
 
-    while ( iter != root->accelerator_list->end() )
+    while ( iter != root->getAcceleratorList()->end() )
     {
       if ( iter->object == obj )
       {
         accel_key = 0;
-        iter = root->accelerator_list->erase(iter);
+        iter = root->getAcceleratorList()->erase(iter);
       }
       else
         ++iter;
@@ -415,7 +415,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
       mbar->getSelectedItem()->unsetSelected();
 
     setSelected();
-    mbar->selected_item = this;
+    mbar->setSelectedItem(this);
     openMenu();
     auto focused_widget = static_cast<FWidget*>(ev->focusedWidget());
     menu->unselectItem();
@@ -438,7 +438,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
   else
   {
     unsetSelected();
-    mbar->selected_item = nullptr;
+    mbar->unsetSelectedItem();
     mbar->redraw();
     processClicked();
     mbar->drop_down = false;
@@ -619,12 +619,12 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 {
   winmenu->clear();
 
-  if ( dialog_list && ! dialog_list->empty() )
+  if ( getDialogList() && ! getDialogList()->empty() )
   {
-    auto first = dialog_list->begin();
+    auto first = getDialogList()->begin();
     auto iter = first;
 
-    while ( iter != dialog_list->end() && *iter )
+    while ( iter != getDialogList()->end() && *iter )
     {
       auto win = static_cast<FDialog*>(*iter);
 

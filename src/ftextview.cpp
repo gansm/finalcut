@@ -195,7 +195,7 @@ void FTextView::scrollTo (int x, int y)
 void FTextView::hide()
 {
   FWidget::hide();
-  hideSize (getSize());
+  hideArea (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -597,6 +597,7 @@ void FTextView::init()
 {
   initScrollbar (vbar, fc::vertical, &FTextView::cb_VBarChange);
   initScrollbar (hbar, fc::horizontal, &FTextView::cb_HBarChange);
+  const FWidgetColors& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
   nf_offset = isNewFont() ? 1 : 0;

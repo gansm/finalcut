@@ -60,8 +60,6 @@ FDialog::~FDialog()  // destructor
   bool is_quit = fapp->isQuit();
   delete dialog_menu;
   dgl_menuitem = nullptr;
-  delete accelerator_list;
-  accelerator_list = nullptr;
 
   if ( ! is_quit )
     switchToPrevWindow(this);
@@ -80,7 +78,7 @@ bool FDialog::setDialogWidget (bool enable)
   if ( isDialogWidget() == enable )
     return true;
 
-  flags.dialog_widget = enable;
+  setFlags().dialog_widget = enable;
 
   if ( enable )
     setTermOffsetWithPadding();
@@ -96,12 +94,12 @@ bool FDialog::setModal (bool enable)
   if ( isModal() == enable )
     return true;
 
-  flags.modal = enable;
+  setFlags().modal = enable;
 
   if ( enable )
-    modal_dialogs++;
+    setModalDialogCounter()++;
   else
-    modal_dialogs--;
+    setModalDialogCounter()--;
 
   return enable;
 }
@@ -110,7 +108,7 @@ bool FDialog::setModal (bool enable)
 //----------------------------------------------------------------------
 bool FDialog::setScrollable (bool enable)
 {
-  return (flags.scrollable = enable);
+  return (setFlags().scrollable = enable);
 }
 
 //----------------------------------------------------------------------
@@ -189,7 +187,7 @@ void FDialog::setPos (const FPoint& pos, bool)
 
   // move to the new position
   FWindow::setPos(pos, false);
-  putArea (getTermPos(), vwin);
+  putArea (getTermPos(), getVWin());
 
   // restoring the non-covered terminal areas
   if ( getTermGeometry().overlap(old_geometry) )
@@ -686,12 +684,12 @@ void FDialog::onWindowRaised (FEvent*)
   if ( ! isShown() )
     return;
 
-  putArea (getTermPos(), vwin);
+  putArea (getTermPos(), getVWin());
 
   // Handle always-on-top windows
-  if ( always_on_top_list && ! always_on_top_list->empty() )
+  if ( getAlwaysOnTopList() && ! getAlwaysOnTopList()->empty() )
   {
-    for (auto&& win : *always_on_top_list)
+    for (auto&& win : *getAlwaysOnTopList())
       putArea (win->getTermPos(), win->getVWin());
   }
 }
@@ -699,13 +697,13 @@ void FDialog::onWindowRaised (FEvent*)
 //----------------------------------------------------------------------
 void FDialog::onWindowLowered (FEvent*)
 {
-  if ( ! window_list )
+  if ( ! getWindowList() )
     return;
 
-  if ( window_list->empty() )
+  if ( getWindowList()->empty() )
     return;
 
-  for (auto&& win : *window_list)
+  for (auto&& win : *getWindowList())
     putArea (win->getTermPos(), win->getVWin());
 }
 
@@ -738,7 +736,7 @@ void FDialog::draw()
   drawTitleBar();
   setCursorPos(FPoint(2, int(getHeight()) - 1));
 
-  if ( flags.shadow )
+  if ( getFlags().shadow )
     drawDialogShadow();
 
   if ( isMonochron() )
@@ -748,7 +746,7 @@ void FDialog::draw()
 //----------------------------------------------------------------------
 void FDialog::drawDialogShadow()
 {
-  if ( isMonochron() && ! flags.trans_shadow )
+  if ( isMonochron() && ! getFlags().trans_shadow )
     return;
 
   drawShadow();
@@ -786,6 +784,7 @@ void FDialog::init()
   addDialog(this);
   setActiveWindow(this);
   setTransparentShadow();
+  const FWidgetColors& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
   auto old_focus = FWidget::getFocusWidget();
@@ -796,15 +795,8 @@ void FDialog::init()
     old_focus->redraw();
   }
 
-  try
-  {
-    accelerator_list = new Accelerators();
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
+  // Create your own accelerator list for this dialog
+  createWidgetAcceleratorList();
 
   // Add the dialog menu
   initDialogMenu();
@@ -915,7 +907,10 @@ void FDialog::drawBorder()
 {
   if ( (getMoveSizeWidget() == this || ! resize_click_pos.isOrigin() )
     && ! isZoomed() )
+  {
+    const FWidgetColors& wc = getFWidgetColors();
     setColor (wc.dialog_resize_fg, getBackgroundColor());
+  }
   else
     setColor();
 
@@ -976,6 +971,7 @@ void FDialog::drawBarButton()
 {
   // Print the title button
   print() << FPoint(1, 1);
+  const FWidgetColors& wc = getFWidgetColors();
 
   if ( dialog_menu && dialog_menu->isShown() )
     setColor (wc.titlebar_button_focus_fg, wc.titlebar_button_focus_bg);
@@ -1027,6 +1023,8 @@ void FDialog::drawZoomButton()
 
   if ( ! isResizeable() )
     return;
+
+  const FWidgetColors& wc = getFWidgetColors();
 
   if ( zoom_button_pressed )
     setColor (wc.titlebar_button_focus_fg, wc.titlebar_button_focus_bg);
@@ -1095,6 +1093,7 @@ void FDialog::drawTextBar()
   // Fill with spaces (left of the title)
   std::size_t center_offset{0};
   std::size_t x{1};
+  const FWidgetColors& wc = getFWidgetColors();
 
   if ( getMaxColor() < 16 )
     setBold();
@@ -1140,17 +1139,17 @@ void FDialog::restoreOverlaidWindows()
 {
   // Restoring overlaid windows
 
-  if ( ! window_list || window_list->empty() )
+  if ( ! getWindowList() || getWindowList()->empty() )
     return;
 
   bool overlaid{false};
 
-  for (auto&& win : *window_list)
+  for (auto&& win : *getWindowList())
   {
     if ( overlaid )
       putArea (win->getTermPos(), win->getVWin());
 
-    if ( vwin == win->getVWin() )
+    if ( getVWin() == win->getVWin() )
       overlaid = true;
   }
 }
@@ -1168,7 +1167,7 @@ void FDialog::setCursorToFocusWidget()
   {
     FPoint cursor_pos(focus->getCursorPos());
     focus->setCursorPos(cursor_pos);
-    updateVTermCursor(vwin);
+    updateVTermCursor(getVWin());
   }
 }
 
@@ -1597,24 +1596,24 @@ inline void FDialog::cancelMoveSize()
 void FDialog::addDialog (FWidget* obj)
 {
   // Add the dialog object obj to the dialog list
-  if ( dialog_list )
-    dialog_list->push_back(obj);
+  if ( getDialogList() )
+    getDialogList()->push_back(obj);
 }
 
 //----------------------------------------------------------------------
 void FDialog::delDialog (FWidget* obj)
 {
   // Delete the dialog object obj from the dialog list
-  if ( ! dialog_list || dialog_list->empty() )
+  if ( ! getDialogList() || getDialogList()->empty() )
     return;
 
-  auto iter = dialog_list->begin();
+  auto iter = getDialogList()->begin();
 
-  while ( iter != dialog_list->end() )
+  while ( iter != getDialogList()->end() )
   {
     if ( (*iter) == obj )
     {
-      dialog_list->erase(iter);
+      getDialogList()->erase(iter);
       return;
     }
 

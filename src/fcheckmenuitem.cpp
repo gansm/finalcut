@@ -55,7 +55,7 @@ FCheckMenuItem::~FCheckMenuItem()  // destructor
 //----------------------------------------------------------------------
 void FCheckMenuItem::init (FWidget* parent)
 {
-  checkable = true;
+  setCheckable();
 
   if ( ! parent )
     return;
@@ -76,7 +76,11 @@ void FCheckMenuItem::processToggle()
 //----------------------------------------------------------------------
 void FCheckMenuItem::processClicked()
 {
-  checked = ! checked;
+  if ( isChecked() )
+    unsetChecked();
+  else
+    setChecked();
+
   processToggle();
   emitCallback("clicked");
 }

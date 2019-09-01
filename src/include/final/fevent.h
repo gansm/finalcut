@@ -104,7 +104,7 @@ class FEvent  // event base class
     explicit FEvent(fc::events);
     fc::events type() const;
 
-  protected:
+  private:
     fc::events t{fc::None_Event};
 };
 
@@ -130,7 +130,7 @@ class FKeyEvent : public FEvent  // keyboard event
     void accept();
     void ignore();
 
-  protected:
+  private:
     FKey k{0};
     bool accpt{false};
 };
@@ -161,10 +161,10 @@ class FMouseEvent : public FEvent  // mouse event
     int getTermY() const;
     int getButton() const;
 
-  protected:
-    FPoint p;
-    FPoint tp;
-    int b;
+  private:
+    FPoint p{};
+    FPoint tp{};
+    int b{};
 };
 
 #pragma pack(pop)
@@ -193,7 +193,7 @@ class FWheelEvent : public FEvent  // wheel event
     int getTermY() const;
     int getWheel() const;
 
-  protected:
+  private:
     FPoint p;
     FPoint tp;
     int w;
@@ -223,7 +223,8 @@ class FFocusEvent : public FEvent  // focus event
     bool isAccepted() const;
     void accept();
     void ignore();
-  protected:
+
+  private:
     bool accpt{true};
     fc::FocusTypes focus_type{fc::FocusDefiniteWidget};
 };
@@ -252,9 +253,9 @@ class FAccelEvent : public FEvent  // focus event
     void     accept();
     void     ignore();
 
-  protected:
+  private:
     bool     accpt{false};
-    void*    focus_widget;
+    void*    focus_widget{};
 };
 
 #pragma pack(pop)
@@ -275,7 +276,7 @@ class FResizeEvent : public FEvent  // resize event
     void accept();
     void ignore();
 
-  protected:
+  private:
     bool accpt{false};
 };
 
@@ -321,7 +322,7 @@ class FCloseEvent : public FEvent  // close event
     void accept();
     void ignore();
 
-  protected:
+  private:
     bool accpt{false};
 };
 
@@ -342,7 +343,7 @@ class FTimerEvent : public FEvent  // timer event
 
     int getTimerId() const;
 
-  protected:
+  private:
     int id{0};
 };
 
@@ -374,7 +375,7 @@ class FUserEvent : public FEvent  // timer event
     FDataPtr getData() const;
     void setData (FDataPtr);
 
-  protected:
+  private:
     int uid{0};
     FDataPtr data_pointer{nullptr};
 };

@@ -109,6 +109,7 @@ bool FToggleButton::setNoUnderline (bool enable)
 bool FToggleButton::setEnable (bool enable)
 {
   FWidget::setEnable(enable);
+  const FWidgetColors& wc = getFWidgetColors();
 
   if ( enable )
   {
@@ -139,6 +140,7 @@ bool FToggleButton::setEnable (bool enable)
 bool FToggleButton::setFocus (bool enable)
 {
   FWidget::setFocus(enable);
+  const FWidgetColors& wc = getFWidgetColors();
 
   if ( enable )
   {
@@ -206,7 +208,7 @@ void FToggleButton::setText (const FString& txt)
 void FToggleButton::hide()
 {
   FWidget::hide();
-  hideSize (getSize());
+  hideArea (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -532,6 +534,7 @@ void FToggleButton::setGroup (FButtonGroup* btngroup)
 void FToggleButton::init()
 {
   setGeometry (FPoint(1, 1), FSize(4, 1), false);  // initialize geometry values
+  const FWidgetColors& wc = getFWidgetColors();
 
   if ( isEnabled() )
   {
@@ -560,6 +563,8 @@ void FToggleButton::drawText ( wchar_t LabelText[]
 {
   if ( isMonochron() )
     setReverse(true);
+
+  const FWidgetColors& wc = getFWidgetColors();
 
   if ( isEnabled() )
     setColor (wc.label_fg, wc.label_bg);

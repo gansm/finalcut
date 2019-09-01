@@ -170,13 +170,13 @@ class FButton : public FWidget
     std::size_t  center_offset{0};
     std::size_t  vcenter_offset{0};
     std::size_t  txtlength{0};
-    FColor       button_fg{wc.button_active_fg};
-    FColor       button_bg{wc.button_active_bg};
-    FColor       button_hotkey_fg{wc.button_hotkey_fg};
-    FColor       button_focus_fg{wc.button_active_focus_fg};
-    FColor       button_focus_bg{wc.button_active_focus_bg};
-    FColor       button_inactive_fg{wc.button_inactive_fg};
-    FColor       button_inactive_bg{wc.button_inactive_bg};
+    FColor       button_fg{getFWidgetColors().button_active_fg};
+    FColor       button_bg{getFWidgetColors().button_active_bg};
+    FColor       button_hotkey_fg{getFWidgetColors().button_hotkey_fg};
+    FColor       button_focus_fg{getFWidgetColors().button_active_focus_fg};
+    FColor       button_focus_bg{getFWidgetColors().button_active_focus_bg};
+    FColor       button_inactive_fg{getFWidgetColors().button_inactive_fg};
+    FColor       button_inactive_bg{getFWidgetColors().button_inactive_bg};
 };
 #pragma pack(pop)
 
@@ -256,7 +256,7 @@ inline bool FButton::unsetClickAnimation()
 
 //----------------------------------------------------------------------
 inline bool FButton::isFlat() const
-{ return flags.flat; }
+{ return getFlags().flat; }
 
 //----------------------------------------------------------------------
 inline bool FButton::isDown() const
@@ -264,7 +264,7 @@ inline bool FButton::isDown() const
 
 //----------------------------------------------------------------------
 inline bool FButton::hasShadow() const
-{ return flags.shadow; }
+{ return getFlags().shadow; }
 
 //----------------------------------------------------------------------
 inline bool FButton::hasClickAnimation()

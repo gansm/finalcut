@@ -130,7 +130,7 @@ void FButton::setInactiveBackgroundColor (FColor color)
 //----------------------------------------------------------------------
 bool FButton::setNoUnderline (bool enable)
 {
-  return (flags.no_underline = enable);
+  return (setFlags().no_underline = enable);
 }
 
 //----------------------------------------------------------------------
@@ -179,7 +179,7 @@ bool FButton::setFocus (bool enable)
 //----------------------------------------------------------------------
 bool FButton::setFlat (bool enable)
 {
-  return (flags.flat = enable);
+  return (setFlags().flat = enable);
 }
 
 //----------------------------------------------------------------------
@@ -189,16 +189,16 @@ bool FButton::setShadow (bool enable)
     && getEncoding() != fc::VT100
     && getEncoding() != fc::ASCII )
   {
-    flags.shadow = true;
+    setFlags().shadow = true;
     setShadowSize(FSize(1, 1));
   }
   else
   {
-    flags.shadow = false;
+    setFlags().shadow = false;
     setShadowSize(FSize(0, 0));
   }
 
-  return flags.shadow;
+  return getFlags().shadow;
 }
 
 //----------------------------------------------------------------------
@@ -238,6 +238,7 @@ void FButton::hide()
   }
   else
   {
+    const FWidgetColors& wc = getFWidgetColors();
     fg = wc.dialog_fg;
     bg = wc.dialog_bg;
   }
@@ -409,6 +410,7 @@ void FButton::onFocusOut (FFocusEvent*)
 //----------------------------------------------------------------------
 void FButton::init()
 {
+  const FWidgetColors& wc = getFWidgetColors();
   setForegroundColor (wc.button_active_fg);
   setBackgroundColor (wc.button_active_bg);
   setShadow();
@@ -455,7 +457,7 @@ inline std::size_t FButton::clickAnimationIndent (FWidget* parent_widget)
     return 0;
 
   // noshadow + indent one character to the right
-  if ( flags.flat )
+  if ( getFlags().flat )
     clearFlatBorder();
   else if ( hasShadow() )
     clearShadow();
@@ -490,7 +492,7 @@ inline void FButton::clearRightMargin (FWidget* parent_widget)
 
     print() << FPoint(1 + int(getWidth()), y) << ' ';  // clear right
 
-    if ( flags.active && isMonochron() )
+    if ( getFlags().active && isMonochron() )
       setReverse(false);  // Dark background
   }
 }
@@ -577,7 +579,7 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
     setCursorPos (FPoint ( 2 + int(center_offset + hotkeypos)
                          , 1 + int(vcenter_offset) ));  // hotkey
 
-  if ( ! flags.active && isMonochron() )
+  if ( ! getFlags().active && isMonochron() )
     setReverse(true);  // Light background
 
   if ( active_focus && (isMonochron() || getMaxColor() < 16) )
@@ -587,14 +589,14 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
       ; pos < center_offset + txtlength && z < getWidth() - 2
       ; z++, pos++)
   {
-    if ( z == hotkeypos && flags.active )
+    if ( z == hotkeypos && getFlags().active )
     {
       setColor (button_hotkey_fg, button_bg);
 
       if ( ! active_focus && getMaxColor() < 16 )
         setBold();
 
-      if ( ! flags.no_underline )
+      if ( ! getFlags().no_underline )
         setUnderline();
 
       print (button_text[z]);
@@ -602,7 +604,7 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
       if ( ! active_focus && getMaxColor() < 16 )
         unsetBold();
 
-      if ( ! flags.no_underline )
+      if ( ! getFlags().no_underline )
         unsetUnderline();
 
       setColor (button_fg, button_bg);
@@ -633,7 +635,7 @@ void FButton::draw()
   auto parent_widget = getParentWidget();
   txtlength = text.getLength();
   space_char = int(' ');
-  active_focus = flags.active && flags.focus;
+  active_focus = getFlags().active && getFlags().focus;
 
   try
   {
@@ -654,13 +656,13 @@ void FButton::draw()
   // Clear right margin after animation
   clearRightMargin (parent_widget);
 
-  if ( ! flags.active && isMonochron() )
+  if ( ! getFlags().active && isMonochron() )
     space_char = fc::MediumShade;  // ▒ simulates greyed out at Monochron
 
-  if ( isMonochron() && (flags.active || flags.focus) )
+  if ( isMonochron() && (getFlags().active || getFlags().focus) )
     setReverse(false);  // Dark background
 
-  if ( flags.flat && ! button_down )
+  if ( getFlags().flat && ! button_down )
     drawFlatBorder();
 
   hotkeypos = finalcut::getHotkeyPos(text.wc_str(), button_text, uInt(txtlength));
@@ -686,7 +688,7 @@ void FButton::draw()
   drawTopBottomBackground();
 
   // Draw button shadow
-  if ( ! flags.flat && flags.shadow && ! button_down )
+  if ( ! getFlags().flat && getFlags().shadow && ! button_down )
     drawShadow();
 
   if ( isMonochron() )
@@ -699,7 +701,7 @@ void FButton::draw()
 //----------------------------------------------------------------------
 void FButton::updateStatusBar()
 {
-  if ( ! flags.focus || ! getStatusBar() )
+  if ( ! getFlags().focus || ! getStatusBar() )
     return;
 
   const auto& msg = getStatusbarMessage();

@@ -168,6 +168,7 @@ const FLineEdit& FLineEdit::operator >> (FString& s)
 //----------------------------------------------------------------------
 bool FLineEdit::setEnable (bool enable)
 {
+  const FWidgetColors& wc = getFWidgetColors();
   FWidget::setEnable(enable);
 
   if ( enable )
@@ -195,6 +196,7 @@ bool FLineEdit::setEnable (bool enable)
 //----------------------------------------------------------------------
 bool FLineEdit::setFocus (bool enable)
 {
+  const FWidgetColors& wc = getFWidgetColors();
   FWidget::setFocus(enable);
 
   if ( enable )
@@ -236,16 +238,16 @@ bool FLineEdit::setShadow (bool enable)
     && getEncoding() != fc::VT100
     && getEncoding() != fc::ASCII )
   {
-    flags.shadow = true;
+    setFlags().shadow = true;
     setShadowSize(FSize(1, 1));
   }
   else
   {
-    flags.shadow = false;
+    setFlags().shadow = false;
     setShadowSize(FSize(0, 0));
   }
 
-  return flags.shadow;
+  return getFlags().shadow;
 }
 
 //----------------------------------------------------------------------
@@ -318,7 +320,7 @@ void FLineEdit::hide()
 
   FWidget::hide();
   FSize shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
-  hideSize (getSize() + shadow);
+  hideArea (getSize() + shadow);
 }
 
 //----------------------------------------------------------------------
@@ -658,6 +660,7 @@ void FLineEdit::adjustSize()
 //----------------------------------------------------------------------
 void FLineEdit::init()
 {
+  const FWidgetColors& wc = getFWidgetColors();
   label->setAccelWidget(this);
   setVisibleCursor();
   setShadow();
@@ -696,7 +699,7 @@ void FLineEdit::draw()
 {
   drawInputField();
 
-  if ( flags.focus && getStatusBar() )
+  if ( getFlags().focus && getStatusBar() )
   {
     const auto& msg = getStatusbarMessage();
     const auto& curMsg = getStatusBar()->getMessage();
@@ -712,7 +715,7 @@ void FLineEdit::draw()
 //----------------------------------------------------------------------
 void FLineEdit::drawInputField()
 {
-  bool isActiveFocus = flags.active && flags.focus;
+  bool isActiveFocus = getFlags().active && getFlags().focus;
   print() << FPoint(1, 1);
 
   if ( isMonochron() )
@@ -756,7 +759,7 @@ void FLineEdit::drawInputField()
     setUnderline(false);
   }
 
-  if ( flags.shadow )
+  if ( getFlags().shadow )
     drawShadow ();
 
   // set the cursor to the first pos.

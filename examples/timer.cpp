@@ -54,8 +54,8 @@ Timer::Timer (finalcut::FWidget* parent)
   delTimer (id);
   addTimer (250);          // 250-millisecond timer
 
-  wc.term_fg = fc::Default;
-  wc.term_bg = fc::Default;
+  setFWidgetColors().term_fg = fc::Default;
+  setFWidgetColors().term_bg = fc::Default;
 }
 
 //----------------------------------------------------------------------
@@ -65,7 +65,7 @@ void Timer::draw()
           << "---------------\n"
           << "Press Q to quit\n"
           << "---------------\n";
-  setAreaCursor (finalcut::FPoint(1, 4), true, vdesktop);
+  setAreaCursor (finalcut::FPoint(1, 4), true, getVirtualDesktop());
 }
 
 //----------------------------------------------------------------------
@@ -81,10 +81,10 @@ void Timer::onTimer (finalcut::FTimerEvent* ev)
           << "Timer event, id " << timer_id << '\n';
 
   if ( is_last_line )
-    scrollAreaForward (vdesktop);
+    scrollAreaForward (getVirtualDesktop());
 
   setAreaCursor ( finalcut::FPoint(1, getPrintPos().getY())
-                , true, vdesktop );
+                , true, getVirtualDesktop() );
 }
 
 //----------------------------------------------------------------------

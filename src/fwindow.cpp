@@ -47,7 +47,7 @@ FWindow::FWindow(FWidget* parent)
   setWindowWidget();
   FRect geometry (getTermGeometry());
   geometry.move(-1, -1);
-  createArea (geometry, getShadow(), vwin);
+  createArea (geometry, getShadow(), getVWin());
   addWindow (this);
 }
 
@@ -74,7 +74,7 @@ FWindow::~FWindow()  // destructor
     restoreVTerm (t_geometry);
   }
 
-  removeArea (vwin);
+  removeArea (getVWin());
 }
 
 
@@ -92,7 +92,7 @@ bool FWindow::setWindowWidget (bool enable)
   if ( isWindowWidget() == enable )
     return true;
 
-  flags.window_widget = enable;
+  setFlags().window_widget = enable;
 
   if ( enable )
     setTermOffset();
@@ -107,14 +107,14 @@ void FWindow::setActiveWindow (FWindow* window)
 {
   // activate FWindow object window
 
-  if ( ! window_list )
+  if ( ! getWindowList() )
     return;
 
-  if ( window_list->empty() )
+  if ( getWindowList()->empty() )
     return;
 
-  auto iter = window_list->begin();
-  auto end  = window_list->end();
+  auto iter = getWindowList()->begin();
+  auto end  = getWindowList()->end();
 
   while ( iter != end )
   {
@@ -157,7 +157,7 @@ bool FWindow::activateWindow (bool enable)
   if ( enable )
   {
     FWidget::setActiveWindow (this);
-    active_area = getVWin();
+    setActiveArea (getVWin());
   }
 
   return (window_active = enable);
@@ -173,13 +173,13 @@ void FWindow::unsetActiveWindow()
 //----------------------------------------------------------------------
 bool FWindow::setResizeable (bool enable)
 {
-  return (flags.resizeable = enable);
+  return (setFlags().resizeable = enable);
 }
 
 //----------------------------------------------------------------------
 bool FWindow::setTransparentShadow (bool enable)
 {
-  flags.shadow = flags.trans_shadow = enable;
+  setFlags().shadow = setFlags().trans_shadow = enable;
 
   if ( enable )
     setShadowSize (FSize(2, 1));
@@ -197,14 +197,14 @@ bool FWindow::setShadow (bool enable)
 
   if ( enable )
   {
-    flags.shadow = true;
-    flags.trans_shadow = false;
+    setFlags().shadow = true;
+    setFlags().trans_shadow = false;
     setShadowSize (FSize(1, 1));
   }
   else
   {
-    flags.shadow = false;
-    flags.trans_shadow = false;
+    setFlags().shadow = false;
+    setFlags().trans_shadow = false;
     setShadowSize (FSize(0, 0));
   }
 
@@ -217,14 +217,14 @@ bool FWindow::setAlwaysOnTop (bool enable)
   if ( isAlwaysOnTop() == enable )
     return true;
 
-  flags.always_on_top = enable;
+  setFlags().always_on_top = enable;
 
   if ( enable )
   {
-    if ( always_on_top_list )
+    if ( getAlwaysOnTopList() )
     {
       deleteFromAlwaysOnTopList (this);
-      always_on_top_list->push_back (this);
+      getAlwaysOnTopList()->push_back (this);
     }
   }
   else
@@ -239,7 +239,7 @@ bool FWindow::isWindowHidden() const
   // returns the window hidden state
 
   if ( isVirtualWindow() )
-    return ! vwin->visible;
+    return ! getVWin()->visible;
   else
     return false;
 }
@@ -284,7 +284,7 @@ void FWindow::drawBorder()
 void FWindow::show()
 {
   if ( isVirtualWindow() )
-    vwin->visible = true;
+    getVWin()->visible = true;
 
   FWidget::show();
 }
@@ -293,7 +293,7 @@ void FWindow::show()
 void FWindow::hide()
 {
   if ( isVirtualWindow() )
-    vwin->visible = false;
+    getVWin()->visible = false;
 
   FWidget::hide();
 }
@@ -304,7 +304,7 @@ void FWindow::setX (int x, bool adjust)
   FWidget::setX (x, adjust);
 
   if ( isVirtualWindow() )
-    vwin->offset_left = getTermX() - 1;
+    getVWin()->offset_left = getTermX() - 1;
 }
 
 //----------------------------------------------------------------------
@@ -316,7 +316,7 @@ void FWindow::setY (int y, bool adjust)
   FWidget::setY (y, adjust);
 
   if ( isVirtualWindow() )
-    vwin->offset_top = getTermY() - 1;
+    getVWin()->offset_top = getTermY() - 1;
 }
 
 //----------------------------------------------------------------------
@@ -331,8 +331,9 @@ void FWindow::setPos (const FPoint& p, bool adjust)
 
   if ( isVirtualWindow() )
   {
-    vwin->offset_left = getTermX() - 1;
-    vwin->offset_top = getTermY() - 1;
+    auto virtual_win = getVWin();
+    virtual_win->offset_left = getTermX() - 1;
+    virtual_win->offset_top = getTermY() - 1;
   }
 }
 
@@ -346,7 +347,7 @@ void FWindow::setWidth (std::size_t w, bool adjust)
   {
     FRect geometry (getTermGeometry());
     geometry.move(-1, -1);
-    resizeArea (geometry, getShadow(), vwin);
+    resizeArea (geometry, getShadow(), getVWin());
   }
 }
 
@@ -360,7 +361,7 @@ void FWindow::setHeight (std::size_t h, bool adjust)
   {
     FRect geometry (getTermGeometry());
     geometry.move(-1, -1);
-    resizeArea (geometry, getShadow(), vwin);
+    resizeArea (geometry, getShadow(), getVWin());
   }
 }
 
@@ -376,7 +377,7 @@ void FWindow::setSize (const FSize& size, bool adjust)
   {
     FRect geometry (getTermGeometry());
     geometry.move(-1, -1);
-    resizeArea (geometry, getShadow(), vwin);
+    resizeArea (geometry, getShadow(), getVWin());
   }
 }
 
@@ -402,15 +403,15 @@ void FWindow::setGeometry ( const FPoint& p, const FSize& size, bool adjust)
   {
     FRect geometry (getTermGeometry());
     geometry.move(-1, -1);
-    resizeArea (geometry, getShadow(), vwin);
+    resizeArea (geometry, getShadow(), getVWin());
   }
   else
   {
     if ( getX() != old_x )
-      vwin->offset_left = getTermX() - 1;
+      getVWin()->offset_left = getTermX() - 1;
 
     if ( getY() != old_y )
-      vwin->offset_top = getTermY() - 1;
+      getVWin()->offset_top = getTermY() - 1;
   }
 }
 
@@ -421,8 +422,9 @@ void FWindow::move (const FPoint& pos)
 
   if ( isVirtualWindow() )
   {
-    vwin->offset_left = getTermX() - 1;
-    vwin->offset_top = getTermY() - 1;
+    auto virtual_win = getVWin();
+    virtual_win->offset_left = getTermX() - 1;
+    virtual_win->offset_top = getTermY() - 1;
   }
 }
 
@@ -430,10 +432,10 @@ void FWindow::move (const FPoint& pos)
 FWindow* FWindow::getWindowWidgetAt (int x, int y)
 {
   // returns the window object to the corresponding coordinates
-  if ( window_list && ! window_list->empty() )
+  if ( getWindowList() && ! getWindowList()->empty() )
   {
-    auto iter  = window_list->end();
-    auto begin = window_list->begin();
+    auto iter  = getWindowList()->end();
+    auto begin = getWindowList()->begin();
 
     do
     {
@@ -457,8 +459,8 @@ FWindow* FWindow::getWindowWidgetAt (int x, int y)
 void FWindow::addWindow (FWidget* obj)
 {
   // add the window object obj to the window list
-  if ( window_list )
-    window_list->push_back(obj);
+  if ( getWindowList() )
+    getWindowList()->push_back(obj);
 
   processAlwaysOnTop();
 }
@@ -467,16 +469,16 @@ void FWindow::addWindow (FWidget* obj)
 void FWindow::delWindow (FWidget* obj)
 {
   // delete the window object obj from the window list
-  if ( ! window_list || window_list->empty() )
+  if ( ! getWindowList() || getWindowList()->empty() )
     return;
 
-  auto iter = window_list->begin();
+  auto iter = getWindowList()->begin();
 
-  while ( iter != window_list->end() )
+  while ( iter != getWindowList()->end() )
   {
     if ( (*iter) == obj )
     {
-      window_list->erase (iter);
+      getWindowList()->erase (iter);
       return;
     }
 
@@ -509,10 +511,10 @@ int FWindow::getWindowLayer (const FWidget* obj)
 
   const FWidget* window;
 
-  if ( ! window_list )
+  if ( ! getWindowList() )
     return -1;
 
-  if ( window_list->empty() )
+  if ( getWindowList()->empty() )
     return -1;
 
   if ( ! obj->isWindowWidget() )
@@ -523,8 +525,8 @@ int FWindow::getWindowLayer (const FWidget* obj)
   else
     window = obj;
 
-  auto iter = window_list->begin();
-  auto end  = window_list->end();
+  auto iter = getWindowList()->begin();
+  auto end  = getWindowList()->end();
 
   while ( iter != end )
   {
@@ -534,7 +536,7 @@ int FWindow::getWindowLayer (const FWidget* obj)
     ++iter;
   }
 
-  return int(std::distance(window_list->begin(), iter) + 1);
+  return int(std::distance(getWindowList()->begin(), iter) + 1);
 }
 
 //----------------------------------------------------------------------
@@ -542,10 +544,10 @@ void FWindow::swapWindow (FWidget* obj1, FWidget* obj2)
 {
   // swaps the window layer between obj1 and obj2
 
-  if ( ! window_list )
+  if ( ! getWindowList() )
     return;
 
-  if ( window_list->empty() )
+  if ( getWindowList()->empty() )
     return;
 
   if ( obj1->getFlags().modal )
@@ -554,8 +556,8 @@ void FWindow::swapWindow (FWidget* obj1, FWidget* obj2)
   if ( obj2->getFlags().modal )
     return;
 
-  auto iter  = window_list->begin();
-  auto end   = window_list->end();
+  auto iter  = getWindowList()->begin();
+  auto end   = getWindowList()->end();
   auto iter1 = end;
   auto iter2 = end;
 
@@ -578,30 +580,30 @@ bool FWindow::raiseWindow (FWidget* obj)
 {
   // raises the window widget obj to the top
 
-  if ( ! window_list )
+  if ( ! getWindowList() )
     return false;
 
-  if ( window_list->empty() )
+  if ( getWindowList()->empty() )
     return false;
 
   if ( ! obj->isWindowWidget() )
     return false;
 
-  if ( window_list->back() == obj )
+  if ( getWindowList()->back() == obj )
     return false;
 
-  if ( window_list->back()->getFlags().modal
+  if ( getWindowList()->back()->getFlags().modal
     && ! obj->isMenuWidget() )
     return false;
 
-  auto iter = window_list->begin();
+  auto iter = getWindowList()->begin();
 
-  while ( iter != window_list->end() )
+  while ( iter != getWindowList()->end() )
   {
     if ( *iter == obj )
     {
-      window_list->erase (iter);
-      window_list->push_back (obj);
+      getWindowList()->erase (iter);
+      getWindowList()->push_back (obj);
       FEvent ev(fc::WindowRaised_Event);
       FApplication::sendEvent(obj, &ev);
       processAlwaysOnTop();
@@ -619,29 +621,29 @@ bool FWindow::lowerWindow (FWidget* obj)
 {
   // lowers the window widget obj to the bottom
 
-  if ( ! window_list )
+  if ( ! getWindowList() )
     return false;
 
-  if ( window_list->empty() )
+  if ( getWindowList()->empty() )
     return false;
 
   if ( ! obj->isWindowWidget() )
     return false;
 
-  if ( window_list->front() == obj )
+  if ( getWindowList()->front() == obj )
     return false;
 
   if ( obj->getFlags().modal )
     return false;
 
-  auto iter = window_list->begin();
+  auto iter = getWindowList()->begin();
 
-  while ( iter != window_list->end() )
+  while ( iter != getWindowList()->end() )
   {
     if ( *iter == obj )
     {
-      window_list->erase (iter);
-      window_list->insert (window_list->begin(), obj);
+      getWindowList()->erase (iter);
+      getWindowList()->insert (getWindowList()->begin(), obj);
       FEvent ev(fc::WindowLowered_Event);
       FApplication::sendEvent(obj, &ev);
       return true;
@@ -694,10 +696,10 @@ void FWindow::switchToPrevWindow (FWidget* widget)
   if ( ! is_activated )
   {
     // no previous window -> looking for another window
-    if ( window_list && window_list->size() > 1 )
+    if ( getWindowList() && getWindowList()->size() > 1 )
     {
-      auto iter  = window_list->end();
-      auto begin = window_list->begin();
+      auto iter  = getWindowList()->end();
+      auto begin = getWindowList()->begin();
 
       do
       {
@@ -771,7 +773,7 @@ void FWindow::setShadowSize (const FSize& size)
   {
     auto geometry = getTermGeometry();
     geometry.move(-1, -1);
-    resizeArea (geometry, getShadow(), vwin);
+    resizeArea (geometry, getShadow(), getVWin());
   }
 }
 
@@ -789,10 +791,10 @@ void FWindow::adjustSize()
   else if ( isVirtualWindow() )
   {
     if ( getX() != old_x )
-      vwin->offset_left = getTermX() - 1;
+      getVWin()->offset_left = getTermX() - 1;
 
     if ( getY() != old_y )
-      vwin->offset_top = getTermY() - 1;
+      getVWin()->offset_top = getTermY() - 1;
   }
 }
 
@@ -846,16 +848,16 @@ void FWindow::onWindowLowered (FEvent*)
 void FWindow::deleteFromAlwaysOnTopList (FWidget* obj)
 {
   // delete the window object obj from the always-on-top list
-  if ( ! always_on_top_list || always_on_top_list->empty() )
+  if ( ! getAlwaysOnTopList() || getAlwaysOnTopList()->empty() )
     return;
 
-  auto iter = always_on_top_list->begin();
+  auto iter = getAlwaysOnTopList()->begin();
 
-  while ( iter != always_on_top_list->end() )
+  while ( iter != getAlwaysOnTopList()->end() )
   {
     if ( *iter == obj )
     {
-      always_on_top_list->erase (iter);
+      getAlwaysOnTopList()->erase (iter);
       return;
     }
 
@@ -867,17 +869,17 @@ void FWindow::deleteFromAlwaysOnTopList (FWidget* obj)
 void FWindow::processAlwaysOnTop()
 {
   // Raise all always-on-top windows
-  if ( ! always_on_top_list || always_on_top_list->empty() )
+  if ( ! getAlwaysOnTopList() || getAlwaysOnTopList()->empty() )
     return;
 
-  auto iter = always_on_top_list->begin();
+  auto iter = getAlwaysOnTopList()->begin();
 
-  while ( iter != always_on_top_list->end() )
+  while ( iter != getAlwaysOnTopList()->end() )
   {
     delWindow (*iter);
 
-    if ( window_list )
-      window_list->push_back(*iter);
+    if ( getWindowList() )
+      getWindowList()->push_back(*iter);
 
     ++iter;
   }

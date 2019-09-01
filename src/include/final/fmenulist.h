@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -74,31 +74,34 @@ class FMenuList
     FMenuList& operator = (const FMenuList&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const;
-    std::size_t         getCount() const;
-    FMenuItem*          getItem (int) const;
-    FMenuItem*          getSelectedItem() const;
+    virtual const char*      getClassName() const;
+    std::size_t              getCount() const;
+    FMenuItem*               getItem (int) const;
+    FMenuItem*               getSelectedItem() const;
+    std::vector<FMenuItem*>  getItemList() const;
 
     // Mutators
-    void                enableItem (int);
-    void                disableItem (int);
-    void                setSelectedItem (FMenuItem*);
+    void                     enableItem (int);
+    void                     disableItem (int);
+    void                     setSelectedItem (FMenuItem*);
+    void                     unsetSelectedItem();
 
     // Inquiries
-    bool                isSelected (int) const;
-    bool                hasSelectedItem() const;
+    bool                     isSelected (int) const;
+    bool                     hasSelectedItem() const;
 
     // Methods
-    virtual void        insert (FMenuItem*);
-    virtual void        remove (FMenuItem*);
-    void                remove (int);
-    void                clear();
-    void                selectFirstItem();
-    void                unselectItem();
+    virtual void             insert (FMenuItem*);
+    virtual void             remove (FMenuItem*);
+    void                     remove (int);
+    void                     clear();
+    void                     selectFirstItem();
+    void                     unselectItem();
 
-  protected:
-    FMenuItem*              selected_item{};
-    std::vector<FMenuItem*> item_list{};
+  private:
+    // Data Members
+    FMenuItem*               selected_item{};
+    std::vector<FMenuItem*>  item_list{};
 };
 #pragma pack(pop)
 
@@ -121,6 +124,10 @@ inline FMenuItem* FMenuList::getSelectedItem() const
 { return selected_item; }
 
 //----------------------------------------------------------------------
+inline std::vector<FMenuItem*> FMenuList::getItemList() const
+{ return item_list; }
+
+//----------------------------------------------------------------------
 inline void FMenuList::enableItem (int index)
 { item_list[uInt(index - 1)]->setEnable(); }
 
@@ -131,6 +138,10 @@ inline void FMenuList::disableItem (int index)
 //----------------------------------------------------------------------
 inline void FMenuList::setSelectedItem (FMenuItem* menuitem)
 { selected_item = menuitem; }
+
+//----------------------------------------------------------------------
+inline void FMenuList::unsetSelectedItem()
+{ selected_item = nullptr; }
 
 //----------------------------------------------------------------------
 inline bool FMenuList::isSelected(int index) const

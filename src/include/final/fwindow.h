@@ -247,19 +247,19 @@ inline bool FWindow::isWindowActive() const
 
 //----------------------------------------------------------------------
 inline bool FWindow::isResizeable() const
-{ return flags.resizeable; }
+{ return getFlags().resizeable; }
 
 //----------------------------------------------------------------------
 inline bool FWindow::isAlwaysOnTop() const
-{ return flags.always_on_top; }
+{ return getFlags().always_on_top; }
 
 //----------------------------------------------------------------------
 inline bool FWindow::hasTransparentShadow() const
-{ return flags.trans_shadow; }
+{ return getFlags().trans_shadow; }
 
 //----------------------------------------------------------------------
 inline bool FWindow::hasShadow() const
-{ return flags.shadow; }
+{ return getFlags().shadow; }
 
 //----------------------------------------------------------------------
 inline FWindow* FWindow::getWindowWidgetAt (const FPoint& pos)

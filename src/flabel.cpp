@@ -236,7 +236,7 @@ void FLabel::setText (const FString& txt)
 void FLabel::hide()
 {
   FWidget::hide();
-  hideSize (getSize());
+  hideArea (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -342,6 +342,7 @@ void FLabel::init()
   }
   else
   {
+    const FWidgetColors& wc = getFWidgetColors();
     setForegroundColor (wc.dialog_fg);
     setBackgroundColor (wc.dialog_bg);
   }
@@ -535,16 +536,17 @@ void FLabel::printLine ( wchar_t line[]
       }
     }
 
-    if ( z == hotkeypos && flags.active )
+    if ( z == hotkeypos && getFlags().active )
     {
+      const FWidgetColors& wc = getFWidgetColors();
       setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
 
-      if ( ! flags.no_underline )
+      if ( ! getFlags().no_underline )
         setUnderline();
 
       print (line[z]);
 
-      if ( ! flags.no_underline )
+      if ( ! getFlags().no_underline )
         unsetUnderline();
 
       if ( hasEmphasis() )

@@ -116,8 +116,8 @@ class FDialog : public FWindow
     void                setText (const FString&);
 
     // Inquiries
-    bool                isModal();
-    bool                isScrollable();
+    bool                isModal() const;
+    bool                isScrollable() const;
 
     // Methods
     void                show() override;
@@ -278,12 +278,12 @@ inline void FDialog::setText (const FString& txt)
 { tb_text.setString(txt); }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isModal()
-{ return flags.modal; }
+inline bool FDialog::isModal() const
+{ return getFlags().modal; }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isScrollable()
-{ return flags.scrollable; }
+inline bool FDialog::isScrollable() const
+{ return getFlags().scrollable; }
 
 }  // namespace finalcut
 

@@ -54,22 +54,22 @@ class FMouse_protected : public finalcut::FMouse
 
     uInt16 getMaxWidth()
     {
-      return max_width;
+      return finalcut::FMouse::getMaxWidth();
     }
 
     uInt16 getMaxHeight()
     {
-      return max_height;
+      return finalcut::FMouse::getMaxHeight();
     }
 
     finalcut::FPoint& getNewMousePosition()
     {
-      return new_mouse_position;
+      return finalcut::FMouse::getNewPos();
     }
 
     uInt64 getDblclickInterval()
     {
-      return dblclick_interval;
+      return finalcut::FMouse::getDblclickInterval();
     }
 
     bool isDblclickTimeout (timeval* t)

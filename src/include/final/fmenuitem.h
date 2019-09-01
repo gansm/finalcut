@@ -111,15 +111,21 @@ class FMenuItem : public FWidget
     void                unsetSelected();
     void                setSeparator();
     void                unsetSeparator();
+    void                setCheckable();
+    void                unsetCheckable();
     void                setChecked();
     void                unsetChecked();
+    void                setRadioButton();
+    void                unsetRadioButton();
     void                setMenu (FMenu*);
     void                setText (const FString&);
 
     // Inquiries
     bool                isSelected() const;
     bool                isSeparator() const;
+    bool                isCheckable() const;
     bool                isChecked() const;
+    bool                isRadioButton() const;
     bool                hasHotkey() const;
     bool                hasMenu() const;
 
@@ -150,21 +156,6 @@ class FMenuItem : public FWidget
     bool                isMenuBar (FWidget*) const;
     bool                isMenu (FWidget*) const;
 
-    // Data Members
-    FString      text{};
-    bool         selected{false};
-    bool         separator{false};
-    bool         checkable{false};
-    bool         checked{false};
-    bool         radio_button{false};
-    bool         dialog_index{false};
-    std::size_t  text_length{0};
-    uChar        hotkey{0};
-    FKey         accel_key{0};
-    FMenu*       menu{nullptr};
-    FWidget*     super_menu{nullptr};
-    FDialog*     associated_window{nullptr};
-
   private:
     // Accessor
     FMenuList*          getFMenuList (FWidget&);
@@ -184,6 +175,21 @@ class FMenuItem : public FWidget
     void                cb_destroyDialog (FWidget*, FDataPtr);
 
     virtual void        processClicked();
+
+    // Data Members
+    FString      text{};
+    bool         selected{false};
+    bool         separator{false};
+    bool         checkable{false};
+    bool         checked{false};
+    bool         radio_button{false};
+    bool         dialog_index{false};
+    std::size_t  text_length{0};
+    uChar        hotkey{0};
+    FKey         accel_key{0};
+    FMenu*       menu{nullptr};
+    FWidget*     super_menu{nullptr};
+    FDialog*     associated_window{nullptr};
 
     // Friend classes
     friend class FDialogListMenu;
@@ -238,12 +244,28 @@ inline void FMenuItem::unsetSeparator()
 }
 
 //----------------------------------------------------------------------
+inline void FMenuItem::setCheckable()
+{ checkable = true; }
+
+//----------------------------------------------------------------------
+inline void FMenuItem::unsetCheckable()
+{ checkable = false; }
+
+//----------------------------------------------------------------------
 inline void FMenuItem::setChecked()
 { checked = true; }
 
 //----------------------------------------------------------------------
 inline void FMenuItem::unsetChecked()
 { checked = false; }
+
+//----------------------------------------------------------------------
+inline void FMenuItem::setRadioButton()
+{ radio_button = true; }
+
+//----------------------------------------------------------------------
+inline void FMenuItem::unsetRadioButton()
+{ radio_button = false; }
 
 //----------------------------------------------------------------------
 inline void FMenuItem::setMenu(FMenu* m)
@@ -258,8 +280,16 @@ inline bool FMenuItem::isSeparator() const
 { return separator; }
 
 //----------------------------------------------------------------------
+inline bool FMenuItem::isCheckable() const
+{ return checkable; }
+
+//----------------------------------------------------------------------
 inline bool FMenuItem::isChecked() const
 { return checked; }
+
+//----------------------------------------------------------------------
+inline bool FMenuItem::isRadioButton() const
+{ return radio_button; }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::hasHotkey() const

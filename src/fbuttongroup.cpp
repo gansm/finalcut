@@ -207,6 +207,7 @@ void FButtonGroup::hide()
   }
   else
   {
+    const FWidgetColors& wc = getFWidgetColors();
     fg = wc.dialog_fg;
     bg = wc.dialog_bg;
   }
@@ -324,6 +325,7 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
   {
     auto iter = buttonlist.begin();
     auto last = buttonlist.end();
+    in_ev->ignore();
 
     while ( iter != last )
     {
@@ -334,7 +336,7 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
         if ( isRadioButton(toggle_button) )
         {
           auto prev_element = getFocusWidget();
-          in_ev->ignore();
+
           toggle_button->setFocus();
 
           FFocusEvent cfi (fc::ChildFocusIn_Event);
@@ -342,6 +344,9 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 
           FFocusEvent in (fc::FocusIn_Event);
           FApplication::sendEvent(toggle_button, &in);
+
+          if ( in.isAccepted() )
+            in_ev->accept();
 
           if ( prev_element )
             prev_element->redraw();
@@ -356,9 +361,9 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
     }
   }
 
-  if ( in_ev->isAccepted() )
+  if ( ! in_ev->isAccepted() )
   {
-    in_ev->ignore();
+    in_ev->accept();
     auto prev_element = getFocusWidget();
 
     if ( in_ev->getFocusType() == fc::FocusNextWidget )
@@ -473,6 +478,7 @@ bool FButtonGroup::isRadioButton (const FToggleButton* button) const
 //----------------------------------------------------------------------
 void FButtonGroup::init()
 {
+  const FWidgetColors& wc = getFWidgetColors();
   setForegroundColor (wc.label_fg);
   setBackgroundColor (wc.label_bg);
   setMinimumSize (FSize(7, 4));
@@ -487,6 +493,8 @@ void FButtonGroup::drawText ( wchar_t LabelText[]
   if ( isMonochron() )
     setReverse(true);
 
+  const FWidgetColors& wc = getFWidgetColors();
+
   if ( isEnabled() )
     setColor(wc.label_emphasis_fg, wc.label_bg);
   else
@@ -494,16 +502,16 @@ void FButtonGroup::drawText ( wchar_t LabelText[]
 
   for (std::size_t z{0}; z < length; z++)
   {
-    if ( (z == hotkeypos) && flags.active )
+    if ( (z == hotkeypos) && getFlags().active )
     {
       setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
 
-      if ( ! flags.no_underline )
+      if ( ! getFlags().no_underline )
         setUnderline();
 
       print (LabelText[z]);
 
-      if ( ! flags.no_underline )
+      if ( ! getFlags().no_underline )
         unsetUnderline();
 
       setColor (wc.label_emphasis_fg, wc.label_bg);

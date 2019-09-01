@@ -758,7 +758,7 @@ int FListView::addColumn (const FString& label, int width)
 void FListView::hide()
 {
   FWidget::hide();
-  hideSize (getSize());
+  hideArea (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -1387,6 +1387,7 @@ void FListView::init()
   root = selflist.begin();
   null_iter = selflist.end();
   setGeometry (FPoint(1, 1), FSize(5, 4), false);  // initialize geometry values
+  const FWidgetColors& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
   nf_offset = isNewFont() ? 1 : 0;
@@ -1492,7 +1493,7 @@ void FListView::draw()
   drawScrollbars();
   drawList();
 
-  if ( flags.focus && getStatusBar() )
+  if ( getFlags().focus && getStatusBar() )
   {
     const auto& msg = getStatusbarMessage();
     const auto& curMsg = getStatusBar()->getMessage();
@@ -1601,9 +1602,9 @@ void FListView::drawList()
     print() << FPoint(2, 2 + int(y));
 
     // Draw one FListViewItem
-    drawListLine (item, flags.focus, is_current_line);
+    drawListLine (item, getFlags().focus, is_current_line);
 
-    if ( flags.focus && is_current_line )
+    if ( getFlags().focus && is_current_line )
     {
       setVisibleCursor (item->isCheckable());
       setCursorPos (FPoint ( 3 + tree_offset + checkbox_offset - xoffset
@@ -1713,6 +1714,7 @@ void FListView::drawListLine ( const FListViewItem* item
 inline void FListView::setLineAttributes ( bool is_current
                                          , bool is_focus )
 {
+  const FWidgetColors& wc = getFWidgetColors();
   setColor (wc.list_fg, wc.list_bg);
 
   if ( is_current )
@@ -1845,6 +1847,7 @@ void FListView::drawHeadlineLabel (const headerItems::const_iterator& iter)
   int column = int(std::distance(first, iter)) + 1;
   bool has_sort_indicator = bool ( sort_column == column
                                 && ! hide_sort_indicator );
+  const FWidgetColors& wc = getFWidgetColors();
 
   if ( isEnabled() )
     setColor (wc.label_emphasis_fg, wc.label_bg);
@@ -1885,6 +1888,7 @@ void FListView::drawColumnEllipsis ( const headerItems::const_iterator& iter
   // Print lable ellipsis
   static constexpr int ellipsis_length = 2;
   int width = iter->width;
+  const FWidgetColors& wc = getFWidgetColors();
 
   headerline << ' '
              << text.left(uInt(width - ellipsis_length))

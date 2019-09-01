@@ -148,7 +148,8 @@ class FVTerm
     virtual const char*   getClassName() const;
     static FColor         getTermForegroundColor();
     static FColor         getTermBackgroundColor();
-    term_area*            getVWin() const;
+    term_area*&           getVWin();
+    const term_area*      getVWin() const;
     FPoint                getPrintCursor();
     static charData       getAttribute();
     static int            getMaxColor();
@@ -320,6 +321,9 @@ class FVTerm
 
     // Accessor
     virtual term_area*    getPrintArea();
+    term_area*            getChildPrintArea() const;
+    term_area*            getCurrentPrintArea() const;
+    term_area*            getVirtualDesktop() const;
     std::size_t           getLineNumber();
     std::size_t           getColumnNumber();
     static bool           charEncodable (wchar_t);
@@ -329,6 +333,8 @@ class FVTerm
 
     // Mutators
     void                  setPrintArea (term_area*);
+    void                  setChildPrintArea (term_area*);
+    void                  setActiveArea (term_area*);
     static void           setInsertCursor (bool);
     static void           setInsertCursor();
     static void           unsetInsertCursor();
@@ -410,9 +416,7 @@ class FVTerm
                            ;
 
     // Data Members
-    static     term_area* vterm;           // virtual terminal
-    static     term_area* vdesktop;        // virtual desktop
-    static     term_area* active_area;     // active area
+  private:
     term_area* print_area{nullptr};        // print area for this object
     term_area* child_print_area{nullptr};  // print area for children
     term_area* vwin{nullptr};              // virtual window
@@ -471,6 +475,9 @@ class FVTerm
     // Data Members
     static FSystem*         fsystem;
     static FTerm*           fterm;
+    static term_area*       vterm;        // virtual terminal
+    static term_area*       vdesktop;     // virtual desktop
+    static term_area*       active_area;  // active area
     static std::queue<int>* output_buffer;
     static charData         term_attribute;
     static charData         next_attribute;
@@ -596,7 +603,11 @@ inline FColor FVTerm::getTermBackgroundColor()
 { return next_attribute.bg_color; }
 
 //----------------------------------------------------------------------
-inline FVTerm::term_area* FVTerm::getVWin() const
+inline FVTerm::term_area*& FVTerm::getVWin()
+{ return vwin; }
+
+//----------------------------------------------------------------------
+inline const FVTerm::term_area* FVTerm::getVWin() const
 { return vwin; }
 
 //----------------------------------------------------------------------
@@ -1047,8 +1058,16 @@ inline void FVTerm::redefineDefaultColors (bool enable)
 { FTerm::redefineDefaultColors(enable); }
 
 //----------------------------------------------------------------------
-inline void FVTerm::setPrintArea (term_area* area)
-{ print_area = area; }
+inline FVTerm::term_area* FVTerm::getChildPrintArea() const
+{ return child_print_area; }
+
+//----------------------------------------------------------------------
+inline FVTerm::term_area* FVTerm::getCurrentPrintArea() const
+{ return print_area; }
+
+//----------------------------------------------------------------------
+inline FVTerm::term_area* FVTerm::getVirtualDesktop() const
+{ return vdesktop; }
 
 //----------------------------------------------------------------------
 inline std::size_t FVTerm::getLineNumber()
@@ -1073,6 +1092,18 @@ inline FMouseControl* FVTerm::getFMouseControl()
 //----------------------------------------------------------------------
 inline FTerm::initializationValues& FVTerm::getInitValues()
 { return FTerm::init_values; }
+
+//----------------------------------------------------------------------
+inline void FVTerm::setPrintArea (term_area* area)
+{ print_area = area; }
+
+//----------------------------------------------------------------------
+inline void FVTerm::setChildPrintArea (term_area* area)
+{ child_print_area = area; }
+
+//----------------------------------------------------------------------
+inline void FVTerm::setActiveArea (term_area* area)
+{ active_area = area; }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setInsertCursor (bool enable)

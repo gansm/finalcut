@@ -157,8 +157,8 @@ class FLabel : public FWidget
     bool               multiline{false};
     FString            text{};
     fc::text_alignment alignment{fc::alignLeft};
-    FColor             emphasis_color{wc.label_emphasis_fg};
-    FColor             ellipsis_color{wc.label_ellipsis_fg};
+    FColor             emphasis_color{getFWidgetColors().label_emphasis_fg};
+    FColor             ellipsis_color{getFWidgetColors().label_ellipsis_fg};
     bool               emphasis{false};
     bool               reverse_mode{false};
     FWidget*           accel_widget{nullptr};

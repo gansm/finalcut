@@ -65,6 +65,7 @@ void FMenuBar::resetMenu()
 void FMenuBar::hide()
 {
   FWindow::hide();
+  const FWidgetColors& wc = getFWidgetColors();
   FColor fg = wc.term_fg;
   FColor bg = wc.term_bg;
   setColor (fg, bg);
@@ -152,7 +153,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
   {
     mouse_down = false;
 
-    if ( ! item_list.empty() && hasSelectedItem() )
+    if ( ! getItemList().empty() && hasSelectedItem() )
       leaveMenuBar();
     else
       return;
@@ -249,6 +250,7 @@ void FMenuBar::init()
 
   addAccelerator (fc::Fkey_f10);
   addAccelerator (fc::Fckey_space);
+  const FWidgetColors& wc = getFWidgetColors();
   setForegroundColor (wc.menu_active_fg);
   setBackgroundColor (wc.menu_active_bg);
   unsetFocusable();
@@ -258,8 +260,9 @@ void FMenuBar::init()
 void FMenuBar::calculateDimensions()
 {
   FPoint item_pos (1, 1);
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto list = getItemList();
+  auto iter = list.begin();
+  auto last = list.end();
 
   // find the maximum item width
   while ( iter != last )
@@ -283,8 +286,9 @@ void FMenuBar::calculateDimensions()
 //----------------------------------------------------------------------
 bool FMenuBar::selectNextItem()
 {
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto list = getItemList();
+  auto iter = list.begin();
+  auto last = list.end();
 
   while ( iter != last )
   {
@@ -297,8 +301,8 @@ bool FMenuBar::selectNextItem()
       {
         ++next_element;
 
-        if ( next_element == item_list.end() )
-          next_element = item_list.begin();
+        if ( next_element == list.end() )
+          next_element = list.begin();
 
         next = static_cast<FMenuItem*>(*next_element);
       } while ( ! next->isEnabled()
@@ -345,8 +349,9 @@ bool FMenuBar::selectNextItem()
 //----------------------------------------------------------------------
 bool FMenuBar::selectPrevItem()
 {
-  auto iter = item_list.end();
-  auto first = item_list.begin();
+  auto list = getItemList();
+  auto iter = list.end();
+  auto first = list.begin();
 
   do
   {
@@ -359,8 +364,8 @@ bool FMenuBar::selectPrevItem()
 
       do
       {
-        if ( prev_element == item_list.begin() )
-          prev_element = item_list.end();
+        if ( prev_element == list.begin() )
+          prev_element = list.end();
 
         --prev_element;
         prev = static_cast<FMenuItem*>(*prev_element);
@@ -408,8 +413,9 @@ bool FMenuBar::selectPrevItem()
 //----------------------------------------------------------------------
 bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 {
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto list = getItemList();
+  auto iter = list.begin();
+  auto last = list.end();
 
   while ( iter != last )
   {
@@ -476,7 +482,9 @@ void FMenuBar::draw()
 //----------------------------------------------------------------------
 void FMenuBar::drawItems()
 {
-  if ( item_list.empty() )
+  auto list = getItemList();
+
+  if ( list.empty() )
     return;
 
   print() << FPoint(1, 1);
@@ -485,8 +493,8 @@ void FMenuBar::drawItems()
     setReverse(true);
 
   screenWidth = getDesktopWidth();
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto iter = list.begin();
+  auto last = list.end();
   std::size_t x{1};
 
   while ( iter != last )
@@ -556,6 +564,7 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
   drawEllipsis (txtdata, x);
   drawTrailingSpace (x);
 
+  const FWidgetColors& wc = getFWidgetColors();
   setColor (wc.menu_active_fg, wc.menu_active_bg);
 
   if ( isMonochron() && is_enabled && is_selected )
@@ -569,6 +578,7 @@ inline void FMenuBar::setLineAttributes (FMenuItem* menuitem)
 {
   bool is_enabled  = menuitem->isEnabled();
   bool is_selected = menuitem->isSelected();
+  const FWidgetColors& wc = getFWidgetColors();
 
   if ( is_enabled )
   {
@@ -617,6 +627,7 @@ inline void FMenuBar::drawMenuText (menuText& data)
 
     if ( z == data.hotkeypos )
     {
+      const FWidgetColors& wc = getFWidgetColors();
       setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
 
       if ( ! data.no_underline )
@@ -681,8 +692,9 @@ void FMenuBar::adjustItems()
 {
   int item_X = 1;
   int item_Y = 1;
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto list = getItemList();
+  auto iter = list.begin();
+  auto last = list.end();
 
   while ( iter != last )
   {
@@ -799,12 +811,14 @@ void FMenuBar::unselectMenuItem (FMenuItem* item)
 //----------------------------------------------------------------------
 void FMenuBar::mouseDownOverList (const FMouseEvent* ev)
 {
-  if ( item_list.empty() )
+  auto list = getItemList();
+
+  if ( list.empty() )
     return;
 
   focus_changed = false;
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto iter = list.begin();
+  auto last = list.end();
   int mouse_x = ev->getX();
   int mouse_y = ev->getY();
 
@@ -847,11 +861,13 @@ void FMenuBar::mouseDownOverList (const FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
 {
-  if ( item_list.empty() )
+  auto list = getItemList();
+
+  if ( list.empty() )
     return;
 
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto iter = list.begin();
+  auto last = list.end();
   int mouse_x = ev->getX();
   int mouse_y = ev->getY();
 
@@ -889,13 +905,15 @@ void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
 {
-  if ( item_list.empty() )
+  auto list = getItemList();
+
+  if ( list.empty() )
     return;
 
   focus_changed = false;
   bool mouse_over_menubar{false};
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto iter = list.begin();
+  auto last = list.end();
   int mouse_x = ev->getX();
   int mouse_y = ev->getY();
 

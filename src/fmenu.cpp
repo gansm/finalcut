@@ -73,7 +73,7 @@ bool FMenu::setMenuWidget (bool enable)
   if ( isMenuWidget() == enable )
     return true;
 
-  return (flags.menu_widget = enable);
+  return (setFlags().menu_widget = enable);
 }
 
 //----------------------------------------------------------------------
@@ -218,7 +218,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
 
   mouse_down = true;
 
-  if ( item_list.empty() )
+  if ( getItemList().empty() )
     return;
 
   // Mouse pointer over menu list changed focus
@@ -239,7 +239,7 @@ void FMenu::onMouseUp (FMouseEvent* ev)
   {
     mouse_down = false;
 
-    if ( item_list.empty() )
+    if ( getItemList().empty() )
       return;
 
     // Mouse pointer over an entry in the menu list
@@ -260,7 +260,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   if ( ! isWindowActive() )
     setActiveWindow(this);
 
-  if ( !  mouse_down || item_list.empty() )
+  if ( !  mouse_down || getItemList().empty() )
     return;
 
   mouseStates ms =
@@ -328,11 +328,13 @@ void FMenu::cb_menuitem_toggled (FWidget* widget, FDataPtr)
   if ( ! menuitem->isChecked() )
     return;
 
-  if ( item_list.empty() )
+  auto list = getItemList();
+
+  if ( list.empty() )
     return;
 
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto iter = list.begin();
+  auto last = list.end();
 
   while ( iter != last )
   {
@@ -443,6 +445,7 @@ void FMenu::init(FWidget* parent)
   setMenuWidget();
   hide();
 
+  const FWidgetColors& wc = getFWidgetColors();
   setForegroundColor (wc.menu_active_fg);
   setBackgroundColor (wc.menu_active_bg);
   item.setMenu(this);
@@ -469,8 +472,9 @@ void FMenu::init(FWidget* parent)
 //----------------------------------------------------------------------
 void FMenu::calculateDimensions()
 {
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto list = getItemList();
+  auto iter = list.begin();
+  auto last = list.end();
   max_item_width = 10;  // minimum width
 
   // find the maximum item width
@@ -506,7 +510,7 @@ void FMenu::calculateDimensions()
               , FSize(max_item_width + 2, getCount() + 2) );
 
   // set geometry of all items
-  iter = item_list.begin();
+  iter = list.begin();
   int item_X = 1;
   int item_Y = 1;
 
@@ -530,8 +534,9 @@ void FMenu::calculateDimensions()
 //----------------------------------------------------------------------
 void FMenu::adjustItems()
 {
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto list = getItemList();
+  auto iter = list.begin();
+  auto last = list.end();
 
   while ( iter != last )
   {
@@ -659,8 +664,9 @@ void FMenu::hideSuperMenus()
 bool FMenu::mouseDownOverList (FPoint mouse_pos)
 {
   bool focus_changed{false};
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto list = getItemList();
+  auto iter = list.begin();
+  auto last = list.end();
   mouse_pos -= FPoint(getRightPadding(), getTopPadding());
 
   while ( iter != last )
@@ -747,8 +753,9 @@ void FMenu::mouseDownSelection (FMenuItem* m_item, bool& focus_changed)
 //----------------------------------------------------------------------
 bool FMenu::mouseUpOverList (FPoint mouse_pos)
 {
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto list = getItemList();
+  auto iter = list.begin();
+  auto last = list.end();
   mouse_pos -= FPoint(getRightPadding(), getTopPadding());
 
   while ( iter != last )
@@ -806,8 +813,9 @@ bool FMenu::mouseUpOverList (FPoint mouse_pos)
 //----------------------------------------------------------------------
 void FMenu::mouseMoveOverList (FPoint mouse_pos, mouseStates& ms)
 {
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto list = getItemList();
+  auto iter = list.begin();
+  auto last = list.end();
   mouse_pos -= FPoint(getRightPadding(), getTopPadding());
 
   while ( iter != last )
@@ -1028,8 +1036,9 @@ FMenu* FMenu::superMenuAt (int x, int y)
 //----------------------------------------------------------------------
 bool FMenu::selectNextItem()
 {
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto list = getItemList();
+  auto iter = list.begin();
+  auto last = list.end();
 
   while ( iter != last )
   {
@@ -1041,8 +1050,8 @@ bool FMenu::selectNextItem()
       do
       {
         ++next_element;
-        if ( next_element == item_list.end() )
-          next_element = item_list.begin();
+        if ( next_element == list.end() )
+          next_element = list.begin();
         next = static_cast<FMenuItem*>(*next_element);
       }
       while ( ! next->isEnabled()
@@ -1076,8 +1085,9 @@ bool FMenu::selectNextItem()
 //----------------------------------------------------------------------
 bool FMenu::selectPrevItem()
 {
-  auto iter = item_list.end();
-  auto first = item_list.begin();
+  auto list = getItemList();
+  auto iter = list.end();
+  auto first = list.begin();
 
   do
   {
@@ -1090,8 +1100,8 @@ bool FMenu::selectPrevItem()
 
       do
       {
-        if ( prev_element == item_list.begin() )
-          prev_element = item_list.end();
+        if ( prev_element == list.begin() )
+          prev_element = list.end();
         --prev_element;
         prev = static_cast<FMenuItem*>(*prev_element);
       }
@@ -1134,8 +1144,9 @@ void FMenu::keypressMenuBar (FKeyEvent* ev)
 //----------------------------------------------------------------------
 bool FMenu::hotkeyMenu (FKeyEvent* ev)
 {
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto list = getItemList();
+  auto iter = list.begin();
+  auto last = list.end();
 
   while ( iter != last )
   {
@@ -1192,6 +1203,7 @@ bool FMenu::hotkeyMenu (FKeyEvent* ev)
 void FMenu::draw()
 {
   // Fill the background
+  const FWidgetColors& wc = getFWidgetColors();
   setColor (wc.menu_active_fg, wc.menu_active_bg);
 
   if ( isMonochron() )
@@ -1210,8 +1222,9 @@ void FMenu::draw()
 void FMenu::drawItems()
 {
   int y = 0;
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto list = getItemList();
+  auto iter = list.begin();
+  auto last = list.end();
 
   while ( iter != last )
   {
@@ -1228,6 +1241,7 @@ void FMenu::drawItems()
 //----------------------------------------------------------------------
 inline void FMenu::drawSeparator (int y)
 {
+  const FWidgetColors& wc = getFWidgetColors();
   print() << FPoint(1, 2 + y)
           << FColorPair(wc.menu_active_fg, wc.menu_active_bg);
 
@@ -1347,6 +1361,7 @@ inline void FMenu::drawCheckMarkPrefix (FMenuItem* menuitem)
     }
     else
     {
+      const FWidgetColors& wc = getFWidgetColors();
       setColor (wc.menu_inactive_fg, getBackgroundColor());
 
       if ( getEncoding() == fc::ASCII )
@@ -1381,6 +1396,7 @@ inline void FMenu::drawMenuText (menuText& data)
 
     if ( z == data.hotkeypos )
     {
+      const FWidgetColors& wc = getFWidgetColors();
       setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
 
       if ( ! data.no_underline )
@@ -1446,6 +1462,7 @@ inline void FMenu::setLineAttributes (FMenuItem* menuitem, int y)
 {
   bool is_enabled  = menuitem->isEnabled();
   bool is_selected = menuitem->isSelected();
+  const FWidgetColors& wc = getFWidgetColors();
 
   if ( is_enabled )
   {

@@ -182,7 +182,7 @@ bool FApplication::sendEvent ( const FObject* receiver
     const auto r_widget = static_cast<const FWidget*>(receiver);
     auto widget = const_cast<FWidget*>(r_widget);
 
-    if ( modal_dialogs > 0 )
+    if ( getModalDialogCounter() > 0 )
     {
       const FWidget* window;
 
@@ -680,7 +680,7 @@ bool FApplication::processDialogSwitchAccelerator()
   {
     FKey key = keyboard->getKey();
     std::size_t n = key - fc::Fmkey_0;
-    std::size_t s = dialog_list->size();
+    std::size_t s = getDialogList()->size();
 
     if ( s > 0 && s >= n )
     {
@@ -695,7 +695,7 @@ bool FApplication::processDialogSwitchAccelerator()
       }
 
       FAccelEvent a_ev (fc::Accelerator_Event, getFocusWidget());
-      sendEvent (dialog_list->at(n - 1), &a_ev);
+      sendEvent (getDialogList()->at(n - 1), &a_ev);
       return true;
     }
   }
@@ -709,11 +709,11 @@ bool FApplication::processAccelerator (const FWidget*& widget)
   bool accpt{false};
 
   if ( widget
-    && widget->accelerator_list
-    && ! widget->accelerator_list->empty() )
+    && widget->getAcceleratorList()
+    && ! widget->getAcceleratorList()->empty() )
   {
-    auto iter = widget->accelerator_list->begin();
-    auto last = widget->accelerator_list->end();
+    auto iter = widget->getAcceleratorList()->begin();
+    auto last = widget->getAcceleratorList()->end();
 
     while ( iter != last )
     {
@@ -1156,17 +1156,17 @@ void FApplication::processCloseWidget()
 {
   updateTerminal (FVTerm::stop_refresh);
 
-  if ( close_widget && ! close_widget->empty() )
+  if ( getWidgetCloseList() && ! getWidgetCloseList()->empty() )
   {
-    auto iter = close_widget->begin();
+    auto iter = getWidgetCloseList()->begin();
 
-    while ( iter != close_widget->end() && *iter )
+    while ( iter != getWidgetCloseList()->end() && *iter )
     {
       delete *iter;
       ++iter;
     }
 
-    close_widget->clear();
+    getWidgetCloseList()->clear();
   }
 
   updateTerminal (FVTerm::start_refresh);

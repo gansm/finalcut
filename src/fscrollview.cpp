@@ -47,7 +47,8 @@ FScrollView::FScrollView (FWidget* parent)
 FScrollView::~FScrollView()  // destructor
 {
   removeArea (viewport);
-  child_print_area = viewport = nullptr;
+  viewport = nullptr;
+  setChildPrintArea (viewport);
 }
 
 
@@ -71,7 +72,7 @@ void FScrollView::setScrollWidth (std::size_t width)
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
-    child_print_area = viewport;
+    setChildPrintArea (viewport);
   }
 
   hbar->setMaximum (int(width - getViewportWidth()));
@@ -100,7 +101,7 @@ void FScrollView::setScrollHeight (std::size_t height)
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
-    child_print_area = viewport;
+    setChildPrintArea (viewport);
   }
 
   vbar->setMaximum (int(height - getViewportHeight()));
@@ -135,7 +136,7 @@ void FScrollView::setScrollSize (const FSize& size)
     (
       F_PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
-    child_print_area = viewport;
+    setChildPrintArea (viewport);
   }
 
   int xoffset_end = int(getScrollWidth() - getViewportWidth());
@@ -634,9 +635,9 @@ FVTerm::term_area* FScrollView::getPrintArea()
 
   if ( use_own_print_area || ! viewport )
   {
-    child_print_area = nullptr;
+    setChildPrintArea (nullptr);
     auto area = FWidget::getPrintArea();
-    child_print_area = viewport;
+    setChildPrintArea (viewport);
     return area;
   }
   else
@@ -696,41 +697,42 @@ void FScrollView::copy2area()
   if ( ! viewport->has_changes )
     return;
 
-  int ax = getTermX() - print_area->offset_left
-    , ay = getTermY() - print_area->offset_top
+  auto printarea = getCurrentPrintArea();
+  int ax = getTermX() - printarea->offset_left
+    , ay = getTermY() - printarea->offset_top
     , dx = viewport_geometry.getX()
     , dy = viewport_geometry.getY()
     , y_end = int(getViewportHeight())
     , x_end = int(getViewportWidth());
 
   // viewport width does not fit into the print_area
-  if ( print_area->width <= ax + x_end )
-    x_end = print_area->width - ax;
+  if ( printarea->width <= ax + x_end )
+    x_end = printarea->width - ax;
 
   // viewport height does not fit into the print_area
-  if ( print_area->height <= ay + y_end )
-    y_end = print_area->height - ay;
+  if ( printarea->height <= ay + y_end )
+    y_end = printarea->height - ay;
 
   for (int y{0}; y < y_end; y++)  // line loop
   {
     charData* vc{};  // viewport character
     charData* ac{};  // area character
     int v_line_len = viewport->width;
-    int a_line_len = print_area->width + print_area->right_shadow;
+    int a_line_len = printarea->width + printarea->right_shadow;
     vc = &viewport->text[(dy + y) * v_line_len + dx];
-    ac = &print_area->text[(ay + y) * a_line_len + ax];
+    ac = &printarea->text[(ay + y) * a_line_len + ax];
     std::memcpy (ac, vc, sizeof(charData) * unsigned(x_end));
 
-    if ( int(print_area->changes[ay + y].xmin) > ax )
-      print_area->changes[ay + y].xmin = uInt(ax);
+    if ( int(printarea->changes[ay + y].xmin) > ax )
+      printarea->changes[ay + y].xmin = uInt(ax);
 
-    if ( int(print_area->changes[ay + y].xmax) < ax + x_end - 1 )
-      print_area->changes[ay + y].xmax = uInt(ax + x_end - 1);
+    if ( int(printarea->changes[ay + y].xmax) < ax + x_end - 1 )
+      printarea->changes[ay + y].xmax = uInt(ax + x_end - 1);
   }
 
   setViewportCursor();
   viewport->has_changes = false;
-  print_area->has_changes = true;
+  printarea->has_changes = true;
 }
 
 
@@ -762,6 +764,7 @@ void FScrollView::init (FWidget* parent)
 
   initScrollbar (vbar, fc::vertical, &FScrollView::cb_VBarChange);
   initScrollbar (hbar, fc::horizontal, &FScrollView::cb_HBarChange);
+  const FWidgetColors& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
   setGeometry (FPoint(1, 1), FSize(4, 4));
@@ -791,7 +794,7 @@ void FScrollView::init (FWidget* parent)
   );
 
   if ( viewport )
-    child_print_area = viewport;
+    setChildPrintArea (viewport);
 }
 
 //----------------------------------------------------------------------
@@ -896,14 +899,15 @@ void FScrollView::setViewportCursor()
   FPoint cursor_pos ( viewport->input_cursor_x - 1
                     , viewport->input_cursor_y - 1 );
   FPoint window_cursor_pos(getViewportCursorPos());
-  print_area->input_cursor_x = window_cursor_pos.getX();
-  print_area->input_cursor_y = window_cursor_pos.getY();
+  auto printarea = getCurrentPrintArea();
+  printarea->input_cursor_x = window_cursor_pos.getX();
+  printarea->input_cursor_y = window_cursor_pos.getY();
 
   if ( viewport->input_cursor_visible
     && viewport_geometry.contains(cursor_pos) )
-    print_area->input_cursor_visible = true;
+    printarea->input_cursor_visible = true;
   else
-    print_area->input_cursor_visible = false;
+    printarea->input_cursor_visible = false;
 }
 
 //----------------------------------------------------------------------

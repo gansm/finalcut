@@ -1,3 +1,6 @@
+2019-09-01  Markus Gans  <guru.mail@muenster.de>
+	* Removing public + protected data members from classes
+
 2019-08-25  Markus Gans  <guru.mail@muenster.de>
 	* More use of direct initializations
 

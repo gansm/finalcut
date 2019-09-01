@@ -175,6 +175,7 @@ bool FStatusBar::hasActivatedKey()
 void FStatusBar::hide()
 {
   FWindow::hide();
+  const FWidgetColors& wc = getFWidgetColors();
   FColor fg = wc.term_fg;
   FColor bg = wc.term_bg;
   setColor (fg, bg);
@@ -211,6 +212,7 @@ void FStatusBar::drawMessage()
   if ( isLastActiveFocus )
     space_offset = 0;
 
+  const FWidgetColors& wc = getFWidgetColors();
   setColor (wc.statusbar_fg, wc.statusbar_bg);
   setPrintPos (FPoint(x, 1));
 
@@ -516,6 +518,7 @@ void FStatusBar::init()
   if ( getRootWidget() )
     getRootWidget()->setBottomPadding(1, true);
 
+  const FWidgetColors& wc = getFWidgetColors();
   setForegroundColor (wc.statusbar_fg);
   setBackgroundColor (wc.statusbar_bg);
   unsetFocusable();
@@ -561,6 +564,7 @@ void FStatusBar::drawKeys()
     }
     else
     {
+      const FWidgetColors& wc = getFWidgetColors();
       setColor (wc.statusbar_fg, wc.statusbar_bg);
 
       for (; x <= int(screenWidth); x++)
@@ -582,6 +586,7 @@ void FStatusBar::drawKey (keyList::const_iterator iter)
   // Draw not active key
 
   auto item = *iter;
+  const FWidgetColors& wc = getFWidgetColors();
   setColor (wc.statusbar_hotkey_fg, wc.statusbar_hotkey_bg);
   x++;
   print (' ');
@@ -644,6 +649,7 @@ void FStatusBar::drawActiveKey (keyList::const_iterator iter)
   if ( isMonochron() )
     setReverse(false);
 
+  const FWidgetColors& wc = getFWidgetColors();
   setColor ( wc.statusbar_active_hotkey_fg
            , wc.statusbar_active_hotkey_bg );
   x++;

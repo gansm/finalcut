@@ -49,7 +49,7 @@ FWidget::widgetList* FWidget::close_widget{nullptr};
 FWidgetColors        FWidget::wc{};
 bool                 FWidget::init_desktop{false};
 bool                 FWidget::hideable{false};
-uInt                 FWidget::modal_dialogs{};
+uInt                 FWidget::modal_dialog_counter{};
 
 //----------------------------------------------------------------------
 // class FWidget
@@ -78,7 +78,7 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
     rootObject = this;
     show_root_widget = nullptr;
     redraw_root_widget = nullptr;
-    modal_dialogs = 0;
+    modal_dialog_counter = 0;
     statusbar = nullptr;
     init();
   }
@@ -120,6 +120,12 @@ FWidget::~FWidget()  // destructor
   {
     setMainWidget(0);
     quit();
+  }
+
+  if ( accelerator_list )
+  {
+    delete accelerator_list;
+    accelerator_list = nullptr;
   }
 
   // finish the program
@@ -992,7 +998,7 @@ void FWidget::redraw()
     startTerminalUpdate();
     // clean desktop
     setColor (wc.term_fg, wc.term_bg);
-    clearArea (vdesktop);
+    clearArea (getVirtualDesktop());
   }
   else if ( ! isShown() )
     return;
@@ -1029,7 +1035,7 @@ void FWidget::resize()
       return;
 
     resizeVTerm (term_geometry.getSize());
-    resizeArea (term_geometry, getShadow(), vdesktop);
+    resizeArea (term_geometry, getShadow(), getVirtualDesktop());
     adjustSizeGlobal();
   }
   else
@@ -1056,7 +1062,7 @@ void FWidget::show()
     // draw the vdesktop
     auto r = getRootWidget();
     setColor(r->getForegroundColor(), r->getBackgroundColor());
-    clearArea (vdesktop);
+    clearArea (getVirtualDesktop());
     init_desktop = true;
   }
 
@@ -1437,8 +1443,8 @@ FVTerm::term_area* FWidget::getPrintArea()
 {
   // returns the print area of this object
 
-  if ( print_area )
-    return print_area;
+  if ( getCurrentPrintArea() )
+    return getCurrentPrintArea();
   else
   {
     FWidget* obj{};
@@ -1449,28 +1455,28 @@ FVTerm::term_area* FWidget::getPrintArea()
       obj = p_obj;
       p_obj = static_cast<FWidget*>(obj->getParent());
     }
-    while ( ! obj->vwin && ! obj->child_print_area && p_obj );
+    while ( ! obj->getVWin() && ! obj->getChildPrintArea() && p_obj );
 
-    if ( obj->vwin )
+    if ( obj->getVWin() )
     {
-      print_area = obj->vwin;
-      return print_area;
+      setPrintArea (obj->getVWin());
+      return getCurrentPrintArea();
     }
-    else if ( obj->child_print_area )
+    else if ( obj->getChildPrintArea() )
     {
-      print_area = obj->child_print_area;
-      return print_area;
+      setPrintArea (obj->getChildPrintArea());
+      return getCurrentPrintArea();
     }
   }
 
-  return vdesktop;
+  return getVirtualDesktop();
 }
 
 //----------------------------------------------------------------------
 void FWidget::addPreprocessingHandler ( FVTerm* instance
                                       , FPreprocessingHandler handler )
 {
-  if ( ! print_area )
+  if ( ! getCurrentPrintArea() )
     FWidget::getPrintArea();
 
   FVTerm::addPreprocessingHandler (instance, handler);
@@ -1479,7 +1485,7 @@ void FWidget::addPreprocessingHandler ( FVTerm* instance
 //----------------------------------------------------------------------
 void FWidget::delPreprocessingHandler (FVTerm* instance)
 {
-  if ( ! print_area )
+  if ( ! getCurrentPrintArea() )
     FWidget::getPrintArea();
 
   FVTerm::delPreprocessingHandler (instance);
@@ -1491,8 +1497,8 @@ bool FWidget::isChildPrintArea() const
   auto p_obj = static_cast<FWidget*>(getParent());
 
   if ( p_obj
-    && p_obj->child_print_area
-    && p_obj->child_print_area == print_area )
+    && p_obj->getChildPrintArea()
+    && p_obj->getChildPrintArea() == getCurrentPrintArea() )
     return true;
   else
     return false;
@@ -1597,7 +1603,7 @@ void FWidget::adjustSizeGlobal()
 }
 
 //----------------------------------------------------------------------
-void FWidget::hideSize (const FSize& size)
+void FWidget::hideArea (const FSize& size)
 {
   if ( size.isEmpty() )
     return;
@@ -1622,13 +1628,30 @@ void FWidget::hideSize (const FSize& size)
   if ( blank == 0 )
     return;
 
-  for (int y{0}; y < int(size.getWidth()); y++)
+  for (int y{0}; y < int(size.getHeight()); y++)
   {
     print() << FPoint(1, 1 + y) << blank;
   }
 
   destroyBlankArray (blank);
   flush_out();
+}
+
+//----------------------------------------------------------------------
+void FWidget::createWidgetAcceleratorList()
+{
+  if ( accelerator_list == 0 )
+  {
+    try
+    {
+      accelerator_list = new Accelerators();
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1956,22 +1979,13 @@ void FWidget::init()
   background_color = wc.term_bg;
   init_desktop = false;
 
-  try
-  {
-    accelerator_list = new Accelerators();
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-  }
+  // Create the root object accelerator list
+  createWidgetAcceleratorList();
 }
 
 //----------------------------------------------------------------------
 void FWidget::finish()
 {
-  delete accelerator_list;
-  accelerator_list = nullptr;
-
   if ( close_widget )
   {
     delete close_widget;

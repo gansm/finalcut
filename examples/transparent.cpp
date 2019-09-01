@@ -93,6 +93,7 @@ void Transparent::draw()
 
   if ( type == shadow )
   {
+    const finalcut::FWidgetColors& wc = getFWidgetColors();
     setColor(wc.shadow_bg, wc.shadow_fg);
     setTransShadow();
   }

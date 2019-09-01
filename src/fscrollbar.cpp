@@ -472,6 +472,7 @@ void FScrollbar::draw()
 //----------------------------------------------------------------------
 void FScrollbar::drawVerticalBar()
 {
+  const FWidgetColors& wc = getFWidgetColors();
   setColor (wc.scrollbar_fg, wc.scrollbar_bg);
 
   for (int z{1}; z <= slider_pos; z++)
@@ -530,6 +531,7 @@ inline void FScrollbar::drawVerticalBackgroundLine()
 //----------------------------------------------------------------------
 void FScrollbar::drawHorizontalBar()
 {
+  const FWidgetColors& wc = getFWidgetColors();
   setColor (wc.scrollbar_fg, wc.scrollbar_bg);
 
   if ( isNewFont() )
@@ -575,6 +577,7 @@ inline void FScrollbar::drawHorizontalBackgroundColumn()
 //----------------------------------------------------------------------
 void FScrollbar::drawButtons()
 {
+  const FWidgetColors& wc = getFWidgetColors();
   setColor (wc.scrollbar_button_fg, wc.scrollbar_button_bg);
 
   if ( isNewFont() )

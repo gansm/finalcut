@@ -71,6 +71,7 @@ class SmallWindow : public finalcut::FDialog
 SmallWindow::SmallWindow (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
+  const finalcut::FWidgetColors& wc = getFWidgetColors();
   wchar_t arrow_up, arrow_down;
   arrow_up = fc::BlackUpPointingTriangle;
   arrow_down = fc::BlackDownPointingTriangle;
@@ -455,11 +456,11 @@ void Window::cb_createWindows (finalcut::FWidget*, FDataPtr)
 //----------------------------------------------------------------------
 void Window::cb_closeWindows (finalcut::FWidget*, FDataPtr)
 {
-  if ( ! dialog_list || dialog_list->empty() )
+  if ( ! getDialogList() || getDialogList()->empty() )
     return;
 
-  auto iter = dialog_list->end();
-  auto first = dialog_list->begin();
+  auto iter = getDialogList()->end();
+  auto first = getDialogList()->begin();
   activateWindow(this);
 
   do
@@ -475,12 +476,12 @@ void Window::cb_closeWindows (finalcut::FWidget*, FDataPtr)
 //----------------------------------------------------------------------
 void Window::cb_next (finalcut::FWidget*, FDataPtr)
 {
-  if ( ! dialog_list || dialog_list->empty() )
+  if ( ! getDialogList() || getDialogList()->empty() )
     return;
 
-  auto iter = dialog_list->begin();
+  auto iter = getDialogList()->begin();
 
-  while ( iter != dialog_list->end() )
+  while ( iter != getDialogList()->end() )
   {
     if ( static_cast<finalcut::FWindow*>(*iter)->isWindowActive() )
     {
@@ -491,8 +492,8 @@ void Window::cb_next (finalcut::FWidget*, FDataPtr)
       {
         ++next_element;
 
-        if ( next_element == dialog_list->end() )
-          next_element = dialog_list->begin();
+        if ( next_element == getDialogList()->end() )
+          next_element = getDialogList()->begin();
 
         next = static_cast<finalcut::FDialog*>(*next_element);
       } while ( ! next->isEnabled()
@@ -511,10 +512,10 @@ void Window::cb_next (finalcut::FWidget*, FDataPtr)
 //----------------------------------------------------------------------
 void Window::cb_previous (finalcut::FWidget*, FDataPtr)
 {
-  if ( ! dialog_list || dialog_list->empty() )
+  if ( ! getDialogList() || getDialogList()->empty() )
     return;
 
-  auto iter = dialog_list->end();
+  auto iter = getDialogList()->end();
 
   do
   {
@@ -528,8 +529,8 @@ void Window::cb_previous (finalcut::FWidget*, FDataPtr)
 
       do
       {
-        if ( prev_element == dialog_list->begin() )
-          prev_element = dialog_list->end();
+        if ( prev_element == getDialogList()->begin() )
+          prev_element = getDialogList()->end();
 
         --prev_element;
         prev = static_cast<finalcut::FDialog*>(*prev_element);
@@ -542,7 +543,7 @@ void Window::cb_previous (finalcut::FWidget*, FDataPtr)
       break;
     }
   }
-  while ( iter != dialog_list->begin() );
+  while ( iter != getDialogList()->begin() );
 }
 
 //----------------------------------------------------------------------
