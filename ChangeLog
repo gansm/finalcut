@@ -1,3 +1,7 @@
+2019-09-04  Markus Gans  <guru.mail@muenster.de>
+	* The Cygwin and Linux console do not use cp437 character encoding 
+	  by default anymore
+
 2019-09-01  Markus Gans  <guru.mail@muenster.de>
 	* Removing public + protected data members from classes
 

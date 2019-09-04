@@ -102,7 +102,7 @@ class FListBoxItem
     // Friend classes
     friend class FListBox;
 
-    // Data Members
+    // Data members
     FString           text{};
     FDataPtr          data_pointer{nullptr};
     fc::brackets_type brackets{fc::NoBrackets};
@@ -326,7 +326,7 @@ class FListBox : public FWidget
                                          , FDataPtr
                                          , int index ){nullptr};
 
-    // Data Members
+    // Data members
     listBoxItems    itemlist{};
     FDataPtr        source_container{nullptr};
     convert_type    conv_type{FListBox::no_convert};

@@ -75,7 +75,7 @@ class FSystemTest : public finalcut::FSystem
     struct keymap_t& getTerminalKeymap();
 
   private:
-    // Data Members
+    // Data members
     std::string characters;
     int cursor_type = 0;
     static keymap_t keymap;
@@ -83,7 +83,7 @@ class FSystemTest : public finalcut::FSystem
 };
 #pragma pack(pop)
 
-// private Data Member of FSystemTest
+// private data member of FSystemTest
 //----------------------------------------------------------------------
 keymap_t FSystemTest::keymap =
 {

@@ -53,14 +53,14 @@ class FColorPair
   public:
     // Constructors
     explicit FColorPair (FColor fg = fc::Default, FColor bg = fc::Default)
-      : fg_color(fg)
-      , bg_color(bg)
+      : fg_color{fg}
+      , bg_color{bg}
     { }
 
     // Copy constructor
     FColorPair (const FColorPair& pair)
-      : fg_color(pair.fg_color)
-      , bg_color(pair.bg_color)
+      : fg_color{pair.fg_color}
+      , bg_color{pair.bg_color}
     { }
 
     // Destructor
@@ -78,13 +78,39 @@ class FColorPair
     const char* getClassName() const
     { return "FColorPair"; }
 
+    FColor getForegroundColor() const
+    { return fg_color; }
+
+    FColor getBackgroundColor() const
+    { return bg_color; }
+
+    // Mutators
+    void setForegroundColor (FColor color)
+    { fg_color = color; }
+
+    void setBackgroundColor (FColor color)
+    { bg_color = color; }
+
+    void setColorPair (const FColorPair& pair)
+    {
+      fg_color = pair.fg_color;
+      bg_color = pair.bg_color;
+    }
+
+    void setColorPair (FColor fg, FColor bg)
+    {
+      fg_color = fg;
+      bg_color = bg;
+    }
+
     // Methods
     void swap()
     {
       std::swap (fg_color, bg_color);
     }
 
-    // Data Members
+  private:
+    // Data members
     FColor fg_color;  // Foreground color
     FColor bg_color;  // Background color
 };

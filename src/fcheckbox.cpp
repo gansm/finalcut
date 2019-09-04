@@ -54,8 +54,8 @@ FCheckBox::~FCheckBox()  // destructor
 //----------------------------------------------------------------------
 void FCheckBox::init()
 {
-  label_offset_pos = 4;
-  button_width = 4;
+  setLabelOffsetPos(4);
+  setButtonWidth(4);
   setVisibleCursor();
 }
 
@@ -84,7 +84,7 @@ void FCheckBox::drawCheckButton()
       setReverse(true);
   }
 
-  if ( checked )
+  if ( isChecked() )
     drawChecked();
   else
     drawUnchecked();

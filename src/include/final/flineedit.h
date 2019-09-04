@@ -185,7 +185,7 @@ class FLineEdit : public FWidget
     void                processActivate();
     void                processChanged();
 
-    // Data Members
+    // Data members
     FString      text{""};
     FString      label_text{""};
     FLabel*      label{};

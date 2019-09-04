@@ -79,7 +79,7 @@ class FObject_protected : public finalcut::FObject
       count++;
     }
 
-    // Data Member
+    // Data member
     uInt count;
 };
 #pragma pack(pop)
@@ -107,7 +107,7 @@ class FObject_timer : public finalcut::FObject
     }
 
   private:
-    // Data Member
+    // Data member
     int value{0};
 };
 #pragma pack(pop)
@@ -135,7 +135,7 @@ class FObject_userEvent : public finalcut::FObject
     }
 
   private:
-    // Data Member
+    // Data member
     int value{0};
 };
 #pragma pack(pop)

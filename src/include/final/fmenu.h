@@ -229,7 +229,7 @@ class FMenu : public FWindow, public FMenuList
     friend class FMenuItem;
     friend class FRadioMenuItem;
 
-    // Data Members
+    // Data members
     FMenuItem    item{};
     FWidget*     super_menu{nullptr};
     FMenu*       opened_sub_menu{nullptr};

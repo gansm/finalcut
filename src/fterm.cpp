@@ -1828,9 +1828,7 @@ void FTerm::init_term_encoding()
 //----------------------------------------------------------------------
 void FTerm::init_individual_term_encoding()
 {
-  if ( isLinuxTerm()
-    || isCygwinTerminal()
-    || isNewFont()
+  if ( isNewFont()
     || (isPuttyTerminal() && ! data->isUTF8())
     || (isTeraTerm() && ! data->isUTF8()) )
   {
@@ -1839,9 +1837,7 @@ void FTerm::init_individual_term_encoding()
 
     if ( hasUTF8() && init_values.encoding == fc::UNKNOWN )
     {
-      if ( isLinuxTerm() )
-        setUTF8(false);
-      else if ( isXTerminal() )
+      if ( isXTerminal() )
         Fputchar = &FTerm::putchar_UTF8;  // function pointer
     }
   }

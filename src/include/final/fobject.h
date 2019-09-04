@@ -157,7 +157,7 @@ class FObject
     // Method
     virtual void performTimerAction (const FObject*, const FEvent*);
 
-    // Data Members
+    // Data members
     FObject*            parent_obj{nullptr};
     FObjectList         children_list{};  // no children yet
     bool                has_parent{false};

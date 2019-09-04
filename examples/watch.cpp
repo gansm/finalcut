@@ -65,7 +65,7 @@ class Watch : public finalcut::FDialog
     void adjustSize() override;
 
   private:
-    // Data Members
+    // Data members
     bool              sec{true};
     finalcut::FLabel  time_label{L"Time", this};
     finalcut::FLabel  time_str{L"--:--:--", this};

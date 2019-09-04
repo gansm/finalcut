@@ -100,7 +100,7 @@ int FTermBuffer::write (wchar_t c)
 //----------------------------------------------------------------------
 void FTermBuffer::write (const FColorPair& pair)
 {
-  FVTerm::setColor(pair.fg_color, pair.bg_color);
+  FVTerm::setColor(pair.getForegroundColor(), pair.getBackgroundColor());
 }
 
 

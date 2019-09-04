@@ -65,7 +65,7 @@ class ProgressDialog : public finalcut::FDialog
     void cb_more_bar (finalcut::FWidget*, FDataPtr);
     void cb_exit_bar (finalcut::FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     finalcut::FProgressbar progressBar{this};
     finalcut::FButton      reset{this};
     finalcut::FButton      more{this};
@@ -208,7 +208,7 @@ class TextWindow : public finalcut::FDialog
     // Method
     void adjustSize() override;
 
-    // Data Members
+    // Data members
     finalcut::FTextView scrollText{this};
 };
 #pragma pack(pop)
@@ -308,7 +308,7 @@ class MyDialog : public finalcut::FDialog
     void cb_view (finalcut::FWidget*, FDataPtr);
     void cb_setInput (finalcut::FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     bool                      initialized{false};
     finalcut::FMenuBar        Menubar{this};
     // Menu bar items

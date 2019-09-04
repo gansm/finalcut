@@ -414,13 +414,6 @@ class FVTerm
       __attribute__((noreturn))
     #endif
                            ;
-
-    // Data Members
-  private:
-    term_area* print_area{nullptr};        // print area for this object
-    term_area* child_print_area{nullptr};  // print area for children
-    term_area* vwin{nullptr};              // virtual window
-
   private:
     // Enumeration
     enum exit_state
@@ -472,7 +465,10 @@ class FVTerm
     static void           appendOutputBuffer (const char[]);
     static int            appendOutputBuffer (int);
 
-    // Data Members
+    // Data members
+    term_area*              print_area{nullptr};        // print area for this object
+    term_area*              child_print_area{nullptr};  // print area for children
+    term_area*              vwin{nullptr};              // virtual window
     static FSystem*         fsystem;
     static FTerm*           fterm;
     static term_area*       vterm;        // virtual terminal
@@ -495,6 +491,7 @@ class FVTerm
     static uInt             clr_bol_length;
     static uInt             clr_eol_length;
     static uInt             cursor_address_length;
+
 };
 #pragma pack(pop)
 

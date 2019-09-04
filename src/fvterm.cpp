@@ -599,7 +599,7 @@ void FVTerm::print (const FPoint& p)
 //----------------------------------------------------------------------
 void FVTerm::print (const FColorPair& pair)
 {
-  setColor (pair.fg_color, pair.bg_color);
+  setColor (pair.getForegroundColor(), pair.getBackgroundColor());
 }
 
 

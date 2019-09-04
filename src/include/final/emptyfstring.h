@@ -59,7 +59,7 @@ public:
   static void clear();
 
 private:
-  // Data Member
+  // Data member
   static const FString* empty_string;
 };
 #pragma pack(pop)

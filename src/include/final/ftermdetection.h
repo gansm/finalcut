@@ -186,7 +186,7 @@ class FTermDetection final
     static char*          secDA_Analysis_85 (char[]);
     static char*          secDA_Analysis_vte (char[]);
 
-    // Data Members
+    // Data members
 #if DEBUG
     static char           termtype_256color[256];
     static char           termtype_Answerback[256];

@@ -108,7 +108,7 @@ class FToolTip : public FWindow
     void                calculateDimensions();
     void                adjustSize() override;
 
-    // Data Members
+    // Data members
     FString       text{};
     FString*      text_components{nullptr};
     FStringList   text_split{};

@@ -98,7 +98,7 @@ class Listbox : public FDialog
     // Event handlers
     void onClose (FCloseEvent*) override;
 
-    // Data Member
+    // Data member
     std::list<double>  double_list{};
     FListBox list1{this};
     FListBox list2{this};

@@ -61,14 +61,14 @@ class AttribDlg : public finalcut::FDialog
     void cb_next (finalcut::FWidget* = nullptr, FDataPtr = nullptr);
     void cb_back (finalcut::FWidget* = nullptr, FDataPtr = nullptr);
 
-    // Data Members
+    // Data members
     FColor bgcolor;
 
   private:
     // Method
     void adjustSize() override;
 
-    // Data Members
+    // Data members
     finalcut::FButton next_button{"&Next >", this};
     finalcut::FButton back_button{"< &Back", this};
 };
@@ -238,7 +238,7 @@ class AttribDemo : public finalcut::FWidget
     void printProtected();
     void draw() override;
 
-    // Data Member
+    // Data member
     int colors;
 };
 #pragma pack(pop)

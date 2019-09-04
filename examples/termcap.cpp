@@ -52,7 +52,7 @@ struct data
 {
   static int getNumberOfItems();
 
-  struct termcap_string
+  struct alignas(alignof(std::string)) termcap_string
   {
     const std::string name;
     const fc::termcaps cap;

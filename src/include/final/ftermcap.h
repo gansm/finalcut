@@ -97,7 +97,7 @@ class FTermcap final
     // Methods
     static void init();
 
-    // Data Members
+    // Data members
     static bool      background_color_erase;
     static bool      can_change_color_palette;
     static bool      automatic_left_margin;
@@ -122,7 +122,7 @@ class FTermcap final
     static void      termcapKeys (char*&);
     static void      termcapKeysVt100 (char*&);
 
-    // Data Member
+    // Data member
     static FTermData*      fterm_data;
     static FTermDetection* term_detection;
 };

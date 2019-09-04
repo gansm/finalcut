@@ -157,7 +157,7 @@ class FTextView : public FWidget
     void                cb_VBarChange (FWidget*, FDataPtr);
     void                cb_HBarChange (FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     FStringList        data{};
     FScrollbarPtr      vbar{nullptr};
     FScrollbarPtr      hbar{nullptr};

@@ -155,7 +155,7 @@ class FMessageBox : public FDialog
     void                resizeButtons();
     void                adjustButtons();
 
-    // Data Members
+    // Data members
     FString       headline_text{};
     FString       text{};
     FString*      text_components{nullptr};

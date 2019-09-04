@@ -128,6 +128,8 @@ class FToggleButton : public FWidget
 
     // Mutator
     void                setHotkeyAccelerator();
+    void                setButtonWidth (std::size_t);
+    void                setLabelOffsetPos (std::size_t);
 
     // Inquiries
     bool                isRadioButton() const;
@@ -143,11 +145,6 @@ class FToggleButton : public FWidget
     // Event handler
     void                onKeyPress (FKeyEvent*) override;
 
-    // Data Members
-    bool          checked{false};
-    std::size_t   label_offset_pos{0};
-    std::size_t   button_width{0};  // plus margin spaces
-
   private:
     // Constants
     static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
@@ -162,10 +159,13 @@ class FToggleButton : public FWidget
     // Friend classes
     friend class FButtonGroup;
 
-    // Data Members
+    // Data members
     FButtonGroup* button_group{nullptr};
-    bool          focus_inside_group{true};
     FString       text{};
+    std::size_t   label_offset_pos{0};
+    std::size_t   button_width{0};  // plus margin spaces
+    bool          focus_inside_group{true};
+    bool          checked{false};
 };
 #pragma pack(pop)
 
@@ -222,6 +222,14 @@ inline bool FToggleButton::isChecked()
 //----------------------------------------------------------------------
 inline FButtonGroup* FToggleButton::getGroup() const
 { return button_group; }
+
+//----------------------------------------------------------------------
+inline void FToggleButton::setButtonWidth (std::size_t width)
+{ button_width = width; }
+
+//----------------------------------------------------------------------
+inline void FToggleButton::setLabelOffsetPos (std::size_t offset)
+{ label_offset_pos = offset; }
 
 //----------------------------------------------------------------------
 inline bool FToggleButton::hasGroup() const

@@ -274,7 +274,7 @@ class FString
     wchar_t* c_to_wc_str (const char[]) const;
     wchar_t* extractToken (wchar_t*[], const wchar_t[], const wchar_t[]);
 
-    // Data Members
+    // Data members
     wchar_t*      string{nullptr};
     std::size_t   length{0};
     std::size_t   bufsize{0};

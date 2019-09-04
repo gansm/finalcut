@@ -65,7 +65,7 @@ class Transparent : public finalcut::FDialog
     // Event handlers
     void onKeyPress (finalcut::FKeyEvent* ev) override;
 
-    // Data Members
+    // Data members
     trans_type type;
 };
 #pragma pack(pop)
@@ -187,7 +187,7 @@ class MainWindow : public finalcut::FDialog
         finalcut::FDialog::onKeyPress(ev);
     }
 
-    // Data Members
+    // Data members
     finalcut::FString line1{};
     finalcut::FString line2{};
     Transparent* transpwin{nullptr};

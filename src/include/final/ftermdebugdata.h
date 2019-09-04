@@ -77,7 +77,7 @@ class FTermDebugData final
     static void    init();
 
   private:
-    // Data Members
+    // Data members
     static FTermData*      data;
     static FTermDetection* term_detection;
 };

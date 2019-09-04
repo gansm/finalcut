@@ -66,7 +66,7 @@ class Menu : public finalcut::FDialog
     // Callback method
     void cb_message (finalcut::FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     finalcut::FString        line{13, fc::BoxDrawingsHorizontal};
     finalcut::FMenuBar       Menubar{this};
     finalcut::FMenu          File{"&File", &Menubar};

@@ -106,7 +106,7 @@ class FProgressbar : public FWidget
     std::size_t         drawProgressIndicator();
     void                drawProgressBackground (std::size_t);
 
-    // Data Members
+    // Data members
     std::size_t  percentage{NOT_SET};
     std::size_t  bar_length{getWidth()};
 };

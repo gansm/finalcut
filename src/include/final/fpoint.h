@@ -90,7 +90,7 @@ class FPoint
     int&                y_ref();
 
   private:
-    // Data Members
+    // Data members
     int xpos{0};
     int ypos{0};
 };

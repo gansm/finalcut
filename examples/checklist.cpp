@@ -65,7 +65,7 @@ class CheckList : public finalcut::FDialog
     // Callback method
     void cb_showList (finalcut::FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     finalcut::FListView  listView{this};
     finalcut::FStatusBar status_bar{this};
 };

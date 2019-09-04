@@ -218,7 +218,7 @@ class FDialog : public FWindow
     void                cb_zoom (FWidget*, FDataPtr);
     void                cb_close (FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     FString             tb_text{};  // title bar text
     int                 result_code{FDialog::Reject};
     bool                zoom_button_pressed{false};

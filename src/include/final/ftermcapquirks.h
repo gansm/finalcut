@@ -81,7 +81,7 @@ class FTermcapQuirks final
     static void general();
     static void ecma48();
 
-    // Data Members
+    // Data members
     static FTermData*          fterm_data;
     static FTermDetection*     term_detection;
 };

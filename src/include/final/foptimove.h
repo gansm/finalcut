@@ -208,7 +208,7 @@ class FOptiMove final
     // Friend function
     friend void printDurations (const FOptiMove&);
 
-    // Data Members
+    // Data members
     capability  F_cursor_home{};
     capability  F_carriage_return{};
     capability  F_cursor_to_ll{};

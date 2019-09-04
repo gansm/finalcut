@@ -181,7 +181,7 @@ class FScrollView : public FWidget
     void                cb_VBarChange (FWidget*, FDataPtr);
     void                cb_HBarChange (FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     FRect             scroll_geometry{1, 1, 1, 1};
     FRect             viewport_geometry{};
     term_area*        viewport{nullptr};  // virtual scroll content

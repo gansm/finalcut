@@ -276,7 +276,7 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     void keyReleased();
     void escapeKeyPressed();
 
-    // Data Members
+    // Data members
     FKey key_pressed{0};
     FKey key_released{0};
     int  number_of_keys{0};

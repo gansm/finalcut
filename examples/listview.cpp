@@ -64,7 +64,7 @@ class Listview : public finalcut::FDialog
     // Callback method
     void cb_showInMessagebox (finalcut::FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     finalcut::FListView listView{this};
     finalcut::FButton   Quit{this};
 };

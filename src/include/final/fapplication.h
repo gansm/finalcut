@@ -187,7 +187,7 @@ class FApplication : public FWidget
     void                  performTimerAction ( const FObject*
                                              , const FEvent* ) override;
 
-    // Data Members
+    // Data members
     int                   app_argc;
     char**                app_argv;
     uInt64                key_timeout{100000};        // 100 ms

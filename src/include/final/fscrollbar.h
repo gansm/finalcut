@@ -143,7 +143,7 @@ class FScrollbar : public FWidget
     void                avoidScrollOvershoot();
     void                processScroll();
 
-    // Data Members
+    // Data members
     sType           scroll_type{FScrollbar::noScroll};
     bool            threshold_reached{false};
     int             threshold_time{500};

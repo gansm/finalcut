@@ -140,7 +140,7 @@ class FButtonGroup : public FScrollView
     // Callback method
     void                cb_buttonToggled (FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     FString        text{};
     FObjectList    buttonlist{};
 };

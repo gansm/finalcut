@@ -154,7 +154,7 @@ class FMenuBar : public FWindow, public FMenuList
     friend class FMenu;
     friend class FMenuItem;
 
-    // Data Members
+    // Data members
     bool        mouse_down{false};
     bool        drop_down{false};
     bool        focus_changed{false};

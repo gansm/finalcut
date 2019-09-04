@@ -58,7 +58,7 @@ class SmallWindow : public finalcut::FDialog
     void onShow (finalcut::FShowEvent*) override;
     void onTimer (finalcut::FTimerEvent*) override;
 
-    // Data Members
+    // Data members
     finalcut::FLabel left_arrow{this};
     finalcut::FLabel right_arrow{this};
     finalcut::FLabel top_left_label{this};
@@ -200,7 +200,7 @@ class Window : public finalcut::FDialog
         // Disable assignment operator (=)
         win_data& operator = (const win_data&) = delete;
 
-        // Data Members
+        // Data members
         bool is_open{false};
         finalcut::FString title{};
         SmallWindow* dgl{nullptr};
@@ -224,7 +224,7 @@ class Window : public finalcut::FDialog
     void cb_previous (finalcut::FWidget*, FDataPtr);
     void cb_destroyWindow (finalcut::FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     std::vector<win_data*>    windows{};
     finalcut::FString         drop_down_symbol{fc::BlackDownPointingTriangle};
     finalcut::FMenuBar        Menubar{this};

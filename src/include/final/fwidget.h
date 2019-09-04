@@ -429,7 +429,7 @@ class FWidget : public FVTerm, public FObject
     void                  drawBlockShadow (int, int, int, int);
     static void           setColorTheme();
 
-    // Data Members
+    // Data members
     FPoint                widget_cursor_position{-1, -1};
 
     struct widget_size_hints

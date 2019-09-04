@@ -158,7 +158,7 @@ class FButton : public FWidget
     void                updateButtonColor();
     void                processClick();
 
-    // Data Members
+    // Data members
     FString      text{};
     bool         button_down{false};
     bool         active_focus{false};

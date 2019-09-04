@@ -126,7 +126,7 @@ class FTermFreeBSD final
     static bool        resetFreeBSDAlt2Meta();
     static bool        setFreeBSDCursorStyle (CursorStyle);
 
-    // Data Members
+    // Data members
     static uInt        bsd_alt_keymap;
     static CursorStyle cursor_style;
     static bool        change_cursorstyle;

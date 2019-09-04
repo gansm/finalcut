@@ -85,7 +85,7 @@ class FTermios final
     static uInt    getBaudRate();
 
   private:
-    // Data Members
+    // Data members
     static int    stdin_no;
     static int    stdout_no;
     static int    stderr_no;

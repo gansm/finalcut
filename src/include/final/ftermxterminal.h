@@ -138,7 +138,7 @@ class FTermXTerminal final
     static void           enableXTermMetaSendsESC();
     static void           disableXTermMetaSendsESC();
 
-    // Data Members
+    // Data members
     static bool                 mouse_support;
     static bool                 meta_sends_esc;
     static bool                 xterm_default_colors;

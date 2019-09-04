@@ -705,11 +705,11 @@ void FScrollView::copy2area()
     , y_end = int(getViewportHeight())
     , x_end = int(getViewportWidth());
 
-  // viewport width does not fit into the print_area
+  // viewport width does not fit into the printarea
   if ( printarea->width <= ax + x_end )
     x_end = printarea->width - ax;
 
-  // viewport height does not fit into the print_area
+  // viewport height does not fit into the printarea
   if ( printarea->height <= ay + y_end )
     y_end = printarea->height - ay;
 

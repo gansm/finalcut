@@ -196,7 +196,7 @@ class FFileDialog : public FDialog
     void                 cb_processOpen (FWidget*, FDataPtr);
     void                 cb_processShowHidden (FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     static FSystem*  fsystem;
     DIR*             directory_stream{nullptr};
     dirEntries       dir_entries{};

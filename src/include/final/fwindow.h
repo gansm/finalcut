@@ -174,7 +174,7 @@ class FWindow : public FWidget
     static void         deleteFromAlwaysOnTopList (FWidget*);
     static void         processAlwaysOnTop();
 
-    // Data Members
+    // Data members
     bool                window_active{false};
     bool                zoomed{false};
     FWidget*            win_focus_widget{nullptr};

@@ -138,7 +138,7 @@ class FRect
     FRect               combined (const FRect&) const;
 
   private:
-    // Data Members
+    // Data members
     int X1{0};
     int Y1{0};
     int X2{-1};

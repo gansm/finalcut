@@ -63,7 +63,7 @@ class ColorChooser : public finalcut::FWidget
     // Event handler
     void onMouseDown (finalcut::FMouseEvent*) override;
 
-    // Data Members
+    // Data members
     FColor fg_color{fc::White};
     FColor bg_color{fc::Black};
     finalcut::FLabel headline{this};
@@ -209,7 +209,7 @@ class Brushes : public finalcut::FWidget
     // Event handler
     void onMouseDown (finalcut::FMouseEvent*) override;
 
-    // Data Members
+    // Data members
     wchar_t brush{L' '};
     FColor  fg_color{fc::White};
     FColor  bg_color{fc::Black};
@@ -360,7 +360,7 @@ class MouseDraw : public finalcut::FDialog
     // Callback methods
     void cb_colorChanged (finalcut::FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     term_area*   canvas{nullptr};
     ColorChooser c_chooser{this};
     Brushes      brush{this};

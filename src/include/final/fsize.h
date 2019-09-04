@@ -98,7 +98,7 @@ class FSize
     std::size_t&        height_ref();
 
   private:
-    // Data Members
+    // Data members
     std::size_t width{0};
     std::size_t height{0};
 };

@@ -177,7 +177,7 @@ class FTermLinux final
     static void          initSpecialCharacter();
     static void          characterFallback (wchar_t, std::vector<wchar_t>);
 
-    // Data Members
+    // Data members
 #if defined(__linux__)
     static bool                   vga_font;
     static bool                   new_font;

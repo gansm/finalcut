@@ -305,7 +305,7 @@ class FTerm final
       __attribute__((noreturn))
     #endif
                            ;
-    // Data Members
+    // Data members
     static struct initializationValues
     {
       public:
@@ -401,7 +401,7 @@ class FTerm final
     static void            resetSignalHandler();
     static void            signal_handler (int);
 
-    // Data Members
+    // Data members
     static FTermData*      data;
     static FSystem*        fsys;
     static FOptiMove*      opti_move;

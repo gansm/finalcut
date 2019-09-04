@@ -37,7 +37,7 @@ namespace finalcut
 FSwitch::FSwitch(FWidget* parent)
   : FToggleButton(parent)
 {
-  button_width = 11;
+  setButtonWidth(11);
 }
 
 //----------------------------------------------------------------------
@@ -45,7 +45,7 @@ FSwitch::FSwitch (const FString& txt, FWidget* parent)
   : FToggleButton(txt, parent)
 {
   switch_offset_pos = txt.getLength() + 1;
-  button_width = 11;
+  setButtonWidth(11);
 }
 
 //----------------------------------------------------------------------
@@ -132,7 +132,7 @@ void FSwitch::drawCheckButton()
 {
   print() << FPoint(1 + int(switch_offset_pos), 1);
 
-  if ( checked )
+  if ( isChecked() )
     drawChecked();
   else
     drawUnchecked();

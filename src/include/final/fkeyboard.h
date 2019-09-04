@@ -64,7 +64,7 @@ class FKeyboardCommand final
     void execute();
 
   private:
-    // Data Members
+    // Data members
     FApplication* instance{nullptr};
     void (FApplication::*handler)(){nullptr};
 };
@@ -159,7 +159,7 @@ class FKeyboard final
     void                keyReleased();
     void                escapeKeyPressed();
 
-    // Data Members
+    // Data members
     FKey                key{0};
     char                read_buf[READ_BUF_SIZE]{'\0'};
     char                fifo_buf[FIFO_BUF_SIZE]{'\0'};

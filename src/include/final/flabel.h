@@ -152,7 +152,7 @@ class FLabel : public FWidget
     void                printLine ( wchar_t[], std::size_t
                                   , std::size_t, std::size_t = 0 );
 
-    // Data Members
+    // Data members
     FStringList        multiline_text{};
     bool               multiline{false};
     FString            text{};

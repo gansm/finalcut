@@ -130,7 +130,7 @@ class FSystemTest : public finalcut::FSystem
     static void initVScreenInfo();
     static void initFScreenInfo();
 
-    // Data Members
+    // Data members
     std::string characters;
     static shiftstate shift_state;
     static rgb terminal_color[16];
@@ -158,7 +158,7 @@ class FSystemTest : public finalcut::FSystem
 #pragma pack(pop)
 
 
-// private Data Member of FSystemTest
+// private data member of FSystemTest
 //----------------------------------------------------------------------
 uChar FSystemTest::vga8x16[] =
 {

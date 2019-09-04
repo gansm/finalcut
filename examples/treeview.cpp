@@ -140,7 +140,7 @@ class Treeview : public finalcut::FDialog
     // Event handler
     void onClose (finalcut::FCloseEvent*) override;
 
-    // Data Members
+    // Data members
     bool                initialized{false};
     finalcut::FListView listView{this};
     finalcut::FButton   Quit{this};
@@ -168,7 +168,7 @@ struct Treeview::TreeItem
   const char* const* end() const
   { return reinterpret_cast<const char* const*>(&child_element); }
 
-  // Data Members
+  // Data members
   const char* name;
   const char* population;
   const char* density;

@@ -63,7 +63,7 @@ class SegmentView : public finalcut::FDialog
     void get7Segment (const wchar_t);
     void draw() override;
 
-    // Data Members
+    // Data members
     std::map<wchar_t, sevenSegment> code{};
     finalcut::FString line[3];
     finalcut::FLineEdit Input{"0123", this};

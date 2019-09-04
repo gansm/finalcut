@@ -182,7 +182,7 @@ class FMouse
     bool                isDblclickTimeout (timeval*);
 
   private:
-    // Data Members
+    // Data members
     button              b_state{};
     bool                mouse_event_occurred{false};
     bool                input_data_pending{false};
@@ -247,7 +247,7 @@ class FMouseGPM final : public FMouse
     // Method
     int                gpmEvent (bool = true);
 
-    // Data Member
+    // Data member
     Gpm_Event          gpm_ev{};
     bool               has_gpm_mouse_data{false};
     bool               gpm_mouse_enabled{false};
@@ -325,7 +325,7 @@ class FMouseX11 final : public FMouse
     void         setMoveState (const FPoint&, int);
     void         setButtonState (int, struct timeval*);
 
-    // Data Member
+    // Data member
     char  x11_mouse[MOUSE_BUF_SIZE]{'\0'};
     uChar x11_button_state{all_buttons_released};
 };
@@ -388,7 +388,7 @@ class FMouseSGR final : public FMouse
     void         setPressedButtonState (int, struct timeval*);
     void         setReleasedButtonState (int);
 
-    // Data Members
+    // Data members
     char  sgr_mouse[MOUSE_BUF_SIZE]{'\0'};
     uChar sgr_button_state{0x23};
 };
@@ -451,7 +451,7 @@ class FMouseUrxvt final : public FMouse
     void         setMoveState (const FPoint&, int);
     void         setButtonState (int, struct timeval*);
 
-    // Data Members
+    // Data members
     char  urxvt_mouse[MOUSE_BUF_SIZE]{'\0'};
     uChar urxvt_button_state{all_buttons_released};
 };
@@ -525,7 +525,7 @@ class FMouseControl
     void                enableXTermMouse();
     void                disableXTermMouse();
 
-    // Data Member
+    // Data member
     FMouseProtocol mouse_protocol{};
     FPoint         zero_point{0, 0};
     bool           use_gpm_mouse{false};

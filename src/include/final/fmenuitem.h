@@ -176,7 +176,7 @@ class FMenuItem : public FWidget
 
     virtual void        processClicked();
 
-    // Data Members
+    // Data members
     FString      text{};
     bool         selected{false};
     bool         separator{false};

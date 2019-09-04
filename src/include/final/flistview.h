@@ -128,7 +128,7 @@ class FListViewItem : public FObject
     std::size_t         getVisibleLines();
     void                resetVisibleLineCounter();
 
-    // Data Members
+    // Data members
     FStringList      column_list{};
     FDataPtr         data_pointer{nullptr};
     FObjectIterator  root{};
@@ -226,7 +226,7 @@ class FListViewIterator
     void                nextElement (FObjectIterator&);
     void                prevElement (FObjectIterator&);
 
-    // Data Members
+    // Data members
     FObjectIteratorStack iter_path{};
     FObjectIterator      node{};
     int                  position{0};
@@ -360,7 +360,7 @@ class FListView : public FWidget
     void                 onFocusIn (FFocusEvent*) override;
     void                 onFocusOut (FFocusEvent*) override;
 
-    // Data Members
+    // Data members
     static FObjectIterator null_iter;
 
   protected:
@@ -447,7 +447,7 @@ class FListView : public FWidget
     void                 cb_VBarChange (FWidget*, FDataPtr);
     void                 cb_HBarChange (FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     FObjectIterator      root{};
     FObjectList          selflist{};
     FObjectList          itemlist{};

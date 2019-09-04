@@ -54,7 +54,7 @@ class FWidgetColors final
     void set8ColorTheme();
     void set16ColorTheme();
 
-    // Data Members
+    // Data members
     FColor term_fg{fc::Default};
     FColor term_bg{fc::Default};
     FColor list_fg{fc::Default};

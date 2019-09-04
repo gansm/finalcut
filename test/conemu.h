@@ -131,7 +131,7 @@ class ConEmu
     void        closeSlavePTY();
     void        parseTerminalBuffer (std::size_t, console);
 
-    // Data Members
+    // Data members
     int          fd_stdin{fileno(stdin)};
     int          fd_stdout{fileno(stdout)};
     int          fd_stderr{fileno(stderr)};
@@ -148,7 +148,7 @@ class ConEmu
 bool* ConEmu::shared_state = nullptr;
 
 
-// private Data Member of ConEmu
+// private data member of ConEmu
 //----------------------------------------------------------------------
 char* ConEmu::colorname[] =
 {

@@ -99,7 +99,7 @@ class FMenuList
     void                     unselectItem();
 
   private:
-    // Data Members
+    // Data members
     FMenuItem*               selected_item{};
     std::vector<FMenuItem*>  item_list{};
 };

@@ -113,7 +113,7 @@ class FTermOpenBSD final
     static bool        setBSDConsoleMetaEsc();
     static bool        resetBSDConsoleEncoding();
 
-    // Data Members
+    // Data members
     static kbd_t       bsd_keyboard_encoding;
     static bool        meta_sends_escape;
     static FSystem*    fsystem;

@@ -62,7 +62,7 @@ class Scrollview : public finalcut::FScrollView
     void cb_go_west (finalcut::FWidget*, FDataPtr);
     void cb_go_north (finalcut::FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     wchar_t pointer_right{fc::BlackRightPointingPointer};
     wchar_t pointer_down{fc::BlackDownPointingTriangle};
     wchar_t pointer_left{fc::BlackLeftPointingPointer};
@@ -212,7 +212,7 @@ class Scrollviewdemo : public finalcut::FDialog
     // Callback method
     void cb_quit (finalcut::FWidget* = nullptr, FDataPtr = nullptr);
 
-    // Data Members
+    // Data members
     Scrollview sview{this};
     finalcut::FButton quit_btn{"&Quit", this};
     finalcut::FLabel label{this};

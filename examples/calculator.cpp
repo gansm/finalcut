@@ -58,7 +58,7 @@ class Button : public finalcut::FButton
     void onKeyPress (finalcut::FKeyEvent*) override;
 
   private:
-    // Data Member
+    // Data member
     bool checked{false};
 };
 #pragma pack(pop)
@@ -220,7 +220,7 @@ class Calc : public finalcut::FDialog
     const wchar_t* getButtonText (std::size_t);
     void           mapKeyFunctions();
 
-    // Data Members
+    // Data members
     bool              error{false};
     bool              arcus_mode{false};
     bool              hyperbolic_mode{false};

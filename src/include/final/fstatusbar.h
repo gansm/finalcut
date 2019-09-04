@@ -124,7 +124,7 @@ class FStatusKey : public FWidget
     // Friend class
     friend class FStatusBar;
 
-    // Data Members
+    // Data members
     FKey        key{0};
     FString     text{};
     bool        active{false};
@@ -250,7 +250,7 @@ class FStatusBar : public FWindow
     void                drawKey (keyList::const_iterator);
     void                drawActiveKey (keyList::const_iterator);
 
-    // Data Members
+    // Data members
     keyList             key_list{};
     FString             text{""};
     bool                mouse_down{};

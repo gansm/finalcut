@@ -185,7 +185,7 @@ class FOptiAttr final
 
   private:
     // Typedefs and Enumerations
-    typedef struct
+    typedef struct alignas(alignof(char*))
     {
       char* cap;
       bool  caused_reset;
@@ -284,7 +284,7 @@ class FOptiAttr final
     bool  switchOff();
     bool  append_sequence (char[]);
 
-    // Data Members
+    // Data members
     capability F_enter_bold_mode{};
     capability F_exit_bold_mode{};
     capability F_enter_dim_mode{};

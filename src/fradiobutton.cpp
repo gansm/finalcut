@@ -54,8 +54,8 @@ FRadioButton::~FRadioButton()  // destructor
 //----------------------------------------------------------------------
 void FRadioButton::init()
 {
-  label_offset_pos = 4;
-  button_width = 4;
+  setLabelOffsetPos(4);
+  setButtonWidth(4);
   setVisibleCursor();
 }
 
@@ -84,7 +84,7 @@ void FRadioButton::drawRadioButton()
       setReverse(true);
   }
 
-  if ( checked )
+  if ( isChecked() )
     drawChecked();
   else
     drawUnchecked();

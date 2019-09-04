@@ -118,7 +118,7 @@ typedef struct
 
   union attribute
   {
-    struct
+    struct alignas(4)
     {
       // Attribute byte #0
       uInt8 bold          : 1;  // bold
@@ -144,7 +144,7 @@ typedef struct
       uInt8               : 6;  // padding bits
     } bit;
 
-    uInt8 byte[3];
+    alignas(4) uInt8 byte[3];
   } attr;
 } charData;
 #pragma pack(pop)

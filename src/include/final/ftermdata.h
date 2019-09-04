@@ -128,7 +128,7 @@ class FTermData final
 #endif
 
   private:
-    // Data Members
+    // Data members
     encodingMap       encoding_list{};
     charSubstitution  char_substitution_map{};
     fc::encoding      term_encoding{fc::UNKNOWN};
