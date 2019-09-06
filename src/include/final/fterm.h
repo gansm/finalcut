@@ -179,7 +179,6 @@ class FTerm final
     static char*           getTermFileName();
     static int             getTabstop();
     static int             getMaxColor();
-    initializationValues&  getInitValues();
     charSubstitution&      getCharSubstitutionMap();
 
     static FTermData*      getFTermData();
@@ -305,47 +304,6 @@ class FTerm final
       __attribute__((noreturn))
     #endif
                            ;
-    // Data members
-    static struct initializationValues
-    {
-      public:
-        void setDefault()
-        {
-          cursor_optimisation = true;
-          mouse_support = true;
-          terminal_detection = true;
-          color_change = true;
-          vgafont = false;
-          newfont = false;
-          encoding = fc::UNKNOWN;
-
-        #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-          meta_sends_escape = true;
-          change_cursorstyle = true;
-        #elif defined(__NetBSD__) || defined(__OpenBSD__)
-          meta_sends_escape = true;
-        #endif
-        }
-
-        uInt8 cursor_optimisation : 1;
-        uInt8 mouse_support       : 1;
-        uInt8 terminal_detection  : 1;
-        uInt8 color_change        : 1;
-        uInt8 vgafont             : 1;
-        uInt8 newfont             : 1;
-        uInt8                     : 2;  // padding bits
-        fc::encoding encoding;
-
-      #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-        uInt8 meta_sends_escape  : 1;
-        uInt8 change_cursorstyle : 1;
-        uInt8                    : 6;  // padding bits
-      #elif defined(__NetBSD__) || defined(__OpenBSD__)
-        uInt8 meta_sends_escape  : 1;
-        uInt8                    : 7;  // padding bits
-      #endif
-    } init_values;
-
   private:
     // Methods
     static void            init_global_values (bool);
@@ -436,10 +394,6 @@ class FTerm final
 //----------------------------------------------------------------------
 inline const char* FTerm::getClassName() const
 { return "FTerm"; }
-
-//----------------------------------------------------------------------
-inline FTerm::initializationValues& FTerm::getInitValues()
-{ return init_values; }
 
 //----------------------------------------------------------------------
 inline void FTerm::setFSystem (FSystem* fsystem)

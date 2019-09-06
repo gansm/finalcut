@@ -29,6 +29,7 @@
 #include "final/fmenubar.h"
 #include "final/fmessagebox.h"
 #include "final/fmouse.h"
+#include "final/fstartoptions.h"
 #include "final/fstatusbar.h"
 #include "final/ftermios.h"
 #include "final/fwidgetcolors.h"
@@ -296,7 +297,7 @@ FWidget* FApplication::processParameters (const int& argc, char* argv[])
     showParameterUsage();
   }
 
-  getInitValues().setDefault();
+  getStartOptions().setDefault();
   cmd_options (argc, argv);
   return 0;
 }
@@ -442,13 +443,13 @@ void FApplication::cmd_options (const int& argc, char* argv[])
         encoding = encoding.toLower();
 
         if ( encoding.includes("utf8") )
-          getInitValues().encoding = fc::UTF8;
+          getStartOptions().encoding = fc::UTF8;
         else if ( encoding.includes("vt100") )
-          getInitValues().encoding = fc::VT100;
+          getStartOptions().encoding = fc::VT100;
         else if ( encoding.includes("pc") )
-          getInitValues().encoding = fc::PC;
+          getStartOptions().encoding = fc::PC;
         else if ( encoding.includes("ascii") )
-          getInitValues().encoding = fc::ASCII;
+          getStartOptions().encoding = fc::ASCII;
         else if ( encoding.includes("help") )
           showParameterUsage();
         else
@@ -457,32 +458,32 @@ void FApplication::cmd_options (const int& argc, char* argv[])
       }
 
       if ( std::strcmp(long_options[idx].name, "no-mouse")  == 0 )
-        getInitValues().mouse_support = false;
+        getStartOptions().mouse_support = false;
 
       if ( std::strcmp(long_options[idx].name, "no-optimized-cursor")  == 0 )
-        getInitValues().cursor_optimisation = false;
+        getStartOptions().cursor_optimisation = false;
 
       if ( std::strcmp(long_options[idx].name, "no-terminal-detection")  == 0 )
-        getInitValues().terminal_detection = false;
+        getStartOptions().terminal_detection = false;
 
       if ( std::strcmp(long_options[idx].name, "no-color-change")  == 0 )
-        getInitValues().color_change = false;
+        getStartOptions().color_change = false;
 
       if ( std::strcmp(long_options[idx].name, "vgafont")  == 0 )
-        getInitValues().vgafont = true;
+        getStartOptions().vgafont = true;
 
       if ( std::strcmp(long_options[idx].name, "newfont")  == 0 )
-        getInitValues().newfont = true;
+        getStartOptions().newfont = true;
 
     #if defined(__FreeBSD__) || defined(__DragonFly__)
       if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta")  == 0 )
-        getInitValues().meta_sends_escape = false;
+        getStartOptions().meta_sends_escape = false;
 
       if ( std::strcmp(long_options[idx].name, "no-cursorstyle-change")  == 0 )
-        getInitValues().change_cursorstyle = false;
+        getStartOptions().change_cursorstyle = false;
     #elif defined(__NetBSD__) || defined(__OpenBSD__)
       if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta")  == 0 )
-        getInitValues().meta_sends_escape = false;
+        getStartOptions().meta_sends_escape = false;
     #endif
     }
   }

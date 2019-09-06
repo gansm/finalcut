@@ -329,7 +329,6 @@ class FVTerm
     static bool           charEncodable (wchar_t);
     static FKeyboard*     getFKeyboard();
     static FMouseControl* getFMouseControl();
-    FTerm::initializationValues& getInitValues();
 
     // Mutators
     void                  setPrintArea (term_area*);
@@ -1085,10 +1084,6 @@ inline FKeyboard* FVTerm::getFKeyboard()
 //----------------------------------------------------------------------
 inline FMouseControl* FVTerm::getFMouseControl()
 { return FTerm::getFMouseControl(); }
-
-//----------------------------------------------------------------------
-inline FTerm::initializationValues& FVTerm::getInitValues()
-{ return FTerm::init_values; }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setPrintArea (term_area* area)

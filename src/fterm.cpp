@@ -33,6 +33,7 @@
 #include "final/fmouse.h"
 #include "final/foptiattr.h"
 #include "final/foptimove.h"
+#include "final/fstartoptions.h"
 #include "final/fstring.h"
 #include "final/fsystem.h"
 #include "final/fsystemimpl.h"
@@ -70,7 +71,6 @@ static bool term_initialized{false};
 int (*FTerm::Fputchar)(int);
 
 // static class attributes
-FTerm::initializationValues FTerm::init_values{};
 FTermData*      FTerm::data          {nullptr};
 FSystem*        FTerm::fsys          {nullptr};
 FOptiMove*      FTerm::opti_move     {nullptr};
@@ -1366,7 +1366,7 @@ void FTerm::init_global_values (bool disable_alt_screen)
   // Initialize xterm object
   xterm->init();
 
-  if ( ! init_values.terminal_detection )
+  if ( ! getStartOptions().terminal_detection )
     term_detection->setTerminalDetection (false);
 
 #if DEBUG
@@ -1695,10 +1695,10 @@ void FTerm::init_optiAttr()
 //----------------------------------------------------------------------
 void FTerm::init_font()
 {
-  if ( init_values.vgafont && ! setVGAFont() )
+  if ( getStartOptions().vgafont && ! setVGAFont() )
     exitWithMessage ("VGAfont is not supported by this terminal");
 
-  if ( init_values.newfont && ! setNewFont() )
+  if ( getStartOptions().newfont && ! setNewFont() )
     exitWithMessage ("Newfont is not supported by this terminal");
 }
 
@@ -1774,9 +1774,9 @@ void FTerm::init_encoding()
 
   init_tab_quirks();
 
-  if ( init_values.encoding != fc::UNKNOWN )
+  if ( getStartOptions().encoding != fc::UNKNOWN )
   {
-    setEncoding(init_values.encoding);
+    setEncoding(getStartOptions().encoding);
   }
 }
 
@@ -1835,7 +1835,7 @@ void FTerm::init_individual_term_encoding()
     data->setTermEncoding (fc::PC);
     Fputchar = &FTerm::putchar_ASCII;  // function pointer
 
-    if ( hasUTF8() && init_values.encoding == fc::UNKNOWN )
+    if ( hasUTF8() && getStartOptions().encoding == fc::UNKNOWN )
     {
       if ( isXTerminal() )
         Fputchar = &FTerm::putchar_UTF8;  // function pointer
@@ -2032,7 +2032,7 @@ void FTerm::enableMouse()
 {
   // Enable the terminal mouse support
 
-  if ( ! init_values.mouse_support )
+  if ( ! getStartOptions().mouse_support )
     return;
 
   bool gpm_mouse{false};
@@ -2324,7 +2324,7 @@ void FTerm::init (bool disable_alt_screen)
   initTermspecifics();
 
   // Redefine the color palette
-  if ( init_values.color_change )
+  if ( getStartOptions().color_change )
     redefineColorPalette();
 
   // Set 220 Hz beep (100 ms)
@@ -2333,7 +2333,7 @@ void FTerm::init (bool disable_alt_screen)
   // Set FTerm signal handler
   setSignalHandler();
 
-  if ( ! init_values.cursor_optimisation )
+  if ( ! getStartOptions().cursor_optimisation )
     data->supportCursorOptimisation(false);
 
   // Activate the VGA or the new graphic font
@@ -2363,19 +2363,19 @@ void FTerm::initOSspecifics()
 #endif  // defined(__linux__)
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  if ( init_values.meta_sends_escape )
+  if ( getStartOptions().meta_sends_escape )
     freebsd->enableMetaSendsEscape();
   else
     freebsd->disableMetaSendsEscape();
 
-  if ( init_values.change_cursorstyle )
+  if ( getStartOptions().change_cursorstyle )
     freebsd->enableChangeCursorStyle();
   else
     freebsd->disableChangeCursorStyle();
 
   freebsd->init();  // Initialize BSD console
 #elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
-  if ( init_values.meta_sends_escape )
+  if ( getStartOptions().meta_sends_escape )
     openbsd->enableMetaSendsEscape();
   else
     openbsd->disableMetaSendsEscape();
@@ -2443,7 +2443,7 @@ void FTerm::finish()
   xterm->setCursorStyle (fc::steady_block);
 
   // Restore the color palette
-  if ( init_values.color_change )
+  if ( getStartOptions().color_change )
     restoreColorPalette();
 
   // Switch to normal escape key mode
@@ -2457,7 +2457,7 @@ void FTerm::finish()
   resetBeep();
 
   // Disable the terminal mouse support
-  if ( init_values.mouse_support )
+  if ( getStartOptions().mouse_support )
     disableMouse();
 
   // Deactivate meta key sends escape

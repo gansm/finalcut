@@ -1,3 +1,6 @@
+2019-09-06  Markus Gans  <guru.mail@muenster.de>
+	* Outsourcing the initialization data to a separate struct
+
 2019-09-04  Markus Gans  <guru.mail@muenster.de>
 	* The Cygwin and Linux console do not use cp437 character encoding 
 	  by default anymore
