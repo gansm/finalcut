@@ -45,9 +45,6 @@ namespace finalcut
 // class FSystem
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FSystem
 {
   public:
@@ -74,7 +71,6 @@ class FSystem
                              , size_t, struct passwd**) = 0;
     virtual char* realpath (const char*, char*) = 0;
 };
-#pragma pack(pop)
 
 }  // namespace finalcut
 

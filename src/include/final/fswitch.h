@@ -66,9 +66,6 @@ namespace finalcut
 // class FSwitch
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FSwitch : public FToggleButton
 {
   public:
@@ -107,8 +104,6 @@ class FSwitch : public FToggleButton
     std::size_t  switch_offset_pos{0};
     bool         button_pressed{false};
 };
-#pragma pack(pop)
-
 
 // FSwitch inline functions
 //----------------------------------------------------------------------

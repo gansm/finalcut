@@ -30,6 +30,7 @@
 #include "final/ftermdata.h"
 #include "final/fwidget.h"
 #include "final/fwidgetcolors.h"
+#include "final/fwindow.h"
 
 namespace finalcut
 {
@@ -102,23 +103,23 @@ FWidget::~FWidget()  // destructor
 
   // unset clicked widget
   if ( this == getClickedWidget() )
-    setClickedWidget(0);
+    setClickedWidget(nullptr);
 
   // unset the local window widget focus
   if ( flags.focus )
   {
     if ( auto window = FWindow::getWindowWidget(this) )
-      window->setWindowFocusWidget(0);
+      window->setWindowFocusWidget(nullptr);
   }
 
   // unset the global widget focus
   if ( this == FWidget::getFocusWidget() )
-    FWidget::setFocusWidget(0);
+    FWidget::setFocusWidget(nullptr);
 
   // unset main widget
   if ( this == getMainWidget() )
   {
-    setMainWidget(0);
+    setMainWidget(nullptr);
     quit();
   }
 
@@ -833,6 +834,7 @@ bool FWidget::close()
       if ( ! flags.modal )
         close_widget->push_back(this);
     }
+
     return true;
   }
   else

@@ -71,9 +71,6 @@ class FSystem;
 // class FTermOpenBSD
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTermOpenBSD final
 {
   public:
@@ -119,7 +116,7 @@ class FTermOpenBSD final
     static FSystem*    fsystem;
 #endif  // defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 };
-#pragma pack(pop)
+
 
 // FTermOpenBSD inline functions
 //----------------------------------------------------------------------

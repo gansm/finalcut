@@ -144,10 +144,10 @@ void FWindow::setActiveWindow (FWindow* window)
 }
 
 //----------------------------------------------------------------------
-void FWindow::setWindowFocusWidget (const FWidget* obj)
+void FWindow::setWindowFocusWidget (FWidget* obj)
 {
   // set focus widget of this window
-  win_focus_widget = const_cast<FWidget*>(obj);
+  win_focus_widget = obj;
 }
 
 //----------------------------------------------------------------------
@@ -167,7 +167,7 @@ bool FWindow::activateWindow (bool enable)
 void FWindow::unsetActiveWindow()
 {
   // unset the active FWindow object
-  FWidget::setActiveWindow (0);
+  FWidget::setActiveWindow (nullptr);
 }
 
 //----------------------------------------------------------------------
@@ -499,7 +499,7 @@ FWindow* FWindow::getWindowWidget (const FWidget* obj)
   }
 
   if ( obj->isWindowWidget() )
-    return const_cast<FWindow*>(static_cast<const FWindow*>(obj));
+    return const_cast<FWindow*>(reinterpret_cast<const FWindow*>(obj));
   else
     return 0;
 }

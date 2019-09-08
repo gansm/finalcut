@@ -52,15 +52,12 @@ void check_c_string ( const char* s1
 namespace test
 {
 
-#pragma pack(push)
-#pragma pack(1)
 typedef struct
 {
   char* string;
   char  tname[3];
 }
 tcap_map;
-#pragma pack(pop)
 
 static tcap_map tcap[] =
 {
@@ -157,9 +154,6 @@ static tcap_map tcap[] =
 // class FTermcapQuirksTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTermcapQuirksTest : public CPPUNIT_NS::TestFixture
 {
   public:
@@ -207,7 +201,6 @@ class FTermcapQuirksTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 FTermcapQuirksTest::FTermcapQuirksTest()

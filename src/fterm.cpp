@@ -1614,9 +1614,6 @@ void FTerm::init_optiMove()
 
   FOptiMove::termEnv optimove_env =
   {
-    FTermcap::automatic_left_margin,
-    FTermcap::eat_nl_glitch,
-    FTermcap::tabstop,
     TCAP(fc::t_cursor_home),
     TCAP(fc::t_carriage_return),
     TCAP(fc::t_cursor_to_ll),
@@ -1636,7 +1633,10 @@ void FTerm::init_optiMove()
     TCAP(fc::t_erase_chars),
     TCAP(fc::t_repeat_char),
     TCAP(fc::t_clr_bol),
-    TCAP(fc::t_clr_eol)
+    TCAP(fc::t_clr_eol),
+    FTermcap::tabstop,
+    FTermcap::automatic_left_margin,
+    FTermcap::eat_nl_glitch
   };
 
   opti_move->setTermEnvironment(optimove_env);
@@ -1649,9 +1649,6 @@ void FTerm::init_optiAttr()
 
   FOptiAttr::termEnv optiattr_env =
   {
-    FTermcap::ansi_default_color,
-    FTermcap::max_color,
-    FTermcap::attr_without_color,
     TCAP(fc::t_enter_bold_mode),
     TCAP(fc::t_exit_bold_mode),
     TCAP(fc::t_enter_dim_mode),
@@ -1686,7 +1683,10 @@ void FTerm::init_optiAttr()
     TCAP(fc::t_set_background),
     TCAP(fc::t_orig_pair),
     TCAP(fc::t_orig_pair),
-    TCAP(fc::t_orig_colors)
+    TCAP(fc::t_orig_colors),
+    FTermcap::max_color,
+    FTermcap::attr_without_color,
+    FTermcap::ansi_default_color
   };
 
   opti_attr->setTermEnvironment(optiattr_env);

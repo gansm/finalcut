@@ -44,8 +44,8 @@ FStatusKey::FStatusKey(FWidget* parent)
 //----------------------------------------------------------------------
 FStatusKey::FStatusKey (FKey k, const FString& txt, FWidget* parent)
   : FWidget(parent)
-  , key(k)
   , text(txt)
+  , key(k)
 {
   init (parent);
 }
@@ -141,13 +141,13 @@ FStatusBar::~FStatusBar()  // destructor
 
     while ( iter != key_list.end() )
     {
-      (*iter)->setConnectedStatusbar(0);
+      (*iter)->setConnectedStatusbar(nullptr);
       delAccelerator (*iter);
       iter = key_list.erase(iter);
     }
   }
 
-  setStatusBar(0);
+  setStatusBar(nullptr);
 }
 
 
@@ -286,7 +286,7 @@ void FStatusBar::remove (FStatusKey* skey)
     if ( (*iter) == skey )
     {
       iter = key_list.erase(iter);
-      skey->setConnectedStatusbar(0);
+      skey->setConnectedStatusbar(nullptr);
       break;
     }
     else

@@ -37,9 +37,6 @@ using finalcut::FSize;
 // class ProgressDialog
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class ProgressDialog : public finalcut::FDialog
 {
   public:
@@ -71,7 +68,6 @@ class ProgressDialog : public finalcut::FDialog
     finalcut::FButton      more{this};
     finalcut::FButton      quit{this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 ProgressDialog::ProgressDialog (finalcut::FWidget* parent)
@@ -183,9 +179,6 @@ void ProgressDialog::cb_exit_bar (finalcut::FWidget*, FDataPtr)
 // class TextWindow
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class TextWindow : public finalcut::FDialog
 {
   public:
@@ -211,7 +204,6 @@ class TextWindow : public finalcut::FDialog
     // Data members
     finalcut::FTextView scrollText{this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 TextWindow::TextWindow (finalcut::FWidget* parent)
@@ -252,9 +244,6 @@ void TextWindow::adjustSize()
 //----------------------------------------------------------------------
 // class MyDialog
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class MyDialog : public finalcut::FDialog
 {
@@ -365,7 +354,6 @@ class MyDialog : public finalcut::FDialog
     finalcut::FLabel          sum_count{this};
     finalcut::FString         clipboard{};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 MyDialog::MyDialog (finalcut::FWidget* parent)

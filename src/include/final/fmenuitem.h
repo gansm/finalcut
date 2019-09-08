@@ -70,9 +70,6 @@ class FMenuList;
 // class FMenuItem
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FMenuItem : public FWidget
 {
   public:
@@ -178,18 +175,18 @@ class FMenuItem : public FWidget
 
     // Data members
     FString      text{};
+    FMenu*       menu{nullptr};
+    FWidget*     super_menu{nullptr};
+    FDialog*     associated_window{nullptr};
+    std::size_t  text_length{0};
+    FKey         accel_key{0};
+    uChar        hotkey{0};
     bool         selected{false};
     bool         separator{false};
     bool         checkable{false};
     bool         checked{false};
     bool         radio_button{false};
     bool         dialog_index{false};
-    std::size_t  text_length{0};
-    uChar        hotkey{0};
-    FKey         accel_key{0};
-    FMenu*       menu{nullptr};
-    FWidget*     super_menu{nullptr};
-    FDialog*     associated_window{nullptr};
 
     // Friend classes
     friend class FDialogListMenu;
@@ -197,7 +194,6 @@ class FMenuItem : public FWidget
     friend class FMenuBar;
     friend class FMenu;
 };
-#pragma pack(pop)
 
 
 // FMenuItem inline functions

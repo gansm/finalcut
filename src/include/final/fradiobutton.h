@@ -66,9 +66,6 @@ namespace finalcut
 // class FRadioButton
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FRadioButton : public FToggleButton
 {
   public:
@@ -96,7 +93,6 @@ class FRadioButton : public FToggleButton
     void        drawChecked();
     void        drawUnchecked();
 };
-#pragma pack(pop)
 
 
 // FRadioButton inline functions

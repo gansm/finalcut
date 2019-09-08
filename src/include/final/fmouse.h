@@ -81,9 +81,6 @@ namespace finalcut
 // class FMouse
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FMouse
 {
   public:
@@ -193,16 +190,12 @@ class FMouse
     FPoint              mouse{0, 0};       // mouse click position
     FPoint              new_mouse_position{};
 };
-#pragma pack(pop)
 
 
 #ifdef F_HAVE_LIBGPM
 //----------------------------------------------------------------------
 // class FMouseGPM
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FMouseGPM final : public FMouse
 {
@@ -253,7 +246,6 @@ class FMouseGPM final : public FMouse
     bool               gpm_mouse_enabled{false};
     int                stdin_no{0};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 inline bool FMouseGPM::enableGpmMouse()
@@ -272,9 +264,6 @@ inline bool FMouseGPM::isGpmMouseEnabled()
 //----------------------------------------------------------------------
 // class FMouseX11
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FMouseX11 final : public FMouse
 {
@@ -329,15 +318,11 @@ class FMouseX11 final : public FMouse
     char  x11_mouse[MOUSE_BUF_SIZE]{'\0'};
     uChar x11_button_state{all_buttons_released};
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // class FMouseSGR
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FMouseSGR final : public FMouse
 {
@@ -392,15 +377,11 @@ class FMouseSGR final : public FMouse
     char  sgr_mouse[MOUSE_BUF_SIZE]{'\0'};
     uChar sgr_button_state{0x23};
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // class FMouseUrxvt
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FMouseUrxvt final : public FMouse
 {
@@ -455,15 +436,12 @@ class FMouseUrxvt final : public FMouse
     char  urxvt_mouse[MOUSE_BUF_SIZE]{'\0'};
     uChar urxvt_button_state{all_buttons_released};
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // class FMouseControl
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
 class FMouseControl
 {
   public:
@@ -531,7 +509,6 @@ class FMouseControl
     bool           use_gpm_mouse{false};
     bool           use_xterm_mouse{false};
 };
-#pragma pack(pop)
 
 // FMouseControl inline functions
 //----------------------------------------------------------------------

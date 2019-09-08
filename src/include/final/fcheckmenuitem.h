@@ -66,9 +66,6 @@ namespace finalcut
 // class FCheckMenuItem
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FCheckMenuItem : public FMenuItem
 {
   public:
@@ -94,8 +91,6 @@ class FCheckMenuItem : public FMenuItem
     void                processToggle();
     void                processClicked() override;
 };
-#pragma pack(pop)
-
 
 // FCheckMenuItem inline functions
 //----------------------------------------------------------------------

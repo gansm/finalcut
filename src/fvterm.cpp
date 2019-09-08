@@ -645,7 +645,7 @@ void FVTerm::createArea ( const FRect& box
     return;
   }
 
-  area->widget = static_cast<FWidget*>(this);
+  area->widget = reinterpret_cast<FWidget*>(this);
   resizeArea (box, shadow, area);
 }
 

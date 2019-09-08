@@ -44,9 +44,6 @@ namespace finalcut
 // class FPoint
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FPoint
 {
   public:
@@ -94,7 +91,6 @@ class FPoint
     int xpos{0};
     int ypos{0};
 };
-#pragma pack(pop)
 
 
 // FPoint inline functions

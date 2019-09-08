@@ -62,9 +62,6 @@ namespace finalcut
 // class FButton
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FButton : public FWidget
 {
   public:
@@ -165,11 +162,6 @@ class FButton : public FWidget
     bool         click_animation{true};
     int          click_time{150};
     int          space_char{int(' ')};
-    std::size_t  hotkeypos{NOT_SET};
-    std::size_t  indent{0};
-    std::size_t  center_offset{0};
-    std::size_t  vcenter_offset{0};
-    std::size_t  txtlength{0};
     FColor       button_fg{getFWidgetColors().button_active_fg};
     FColor       button_bg{getFWidgetColors().button_active_bg};
     FColor       button_hotkey_fg{getFWidgetColors().button_hotkey_fg};
@@ -177,9 +169,12 @@ class FButton : public FWidget
     FColor       button_focus_bg{getFWidgetColors().button_active_focus_bg};
     FColor       button_inactive_fg{getFWidgetColors().button_inactive_fg};
     FColor       button_inactive_bg{getFWidgetColors().button_inactive_bg};
+    std::size_t  hotkeypos{NOT_SET};
+    std::size_t  indent{0};
+    std::size_t  center_offset{0};
+    std::size_t  vcenter_offset{0};
+    std::size_t  txtlength{0};
 };
-#pragma pack(pop)
-
 
 // FButton inline functions
 //----------------------------------------------------------------------

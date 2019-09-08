@@ -42,9 +42,6 @@ namespace finalcut
 // class FStartOptions
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 struct FStartOptions
 {
   public:
@@ -86,7 +83,6 @@ struct FStartOptions
     uInt8                    : 7;  // padding bits
 #endif
 };
-#pragma pack(pop)
 
 static struct FStartOptions start_options{};
 

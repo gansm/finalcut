@@ -65,9 +65,6 @@ class FLabel;
 // class FLineEdit
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FLineEdit : public FWidget
 {
   public:
@@ -189,17 +186,16 @@ class FLineEdit : public FWidget
     FString      text{""};
     FString      label_text{""};
     FLabel*      label{};
-    label_o      label_orientation{FLineEdit::label_left};
     std::wstring input_filter{};
     dragScroll   drag_scroll{FLineEdit::noScroll};
-    bool         scroll_timer{false};
+    label_o      label_orientation{FLineEdit::label_left};
     int          scroll_repeat{100};
+    bool         scroll_timer{false};
     bool         insert_mode{true};
     std::size_t  cursor_pos{0};
     std::size_t  text_offset{0};
     std::size_t  max_length{std::numeric_limits<std::size_t>::max()};
 };
-#pragma pack(pop)
 
 
 // FLineEdit inline functions

@@ -1,3 +1,7 @@
+2019-09-08  Markus Gans  <guru.mail@muenster.de>
+	* Remove the lines of the #pragma pack() directive from the code 
+	  because they caused a misaligned address
+
 2019-09-06  Markus Gans  <guru.mail@muenster.de>
 	* Outsourcing the initialization data to a separate struct
 

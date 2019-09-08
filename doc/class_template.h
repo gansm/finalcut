@@ -44,9 +44,6 @@ namespace finalcut
 // class FClassName
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FClassName
 {
   public:
@@ -121,7 +118,7 @@ class FClassName
     // Friend class
 
 };
-#pragma pack(pop)
+
 
 // FClassName inline functions
 //----------------------------------------------------------------------

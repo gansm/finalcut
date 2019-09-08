@@ -33,9 +33,6 @@ using finalcut::FSize;
 // class ColorChooser
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class ColorChooser : public finalcut::FWidget
 {
   public:
@@ -68,7 +65,6 @@ class ColorChooser : public finalcut::FWidget
     FColor bg_color{fc::Black};
     finalcut::FLabel headline{this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 ColorChooser::ColorChooser (finalcut::FWidget* parent)
@@ -176,9 +172,6 @@ inline FColor ColorChooser::getBackground()
 // class Brushes
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class Brushes : public finalcut::FWidget
 {
   public:
@@ -215,7 +208,6 @@ class Brushes : public finalcut::FWidget
     FColor  bg_color{fc::Black};
     finalcut::FLabel headline{this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Brushes::Brushes (finalcut::FWidget* parent)
@@ -318,9 +310,6 @@ inline void Brushes::setBackground (FColor color)
 // class MouseDraw
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class MouseDraw : public finalcut::FDialog
 {
   public:
@@ -365,7 +354,7 @@ class MouseDraw : public finalcut::FDialog
     ColorChooser c_chooser{this};
     Brushes      brush{this};
 };
-#pragma pack(pop)
+
 
 //----------------------------------------------------------------------
 MouseDraw::MouseDraw (finalcut::FWidget* parent)

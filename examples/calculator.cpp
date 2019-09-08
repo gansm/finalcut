@@ -42,9 +42,6 @@ constexpr lDouble PI{3.141592653589793238L};
 // class Button
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class Button : public finalcut::FButton
 {
   public:
@@ -61,7 +58,6 @@ class Button : public finalcut::FButton
     // Data member
     bool checked{false};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Button::Button (finalcut::FWidget* parent)
@@ -109,9 +105,6 @@ void Button::onKeyPress (finalcut::FKeyEvent* ev)
 //----------------------------------------------------------------------
 // class Calc
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class Calc : public finalcut::FDialog
 {
@@ -244,7 +237,6 @@ class Calc : public finalcut::FDialog
     std::map<Calc::button, std::shared_ptr<Button> > calculator_buttons{};
     std::map<Calc::button, keyFunction> key_map{};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Calc::Calc (FWidget* parent)

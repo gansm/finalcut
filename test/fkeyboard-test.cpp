@@ -34,8 +34,6 @@
 namespace test
 {
 
-#pragma pack(push)
-#pragma pack(1)
 typedef struct
 {
   int   num;
@@ -43,7 +41,6 @@ typedef struct
   char  tname[4];
 }
 fkeymap;
-#pragma pack(pop)
 
 fkeymap Fkey[] =
 {
@@ -227,9 +224,6 @@ fkeymap Fkey[] =
 // class FKeyboardTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FKeyboardTest : public CPPUNIT_NS::TestFixture
 {
   public:
@@ -282,7 +276,6 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     int  number_of_keys{0};
     finalcut::FKeyboard* keyboard{nullptr};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 FKeyboardTest::FKeyboardTest()

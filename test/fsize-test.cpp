@@ -37,9 +37,6 @@
 // class FSizeTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FSizeTest : public CPPUNIT_NS::TestFixture
 {
   public:
@@ -91,7 +88,6 @@ class FSizeTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 void FSizeTest::classNameTest()

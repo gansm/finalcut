@@ -66,9 +66,6 @@ namespace finalcut
 // class FRadioMenuItem
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FRadioMenuItem : public FMenuItem
 {
   public:
@@ -94,8 +91,6 @@ class FRadioMenuItem : public FMenuItem
     void        processToggle();
     void        processClicked() override;
 };
-#pragma pack(pop)
-
 
 // FRadioMenuItem inline functions
 //----------------------------------------------------------------------

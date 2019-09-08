@@ -48,9 +48,6 @@ namespace finalcut
 // class FTermDetection
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTermDetection final
 {
   public:
@@ -166,7 +163,7 @@ class FTermDetection final
     static bool           get256colorEnvString();
     static char*          termtype_256color_quirks();
     static char*          determineMaxColor (char[]);
-    static const FString  getXTermColorName (int);
+    static const FString  getXTermColorName (FColor);
     static char*          parseAnswerbackMsg (char[]);
     static const FString  getAnswerbackMsg();
     static char*          parseSecDA (char[]);
@@ -222,7 +219,6 @@ class FTermDetection final
       int terminal_id_hardware{-1};
     } secondary_da;
 };
-#pragma pack(pop)
 
 // FTermDetection inline functions
 //----------------------------------------------------------------------

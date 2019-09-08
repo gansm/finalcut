@@ -36,9 +36,6 @@ using finalcut::FSize;
 // class CheckList
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class CheckList : public finalcut::FDialog
 {
   public:
@@ -69,7 +66,6 @@ class CheckList : public finalcut::FDialog
     finalcut::FListView  listView{this};
     finalcut::FStatusBar status_bar{this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 CheckList::CheckList (finalcut::FWidget* parent)

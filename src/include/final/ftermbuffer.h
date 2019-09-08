@@ -49,9 +49,6 @@ class FColorPair;
 // class FTermBuffer
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTermBuffer
 {
   public:
@@ -94,7 +91,6 @@ class FTermBuffer
   private:
     charDataVector         data{};
 };
-#pragma pack(pop)
 
 
 // FTermBuffer inline functions

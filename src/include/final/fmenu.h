@@ -73,9 +73,6 @@ class FMenuItem;
 // class FMenu
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FMenu : public FWindow, public FMenuList
 {
   public:
@@ -239,7 +236,6 @@ class FMenu : public FWindow, public FMenuList
     bool         mouse_down{false};
     bool         has_checkable_items{false};
 };
-#pragma pack(pop)
 
 
 // FMenu inline functions

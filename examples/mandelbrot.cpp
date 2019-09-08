@@ -31,9 +31,6 @@ using finalcut::FSize;
 // class Mandelbrot
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class Mandelbrot : public finalcut::FDialog
 {
   public:
@@ -52,7 +49,7 @@ class Mandelbrot : public finalcut::FDialog
     void draw() override;
     void adjustSize() override;
 };
-#pragma pack(pop)
+
 
 //----------------------------------------------------------------------
 Mandelbrot::Mandelbrot (finalcut::FWidget* parent)

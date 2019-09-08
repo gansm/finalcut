@@ -50,9 +50,6 @@ class FTermLinux;
 // class FKeyboardCommand
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FKeyboardCommand final
 {
   public:
@@ -68,15 +65,11 @@ class FKeyboardCommand final
     FApplication* instance{nullptr};
     void (FApplication::*handler)(){nullptr};
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // class FKeyboard
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FKeyboard final
 {
@@ -160,30 +153,29 @@ class FKeyboard final
     void                escapeKeyPressed();
 
     // Data members
-    FKey                key{0};
-    char                read_buf[READ_BUF_SIZE]{'\0'};
-    char                fifo_buf[FIFO_BUF_SIZE]{'\0'};
-    int                 fifo_offset{0};
-    bool                fifo_in_use{false};
-    int                 stdin_status_flags{0};
-    static uInt64       key_timeout;
-    bool                input_data_pending{false};
-    bool                utf8_input{false};
-    bool                mouse_support{true};
-    bool                non_blocking_stdin{false};
     FKeyboardCommand    keypressed_cmd{};
     FKeyboardCommand    keyreleased_cmd{};
     FKeyboardCommand    escape_key_cmd{};
-
-    static timeval      time_keypressed;
-    fc::fkeymap*        key_map{nullptr};
 
 #if defined(__linux__)
     #undef linux
     static FTermLinux*  linux;
 #endif
+
+    static timeval      time_keypressed;
+    static uInt64       key_timeout;
+    fc::fkeymap*        key_map{nullptr};
+    FKey                key{0};
+    char                read_buf[READ_BUF_SIZE]{'\0'};
+    char                fifo_buf[FIFO_BUF_SIZE]{'\0'};
+    int                 fifo_offset{0};
+    int                 stdin_status_flags{0};
+    bool                fifo_in_use{false};
+    bool                input_data_pending{false};
+    bool                utf8_input{false};
+    bool                mouse_support{true};
+    bool                non_blocking_stdin{false};
 };
-#pragma pack(pop)
 
 // FKeyboard inline functions
 //----------------------------------------------------------------------

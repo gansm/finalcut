@@ -149,9 +149,6 @@ class FTermXTerminal;
 // class FTerm
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTerm final
 {
   public:
@@ -388,7 +385,6 @@ class FTerm final
 #endif
 };
 
-#pragma pack(pop)
 
 // FTerm inline functions
 //----------------------------------------------------------------------

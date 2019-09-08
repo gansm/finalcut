@@ -31,9 +31,6 @@ using finalcut::FSize;
 // class Watch
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class Watch : public finalcut::FDialog
 {
   public:
@@ -73,7 +70,6 @@ class Watch : public finalcut::FDialog
     finalcut::FSwitch seconds_sw{L"Seconds", this};
     finalcut::FButton quit_btn{L"&Quit", this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Watch::Watch (FWidget* parent)

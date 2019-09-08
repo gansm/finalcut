@@ -90,9 +90,6 @@ class FObject;
 // class FApplication
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FApplication : public FWidget
 {
   public:
@@ -201,8 +198,6 @@ class FApplication : public FWidget
     static FKeyboard*     keyboard;
     static FWidget*       keyboard_widget;
 };
-#pragma pack(pop)
-
 
 // FApplication inline functions
 //----------------------------------------------------------------------

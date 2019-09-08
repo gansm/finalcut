@@ -196,7 +196,7 @@ FListViewItem::FListViewItem (FObjectIterator parent_iter)
 FListViewItem::FListViewItem ( const FStringList& cols
                              , FDataPtr data
                              , FObjectIterator parent_iter )
-  : FObject(0)
+  : FObject(nullptr)
   , column_list(cols)
   , data_pointer(data)
 {

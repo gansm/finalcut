@@ -37,9 +37,6 @@
 // class FPointTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FPointTest : public CPPUNIT_NS::TestFixture
 {
   public:
@@ -85,7 +82,7 @@ class FPointTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
+
 
 //----------------------------------------------------------------------
 void FPointTest::classNameTest()

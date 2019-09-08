@@ -72,9 +72,6 @@ class FString;
 // class FListViewItem
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FListViewItem : public FObject
 {
   public:
@@ -142,7 +139,6 @@ class FListViewItem : public FObject
     friend class FListView;
     friend class FListViewIterator;
 };
-#pragma pack(pop)
 
 
 // FListViewItem inline functions
@@ -187,9 +183,6 @@ inline bool FListViewItem::isCheckable() const
 // class FListViewIterator
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FListViewIterator
 {
   public:
@@ -231,7 +224,6 @@ class FListViewIterator
     FObjectIterator      node{};
     int                  position{0};
 };
-#pragma pack(pop)
 
 
 // FListViewIterator inline functions
@@ -262,9 +254,6 @@ inline int FListViewIterator::getPosition() const
 //----------------------------------------------------------------------
 // class FListView
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FListView : public FWidget
 {
@@ -458,48 +447,46 @@ class FListView : public FWidget
     FTermBuffer          headerline{};
     FScrollbarPtr        vbar{nullptr};
     FScrollbarPtr        hbar{nullptr};
+    sortTypes            sort_type{};
+    FPoint               clicked_expander_pos{-1, -1};
+    FPoint               clicked_header_pos{-1, -1};
+    const FListViewItem* clicked_checkbox_item{nullptr};
+    std::size_t          nf_offset{0};
+    std::size_t          max_line_width{1};
     fc::dragScroll       drag_scroll{fc::noScroll};
     int                  scroll_repeat{100};
     int                  scroll_distance{1};
+    int                  xoffset{0};
+    int                  sort_column{-1};
+    fc::sorting_order    sort_order{fc::unsorted};
     bool                 scroll_timer{false};
     bool                 tree_view{false};
     bool                 hide_sort_indicator{false};
     bool                 has_checkable_items{false};
-    FPoint               clicked_expander_pos{-1, -1};
-    FPoint               clicked_header_pos{-1, -1};
-    const FListViewItem* clicked_checkbox_item{nullptr};
-    int                  xoffset{0};
-    std::size_t          nf_offset{0};
-    std::size_t          max_line_width{1};
-    int                  sort_column{-1};
-    sortTypes            sort_type{};
-    fc::sorting_order    sort_order{fc::unsorted};
+
+    // Function Pointer
     bool (*user_defined_ascending) (const FObject*, const FObject*){nullptr};
     bool (*user_defined_descending) (const FObject*, const FObject*){nullptr};
 
     // Friend class
     friend class FListViewItem;
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // struct FListView::Header
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
 struct FListView::Header
 {
   public:
     Header() = default;
 
     FString name{};
+    fc::text_alignment alignment{fc::alignLeft};
     int width{0};
     bool fixed_width{false};
-    fc::text_alignment alignment{fc::alignLeft};
 };
-#pragma pack(pop)
 
 
 // FListView inline functions

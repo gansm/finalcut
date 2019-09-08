@@ -71,8 +71,6 @@ class FTermDetection;
 //----------------------------------------------------------------------
 // class FTermcap
 //----------------------------------------------------------------------
-#pragma pack(push)
-#pragma pack(1)
 
 class FTermcap final
 {
@@ -126,7 +124,7 @@ class FTermcap final
     static FTermData*      fterm_data;
     static FTermDetection* term_detection;
 };
-#pragma pack(pop)
+
 
 // FTermcap inline functions
 //----------------------------------------------------------------------

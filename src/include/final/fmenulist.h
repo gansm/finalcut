@@ -55,9 +55,6 @@ namespace finalcut
 // class FMenuList
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FMenuList
 {
   public:
@@ -103,7 +100,6 @@ class FMenuList
     FMenuItem*               selected_item{};
     std::vector<FMenuItem*>  item_list{};
 };
-#pragma pack(pop)
 
 
 // FMenuList inline functions

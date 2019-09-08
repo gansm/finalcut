@@ -34,9 +34,6 @@ using finalcut::FColorPair;
 // class AttribDlg
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class AttribDlg : public finalcut::FDialog
 {
   public:
@@ -72,7 +69,6 @@ class AttribDlg : public finalcut::FDialog
     finalcut::FButton next_button{"&Next >", this};
     finalcut::FButton back_button{"< &Back", this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 AttribDlg::AttribDlg (finalcut::FWidget* parent)
@@ -197,9 +193,6 @@ void AttribDlg::adjustSize()
 // class AttribDemo
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class AttribDemo : public finalcut::FWidget
 {
   public:
@@ -241,7 +234,6 @@ class AttribDemo : public finalcut::FWidget
     // Data member
     int colors;
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 AttribDemo::AttribDemo (finalcut::FWidget* parent)

@@ -47,9 +47,6 @@ class FTermDetection;
 // class FTermXTerminal
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTermXTerminal final
 {
   public:
@@ -156,7 +153,7 @@ class FTermXTerminal final
     static FTermDetection*      term_detection;
     static fc::xtermCursorStyle cursor_style;
 };
-#pragma pack(pop)
+
 
 // FTermXTerminal inline functions
 //----------------------------------------------------------------------

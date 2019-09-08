@@ -76,9 +76,6 @@ class FTermData;
 // class FTermFreeBSD
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTermFreeBSD final
 {
   public:
@@ -134,7 +131,7 @@ class FTermFreeBSD final
     static FSystem*    fsystem;
     static FTermData*  fterm_data;
 };
-#pragma pack(pop)
+
 
 // FTermFreeBSD inline functions
 //----------------------------------------------------------------------

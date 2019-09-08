@@ -56,9 +56,6 @@ void check_c_string ( const char* s1
 // class FTermDetectionTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTermDetectionTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 {
   public:
@@ -120,7 +117,6 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 FTermDetectionTest::FTermDetectionTest()

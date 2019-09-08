@@ -31,9 +31,6 @@ using finalcut::FSize;
 // class Scrollview
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class Scrollview : public finalcut::FScrollView
 {
   public:
@@ -72,7 +69,6 @@ class Scrollview : public finalcut::FScrollView
     finalcut::FButton go_west{pointer_left, this};
     finalcut::FButton go_north{pointer_up, this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Scrollview::Scrollview (finalcut::FWidget* parent)
@@ -194,9 +190,6 @@ void Scrollview::cb_go_north (finalcut::FWidget*, FDataPtr)
 // class Scrollviewdemo
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class Scrollviewdemo : public finalcut::FDialog
 {
   public:
@@ -217,7 +210,6 @@ class Scrollviewdemo : public finalcut::FDialog
     finalcut::FButton quit_btn{"&Quit", this};
     finalcut::FLabel label{this};
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------

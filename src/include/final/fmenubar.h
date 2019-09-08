@@ -72,9 +72,6 @@ class FMenu;
 // class FMenuBar
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FMenuBar : public FWindow, public FMenuList
 {
   public:
@@ -155,12 +152,11 @@ class FMenuBar : public FWindow, public FMenuList
     friend class FMenuItem;
 
     // Data members
+    std::size_t screenWidth{80};
     bool        mouse_down{false};
     bool        drop_down{false};
     bool        focus_changed{false};
-    std::size_t screenWidth{80};
 };
-#pragma pack(pop)
 
 
 // FMenuBar inline functions

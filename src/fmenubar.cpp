@@ -49,7 +49,7 @@ FMenuBar::FMenuBar(FWidget* parent)
 //----------------------------------------------------------------------
 FMenuBar::~FMenuBar()  // destructor
 {
-  setMenuBar(0);
+  setMenuBar(nullptr);
 }
 
 
@@ -456,7 +456,7 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
         }
         else
         {
-          setSelectedItem(0);
+          setSelectedItem(nullptr);
           redraw();
           drop_down = false;
           (*iter)->processClicked();
@@ -785,7 +785,7 @@ bool FMenuBar::clickItem (FMenuItem* item)
 
   if ( getSelectedItem() == item )
   {
-    setSelectedItem(0);
+    setSelectedItem(nullptr);
     leaveMenuBar();
     drop_down = false;
     item->processClicked();
@@ -805,7 +805,7 @@ void FMenuBar::unselectMenuItem (FMenuItem* item)
   drop_down = false;
 
   if ( getSelectedItem() == item )
-    setSelectedItem(0);
+    setSelectedItem(nullptr);
 }
 
 //----------------------------------------------------------------------

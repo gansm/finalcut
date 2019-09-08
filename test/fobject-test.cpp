@@ -37,9 +37,6 @@ namespace test
 // class FObject_protected
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FObject_protected : public finalcut::FObject
 {
   public:
@@ -82,11 +79,8 @@ class FObject_protected : public finalcut::FObject
     // Data member
     uInt count;
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
-#pragma pack(push)
-#pragma pack(1)
 
 class FObject_timer : public finalcut::FObject
 {
@@ -110,11 +104,8 @@ class FObject_timer : public finalcut::FObject
     // Data member
     int value{0};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
-#pragma pack(push)
-#pragma pack(1)
 
 class FObject_userEvent : public finalcut::FObject
 {
@@ -138,7 +129,6 @@ class FObject_userEvent : public finalcut::FObject
     // Data member
     int value{0};
 };
-#pragma pack(pop)
 
 }  // namespace test
 
@@ -146,9 +136,6 @@ class FObject_userEvent : public finalcut::FObject
 //----------------------------------------------------------------------
 // class FObjectTest
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FObjectTest : public CPPUNIT_NS::TestFixture
 {
@@ -191,7 +178,6 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 void FObjectTest::classNameTest()

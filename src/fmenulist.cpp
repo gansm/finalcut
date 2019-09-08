@@ -46,7 +46,7 @@ FMenuList::~FMenuList()  // destructor
 
   while ( iter != item_list.end() )
   {
-    (*iter)->setSuperMenu(0);
+    (*iter)->setSuperMenu(nullptr);
     iter = item_list.erase(iter);
   }
 }
@@ -74,7 +74,7 @@ void FMenuList::remove (FMenuItem* i)
     if ( (*iter) == i )
     {
       iter = item_list.erase(iter);
-      i->setSuperMenu(0);
+      i->setSuperMenu(nullptr);
       break;
     }
     else
@@ -131,7 +131,7 @@ void FMenuList::unselectItem()
   if ( hasSelectedItem() )
     getSelectedItem()->unsetSelected();
 
-  setSelectedItem(0);
+  setSelectedItem(nullptr);
 }
 
 }  // namespace finalcut

@@ -61,9 +61,6 @@ namespace finalcut
 // class FProgressbar
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FProgressbar : public FWidget
 {
   public:
@@ -110,7 +107,6 @@ class FProgressbar : public FWidget
     std::size_t  percentage{NOT_SET};
     std::size_t  bar_length{getWidth()};
 };
-#pragma pack(pop)
 
 
 // FProgressbar inline functions

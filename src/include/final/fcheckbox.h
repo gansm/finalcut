@@ -66,9 +66,6 @@ namespace finalcut
 // class FCheckBox
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FCheckBox : public FToggleButton
 {
   public:
@@ -96,8 +93,6 @@ class FCheckBox : public FToggleButton
     void        drawChecked();
     void        drawUnchecked();
 };
-#pragma pack(pop)
-
 
 // FCheckBox inline functions
 //----------------------------------------------------------------------

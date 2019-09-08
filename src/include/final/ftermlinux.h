@@ -66,9 +66,6 @@ class FTermDetection;
 // class FTermLinux
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTermLinux final
 {
   public:
@@ -193,7 +190,7 @@ class FTermLinux final
     static int                    framebuffer_bpp;
 #endif  // defined(__linux__)
 };
-#pragma pack(pop)
+
 
 // FTermLinux inline functions
 //----------------------------------------------------------------------

@@ -67,9 +67,6 @@ class FString;
 // class FTextView
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTextView : public FWidget
 {
   public:
@@ -167,8 +164,6 @@ class FTextView : public FWidget
     int                nf_offset{0};
     std::size_t        maxLineWidth{0};
 };
-#pragma pack(pop)
-
 
 // FListBox inline functions
 //----------------------------------------------------------------------

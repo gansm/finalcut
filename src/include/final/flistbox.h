@@ -69,9 +69,6 @@ class FString;
 // class FListBoxItem
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FListBoxItem
 {
   public:
@@ -108,7 +105,6 @@ class FListBoxItem
     fc::brackets_type brackets{fc::NoBrackets};
     bool              selected{false};
 };
-#pragma pack(pop)
 
 
 // FListBoxItem inline functions
@@ -140,9 +136,6 @@ inline void FListBoxItem::clear()
 //----------------------------------------------------------------------
 // class FListBox
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FListBox : public FWidget
 {
@@ -329,27 +322,26 @@ class FListBox : public FWidget
     // Data members
     listBoxItems    itemlist{};
     FDataPtr        source_container{nullptr};
-    convert_type    conv_type{FListBox::no_convert};
     FScrollbarPtr   vbar{nullptr};
     FScrollbarPtr   hbar{nullptr};
     FString         text{};
     FString         inc_search{};
-    bool            multi_select{false};
-    bool            mouse_select{false};
+    convert_type    conv_type{FListBox::no_convert};
     fc::dragScroll  drag_scroll{fc::noScroll};
-    bool            scroll_timer{false};
     int             scroll_repeat{100};
     int             scroll_distance{1};
-    std::size_t     current{0};
     int             last_current{-1};
     int             secect_from_item{-1};
     int             xoffset{0};
     int             yoffset{0};
     int             last_yoffset{-1};
+    std::size_t     current{0};
     std::size_t     nf_offset{0};
     std::size_t     max_line_width{0};
+    bool            multi_select{false};
+    bool            mouse_select{false};
+    bool            scroll_timer{false};
 };
-#pragma pack(pop)
 
 
 // FListBox inline functions

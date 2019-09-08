@@ -74,9 +74,6 @@ class FStatusBar;
 // class FStatusKey
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FStatusKey : public FWidget
 {
   public:
@@ -125,13 +122,12 @@ class FStatusKey : public FWidget
     friend class FStatusBar;
 
     // Data members
-    FKey        key{0};
     FString     text{};
+    FStatusBar* bar{nullptr};
+    FKey        key{0};
     bool        active{false};
     bool        mouse_focus{false};
-    FStatusBar* bar{nullptr};
 };
-#pragma pack(pop)
 
 
 // FStatusKey inline functions
@@ -187,9 +183,6 @@ inline void FStatusKey::setConnectedStatusbar (FStatusBar* sb)
 //----------------------------------------------------------------------
 // class FStatusBar
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FStatusBar : public FWindow
 {
@@ -253,13 +246,12 @@ class FStatusBar : public FWindow
     // Data members
     keyList             key_list{};
     FString             text{""};
-    bool                mouse_down{};
     std::size_t         screenWidth{80};
     int                 keyname_len{0};
     int                 x{-1};
     int                 x_msg{-1};
+    bool                mouse_down{};
 };
-#pragma pack(pop)
 
 
 // FStatusBar inline functions

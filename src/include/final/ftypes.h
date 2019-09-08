@@ -106,9 +106,6 @@ struct getPrecision
 
 typedef std::unordered_map<wchar_t, wchar_t> charSubstitution;
 
-#pragma pack(push)
-#pragma pack(1)
-
 typedef struct
 {
   wchar_t code;          // character code
@@ -118,7 +115,7 @@ typedef struct
 
   union attribute
   {
-    struct alignas(4)
+    struct
     {
       // Attribute byte #0
       uInt8 bold          : 1;  // bold
@@ -142,17 +139,17 @@ typedef struct
       uInt8 no_changes    : 1;  // no changes required
       uInt8 printed       : 1;  // is printed to VTerm
       uInt8               : 6;  // padding bits
+      // Attribute byte #3
+      uInt8               : 8;  // padding byte
     } bit;
 
-    alignas(4) uInt8 byte[3];
+    uInt8 byte[4];
   } attr;
 } charData;
-#pragma pack(pop)
 
 namespace fc
 {
-#pragma pack(push)
-#pragma pack(1)
+
 typedef struct
 {
   FKey  num;
@@ -174,7 +171,6 @@ typedef struct
   char string[25];
 }
 keyname;
-#pragma pack(pop)
 
 }  // namespace fc
 

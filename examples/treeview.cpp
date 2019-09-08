@@ -112,9 +112,6 @@ bool sortDescending ( const finalcut::FObject* lhs
 // class Treeview
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class Treeview : public finalcut::FDialog
 {
   public:
@@ -151,15 +148,12 @@ class Treeview : public finalcut::FDialog
     static TreeItem     south_america[];
     static TreeItem     oceania[];
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // struct Treeview::TreeItem
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
 struct Treeview::TreeItem
 {
   const char* const* begin() const
@@ -174,7 +168,6 @@ struct Treeview::TreeItem
   const char* density;
   TreeItem*   child_element;
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 // class Treeview - array data

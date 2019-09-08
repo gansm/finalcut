@@ -46,9 +46,6 @@ class FTermDetection;
 // class FTermcapsQuirks
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTermcapQuirks final
 {
   public:
@@ -85,7 +82,6 @@ class FTermcapQuirks final
     static FTermData*          fterm_data;
     static FTermDetection*     term_detection;
 };
-#pragma pack(pop)
 
 // FTermcapQuirks inline functions
 //----------------------------------------------------------------------

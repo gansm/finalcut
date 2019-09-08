@@ -61,9 +61,6 @@ namespace finalcut
 // class FScrollbar
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FScrollbar : public FWidget
 {
   public:
@@ -144,27 +141,25 @@ class FScrollbar : public FWidget
     void                processScroll();
 
     // Data members
-    sType           scroll_type{FScrollbar::noScroll};
-    bool            threshold_reached{false};
-    int             threshold_time{500};
-    int             repeat_time{10};
-    int             slider_click_pos{-1};
-    int             slider_click_stop_pos{-1};
-    int             current_slider_pos{-1};
-    int             slider_pos{0};
-    std::size_t     slider_length{18};  // = bar_length
-    std::size_t     bar_length{18};     // = length - 2
-    int             val{0};
-    int             min{0};
-    int             max{99};
-    double          steps{1};
-    int             pagesize{0};
-    std::size_t     length{20};
-    fc::orientation bar_orientation{fc::vertical};
-    int             max_color{getMaxColor()};
+    sType               scroll_type{FScrollbar::noScroll};
+    bool                threshold_reached{false};
+    int                 threshold_time{500};
+    int                 repeat_time{10};
+    int                 slider_click_pos{-1};
+    int                 slider_click_stop_pos{-1};
+    int                 current_slider_pos{-1};
+    int                 slider_pos{0};
+    std::size_t         slider_length{18};  // = bar_length
+    std::size_t         bar_length{18};     // = length - 2
+    int                 val{0};
+    int                 min{0};
+    int                 max{99};
+    int                 pagesize{0};
+    double              steps{1};
+    std::size_t         length{20};
+    fc::orientation     bar_orientation{fc::vertical};
+    int                 max_color{getMaxColor()};
 };
-#pragma pack(pop)
-
 
 // FScrollbar inline functions
 //----------------------------------------------------------------------

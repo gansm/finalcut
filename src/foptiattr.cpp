@@ -56,10 +56,6 @@ void FOptiAttr::setTermEnvironment (termEnv& term_env)
   // Set all required termcap values at once
   // and initialize the FOptiAttr environment
 
-  ansi_default_color = term_env.ansi_default_color;
-  max_color = term_env.max_color;
-  attr_without_color = term_env.attr_without_color;
-
   set_enter_bold_mode (term_env.t_enter_bold_mode);
   set_exit_bold_mode (term_env.t_exit_bold_mode);
   set_enter_dim_mode (term_env.t_enter_dim_mode);
@@ -95,6 +91,10 @@ void FOptiAttr::setTermEnvironment (termEnv& term_env)
   set_term_color_pair (term_env.t_set_color_pair);
   set_orig_pair (term_env.t_orig_pair);
   set_orig_orig_colors (term_env.t_orig_colors);
+
+  max_color = term_env.max_color;
+  attr_without_color = term_env.attr_without_color;
+  ansi_default_color = term_env.ansi_default_color;
 
   initialize();
 }

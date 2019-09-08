@@ -72,9 +72,6 @@ namespace finalcut
 // class FDialogListMenu
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FDialogListMenu : public FMenu
 {
   public:
@@ -98,7 +95,6 @@ class FDialogListMenu : public FMenu
     // Method
     void init();
 };
-#pragma pack(pop)
 
 
 // FDialogListMenu inline functions

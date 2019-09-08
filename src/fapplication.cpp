@@ -691,7 +691,7 @@ bool FApplication::processDialogSwitchAccelerator()
       if ( move_size )
       {
         auto w = move_size;
-        setMoveSizeWidget(0);
+        setMoveSizeWidget(nullptr);
         w->redraw();
       }
 
@@ -729,7 +729,7 @@ bool FApplication::processAccelerator (const FWidget*& widget)
         if ( move_size )
         {
           auto w = move_size;
-          setMoveSizeWidget(0);
+          setMoveSizeWidget(nullptr);
           w->redraw();
         }
 
@@ -807,7 +807,7 @@ void FApplication::unsetMoveSizeMode()
   if ( move_size )
   {
     auto w = move_size;
-    setMoveSizeWidget(0);
+    setMoveSizeWidget(nullptr);
     w->redraw();
   }
 }
@@ -1011,7 +1011,7 @@ void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
 
     if ( ! mouse->isRightButtonPressed()
       && ! mouse->isMiddleButtonPressed() )
-      setClickedWidget(0);
+      setClickedWidget(nullptr);
 
     sendEvent (released_widget, &m_up_ev);
   }
@@ -1045,7 +1045,7 @@ void FApplication::sendMouseRightClickEvent ( const FPoint& widgetMousePos
 
     if ( ! mouse->isLeftButtonPressed()
       && ! mouse->isMiddleButtonPressed() )
-      setClickedWidget(0);
+      setClickedWidget(nullptr);
 
     sendEvent (released_widget, &m_up_ev);
   }
@@ -1071,7 +1071,7 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
 
     // gnome-terminal sends no released on middle click
     if ( isGnomeTerminal() )
-      setClickedWidget(0);
+      setClickedWidget(nullptr);
   }
   else if ( mouse->isMiddleButtonReleased() )
   {
@@ -1084,7 +1084,7 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
     if ( ! mouse->isLeftButtonPressed()
       && ! mouse->isRightButtonPressed() )
     {
-      setClickedWidget(0);
+      setClickedWidget(nullptr);
     }
 
     sendEvent (released_widget, &m_up_ev);
@@ -1107,7 +1107,7 @@ void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
                          , mouse_position
                          , fc::WheelUp );
     auto scroll_over_widget = clicked;
-    setClickedWidget(0);
+    setClickedWidget(nullptr);
     sendEvent(scroll_over_widget, &wheel_ev);
   }
 
@@ -1118,7 +1118,7 @@ void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
                          , mouse_position
                          , fc::WheelDown );
     auto scroll_over_widget = clicked;
-    setClickedWidget(0);
+    setClickedWidget(nullptr);
     sendEvent (scroll_over_widget, &wheel_ev);
   }
 }

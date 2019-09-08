@@ -43,9 +43,6 @@ namespace test
 // class ConEmu
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class ConEmu
 {
   public:
@@ -142,7 +139,6 @@ class ConEmu
     static bool* shared_state;
     static char* colorname[];
 };
-#pragma pack(pop)
 
 // static class attributes
 bool* ConEmu::shared_state = nullptr;

@@ -64,9 +64,6 @@ namespace finalcut
 // class FLabel
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FLabel : public FWidget
 {
   public:
@@ -153,18 +150,16 @@ class FLabel : public FWidget
                                   , std::size_t, std::size_t = 0 );
 
     // Data members
-    FStringList        multiline_text{};
-    bool               multiline{false};
-    FString            text{};
-    fc::text_alignment alignment{fc::alignLeft};
-    FColor             emphasis_color{getFWidgetColors().label_emphasis_fg};
-    FColor             ellipsis_color{getFWidgetColors().label_ellipsis_fg};
-    bool               emphasis{false};
-    bool               reverse_mode{false};
-    FWidget*           accel_widget{nullptr};
+    FStringList         multiline_text{};
+    FString             text{};
+    FWidget*            accel_widget{nullptr};
+    fc::text_alignment  alignment{fc::alignLeft};
+    FColor              emphasis_color{getFWidgetColors().label_emphasis_fg};
+    FColor              ellipsis_color{getFWidgetColors().label_ellipsis_fg};
+    bool                multiline{false};
+    bool                emphasis{false};
+    bool                reverse_mode{false};
 };
-#pragma pack(pop)
-
 
 // FLabel inline functions
 //----------------------------------------------------------------------

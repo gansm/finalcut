@@ -68,9 +68,6 @@ class FUserEvent;
 // class FObject
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FObject
 {
   public:
@@ -158,15 +155,14 @@ class FObject
     virtual void performTimerAction (const FObject*, const FEvent*);
 
     // Data members
-    FObject*            parent_obj{nullptr};
-    FObjectList         children_list{};  // no children yet
-    bool                has_parent{false};
-    bool                widget_object{false};
-    static bool         timer_modify_lock;
-    static TimerList*   timer_list;
+    FObject*             parent_obj{nullptr};
+    FObjectList          children_list{};  // no children yet
+    bool                 has_parent{false};
+    bool                 widget_object{false};
+    static bool          timer_modify_lock;
+    static TimerList*    timer_list;
 };
 
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 inline const char* FObject::getClassName() const

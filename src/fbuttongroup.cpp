@@ -63,7 +63,7 @@ FButtonGroup::~FButtonGroup()  // destructor
   while ( iter != buttonlist.end() )
   {
     auto toggle_button = static_cast<FToggleButton*>(*iter);
-    toggle_button->setGroup(0);
+    toggle_button->setGroup(nullptr);
     iter = buttonlist.erase(iter);
   }
 }
@@ -272,7 +272,7 @@ void FButtonGroup::remove (FToggleButton* button)
     if ( toggle_button == button )
     {
       iter = buttonlist.erase(iter);
-      button->setGroup(0);
+      button->setGroup(nullptr);
       button->delCallback(this);
       break;
     }

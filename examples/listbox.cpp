@@ -76,9 +76,6 @@ FString& mapToString ( std::map<FString
 // class Listbox
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class Listbox : public FDialog
 {
   public:
@@ -105,7 +102,6 @@ class Listbox : public FDialog
     FListBox list3{this};
     FButton  Quit{this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Listbox::Listbox (FWidget* parent)

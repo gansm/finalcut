@@ -92,9 +92,6 @@ class FSystem;
 // class FFileDialog
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FFileDialog : public FDialog
 {
   public:
@@ -216,8 +213,6 @@ class FFileDialog : public FDialog
     friend bool sortDirFirst ( const FFileDialog::dir_entry&
                              , const FFileDialog::dir_entry& );
 };
-#pragma pack(pop)
-
 
 // FMessageBox inline functions
 //----------------------------------------------------------------------

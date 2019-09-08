@@ -36,9 +36,6 @@ using finalcut::FSize;
 // class TextWindow
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class SegmentView : public finalcut::FDialog
 {
   public:
@@ -69,7 +66,6 @@ class SegmentView : public finalcut::FDialog
     finalcut::FLineEdit Input{"0123", this};
     finalcut::FButton Exit{"E&xit", this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 SegmentView::SegmentView (finalcut::FWidget* parent)

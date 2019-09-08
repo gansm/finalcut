@@ -64,9 +64,6 @@ namespace test
 // class FSystemTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FSystemTest : public finalcut::FSystem
 {
   public:
@@ -155,7 +152,6 @@ class FSystemTest : public finalcut::FSystem
     static uChar vga8x16[];
     static struct unipair unicode_cp437_pairs[];
 };
-#pragma pack(pop)
 
 
 // private data member of FSystemTest
@@ -1477,9 +1473,6 @@ void FSystemTest::initFScreenInfo()
 // class FTermLinuxTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTermLinuxTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 {
   public:
@@ -1508,7 +1501,7 @@ class FTermLinuxTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
+
 
 //----------------------------------------------------------------------
 FTermLinuxTest::FTermLinuxTest()

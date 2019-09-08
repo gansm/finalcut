@@ -42,9 +42,6 @@ namespace test
 // class FSystemTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FSystemTest : public finalcut::FSystem
 {
   public:
@@ -81,7 +78,7 @@ class FSystemTest : public finalcut::FSystem
     static keymap_t keymap;
     static keymap_t terminal_keymap;
 };
-#pragma pack(pop)
+
 
 // private data member of FSystemTest
 //----------------------------------------------------------------------
@@ -583,9 +580,6 @@ struct keymap_t& FSystemTest::getTerminalKeymap()
 // class ftermfreebsdTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class ftermfreebsdTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 {
   public:
@@ -607,7 +601,6 @@ class ftermfreebsdTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 ftermfreebsdTest::ftermfreebsdTest()

@@ -85,9 +85,6 @@ void FOptiMove::setTermEnvironment (termEnv& term_env)
 {
   // Set all required termcap values at once
 
-  set_auto_left_margin (term_env.automatic_left_margin);
-  set_eat_newline_glitch (term_env.eat_nl_glitch);
-  setTabStop (term_env.tabstop);
   set_cursor_home (term_env.t_cursor_home);
   set_cursor_to_ll (term_env.t_cursor_to_ll);
   set_carriage_return (term_env.t_carriage_return);
@@ -108,6 +105,9 @@ void FOptiMove::setTermEnvironment (termEnv& term_env)
   set_repeat_char (term_env.t_repeat_char);
   set_clr_bol (term_env.t_clr_bol);
   set_clr_eol (term_env.t_clr_eol);
+  setTabStop (term_env.tabstop);
+  set_auto_left_margin (term_env.automatic_left_margin);
+  set_eat_newline_glitch (term_env.eat_nl_glitch);
 }
 
 //----------------------------------------------------------------------
@@ -601,7 +601,7 @@ int FOptiMove::repeatedAppend ( const capability& o
                               , char* dst )
 {
   std::size_t src_len = std::strlen(o.cap);
-  std::size_t dst_len = ( dst != 0 ) ? std::strlen(dst) : 0;
+  std::size_t dst_len = ( dst != nullptr ) ? std::strlen(dst) : 0;
   int total{0};
 
   if ( (dst_len + uInt(count) * src_len) < BUF_SIZE - 1 )
@@ -611,7 +611,7 @@ int FOptiMove::repeatedAppend ( const capability& o
     if ( dst )
     {
       dst += dst_len;
-      std::size_t free = BUF_SIZE - dst_len;
+      std::size_t free = BUF_SIZE - dst_len - 2;
 
       while ( count-- > 0 )
       {
@@ -921,9 +921,8 @@ inline bool FOptiMove::isMethod1Faster ( int& move_time
 
   if ( xold >= 0 && yold >= 0 )
   {
-    char  null_result[BUF_SIZE];
-    char* null_ptr = null_result;
-    int   new_time = relativeMove (null_ptr, xold, yold, xnew, ynew);
+    char null_result[BUF_SIZE];
+    int  new_time = relativeMove (null_result, xold, yold, xnew, ynew);
 
     if ( new_time < LONG_DURATION && new_time < move_time )
     {
@@ -944,9 +943,8 @@ inline bool FOptiMove::isMethod2Faster ( int& move_time
 
   if ( yold >= 0 && F_carriage_return.cap )
   {
-    char  null_result[BUF_SIZE];
-    char* null_ptr = null_result;
-    int   new_time = relativeMove (null_ptr, 0, yold, xnew, ynew);
+    char null_result[BUF_SIZE];
+    int  new_time = relativeMove (null_result, 0, yold, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_carriage_return.duration + new_time < move_time )
@@ -967,9 +965,8 @@ inline bool FOptiMove::isMethod3Faster ( int& move_time
 
   if ( F_cursor_home.cap )
   {
-    char  null_result[BUF_SIZE];
-    char* null_ptr = null_result;
-    int   new_time = relativeMove (null_ptr, 0, 0, xnew, ynew);
+    char null_result[BUF_SIZE];
+    int  new_time = relativeMove (null_result, 0, 0, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_cursor_home.duration + new_time < move_time )
@@ -989,11 +986,10 @@ inline bool FOptiMove::isMethod4Faster ( int& move_time
   // Test method 4: home-down + local movement
   if ( F_cursor_to_ll.cap )
   {
-    char  null_result[BUF_SIZE];
-    char* null_ptr = null_result;
-    int   new_time = relativeMove ( null_ptr
-                                  , 0, int(screen_height) - 1
-                                  , xnew, ynew );
+    char null_result[BUF_SIZE];
+    int  new_time = relativeMove ( null_result
+                                 , 0, int(screen_height) - 1
+                                 , xnew, ynew );
 
     if ( new_time < LONG_DURATION
       && F_cursor_to_ll.duration + new_time < move_time )
@@ -1017,11 +1013,10 @@ inline bool FOptiMove::isMethod5Faster ( int& move_time
     && yold > 0
     && F_cursor_left.cap )
   {
-    char  null_result[BUF_SIZE];
-    char* null_ptr = null_result;
-    int   new_time = relativeMove ( null_ptr
-                                  , int(screen_width) - 1, yold - 1
-                                  , xnew, ynew );
+    char null_result[BUF_SIZE];
+    int  new_time = relativeMove ( null_result
+                                 , int(screen_width) - 1, yold - 1
+                                 , xnew, ynew );
 
     if ( new_time < LONG_DURATION
       && F_carriage_return.cap
@@ -1030,6 +1025,7 @@ inline bool FOptiMove::isMethod5Faster ( int& move_time
     {
       move_time = F_carriage_return.duration
                 + F_cursor_left.duration + new_time;
+
       return true;
     }
   }

@@ -68,9 +68,6 @@ namespace finalcut
 // class FToolTip
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FToolTip : public FWindow
 {
   public:
@@ -115,7 +112,6 @@ class FToolTip : public FWindow
     std::size_t   max_line_width{0};
     std::size_t   text_num_lines{0};
 };
-#pragma pack(pop)
 
 
 // FToolTip inline functions

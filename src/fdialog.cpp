@@ -606,7 +606,7 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
     if ( window_focus_widget )
       window_focus_widget->setFocus();
 
-    setClickedWidget(0);
+    setClickedWidget(nullptr);
 
     if ( isModal() )
       done (FDialog::Reject);
@@ -1566,7 +1566,7 @@ void FDialog::cancelMouseResize()
 //----------------------------------------------------------------------
 inline void FDialog::acceptMoveSize()
 {
-  setMoveSizeWidget(0);
+  setMoveSizeWidget(nullptr);
 
   if ( tooltip )
     delete tooltip;
@@ -1578,7 +1578,7 @@ inline void FDialog::acceptMoveSize()
 //----------------------------------------------------------------------
 inline void FDialog::cancelMoveSize()
 {
-  setMoveSizeWidget(0);
+  setMoveSizeWidget(nullptr);
 
   if ( tooltip )
     delete tooltip;
@@ -1677,7 +1677,7 @@ void FDialog::cb_zoom (FWidget*, FDataPtr)
 {
   dialog_menu->unselectItem();
   dialog_menu->hide();
-  setClickedWidget(0);
+  setClickedWidget(nullptr);
   drawTitleBar();
   zoomWindow();
   setZoomItem();
@@ -1688,7 +1688,7 @@ void FDialog::cb_close (FWidget*, FDataPtr)
 {
   dialog_menu->unselectItem();
   dialog_menu->hide();
-  setClickedWidget(0);
+  setClickedWidget(nullptr);
   drawTitleBar();
   close();
 }

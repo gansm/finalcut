@@ -77,9 +77,6 @@ class FButton;
 // class FMessageBox
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FMessageBox : public FDialog
 {
   public:
@@ -160,15 +157,14 @@ class FMessageBox : public FDialog
     FString       text{};
     FString*      text_components{nullptr};
     FStringList   text_split{};
+    FButton*      button[3]{nullptr};
     std::size_t   max_line_width{0};
-    bool          center_text{false};
     FColor        emphasis_color{getFWidgetColors().dialog_emphasis_fg};
+    int           button_digit[3]{0};
     uInt          num_buttons{0};
     uInt          text_num_lines{0};
-    int           button_digit[3]{0};
-    FButton*      button[3]{nullptr};
+    bool          center_text{false};
 };
-#pragma pack(pop)
 
 
 // FMessageBox inline functions

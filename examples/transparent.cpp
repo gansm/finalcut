@@ -31,9 +31,6 @@ using finalcut::FSize;
 // class Transparent
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class Transparent : public finalcut::FDialog
 {
   public:
@@ -68,7 +65,6 @@ class Transparent : public finalcut::FDialog
     // Data members
     trans_type type;
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Transparent::Transparent ( finalcut::FWidget* parent
@@ -147,9 +143,6 @@ void Transparent::onKeyPress (finalcut::FKeyEvent* ev)
 // class MainWindow
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class MainWindow : public finalcut::FDialog
 {
   public:
@@ -195,7 +188,7 @@ class MainWindow : public finalcut::FDialog
     Transparent* ibg{nullptr};
     finalcut::FStatusBar status_bar{this};
 };
-#pragma pack(pop)
+
 
 //----------------------------------------------------------------------
 MainWindow::MainWindow (finalcut::FWidget* parent)

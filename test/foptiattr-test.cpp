@@ -58,9 +58,6 @@ void check_c_string ( const char* s1
 // class FOptiAttrTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FOptiAttrTest : public CPPUNIT_NS::TestFixture
 {
   public:
@@ -108,7 +105,6 @@ class FOptiAttrTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
@@ -3998,9 +3994,6 @@ void FOptiAttrTest::wyse50Test()
   finalcut::FOptiAttr oa;
   finalcut::FOptiAttr::termEnv optiattr_env =
   {
-    false,                              // No ANSI default color
-    1,                                  // Max color
-    0,                                  // No color video
     0,                                  // Enter bold
     C_STR(ESC "("  ESC "H\003"
           ESC "G0" ESC "cD"),           // Exit bold
@@ -4049,7 +4042,10 @@ void FOptiAttrTest::wyse50Test()
     0,                                  // Background color
     0,                                  // Term color pair
     0,                                  // Orig pair
-    0                                   // Orig orig colors
+    0,                                  // Orig orig colors
+    1,                                  // Max color
+    0,                                  // No color video
+    false                               // No ANSI default color
   };
 
   oa.setTermEnvironment(optiattr_env);

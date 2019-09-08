@@ -66,9 +66,6 @@ class FToggleButton;
 // class FButtonGroup
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FButtonGroup : public FScrollView
 {
   public:
@@ -144,8 +141,6 @@ class FButtonGroup : public FScrollView
     FString        text{};
     FObjectList    buttonlist{};
 };
-#pragma pack(pop)
-
 
 // FButtonGroup inline functions
 //----------------------------------------------------------------------

@@ -65,18 +65,12 @@ namespace finalcut
 // class FOptiAttr
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FOptiAttr final
 {
   public:
     // Typedef
     typedef struct
     {
-      bool  ansi_default_color;
-      int   max_color;
-      int   attr_without_color;
       char* t_enter_bold_mode;
       char* t_exit_bold_mode;
       char* t_enter_dim_mode;
@@ -112,6 +106,9 @@ class FOptiAttr final
       char* t_set_color_pair;
       char* t_orig_pair;
       char* t_orig_colors;
+      int   max_color;
+      int   attr_without_color;
+      bool  ansi_default_color;
     } termEnv;
 
     // Constructor
@@ -185,7 +182,7 @@ class FOptiAttr final
 
   private:
     // Typedefs and Enumerations
-    typedef struct alignas(alignof(char*))
+    typedef struct
     {
       char* cap;
       bool  caused_reset;
@@ -327,14 +324,13 @@ class FOptiAttr final
 
     int        max_color{1};
     int        attr_without_color{0};
+    char*      attr_ptr{attr_buf};
+    char       attr_buf[8192]{'\0'};
     bool       ansi_default_color{false};
     bool       alt_equal_pc_charset{false};
     bool       monochron{true};
     bool       fake_reverse{false};
-    char       attr_buf[8192]{'\0'};
-    char*      attr_ptr{attr_buf};
 };
-#pragma pack(pop)
 
 
 // FOptiAttr inline functions

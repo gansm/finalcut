@@ -50,9 +50,6 @@ namespace finalcut
 // class FTermData
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTermData final
 {
   public:
@@ -131,10 +128,19 @@ class FTermData final
     // Data members
     encodingMap       encoding_list{};
     charSubstitution  char_substitution_map{};
-    fc::encoding      term_encoding{fc::UNKNOWN};
     FRect             term_geometry{};  // current terminal geometry
+    FString           xterm_font{};
+    FString           xterm_title{};
+    fc::encoding      term_encoding{fc::UNKNOWN};
     int               fd_tty{-1};  // Teletype (tty) file descriptor is still undefined
+
+#if DEBUG
+    int               framebuffer_bpp{-1};
+#endif
+
     uInt              baudrate{0};
+    char              termtype[256]{'\0'};
+    char              termfilename[256]{'\0'};
     bool              shadow_character{true};
     bool              half_block_character{true};
     bool              cursor_optimisation{true};
@@ -148,15 +154,7 @@ class FTermData final
     bool              vga_font{false};
     bool              monochron{false};
     bool              resize_term{false};
-    char              termtype[256]{'\0'};
-    char              termfilename[256]{'\0'};
-    FString           xterm_font{};
-    FString           xterm_title{};
-#if DEBUG
-    int               framebuffer_bpp{-1};
-#endif
 };
-#pragma pack(pop)
 
 // FTermData inline functions
 //----------------------------------------------------------------------

@@ -64,9 +64,6 @@ class FButtonGroup;
 // class FToggleButton - abstract class for FRadioButton, FCheckBox, ...
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FToggleButton : public FWidget
 {
   public:
@@ -167,8 +164,6 @@ class FToggleButton : public FWidget
     bool          focus_inside_group{true};
     bool          checked{false};
 };
-#pragma pack(pop)
-
 
 // FRadioButton inline functions
 //----------------------------------------------------------------------

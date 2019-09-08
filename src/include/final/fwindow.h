@@ -69,9 +69,6 @@ namespace finalcut
 // class FWindow
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FWindow : public FWidget
 {
   public:
@@ -101,7 +98,7 @@ class FWindow : public FWidget
     bool                setWindowWidget();
     bool                unsetWindowWidget();
     static void         setActiveWindow (FWindow*);
-    void                setWindowFocusWidget (const FWidget*);
+    void                setWindowFocusWidget (FWidget*);
     bool                activateWindow (bool);
     bool                activateWindow();
     void                unsetActiveWindow();
@@ -175,13 +172,12 @@ class FWindow : public FWidget
     static void         processAlwaysOnTop();
 
     // Data members
-    bool                window_active{false};
-    bool                zoomed{false};
     FWidget*            win_focus_widget{nullptr};
     FRect               normalGeometry{};
     static FWindow*     previous_window;
+    bool                window_active{false};
+    bool                zoomed{false};
 };
-#pragma pack(pop)
 
 
 // FWindow inline functions

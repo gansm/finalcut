@@ -45,9 +45,6 @@ void string();
 // struct data
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 struct data
 {
   static int getNumberOfItems();
@@ -60,7 +57,6 @@ struct data
 
   static termcap_string strings[];
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 // struct data - string data array

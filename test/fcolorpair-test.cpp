@@ -36,9 +36,6 @@
 // class FColorPairTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FColorPairTest : public CPPUNIT_NS::TestFixture
 {
   public:
@@ -68,7 +65,7 @@ class FColorPairTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
+
 
 //----------------------------------------------------------------------
 void FColorPairTest::classNameTest()

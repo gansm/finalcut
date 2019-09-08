@@ -58,9 +58,6 @@ void check_c_string ( const char* s1
 // class FOptiMoveTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FOptiMoveTest : public CPPUNIT_NS::TestFixture
 {
   public:
@@ -106,7 +103,6 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
@@ -614,9 +610,6 @@ void FOptiMoveTest::teratermTest()
 
   finalcut::FOptiMove::termEnv optimove_env =
   {
-    false,                        // Automatic left margin
-    true,                         // Eat newline glitch
-    8,                            // Tab stop
     C_STR(CSI "H"),               // Cursor home
     C_STR("\r"),                  // Carriage return
     0,                            // Cursor to ll
@@ -636,7 +629,10 @@ void FOptiMoveTest::teratermTest()
     C_STR(CSI "%p1%dX"),          // Erase characters
     0,                            // Repeat character
     C_STR(CSI "1K"),              // Clear to beginning of line
-    C_STR(CSI "K")                // Clear to end of line
+    C_STR(CSI "K"),               // Clear to end of line
+    8,                            // Tab stop
+    false,                        // Automatic left margin
+    true                          // Eat newline glitch
   };
 
   om.setTermEnvironment(optimove_env);
@@ -702,7 +698,7 @@ void FOptiMoveTest::wyse50Test()
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), C_STR(ESC "=%%"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), C_STR("\036"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), C_STR("\r"));
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), C_STR("\r\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), C_STR("\r\n"));om.set_auto_left_margin (true);
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), C_STR("\f"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), C_STR("\b"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), C_STR("\f\f"));

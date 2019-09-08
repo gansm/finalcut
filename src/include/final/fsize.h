@@ -47,9 +47,6 @@ namespace finalcut
 // class FSize
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FSize
 {
   public:
@@ -102,8 +99,6 @@ class FSize
     std::size_t width{0};
     std::size_t height{0};
 };
-#pragma pack(pop)
-
 
 // FSize inline functions
 //----------------------------------------------------------------------

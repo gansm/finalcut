@@ -60,9 +60,6 @@ namespace test
 // class FSystemTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FSystemTest : public finalcut::FSystem
 {
   public:
@@ -94,7 +91,6 @@ class FSystemTest : public finalcut::FSystem
     kbd_t kbdencoding = 512;
     wskbd_bell_data system_bell;
 };
-#pragma pack(pop)
 
 
 // constructors and destructor
@@ -310,9 +306,6 @@ wskbd_bell_data& FSystemTest::getBell()
 // class ftermopenbsdTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class ftermopenbsdTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 {
   public:
@@ -335,7 +328,7 @@ class ftermopenbsdTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
+
 
 //----------------------------------------------------------------------
 ftermopenbsdTest::ftermopenbsdTest()

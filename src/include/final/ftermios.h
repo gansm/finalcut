@@ -47,9 +47,6 @@ namespace finalcut
 // class FTermios
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTermios final
 {
   public:
@@ -92,7 +89,7 @@ class FTermios final
     static bool   raw_mode;
     static struct termios term_init;
 };
-#pragma pack(pop)
+
 
 // FTermios inline functions
 //----------------------------------------------------------------------

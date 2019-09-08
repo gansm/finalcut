@@ -37,9 +37,6 @@ namespace test
 // class FMouse_protected
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FMouse_protected : public finalcut::FMouse
 {
   public:
@@ -77,7 +74,6 @@ class FMouse_protected : public finalcut::FMouse
       return finalcut::FMouse::isDblclickTimeout(t);
     }
 };
-#pragma pack(pop)
 
 }  // namespace test
 
@@ -85,9 +81,6 @@ class FMouse_protected : public finalcut::FMouse
 //----------------------------------------------------------------------
 // class finalcut::FMouseTest
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FMouseTest : public CPPUNIT_NS::TestFixture
 {
@@ -128,7 +121,6 @@ class FMouseTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 void FMouseTest::classNameTest()

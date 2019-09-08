@@ -31,9 +31,6 @@ using finalcut::FSize;
 // class Menu
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class Menu : public finalcut::FDialog
 {
   public:
@@ -117,7 +114,6 @@ class Menu : public finalcut::FDialog
     finalcut::FLabel         Headline2{this};
     finalcut::FLabel         Info{this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Menu::Menu (finalcut::FWidget* parent)

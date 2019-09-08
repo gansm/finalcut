@@ -36,9 +36,6 @@ using finalcut::FSize;
 // class Listview
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class Listview : public finalcut::FDialog
 {
   public:
@@ -68,7 +65,6 @@ class Listview : public finalcut::FDialog
     finalcut::FListView listView{this};
     finalcut::FButton   Quit{this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Listview::Listview (finalcut::FWidget* parent)

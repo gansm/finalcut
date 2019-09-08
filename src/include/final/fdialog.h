@@ -69,9 +69,6 @@ class FToolTip;
 // class FDialog
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FDialog : public FWindow
 {
   public:
@@ -238,7 +235,6 @@ class FDialog : public FWindow
     // Friend function from FMenu
     friend void FMenu::hideSuperMenus();
 };
-#pragma pack(pop)
 
 // FDialog inline functions
 //----------------------------------------------------------------------

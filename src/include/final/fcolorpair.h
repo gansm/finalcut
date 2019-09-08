@@ -45,9 +45,6 @@ namespace finalcut
 // class FColorPair
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FColorPair
 {
   public:
@@ -114,7 +111,6 @@ class FColorPair
     FColor fg_color;  // Foreground color
     FColor bg_color;  // Background color
 };
-#pragma pack(pop)
 
 }  // namespace finalcut
 

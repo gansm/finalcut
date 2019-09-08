@@ -539,7 +539,7 @@ char* FTermDetection::determineMaxColor (char current_termtype[])
 }
 
 //----------------------------------------------------------------------
-const FString FTermDetection::getXTermColorName (int color)
+const FString FTermDetection::getXTermColorName (FColor color)
 {
   FString color_str{""};
   fd_set ifds{};
@@ -547,7 +547,7 @@ const FString FTermDetection::getXTermColorName (int color)
   int stdin_no = FTermios::getStdIn();
 
   char temp[512]{};
-  std::fprintf (stdout, OSC "4;%d;?" BEL, color);  // get color
+  std::fprintf (stdout, OSC "4;%hu;?" BEL, color);  // get color
   std::fflush(stdout);
 
   FD_ZERO(&ifds);
@@ -558,7 +558,7 @@ const FString FTermDetection::getXTermColorName (int color)
   // read the terminal answer
   if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
   {
-    if ( std::scanf("\033]4;%10d;%509[^\n]s", &color, temp) == 2 )
+    if ( std::scanf("\033]4;%10hu;%509[^\n]s", &color, temp) == 2 )
     {
       std::size_t n = std::strlen(temp);
 

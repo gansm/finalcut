@@ -63,10 +63,10 @@ FMessageBox::FMessageBox (const FMessageBox& mbox)
   , text_components(mbox.text_components)
   , text_split(mbox.text_split)
   , max_line_width(mbox.max_line_width)
-  , center_text(mbox.center_text)
   , emphasis_color(mbox.emphasis_color)
   , num_buttons(mbox.num_buttons)
   , text_num_lines(mbox.text_num_lines)
+  , center_text(mbox.center_text)
 {
   setTitlebarText (mbox.getTitlebarText());
   init ( mbox.button_digit[0]

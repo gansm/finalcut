@@ -65,9 +65,6 @@ namespace finalcut
 // class FScrollView
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FScrollView : public FWidget
 {
   public:
@@ -194,8 +191,6 @@ class FScrollView : public FWidget
     fc::scrollBarMode vMode{fc::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
     fc::scrollBarMode hMode{fc::Auto};
 };
-#pragma pack(pop)
-
 
 // FScrollView inline functions
 //----------------------------------------------------------------------

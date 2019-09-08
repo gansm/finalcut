@@ -70,18 +70,12 @@ namespace finalcut
 // class FOptiMove
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FOptiMove final
 {
   public:
     // Typedef
     typedef struct
     {
-      bool  automatic_left_margin;
-      bool  eat_nl_glitch;
-      int   tabstop;
       char* t_cursor_home;
       char* t_carriage_return;
       char* t_cursor_to_ll;
@@ -102,6 +96,9 @@ class FOptiMove final
       char* t_repeat_char;
       char* t_clr_bol;
       char* t_clr_eol;
+      int   tabstop;
+      bool  automatic_left_margin;
+      bool  eat_nl_glitch;
     } termEnv;
 
     // Constructor
@@ -158,8 +155,8 @@ class FOptiMove final
     void  set_repeat_char (char[]);
     void  set_clr_bol (char[]);
     void  set_clr_eol (char[]);
-    void  set_auto_left_margin (const bool&);
-    void  set_eat_newline_glitch (const bool&);
+    void  set_auto_left_margin (bool);
+    void  set_eat_newline_glitch (bool);
 
     // Methods
     void  check_boundaries (int&, int&, int&, int&);
@@ -230,16 +227,15 @@ class FOptiMove final
     capability  F_clr_bol{};
     capability  F_clr_eol{};
 
-    bool        automatic_left_margin{false};
-    bool        eat_nl_glitch{false};
-    char        move_buf[BUF_SIZE]{'\0'};
+    std::size_t screen_width{80};
+    std::size_t screen_height{24};
     int         char_duration{1};
     int         baudrate{9600};
     int         tabstop{0};
-    std::size_t screen_width{80};
-    std::size_t screen_height{24};
+    char        move_buf[BUF_SIZE]{'\0'};
+    bool        automatic_left_margin{false};
+    bool        eat_nl_glitch{false};
 };
-#pragma pack(pop)
 
 
 // FOptiMove inline functions
@@ -328,11 +324,11 @@ inline uInt FOptiMove::getClrEolLength() const
 { return uInt(F_clr_eol.length); }
 
 //----------------------------------------------------------------------
-inline void FOptiMove::set_auto_left_margin (const bool& bcap)
+inline void FOptiMove::set_auto_left_margin (bool bcap)
 { automatic_left_margin = bcap; }
 
 //----------------------------------------------------------------------
-inline void FOptiMove::set_eat_newline_glitch (const bool& bcap)
+inline void FOptiMove::set_eat_newline_glitch (bool bcap)
 { eat_nl_glitch = bcap; }
 
 

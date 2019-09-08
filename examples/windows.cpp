@@ -32,9 +32,6 @@ using finalcut::FSize;
 // class SmallWindow
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class SmallWindow : public finalcut::FDialog
 {
   public:
@@ -65,7 +62,7 @@ class SmallWindow : public finalcut::FDialog
     finalcut::FLabel top_right_label{this};
     finalcut::FLabel bottom_label{this};
 };
-#pragma pack(pop)
+
 
 //----------------------------------------------------------------------
 SmallWindow::SmallWindow (finalcut::FWidget* parent)
@@ -167,9 +164,6 @@ void SmallWindow::onTimer (finalcut::FTimerEvent*)
 // class Window
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class Window : public finalcut::FDialog
 {
   public:
@@ -242,7 +236,7 @@ class Window : public finalcut::FDialog
     finalcut::FButton         CloseButton{this};
     finalcut::FButton         QuitButton{this};
 };
-#pragma pack(pop)
+
 
 //----------------------------------------------------------------------
 Window::Window (finalcut::FWidget* parent)

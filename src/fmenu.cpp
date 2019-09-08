@@ -111,7 +111,7 @@ void FMenu::hide()
     if ( openmenu && openmenu != this )
       openmenu->hide();
 
-    setOpenMenu(0);
+    setOpenMenu(nullptr);
   }
 
   mouse_down = false;
@@ -882,7 +882,7 @@ void FMenu::mouseMoveDeselection (FMenuItem* m_item, mouseStates& ms)
   m_item->unsetFocus();
 
   if ( getSelectedItem() == m_item )
-    setSelectedItem(0);
+    setSelectedItem(nullptr);
 
   ms.focus_changed = true;
 }

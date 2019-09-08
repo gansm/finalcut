@@ -128,9 +128,6 @@ class FWidgetColors;
 // class FWidget
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FWidget : public FVTerm, public FObject
 {
   public:
@@ -140,7 +137,7 @@ class FWidget : public FVTerm, public FObject
 
     struct accelerator
     {
-      FKey key;
+      alignas(8) FKey key;
       FWidget* object;
     };
 
@@ -525,7 +522,6 @@ class FWidget : public FVTerm, public FObject
     friend class FScrollView;
 };
 
-#pragma pack(pop)
 
 // non-member function forward declarations
 //----------------------------------------------------------------------

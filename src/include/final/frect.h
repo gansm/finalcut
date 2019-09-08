@@ -52,9 +52,6 @@ class FSize;
 // class FRect
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FRect
 {
   public:
@@ -144,8 +141,6 @@ class FRect
     int X2{-1};
     int Y2{-1};
 };
-#pragma pack(pop)
-
 
 // FRect inline functions
 //----------------------------------------------------------------------

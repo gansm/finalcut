@@ -82,9 +82,6 @@ class FWidget;
 // class FVTerm
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FVTerm
 {
   public:
@@ -492,15 +489,11 @@ class FVTerm
     static uInt             cursor_address_length;
 
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // struct FVTerm::term_area
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 struct FVTerm::term_area  // define virtual terminal character properties
 {
@@ -533,7 +526,6 @@ struct FVTerm::term_area  // define virtual terminal character properties
     bool has_changes{false};
     bool visible{false};
 };
-#pragma pack(pop)
 
 
 // FVTerm inline functions

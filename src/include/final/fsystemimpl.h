@@ -82,9 +82,6 @@ namespace finalcut
 // class FSystemImpl
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FSystemImpl : public FSystem
 {
   public:
@@ -210,7 +207,6 @@ class FSystemImpl : public FSystem
       return ::realpath(path, resolved_path);
     }
 };
-#pragma pack(pop)
 
 }  // namespace finalcut
 
