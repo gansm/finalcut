@@ -26,9 +26,6 @@
 #include <final/final.h>
 
 
-// Global FVTerm object
-static finalcut::FVTerm* terminal;
-
 // Global FApplication object
 static finalcut::FApplication* app{nullptr};
 
@@ -145,7 +142,6 @@ int main (int argc, char* argv[])
   finalcut::FApplication TermApp(argc, argv);
 
   // Pointer to the global virtual terminal object
-  terminal = static_cast<finalcut::FVTerm*>(&TermApp);
   app = &TermApp;
 
   // Get screen dimension

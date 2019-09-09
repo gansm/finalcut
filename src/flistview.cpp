@@ -715,7 +715,7 @@ void FListView::setColumnSortType (int column, fc::sorting_type type)
   if ( column < 1 || header.empty() || column > int(header.size()) )
     return;
 
-  std::size_t size = std::size_t(column + 1);
+  std::size_t size = std::size_t(column) + 1;
 
   if ( sort_type.empty() || sort_type.size() < size )
     sort_type.resize(size);
@@ -2010,7 +2010,7 @@ void FListView::recalculateHorizontalBar (std::size_t len)
 //----------------------------------------------------------------------
 void FListView::recalculateVerticalBar (std::size_t element_count)
 {
-  int vmax = ( element_count > getHeight() - 2 )
+  int vmax = ( element_count + 2 > getHeight() )
              ? int(element_count - getHeight() + 2)
              : 0;
   vbar->setMaximum (vmax);
@@ -2679,8 +2679,7 @@ void FListView::cb_HBarChange (FWidget*, FDataPtr)
     flush_out();
   }
 
-  if ( scrollType >= FScrollbar::scrollStepBackward
-    && scrollType <= FScrollbar::scrollWheelDown )
+  if ( scrollType >= FScrollbar::scrollStepBackward )
   {
     hbar->setValue (xoffset);
 

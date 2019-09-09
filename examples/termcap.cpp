@@ -28,9 +28,6 @@
 
 namespace fc = finalcut::fc;
 
-// Global FVTerm object
-static finalcut::FVTerm* terminal;
-
 // Function prototype
 void tcapBoolean (const std::string&, bool);
 void tcapNumeric (const std::string&, int);
@@ -308,9 +305,6 @@ int main (int argc, char* argv[])
 {
   bool disable_alt_screen{true};
   finalcut::FApplication TermApp (argc, argv, disable_alt_screen);
-
-  // Pointer to the global virtual terminal object
-  terminal = static_cast<finalcut::FVTerm*>(&TermApp);
 
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";
   std::cout << "Terminal: " << TermApp.getTermType() << "\r\n";

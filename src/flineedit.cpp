@@ -284,7 +284,7 @@ void FLineEdit::setCursorPosition (std::size_t pos)
 
   if ( cursor_pos > text.getLength() )
     keyEnd();
-  else if ( cursor_pos >= getWidth() - 1 )
+  else if ( cursor_pos + 1 >= getWidth() )
     text_offset = text.getLength() - getWidth() + 2;
   else
     text_offset = 0;
@@ -534,7 +534,7 @@ void FLineEdit::onTimer (FTimerEvent*)
       break;
 
     case FLineEdit::scrollRight:
-      if ( len < getWidth() - 2
+      if ( len + 2 < getWidth()
         || text_offset == len - getWidth() + 2 )
       {
         drag_scroll = FLineEdit::noScroll;
@@ -744,7 +744,7 @@ void FLineEdit::drawInputField()
 
   std::size_t x = show_text.getLength();
 
-  while ( x < getWidth() - 1 )
+  while ( x + 1 < getWidth() )
   {
     print (' ');
     x++;
@@ -784,7 +784,7 @@ inline void FLineEdit::keyRight()
   if ( cursor_pos < len )
     cursor_pos++;
 
-  if ( cursor_pos - text_offset >= getWidth() - 2
+  if ( cursor_pos - text_offset + 2 >= getWidth()
     && text_offset <= len - getWidth() + 1 )
     text_offset++;
 }
@@ -802,7 +802,7 @@ inline void FLineEdit::keyEnd()
   std::size_t len = text.getLength();
   cursor_pos = len;
 
-  if ( cursor_pos >= getWidth() - 1 )
+  if ( cursor_pos + 1 >= getWidth() )
     text_offset = len - getWidth() + 2;
   else
     text_offset = 0;
@@ -822,7 +822,7 @@ inline void FLineEdit::keyDel()
   if ( cursor_pos >= len )
     cursor_pos = len;
 
-  if ( text_offset > 0 && len - text_offset < getWidth() - 1 )
+  if ( text_offset > 0 && len - text_offset + 1 < getWidth() )
     text_offset--;
 }
 
@@ -888,7 +888,7 @@ inline bool FLineEdit::keyInput (FKey key)
 
     cursor_pos++;
 
-    if ( cursor_pos >= getWidth() - 1 )
+    if ( cursor_pos + 1 >= getWidth() )
       text_offset++;
 
     processChanged();

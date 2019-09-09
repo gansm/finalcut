@@ -346,8 +346,8 @@ FRect operator - (const FRect& r, const FSize& s)
 {
   return FRect ( r.X1
                , r.Y1
-               , std::size_t(r.X2 - r.X1 + 1) - s.getWidth()
-               , std::size_t(r.Y2 - r.Y1 + 1) - s.getHeight() );
+               , std::size_t(r.X2 - r.X1) + 1 - s.getWidth()
+               , std::size_t(r.Y2 - r.Y1) + 1 - s.getHeight() );
 }
 
 //----------------------------------------------------------------------

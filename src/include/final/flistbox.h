@@ -533,7 +533,7 @@ void FListBox::insert ( const ItemT& item
 
 //----------------------------------------------------------------------
 inline bool FListBox::isHorizontallyScrollable()
-{ return bool( max_line_width >= getClientWidth() - 1 ); }
+{ return bool( max_line_width + 1 >= getClientWidth() ); }
 
 //----------------------------------------------------------------------
 inline bool FListBox::isVerticallyScrollable()

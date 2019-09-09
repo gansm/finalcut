@@ -707,7 +707,7 @@ void FTextView::drawText()
   {
     std::size_t i{};
     std::size_t n = y + std::size_t(yoffset);
-    std::size_t x = std::size_t(1 + xoffset);
+    std::size_t x = std::size_t(xoffset) + 1;
     FString line(data[n].mid (x, getTextWidth()));
     const auto line_str = line.wc_str();
     const auto len = line.getLength();
@@ -750,15 +750,10 @@ void FTextView::cb_VBarChange (FWidget*, FDataPtr)
   int distance{1};
   int wheel_distance{4};
 
-  if ( scrollType >= FScrollbar::scrollStepBackward
-    && scrollType <= FScrollbar::scrollWheelDown )
-  {
+  if ( scrollType >= FScrollbar::scrollStepBackward )
     update_scrollbar = true;
-  }
   else
-  {
     update_scrollbar = false;
-  }
 
   switch ( scrollType )
   {
@@ -806,15 +801,10 @@ void FTextView::cb_HBarChange (FWidget*, FDataPtr)
   int distance{1};
   int wheel_distance{4};
 
-  if ( scrollType >= FScrollbar::scrollStepBackward
-    && scrollType <= FScrollbar::scrollWheelDown )
-  {
+  if ( scrollType >= FScrollbar::scrollStepBackward )
     update_scrollbar = true;
-  }
   else
-  {
     update_scrollbar = false;
-  }
 
   switch ( scrollType )
   {

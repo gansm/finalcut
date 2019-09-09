@@ -138,7 +138,8 @@ typedef struct
       // Attribute byte #2
       uInt8 no_changes    : 1;  // no changes required
       uInt8 printed       : 1;  // is printed to VTerm
-      uInt8               : 6;  // padding bits
+      uInt8 char_with     : 2;  // Number of character cells on screen
+      uInt8               : 4;  // padding bits
       // Attribute byte #3
       uInt8               : 8;  // padding byte
     } bit;

@@ -687,15 +687,17 @@ void FVTerm::resizeArea ( const FRect& box
   }
 
   bool realloc_success{false};
-  std::size_t area_size = std::size_t((width + rsw) * (height + bsh));
+  std::size_t full_width = std::size_t(width) + std::size_t(rsw);
+  std::size_t full_height = std::size_t(height) + std::size_t(bsh);
+  std::size_t area_size = full_width * full_height;
 
-  if ( area->height + area->bottom_shadow != height + bsh )
+  if ( area->height + area->bottom_shadow != int(full_height) )
   {
     realloc_success = reallocateTextArea ( area
-                                         , std::size_t(height + bsh)
+                                         , full_height
                                          , area_size );
   }
-  else if ( area->width + area->right_shadow != width + rsw )
+  else if ( area->width + area->right_shadow != int(full_width) )
   {
     realloc_success = reallocateTextArea (area, area_size);
   }
@@ -713,7 +715,7 @@ void FVTerm::resizeArea ( const FRect& box
   area->bottom_shadow = bsh;
   area->has_changes   = false;
 
-  FSize size(std::size_t(width + rsw), std::size_t(height + bsh));
+  FSize size(full_width, full_height);
   setTextToDefault (area, size);
 }
 
@@ -827,9 +829,6 @@ void FVTerm::restoreVTerm (const FRect& box)
   if ( y < 0 )
     y = 0;
 
-  if ( w < 0 || h < 0 )
-    return;
-
   if ( x + w > vterm->width )
     w = vterm->width - x;
 
@@ -892,8 +891,8 @@ FVTerm::covered_state FVTerm::isCovered ( const FPoint& pos
       int win_y = win->offset_top;
       FRect geometry ( win_x
                      , win_y
-                     , std::size_t(win->width + win->right_shadow)
-                     , std::size_t(win->height + win->bottom_shadow) );
+                     , std::size_t(win->width) + std::size_t(win->right_shadow)
+                     , std::size_t(win->height) + std::size_t(win->bottom_shadow) );
 
       if ( found && geometry.contains(pos) )
       {
@@ -1677,8 +1676,8 @@ charData FVTerm::generateCharacter (const FPoint& pos)
     int win_y = win->offset_top;
     FRect geometry ( win_x
                    , win_y
-                   , std::size_t(win->width + win->right_shadow)
-                   , std::size_t(win->height + win->bottom_shadow) );
+                   , std::size_t(win->width) + std::size_t(win->right_shadow)
+                   , std::size_t(win->height) + std::size_t(win->bottom_shadow) );
 
     // Window is visible and contains current character
     if ( geometry.contains(x, y) )
@@ -1778,8 +1777,8 @@ charData FVTerm::getCharacter ( character_type char_type
 
       FRect geometry ( win->offset_left
                      , win->offset_top
-                     , std::size_t(win->width + win->right_shadow)
-                     , std::size_t(win->height + win->bottom_shadow) );
+                     , std::size_t(win->width) + std::size_t(win->right_shadow)
+                     , std::size_t(win->height) + std::size_t(win->bottom_shadow) );
 
       // Window visible and contains current character
       if ( geometry.contains(x, y) )

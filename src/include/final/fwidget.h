@@ -484,9 +484,9 @@ class FWidget : public FVTerm, public FObject
     FRect                 adjust_wsize_shadow{};
     FRect                 adjust_wsize_term_shadow{};
     // widget offset
-    FRect                 offset{};
+    FRect                 woffset{};
     // offset of the widget client area
-    FRect                 client_offset{};
+    FRect                 wclient_offset{};
     // widget shadow size (on the right and bottom side)
     FSize                 wshadow{0, 0};
 
@@ -512,7 +512,7 @@ class FWidget : public FVTerm, public FObject
     static widgetList*    dialog_list;
     static widgetList*    always_on_top_list;
     static widgetList*    close_widget;
-    static FWidgetColors  wc;
+    static FWidgetColors  wcolors;
     static uInt           modal_dialog_counter;
     static bool           init_desktop;
     static bool           hideable;
@@ -602,11 +602,11 @@ inline const FPoint FWidget::getPos() const  // position relative to the widget
 
 //----------------------------------------------------------------------
 inline int FWidget::getTermX() const  // x-position on terminal
-{ return offset.getX1() + adjust_wsize.getX(); }
+{ return woffset.getX1() + adjust_wsize.getX(); }
 
 //----------------------------------------------------------------------
 inline int FWidget::getTermY() const  // y-position on terminal
-{ return offset.getY1() + adjust_wsize.getY(); }
+{ return woffset.getY1() + adjust_wsize.getY(); }
 
 //----------------------------------------------------------------------
 inline const FPoint FWidget::getTermPos() const  // position on terminal
@@ -642,19 +642,19 @@ inline int FWidget::getRightPadding() const
 
 //----------------------------------------------------------------------
 inline std::size_t FWidget::getClientWidth() const
-{ return client_offset.getWidth(); }
+{ return wclient_offset.getWidth(); }
 
 //----------------------------------------------------------------------
 inline std::size_t FWidget::getClientHeight() const
-{ return client_offset.getHeight(); }
+{ return wclient_offset.getHeight(); }
 
 //----------------------------------------------------------------------
 inline std::size_t FWidget::getMaxWidth() const
-{ return offset.getWidth(); }
+{ return woffset.getWidth(); }
 
 //----------------------------------------------------------------------
 inline std::size_t FWidget::getMaxHeight() const
-{ return offset.getHeight(); }
+{ return woffset.getHeight(); }
 
 //----------------------------------------------------------------------
 inline const FSize& FWidget::getShadow() const
@@ -683,10 +683,10 @@ inline const FRect& FWidget::getTermGeometry()
 {
   adjust_wsize_term.setCoordinates
   (
-    adjust_wsize.x1_ref() + offset.x1_ref(),
-    adjust_wsize.y1_ref() + offset.y1_ref(),
-    adjust_wsize.x2_ref() + offset.x1_ref(),
-    adjust_wsize.y2_ref() + offset.y1_ref()
+    adjust_wsize.x1_ref() + woffset.x1_ref(),
+    adjust_wsize.y1_ref() + woffset.y1_ref(),
+    adjust_wsize.x2_ref() + woffset.x1_ref(),
+    adjust_wsize.y2_ref() + woffset.y1_ref()
   );
 
   return adjust_wsize_term;
@@ -697,10 +697,10 @@ inline const FRect& FWidget::getTermGeometryWithShadow()
 {
   adjust_wsize_term_shadow.setCoordinates
   (
-    adjust_wsize.x1_ref() + offset.x1_ref(),
-    adjust_wsize.y1_ref() + offset.y1_ref(),
-    adjust_wsize.x2_ref() + offset.x1_ref() + int(wshadow.width_ref()),
-    adjust_wsize.y2_ref() + offset.y1_ref() + int(wshadow.height_ref())
+    adjust_wsize.x1_ref() + woffset.x1_ref(),
+    adjust_wsize.y1_ref() + woffset.y1_ref(),
+    adjust_wsize.x2_ref() + woffset.x1_ref() + int(wshadow.width_ref()),
+    adjust_wsize.y2_ref() + woffset.y1_ref() + int(wshadow.height_ref())
   );
 
   return adjust_wsize_term_shadow;
@@ -945,8 +945,8 @@ inline void FWidget::delAccelerator()
 //----------------------------------------------------------------------
 inline FPoint FWidget::termToWidgetPos (const FPoint& tPos)
 {
-  return FPoint ( tPos.getX() + 1 - offset.getX1() - adjust_wsize.getX()
-                , tPos.getY() + 1 - offset.getY1() - adjust_wsize.getY() );
+  return FPoint ( tPos.getX() + 1 - woffset.getX1() - adjust_wsize.getX()
+                , tPos.getY() + 1 - woffset.getY1() - adjust_wsize.getY() );
 }
 
 //----------------------------------------------------------------------
@@ -963,7 +963,7 @@ inline void FWidget::drawBorder()
 
 //----------------------------------------------------------------------
 inline const FWidgetColors& FWidget::getFWidgetColors() const
-{ return wc; }
+{ return wcolors; }
 
 //----------------------------------------------------------------------
 inline uInt FWidget::getModalDialogCounter()
@@ -983,7 +983,7 @@ inline FWidget::widgetList*& FWidget::getWidgetCloseList()
 
 //----------------------------------------------------------------------
 inline FWidgetColors& FWidget::setFWidgetColors()
-{ return wc; }
+{ return wcolors; }
 
 //----------------------------------------------------------------------
 inline uInt& FWidget::setModalDialogCounter()

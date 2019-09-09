@@ -597,9 +597,7 @@ void FMenuItem::updateSuperMenuDimensions()
     return;
 
   auto menu_ptr = static_cast<FMenu*>(super_menu);
-
-  if ( menu_ptr )
-    menu_ptr->calculateDimensions();
+  menu_ptr->calculateDimensions();
 }
 
 //----------------------------------------------------------------------

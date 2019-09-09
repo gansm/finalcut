@@ -586,7 +586,7 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
     setBold();
 
   for ( std::size_t z{0}
-      ; pos < center_offset + txtlength && z < getWidth() - 2
+      ; pos < center_offset + txtlength && z + 2 < getWidth()
       ; z++, pos++)
   {
     if ( z == hotkeypos && getFlags().active )
@@ -615,7 +615,7 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
     }
   }
 
-  if ( txtlength >= getWidth() - 1 )
+  if ( txtlength + 1 >= getWidth() )
   {
     // Print ellipsis
     print() << FPoint(int(getWidth() + indent) - 2, 1) << "..";

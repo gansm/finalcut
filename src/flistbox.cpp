@@ -259,7 +259,7 @@ void FListBox::remove (std::size_t item)
   if ( hbar->isShown() && isHorizontallyScrollable() )
     hbar->hide();
 
-  int vmax = ( element_count > getHeight() - 2 )
+  int vmax = ( element_count + 2 > getHeight() )
              ? int(element_count - getHeight()) + 2
              : 0;
   vbar->setMaximum (vmax);
@@ -721,7 +721,7 @@ void FListBox::adjustSize()
   vbar->setHeight (height, false);
   vbar->resize();
 
-  int hmax = ( max_line_width > width - 2 )
+  int hmax = ( max_line_width + 2 > width )
              ? int(max_line_width - width + 2)
              : 0;
   hbar->setMaximum (hmax);
@@ -956,7 +956,7 @@ inline void FListBox::drawListLine ( int y
   std::size_t inc_len = inc_search.getLength();
   const FWidgetColors& wc = getFWidgetColors();
   bool isCurrentLine = bool(y + yoffset + 1 == int(current));
-  FString element (getString(iter).mid ( std::size_t(1 + xoffset)
+  FString element (getString(iter).mid ( std::size_t(xoffset) + 1
                                        , getWidth() - nf_offset - 4 ));
   const wchar_t* const& element_str = element.wc_str();
   std::size_t len = element.getLength();
@@ -1215,7 +1215,7 @@ void FListBox::recalculateHorizontalBar (std::size_t len, bool has_brackets)
 //----------------------------------------------------------------------
 void FListBox::recalculateVerticalBar (std::size_t element_count)
 {
-  int vmax = ( element_count > getHeight() - 2 )
+  int vmax = ( element_count + 2 > getHeight() )
              ? int(element_count - getHeight() + 2)
              : 0;
   vbar->setMaximum (vmax);
@@ -1314,7 +1314,7 @@ void FListBox::wheelUp (int pagesize)
 
   if ( yoffset < 0 )
   {
-    current -= std::size_t(pagesize + yoffset);
+    current -= std::size_t(pagesize) + std::size_t(yoffset);
     yoffset = 0;
   }
   else
@@ -1515,7 +1515,7 @@ void FListBox::scrollToY (int val)
   if ( yoffset < 0 )
     yoffset = 0;
 
-  current = std::size_t(yoffset + c);
+  current = std::size_t(yoffset) + std::size_t(c);
 
   if ( current < std::size_t(yoffset) )
     current = std::size_t(yoffset);
@@ -1700,7 +1700,7 @@ inline bool FListBox::keyInsert()
     if ( current > element_count )
       current = element_count;
 
-    if ( current - std::size_t(yoffset) >= getHeight() - 1 )
+    if ( current - std::size_t(yoffset) + 1 >= getHeight() )
       yoffset++;
 
     return true;
@@ -1871,8 +1871,7 @@ void FListBox::cb_VBarChange (FWidget*, FDataPtr)
   if ( isShown() )
     drawList();
 
-  if ( scrollType >= FScrollbar::scrollStepBackward
-    && scrollType <= FScrollbar::scrollWheelDown )
+  if ( scrollType >= FScrollbar::scrollStepBackward )
   {
     vbar->setValue (yoffset);
 
@@ -1936,8 +1935,7 @@ void FListBox::cb_HBarChange (FWidget*, FDataPtr)
     flush_out();
   }
 
-  if ( scrollType >= FScrollbar::scrollStepBackward
-    && scrollType <= FScrollbar::scrollWheelDown )
+  if ( scrollType >= FScrollbar::scrollStepBackward )
   {
     hbar->setValue (xoffset);
 

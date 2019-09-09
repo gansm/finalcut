@@ -917,8 +917,7 @@ void FScrollView::cb_VBarChange (FWidget*, FDataPtr)
   int distance{1};
   int wheel_distance{4};
 
-  if ( scrollType >= FScrollbar::scrollStepBackward
-    && scrollType <= FScrollbar::scrollWheelDown )
+  if ( scrollType >= FScrollbar::scrollStepBackward )
   {
     update_scrollbar = true;
   }
@@ -969,8 +968,7 @@ void FScrollView::cb_HBarChange (FWidget*, FDataPtr)
   int distance{1};
   int wheel_distance{4};
 
-  if ( scrollType >= FScrollbar::scrollStepBackward
-    && scrollType <= FScrollbar::scrollWheelDown )
+  if ( scrollType >= FScrollbar::scrollStepBackward )
   {
     update_scrollbar = true;
   }
