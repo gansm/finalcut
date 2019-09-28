@@ -52,9 +52,6 @@ void check_c_string ( const char* s1
 // class FTermDataTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTermDataTest : public CPPUNIT_NS::TestFixture
 {
   public:
@@ -78,7 +75,6 @@ class FTermDataTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 void FTermDataTest::classNameTest()

@@ -63,10 +63,8 @@
 #include <cstddef>
 #include <map>
 
-#include "final/fconfig.h"
 #include "final/fkeyboard.h"
 #include "final/fpoint.h"
-#include "final/ftypes.h"
 
 #if defined(__linux__)
   #include <linux/keyboard.h>  // need for gpm keyboard modifiers
@@ -82,9 +80,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 // class FMouse
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FMouse
 {
@@ -136,6 +131,7 @@ class FMouse
 
     // Methods
     static FMouse*      createMouseObject (mouse_type);
+    void                clearButtonState();
     virtual void        setRawData (FKeyboard::keybuffer&) = 0;
     virtual void        processEvent (struct timeval*) = 0;
 
@@ -163,33 +159,43 @@ class FMouse
       DoubleClick = 3
     };
 
+    // Accessors
+    button&             getButtonState();
+    FPoint&             getNewPos();
+    uInt16              getMaxWidth();
+    uInt16              getMaxHeight();
+    uInt64              getDblclickInterval();
+    timeval*            getMousePressedTime();
+
     // Mutator
     void                setPos (const FPoint&);
+    void                setNewPos (int, int);
+    void                setPending (bool);
+    void                setEvent();
+    void                setMousePressedTime (timeval*);
+    void                resetMousePressedTime();
 
-    // Method
+    // Inquiry
     bool                isDblclickTimeout (timeval*);
 
-    // Data Members
+  private:
+    // Data members
     button              b_state{};
     bool                mouse_event_occurred{false};
     bool                input_data_pending{false};
-    uInt64              dblclick_interval{500000};  // 500 ms
     uInt16              max_width{80};
     uInt16              max_height{25};
+    uInt64              dblclick_interval{500000};  // 500 ms
     struct timeval      time_mousepressed{};
     FPoint              mouse{0, 0};       // mouse click position
     FPoint              new_mouse_position{};
 };
-#pragma pack(pop)
 
 
 #ifdef F_HAVE_LIBGPM
 //----------------------------------------------------------------------
 // class FMouseGPM
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FMouseGPM final : public FMouse
 {
@@ -201,18 +207,18 @@ class FMouseGPM final : public FMouse
     virtual ~FMouseGPM();
 
     // Accessors
-    virtual const char*  getClassName() const override;
+    const char*          getClassName() const override;
 
     // Mutators
     void                 setStdinNo(int);
 
     // Inquiry
-    virtual bool         hasData() override;
+    bool                 hasData() override;
     bool                 isGpmMouseEnabled();
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&) override;
-    virtual void         processEvent (struct timeval*) override;
+    void                 setRawData (FKeyboard::keybuffer&) override;
+    void                 processEvent (struct timeval*) override;
     bool                 gpmMouse (bool);
     bool                 enableGpmMouse();
     bool                 disableGpmMouse();
@@ -234,13 +240,12 @@ class FMouseGPM final : public FMouse
     // Method
     int                gpmEvent (bool = true);
 
-    // Data Member
+    // Data member
     Gpm_Event          gpm_ev{};
     bool               has_gpm_mouse_data{false};
     bool               gpm_mouse_enabled{false};
     int                stdin_no{0};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 inline bool FMouseGPM::enableGpmMouse()
@@ -260,9 +265,6 @@ inline bool FMouseGPM::isGpmMouseEnabled()
 // class FMouseX11
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FMouseX11 final : public FMouse
 {
   public:
@@ -273,14 +275,14 @@ class FMouseX11 final : public FMouse
     virtual ~FMouseX11() = default;
 
     // Accessors
-    virtual const char*  getClassName() const override;
+    const char*          getClassName() const override;
 
     // Inquiry
-    virtual bool         hasData() override;
+    bool                 hasData() override;
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&) override;
-    virtual void         processEvent (struct timeval*) override;
+    void                 setRawData (FKeyboard::keybuffer&) override;
+    void                 processEvent (struct timeval*) override;
 
   private:
     // Enumeration
@@ -312,19 +314,15 @@ class FMouseX11 final : public FMouse
     void         setMoveState (const FPoint&, int);
     void         setButtonState (int, struct timeval*);
 
-    // Data Member
+    // Data member
     char  x11_mouse[MOUSE_BUF_SIZE]{'\0'};
     uChar x11_button_state{all_buttons_released};
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // class FMouseSGR
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FMouseSGR final : public FMouse
 {
@@ -336,14 +334,14 @@ class FMouseSGR final : public FMouse
     virtual ~FMouseSGR() = default;
 
     // Accessors
-    virtual const char*  getClassName() const override;
+    const char*  getClassName() const override;
 
     // Inquiry
-    virtual bool         hasData() override;
+    bool         hasData() override;
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&) override;
-    virtual void         processEvent (struct timeval*) override;
+    void         setRawData (FKeyboard::keybuffer&) override;
+    void         processEvent (struct timeval*) override;
 
   private:
     // Enumeration
@@ -375,19 +373,15 @@ class FMouseSGR final : public FMouse
     void         setPressedButtonState (int, struct timeval*);
     void         setReleasedButtonState (int);
 
-    // Data Members
+    // Data members
     char  sgr_mouse[MOUSE_BUF_SIZE]{'\0'};
     uChar sgr_button_state{0x23};
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // class FMouseUrxvt
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FMouseUrxvt final : public FMouse
 {
@@ -399,14 +393,14 @@ class FMouseUrxvt final : public FMouse
     virtual ~FMouseUrxvt() = default;
 
     // Accessors
-    virtual const char*  getClassName() const override;
+    const char*  getClassName() const override;
 
     // Inquiry
-    virtual bool         hasData() override;
+    bool         hasData() override;
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&) override;
-    virtual void         processEvent (struct timeval*) override;
+    void         setRawData (FKeyboard::keybuffer&) override;
+    void         processEvent (struct timeval*) override;
 
   private:
     // Enumeration
@@ -438,19 +432,16 @@ class FMouseUrxvt final : public FMouse
     void         setMoveState (const FPoint&, int);
     void         setButtonState (int, struct timeval*);
 
-    // Data Members
+    // Data members
     char  urxvt_mouse[MOUSE_BUF_SIZE]{'\0'};
     uChar urxvt_button_state{all_buttons_released};
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // class FMouseControl
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
 class FMouseControl
 {
   public:
@@ -502,6 +493,9 @@ class FMouseControl
     void                drawGpmPointer();
 
   private:
+    // Typedef
+    typedef std::map<FMouse::mouse_type, FMouse*> FMouseProtocol;
+
     // Accessor
     FMouse*             getMouseWithData();
     FMouse*             getMouseWithEvent();
@@ -509,14 +503,12 @@ class FMouseControl
     void                enableXTermMouse();
     void                disableXTermMouse();
 
-    // Data Member
-    std::map<FMouse::mouse_type, FMouse*> mouse_protocol{};
-    std::map<FMouse::mouse_type, FMouse*>::iterator iter{};
-    FPoint zero_point{0, 0};
-    bool   use_gpm_mouse{false};
-    bool   use_xterm_mouse{false};
+    // Data member
+    FMouseProtocol mouse_protocol{};
+    FPoint         zero_point{0, 0};
+    bool           use_gpm_mouse{false};
+    bool           use_xterm_mouse{false};
 };
-#pragma pack(pop)
 
 // FMouseControl inline functions
 //----------------------------------------------------------------------

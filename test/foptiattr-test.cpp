@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -32,6 +32,7 @@
 #include <cppunit/TestAssert.h>
 
 #include <iomanip>
+#include <string>
 #include <final/final.h>
 
 
@@ -56,9 +57,6 @@ void check_c_string ( const char* s1
 //----------------------------------------------------------------------
 // class FOptiAttrTest
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FOptiAttrTest : public CPPUNIT_NS::TestFixture
 {
@@ -107,7 +105,6 @@ class FOptiAttrTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
@@ -121,7 +118,7 @@ void FOptiAttrTest::classNameTest()
 //----------------------------------------------------------------------
 void FOptiAttrTest::noArgumentTest()
 {
-  finalcut::FOptiAttr::charData* ch = new finalcut::FOptiAttr::charData();
+  finalcut::charData* ch = new finalcut::charData();
   finalcut::FOptiAttr oa;
   oa.initialize();
 
@@ -133,7 +130,7 @@ void FOptiAttrTest::noArgumentTest()
   CPPUNIT_ASSERT ( oa.isNormal(ch) );
 
   // Null test
-  finalcut::FOptiAttr::charData* ch_null = nullptr;
+  finalcut::charData* ch_null = nullptr;
   CPPUNIT_ASSERT ( oa.changeAttribute(ch, ch) == 0 );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(ch, ch_null), C_STR("") );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(ch_null, ch), C_STR("") );
@@ -207,10 +204,8 @@ void FOptiAttrTest::fakeReverseTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  finalcut::FOptiAttr::charData* from = \
-      new finalcut::FOptiAttr::charData();
-  finalcut::FOptiAttr::charData* to = \
-      new finalcut::FOptiAttr::charData();
+  finalcut::charData* from = new finalcut::charData();
+  finalcut::charData* to = new finalcut::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Gray text on blue background
@@ -304,8 +299,8 @@ void FOptiAttrTest::ansiTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
-  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
+  finalcut::charData* from = new finalcut::charData();
+  finalcut::charData* to = new finalcut::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -769,8 +764,8 @@ void FOptiAttrTest::vt100Test()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
-  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
+  finalcut::charData* from = new finalcut::charData();
+  finalcut::charData* to = new finalcut::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -1240,8 +1235,8 @@ void FOptiAttrTest::xtermTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
-  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
+  finalcut::charData* from = new finalcut::charData();
+  finalcut::charData* to = new finalcut::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -1711,8 +1706,8 @@ void FOptiAttrTest::rxvtTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
-  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
+  finalcut::charData* from = new finalcut::charData();
+  finalcut::charData* to = new finalcut::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -2183,8 +2178,8 @@ void FOptiAttrTest::linuxTest()
   oa.set_orig_orig_colors (C_STR(OSC "R"));
   oa.initialize();
 
-  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
-  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
+  finalcut::charData* from = new finalcut::charData();
+  finalcut::charData* to = new finalcut::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -2666,8 +2661,8 @@ void FOptiAttrTest::puttyTest()
   oa.initialize();
 
 
-  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
-  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
+  finalcut::charData* from = new finalcut::charData();
+  finalcut::charData* to = new finalcut::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -3139,8 +3134,8 @@ void FOptiAttrTest::teratermTest()
   oa.initialize();
 
 
-  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
-  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
+  finalcut::charData* from = new finalcut::charData();
+  finalcut::charData* to = new finalcut::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -3614,8 +3609,8 @@ void FOptiAttrTest::ibmColorTest()
   oa.initialize();
 
 
-  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
-  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
+  finalcut::charData* from = new finalcut::charData();
+  finalcut::charData* to = new finalcut::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -3999,9 +3994,6 @@ void FOptiAttrTest::wyse50Test()
   finalcut::FOptiAttr oa;
   finalcut::FOptiAttr::termEnv optiattr_env =
   {
-    false,                              // No ANSI default color
-    1,                                  // Max color
-    0,                                  // No color video
     0,                                  // Enter bold
     C_STR(ESC "("  ESC "H\003"
           ESC "G0" ESC "cD"),           // Exit bold
@@ -4050,13 +4042,16 @@ void FOptiAttrTest::wyse50Test()
     0,                                  // Background color
     0,                                  // Term color pair
     0,                                  // Orig pair
-    0                                   // Orig orig colors
+    0,                                  // Orig orig colors
+    1,                                  // Max color
+    0,                                  // No color video
+    false                               // No ANSI default color
   };
 
   oa.setTermEnvironment(optiattr_env);
 
-  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
-  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
+  finalcut::charData* from = new finalcut::charData();
+  finalcut::charData* to = new finalcut::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold

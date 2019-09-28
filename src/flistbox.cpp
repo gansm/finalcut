@@ -24,9 +24,13 @@
 #include <memory>
 
 #include "final/fapplication.h"
+#include "final/fcolorpair.h"
+#include "final/fevent.h"
 #include "final/flistbox.h"
 #include "final/fscrollbar.h"
+#include "final/fstring.h"
 #include "final/fstatusbar.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {
@@ -100,12 +104,10 @@ FListBox::~FListBox()  // destructor
 //----------------------------------------------------------------------
 void FListBox::setCurrentItem (std::size_t index)
 {
-  std::size_t element_count;
-
   if ( index == current )
     return;
 
-  element_count = getCount();
+  std::size_t element_count = getCount();
 
   if ( index > element_count )
     current = element_count;
@@ -138,13 +140,13 @@ void FListBox::showInsideBrackets ( std::size_t index
   if ( b == fc::NoBrackets )
     return;
 
-  std::size_t len = iter->getText().getLength() + 2;
+  std::size_t column_width = getColumnWidth(iter->getText()) + 2;
 
-  if ( len > max_line_width )
+  if ( column_width > max_line_width )
   {
-    max_line_width = len;
+    max_line_width = column_width;
 
-    if ( len >= getWidth() - nf_offset - 3 )
+    if ( column_width >= getWidth() - nf_offset - 3 )
     {
       int hmax = ( max_line_width > getWidth() - nf_offset - 4 )
                  ? int(max_line_width - getWidth() + nf_offset + 4)
@@ -161,7 +163,7 @@ void FListBox::showInsideBrackets ( std::size_t index
 
 //----------------------------------------------------------------------
 void FListBox::setGeometry ( const FPoint& pos, const FSize& size
-                           , bool adjust)
+                           , bool adjust )
 {
   // Set the widget geometry
 
@@ -207,22 +209,22 @@ bool FListBox::setFocus (bool enable)
 //----------------------------------------------------------------------
 void FListBox::setText (const FString& txt)
 {
-  text = txt;
+  text.setString(txt);
 }
 
 //----------------------------------------------------------------------
 void FListBox::hide()
 {
   FWidget::hide();
-  hideSize (getSize());
+  hideArea (getSize());
 }
 
 //----------------------------------------------------------------------
 void FListBox::insert (FListBoxItem listItem)
 {
-  std::size_t len = listItem.text.getLength();
-  bool has_brackets = bool(listItem.brackets);
-  recalculateHorizontalBar (len, has_brackets);
+  std::size_t column_width = getColumnWidth(listItem.text);
+  bool has_brackets(listItem.brackets);
+  recalculateHorizontalBar (column_width, has_brackets);
 
   itemlist.push_back (listItem);
 
@@ -233,21 +235,19 @@ void FListBox::insert (FListBoxItem listItem)
 //----------------------------------------------------------------------
 void FListBox::remove (std::size_t item)
 {
-  std::size_t element_count;
-
   if ( item > getCount() )
     return;
 
   itemlist.erase (itemlist.begin() + int(item) - 1);
-  element_count = getCount();
+  std::size_t element_count = getCount();
   max_line_width = 0;
 
   for (auto&& listbox_item : itemlist)
   {
-    std::size_t len = listbox_item.getText().getLength();
+    std::size_t column_width = getColumnWidth(listbox_item.getText());
 
-    if ( len > max_line_width )
-      max_line_width = len;
+    if ( column_width > max_line_width )
+      max_line_width = column_width;
   }
 
   int hmax = ( max_line_width > getWidth() - nf_offset - 4 )
@@ -259,7 +259,7 @@ void FListBox::remove (std::size_t item)
   if ( hbar->isShown() && isHorizontallyScrollable() )
     hbar->hide();
 
-  int vmax = ( element_count > getHeight() - 2 )
+  int vmax = ( element_count + 2 > getHeight() )
              ? int(element_count - getHeight()) + 2
              : 0;
   vbar->setMaximum (vmax);
@@ -284,8 +284,8 @@ void FListBox::remove (std::size_t item)
 //----------------------------------------------------------------------
 void FListBox::clear()
 {
-  std::size_t size;
   itemlist.clear();
+  itemlist.shrink_to_fit();
   current = 0;
   xoffset = 0;
   yoffset = 0;
@@ -302,18 +302,19 @@ void FListBox::clear()
   hbar->hide();
 
   // clear list from screen
+  const auto& wc = getFWidgetColors();
   setColor (wc.list_fg, wc.list_bg);
-  size = getWidth() - 2;
+  std::size_t size = getWidth() - 2;
 
   if ( size == 0 )
     return;
 
-  auto blank = createBlankArray(size + 1);
+  char* blank = createBlankArray(size + 1);
 
   std::memset (blank, ' ', size);
   blank[size] = '\0';
 
-  for (int y = 0; y < int(getHeight()) - 2; y++)
+  for (int y{0}; y < int(getHeight()) - 2; y++)
   {
     print() << FPoint(2, 2 + y) << blank;
   }
@@ -333,69 +334,69 @@ void FListBox::onKeyPress (FKeyEvent* ev)
   {
     case fc::Fkey_return:
     case fc::Fkey_enter:
-      keyEnter();
+      acceptSelection();
       ev->accept();
       break;
 
     case fc::Fkey_up:
-      keyUp();
+      onePosUp();
       ev->accept();
       break;
 
     case fc::Fkey_down:
-      keyDown();
+      onePosDown();
       ev->accept();
       break;
 
     case fc::Fkey_left:
-      keyLeft();
+      scrollLeft();
       ev->accept();
       break;
 
     case fc::Fkey_right:
-      keyRight();
+      scrollRight();
       ev->accept();
       break;
 
     case fc::Fkey_ppage:
-      keyPgUp();
+      onePageUp();
       ev->accept();
       break;
 
     case fc::Fkey_npage:
-      keyPgDn();
+      onePageDown();
       ev->accept();
       break;
 
     case fc::Fkey_home:
-      keyHome();
+      firstPos();
       ev->accept();
       break;
 
     case fc::Fkey_end:
-      keyEnd();
+      lastPos();
       ev->accept();
       break;
 
     case fc::Fkey_ic:  // insert key
-      if ( keyInsert() )
+      if ( changeSelectionAndPosition() )
         ev->accept();
       break;
 
     case fc::Fkey_space:
-      if ( keySpace() )
+      if ( spacebarProcessing() )
         ev->accept();
       break;
 
     case fc::Fkey_erase:
     case fc::Fkey_backspace:
-      if ( keyBackspace() )
+      if ( deletePreviousCharacter() )
         ev->accept();
       break;
 
     case fc::Fkey_escape:
     case fc::Fkey_escape_mintty:
-      if ( keyEsc() )
+      if ( skipIncrementalSearch() )
         ev->accept();
       break;
 
@@ -414,8 +415,8 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 
   if ( ev->isAccepted() )
   {
-    bool draw_vbar = yoffset_before != yoffset;
-    bool draw_hbar = xoffset_before != xoffset;
+    bool draw_vbar( yoffset_before != yoffset );
+    bool draw_hbar( xoffset_before != xoffset );
     updateDrawing (draw_vbar, draw_hbar);
   }
 }
@@ -423,10 +424,6 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onMouseDown (FMouseEvent* ev)
 {
-  int yoffset_before
-    , mouse_x
-    , mouse_y;
-
   if ( ev->getButton() != fc::LeftButton
     && ev->getButton() != fc::RightButton )
   {
@@ -438,9 +435,9 @@ void FListBox::onMouseDown (FMouseEvent* ev)
 
   getWidgetFocus();
 
-  yoffset_before = yoffset;
-  mouse_x = ev->getX();
-  mouse_y = ev->getY();
+  int yoffset_before = yoffset;
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
 
   if ( mouse_x > 1 && mouse_x < int(getWidth())
     && mouse_y > 1 && mouse_y < int(getHeight()) )
@@ -548,13 +545,11 @@ void FListBox::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onMouseDoubleClick (FMouseEvent* ev)
 {
-  int mouse_x, mouse_y;
-
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  mouse_x = ev->getX();
-  mouse_y = ev->getY();
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
 
   if ( mouse_x > 1 && mouse_x < int(getWidth())
     && mouse_y > 1 && mouse_y < int(getHeight()) )
@@ -619,11 +614,9 @@ void FListBox::onTimer (FTimerEvent*)
 void FListBox::onWheel (FWheelEvent* ev)
 {
   std::size_t current_before = current;
-  int wheel
-    , yoffset_before = yoffset
-    , pagesize = 4;
-
-  wheel = ev->getWheel();
+  int yoffset_before = yoffset;
+  int pagesize{4};
+  int wheel = ev->getWheel();
 
   if ( drag_scroll != fc::noScroll )
     stopDragScroll();
@@ -727,7 +720,7 @@ void FListBox::adjustSize()
   vbar->setHeight (height, false);
   vbar->resize();
 
-  int hmax = ( max_line_width > width - 2 )
+  int hmax = ( max_line_width + 2 > width )
              ? int(max_line_width - width + 2)
              : 0;
   hbar->setMaximum (hmax);
@@ -736,15 +729,18 @@ void FListBox::adjustSize()
   hbar->setWidth (width + nf_offset, false);
   hbar->resize();
 
-  if ( isHorizontallyScrollable() )
-    hbar->show();
-  else
-    hbar->hide();
+  if ( isShown() )
+  {
+    if ( isHorizontallyScrollable() )
+      hbar->show();
+    else
+      hbar->hide();
 
-  if ( isVerticallyScrollable() )
-    vbar->show();
-  else
-    vbar->hide();
+    if ( isVerticallyScrollable() )
+      vbar->show();
+    else
+      vbar->hide();
+  }
 }
 
 
@@ -761,6 +757,7 @@ void FListBox::init()
   initScrollbar (vbar, fc::vertical, &FListBox::cb_VBarChange);
   initScrollbar (hbar, fc::horizontal, &FListBox::cb_HBarChange);
   setGeometry (FPoint(1, 1), FSize(5, 4), false);  // initialize geometry values
+  const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
   nf_offset = isNewFont() ? 1 : 0;
@@ -807,16 +804,13 @@ void FListBox::draw()
   if ( isMonochron() )
     setReverse(true);
 
-  if ( isNewFont() )
-    drawBorder (1, 1, int(getWidth()) - 1, int(getHeight()));
-  else
-    drawBorder();
+  drawBorder();
 
   if ( isNewFont() && ! vbar->isShown() )
   {
     setColor();
 
-    for (int y = 2; y < int(getHeight()); y++)
+    for (int y{2}; y < int(getHeight()); y++)
     {
       print() << FPoint(int(getWidth()), y)
               << ' ';  // clear right side of the scrollbar
@@ -828,11 +822,10 @@ void FListBox::draw()
   if ( isMonochron() )
     setReverse(false);
 
-  vbar->redraw();
-  hbar->redraw();
+  drawScrollbars();
   drawList();
 
-  if ( flags.focus && getStatusBar() )
+  if ( getFlags().focus && getStatusBar() )
   {
     const auto& msg = getStatusbarMessage();
     const auto& curMsg = getStatusBar()->getMessage();
@@ -846,26 +839,55 @@ void FListBox::draw()
 }
 
 //----------------------------------------------------------------------
+void FListBox::drawBorder()
+{
+  if ( isNewFont() )
+  {
+    FRect box(FPoint(1, 1), getSize());
+    box.scaleBy(-1, 0);
+    finalcut::drawBorder (this, box);
+  }
+  else
+    FWidget::drawBorder();
+}
+
+//----------------------------------------------------------------------
+void FListBox::drawScrollbars()
+{
+  if ( ! hbar->isShown() && isHorizontallyScrollable() )
+    hbar->show();
+  else
+    vbar->redraw();
+
+  if ( ! vbar->isShown() && isVerticallyScrollable() )
+    vbar->show();
+  else
+    hbar->redraw();
+}
+
+
+//----------------------------------------------------------------------
 void FListBox::drawHeadline()
 {
   if ( text.isNull() || text.isEmpty() )
     return;
 
-  FString txt = " " + text + " ";
-  std::size_t length = txt.getLength();
+  FString txt(" " + text + " ");
+  auto column_width = getColumnWidth(txt);
   print() << FPoint(2, 1);
+  const auto& wc = getFWidgetColors();
 
   if ( isEnabled() )
     setColor(wc.label_emphasis_fg, wc.label_bg);
   else
     setColor(wc.label_inactive_fg, wc.label_inactive_bg);
 
-  if ( length <= uInt(getClientWidth()) )
+  if ( column_width <= getClientWidth() )
     print (txt);
   else
   {
     // Print ellipsis
-    print() << text.left(uInt(getClientWidth() - 2))
+    print() << getColumnSubString (text, 1, getClientWidth() - 2)
             << FColorPair (wc.label_ellipsis_fg, wc.label_bg) << "..";
   }
 }
@@ -876,8 +898,8 @@ void FListBox::drawList()
   if ( itemlist.empty() || getHeight() <= 2 || getWidth() <= 4 )
     return;
 
-  std::size_t start = 0;
-  std::size_t num = uInt(getHeight() - 2);
+  std::size_t start{};
+  std::size_t num(getHeight() - 2);
 
   if ( num > getCount() )
     num = getCount();
@@ -897,7 +919,7 @@ void FListBox::drawList()
 
   for (std::size_t y = start; y < num && iter != itemlist.end() ; y++)
   {
-    bool serach_mark = false;
+    bool serach_mark{false};
     bool lineHasBrackets = hasBrackets(iter);
 
     // Import data via lazy conversion
@@ -930,16 +952,15 @@ inline void FListBox::drawListLine ( int y
                                    , listBoxItems::iterator iter
                                    , bool serach_mark )
 {
-  std::size_t i, len;
   std::size_t inc_len = inc_search.getLength();
-  bool isCurrentLine = bool(y + yoffset + 1 == int(current));
-  FString element;
-  element = getString(iter).mid ( std::size_t(1 + xoffset)
-                                , getWidth() - nf_offset - 4 );
-  const wchar_t* const& element_str = element.wc_str();
-  len = element.getLength();
+  const auto& wc = getFWidgetColors();
+  bool isCurrentLine( y + yoffset + 1 == int(current) );
+  std::size_t first = std::size_t(xoffset) + 1;
+  std::size_t max_width = getWidth() - nf_offset - 4;
+  FString element(getColumnSubString (getString(iter), first, max_width));
+  std::size_t column_width = getColumnWidth(element);
 
-  if ( isMonochron() && isCurrentLine && flags.focus )
+  if ( isMonochron() && isCurrentLine && getFlags().focus )
     print (fc::BlackRightPointingPointer);  // ►
   else
     print (' ');
@@ -948,22 +969,22 @@ inline void FListBox::drawListLine ( int y
     setColor ( wc.current_inc_search_element_fg
              , wc.current_element_focus_bg );
 
-  for (i = 0; i < len; i++)
+  for (std::size_t i{0}; i < element.getLength(); i++)
   {
-    if ( serach_mark && i == inc_len && flags.focus  )
+    if ( serach_mark && i == inc_len && getFlags().focus  )
       setColor ( wc.current_element_focus_fg
                , wc.current_element_focus_bg );
 
-    print (element_str[i]);
+    print (element[i]);
   }
 
-  if ( isMonochron() && isCurrentLine  && flags.focus )
+  if ( isMonochron() && isCurrentLine  && getFlags().focus )
   {
     print (fc::BlackLeftPointingPointer);  // ◄
-    i++;
+    column_width++;
   }
 
-  for (; i < getWidth() - nf_offset - 3; i++)
+  for (; column_width < getWidth() - nf_offset - 3; column_width++)
     print (' ');
 }
 
@@ -986,35 +1007,30 @@ inline void FListBox::drawListBracketsLine ( int y
                                            , listBoxItems::iterator iter
                                            , bool serach_mark )
 {
-  FString element;
-  std::size_t len
-            , full_length
-            , inc_len = inc_search.getLength()
-            , i = 0
-            , b = 0;
-  bool isCurrentLine = bool(y + yoffset + 1 == int(current));
+  std::size_t inc_len = inc_search.getLength()
+            , b{0};
+  bool isCurrentLine( y + yoffset + 1 == int(current) );
 
-  if ( isMonochron() && isCurrentLine && flags.focus )
+  if ( isMonochron() && isCurrentLine && getFlags().focus )
     print (fc::BlackRightPointingPointer);  // ►
   else
     print (' ');
 
   if ( xoffset == 0 )
   {
-    b = 1;
+    b = 1;  // Required bracket space
     printLeftBracket (iter->brackets);
-
-    element = getString(iter).mid ( std::size_t(xoffset) + 1
-                                  , getWidth() - nf_offset - 5 );
   }
-  else
-    element = getString(iter).mid ( std::size_t(xoffset)
-                                  , getWidth() - nf_offset - 4 );
 
-  const wchar_t* const& element_str = element.wc_str();
-  len = element.getLength();
+  std::size_t first = std::size_t(xoffset);
+  std::size_t max_width = getWidth() - nf_offset - 4 - b;
+  FString element(getColumnSubString (getString(iter), first, max_width));
+  std::size_t column_width = getColumnWidth(element);
+  std::size_t text_width = getColumnWidth(getString(iter));
+  std::size_t i{0};
+  const auto& wc = getFWidgetColors();
 
-  for (; i < len; i++)
+  for (; i < element.getLength(); i++)
   {
     if ( serach_mark && i == 0 )
       setColor ( wc.current_inc_search_element_fg
@@ -1024,29 +1040,27 @@ inline void FListBox::drawListBracketsLine ( int y
       setColor ( wc.current_element_focus_fg
                , wc.current_element_focus_bg );
 
-    print (element_str[i]);
+    print (element[i]);
   }
 
-  full_length = getString(iter).getLength();
-
-  if ( b + i < getWidth() - nf_offset - 4
-    && std::size_t(xoffset) <= full_length + 1 )
+  if ( b + column_width < getWidth() - nf_offset - 4
+    && std::size_t(xoffset) <= text_width )
   {
     if ( serach_mark && i == inc_len )
       setColor ( wc.current_element_focus_fg
                , wc.current_element_focus_bg );
 
     printRightBracket (iter->brackets);
-    i++;
+    column_width++;
   }
 
-  if ( isMonochron() && isCurrentLine && flags.focus )
+  if ( isMonochron() && isCurrentLine && getFlags().focus )
   {
     print (fc::BlackLeftPointingPointer);   // ◄
-    i++;
+    column_width++;
   }
 
-  for (; b + i < getWidth() - nf_offset - 3; i++)
+  for (; b + column_width < getWidth() - nf_offset - 3; column_width++)
     print (' ');
 }
 
@@ -1056,8 +1070,10 @@ inline void FListBox::setLineAttributes ( int y
                                         , bool lineHasBrackets
                                         , bool& serach_mark )
 {
-  bool isCurrentLine = bool(y + yoffset + 1 == int(current));
+  bool isCurrentLine( y + yoffset + 1 == int(current) );
   std::size_t inc_len = inc_search.getLength();
+  std::size_t inc_width = getColumnWidth(inc_search);
+  const auto& wc = getFWidgetColors();
   print() << FPoint(2, 2 + int(y));
 
   if ( isLineSelected )
@@ -1077,14 +1093,14 @@ inline void FListBox::setLineAttributes ( int y
 
   if ( isCurrentLine )
   {
-    if ( flags.focus && getMaxColor() < 16 )
+    if ( getFlags().focus && getMaxColor() < 16 )
       setBold();
 
     if ( isLineSelected )
     {
       if ( isMonochron() )
         setBold();
-      else if ( flags.focus )
+      else if ( getFlags().focus )
         setColor ( wc.selected_current_element_focus_fg
                  , wc.selected_current_element_focus_bg );
       else
@@ -1098,7 +1114,7 @@ inline void FListBox::setLineAttributes ( int y
       if ( isMonochron() )
         unsetBold();
 
-      if ( flags.focus )
+      if ( getFlags().focus )
       {
         setColor ( wc.current_element_focus_fg
                  , wc.current_element_focus_bg );
@@ -1108,7 +1124,7 @@ inline void FListBox::setLineAttributes ( int y
         {
           serach_mark = true;
           // Place the cursor on the last found character
-          setCursorPos (FPoint(2 + b + int(inc_len), 2 + int(y)));
+          setCursorPos (FPoint(2 + b + int(inc_width), 2 + int(y)));
         }
         else  // only highlighted
           setCursorPos (FPoint(3 + b, 2 + int(y)));  // first character
@@ -1125,7 +1141,7 @@ inline void FListBox::setLineAttributes ( int y
   {
     if ( isMonochron() )
       setReverse(true);
-    else if ( flags.focus && getMaxColor() < 16 )
+    else if ( getFlags().focus && getMaxColor() < 16 )
       unsetBold();
   }
 }
@@ -1179,27 +1195,33 @@ void FListBox::recalculateHorizontalBar (std::size_t len, bool has_brackets)
     hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset - 4));
     hbar->calculateSliderValues();
 
-    if ( isHorizontallyScrollable() )
-      hbar->show();
-    else
-      hbar->hide();
+    if ( isShown() )
+    {
+      if ( isHorizontallyScrollable() )
+        hbar->show();
+      else
+        hbar->hide();
+    }
   }
 }
 
 //----------------------------------------------------------------------
 void FListBox::recalculateVerticalBar (std::size_t element_count)
 {
-  int vmax = ( element_count > getHeight() - 2 )
+  int vmax = ( element_count + 2 > getHeight() )
              ? int(element_count - getHeight() + 2)
              : 0;
   vbar->setMaximum (vmax);
   vbar->setPageSize (int(element_count), int(getHeight()) - 2);
   vbar->calculateSliderValues();
 
-  if ( isVerticallyScrollable() )
-    vbar->show();
-  else
-    vbar->hide();
+  if ( isShown() )
+  {
+    if ( isVerticallyScrollable() )
+      vbar->show();
+    else
+      vbar->hide();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1242,7 +1264,7 @@ void FListBox::multiSelection (std::size_t pos)
 //----------------------------------------------------------------------
 void FListBox::multiSelectionUpTo (std::size_t pos)
 {
-  std::size_t from, to;
+  std::size_t from{}, to{};
 
   if ( ! isMultiSelection() )
     return;
@@ -1285,7 +1307,7 @@ void FListBox::wheelUp (int pagesize)
 
   if ( yoffset < 0 )
   {
-    current -= std::size_t(pagesize + yoffset);
+    current -= std::size_t(pagesize) + std::size_t(yoffset);
     yoffset = 0;
   }
   else
@@ -1486,7 +1508,7 @@ void FListBox::scrollToY (int val)
   if ( yoffset < 0 )
     yoffset = 0;
 
-  current = std::size_t(yoffset + c);
+  current = std::size_t(yoffset) + std::size_t(c);
 
   if ( current < std::size_t(yoffset) )
     current = std::size_t(yoffset);
@@ -1525,35 +1547,35 @@ void FListBox::scrollRight (int distance)
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::keyUp()
-{
-  prevListItem (1);
-  inc_search.clear();
-}
-
-//----------------------------------------------------------------------
-inline void FListBox::keyDown()
-{
-  nextListItem (1);
-  inc_search.clear();
-}
-
-//----------------------------------------------------------------------
-inline void FListBox::keyLeft()
+inline void FListBox::scrollLeft()
 {
   scrollLeft(1);
   inc_search.clear();
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::keyRight()
+inline void FListBox::scrollRight()
 {
   scrollRight(1);
   inc_search.clear();
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::keyPgUp()
+inline void FListBox::onePosUp()
+{
+  prevListItem (1);
+  inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::onePosDown()
+{
+  nextListItem (1);
+  inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::onePageUp()
 {
   int pagesize = int(getClientHeight()) - 1;
   prevListItem (pagesize);
@@ -1561,7 +1583,7 @@ inline void FListBox::keyPgUp()
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::keyPgDn()
+inline void FListBox::onePageDown()
 {
   int pagesize = int(getClientHeight()) - 1;
   nextListItem (pagesize);
@@ -1569,7 +1591,7 @@ inline void FListBox::keyPgDn()
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::keyHome()
+inline void FListBox::firstPos()
 {
   current = 1;
   yoffset = 0;
@@ -1577,7 +1599,7 @@ inline void FListBox::keyHome()
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::keyEnd()
+inline void FListBox::lastPos()
 {
   std::size_t element_count = getCount();
   int yoffset_end = int(element_count - getClientHeight());
@@ -1590,7 +1612,7 @@ inline void FListBox::keyEnd()
 }
 
 //----------------------------------------------------------------------
-inline bool FListBox::keyEsc()
+inline bool FListBox::skipIncrementalSearch()
 {
   if ( inc_search.getLength() > 0 )
   {
@@ -1602,21 +1624,21 @@ inline bool FListBox::keyEsc()
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::keyEnter()
+inline void FListBox::acceptSelection()
 {
   processClick();
   inc_search.clear();
 }
 
 //----------------------------------------------------------------------
-inline bool FListBox::keySpace()
+inline bool FListBox::spacebarProcessing()
 {
   std::size_t inc_len = inc_search.getLength();
 
-  if ( inc_len > 0 )
+  if ( inc_len > 0 )  // Enter a spacebar for incremental search
   {
     inc_search += L' ';
-    bool inc_found = false;
+    bool inc_found{false};
     auto iter = itemlist.begin();
 
     while ( iter != itemlist.end() )
@@ -1639,7 +1661,7 @@ inline bool FListBox::keySpace()
       return false;
     }
   }
-  else if ( isMultiSelection() )
+  else if ( isMultiSelection() )  // Change selection
   {
     if ( isSelected(current) )
       unselectItem(current);
@@ -1654,7 +1676,7 @@ inline bool FListBox::keySpace()
 }
 
 //----------------------------------------------------------------------
-inline bool FListBox::keyInsert()
+inline bool FListBox::changeSelectionAndPosition()
 {
   if ( isMultiSelection() )
   {
@@ -1671,7 +1693,7 @@ inline bool FListBox::keyInsert()
     if ( current > element_count )
       current = element_count;
 
-    if ( current - std::size_t(yoffset) >= getHeight() - 1 )
+    if ( current - std::size_t(yoffset) + 1 >= getHeight() )
       yoffset++;
 
     return true;
@@ -1682,7 +1704,7 @@ inline bool FListBox::keyInsert()
 }
 
 //----------------------------------------------------------------------
-inline bool FListBox::keyBackspace()
+inline bool FListBox::deletePreviousCharacter()
 {
   std::size_t inc_len = inc_search.getLength();
 
@@ -1726,7 +1748,7 @@ inline bool FListBox::keyIncSearchInput (FKey key)
     inc_search += wchar_t(key);
 
   std::size_t inc_len = inc_search.getLength();
-  bool inc_found = false;
+  bool inc_found{false};
   auto iter = itemlist.begin();
 
   while ( iter != itemlist.end() )
@@ -1781,8 +1803,8 @@ void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
     return;
 
   convertToItem (*iter, source_container, y + yoffset);
-  std::size_t len = iter->text.getLength();
-  recalculateHorizontalBar (len, hasBrackets(iter));
+  std::size_t column_width = getColumnWidth(iter->text);
+  recalculateHorizontalBar (column_width, hasBrackets(iter));
 
   if ( hbar->isShown() )
     hbar->redraw();
@@ -1793,8 +1815,8 @@ void FListBox::cb_VBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType;
   std::size_t current_before = current;
-  int distance = 1
-    , pagesize = 4
+  int distance{1}
+    , pagesize{4}
     , yoffset_before = yoffset;
   scrollType = vbar->getScrollType();
 
@@ -1842,8 +1864,7 @@ void FListBox::cb_VBarChange (FWidget*, FDataPtr)
   if ( isShown() )
     drawList();
 
-  if ( scrollType >= FScrollbar::scrollStepBackward
-    && scrollType <= FScrollbar::scrollWheelDown )
+  if ( scrollType >= FScrollbar::scrollStepBackward )
   {
     vbar->setValue (yoffset);
 
@@ -1860,8 +1881,8 @@ void FListBox::cb_HBarChange (FWidget*, FDataPtr)
 {
   static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
   FScrollbar::sType scrollType;
-  int distance = 1
-    , pagesize = 4
+  int distance{1}
+    , pagesize{4}
     , xoffset_before = xoffset;
   scrollType = hbar->getScrollType();
 
@@ -1907,8 +1928,7 @@ void FListBox::cb_HBarChange (FWidget*, FDataPtr)
     flush_out();
   }
 
-  if ( scrollType >= FScrollbar::scrollStepBackward
-    && scrollType <= FScrollbar::scrollWheelDown )
+  if ( scrollType >= FScrollbar::scrollStepBackward )
   {
     hbar->setValue (xoffset);
 

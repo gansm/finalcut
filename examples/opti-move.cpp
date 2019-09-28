@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2018 Markus Gans                                      *
+* Copyright 2016-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -26,11 +26,8 @@
 #include <final/final.h>
 
 
-// Global FVTerm object
-static finalcut::FVTerm* terminal;
-
 // Global FApplication object
-static finalcut::FApplication* app = nullptr;
+static finalcut::FApplication* app{nullptr};
 
 // function prototype
 bool keyPressed();
@@ -44,12 +41,13 @@ void move (int, int, int, int);
 bool keyPressed()
 {
   // Waiting for keypress
-  struct termios save, t;
-  bool ret;
+
+  struct termios save{};
+  bool ret{false};
   std::cout << "\nPress any key to continue...";
   fflush(stdout);
   tcgetattr (STDIN_FILENO, &save);
-  t = save;
+  struct termios t = save;
   t.c_lflag &= uInt(~(ICANON | ECHO));
   tcsetattr (STDIN_FILENO, TCSANOW, &t);
 
@@ -89,10 +87,8 @@ void term_boundaries (int& x, int& y)
 void move (int xold, int yold, int xnew, int ynew)
 {
   // prints the cursor move escape sequence
-  std::string sequence;
-  char* buffer;
-  char  from[26], to[26], byte[20];
-  uInt  len;
+  std::string sequence{};
+  char  from[26]{}, to[26]{}, byte[20]{};
   const std::string ctrl_character[] =
   {
     "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL",
@@ -111,8 +107,8 @@ void move (int xold, int yold, int xnew, int ynew)
             << std::left << std::setw(10) << to
             << " ";
   // get the move string
-  buffer = terminal->moveCursor (xold, yold, xnew, ynew);
-  len    = uInt(std::strlen(buffer));
+  char* buffer = finalcut::FTerm::moveCursorString (xold, yold, xnew, ynew);
+  uInt len = uInt(std::strlen(buffer));
 
   for (uInt i = 0; i < len; i++)
   {
@@ -142,18 +138,15 @@ void move (int xold, int yold, int xnew, int ynew)
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
-  int xmax, ymax;
-
   // Create the application object
   finalcut::FApplication TermApp(argc, argv);
 
   // Pointer to the global virtual terminal object
-  terminal = static_cast<finalcut::FVTerm*>(&TermApp);
   app = &TermApp;
 
   // Get screen dimension
-  xmax = int(TermApp.getDesktopWidth() - 1);
-  ymax = int(TermApp.getDesktopHeight() - 1);
+  int xmax = int(TermApp.getDesktopWidth() - 1);
+  int ymax = int(TermApp.getDesktopHeight() - 1);
   finalcut::FString line(std::size_t(xmax) + 1, '-');
 
   // Place the cursor in the upper left corner
@@ -197,7 +190,8 @@ int main (int argc, char* argv[])
 
   // Show terminal speed and milliseconds for all cursor movement sequence
   std::cout << "\r" << line;
-  TermApp.printMoveDurations();
+  const finalcut::FOptiMove& opti_move = *TermApp.getFTerm().getFOptiMove();
+  finalcut::printDurations(opti_move);
 
   // Waiting for keypress
   keyPressed();

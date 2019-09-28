@@ -20,7 +20,10 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fcolorpair.h"
+#include "final/fevent.h"
 #include "final/fswitch.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {
@@ -34,7 +37,7 @@ namespace finalcut
 FSwitch::FSwitch(FWidget* parent)
   : FToggleButton(parent)
 {
-  button_width = 11;
+  setButtonWidth(11);
 }
 
 //----------------------------------------------------------------------
@@ -42,7 +45,7 @@ FSwitch::FSwitch (const FString& txt, FWidget* parent)
   : FToggleButton(txt, parent)
 {
   switch_offset_pos = txt.getLength() + 1;
-  button_width = 11;
+  setButtonWidth(11);
 }
 
 //----------------------------------------------------------------------
@@ -114,6 +117,9 @@ void FSwitch::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FSwitch::draw()
 {
+  if ( ! isVisible() )
+    return;
+
   drawLabel();
   drawCheckButton();
   FToggleButton::draw();
@@ -124,22 +130,20 @@ void FSwitch::draw()
 //----------------------------------------------------------------------
 void FSwitch::drawCheckButton()
 {
-  if ( ! isVisible() )
-    return;
-
   print() << FPoint(1 + int(switch_offset_pos), 1);
 
-  if ( checked )
+  if ( isChecked() )
     drawChecked();
   else
     drawUnchecked();
 }
 
 //----------------------------------------------------------------------
-void FSwitch::drawChecked()
+inline void FSwitch::drawChecked()
 {
-  wchar_t on[6] = L"  On ";
-  wchar_t off[6] = L" Off ";
+  wchar_t on[6]{L"  On "};
+  wchar_t off[6]{L" Off "};
+  const auto& wc = getFWidgetColors();
 
   if ( hasFocus() && ! button_pressed )
   {
@@ -185,11 +189,12 @@ void FSwitch::drawChecked()
 }
 
 //----------------------------------------------------------------------
-void FSwitch::drawUnchecked()
+inline void FSwitch::drawUnchecked()
 {
-  wchar_t on[6] = L"  On ";
-  wchar_t off[6] = L" Off ";
+  wchar_t on[6]{L"  On "};
+  wchar_t off[6]{L" Off "};
 
+  const auto& wc = getFWidgetColors();
   setColor (wc.button_inactive_fg, wc.button_inactive_bg);
 
   if ( isMonochron() )

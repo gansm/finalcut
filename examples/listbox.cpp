@@ -23,6 +23,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <memory>
 #include <fstream>
 
 #include <final/final.h>
@@ -75,9 +76,6 @@ FString& mapToString ( std::map<FString
 // class Listbox
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class Listbox : public FDialog
 {
   public:
@@ -95,16 +93,15 @@ class Listbox : public FDialog
 
   private:
     // Event handlers
-    virtual void onClose (FCloseEvent*) override;
+    void onClose (FCloseEvent*) override;
 
-    // Data Member
+    // Data member
     std::list<double>  double_list{};
     FListBox list1{this};
     FListBox list2{this};
     FListBox list3{this};
     FButton  Quit{this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Listbox::Listbox (FWidget* parent)
@@ -118,12 +115,12 @@ Listbox::Listbox (FWidget* parent)
   list1.setGeometry(FPoint(2, 1), FSize(18, 10));
   list1.setText ("FListBoxItem");
 
-  for (int i = 1; i < 30; i++)
+  for (int i{1}; i < 30; i++)
     list1.insert (L"----- " + (FString() << i) + L" -----");
 
   // listbox 2
   //----------
-  for (double i = 1; i<=15; i++)
+  for (double i{1.0}; i <= 15.0; i++)
     double_list.push_back(2 * i + (i / 100));
 
   list2.setGeometry(FPoint(21, 1), FSize(10, 10));

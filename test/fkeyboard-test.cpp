@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -28,13 +28,12 @@
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
 
+#include <string>
 #include <final/final.h>
 
 namespace test
 {
 
-#pragma pack(push)
-#pragma pack(1)
 typedef struct
 {
   int   num;
@@ -42,7 +41,6 @@ typedef struct
   char  tname[4];
 }
 fkeymap;
-#pragma pack(pop)
 
 fkeymap Fkey[] =
 {
@@ -226,9 +224,6 @@ fkeymap Fkey[] =
 // class FKeyboardTest
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FKeyboardTest : public CPPUNIT_NS::TestFixture
 {
   public:
@@ -275,13 +270,12 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     void keyReleased();
     void escapeKeyPressed();
 
-    // Data Members
+    // Data members
     FKey key_pressed{0};
     FKey key_released{0};
     int  number_of_keys{0};
     finalcut::FKeyboard* keyboard{nullptr};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 FKeyboardTest::FKeyboardTest()
@@ -354,7 +348,8 @@ void FKeyboardTest::escapeKeyTest()
   input("\033");
   processInput();
   // Wait 100 ms (= 100,000,000 ns)
-  nanosleep ((const struct timespec[]){{0, 100000000L}}, NULL);
+  const struct timespec ms[]{{0, 100000000L}};
+  nanosleep (ms, NULL);
   keyboard->escapeKeyHandling();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_escape );
@@ -2084,7 +2079,8 @@ void FKeyboardTest::metaKeyTest()
   input("\033O");
   processInput();
   // Wait 100 ms - Substring keys needs a timeout
-  nanosleep ((const struct timespec[]){{0, 100000000L}}, NULL);
+  const struct timespec ms[]{{0, 100000000L}};
+  nanosleep (ms, NULL);
   keyboard->escapeKeyHandling();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fmkey_O );
@@ -2171,7 +2167,7 @@ void FKeyboardTest::metaKeyTest()
   input("\033[");
   processInput();
   // Wait 100 ms - Substring keys needs a timeout
-  nanosleep ((const struct timespec[]){{0, 100000000L}}, NULL);
+  nanosleep (ms, NULL);
   keyboard->escapeKeyHandling();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fmkey_left_square_bracket );
@@ -2188,7 +2184,7 @@ void FKeyboardTest::metaKeyTest()
   input("\033]");
   processInput();
   // Wait 100 ms - Substring keys needs a timeout
-  nanosleep ((const struct timespec[]){{0, 100000000L}}, NULL);
+  nanosleep (ms, NULL);
   keyboard->escapeKeyHandling();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fmkey_right_square_bracket );

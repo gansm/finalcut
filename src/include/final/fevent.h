@@ -65,7 +65,11 @@
  *      │    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
  *      │
  *      │    ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- *      └─────▏FTimerEvent ▏
+ *      ├─────▏FTimerEvent ▏
+ *      │    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *      │
+ *      │    ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *      └─────▏FUserEvent  ▏
  *           ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
  */
 
@@ -83,12 +87,12 @@
 namespace finalcut
 {
 
+// class forward declaration
+class FPoint;
+
 //----------------------------------------------------------------------
 // class FEvent
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FEvent  // event base class
 {
@@ -97,19 +101,14 @@ class FEvent  // event base class
     explicit FEvent(fc::events);
     fc::events type() const;
 
-  protected:
+  private:
     fc::events t{fc::None_Event};
 };
-
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // class FKeyEvent
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FKeyEvent : public FEvent  // keyboard event
 {
@@ -118,25 +117,20 @@ class FKeyEvent : public FEvent  // keyboard event
     FKeyEvent (fc::events, FKey);
     ~FKeyEvent();
 
-    FKey key() const;
-    bool isAccepted() const;
-    void accept();
-    void ignore();
+    FKey     key() const;
+    bool     isAccepted() const;
+    void     accept();
+    void     ignore();
 
-  protected:
-    FKey k{0};
-    bool accpt{false};
+  private:
+    FKey     k{0};
+    bool     accpt{false};
 };
-
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // class FMouseEvent
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FMouseEvent : public FEvent  // mouse event
 {
@@ -146,29 +140,24 @@ class FMouseEvent : public FEvent  // mouse event
     FMouseEvent (fc::events, const FPoint&, int);
     ~FMouseEvent();
 
-    const FPoint& getPos() const;
-    const FPoint& getTermPos() const;
-    int getX() const;
-    int getY() const;
-    int getTermX() const;
-    int getTermY() const;
-    int getButton() const;
+    const    FPoint& getPos() const;
+    const    FPoint& getTermPos() const;
+    int      getX() const;
+    int      getY() const;
+    int      getTermX() const;
+    int      getTermY() const;
+    int      getButton() const;
 
-  protected:
-    FPoint p;
-    FPoint tp;
-    int b;
+  private:
+    FPoint   p{};
+    FPoint   tp{};
+    int      b{};
 };
-
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // class FWheelEvent
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FWheelEvent : public FEvent  // wheel event
 {
@@ -178,29 +167,24 @@ class FWheelEvent : public FEvent  // wheel event
     FWheelEvent (fc::events, const FPoint&, const FPoint&, int);
     ~FWheelEvent();
 
-    const FPoint& getPos() const;
-    const FPoint& getTermPos() const;
-    int getX() const;
-    int getY() const;
-    int getTermX() const;
-    int getTermY() const;
-    int getWheel() const;
+    const    FPoint& getPos() const;
+    const    FPoint& getTermPos() const;
+    int      getX() const;
+    int      getY() const;
+    int      getTermX() const;
+    int      getTermY() const;
+    int      getWheel() const;
 
-  protected:
-    FPoint p;
-    FPoint tp;
-    int w;
+  private:
+    FPoint   p;
+    FPoint   tp;
+    int      w;
 };
-
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // class FFocusEvent
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FFocusEvent : public FEvent  // focus event
 {
@@ -209,27 +193,23 @@ class FFocusEvent : public FEvent  // focus event
     explicit FFocusEvent (fc::events);
     ~FFocusEvent();
 
-    bool gotFocus()  const;
-    bool lostFocus() const;
+    bool     gotFocus()  const;
+    bool     lostFocus() const;
     fc::FocusTypes getFocusType() const;
-    void setFocusType(fc::FocusTypes);
-    bool isAccepted() const;
-    void accept();
-    void ignore();
-  protected:
-    bool accpt{true};
+    void     setFocusType(fc::FocusTypes);
+    bool     isAccepted() const;
+    void     accept();
+    void     ignore();
+
+  private:
+    bool     accpt{true};
     fc::FocusTypes focus_type{fc::FocusDefiniteWidget};
 };
-
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // class FAccelEvent
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FAccelEvent : public FEvent  // focus event
 {
@@ -245,12 +225,10 @@ class FAccelEvent : public FEvent  // focus event
     void     accept();
     void     ignore();
 
-  protected:
+  private:
     bool     accpt{false};
-    void*    focus_widget;
+    void*    focus_widget{};
 };
-
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
@@ -264,12 +242,12 @@ class FResizeEvent : public FEvent  // resize event
     explicit FResizeEvent (fc::events);
     ~FResizeEvent();
 
-    bool isAccepted() const;
-    void accept();
-    void ignore();
+    bool     isAccepted() const;
+    void     accept();
+    void     ignore();
 
-  protected:
-    bool accpt{false};
+  private:
+    bool     accpt{false};
 };
 
 
@@ -310,21 +288,18 @@ class FCloseEvent : public FEvent  // close event
     explicit FCloseEvent(fc::events);
     ~FCloseEvent();
 
-    bool isAccepted() const;
-    void accept();
-    void ignore();
+    bool     isAccepted() const;
+    void     accept();
+    void     ignore();
 
-  protected:
-    bool accpt{false};
+  private:
+    bool     accpt{false};
 };
 
 
 //----------------------------------------------------------------------
 // class FTimerEvent
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FTimerEvent : public FEvent  // timer event
 {
@@ -333,21 +308,16 @@ class FTimerEvent : public FEvent  // timer event
     FTimerEvent (fc::events, int);
     ~FTimerEvent();
 
-    int getTimerId() const;
+    int      getTimerId() const;
 
-  protected:
-    int id{0};
+  private:
+    int      id{0};
 };
-
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // class FUserEvent
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FUserEvent : public FEvent  // timer event
 {
@@ -363,16 +333,14 @@ class FUserEvent : public FEvent  // timer event
     // Disable assignment operator (=)
     FUserEvent& operator = (const FUserEvent&) = delete;
 
-    int getUserId() const;
+    int      getUserId() const;
     FDataPtr getData() const;
-    void setData (FDataPtr);
+    void     setData (FDataPtr);
 
-  protected:
-    int uid{0};
+  private:
+    int      uid{0};
     FDataPtr data_pointer{nullptr};
 };
-
-#pragma pack(pop)
 
 }  // namespace finalcut
 

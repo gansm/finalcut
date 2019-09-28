@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2018 Markus Gans                                      *
+* Copyright 2016-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -68,9 +68,6 @@ namespace finalcut
 // class FToolTip
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FToolTip : public FWindow
 {
   public:
@@ -88,34 +85,32 @@ class FToolTip : public FWindow
     FToolTip& operator = (const FToolTip&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     const FString       getText() const;
 
     // Mutators
     void                setText (const FString&);
 
     // Methods
-    virtual void        draw() override;
-    virtual void        show() override;
-    virtual void        hide() override;
+    void                draw() override;
+    void                show() override;
+    void                hide() override;
 
     // Event handler
-    virtual void        onMouseDown (FMouseEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
 
   private:
     // Methods
     void                init();
     void                calculateDimensions();
-    virtual void        adjustSize() override;
+    void                adjustSize() override;
 
-    // Data Members
+    // Data members
     FString       text{};
-    FString*      text_components{nullptr};
-    FStringList   text_split{};
+    FStringList   text_components{};
     std::size_t   max_line_width{0};
     std::size_t   text_num_lines{0};
 };
-#pragma pack(pop)
 
 
 // FToolTip inline functions

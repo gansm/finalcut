@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -61,6 +61,7 @@
 
 #include <vector>
 
+#include "final/fwidget.h"
 #include "final/fwindow.h"
 
 namespace finalcut
@@ -72,9 +73,6 @@ class FStatusBar;
 //----------------------------------------------------------------------
 // class FStatusKey
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FStatusKey : public FWidget
 {
@@ -93,7 +91,7 @@ class FStatusKey : public FWidget
     FStatusKey& operator = (const FStatusKey&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     virtual FKey        getKey() const;
     virtual FString     getText() const;
 
@@ -111,7 +109,7 @@ class FStatusKey : public FWidget
     bool                hasMouseFocus() const;
 
     // Event handler
-    virtual void        onAccel (FAccelEvent*) override;
+    void                onAccel (FAccelEvent*) override;
 
   private:
     // Methods
@@ -123,14 +121,13 @@ class FStatusKey : public FWidget
     // Friend class
     friend class FStatusBar;
 
-    // Data Members
-    FKey        key{0};
+    // Data members
     FString     text{};
+    FStatusBar* bar{nullptr};
+    FKey        key{0};
     bool        active{false};
     bool        mouse_focus{false};
-    FStatusBar* bar{nullptr};
 };
-#pragma pack(pop)
 
 
 // FStatusKey inline functions
@@ -152,7 +149,7 @@ inline void FStatusKey::setKey (FKey k)
 
 //----------------------------------------------------------------------
 inline void FStatusKey::setText (const FString& txt)
-{ text = txt; }
+{ text.setString(txt); }
 
 //----------------------------------------------------------------------
 inline void FStatusKey::unsetActive()
@@ -187,9 +184,6 @@ inline void FStatusKey::setConnectedStatusbar (FStatusBar* sb)
 // class FStatusBar
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FStatusBar : public FWindow
 {
   public:
@@ -206,7 +200,7 @@ class FStatusBar : public FWindow
     FStatusBar& operator = (const FStatusBar&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     FStatusKey*         getStatusKey (int) const;
     FString             getMessage() const;
     std::size_t         getCount() const;
@@ -221,19 +215,19 @@ class FStatusBar : public FWindow
     bool                hasActivatedKey();
 
     // Methods
-    virtual void        hide() override;
+    void                hide() override;
     void                drawMessage();
     void                clearMessage();
     void                insert (FStatusKey*);
     void                remove (FStatusKey*);
     void                remove (int);
     void                clear();
-    virtual void        adjustSize() override;
+    void                adjustSize() override;
 
     // Event handlers
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
-    virtual void        onMouseMove (FMouseEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
+    void                onMouseMove (FMouseEvent*) override;
 
     // Callback method
     void                cb_statuskey_activated (FWidget*, FDataPtr);
@@ -244,21 +238,22 @@ class FStatusBar : public FWindow
 
     // Methods
     void                init();
-    virtual void        draw() override;
+    int                 getKeyNameWidth (const FStatusKey*);
+    int                 getKeyTextWidth (const FStatusKey*);
+    void                draw() override;
     void                drawKeys();
     void                drawKey (keyList::const_iterator);
     void                drawActiveKey (keyList::const_iterator);
 
-    // Data Members
+    // Data members
     keyList             key_list{};
     FString             text{""};
-    bool                mouse_down{};
     std::size_t         screenWidth{80};
     int                 keyname_len{0};
     int                 x{-1};
     int                 x_msg{-1};
+    bool                mouse_down{};
 };
-#pragma pack(pop)
 
 
 // FStatusBar inline functions

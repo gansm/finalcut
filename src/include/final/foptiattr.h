@@ -58,9 +58,6 @@
 
 #include <algorithm>  // need for std::swap
 
-#include "final/fc.h"
-#include "final/ftypes.h"
-
 namespace finalcut
 {
 
@@ -68,57 +65,12 @@ namespace finalcut
 // class FOptiAttr
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FOptiAttr final
 {
   public:
-    // Typedefs
+    // Typedef
     typedef struct
     {
-      wchar_t code;          // character code
-      wchar_t encoded_code;  // encoded output character
-      FColor  fg_color;      // foreground color
-      FColor  bg_color;      // background color
-
-      union attribute
-      {
-        struct
-        {
-          // Attribute byte #0
-          uInt8 bold          : 1;  // bold
-          uInt8 dim           : 1;  // dim
-          uInt8 italic        : 1;  // italic
-          uInt8 underline     : 1;  // underline
-          uInt8 blink         : 1;  // blink
-          uInt8 reverse       : 1;  // reverse
-          uInt8 standout      : 1;  // standout
-          uInt8 invisible     : 1;  // invisible
-          // Attribute byte #1
-          uInt8 protect       : 1;  // protect mode
-          uInt8 crossed_out   : 1;  // crossed out
-          uInt8 dbl_underline : 1;  // double underline
-          uInt8 alt_charset   : 1;  // alternate character set (vt100)
-          uInt8 pc_charset    : 1;  // pc character set (CP437)
-          uInt8 transparent   : 1;  // transparent
-          uInt8 trans_shadow  : 1;  // transparent shadow
-          uInt8 inherit_bg    : 1;  // inherit background
-          // Attribute byte #2
-          uInt8 no_changes    : 1;  // no changes required
-          uInt8 printed       : 1;  // is printed to VTerm
-          uInt8               : 6;  // padding bits
-        } bit;
-
-        uInt8 byte[3];
-      } attr;
-    } charData;
-
-    typedef struct
-    {
-      bool  ansi_default_color;
-      int   max_color;
-      int   attr_without_color;
       char* t_enter_bold_mode;
       char* t_exit_bold_mode;
       char* t_enter_dim_mode;
@@ -154,6 +106,9 @@ class FOptiAttr final
       char* t_set_color_pair;
       char* t_orig_pair;
       char* t_orig_colors;
+      int   max_color;
+      int   attr_without_color;
+      bool  ansi_default_color;
     } termEnv;
 
     // Constructor
@@ -326,7 +281,7 @@ class FOptiAttr final
     bool  switchOff();
     bool  append_sequence (char[]);
 
-    // Data Members
+    // Data members
     capability F_enter_bold_mode{};
     capability F_exit_bold_mode{};
     capability F_enter_dim_mode{};
@@ -369,31 +324,32 @@ class FOptiAttr final
 
     int        max_color{1};
     int        attr_without_color{0};
+    char*      attr_ptr{attr_buf};
+    char       attr_buf[8192]{'\0'};
     bool       ansi_default_color{false};
     bool       alt_equal_pc_charset{false};
     bool       monochron{true};
     bool       fake_reverse{false};
-    char       attr_buf[8192]{'\0'};
-    char*      attr_ptr{attr_buf};
 };
-#pragma pack(pop)
 
 
 // FOptiAttr inline functions
 //----------------------------------------------------------------------
-inline bool operator == ( const FOptiAttr::charData& lhs,
-                          const FOptiAttr::charData& rhs )
+inline bool operator == ( const charData& lhs,
+                          const charData& rhs )
 {
   return lhs.code         == rhs.code
       && lhs.fg_color     == rhs.fg_color
       && lhs.bg_color     == rhs.bg_color
       && lhs.attr.byte[0] == rhs.attr.byte[0]
-      && lhs.attr.byte[1] == rhs.attr.byte[1];
+      && lhs.attr.byte[1] == rhs.attr.byte[1]
+      && lhs.attr.bit.fullwidth_padding \
+                          == rhs.attr.bit.fullwidth_padding;
 }
 
 //----------------------------------------------------------------------
-inline bool operator != ( const FOptiAttr::charData& lhs,
-                          const FOptiAttr::charData& rhs )
+inline bool operator != ( const charData& lhs,
+                          const charData& rhs )
 { return ! ( lhs == rhs ); }
 
 //----------------------------------------------------------------------

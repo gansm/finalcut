@@ -63,11 +63,12 @@
 #endif
 
 #include <sys/param.h>
+#include <sys/types.h>
 
 #include <dirent.h>
 #include <fnmatch.h>
 #include <libgen.h>
-#include <pwd.h>
+#include <unistd.h>
 
 #include <string>
 #include <vector>
@@ -84,12 +85,12 @@
 namespace finalcut
 {
 
+// class forward declaration
+class FSystem;
+
 //----------------------------------------------------------------------
 // class FFileDialog
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FFileDialog : public FDialog
 {
@@ -116,7 +117,7 @@ class FFileDialog : public FDialog
     FFileDialog& operator = (const FFileDialog&);
 
     // Accessors
-    virtual const char*  getClassName() const override;
+    const char*          getClassName() const override;
     const FString        getPath() const;
     const FString        getFilter() const;
     const FString        getSelectedFile() const;
@@ -130,7 +131,7 @@ class FFileDialog : public FDialog
     bool                 unsetShowHiddenFiles();
 
     // Event handler
-    virtual void         onKeyPress (FKeyEvent*) override;
+    void                 onKeyPress (FKeyEvent*) override;
 
     // Methods
     static const FString fileOpenChooser ( FWidget*
@@ -147,7 +148,7 @@ class FFileDialog : public FDialog
 
   protected:
     // Method
-    virtual void adjustSize() override;
+    void                 adjustSize() override;
 
   private:
     // Typedef
@@ -173,7 +174,7 @@ class FFileDialog : public FDialog
     void                 initCallbacks();
     bool                 pattern_match (const char* const, char[]);
     void                 clear();
-    int                  numOfDirs();
+    long                 numOfDirs();
     void                 sortDir();
     int                  readDir();
     void                 getEntry (const char* const, struct dirent*);
@@ -192,18 +193,19 @@ class FFileDialog : public FDialog
     void                 cb_processOpen (FWidget*, FDataPtr);
     void                 cb_processShowHidden (FWidget*, FDataPtr);
 
-    // Data Members
-    DIR*        directory_stream{nullptr};
-    dirEntries  dir_entries{};
-    FString     directory{};
-    FString     filter_pattern{};
-    FLineEdit   filename{this};
-    FListBox    filebrowser{this};
-    FCheckBox   hidden{this};
-    FButton     cancel{this};
-    FButton     open{this};
-    DialogType  dlg_type{FFileDialog::Open};
-    bool        show_hidden{false};
+    // Data members
+    static FSystem*  fsystem;
+    DIR*             directory_stream{nullptr};
+    dirEntries       dir_entries{};
+    FString          directory{};
+    FString          filter_pattern{};
+    FLineEdit        filename{this};
+    FListBox         filebrowser{this};
+    FCheckBox        hidden_check{this};
+    FButton          cancel_btn{this};
+    FButton          open_btn{this};
+    DialogType       dlg_type{FFileDialog::Open};
+    bool             show_hidden{false};
 
     // Friend functions
     friend bool sortByName ( const FFileDialog::dir_entry&
@@ -211,8 +213,6 @@ class FFileDialog : public FDialog
     friend bool sortDirFirst ( const FFileDialog::dir_entry&
                              , const FFileDialog::dir_entry& );
 };
-#pragma pack(pop)
-
 
 // FMessageBox inline functions
 //----------------------------------------------------------------------

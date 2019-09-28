@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fc.h"
 #include "final/fcolorpalette.h"
 
 namespace finalcut
@@ -78,22 +79,7 @@ void FColorPalette::set16ColorPalette (funcp setPalette)
 //----------------------------------------------------------------------
 void FColorPalette::reset8ColorPalette (funcp setPalette)
 {
-  setPalette (fc::Black, 0x00, 0x00, 0x00);
-  setPalette (fc::Blue, 0x00, 0x00, 0xaa);
-  setPalette (fc::Green, 0x00, 0xaa, 0x00);
-  setPalette (fc::Cyan, 0x00, 0x55, 0xaa);
-  setPalette (fc::Red, 0xaa, 0x00, 0x00);
-  setPalette (fc::Magenta, 0xaa, 0x00, 0xaa);
-  setPalette (fc::Brown, 0xaa, 0xaa, 0x00);
-  setPalette (fc::LightGray, 0xaa, 0xaa, 0xaa);
-  setPalette (fc::DarkGray, 0x55, 0x55, 0x55);
-  setPalette (fc::LightBlue, 0x55, 0x55, 0xff);
-  setPalette (fc::LightGreen, 0x55, 0xff, 0x55);
-  setPalette (fc::LightCyan, 0x55, 0xff, 0xff);
-  setPalette (fc::LightRed, 0xff, 0x55, 0x55);
-  setPalette (fc::LightMagenta, 0xff, 0x55, 0xff);
-  setPalette (fc::Yellow, 0xff, 0xff, 0x55);
-  setPalette (fc::White, 0xff, 0xff, 0xff);
+  reset16ColorPalette(setPalette);
 }
 
 //----------------------------------------------------------------------

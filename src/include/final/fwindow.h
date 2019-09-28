@@ -69,14 +69,10 @@ namespace finalcut
 // class FWindow
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FWindow : public FWidget
 {
   public:
     // Using-declaration
-    using FWidget::drawBorder;
     using FWidget::setGeometry;
 
     // Constructor
@@ -92,7 +88,7 @@ class FWindow : public FWidget
     FWindow& operator = (const FWindow&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     static FWindow*     getWindowWidget (const FWidget*);
     static int          getWindowLayer (const FWidget*);
     FWidget*            getWindowFocusWidget() const;
@@ -102,7 +98,7 @@ class FWindow : public FWidget
     bool                setWindowWidget();
     bool                unsetWindowWidget();
     static void         setActiveWindow (FWindow*);
-    void                setWindowFocusWidget (const FWidget*);
+    void                setWindowFocusWidget (FWidget*);
     bool                activateWindow (bool);
     bool                activateWindow();
     void                unsetActiveWindow();
@@ -130,18 +126,18 @@ class FWindow : public FWidget
     bool                hasShadow() const;
 
     // Methods
-    virtual void        drawBorder() override;
-    virtual void        show() override;
-    virtual void        hide() override;
-    virtual void        setX (int, bool = true) override;
-    virtual void        setY (int, bool = true) override;
-    virtual void        setPos (const FPoint&, bool = true) override;
-    virtual void        setWidth (std::size_t, bool = true) override;
-    virtual void        setHeight (std::size_t, bool = true) override;
-    virtual void        setSize (const FSize&, bool = true) override;
-    virtual void        setGeometry ( const FPoint&, const FSize&
+    void                drawBorder() override;
+    void                show() override;
+    void                hide() override;
+    void                setX (int, bool = true) override;
+    void                setY (int, bool = true) override;
+    void                setPos (const FPoint&, bool = true) override;
+    void                setWidth (std::size_t, bool = true) override;
+    void                setHeight (std::size_t, bool = true) override;
+    void                setSize (const FSize&, bool = true) override;
+    void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
-    virtual void        move (const FPoint&) override;
+    void                move (const FPoint&) override;
     static FWindow*     getWindowWidgetAt (const FPoint&);
     static FWindow*     getWindowWidgetAt (int, int);
     static void         addWindow (FWidget*);
@@ -154,17 +150,17 @@ class FWindow : public FWidget
     bool                zoomWindow ();
     static void         switchToPrevWindow (FWidget*);
     static bool         activatePrevWindow();
-    virtual void        setShadowSize (const FSize&) override;
+    void                setShadowSize (const FSize&) override;
 
   protected:
     // Method
-    virtual void        adjustSize() override;
+    void                adjustSize() override;
 
     // Mutator
     static void         setPreviousWindow (FWindow*);
 
     // Event handlers
-    virtual bool        event (FEvent*) override;
+    bool                event (FEvent*) override;
     virtual void        onWindowActive (FEvent*);
     virtual void        onWindowInactive (FEvent*);
     virtual void        onWindowRaised (FEvent*);
@@ -175,15 +171,13 @@ class FWindow : public FWidget
     static void         deleteFromAlwaysOnTopList (FWidget*);
     static void         processAlwaysOnTop();
 
-    // Data Members
-    bool            window_active{false};
-    bool            zoomed{false};
-    FWidget*        win_focus_widget{nullptr};
-    FRect           normalGeometry{};
-    static FWindow* previous_window;
-
+    // Data members
+    FWidget*            win_focus_widget{nullptr};
+    FRect               normalGeometry{};
+    static FWindow*     previous_window;
+    bool                window_active{false};
+    bool                zoomed{false};
 };
-#pragma pack(pop)
 
 
 // FWindow inline functions
@@ -249,19 +243,19 @@ inline bool FWindow::isWindowActive() const
 
 //----------------------------------------------------------------------
 inline bool FWindow::isResizeable() const
-{ return flags.resizeable; }
+{ return getFlags().resizeable; }
 
 //----------------------------------------------------------------------
 inline bool FWindow::isAlwaysOnTop() const
-{ return flags.always_on_top; }
+{ return getFlags().always_on_top; }
 
 //----------------------------------------------------------------------
 inline bool FWindow::hasTransparentShadow() const
-{ return flags.trans_shadow; }
+{ return getFlags().trans_shadow; }
 
 //----------------------------------------------------------------------
 inline bool FWindow::hasShadow() const
-{ return flags.shadow; }
+{ return getFlags().shadow; }
 
 //----------------------------------------------------------------------
 inline FWindow* FWindow::getWindowWidgetAt (const FPoint& pos)

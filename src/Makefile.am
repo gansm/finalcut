@@ -27,6 +27,8 @@ libfinal_la_SOURCES = \
 	flistview.cpp \
 	fmenu.cpp \
 	fmouse.cpp \
+	fsystem.cpp \
+	fsystemimpl.cpp \
 	fkeyboard.cpp \
 	fdialoglistmenu.cpp \
 	fmenubar.cpp \
@@ -41,7 +43,9 @@ libfinal_la_SOURCES = \
 	ftooltip.cpp \
 	ffiledialog.cpp \
 	fkey_map.cpp \
+	fcharmap.cpp \
 	ftextview.cpp \
+	fstartoptions.cpp \
 	fstatusbar.cpp \
 	ftermcap.cpp \
 	ftermcapquirks.cpp \
@@ -49,6 +53,7 @@ libfinal_la_SOURCES = \
 	ftermfreebsd.cpp \
 	ftermopenbsd.cpp \
 	ftermlinux.cpp \
+	ftermdebugdata.cpp \
 	ftermdetection.cpp \
 	ftermios.cpp \
 	fterm.cpp \
@@ -71,7 +76,6 @@ finalcutinclude_HEADERS = \
 	include/final/fapplication.h \
 	include/final/fbutton.h \
 	include/final/fbuttongroup.h \
-	include/final/fcharmap.h \
 	include/final/fcheckbox.h \
 	include/final/fcolorpair.h \
 	include/final/fconfig.h \
@@ -84,6 +88,7 @@ finalcutinclude_HEADERS = \
 	include/final/ffiledialog.h \
 	include/final/final.h \
 	include/final/fkey_map.h \
+	include/final/fcharmap.h \
 	include/final/flabel.h \
 	include/final/flineedit.h \
 	include/final/flistbox.h \
@@ -110,8 +115,11 @@ finalcutinclude_HEADERS = \
 	include/final/frect.h \
 	include/final/fscrollbar.h \
 	include/final/fscrollview.h \
+	include/final/fstartoptions.h \
 	include/final/fstatusbar.h \
 	include/final/fstring.h \
+	include/final/fsystem.h \
+	include/final/fsystemimpl.h \
 	include/final/ftermcap.h \
 	include/final/ftermcapquirks.h \
 	include/final/ftermxterminal.h \

@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fc.h"
 #include "final/fterm.h"
 #include "final/fwidgetcolors.h"
 

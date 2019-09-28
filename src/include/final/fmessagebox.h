@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -64,19 +64,18 @@
 
 #include <cstring>
 
-#include "final/fbutton.h"
 #include "final/fdialog.h"
-#include "final/fterm.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {
 
+// class forward declaration
+class FButton;
+
 //----------------------------------------------------------------------
 // class FMessageBox
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FMessageBox : public FDialog
 {
@@ -107,7 +106,7 @@ class FMessageBox : public FDialog
     FMessageBox& operator = (const FMessageBox&);
 
     // Accessor
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     const FString       getTitlebarText() const;
     const FString       getHeadline() const;
     const FString       getText() const;
@@ -137,7 +136,7 @@ class FMessageBox : public FDialog
                               , int = 0 );
    protected:
     // Method
-    virtual void        adjustSize() override;
+    void                adjustSize() override;
 
     // Callback method
     void                cb_processClick (FWidget*, FDataPtr);
@@ -149,24 +148,22 @@ class FMessageBox : public FDialog
     void                deallocation();
     void                initCallbacks();
     void                calculateDimensions();
-    virtual void        draw() override;
+    void                draw() override;
     void                resizeButtons();
     void                adjustButtons();
 
-    // Data Members
+    // Data members
     FString       headline_text{};
     FString       text{};
-    FString*      text_components{nullptr};
-    FStringList   text_split{};
-    std::size_t   max_line_width{0};
-    bool          center_text{false};
-    FColor        emphasis_color{wc.dialog_emphasis_fg};
-    uInt          num_buttons{0};
-    uInt          text_num_lines{0};
-    int           button_digit[3]{0};
+    FStringList   text_components{};
     FButton*      button[3]{nullptr};
+    std::size_t   max_line_width{0};
+    FColor        emphasis_color{getFWidgetColors().dialog_emphasis_fg};
+    int           button_digit[3]{0};
+    uInt          num_buttons{0};
+    std::size_t   text_num_lines{0};
+    bool          center_text{false};
 };
-#pragma pack(pop)
 
 
 // FMessageBox inline functions
@@ -211,12 +208,11 @@ int FMessageBox::info ( FWidget* parent
                       , int button1
                       , int button2 )
 {
-  int reply;
   FMessageBox mbox ( caption
                    , FString() << message
                    , button0, button1, button2
                    , parent );
-  reply = mbox.exec();
+  int reply = mbox.exec();
   return reply;
 }
 
@@ -228,8 +224,8 @@ int FMessageBox::error ( FWidget* parent
                        , int button1
                        , int button2 )
 {
-  int reply;
-  const FString& caption = "Error message";
+  const FString caption{"Error message"};
+
   FMessageBox mbox ( caption
                    , FString() << message
                    , button0, button1, button2
@@ -237,10 +233,11 @@ int FMessageBox::error ( FWidget* parent
   mbox.beep();
   mbox.setHeadline("Warning:");
   mbox.setCenterText();
-  mbox.setForegroundColor(mbox.wc.error_box_fg);
-  mbox.setBackgroundColor(mbox.wc.error_box_bg);
-  mbox.emphasis_color  = mbox.wc.error_box_emphasis_fg;
-  reply = mbox.exec();
+  const FWidgetColors& wc = mbox.getFWidgetColors();
+  mbox.setForegroundColor(wc.error_box_fg);
+  mbox.setBackgroundColor(wc.error_box_bg);
+  mbox.emphasis_color = wc.error_box_emphasis_fg;
+  int reply = mbox.exec();
   return reply;
 }
 

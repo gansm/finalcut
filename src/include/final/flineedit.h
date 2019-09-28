@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -52,18 +52,18 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <limits>
 #include "final/fwidget.h"
-#include "final/flabel.h"
 
 namespace finalcut
 {
 
+// class forward declaration
+class FLabel;
+
 //----------------------------------------------------------------------
 // class FLineEdit
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FLineEdit : public FWidget
 {
@@ -74,6 +74,9 @@ class FLineEdit : public FWidget
       label_above = 0,
       label_left = 1
     };
+
+    // Using-declaration
+    using FWidget::setGeometry;
 
     // Constructor
     explicit FLineEdit (FWidget* = nullptr);
@@ -103,21 +106,29 @@ class FLineEdit : public FWidget
     const FLineEdit& operator >> (FString&);
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     FString             getText() const;
+    std::size_t         getMaxLength() const;
+    std::size_t         getCursorPosition() const;
     int                 getLabelOrientation();
 
     // Mutators
     void                setText (const FString&);
+    void                setInputFilter (const FString&);
+    void                clearInputFilter();
+    void                setMaxLength (std::size_t);
+    void                setCursorPosition (std::size_t);
     void                setLabelText (const FString&);
-    void                setLabelOrientation(const label_o);
-    virtual bool        setEnable(bool) override;
-    virtual bool        setEnable() override;
-    virtual bool        unsetEnable() override;
-    virtual bool        setDisable() override;
-    virtual bool        setFocus(bool) override;
-    virtual bool        setFocus() override;
-    virtual bool        unsetFocus() override;
+    void                setLabelOrientation (const label_o);
+    void                setGeometry ( const FPoint&, const FSize&
+                                    , bool = true ) override;
+    bool                setEnable(bool) override;
+    bool                setEnable() override;
+    bool                unsetEnable() override;
+    bool                setDisable() override;
+    bool                setFocus(bool) override;
+    bool                setFocus() override;
+    bool                unsetFocus() override;
     bool                setShadow(bool);
     bool                setShadow();
     bool                unsetShadow();
@@ -126,25 +137,28 @@ class FLineEdit : public FWidget
     bool                hasShadow();
 
     // Methods
-    virtual void        hide() override;
+    void                hide() override;
     void                clear();
 
     // Event handlers
-    virtual void        onKeyPress (FKeyEvent*) override;
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
-    virtual void        onMouseMove (FMouseEvent*) override;
-    virtual void        onTimer (FTimerEvent*) override;
-    virtual void        onAccel (FAccelEvent*) override;
-    virtual void        onHide (FHideEvent*) override;
-    virtual void        onFocusIn (FFocusEvent*) override;
-    virtual void        onFocusOut (FFocusEvent*) override;
+    void                onKeyPress (FKeyEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
+    void                onMouseMove (FMouseEvent*) override;
+    void                onTimer (FTimerEvent*) override;
+    void                onAccel (FAccelEvent*) override;
+    void                onHide (FHideEvent*) override;
+    void                onFocusIn (FFocusEvent*) override;
+    void                onFocusOut (FFocusEvent*) override;
 
   protected:
     void                adjustLabel();
-    virtual void        adjustSize() override;
+    void                adjustSize() override;
 
   private:
+    // Typedef
+    typedef std::pair<std::size_t, std::size_t> offsetPair;
+
     // Enumeration
     enum dragScroll
     {
@@ -153,36 +167,45 @@ class FLineEdit : public FWidget
       scrollRight = 2
     };
 
+    // Constants
+    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
+
     // Methods
     void                init();
     bool                hasHotkey();
-    virtual void        draw() override;
+    void                draw() override;
     void                drawInputField();
-    void                keyLeft();
-    void                keyRight();
-    void                keyHome();
-    void                keyEnd();
-    void                keyDel();
-    void                keyBackspace();
-    void                keyInsert();
-    void                keyEnter();
+    offsetPair          endPosToOffset (std::size_t);
+    std::size_t         clickPosToCursorPos (std::size_t);
+    void                adjustTextOffset();
+    void                cursorLeft();
+    void                cursorRight();
+    void                cursorHome();
+    void                cursorEnd();
+    void                deleteCurrentCharacter();
+    void                deletePreviousCharacter();
+    void                switchInsertMode();
+    void                acceptInput();
     bool                keyInput (FKey);
+    wchar_t             characterFilter (const wchar_t);
     void                processActivate();
     void                processChanged();
 
-    // Data Members
+    // Data members
     FString      text{""};
     FString      label_text{""};
     FLabel*      label{};
-    label_o      label_orientation{FLineEdit::label_left};
+    std::wstring input_filter{};
     dragScroll   drag_scroll{FLineEdit::noScroll};
-    bool         scroll_timer{false};
+    label_o      label_orientation{FLineEdit::label_left};
     int          scroll_repeat{100};
+    bool         scroll_timer{false};
     bool         insert_mode{true};
-    std::size_t  cursor_pos{0};
+    std::size_t  cursor_pos{NOT_SET};
     std::size_t  text_offset{0};
+    std::size_t  char_width_offset{0};
+    std::size_t  max_length{std::numeric_limits<std::size_t>::max()};
 };
-#pragma pack(pop)
 
 
 // FLineEdit inline functions
@@ -195,8 +218,24 @@ inline FString FLineEdit::getText() const
 { return text; }
 
 //----------------------------------------------------------------------
+inline std::size_t FLineEdit::getMaxLength() const
+{ return max_length; }
+
+//----------------------------------------------------------------------
+inline std::size_t FLineEdit::getCursorPosition() const
+{ return cursor_pos; }
+
+//----------------------------------------------------------------------
 inline int FLineEdit::getLabelOrientation()
 { return int(label_orientation); }
+
+//----------------------------------------------------------------------
+inline void FLineEdit::setInputFilter (const FString& regex_string)
+{ input_filter = regex_string.wc_str(); }
+
+//----------------------------------------------------------------------
+inline void FLineEdit::clearInputFilter()
+{ input_filter.clear(); }
 
 //----------------------------------------------------------------------
 inline bool FLineEdit::setEnable()
@@ -228,7 +267,7 @@ inline bool FLineEdit::unsetShadow()
 
 //----------------------------------------------------------------------
 inline bool FLineEdit::hasShadow()
-{ return flags.shadow; }
+{ return getFlags().shadow; }
 
 }  // namespace finalcut
 

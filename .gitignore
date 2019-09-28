@@ -49,6 +49,8 @@ examples/windows
 examples/term-attributes
 examples/transparent
 examples/input-dialog
+examples/fullwidth-character
+examples/7segment
 examples/choice
 examples/listbox
 examples/listview

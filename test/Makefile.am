@@ -13,6 +13,9 @@ noinst_PROGRAMS = \
 	ftermdata_test \
 	ftermdetection_test \
 	ftermcapquirks_test \
+	ftermlinux_test \
+	ftermopenbsd_test \
+	ftermfreebsd_test \
 	foptimove_test \
 	foptiattr_test \
 	fcolorpair_test \
@@ -27,6 +30,9 @@ fkeyboard_test_SOURCES = fkeyboard-test.cpp
 ftermdata_test_SOURCES = ftermdata-test.cpp
 ftermdetection_test_SOURCES = ftermdetection-test.cpp
 ftermcapquirks_test_SOURCES = ftermcapquirks-test.cpp
+ftermlinux_test_SOURCES = ftermlinux-test.cpp
+ftermopenbsd_test_SOURCES = ftermopenbsd-test.cpp
+ftermfreebsd_test_SOURCES = ftermfreebsd-test.cpp
 foptimove_test_SOURCES = foptimove-test.cpp
 foptiattr_test_SOURCES = foptiattr-test.cpp
 fcolorpair_test_SOURCES = fcolorpair-test.cpp
@@ -41,6 +47,9 @@ TESTS = fobject_test \
 	ftermdata_test \
 	ftermdetection_test \
 	ftermcapquirks_test \
+	ftermlinux_test \
+	ftermopenbsd_test \
+	ftermfreebsd_test \
 	foptimove_test \
 	foptiattr_test \
 	fcolorpair_test \

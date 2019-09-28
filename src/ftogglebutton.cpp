@@ -22,8 +22,11 @@
 
 #include "final/fapplication.h"
 #include "final/fbuttongroup.h"
+#include "final/fevent.h"
+#include "final/fpoint.h"
 #include "final/fstatusbar.h"
 #include "final/ftogglebutton.h"
+#include "final/fwidget.h"
 
 namespace finalcut
 {
@@ -81,9 +84,10 @@ void FToggleButton::setGeometry ( const FPoint& pos, const FSize& s
 {
   // Set the toggle button geometry
 
-  FSize size = s;
+  FSize size(s);
   std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
-  std::size_t min_width = button_width + text.getLength() - hotkey_mark;
+  std::size_t column_width = getColumnWidth(text);
+  std::size_t min_width = button_width + column_width - hotkey_mark;
 
   if ( size.getWidth() < min_width )
     size.setWidth(min_width);
@@ -106,6 +110,7 @@ bool FToggleButton::setNoUnderline (bool enable)
 bool FToggleButton::setEnable (bool enable)
 {
   FWidget::setEnable(enable);
+  const auto& wc = getFWidgetColors();
 
   if ( enable )
   {
@@ -136,6 +141,7 @@ bool FToggleButton::setEnable (bool enable)
 bool FToggleButton::setFocus (bool enable)
 {
   FWidget::setFocus(enable);
+  const auto& wc = getFWidgetColors();
 
   if ( enable )
   {
@@ -187,10 +193,10 @@ bool FToggleButton::setChecked (bool enable)
 //----------------------------------------------------------------------
 void FToggleButton::setText (const FString& txt)
 {
-  text = txt;
+  text.setString(txt);
   std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
-
-  setWidth(button_width + text.getLength() - hotkey_mark);
+  std::size_t column_width = getColumnWidth(text);
+  setWidth(button_width + column_width - hotkey_mark);
 
   if ( isEnabled() )
   {
@@ -203,7 +209,7 @@ void FToggleButton::setText (const FString& txt)
 void FToggleButton::hide()
 {
   FWidget::hide();
-  hideSize (getSize());
+  hideArea (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -366,6 +372,9 @@ void FToggleButton::setHotkeyAccelerator()
 {
   FKey hotkey = getHotkey(text);
 
+  if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
+    hotkey -= 0xfee0;
+
   if ( hotkey )
   {
     if ( std::isalpha(int(hotkey)) || std::isdigit(int(hotkey)) )
@@ -397,6 +406,9 @@ bool FToggleButton::isCheckboxButton() const
 //----------------------------------------------------------------------
 void FToggleButton::draw()
 {
+  if ( ! isVisible() )
+    return;
+
   if ( flags.focus && getStatusBar() )
   {
     const auto& msg = getStatusbarMessage();
@@ -419,9 +431,6 @@ void FToggleButton::drawLabel()
 {
   wchar_t* LabelText;
 
-  if ( ! isVisible() )
-    return;
-
   if ( text.isNull() || text.isEmpty() )
     return;
 
@@ -437,10 +446,10 @@ void FToggleButton::drawLabel()
     return;
   }
 
-  FString txt = text;
+  FString txt(text);
   wchar_t* src = const_cast<wchar_t*>(txt.wc_str());
   wchar_t* dest = const_cast<wchar_t*>(LabelText);
-  auto hotkeypos = getHotkeyPos(src, dest, length);
+  auto hotkeypos = finalcut::getHotkeyPos(src, dest, length);
 
   if ( hotkeypos != NOT_SET )
     length--;
@@ -529,6 +538,7 @@ void FToggleButton::setGroup (FButtonGroup* btngroup)
 void FToggleButton::init()
 {
   setGeometry (FPoint(1, 1), FSize(4, 1), false);  // initialize geometry values
+  const auto& wc = getFWidgetColors();
 
   if ( isEnabled() )
   {
@@ -551,31 +561,6 @@ void FToggleButton::init()
 }
 
 //----------------------------------------------------------------------
-std::size_t  FToggleButton::getHotkeyPos ( wchar_t src[]
-                                         , wchar_t dest[]
-                                         , std::size_t length )
-{
-  // find hotkey position in string
-  // + generate a new string without the '&'-sign
-  std::size_t  pos = NOT_SET;
-  wchar_t* txt = src;
-
-  for (std::size_t i = 0; i < length; i++)
-  {
-    if ( i < length && txt[i] == L'&' && pos == NOT_SET )
-    {
-      pos = i;
-      i++;
-      src++;
-    }
-
-    *dest++ = *src++;
-  }
-
-  return pos;
-}
-
-//----------------------------------------------------------------------
 void FToggleButton::drawText ( wchar_t LabelText[]
                              , std::size_t hotkeypos
                              , std::size_t length )
@@ -583,12 +568,14 @@ void FToggleButton::drawText ( wchar_t LabelText[]
   if ( isMonochron() )
     setReverse(true);
 
+  const auto& wc = getFWidgetColors();
+
   if ( isEnabled() )
     setColor (wc.label_fg, wc.label_bg);
   else
     setColor (wc.label_inactive_fg, wc.label_inactive_bg);
 
-  for (std::size_t z = 0; z < length; z++)
+  for (std::size_t z{0}; z < length; z++)
   {
     if ( (z == hotkeypos) && flags.active )
     {

@@ -50,25 +50,28 @@
 
 #include <cstdio>  // need for sprintf
 #include <cstring>
+#include <vector>
 
-#include "final/fc.h"
-#include "final/fcharmap.h"
-#include "final/ftermdetection.h"
-#include "final/ftypes.h"
+#include "final/ftermdata.h"
 
 namespace finalcut
 {
+
+// class forward declaration
+class FSystem;
+class FTermData;
+class FTermDetection;
 
 //----------------------------------------------------------------------
 // class FTermLinux
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTermLinux final
 {
   public:
+    // Typedef
+    typedef fc::linuxConsoleCursorStyle  CursorStyle;
+
     // Constructors
     FTermLinux() = default;
 
@@ -84,34 +87,31 @@ class FTermLinux final
     // Accessors
     const char*          getClassName() const;
     static fc::linuxConsoleCursorStyle getCursorStyle();
+    static char*         getCursorStyleString();
     static int           getFramebufferBpp();
 
     // Mutators
-    static void          setFTermData (FTermData*);
-    static void          setFTermDetection (FTermDetection*);
-    static char*         setCursorStyle (fc::linuxConsoleCursorStyle, bool);
+    static bool          setCursorStyle (CursorStyle);
     static bool          setPalette (FColor, int, int, int);
     static void          setUTF8 (bool);
 
     // Inquiries
     static bool          isLinuxConsole();
-    static bool          hasShadowCharacter();
-    static bool          hasHalfBlockCharacter();
     static bool          isVGAFontUsed();
     static bool          isNewFontUsed();
 
     // Methods
     static void          init();
-    static void          initCharMap (uInt[][fc::NUM_OF_ENCODINGS]);
+    static void          initCharMap();
     static void          finish();
     static bool          loadVGAFont();
     static bool          loadNewFont();
-    static bool          loadOldFont (uInt[][fc::NUM_OF_ENCODINGS]);
+    static bool          loadOldFont();
     static bool          saveColorMap();
     static bool          resetColorMap();
     static void          setBeep (int, int);
     static void          resetBeep();
-    static char*         restoreCursorStyle();
+
     static FKey          modifierKeyCorrection (const FKey&);
 
   private:
@@ -137,8 +137,6 @@ class FTermLinux final
       rgb color[16];
     } ColorMap;
 
-    typedef FTermData::characterSub  characterSub;
-
     // Accessors
     static int           getFramebuffer_bpp();
     static bool          getScreenFont();
@@ -149,6 +147,7 @@ class FTermLinux final
     static int           setScreenFont ( uChar[], uInt, uInt, uInt
                                        , bool = false );
     static int           setUnicodeMap (struct unimapdesc*);
+    static void          setLinuxCursorStyle (fc::linuxConsoleCursorStyle);
 
     // Methods
 #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
@@ -158,6 +157,8 @@ class FTermLinux final
     static uChar         getAttributeMode();
     static void          setAttributeMode (uChar);
     static int           setBlinkAsIntensity (bool);
+    static void          getVGAPalette();
+    static void          setVGADefaultPalette();
     static bool          setVGAPalette (FColor, int, int, int);
     static bool          saveVGAPalette();
     static bool          resetVGAPalette();
@@ -173,17 +174,15 @@ class FTermLinux final
     static void          initSpecialCharacter();
     static void          characterFallback (wchar_t, std::vector<wchar_t>);
 
-    // Data Members
+    // Data members
 #if defined(__linux__)
     static bool                   vga_font;
     static bool                   new_font;
-    static bool                   shadow_character;
-    static bool                   half_block_character;
     static bool                   has_saved_palette;
     static FTermData*             fterm_data;
+    static FSystem*               fsystem;
     static FTermDetection*        term_detection;
-    static fc::linuxConsoleCursorStyle
-                                  linux_console_cursor_style;
+    static CursorStyle            linux_console_cursor_style;
     static console_font_op        screen_font;
     static unimapdesc             screen_unicode_map;
     static ColorMap               saved_color_map;
@@ -191,7 +190,7 @@ class FTermLinux final
     static int                    framebuffer_bpp;
 #endif  // defined(__linux__)
 };
-#pragma pack(pop)
+
 
 // FTermLinux inline functions
 //----------------------------------------------------------------------
@@ -202,22 +201,6 @@ inline const char* FTermLinux::getClassName() const
 #if defined(__linux__)
 inline int FTermLinux::getFramebufferBpp()
 { return framebuffer_bpp; }
-
-//----------------------------------------------------------------------
-inline void FTermLinux::setFTermData (FTermData* data)
-{ fterm_data = data; }
-
-//----------------------------------------------------------------------
-inline void FTermLinux::setFTermDetection (FTermDetection* td)
-{ term_detection = td; }
-
-//----------------------------------------------------------------------
-inline bool FTermLinux::hasShadowCharacter()
-{ return shadow_character; }
-
-//----------------------------------------------------------------------
-inline bool FTermLinux::hasHalfBlockCharacter()
-{ return half_block_character; }
 
 //----------------------------------------------------------------------
 inline bool FTermLinux::isVGAFontUsed()

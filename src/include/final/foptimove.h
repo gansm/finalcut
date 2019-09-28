@@ -63,8 +63,6 @@
 #include <cstring>
 #include <iostream>
 
-#include "final/ftypes.h"
-
 namespace finalcut
 {
 
@@ -72,18 +70,12 @@ namespace finalcut
 // class FOptiMove
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FOptiMove final
 {
   public:
     // Typedef
     typedef struct
     {
-      bool  automatic_left_margin;
-      bool  eat_nl_glitch;
-      int   tabstop;
       char* t_cursor_home;
       char* t_carriage_return;
       char* t_cursor_to_ll;
@@ -104,6 +96,9 @@ class FOptiMove final
       char* t_repeat_char;
       char* t_clr_bol;
       char* t_clr_eol;
+      int   tabstop;
+      bool  automatic_left_margin;
+      bool  eat_nl_glitch;
     } termEnv;
 
     // Constructor
@@ -160,8 +155,8 @@ class FOptiMove final
     void  set_repeat_char (char[]);
     void  set_clr_bol (char[]);
     void  set_clr_eol (char[]);
-    void  set_auto_left_margin (const bool&);
-    void  set_eat_newline_glitch (const bool&);
+    void  set_auto_left_margin (bool);
+    void  set_eat_newline_glitch (bool);
 
     // Methods
     void  check_boundaries (int&, int&, int&, int&);
@@ -210,7 +205,7 @@ class FOptiMove final
     // Friend function
     friend void printDurations (const FOptiMove&);
 
-    // Data Members
+    // Data members
     capability  F_cursor_home{};
     capability  F_carriage_return{};
     capability  F_cursor_to_ll{};
@@ -232,16 +227,15 @@ class FOptiMove final
     capability  F_clr_bol{};
     capability  F_clr_eol{};
 
-    bool        automatic_left_margin{false};
-    bool        eat_nl_glitch{false};
-    char        move_buf[BUF_SIZE]{'\0'};
+    std::size_t screen_width{80};
+    std::size_t screen_height{24};
     int         char_duration{1};
     int         baudrate{9600};
     int         tabstop{0};
-    std::size_t screen_width{80};
-    std::size_t screen_height{24};
+    char        move_buf[BUF_SIZE]{'\0'};
+    bool        automatic_left_margin{false};
+    bool        eat_nl_glitch{false};
 };
-#pragma pack(pop)
 
 
 // FOptiMove inline functions
@@ -330,55 +324,17 @@ inline uInt FOptiMove::getClrEolLength() const
 { return uInt(F_clr_eol.length); }
 
 //----------------------------------------------------------------------
-inline void FOptiMove::set_auto_left_margin (const bool& bcap)
+inline void FOptiMove::set_auto_left_margin (bool bcap)
 { automatic_left_margin = bcap; }
 
 //----------------------------------------------------------------------
-inline void FOptiMove::set_eat_newline_glitch (const bool& bcap)
+inline void FOptiMove::set_eat_newline_glitch (bool bcap)
 { eat_nl_glitch = bcap; }
 
 
-// FOptiMove non-member function
+// FOptiMove non-member function forward declaration
 //----------------------------------------------------------------------
-inline void printDurations (const FOptiMove& om)
-{
-  std::cout << "            speed: "
-            << om.baudrate << " baud\r\n";
-  std::cout << "    char_duration: "
-            << om.char_duration << " ms\r\n";
-  std::cout << "      cursor_home: "
-            << om.F_cursor_home.duration << " ms\r\n";
-  std::cout << "     cursor_to_ll: "
-            << om.F_cursor_to_ll.duration << " ms\r\n";
-  std::cout << "  carriage_return: "
-            << om.F_carriage_return.duration << " ms\r\n";
-  std::cout << "              tab: "
-            << om.F_tab.duration << " ms\r\n";
-  std::cout << "         back_tab: "
-            << om.F_back_tab.duration << " ms\r\n";
-  std::cout << "        cursor_up: "
-            << om.F_cursor_up.duration << " ms\r\n";
-  std::cout << "      cursor_down: "
-            << om.F_cursor_down.duration << " ms\r\n";
-  std::cout << "      cursor_left: "
-            << om.F_cursor_left.duration << " ms\r\n";
-  std::cout << "     cursor_right: "
-            << om.F_cursor_right.duration << " ms\r\n";
-  std::cout << "   cursor_address: "
-            << om.F_cursor_address.duration << " ms\r\n";
-  std::cout << "   column_address: "
-            << om.F_column_address.duration << " ms\r\n";
-  std::cout << "      row_address: "
-            << om.F_row_address.duration << " ms\r\n";
-  std::cout << "   parm_up_cursor: "
-            << om.F_parm_up_cursor.duration << " ms\r\n";
-  std::cout << " parm_down_cursor: "
-            << om.F_parm_down_cursor.duration << " ms\r\n";
-  std::cout << " parm_left_cursor: "
-            << om.F_parm_left_cursor.duration << " ms\r\n";
-  std::cout << "parm_right_cursor: "
-            << om.F_parm_right_cursor.duration << " ms\r\n";
-}
+void printDurations (const FOptiMove&);
 
 }  // namespace finalcut
 

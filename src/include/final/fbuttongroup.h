@@ -54,6 +54,7 @@
 #endif
 
 #include "final/fscrollview.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {
@@ -64,9 +65,6 @@ class FToggleButton;
 //----------------------------------------------------------------------
 // class FButtonGroup
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FButtonGroup : public FScrollView
 {
@@ -85,7 +83,7 @@ class FButtonGroup : public FScrollView
     FButtonGroup& operator = (const FButtonGroup&) = delete;
 
     // Accessor
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     FToggleButton*      getFirstButton();
     FToggleButton*      getLastButton();
     FToggleButton*      getButton (int) const;
@@ -93,10 +91,10 @@ class FButtonGroup : public FScrollView
     FString&            getText();
 
     // Mutator
-    virtual bool        setEnable(bool) override;
-    virtual bool        setEnable() override;
-    virtual bool        unsetEnable() override;
-    virtual bool        setDisable() override;
+    bool                setEnable(bool) override;
+    bool                setEnable() override;
+    bool                unsetEnable() override;
+    bool                setDisable() override;
     void                setText (const FString&);
 
     // Inquiries
@@ -105,23 +103,23 @@ class FButtonGroup : public FScrollView
     bool                hasCheckedButton() const;
 
     // Methods
-    virtual void        hide() override;
+    void                hide() override;
     void                insert (FToggleButton*);
     void                remove (FToggleButton*);
     void                checkScrollSize (FToggleButton*);
     void                checkScrollSize (const FRect&);
 
     // Event handlers
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onAccel (FAccelEvent*) override;
-    virtual void        onFocusIn (FFocusEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onAccel (FAccelEvent*) override;
+    void                onFocusIn (FFocusEvent*) override;
 
   protected:
     // Mutator
     void                setHotkeyAccelerator();
 
     // Methods
-    virtual void        draw() override;
+    void                draw() override;
     void                drawLabel();
 
   private:
@@ -129,23 +127,20 @@ class FButtonGroup : public FScrollView
     static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
     // Inquiries
-    bool                isRadioButton (FToggleButton*) const;
+    bool                isRadioButton (const FToggleButton*) const;
 
     // Methods
     void                init();
-    std::size_t         getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
     void                drawText (wchar_t[], std::size_t, std::size_t);
     void                directFocus();
 
     // Callback method
     void                cb_buttonToggled (FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     FString        text{};
     FObjectList    buttonlist{};
 };
-#pragma pack(pop)
-
 
 // FButtonGroup inline functions
 //----------------------------------------------------------------------

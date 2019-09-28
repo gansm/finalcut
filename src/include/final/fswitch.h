@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -66,9 +66,6 @@ namespace finalcut
 // class FSwitch
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FSwitch : public FToggleButton
 {
   public:
@@ -86,29 +83,27 @@ class FSwitch : public FToggleButton
     FSwitch& operator = (const FSwitch&) = delete;
 
     // Accessor
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
 
     // Mutator
-    virtual void        setText (const FString&) override;
+    void                setText (const FString&) override;
 
     // Event handlers
-    virtual void        onKeyPress (FKeyEvent*) override;
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
+    void                onKeyPress (FKeyEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
 
   private:
     // Methods
-    virtual void        draw() override;
+    void                draw() override;
     void                drawCheckButton();
     void                drawChecked();
     void                drawUnchecked();
 
-    // Data Members
+    // Data members
     std::size_t  switch_offset_pos{0};
     bool         button_pressed{false};
 };
-#pragma pack(pop)
-
 
 // FSwitch inline functions
 //----------------------------------------------------------------------

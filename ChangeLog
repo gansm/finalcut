@@ -1,5 +1,112 @@
+2019-09-28  Markus Gans  <guru.mail@muenster.de>
+	* Support for displaying full-width characters (2 columns wide) 
+	  on the terminal. This is particularly important for the correct 
+	  display of CJK characters
+
+2019-09-16  Markus Gans  <guru.mail@muenster.de>
+	* Improve FStartOptions implementation
+
+2019-09-08  Markus Gans  <guru.mail@muenster.de>
+	* Remove the lines of the #pragma pack() directive from the code 
+	  because they caused a misaligned address
+
+2019-09-06  Markus Gans  <guru.mail@muenster.de>
+	* Outsourcing the initialization data to a separate struct
+
+2019-09-04  Markus Gans  <guru.mail@muenster.de>
+	* The Cygwin and Linux console do not use cp437 character encoding 
+	  by default anymore
+
+2019-09-01  Markus Gans  <guru.mail@muenster.de>
+	* Removing public + protected data members from classes
+
+2019-08-25  Markus Gans  <guru.mail@muenster.de>
+	* More use of direct initializations
+
+2019-08-18  Markus Gans  <guru.mail@muenster.de>
+	* Solved problem detecting terminal size on quick changes
+	* Update VTerm information only in case of changes
+	* Fixes print() << FPoint() behavior in FScrollView
+
+2019-08-11  Markus Gans  <guru.mail@muenster.de>
+	* FRect has now got a scaleBy() method
+	* Convert drawBorder() to a non-member function using FRect
+	* Converts getHotkeyPos() for sharing into a non-member function
+
+2019-08-10  Markus Gans  <guru.mail@muenster.de>
+	* Pitch and duration of system speaker can now be changed 
+	  on OpenBSD
+
+2019-08-07  Markus Gans  <guru.mail@muenster.de>
+	* Fixes the Cygwin build
+
+2019-08-04  Markus Gans  <guru.mail@muenster.de>
+	* Reduce the number of interface parameters
+
+2019-07-31  Markus Gans  <guru.mail@muenster.de>
+	* Unit test for the move assignment operator and move constructor 
+	  in FPoint, FSize and FRect
+
+2019-07-28  Markus Gans  <guru.mail@muenster.de>
+	* FreeBSD can now change the frequency and duration 
+	  of the pc speaker signal
+	* Added a unit test for the FTermFreeBSD class to test 
+	  the FreeBSD console
+
+2019-07-21  Markus Gans  <guru.mail@muenster.de>
+	* Reduce include entries in the header files
+
+2019-07-14  Markus Gans  <guru.mail@muenster.de>
+	* Reduces the use of raw loops 
+	* Add a unit test for FTermOpenBSD to test the OpenBSD 
+	  and NetBSD console
+
+2019-06-30  Markus Gans  <guru.mail@muenster.de>
+	* Expanding the unit test for FTermLinux
+	* Update the cp437 unicode map
+	* Reducing the special cases for Solaris
+
+2019-06-19  Markus Gans  <guru.mail@muenster.de>
+	* Add a unit test for FTermLinux with a Linux console emulation 
+	  and a dedicated FSystem test instance
+
+2019-06-12  Markus Gans  <guru.mail@muenster.de>
+	* Fixes problem with scroll bar view after first draw
+
+2019-06-02  Markus Gans  <guru.mail@muenster.de>
+	* Avoid drawing the scroll bars if the widget is non-visible
+
+2019-05-27  Markus Gans  <guru.mail@muenster.de>
+	* Use the Singleton design pattern to get a single object instance 
+	  via FTerm
+
+2019-05-26  Marek Habersack <grendel@twistedcode.net>
+	* Fix a segfault when processing input to empty FListView
+
+2019-05-17  Markus Gans  <guru.mail@muenster.de>
+	* Move system calls to the new class FSystem
+
+2019-04-27  Markus Gans  <guru.mail@muenster.de>
+	* Add the reserve() method to FListBox to increase the capacity 
+	  of the list
+	* Use shrink_to_fit() to save memory space
+
+2019-03-24  Markus Gans  <guru.mail@muenster.de>
+	* Add a "scroll view" chapter to the first steps document
+
+2019-02-28  Markus Gans  <guru.mail@muenster.de>
+	* Add an lambda expression callback example to the first steps document
+
+2019-02-24  Markus Gans  <guru.mail@muenster.de>
+	* FLineEdit now has the ability to define a character input filter 
+	  via regular expression (regex)
+	* Now FLineEdit can define a maximum character length for the input
+	* The cursor position can now be set directly in FLineEdit
+	* Added the 7-segment example to demonstrate the use of FTermBuffer
+	  and FLineEdit input filters
+
 2019-02-07  Markus Gans  <guru.mail@muenster.de>
-	* Add a "dynamic layout" Chapter into the first steps document
+	* Add a "dynamic layout" chapter into the first steps document
 
 2019-01-30  Markus Gans  <guru.mail@muenster.de>
 	* Printing an FColorPair object can change the foreground and 
@@ -91,7 +198,7 @@
 	  the switch statement with a vector of lambda expressions
 
 2018-12-09  Markus Gans  <guru.mail@muenster.de>
-	* Better handling of the scrollbar maximum
+	* Better handling of the scroll bar maximum
 	* Deactivate copy constructor and assignment operator with "= delete"
 	* Use nullptr instead of 0 to initialize a pointer values
 
@@ -107,7 +214,7 @@
 	* Fix compile in optimization level 2 for newer gcc
 
 2018-11-27  Markus Gans  <guru.mail@muenster.de>
-	* Correct vertical scrollbar position after sorting in FListView
+	* Correct vertical scroll bar position after sorting in FListView
 
 2018-11-25  Markus Gans  <guru.mail@muenster.de>
 	* Version 0.5.0

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -43,9 +43,6 @@
 //----------------------------------------------------------------------
 // class FStringTest
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FStringTest : public CPPUNIT_NS::TestFixture
 {
@@ -131,7 +128,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
+
 
 //----------------------------------------------------------------------
 void FStringTest::setUp()
@@ -855,7 +852,7 @@ void FStringTest::streamInsertionTest()
   CPPUNIT_ASSERT ( out == L"-1234567" );
 
   out.clear();
-  out << uInt(12345678);
+  out << uInt(12345678u);
   CPPUNIT_ASSERT ( out == L"12345678" );
 
   out.clear();
@@ -863,7 +860,7 @@ void FStringTest::streamInsertionTest()
   CPPUNIT_ASSERT ( out == L"-34721053343141" );
 
   out.clear();
-  out << uLong(4670148723459);
+  out << uLong(4670148723459u);
   CPPUNIT_ASSERT ( out == L"4670148723459" );
 
   out.clear();
@@ -976,7 +973,7 @@ void FStringTest::iteratorTest()
   CPPUNIT_ASSERT ( str.front() == L'1' );
   CPPUNIT_ASSERT ( str.back() == L'9' );
 
-  finalcut::FString::iterator iter = str.begin();
+  finalcut::FString::const_iterator iter = str.begin();
   CPPUNIT_ASSERT ( (*iter) == L'1' );
   ++iter;
   CPPUNIT_ASSERT ( (*iter) == L'2' );
@@ -996,6 +993,17 @@ void FStringTest::iteratorTest()
   CPPUNIT_ASSERT ( (*iter) == L'9' );
   ++iter;
   CPPUNIT_ASSERT ( iter == str.end() );
+
+  finalcut::FString str2("bcdefg");
+  finalcut::FString::iterator iter2 = str2.begin();
+
+  while ( iter2 != str2.end() )
+  {
+    *iter2 -= 1;
+    ++iter2;
+  }
+
+  CPPUNIT_ASSERT ( str2 == L"abcdef" );
 }
 
 //----------------------------------------------------------------------
@@ -1048,7 +1056,7 @@ void FStringTest::formatTest()
 
 #if defined(__LP64__) || defined(_LP64)
   // 64-bit architecture
-  fnum1.setFormatedNumber(0xffffffffffffffff, '\'');
+  fnum1.setFormatedNumber(0xffffffffffffffffu, '\'');
   CPPUNIT_ASSERT ( fnum1 == "18'446'744'073'709'551'615" );
 
   fnum2.setFormatedNumber(-9223372036854775807);
@@ -1057,17 +1065,17 @@ void FStringTest::formatTest()
   fnum2.setFormatedNumber(long(9223372036854775807), '\0');
   CPPUNIT_ASSERT ( fnum2 == "9 223 372 036 854 775 807" );
 
-  fnum2.setFormatedNumber(uLong(9223372036854775807), '\0');
+  fnum2.setFormatedNumber(uLong(9223372036854775807u), '\0');
   CPPUNIT_ASSERT ( fnum2 == "9 223 372 036 854 775 807" );
 
   fnum2.setFormatedNumber(sInt64(9223372036854775807), '\0');
   CPPUNIT_ASSERT ( fnum2 == "9 223 372 036 854 775 807" );
 
-  fnum2.setFormatedNumber(uInt64(9223372036854775807), '\0');
+  fnum2.setFormatedNumber(uInt64(9223372036854775807u), '\0');
   CPPUNIT_ASSERT ( fnum2 == "9 223 372 036 854 775 807" );
 #else
   // 32-bit architecture
-  fnum1.setFormatedNumber(0xffffffff, '\'');
+  fnum1.setFormatedNumber(0xffffffffu, '\'');
   CPPUNIT_ASSERT ( fnum1 == "4'294'967'295" );
 
   fnum2.setFormatedNumber(-2147483647);
@@ -1076,26 +1084,26 @@ void FStringTest::formatTest()
   fnum2.setFormatedNumber(long(2147483647), '\0');
   CPPUNIT_ASSERT ( fnum2 == "2 147 483 647" );
 
-  fnum2.setFormatedNumber(uLong(2147483647), '\0');
+  fnum2.setFormatedNumber(uLong(2147483647u), '\0');
   CPPUNIT_ASSERT ( fnum2 == "2 147 483 647" );
 
   fnum2.setFormatedNumber(sInt32(2147483647), '\0');
   CPPUNIT_ASSERT ( fnum2 == "2 147 483 647" );
 
-  fnum2.setFormatedNumber(uInt32(2147483647), '\0');
+  fnum2.setFormatedNumber(uInt32(2147483647u), '\0');
   CPPUNIT_ASSERT ( fnum2 == "2 147 483 647" );
 #endif
 
   fnum1.setFormatedNumber(sInt16(-2048), '_');
   CPPUNIT_ASSERT ( fnum1 == "-2_048" );
 
-  fnum2.setFormatedNumber(uInt16(65535));
+  fnum2.setFormatedNumber(uInt16(65535u));
   CPPUNIT_ASSERT ( fnum2 == "65 535" );
 
   fnum1.setFormatedNumber(sInt8(-123), '*');
   CPPUNIT_ASSERT ( fnum1 == "-123" );
 
-  fnum2.setFormatedNumber(uInt8(255));
+  fnum2.setFormatedNumber(uInt8(255u));
   CPPUNIT_ASSERT ( fnum2 == "255" );
 }
 
@@ -1106,13 +1114,13 @@ void FStringTest::convertToNumberTest()
   CPPUNIT_ASSERT ( str.toShort() == -127 );
 
   str = "255";
-  CPPUNIT_ASSERT ( str.toUShort() == 255 );
+  CPPUNIT_ASSERT ( str.toUShort() == 255u );
 
   str = "-32768";
   CPPUNIT_ASSERT ( str.toInt() == -32768 );
 
   str = "65535";
-  CPPUNIT_ASSERT ( str.toUInt() == 65535 );
+  CPPUNIT_ASSERT ( str.toUInt() == 65535u );
 
   str = "-2147483647";
   CPPUNIT_ASSERT ( str.toLong() == -2147483647 );
@@ -1121,10 +1129,10 @@ void FStringTest::convertToNumberTest()
   CPPUNIT_ASSERT ( str.toLong() == 987654321 );
 
   str = "4294967295";
-  CPPUNIT_ASSERT ( str.toULong() == 4294967295 );
+  CPPUNIT_ASSERT ( str.toULong() == 4294967295u );
 
   str = "+1234567890";
-  CPPUNIT_ASSERT ( str.toULong() == 1234567890 );
+  CPPUNIT_ASSERT ( str.toULong() == 1234567890u );
 
   str = "3.14159";
   CPPUNIT_ASSERT ( str.toFloat() == 3.14159f );
@@ -1143,17 +1151,17 @@ void FStringTest::convertToNumberTest()
 void FStringTest::convertFromNumberTest()
 {
   constexpr sInt8   n1  = -12;
-  constexpr uInt8   n2  =  12;
+  constexpr uInt8   n2  =  12u;
   constexpr sInt16  n3  = -1234;
-  constexpr uInt16  n4  =  1234;
+  constexpr uInt16  n4  =  1234u;
   constexpr int     n5  = -12345;
-  constexpr uInt    n6  =  12345;
+  constexpr uInt    n6  =  12345u;
   constexpr sInt32  n7  = -12345;
-  constexpr uInt32  n8  =  12345;
+  constexpr uInt32  n8  =  12345u;
   constexpr long    n9  = -12345678;
-  constexpr uLong   n10 =  12345678;
+  constexpr uLong   n10 =  12345678u;
   constexpr sInt64  n11 = -12345678;
-  constexpr uInt64  n12 =  12345678;
+  constexpr uInt64  n12 =  12345678u;
   constexpr float   n13 =  1234.56f;
   constexpr double  n14 =  1234.5678;
   constexpr lDouble n15 =  12345.67890L;

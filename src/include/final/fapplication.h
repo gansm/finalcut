@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2018 Markus Gans                                      *
+* Copyright 2013-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -66,19 +66,30 @@
 #include <string>
 #include <utility>
 
-#include "final/fevent.h"
+#include "final/ftypes.h"
 #include "final/fwidget.h"
-#include "final/fwindow.h"
 
 namespace finalcut
 {
 
+// class forward declaration
+class FEvent;
+class FAccelEvent;
+class FCloseEvent;
+class FFocusEvent;
+class FKeyEvent;
+class FMouseEvent;
+class FStartOptions;
+class FTimerEvent;
+class FWheelEvent;
+class FMouseControl;
+class FKeyboard;
+class FPoint;
+class FObject;
+
 //----------------------------------------------------------------------
 // class FApplication
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FApplication : public FWidget
 {
@@ -96,7 +107,7 @@ class FApplication : public FWidget
     FApplication& operator = (const FApplication&) = delete;
 
     // Accessors
-    virtual const char*   getClassName() const override;
+    const char*           getClassName() const override;
     int                   getArgc() const;
     char**                getArgv() const;
     static FApplication*  getApplicationObject();
@@ -115,7 +126,7 @@ class FApplication : public FWidget
     static void           sendQueuedEvents ();
     static bool           eventInQueue();
     static bool           removeQueuedEvent (const FObject*);
-    FWidget*              processParameters (const int&, char*[]);
+    static FWidget*       processParameters (const int&, char*[]);
     static void           showParameterUsage ()
     #if defined(__clang__) || defined(__GNUC__)
       __attribute__((noreturn))
@@ -133,7 +144,8 @@ class FApplication : public FWidget
 
     // Methods
     void                  init (uInt64, uInt64);
-    void                  cmd_options (const int&, char*[]);
+    static void           cmd_options (const int&, char*[]);
+    static FStartOptions& getStartOptions();
     void                  findKeyboardWidget();
     bool                  isKeyPressed();
     void                  keyPressed();
@@ -171,10 +183,10 @@ class FApplication : public FWidget
     void                  processResizeEvent();
     void                  processCloseWidget();
     bool                  processNextEvent();
-    virtual void          performTimerAction ( const FObject*
+    void                  performTimerAction ( const FObject*
                                              , const FEvent* ) override;
 
-    // Data Members
+    // Data members
     int                   app_argc;
     char**                app_argv;
     uInt64                key_timeout{100000};        // 100 ms
@@ -188,8 +200,6 @@ class FApplication : public FWidget
     static FKeyboard*     keyboard;
     static FWidget*       keyboard_widget;
 };
-#pragma pack(pop)
-
 
 // FApplication inline functions
 //----------------------------------------------------------------------

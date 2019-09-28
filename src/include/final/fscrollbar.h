@@ -61,9 +61,6 @@ namespace finalcut
 // class FScrollbar
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FScrollbar : public FWidget
 {
   public:
@@ -97,7 +94,7 @@ class FScrollbar : public FWidget
     FScrollbar& operator = (const FScrollbar&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     int                 getValue() const;
     sType               getScrollType() const;
 
@@ -109,28 +106,30 @@ class FScrollbar : public FWidget
     void                setSteps (double);
     void                setPageSize (int, int);
     void                setOrientation (fc::orientation);
-    virtual void        setGeometry ( const FPoint&, const FSize&
+    void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
 
     // Methods
-    virtual void        resize() override;
-    virtual void        redraw() override;
+    void                resize() override;
+    void                redraw() override;
     void                calculateSliderValues();
-    void                drawVerticalBar();
-    void                drawHorizontalBar();
     void                drawBar();
 
     // Event handlers
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
-    virtual void        onMouseMove (FMouseEvent*) override;
-    virtual void        onWheel (FWheelEvent*) override;
-    virtual void        onTimer (FTimerEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
+    void                onMouseMove (FMouseEvent*) override;
+    void                onWheel (FWheelEvent*) override;
+    void                onTimer (FTimerEvent*) override;
 
   private:
     // Methods
     void                init();
-    virtual void        draw() override;
+    void                draw() override;
+    void                drawVerticalBar();
+    void                drawVerticalBackgroundLine();
+    void                drawHorizontalBar();
+    void                drawHorizontalBackgroundColumn();
     void                drawButtons();
     sType               getClickedScrollType (int, int);
     sType               getVerticalClickedScrollType (int);
@@ -141,28 +140,26 @@ class FScrollbar : public FWidget
     void                avoidScrollOvershoot();
     void                processScroll();
 
-    // Data Members
-    sType           scroll_type{FScrollbar::noScroll};
-    bool            threshold_reached{false};
-    int             threshold_time{500};
-    int             repeat_time{10};
-    int             slider_click_pos{-1};
-    int             slider_click_stop_pos{-1};
-    int             current_slider_pos{-1};
-    int             slider_pos{0};
-    std::size_t     slider_length{18};  // = bar_length
-    std::size_t     bar_length{18};     // = length - 2
-    int             val{0};
-    int             min{0};
-    int             max{99};
-    double          steps{1};
-    int             pagesize{0};
-    std::size_t     length{20};
-    fc::orientation bar_orientation{fc::vertical};
-    int             max_color{getMaxColor()};
+    // Data members
+    sType               scroll_type{FScrollbar::noScroll};
+    bool                threshold_reached{false};
+    int                 threshold_time{500};
+    int                 repeat_time{10};
+    int                 slider_click_pos{-1};
+    int                 slider_click_stop_pos{-1};
+    int                 current_slider_pos{-1};
+    int                 slider_pos{0};
+    std::size_t         slider_length{18};  // = bar_length
+    std::size_t         bar_length{18};     // = length - 2
+    int                 val{0};
+    int                 min{0};
+    int                 max{99};
+    int                 pagesize{0};
+    double              steps{1};
+    std::size_t         length{20};
+    fc::orientation     bar_orientation{fc::vertical};
+    int                 max_color{getMaxColor()};
 };
-#pragma pack(pop)
-
 
 // FScrollbar inline functions
 //----------------------------------------------------------------------

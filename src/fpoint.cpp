@@ -42,6 +42,15 @@ FPoint& FPoint::operator = (const FPoint& p)
 }
 
 //----------------------------------------------------------------------
+FPoint& FPoint::operator = (FPoint&& p)
+{
+  xpos = p.xpos;
+  ypos = p.ypos;
+  p.xpos = p.ypos = 0;
+  return *this;
+}
+
+//----------------------------------------------------------------------
 FPoint& FPoint::operator += (const FPoint& p)
 {
   xpos = xpos + p.xpos;

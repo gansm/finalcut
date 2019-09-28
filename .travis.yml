@@ -12,6 +12,7 @@ addons:
      - autoconf
      - autoconf-archive
      - libtool
+     - pkg-config
      - libglib2.0-dev
      - libncurses5-dev
      - gpm
@@ -21,6 +22,7 @@ addons:
   homebrew:
     packages:
       - autoconf-archive
+    update: true
 
 env:
   global:
@@ -52,7 +54,7 @@ matrix:
           name: gansm/finalcut
           description: Build submitted via Travis CI
         notification_email: guru.mail@muenster.de
-        build_command_prepend: "autoreconf -v --install --force && ./configure --prefix=/usr CPPFLAGS='-DDEBUG' CXXFLAGS='-g -O0 -DDEBUG' --with-unit-test && make clean"
+        build_command_prepend: "autoreconf -v --install --force && ./configure --prefix=/usr CPPFLAGS='-DDEBUG' CXXFLAGS='-g -O0 -DDEBUG -DUNIT_TEST' --with-unit-test && make clean"
         build_command: "make V=1 -j10"
         branch_pattern: master
     before_install:
@@ -60,15 +62,18 @@ matrix:
       - uname -a
       - whoami
       - sudo apt-get install gpm libgpm-dev libcppunit-dev autoconf-archive
+      # Work around broken certificate of scan.coverity.com
+      - sudo curl -s -L https://entrust.com/root-certificates/entrust_l1k.cer -o /usr/local/share/ca-certificates/entrust_l1k.crt
+      - sudo update-ca-certificates
     script:
       - autoreconf -v --install --force
-      - ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG" --with-unit-test
+      - ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -DUNIT_TEST" --with-unit-test
       - make V=1 -j10
       - make check
       - cat test/*.log
 
   #
-  # Coveralls
+  # Coveralls + Codecov
   #
   - os: linux
     env:
@@ -77,10 +82,12 @@ matrix:
       - lsb_release -a
       - uname -a
       - pip install --user cpp-coveralls
+      - sudo pip install codecov
     script:
       - ./build.sh coverage
     after_success:
       - coveralls --gcov-options '\-lp' -e debian -e doc -e icon -e logo -e m4 -e scripts -e examples
+      - bash <(curl -s https://codecov.io/bash)
 
   #
   # macOS

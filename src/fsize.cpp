@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <limits>
 #include "final/fsize.h"
 
 namespace finalcut
@@ -42,9 +43,18 @@ FSize& FSize::operator = (const FSize& s)
 }
 
 //----------------------------------------------------------------------
+FSize& FSize::operator = (FSize&& s)
+{
+  width = s.width;
+  height = s.height;
+  s.width = s.height = 0;
+  return *this;
+}
+
+//----------------------------------------------------------------------
 FSize& FSize::operator += (const FSize& s)
 {
-  std::size_t max = std::numeric_limits<std::size_t>::max();
+  constexpr std::size_t max = std::numeric_limits<std::size_t>::max();
   width = ( width < max - s.width) ? width + s.width : max;
   height = ( height < max - s.height) ? height + s.height : max;
   return *this;

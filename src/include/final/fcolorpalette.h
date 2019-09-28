@@ -35,17 +35,12 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/fc.h"
-
 namespace finalcut
 {
 
 //----------------------------------------------------------------------
 // class FColorPalette
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FColorPalette final
 {
@@ -68,7 +63,6 @@ class FColorPalette final
     static void reset8ColorPalette (funcp);
     static void reset16ColorPalette (funcp);
 };
-#pragma pack(pop)
 
 // FColorPalette inline functions
 //----------------------------------------------------------------------

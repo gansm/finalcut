@@ -35,20 +35,17 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/fc.h"
-#include "final/fstring.h"
-#include "final/ftermcap.h"
-#include "final/ftermdetection.h"
-
 namespace finalcut
 {
+
+// class forward declaration
+class FString;
+class FSystem;
+class FTermDetection;
 
 //----------------------------------------------------------------------
 // class FTermXTerminal
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FTermXTerminal final
 {
@@ -60,7 +57,6 @@ class FTermXTerminal final
     virtual ~FTermXTerminal();
 
     // Mutators
-    static void           setFTermDetection (FTermDetection*);
     static void           redefineDefaultColors (bool);
     static void           setCursorStyle (fc::xtermCursorStyle);
     static void           setFont (const FString&);
@@ -94,6 +90,7 @@ class FTermXTerminal final
     static bool           hasTitle();
 
     // Methods
+    static void           init();
     static void           setDefaults();
     static void           resetColorMap();
     static void           resetForeground();
@@ -119,6 +116,8 @@ class FTermXTerminal final
     static void           setXTermHighlightBackground();
     static void           setXTerm8ColorDefaults();
     static void           setXTerm16ColorDefaults();
+    static void           setXTermDefaultsMouseCursor();
+    static bool           canSetXTermBackground();
     static void           resetXTermColorMap();
     static void           resetXTermForeground();
     static void           resetXTermBackground();
@@ -136,7 +135,7 @@ class FTermXTerminal final
     static void           enableXTermMetaSendsESC();
     static void           disableXTermMetaSendsESC();
 
-    // Data Members
+    // Data members
     static bool                 mouse_support;
     static bool                 meta_sends_esc;
     static bool                 xterm_default_colors;
@@ -150,20 +149,16 @@ class FTermXTerminal final
     static const FString*       mouse_foreground_color;
     static const FString*       mouse_background_color;
     static const FString*       highlight_background_color;
-    static FTermcap::tcap_map*  tcap;
+    static FSystem*             fsystem;
     static FTermDetection*      term_detection;
     static fc::xtermCursorStyle cursor_style;
 };
-#pragma pack(pop)
+
 
 // FTermXTerminal inline functions
 //----------------------------------------------------------------------
 inline const char* FTermXTerminal::getClassName() const
 { return "FTermXTerminal"; }
-
-//----------------------------------------------------------------------
-inline void FTermXTerminal::setFTermDetection (FTermDetection* td)
-{ term_detection = td; }
 
 //----------------------------------------------------------------------
 inline void FTermXTerminal::redefineDefaultColors (bool enable)

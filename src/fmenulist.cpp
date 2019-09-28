@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -22,7 +22,9 @@
 
 #include <vector>
 
+#include "final/fc.h"
 #include "final/fmenulist.h"
+#include "final/fmenuitem.h"
 
 namespace finalcut
 {
@@ -44,7 +46,7 @@ FMenuList::~FMenuList()  // destructor
 
   while ( iter != item_list.end() )
   {
-    (*iter)->setSuperMenu(0);
+    (*iter)->setSuperMenu(nullptr);
     iter = item_list.erase(iter);
   }
 }
@@ -72,7 +74,7 @@ void FMenuList::remove (FMenuItem* i)
     if ( (*iter) == i )
     {
       iter = item_list.erase(iter);
-      i->setSuperMenu(0);
+      i->setSuperMenu(nullptr);
       break;
     }
     else
@@ -93,6 +95,7 @@ void FMenuList::remove (int pos)
 void FMenuList::clear()
 {
   item_list.clear();
+  item_list.shrink_to_fit();
 }
 
 //----------------------------------------------------------------------
@@ -128,7 +131,7 @@ void FMenuList::unselectItem()
   if ( hasSelectedItem() )
     getSelectedItem()->unsetSelected();
 
-  setSelectedItem(0);
+  setSelectedItem(nullptr);
 }
 
 }  // namespace finalcut

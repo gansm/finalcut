@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fc.h"
 #include "final/fcheckbox.h"
 
 namespace finalcut
@@ -53,14 +54,17 @@ FCheckBox::~FCheckBox()  // destructor
 //----------------------------------------------------------------------
 void FCheckBox::init()
 {
-  label_offset_pos = 4;
-  button_width = 4;
+  setLabelOffsetPos(4);
+  setButtonWidth(4);
   setVisibleCursor();
 }
 
 //----------------------------------------------------------------------
 void FCheckBox::draw()
 {
+  if ( ! isVisible() )
+    return;
+
   drawCheckButton();
   drawLabel();
   FToggleButton::draw();
@@ -69,9 +73,6 @@ void FCheckBox::draw()
 //----------------------------------------------------------------------
 void FCheckBox::drawCheckButton()
 {
-  if ( ! isVisible() )
-    return;
-
   print() << FPoint(1, 1);
   setColor();
 
@@ -83,31 +84,39 @@ void FCheckBox::drawCheckButton()
       setReverse(true);
   }
 
-  if ( checked )
-  {
-    if ( isNewFont() )
-      print (CHECKBOX_ON);
-    else
-    {
-      print ('[');
-      print (fc::Times);  // Times ×
-      print (']');
-    }
-  }
+  if ( isChecked() )
+    drawChecked();
   else
-  {
-    if ( isNewFont() )
-      print (CHECKBOX);
-    else
-    {
-      print ('[');
-      print (' ');
-      print (']');
-    }
-  }
+    drawUnchecked();
 
   if ( isMonochron() )
     setReverse(false);
+}
+
+//----------------------------------------------------------------------
+inline void FCheckBox::drawChecked()
+{
+  if ( isNewFont() )
+    print (CHECKBOX_ON);
+  else
+  {
+    print ('[');
+    print (fc::Times);  // Times ×
+    print (']');
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FCheckBox::drawUnchecked()
+{
+  if ( isNewFont() )
+    print (CHECKBOX);
+  else
+  {
+    print ('[');
+    print (' ');
+    print (']');
+  }
 }
 
 }  // namespace finalcut

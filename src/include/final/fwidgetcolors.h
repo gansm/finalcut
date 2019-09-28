@@ -44,9 +44,6 @@ namespace finalcut
 // class FWidgetColors
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FWidgetColors final
 {
   public:
@@ -54,7 +51,7 @@ class FWidgetColors final
     void set8ColorTheme();
     void set16ColorTheme();
 
-    // Data Members
+    // Data members
     FColor term_fg{fc::Default};
     FColor term_bg{fc::Default};
     FColor list_fg{fc::Default};
@@ -140,7 +137,6 @@ class FWidgetColors final
     FColor progressbar_fg{fc::Default};
     FColor progressbar_bg{fc::Default};
 };
-#pragma pack(pop)
 
 }  // namespace finalcut
 

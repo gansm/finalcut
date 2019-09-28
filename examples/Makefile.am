@@ -11,6 +11,8 @@ noinst_PROGRAMS = \
 	hello \
 	dialog \
 	input-dialog \
+	fullwidth-character \
+	7segment \
 	choice \
 	listbox \
 	listview \
@@ -35,6 +37,8 @@ noinst_PROGRAMS = \
 hello_SOURCES = hello.cpp
 dialog_SOURCES = dialog.cpp
 input_dialog_SOURCES = input-dialog.cpp
+fullwidth_character_SOURCES = fullwidth-character.cpp
+7segment_SOURCES = 7segment.cpp
 choice_SOURCES = choice.cpp
 listbox_SOURCES = listbox.cpp
 listview_SOURCES = listview.cpp

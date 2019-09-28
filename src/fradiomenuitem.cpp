@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fc.h"
 #include "final/fradiomenuitem.h"
 #include "final/fmenu.h"
 
@@ -54,8 +55,8 @@ FRadioMenuItem::~FRadioMenuItem()  // destructor
 //----------------------------------------------------------------------
 void FRadioMenuItem::init (FWidget* parent)
 {
-  checkable = true;
-  radio_button = true;
+  setCheckable();
+  setRadioButton();
 
   if ( ! parent )
     return;
@@ -82,9 +83,9 @@ void FRadioMenuItem::processToggle()
 //----------------------------------------------------------------------
 void FRadioMenuItem::processClicked()
 {
-  if ( ! checked )
+  if ( ! isChecked() )
   {
-    checked = true;
+    setChecked();
     processToggle();
   }
 

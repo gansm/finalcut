@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -24,25 +24,31 @@
 #include <string>
 #include <vector>
 
+#include "final/emptyfstring.h"
+#include "final/fc.h"
+#include "final/fkey_map.h"
+#include "final/fterm.h"
+#include "final/ftermdata.h"
 #include "final/ftermcap.h"
+#include "final/ftermdetection.h"
 
 namespace finalcut
 {
 
 // static class attributes
-bool            FTermcap::background_color_erase   = false;
-bool            FTermcap::can_change_color_palette = false;
-bool            FTermcap::automatic_left_margin    = false;
-bool            FTermcap::automatic_right_margin   = false;
-bool            FTermcap::eat_nl_glitch            = false;
-bool            FTermcap::ansi_default_color       = false;
-bool            FTermcap::osc_support              = false;
-bool            FTermcap::no_utf8_acs_chars        = false;
-int             FTermcap::max_color                = 1;
-int             FTermcap::tabstop                  = 8;
-int             FTermcap::attr_without_color       = 0;
-FTermData*      FTermcap::fterm_data               = nullptr;
-FTermDetection* FTermcap::term_detection           = nullptr;
+bool             FTermcap::background_color_erase  {false};
+bool             FTermcap::can_change_color_palette{false};
+bool             FTermcap::automatic_left_margin   {false};
+bool             FTermcap::automatic_right_margin  {false};
+bool             FTermcap::eat_nl_glitch           {false};
+bool             FTermcap::ansi_default_color      {false};
+bool             FTermcap::osc_support             {false};
+bool             FTermcap::no_utf8_acs_chars       {false};
+int              FTermcap::max_color               {1};
+int              FTermcap::tabstop                 {8};
+int              FTermcap::attr_without_color      {0};
+FTermData*       FTermcap::fterm_data              {nullptr};
+FTermDetection*  FTermcap::term_detection          {nullptr};
 
 
 //----------------------------------------------------------------------
@@ -60,20 +66,10 @@ FTermDetection* FTermcap::term_detection           = nullptr;
 
 // public methods of FTermcap
 //----------------------------------------------------------------------
-void FTermcap::setFTermData (FTermData* data)
-{
-  fterm_data = data;
-}
-
-//----------------------------------------------------------------------
-void FTermcap::setFTermDetection (FTermDetection* td)
-{
-  term_detection = td;
-}
-
-//----------------------------------------------------------------------
 void FTermcap::init()
 {
+  fterm_data = FTerm::getFTermData();
+  term_detection = FTerm::getFTermDetection();
   termcap();
 }
 
@@ -81,11 +77,11 @@ void FTermcap::init()
 //----------------------------------------------------------------------
 void FTermcap::termcap()
 {
-  std::vector<std::string> terminals;
+  std::vector<std::string> terminals{};
   static constexpr int success = 1;
   static constexpr int uninitialized = -2;
-  static char term_buffer[2048];
-  static char string_buf[2048];
+  static char term_buffer[2048]{};
+  static char string_buf[2048]{};
   char* buffer = string_buf;
   int status = uninitialized;
   bool color256 = term_detection->canDisplay256Colors();
@@ -225,8 +221,8 @@ void FTermcap::termcapStrings (char*& buffer)
   // Get termcap strings
 
   // Read termcap output strings
-  for (std::size_t i = 0; tcap[i].tname[0] != 0; i++)
-    tcap[i].string = tgetstr(tcap[i].tname, &buffer);
+  for (std::size_t i{0}; strings[i].tname[0] != 0; i++)
+    strings[i].string = tgetstr(strings[i].tname, &buffer);
 }
 
 //----------------------------------------------------------------------
@@ -234,7 +230,7 @@ void FTermcap::termcapKeys (char*& buffer)
 {
   // Read termcap key strings
 
-  for (std::size_t i = 0; fc::Fkey[i].tname[0] != 0; i++)
+  for (std::size_t i{0}; fc::Fkey[i].tname[0] != 0; i++)
   {
     fc::Fkey[i].string = tgetstr(fc::Fkey[i].tname, &buffer);
 
@@ -290,11 +286,11 @@ void FTermcap::termcapKeysVt100 (char*& buffer)
 
   const char* key_up_string = tgetstr(C_STR("ku"), &buffer);
 
-  if ( (key_up_string && (std::strcmp(key_up_string, CSI "A") == 0))
+  if ( (key_up_string && (std::strcmp(key_up_string, ESC "OA") == 0))
     || ( TCAP(fc::t_cursor_up)
       && (std::strcmp(TCAP(fc::t_cursor_up), CSI "A") == 0) ) )
   {
-    for (std::size_t i = 0; fc::Fkey[i].tname[0] != 0; i++)
+    for (std::size_t i{0}; fc::Fkey[i].tname[0] != 0; i++)
     {
       if ( std::strncmp(fc::Fkey[i].tname, "kux", 3) == 0 )
         fc::Fkey[i].string = C_STR(CSI "A");  // Key up
@@ -326,7 +322,7 @@ void FTermcap::termcapKeysVt100 (char*& buffer)
 
 // private Data Member of FTermcap - termcap capabilities
 //----------------------------------------------------------------------
-FTermcap::tcap_map FTermcap::tcap[] =
+FTermcap::tcap_map FTermcap::strings[] =
 {
 //  .------------- term string
 //  |    .-------- Tcap-code

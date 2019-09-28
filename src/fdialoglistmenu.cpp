@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2018 Markus Gans                                      *
+* Copyright 2016-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fc.h"
 #include "final/fdialoglistmenu.h"
 
 namespace finalcut
@@ -53,8 +54,8 @@ FDialogListMenu::~FDialogListMenu()
 //----------------------------------------------------------------------
 void FDialogListMenu::init()
 {
-  auto menuitem = getItem();
-  menuitem->dialog_index = true;
+  auto m_item = getItem();
+  m_item->dialog_index = true;
 }
 
 }  // namespace finalcut

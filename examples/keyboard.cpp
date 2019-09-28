@@ -34,27 +34,27 @@ class Keyboard : public finalcut::FWidget
 
   protected:
     // Event handlers
-    virtual void onKeyPress (finalcut::FKeyEvent*) override;
-    virtual void onAccel (finalcut::FAccelEvent*) override;
+    void onKeyPress (finalcut::FKeyEvent*) override;
+    void onAccel (finalcut::FAccelEvent*) override;
 
   private:
     // Methods
-    virtual void draw() override;
+    void draw() override;
 };
 
 //----------------------------------------------------------------------
 Keyboard::Keyboard (finalcut::FWidget* parent)
   : finalcut::FWidget(parent)
 {
-  wc.term_fg = finalcut::fc::Default;
-  wc.term_bg = finalcut::fc::Default;
+  setFWidgetColors().term_fg = finalcut::fc::Default;
+  setFWidgetColors().term_bg = finalcut::fc::Default;
 }
 
 //----------------------------------------------------------------------
 void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
 {
   FKey key_id = ev->key();
-  bool is_last_line = false;
+  bool is_last_line{false};
 
   if ( getPrintPos().getY() == int(getDesktopHeight()) )
     is_last_line = true;
@@ -63,10 +63,10 @@ void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
           << " (id " << key_id << ")\n";
 
   if ( is_last_line )
-    scrollAreaForward (vdesktop);
+    scrollAreaForward (getVirtualDesktop());
 
   setAreaCursor ( finalcut::FPoint(1, getPrintPos().getY())
-                , true, vdesktop );
+                , true, getVirtualDesktop() );
 }
 
 //----------------------------------------------------------------------
@@ -83,7 +83,7 @@ void Keyboard::draw()
           << "---------------\n"
           << "Press Q to quit\n"
           << "---------------\n";
-  setAreaCursor (finalcut::FPoint(1, 4), true, vdesktop);
+  setAreaCursor (finalcut::FPoint(1, 4), true, getVirtualDesktop());
 }
 
 //----------------------------------------------------------------------

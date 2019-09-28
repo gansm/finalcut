@@ -1,5 +1,5 @@
 /***********************************************************************
-* input-dialog.cpp - an input field example                            *
+* input-dialog.cpp - An input field example                            *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *

@@ -56,19 +56,18 @@ e Copyright 2014-2019 Markus Gans                                      *
 #include <memory>
 #include <vector>
 
-#include "final/fscrollbar.h"
-#include "final/fstring.h"
 #include "final/fwidget.h"
 
 namespace finalcut
 {
 
+// class forward declaration
+class FScrollbar;
+class FString;
+
 //----------------------------------------------------------------------
 // class FListBoxItem
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FListBoxItem
 {
@@ -100,13 +99,12 @@ class FListBoxItem
     // Friend classes
     friend class FListBox;
 
-    // Data Members
+    // Data members
     FString           text{};
     FDataPtr          data_pointer{nullptr};
     fc::brackets_type brackets{fc::NoBrackets};
     bool              selected{false};
 };
-#pragma pack(pop)
 
 
 // FListBoxItem inline functions
@@ -124,7 +122,7 @@ inline FDataPtr FListBoxItem::getData() const
 
 //----------------------------------------------------------------------
 inline void FListBoxItem::setText (const FString& txt)
-{ text = txt; }
+{ text.setString(txt); }
 
 //----------------------------------------------------------------------
 inline void FListBoxItem::setData (FDataPtr data)
@@ -138,9 +136,6 @@ inline void FListBoxItem::clear()
 //----------------------------------------------------------------------
 // class FListBox
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FListBox : public FWidget
 {
@@ -168,7 +163,7 @@ class FListBox : public FWidget
     FListBox& operator = (const FListBox&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     std::size_t         getCount() const;
     FListBoxItem        getItem (std::size_t);
     FListBoxItem        getItem (listBoxItems::iterator) const;
@@ -185,15 +180,15 @@ class FListBox : public FWidget
     void                showInsideBrackets (std::size_t, fc::brackets_type);
     void                showNoBrackets (std::size_t);
     void                showNoBrackets (listBoxItems::iterator);
-    virtual void        setGeometry ( const FPoint&, const FSize&
+    void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     void                setMultiSelection (bool);
     void                setMultiSelection ();
     void                unsetMultiSelection ();
-    virtual bool        setDisable() override;
-    virtual bool        setFocus (bool) override;
-    virtual bool        setFocus() override;
-    virtual bool        unsetFocus() override;
+    bool                setDisable() override;
+    bool                setFocus (bool) override;
+    bool                setFocus() override;
+    bool                unsetFocus() override;
     void                setText (const FString&);
 
     // Inquiries
@@ -204,7 +199,7 @@ class FListBox : public FWidget
     bool                hasBrackets (listBoxItems::iterator) const;
 
     // Methods
-    virtual void        hide() override;
+    void                hide() override;
     template <typename Iterator, typename InsertConverter>
     void                insert (Iterator, Iterator, InsertConverter);
     template <typename Container, typename LazyConverter>
@@ -221,23 +216,24 @@ class FListBox : public FWidget
                                , bool = false
                                , FDataPtr = nullptr );
     void                remove (std::size_t);
+    void                reserve (std::size_t);
     void                clear();
 
     // Event handlers
-    virtual void        onKeyPress (FKeyEvent*) override;
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
-    virtual void        onMouseMove (FMouseEvent*) override;
-    virtual void        onMouseDoubleClick (FMouseEvent*) override;
-    virtual void        onWheel (FWheelEvent*) override;
-    virtual void        onTimer (FTimerEvent*) override;
-    virtual void        onFocusIn (FFocusEvent*) override;
-    virtual void        onFocusOut (FFocusEvent*) override;
+    void                onKeyPress (FKeyEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
+    void                onMouseMove (FMouseEvent*) override;
+    void                onMouseDoubleClick (FMouseEvent*) override;
+    void                onWheel (FWheelEvent*) override;
+    void                onTimer (FTimerEvent*) override;
+    void                onFocusIn (FFocusEvent*) override;
+    void                onFocusOut (FFocusEvent*) override;
 
   protected:
     // Methods
     void                adjustYOffset (std::size_t);
-    virtual void        adjustSize() override;
+    void                adjustSize() override;
 
   private:
     // Typedef
@@ -264,7 +260,9 @@ class FListBox : public FWidget
     void                initScrollbar ( FScrollbarPtr&
                                       , fc::orientation
                                       , FListBoxCallback );
-    virtual void        draw() override;
+    void                draw() override;
+    void                drawBorder() override;
+    void                drawScrollbars();
     void                drawHeadline();
     void                drawList();
     void                drawListLine (int, listBoxItems::iterator, bool);
@@ -292,19 +290,19 @@ class FListBox : public FWidget
     void                scrollToY (int);
     void                scrollLeft (int);
     void                scrollRight (int);
-    void                keyUp();
-    void                keyDown();
-    void                keyLeft();
-    void                keyRight();
-    void                keyPgUp();
-    void                keyPgDn();
-    void                keyHome();
-    void                keyEnd();
-    bool                keyEsc();
-    void                keyEnter();
-    bool                keySpace();
-    bool                keyInsert();
-    bool                keyBackspace();
+    void                scrollLeft();
+    void                scrollRight();
+    void                onePosUp();
+    void                onePosDown();
+    void                onePageUp();
+    void                onePageDown();
+    void                firstPos();
+    void                lastPos();
+    bool                skipIncrementalSearch();
+    void                acceptSelection();
+    bool                spacebarProcessing();
+    bool                changeSelectionAndPosition();
+    bool                deletePreviousCharacter();
     bool                keyIncSearchInput (FKey);
     void                processClick();
     void                processSelect();
@@ -321,30 +319,29 @@ class FListBox : public FWidget
                                          , FDataPtr
                                          , int index ){nullptr};
 
-    // Data Members
+    // Data members
     listBoxItems    itemlist{};
     FDataPtr        source_container{nullptr};
-    convert_type    conv_type{FListBox::no_convert};
     FScrollbarPtr   vbar{nullptr};
     FScrollbarPtr   hbar{nullptr};
     FString         text{};
     FString         inc_search{};
-    bool            multi_select{false};
-    bool            mouse_select{false};
+    convert_type    conv_type{FListBox::no_convert};
     fc::dragScroll  drag_scroll{fc::noScroll};
-    bool            scroll_timer{false};
     int             scroll_repeat{100};
     int             scroll_distance{1};
-    std::size_t     current{0};
     int             last_current{-1};
     int             secect_from_item{-1};
     int             xoffset{0};
     int             yoffset{0};
     int             last_yoffset{-1};
+    std::size_t     current{0};
     std::size_t     nf_offset{0};
     std::size_t     max_line_width{0};
+    bool            multi_select{false};
+    bool            mouse_select{false};
+    bool            scroll_timer{false};
 };
-#pragma pack(pop)
 
 
 // FListBox inline functions
@@ -472,6 +469,10 @@ inline bool FListBox::hasBrackets(listBoxItems::iterator iter) const
 { return bool(iter->brackets > 0); }
 
 //----------------------------------------------------------------------
+inline void FListBox::reserve (std::size_t new_cap)
+{ itemlist.reserve(new_cap); }
+
+//----------------------------------------------------------------------
 template <typename Iterator, typename InsertConverter>
 inline void FListBox::insert ( Iterator first
                              , Iterator last
@@ -532,7 +533,7 @@ void FListBox::insert ( const ItemT& item
 
 //----------------------------------------------------------------------
 inline bool FListBox::isHorizontallyScrollable()
-{ return bool( max_line_width >= getClientWidth() - 1 ); }
+{ return bool( max_line_width + 1 >= getClientWidth() ); }
 
 //----------------------------------------------------------------------
 inline bool FListBox::isVerticallyScrollable()

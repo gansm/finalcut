@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
 #include <vector>
 #include <final/final.h>
 
@@ -96,7 +97,7 @@ void preset (std::vector<FRadioButtonPtr>& os)
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
-  finalcut::FString label_text = "no OS";
+  finalcut::FString label_text("no OS");
 
   // Create the application object
   finalcut::FApplication app(argc, argv);
@@ -105,8 +106,8 @@ int main (int argc, char* argv[])
     finalcut::FDialog dgl(&app);
     dgl.setModal();
     dgl.setText ("UNIX select");
-    std::size_t w = 20;
-    std::size_t h = 13;
+    std::size_t w{20};
+    std::size_t h{13};
     int x = int(app.getDesktopWidth() - w) / 2;
     int y = int(app.getDesktopHeight() - h) / 2;
     dgl.setGeometry (FPoint(x, y), FSize(w, h));
@@ -122,7 +123,7 @@ int main (int argc, char* argv[])
     // Set the radio button geometry
     // => checkButtonGroup.setScrollSize(...) is not required
     //    because a FButtonGroup is self-adjusting
-    for (uInt i = 0; i < os.size(); i++)
+    for (uInt i{0}; i < os.size(); i++)
       os[i]->setGeometry(FPoint(1, int(1 + i)), FSize(12, 1));
 
     preset(os);
@@ -147,7 +148,7 @@ int main (int argc, char* argv[])
     dgl.show();
 
     // Get the checked radio button text
-    for (int n = 1; n <= int(checkButtonGroup.getCount()); n++)
+    for (int n{1}; n <= int(checkButtonGroup.getCount()); n++)
     {
       if ( checkButtonGroup.isChecked(n) )
       {

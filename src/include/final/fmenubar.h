@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -59,19 +59,18 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/fmenu.h"
 #include "final/fmenulist.h"
 #include "final/fwindow.h"
 
 namespace finalcut
 {
 
+// class forward declaration
+class FMenu;
+
 //----------------------------------------------------------------------
 // class FMenuBar
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FMenuBar : public FWindow, public FMenuList
 {
@@ -89,19 +88,19 @@ class FMenuBar : public FWindow, public FMenuList
     FMenuBar& operator = (const FMenuBar&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char* getClassName() const override;
 
     // Methods
     void         resetMenu();
-    virtual void hide() override;
-    virtual void adjustSize() override;
+    void         hide() override;
+    void         adjustSize() override;
 
     // Event handlers
-    virtual void onKeyPress (FKeyEvent*) override;
-    virtual void onMouseDown (FMouseEvent*) override;
-    virtual void onMouseUp (FMouseEvent*) override;
-    virtual void onMouseMove (FMouseEvent*) override;
-    virtual void onAccel (FAccelEvent*) override;
+    void         onKeyPress (FKeyEvent*) override;
+    void         onMouseDown (FMouseEvent*) override;
+    void         onMouseUp (FMouseEvent*) override;
+    void         onMouseMove (FMouseEvent*) override;
+    void         onAccel (FAccelEvent*) override;
 
     // Callback methods
     void         cb_item_deactivated (FWidget*, FDataPtr);
@@ -121,7 +120,7 @@ class FMenuBar : public FWindow, public FMenuList
     } menuText;
 
     // Inquiry
-    bool         isMenu (FMenuItem*) const;
+    bool         isMenu (const FMenuItem*) const;
 
     // Methods
     void         init();
@@ -129,11 +128,11 @@ class FMenuBar : public FWindow, public FMenuList
     bool         selectNextItem();
     bool         selectPrevItem();
     bool         hotkeyMenu (FKeyEvent*&);
-    std::size_t  getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
-    virtual void draw() override;
+    void         draw() override;
     void         drawItems();
     void         drawItem (FMenuItem*, std::size_t&);
     void         setLineAttributes (FMenuItem*);
+    void         setCursorToHotkeyPosition (FMenuItem*, std::size_t);
     void         drawMenuText (menuText&);
     void         drawEllipsis (const menuText&, std::size_t);
     void         drawLeadingSpace (std::size_t&);
@@ -153,13 +152,12 @@ class FMenuBar : public FWindow, public FMenuList
     friend class FMenu;
     friend class FMenuItem;
 
-    // Data Members
+    // Data members
+    std::size_t screenWidth{80};
     bool        mouse_down{false};
     bool        drop_down{false};
     bool        focus_changed{false};
-    std::size_t screenWidth{80};
 };
-#pragma pack(pop)
 
 
 // FMenuBar inline functions
@@ -168,7 +166,7 @@ inline const char* FMenuBar::getClassName() const
 { return "FMenuBar"; }
 
 //----------------------------------------------------------------------
-inline bool FMenuBar::isMenu (FMenuItem* mi) const
+inline bool FMenuBar::isMenu (const FMenuItem* mi) const
 { return mi->hasMenu(); }
 
 }  // namespace finalcut

@@ -31,9 +31,6 @@ using finalcut::FSize;
 // class Watch
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class Watch : public finalcut::FDialog
 {
   public:
@@ -53,8 +50,8 @@ class Watch : public finalcut::FDialog
     void printTime();
 
     // Event handlers
-    virtual void onTimer (finalcut::FTimerEvent*) override;
-    virtual void onClose (finalcut::FCloseEvent*) override;
+    void onTimer (finalcut::FTimerEvent*) override;
+    void onClose (finalcut::FCloseEvent*) override;
 
     // Callback methods
     void cb_clock (finalcut::FWidget*, FDataPtr);
@@ -62,10 +59,10 @@ class Watch : public finalcut::FDialog
 
   protected:
     // Method
-    virtual void adjustSize() override;
+    void adjustSize() override;
 
   private:
-    // Data Members
+    // Data members
     bool              sec{true};
     finalcut::FLabel  time_label{L"Time", this};
     finalcut::FLabel  time_str{L"--:--:--", this};
@@ -73,7 +70,6 @@ class Watch : public finalcut::FDialog
     finalcut::FSwitch seconds_sw{L"Seconds", this};
     finalcut::FButton quit_btn{L"&Quit", this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Watch::Watch (FWidget* parent)
@@ -127,11 +123,10 @@ Watch::~Watch()
 //----------------------------------------------------------------------
 void Watch::printTime()
 {
-  finalcut::FString str;
-  std::tm now;
-  std::time_t t;
+  finalcut::FString str{};
+  std::tm now{};
 
-  t = std::time(0);  // get current time
+  std::time_t t = std::time(0);  // get current time
   localtime_r(&t, &now);
 
   if ( sec )

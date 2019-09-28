@@ -57,8 +57,6 @@
 #include <stack>
 #include <vector>
 
-#include "final/fscrollbar.h"
-#include "final/fstring.h"
 #include "final/ftermbuffer.h"
 #include "final/fwidget.h"
 
@@ -67,13 +65,12 @@ namespace finalcut
 
 // class forward declaration
 class FListView;
+class FScrollbar;
+class FString;
 
 //----------------------------------------------------------------------
 // class FListViewItem
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FListViewItem : public FObject
 {
@@ -92,7 +89,7 @@ class FListViewItem : public FObject
     FListViewItem& operator = (const FListViewItem&);
 
     // Accessors
-    virtual const char* getClassName() const;
+    const char*         getClassName() const override;
     uInt                getColumnCount() const;
     int                 getSortColumn() const;
     FString             getText (int) const;
@@ -128,7 +125,7 @@ class FListViewItem : public FObject
     std::size_t         getVisibleLines();
     void                resetVisibleLineCounter();
 
-    // Data Members
+    // Data members
     FStringList      column_list{};
     FDataPtr         data_pointer{nullptr};
     FObjectIterator  root{};
@@ -142,7 +139,6 @@ class FListViewItem : public FObject
     friend class FListView;
     friend class FListViewIterator;
 };
-#pragma pack(pop)
 
 
 // FListViewItem inline functions
@@ -187,9 +183,6 @@ inline bool FListViewItem::isCheckable() const
 // class FListViewIterator
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FListViewIterator
 {
   public:
@@ -226,12 +219,11 @@ class FListViewIterator
     void                nextElement (FObjectIterator&);
     void                prevElement (FObjectIterator&);
 
-    // Data Members
+    // Data members
     FObjectIteratorStack iter_path{};
     FObjectIterator      node{};
     int                  position{0};
 };
-#pragma pack(pop)
 
 
 // FListViewIterator inline functions
@@ -263,9 +255,6 @@ inline int FListViewIterator::getPosition() const
 // class FListView
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FListView : public FWidget
 {
   public:
@@ -285,7 +274,7 @@ class FListView : public FWidget
     FListView& operator = (const FListView&) = delete;
 
     // Accessors
-    virtual const char*  getClassName() const override;
+    const char*          getClassName() const override;
     std::size_t          getCount();
     fc::text_alignment   getColumnAlignment (int) const;
     FString              getColumnText (int) const;
@@ -295,7 +284,7 @@ class FListView : public FWidget
     FListViewItem*       getCurrentItem();
 
     // Mutators
-    virtual void         setGeometry ( const FPoint&, const FSize&
+    void                 setGeometry ( const FPoint&, const FSize&
                                      , bool = true ) override;
     void                 setColumnAlignment (int, fc::text_alignment);
     void                 setColumnText (int, const FString&);
@@ -314,7 +303,7 @@ class FListView : public FWidget
 
     // Methods
     virtual int          addColumn (const FString&, int = USE_MAX_SIZE);
-    virtual void         hide() override;
+    void                 hide() override;
     FObjectIterator      insert (FListViewItem*);
     FObjectIterator      insert (FListViewItem*, FObjectIterator);
     FObjectIterator      insert ( const FStringList&
@@ -350,23 +339,23 @@ class FListView : public FWidget
     virtual void         sort();
 
     // Event handlers
-    virtual void         onKeyPress (FKeyEvent*) override;
-    virtual void         onMouseDown (FMouseEvent*) override;
-    virtual void         onMouseUp (FMouseEvent*) override;
-    virtual void         onMouseMove (FMouseEvent*) override;
-    virtual void         onMouseDoubleClick (FMouseEvent*) override;
-    virtual void         onWheel (FWheelEvent*) override;
-    virtual void         onTimer (FTimerEvent*) override;
-    virtual void         onFocusIn (FFocusEvent*) override;
-    virtual void         onFocusOut (FFocusEvent*) override;
+    void                 onKeyPress (FKeyEvent*) override;
+    void                 onMouseDown (FMouseEvent*) override;
+    void                 onMouseUp (FMouseEvent*) override;
+    void                 onMouseMove (FMouseEvent*) override;
+    void                 onMouseDoubleClick (FMouseEvent*) override;
+    void                 onWheel (FWheelEvent*) override;
+    void                 onTimer (FTimerEvent*) override;
+    void                 onFocusIn (FFocusEvent*) override;
+    void                 onFocusOut (FFocusEvent*) override;
 
-    // Data Members
+    // Data members
     static FObjectIterator null_iter;
 
   protected:
     // Methods
     void                 adjustViewport (int);
-    virtual void         adjustSize() override;
+    void                 adjustSize() override;
 
   private:
     // Typedef
@@ -393,7 +382,9 @@ class FListView : public FWidget
     std::size_t          getAlignOffset ( fc::text_alignment
                                         , std::size_t
                                         , std::size_t );
-    virtual void         draw() override;
+    void                 draw() override;
+    void                 drawBorder() override;
+    void                 drawScrollbars();
     void                 drawHeadlines();
     void                 drawList();
     void                 drawListLine (const FListViewItem*, bool, bool);
@@ -403,6 +394,7 @@ class FListView : public FWidget
     void                 drawSortIndicator (std::size_t&, std::size_t);
     void                 drawHeadlineLabel (const headerItems::const_iterator&);
     void                 drawHeaderBorder (std::size_t);
+    void                 drawBufferedHeadline();
     void                 drawColumnEllipsis ( const headerItems::const_iterator&
                                             , const FString& );
     void                 updateDrawing (bool, bool);
@@ -422,13 +414,13 @@ class FListView : public FWidget
     FObjectIterator      appendItem (FListViewItem*);
     void                 processClick();
     void                 processChanged();
-    void                 keySpace();
-    void                 keyLeft (int&);
-    void                 keyRight (int&);
-    void                 keyHome();
-    void                 keyEnd();
-    bool                 keyPlus();
-    bool                 keyMinus();
+    void                 toggleCheckbox();
+    void                 collapseAndScrollLeft (int&);
+    void                 expandAndScrollRight (int&);
+    void                 firstPos();
+    void                 lastPos();
+    bool                 expandSubtree();
+    bool                 collapseSubtree();
     void                 setRelativePosition (int);
     void                 stepForward();
     void                 stepBackward();
@@ -445,7 +437,7 @@ class FListView : public FWidget
     void                 cb_VBarChange (FWidget*, FDataPtr);
     void                 cb_HBarChange (FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     FObjectIterator      root{};
     FObjectList          selflist{};
     FObjectList          itemlist{};
@@ -456,48 +448,46 @@ class FListView : public FWidget
     FTermBuffer          headerline{};
     FScrollbarPtr        vbar{nullptr};
     FScrollbarPtr        hbar{nullptr};
+    sortTypes            sort_type{};
+    FPoint               clicked_expander_pos{-1, -1};
+    FPoint               clicked_header_pos{-1, -1};
+    const FListViewItem* clicked_checkbox_item{nullptr};
+    std::size_t          nf_offset{0};
+    std::size_t          max_line_width{1};
     fc::dragScroll       drag_scroll{fc::noScroll};
     int                  scroll_repeat{100};
     int                  scroll_distance{1};
+    int                  xoffset{0};
+    int                  sort_column{-1};
+    fc::sorting_order    sort_order{fc::unsorted};
     bool                 scroll_timer{false};
     bool                 tree_view{false};
     bool                 hide_sort_indicator{false};
     bool                 has_checkable_items{false};
-    FPoint               clicked_expander_pos{-1, -1};
-    FPoint               clicked_header_pos{-1, -1};
-    const FListViewItem* clicked_checkbox_item{nullptr};
-    int                  xoffset{0};
-    std::size_t          nf_offset{0};
-    std::size_t          max_line_width{1};
-    int                  sort_column{-1};
-    sortTypes            sort_type{};
-    fc::sorting_order    sort_order{fc::unsorted};
+
+    // Function Pointer
     bool (*user_defined_ascending) (const FObject*, const FObject*){nullptr};
     bool (*user_defined_descending) (const FObject*, const FObject*){nullptr};
 
     // Friend class
     friend class FListViewItem;
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // struct FListView::Header
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
 struct FListView::Header
 {
   public:
     Header() = default;
 
     FString name{};
+    fc::text_alignment alignment{fc::alignLeft};
     int width{0};
     bool fixed_width{false};
-    fc::text_alignment alignment{fc::alignLeft};
 };
-#pragma pack(pop)
 
 
 // FListView inline functions
@@ -580,8 +570,15 @@ FObject::FObjectIterator
 {
   FStringList str_cols;
 
-  for (auto& col : list)
-    str_cols.push_back (FString() << col);
+  std::transform ( std::begin(list)
+                 , std::end(list)
+                 , std::back_inserter(str_cols)
+                 , [] (const T& col) -> const FString
+                   {
+                     const FString s(FString() << col);
+                     return s;
+                   }
+                 );
 
   auto item_iter = insert (str_cols, d, parent_iter);
   return item_iter;
@@ -609,8 +606,15 @@ FObject::FObjectIterator
 {
   FStringList str_cols;
 
-  for (auto& col : cols)
-    str_cols.push_back (FString() << col);
+  std::transform ( std::begin(cols)
+                 , std::end(cols)
+                 , std::back_inserter(str_cols)
+                 , [] (const ColT& col) -> const FString
+                   {
+                     const FString s(FString() << col);
+                     return s;
+                   }
+                 );
 
   auto item_iter = insert (str_cols, d, parent_iter);
   return item_iter;

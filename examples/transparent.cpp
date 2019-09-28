@@ -22,6 +22,7 @@
 
 #include <final/final.h>
 
+namespace fc = finalcut::fc;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -29,9 +30,6 @@ using finalcut::FSize;
 //----------------------------------------------------------------------
 // class Transparent
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class Transparent : public finalcut::FDialog
 {
@@ -59,15 +57,14 @@ class Transparent : public finalcut::FDialog
 
   private:
     // Method
-    virtual void draw() override;
+    void draw() override;
 
     // Event handlers
-    virtual void onKeyPress (finalcut::FKeyEvent* ev) override;
+    void onKeyPress (finalcut::FKeyEvent* ev) override;
 
-    // Data Members
+    // Data members
     trans_type type;
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Transparent::Transparent ( finalcut::FWidget* parent
@@ -92,15 +89,16 @@ void Transparent::draw()
 
   if ( type == shadow )
   {
+    const finalcut::FWidgetColors& wc = getFWidgetColors();
     setColor(wc.shadow_bg, wc.shadow_fg);
     setTransShadow();
   }
   else if ( type == inherit_background )
   {
     if ( getMaxColor() > 8 )
-      setColor(finalcut::fc::Blue, finalcut::fc::Black);
+      setColor(fc::Blue, fc::Black);
     else
-      setColor(finalcut::fc::Green, finalcut::fc::Black);
+      setColor(fc::Green, fc::Black);
 
     setInheritBackground();
   }
@@ -109,7 +107,7 @@ void Transparent::draw()
 
   finalcut::FString line(getClientWidth(), '.');
 
-  for (int n = 1; n <= int(getClientHeight()); n++)
+  for (int n{1}; n <= int(getClientHeight()); n++)
   {
     print() << FPoint(2, 2 + n) << line;
   }
@@ -145,9 +143,6 @@ void Transparent::onKeyPress (finalcut::FKeyEvent* ev)
 // class MainWindow
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class MainWindow : public finalcut::FDialog
 {
   public:
@@ -165,13 +160,13 @@ class MainWindow : public finalcut::FDialog
 
   private:
     // Method
-    virtual void draw() override;
+    void draw() override;
 
     // Event handlers
-    virtual void onClose (finalcut::FCloseEvent*) override;
-    virtual void onShow  (finalcut::FShowEvent*) override;
-    virtual void onTimer (finalcut::FTimerEvent*) override;
-    virtual void onKeyPress (finalcut::FKeyEvent* ev) override
+    void onClose (finalcut::FCloseEvent*) override;
+    void onShow  (finalcut::FShowEvent*) override;
+    void onTimer (finalcut::FTimerEvent*) override;
+    void onKeyPress (finalcut::FKeyEvent* ev) override
     {
       if ( ! ev )
         return;
@@ -185,7 +180,7 @@ class MainWindow : public finalcut::FDialog
         finalcut::FDialog::onKeyPress(ev);
     }
 
-    // Data Members
+    // Data members
     finalcut::FString line1{};
     finalcut::FString line2{};
     Transparent* transpwin{nullptr};
@@ -193,7 +188,7 @@ class MainWindow : public finalcut::FDialog
     Transparent* ibg{nullptr};
     finalcut::FStatusBar status_bar{this};
 };
-#pragma pack(pop)
+
 
 //----------------------------------------------------------------------
 MainWindow::MainWindow (finalcut::FWidget* parent)

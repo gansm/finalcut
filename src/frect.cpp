@@ -22,7 +22,9 @@
 
 #include <algorithm>
 
+#include "final/fpoint.h"
 #include "final/frect.h"
+#include "final/fsize.h"
 
 namespace finalcut
 {
@@ -58,6 +60,40 @@ FRect::~FRect()  // destructor
 bool FRect::isEmpty() const
 {
   return X2 == X1 - 1 && Y2 == Y1 - 1;
+}
+
+//----------------------------------------------------------------------
+FPoint FRect::getPos() const
+{
+  return FPoint(X1, Y1);
+}
+
+//----------------------------------------------------------------------
+FPoint FRect::getUpperLeftPos() const
+{
+  return FPoint(X1, Y1);
+}
+
+//----------------------------------------------------------------------
+FPoint FRect::getUpperRightPos() const
+{
+  return FPoint(X2, Y1);
+}
+
+//----------------------------------------------------------------------
+FPoint FRect::getLowerLeftPos() const
+{ return FPoint(X1, Y2); }
+
+//----------------------------------------------------------------------
+FPoint FRect::getLowerRightPos() const
+{
+  return FPoint(X2, Y2);
+}
+
+//----------------------------------------------------------------------
+FSize FRect::getSize() const
+{
+  return FSize(getWidth(), getHeight());
 }
 
 //----------------------------------------------------------------------
@@ -135,10 +171,10 @@ void FRect::setHeight (std::size_t h)
 }
 
 //----------------------------------------------------------------------
-void FRect::setSize (std::size_t w, std::size_t h)
+void FRect::setSize (std::size_t width, std::size_t height)
 {
-  X2 = X1 + int(w) - 1;
-  Y2 = Y1 + int(h) - 1;
+  X2 = X1 + int(width) - 1;
+  Y2 = Y1 + int(height) - 1;
 }
 
 //----------------------------------------------------------------------
@@ -209,6 +245,20 @@ void FRect::move (const FPoint& d)
 }
 
 //----------------------------------------------------------------------
+void FRect::scaleBy (int dx, int dy)
+{
+  X2 += dx;
+  Y2 += dy;
+}
+
+//----------------------------------------------------------------------
+void FRect::scaleBy (const FPoint& d)
+{
+  X2 += d.getX();
+  Y2 += d.getY();
+}
+
+//----------------------------------------------------------------------
 bool FRect::contains (int x, int y) const
 {
   return x >= X1 && x <= X2
@@ -240,7 +290,7 @@ bool FRect::overlap (const FRect &r) const
 FRect FRect::intersect (const FRect& r) const
 {
   // intersection: this ∩ r
-  FRect new_rect;
+  FRect new_rect{};
   new_rect.X1 = std::max(X1, r.X1);
   new_rect.Y1 = std::max(Y1, r.Y1);
   new_rect.X2 = std::min(X2, r.X2);
@@ -252,7 +302,7 @@ FRect FRect::intersect (const FRect& r) const
 FRect FRect::combined (const FRect& r) const
 {
   // Union: this ∪ r
-  FRect new_rect;
+  FRect new_rect{};
   new_rect.X1 = std::min(X1, r.X1);
   new_rect.Y1 = std::min(Y1, r.Y1);
   new_rect.X2 = std::max(X2, r.X2);
@@ -263,10 +313,22 @@ FRect FRect::combined (const FRect& r) const
 //----------------------------------------------------------------------
 FRect& FRect::operator = (const FRect& r)
 {
-  X1 = r.getX1();
-  Y1 = r.getY1();
-  X2 = r.getX2();
-  Y2 = r.getY2();
+  X1 = r.X1;
+  Y1 = r.Y1;
+  X2 = r.X2;
+  Y2 = r.Y2;
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FRect& FRect::operator = (FRect&& r)
+{
+  X1 = r.X1;
+  Y1 = r.Y1;
+  X2 = r.X2;
+  Y2 = r.Y2;
+  r.X1 = r.Y1 = 0;
+  r.X2 = r.Y2 = -1;
   return *this;
 }
 
@@ -284,8 +346,8 @@ FRect operator - (const FRect& r, const FSize& s)
 {
   return FRect ( r.X1
                , r.Y1
-               , std::size_t(r.X2 - r.X1 + 1) - s.getWidth()
-               , std::size_t(r.Y2 - r.Y1 + 1) - s.getHeight() );
+               , std::size_t(r.X2 - r.X1) + 1 - s.getWidth()
+               , std::size_t(r.Y2 - r.Y1) + 1 - s.getHeight() );
 }
 
 //----------------------------------------------------------------------

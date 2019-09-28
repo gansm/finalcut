@@ -27,11 +27,16 @@
 #include <memory>
 #include <vector>
 
+#include "final/emptyfstring.h"
 #include "final/fapplication.h"
+#include "final/fcolorpair.h"
+#include "final/fevent.h"
 #include "final/flistview.h"
 #include "final/fscrollbar.h"
 #include "final/fstatusbar.h"
+#include "final/fstring.h"
 #include "final/ftermbuffer.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {
@@ -52,9 +57,6 @@ uInt64 firstNumberFromString (const FString& str)
 {
   auto last = str.end();
   auto iter = str.begin();
-  std::size_t pos;
-  std::size_t length;
-  uInt64 number;
 
   while ( iter != last )
   {
@@ -87,8 +89,9 @@ uInt64 firstNumberFromString (const FString& str)
   if ( last_pos == last )
     return 0;
 
-  pos = std::size_t(std::distance(str.begin(), first_pos)) + 1;
-  length = std::size_t(std::distance(first_pos, last_pos));
+  uInt64 number;
+  std::size_t pos = std::size_t(std::distance(str.begin(), first_pos)) + 1;
+  std::size_t length = std::size_t(std::distance(first_pos, last_pos));
   const auto& num_str = str.mid(pos, length);
 
   try
@@ -193,7 +196,7 @@ FListViewItem::FListViewItem (FObjectIterator parent_iter)
 FListViewItem::FListViewItem ( const FStringList& cols
                              , FDataPtr data
                              , FObjectIterator parent_iter )
-  : FObject(0)
+  : FObject(nullptr)
   , column_list(cols)
   , data_pointer(data)
 {
@@ -229,7 +232,7 @@ FString FListViewItem::getText (int column) const
     return fc::emptyFString::get();
 
   // Convert column position to address offset (index)
-  std::size_t index = uInt(column - 1);
+  std::size_t index = std::size_t(column - 1);
   return column_list[index];
 }
 
@@ -256,7 +259,7 @@ void FListViewItem::setText (int column, const FString& text)
     return;
 
   // Convert column position to address offset (index)
-  std::size_t index = uInt(column - 1);
+  std::size_t index = std::size_t(column - 1);
   auto parent = getParent();
 
   if ( parent && parent->isInstanceOf("FListView") )
@@ -265,10 +268,10 @@ void FListViewItem::setText (int column, const FString& text)
 
     if ( ! listview->header[index].fixed_width )
     {
-      int length = int(text.getLength());
+      int column_width = int(getColumnWidth(text));
 
-      if ( length > listview->header[index].width )
-        listview->header[index].width = length;
+      if ( column_width > listview->header[index].width )
+        listview->header[index].width = column_width;
     }
   }
 
@@ -592,14 +595,12 @@ FListView::~FListView()  // destructor
 //----------------------------------------------------------------------
 std::size_t FListView::getCount()
 {
-  int n = 0;
-  auto iter = itemlist.begin();
+  int n{0};
 
-  while ( iter != itemlist.end() )
+  for (auto&& item : itemlist)
   {
-    auto item = static_cast<FListViewItem*>(*iter);
-    n += item->getVisibleLines();
-    ++iter;
+    auto listitem = static_cast<FListViewItem*>(item);
+    n += listitem->getVisibleLines();
   }
 
   return std::size_t(n);
@@ -614,7 +615,7 @@ fc::text_alignment FListView::getColumnAlignment (int column) const
     return fc::alignLeft;
 
   // Convert column position to address offset (index)
-  std::size_t index = uInt(column - 1);
+  std::size_t index = std::size_t(column - 1);
   return header[index].alignment;
 }
 
@@ -627,7 +628,7 @@ FString FListView::getColumnText (int column) const
     return fc::emptyFString::get();
 
   // Convert column position to address offset (index)
-  std::size_t index = uInt(column - 1);
+  std::size_t index = std::size_t(column - 1);
   return header[index].name;
 }
 
@@ -635,7 +636,7 @@ FString FListView::getColumnText (int column) const
 fc::sorting_type FListView::getColumnSortType (int column) const
 {
   fc::sorting_type type;
-  std::size_t col = uInt(column);
+  std::size_t col = std::size_t(column);
 
   try
   {
@@ -678,7 +679,7 @@ void FListView::setColumnAlignment (int column, fc::text_alignment align)
     return;
 
   // Convert column position to address offset (index)
-  std::size_t index = uInt(column - 1);
+  std::size_t index = std::size_t(column - 1);
   header[index].alignment = align;
 }
 
@@ -691,14 +692,14 @@ void FListView::setColumnText (int column, const FString& label)
     return;
 
   // Convert column position to address offset (index)
-  std::size_t index = uInt(column - 1);
+  std::size_t index = std::size_t(column - 1);
 
   if ( ! header[index].fixed_width )
   {
-    int length = int(label.getLength());
+    int column_width = int(getColumnWidth(label));
 
-    if ( length > header[index].width )
-      header[index].width = length;
+    if ( column_width > header[index].width )
+      header[index].width = column_width;
   }
 
   header[index].name = label;
@@ -712,7 +713,7 @@ void FListView::setColumnSortType (int column, fc::sorting_type type)
   if ( column < 1 || header.empty() || column > int(header.size()) )
     return;
 
-  std::size_t size = uInt(column + 1);
+  std::size_t size = std::size_t(column + 1);
 
   if ( sort_type.empty() || sort_type.size() < size )
     sort_type.resize(size);
@@ -742,7 +743,7 @@ int FListView::addColumn (const FString& label, int width)
   if ( new_column.width == USE_MAX_SIZE )
   {
     new_column.fixed_width = false;
-    new_column.width = int(label.getLength());
+    new_column.width = int(getColumnWidth(label));
   }
   else
     new_column.fixed_width = true;
@@ -755,7 +756,7 @@ int FListView::addColumn (const FString& label, int width)
 void FListView::hide()
 {
   FWidget::hide();
-  hideSize (getSize());
+  hideArea (getSize());
 }
 
 //----------------------------------------------------------------------
@@ -892,7 +893,7 @@ void FListView::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_space:
-      keySpace();
+      toggleCheckbox();
       ev->accept();
       break;
 
@@ -907,12 +908,12 @@ void FListView::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_left:
-      keyLeft (first_line_position_before);
+      collapseAndScrollLeft (first_line_position_before);
       ev->accept();
       break;
 
     case fc::Fkey_right:
-      keyRight(first_line_position_before);
+      expandAndScrollRight (first_line_position_before);
       ev->accept();
       break;
 
@@ -927,22 +928,22 @@ void FListView::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_home:
-      keyHome();
+      firstPos();
       ev->accept();
       break;
 
     case fc::Fkey_end:
-      keyEnd();
+      lastPos();
       ev->accept();
       break;
 
     case int('+'):
-      if ( keyPlus() )
+      if ( expandSubtree() )
         ev->accept();
       break;
 
     case int('-'):
-      if ( keyMinus() )
+      if ( collapseSubtree() )
         ev->accept();
       break;
 
@@ -955,9 +956,9 @@ void FListView::onKeyPress (FKeyEvent* ev)
 
   if ( ev->isAccepted() )
   {
-    bool draw_vbar = first_line_position_before
-                  != first_visible_line.getPosition();
-    bool draw_hbar = xoffset_before != xoffset;
+    bool draw_vbar( first_line_position_before
+                 != first_visible_line.getPosition() );
+    bool draw_hbar(xoffset_before != xoffset);
     updateDrawing (draw_vbar, draw_hbar);
   }
 }
@@ -995,6 +996,9 @@ void FListView::onMouseDown (FMouseEvent* ev)
     }
     else if ( mouse_y > 1 && mouse_y < int(getHeight()) )  // List
     {
+      if ( itemlist.empty() )
+        return;
+
       int indent = 0;
       int new_pos = first_visible_line.getPosition() + mouse_y - 2;
 
@@ -1057,7 +1061,10 @@ void FListView::onMouseUp (FMouseEvent* ev)
       }
       else if ( mouse_y > 1 && mouse_y < int(getHeight()) )  // List
       {
-        int indent = 0;
+        if ( itemlist.empty() )
+          return;
+
+        int indent{0};
         auto item = getCurrentItem();
 
         if ( tree_view )
@@ -1150,18 +1157,19 @@ void FListView::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListView::onMouseDoubleClick (FMouseEvent* ev)
 {
-  int mouse_x, mouse_y;
-
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  mouse_x = ev->getX();
-  mouse_y = ev->getY();
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
 
   if ( mouse_x > 1 && mouse_x < int(getWidth())
     && mouse_y > 1 && mouse_y < int(getHeight()) )
   {
     if ( first_visible_line.getPosition() + mouse_y - 1 > int(getCount()) )
+      return;
+
+    if ( itemlist.empty() )
       return;
 
     auto item = getCurrentItem();
@@ -1229,7 +1237,7 @@ void FListView::onWheel (FWheelEvent* ev)
 {
   int position_before = current_iter.getPosition()
     , first_line_position_before = first_visible_line.getPosition()
-    , pagesize = 4;
+    , pagesize{4};
 
   if ( drag_scroll != fc::noScroll )
     stopDragScroll();
@@ -1352,15 +1360,18 @@ void FListView::adjustSize()
   hbar->setWidth (width, false);
   hbar->resize();
 
-  if ( isHorizontallyScrollable() )
-    hbar->show();
-  else
-    hbar->hide();
+  if ( isShown() )
+  {
+    if ( isHorizontallyScrollable() )
+      hbar->show();
+    else
+      hbar->hide();
 
-  if ( isVerticallyScrollable() )
-    vbar->show();
-  else
-    vbar->hide();
+    if ( isVerticallyScrollable() )
+      vbar->show();
+    else
+      vbar->hide();
+  }
 }
 
 
@@ -1374,6 +1385,7 @@ void FListView::init()
   root = selflist.begin();
   null_iter = selflist.end();
   setGeometry (FPoint(1, 1), FSize(5, 4), false);  // initialize geometry values
+  const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
   nf_offset = isNewFont() ? 1 : 0;
@@ -1423,7 +1435,7 @@ void FListView::sort (Compare cmp)
 
 //----------------------------------------------------------------------
 std::size_t FListView::getAlignOffset ( fc::text_alignment align
-                                      , std::size_t txt_length
+                                      , std::size_t column_width
                                       , std::size_t width )
 {
   switch ( align )
@@ -1432,14 +1444,14 @@ std::size_t FListView::getAlignOffset ( fc::text_alignment align
       return 0;
 
     case fc::alignCenter:
-      if ( txt_length < width )
-        return (width - txt_length) / 2;
+      if ( column_width < width )
+        return (width - column_width) / 2;
       else
         return 0;
 
     case fc::alignRight:
-      if ( txt_length < width )
-        return width - txt_length;
+      if ( column_width < width )
+        return width - column_width;
       else
         return 0;
   }
@@ -1458,16 +1470,13 @@ void FListView::draw()
   if ( isMonochron() )
     setReverse(true);
 
-  if ( isNewFont() )
-    drawBorder (1, 1, int(getWidth()) - 1, int(getHeight()));
-  else
-    drawBorder();
+  drawBorder();
 
   if ( isNewFont() && ! vbar->isShown() )
   {
     setColor();
 
-    for (int y = 2; y < int(getHeight()); y++)
+    for (int y{2}; y < int(getHeight()); y++)
     {
       print() << FPoint(int(getWidth()), y)
               << ' ';  // clear right side of the scrollbar
@@ -1479,11 +1488,10 @@ void FListView::draw()
   if ( isMonochron() )
     setReverse(false);
 
-  vbar->redraw();
-  hbar->redraw();
+  drawScrollbars();
   drawList();
 
-  if ( flags.focus && getStatusBar() )
+  if ( getFlags().focus && getStatusBar() )
   {
     const auto& msg = getStatusbarMessage();
     const auto& curMsg = getStatusBar()->getMessage();
@@ -1497,10 +1505,35 @@ void FListView::draw()
 }
 
 //----------------------------------------------------------------------
+void FListView::drawBorder()
+{
+  if ( isNewFont() )
+  {
+    FRect box(FPoint(1, 1), getSize());
+    box.scaleBy(-1, 0);
+    finalcut::drawBorder (this, box);
+  }
+  else
+    FWidget::drawBorder();
+}
+
+//----------------------------------------------------------------------
+void FListView::drawScrollbars()
+{
+  if ( ! hbar->isShown() && isHorizontallyScrollable() )
+    hbar->show();
+  else
+    vbar->redraw();
+
+  if ( ! vbar->isShown() && isVerticallyScrollable() )
+    vbar->show();
+  else
+    hbar->redraw();
+}
+
+//----------------------------------------------------------------------
 void FListView::drawHeadlines()
 {
-  std::vector<charData>::const_iterator first, last;
-
   if ( header.empty()
     || getHeight() <= 2
     || getWidth() <= 4
@@ -1511,7 +1544,7 @@ void FListView::drawHeadlines()
   headerline.clear();
 
   if ( hasCheckableItems() )
-    drawHeaderBorder(4);
+    drawHeaderBorder(4);  // Draw into FTermBuffer object
 
   while ( iter != header.end() )
   {
@@ -1523,27 +1556,12 @@ void FListView::drawHeadlines()
       continue;
     }
 
-    drawHeadlineLabel(iter);
+    drawHeadlineLabel(iter);  // Draw into FTermBuffer object
     ++iter;
   }
 
-  std::vector<charData> h;
-  h << headerline;
-  first = h.begin() + xoffset;
-
-  if ( h.size() <= getClientWidth() )
-    last = h.end();
-  else
-  {
-    int len = int(getClientWidth()) + xoffset - 1;
-
-    if ( len > int(h.size()) )
-      len = int(h.size());
-
-    last = h.begin() + len;
-  }
-
-  print() << FPoint(2, 1) << std::vector<charData>(first, last);
+  // Print the FTermBuffer object
+  drawBufferedHeadline();
 }
 
 //----------------------------------------------------------------------
@@ -1552,26 +1570,30 @@ void FListView::drawList()
   if ( itemlist.empty() || getHeight() <= 2 || getWidth() <= 4 )
     return;
 
-  uInt y = 0;
-  uInt page_height = uInt(getHeight() - 2);
+  uInt y{0};
+  uInt page_height = uInt(getHeight()) - 2;
   auto iter = first_visible_line;
 
   while ( iter != itemlist.end() && y < page_height )
   {
-    bool is_current_line = bool( iter == current_iter );
+    bool is_current_line( iter == current_iter );
     const auto item = static_cast<FListViewItem*>(*iter);
     int tree_offset = ( tree_view ) ? int(item->getDepth() << 1) + 1 : 0;
     int checkbox_offset = ( item->isCheckable() ) ? 1 : 0;
     print() << FPoint(2, 2 + int(y));
 
     // Draw one FListViewItem
-    drawListLine (item, flags.focus, is_current_line);
+    drawListLine (item, getFlags().focus, is_current_line);
 
-    if ( flags.focus && is_current_line )
+    if ( getFlags().focus && is_current_line )
     {
+      int xpos = 3 + tree_offset + checkbox_offset - xoffset;
+
+      if ( xpos < 2 )  // Hide the cursor
+        xpos = -9999;  // by moving it outside the visible area
+
       setVisibleCursor (item->isCheckable());
-      setCursorPos (FPoint ( 3 + tree_offset + checkbox_offset - xoffset
-                           , 2 + int(y) ));  // first character
+      setCursorPos (FPoint(xpos, 2 + int(y)));  // first character
     }
 
     last_visible_line = iter;
@@ -1604,71 +1626,75 @@ void FListView::drawListLine ( const FListViewItem* item
 
   // Print the entry
   std::size_t indent = item->getDepth() << 1;  // indent = 2 * depth
-  FString line = getLinePrefix (item, indent);
+  FString line(getLinePrefix (item, indent));
 
   // Print columns
   if ( ! item->column_list.empty() )
   {
-    for (std::size_t col = 0; col < item->column_list.size(); )
+    for (std::size_t col{0}; col < item->column_list.size(); )
     {
-      static constexpr std::size_t leading_space = 1;
-      static constexpr std::size_t checkbox_space = 4;
       static constexpr std::size_t ellipsis_length = 2;
-
       const auto& text = item->column_list[col];
       std::size_t width = std::size_t(header[col].width);
-      std::size_t txt_length = text.getLength();
-      // Increment the value of i for the column position
+      std::size_t column_width = getColumnWidth(text);
+      // Increment the value of col for the column position
       // and the next iteration
       col++;
       fc::text_alignment align = getColumnAlignment(int(col));
-      std::size_t align_offset = getAlignOffset (align, txt_length, width);
+      std::size_t align_offset = getAlignOffset (align, column_width, width);
 
       if ( tree_view && col == 1 )
       {
         width -= (indent + 1);
 
         if ( item->isCheckable() )
+        {
+          static constexpr std::size_t checkbox_space = 4;
           width -= checkbox_space;
+        }
       }
 
       // Insert alignment spaces
       if ( align_offset > 0 )
         line += FString(align_offset, L' ');
 
-      if ( align_offset + txt_length <= width )
+      if ( align_offset + column_width <= width )
       {
         // Insert text and trailing space
-        line += text.left(width);
+        static constexpr std::size_t leading_space = 1;
+        line += getColumnSubString (text, 1, width);
         line += FString ( leading_space + width
-                        - align_offset - txt_length, L' ');
+                        - align_offset - column_width, L' ');
       }
       else if ( align == fc::alignRight )
       {
         // Ellipse right align text
+        std::size_t first = getColumnWidth(text) + 1 - width;
         line += FString (L"..");
-        line += text.right(width - ellipsis_length);
+        line += getColumnSubString (text, first, width - ellipsis_length);
         line += L' ';
       }
       else
       {
         // Ellipse left align text and center text
-        line += text.left(width - ellipsis_length);
+        line += getColumnSubString (text, 1, width - ellipsis_length);
         line += FString (L".. ");
       }
     }
   }
 
-  line = line.mid ( std::size_t(xoffset) + 1
-                  , getWidth() - nf_offset - 2);
-  const wchar_t* const& element_str = line.wc_str();
+  std::size_t width = getWidth() - nf_offset - 2;
+  line = getColumnSubString ( line, std::size_t(xoffset) + 1, width );
   std::size_t len = line.getLength();
-  std::size_t i;
+  std::size_t char_width{0};
 
-  for (i = 0; i < len; i++)
-    print() << element_str[i];
+  for (std::size_t i{0}; i < len; i++)
+  {
+    char_width += getColumnWidth(line[i]);
+    print() << line[i];
+  }
 
-  for (; i < getWidth() - nf_offset - 2; i++)
+  for (std::size_t i = char_width; i < width; i++)
     print (' ');
 }
 
@@ -1676,6 +1702,7 @@ void FListView::drawListLine ( const FListViewItem* item
 inline void FListView::setLineAttributes ( bool is_current
                                          , bool is_focus )
 {
+  const auto& wc = getFWidgetColors();
   setColor (wc.list_fg, wc.list_bg);
 
   if ( is_current )
@@ -1710,7 +1737,7 @@ inline void FListView::setLineAttributes ( bool is_current
 //----------------------------------------------------------------------
 inline FString FListView::getCheckBox (const FListViewItem* item)
 {
-  FString checkbox;
+  FString checkbox{};
 
   if ( isNewFont() )
   {
@@ -1719,7 +1746,7 @@ inline FString FListView::getCheckBox (const FListViewItem* item)
   }
   else
   {
-    checkbox = L"[ ] ";
+    checkbox.setString("[ ] ");
 
     if ( item->isChecked() )
       checkbox[1] = fc::Times;  // Times ×
@@ -1732,7 +1759,7 @@ inline FString FListView::getCheckBox (const FListViewItem* item)
 inline FString FListView::getLinePrefix ( const FListViewItem* item
                                         , std::size_t indent )
 {
-  FString line;
+  FString line{};
 
   if ( tree_view )
   {
@@ -1756,7 +1783,7 @@ inline FString FListView::getLinePrefix ( const FListViewItem* item
       line += L"  ";
   }
   else
-    line = L" ";
+    line.setString(" ");
 
   if ( item->isCheckable() )
     line += getCheckBox(item);
@@ -1766,9 +1793,9 @@ inline FString FListView::getLinePrefix ( const FListViewItem* item
 
 //----------------------------------------------------------------------
 inline void FListView::drawSortIndicator ( std::size_t& length
-                                         , std::size_t  column_width )
+                                         , std::size_t  column_max )
 {
-  if ( length >= column_width )
+  if ( length >= column_max )
     return;
 
   setColor();
@@ -1779,7 +1806,7 @@ inline void FListView::drawSortIndicator ( std::size_t& length
   else if ( sort_order == fc::descending )
     headerline << fc::BlackDownPointingTriangle;  // ▼
 
-  if ( length < column_width  )
+  if ( length < column_max  )
   {
     length++;
     headerline << ' ';
@@ -1794,63 +1821,153 @@ inline void FListView::drawHeaderBorder (std::size_t length)
   headerline << line;  // horizontal line
 }
 
+
 //----------------------------------------------------------------------
 void FListView::drawHeadlineLabel (const headerItems::const_iterator& iter)
 {
-  // Print lable text
+  // Print label text
   static constexpr std::size_t leading_space = 1;
   const auto& text = iter->name;
-  FString txt = " " + text;
+  FString txt(" " + text);
   std::size_t width = std::size_t(iter->width);
-  std::size_t txt_length = txt.getLength();
-  std::size_t column_width = leading_space + width;
+  std::size_t column_width = getColumnWidth(txt);
+  std::size_t column_max = leading_space + width;
   headerItems::const_iterator first = header.begin();
   int column = int(std::distance(first, iter)) + 1;
-  bool has_sort_indicator = bool ( sort_column == column
-                                && ! hide_sort_indicator );
+  bool has_sort_indicator( sort_column == column && ! hide_sort_indicator );
+  const auto& wc = getFWidgetColors();
 
   if ( isEnabled() )
     setColor (wc.label_emphasis_fg, wc.label_bg);
   else
     setColor (wc.label_inactive_fg, wc.label_inactive_bg);
 
-  if ( has_sort_indicator && txt_length >= column_width - 1 && txt_length > 1 )
+  if ( has_sort_indicator && column_width >= column_max - 1 && column_width > 1 )
   {
-    txt_length = column_width - 2;
-    txt = txt.left(txt_length);
+    column_width = column_max - 2;
+    txt = getColumnSubString (txt, 1, column_width);
   }
 
-  if ( txt_length <= column_width )
+  if ( column_width <= column_max )
   {
-    std::size_t length = txt_length;
     headerline << txt;
 
-    if ( length < column_width )
+    if ( column_width < column_max )
     {
-      length++;
+      column_width++;
       headerline << ' ';  // trailing space
     }
 
     if ( has_sort_indicator )
-      drawSortIndicator (length, column_width );
+      drawSortIndicator (column_width, column_max );
 
-    if ( length < column_width )
-      drawHeaderBorder (column_width - length);
+    if ( column_width < column_max )
+      drawHeaderBorder (column_max - column_width);
   }
   else
     drawColumnEllipsis (iter, text);  // Print ellipsis
 }
 
 //----------------------------------------------------------------------
+void FListView::drawBufferedHeadline()
+{
+  // Print the FTermBuffer object
+
+  if ( headerline.isEmpty() )
+    return;
+
+  std::size_t column_offset{0};
+  std::size_t column_width{0};
+  std::size_t offset{0};
+  bool left_truncated_fullwidth{false};
+  bool right_truncated_fullwidth{false};
+  std::vector<charData>::const_iterator first{}, last{};
+  last = headerline.end();
+
+  // Search for the start position
+  for (auto&& tc : headerline)
+  {
+    if ( xoffset == 0 )
+      break;
+
+    column_offset += getColumnWidth(tc);
+    offset++;
+
+    if ( column_offset == std::size_t(xoffset) )
+      break;
+
+    if ( column_offset > std::size_t(xoffset) && column_offset >= 2 )
+    {
+      left_truncated_fullwidth = true;
+      break;
+    }
+  }
+
+  first = headerline.begin();
+  std::advance(first, offset);
+
+  // Search for the end position
+  if ( getColumnWidth(headerline) > getClientWidth() )
+  {
+    std::size_t character{0};
+
+    if ( left_truncated_fullwidth )
+      column_width++;
+
+    for (auto&& tc : FTermBuffer(first, last))
+    {
+      uInt8 char_width = tc.attr.bit.char_width;
+
+      if ( column_width + char_width > getClientWidth() )
+      {
+        column_width++;
+        right_truncated_fullwidth = true;
+        break;
+      }
+
+      column_width += char_width;
+      character++;
+
+      if ( column_width == getClientWidth() )
+        break;
+    }
+
+    last = first;
+    std::advance(last, character);
+  }
+  else
+    column_width = getColumnWidth(headerline);
+
+  // Print the header line
+  print() << FPoint(2, 1);
+
+  if ( left_truncated_fullwidth )
+    print (fc::SingleLeftAngleQuotationMark);  // ‹
+
+  print() << FTermBuffer(first, last);
+
+  if ( right_truncated_fullwidth )
+    print (fc::SingleRightAngleQuotationMark);  // ›
+
+  while ( column_width < getClientWidth() )
+  {
+    setColor();
+    print(fc::BoxDrawingsHorizontal);
+    column_width++;
+  }
+}
+
+//----------------------------------------------------------------------
 void FListView::drawColumnEllipsis ( const headerItems::const_iterator& iter
                                    , const FString& text )
 {
-  // Print lable ellipsis
+  // Print label ellipsis
   static constexpr int ellipsis_length = 2;
   int width = iter->width;
+  const auto& wc = getFWidgetColors();
 
   headerline << ' '
-             << text.left(uInt(width - ellipsis_length))
+             << getColumnSubString (text, 1, uInt(width - ellipsis_length))
              << FColorPair (wc.label_ellipsis_fg, wc.label_bg)
              << "..";
 
@@ -1882,33 +1999,36 @@ void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
 std::size_t FListView::determineLineWidth (FListViewItem* item)
 {
   static constexpr std::size_t padding_space = 1;
+  static constexpr std::size_t checkbox_space = 4;
   std::size_t line_width = padding_space;  // leading space
-  uInt column_idx = 0;
-  uInt entries = uInt(item->column_list.size());
-  headerItems::iterator header_iter = header.begin();
+  std::size_t column_idx{0};
+  std::size_t entries = std::size_t(item->column_list.size());
 
-  while ( header_iter != header.end() )
+  if ( hasCheckableItems() )
+    line_width += checkbox_space;
+
+  for (auto&& header_item : header)
   {
-    std::size_t width = std::size_t(header_iter->width);
-    bool fixed_width = header_iter->fixed_width;
+    std::size_t width = std::size_t(header_item.width);
+    bool fixed_width = header_item.fixed_width;
 
     if ( ! fixed_width )
     {
-      std::size_t len;
+      std::size_t len{};
 
       if ( column_idx < entries )
-        len = item->column_list[column_idx].getLength();
+        len = getColumnWidth(item->column_list[column_idx]);
       else
         len = 0;
 
       if ( len > width )
-        header_iter->width = int(len);
+        header_item.width = int(len);
     }
 
-    line_width += std::size_t(header_iter->width)
-                + padding_space;  // width + trailing space
+    // width + trailing space
+    line_width += std::size_t(header_item.width) + padding_space;
+
     column_idx++;
-    ++header_iter;
   }
 
   return line_width;
@@ -1956,49 +2076,54 @@ void FListView::recalculateHorizontalBar (std::size_t len)
     hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset) - 4);
     hbar->calculateSliderValues();
 
-    if ( isHorizontallyScrollable() )
-      hbar->show();
-    else
-      hbar->hide();
+    if ( isShown() )
+    {
+      if ( isHorizontallyScrollable() )
+        hbar->show();
+      else
+        hbar->hide();
+    }
   }
 }
 
 //----------------------------------------------------------------------
 void FListView::recalculateVerticalBar (std::size_t element_count)
 {
-  int vmax = ( element_count > getHeight() - 2 )
+  int vmax = ( element_count + 2 > getHeight() )
              ? int(element_count - getHeight() + 2)
              : 0;
   vbar->setMaximum (vmax);
   vbar->setPageSize (int(element_count), int(getHeight()) - 2);
   vbar->calculateSliderValues();
 
-  if ( isVerticallyScrollable() )
-    vbar->show();
-  else
-    vbar->hide();
+  if ( isShown() )
+  {
+    if ( isVerticallyScrollable() )
+      vbar->show();
+    else
+      vbar->hide();
+  }
 }
 
 //----------------------------------------------------------------------
 void FListView::mouseHeaderClicked()
 {
-  int column = 1;
+  int column{1};
   int checkbox_offset = ( hasCheckableItems() ) ? 4 : 0;
   int header_start = 2 + checkbox_offset;
   int header_pos = clicked_header_pos.getX() + xoffset;
-  headerItems::const_iterator iter = header.begin();
 
-  while ( iter != header.end() )
+  for (auto&& item : header)
   {
     static constexpr int leading_space = 1;
-    bool has_sort_indicator = bool( column == sort_column );
-    int click_width = int(iter->name.getLength());
+    bool has_sort_indicator( column == sort_column );
+    int click_width = int(getColumnWidth(item.name));
 
     if ( has_sort_indicator )
       click_width += 2;
 
-    if ( click_width > iter->width )
-      click_width = iter->width;
+    if ( click_width > item.width )
+      click_width = item.width;
 
     if ( header_pos > header_start
       && header_pos <= header_start + click_width )
@@ -2016,16 +2141,15 @@ void FListView::mouseHeaderClicked()
       break;
     }
 
-    header_start += leading_space + iter->width;
+    header_start += leading_space + item.width;
     column++;
-    ++iter;
   }
 }
 
 //----------------------------------------------------------------------
 void FListView::wheelUp (int pagesize)
 {
-  if ( current_iter.getPosition() == 0 )
+  if ( itemlist.empty() || current_iter.getPosition() == 0 )
     return;
 
   if ( first_visible_line.getPosition() >= pagesize )
@@ -2049,6 +2173,9 @@ void FListView::wheelUp (int pagesize)
 //----------------------------------------------------------------------
 void FListView::wheelDown (int pagesize)
 {
+  if ( itemlist.empty() )
+    return;
+
   int element_count = int(getCount());
 
   if ( current_iter.getPosition() + 1 == element_count )
@@ -2171,6 +2298,9 @@ FObject::FObjectIterator FListView::appendItem (FListViewItem* item)
 //----------------------------------------------------------------------
 void FListView::processClick()
 {
+  if ( itemlist.empty() )
+    return;
+
   emitCallback("clicked");
 }
 
@@ -2181,8 +2311,11 @@ void FListView::processChanged()
 }
 
 //----------------------------------------------------------------------
-inline void FListView::keySpace()
+inline void FListView::toggleCheckbox()
 {
+  if ( itemlist.empty() )
+    return;
+
   auto item = getCurrentItem();
 
   if ( item->isCheckable() )
@@ -2190,8 +2323,11 @@ inline void FListView::keySpace()
 }
 
 //----------------------------------------------------------------------
-inline void FListView::keyLeft (int& first_line_position_before)
+inline void FListView::collapseAndScrollLeft (int& first_line_position_before)
 {
+  if ( itemlist.empty() )
+    return;
+
   int position_before = current_iter.getPosition();
   auto item = getCurrentItem();
 
@@ -2244,8 +2380,11 @@ inline void FListView::keyLeft (int& first_line_position_before)
 }
 
 //----------------------------------------------------------------------
-inline void FListView::keyRight (int& first_line_position_before)
+inline void FListView::expandAndScrollRight (int& first_line_position_before)
 {
+  if ( itemlist.empty() )
+    return;
+
   int xoffset_end = int(max_line_width) - int(getClientWidth());
   auto item = getCurrentItem();
 
@@ -2269,8 +2408,11 @@ inline void FListView::keyRight (int& first_line_position_before)
 }
 
 //----------------------------------------------------------------------
-inline void FListView::keyHome()
+inline void FListView::firstPos()
 {
+  if ( itemlist.empty() )
+    return;
+
   current_iter -= current_iter.getPosition();
   int difference = first_visible_line.getPosition();
   first_visible_line -= difference;
@@ -2278,8 +2420,11 @@ inline void FListView::keyHome()
 }
 
 //----------------------------------------------------------------------
-inline void FListView::keyEnd()
+inline void FListView::lastPos()
 {
+  if ( itemlist.empty() )
+    return;
+
   int element_count = int(getCount());
   current_iter += element_count - current_iter.getPosition() - 1;
   int difference = element_count - last_visible_line.getPosition() - 1;
@@ -2288,8 +2433,11 @@ inline void FListView::keyEnd()
 }
 
 //----------------------------------------------------------------------
-inline bool FListView::keyPlus()
+inline bool FListView::expandSubtree()
 {
+  if ( itemlist.empty() )
+    return false;
+
   auto item = getCurrentItem();
 
   if ( tree_view && item->isExpandable() && ! item->isExpand() )
@@ -2303,8 +2451,11 @@ inline bool FListView::keyPlus()
 }
 
 //----------------------------------------------------------------------
-inline bool FListView::keyMinus()
+inline bool FListView::collapseSubtree()
 {
+  if ( itemlist.empty() )
+    return false;
+
   auto item = getCurrentItem();
 
   if ( tree_view && item->isExpandable() && item->isExpand() )
@@ -2327,6 +2478,9 @@ void FListView::setRelativePosition (int ry)
 //----------------------------------------------------------------------
 void FListView::stepForward()
 {
+  if ( itemlist.empty() )
+    return;
+
   if ( current_iter == last_visible_line )
   {
     ++last_visible_line;
@@ -2346,6 +2500,9 @@ void FListView::stepForward()
 //----------------------------------------------------------------------
 void FListView::stepBackward()
 {
+  if ( itemlist.empty() )
+    return;
+
   if ( current_iter == first_visible_line
     && current_iter != itemlist.begin() )
   {
@@ -2360,6 +2517,9 @@ void FListView::stepBackward()
 //----------------------------------------------------------------------
 void FListView::stepForward (int distance)
 {
+  if ( itemlist.empty() )
+    return;
+
   int element_count = int(getCount());
 
   if ( current_iter.getPosition() + 1 == element_count )
@@ -2393,7 +2553,7 @@ void FListView::stepForward (int distance)
 //----------------------------------------------------------------------
 void FListView::stepBackward (int distance)
 {
-  if ( current_iter.getPosition() == 0 )
+  if ( itemlist.empty() || current_iter.getPosition() == 0 )
     return;
 
   if ( current_iter.getPosition() - distance >= 0 )
@@ -2490,8 +2650,8 @@ void FListView::scrollBy (int dx, int dy)
 void FListView::cb_VBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
-  int distance = 1
-    , pagesize = 4
+  int distance{1}
+    , pagesize{4}
     , first_line_position_before = first_visible_line.getPosition();
 
   switch ( scrollType )
@@ -2549,8 +2709,8 @@ void FListView::cb_VBarChange (FWidget*, FDataPtr)
 void FListView::cb_HBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
-  int distance = 1
-    , pagesize = 4
+  int distance{1}
+    , pagesize{4}
     , xoffset_before = xoffset;
 
   switch ( scrollType )
@@ -2596,8 +2756,7 @@ void FListView::cb_HBarChange (FWidget*, FDataPtr)
     flush_out();
   }
 
-  if ( scrollType >= FScrollbar::scrollStepBackward
-    && scrollType <= FScrollbar::scrollWheelDown )
+  if ( scrollType >= FScrollbar::scrollStepBackward )
   {
     hbar->setValue (xoffset);
 

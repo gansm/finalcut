@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -66,9 +66,6 @@ namespace finalcut
 // class FCheckBox
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FCheckBox : public FToggleButton
 {
   public:
@@ -86,16 +83,16 @@ class FCheckBox : public FToggleButton
     FCheckBox& operator = (const FCheckBox&) = delete;
 
     // Accessor
-    virtual const char* getClassName() const override;
+    const char* getClassName() const override;
 
   private:
     // Methods
-    void                init();
-    virtual void        draw() override;
-    void                drawCheckButton();
+    void        init();
+    void        draw() override;
+    void        drawCheckButton();
+    void        drawChecked();
+    void        drawUnchecked();
 };
-#pragma pack(pop)
-
 
 // FCheckBox inline functions
 //----------------------------------------------------------------------

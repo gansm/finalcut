@@ -41,21 +41,12 @@
 #include <cstdio>
 #include <cstring>
 
-#include "final/fc.h"
-#include "final/fconfig.h"
-#include "final/ftermdata.h"
-#include "final/ftermios.h"
-#include "final/ftypes.h"
-
 namespace finalcut
 {
 
 //----------------------------------------------------------------------
 // class FTermDetection
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FTermDetection final
 {
@@ -153,18 +144,10 @@ class FTermDetection final
     static void           setScreenTerm (bool);
     static void           setTmuxTerm (bool);
     static void           setTerminalDetection (bool);
-    static void           setFTermData (FTermData*);
     static void           setTtyTypeFileName (char[]);
 
     // Methods
     static void           detect();
-
-    // Data Members
-#if DEBUG
-    static char           termtype_256color[256];
-    static char           termtype_Answerback[256];
-    static char           termtype_SecDA[256];
-#endif
 
   private:
     // Methods
@@ -180,7 +163,7 @@ class FTermDetection final
     static bool           get256colorEnvString();
     static char*          termtype_256color_quirks();
     static char*          determineMaxColor (char[]);
-    static const FString  getXTermColorName (int);
+    static const FString  getXTermColorName (FColor);
     static char*          parseAnswerbackMsg (char[]);
     static const FString  getAnswerbackMsg();
     static char*          parseSecDA (char[]);
@@ -200,7 +183,12 @@ class FTermDetection final
     static char*          secDA_Analysis_85 (char[]);
     static char*          secDA_Analysis_vte (char[]);
 
-    // Data Members
+    // Data members
+#if DEBUG
+    static char           termtype_256color[256];
+    static char           termtype_Answerback[256];
+    static char           termtype_SecDA[256];
+#endif
     static char           termtype[256];
     static char           ttytypename[256];
     static bool           decscusr_support;
@@ -210,45 +198,27 @@ class FTermDetection final
     static const FString* answer_back;
     static const FString* sec_da;
     static FTermData*     fterm_data;
+    static FSystem*       fsystem;
     static terminalType   terminal_type;
 
     static struct colorEnv
     {
-      void setDefault()
-      {
-        string1 = nullptr;
-        string2 = nullptr;
-        string3 = nullptr;
-        string4 = nullptr;
-        string5 = nullptr;
-        string6 = nullptr;
-        string7 = nullptr;
-      }
-
-      char* string1;
-      char* string2;
-      char* string3;
-      char* string4;
-      char* string5;
-      char* string6;
-      char* string7;
+      char* string1{nullptr};
+      char* string2{nullptr};
+      char* string3{nullptr};
+      char* string4{nullptr};
+      char* string5{nullptr};
+      char* string6{nullptr};
+      char* string7{nullptr};
     } color_env;
 
     static struct secondaryDA
     {
-      void setDefault()
-      {
-        terminal_id_type = -1;
-        terminal_id_version = -1;
-        terminal_id_hardware = -1;
-      }
-
-      int terminal_id_type;
-      int terminal_id_version;
-      int terminal_id_hardware;
+      int terminal_id_type{-1};
+      int terminal_id_version{-1};
+      int terminal_id_hardware{-1};
     } secondary_da;
 };
-#pragma pack(pop)
 
 // FTermDetection inline functions
 //----------------------------------------------------------------------
@@ -268,14 +238,6 @@ inline FTermDetection::terminalType& FTermDetection::getTermTypeStruct()
 { return terminal_type; }
 
 #if DEBUG
-//----------------------------------------------------------------------
-inline const FString& FTermDetection::getAnswerbackString()
-{ return ( answer_back ) ? *answer_back : fc::emptyFString::get(); }
-
-//----------------------------------------------------------------------
-inline const FString& FTermDetection::getSecDAString()
-{ return ( sec_da ) ? *sec_da : fc::emptyFString::get(); }
-
 //----------------------------------------------------------------------
 inline const char* FTermDetection::getTermType_256color()
 { return termtype_256color; }

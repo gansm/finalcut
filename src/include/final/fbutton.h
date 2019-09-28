@@ -53,6 +53,7 @@
 #endif
 
 #include "final/fwidget.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {
@@ -60,9 +61,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 // class FButton
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FButton : public FWidget
 {
@@ -84,7 +82,7 @@ class FButton : public FWidget
     FButton& operator = (const FString&);
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     FString&            getText();
 
     // Mutators
@@ -98,13 +96,13 @@ class FButton : public FWidget
     bool                setNoUnderline(bool);
     bool                setNoUnderline();
     bool                unsetNoUnderline();
-    virtual bool        setEnable(bool) override;
-    virtual bool        setEnable() override;
-    virtual bool        unsetEnable() override;
-    virtual bool        setDisable() override;
-    virtual bool        setFocus(bool) override;
-    virtual bool        setFocus() override;
-    virtual bool        unsetFocus() override;
+    bool                setEnable(bool) override;
+    bool                setEnable() override;
+    bool                unsetEnable() override;
+    bool                setDisable() override;
+    bool                setFocus(bool) override;
+    bool                setFocus() override;
+    bool                unsetFocus() override;
     bool                setFlat(bool);
     bool                setFlat();
     bool                unsetFlat();
@@ -126,17 +124,17 @@ class FButton : public FWidget
     bool                hasClickAnimation();
 
     // Methods
-    virtual void        hide() override;
+    void                hide() override;
 
     // Event handlers
-    virtual void        onKeyPress (FKeyEvent*) override;
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
-    virtual void        onMouseMove (FMouseEvent*) override;
-    virtual void        onTimer (FTimerEvent*) override;
-    virtual void        onAccel (FAccelEvent*) override;
-    virtual void        onFocusIn (FFocusEvent*) override;
-    virtual void        onFocusOut (FFocusEvent*) override;
+    void                onKeyPress (FKeyEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
+    void                onMouseMove (FMouseEvent*) override;
+    void                onTimer (FTimerEvent*) override;
+    void                onAccel (FAccelEvent*) override;
+    void                onFocusIn (FFocusEvent*) override;
+    void                onFocusOut (FFocusEvent*) override;
 
   private:
     // Constants
@@ -146,40 +144,37 @@ class FButton : public FWidget
     void                init();
     void                setHotkeyAccelerator();
     void                detectHotkey();
-    std::size_t         getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
     std::size_t         clickAnimationIndent (FWidget*);
     void                clearRightMargin (FWidget*);
     void                drawMarginLeft();
     void                drawMarginRight();
     void                drawTopBottomBackground();
     void                drawButtonTextLine (wchar_t[]);
-    virtual void        draw() override;
+    void                draw() override;
     void                updateStatusBar();
     void                updateButtonColor();
     void                processClick();
 
-    // Data Members
+    // Data members
     FString      text{};
     bool         button_down{false};
     bool         active_focus{false};
     bool         click_animation{true};
     int          click_time{150};
     int          space_char{int(' ')};
+    FColor       button_fg{getFWidgetColors().button_active_fg};
+    FColor       button_bg{getFWidgetColors().button_active_bg};
+    FColor       button_hotkey_fg{getFWidgetColors().button_hotkey_fg};
+    FColor       button_focus_fg{getFWidgetColors().button_active_focus_fg};
+    FColor       button_focus_bg{getFWidgetColors().button_active_focus_bg};
+    FColor       button_inactive_fg{getFWidgetColors().button_inactive_fg};
+    FColor       button_inactive_bg{getFWidgetColors().button_inactive_bg};
     std::size_t  hotkeypos{NOT_SET};
     std::size_t  indent{0};
     std::size_t  center_offset{0};
     std::size_t  vcenter_offset{0};
-    std::size_t  txtlength{0};
-    FColor       button_fg{wc.button_active_fg};
-    FColor       button_bg{wc.button_active_bg};
-    FColor       button_hotkey_fg{wc.button_hotkey_fg};
-    FColor       button_focus_fg{wc.button_active_focus_fg};
-    FColor       button_focus_bg{wc.button_active_focus_bg};
-    FColor       button_inactive_fg{wc.button_inactive_fg};
-    FColor       button_inactive_bg{wc.button_inactive_bg};
+    std::size_t  column_width{0};
 };
-#pragma pack(pop)
-
 
 // FButton inline functions
 //----------------------------------------------------------------------
@@ -256,7 +251,7 @@ inline bool FButton::unsetClickAnimation()
 
 //----------------------------------------------------------------------
 inline bool FButton::isFlat() const
-{ return flags.flat; }
+{ return getFlags().flat; }
 
 //----------------------------------------------------------------------
 inline bool FButton::isDown() const
@@ -264,7 +259,7 @@ inline bool FButton::isDown() const
 
 //----------------------------------------------------------------------
 inline bool FButton::hasShadow() const
-{ return flags.shadow; }
+{ return getFlags().shadow; }
 
 //----------------------------------------------------------------------
 inline bool FButton::hasClickAnimation()

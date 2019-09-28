@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -30,17 +30,23 @@
 
 #include "final/fkeyboard.h"
 #include "final/fkey_map.h"
+#include "final/fobject.h"
+#include "final/fterm.h"
 #include "final/ftermios.h"
+
+#if defined(__linux__)
+  #include "final/ftermlinux.h"
+#endif
 
 namespace finalcut
 {
 
 // static class attributes
-uInt64 FKeyboard::key_timeout = 100000;  // 100 ms (default timeout for keypress)
+uInt64 FKeyboard::key_timeout{100000};  // 100 ms (default timeout for keypress)
 struct timeval FKeyboard::time_keypressed{};
 
 #if defined(__linux__)
-  FTermLinux* FKeyboard::linux = nullptr;
+  FTermLinux* FKeyboard::linux{nullptr};
 #endif
 
 //----------------------------------------------------------------------
@@ -96,7 +102,7 @@ void FKeyboard::fetchKeyCode()
 //----------------------------------------------------------------------
 const FString FKeyboard::getKeyName (FKey keynum)
 {
-  for (std::size_t i = 0; fc::FkeyName[i].string[0] != 0; i++)
+  for (std::size_t i{0}; fc::FkeyName[i].string[0] != 0; i++)
     if ( fc::FkeyName[i].num && fc::FkeyName[i].num == keynum )
       return FString(fc::FkeyName[i].string);
 
@@ -113,6 +119,14 @@ void FKeyboard::setTermcapMap (fc::fkeymap* keymap)
 }
 
 //----------------------------------------------------------------------
+void FKeyboard::init()
+{
+#if defined(__linux__)
+  linux = FTerm::getFTermLinux();
+#endif
+}
+
+//----------------------------------------------------------------------
 bool& FKeyboard::unprocessedInput()
 {
   return input_data_pending;
@@ -121,16 +135,15 @@ bool& FKeyboard::unprocessedInput()
 //----------------------------------------------------------------------
 bool FKeyboard::isKeyPressed()
 {
-  int result;
-  fd_set ifds;
-  struct timeval tv;
+  fd_set ifds{};
+  struct timeval tv{};
   int stdin_no = FTermios::getStdIn();
 
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
   tv.tv_usec = 100000;  // 100 ms
-  result = select (stdin_no + 1, &ifds, 0, 0, &tv);
+  int result = select (stdin_no + 1, &ifds, 0, 0, &tv);
 
   if ( result > 0 && FD_ISSET(stdin_no, &ifds) )
     FD_CLR (stdin_no, &ifds);
@@ -221,14 +234,14 @@ inline FKey FKeyboard::getTermcapKey()
   if ( ! key_map )
     return NOT_SET;
 
-  for (std::size_t i = 0; key_map[i].tname[0] != 0; i++)
+  for (std::size_t i{0}; key_map[i].tname[0] != 0; i++)
   {
     char* k = key_map[i].string;
     std::size_t len = ( k ) ? std::strlen(k) : 0;
 
     if ( k && std::strncmp(k, fifo_buf, len) == 0 )  // found
     {
-      std::size_t n;
+      std::size_t n{};
 
       for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove founded entry
         fifo_buf[n - len] = fifo_buf[n];
@@ -251,14 +264,14 @@ inline FKey FKeyboard::getMetaKey()
 
   assert ( FIFO_BUF_SIZE > 0 );
 
-  for (std::size_t i = 0; fc::Fmetakey[i].string[0] != 0; i++)
+  for (std::size_t i{0}; fc::Fmetakey[i].string[0] != 0; i++)
   {
     char* kmeta = fc::Fmetakey[i].string;  // The string is never null
     std::size_t len = std::strlen(kmeta);
 
     if ( std::strncmp(kmeta, fifo_buf, len) == 0 )  // found
     {
-      std::size_t n;
+      std::size_t n{};
 
       if ( len == 2 && ( fifo_buf[1] == 'O'
                       || fifo_buf[1] == '['
@@ -287,15 +300,15 @@ inline FKey FKeyboard::getSingleKey()
 {
   // Looking for single key code in the buffer
 
+  std::size_t n{};
+  std::size_t len{1};
   uChar firstchar = uChar(fifo_buf[0]);
-  std::size_t n;
-  std::size_t len = 1;
-  FKey keycode;
+  FKey keycode{};
 
   // Look for a utf-8 character
   if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
   {
-    char utf8char[5] = { };  // Init array with '\0'
+    char utf8char[5]{};  // Init array with '\0'
 
     if ( (firstchar & 0xe0) == 0xc0 )
       len = 2;
@@ -304,7 +317,7 @@ inline FKey FKeyboard::getSingleKey()
     else if ( (firstchar & 0xf8) == 0xf0 )
       len = 4;
 
-    for (std::size_t i = 0; i < len ; i++)
+    for (std::size_t i{0}; i < len ; i++)
       utf8char[i] = char(fifo_buf[i] & 0xff);
 
     keycode = UTF8decode(utf8char);
@@ -359,14 +372,14 @@ bool FKeyboard::isKeypressTimeout()
 //----------------------------------------------------------------------
 FKey FKeyboard::UTF8decode (const char utf8[])
 {
-  FKey ucs = 0;  // Universal coded character
+  FKey ucs{0};  // Universal coded character
   constexpr std::size_t max = 4;
   std::size_t len = std::strlen(utf8);
 
   if ( len > max )
     len = max;
 
-  for (std::size_t i = 0; i < len; ++i)
+  for (std::size_t i{0}; i < len; ++i)
   {
     uChar ch = uChar(utf8[i]);
 
@@ -408,9 +421,8 @@ FKey FKeyboard::UTF8decode (const char utf8[])
 //----------------------------------------------------------------------
 inline ssize_t FKeyboard::readKey()
 {
-  ssize_t bytes;
   setNonBlockingInput();
-  bytes = read(FTermios::getStdIn(), &read_buf, READ_BUF_SIZE - 1);
+  ssize_t bytes = read(FTermios::getStdIn(), &read_buf, READ_BUF_SIZE - 1);
   unsetNonBlockingInput();
   return bytes;
 }
@@ -418,14 +430,14 @@ inline ssize_t FKeyboard::readKey()
 //----------------------------------------------------------------------
 void FKeyboard::parseKeyBuffer()
 {
-  ssize_t bytesread;
+  ssize_t bytesread{};
   FObject::getCurrentTime (&time_keypressed);
 
   while ( (bytesread = readKey()) > 0 )
   {
     if ( bytesread + fifo_offset <= int(FIFO_BUF_SIZE) )
     {
-      for (std::size_t i = 0; i < std::size_t(bytesread); i++)
+      for (std::size_t i{0}; i < std::size_t(bytesread); i++)
       {
         fifo_buf[fifo_offset] = read_buf[i];
         fifo_offset++;

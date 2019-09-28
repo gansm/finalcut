@@ -22,15 +22,20 @@
 
 #include <string>
 
+#include "final/fc.h"
+#include "final/fkey_map.h"
+#include "final/fterm.h"
+#include "final/ftermcap.h"
 #include "final/ftermcapquirks.h"
+#include "final/ftermdata.h"
+#include "final/ftermdetection.h"
 
 namespace finalcut
 {
 
 // static class attributes
-FTermcap::tcap_map* FTermcapQuirks::tcap           = nullptr;
-FTermData*          FTermcapQuirks::fterm_data     = nullptr;
-FTermDetection*     FTermcapQuirks::term_detection = nullptr;
+FTermData*       FTermcapQuirks::fterm_data     {nullptr};
+FTermDetection*  FTermcapQuirks::term_detection {nullptr};
 
 
 //----------------------------------------------------------------------
@@ -40,9 +45,7 @@ FTermDetection*     FTermcapQuirks::term_detection = nullptr;
 // constructors and destructor
 //----------------------------------------------------------------------
 FTermcapQuirks::FTermcapQuirks()
-{
-  tcap = FTermcap::getTermcapMap();
-}
+{ }
 
 //----------------------------------------------------------------------
 FTermcapQuirks::~FTermcapQuirks()  // destructor
@@ -51,22 +54,10 @@ FTermcapQuirks::~FTermcapQuirks()  // destructor
 
 // public methods of FTermcapQuirks
 //----------------------------------------------------------------------
-void FTermcapQuirks::setFTermData (FTermData* data)
-{
-  fterm_data = data;
-}
-
-//----------------------------------------------------------------------
-void FTermcapQuirks::setFTermDetection (FTermDetection* td)
-{
-  term_detection = td;
-}
-
-
-// private methods of FTermcapQuirks
-//----------------------------------------------------------------------
 void FTermcapQuirks::terminalFixup()
 {
+  fterm_data = FTerm::getFTermData();
+  term_detection = FTerm::getFTermDetection();
   auto& td = term_detection;
 
   if ( td->isCygwinTerminal() )
@@ -101,12 +92,12 @@ void FTermcapQuirks::terminalFixup()
   {
     screen();
   }
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   else if ( td->isFreeBSDTerm() )
   {
     freebsd();
   }
-#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 
   // xterm and compatible terminals
   if ( td->isXTerminal() && ! td->isPuttyTerminal() )
@@ -118,8 +109,10 @@ void FTermcapQuirks::terminalFixup()
   ecma48();
 }
 
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+
+// private methods of FTermcapQuirks
 //----------------------------------------------------------------------
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 void FTermcapQuirks::freebsd()
 {
   // FreeBSD console fixes
@@ -143,7 +136,7 @@ void FTermcapQuirks::freebsd()
 
   FTermcap::attr_without_color = 18;
 }
-#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 
 //----------------------------------------------------------------------
 void FTermcapQuirks::cygwin()
@@ -409,7 +402,7 @@ void FTermcapQuirks::sunConsole()
       C_STR(CSI "%p1%dD");
 
   // Sun Microsystems workstation console keys
-  for (std::size_t i = 0; fc::Fkey[i].tname[0] != 0; i++)
+  for (std::size_t i{0}; fc::Fkey[i].tname[0] != 0; i++)
   {
     if ( std::strncmp(fc::Fkey[i].tname, "K2", 2) == 0 )
       fc::Fkey[i].string = C_STR(CSI "218z");  // center of keypad

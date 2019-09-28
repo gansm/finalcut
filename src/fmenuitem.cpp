@@ -24,6 +24,7 @@
 
 #include "final/fapplication.h"
 #include "final/fdialog.h"
+#include "final/fevent.h"
 #include "final/fmenu.h"
 #include "final/fmenubar.h"
 #include "final/fmenulist.h"
@@ -93,7 +94,7 @@ bool FMenuItem::setEnable (bool enable)
     if ( super && isMenuBar(super) )
     {
       // Meta + hotkey
-      super->addAccelerator ( fc::Fmkey_meta + FKey(std::tolower(hotkey))
+      super->addAccelerator ( fc::Fmkey_meta + FKey(std::tolower(int(hotkey)))
                             , this );
     }
   }
@@ -187,12 +188,16 @@ void FMenuItem::unsetSelected()
 //----------------------------------------------------------------------
 void FMenuItem::setText (const FString& txt)
 {
-  text = txt;
+  text.setString(txt);
   text_length = text.getLength();
-  hotkey = hotKey();
+  text_width = getColumnWidth(txt);
+  hotkey = finalcut::getHotkey(text);
 
   if ( hotkey )
+  {
     text_length--;
+    text_width--;
+  }
 
   updateSuperMenuDimensions();
 }
@@ -203,10 +208,10 @@ void FMenuItem::addAccelerator (FKey key, FWidget* obj)
   auto root = getRootWidget();
   accelerator accel = { key, obj };
 
-  if ( root && root->accelerator_list )
+  if ( root && root->getAcceleratorList() )
   {
     accel_key = key;
-    root->accelerator_list->push_back(accel);
+    root->getAcceleratorList()->push_back(accel);
   }
 
   updateSuperMenuDimensions();
@@ -218,17 +223,17 @@ void FMenuItem::delAccelerator (FWidget* obj)
   auto root = getRootWidget();
 
   if ( root
-    && root->accelerator_list
-    && ! root->accelerator_list->empty() )
+    && root->getAcceleratorList()
+    && ! root->getAcceleratorList()->empty() )
   {
-    auto iter = root->accelerator_list->begin();
+    auto iter = root->getAcceleratorList()->begin();
 
-    while ( iter != root->accelerator_list->end() )
+    while ( iter != root->getAcceleratorList()->end() )
     {
       if ( iter->object == obj )
       {
         accel_key = 0;
-        iter = root->accelerator_list->erase(iter);
+        iter = root->getAcceleratorList()->erase(iter);
       }
       else
         ++iter;
@@ -414,7 +419,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
       mbar->getSelectedItem()->unsetSelected();
 
     setSelected();
-    mbar->selected_item = this;
+    mbar->setSelectedItem(this);
     openMenu();
     auto focused_widget = static_cast<FWidget*>(ev->focusedWidget());
     menu->unselectItem();
@@ -437,7 +442,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
   else
   {
     unsetSelected();
-    mbar->selected_item = nullptr;
+    mbar->unsetSelectedItem();
     mbar->redraw();
     processClicked();
     mbar->drop_down = false;
@@ -501,7 +506,7 @@ bool FMenuItem::isMenu (FWidget* w) const
 //----------------------------------------------------------------------
 FMenuList* FMenuItem::getFMenuList (FWidget& widget)
 {
-  FMenuList* menu_list;
+  FMenuList* menu_list{};
 
   if ( isMenu(&widget) )
   {
@@ -523,12 +528,19 @@ FMenuList* FMenuItem::getFMenuList (FWidget& widget)
 void FMenuItem::init (FWidget* parent)
 {
   text_length = text.getLength();
-  hotkey = hotKey();
+  text_width = getColumnWidth(text);
+  hotkey = finalcut::getHotkey(text);
+
+  if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
+    hotkey -= 0xfee0;
 
   if ( hotkey )
+  {
     text_length--;
+    text_width--;
+  }
 
-  setGeometry (FPoint(1, 1), FSize(text_length + 2, 1), false);
+  setGeometry (FPoint(1, 1), FSize(text_width + 2, 1), false);
 
   if ( ! parent )
     return;
@@ -549,7 +561,7 @@ void FMenuItem::init (FWidget* parent)
     menubar_ptr->calculateDimensions();
 
     if ( hotkey )  // Meta + hotkey
-      menubar_ptr->addAccelerator ( fc::Fmkey_meta + FKey(std::tolower(hotkey))
+      menubar_ptr->addAccelerator ( fc::Fmkey_meta + FKey(std::tolower(int(hotkey)))
                                   , this );
 
     addCallback  // for this element
@@ -566,41 +578,13 @@ void FMenuItem::init (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-uChar FMenuItem::hotKey()
-{
-  std::size_t length;
-
-  if ( text.isEmpty() )
-    return 0;
-
-  length = text.getLength();
-
-  for (std::size_t i = 0; i < length; i++)
-  {
-    try
-    {
-      if ( i + 1 < length && text[i] == '&' )
-        return uChar(text[++i]);
-    }
-    catch (const std::out_of_range&)
-    {
-      return 0;
-    }
-  }
-
-  return 0;
-}
-
-//----------------------------------------------------------------------
 void FMenuItem::updateSuperMenuDimensions()
 {
   if ( ! super_menu || ! isMenu(super_menu) )
     return;
 
   auto menu_ptr = static_cast<FMenu*>(super_menu);
-
-  if ( menu_ptr )
-    menu_ptr->calculateDimensions();
+  menu_ptr->calculateDimensions();
 }
 
 //----------------------------------------------------------------------
@@ -620,18 +604,18 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 {
   winmenu->clear();
 
-  if ( dialog_list && ! dialog_list->empty() )
+  if ( getDialogList() && ! getDialogList()->empty() )
   {
-    auto first = dialog_list->begin();
+    auto first = getDialogList()->begin();
     auto iter = first;
 
-    while ( iter != dialog_list->end() && *iter )
+    while ( iter != getDialogList()->end() && *iter )
     {
       auto win = static_cast<FDialog*>(*iter);
 
       if ( win )
       {
-        FMenuItem* win_item;
+        FMenuItem* win_item{};
         uInt32 n = uInt32(std::distance(first, iter));
         // get the dialog title
         const auto& name = win->getText();

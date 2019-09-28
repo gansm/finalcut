@@ -1,7 +1,12 @@
 ![FINAL CUT](logo/svg/finalcut-logo.svg)
 ============================================
 
-### Building and code analysis
+# Library for creating terminal applications with text-based widgets
+The FINAL CUT is a C++ class library and widget toolkit with full mouse support for creating a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple text windows on the screen.
+
+The structure of the Qt framework was originally the inspiration for the C++ class design of FINAL CUT. It provides common controls like dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, status bars and so on.
+
+## Building and code analysis
 *Latest release:*<br />
 &#160;&#160;&#160;&#160;&#160;[![Latest Release](https://img.shields.io/github/release/gansm/finalcut.svg)](https://github.com/gansm/finalcut/releases) <br />
 *License:*<br />
@@ -9,18 +14,13 @@
 *Travis CI:*<br />
 &#160;&#160;&#160;&#160;&#160;[![Build Status](https://travis-ci.org/gansm/finalcut.svg?branch=master)](https://travis-ci.org/gansm/finalcut) <br />
 *Coverity Scan:*<br />
-&#160;&#160;&#160;&#160;&#160;[![Coverity Scan Status](https://scan.coverity.com/projects/6508/badge.svg)](https://scan.coverity.com/projects/6508) <br />
+&#160;&#160;&#160;&#160;&#160;[![Coverity Scan Status](https://img.shields.io/coverity/scan/6508.svg)](https://scan.coverity.com/projects/6508) <br />
 *LGTM:*<br />
 &#160;&#160;&#160;&#160;&#160;[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/gansm/finalcut.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/gansm/finalcut/context:cpp) <br />
 *Class Reference:*<br />
 &#160;&#160;&#160;&#160;&#160;[![documented](https://codedocs.xyz/gansm/finalcut.svg)](https://codedocs.xyz/gansm/finalcut/hierarchy.html)
 
-### Description
-The FINAL CUT is a C++ class library and widget toolkit with full mouse support for creating a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple text windows on the screen.
-
-The structure of the Qt framework was originally the inspiration for the C++ class design of FINAL CUT. It provides common controls like dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, status bars and so on.
-
-### Installation
+## Installation
 ```bash
 > git clone git://github.com/gansm/finalcut.git
 > cd finalcut
@@ -30,7 +30,7 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 > su -c "make install"
 ```
 
-### Supported platforms
+## Supported platforms
 * Linux
 * FreeBSD
 * NetBSD
@@ -39,13 +39,12 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 * Cygwin
 * Solaris
 
-### First steps
+## First steps
+Read here [how to use the library](doc/first-steps.md#first-steps-with-the-final-cut-widget-toolkit)
 
-[How to use the library](doc/first-steps.md#first-steps-with-the-final-cut-widget-toolkit)
+## Some screenshots
 
-### Screenshots
-
-The FFileDialog widget:
+The FFileDialog widget with incremental file name search:
 
 ![FFileDialog](doc/fileopen-dialog.png)
 
@@ -152,47 +151,53 @@ Class digramm
               1┌──────────────┐
    ┌-----------┤ FTermFreeBSD │
    :           └──────────────┘
-   :          1┌──────────────┐         ┌───────────┐
-   ┌-----------┤ FTermOpenBSD │    ┌────┤ FKeyEvent │
-   :           └──────────────┘    │    └───────────┘
+   :          1┌──────────────┐
+   ┌-----------┤ FTermOpenBSD │
+   :           └──────────────┘
+   :          1┌────────────────┐       ┌───────────┐
+   ┌-----------┤ FTermDetection │  ┌────┤ FKeyEvent │
+   :           └────────────────┘  │    └───────────┘
    :          1┌────────────────┐  │    ┌─────────────┐
-   ┌-----------┤ FTermDetection │  ├────┤ FMouseEvent │
+   ┌-----------┤ FTermcapQuirks │  ├────┤ FMouseEvent │
    :           └────────────────┘  │    └─────────────┘
    :          1┌────────────────┐  │    ┌─────────────┐
-   ┌-----------┤ FTermcapQuirks │  ├────┤ FWheelEvent │
-   :           └────────────────┘  │    └─────────────┘
-   :          1┌────────────────┐  │    ┌─────────────┐
-   ┌-----------┤ FTermXTerminal │  ├────┤ FFocusEvent │
+   ┌-----------┤ FTermXTerminal │  ├────┤ FWheelEvent │
    :           └────────────────┘  │    └─────────────┘
    :          1┌──────────┐        │    ┌─────────────┐
-   ┌-----------┤ FTermcap │        ├────┤ FAccelEvent │
+   ┌-----------┤ FTermcap │        ├────┤ FFocusEvent │
    :           └──────────┘        │    └─────────────┘
-   :          1┌──────────┐        │    ┌──────────────┐
-   ┌-----------┤ FTermios │        ├────┤ FResizeEvent │
-   :           └──────────┘        │    └──────────────┘
-   :          1┌───────────────┐   │    ┌────────────┐
-   ┌-----------┤ FColorPalette │   ├────┤ FShowEvent │
-   :           └───────────────┘   │    └────────────┘
+   :          1┌──────────┐        │    ┌─────────────┐
+   ┌-----------┤ FTermios │        ├────┤ FAccelEvent │
+   :           └──────────┘        │    └─────────────┘
+   :          1┌───────────────┐   │    ┌──────────────┐
+   ┌-----------┤ FColorPalette │   ├────┤ FResizeEvent │
+   :           └───────────────┘   │    └──────────────┘
    :          1┌───────────┐       │    ┌────────────┐
-   ┌-----------┤ FOptiMove │       ├────┤ FHideEvent │
+   ┌-----------┤ FOptiMove │       ├────┤ FShowEvent │
+   :           └───────────┘       │    └────────────┘
+   :          1┌───────────┐       │    ┌────────────┐
+   ┌-----------┤ FOptiAttr │       ├────┤ FHideEvent │
    :           └───────────┘       │    └────────────┘
    :          1┌───────────┐       │    ┌─────────────┐
-   ┌-----------┤ FOptiAttr │       ├────┤ FCloseEvent │
+   ┌-----------┤ FKeyboard │       ├────┤ FCloseEvent │
    :           └───────────┘       │    └─────────────┘
-   :          1┌───────────┐       │    ┌─────────────┐
-   ┌-----------┤ FKeyboard │       ├────┤ FTimerEvent │
-   :           └───────────┘       │    └─────────────┘
-   :          1┌───────────────┐   │
-   ┌-----------┤ FMouseControl │   │       ┌──────────────┐
-   :           └───────────────┘   │  ┌────┤ FApplication │
-   :          *┌─────────┐         │  │    └──────────────┘
-   :  ┌--------┤ FString │         │  │    ┌─────────┐
-   :  :        └─────────┘         │  ├────┤ FButton │
-   :  :       *┌────────┐          │  │    └─────────┘
-   :  ┌--------┤ FPoint │          │  │    ┌────────┐
-   :  :        └────────┘          │  ├────┤ FLabel │
+   :          1┌───────────────┐   │    ┌─────────────┐
+   ┌-----------┤ FMouseControl │   ├────┤ FTimerEvent │
+   :           └───────────────┘   │    └─────────────┘
+   :          1┌─────────┐         │
+   ┌-----------┤ FSystem │         │
+   :           └─────────┘         │
+   :          *┌─────────┐         │
+   :  ┌--------┤ FString │         │       ┌──────────────┐
+   :  :        └─────────┘         │  ┌────┤ FApplication │
+   :  :       *┌────────┐          │  │    └──────────────┘
+   :  ┌--------┤ FPoint │          │  │    ┌─────────┐
+   :  :        └────────┘          │  ├────┤ FButton │
+   :  :       *┌───────┐           │  │    └─────────┘
+   :  ┌--------┤ FRect │           │  │    ┌────────┐
+   :  :        └───────┘           │  ├────┤ FLabel │
    :  :       *┌───────┐           │  │    └────────┘
-   :  ┌--------┤ FRect │           │  │    ┌───────────┐
+   :  ┌--------┤ FSize │           │  │    ┌───────────┐
    :  :        └───────┘           │  ├────┤ FLineEdit │
    :1 :1                           │  │    └───────────┘
  ┌─┴──┴──┐                         │  │    ┌──────────────┐      ┌──────────────┐

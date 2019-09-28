@@ -38,6 +38,11 @@
 namespace finalcut
 {
 
+// class forward declaration
+class FTerm;
+class FTermData;
+class FTermDetection;
+
 #if DEBUG
 //----------------------------------------------------------------------
 // class FTermDebugData
@@ -67,51 +72,15 @@ class FTermDebugData final
 #if defined(__linux__)
     int            getFramebufferBpp();
 #endif
-    // Mutators
-    void           setFTermDetection (FTermDetection*);
-    void           setFTermData (FTermData*);
+
+    // Methods
+    static void    init();
 
   private:
-    // Data Members
-    FTermDetection* term_detection{nullptr};
-    FTermData*      data{nullptr};
+    // Data members
+    static FTermData*      data;
+    static FTermDetection* term_detection;
 };
-
-// FTermDebugData inline functions
-//----------------------------------------------------------------------
-inline void FTermDebugData::setFTermDetection (FTermDetection* obj)
-{ term_detection = obj; }
-
-//----------------------------------------------------------------------
-inline void FTermDebugData::setFTermData (FTermData* obj)
-{ data = obj; }
-
-//----------------------------------------------------------------------
-inline const FString& FTermDebugData::getAnswerbackString()
-{ return term_detection->getAnswerbackString(); }
-
-//----------------------------------------------------------------------
-inline const FString& FTermDebugData::getSecDAString()
-{ return term_detection->getSecDAString(); }
-
-//----------------------------------------------------------------------
-inline const char* FTermDebugData::getTermType_256color()
-{ return term_detection->getTermType_256color(); }
-
-//----------------------------------------------------------------------
-inline const char* FTermDebugData::getTermType_Answerback()
-{ return term_detection->getTermType_Answerback(); }
-
-//----------------------------------------------------------------------
-inline const char* FTermDebugData::getTermType_SecDA()
-{ return term_detection->getTermType_SecDA(); }
-
-//----------------------------------------------------------------------
-#if defined(__linux__)
-inline int FTermDebugData::getFramebufferBpp()
-{ return data->getFramebufferBpp(); }
-#endif  // defined(__linux__)
-
 #endif  // DEBUG
 
 }  // namespace finalcut

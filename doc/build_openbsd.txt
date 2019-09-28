@@ -1,0 +1,24 @@
+Build FINAL CUT with the clang c++ compiler
+-------------------------------------------
+openbsd# CXX=clang++ ./build.sh
+
+Build FINAL CUT with eg++
+-------------------------
+openbsd# CXX=eg++ ./build.sh
+
+Install egcc on OpenBSD
+-----------------------
+openbsd# pkg_add g++
+quirks-3.124 signed on 2019-04-15T12:10:16Z
+Ambiguous: choose package for g++
+a	0: <None>
+	1: g++-4.9.4p18
+	2: g++-8.3.0
+Your choice: 2
+g++-8.3.0:gcc-libs-8.3.0: ok
+g++-8.3.0:gmp-6.1.2p3: ok
+g++-8.3.0:mpfr-3.1.5.2p0: ok
+g++-8.3.0:libmpc-0.9p2: ok
+g++-8.3.0:gcc-8.3.0: ok
+g++-8.3.0: ok
+

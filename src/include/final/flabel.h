@@ -55,6 +55,7 @@
 #include <vector>
 
 #include "final/fwidget.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {
@@ -62,9 +63,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 // class FLabel
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FLabel : public FWidget
 {
@@ -100,21 +98,21 @@ class FLabel : public FWidget
     const FLabel& operator >> (FString&);
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     FWidget*            getAccelWidget();
     fc::text_alignment  getAlignment();
     FString&            getText();
 
     // Mutators
     void                setAccelWidget (FWidget* = nullptr);
-    void                setAlignment(fc::text_alignment);
-    bool                setEmphasis(bool);
+    void                setAlignment (fc::text_alignment);
+    bool                setEmphasis (bool);
     bool                setEmphasis();
     bool                unsetEmphasis();
-    bool                setReverseMode(bool);
+    bool                setReverseMode (bool);
     bool                setReverseMode();
     bool                unsetReverseMode();
-    virtual bool        setEnable (bool) override;
+    bool                setEnable (bool) override;
     void                setNumber (uLong);
     void                setNumber (long);
     void                setNumber (float, int = FLT_DIG);
@@ -127,12 +125,12 @@ class FLabel : public FWidget
     bool                hasReverseMode();
 
     // Methods
-    virtual void        hide() override;
+    void                hide() override;
     void                clear();
 
     // Event handlers
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onAccel (FAccelEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onAccel (FAccelEvent*) override;
 
     // Callback method
     void                cb_accel_widget_destroyed (FWidget*, FDataPtr);
@@ -143,28 +141,25 @@ class FLabel : public FWidget
 
     // Methods
     void                init();
-    std::size_t         getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
     void                setHotkeyAccelerator();
     std::size_t         getAlignOffset (std::size_t);
-    virtual void        draw() override;
+    void                draw() override;
     void                drawMultiLine();
     void                drawSingleLine();
-    void                printLine ( wchar_t[], std::size_t
+    void                printLine ( wchar_t[], std::size_t, std::size_t
                                   , std::size_t, std::size_t = 0 );
 
-    // Data Members
-    FStringList        multiline_text{};
-    bool               multiline{false};
-    FString            text{};
-    fc::text_alignment alignment{fc::alignLeft};
-    FColor             emphasis_color{wc.label_emphasis_fg};
-    FColor             ellipsis_color{wc.label_ellipsis_fg};
-    bool               emphasis{false};
-    bool               reverse_mode{false};
-    FWidget*           accel_widget{nullptr};
+    // Data members
+    FStringList         multiline_text{};
+    FString             text{};
+    FWidget*            accel_widget{nullptr};
+    fc::text_alignment  alignment{fc::alignLeft};
+    FColor              emphasis_color{getFWidgetColors().label_emphasis_fg};
+    FColor              ellipsis_color{getFWidgetColors().label_ellipsis_fg};
+    bool                multiline{false};
+    bool                emphasis{false};
+    bool                reverse_mode{false};
 };
-#pragma pack(pop)
-
 
 // FLabel inline functions
 //----------------------------------------------------------------------
@@ -184,12 +179,20 @@ inline FString& FLabel::getText()
 { return text; }
 
 //----------------------------------------------------------------------
+inline bool FLabel::setEmphasis (bool enable)
+{ return (emphasis = enable); }
+
+//----------------------------------------------------------------------
 inline bool FLabel::setEmphasis()
 { return setEmphasis(true); }
 
 //----------------------------------------------------------------------
 inline bool FLabel::unsetEmphasis()
 { return setEmphasis(false); }
+
+//----------------------------------------------------------------------
+inline bool FLabel::setReverseMode (bool enable)
+{ return (reverse_mode = enable); }
 
 //----------------------------------------------------------------------
 inline bool FLabel::setReverseMode()

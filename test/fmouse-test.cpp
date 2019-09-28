@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -30,13 +30,12 @@
 
 #include <final/final.h>
 
+namespace test
+{
 
 //----------------------------------------------------------------------
 // class FMouse_protected
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FMouse_protected : public finalcut::FMouse
 {
@@ -52,22 +51,22 @@ class FMouse_protected : public finalcut::FMouse
 
     uInt16 getMaxWidth()
     {
-      return max_width;
+      return finalcut::FMouse::getMaxWidth();
     }
 
     uInt16 getMaxHeight()
     {
-      return max_height;
+      return finalcut::FMouse::getMaxHeight();
     }
 
     finalcut::FPoint& getNewMousePosition()
     {
-      return new_mouse_position;
+      return finalcut::FMouse::getNewPos();
     }
 
     uInt64 getDblclickInterval()
     {
-      return dblclick_interval;
+      return finalcut::FMouse::getDblclickInterval();
     }
 
     bool isDblclickTimeout (timeval* t)
@@ -75,15 +74,13 @@ class FMouse_protected : public finalcut::FMouse
       return finalcut::FMouse::isDblclickTimeout(t);
     }
 };
-#pragma pack(pop)
+
+}  // namespace test
 
 
 //----------------------------------------------------------------------
 // class finalcut::FMouseTest
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FMouseTest : public CPPUNIT_NS::TestFixture
 {
@@ -124,12 +121,11 @@ class FMouseTest : public CPPUNIT_NS::TestFixture
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 void FMouseTest::classNameTest()
 {
-  FMouse_protected m;
+  test::FMouse_protected m;
   const char* const classname1 = m.getClassName();
   CPPUNIT_ASSERT ( std::strcmp(classname1, "FMouse") == 0 );
 
@@ -159,7 +155,7 @@ void FMouseTest::classNameTest()
 //----------------------------------------------------------------------
 void FMouseTest::noArgumentTest()
 {
-  FMouse_protected mouse;
+  test::FMouse_protected mouse;
   CPPUNIT_ASSERT ( mouse.getPos() == finalcut::FPoint(0, 0) );
   CPPUNIT_ASSERT ( mouse.getNewMousePosition() == finalcut::FPoint(0, 0) );
   CPPUNIT_ASSERT ( ! mouse.hasEvent() );
@@ -201,7 +197,7 @@ void FMouseTest::doubleClickTest()
 {
   using finalcut::operator -;
 
-  FMouse_protected mouse;
+  test::FMouse_protected mouse;
   CPPUNIT_ASSERT ( mouse.getDblclickInterval() == 500000 );  // 500 ms
   timeval tv = { 0, 0 };
   CPPUNIT_ASSERT ( mouse.isDblclickTimeout(&tv) );
@@ -226,7 +222,7 @@ void FMouseTest::doubleClickTest()
 //----------------------------------------------------------------------
 void FMouseTest::workspaceSizeTest()
 {
-  FMouse_protected mouse;
+  test::FMouse_protected mouse;
   CPPUNIT_ASSERT ( mouse.getMaxWidth() == 80 );
   CPPUNIT_ASSERT ( mouse.getMaxHeight() == 25 );
 

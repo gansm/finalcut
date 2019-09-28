@@ -66,9 +66,6 @@ namespace finalcut
 // class FRadioMenuItem
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FRadioMenuItem : public FMenuItem
 {
   public:
@@ -86,16 +83,14 @@ class FRadioMenuItem : public FMenuItem
     FRadioMenuItem& operator = (const FRadioMenuItem&) = delete;
 
     // Accessor
-    virtual const char* getClassName() const override;
+    const char* getClassName() const override;
 
   private:
     // Methods
-    void                init (FWidget*);
-    void                processToggle();
-    virtual void        processClicked() override;
+    void        init (FWidget*);
+    void        processToggle();
+    void        processClicked() override;
 };
-#pragma pack(pop)
-
 
 // FRadioMenuItem inline functions
 //----------------------------------------------------------------------

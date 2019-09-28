@@ -22,6 +22,7 @@
 
 #include <cstring>
 
+#include "final/fc.h"
 #include "final/foptiattr.h"
 
 namespace finalcut
@@ -54,10 +55,6 @@ void FOptiAttr::setTermEnvironment (termEnv& term_env)
 {
   // Set all required termcap values at once
   // and initialize the FOptiAttr environment
-
-  ansi_default_color = term_env.ansi_default_color;
-  max_color = term_env.max_color;
-  attr_without_color = term_env.attr_without_color;
 
   set_enter_bold_mode (term_env.t_enter_bold_mode);
   set_exit_bold_mode (term_env.t_exit_bold_mode);
@@ -94,6 +91,10 @@ void FOptiAttr::setTermEnvironment (termEnv& term_env)
   set_term_color_pair (term_env.t_set_color_pair);
   set_orig_pair (term_env.t_orig_pair);
   set_orig_orig_colors (term_env.t_orig_colors);
+
+  max_color = term_env.max_color;
+  attr_without_color = term_env.attr_without_color;
+  ansi_default_color = term_env.ansi_default_color;
 
   initialize();
 }
@@ -1219,10 +1220,10 @@ inline bool FOptiAttr::hasColorChanged (charData*& term, charData*& next)
 {
   if ( term && next )
   {
-    bool frev = ( on.attr.bit.reverse
+    bool frev ( ( on.attr.bit.reverse
                || on.attr.bit.standout
                || off.attr.bit.reverse
-               || off.attr.bit.standout ) && fake_reverse;
+               || off.attr.bit.standout ) && fake_reverse );
     return bool ( frev
                || term->fg_color != next->fg_color
                || term->bg_color != next->bg_color );
@@ -1252,7 +1253,7 @@ inline void FOptiAttr::prevent_no_color_video_attributes ( charData*& attr
     || attr_without_color <= 0 )
     return;
 
-  for (int bit = 1; bit < no_mode; bit <<= 1)
+  for (int bit{1}; bit < no_mode; bit <<= 1)
   {
     switch ( bit & attr_without_color )
     {
@@ -1330,7 +1331,7 @@ inline void FOptiAttr::deactivateAttributes ( charData*& term
 inline void FOptiAttr::changeAttributeSGR ( charData*& term
                                           , charData*& next )
 {
-  bool pc_charset_usable = true;
+  bool pc_charset_usable{true};
 
   if ( ! (term && next) )
     return;
@@ -1392,8 +1393,6 @@ inline void FOptiAttr::changeAttributeSeparately ( charData*& term
 //----------------------------------------------------------------------
 void FOptiAttr::change_color (charData*& term, charData*& next)
 {
-  FColor fg, bg;
-
   if ( ! (term && next) )
     return;
 
@@ -1410,8 +1409,8 @@ void FOptiAttr::change_color (charData*& term, charData*& next)
   if ( next->bg_color != fc::Default )
     next->bg_color %= max_color;
 
-  fg = next->fg_color;
-  bg = next->bg_color;
+  FColor fg = next->fg_color;
+  FColor bg = next->bg_color;
 
   if ( fg == fc::Default || bg == fc::Default )
     change_to_default_color (term, next, fg, bg);
@@ -1448,7 +1447,7 @@ inline void FOptiAttr::change_to_default_color ( charData*& term
     }
     else if ( fg == fc::Default && term->fg_color != fc::Default )
     {
-      char sgr_39[] = CSI "39m";
+      char sgr_39[]{ CSI "39m" };
       append_sequence (sgr_39);
       term->fg_color = fc::Default;
     }
@@ -1478,16 +1477,16 @@ inline void FOptiAttr::change_to_default_color ( charData*& term
 inline void FOptiAttr::change_current_color ( charData*& term
                                             , FColor fg, FColor bg )
 {
-  char* color_str;
+  char* color_str{};
   auto& AF = F_set_a_foreground.cap;
   auto& AB = F_set_a_background.cap;
   auto& Sf = F_set_foreground.cap;
   auto& Sb = F_set_background.cap;
   auto& sp = F_set_color_pair.cap;
-  bool frev = ( off.attr.bit.reverse
+  bool frev ( ( off.attr.bit.reverse
              || off.attr.bit.standout
              || term->attr.bit.reverse
-             || term->attr.bit.standout ) && fake_reverse;
+             || term->attr.bit.standout ) && fake_reverse );
 
   if ( AF && AB )
   {
@@ -1546,12 +1545,13 @@ inline void FOptiAttr::reset (charData*& attr)
 bool FOptiAttr::caused_reset_attributes (char cap[], uChar test)
 {
   // test if "cap" reset all attributes
-  auto& ue = F_exit_underline_mode.cap;
-  auto& se = F_exit_standout_mode.cap;
-  auto& me = F_exit_attribute_mode.cap;
 
   if ( cap )
   {
+    auto& ue = F_exit_underline_mode.cap;
+    auto& se = F_exit_standout_mode.cap;
+    auto& me = F_exit_attribute_mode.cap;
+
     if ( (test & test_ansi_reset) && std::strncmp (cap, CSI "m", 3) == 0 )
       return true;
 

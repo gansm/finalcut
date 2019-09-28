@@ -44,9 +44,6 @@ namespace finalcut
 // class FClassName
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FClassName
 {
   public:
@@ -82,7 +79,7 @@ class FClassName
 
     // Callback methods
 
-    // Data Members
+    // Data members
 
   protected:
     // Typedefs and Enumerations
@@ -99,7 +96,7 @@ class FClassName
 
     // Callback methods
 
-    // Data Members
+    // Data members
 
   private:
     // Typedefs and Enumerations
@@ -116,12 +113,12 @@ class FClassName
 
     // Callback methods
 
-    // Data Members
+    // Data members
 
     // Friend class
 
 };
-#pragma pack(pop)
+
 
 // FClassName inline functions
 //----------------------------------------------------------------------

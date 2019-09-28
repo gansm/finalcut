@@ -1,0 +1,516 @@
+3C0h:  Attribute Controller: Address register
+bit 0-4  Address of data register to write to port 3C0h or read from port 3C1h
+         (Reads only on VGA).
+      5  If set screen output is enabled and the palette can not be modified,
+         if clear screen output is disabled and the palette can be modified.
+
+
+Port 3C0h is special in that it is both address and data-write register.
+Data reads happen from port 3C1h. An internal flip-flop remembers whether it
+is currently acting as address or data register.
+Accesses to the attribute controller must be separated by at least 250ns.
+Reading port 3dAh will reset the flip-flop to address mode.
+
+
+3C0h index 0-Fh  (r/W):  Attribute: Palette
+bit   0  (EGA) Primary Blue
+      1  (EGA) Primary Green
+      2  (EGA) Primary Red
+      3  (EGA) Secondary Blue
+      4  (EGA) Secondary Green
+      5  (EGA) Secondary Red
+    0-5  (VGA) Index into the 256 color DAC table.
+               May be modified by 3C0h index 10h and 14h.
+
+3C0h index 10h (r/W):  Attribute: Mode Control Register
+bit   0  Graphics mode if set, Alphanumeric mode else.
+      1  Monochrome mode if set, color mode else.
+      2  9-bit wide characters if set.
+         The 9th bit of characters C0h-DFh will be the same as
+         the 8th bit. Otherwise it will be the background color.
+      3  If set Attribute bit 7 is blinking, else high intensity.
+      5  (VGA Only) If set the PEL panning register (3C0h index 13h) is
+         temporarily set to 0 from when the line compare causes a wrap around
+         until the next vertical retrace when the register is automatically
+         reloaded with the old value, else the PEL panning register ignores
+         line compares.
+      6  (VGA Only) If set pixels are 8 bits wide. Used in 256 color modes.
+      7  (VGA Only) If set bit 4-5 of the index into the DAC table are taken
+         from port 3C0h index 14h bit 0-1, else the bits in the palette
+         register are used.
+
+3C0h index 11h (r/W):  Attribute: Overscan Color Register.
+bit 0-5  Color of screen border. Color is defined as in the palette registers.
+Note: The EGA requires the Overscan color to be 0 in high resolution modes.
+
+3C0h index 12h (r/W):  Attribute: Color Plane Enable Register
+bit   0  Bit plane 0 is enabled if set.
+      1  Bit plane 1 is enabled if set.
+      2  Bit plane 2 is enabled if set.
+      3  Bit plane 3 is enabled if set.
+    4-5  Video Status MUX. Diagnostics use only.
+         Two attribute bits appear on bits 4 and 5 of the Input
+         Status Register 1 (3dAh).
+         Value       EGA            VGA
+           0      Red/Blue        Bit 2/Bit 0
+           1      Blue'/Green     Bit 5/Bit 4
+           2      Red'/Green'     Bit 3/Bit 1
+           3                      Bit 7/Bit 6
+
+3C0h index 13h (r/W):  Attribute: Horizontal PEL Panning Register
+bit 0-3  Indicates number of pixels to shift the display left
+         Value  9bit textmode   256color mode   Other modes
+           0          1               0              0
+           1          2              n/a             1
+           2          3               1              2
+           3          4              n/a             3
+           4          5               2              4
+           5          6              n/a             5
+           6          7               3              6
+           7          8              n/a             7
+           8          0              n/a            n/a
+
+3C0h index 14h (r/W):  Attribute: Color Select Register  (VGA Only)
+bit 0-1  If 3C0h index 10h bit 7 is set these 2 bits are used as bits 4-5 of
+         the index into the DAC table.
+    2-3  These 2 bits are used as bit 6-7 of the index into the DAC table
+         except in 256 color mode.
+Note: this register does not affect 256 color modes.
+
+3C2h (R):  Input Status #0 Register
+bit   4  Status of the switch selected by the Miscellaneous Output
+         Register 3C2h bit 2-3. Switch high if set.
+      5  (EGA Only) Pin 19 of the Feature Connector (FEAT0) is high if set
+      6  (EGA Only) Pin 17 of the Feature Connector (FEAT1) is high if set
+      7  (EGA Only ??) If set IRQ 2 has happened due to Vertical Retrace.
+         Should be cleared by IRQ 2 interrupt routine by clearing port 3d4h
+         index 11h bit 4.
+
+3C2h (W):  Miscellaneous Output Register
+bit   0  If set Color Emulation. Base Address=3Dxh else Mono Emulation. Base
+         Address=3Bxh.
+      1  Enable CPU Access to video memory if set
+    2-3  Clock Select
+          0: 14MHz(EGA)     25MHz(VGA)
+          1: 16MHz(EGA)     28MHz(VGA)
+          2: External(EGA)  Reserved(VGA)
+      4  (EGA Only) Disable internal video drivers if set
+      5  When in Odd/Even modes Select High 64k bank if set
+      6  Horizontal Sync Polarity. Negative if set
+      7  Vertical Sync Polarity. Negative if set
+         Bit 6-7 indicates the number of lines on the display:
+              0=200(EGA)  Reserved(VGA)
+              1=          400(VGA)
+              2=350(EGA)  350(VGA)
+              3=          480(VGA).
+Note: Set to all zero on a hardware reset.
+Note: On the VGA this register can be read from port 3CCh.
+
+3C3h (W):  Video Subsystem Enable Register
+bit   0  Enables the VGA display if set
+
+3C4h index  0  (r/W):  Sequencer: Reset
+bit   0  (EGA) Asynchronous Reset if clear
+      0  (VGA) Synchronous Reset just as bit 1
+      1  Synchronous Reset if clear
+
+3C4h index  1  (r/W):  Sequencer: Clocking Mode
+bit   0  If set character clocks are 8 dots wide, else 9.
+      1  (EGA Only) If set the CRTC uses 2/5 of the clock cycles, else 4/5.
+      2  If set loads video serializers every other character
+         clock cycle, else every one.
+      3  If set the Dot Clock is Master Clock/2, else same as
+         Master Clock (See 3C2h bit 2-3). (Doubles pixels).
+      4  (VGA Only) If set loads video serializers every fourth character
+         clock cycle, else every one.
+      5  (VGA Only) if set turns off screen and gives all memory cycles to the
+         CPU interface.
+
+3C4h index  2  (r/W):  Sequencer: Map Mask Register
+bit   0  Enable writes to plane 0 if set
+      1  Enable writes to plane 1 if set
+      2  Enable writes to plane 2 if set
+      3  Enable writes to plane 3 if set
+
+3C4h index  3  (r/W):  Sequencer: Character Map Select Register
+bit 0-1  (EGA) Selects EGA Character Map (0..3) if bit 3 of the character
+         attribute is clear.
+    2-3  (EGA) Selects EGA Character Map (0..3) if bit 3 of the character
+         attribute is set.
+  0,1,4  (VGA) Selects VGA Character Map (0..7) if bit 3 of the character
+         attribute is clear.
+  2,3,5  (VGA) Selects VGA Character Map (0..7) if bit 3 of the character
+         attribute is set.
+Note: Character Maps are placed at:
+      Map no. (EGA/VGA)       Map no. (VGA)
+         0       0k              4      8k
+         1      16k              5     24k
+         2      32k              6     40k
+         3      48k              7     56k
+
+3C4h index  4  (r/W):  Sequencer: Memory Mode Register
+bit   0  Set if in an alphanumeric mode, clear in graphics modes.
+      1  Set if more than 64kbytes on the adapter.
+      2  Enables Odd/Even addressing mode if set. Odd/Even mode places all odd
+         bytes in plane 1&3, and all even bytes in plane 0&2.
+      3  (VGA Only)  If set address bit 0-1 selects video memory planes
+         (256 color mode), rather than the Map Mask and Read Map Select
+         Registers.
+
+3C4h index 7 (R/W):  Sequencer Horizontal Character Counter Reset Register.
+                                                                   (VGA  Only)
+Note: Undocumented by IBM. May not be available in all clones.
+      A write to this register will cause the Horizontal Character Counter
+      to be held reset (=0) until a write happens to any of the Sequencer
+      registers index 0..6.
+      The Vertical Line counter is clocked by a signal derived from the
+      Horizontal Display Enable (which does not occur if the Horizontal
+      Character Counter is held reset).
+      Thus a write to index 7 during Vertical Retrace can stop the display
+      timing and allow software to start the next frame reasonably
+      synchronous to an external event.
+
+3C6h (R/W):  PEL Mask                                               (VGA Only)
+bit 0-7  This register is anded with the palette index sent for each dot.
+         Should be set to FFh.
+
+3C7h (R):  DAC State Register                                       (VGA Only)
+bit 0-1  0 indicates the DAC is in Read Mode and 3 indicates write mode.
+
+3C7h (W):  PEL Address Read Mode                                    (VGA Only)
+bit 0-7  The PEL data register (0..255) to be read from 3C9h.
+Note: After reading the 3 bytes at 3C9h this register will increment,
+      pointing to the next data register.
+
+3C8h (R/W):  PEL Address Write Mode                                 (VGA Only)
+bit 0-7  The PEL data register (0..255) to be written to 3C9h.
+Note: After writing the 3 bytes at 3C9h this register will increment, pointing
+      to the next data register.
+
+3C9h (R/W):  PEL Data Register                                      (VGA Only)
+bit 0-5  Color value
+Note:  Each read or write of this register will cycle through first the
+       registers for Red, Blue and Green, then increment the appropriate
+       address register, thus the entire palette can be loaded by writing 0 to
+       the PEL Address Write Mode register 3C8h and then writing all 768 bytes
+       of the palette to this register.
+
+3CAh (R):  Feature Control Register                                 (VGA Only)
+Bit   3  Vertical Sync Select. If set Vertical Sync to the monitor is the
+         logical OR of the vertical sync and the vertical display enable.
+Note: This register is written to port 3dAh and read from 3CAh.
+
+3CAh (W):  Graphics 2 Position                                      (EGA Only)
+bit 0-1  Select which bit planes should be controlled by Graphics Controller
+         #2. Always set to 1.
+
+3CCh (R):  Miscellaneous Output Register                            (VGA Only)
+bit   0  If set Color Emulation. Base Address=3Dxh else Mono Emulation. Base
+         Address=3Bxh.
+      1  Enable CPU Access to video memory if set
+    2-3  Clock Select. 0= 25MHz, 1= 28MHz, 2= Reserved
+      5  When in Odd/Even modes Select High 64k bank if set
+      6  Horizontal Sync Polarity. Negative if set
+      7  Vertical Sync Polarity. Negative if set
+         Bit 6-7 indicates the number of lines on the display:
+            0=Reserved, 1=400, 2=350, 3=480.
+Note: This register is written to port 3C2h and read from port 3CCh.
+
+3CCh (W):  Graphics 1 Position                                      (EGA Only)
+bit 0-1  Select which bit planes should be controlled by Graphics Controller
+         #1. Always set to 0.
+
+3CEh index  0  (r/W):  Graphics: Set/Reset Register
+bit   0  If in Write Mode 0 and bit 0 of 3CEh index 1 is set a write to
+         display memory will set all the bits in plane 0 of the byte to this
+         bit, if the corresponding bit is set in the Map Mask Register (3CEh
+         index 8).
+      1  Same for plane 1 and bit 1 of 3CEh index 1.
+      2  Same for plane 2 and bit 2 of 3CEh index 1.
+      3  Same for plane 3 and bit 3 of 3CEh index 1.
+
+3CEh index  1  (r/W):  Graphics: Enable Set/Reset Register
+bit   0  If set enables Set/reset of plane 0 in Write Mode 0.
+      1  Same for plane 1.
+      2  Same for plane 2.
+      3  Same for plane 3.
+
+3CEh index  2  (r/W):  Graphics: Color Compare Register
+bit 0-3  In Read Mode 1 each pixel at the address of the byte read is compared
+         to this color and the corresponding bit in the output set to 1 if
+         they match, 0 if not. The Color Don't Care Register (3CEh index 7)
+         can exclude bitplanes from the comparison.
+
+3CEh index  3  (r/W):  Graphics: Data Rotate
+bit 0-2  Number of positions to rotate data right before it is written to
+         display memory. Only active in Write Mode 0.
+    3-4  In Write Mode 2 this field controls the relation between the data
+         written from the CPU, the data latched from the previous read and the
+         data written to display memory:
+           0: CPU Data is written unmodified
+           1: CPU data is ANDed with the latched data
+           2: CPU data is ORed  with the latch data.
+           3: CPU data is XORed with the latched data.
+
+3CEh index  4  (r/W):  Graphics: Read Map Select Register
+bit 0-1  Number of the plane Read Mode 0 will read from.
+
+3CEh index  5  (r/W):  Graphics: Mode Register
+bit 0-1  Write Mode: Controls how data from the CPU is transformed before
+         being written to display memory:
+           0: Mode 0 works as a Read-Modify-Write operation.
+              First a read access loads the data latches of the EGA/VGA with
+              the value in video memory at the addressed location. Then a
+              write access will provide the destination address and the CPU
+              data byte. The data written is modified by the function code in
+              the Data Rotate register (3CEh index 3) as a function of the CPU
+              data and the latches, then data is rotated as specified by the
+              same register.  
+           1: Mode 1 is used for video to video transfers.
+              A read access will load the data latches with the contents of
+              the addressed byte of video memory. A write access will write
+              the contents of the latches to the addressed byte. Thus a single
+              MOVSB instruction can copy all pixels in the source address byte
+              to the destination address.
+           2: Mode 2 writes a color to all pixels in the addressed byte of
+              video memory. Bit 0 of the CPU data is written to plane 0 et
+              cetera. Individual bits can be enabled or disabled through the
+              Bit Mask register (3CEh index 8). 
+           3: (VGA Only) Mode 3 can be used to fill an area with a color and
+              pattern. The CPU data is rotated according to 3CEh index 3 bits
+              0-2 and anded with the Bit Mask Register (3CEh index 8). For
+              each bit in the result the corresponding pixel is set to the
+              color in the Set/Reset Register (3CEh index 0 bits 0-3) if the
+              bit is set and to the contents of the processor latch if the bit
+              is clear.
+      2  (EGA Only) Forces all outputs to a high impedance state if set.
+      3  Read Mode
+           0: Data is read from one of 4 bit planes depending on the Read Map
+              Select Register (3CEh index 4).
+           1: Data returned is a comparison between the 8 pixels occupying the
+              read byte and the color in the Color Compare Register (3CEh
+              index 2). A bit is set if the color of the corresponding pixel
+              matches the register.
+      4  Enables Odd/Even mode if set (See 3C4h index 4 bit 2).
+      5  Enables CGA style 4 color pixels using even/odd bit pairs if set.
+      6  (VGA Only) Enables 256 color mode if set.
+
+3CEh index  6  (r/W):  Graphics: Miscellaneous Register
+bit   0  Indicates Graphics Mode if set, Alphanumeric mode else.
+      1  Enables Odd/Even mode if set.
+    2-3  Memory Mapping:
+           0: use A000h-BFFFh
+           1: use A000h-AFFFh   EGA/VGA Graphics modes
+           2: use B000h-B7FFh   Monochrome modes
+           3: use B800h-BFFFh   CGA modes
+
+3CEh index  7  (r/W):  Graphics: Color Don't Care Register
+bit   0  Ignore bit plane 0 in Read mode 1 if clear.
+      1  Ignore bit plane 1 in Read mode 1 if clear.
+      2  Ignore bit plane 2 in Read mode 1 if clear.
+      3  Ignore bit plane 3 in Read mode 1 if clear.
+
+3CEh index  8  (r/W):  Graphics: Bit Mask Register
+bit 0-7  Each bit if set enables writing to the corresponding bit of a byte in
+         display memory.
+
+3d4h index  0  (r/W):  CRTC: Horizontal Total Register
+bit 0-7  (EGA) Horizontal Total Character Clocks-2
+    0-7  (VGA) Horizontal Total Character Clocks-5
+
+3d4h index  1  (r/W):  CRTC: Horizontal Display End Register
+bit 0-7  Number of Character Clocks Displayed -1
+
+3d4h index  2  (r/W):  CRTC: Start Horizontal Blanking Register
+bit 0-7  The count at which Horizontal Blanking starts
+
+3d4h index  3  (r/W):  CRTC: End Horizontal Blanking Register
+bit 0-4  Horizontal Blanking ends when the last 5 (6 for VGA) bits of the
+         character counter equals this field.
+         (VGA) The sixth bit is found in port 3d4h index 5 bit 7.
+    5-6  Number of character clocks to delay start of display after Horizontal
+         Total has been reached.
+      7  (VGA Only) Access to Vertical Retrace registers if set. If clear
+         reads to 3d4h index 10h and 11h access the Lightpen read back
+         registers ?? 
+
+3d4h index  4  (r/W):  CRTC: Start Horizontal Retrace Register
+bit 0-7  Horizontal Retrace starts when the Character Counter reaches this
+         value.
+
+3d4h index  5  (r/W):  CRTC: End Horizontal Retrace Register
+bit 0-4  Horizontal Retrace ends when the last 5 bits of the character counter
+         equals this value.
+    5-6  Number of character clocks to delay start of display after Horizontal
+         Retrace.
+      7  (EGA) Provides Smooth Scrolling in Odd/Even mode. When set display
+         starts from an odd byte.
+      7  (VGA) bit 5 of the End Horizontal Blanking count (See 3d4h index 3
+         bit 0-4).
+
+3d4h index  6  (r/W):  CRTC: Vertical Total Register
+bit 0-7  Lower 8 bits of the Vertical Total. Bit 8 is found in 3d4h index 7
+         bit 0. (VGA) Bit 9 is found in 3d4h index 7 bit 5.
+Note: For the VGA this value is the number of scan lines in the display -2.
+
+3d4h index  7  (r/W):  CRTC: Overflow Register
+bit   0  Bit 8 of Vertical Total (3d4h index 6)
+      1  Bit 8 of Vertical Display End (3d4h index 12h)
+      2  Bit 8 of Vertical Retrace Start (3d4h index 10h)
+      3  Bit 8 of Start Vertical Blanking (3d4h index 15h)
+      4  Bit 8 of Line Compare Register (3d4h index 18h)
+      5  (VGA) Bit 9 of Vertical Total (3d4h index 6)
+      6  (VGA) Bit 9 of Vertical Display End (3d4h index 12h)
+      7  (VGA) Bit 9 of Vertical Retrace Start (3d4h index 10h)
+
+3d4h index  8  (r/W):  CRTC: Preset Row Scan Register
+bit 0-4  Number of lines we have scrolled down in the first character row.
+         Provides Smooth Vertical Scrolling.
+    5-6  (VGA Only) Number of bytes to skip at the start of scanline. Provides
+         Smooth Horizontal Scrolling together with the Horizontal Panning
+         Register (3C0h index 13h).
+
+3d4h index  9  (r/W):  CRTC: Maximum Scan Line Register
+bit 0-4  Number of scan lines in a character row -1. In graphics modes this is
+         the number of times (-1) the line is displayed before passing on to
+         the next line (0: normal, 1: double, 2: triple...).
+         This is independent of bit 7, except in CGA modes which seems to
+         require this field to be 1 and bit 7 to be set to work.
+      5  (VGA) Bit 9 of Start Vertical Blanking
+      6  (VGA) Bit 9 of Line Compare Register
+      7  (VGA) Doubles each scan line if set.
+         I.e. displays 200 lines on a 400 display.
+
+3d4h index  Ah (r/W):  CRTC: Cursor Start Register
+bit 0-4  First scanline of cursor within character.
+      5  (VGA) Turns Cursor off if set
+
+3d4h index  Bh (r/W):  CRTC: Cursor End Register
+bit 0-4  Last scanline of cursor within character
+    5-6  Delay of cursor data in character clocks.
+
+3d4h index  Ch (r/W):  CRTC: Start Address High Register
+bit 0-7  Upper 8 bits of the start address of the display buffer
+
+3d4h index  Dh (r/W):  CRTC: Start Address Low Register
+bit 0-7  Lower 8 bits of the start address of the display buffer
+
+3d4h index  Eh (r/W):  CRTC: Cursor Location High Register
+bit 0-7  Upper 8 bits of the address of the cursor
+
+3d4h index  Fh (r/W):  CRTC: Cursor Location Low Register
+bit 0-7  Lower 8 bits of the address of the cursor
+
+3d4h index 10h (R):  CRTC: Light Pen High Register     (EGA Only)
+bit 0-7  (EGA Only)  Upper 8 bits of the address of the lightpen position.
+
+3d4h index 10h (r/W):  CRTC: Vertical Retrace Start Register
+bit 0-7  Lower 8 bits of Vertical Retrace Start. Vertical Retrace starts when
+         the line counter reaches this value. Bit 8 is found in 3d4h index 7
+         bit 2. (VGA Only) Bit 9 is found in 3d4h index 7 bit 7.
+
+3d4h index 11h (R):  CRTC: Light Pen Low Register                   (EGA Only)
+bit 0-7  (EGA Only)  Lower 8 bits of the address of the lightpen position.
+
+3d4h index 11h (r/W):  CRTC: Vertical Retrace End Register
+bit 0-3  Vertical Retrace ends when the last 4 bits of the line counter equals
+         this value.
+      4  if clear Clears pending Vertical Interrupts.
+      5  Vertical Interrupts (IRQ 2) disabled if set. Can usually be left
+         disabled, but some systems (including PS/2) require it to be enabled.
+      6  (VGA Only) If set selects 5 refresh cycles per scanline rather
+         than 3.
+      7  (VGA Only) Disables writing to registers 0-7 if set 3d4h index 7
+         bit 4 is not affected by this bit.
+
+3d4h index 12h (r/W):  CRTC: Vertical Display End Register
+bit 0-7  Lower 8 bits of Vertical Display End. The display ends when the line
+         counter reaches this value. Bit 8 is found in 3d4h index 7 bit 1.
+         (VGA Only) Bit 9 is found in 3d4h index 7 bit 6.
+
+3d4h index 13h (r/W):  CRTC: Offset register
+bit 0-7  Number of bytes in a scanline / K. Where K is 2 for byte mode, 4 for
+         word mode and 8 for Double Word mode.
+
+3d4h index 14h (r/W):  CRTC: Underline Location Register
+bit 0-4  Position of underline within Character cell.
+      5  (VGA Only) If set memory address is only changed every fourth
+         character clock.
+      6  (VGA Only) Double Word mode addressing if set
+
+3d4h index 15h (r/W):  CRTC: Start Vertical Blank Register
+bit 0-7  Lower 8 bits of Vertical Blank Start. Vertical blanking starts when
+         the line counter reaches this value. Bit 8 is found in 3d4h index 7
+         bit 3.
+
+3d4h index 16h (r/W):  CRTC: End Vertical Blank Register
+bit 0-4  (EGA) Vertical blanking stops when the lower 5 bits of the line
+         counter equals this field.
+    0-6  (VGA) Vertical blanking stops when the lower 7 bits of the line
+         counter equals this field.
+
+3d4h index 17h (r/W):  CRTC: Mode Control Register
+bit   0  If clear use CGA compatible memory addressing system
+         by substituting character row scan counter bit 0 for address bit 13,
+         thus creating 2 banks for even and odd scan lines.
+      1  If clear use Hercules compatible memory addressing system by
+         substituting character row scan counter bit 1 for address bit 14,
+         thus creating 4 banks.
+      2  If set increase scan line counter only every second line.
+      3  If set increase memory address counter only every other character
+         clock.
+      4  (EGA Only) If set disable the EGA output drivers. This bit is used
+         for other purposes in some Super VGA chips.
+      5  When in Word Mode bit 15 is rotated to bit 0 if this bit is set else
+         bit 13 is rotated into bit 0.
+      6  If clear system is in word mode. Addresses are rotated 1 position up
+         bringing either bit 13 or 15 into bit 0.
+      7  Clearing this bit will reset the display system until the bit is set
+         again.
+
+3d4h index 18h (r/W):  CRTC: Line Compare Register
+bit 0-7  Lower 8 bits of the Line Compare. When the Line counter reaches this
+         value, the display address wraps to 0. Provides Split Screen
+         facilities. Bit 8 is found in 3d4h index 7 bit 4.
+         (VGA Only) Bit 9 is found in 3d4h index 9 bit 6.
+
+3d4h index 22h (R):  Memory Latch Register                       (VGA - Undoc)
+bit 0-7  Reads the contents of the Graphics Controller Memory Data Latch for
+         the plane selected by 3C0h index 4 bit 0-1 (Read Map Select).
+Note: This register is not documented by IBM and may not be available on all
+      clones.
+
+3d4h index 24h (R):  Attribute Controller Toggle Register.       (VGA - Undoc)
+bit 0-4  Attribute Controller Index. 
+         The current value of the Attribute Index Register.
+      5  Palette Address Source. Same as 3C0h bit 5.
+      7  If set next read or write to 3C0h will access the data register.       
+Note: This register is not documented by IBM and may not be available on all
+      clones.
+
+3d4h index 30h-3Fh (W):  Clear Vertical Display Enable.          (VGA - Undoc)
+bit   0  Setting this bit will clear the Vertical Display Enable thus blanking
+         the display for the rest of the frame and giving the CPU total access
+         to display memory until the start of the next frame.
+Note: This register is not documented by IBM and may not be available on all
+      clones.
+
+3dAh (R):  Input Status #1 Register
+bit   0  Either Vertical or Horizontal Retrace active if set
+      1  (EGA Only) Light Pen has triggered if set
+      2  (EGA Only) Light Pen switch is open if set
+      3  Vertical Retrace in progress if set
+    4-5  (EGA Only) Shows two of the 6 color outputs, depending on 3C0h index
+         12h bit 4-5:
+          Attr: Bit 4-5:   Out bit 4  Out bit 5
+                   0          Blue       Red
+                   1        I Blue       Green
+                   2        I Red      I Green
+
+3dAh (W):  Feature Control Register
+bit   0  (EGA Only) Output to pin 21 of the Feature Connector.
+      1  (EGA Only) Output to pin 20 of the Feature Connector.
+      3  (VGA Only) Vertical Sync Select. If set Vertical Sync to the monitor
+         is the logical OR of the vertical sync and the vertical display
+         enable.
+Note: On the VGA this register can be read from port 3CAh.

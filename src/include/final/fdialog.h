@@ -57,19 +57,17 @@
 #endif
 
 #include "final/fmenu.h"
-#include "final/fmenuitem.h"
-#include "final/ftooltip.h"
 #include "final/fwindow.h"
 
 namespace finalcut
 {
 
+// class forward declaration
+class FToolTip;
+
 //----------------------------------------------------------------------
 // class FDialog
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FDialog : public FWindow
 {
@@ -98,7 +96,7 @@ class FDialog : public FWindow
     FDialog& operator = (const FDialog&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
+    const char*         getClassName() const override;
     FString             getText() const;
 
     // Mutators
@@ -108,27 +106,27 @@ class FDialog : public FWindow
     bool                setModal (bool);
     bool                setModal();
     bool                unsetModal();
-    virtual bool        setResizeable (bool) override;
+    bool                setResizeable (bool) override;
     bool                setScrollable (bool);
     bool                setScrollable();
     bool                unsetScrollable();
     void                setText (const FString&);
 
     // Inquiries
-    bool                isModal();
-    bool                isScrollable();
+    bool                isModal() const;
+    bool                isScrollable() const;
 
     // Methods
-    virtual void        show() override;
-    virtual void        hide() override;
+    void                show() override;
+    void                hide() override;
     int                 exec();
-    virtual void        setPos (const FPoint&, bool = true) override;
-    virtual void        move (const FPoint&) override;
+    void                setPos (const FPoint&, bool = true) override;
+    void                move (const FPoint&) override;
     bool                moveUp (int);
     bool                moveDown (int);
     bool                moveLeft (int);
     bool                moveRight (int);
-    virtual void        setSize (const FSize&, bool = true) override;
+    void                setSize (const FSize&, bool = true) override;
     bool                reduceHeight (int);
     bool                expandHeight (int);
     bool                reduceWidth (int);
@@ -136,27 +134,27 @@ class FDialog : public FWindow
     void                activateDialog();
 
     // Event handlers
-    virtual void        onKeyPress (FKeyEvent*) override;
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
-    virtual void        onMouseMove (FMouseEvent*) override;
-    virtual void        onMouseDoubleClick (FMouseEvent*) override;
-    virtual void        onAccel (FAccelEvent*) override;
-    virtual void        onWindowActive (FEvent*) override;
-    virtual void        onWindowInactive (FEvent*) override;
-    virtual void        onWindowRaised (FEvent*) override;
-    virtual void        onWindowLowered (FEvent*) override;
+    void                onKeyPress (FKeyEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
+    void                onMouseMove (FMouseEvent*) override;
+    void                onMouseDoubleClick (FMouseEvent*) override;
+    void                onAccel (FAccelEvent*) override;
+    void                onWindowActive (FEvent*) override;
+    void                onWindowInactive (FEvent*) override;
+    void                onWindowRaised (FEvent*) override;
+    void                onWindowLowered (FEvent*) override;
 
   protected:
     // Methods
     virtual void        done (int);
-    virtual void        draw() override;
+    void                draw() override;
     void                drawDialogShadow();
 
     // Event handlers
-    virtual void        onShow (FShowEvent*) override;
-    virtual void        onHide (FHideEvent*) override;
-    virtual void        onClose (FCloseEvent*) override;
+    void                onShow (FShowEvent*) override;
+    void                onHide (FHideEvent*) override;
+    void                onClose (FCloseEvent*) override;
 
   private:
     // Typedef
@@ -173,16 +171,13 @@ class FDialog : public FWindow
     static constexpr std::size_t MENU_BTN = 3;
     static constexpr bool PRINT_WIN_NUMBER = false;  // Only for debug
 
-    // Using-declaration
-    using FWidget::drawBorder;
-
     // Methods
     void                init();
     void                initDialogMenu();
     void                initMoveSizeMenuItem (FMenu*);
     void                initZoomMenuItem (FMenu*);
     void                initCloseMenuItem (FMenu*);
-    virtual void        drawBorder() override;
+    void                drawBorder() override;
     void                drawTitleBar();
     void                drawBarButton();
     void                drawZoomButton();
@@ -220,7 +215,7 @@ class FDialog : public FWindow
     void                cb_zoom (FWidget*, FDataPtr);
     void                cb_close (FWidget*, FDataPtr);
 
-    // Data Members
+    // Data members
     FString             tb_text{};  // title bar text
     int                 result_code{FDialog::Reject};
     bool                zoom_button_pressed{false};
@@ -240,7 +235,6 @@ class FDialog : public FWindow
     // Friend function from FMenu
     friend void FMenu::hideSuperMenus();
 };
-#pragma pack(pop)
 
 // FDialog inline functions
 //----------------------------------------------------------------------
@@ -277,15 +271,15 @@ inline bool FDialog::unsetScrollable()
 
 //----------------------------------------------------------------------
 inline void FDialog::setText (const FString& txt)
-{ tb_text = txt; }
+{ tb_text.setString(txt); }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isModal()
-{ return flags.modal; }
+inline bool FDialog::isModal() const
+{ return getFlags().modal; }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isScrollable()
-{ return flags.scrollable; }
+inline bool FDialog::isScrollable() const
+{ return getFlags().scrollable; }
 
 }  // namespace finalcut
 

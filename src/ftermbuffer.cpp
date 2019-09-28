@@ -23,7 +23,12 @@
 #include <string>
 #include <vector>
 
+#include "final/fc.h"
+#include "final/fcolorpair.h"
+#include "final/fstring.h"
 #include "final/ftermbuffer.h"
+#include "final/fvterm.h"
+#include "final/ftypes.h"
 
 namespace finalcut
 {
@@ -36,56 +41,43 @@ FTermBuffer::~FTermBuffer()  // destructor
 
 // public methods of FTermBuffer
 //----------------------------------------------------------------------
-int FTermBuffer::writef (const FString format, ...)
+const FString FTermBuffer::toString() const
 {
-  static constexpr int BUFSIZE = 4096;
-  wchar_t buffer[BUFSIZE];
-  va_list args;
+  std::wstring wide_string{};
+  wide_string.reserve(data.size());
 
-  if ( format.isEmpty() )
-    return 0;
+  for (auto&& tc : data)
+    wide_string.push_back(tc.code);
 
-  va_start (args, format);
-  std::vswprintf (buffer, BUFSIZE, format.wc_str(), args);
-  va_end (args);
-
-  FString str(buffer);
-  return write(str);
+  return FString(wide_string);
 }
 
 //----------------------------------------------------------------------
-int FTermBuffer::write (const FString& s)
+int FTermBuffer::write (const FString& string)
 {
-  assert ( ! s.isNull() );
-  int len = 0;
-  const wchar_t* p = s.wc_str();
+  assert ( ! string.isNull() );
+  int len = int(string.getLength());
 
-  if ( p )
+  for (auto&& c : string)
   {
-    while ( *p )
-    {
-      charData  nc;  // next character
-      nc = FVTerm::getAttribute();
-      nc.code = *p;
-      nc.attr.bit.no_changes = false;
-      nc.attr.bit.printed = false;
-
-      data.push_back(nc);
-
-      p++;
-      len++;
-    }  // end of while
+    charData  nc;  // next character
+    nc = FVTerm::getAttribute();
+    nc.code = c;
+    getColumnWidth(nc);  // add column width
+    nc.attr.bit.no_changes = false;
+    nc.attr.bit.printed = false;
+    data.push_back(nc);
   }
 
   return len;
 }
 
 //----------------------------------------------------------------------
-int FTermBuffer::write (wchar_t c)
+int FTermBuffer::write (wchar_t ch)
 {
-  charData nc;  // next character
-  nc = FVTerm::getAttribute();
-  nc.code = c;
+  charData nc = FVTerm::getAttribute();  // next character
+  nc.code = ch;
+  getColumnWidth(nc);  // add column width
   nc.attr.bit.no_changes = false;
   nc.attr.bit.printed = false;
 
@@ -96,18 +88,14 @@ int FTermBuffer::write (wchar_t c)
 //----------------------------------------------------------------------
 void FTermBuffer::write (const FColorPair& pair)
 {
-  charData nc;  // next character
-  nc = FVTerm::getAttribute();
-  nc.fg_color = pair.fg_color;
-  nc.bg_color = pair.bg_color;
+  FVTerm::setColor(pair.getForegroundColor(), pair.getBackgroundColor());
 }
 
 
 // FTermBuffer non-member operators
 //----------------------------------------------------------------------
-std::vector<FTermBuffer::charData>& operator << \
-  ( std::vector<FTermBuffer::charData>& termString
-  , const FTermBuffer& buf )
+FTermBuffer::charDataVector& operator << ( FTermBuffer::charDataVector& termString
+                                         , const FTermBuffer& buf )
 {
   if ( ! buf.data.empty() )
     termString.assign(buf.data.begin(), buf.data.end());

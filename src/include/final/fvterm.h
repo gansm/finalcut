@@ -48,18 +48,13 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#if defined(__CYGWIN__)
-  #include "final/fconfig.h"  // includes _GNU_SOURCE for wcwidth()
-#endif
-
 #include <queue>
 #include <sstream>  // std::stringstream
 #include <string>
 #include <vector>
 
+#include "final/fc.h"
 #include "final/fterm.h"
-#include "final/fcolorpair.h"
-
 
 // Preprocessing handler macro
 #define F_PREPROC_HANDLER(i,h) \
@@ -70,14 +65,22 @@ namespace finalcut
 {
 
 // class forward declaration
+class FColorPair;
+class FKeyboard;
+class FMouseControl;
+class FPoint;
+class FRect;
+class FSize;
+class FString;
+class FSystem;
+class FTerm;
+class FTermBuffer;
+class FTermDebugData;
 class FWidget;
 
 //----------------------------------------------------------------------
 // class FVTerm
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FVTerm
 {
@@ -90,7 +93,6 @@ class FVTerm
       uInt trans_count;    // Number of transparent characters
     } line_changes;
 
-    typedef FOptiAttr::charData  charData;
     typedef void (FVTerm::*FPreprocessingHandler)();
 
     struct term_area;  // forward declaration
@@ -130,8 +132,11 @@ class FVTerm
     FVTerm& operator = (const FVTerm&) = delete;
 
     // Overloaded operators
-    template <typename type>
-    FVTerm& operator << (const type&);
+    template <typename typeT>
+    FVTerm& operator << (const typeT&);
+    FVTerm& operator << (fc::SpecialCharacter);
+    FVTerm& operator << (const std::string&);
+    FVTerm& operator << (const FTermBuffer&);
     FVTerm& operator << (const std::vector<charData>&);
     FVTerm& operator << (const FPoint&);
     FVTerm& operator << (const FColorPair&);
@@ -140,7 +145,8 @@ class FVTerm
     virtual const char*   getClassName() const;
     static FColor         getTermForegroundColor();
     static FColor         getTermBackgroundColor();
-    term_area*            getVWin() const;
+    term_area*&           getVWin();
+    const term_area*      getVWin() const;
     FPoint                getPrintCursor();
     static charData       getAttribute();
     static int            getMaxColor();
@@ -151,9 +157,6 @@ class FVTerm
     static char*          getTermType();
     static char*          getTermFileName();
     FTerm&                getFTerm();
-#if DEBUG
-    FTermDebugData&       getFTermDebugData();
-#endif
 
     // Mutators
     void                  setTermXY (int, int);
@@ -162,7 +165,7 @@ class FVTerm
     void                  showCursor();
     void                  setPrintCursor (const FPoint&);
     FColor                rgb2ColorIndex (uInt8, uInt8, uInt8);
-    void                  setColor (FColor, FColor);
+    static void           setColor (FColor, FColor);
     static void           setNormal();
 
     static bool           setBold (bool);
@@ -288,9 +291,12 @@ class FVTerm
                                                   , FPreprocessingHandler );
     virtual void          delPreprocessingHandler (FVTerm*);
 
-    int                   printf (const FString, ...);
+    template<typename... Args>
+    int                   printf (const FString, Args&&...);
     int                   print (const FString&);
     int                   print (term_area*, const FString&);
+    int                   print (const FTermBuffer&);
+    int                   print (term_area*, const FTermBuffer&);
     int                   print (const std::vector<charData>&);
     int                   print (term_area*, const std::vector<charData>&);
     int                   print (wchar_t);
@@ -302,8 +308,6 @@ class FVTerm
     virtual FVTerm&       print();
     static void           beep();
     static void           redefineDefaultColors (bool);
-    static char*          moveCursor (int, int, int, int);
-    static void           printMoveDurations();
 
   protected:
     // Enumeration
@@ -315,15 +319,19 @@ class FVTerm
 
     // Accessor
     virtual term_area*    getPrintArea();
+    term_area*            getChildPrintArea() const;
+    term_area*            getCurrentPrintArea() const;
+    term_area*            getVirtualDesktop() const;
     std::size_t           getLineNumber();
     std::size_t           getColumnNumber();
     static bool           charEncodable (wchar_t);
-    static FKeyboard*     getKeyboard();
-    static FMouseControl* getMouseControl();
-    FTerm::initializationValues& getInitValues();
+    static FKeyboard*     getFKeyboard();
+    static FMouseControl* getFMouseControl();
 
     // Mutators
     void                  setPrintArea (term_area*);
+    void                  setChildPrintArea (term_area*);
+    void                  setActiveArea (term_area*);
     static void           setInsertCursor (bool);
     static void           setInsertCursor();
     static void           unsetInsertCursor();
@@ -403,19 +411,8 @@ class FVTerm
       __attribute__((noreturn))
     #endif
                            ;
-
-    // Data Members
-    static     term_area* vterm;           // virtual terminal
-    static     term_area* vdesktop;        // virtual desktop
-    static     term_area* active_area;     // active area
-    term_area* print_area{nullptr};        // print area for this object
-    term_area* child_print_area{nullptr};  // print area for children
-    term_area* vwin{nullptr};              // virtual window
-
   private:
-    // Typedef and Enumeration
-    typedef FTermcap::tcap_map termcap_map;
-
+    // Enumeration
     enum exit_state
     {
       not_used,
@@ -424,8 +421,8 @@ class FVTerm
     };
 
     // Constants
+    //   Buffer size for character output on the terminal
     static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
-    // Buffer size for character output on the terminal
 
     // Methods
     void                  init (bool);
@@ -444,13 +441,23 @@ class FVTerm
     static bool           canClearTrailingWS (uInt&, uInt);
     bool                  skipUnchangedCharacters (uInt&, uInt, uInt);
     void                  printRange (uInt, uInt, uInt, bool);
+    void                  replaceNonPrintableFullwidth (uInt, charData*&);
+    void                  printCharacter (uInt&, uInt, bool, charData*&);
+    void                  printFullWidthCharacter (uInt&, uInt, charData*&);
+    void                  printFullWidthPaddingCharacter (uInt&, uInt, charData*&);
+    void                  printHalfCovertFullWidthCharacter (uInt&, uInt, charData*&);
+    void                  skipPaddingCharacter (uInt&, uInt, charData*&);
     exit_state            eraseCharacters (uInt&, uInt, uInt, bool);
     exit_state            repeatCharacter (uInt&, uInt, uInt);
+    bool                  isFullWidthChar (charData*&);
+    bool                  isFullWidthPaddingChar (charData*&);
     static void           cursorWrap();
     bool                  printWrap (term_area*);
+    void                  printPaddingCharacter (term_area*, charData&);
     void                  updateTerminalLine (uInt);
     bool                  updateTerminalCursor();
     bool                  isInsideTerminal (const FPoint&);
+    bool                  isTermSizeChanged();
     static void           markAsPrinted (uInt, uInt);
     static void           markAsPrinted (uInt, uInt, uInt);
     static void           newFontChanges (charData*&);
@@ -462,21 +469,23 @@ class FVTerm
     static void           characterFilter (charData*&);
     static void           appendOutputBuffer (const std::string&);
     static void           appendOutputBuffer (const char[]);
-
-#if defined(__sun) && defined(__SVR4)
-    static int            appendOutputBuffer (char);
-#endif
     static int            appendOutputBuffer (int);
 
-    // Data Members
+    // Data members
+    term_area*              print_area{nullptr};        // print area for this object
+    term_area*              child_print_area{nullptr};  // print area for children
+    term_area*              vwin{nullptr};              // virtual window
+    static FSystem*         fsystem;
     static FTerm*           fterm;
+    static term_area*       vterm;        // virtual terminal
+    static term_area*       vdesktop;     // virtual desktop
+    static term_area*       active_area;  // active area
     static std::queue<int>* output_buffer;
     static charData         term_attribute;
     static charData         next_attribute;
     static charData         s_ch;      // shadow character
     static charData         i_ch;      // inherit background character
     static FPoint*          term_pos;  // terminal cursor position
-    static FTermcap::tcap_map* tcap;
     static FKeyboard*       keyboard;
     static bool             terminal_update_complete;
     static bool             terminal_update_pending;
@@ -488,16 +497,13 @@ class FVTerm
     static uInt             clr_bol_length;
     static uInt             clr_eol_length;
     static uInt             cursor_address_length;
+
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // struct FVTerm::term_area
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 struct FVTerm::term_area  // define virtual terminal character properties
 {
@@ -530,13 +536,12 @@ struct FVTerm::term_area  // define virtual terminal character properties
     bool has_changes{false};
     bool visible{false};
 };
-#pragma pack(pop)
 
 
 // FVTerm inline functions
 //----------------------------------------------------------------------
-template <typename type>
-inline FVTerm& FVTerm::operator << (const type& s)
+template <typename typeT>
+inline FVTerm& FVTerm::operator << (const typeT& s)
 {
   std::wostringstream outstream;
   outstream << s;
@@ -548,8 +553,22 @@ inline FVTerm& FVTerm::operator << (const type& s)
 }
 
 //----------------------------------------------------------------------
+inline FVTerm& FVTerm::operator << (fc::SpecialCharacter c)
+{
+  print (static_cast<wchar_t>(c));  // Required under Solaris
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FVTerm& FVTerm::operator << (const std::string& string)
+{
+  print (string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
 inline FVTerm& FVTerm::operator << \
-    (const std::vector<FVTerm::charData>& termString)
+    (const std::vector<charData>& termString)
 {
   print (termString);
   return *this;
@@ -582,11 +601,15 @@ inline FColor FVTerm::getTermBackgroundColor()
 { return next_attribute.bg_color; }
 
 //----------------------------------------------------------------------
-inline FVTerm::term_area* FVTerm::getVWin() const
+inline FVTerm::term_area*& FVTerm::getVWin()
 { return vwin; }
 
 //----------------------------------------------------------------------
-inline FVTerm::charData FVTerm::getAttribute()
+inline const FVTerm::term_area* FVTerm::getVWin() const
+{ return vwin; }
+
+//----------------------------------------------------------------------
+inline charData FVTerm::getAttribute()
 { return next_attribute; }
 
 //----------------------------------------------------------------------
@@ -620,12 +643,6 @@ inline char* FVTerm::getTermFileName()
 //----------------------------------------------------------------------
 inline FTerm& FVTerm::getFTerm()
 { return *fterm; }
-
-//----------------------------------------------------------------------
-#if DEBUG
-inline FTermDebugData& FVTerm::getFTermDebugData()
-{ return getFTerm().getFTermDebugData(); }
-#endif
 
 //----------------------------------------------------------------------
 inline void FVTerm::hideCursor()
@@ -1027,6 +1044,22 @@ inline bool FVTerm::hasUTF8()
 { return FTerm::hasUTF8(); }
 
 //----------------------------------------------------------------------
+template<typename... Args>
+inline int FVTerm::printf (const FString format, Args&&... args)
+{
+  static constexpr int BUFSIZE = 4096;
+  wchar_t buffer[BUFSIZE]{};
+
+  if ( format.isEmpty() )
+    return 0;
+
+  std::swprintf ( buffer, BUFSIZE
+                , format.wc_str(), std::forward<Args>(args)... );
+  FString str(buffer);
+  return print(str);
+}
+
+//----------------------------------------------------------------------
 inline FVTerm& FVTerm::print()
 { return *this; }
 
@@ -1039,16 +1072,16 @@ inline void FVTerm::redefineDefaultColors (bool enable)
 { FTerm::redefineDefaultColors(enable); }
 
 //----------------------------------------------------------------------
-inline char* FVTerm::moveCursor (int xold, int yold, int xnew, int ynew)
-{ return FTerm::moveCursor (xold, yold, xnew, ynew); }
+inline FVTerm::term_area* FVTerm::getChildPrintArea() const
+{ return child_print_area; }
 
 //----------------------------------------------------------------------
-inline void FVTerm::printMoveDurations()
-{ return FTerm::printMoveDurations(); }
+inline FVTerm::term_area* FVTerm::getCurrentPrintArea() const
+{ return print_area; }
 
 //----------------------------------------------------------------------
-inline void FVTerm::setPrintArea (term_area* area)
-{ print_area = area; }
+inline FVTerm::term_area* FVTerm::getVirtualDesktop() const
+{ return vdesktop; }
 
 //----------------------------------------------------------------------
 inline std::size_t FVTerm::getLineNumber()
@@ -1063,16 +1096,24 @@ inline bool FVTerm::charEncodable (wchar_t c)
 { return FTerm::charEncodable(c); }
 
 //----------------------------------------------------------------------
-inline FKeyboard* FVTerm::getKeyboard()
-{ return FTerm::getKeyboard(); }
+inline FKeyboard* FVTerm::getFKeyboard()
+{ return FTerm::getFKeyboard(); }
 
 //----------------------------------------------------------------------
-inline FMouseControl* FVTerm::getMouseControl()
-{ return FTerm::getMouseControl(); }
+inline FMouseControl* FVTerm::getFMouseControl()
+{ return FTerm::getFMouseControl(); }
 
 //----------------------------------------------------------------------
-inline FTerm::initializationValues& FVTerm::getInitValues()
-{ return FTerm::init_values; }
+inline void FVTerm::setPrintArea (term_area* area)
+{ print_area = area; }
+
+//----------------------------------------------------------------------
+inline void FVTerm::setChildPrintArea (term_area* area)
+{ child_print_area = area; }
+
+//----------------------------------------------------------------------
+inline void FVTerm::setActiveArea (term_area* area)
+{ active_area = area; }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setInsertCursor (bool enable)

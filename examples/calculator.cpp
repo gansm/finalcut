@@ -30,19 +30,17 @@
 
 #include <final/final.h>
 
+namespace fc = finalcut::fc;
 using finalcut::FPoint;
 using finalcut::FSize;
 using finalcut::FColorPair;
 
-constexpr lDouble PI = 3.141592653589793238L;
+constexpr lDouble PI{3.141592653589793238L};
 
 
 //----------------------------------------------------------------------
 // class Button
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class Button : public finalcut::FButton
 {
@@ -54,13 +52,12 @@ class Button : public finalcut::FButton
     void setChecked(bool);
 
     // Event handler
-    virtual void onKeyPress (finalcut::FKeyEvent*) override;
+    void onKeyPress (finalcut::FKeyEvent*) override;
 
   private:
-    // Data Member
+    // Data member
     bool checked{false};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Button::Button (finalcut::FWidget* parent)
@@ -77,12 +74,13 @@ void Button::setChecked (bool enable)
 
   if ( checked )
   {
-    setBackgroundColor(finalcut::fc::Cyan);
-    setFocusForegroundColor(finalcut::fc::White);
-    setFocusBackgroundColor(finalcut::fc::Cyan);
+    setBackgroundColor(fc::Cyan);
+    setFocusForegroundColor(fc::White);
+    setFocusBackgroundColor(fc::Cyan);
   }
   else
   {
+    const finalcut::FWidgetColors& wc = getFWidgetColors();
     setBackgroundColor(wc.button_active_bg);
     setFocusForegroundColor(wc.button_active_focus_fg);
     setFocusBackgroundColor(wc.button_active_focus_bg);
@@ -97,8 +95,7 @@ void Button::onKeyPress (finalcut::FKeyEvent* ev)
   FKey key = ev->key();
 
   // catch the enter key
-  if ( key == finalcut::fc::Fkey_return
-    || key == finalcut::fc::Fkey_enter )
+  if ( key == fc::Fkey_return || key == fc::Fkey_enter )
     return;
 
   finalcut::FButton::onKeyPress(ev);
@@ -108,9 +105,6 @@ void Button::onKeyPress (finalcut::FKeyEvent* ev)
 //----------------------------------------------------------------------
 // class Calc
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class Calc : public finalcut::FDialog
 {
@@ -122,8 +116,8 @@ class Calc : public finalcut::FDialog
     ~Calc();
 
     // Event handlers
-    virtual void   onKeyPress (finalcut::FKeyEvent*) override;
-    virtual void   onClose (finalcut::FCloseEvent*) override;
+    void           onKeyPress (finalcut::FKeyEvent*) override;
+    void           onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
     void           cb_buttonClicked (finalcut::FWidget*, FDataPtr);
@@ -173,7 +167,7 @@ class Calc : public finalcut::FDialog
 
     // Methods
     void           drawDispay();
-    virtual void   draw() override;
+    void           draw() override;
     void           clear (lDouble&);
     void           zero (lDouble&);
     void           one (lDouble&);
@@ -215,11 +209,11 @@ class Calc : public finalcut::FDialog
     void           setInfixOperator (char);
     void           clearInfixOperator();
     void           calcInfixOperator();
-    virtual void   adjustSize() override;
+    void           adjustSize() override;
     const wchar_t* getButtonText (std::size_t);
     void           mapKeyFunctions();
 
-    // Data Members
+    // Data members
     bool              error{false};
     bool              arcus_mode{false};
     bool              hyperbolic_mode{false};
@@ -243,7 +237,6 @@ class Calc : public finalcut::FDialog
     std::map<Calc::button, std::shared_ptr<Button> > calculator_buttons{};
     std::map<Calc::button, keyFunction> key_map{};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Calc::Calc (FWidget* parent)
@@ -255,7 +248,7 @@ Calc::Calc (FWidget* parent)
   setText ("Calculator");
   setGeometry (FPoint(19, 6), FSize(37, 18));
 
-  for (std::size_t key = 0; key < Calc::NUM_OF_BUTTONS; key++)
+  for (std::size_t key{0}; key < Calc::NUM_OF_BUTTONS; key++)
   {
     auto btn = std::make_shared<Button>(this);
     button_no[key] = key;
@@ -264,19 +257,17 @@ Calc::Calc (FWidget* parent)
       btn->setGeometry(FPoint(30, 15), FSize(5, 3));
     else
     {
-      int x, y;
-      std::size_t n;
-      ( key <= Three ) ? n = 0 : n = 1;
-      x = int(key + n) % 5 * 7 + 2;
-      y = int(key + n) / 5 * 2 + 3;
+      std::size_t n = ( key <= Three ) ? 0 : 1;
+      int x = int(key + n) % 5 * 7 + 2;
+      int y = int(key + n) / 5 * 2 + 3;
       btn->setGeometry(FPoint(x, y), FSize(5, 1));
     }
 
     btn->setFlat();
     btn->setNoUnderline();
     btn->setText(getButtonText(key));
-    btn->setDoubleFlatLine(finalcut::fc::top);
-    btn->setDoubleFlatLine(finalcut::fc::bottom);
+    btn->setDoubleFlatLine(fc::top);
+    btn->setDoubleFlatLine(fc::bottom);
 
     if ( isNewFont() )
       btn->unsetClickAnimation();
@@ -291,7 +282,7 @@ Calc::Calc (FWidget* parent)
     calculator_buttons[button(key)] = btn;
   }
 
-  calculator_buttons[On]->addAccelerator(finalcut::fc::Fkey_dc);  // Del key
+  calculator_buttons[On]->addAccelerator(fc::Fkey_dc);  // Del key
   calculator_buttons[On]->setFocus();
   calculator_buttons[Pi]->addAccelerator('p');
   calculator_buttons[Power]->addAccelerator('^');
@@ -300,8 +291,8 @@ Calc::Calc (FWidget* parent)
   calculator_buttons[Multiply]->addAccelerator('*');
   calculator_buttons[Decimal_point]->addAccelerator(',');
   calculator_buttons[Change_sign]->addAccelerator('#');
-  calculator_buttons[Equals]->addAccelerator(finalcut::fc::Fkey_return);
-  calculator_buttons[Equals]->addAccelerator(finalcut::fc::Fkey_enter);
+  calculator_buttons[Equals]->addAccelerator(fc::Fkey_return);
+  calculator_buttons[Equals]->addAccelerator(fc::Fkey_enter);
 }
 
 //----------------------------------------------------------------------
@@ -311,7 +302,7 @@ Calc::~Calc()
 //----------------------------------------------------------------------
 void Calc::drawDispay()
 {
-  finalcut::FString display = input;
+  finalcut::FString display(input);
 
   if ( display.isNull() || display.isEmpty()  )
     display = L'0';
@@ -337,7 +328,8 @@ void Calc::drawDispay()
   if ( isMonochron() )
     setReverse(false);
 
-  print() << FColorPair(finalcut::fc::Black, finalcut::fc::LightGray)
+  const finalcut::FWidgetColors& wc = getFWidgetColors();
+  print() << FColorPair(fc::Black, fc::LightGray)
           << FPoint(3, 3) << display << ' '
           << FColorPair(wc.dialog_fg, wc.dialog_bg);
 
@@ -346,11 +338,11 @@ void Calc::drawDispay()
 
   if ( isNewFont() )
   {
-    wchar_t bottom_line     = finalcut::fc::NF_border_line_bottom;
-    wchar_t top_bottom_line = finalcut::fc::NF_border_line_up_and_down;
-    wchar_t top_line        = finalcut::fc::NF_border_line_upper;
-    wchar_t right_line      = finalcut::fc::NF_rev_border_line_right;
-    wchar_t left_line       = finalcut::fc::NF_border_line_left;
+    wchar_t bottom_line     {fc::NF_border_line_bottom};
+    wchar_t top_bottom_line {fc::NF_border_line_up_and_down};
+    wchar_t top_line        {fc::NF_border_line_upper};
+    wchar_t right_line      {fc::NF_rev_border_line_right};
+    wchar_t left_line       {fc::NF_border_line_left};
     print() << FPoint(3, 2) << finalcut::FString(33, bottom_line);
     print() << FPoint(2, 3) << right_line;
     print() << FPoint(36, 3) << left_line;
@@ -365,12 +357,12 @@ void Calc::drawDispay()
   }
   else
   {
-    wchar_t vertical_and_right  = finalcut::fc::BoxDrawingsVerticalAndRight;
-    wchar_t horizontal          = finalcut::fc::BoxDrawingsHorizontal;
-    wchar_t vertical_and_left   = finalcut::fc::BoxDrawingsVerticalAndLeft;
-    finalcut::FString separator = finalcut::FString(vertical_and_right)
+    wchar_t vertical_and_right {fc::BoxDrawingsVerticalAndRight};
+    wchar_t horizontal         {fc::BoxDrawingsHorizontal};
+    wchar_t vertical_and_left  {fc::BoxDrawingsVerticalAndLeft};
+    finalcut::FString separator ( finalcut::FString(vertical_and_right)
                                 + finalcut::FString(35, horizontal)
-                                + finalcut::FString(vertical_and_left);
+                                + finalcut::FString(vertical_and_left) );
     print() << FPoint(1, 4) << separator;
   }
 }
@@ -609,7 +601,7 @@ void Calc::pi (lDouble& x)
 //----------------------------------------------------------------------
 void Calc::open_bracket (lDouble&)
 {
-  stack_data d = { a, infix_operator };
+  stack_data d{ a, infix_operator };
   bracket_stack.push(d);
   clearInfixOperator();
   input = "";
@@ -838,8 +830,8 @@ void Calc::tangent (lDouble& x)
 void Calc::draw()
 {
   setBold();
-  setColor (finalcut::fc::Blue, finalcut::fc::Cyan);
-  clearArea (vdesktop, finalcut::fc::MediumShade);
+  setColor (fc::LightBlue, fc::Cyan);
+  clearArea (getVirtualDesktop(), fc::MediumShade);
   unsetBold();
   finalcut::FDialog::draw();
   drawDispay();
@@ -906,7 +898,7 @@ lDouble& Calc::getValue()
 //----------------------------------------------------------------------
 void Calc::setDisplay (lDouble d)
 {
-  char buffer[33];
+  char buffer[33]{};
   snprintf (buffer, sizeof(buffer), "%32.11Lg", d);
   input = buffer;
 }
@@ -995,8 +987,8 @@ void Calc::onKeyPress (finalcut::FKeyEvent* ev)
 
   switch ( key )
   {
-    case finalcut::fc::Fkey_erase:
-    case finalcut::fc::Fkey_backspace:
+    case fc::Fkey_erase:
+    case fc::Fkey_backspace:
       if ( len > 0 )
       {
         lDouble& x = getValue();
@@ -1019,10 +1011,10 @@ void Calc::onKeyPress (finalcut::FKeyEvent* ev)
       ev->accept();
       break;
 
-    case finalcut::fc::Fkey_escape:
-    case finalcut::fc::Fkey_escape_mintty:
+    case fc::Fkey_escape:
+    case fc::Fkey_escape_mintty:
       {
-        finalcut::FAccelEvent a_ev( finalcut::fc::Accelerator_Event
+        finalcut::FAccelEvent a_ev( fc::Accelerator_Event
                                   , getFocusWidget() );
         calculator_buttons[On]->onAccel(&a_ev);
       }

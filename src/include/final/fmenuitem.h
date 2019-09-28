@@ -70,9 +70,6 @@ class FMenuList;
 // class FMenuItem
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FMenuItem : public FWidget
 {
   public:
@@ -96,47 +93,54 @@ class FMenuItem : public FWidget
     FMenuItem& operator = (const FMenuItem&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const override;
-    uChar               getHotkey() const;
+    const char*         getClassName() const override;
+    FKey                getHotkey() const;
     FMenu*              getMenu() const;
     std::size_t         getTextLength() const;
+    std::size_t         getTextWidth() const;
     FString             getText() const;
 
     // Mutators
-    virtual bool        setEnable (bool) override;
-    virtual bool        setFocus (bool) override;
-    virtual bool        setFocus() override;
-    virtual bool        unsetFocus() override;
+    bool                setEnable (bool) override;
+    bool                setFocus (bool) override;
+    bool                setFocus() override;
+    bool                unsetFocus() override;
     void                setSelected();
     void                unsetSelected();
     void                setSeparator();
     void                unsetSeparator();
+    void                setCheckable();
+    void                unsetCheckable();
     void                setChecked();
     void                unsetChecked();
+    void                setRadioButton();
+    void                unsetRadioButton();
     void                setMenu (FMenu*);
     void                setText (const FString&);
 
     // Inquiries
     bool                isSelected() const;
     bool                isSeparator() const;
+    bool                isCheckable() const;
     bool                isChecked() const;
+    bool                isRadioButton() const;
     bool                hasHotkey() const;
     bool                hasMenu() const;
 
     // Methods
-    virtual void        addAccelerator (FKey, FWidget*) override;
-    virtual void        delAccelerator (FWidget*) override;
+    void                addAccelerator (FKey, FWidget*) override;
+    void                delAccelerator (FWidget*) override;
     void                openMenu();
 
     // Event handlers
-    virtual void        onKeyPress (FKeyEvent*) override;
-    virtual void        onMouseDoubleClick (FMouseEvent*) override;
-    virtual void        onMouseDown (FMouseEvent*) override;
-    virtual void        onMouseUp (FMouseEvent*) override;
-    virtual void        onMouseMove (FMouseEvent*) override;
-    virtual void        onAccel (FAccelEvent*) override;
-    virtual void        onFocusIn (FFocusEvent*) override;
-    virtual void        onFocusOut (FFocusEvent*) override;
+    void                onKeyPress (FKeyEvent*) override;
+    void                onMouseDoubleClick (FMouseEvent*) override;
+    void                onMouseDown (FMouseEvent*) override;
+    void                onMouseUp (FMouseEvent*) override;
+    void                onMouseMove (FMouseEvent*) override;
+    void                onAccel (FAccelEvent*) override;
+    void                onFocusIn (FFocusEvent*) override;
+    void                onFocusOut (FFocusEvent*) override;
 
   protected:
     // Accessor
@@ -150,28 +154,12 @@ class FMenuItem : public FWidget
     bool                isMenuBar (FWidget*) const;
     bool                isMenu (FWidget*) const;
 
-    // Data Members
-    FString      text{};
-    bool         selected{false};
-    bool         separator{false};
-    bool         checkable{false};
-    bool         checked{false};
-    bool         radio_button{false};
-    bool         dialog_index{false};
-    std::size_t  text_length{0};
-    uChar        hotkey{0};
-    FKey         accel_key{0};
-    FMenu*       menu{nullptr};
-    FWidget*     super_menu{nullptr};
-    FDialog*     associated_window{nullptr};
-
   private:
     // Accessor
     FMenuList*          getFMenuList (FWidget&);
 
     // Methods
     void                init (FWidget*);
-    uChar               hotKey();
     void                updateSuperMenuDimensions();
     void                processActivate();
     void                processDeactivate();
@@ -185,13 +173,28 @@ class FMenuItem : public FWidget
 
     virtual void        processClicked();
 
+    // Data members
+    FString      text{};
+    FMenu*       menu{nullptr};
+    FWidget*     super_menu{nullptr};
+    FDialog*     associated_window{nullptr};
+    std::size_t  text_length{0};
+    std::size_t  text_width{0};
+    FKey         accel_key{0};
+    FKey         hotkey{0};
+    bool         selected{false};
+    bool         separator{false};
+    bool         checkable{false};
+    bool         checked{false};
+    bool         radio_button{false};
+    bool         dialog_index{false};
+
     // Friend classes
     friend class FDialogListMenu;
     friend class FMenuList;
     friend class FMenuBar;
     friend class FMenu;
 };
-#pragma pack(pop)
 
 
 // FMenuItem inline functions
@@ -200,7 +203,7 @@ inline const char* FMenuItem::getClassName() const
 { return "FMenuItem"; }
 
 //----------------------------------------------------------------------
-inline uChar FMenuItem::getHotkey() const
+inline FKey FMenuItem::getHotkey() const
 { return hotkey; }
 
 //----------------------------------------------------------------------
@@ -210,6 +213,10 @@ inline FMenu* FMenuItem::getMenu() const
 //----------------------------------------------------------------------
 inline std::size_t FMenuItem::getTextLength() const
 { return text_length; }
+
+//----------------------------------------------------------------------
+inline std::size_t FMenuItem::getTextWidth() const
+{ return text_width; }
 
 //----------------------------------------------------------------------
 inline FString FMenuItem::getText() const
@@ -238,12 +245,28 @@ inline void FMenuItem::unsetSeparator()
 }
 
 //----------------------------------------------------------------------
+inline void FMenuItem::setCheckable()
+{ checkable = true; }
+
+//----------------------------------------------------------------------
+inline void FMenuItem::unsetCheckable()
+{ checkable = false; }
+
+//----------------------------------------------------------------------
 inline void FMenuItem::setChecked()
 { checked = true; }
 
 //----------------------------------------------------------------------
 inline void FMenuItem::unsetChecked()
 { checked = false; }
+
+//----------------------------------------------------------------------
+inline void FMenuItem::setRadioButton()
+{ radio_button = true; }
+
+//----------------------------------------------------------------------
+inline void FMenuItem::unsetRadioButton()
+{ radio_button = false; }
 
 //----------------------------------------------------------------------
 inline void FMenuItem::setMenu(FMenu* m)
@@ -258,8 +281,16 @@ inline bool FMenuItem::isSeparator() const
 { return separator; }
 
 //----------------------------------------------------------------------
+inline bool FMenuItem::isCheckable() const
+{ return checkable; }
+
+//----------------------------------------------------------------------
 inline bool FMenuItem::isChecked() const
 { return checked; }
+
+//----------------------------------------------------------------------
+inline bool FMenuItem::isRadioButton() const
+{ return radio_button; }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::hasHotkey() const

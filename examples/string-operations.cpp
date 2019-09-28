@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -101,7 +101,7 @@ void inputStreamExample()
 void outputStreamExample()
 {
   // Test: output stream (operator <<)
-  const finalcut::FString& out = L"A test string for 0 \x20ac";
+  const finalcut::FString out{L"A test string for 0 \x20ac"};
   std::cout << " outstream << " << out << std::endl;
 }
 
@@ -187,7 +187,7 @@ void streamingFromFStringExample()
   std::wcout << "stream out: " << stream_wstring << std::endl;
 
   // ...to wide character
-  wchar_t stream_wchar_t = L'\0';
+  wchar_t stream_wchar_t{L'\0'};
   finalcut::FString("w") >> stream_wchar_t;
   std::wcout << "stream out: " << stream_wchar_t << std::endl;
 
@@ -302,7 +302,7 @@ void streamToFloat()
 void CStringOutputExample()
 {
   // Test: c-string output
-  const finalcut::FString& out = L"A test string for 0 \x20ac";
+  const finalcut::FString out{L"A test string for 0 \x20ac"};
   printf ("     c_str:  \"%s\"\n", out.c_str());
 }
 
@@ -326,7 +326,7 @@ void copyIntoFString()
 void utf8StringOutputExample()
 {
   // Test: utf-8 string
-  const finalcut::FString& len = "длина́";
+  const finalcut::FString len{"длина́"};
   std::cout << "    length: \"" << len << "\" has "
             << len.getLength() << " characters" << std::endl;
 }
@@ -335,11 +335,11 @@ void utf8StringOutputExample()
 void letterCaseExample()
 {
   // Test: convert uppercase letter to lowercase
-  const finalcut::FString& lower = finalcut::FString(L"InPut").toLower();
+  const finalcut::FString lower{finalcut::FString(L"InPut").toLower()};
   std::wcout << L"   toLower: " << lower << std::endl;
 
   // Test: convert lowercase letter to uppercase
-  const finalcut::FString& upper = finalcut::FString("inPut").toUpper();
+  const finalcut::FString upper{finalcut::FString("inPut").toUpper()};
   std::cout << "   toUpper: " << upper << std::endl;
 }
 
@@ -414,7 +414,7 @@ void stringConcatenationExample()
 void stringCompareExample()
 {
   // Test: compare operators ==, <=, <, >=, >, !=
-  const finalcut::FString& cmp = "compare";
+  const finalcut::FString cmp{"compare"};
 
   if ( cmp == finalcut::FString("compare") )
     std::cout << "       cmp: == Ok" << std::endl;
@@ -451,10 +451,10 @@ void stringCompareExample()
 void stringSplittingExample()
 {
   // Test: split a string with a delimiter and returns a vector (array)
-  finalcut::FString split_str = "a,b,c,d";
+  finalcut::FString split_str{"a,b,c,d"};
   std::cout << "     split: \""
             << split_str << "\" into substrings ->";
-  finalcut::FStringList parts = split_str.split(",");
+  finalcut::FStringList parts{ split_str.split(",") };
   finalcut::FStringList::iterator it, end;
   end = parts.end();
 
@@ -468,7 +468,7 @@ void stringSplittingExample()
 void fromatStringExample()
 {
   // Test: format a string with sprintf
-  finalcut::FString formatStr = "";
+  finalcut::FString formatStr{""};
   std::cout << " formatted: "
             << formatStr.sprintf("sqrt(%d) = %d", 16, 4)
             << std::endl;
@@ -533,8 +533,8 @@ void convertToNumberExample()
 void convertNumberToStringExample()
 {
   // Test: convert integer and double value to a string
-  finalcut::FString num1, num2, num3;
-  num1.setNumber(137);
+  finalcut::FString num1{}, num2{}, num3{};
+  num1.setNumber(137u);
   num2.setNumber(-512);
   num3.setNumber(3.141592653589793238L, 12);
   std::cout << " setNumber:  "
@@ -550,14 +550,14 @@ void formatedNumberExample()
 {
   // Test: convert and format a integer number with thousand separator
   std::setlocale (LC_NUMERIC, "");
-  finalcut::FString fnum1, fnum2;
+  finalcut::FString fnum1{}, fnum2{};
 #if defined(__LP64__) || defined(_LP64)
   // 64-bit architecture
-  fnum1.setFormatedNumber(0xffffffffffffffff, '\'');
+  fnum1.setFormatedNumber(0xffffffffffffffffu, '\'');
   fnum2.setFormatedNumber(-9223372036854775807);
 #else
   // 32-bit architecture
-  fnum1.setFormatedNumber(0xffffffff, '\'');
+  fnum1.setFormatedNumber(0xffffffffu, '\'');
   fnum2.setFormatedNumber(-2147483647);
 #endif
   std::cout << "setFormatedNumber: "
@@ -570,7 +570,7 @@ void formatedNumberExample()
 void trimExample()
 {
   // Test: remove whitespace from the end of a string
-  const finalcut::FString& trim_str = "  A string \t";
+  const finalcut::FString& trim_str{"  A string \t"};
   std::wcout << "    rtrim: \""
              << trim_str.rtrim() << "\"" << std::endl;
 
@@ -587,8 +587,8 @@ void trimExample()
 void substringExample()
 {
   // Test: 11 characters from the left of the string
-  const finalcut::FString& alphabet = "a b c d e f g h i j k l m "
-                                      "n o p q r s t u v w x y z";
+  const finalcut::FString alphabet{ "a b c d e f g h i j k l m "
+                                    "n o p q r s t u v w x y z" };
   std::cout << "     left: \""
             << alphabet.left(11)   << "\"" << std::endl;
 
@@ -605,7 +605,7 @@ void substringExample()
 void insertExample()
 {
   // Test: insert a string at index position 7
-  finalcut::FString insert_str = "I am a string";
+  finalcut::FString insert_str{"I am a string"};
 
   try
   {
@@ -622,7 +622,7 @@ void insertExample()
 void indexExample()
 {
   // Test: get character access at a specified index position
-  finalcut::FString index(5);  // string with five characters
+  finalcut::FString index{5};  // string with five characters
   index = "index";
 
   try
@@ -642,8 +642,8 @@ void indexExample()
 void iteratorExample()
 {
   // Test: character access with std::iterator
-  const finalcut::FString& stringIterator = "iterator";
-  finalcut::FString::iterator iter;
+  const finalcut::FString stringIterator{"iterator"};
+  finalcut::FString::const_iterator iter;
   iter = stringIterator.begin();
   std::cout << " " << stringIterator << ": ";
 
@@ -662,7 +662,7 @@ void iteratorExample()
 void overwriteExample()
 {
   // Test: overwrite string at position 10 with "for t"
-  finalcut::FString overwrite_std = "Overwrite the rest";
+  finalcut::FString overwrite_std{"Overwrite the rest"};
   std::cout << "overwrite: "
             << overwrite_std.overwrite("for t", 10) << std::endl;
 }
@@ -671,7 +671,7 @@ void overwriteExample()
 void removeExample()
 {
   // Test: remove 2 characters at position 7
-  finalcut::FString remove_std = "A fast remove";
+  finalcut::FString remove_std{"A fast remove"};
   std::cout << "   remove: "
             << remove_std.remove(7, 2) << std::endl;
 }
@@ -680,7 +680,7 @@ void removeExample()
 void substringIncludeExample()
 {
   // Test: includes a substring (positive test)
-  finalcut::FString include_std = "string";
+  finalcut::FString include_std{"string"};
 
   if ( include_std.includes("ring") )
     std::cout << " includes: \""
@@ -706,7 +706,7 @@ void substringIncludeExample()
 void replaceExample()
 {
   // Test: find and replace a substring
-  finalcut::FString source_str = "computer and software";
+  finalcut::FString source_str{"computer and software"};
   const finalcut::FString& replace_str = \
       source_str.replace("computer", "hard-");
   std::cout << "  replace: "
@@ -717,7 +717,7 @@ void replaceExample()
 void tabToSpaceExample()
 {
   // Test: convert tabs to spaces
-  const finalcut::FString& tab_str = "1234\t5678";
+  const finalcut::FString tab_str{"1234\t5678"};
   std::cout << "      tab: "
             << tab_str.expandTabs() << std::endl;
 }
@@ -726,7 +726,7 @@ void tabToSpaceExample()
 void backspaceControlCharacterExample()
 {
   // Test: backspaces remove characters in the string
-  const finalcut::FString& bs_str = "t\b\bTesT\bt";
+  const finalcut::FString bs_str{"t\b\bTesT\bt"};
   std::cout << "backspace: "
             << bs_str.removeBackspaces() << std::endl;
 }
@@ -735,7 +735,7 @@ void backspaceControlCharacterExample()
 void deleteControlCharacterExample()
 {
   // Test: delete characters remove characters in the string
-  const finalcut::FString& del_str = "apple \177\177\177pietree";
+  const finalcut::FString del_str{"apple \177\177\177pietree"};
   std::cout << "   delete: "
             << del_str.removeDel() << std::endl;
 }

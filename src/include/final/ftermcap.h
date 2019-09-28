@@ -58,22 +58,19 @@
 #include <string>
 #include <vector>
 
-#include "final/emptyfstring.h"
-#include "final/fkey_map.h"
-#include "final/ftermdetection.h"
-
-
 // FTermcap string macro
-#define TCAP(...)  tcap[__VA_ARGS__].string
+#define TCAP(...)  FTermcap::strings[__VA_ARGS__].string
 
 namespace finalcut
 {
 
+// class forward declaration
+class FTermData;
+class FTermDetection;
+
 //----------------------------------------------------------------------
 // class FTermcap
 //----------------------------------------------------------------------
-#pragma pack(push)
-#pragma pack(1)
 
 class FTermcap final
 {
@@ -93,50 +90,41 @@ class FTermcap final
     ~FTermcap() = default;
 
     // Accessors
-    const char* getClassName() const;
-
-    static tcap_map* getTermcapMap()
-    {
-      return tcap;
-    }
-
-    // Mutator
-    static void setFTermData (FTermData*);
-    static void setFTermDetection (FTermDetection*);
+    const char*      getClassName() const;
 
     // Methods
     static void init();
 
-    // Data Members
-    static bool background_color_erase;
-    static bool can_change_color_palette;
-    static bool automatic_left_margin;
-    static bool automatic_right_margin;
-    static bool eat_nl_glitch;
-    static bool ansi_default_color;
-    static bool osc_support;
-    static bool no_utf8_acs_chars;
-    static int  max_color;
-    static int  tabstop;
-    static int  attr_without_color;
+    // Data members
+    static bool      background_color_erase;
+    static bool      can_change_color_palette;
+    static bool      automatic_left_margin;
+    static bool      automatic_right_margin;
+    static bool      eat_nl_glitch;
+    static bool      ansi_default_color;
+    static bool      osc_support;
+    static bool      no_utf8_acs_chars;
+    static int       max_color;
+    static int       tabstop;
+    static int       attr_without_color;
+    static tcap_map  strings[];
 
   private:
     // Methods
-    static void termcap();
-    static void termcapError (int);
-    static void termcapVariables (char*&);
-    static void termcapBoleans();
-    static void termcapNumerics();
-    static void termcapStrings (char*&);
-    static void termcapKeys (char*&);
-    static void termcapKeysVt100 (char*&);
+    static void      termcap();
+    static void      termcapError (int);
+    static void      termcapVariables (char*&);
+    static void      termcapBoleans();
+    static void      termcapNumerics();
+    static void      termcapStrings (char*&);
+    static void      termcapKeys (char*&);
+    static void      termcapKeysVt100 (char*&);
 
-    // Data Member
-    static tcap_map        tcap[];
+    // Data member
     static FTermData*      fterm_data;
     static FTermDetection* term_detection;
 };
-#pragma pack(pop)
+
 
 // FTermcap inline functions
 //----------------------------------------------------------------------

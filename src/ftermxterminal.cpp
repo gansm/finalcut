@@ -20,30 +20,40 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__CYGWIN__)
+  #include "final/fconfig.h"  // includes _GNU_SOURCE for fd_set
+#endif
+
+#include "final/fc.h"
+#include "final/fstring.h"
 #include "final/fterm.h"
+#include "final/ftermcap.h"
+#include "final/ftermdetection.h"
 #include "final/ftermfreebsd.h"
+#include "final/ftermios.h"
 #include "final/ftermxterminal.h"
+#include "final/fsize.h"
 
 namespace finalcut
 {
 
 // static class attributes
-bool                 FTermXTerminal::mouse_support;
-bool                 FTermXTerminal::meta_sends_esc;
-bool                 FTermXTerminal::xterm_default_colors;
-std::size_t          FTermXTerminal::term_width = 80;
-std::size_t          FTermXTerminal::term_height = 24;
-const FString*       FTermXTerminal::xterm_font = nullptr;
-const FString*       FTermXTerminal::xterm_title = nullptr;
-const FString*       FTermXTerminal::foreground_color = nullptr;
-const FString*       FTermXTerminal::background_color = nullptr;
-const FString*       FTermXTerminal::cursor_color = nullptr;
-const FString*       FTermXTerminal::mouse_foreground_color = nullptr;
-const FString*       FTermXTerminal::mouse_background_color = nullptr;
-const FString*       FTermXTerminal::highlight_background_color = nullptr;
-FTermcap::tcap_map*  FTermXTerminal::tcap = nullptr;
-FTermDetection*      FTermXTerminal::term_detection = nullptr;
-fc::xtermCursorStyle FTermXTerminal::cursor_style = fc::unknown_cursor_style;
+bool                 FTermXTerminal::mouse_support{false};
+bool                 FTermXTerminal::meta_sends_esc{false};
+bool                 FTermXTerminal::xterm_default_colors{false};
+std::size_t          FTermXTerminal::term_width{80};
+std::size_t          FTermXTerminal::term_height{24};
+const FString*       FTermXTerminal::xterm_font{nullptr};
+const FString*       FTermXTerminal::xterm_title{nullptr};
+const FString*       FTermXTerminal::foreground_color{nullptr};
+const FString*       FTermXTerminal::background_color{nullptr};
+const FString*       FTermXTerminal::cursor_color{nullptr};
+const FString*       FTermXTerminal::mouse_foreground_color{nullptr};
+const FString*       FTermXTerminal::mouse_background_color{nullptr};
+const FString*       FTermXTerminal::highlight_background_color{nullptr};
+FSystem*             FTermXTerminal::fsystem{nullptr};
+FTermDetection*      FTermXTerminal::term_detection{nullptr};
+fc::xtermCursorStyle FTermXTerminal::cursor_style{fc::unknown_cursor_style};
 
 
 //----------------------------------------------------------------------
@@ -54,12 +64,8 @@ fc::xtermCursorStyle FTermXTerminal::cursor_style = fc::unknown_cursor_style;
 //----------------------------------------------------------------------
 FTermXTerminal::FTermXTerminal()
 {
-  // Preset to false
-  mouse_support        = \
-  meta_sends_esc       = \
-  xterm_default_colors = false;
-
-  tcap = FTermcap::getTermcapMap();
+  // Get FSystem object
+  fsystem = FTerm::getFSystem();
 }
 
 //----------------------------------------------------------------------
@@ -230,6 +236,12 @@ void FTermXTerminal::metaSendsESC (bool enable)
 }
 
 //----------------------------------------------------------------------
+void FTermXTerminal::init()
+{
+  term_detection = FTerm::getFTermDetection();
+}
+
+//----------------------------------------------------------------------
 void FTermXTerminal::setDefaults()
 {
   // Redefinition of the XTerm default colors
@@ -372,7 +384,7 @@ void FTermXTerminal::setXTermCursorStyle()
 {
   // Set the xterm cursor style
 
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   if ( FTermFreeBSD::isFreeBSDConsole() )
     return;
 #endif
@@ -386,6 +398,7 @@ void FTermXTerminal::setXTermCursorStyle()
 
   if ( TCAP(fc::t_cursor_style)
     || term_detection->isXTerminal()
+    || term_detection->isCygwinTerminal()
     || term_detection->isMinttyTerm()
     || term_detection->hasSetCursorStyleSupport() )
   {
@@ -401,6 +414,7 @@ void FTermXTerminal::setXTermTitle()
 
   if ( term_detection->isXTerminal()
     || term_detection->isScreenTerm()
+    || term_detection->isCygwinTerminal()
     || term_detection->isMinttyTerm()
     || term_detection->isPuttyTerminal()
     || FTermcap::osc_support )
@@ -553,17 +567,9 @@ void FTermXTerminal::setXTerm8ColorDefaults()
   if ( term_detection->isPuttyTerminal() )
     return;
 
-  setMouseBackground("rgb:ffff/ffff/ffff");        // white
-  setMouseForeground ("rgb:0000/0000/0000");       // black
+  setXTermDefaultsMouseCursor();
 
-  if ( ! term_detection->isGnomeTerminal() )
-    setCursorColor("rgb:ffff/ffff/ffff");          // white
-
-  if ( xterm_default_colors
-    && ! (term_detection->isMinttyTerm()
-       || term_detection->isMltermTerminal()
-       || term_detection->isRxvtTerminal()
-       || term_detection->isScreenTerm()) )
+  if ( canSetXTermBackground() )
   {
     // mintty and rxvt can't reset these settings
     setBackground("rgb:2222/2222/b2b2");           // blue
@@ -581,17 +587,9 @@ void FTermXTerminal::setXTerm16ColorDefaults()
   if ( term_detection->isPuttyTerminal() )
     return;
 
-  setMouseBackground("rgb:ffff/ffff/ffff");        // white
-  setMouseForeground ("rgb:0000/0000/0000");       // black
+  setXTermDefaultsMouseCursor();
 
-  if ( ! term_detection->isGnomeTerminal() )
-    setCursorColor("rgb:ffff/ffff/ffff");          // white
-
-  if ( xterm_default_colors
-    && ! (term_detection->isMinttyTerm()
-       || term_detection->isMltermTerminal()
-       || term_detection->isRxvtTerminal()
-       || term_detection->isScreenTerm()) )
+  if ( canSetXTermBackground() )
   {
     // mintty and rxvt can't reset these settings
     setBackground("rgb:8080/a4a4/ecec");           // very light blue
@@ -601,22 +599,44 @@ void FTermXTerminal::setXTerm16ColorDefaults()
 }
 
 //----------------------------------------------------------------------
+inline void FTermXTerminal::setXTermDefaultsMouseCursor()
+{
+  setMouseBackground("rgb:ffff/ffff/ffff");        // white
+  setMouseForeground ("rgb:0000/0000/0000");       // black
+
+  if ( ! term_detection->isGnomeTerminal() )
+    setCursorColor("rgb:ffff/ffff/ffff");          // white
+}
+
+//----------------------------------------------------------------------
+inline bool FTermXTerminal::canSetXTermBackground()
+{
+  if ( xterm_default_colors
+    && ! (term_detection->isMinttyTerm()
+       || term_detection->isMltermTerminal()
+       || term_detection->isRxvtTerminal()
+       || term_detection->isScreenTerm()) )
+    return true;
+  else
+    return false;
+}
+
+//----------------------------------------------------------------------
 void FTermXTerminal::resetXTermColorMap()
 {
   // Reset the entire color table
 
   if ( term_detection->isMinttyTerm() )
   {
-    FTerm::putstringf (ESC "c");  // Full Reset (RIS)
+    FTerm::putstring (ESC "c");  // Full Reset (RIS)
   }
   else if ( canResetColor() )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "104" BEL);
+    FTerm::putstring (OSC "104" BEL);
     oscPostfix();
     std::fflush(stdout);
   }
-
 }
 
 //----------------------------------------------------------------------
@@ -697,7 +717,7 @@ void FTermXTerminal::resetXTermHighlightBackground()
   if ( canResetColor() )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "117" BEL);
+    FTerm::putstring (OSC "117" BEL);
     oscPostfix();
     std::fflush(stdout);
   }
@@ -755,8 +775,8 @@ const FString* FTermXTerminal::captureXTermFont()
     || term_detection->isScreenTerm()
     || FTermcap::osc_support )
   {
-    fd_set ifds;
-    struct timeval tv;
+    fd_set ifds{};
+    struct timeval tv{};
     int stdin_no = FTermios::getStdIn();
 
     oscPrefix();
@@ -772,7 +792,7 @@ const FString* FTermXTerminal::captureXTermFont()
     // Read the terminal answer
     if ( select(stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
     {
-      char temp[150] = { };
+      char temp[150]{};
 
       if ( std::scanf("\033]50;%148[^\n]s", temp) == 1 )
       {
@@ -807,8 +827,8 @@ const FString* FTermXTerminal::captureXTermTitle()
   if ( term_detection->isKdeTerminal() )
     return 0;
 
-  fd_set ifds;
-  struct timeval tv;
+  fd_set ifds{};
+  struct timeval tv{};
   int stdin_no = FTermios::getStdIn();
 
   FTerm::putstring (CSI "21t");  // get title
@@ -822,7 +842,7 @@ const FString* FTermXTerminal::captureXTermTitle()
   // read the terminal answer
   if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
   {
-    char temp[512] = { };
+    char temp[512]{};
 
     if ( std::scanf("\033]l%509[^\n]s", temp) == 1 )
     {
@@ -863,6 +883,9 @@ void FTermXTerminal::enableXTermMouse()
 
   if ( mouse_support )
     return;
+
+  if ( ! fsystem )
+    fsystem = FTerm::getFSystem();
 
   FTerm::putstring (CSI "?1001s"    // save old highlight mouse tracking
                     CSI "?1000h"    // enable x11 mouse tracking

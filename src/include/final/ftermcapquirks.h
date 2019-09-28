@@ -35,21 +35,16 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/fc.h"
-#include "final/fterm.h"
-#include "final/ftermcap.h"
-#include "final/ftermdata.h"
-#include "final/ftermdetection.h"
-
 namespace finalcut
 {
+
+// class forward declaration
+class FTermData;
+class FTermDetection;
 
 //----------------------------------------------------------------------
 // class FTermcapsQuirks
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FTermcapQuirks final
 {
@@ -63,16 +58,12 @@ class FTermcapQuirks final
     // Accessor
     virtual const char* getClassName() const;
 
-    // Mutator
-    static void setFTermData (FTermData*);
-    static void setFTermDetection (FTermDetection*);
-
     // Methods
     static void terminalFixup();
 
   private:
     // Methods
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
     static void freebsd();
 #endif
     static void cygwin();
@@ -87,12 +78,10 @@ class FTermcapQuirks final
     static void general();
     static void ecma48();
 
-    // Data Members
-    static FTermcap::tcap_map* tcap;
+    // Data members
     static FTermData*          fterm_data;
     static FTermDetection*     term_detection;
 };
-#pragma pack(pop)
 
 // FTermcapQuirks inline functions
 //----------------------------------------------------------------------

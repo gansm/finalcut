@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018 Markus Gans                                           *
+* Copyright 2018-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -21,17 +21,23 @@
 ***********************************************************************/
 
 #include "final/fcharmap.h"
+#include "final/fsystem.h"
+#include "final/fterm.h"
+#include "final/ftermdata.h"
 #include "final/ftermfreebsd.h"
+#include "final/ftypes.h"
 
 namespace finalcut
 {
 
 // static class attributes
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-  uInt                      FTermFreeBSD::bsd_alt_keymap = 0;
-  FTermFreeBSD::CursorStyle FTermFreeBSD::cursor_style = fc::normal_cursor;
-  bool                      FTermFreeBSD::change_cursorstyle = true;
-  bool                      FTermFreeBSD::meta_sends_escape = true;
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
+  uInt                      FTermFreeBSD::bsd_alt_keymap{0};
+  FTermFreeBSD::CursorStyle FTermFreeBSD::cursor_style{fc::normal_cursor};
+  bool                      FTermFreeBSD::change_cursorstyle{true};
+  bool                      FTermFreeBSD::meta_sends_escape{true};
+  FSystem*                  FTermFreeBSD::fsystem{nullptr};
+  FTermData*                FTermFreeBSD::fterm_data{nullptr};
 #endif
 
 
@@ -41,29 +47,29 @@ namespace finalcut
 
 // public methods of FTermFreeBSD
 //----------------------------------------------------------------------
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 FTermFreeBSD::CursorStyle FTermFreeBSD::getCursorStyle()
 {
   return cursor_style;
 }
 
 //----------------------------------------------------------------------
-void FTermFreeBSD::setCursorStyle (CursorStyle style, bool hidden)
+bool FTermFreeBSD::setCursorStyle (CursorStyle style)
 {
   // Set cursor style in a BSD console
 
-  if ( ! isFreeBSDConsole() )
-    return;
+  if ( ! fsystem || ! isFreeBSDConsole() || ! change_cursorstyle )
+    return false;
 
-  if ( ! change_cursorstyle )
-    return;
+  if ( ! fterm_data )
+    fterm_data = FTerm::getFTermData();
 
   cursor_style = style;
 
-  if ( hidden )
-    return;
+  if ( fterm_data->isCursorHidden() )
+    return false;
 
-  ioctl(0, CONS_CURSORTYPE, &style);
+  return setFreeBSDCursorStyle(style);
 }
 
 //----------------------------------------------------------------------
@@ -71,49 +77,88 @@ bool FTermFreeBSD::isFreeBSDConsole()
 {
   // Check if it's a FreeBSD console
 
-  keymap_t keymap;
+  keymap_t keymap{};
 
-  if ( ioctl(0, GIO_KEYMAP, &keymap) == 0 )
+  if ( ! fsystem )
+    fsystem = FTerm::getFSystem();
+
+  if ( fsystem && fsystem->ioctl(0, GIO_KEYMAP, &keymap) == 0 )
     return true;
   else
     return false;
 }
 
 //----------------------------------------------------------------------
+void FTermFreeBSD::setBeep (int Hz, int ms)
+{
+  if ( ! FTerm::isFreeBSDTerm() )
+    return;
+
+  // Range for frequency: 21-32766
+  if ( Hz < 21 || Hz > 32766 )
+    return;
+
+  // Range for duration:  0-1999
+  if ( ms < 0 || ms > 1999 )
+    return;
+
+  constexpr int timer_frequency = 1193182;
+  int period = timer_frequency / Hz;
+  ms /= 10;
+  FTerm::putstringf (CSI "=%d;%dB", period, ms);
+  std::fflush(stdout);
+}
+
+//----------------------------------------------------------------------
+void FTermFreeBSD::resetBeep()
+{
+  if ( ! FTerm::isFreeBSDTerm() )
+    return;
+
+  // Default frequency: 1491 Hz
+  // Default duration:  50 ms
+  FTerm::putstring (CSI "=800;5B");
+  std::fflush(stdout);
+}
+
+//----------------------------------------------------------------------
 void FTermFreeBSD::init()
 {
-  // initialize BSD console
+  // Initialize BSD console
+
+  fsystem = FTerm::getFSystem();
+  fterm_data = FTerm::getFTermData();
 
   if ( ! isFreeBSDConsole() )
     return;
 
   if ( meta_sends_escape )
   {
-    // save current left alt key mapping
+    // Save current left alt key mapping
     saveFreeBSDAltKey();
 
-    // map meta key to left alt key
+    // Map meta key to left alt key
     setFreeBSDAlt2Meta();
   }
 
   if ( change_cursorstyle )
   {
     // Initialize FreeBSD console cursor
-    setCursorStyle (fc::destructive_cursor, true);
+    setCursorStyle (fc::destructive_cursor);
   }
 }
 
 //----------------------------------------------------------------------
-void FTermFreeBSD::initCharMap (uInt char_map[][fc::NUM_OF_ENCODINGS])
+void FTermFreeBSD::initCharMap()
 {
   // A FreeBSD console can't show ASCII codes from 0x00 to 0x1b
 
   if ( ! isFreeBSDConsole() )
     return;
 
-  for (std::size_t i = 0; i <= fc::lastCharItem; i++)
-    if ( char_map[i][fc::PC] < 0x1c )
-      char_map[i][fc::PC] = char_map[i][fc::ASCII];
+  for (std::size_t i{0}; i <= fc::lastCharItem; i++)
+    if ( fc::character[i][fc::PC] < 0x1c )
+      fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
 }
 
 //----------------------------------------------------------------------
@@ -127,16 +172,9 @@ void FTermFreeBSD::finish()
   if ( meta_sends_escape )
     resetFreeBSDAlt2Meta();
 
-  setCursorStyle (fc::normal_cursor, false);
+  setFreeBSDCursorStyle (fc::normal_cursor);
 }
 
-//----------------------------------------------------------------------
-void FTermFreeBSD::restoreCursorStyle()
-{
-  // Reset to the last used FreeBSD console cursor style
-
-  setCursorStyle (getCursorStyle(), false);
-}
 
 // private methods of FTermFreeBSD
 //----------------------------------------------------------------------
@@ -145,16 +183,17 @@ bool FTermFreeBSD::saveFreeBSDAltKey()
   // Saving the current mapping for the alt key
 
   static constexpr int left_alt = 0x38;
-  int ret;
-  keymap_t keymap;
+  int ret{-1};
+  keymap_t keymap{};
 
-  ret = ioctl(0, GIO_KEYMAP, &keymap);
+  if ( fsystem )
+    ret = fsystem->ioctl (0, GIO_KEYMAP, &keymap);
 
   if ( ret < 0 )
     return false;
 
-  // save current mapping
-  bsd_alt_keymap = keymap.key[left_alt].map[0];
+  // Save current mapping
+  bsd_alt_keymap = uInt(keymap.key[left_alt].map[0]);
   return true;
 }
 
@@ -164,18 +203,20 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
   // Remapping the alt key
 
   static constexpr int left_alt = 0x38;
-  int ret;
-  keymap_t keymap;
+  int ret{-1};
+  keymap_t keymap{};
 
-  ret = ioctl(0, GIO_KEYMAP, &keymap);
+  if ( fsystem )
+    ret = fsystem->ioctl (0, GIO_KEYMAP, &keymap);
 
   if ( ret < 0 )
     return false;
 
-  // map to meta key
-  keymap.key[left_alt].map[0] = key;
+  // Mapping "key" on the left alt key
+  keymap.key[left_alt].map[0] = int(key);
 
-  if ( (keymap.n_keys > 0) && (ioctl(0, PIO_KEYMAP, &keymap) < 0) )
+  if ( (keymap.n_keys > 0)
+    && fsystem && (fsystem->ioctl(0, PIO_KEYMAP, &keymap) < 0) )
     return false;
   else
     return true;
@@ -196,6 +237,15 @@ bool FTermFreeBSD::resetFreeBSDAlt2Meta()
 
   return setFreeBSDAltKey (bsd_alt_keymap);
 }
-#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
+
+//----------------------------------------------------------------------
+bool FTermFreeBSD::setFreeBSDCursorStyle (CursorStyle style)
+{
+  if ( fsystem->ioctl(0, CONS_CURSORTYPE, &style) == 0 )
+    return true;
+  else
+    return false;
+}
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 
 }  // namespace finalcut

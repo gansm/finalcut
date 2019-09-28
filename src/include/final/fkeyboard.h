@@ -35,26 +35,20 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/fobject.h"
+#include <sys/time.h>
 #include "final/ftypes.h"
-
-#if defined(__linux__)
-  #include "final/ftermlinux.h"
-#endif
 
 namespace finalcut
 {
 
 // class forward declaration
 class FApplication;
-
+class FString;
+class FTermLinux;
 
 //----------------------------------------------------------------------
 // class FKeyboardCommand
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FKeyboardCommand final
 {
@@ -67,19 +61,15 @@ class FKeyboardCommand final
     void execute();
 
   private:
-    // Data Members
+    // Data members
     FApplication* instance{nullptr};
     void (FApplication::*handler)(){nullptr};
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------
 // class FKeyboard
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FKeyboard final
 {
@@ -116,11 +106,6 @@ class FKeyboard final
     void                disableUTF8();
     void                enableMouseSequences();
     void                disableMouseSequences();
-
-#if defined(__linux__)
-    void                setFTermLinux (FTermLinux*);
-#endif
-
     void                setPressCommand (FKeyboardCommand);
     void                setReleaseCommand (FKeyboardCommand);
     void                setEscPressedCommand (FKeyboardCommand);
@@ -129,6 +114,7 @@ class FKeyboard final
     bool                isInputDataPending();
 
     // Methods
+    static void         init();
     bool&               unprocessedInput();
     bool                isKeyPressed();
     void                clearKeyBuffer();
@@ -166,31 +152,30 @@ class FKeyboard final
     void                keyReleased();
     void                escapeKeyPressed();
 
-    // Data Members
-    FKey                key{0};
-    char                read_buf[READ_BUF_SIZE]{'\0'};
-    char                fifo_buf[FIFO_BUF_SIZE]{'\0'};
-    int                 fifo_offset{0};
-    bool                fifo_in_use{false};
-    int                 stdin_status_flags{0};
-    static uInt64       key_timeout;
-    bool                input_data_pending{false};
-    bool                utf8_input{false};
-    bool                mouse_support{true};
-    bool                non_blocking_stdin{false};
+    // Data members
     FKeyboardCommand    keypressed_cmd{};
     FKeyboardCommand    keyreleased_cmd{};
     FKeyboardCommand    escape_key_cmd{};
-
-    static timeval      time_keypressed;
-    fc::fkeymap*        key_map{nullptr};
 
 #if defined(__linux__)
     #undef linux
     static FTermLinux*  linux;
 #endif
+
+    static timeval      time_keypressed;
+    static uInt64       key_timeout;
+    fc::fkeymap*        key_map{nullptr};
+    FKey                key{0};
+    char                read_buf[READ_BUF_SIZE]{'\0'};
+    char                fifo_buf[FIFO_BUF_SIZE]{'\0'};
+    int                 fifo_offset{0};
+    int                 stdin_status_flags{0};
+    bool                fifo_in_use{false};
+    bool                input_data_pending{false};
+    bool                utf8_input{false};
+    bool                mouse_support{true};
+    bool                non_blocking_stdin{false};
 };
-#pragma pack(pop)
 
 // FKeyboard inline functions
 //----------------------------------------------------------------------
@@ -228,12 +213,6 @@ inline void FKeyboard::enableMouseSequences()
 //----------------------------------------------------------------------
 inline void FKeyboard::disableMouseSequences()
 { mouse_support = false; }
-
-#if defined(__linux__)
-//----------------------------------------------------------------------
-inline void FKeyboard::setFTermLinux (FTermLinux* linux_obj)
-{ linux = linux_obj; }
-#endif
 
 //----------------------------------------------------------------------
 inline void FKeyboard::setPressCommand (FKeyboardCommand cmd)

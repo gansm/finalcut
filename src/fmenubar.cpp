@@ -24,8 +24,12 @@
 #include <vector>
 
 #include "final/fapplication.h"
+#include "final/fevent.h"
+#include "final/fmenu.h"
 #include "final/fmenubar.h"
+#include "final/fmenuitem.h"
 #include "final/fstatusbar.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {
@@ -45,7 +49,7 @@ FMenuBar::FMenuBar(FWidget* parent)
 //----------------------------------------------------------------------
 FMenuBar::~FMenuBar()  // destructor
 {
-  setMenuBar(0);
+  setMenuBar(nullptr);
 }
 
 
@@ -61,11 +65,12 @@ void FMenuBar::resetMenu()
 void FMenuBar::hide()
 {
   FWindow::hide();
+  const auto& wc = getFWidgetColors();
   FColor fg = wc.term_fg;
   FColor bg = wc.term_bg;
   setColor (fg, bg);
   screenWidth = getDesktopWidth();
-  auto blank = createBlankArray (screenWidth + 1);
+  char* blank = createBlankArray (screenWidth + 1);
   print() << FPoint(1, 1) << blank;
   destroyBlankArray (blank);
 }
@@ -148,7 +153,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
   {
     mouse_down = false;
 
-    if ( ! item_list.empty() && hasSelectedItem() )
+    if ( ! getItemList().empty() && hasSelectedItem() )
       leaveMenuBar();
     else
       return;
@@ -245,6 +250,7 @@ void FMenuBar::init()
 
   addAccelerator (fc::Fkey_f10);
   addAccelerator (fc::Fckey_space);
+  const auto& wc = getFWidgetColors();
   setForegroundColor (wc.menu_active_fg);
   setBackgroundColor (wc.menu_active_bg);
   unsetFocusable();
@@ -254,35 +260,31 @@ void FMenuBar::init()
 void FMenuBar::calculateDimensions()
 {
   FPoint item_pos (1, 1);
-  auto iter = item_list.begin();
-  auto last = item_list.end();
 
   // find the maximum item width
-  while ( iter != last )
+  for (auto&& item : getItemList())
   {
-    std::size_t len = (*iter)->getTextLength();
-    int item_width = int(len) + 2;
+    int len = int(item->getTextWidth());
+    int item_width = len + 2;
 
     // set item geometry
-    (*iter)->setGeometry (item_pos, FSize(std::size_t(item_width), 1), false);
+    item->setGeometry (item_pos, FSize(std::size_t(item_width), 1), false);
 
     // set menu position
-    if ( (*iter)->hasMenu() )
-      (*iter)->getMenu()->setPos (item_pos, false);
+    if ( item->hasMenu() )
+      item->getMenu()->setPos (item_pos, false);
 
     item_pos.x_ref() += item_width;
-
-    ++iter;
   }
 }
 
 //----------------------------------------------------------------------
 bool FMenuBar::selectNextItem()
 {
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  auto list = getItemList();
+  auto iter = list.begin();
 
-  while ( iter != last )
+  while ( iter != list.end() )
   {
     if ( (*iter)->isSelected() )
     {
@@ -293,8 +295,8 @@ bool FMenuBar::selectNextItem()
       {
         ++next_element;
 
-        if ( next_element == item_list.end() )
-          next_element = item_list.begin();
+        if ( next_element == list.end() )
+          next_element = list.begin();
 
         next = static_cast<FMenuItem*>(*next_element);
       } while ( ! next->isEnabled()
@@ -341,8 +343,8 @@ bool FMenuBar::selectNextItem()
 //----------------------------------------------------------------------
 bool FMenuBar::selectPrevItem()
 {
-  auto iter = item_list.end();
-  auto first = item_list.begin();
+  auto list = getItemList();
+  auto iter = list.end();
 
   do
   {
@@ -355,8 +357,8 @@ bool FMenuBar::selectPrevItem()
 
       do
       {
-        if ( prev_element == item_list.begin() )
-          prev_element = item_list.end();
+        if ( prev_element == list.begin() )
+          prev_element = list.end();
 
         --prev_element;
         prev = static_cast<FMenuItem*>(*prev_element);
@@ -396,7 +398,7 @@ bool FMenuBar::selectPrevItem()
       break;
     }
   }
-  while ( iter != first );
+  while ( iter != list.begin() );
 
   return true;
 }
@@ -404,17 +406,17 @@ bool FMenuBar::selectPrevItem()
 //----------------------------------------------------------------------
 bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 {
-  auto iter = item_list.begin();
-  auto last = item_list.end();
-
-  while ( iter != last )
+  for (auto&& item : getItemList())
   {
-    if ( (*iter)->isEnabled() )
+    if ( item->isEnabled() )
     {
-      uChar hotkey = (*iter)->getHotkey();
+      FKey hotkey = item->getHotkey();
       FKey key = ev->key();
 
-      if ( fc::Fmkey_meta + FKey(std::tolower(hotkey)) == key )
+      if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
+        hotkey -= 0xfee0;
+
+      if ( fc::Fmkey_meta + FKey(std::tolower(int(hotkey))) == key )
       {
         auto sel_item = getSelectedItem();
 
@@ -423,13 +425,13 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 
         unselectItem();
 
-        if ( (*iter)->hasMenu() )
+        if ( item->hasMenu() )
         {
-          auto menu = (*iter)->getMenu();
-          (*iter)->setSelected();
-          setSelectedItem(*iter);
-          (*iter)->setFocus();
-          (*iter)->openMenu();
+          auto menu = item->getMenu();
+          item->setSelected();
+          setSelectedItem(item);
+          item->setFocus();
+          item->openMenu();
           menu->selectFirstItem();
           auto first_item = menu->getSelectedItem();
 
@@ -446,46 +448,19 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
         }
         else
         {
-          setSelectedItem(0);
+          setSelectedItem(nullptr);
           redraw();
           drop_down = false;
-          (*iter)->processClicked();
+          item->processClicked();
         }
 
         ev->accept();
         return true;
       }
     }
-
-    ++iter;
   }
 
   return false;
-}
-
-//----------------------------------------------------------------------
-std::size_t FMenuBar::getHotkeyPos ( wchar_t src[]
-                                   , wchar_t dest[]
-                                   , std::size_t length )
-{
-  // find hotkey position in string
-  // + generate a new string without the '&'-sign
-  std::size_t hotkeypos = NOT_SET;
-  wchar_t* txt = src;
-
-  for (std::size_t i = 0; i < length; i++)
-  {
-    if ( i < length && txt[i] == L'&' && hotkeypos == NOT_SET )
-    {
-      hotkeypos = i;
-      i++;
-      src++;
-    }
-
-    *dest++ = *src++;
-  }
-
-  return hotkeypos;
 }
 
 //----------------------------------------------------------------------
@@ -497,7 +472,9 @@ void FMenuBar::draw()
 //----------------------------------------------------------------------
 void FMenuBar::drawItems()
 {
-  if ( item_list.empty() )
+  auto list = getItemList();
+
+  if ( list.empty() )
     return;
 
   print() << FPoint(1, 1);
@@ -506,15 +483,10 @@ void FMenuBar::drawItems()
     setReverse(true);
 
   screenWidth = getDesktopWidth();
-  auto iter = item_list.begin();
-  auto last = item_list.end();
-  std::size_t x = 1;
+  std::size_t x{1};
 
-  while ( iter != last )
-  {
-    drawItem (*iter, x);
-    ++iter;
-  }
+  for (auto&& item : list)
+    drawItem (item, x);
 
   // Print spaces to end of line
   for (; x <= screenWidth; x++)
@@ -527,16 +499,15 @@ void FMenuBar::drawItems()
 //----------------------------------------------------------------------
 inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
 {
-  FString txt = menuitem->getText();
-  menuText txtdata;
-  std::size_t txt_length = txt.getLength();
-  std::size_t to_char;
-  std::size_t hotkeypos;
-  bool is_enabled  = menuitem->isEnabled();
-  bool is_selected = menuitem->isSelected();
-
+  menuText txtdata{};
   txtdata.startpos = x + 1;
   txtdata.no_underline = menuitem->getFlags().no_underline;
+  FString txt(menuitem->getText());
+  std::size_t to_char{};
+  std::size_t txt_length = txt.getLength();
+  std::size_t column_width = getColumnWidth(txt);
+  bool is_enabled  = menuitem->isEnabled();
+  bool is_selected = menuitem->isSelected();
 
   // Set screen attributes
   setLineAttributes (menuitem);
@@ -557,26 +528,31 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
   else
     to_char = txt_length - screenWidth - x - 1;
 
-  hotkeypos = getHotkeyPos (txt.wc_str(), txtdata.text, txt_length);
+  std::size_t hotkeypos = finalcut::getHotkeyPos ( txt.wc_str()
+                                                 , txtdata.text
+                                                 , txt_length );
 
   if ( hotkeypos != NOT_SET )
   {
     txt_length--;
+    column_width--;
     to_char--;
   }
 
   txtdata.length = to_char;
-  x += txt_length;
+  x += column_width;
 
   if ( ! is_enabled || is_selected )
     txtdata.hotkeypos = NOT_SET;
   else
     txtdata.hotkeypos = hotkeypos;
 
+  setCursorToHotkeyPosition (menuitem, hotkeypos);
   drawMenuText (txtdata);
   drawEllipsis (txtdata, x);
   drawTrailingSpace (x);
 
+  const auto& wc = getFWidgetColors();
   setColor (wc.menu_active_fg, wc.menu_active_bg);
 
   if ( isMonochron() && is_enabled && is_selected )
@@ -590,6 +566,7 @@ inline void FMenuBar::setLineAttributes (FMenuItem* menuitem)
 {
   bool is_enabled  = menuitem->isEnabled();
   bool is_selected = menuitem->isSelected();
+  const auto& wc = getFWidgetColors();
 
   if ( is_enabled )
   {
@@ -617,16 +594,35 @@ inline void FMenuBar::setLineAttributes (FMenuItem* menuitem)
 }
 
 //----------------------------------------------------------------------
+inline void FMenuBar::setCursorToHotkeyPosition ( FMenuItem* menuitem
+                                                , std::size_t hotkeypos )
+{
+  if ( ! menuitem->isSelected() )
+    return;
+
+  if ( hotkeypos == NOT_SET )
+  {
+    // set cursor to the first character
+    menuitem->setCursorPos (FPoint(2, 1));
+    return;
+  }
+
+  // set cursor to the hotkey position
+  std::size_t x = getColumnWidth (menuitem->getText(), hotkeypos);
+  menuitem->setCursorPos (FPoint(2 + int(x), 1));
+}
+
+//----------------------------------------------------------------------
 inline void FMenuBar::drawMenuText (menuText& data)
 {
   // Print menu text
 
-  for (std::size_t z = 0; z < data.length; z++)
+  for (std::size_t z{0}; z < data.length; z++)
   {
     if ( data.startpos > screenWidth - z )
       break;
 
-    if ( ! std::iswprint(wint_t(data.text[z])) )
+    if ( ! std::iswprint(std::wint_t(data.text[z])) )
     {
       if ( ! isNewFont()
         && ( int(data.text[z]) < fc::NF_rev_left_arrow2
@@ -638,6 +634,7 @@ inline void FMenuBar::drawMenuText (menuText& data)
 
     if ( z == data.hotkeypos )
     {
+      const auto& wc = getFWidgetColors();
       setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
 
       if ( ! data.no_underline )
@@ -702,17 +699,15 @@ void FMenuBar::adjustItems()
 {
   int item_X = 1;
   int item_Y = 1;
-  auto iter = item_list.begin();
-  auto last = item_list.end();
 
-  while ( iter != last )
+  for (auto&& item : getItemList())
   {
     // get item width
-    int item_width = int((*iter)->getWidth());
+    int item_width = int(item->getWidth());
 
-    if ( (*iter)->hasMenu() )
+    if ( item->hasMenu() )
     {
-      auto menu = (*iter)->getMenu();
+      auto menu = item->getMenu();
 
       // set menu position
       menu->setPos (FPoint(menu->adjustX(item_X), item_Y));
@@ -722,7 +717,6 @@ void FMenuBar::adjustItems()
     }
 
     item_X += item_width;
-    ++iter;
   }
 }
 
@@ -794,7 +788,7 @@ bool FMenuBar::clickItem (FMenuItem* item)
 
   if ( getSelectedItem() == item )
   {
-    setSelectedItem(0);
+    setSelectedItem(nullptr);
     leaveMenuBar();
     drop_down = false;
     item->processClicked();
@@ -814,40 +808,33 @@ void FMenuBar::unselectMenuItem (FMenuItem* item)
   drop_down = false;
 
   if ( getSelectedItem() == item )
-    setSelectedItem(0);
+    setSelectedItem(nullptr);
 }
 
 //----------------------------------------------------------------------
 void FMenuBar::mouseDownOverList (const FMouseEvent* ev)
 {
-  if ( item_list.empty() )
+  auto list = getItemList();
+
+  if ( list.empty() )
     return;
 
   focus_changed = false;
-  auto iter = item_list.begin();
-  auto last = item_list.end();
   int mouse_x = ev->getX();
   int mouse_y = ev->getY();
 
-  while ( iter != last )
+  for (auto&& item : list)
   {
-    int x1 = (*iter)->getX();
-    int x2 = (*iter)->getX() + int((*iter)->getWidth());
+    int x1 = item->getX();
+    int x2 = item->getX() + int(item->getWidth());
 
     if ( mouse_y == 1 )
     {
       if ( mouse_x >= x1 && mouse_x < x2 )
-      {
-        // Mouse pointer over item
-        selectMenuItem (*iter);
-      }
+        selectMenuItem (item);  // Mouse pointer over item
       else
-      {
-        unselectMenuItem (*iter);
-      }
+        unselectMenuItem (item);
     }
-
-    ++iter;
   }
 
   if ( getStatusBar() )
@@ -868,39 +855,37 @@ void FMenuBar::mouseDownOverList (const FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
 {
-  if ( item_list.empty() )
+  auto list = getItemList();
+
+  if ( list.empty() )
     return;
 
-  auto iter = item_list.begin();
-  auto last = item_list.end();
   int mouse_x = ev->getX();
   int mouse_y = ev->getY();
 
-  while ( iter != last )
+  for (auto&& item : list)
   {
-    int x1 = (*iter)->getX();
-    int x2 = (*iter)->getX() + int((*iter)->getWidth());
+    int x1 = item->getX();
+    int x2 = item->getX() + int(item->getWidth());
 
     if ( mouse_y == 1
       && mouse_x >= x1
       && mouse_x < x2
-      && (*iter)->isEnabled()
-      && (*iter)->isSelected() )
+      && item->isEnabled()
+      && item->isSelected() )
     {
       // Mouse pointer over item
-      if ( ! activateMenu(*iter) )
+      if ( ! activateMenu(item) )
       {
-        if ( clickItem(*iter) )
+        if ( clickItem(item) )
           return;
       }
     }
     else
     {
-      unselectMenuItem(*iter);
+      unselectMenuItem(item);
       redraw();
     }
-
-    ++iter;
   }
 
   if ( ! hasSelectedItem() )
@@ -910,37 +895,37 @@ void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
 {
-  if ( item_list.empty() )
+  auto list = getItemList();
+
+  if ( list.empty() )
     return;
 
   focus_changed = false;
-  bool mouse_over_menubar = false;
-  auto iter = item_list.begin();
-  auto last = item_list.end();
+  bool mouse_over_menubar{false};
   int mouse_x = ev->getX();
   int mouse_y = ev->getY();
 
   if ( getTermGeometry().contains(ev->getTermPos()) )
     mouse_over_menubar = true;
 
-  while ( iter != last )
+  for (auto&& item : list)
   {
-    int x1 = (*iter)->getX();
-    int x2 = (*iter)->getX() + int((*iter)->getWidth());
+    int x1 = item->getX();
+    int x2 = item->getX() + int(item->getWidth());
 
     if ( mouse_x >= x1
       && mouse_x < x2
       && mouse_y == 1 )
     {
       // Mouse pointer over item
-      selectMenuItem(*iter);
+      selectMenuItem(item);
     }
     else
     {
       if ( mouse_over_menubar )
       {
         // Unselect selected item without mouse focus
-        unselectMenuItem(*iter);
+        unselectMenuItem(item);
       }
       else
       {
@@ -948,8 +933,6 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
         passEventToMenu(ev);
       }
     }
-
-    ++iter;
   }
 
   if ( getStatusBar() )

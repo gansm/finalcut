@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2018 Markus Gans                                      *
+* Copyright 2015-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -48,20 +48,25 @@
 #include <memory>
 #include <vector>
 
-#include "final/emptyfstring.h"
-#include "final/fc.h"
-#include "final/fevent.h"
-#include "final/ftypes.h"
-
 namespace finalcut
 {
+
+// class forward declaration
+class FEvent;
+class FKeyEvent;
+class FMouseEvent;
+class FWheelEvent;
+class FFocusEvent;
+class FAccelEvent;
+class FShowEvent;
+class FHideEvent;
+class FCloseEvent;
+class FTimerEvent;
+class FUserEvent;
 
 //----------------------------------------------------------------------
 // class FObject
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FObject
 {
@@ -98,8 +103,8 @@ class FObject
     // Inquiries
     bool                 hasParent() const;
     bool                 hasChildren() const;
-    bool                 isChild (FObject*) const;
-    bool                 isDirectChild (FObject*) const;
+    bool                 isChild (const FObject*) const;
+    bool                 isDirectChild (const FObject*) const;
     bool                 isWidget() const;
     bool                 isInstanceOf (const char[]) const;
     bool                 isTimerInUpdating() const;
@@ -149,16 +154,15 @@ class FObject
     // Method
     virtual void performTimerAction (const FObject*, const FEvent*);
 
-    // Data Members
-    FObject*            parent_obj{nullptr};
-    FObjectList         children_list{};  // no children yet
-    bool                has_parent{false};
-    bool                widget_object{false};
-    static bool         timer_modify_lock;
-    static TimerList*   timer_list;
+    // Data members
+    FObject*             parent_obj{nullptr};
+    FObjectList          children_list{};  // no children yet
+    bool                 has_parent{false};
+    bool                 widget_object{false};
+    static bool          timer_modify_lock;
+    static TimerList*    timer_list;
 };
 
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 inline const char* FObject::getClassName() const
@@ -205,7 +209,7 @@ inline bool FObject::hasChildren() const
 { return bool( ! children_list.empty() ); }
 
 //----------------------------------------------------------------------
-inline bool FObject::isDirectChild (FObject* obj) const
+inline bool FObject::isDirectChild (const FObject* obj) const
 { return bool( obj->getParent() == this ); }
 
 //----------------------------------------------------------------------
@@ -235,7 +239,7 @@ inline void FObject::setWidgetProperty (bool property)
 
 static inline timeval operator + (const timeval& t1, const timeval& t2)
 {
-  timeval tmp;
+  timeval tmp{};
   tmp.tv_sec = t1.tv_sec + t2.tv_sec;
 
   if ( (tmp.tv_usec = t1.tv_usec + t2.tv_usec) >= 1000000 )
@@ -250,7 +254,7 @@ static inline timeval operator + (const timeval& t1, const timeval& t2)
 //----------------------------------------------------------------------
 static inline timeval operator - (const timeval& t1, const timeval& t2)
 {
-  timeval tmp;
+  timeval tmp{};
   tmp.tv_sec = t1.tv_sec - t2.tv_sec;
 
   if ( (tmp.tv_usec = t1.tv_usec - t2.tv_usec) < 0 )

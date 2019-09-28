@@ -22,7 +22,10 @@
 
 #include <algorithm>
 
+#include "final/fevent.h"
 #include "final/fscrollbar.h"
+#include "final/fsize.h"
+#include "final/fwidgetcolors.h"
 
 namespace finalcut
 {
@@ -126,7 +129,7 @@ void FScrollbar::setPageSize (int document_size, int page_size)
 //----------------------------------------------------------------------
 void FScrollbar::setOrientation (fc::orientation o)
 {
-  std::size_t nf = 0;
+  std::size_t nf{0};
   length = ( getHeight() > getWidth() ) ? getHeight() : getWidth();
 
   if ( o == fc::vertical && bar_orientation == fc::horizontal )
@@ -155,7 +158,7 @@ void FScrollbar::setGeometry ( const FPoint& pos, const FSize& size
 
   FWidget::setGeometry (pos, size, adjust);
 
-  std::size_t nf = 0;
+  std::size_t nf{0};
   std::size_t w = size.getWidth();
   std::size_t h = size.getHeight();
   length = ( h > w ) ? h : w;
@@ -232,120 +235,7 @@ void FScrollbar::calculateSliderValues()
     slider_pos = int(bar_length - slider_length);
 }
 
-//----------------------------------------------------------------------
-void FScrollbar::drawVerticalBar()
-{
-  int z;
-  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
 
-  for (z = 1; z <= slider_pos; z++)
-  {
-    print() << FPoint(1, 1 + z);
-
-    if ( isNewFont() )
-    {
-      if ( isMonochron() || max_color < 16 )
-        print (fc::MediumShade);  // ▒
-      else
-        print (fc::NF_border_line_left);  // ⎸
-    }
-
-    if ( isMonochron() || max_color < 16 )
-      print (fc::MediumShade);  // ▒
-    else
-      print (' ');
-  }
-
-  setColor (wc.scrollbar_bg, wc.scrollbar_fg);
-
-  if ( isMonochron() )
-    setReverse(false);
-
-  for (z = 1; z <= int(slider_length); z++)
-  {
-    print() << FPoint(1, 1 + slider_pos + z);
-
-    if ( isNewFont() )
-      print (' ');
-
-    print (' ');
-  }
-
-  if ( isMonochron() )
-    setReverse(true);
-
-  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-
-  for (z = slider_pos + int(slider_length) + 1; z <= int(bar_length); z++)
-  {
-    print() << FPoint(1, 1 + z);
-
-    if ( isNewFont() )
-    {
-      if ( isMonochron() || max_color < 16 )
-        print (fc::MediumShade);  // ▒
-      else
-        print (fc::NF_border_line_left);  // ⎸
-    }
-
-    if ( isMonochron() || max_color < 16 )
-      print (fc::MediumShade);
-    else
-      print (' ');
-  }
-
-  if ( isMonochron() )
-    setReverse(false);
-}
-
-//----------------------------------------------------------------------
-void FScrollbar::drawHorizontalBar()
-{
-  int z;
-  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-
-  if ( isNewFont() )
-    print() << FPoint(3, 1);
-  else
-    print() << FPoint(2, 1);
-
-  for (z = 0; z < slider_pos; z++)
-  {
-    if ( isNewFont() && max_color > 8 )
-      print (fc::NF_border_line_upper);  // ¯
-    else if ( isMonochron() || max_color < 16 )
-      print (fc::MediumShade);  // ▒
-    else
-      print (' ');
-  }
-
-  setColor (wc.scrollbar_bg, wc.scrollbar_fg);
-
-  if ( isMonochron() )
-    setReverse(false);
-
-  for (z = 0; z < int(slider_length); z++)
-    print (' ');
-
-  if ( isMonochron() )
-    setReverse(true);
-
-  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-  z = slider_pos + int(slider_length) + 1;
-
-  for (; z <= int(bar_length); z++)
-  {
-    if ( isNewFont() && max_color > 8 )
-      print (fc::NF_border_line_upper);  // ¯
-    else if ( isMonochron() || max_color < 16 )
-      print (fc::MediumShade);  // ▒
-    else
-      print (' ');
-  }
-
-  if ( isMonochron() )
-    setReverse(false);
-}
 
 //----------------------------------------------------------------------
 void FScrollbar::drawBar()
@@ -367,8 +257,6 @@ void FScrollbar::drawBar()
 //----------------------------------------------------------------------
 void FScrollbar::onMouseDown (FMouseEvent* ev)
 {
-  int mouse_x, mouse_y;
-
   if ( ev->getButton() != fc::LeftButton
     && ev->getButton() != fc::MiddleButton )
     return;
@@ -376,8 +264,8 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
   if ( min == max )
     return;
 
-  mouse_x = ev->getX();
-  mouse_y = ev->getY();
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
 
   if ( ev->getButton() == fc::MiddleButton )
   {
@@ -440,14 +328,12 @@ void FScrollbar::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FScrollbar::onMouseMove (FMouseEvent* ev)
 {
-  int mouse_x, mouse_y, new_scroll_type;
-
   if ( ev->getButton() != fc::LeftButton
     && ev->getButton() != fc::MiddleButton )
     return;
 
-  mouse_x = ev->getX();
-  mouse_y = ev->getY();
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
 
   if ( ev->getButton() == fc::MiddleButton )
   {
@@ -456,7 +342,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
   }
 
   // Process left button
-  new_scroll_type = getClickedScrollType(mouse_x, mouse_y);
+  int new_scroll_type = getClickedScrollType(mouse_x, mouse_y);
 
   if ( scroll_type == FScrollbar::scrollJump )
   {
@@ -584,8 +470,114 @@ void FScrollbar::draw()
 }
 
 //----------------------------------------------------------------------
+void FScrollbar::drawVerticalBar()
+{
+  const auto& wc = getFWidgetColors();
+  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+
+  for (int z{1}; z <= slider_pos; z++)
+  {
+    print() << FPoint(1, 1 + z);
+    drawVerticalBackgroundLine();
+  }
+
+  setColor (wc.scrollbar_bg, wc.scrollbar_fg);
+
+  if ( isMonochron() )
+    setReverse(false);
+
+  for (int z{1}; z <= int(slider_length); z++)  // Draw slider
+  {
+    print() << FPoint(1, 1 + slider_pos + z);
+
+    if ( isNewFont() )
+      print (' ');
+
+    print (' ');
+  }
+
+  if ( isMonochron() )
+    setReverse(true);
+
+  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+
+  for (int z = slider_pos + int(slider_length) + 1; z <= int(bar_length); z++)
+  {
+    print() << FPoint(1, 1 + z);
+    drawVerticalBackgroundLine();
+  }
+
+  if ( isMonochron() )
+    setReverse(false);
+}
+
+//----------------------------------------------------------------------
+inline void FScrollbar::drawVerticalBackgroundLine()
+{
+  if ( isNewFont() )
+  {
+    if ( isMonochron() || max_color < 16 )
+      print (fc::MediumShade);  // ▒
+    else
+      print (fc::NF_border_line_left);  // ⎸
+  }
+
+  if ( isMonochron() || max_color < 16 )
+    print (fc::MediumShade);  // ▒
+  else
+    print (' ');
+}
+
+//----------------------------------------------------------------------
+void FScrollbar::drawHorizontalBar()
+{
+  const auto& wc = getFWidgetColors();
+  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+
+  if ( isNewFont() )
+    print() << FPoint(3, 1);
+  else
+    print() << FPoint(2, 1);
+
+  for (int z{0}; z < slider_pos; z++)
+    drawHorizontalBackgroundColumn();
+
+  setColor (wc.scrollbar_bg, wc.scrollbar_fg);
+
+  if ( isMonochron() )
+    setReverse(false);
+
+  for (int z{0}; z < int(slider_length); z++)  // Draw slider
+    print (' ');
+
+  if ( isMonochron() )
+    setReverse(true);
+
+  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+  int z = slider_pos + int(slider_length) + 1;
+
+  for (; z <= int(bar_length); z++)
+    drawHorizontalBackgroundColumn();
+
+  if ( isMonochron() )
+    setReverse(false);
+}
+
+//----------------------------------------------------------------------
+inline void FScrollbar::drawHorizontalBackgroundColumn()
+{
+  if ( isNewFont() && max_color > 8 )
+    print (fc::NF_border_line_upper);  // ¯
+  else if ( isMonochron() || max_color < 16 )
+    print (fc::MediumShade);  // ▒
+  else
+    print (' ');
+}
+
+//----------------------------------------------------------------------
 void FScrollbar::drawButtons()
 {
+  const auto& wc = getFWidgetColors();
   setColor (wc.scrollbar_button_fg, wc.scrollbar_button_bg);
 
   if ( isNewFont() )
@@ -750,7 +742,7 @@ int FScrollbar::getSliderClickPos (int mouse_x, int mouse_y)
 //----------------------------------------------------------------------
 void FScrollbar::jumpToClickPos (int x, int y)
 {
-  int new_val;
+  int new_val{};
 
   if ( bar_orientation == fc::vertical )
   {

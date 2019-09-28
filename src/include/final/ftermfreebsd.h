@@ -36,9 +36,28 @@
 #endif
 
 #include "final/fc.h"
-#include "final/ftypes.h"
 
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(UNIT_TEST)
+  #define CONS_CURSORTYPE 0x80046307
+  #define GIO_KEYMAP      0x20006b06
+  #define PIO_KEYMAP      0x20006b07
+  #define META            0x84  // Meta key
+  #define NUM_KEYS        256   // Number of keys in table
+  #define NUM_STATES      8     // States per key
+
+  struct keyent_t
+  {
+    int map[NUM_STATES];
+    int spcl;
+    int flgs;
+  };
+
+  struct keymap_t
+  {
+    int n_keys;
+    struct keyent_t key[NUM_KEYS];
+  };
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
   #undef mouse_info  // consio.h
   #undef buttons     // consio.h
 
@@ -49,12 +68,13 @@
 namespace finalcut
 {
 
+// class forward declaration
+class FSystem;
+class FTermData;
+
 //----------------------------------------------------------------------
 // class FTermFreeBSD
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FTermFreeBSD final
 {
@@ -82,17 +102,18 @@ class FTermFreeBSD final
     static bool        isFreeBSDConsole();
 
     // Mutators
-    static void        setCursorStyle (CursorStyle, bool);
+    static bool        setCursorStyle (CursorStyle);
     static void        enableChangeCursorStyle();
     static void        disableChangeCursorStyle();
     static void        enableMetaSendsEscape();
     static void        disableMetaSendsEscape();
+    static void        setBeep (int, int);
+    static void        resetBeep();
 
     // Methods
     static void        init();
-    static void        initCharMap (uInt[][fc::NUM_OF_ENCODINGS]);
+    static void        initCharMap();
     static void        finish();
-    static void        restoreCursorStyle();
 
   private:
     // Methods
@@ -100,14 +121,17 @@ class FTermFreeBSD final
     static bool        setFreeBSDAltKey (uInt);
     static bool        setFreeBSDAlt2Meta();
     static bool        resetFreeBSDAlt2Meta();
+    static bool        setFreeBSDCursorStyle (CursorStyle);
 
-    // Data Members
+    // Data members
     static uInt        bsd_alt_keymap;
     static CursorStyle cursor_style;
     static bool        change_cursorstyle;
     static bool        meta_sends_escape;
+    static FSystem*    fsystem;
+    static FTermData*  fterm_data;
 };
-#pragma pack(pop)
+
 
 // FTermFreeBSD inline functions
 //----------------------------------------------------------------------
@@ -115,7 +139,7 @@ inline const char* FTermFreeBSD::getClassName() const
 { return "FTermFreeBSD"; }
 
 //----------------------------------------------------------------------
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 inline void FTermFreeBSD::enableChangeCursorStyle()
 { change_cursorstyle = true; }
 
@@ -130,7 +154,7 @@ inline void FTermFreeBSD::enableMetaSendsEscape()
 //----------------------------------------------------------------------
 inline void FTermFreeBSD::disableMetaSendsEscape()
 { meta_sends_escape = false; }
-#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 
 }  // namespace finalcut
 

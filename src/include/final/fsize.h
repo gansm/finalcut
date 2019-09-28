@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -35,7 +35,9 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <limits>
 #include <iostream>
+
 #include "final/ftypes.h"
 
 namespace finalcut
@@ -45,15 +47,13 @@ namespace finalcut
 // class FSize
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FSize
 {
   public:
     // Constructors
     FSize () = default;
     FSize (const FSize&);  // copy constructor
+    FSize (FSize&&);       // move constructor
     FSize (std::size_t, std::size_t);
 
     // Destructor
@@ -61,6 +61,7 @@ class FSize
 
     // Overloaded operators
     FSize& operator =  (const FSize&);
+    FSize& operator =  (FSize&&);
     FSize& operator += (const FSize&);
     FSize& operator -= (const FSize&);
 
@@ -94,12 +95,10 @@ class FSize
     std::size_t&        height_ref();
 
   private:
-    // Data Members
+    // Data members
     std::size_t width{0};
     std::size_t height{0};
 };
-#pragma pack(pop)
-
 
 // FSize inline functions
 //----------------------------------------------------------------------
@@ -107,6 +106,12 @@ inline FSize::FSize (const FSize& s)  // copy constructor
   : width(s.width)
   , height(s.height)
 { }
+
+//----------------------------------------------------------------------
+inline FSize::FSize (FSize&& s)  // move constructor
+  : width(s.width)
+  , height(s.height)
+{ s.width = s.height = 0; }
 
 //----------------------------------------------------------------------
 inline FSize::FSize (std::size_t w, std::size_t h)
@@ -141,7 +146,7 @@ inline bool operator > (const FSize& s1, const FSize& s2)
 //----------------------------------------------------------------------
 inline FSize operator + (const FSize& s1, const FSize& s2)
 {
-  std::size_t max = std::numeric_limits<std::size_t>::max();
+  constexpr std::size_t max = std::numeric_limits<std::size_t>::max();
   std::size_t w = ( s1.width < max - s2.width) ? s1.width + s2.width : max;
   std::size_t h = ( s1.height < max - s2.height) ? s1.height + s2.height : max;
   return FSize(w, h);

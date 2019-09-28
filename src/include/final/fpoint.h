@@ -36,7 +36,6 @@
 #endif
 
 #include <iostream>
-#include "final/ftypes.h"
 
 namespace finalcut
 {
@@ -45,15 +44,13 @@ namespace finalcut
 // class FPoint
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FPoint
 {
   public:
     // Constructors
     FPoint () = default;
     FPoint (const FPoint&);  // copy constructor
+    FPoint (FPoint&&);       // move constructor
     FPoint (int, int);
 
     // Destructor
@@ -61,6 +58,7 @@ class FPoint
 
     // Overloaded operators
     FPoint& operator =  (const FPoint&);
+    FPoint& operator =  (FPoint&&);
     FPoint& operator += (const FPoint&);
     FPoint& operator -= (const FPoint&);
 
@@ -89,11 +87,10 @@ class FPoint
     int&                y_ref();
 
   private:
-    // Data Members
+    // Data members
     int xpos{0};
     int ypos{0};
 };
-#pragma pack(pop)
 
 
 // FPoint inline functions
@@ -102,6 +99,12 @@ inline FPoint::FPoint (const FPoint& p)  // copy constructor
   : xpos(p.xpos)
   , ypos(p.ypos)
 { }
+
+//----------------------------------------------------------------------
+inline FPoint::FPoint (FPoint&& p)  // move constructor
+  : xpos(p.xpos)
+  , ypos(p.ypos)
+{ p.xpos = p.ypos = 0; }
 
 //----------------------------------------------------------------------
 inline FPoint::FPoint (int x, int y)

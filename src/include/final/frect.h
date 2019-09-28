@@ -40,18 +40,17 @@
 #endif
 
 #include <algorithm>
-#include "final/fpoint.h"
-#include "final/fsize.h"
 
 namespace finalcut
 {
 
+// class forward declaration
+class FPoint;
+class FSize;
+
 //----------------------------------------------------------------------
 // class FRect
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class FRect
 {
@@ -59,6 +58,7 @@ class FRect
     // Constructors
     FRect () = default;
     FRect (const FRect&);  // copy constructor
+    FRect (FRect&&);       // move constructor
     FRect (int, int, std::size_t, std::size_t);
     FRect (const FPoint&, const FSize&);
     FRect (const FPoint&, const FPoint&);
@@ -68,6 +68,7 @@ class FRect
 
     // Overloaded operators
     FRect& operator = (const FRect&);
+    FRect& operator = (FRect&&);
 
     friend FRect operator +  (const FRect&, const FSize&);
     friend FRect operator -  (const FRect&, const FSize&);
@@ -124,6 +125,8 @@ class FRect
     // Methods
     void                move (int, int);
     void                move (const FPoint&);
+    void                scaleBy (int, int);
+    void                scaleBy (const FPoint&);
     bool                contains (int, int) const;
     bool                contains (const FPoint&) const;
     bool                contains (const FRect&) const;
@@ -132,14 +135,12 @@ class FRect
     FRect               combined (const FRect&) const;
 
   private:
-    // Data Members
+    // Data members
     int X1{0};
     int Y1{0};
     int X2{-1};
     int Y2{-1};
 };
-#pragma pack(pop)
-
 
 // FRect inline functions
 //----------------------------------------------------------------------
@@ -149,6 +150,17 @@ inline FRect::FRect (const FRect& r)  // copy constructor
   , X2(r.X2)
   , Y2(r.Y2)
 { }
+
+//----------------------------------------------------------------------
+inline FRect::FRect (FRect&& r)  // move constructor
+  : X1(r.X1)
+  , Y1(r.Y1)
+  , X2(r.X2)
+  , Y2(r.Y2)
+{
+  r.X1 = r.Y1 = 0;
+  r.X2 = r.Y2 = -1;
+}
 
 //----------------------------------------------------------------------
 inline FRect::FRect (int x, int y, std::size_t width, std::size_t height)
@@ -187,26 +199,6 @@ inline int FRect::getY() const
 { return Y1; }
 
 //----------------------------------------------------------------------
-inline FPoint FRect::getPos() const
-{ return FPoint(X1, Y1); }
-
-//----------------------------------------------------------------------
-inline FPoint FRect::getUpperLeftPos() const
-{ return FPoint(X1, Y1); }
-
-//----------------------------------------------------------------------
-inline FPoint FRect::getUpperRightPos() const
-{ return FPoint(X2, Y1); }
-
-//----------------------------------------------------------------------
-inline FPoint FRect::getLowerLeftPos() const
-{ return FPoint(X1, Y2); }
-
-//----------------------------------------------------------------------
-inline FPoint FRect::getLowerRightPos() const
-{ return FPoint(X2, Y2); }
-
-//----------------------------------------------------------------------
 inline std::size_t FRect::getWidth() const
 {
   int w = X2 - X1 + 1;
@@ -219,10 +211,6 @@ inline std::size_t FRect::getHeight() const
   int h = Y2 - Y1 + 1;
   return ( h < 0 ) ? 0 : std::size_t(h);
 }
-
-//----------------------------------------------------------------------
-inline FSize FRect::getSize() const
-{ return FSize(getWidth(), getHeight()); }
 
 //----------------------------------------------------------------------
 inline int& FRect::x1_ref()

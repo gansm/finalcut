@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2018 Markus Gans                                      *
+* Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -74,14 +74,12 @@ typedef std::vector<FString> FStringList;
 // class FString
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FString
 {
   public:
     // Typedef
-    typedef const wchar_t* iterator;
+    typedef const wchar_t* const_iterator;
+    typedef wchar_t* iterator;
 
     // Constructors
     FString () = default;
@@ -89,6 +87,7 @@ class FString
     explicit FString (std::size_t);
     FString (std::size_t, wchar_t);
     FString (const FString&);        // implicit conversion copy constructor
+    FString (FString&&);             // implicit conversion move constructor
     FString (const std::wstring&);   // implicit conversion constructor
     FString (const wchar_t[]);       // implicit conversion constructor
     FString (const std::string&);    // implicit conversion constructor
@@ -102,6 +101,7 @@ class FString
 
     // Overloaded operators
     FString& operator = (const FString&);
+    FString& operator = (FString&&);
 
     const FString& operator += (const FString&);
 
@@ -192,13 +192,16 @@ class FString
     std::size_t getUTF8length() const;
     std::size_t capacity() const;
 
-    iterator begin() const;
-    iterator end()   const;
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
     wchar_t  front() const;
-    wchar_t  back()  const;
+    wchar_t  back() const;
 
-    FString& sprintf (const FString, ...);
-    FString clear();
+    template<typename... Args>
+    FString& sprintf (const FString, Args&&...);
+    FString  clear();
 
     const wchar_t* wc_str() const;
     wchar_t* wc_str();
@@ -272,13 +275,13 @@ class FString
     wchar_t* c_to_wc_str (const char[]) const;
     wchar_t* extractToken (wchar_t*[], const wchar_t[], const wchar_t[]);
 
-    // Data Members
+    // Data members
     wchar_t*      string{nullptr};
     std::size_t   length{0};
     std::size_t   bufsize{0};
     mutable char* c_string{nullptr};
 };
-#pragma pack(pop)
+
 
 // FString inline functions
 //----------------------------------------------------------------------
@@ -370,11 +373,19 @@ inline std::size_t FString::capacity() const
 { return ( length > 0 ) ? bufsize - 1 : 0; }
 
 //----------------------------------------------------------------------
-inline FString::iterator FString::begin() const
+inline FString::iterator FString::begin()
 { return string; }
 
 //----------------------------------------------------------------------
-inline FString::iterator FString::end() const
+inline FString::iterator FString::end()
+{ return string + length; }
+
+//----------------------------------------------------------------------
+inline FString::const_iterator FString::begin() const
+{ return string; }
+
+//----------------------------------------------------------------------
+inline FString::const_iterator FString::end() const
 { return string + length; }
 
 //----------------------------------------------------------------------
@@ -389,6 +400,25 @@ inline wchar_t FString::back() const
 {
   assert( ! isEmpty() );
   return string[length - 1];
+}
+
+//----------------------------------------------------------------------
+template<typename... Args>
+inline FString& FString::sprintf (const FString format, Args&&... args)
+{
+  static constexpr int BUFSIZE = 4096;
+  wchar_t buffer[BUFSIZE]{};
+
+  if ( ! format )
+  {
+    clear();
+    return *this;
+  }
+
+  std::swprintf ( buffer, BUFSIZE
+                , format.wc_str(), std::forward<Args>(args)... );
+  _assign(buffer);
+  return *this;
 }
 
 //----------------------------------------------------------------------

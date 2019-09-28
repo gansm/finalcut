@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2017-2019 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -26,9 +26,7 @@
 
 #include <final/final.h>
 
-
-// Global FVTerm object
-static finalcut::FVTerm* terminal;
+namespace fc = finalcut::fc;
 
 // Function prototype
 void tcapBoolean (const std::string&, bool);
@@ -37,117 +35,113 @@ void tcapString (const std::string&, const char[]);
 void debug (finalcut::FApplication&);
 void booleans();
 void numeric();
-void string(finalcut::FTermcap::tcap_map*&);
+void string();
 
 
 //----------------------------------------------------------------------
 // struct data
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 struct data
 {
   static int getNumberOfItems();
 
-  struct termcap_string
+  struct alignas(alignof(std::string)) termcap_string
   {
     const std::string name;
-    const finalcut::fc::termcaps cap;
+    const fc::termcaps cap;
   };
 
   static termcap_string strings[];
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 // struct data - string data array
 //----------------------------------------------------------------------
 data::termcap_string data::strings[] =
 {
-  { "t_bell", finalcut::fc::t_bell },
-  { "t_erase_chars", finalcut::fc::t_erase_chars },
-  { "t_clear_screen", finalcut::fc::t_clear_screen },
-  { "t_clr_eos", finalcut::fc::t_clr_eos },
-  { "t_clr_eol", finalcut::fc::t_clr_eol },
-  { "t_clr_bol", finalcut::fc::t_clr_bol },
-  { "t_cursor_home", finalcut::fc::t_cursor_home },
-  { "t_cursor_to_ll", finalcut::fc::t_cursor_to_ll },
-  { "t_carriage_return", finalcut::fc::t_carriage_return },
-  { "t_tab", finalcut::fc::t_tab },
-  { "t_back_tab", finalcut::fc::t_back_tab },
-  { "t_insert_padding", finalcut::fc::t_insert_padding },
-  { "t_insert_character", finalcut::fc::t_insert_character },
-  { "t_parm_ich", finalcut::fc::t_parm_ich },
-  { "t_repeat_char", finalcut::fc::t_repeat_char },
-  { "t_initialize_color", finalcut::fc::t_initialize_color },
-  { "t_initialize_pair", finalcut::fc::t_initialize_pair },
-  { "t_set_a_foreground", finalcut::fc::t_set_a_foreground },
-  { "t_set_a_background", finalcut::fc::t_set_a_background },
-  { "t_set_foreground", finalcut::fc::t_set_foreground },
-  { "t_set_background", finalcut::fc::t_set_background },
-  { "t_set_color_pair", finalcut::fc::t_set_color_pair },
-  { "t_orig_pair", finalcut::fc::t_orig_pair },
-  { "t_orig_colors", finalcut::fc::t_orig_colors },
-  { "t_no_color_video", finalcut::fc::t_no_color_video },
-  { "t_cursor_address", finalcut::fc::t_cursor_address },
-  { "t_column_address", finalcut::fc::t_column_address },
-  { "t_row_address", finalcut::fc::t_row_address },
-  { "t_cursor_visible", finalcut::fc::t_cursor_visible },
-  { "t_cursor_invisible", finalcut::fc::t_cursor_invisible },
-  { "t_cursor_normal", finalcut::fc::t_cursor_normal },
-  { "t_cursor_up", finalcut::fc::t_cursor_up },
-  { "t_cursor_down", finalcut::fc::t_cursor_down },
-  { "t_cursor_left", finalcut::fc::t_cursor_left },
-  { "t_cursor_right", finalcut::fc::t_cursor_right },
-  { "t_parm_up_cursor", finalcut::fc::t_parm_up_cursor },
-  { "t_parm_down_cursor", finalcut::fc::t_parm_down_cursor },
-  { "t_parm_left_cursor", finalcut::fc::t_parm_left_cursor },
-  { "t_parm_right_cursor", finalcut::fc::t_parm_right_cursor },
-  { "t_save_cursor", finalcut::fc::t_save_cursor },
-  { "t_restore_cursor", finalcut::fc::t_restore_cursor },
-  { "t_scroll_forward", finalcut::fc::t_scroll_forward },
-  { "t_scroll_reverse", finalcut::fc::t_scroll_reverse },
-  { "t_enter_ca_mode", finalcut::fc::t_enter_ca_mode },
-  { "t_exit_ca_mode", finalcut::fc::t_exit_ca_mode },
-  { "t_enable_acs", finalcut::fc::t_enable_acs },
-  { "t_enter_bold_mode", finalcut::fc::t_enter_bold_mode },
-  { "t_exit_bold_mode", finalcut::fc::t_exit_bold_mode },
-  { "t_enter_dim_mode", finalcut::fc::t_enter_dim_mode },
-  { "t_exit_dim_mode", finalcut::fc::t_exit_dim_mode },
-  { "t_enter_italics_mode", finalcut::fc::t_enter_italics_mode },
-  { "t_exit_italics_mode", finalcut::fc::t_exit_italics_mode },
-  { "t_enter_underline_mode", finalcut::fc::t_enter_underline_mode },
-  { "t_exit_underline_mode", finalcut::fc::t_exit_underline_mode },
-  { "t_enter_blink_mode", finalcut::fc::t_enter_blink_mode },
-  { "t_exit_blink_mode", finalcut::fc::t_exit_blink_mode },
-  { "t_enter_reverse_mode", finalcut::fc::t_enter_reverse_mode },
-  { "t_exit_reverse_mode", finalcut::fc::t_exit_reverse_mode },
-  { "t_enter_standout_mode", finalcut::fc::t_enter_standout_mode },
-  { "t_exit_standout_mode", finalcut::fc::t_exit_standout_mode },
-  { "t_enter_secure_mode", finalcut::fc::t_enter_secure_mode },
-  { "t_exit_secure_mode", finalcut::fc::t_exit_secure_mode },
-  { "t_enter_protected_mode", finalcut::fc::t_enter_protected_mode },
-  { "t_exit_protected_mode", finalcut::fc::t_exit_protected_mode },
-  { "t_enter_crossed_out_mode", finalcut::fc::t_enter_crossed_out_mode },
-  { "t_exit_crossed_out_mode", finalcut::fc::t_exit_crossed_out_mode },
-  { "t_enter_dbl_underline_mode", finalcut::fc::t_enter_dbl_underline_mode },
-  { "t_exit_dbl_underline_mode", finalcut::fc::t_exit_dbl_underline_mode },
-  { "t_set_attributes", finalcut::fc::t_set_attributes },
-  { "t_exit_attribute_mode", finalcut::fc::t_exit_attribute_mode },
-  { "t_enter_alt_charset_mode", finalcut::fc::t_enter_alt_charset_mode },
-  { "t_exit_alt_charset_mode", finalcut::fc::t_exit_alt_charset_mode },
-  { "t_enter_pc_charset_mode", finalcut::fc::t_enter_pc_charset_mode },
-  { "t_exit_pc_charset_mode", finalcut::fc::t_exit_pc_charset_mode },
-  { "t_enter_insert_mode", finalcut::fc::t_enter_insert_mode },
-  { "t_exit_insert_mode", finalcut::fc::t_exit_insert_mode },
-  { "t_enter_am_mode", finalcut::fc::t_enter_am_mode },
-  { "t_exit_am_mode", finalcut::fc::t_exit_am_mode },
-  { "t_acs_chars", finalcut::fc::t_acs_chars },
-  { "t_keypad_xmit", finalcut::fc::t_keypad_xmit },
-  { "t_keypad_local", finalcut::fc::t_keypad_local },
-  { "t_key_mouse", finalcut::fc::t_key_mouse }
+  { "t_bell", fc::t_bell },
+  { "t_erase_chars", fc::t_erase_chars },
+  { "t_clear_screen", fc::t_clear_screen },
+  { "t_clr_eos", fc::t_clr_eos },
+  { "t_clr_eol", fc::t_clr_eol },
+  { "t_clr_bol", fc::t_clr_bol },
+  { "t_cursor_home", fc::t_cursor_home },
+  { "t_cursor_to_ll", fc::t_cursor_to_ll },
+  { "t_carriage_return", fc::t_carriage_return },
+  { "t_tab", fc::t_tab },
+  { "t_back_tab", fc::t_back_tab },
+  { "t_insert_padding", fc::t_insert_padding },
+  { "t_insert_character", fc::t_insert_character },
+  { "t_parm_ich", fc::t_parm_ich },
+  { "t_repeat_char", fc::t_repeat_char },
+  { "t_initialize_color", fc::t_initialize_color },
+  { "t_initialize_pair", fc::t_initialize_pair },
+  { "t_set_a_foreground", fc::t_set_a_foreground },
+  { "t_set_a_background", fc::t_set_a_background },
+  { "t_set_foreground", fc::t_set_foreground },
+  { "t_set_background", fc::t_set_background },
+  { "t_set_color_pair", fc::t_set_color_pair },
+  { "t_orig_pair", fc::t_orig_pair },
+  { "t_orig_colors", fc::t_orig_colors },
+  { "t_no_color_video", fc::t_no_color_video },
+  { "t_cursor_address", fc::t_cursor_address },
+  { "t_column_address", fc::t_column_address },
+  { "t_row_address", fc::t_row_address },
+  { "t_cursor_visible", fc::t_cursor_visible },
+  { "t_cursor_invisible", fc::t_cursor_invisible },
+  { "t_cursor_normal", fc::t_cursor_normal },
+  { "t_cursor_up", fc::t_cursor_up },
+  { "t_cursor_down", fc::t_cursor_down },
+  { "t_cursor_left", fc::t_cursor_left },
+  { "t_cursor_right", fc::t_cursor_right },
+  { "t_parm_up_cursor", fc::t_parm_up_cursor },
+  { "t_parm_down_cursor", fc::t_parm_down_cursor },
+  { "t_parm_left_cursor", fc::t_parm_left_cursor },
+  { "t_parm_right_cursor", fc::t_parm_right_cursor },
+  { "t_save_cursor", fc::t_save_cursor },
+  { "t_restore_cursor", fc::t_restore_cursor },
+  { "t_scroll_forward", fc::t_scroll_forward },
+  { "t_scroll_reverse", fc::t_scroll_reverse },
+  { "t_enter_ca_mode", fc::t_enter_ca_mode },
+  { "t_exit_ca_mode", fc::t_exit_ca_mode },
+  { "t_enable_acs", fc::t_enable_acs },
+  { "t_enter_bold_mode", fc::t_enter_bold_mode },
+  { "t_exit_bold_mode", fc::t_exit_bold_mode },
+  { "t_enter_dim_mode", fc::t_enter_dim_mode },
+  { "t_exit_dim_mode", fc::t_exit_dim_mode },
+  { "t_enter_italics_mode", fc::t_enter_italics_mode },
+  { "t_exit_italics_mode", fc::t_exit_italics_mode },
+  { "t_enter_underline_mode", fc::t_enter_underline_mode },
+  { "t_exit_underline_mode", fc::t_exit_underline_mode },
+  { "t_enter_blink_mode", fc::t_enter_blink_mode },
+  { "t_exit_blink_mode", fc::t_exit_blink_mode },
+  { "t_enter_reverse_mode", fc::t_enter_reverse_mode },
+  { "t_exit_reverse_mode", fc::t_exit_reverse_mode },
+  { "t_enter_standout_mode", fc::t_enter_standout_mode },
+  { "t_exit_standout_mode", fc::t_exit_standout_mode },
+  { "t_enter_secure_mode", fc::t_enter_secure_mode },
+  { "t_exit_secure_mode", fc::t_exit_secure_mode },
+  { "t_enter_protected_mode", fc::t_enter_protected_mode },
+  { "t_exit_protected_mode", fc::t_exit_protected_mode },
+  { "t_enter_crossed_out_mode", fc::t_enter_crossed_out_mode },
+  { "t_exit_crossed_out_mode", fc::t_exit_crossed_out_mode },
+  { "t_enter_dbl_underline_mode", fc::t_enter_dbl_underline_mode },
+  { "t_exit_dbl_underline_mode", fc::t_exit_dbl_underline_mode },
+  { "t_set_attributes", fc::t_set_attributes },
+  { "t_exit_attribute_mode", fc::t_exit_attribute_mode },
+  { "t_enter_alt_charset_mode", fc::t_enter_alt_charset_mode },
+  { "t_exit_alt_charset_mode", fc::t_exit_alt_charset_mode },
+  { "t_enter_pc_charset_mode", fc::t_enter_pc_charset_mode },
+  { "t_exit_pc_charset_mode", fc::t_exit_pc_charset_mode },
+  { "t_enter_insert_mode", fc::t_enter_insert_mode },
+  { "t_exit_insert_mode", fc::t_exit_insert_mode },
+  { "t_enter_am_mode", fc::t_enter_am_mode },
+  { "t_exit_am_mode", fc::t_exit_am_mode },
+  { "t_acs_chars", fc::t_acs_chars },
+  { "t_keypad_xmit", fc::t_keypad_xmit },
+  { "t_keypad_local", fc::t_keypad_local },
+  { "t_key_mouse", fc::t_key_mouse }
 };
 
 // data inline functions
@@ -180,8 +174,7 @@ void tcapNumeric (const std::string& name, int cap_num)
 //----------------------------------------------------------------------
 void tcapString (const std::string& name, const char cap_str[])
 {
-  uInt len;
-  std::string sequence;
+  std::string sequence{};
   std::cout << name << ": ";
 
   if ( cap_str == 0 )
@@ -190,9 +183,9 @@ void tcapString (const std::string& name, const char cap_str[])
     return;
   }
 
-  len = uInt(std::strlen(cap_str));
+  uInt len = uInt(std::strlen(cap_str));
 
-  for (uInt i = 0; i < len; i++)
+  for (uInt i{0}; i < len; i++)
   {
     uChar c = uChar(cap_str[i]);
 
@@ -225,7 +218,8 @@ void tcapString (const std::string& name, const char cap_str[])
 #if DEBUG
 void debug (finalcut::FApplication& TermApp)
 {
-  finalcut::FTermDebugData& debug_data = TermApp.getFTermDebugData();
+  auto& fterm = TermApp.getFTerm();
+  auto& debug_data = fterm.getFTermDebugData();
   const finalcut::FString& ab_s = debug_data.getAnswerbackString();
   const finalcut::FString& sec_da = debug_data.getSecDAString();
   std::cout << "\n.------------------- debug -------------------\r\n";
@@ -290,15 +284,17 @@ void numeric()
 }
 
 //----------------------------------------------------------------------
-void string(finalcut::FTermcap::tcap_map*& tcap)
+void string()
 {
   std::cout << "\r\n[String]\r\n";
+  finalcut::FTermcap::tcap_map (&tcap_strings)[] \
+      = finalcut::FTermcap::strings;
 
-  for (int n = 0; n <= data::getNumberOfItems(); n++ )
+  for (int n{0}; n <= data::getNumberOfItems(); n++ )
   {
     const std::string name = data::strings[n].name;
-    const finalcut::fc::termcaps cap = data::strings[n].cap;
-    tcapString (name, tcap[cap].string);
+    const fc::termcaps cap = data::strings[n].cap;
+    tcapString (name, tcap_strings[cap].string);
   }
 }
 
@@ -307,14 +303,8 @@ void string(finalcut::FTermcap::tcap_map*& tcap)
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
-  bool disable_alt_screen = true;
+  bool disable_alt_screen{true};
   finalcut::FApplication TermApp (argc, argv, disable_alt_screen);
-
-  // Pointer to the global virtual terminal object
-  terminal = static_cast<finalcut::FVTerm*>(&TermApp);
-
-  finalcut::FTermcap::tcap_map* tcap = nullptr;
-  tcap = finalcut::FTermcap::getTermcapMap();
 
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";
   std::cout << "Terminal: " << TermApp.getTermType() << "\r\n";
@@ -323,5 +313,5 @@ int main (int argc, char* argv[])
 
   booleans();
   numeric();
-  string(tcap);
+  string();
 }

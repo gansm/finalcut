@@ -13,9 +13,11 @@ Table of Contents
 - [Signals and Callbacks](#signals-and-callbacks)
   - [Default signals](#the-final-cut-widgets-emit-the-following-default-signals)
 - [Callback function](#example-of-a-callback-function)
+- [Callback lambda expression](#example-of-an-lambda-expression-callback)
 - [Callback method](#example-of-a-callback-function)
 - [Custom signals](#send-custom-signals)
 - [Dynamic layout](#dynamic-layout)
+- [Scroll view](#scroll-view)
 <!-- /TOC -->
 
 
@@ -25,7 +27,7 @@ How to use the library
 At the beginning of this introduction to the Final Cut
 we will start with a small example.
 
-The following example creates an empty 30×10 character dialog.
+The following example creates an empty 30??10 character dialog.
 
 **File:** *dialog.cpp*
 ```cpp
@@ -288,7 +290,7 @@ class dialogWidget : public FDialog
     }
 
   private:
-    virtual void onTimer (FTimerEvent* ev) override
+    void onTimer (FTimerEvent* ev) override
     {
       if ( id == ev->getTimerId() && n < 9999999999 )
       {
@@ -479,6 +481,64 @@ g++ -O2 -lfinal callback-function.cpp -o callback-function
 ```
 &nbsp;
 
+### Example of an lambda expression callback: ###
+
+**File:** *callback-lambda.cpp*
+
+```cpp
+#include <final/final.h>
+
+using namespace finalcut;
+
+int main (int argc, char* argv[])
+{
+  FApplication app(argc, argv);
+  FDialog dialog(&app);
+  dialog.setText ("Lambda expression as callback");
+  dialog.setGeometry (FRect(25, 5, 45, 9));
+  FButton button ("&bottom", &dialog);
+  button.setGeometry (FPoint(15, 5), FSize(14, 1));
+
+  // Connect the button signal "clicked" with the lambda expression
+  button.addCallback
+  (
+    "clicked",
+    [] (FWidget* w, FDataPtr d)
+    {
+      FButton& button = *(static_cast<FButton*>(w));
+
+      if ( button.getY() != 2 )
+      {
+        button.setPos (FPoint(15, 2));
+        button.setText("&top");
+      }
+      else
+      {
+        button.setPos (FPoint(15, 5));
+        button.setText("&bottom");
+      }
+
+      static_cast<FDialog*>(d)->redraw();
+    },
+    &dialog
+  );
+
+  app.setMainWidget(&dialog);
+  dialog.show();
+  return app.exec();
+}
+```
+*(Note: You can close the dialog with the mouse, 
+<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+
+
+After entering the source code in *callback-lambda.cpp* you can compile
+the above program with gcc:
+```cpp
+g++ -O2 -lfinal -std=c++11 callback-lambda.cpp -o callback-lambda
+```
+&nbsp;
+
 ### Example of a callback method: ###
 
 **File:** *callback-method.cpp*
@@ -639,12 +699,12 @@ class dialogWidget : public FDialog
     void setTemperature()
     {
       label.clear();
-      label << t << "°C";
+      label << t << "??C";
       label.redraw();
     }
 
     int t = 20;
-    FLabel label{FString() << t << "°C", this};
+    FLabel label{FString() << t << "??C", this};
     FButton plus {"&+", this};
     FButton minus {"&-", this};
 };
@@ -702,8 +762,8 @@ class dialogWidget : public FDialog
     {
       setText ("Dialog");
       setResizeable();
-      btn.setGeometry (FPoint(1, 1), FSize(12, 1), false);
-      line.setGeometry (FPoint(2, 3), FSize(12, 1), false);
+      button.setGeometry (FPoint(1, 1), FSize(12, 1), false);
+      input.setGeometry (FPoint(2, 3), FSize(12, 1), false);
       // Set dialog geometry and calling adjustSize()
       setGeometry (FPoint(25, 5), FSize(40, 12));
       setMinimumSize (FSize(25, 9));
@@ -727,15 +787,15 @@ class dialogWidget : public FDialog
 
     void adjustWidgets()
     {
-      auto bx = int(getWidth() - btn.getWidth() - 3);
+      auto bx = int(getWidth() - button.getWidth() - 3);
       auto by = int(getHeight() - 4);
-      btn.setPos (FPoint(bx, by), false);
-      line.setWidth (getWidth() - 4);
+      button.setPos (FPoint(bx, by), false);
+      input.setWidth (getWidth() - 4);
       auto ly = int(getHeight() / 2) - 1;
-      line.setY (ly, false);
+      input.setY (ly, false);
     }
 
-    virtual void adjustSize() override
+    void adjustSize() override
     {
       // Calling super class method adjustSize()
       FDialog::adjustSize();
@@ -743,14 +803,14 @@ class dialogWidget : public FDialog
       centerDialog();
     }
 
-    virtual void setSize (const FSize& size, bool) override
+    void setSize (const FSize& size, bool) override
     {
       // Calling super class methods setSize() + adjustSize()
       FDialog::setSize (size, false);
       FDialog::adjustSize();
     }
 
-    virtual void draw() override
+    void draw() override
     {
       adjustWidgets();  // Adjust widgets before drawing 
 
@@ -764,8 +824,8 @@ class dialogWidget : public FDialog
               << "top";
     }
 
-    FLineEdit line{"Middle", this};
-    FButton btn{"&Bottom", this};
+    FLineEdit input{"Middle", this};
+    FButton button{"&Bottom", this};
 };
 
 int main (int argc, char* argv[])
@@ -787,3 +847,123 @@ the above program with gcc:
 g++ -O2 -lfinal -std=c++11 size-adjustment.cpp -o size-adjustment
 ```
 
+
+Scroll view
+-----------
+
+The scroll view of the `FScrollView` class allows users to view content 
+that is larger than the visible area. The `FScrollView` widget displays 
+the horizontal and vertical scroll bar by default, only if the content size 
+requires it. You can controll this behavior by the two methods 
+`setHorizontalScrollBarMode()` and `setVerticalScrollBarMode()`.
+
+```cpp
+setHorizontalScrollBarMode (fc::scrollBarMode);
+setVerticalScrollBarMode (fc::scrollBarMode);
+```
+
+You pass the scroll bar visibility mode as a value of the enum type 
+`fc::scrollBarMode`.
+
+```cpp
+enum scrollBarMode
+{
+  Auto   = 0,  // Shows a scroll bar when area is larger than viewport
+  Hidden = 1,  // Never shows a scroll bar
+  Scroll = 2   // Always shows a scroll bar
+};
+```
+
+You can add widgets to an `FScrollView` object as child objects and place 
+them (with a widget positioning method) on the scrollable area. If a client 
+widget gets the focus, it automatically scrolls the viewport to the focused 
+widget. You can use the methods `scrollTo()`, `scrollToX()`, `scrollToY()` 
+and `scrollBy()` to set the scroll position of the viewport directly.
+
+The `FButtonGroup` widget uses `FScrollView` to display more buttons 
+in the frame than the height allows.
+
+**File:** *scrollview.cpp*
+```cpp
+#include <utility>
+#include <final/final.h>
+
+using namespace finalcut;
+
+class dialogWidget : public FDialog
+{
+  public:
+    explicit dialogWidget (FWidget* parent = nullptr)
+      : FDialog(parent)
+    {
+      setText ("Dialog");
+      setGeometry (FPoint(28, 2), FSize(24, 21));
+      scrollview.setGeometry(FPoint(1, 1), FSize(22, 11));
+      scrollview.setScrollSize(FSize(60, 27));
+      setColor (wc.label_inactive_fg, wc.dialog_bg);
+      scrollview.clearArea();
+      FColorPair red (fc::LightRed, wc.dialog_bg);
+      FColorPair black (fc::Black, wc.dialog_bg);
+      FColorPair cyan (fc::Cyan, wc.dialog_bg);
+
+      static std::vector<direction> d
+      {
+        {"NW", FPoint(3,  13), FPoint(1,  1),  black},
+        {"N",  FPoint(10, 13), FPoint(21, 1),  red},
+        {"NE", FPoint(17, 13), FPoint(41, 1),  black},
+        {"W",  FPoint(3,  15), FPoint(1,  10), black},
+        {"*",  FPoint(10, 15), FPoint(21, 10), black},
+        {"E",  FPoint(17, 15), FPoint(41, 10), black},
+        {"SW", FPoint(3,  17), FPoint(1,  19), black},
+        {"S",  FPoint(10, 17), FPoint(21, 19), cyan},
+        {"SE", FPoint(17, 17), FPoint(41, 19), black}
+      };
+
+      for (auto&& b : d)
+      {
+        scrollview.print() << std::get<2>(b) + FPoint(10, 5)
+                           << std::get<3>(b) << std::get<0>(b);
+        auto edit = new FLineEdit("direction " + std::get<0>(b), &scrollview);
+        edit->setGeometry(std::get<2>(b) + FPoint(1, 1), FSize(17, 1));
+        auto btn = new FButton(std::get<0>(b), this);
+        btn->setGeometry(std::get<1>(b), FSize(4, 1));
+        btn->unsetShadow();
+        btn->addCallback
+        (
+          "clicked",
+          F_METHOD_CALLBACK (this, &dialogWidget::cb_button),
+          static_cast<FDataPtr>(&std::get<2>(b))
+        );
+      };
+    }
+
+  private:
+    typedef std::tuple<FString, FPoint, FPoint, FColorPair> direction;
+
+    void cb_button (FWidget*, FDataPtr data)
+    {
+      FPoint* p = static_cast<FPoint*>(data);
+      scrollview.scrollTo(*p);
+    }
+
+    FScrollView scrollview{this};
+};
+
+int main (int argc, char* argv[])
+{
+  FApplication app(argc, argv);
+  dialogWidget dialog(&app);
+  app.setMainWidget(&dialog);
+  dialog.show();
+  return app.exec();
+}
+```
+*(Note: You can close the window with the mouse, 
+<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+
+
+After entering the source code in *scrollview.cpp* you can compile
+the above program with gcc:
+```cpp
+g++ -O2 -lfinal -std=c++11 scrollview.cpp -o scrollview
+```

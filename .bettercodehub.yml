@@ -1,11 +1,15 @@
 exclude:
-- /fonts/.*
-- /scripts/.*
-- /doc/.*
-- /build.sh
-- /ltmain.sh
-component_depth: 1
+  - /debian/.*
+  - /doc/.*
+  - /examples/.*
+  - /fonts/.*
+  - /icon/.*
+  - /logo/.*
+  - /m4/.*
+  - /scripts/.*
+  - /build.sh
+  - /ltmain.sh
+component_depth: 3
 languages:
 - cpp
-- script
 

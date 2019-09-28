@@ -22,6 +22,7 @@
 
 #include <final/final.h>
 
+namespace fc = finalcut::fc;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -29,9 +30,6 @@ using finalcut::FSize;
 //----------------------------------------------------------------------
 // class Scrollview
 //----------------------------------------------------------------------
-
-#pragma pack(push)
-#pragma pack(1)
 
 class Scrollview : public finalcut::FScrollView
 {
@@ -53,7 +51,7 @@ class Scrollview : public finalcut::FScrollView
 
   private:
     // Method
-    virtual void draw() override;
+    void draw() override;
 
     // Callback methods
     void cb_go_east (finalcut::FWidget*, FDataPtr);
@@ -61,17 +59,16 @@ class Scrollview : public finalcut::FScrollView
     void cb_go_west (finalcut::FWidget*, FDataPtr);
     void cb_go_north (finalcut::FWidget*, FDataPtr);
 
-    // Data Members
-    wchar_t pointer_right{finalcut::fc::BlackRightPointingPointer};
-    wchar_t pointer_down{finalcut::fc::BlackDownPointingTriangle};
-    wchar_t pointer_left{finalcut::fc::BlackLeftPointingPointer};
-    wchar_t pointer_up{finalcut::fc::BlackUpPointingTriangle};
+    // Data members
+    wchar_t pointer_right{fc::BlackRightPointingPointer};
+    wchar_t pointer_down{fc::BlackDownPointingTriangle};
+    wchar_t pointer_left{fc::BlackLeftPointingPointer};
+    wchar_t pointer_up{fc::BlackUpPointingTriangle};
     finalcut::FButton go_east{pointer_right, this};
     finalcut::FButton go_south{pointer_down, this};
     finalcut::FButton go_west{pointer_left, this};
     finalcut::FButton go_north{pointer_up, this};
 };
-#pragma pack(pop)
 
 //----------------------------------------------------------------------
 Scrollview::Scrollview (finalcut::FWidget* parent)
@@ -121,8 +118,8 @@ Scrollview::~Scrollview()
 void Scrollview::setScrollSize (const FSize& size)
 {
   FScrollView::setScrollSize (size);
-  auto width = int(size.getWidth());
-  auto height = int(size.getHeight());
+  int width = int(size.getWidth());
+  int height = int(size.getHeight());
   go_south.setPos (FPoint(width - 5, 1));
   go_west.setPos (FPoint(width - 5, height - 1));
   go_north.setPos (FPoint(1, height - 1));
@@ -134,15 +131,17 @@ void Scrollview::draw()
   if ( isMonochron() )
     setReverse(true);
 
+  const finalcut::FWidgetColors& wc = getFWidgetColors();
   setColor (wc.label_inactive_fg, wc.dialog_bg);
   clearArea();
 
-  for (int y = 0; y < int(getScrollHeight()); y++)
+  for (int y{0}; y < int(getScrollHeight()); y++)
   {
     print() << FPoint(1, 1 + y);
 
-    for (int x = 0; x < int(getScrollWidth()); x++)
+    for (int x{0}; x < int(getScrollWidth()); x++)
       print (32 + ((x + y) % 0x5f));
+
   }
 
   if ( isMonochron() )
@@ -192,9 +191,6 @@ void Scrollview::cb_go_north (finalcut::FWidget*, FDataPtr)
 // class Scrollviewdemo
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class Scrollviewdemo : public finalcut::FDialog
 {
   public:
@@ -205,17 +201,16 @@ class Scrollviewdemo : public finalcut::FDialog
     ~Scrollviewdemo();
 
     // Event handler
-    virtual void onClose (finalcut::FCloseEvent*) override;
+    void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
     void cb_quit (finalcut::FWidget* = nullptr, FDataPtr = nullptr);
 
-    // Data Members
+    // Data members
     Scrollview sview{this};
     finalcut::FButton quit_btn{"&Quit", this};
     finalcut::FLabel label{this};
 };
-#pragma pack(pop)
 
 
 //----------------------------------------------------------------------

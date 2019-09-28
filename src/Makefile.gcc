@@ -43,11 +43,15 @@ INCLUDE_HEADERS = \
 	fscrollview.h \
 	fstatusbar.h \
 	fstring.h \
+	fsystem.h \
+	fsystemimpl.h \
 	fmouse.h \
 	fkeyboard.h \
+	fstartoptions.h \
 	ftermcap.h \
 	fterm.h \
 	ftermdata.h \
+	ftermdebugdata.h \
 	ftermios.h \
 	ftermdetection.h \
 	ftermcapquirks.h \
@@ -104,12 +108,17 @@ OBJS = \
 	ftooltip.o \
 	ffiledialog.o \
 	fkey_map.o \
+	fcharmap.o \
 	ftextview.o \
 	fstatusbar.o \
 	fmouse.o \
+	fsystem.o \
+	fsystemimpl.o \
 	fkeyboard.o \
 	ftermcap.o \
+	fstartoptions.o \
 	fterm.o \
+	ftermdebugdata.o \
 	ftermios.o \
 	ftermdetection.o \
 	ftermcapquirks.o \
@@ -152,6 +161,9 @@ $(LIB): all
 
 debug:
 	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic"
+
+unittest:
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -DUNIT_TEST -Wall -Wextra -Wpedantic"
 
 profile:
 	$(MAKE) $(MAKEFILE) PROFILE="-pg"

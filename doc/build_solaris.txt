@@ -1,0 +1,12 @@
+Install gcc5g++ on Solaris
+https://www.opencsw.org/packages/gcc5g++/
+
+pkgadd -d http://get.opencsw.org/now
+/opt/csw/bin/pkgutil -U
+/opt/csw/bin/pkgutil -y -i gcc5g++ 
+/usr/sbin/pkgchk -L CSWgcc5g++ # list files
+
+
+
+PATH=/opt/csw/bin:$PATH
+

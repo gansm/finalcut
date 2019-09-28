@@ -1,5 +1,5 @@
 /***********************************************************************
-* fterm.h - Base class for terminal detection and control              *
+* fterm.h - Base class for terminal control                            *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
@@ -115,49 +115,45 @@
 #include <string>
 
 #include "final/fc.h"
-#include "final/fcolorpalette.h"
-#include "final/fkey_map.h"
-#include "final/fkeyboard.h"
-#include "final/fmouse.h"
-#include "final/foptiattr.h"
-#include "final/foptimove.h"
-#include "final/fpoint.h"
-#include "final/frect.h"
 #include "final/fstring.h"
-#include "final/ftermcap.h"
-#include "final/ftermcapquirks.h"
-#include "final/ftermdata.h"
-#include "final/ftermdebugdata.h"
-#include "final/ftermdetection.h"
-
-#if defined(__linux__)
-  #include "final/ftermlinux.h"
-#elif defined(__FreeBSD__) || defined(__DragonFly__)
-  #include "final/ftermfreebsd.h"
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
-  #include "final/ftermopenbsd.h"
-#endif
-
-#include "final/ftermios.h"
-#include "final/ftermxterminal.h"
+#include "final/fsystem.h"
 
 namespace finalcut
 {
+
+// class forward declaration
+class FKeyboard;
+class FMouseControl;
+class FOptiAttr;
+class FOptiMove;
+class FStartOptions;
+class FSize;
+class FString;
+class FTermBuffer;
+class FTermData;
+class FTermDebugData;
+class FTermDetection;
+class FTermXTerminal;
+
+#if defined(UNIT_TEST)
+  class FTermLinux;
+  class FTermFreeBSD;
+  class FTermOpenBSD;
+#elif defined(__linux__)
+  class FTermLinux;
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
+  class FTermFreeBSD;
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
+  class FTermOpenBSD;
+#endif
 
 //----------------------------------------------------------------------
 // class FTerm
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
 class FTerm final
 {
   public:
-    // Typedefs
-    typedef FOptiAttr::charData  charData;
-    typedef FTermData::characterSub  characterSub;
-
     struct initializationValues;  // forward declaration
 
     // Constructor
@@ -174,22 +170,39 @@ class FTerm final
 
     // Accessors
     virtual const char*    getClassName() const;
-    static FKeyboard*      getKeyboard();
-    static FMouseControl*  getMouseControl();
     static std::size_t     getLineNumber();
     static std::size_t     getColumnNumber();
     static const FString   getKeyName (FKey);
-    static FOptiMove*      getFOptiMove();
     static int             getTTYFileDescriptor();
     static char*           getTermType();
     static char*           getTermFileName();
     static int             getTabstop();
     static int             getMaxColor();
-    initializationValues&  getInitValues();
-    characterSub&          getCharSubstitutionMap();
+    charSubstitution&      getCharSubstitutionMap();
+
+    static FTermData*      getFTermData();
+    static FSystem*        getFSystem();
+    static FOptiMove*      getFOptiMove();
+    static FOptiAttr*      getFOptiAttr();
+    static FTermDetection* getFTermDetection();
+    static FTermXTerminal* getFTermXTerminal();
+    static FKeyboard*      getFKeyboard();
+    static FMouseControl*  getFMouseControl();
+
+#if defined(UNIT_TEST)
+    static FTermLinux*     getFTermLinux();
+    static FTermFreeBSD*   getFTermFreeBSD();
+    static FTermOpenBSD*   getFTermOpenBSD();
+#elif defined(__linux__)
+    static FTermLinux*     getFTermLinux();
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
+    static FTermFreeBSD*   getFTermFreeBSD();
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
+    static FTermOpenBSD*   getFTermOpenBSD();
+#endif
 
 #if DEBUG
-    FTermDebugData&        getFTermDebugData();
+    static FTermDebugData& getFTermDebugData();
 #endif
 
     // Inquiries
@@ -227,6 +240,7 @@ class FTerm final
     static bool            canChangeColorPalette();
 
     // Mutators
+    static void            setFSystem (FSystem*);
     static void            setTermType (const char[]);
     static void            setInsertCursor (bool);
     static void            redefineDefaultColors (bool);
@@ -241,11 +255,8 @@ class FTerm final
     static bool            setOldFont();
     static int             openConsole();
     static int             closeConsole();
-    static char*           moveCursor (int, int, int, int);
-    static char*           cursorsVisibility (bool);
-    static void            printMoveDurations();
-    static char*           enableCursor();
-    static char*           disableCursor();
+    static char*           moveCursorString (int, int, int, int);
+    static char*           cursorsVisibilityString (bool);
     static void            detectTermSize();
     static void            setTermSize (const FSize&);
     static void            setTermTitle (const FString&);
@@ -263,8 +274,6 @@ class FTerm final
     static bool            charEncodable (wchar_t);
     static wchar_t         charEncode (wchar_t);
     static wchar_t         charEncode (wchar_t, fc::encoding);
-    static wchar_t         cp437_to_unicode (uChar);
-    static uChar           unicode_to_cp437 (wchar_t);
 
     static bool            scrollTermForward();
     static bool            scrollTermReverse();
@@ -272,19 +281,9 @@ class FTerm final
     // function pointer -> static function
     static int             (*Fputchar)(int);
 
-    static void            putstringf (const char[], ...)
-#if defined(__clang__)
-      __attribute__ ((__format__ (__printf__, 1, 2)))
-#elif defined(__GNUC__)
-      __attribute__ ((format (printf, 1, 2)))
-#endif
-                           ;
+    template<typename... Args>
+    static void            putstringf (const char[], Args&&...);
     static void            putstring (const char[], int = 1);
-
-#if defined(__sun) && defined(__SVR4)
-    static int             putchar_ASCII (char);
-#endif
-
     static int             putchar_ASCII (int);
     static int             putchar_UTF8  (int);
 
@@ -297,49 +296,9 @@ class FTerm final
       __attribute__((noreturn))
     #endif
                            ;
-    // Data Members
-    static struct initializationValues
-    {
-      public:
-        void setDefault()
-        {
-          cursor_optimisation = true;
-          mouse_support = true;
-          terminal_detection = true;
-          color_change = true;
-          vgafont = false;
-          newfont = false;
-          encoding = fc::UNKNOWN;
-
-        #if defined(__FreeBSD__) || defined(__DragonFly__)
-          meta_sends_escape = true;
-          change_cursorstyle = true;
-        #elif defined(__NetBSD__) || defined(__OpenBSD__)
-          meta_sends_escape = true;
-        #endif
-        }
-
-        uInt8 cursor_optimisation : 1;
-        uInt8 mouse_support       : 1;
-        uInt8 terminal_detection  : 1;
-        uInt8 color_change        : 1;
-        uInt8 vgafont             : 1;
-        uInt8 newfont             : 1;
-        uInt8                     : 2;  // padding bits
-        fc::encoding encoding;
-
-      #if defined(__FreeBSD__) || defined(__DragonFly__)
-        uInt8 meta_sends_escape  : 1;
-        uInt8 change_cursorstyle : 1;
-        uInt8                    : 6;  // padding bits
-      #elif defined(__NetBSD__) || defined(__OpenBSD__)
-        uInt8 meta_sends_escape  : 1;
-        uInt8                    : 7;  // padding bits
-      #endif
-    } init_values;
-
   private:
     // Methods
+    static FStartOptions&  getStartOptions();
     static void            init_global_values (bool);
     static void            init_terminal_device_path();
     static void            oscPrefix();
@@ -369,6 +328,8 @@ class FTerm final
     static void            restoreColorPalette();
     static void            setInsertCursorStyle();
     static void            setOverwriteCursorStyle();
+    static char*           enableCursorString();
+    static char*           disableCursorString();
     static void            enableMouse();
     static void            disableMouse();
     static void            enableApplicationEscKey();
@@ -391,9 +352,9 @@ class FTerm final
     static void            resetSignalHandler();
     static void            signal_handler (int);
 
-    // Data Members
+    // Data members
     static FTermData*      data;
-    static FTermcap::tcap_map* tcap;
+    static FSystem*        fsys;
     static FOptiMove*      opti_move;
     static FOptiAttr*      opti_attr;
     static FTermDetection* term_detection;
@@ -401,7 +362,12 @@ class FTerm final
     static FKeyboard*      keyboard;
     static FMouseControl*  mouse;
 
-#if defined(__linux__)
+#if defined(UNIT_TEST)
+    #undef linux
+    static FTermLinux*     linux;
+    static FTermFreeBSD*   freebsd;
+    static FTermOpenBSD*   openbsd;
+#elif defined(__linux__)
     #undef linux
     static FTermLinux*     linux;
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
@@ -415,7 +381,21 @@ class FTerm final
 #endif
 };
 
-#pragma pack(pop)
+
+// non-member function forward declarations
+//----------------------------------------------------------------------
+wchar_t cp437_to_unicode (uChar);
+uChar unicode_to_cp437 (wchar_t);
+FString getFullWidth (const FString&);
+FString getHalfWidth (const FString&);
+std::size_t getColumnWidthToLength (const FString&, std::size_t);
+FString getColumnSubString (const FString&, std::size_t, std::size_t);
+std::size_t getColumnWidth (const FString&, std::size_t);
+std::size_t getColumnWidth (const FString&);
+std::size_t getColumnWidth (const wchar_t);
+std::size_t getColumnWidth (charData&);
+std::size_t getColumnWidth (const FTermBuffer&);
+
 
 // FTerm inline functions
 //----------------------------------------------------------------------
@@ -423,150 +403,8 @@ inline const char* FTerm::getClassName() const
 { return "FTerm"; }
 
 //----------------------------------------------------------------------
-inline FKeyboard* FTerm::getKeyboard()
-{ return ( keyboard ) ? keyboard : 0; }
-
-//----------------------------------------------------------------------
-inline FMouseControl* FTerm::getMouseControl()
-{ return ( mouse ) ? mouse : 0; }
-
-//----------------------------------------------------------------------
-inline int FTerm::getTTYFileDescriptor()
-{ return data->getTTYFileDescriptor(); }
-
-//----------------------------------------------------------------------
-inline char* FTerm::getTermType()
-{ return data->getTermType(); }
-
-//----------------------------------------------------------------------
-inline char* FTerm::getTermFileName()
-{ return data->getTermFileName(); }
-
-//----------------------------------------------------------------------
-inline int FTerm::getTabstop()
-{ return FTermcap::tabstop; }
-
-//----------------------------------------------------------------------
-inline int FTerm::getMaxColor()
-{ return FTermcap::max_color; }
-
-//----------------------------------------------------------------------
-inline FTerm::initializationValues& FTerm::getInitValues()
-{ return init_values; }
-
-//----------------------------------------------------------------------
-inline FTerm::characterSub& FTerm::getCharSubstitutionMap()
-{ return data->getCharSubstitutionMap(); }
-
-#if DEBUG
-//----------------------------------------------------------------------
-inline FTermDebugData& FTerm::getFTermDebugData()
-{ return *debug_data; }
-#endif  // DEBUG
-
-//----------------------------------------------------------------------
-inline bool FTerm::hasUTF8()
-{ return data->hasUTF8Console(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isMonochron()
-{ return data->isMonochron(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isXTerminal()
-{ return term_detection->isXTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isAnsiTerminal()
-{ return term_detection->isAnsiTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isRxvtTerminal()
-{ return term_detection->isRxvtTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isUrxvtTerminal()
-{ return term_detection->isUrxvtTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isMltermTerminal()
-{ return term_detection->isMltermTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isPuttyTerminal()
-{ return term_detection->isPuttyTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isKdeTerminal()
-{ return term_detection->isKdeTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isGnomeTerminal()
-{ return term_detection->isGnomeTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isKtermTerminal()
-{ return term_detection->isKtermTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isTeraTerm()
-{ return term_detection->isTeraTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isSunTerminal()
-{ return term_detection->isSunTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isCygwinTerminal()
-{ return term_detection->isCygwinTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isMinttyTerm()
-{ return term_detection->isMinttyTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isLinuxTerm()
-{ return term_detection->isLinuxTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isFreeBSDTerm()
-{ return term_detection->isFreeBSDTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isNetBSDTerm()
-{ return term_detection->isNetBSDTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isOpenBSDTerm()
-{ return term_detection->isOpenBSDTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isScreenTerm()
-{ return term_detection->isScreenTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isTmuxTerm()
-{ return term_detection->isTmuxTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isNewFont()
-{ return data->isNewFont(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::hasChangedTermSize()
-{ return data->hasTermResized(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::hasShadowCharacter()
-{ return data->hasShadowCharacter(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::hasHalfBlockCharacter()
-{ return data->hasHalfBlockCharacter(); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::hasAlternateScreen()
-{ return data->hasAlternateScreen(); }
+inline void FTerm::setFSystem (FSystem* fsystem)
+{ fsys = fsystem; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::setUTF8()
@@ -577,12 +415,14 @@ inline bool FTerm::unsetUTF8()
 { return setUTF8(false); }
 
 //----------------------------------------------------------------------
-inline FOptiMove* FTerm::getFOptiMove()
-{ return opti_move; }
-
-//----------------------------------------------------------------------
-inline void FTerm::changeTermSizeFinished()
-{ data->setTermResized(false); }
+template<typename... Args>
+inline void FTerm::putstringf (const char format[], Args&&... args)
+{
+  char buf[512]{};
+  char* str = buf;
+  std::snprintf (str, sizeof(buf), format, std::forward<Args>(args)...);
+  fsys->tputs (str, 1, FTerm::putchar_ASCII);
+}
 
 }  // namespace finalcut
 

@@ -22,6 +22,8 @@
 
 #include <final/final.h>
 
+namespace fc = finalcut::fc;
+
 
 //----------------------------------------------------------------------
 // class Timer
@@ -35,11 +37,11 @@ class Timer : public finalcut::FWidget
 
   protected:
     // Method
-    virtual void draw() override;
+    void draw() override;
 
     // Event handlers
-    virtual void onTimer (finalcut::FTimerEvent*) override;
-    virtual void onAccel (finalcut::FAccelEvent*) override;
+    void onTimer (finalcut::FTimerEvent*) override;
+    void onAccel (finalcut::FAccelEvent*) override;
 };
 
 //----------------------------------------------------------------------
@@ -52,8 +54,8 @@ Timer::Timer (finalcut::FWidget* parent)
   delTimer (id);
   addTimer (250);          // 250-millisecond timer
 
-  wc.term_fg = finalcut::fc::Default;
-  wc.term_bg = finalcut::fc::Default;
+  setFWidgetColors().term_fg = fc::Default;
+  setFWidgetColors().term_bg = fc::Default;
 }
 
 //----------------------------------------------------------------------
@@ -63,13 +65,13 @@ void Timer::draw()
           << "---------------\n"
           << "Press Q to quit\n"
           << "---------------\n";
-  setAreaCursor (finalcut::FPoint(1, 4), true, vdesktop);
+  setAreaCursor (finalcut::FPoint(1, 4), true, getVirtualDesktop());
 }
 
 //----------------------------------------------------------------------
 void Timer::onTimer (finalcut::FTimerEvent* ev)
 {
-  bool is_last_line = false;
+  bool is_last_line{false};
   int timer_id = ev->getTimerId();
 
   if ( getPrintPos().getY() == int(getDesktopHeight()) )
@@ -79,10 +81,10 @@ void Timer::onTimer (finalcut::FTimerEvent* ev)
           << "Timer event, id " << timer_id << '\n';
 
   if ( is_last_line )
-    scrollAreaForward (vdesktop);
+    scrollAreaForward (getVirtualDesktop());
 
   setAreaCursor ( finalcut::FPoint(1, getPrintPos().getY())
-                , true, vdesktop );
+                , true, getVirtualDesktop() );
 }
 
 //----------------------------------------------------------------------
@@ -100,8 +102,8 @@ int main (int argc, char* argv[])
 {
   // Create the application object
   finalcut::FApplication app(argc, argv);
-  app.setForegroundColor(finalcut::fc::Default);
-  app.setBackgroundColor(finalcut::fc::Default);
+  app.setForegroundColor(fc::Default);
+  app.setBackgroundColor(fc::Default);
 
   // Create a timer object t
   Timer t(&app);
