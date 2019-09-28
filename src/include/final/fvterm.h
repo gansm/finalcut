@@ -291,7 +291,8 @@ class FVTerm
                                                   , FPreprocessingHandler );
     virtual void          delPreprocessingHandler (FVTerm*);
 
-    int                   printf (const FString, ...);
+    template<typename... Args>
+    int                   printf (const FString, Args&&...);
     int                   print (const FString&);
     int                   print (term_area*, const FString&);
     int                   print (const FTermBuffer&);
@@ -440,10 +441,19 @@ class FVTerm
     static bool           canClearTrailingWS (uInt&, uInt);
     bool                  skipUnchangedCharacters (uInt&, uInt, uInt);
     void                  printRange (uInt, uInt, uInt, bool);
+    void                  replaceNonPrintableFullwidth (uInt, charData*&);
+    void                  printCharacter (uInt&, uInt, bool, charData*&);
+    void                  printFullWidthCharacter (uInt&, uInt, charData*&);
+    void                  printFullWidthPaddingCharacter (uInt&, uInt, charData*&);
+    void                  printHalfCovertFullWidthCharacter (uInt&, uInt, charData*&);
+    void                  skipPaddingCharacter (uInt&, uInt, charData*&);
     exit_state            eraseCharacters (uInt&, uInt, uInt, bool);
     exit_state            repeatCharacter (uInt&, uInt, uInt);
+    bool                  isFullWidthChar (charData*&);
+    bool                  isFullWidthPaddingChar (charData*&);
     static void           cursorWrap();
     bool                  printWrap (term_area*);
+    void                  printPaddingCharacter (term_area*, charData&);
     void                  updateTerminalLine (uInt);
     bool                  updateTerminalCursor();
     bool                  isInsideTerminal (const FPoint&);
@@ -1032,6 +1042,22 @@ inline bool FVTerm::hasChangedTermSize()
 //----------------------------------------------------------------------
 inline bool FVTerm::hasUTF8()
 { return FTerm::hasUTF8(); }
+
+//----------------------------------------------------------------------
+template<typename... Args>
+inline int FVTerm::printf (const FString format, Args&&... args)
+{
+  static constexpr int BUFSIZE = 4096;
+  wchar_t buffer[BUFSIZE]{};
+
+  if ( format.isEmpty() )
+    return 0;
+
+  std::swprintf ( buffer, BUFSIZE
+                , format.wc_str(), std::forward<Args>(args)... );
+  FString str(buffer);
+  return print(str);
+}
 
 //----------------------------------------------------------------------
 inline FVTerm& FVTerm::print()

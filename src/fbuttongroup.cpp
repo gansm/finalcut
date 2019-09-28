@@ -23,6 +23,7 @@
 
 #include "final/fapplication.h"
 #include "final/fbuttongroup.h"
+#include "final/fcolorpair.h"
 #include "final/fevent.h"
 #include "final/fsize.h"
 #include "final/fstatusbar.h"
@@ -142,17 +143,12 @@ bool FButtonGroup::hasFocusedButton() const
   if ( buttonlist.empty() )
     return false;
 
-  auto iter = buttonlist.begin();
-  auto last = buttonlist.end();
-
-  while ( iter != last )
+  for (auto&& item : buttonlist)
   {
-    auto toggle_button = static_cast<FToggleButton*>(*iter);
+    auto toggle_button = static_cast<FToggleButton*>(item);
 
     if ( toggle_button->hasFocus() )
       return true;
-
-    ++iter;
   }
 
   return false;
@@ -164,17 +160,12 @@ bool FButtonGroup::hasCheckedButton() const
   if ( buttonlist.empty() )
     return false;
 
-  auto iter = buttonlist.begin();
-  auto last = buttonlist.end();
-
-  while ( iter != last )
+  for (auto&& item : buttonlist)
   {
-    auto toggle_button = static_cast<FToggleButton*>(*iter);
+    auto toggle_button = static_cast<FToggleButton*>(item);
 
     if ( toggle_button->isChecked() )
       return true;
-
-    ++iter;
   }
 
   return false;
@@ -189,14 +180,10 @@ void FButtonGroup::hide()
 
   if ( ! buttonlist.empty() )
   {
-    auto iter = buttonlist.begin();
-    auto last = buttonlist.end();
-
-    while ( iter != last )
+    for (auto&& item : buttonlist)
     {
-      auto toggle_button = static_cast<FToggleButton*>(*iter);
+      auto toggle_button = static_cast<FToggleButton*>(item);
       toggle_button->hide();
-      ++iter;
     }
   }
 
@@ -207,7 +194,7 @@ void FButtonGroup::hide()
   }
   else
   {
-    const FWidgetColors& wc = getFWidgetColors();
+    const auto& wc = getFWidgetColors();
     fg = wc.dialog_fg;
     bg = wc.dialog_bg;
   }
@@ -323,13 +310,11 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 {
   if ( hasCheckedButton() && ! buttonlist.empty() )
   {
-    auto iter = buttonlist.begin();
-    auto last = buttonlist.end();
     in_ev->ignore();
 
-    while ( iter != last )
+    for (auto&& item : buttonlist)
     {
-      auto toggle_button = static_cast<FToggleButton*>(*iter);
+      auto toggle_button = static_cast<FToggleButton*>(item);
 
       if ( toggle_button->isChecked() )
       {
@@ -356,9 +341,7 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 
         break;
       }
-
-      ++iter;
-    }
+    }  // end of range-based for loop
   }
 
   if ( ! in_ev->isAccepted() )
@@ -392,6 +375,9 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 void FButtonGroup::setHotkeyAccelerator()
 {
   FKey hotkey = getHotkey(text);
+
+  if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
+    hotkey -= 0xfee0;
 
   if ( hotkey )
   {
@@ -478,10 +464,10 @@ bool FButtonGroup::isRadioButton (const FToggleButton* button) const
 //----------------------------------------------------------------------
 void FButtonGroup::init()
 {
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   setForegroundColor (wc.label_fg);
   setBackgroundColor (wc.label_bg);
-  setMinimumSize (FSize(7, 4));
+  setMinimumSize (FSize(7, 3));
   buttonlist.clear();  // no buttons yet
 }
 
@@ -490,10 +476,20 @@ void FButtonGroup::drawText ( wchar_t LabelText[]
                             , std::size_t hotkeypos
                             , std::size_t length )
 {
+  const auto& wc = getFWidgetColors();
+  std::size_t column_width = getColumnWidth(LabelText);
+  bool ellipsis{false};
+
+  if ( column_width > getClientWidth() )
+  {
+    std::size_t len = getClientWidth() - 3;
+    FString s = finalcut::getColumnSubString (LabelText, 1, len);
+    length = s.getLength();
+    ellipsis = true;
+  }
+
   if ( isMonochron() )
     setReverse(true);
-
-  const FWidgetColors& wc = getFWidgetColors();
 
   if ( isEnabled() )
     setColor(wc.label_emphasis_fg, wc.label_bg);
@@ -520,6 +516,9 @@ void FButtonGroup::drawText ( wchar_t LabelText[]
       print (LabelText[z]);
   }
 
+  if ( ellipsis )  // Print ellipsis
+    print() << FColorPair (wc.label_ellipsis_fg, wc.label_bg) << "..";
+
   if ( isMonochron() )
     setReverse(true);
 }
@@ -533,12 +532,9 @@ void FButtonGroup::directFocus()
 
     if ( hasCheckedButton() && ! buttonlist.empty() )
     {
-      auto iter = buttonlist.begin();
-      auto last = buttonlist.end();
-
-      while ( iter != last )
+      for (auto&& item : buttonlist)
       {
-        auto toggle_button = static_cast<FToggleButton*>(*iter);
+        auto toggle_button = static_cast<FToggleButton*>(item);
 
         if ( toggle_button->isChecked() )
         {
@@ -559,9 +555,7 @@ void FButtonGroup::directFocus()
 
           break;
         }
-
-        ++iter;
-      }
+      }  // end of range-based for loop
     }
 
     if ( ! found_checked )
@@ -598,12 +592,9 @@ void FButtonGroup::cb_buttonToggled (FWidget* widget, FDataPtr)
   if ( buttonlist.empty() )
     return;
 
-  auto iter = buttonlist.begin();
-  auto last = buttonlist.end();
-
-  while ( iter != last )
+  for (auto&& item : buttonlist)
   {
-    auto toggle_button = static_cast<FToggleButton*>(*iter);
+    auto toggle_button = static_cast<FToggleButton*>(item);
 
     if ( toggle_button != button
       && toggle_button->isChecked()
@@ -614,8 +605,6 @@ void FButtonGroup::cb_buttonToggled (FWidget* widget, FDataPtr)
       if ( toggle_button->isShown() )
         toggle_button->redraw();
     }
-
-    ++iter;
   }
 }
 

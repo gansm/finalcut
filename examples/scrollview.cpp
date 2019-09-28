@@ -118,8 +118,8 @@ Scrollview::~Scrollview()
 void Scrollview::setScrollSize (const FSize& size)
 {
   FScrollView::setScrollSize (size);
-  auto width = int(size.getWidth());
-  auto height = int(size.getHeight());
+  int width = int(size.getWidth());
+  int height = int(size.getHeight());
   go_south.setPos (FPoint(width - 5, 1));
   go_west.setPos (FPoint(width - 5, height - 1));
   go_north.setPos (FPoint(1, height - 1));
@@ -141,6 +141,7 @@ void Scrollview::draw()
 
     for (int x{0}; x < int(getScrollWidth()); x++)
       print (32 + ((x + y) % 0x5f));
+
   }
 
   if ( isMonochron() )

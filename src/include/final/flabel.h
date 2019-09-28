@@ -105,11 +105,11 @@ class FLabel : public FWidget
 
     // Mutators
     void                setAccelWidget (FWidget* = nullptr);
-    void                setAlignment(fc::text_alignment);
-    bool                setEmphasis(bool);
+    void                setAlignment (fc::text_alignment);
+    bool                setEmphasis (bool);
     bool                setEmphasis();
     bool                unsetEmphasis();
-    bool                setReverseMode(bool);
+    bool                setReverseMode (bool);
     bool                setReverseMode();
     bool                unsetReverseMode();
     bool                setEnable (bool) override;
@@ -146,7 +146,7 @@ class FLabel : public FWidget
     void                draw() override;
     void                drawMultiLine();
     void                drawSingleLine();
-    void                printLine ( wchar_t[], std::size_t
+    void                printLine ( wchar_t[], std::size_t, std::size_t
                                   , std::size_t, std::size_t = 0 );
 
     // Data members
@@ -179,12 +179,20 @@ inline FString& FLabel::getText()
 { return text; }
 
 //----------------------------------------------------------------------
+inline bool FLabel::setEmphasis (bool enable)
+{ return (emphasis = enable); }
+
+//----------------------------------------------------------------------
 inline bool FLabel::setEmphasis()
 { return setEmphasis(true); }
 
 //----------------------------------------------------------------------
 inline bool FLabel::unsetEmphasis()
 { return setEmphasis(false); }
+
+//----------------------------------------------------------------------
+inline bool FLabel::setReverseMode (bool enable)
+{ return (reverse_mode = enable); }
 
 //----------------------------------------------------------------------
 inline bool FLabel::setReverseMode()

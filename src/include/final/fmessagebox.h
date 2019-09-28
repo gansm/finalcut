@@ -155,14 +155,13 @@ class FMessageBox : public FDialog
     // Data members
     FString       headline_text{};
     FString       text{};
-    FString*      text_components{nullptr};
-    FStringList   text_split{};
+    FStringList   text_components{};
     FButton*      button[3]{nullptr};
     std::size_t   max_line_width{0};
     FColor        emphasis_color{getFWidgetColors().dialog_emphasis_fg};
     int           button_digit[3]{0};
     uInt          num_buttons{0};
-    uInt          text_num_lines{0};
+    std::size_t   text_num_lines{0};
     bool          center_text{false};
 };
 

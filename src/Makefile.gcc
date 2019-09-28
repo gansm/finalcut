@@ -47,6 +47,7 @@ INCLUDE_HEADERS = \
 	fsystemimpl.h \
 	fmouse.h \
 	fkeyboard.h \
+	fstartoptions.h \
 	ftermcap.h \
 	fterm.h \
 	ftermdata.h \
@@ -115,6 +116,7 @@ OBJS = \
 	fsystemimpl.o \
 	fkeyboard.o \
 	ftermcap.o \
+	fstartoptions.o \
 	fterm.o \
 	ftermdebugdata.o \
 	ftermios.o \
@@ -159,6 +161,9 @@ $(LIB): all
 
 debug:
 	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic"
+
+unittest:
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -DUNIT_TEST -Wall -Wextra -Wpedantic"
 
 profile:
 	$(MAKE) $(MAKEFILE) PROFILE="-pg"

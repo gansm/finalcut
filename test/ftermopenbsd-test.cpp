@@ -88,8 +88,8 @@ class FSystemTest : public finalcut::FSystem
     wskbd_bell_data& getBell();
 
   private:
-    kbd_t kbdencoding = 512;
-    wskbd_bell_data system_bell;
+    kbd_t kbdencoding{512};
+    wskbd_bell_data system_bell{};
 };
 
 
@@ -132,10 +132,10 @@ int FSystemTest::isTTY (int fd)
 //----------------------------------------------------------------------
 int FSystemTest::ioctl (int fd, uLong request, ...)
 {
-  va_list args;
-  void* argp;
-  std::string req_string;
-  int ret_val = -1;
+  va_list args{};
+  void* argp{};
+  std::string req_string{};
+  int ret_val{-1};
 
   va_start (args, request);
   argp = va_arg (args, void*);
@@ -218,7 +218,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
 //----------------------------------------------------------------------
 int FSystemTest::open (const char* pathname, int flags, ...)
 {
-  va_list args;
+  va_list args{};
   va_start (args, flags);
   mode_t mode = static_cast<mode_t>(va_arg (args, int));
   va_end (args);
@@ -345,13 +345,11 @@ void ftermopenbsdTest::classNameTest()
 //----------------------------------------------------------------------
 void ftermopenbsdTest::netbsdConsoleTest()
 {
-  finalcut::FTermData* data;
-  finalcut::FSystem* fsys;
-  fsys = new test::FSystemTest();
+  finalcut::FSystem* fsys = new test::FSystemTest();
   finalcut::FTerm::setFSystem(fsys);
-  finalcut::FTermDetection* term_detection;
+  finalcut::FTermDetection* term_detection{};
   std::cout << "\n";
-  data = finalcut::FTerm::getFTermData();
+  finalcut::FTermData* data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
   encoding_list["UTF-8"] = finalcut::fc::UTF8;
@@ -452,13 +450,11 @@ void ftermopenbsdTest::netbsdConsoleTest()
 //----------------------------------------------------------------------
 void ftermopenbsdTest::openbsdConsoleTest()
 {
-  finalcut::FTermData* data;
-  finalcut::FSystem* fsys;
-  fsys = new test::FSystemTest();
+  finalcut::FSystem* fsys = new test::FSystemTest();
   finalcut::FTerm::setFSystem(fsys);
-  finalcut::FTermDetection* term_detection;
+  finalcut::FTermDetection* term_detection{};
   std::cout << "\n";
-  data = finalcut::FTerm::getFTermData();
+  finalcut::FTermData* data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
   encoding_list["UTF-8"] = finalcut::fc::UTF8;

@@ -398,6 +398,7 @@ void FTermXTerminal::setXTermCursorStyle()
 
   if ( TCAP(fc::t_cursor_style)
     || term_detection->isXTerminal()
+    || term_detection->isCygwinTerminal()
     || term_detection->isMinttyTerm()
     || term_detection->hasSetCursorStyleSupport() )
   {
@@ -413,6 +414,7 @@ void FTermXTerminal::setXTermTitle()
 
   if ( term_detection->isXTerminal()
     || term_detection->isScreenTerm()
+    || term_detection->isCygwinTerminal()
     || term_detection->isMinttyTerm()
     || term_detection->isPuttyTerminal()
     || FTermcap::osc_support )
@@ -626,12 +628,12 @@ void FTermXTerminal::resetXTermColorMap()
 
   if ( term_detection->isMinttyTerm() )
   {
-    FTerm::putstringf (ESC "c");  // Full Reset (RIS)
+    FTerm::putstring (ESC "c");  // Full Reset (RIS)
   }
   else if ( canResetColor() )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "104" BEL);
+    FTerm::putstring (OSC "104" BEL);
     oscPostfix();
     std::fflush(stdout);
   }
@@ -715,7 +717,7 @@ void FTermXTerminal::resetXTermHighlightBackground()
   if ( canResetColor() )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "117" BEL);
+    FTerm::putstring (OSC "117" BEL);
     oscPostfix();
     std::fflush(stdout);
   }

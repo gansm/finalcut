@@ -148,6 +148,7 @@ class FTextView : public FWidget
                                       , FTextViewCallback );
     void                draw() override;
     void                drawText();
+    bool                isPrintable (wchar_t);
     void                processChanged();
 
     // Callback methods

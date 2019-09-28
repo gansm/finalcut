@@ -78,6 +78,7 @@ void FToolTip::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FToolTip::draw()
 {
+  int y{0};
   setColor();
 
   if ( getMaxColor() < 16 )
@@ -86,9 +87,10 @@ void FToolTip::draw()
   clearArea();
   drawBorder();
 
-  for (std::size_t i{0}; i < text_num_lines; i++)
+  for (auto&& line : text_components)
   {
-    print() << FPoint(3, 2 + int(i)) << text_components[i];
+    print() << FPoint(3, 2 + y) << line;
+    y++;
   }
 
   unsetBold();
@@ -126,7 +128,7 @@ void FToolTip::init()
   // initialize geometry values
   setGeometry (FPoint(1, 1), FSize(3, 3), false);
   setMinimumSize (FSize(3, 3));
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   setForegroundColor (wc.tooltip_fg);
   setBackgroundColor (wc.tooltip_bg);
   calculateDimensions();
@@ -138,19 +140,18 @@ void FToolTip::calculateDimensions()
   int x{}, y{};
   auto r = getRootWidget();
   max_line_width = 0;
-  text_split = text.split("\n");
-  text_num_lines = uInt(text_split.size());
+  text_components = text.split("\n");
+  text_num_lines = std::size_t(text_components.size());
 
   if ( text_num_lines == 0 )
     return;
 
-  for (std::size_t i{0}; i < text_num_lines; i++)
+  for (auto&& line : text_components)
   {
-    text_components = &text_split[0];
-    std::size_t len = text_components[i].getLength();
+    std::size_t column_width = getColumnWidth(line);
 
-    if ( len > max_line_width )
-      max_line_width = len;
+    if ( column_width > max_line_width )
+      max_line_width = column_width;
   }
 
   std::size_t h = text_num_lines + 2;

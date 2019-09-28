@@ -35,6 +35,11 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include  <iostream>
+
+#include "final/fc.h"
+#include "final/ftypes.h"
+
 namespace finalcut
 {
 
@@ -42,27 +47,26 @@ namespace finalcut
 // class FStartOptions
 //----------------------------------------------------------------------
 
-struct FStartOptions
+class FStartOptions final
 {
   public:
-    // Mutator
-    void setDefault()
-    {
-      cursor_optimisation = true;
-      mouse_support = true;
-      terminal_detection = true;
-      color_change = true;
-      vgafont = false;
-      newfont = false;
-      encoding = fc::UNKNOWN;
+    // Constructors
+    FStartOptions();
 
-#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-      meta_sends_escape = true;
-      change_cursorstyle = true;
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
-      meta_sends_escape = true;
-#endif
-    }
+    // Disable copy constructor
+    FStartOptions (const FStartOptions&) = delete;
+
+    // Destructor
+    virtual ~FStartOptions();
+
+    // Disable assignment operator (=)
+    FStartOptions& operator = (const FStartOptions&) = delete;
+
+    // Accessors
+    static FStartOptions& getFStartOptions();
+
+    // Mutator
+    void setDefault();
 
     // Data members
     uInt8 cursor_optimisation : 1;
@@ -75,19 +79,16 @@ struct FStartOptions
     fc::encoding encoding;
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-    uInt8 meta_sends_escape  : 1;
-    uInt8 change_cursorstyle : 1;
-    uInt8                    : 6;  // padding bits
+    uInt8 meta_sends_escape   : 1;
+    uInt8 change_cursorstyle  : 1;
+    uInt8                     : 6;  // padding bits
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
-    uInt8 meta_sends_escape  : 1;
-    uInt8                    : 7;  // padding bits
+    uInt8 meta_sends_escape   : 1;
+    uInt8                     : 7;  // padding bits
 #endif
+
+    static FStartOptions*     start_options;
 };
-
-static struct FStartOptions start_options{};
-
-inline FStartOptions& getStartOptions()
-{ return start_options; }
 
 }  // namespace finalcut
 

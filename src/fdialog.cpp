@@ -784,7 +784,7 @@ void FDialog::init()
   addDialog(this);
   setActiveWindow(this);
   setTransparentShadow();
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
   auto old_focus = FWidget::getFocusWidget();
@@ -908,7 +908,7 @@ void FDialog::drawBorder()
   if ( (getMoveSizeWidget() == this || ! resize_click_pos.isOrigin() )
     && ! isZoomed() )
   {
-    const FWidgetColors& wc = getFWidgetColors();
+    const auto& wc = getFWidgetColors();
     setColor (wc.dialog_resize_fg, getBackgroundColor());
   }
   else
@@ -971,7 +971,7 @@ void FDialog::drawBarButton()
 {
   // Print the title button
   print() << FPoint(1, 1);
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
 
   if ( dialog_menu && dialog_menu->isShown() )
     setColor (wc.titlebar_button_focus_fg, wc.titlebar_button_focus_bg);
@@ -1024,7 +1024,7 @@ void FDialog::drawZoomButton()
   if ( ! isResizeable() )
     return;
 
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
 
   if ( zoom_button_pressed )
     setColor (wc.titlebar_button_focus_fg, wc.titlebar_button_focus_bg);
@@ -1093,7 +1093,7 @@ void FDialog::drawTextBar()
   // Fill with spaces (left of the title)
   std::size_t center_offset{0};
   std::size_t x{1};
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
 
   if ( getMaxColor() < 16 )
     setBold();
@@ -1103,9 +1103,9 @@ void FDialog::drawTextBar()
   else
     setColor (wc.titlebar_inactive_fg, wc.titlebar_inactive_bg);
 
-  std::size_t width = getWidth();
-  std::size_t zoom_btn = getZoomButtonWidth();
-  std::size_t length = tb_text.getLength();
+  auto width = getWidth();
+  auto zoom_btn = getZoomButtonWidth();
+  auto length = getColumnWidth(tb_text);
 
   if ( width > length + MENU_BTN + zoom_btn )
     center_offset = (width - length - MENU_BTN - zoom_btn) / 2;

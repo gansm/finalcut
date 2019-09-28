@@ -35,9 +35,9 @@
 #include "final/foptimove.h"
 #include "final/fstartoptions.h"
 #include "final/fstring.h"
-#include "final/fsystem.h"
 #include "final/fsystemimpl.h"
 #include "final/fterm.h"
+#include "final/ftermbuffer.h"
 #include "final/ftermcap.h"
 #include "final/ftermcapquirks.h"
 #include "final/ftermdata.h"
@@ -1165,47 +1165,9 @@ wchar_t FTerm::charEncode (wchar_t c, fc::encoding enc)
   }
 
   if ( enc == fc::PC && ch_enc == c )
-    ch_enc = FTerm::unicode_to_cp437(c);
+    ch_enc = finalcut::unicode_to_cp437(c);
 
   return ch_enc;
-}
-
-//----------------------------------------------------------------------
-wchar_t FTerm::cp437_to_unicode (uChar c)
-{
-  constexpr std::size_t CP437 = 0;
-  constexpr std::size_t UNICODE = 1;
-  wchar_t ucs = wchar_t(c);
-
-  for (std::size_t i{0}; i <= fc::lastCP437Item; i++)
-  {
-    if ( fc::cp437_to_ucs[i][CP437] == c )  // found
-    {
-      ucs = fc::cp437_to_ucs[UNICODE][1];
-      break;
-    }
-  }
-
-  return ucs;
-}
-
-//----------------------------------------------------------------------
-uChar FTerm::unicode_to_cp437 (wchar_t ucs)
-{
-  constexpr std::size_t CP437 = 0;
-  constexpr std::size_t UNICODE = 1;
-  uChar c = '?';
-
-  for (std::size_t i{0}; i <= fc::lastCP437Item; i++)
-  {
-    if ( fc::cp437_to_ucs[i][UNICODE] == ucs )  // found
-    {
-      c = uChar(fc::cp437_to_ucs[i][CP437]);
-      break;
-    }
-  }
-
-  return c;
 }
 
 //----------------------------------------------------------------------
@@ -1232,21 +1194,6 @@ bool FTerm::scrollTermReverse()
   }
 
   return false;
-}
-
-//----------------------------------------------------------------------
-void FTerm::putstringf (const char format[], ...)
-{
-  assert ( format != 0 );
-  char buf[512]{};
-  va_list args{};
-
-  char* str = buf;
-  va_start (args, format);
-  vsnprintf (str, sizeof(buf), format, args);
-  va_end (args);
-
-  fsys->tputs (str, 1, FTerm::putchar_ASCII);
 }
 
 //----------------------------------------------------------------------
@@ -1353,6 +1300,12 @@ void FTerm::exitWithMessage (const FString& message)
 
 // private methods of FTerm
 //----------------------------------------------------------------------
+inline FStartOptions& FTerm::getStartOptions()
+{
+  return FStartOptions::getFStartOptions();
+}
+
+//----------------------------------------------------------------------
 void FTerm::init_global_values (bool disable_alt_screen)
 {
   // Initialize global values
@@ -1441,7 +1394,7 @@ void FTerm::init_alt_charset()
     uChar keyChar = uChar(fc::vt100_key_to_utf8[n][vt100_key]);
     uChar altChar = uChar(vt100_alt_char[keyChar]);
     uInt utf8char = uInt(fc::vt100_key_to_utf8[n][utf8_char]);
-    fc::encoding num = fc::NUM_OF_ENCODINGS;
+    fc::encoding num{fc::NUM_OF_ENCODINGS};
 
     uInt* p = std::find ( fc::character[0]
                         , fc::character[fc::lastCharItem] + num
@@ -2573,6 +2526,234 @@ uInt env2uint (const char* env)
   {
     return 0;
   }
+}
+
+//----------------------------------------------------------------------
+wchar_t cp437_to_unicode (uChar c)
+{
+  constexpr std::size_t CP437 = 0;
+  constexpr std::size_t UNICODE = 1;
+  wchar_t ucs(c);
+
+  for (std::size_t i{0}; i <= fc::lastCP437Item; i++)
+  {
+    if ( fc::cp437_to_ucs[i][CP437] == c )  // found
+    {
+      ucs = fc::cp437_to_ucs[i][UNICODE];
+      break;
+    }
+  }
+
+  return ucs;
+}
+
+//----------------------------------------------------------------------
+uChar unicode_to_cp437 (wchar_t ucs)
+{
+  constexpr std::size_t CP437 = 0;
+  constexpr std::size_t UNICODE = 1;
+  uChar c{'?'};
+
+  for (std::size_t i{0}; i <= fc::lastCP437Item; i++)
+  {
+    if ( fc::cp437_to_ucs[i][UNICODE] == ucs )  // found
+    {
+      c = uChar(fc::cp437_to_ucs[i][CP437]);
+      break;
+    }
+  }
+
+  return c;
+}
+
+//----------------------------------------------------------------------
+FString getFullWidth (const FString& str)
+{
+  // Converts half-width to full-width characters
+
+  FString s(str);
+  constexpr std::size_t HALF = 0;
+  constexpr std::size_t FULL = 1;
+
+  for (auto&& c : s)
+  {
+    if ( c > L'\x20' && c < L'\x7f' )  // half-width ASCII
+    {
+      c += 0xfee0;
+    }
+    else for (std::size_t i{0}; i <= fc::lastHalfWidthItem; i++)
+    {
+      if ( fc::halfWidth_fullWidth[i][HALF] == c )  // found
+      {
+        c = fc::halfWidth_fullWidth[i][FULL];
+      }
+    }
+  }
+
+  return s;
+}
+
+//----------------------------------------------------------------------
+FString getHalfWidth (const FString& str)
+{
+  // Converts full-width to half-width characters
+
+  FString s(str);
+  constexpr std::size_t HALF = 0;
+  constexpr std::size_t FULL = 1;
+
+  for (auto&& c : s)
+  {
+    if ( c > L'\xff00' && c < L'\xff5f' )  // full-width ASCII
+    {
+      c -= 0xfee0;
+    }
+    else for (std::size_t i{0}; i <= fc::lastHalfWidthItem; i++)
+    {
+      if ( fc::halfWidth_fullWidth[i][FULL] == c )  // found
+      {
+        c = fc::halfWidth_fullWidth[i][HALF];
+      }
+    }
+  }
+
+  return s;
+}
+
+//----------------------------------------------------------------------
+std::size_t getColumnWidthToLength ( const FString& str
+                                   , std::size_t col_len )
+{
+  std::size_t column_width{0}, length{0};
+
+  for (auto&& ch : str)
+  {
+    if ( column_width < col_len )
+    {
+      column_width += getColumnWidth(ch);
+      length++;
+    }
+  }
+
+  return length;
+}
+
+//----------------------------------------------------------------------
+FString getColumnSubString ( const FString& str
+                           , std::size_t col_pos, std::size_t col_len )
+{
+  FString s(str);
+  std::size_t col_first{1}, col_num{0}, first{1}, num{0};
+
+  if ( col_len == 0 || s.isEmpty() )
+    return FString(L"");
+
+  if ( col_pos == 0 )
+    col_pos = 1;
+
+  for (auto&& ch : s)
+  {
+    std::size_t width = getColumnWidth(ch);
+
+    if ( col_first < col_pos )
+    {
+      if ( col_first + width <= col_pos )
+      {
+        col_first += width;
+        first++;
+      }
+      else
+      {
+        ch = fc::SingleLeftAngleQuotationMark;  // ‹
+        num = col_num = 1;
+        col_pos = col_first;
+      }
+    }
+    else
+    {
+      if ( col_num + width <= col_len )
+      {
+        col_num += width;
+        num++;
+      }
+      else if ( col_num < col_len )
+      {
+        ch = fc::SingleRightAngleQuotationMark;  // ›
+        num++;
+        break;
+      }
+    }
+  }
+
+  if ( col_first < col_pos )  // String length < col_pos
+    return FString(L"");
+
+  return s.mid(first, num);
+}
+
+//----------------------------------------------------------------------
+std::size_t getColumnWidth (const FString& s, std::size_t pos)
+{
+  if ( s.isEmpty() )
+    return 0;
+
+  std::size_t column_width{0};
+  auto length = s.getLength();
+
+  if ( pos > length )
+    pos = length;
+
+  for (std::size_t i{0}; i < pos; i++)
+    column_width += getColumnWidth(s[i]);
+
+  return column_width;
+}
+
+//----------------------------------------------------------------------
+std::size_t getColumnWidth (const FString& s)
+{
+  if ( s.isEmpty() )
+    return 0;
+
+  const wchar_t* str = s.wc_str();
+  size_t len = std::wcslen(str);
+  int column_width = wcswidth (str, len);
+  return ( column_width == -1 ) ? 0 : std::size_t(column_width);
+}
+
+//----------------------------------------------------------------------
+std::size_t getColumnWidth (const wchar_t wchar)
+{
+  int column_width = wcwidth (wchar);
+  return ( column_width == -1 ) ? 0 : std::size_t(column_width);
+}
+
+//----------------------------------------------------------------------
+std::size_t getColumnWidth (charData& term_char)
+{
+  int column_width = wcwidth (term_char.code);
+  std::size_t char_width = ( column_width == -1 ) ? 0 : std::size_t(column_width);
+
+  if ( char_width == 2 && FTerm::getEncoding() != fc::UTF8 )
+  {
+    term_char.code = '.';
+    term_char.attr.bit.char_width = 1;
+  }
+  else
+    term_char.attr.bit.char_width = char_width & 0x03;
+
+  return char_width;
+}
+
+//----------------------------------------------------------------------
+std::size_t getColumnWidth (const FTermBuffer& termbuffer)
+{
+  std::size_t column_width{0};
+
+  for (auto&& tc : termbuffer)
+    column_width += tc.attr.bit.char_width;
+
+  return column_width;
 }
 
 }  // namespace finalcut

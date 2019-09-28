@@ -1,9 +1,9 @@
 /***********************************************************************
-* fdialoglistmenu.cpp - Widget FDialogListMenu                         *
+* fstartoptions.cpp - Contains the start options for initialization    *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2019 Markus Gans                                      *
+* Copyright 2019 Markus Gans                                           *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,42 +20,81 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include "final/fc.h"
-#include "final/fdialoglistmenu.h"
+#include "final/fstartoptions.h"
 
 namespace finalcut
 {
 
+// static class attribute
+FStartOptions* FStartOptions::start_options{};
+
 //----------------------------------------------------------------------
-// class FDialogListMenu
+// class FStartOptions
 //----------------------------------------------------------------------
 
-// constructor and destructor
+// constructors and destructor
 //----------------------------------------------------------------------
-FDialogListMenu::FDialogListMenu(FWidget* parent)
-  : FMenu(parent)
+FStartOptions::FStartOptions()
+ : cursor_optimisation{true}
+ , mouse_support{true}
+ , terminal_detection{true}
+ , color_change{true}
+ , vgafont{false}
+ , newfont{false}
+ , encoding{fc::UNKNOWN}
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
+ , meta_sends_escape{true}
+ , change_cursorstyle{true}
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
+ , meta_sends_escape{true}
+#endif
+{ }
+
+//----------------------------------------------------------------------
+FStartOptions::~FStartOptions()  // destructor
 {
-  init();
+  if ( start_options )
+    delete start_options;
+}
+
+// public methods of FStartOptions
+//----------------------------------------------------------------------
+FStartOptions& FStartOptions::getFStartOptions()
+{
+  if ( start_options == 0 )
+  {
+    try
+    {
+      start_options = new FStartOptions;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      std::abort();
+    }
+  }
+
+  return *start_options;
 }
 
 //----------------------------------------------------------------------
-FDialogListMenu::FDialogListMenu (const FString& txt, FWidget* parent)
-  : FMenu(txt, parent)
+void FStartOptions::setDefault()
 {
-  init();
-}
+  cursor_optimisation = true;
+  mouse_support = true;
+  terminal_detection = true;
+  color_change = true;
+  vgafont = false;
+  newfont = false;
+  encoding = fc::UNKNOWN;
 
-//----------------------------------------------------------------------
-FDialogListMenu::~FDialogListMenu()
-{  }
-
-
-// private methods of FMenu
-//----------------------------------------------------------------------
-void FDialogListMenu::init()
-{
-  auto m_item = getItem();
-  m_item->dialog_index = true;
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
+  meta_sends_escape = true;
+  change_cursorstyle = true;
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
+  meta_sends_escape = true;
+#endif
 }
 
 }  // namespace finalcut
+

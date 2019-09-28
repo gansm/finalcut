@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -417,34 +418,13 @@ std::size_t FString::getUTF8length() const
   if ( ! string )
     return 0;
 
-  std::size_t len = 0;
+  std::size_t len{0};
   const char* s = c_str();
 
   while ( *s )
     len += std::size_t((*s++ & 0xc0) != 0x80);
 
   return len;
-}
-
-//----------------------------------------------------------------------
-FString& FString::sprintf (const FString format, ...)
-{
-  static constexpr int BUFSIZE = 4096;
-  wchar_t buffer[BUFSIZE]{};
-  va_list args{};
-
-  if ( ! format )
-  {
-    clear();
-    return *this;
-  }
-
-  va_start (args, format);
-  std::vswprintf (buffer, BUFSIZE, format.wc_str(), args);
-  va_end (args);
-
-  _assign (buffer);
-  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -511,17 +491,11 @@ const std::string FString::toString() const
 FString FString::toLower() const
 {
   FString s(string);
-  wchar_t* p = s.string;
-
-  if ( p )
-  {
-    while ( *p )
-    {
-      *p = wchar_t(std::towlower(wint_t(*p)));
-      p++;
-    }
-  }
-
+  auto to_lower = [] (wchar_t& c)
+                  {
+                    c = wchar_t(std::towlower(std::wint_t(c)));
+                  };
+  std::for_each (s.begin(), s.end(), to_lower);
   return s;
 }
 
@@ -529,17 +503,11 @@ FString FString::toLower() const
 FString FString::toUpper() const
 {
   FString s(string);
-  wchar_t* p = s.string;
-
-  if ( p )
-  {
-    while ( *p )
-    {
-      *p = wchar_t(std::towupper(wint_t(*p)));
-      p++;
-    }
-  }
-
+  auto to_upper = [] (wchar_t& c)
+                  {
+                    c = wchar_t(std::towupper(std::wint_t(c)));
+                  };
+  std::for_each (s.begin(), s.end(), to_upper);
   return s;
 }
 
@@ -621,9 +589,9 @@ long FString::toLong() const
     p++;
   }
 
-  while ( std::iswdigit(wint_t(*p)) )
+  while ( std::iswdigit(std::wint_t(*p)) )
   {
-    uChar d = uChar((*p) - L'0');
+    uChar d = uChar(*p - L'0');
 
     if ( num > tenth_limit
       || (num == tenth_limit && d > tenth_limit_digit) )
@@ -638,7 +606,7 @@ long FString::toLong() const
     p++;
   }
 
-  if ( *p != L'\0' && ! std::iswdigit(wint_t(*p)) )
+  if ( *p != L'\0' && ! std::iswdigit(std::wint_t(*p)) )
     throw std::invalid_argument ("no valid number");
 
   if ( neg )
@@ -671,9 +639,9 @@ uLong FString::toULong() const
     p++;
   }
 
-  while ( std::iswdigit(wint_t(*p)) )
+  while ( std::iswdigit(std::wint_t(*p)) )
   {
-    uChar d = uChar((*p) - L'0');
+    uChar d = uChar(*p - L'0');
 
     if ( num > tenth_limit
       || (num == tenth_limit && d > tenth_limit_digit) )
@@ -685,7 +653,7 @@ uLong FString::toULong() const
     p++;
   }
 
-  if ( *p != L'\0' && ! std::iswdigit(wint_t(*p)) )
+  if ( *p != L'\0' && ! std::iswdigit(std::wint_t(*p)) )
     throw std::invalid_argument ("no valid number");
 
   return num;
@@ -743,7 +711,7 @@ FString FString::ltrim() const
 
   const wchar_t* p = s.string;
 
-  while ( std::iswspace(wint_t(*p)) )
+  while ( std::iswspace(std::wint_t(*p)) )
     p++;
 
   return FString(p);
@@ -761,10 +729,10 @@ FString FString::rtrim() const
   wchar_t* p = s.string;
   wchar_t* last = p + length;
 
-  while ( std::iswspace(wint_t(*--last)) && last > p )
+  while ( std::iswspace(std::wint_t(*--last)) && last > p )
     s.length--;
 
-  if ( last == p && std::iswspace(wint_t(*last)) )
+  if ( last == p && std::iswspace(std::wint_t(*last)) )
     s = L"";
   else
     *(last + 1) = '\0';
@@ -1166,29 +1134,23 @@ FString FString::replace (const FString& from, const FString& to)
 FString FString::replaceControlCodes() const
 {
   FString s(string);
-  wchar_t* p = s.string;
 
-  if ( p )
+  for (auto&& c : s)
   {
-    while ( *p )
+    if ( c <= L'\x1f' )
     {
-      if ( *p <= L'\x1f' )
-      {
-        *p += L'\x2400';
-      }
-      else if ( *p == L'\x7f' )
-      {
-        *p = L'\x2421';
-      }
-      else if ( *p >= L'\x80' && *p <= L'\x9f' )
-      {
-        *p = L' ';
-      }
-      else if ( ! std::iswprint(wint_t(*p)) )
-        *p = L' ';
-
-      p++;
+      c += L'\x2400';
     }
+    else if ( c == L'\x7f' )
+    {
+      c = L'\x2421';
+    }
+    else if ( c >= L'\x80' && c <= L'\x9f' )
+    {
+      c = L' ';
+    }
+    else if ( ! std::iswprint(std::wint_t(c)) )
+      c = L' ';
   }
 
   return s;
@@ -1224,36 +1186,28 @@ FString FString::expandTabs (int tabstop) const
 FString FString::removeDel() const
 {
   FString s(string);
-  const wchar_t* p = s.string;
+  std::size_t i{0};
+  std::size_t count{0};
 
-  if ( p )
+  for (auto&& c : s)
   {
-    uInt i{0};
-    uInt d{0};
-
-    while ( *p )
+    if ( c == 0x7f )
     {
-      if ( *p == 0x7f )
-      {
-        d++;
-      }
-      else if ( d > 0 )
-      {
-        d--;
-      }
-      else
-      {
-        s.string[i] = *p;
-        i++;
-      }
-
-      p++;
+      count++;
     }
-
-    s.string[i] = L'\0';
-    s.length = i;
+    else if ( count > 0 )
+    {
+      count--;
+    }
+    else  // count == 0
+    {
+      s.string[i] = c;
+      i++;
+    }
   }
 
+  s.string[i] = L'\0';
+  s.length = i;
   return s;
 }
 
@@ -1262,31 +1216,23 @@ FString FString::removeDel() const
 FString FString::removeBackspaces() const
 {
   FString s(string);
-  const wchar_t* p = s.string;
+  std::size_t i{0};
 
-  if ( p )
+  for (auto&& c : s)
   {
-    uInt i = 0;
-
-    while ( *p )
+    if ( c != L'\b' )
     {
-      if ( *p != L'\b' )
-      {
-        s.string[i] = *p;
-        i++;
-      }
-      else if ( i > 0 )
-      {
-        i--;
-      }
-
-      p++;
+      s.string[i] = c;
+      i++;
     }
-
-    s.string[i] = L'\0';
-    s.length = i;
+    else if ( i > 0 )
+    {
+      i--;
+    }
   }
 
+  s.string[i] = L'\0';
+  s.length = i;
   return s;
 }
 
@@ -1367,7 +1313,7 @@ inline void FString::initLength (std::size_t len)
 }
 
 //----------------------------------------------------------------------
-inline void FString::_assign (const wchar_t s[])
+void FString::_assign (const wchar_t s[])
 {
   if ( ! s )
   {
@@ -1378,7 +1324,7 @@ inline void FString::_assign (const wchar_t s[])
   if ( string && std::wcscmp(string, s) == 0 )
     return;  // string == s
 
-  uInt new_length = uInt(std::wcslen(s));
+  uInt new_length= uInt(std::wcslen(s));
 
   if ( ! string || new_length > capacity() )
   {
@@ -1404,7 +1350,7 @@ inline void FString::_assign (const wchar_t s[])
 }
 
 //----------------------------------------------------------------------
-inline void FString::_insert (std::size_t len, const wchar_t s[])
+void FString::_insert (std::size_t len, const wchar_t s[])
 {
   if ( len == 0 )  // String s is a null or a empty string
     return;
@@ -1430,9 +1376,9 @@ inline void FString::_insert (std::size_t len, const wchar_t s[])
 }
 
 //----------------------------------------------------------------------
-inline void FString::_insert ( std::size_t pos
-                             , std::size_t len
-                             , const wchar_t s[] )
+void FString::_insert ( std::size_t pos
+                      , std::size_t len
+                      , const wchar_t s[] )
 {
   if ( len == 0 )  // String s is a null or a empty string
     return;
@@ -1491,7 +1437,7 @@ inline void FString::_insert ( std::size_t pos
 }
 
 //----------------------------------------------------------------------
-inline void FString::_remove (std::size_t pos, std::size_t len)
+void FString::_remove (std::size_t pos, std::size_t len)
 {
   if ( capacity() - length + len <= FWDBUFFER )
   {
@@ -1558,7 +1504,7 @@ inline char* FString::wc_to_c_str (const wchar_t s[]) const
   int size = int(std::wcslen(s)) + 1;
   int dest_size = size * int(CHAR_SIZE);
   const wchar_t* src = s;
-  std::mbstate_t state;
+  std::mbstate_t state{};
   std::memset (&state, '\0', sizeof(mbstate_t));
 
   try
@@ -1611,7 +1557,7 @@ inline wchar_t* FString::c_to_wc_str (const char s[]) const
   int dest_size = size * int(CHAR_SIZE);
   const char* src = s;
   wchar_t* dest{};
-  std::mbstate_t state;
+  std::mbstate_t state{};
   std::memset (&state, '\0', sizeof(mbstate_t));
 
   try

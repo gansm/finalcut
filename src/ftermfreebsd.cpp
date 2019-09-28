@@ -193,7 +193,7 @@ bool FTermFreeBSD::saveFreeBSDAltKey()
     return false;
 
   // Save current mapping
-  bsd_alt_keymap = keymap.key[left_alt].map[0];
+  bsd_alt_keymap = uInt(keymap.key[left_alt].map[0]);
   return true;
 }
 
@@ -213,7 +213,7 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
     return false;
 
   // Mapping "key" on the left alt key
-  keymap.key[left_alt].map[0] = key;
+  keymap.key[left_alt].map[0] = int(key);
 
   if ( (keymap.n_keys > 0)
     && fsystem && (fsystem->ioctl(0, PIO_KEYMAP, &keymap) < 0) )

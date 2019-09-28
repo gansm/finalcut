@@ -238,7 +238,7 @@ void FButton::hide()
   }
   else
   {
-    const FWidgetColors& wc = getFWidgetColors();
+    const auto& wc = getFWidgetColors();
     fg = wc.dialog_fg;
     bg = wc.dialog_bg;
   }
@@ -410,7 +410,7 @@ void FButton::onFocusOut (FFocusEvent*)
 //----------------------------------------------------------------------
 void FButton::init()
 {
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   setForegroundColor (wc.button_active_fg);
   setBackgroundColor (wc.button_active_bg);
   setShadow();
@@ -423,6 +423,9 @@ void FButton::init()
 void FButton::setHotkeyAccelerator()
 {
   FKey hotkey = getHotkey(text);
+
+  if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
+    hotkey -= 0xfee0;
 
   if ( hotkey )
   {
@@ -466,9 +469,9 @@ inline std::size_t FButton::clickAnimationIndent (FWidget* parent_widget)
     setColor ( parent_widget->getForegroundColor()
              , parent_widget->getBackgroundColor() );
 
-  for (std::size_t y{1}; y <= getHeight(); y++)
+  for (int y{1}; y <= int(getHeight()); y++)
   {
-    print() << FPoint(1, int(y)) << ' ';  // clear one left █
+    print() << FPoint(1, y) << ' ';  // clear one left █
   }
 
   return 1;
@@ -563,10 +566,10 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
   print() << FPoint(2 + int(indent), 1 + int(vcenter_offset))
           << FColorPair (button_fg, button_bg);
 
-  if ( getWidth() < txtlength + 1 )
+  if ( getWidth() < column_width + 1 )
     center_offset = 0;
   else
-    center_offset = (getWidth() - txtlength - 1) / 2;
+    center_offset = (getWidth() - column_width - 1) / 2;
 
   // Print button text line
   for (pos = 0; pos < center_offset; pos++)
@@ -585,9 +588,9 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
   if ( active_focus && (isMonochron() || getMaxColor() < 16) )
     setBold();
 
-  for ( std::size_t z{0}
-      ; pos < center_offset + txtlength && z + 2 < getWidth()
-      ; z++, pos++)
+  for ( std::size_t z{0}, columns{0}
+      ; pos < center_offset + column_width && columns + 2 < getWidth()
+      ; z++)
   {
     if ( z == hotkeypos && getFlags().active )
     {
@@ -613,9 +616,13 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
     {
       print (button_text[z]);
     }
+
+    auto char_width = getColumnWidth (button_text[z]);
+    columns += char_width;
+    pos += char_width;
   }
 
-  if ( txtlength + 1 >= getWidth() )
+  if ( column_width + 1 >= getWidth() )
   {
     // Print ellipsis
     print() << FPoint(int(getWidth() + indent) - 2, 1) << "..";
@@ -624,7 +631,7 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
   if ( active_focus && (isMonochron() || getMaxColor() < 16) )
     unsetBold();
 
-  for (pos = center_offset + txtlength; pos < getWidth() - 2; pos++)
+  for (pos = center_offset + column_width; pos < getWidth() - 2; pos++)
     print (space_char);  // █
 }
 
@@ -633,7 +640,8 @@ void FButton::draw()
 {
   wchar_t* button_text{};
   auto parent_widget = getParentWidget();
-  txtlength = text.getLength();
+  auto txtlength = text.getLength();
+  column_width = getColumnWidth(text);
   space_char = int(' ');
   active_focus = getFlags().active && getFlags().focus;
 
@@ -668,7 +676,7 @@ void FButton::draw()
   hotkeypos = finalcut::getHotkeyPos(text.wc_str(), button_text, uInt(txtlength));
 
   if ( hotkeypos != NOT_SET )
-    txtlength--;
+    column_width--;
 
   if ( getHeight() >= 2 )
     vcenter_offset = (getHeight() - 1) / 2;

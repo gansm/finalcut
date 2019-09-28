@@ -782,18 +782,18 @@ void FWindow::setShadowSize (const FSize& size)
 //----------------------------------------------------------------------
 void FWindow::adjustSize()
 {
-  int old_x = getX();
-  int old_y = getY();
+  int old_x = getTermX();
+  int old_y = getTermY();
   FWidget::adjustSize();
 
   if ( zoomed )
     setGeometry (FPoint(1, 1), FSize(getMaxWidth(), getMaxHeight()), false);
   else if ( isVirtualWindow() )
   {
-    if ( getX() != old_x )
+    if ( getTermX() != old_x )
       getVWin()->offset_left = getTermX() - 1;
 
-    if ( getY() != old_y )
+    if ( getTermY() != old_y )
       getVWin()->offset_top = getTermY() - 1;
   }
 }

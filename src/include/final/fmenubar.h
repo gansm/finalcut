@@ -132,6 +132,7 @@ class FMenuBar : public FWindow, public FMenuList
     void         drawItems();
     void         drawItem (FMenuItem*, std::size_t&);
     void         setLineAttributes (FMenuItem*);
+    void         setCursorToHotkeyPosition (FMenuItem*, std::size_t);
     void         drawMenuText (menuText&);
     void         drawEllipsis (const menuText&, std::size_t);
     void         drawLeadingSpace (std::size_t&);

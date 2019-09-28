@@ -184,24 +184,6 @@ void FLabel::setAlignment (fc::text_alignment align)
 }
 
 //----------------------------------------------------------------------
-bool FLabel::setEmphasis (bool enable)
-{
-  if ( emphasis != enable )
-    emphasis = enable;
-
-  return enable;
-}
-
-//----------------------------------------------------------------------
-bool FLabel::setReverseMode (bool enable)
-{
-  if ( reverse_mode != enable )
-    reverse_mode = enable;
-
-  return enable;
-}
-
-//----------------------------------------------------------------------
 bool FLabel::setEnable (bool enable)
 {
   FWidget::setEnable(enable);
@@ -342,7 +324,7 @@ void FLabel::init()
   }
   else
   {
-    const FWidgetColors& wc = getFWidgetColors();
+    const auto& wc = getFWidgetColors();
     setForegroundColor (wc.dialog_fg);
     setBackgroundColor (wc.dialog_bg);
   }
@@ -352,6 +334,9 @@ void FLabel::init()
 void FLabel::setHotkeyAccelerator()
 {
   FKey hotkey = getHotkey(text);
+
+  if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
+    hotkey -= 0xfee0;
 
   if ( hotkey )
   {
@@ -372,7 +357,7 @@ void FLabel::setHotkeyAccelerator()
 //----------------------------------------------------------------------
 std::size_t FLabel::getAlignOffset (std::size_t length)
 {
-  std::size_t width = std::size_t(getWidth());
+  std::size_t width(getWidth());
 
   switch ( alignment )
   {
@@ -398,6 +383,9 @@ std::size_t FLabel::getAlignOffset (std::size_t length)
 //----------------------------------------------------------------------
 void FLabel::draw()
 {
+  if ( text.isEmpty() )
+    return;
+
   if ( isMonochron() )
   {
     setReverse(true);
@@ -435,10 +423,11 @@ void FLabel::drawMultiLine()
 
   while ( y < text_lines && y < std::size_t(getHeight()) )
   {
-    wchar_t* label_text;
+    wchar_t* label_text{};
     std::size_t hotkeypos{NOT_SET};
     std::size_t align_offset{};
-    std::size_t length = multiline_text[y].getLength();
+    auto length = multiline_text[y].getLength();
+    auto column_width = getColumnWidth(multiline_text[y]);
 
     try
     {
@@ -463,13 +452,13 @@ void FLabel::drawMultiLine()
     if ( hotkeypos != NOT_SET )
     {
       align_offset = getAlignOffset(length - 1);
-      printLine (label_text, length - 1, hotkeypos, align_offset);
+      printLine (label_text, length - 1, column_width, hotkeypos, align_offset);
       hotkey_printed = true;
     }
     else
     {
       align_offset = getAlignOffset(length);
-      printLine (label_text, length, NOT_SET, align_offset);
+      printLine (label_text, length, column_width, NOT_SET, align_offset);
     }
 
     y++;
@@ -480,9 +469,10 @@ void FLabel::drawMultiLine()
 //----------------------------------------------------------------------
 void FLabel::drawSingleLine()
 {
-  wchar_t* label_text;
+  wchar_t* label_text{};
   std::size_t hotkeypos{NOT_SET};
-  std::size_t length = text.getLength();
+  auto length = text.getLength();
+  auto column_width = getColumnWidth(text);
 
   try
   {
@@ -497,37 +487,48 @@ void FLabel::drawSingleLine()
   hotkeypos = finalcut::getHotkeyPos (text.wc_str(), label_text, length);
 
   if ( hotkeypos != NOT_SET )
+  {
     length--;
+    column_width--;
+  }
 
   print() << FPoint(1, 1);
-  std::size_t align_offset = getAlignOffset(length);
-  printLine (label_text, length, hotkeypos, align_offset);
+  auto align_offset = getAlignOffset(column_width);
+  printLine (label_text, length, column_width, hotkeypos, align_offset);
   delete[] label_text;
 }
 
 //----------------------------------------------------------------------
 void FLabel::printLine ( wchar_t line[]
                        , std::size_t length
+                       , std::size_t column_width
                        , std::size_t hotkeypos
                        , std::size_t align_offset )
 {
   std::size_t to_char{};
-  std::size_t width = std::size_t(getWidth());
+  std::size_t to_column{};
+  std::size_t width(getWidth());
 
   if ( align_offset > 0 )
     print (FString(align_offset, ' '));  // leading spaces
 
-  if ( length <= width )
+  if ( column_width <= width )
+  {
     to_char = length;
+    to_column = column_width;
+  }
   else
-    to_char = width - 2;
+  {
+    to_column = width - 2;
+    to_char = getColumnWidthToLength(line, to_column);
+  }
 
   if ( hasReverseMode() )
     setReverse(true);
 
   for (std::size_t z{0}; z < to_char; z++)
   {
-    if ( ! std::iswprint(wint_t(line[z])) )
+    if ( ! std::iswprint(std::wint_t(line[z])) )
     {
       if ( ! isNewFont() && ( int(line[z]) < fc::NF_rev_left_arrow2
                            || int(line[z]) > fc::NF_check_mark ) )
@@ -538,7 +539,7 @@ void FLabel::printLine ( wchar_t line[]
 
     if ( z == hotkeypos && getFlags().active )
     {
-      const FWidgetColors& wc = getFWidgetColors();
+      const auto& wc = getFWidgetColors();
       setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
 
       if ( ! getFlags().no_underline )
@@ -558,16 +559,16 @@ void FLabel::printLine ( wchar_t line[]
       print (line[z]);
   }
 
-  if ( length > width )
+  if ( column_width > width )
   {
     // Print ellipsis
     print() << FColorPair(ellipsis_color, getBackgroundColor()) << "..";
     setColor();
   }
-  else if ( align_offset + to_char < width )
+  else if ( align_offset + to_column < width )
   {
     // Print trailing spaces
-    std::size_t len = width - align_offset - to_char;
+    std::size_t len = width - align_offset - to_column;
     print (FString(len, ' '));
   }
 

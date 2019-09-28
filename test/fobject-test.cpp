@@ -551,7 +551,8 @@ void FObjectTest::performTimerActionTest()
   {
     num_events += t1.processEvent();
     // Wait 100 ms
-    nanosleep ((const struct timespec[]){{0, 100000000L}}, NULL);
+    const struct timespec ms[]{{0, 100000000L}};
+    nanosleep (ms, NULL);
     loop++;
   }
 

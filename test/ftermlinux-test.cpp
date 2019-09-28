@@ -145,10 +145,10 @@ class FSystemTest : public finalcut::FSystem
       0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d,
       0x0e, 0x0f, 0x0c, 0x00, 0x0f, 0x08, 0x00
     };
-    uChar ac_index = 0;
-    bool palette_addr_source_field = true;
-    uChar port_3cc = 0x67;  // Miscellaneous output
-    uChar port_3da = 0;     // Input status 1
+    uChar ac_index{0};
+    bool palette_addr_source_field{true};
+    uChar port_3cc{0x67};  // Miscellaneous output
+    uChar port_3da{0};     // Input status 1
     static uChar vga8x16[];
     static struct unipair unicode_cp437_pairs[];
 };
@@ -965,12 +965,12 @@ FSystemTest::rgb FSystemTest::defaultColor[16]
 
 // static class attributes
 //----------------------------------------------------------------------
-FSystemTest::shiftstate   FSystemTest::shift_state;
-struct console_font_op    FSystemTest::terminal_font;
-unimapdesc                FSystemTest::terminal_unicode_map;
-struct fb_var_screeninfo  FSystemTest::fb_terminal_info;
-struct fb_fix_screeninfo  FSystemTest::fb_terminal_fix_info;
-bool                      FSystemTest::vga_port_access = false;
+FSystemTest::shiftstate   FSystemTest::shift_state{};
+struct console_font_op    FSystemTest::terminal_font{};
+unimapdesc                FSystemTest::terminal_unicode_map{};
+struct fb_var_screeninfo  FSystemTest::fb_terminal_info{};
+struct fb_fix_screeninfo  FSystemTest::fb_terminal_fix_info{};
+bool                      FSystemTest::vga_port_access{false};
 
 
 // constructors and destructor
@@ -1062,10 +1062,10 @@ int FSystemTest::isTTY (int fd)
 //----------------------------------------------------------------------
 int FSystemTest::ioctl (int fd, uLong request, ...)
 {
-  va_list args;
-  void* argp;
-  std::string req_string;
-  int ret_val = -1;
+  va_list args{};
+  void* argp{};
+  std::string req_string{};
+  int ret_val{-1};
 
   va_start (args, request);
   argp = va_arg (args, void*);
@@ -1290,7 +1290,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
 //----------------------------------------------------------------------
 int FSystemTest::open (const char* pathname, int flags, ...)
 {
-  va_list args;
+  va_list args{};
   va_start (args, flags);
   mode_t mode = static_cast<mode_t>(va_arg (args, int));
   va_end (args);
@@ -1518,13 +1518,11 @@ void FTermLinuxTest::classNameTest()
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxConsoleTest()
 {
-  finalcut::FTermData* data;
-  finalcut::FSystem* fsys;
-  fsys = new test::FSystemTest();
+  finalcut::FSystem* fsys = new test::FSystemTest();
   finalcut::FTerm::setFSystem(fsys);
-  finalcut::FTermDetection* term_detection;
+  finalcut::FTermDetection* term_detection{};
   std::cout << "\n";
-  data = finalcut::FTerm::getFTermData();
+  finalcut::FTermData* data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
   encoding_list["UTF-8"] = finalcut::fc::UTF8;
@@ -1642,13 +1640,11 @@ void FTermLinuxTest::linuxConsoleTest()
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxCursorStyleTest()
 {
-  finalcut::FTermData* data;
-  finalcut::FSystem* fsys;
-  fsys = new test::FSystemTest();
+  finalcut::FSystem* fsys = new test::FSystemTest();
   finalcut::FTerm::setFSystem(fsys);
-  finalcut::FTermDetection* term_detection;
+  finalcut::FTermDetection* term_detection{};
   std::cout << "\n";
-  data = finalcut::FTerm::getFTermData();
+  finalcut::FTermData* data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
   encoding_list["UTF-8"] = finalcut::fc::UTF8;
@@ -1833,13 +1829,11 @@ void FTermLinuxTest::linuxCursorStyleTest()
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxColorPaletteTest()
 {
-  finalcut::FTermData* data;
-  finalcut::FSystem* fsys;
-  fsys = new test::FSystemTest();
+  finalcut::FSystem* fsys = new test::FSystemTest();
   finalcut::FTerm::setFSystem(fsys);
-  finalcut::FTermDetection* term_detection;
+  finalcut::FTermDetection* term_detection{};
   std::cout << "\n";
-  data = finalcut::FTerm::getFTermData();
+  finalcut::FTermData* data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
   encoding_list["UTF-8"] = finalcut::fc::UTF8;
@@ -2111,13 +2105,11 @@ void FTermLinuxTest::linuxColorPaletteTest()
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxFontTest()
 {
-  finalcut::FTermData* data;
-  finalcut::FSystem* fsys;
-  fsys = new test::FSystemTest();
+  finalcut::FSystem* fsys = new test::FSystemTest();
   finalcut::FTerm::setFSystem(fsys);
-  finalcut::FTermDetection* term_detection;
+  finalcut::FTermDetection* term_detection{};
   std::cout << "\n";
-  data = finalcut::FTerm::getFTermData();
+  finalcut::FTermData* data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
   encoding_list["UTF-8"] = finalcut::fc::UTF8;
@@ -2256,11 +2248,10 @@ void FTermLinuxTest::linuxFontTest()
 //----------------------------------------------------------------------
 void FTermLinuxTest::modifierKeyTest()
 {
-  FKey keycode;
-  FKey mod_keycode;
+  FKey keycode{};
+  FKey mod_keycode{};
   const finalcut::FTermLinux linux{};
-  finalcut::FSystem* fsys;
-  fsys = new test::FSystemTest();
+  finalcut::FSystem* fsys(new test::FSystemTest());
   test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
   test::FSystemTest::shiftstate& mod_key = fsystest->getShiftState();
 

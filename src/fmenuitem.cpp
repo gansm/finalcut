@@ -94,7 +94,7 @@ bool FMenuItem::setEnable (bool enable)
     if ( super && isMenuBar(super) )
     {
       // Meta + hotkey
-      super->addAccelerator ( fc::Fmkey_meta + FKey(std::tolower(hotkey))
+      super->addAccelerator ( fc::Fmkey_meta + FKey(std::tolower(int(hotkey)))
                             , this );
     }
   }
@@ -190,10 +190,14 @@ void FMenuItem::setText (const FString& txt)
 {
   text.setString(txt);
   text_length = text.getLength();
-  hotkey = hotKey();
+  text_width = getColumnWidth(txt);
+  hotkey = finalcut::getHotkey(text);
 
   if ( hotkey )
+  {
     text_length--;
+    text_width--;
+  }
 
   updateSuperMenuDimensions();
 }
@@ -524,12 +528,19 @@ FMenuList* FMenuItem::getFMenuList (FWidget& widget)
 void FMenuItem::init (FWidget* parent)
 {
   text_length = text.getLength();
-  hotkey = hotKey();
+  text_width = getColumnWidth(text);
+  hotkey = finalcut::getHotkey(text);
+
+  if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
+    hotkey -= 0xfee0;
 
   if ( hotkey )
+  {
     text_length--;
+    text_width--;
+  }
 
-  setGeometry (FPoint(1, 1), FSize(text_length + 2, 1), false);
+  setGeometry (FPoint(1, 1), FSize(text_width + 2, 1), false);
 
   if ( ! parent )
     return;
@@ -550,7 +561,7 @@ void FMenuItem::init (FWidget* parent)
     menubar_ptr->calculateDimensions();
 
     if ( hotkey )  // Meta + hotkey
-      menubar_ptr->addAccelerator ( fc::Fmkey_meta + FKey(std::tolower(hotkey))
+      menubar_ptr->addAccelerator ( fc::Fmkey_meta + FKey(std::tolower(int(hotkey)))
                                   , this );
 
     addCallback  // for this element
@@ -564,30 +575,6 @@ void FMenuItem::init (FWidget* parent)
     auto menu_ptr = static_cast<FMenu*>(parent);
     menu_ptr->calculateDimensions();
   }
-}
-
-//----------------------------------------------------------------------
-uChar FMenuItem::hotKey()
-{
-  if ( text.isEmpty() )
-    return 0;
-
-  std::size_t length = text.getLength();
-
-  for (std::size_t i{0}; i < length; i++)
-  {
-    try
-    {
-      if ( i + 1 < length && text[i] == '&' )
-        return uChar(text[++i]);
-    }
-    catch (const std::out_of_range&)
-    {
-      return 0;
-    }
-  }
-
-  return 0;
 }
 
 //----------------------------------------------------------------------

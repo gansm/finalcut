@@ -116,6 +116,7 @@
 
 #include "final/fc.h"
 #include "final/fstring.h"
+#include "final/fsystem.h"
 
 namespace finalcut
 {
@@ -125,9 +126,10 @@ class FKeyboard;
 class FMouseControl;
 class FOptiAttr;
 class FOptiMove;
+class FStartOptions;
 class FSize;
 class FString;
-class FSystem;
+class FTermBuffer;
 class FTermData;
 class FTermDebugData;
 class FTermDetection;
@@ -272,8 +274,6 @@ class FTerm final
     static bool            charEncodable (wchar_t);
     static wchar_t         charEncode (wchar_t);
     static wchar_t         charEncode (wchar_t, fc::encoding);
-    static wchar_t         cp437_to_unicode (uChar);
-    static uChar           unicode_to_cp437 (wchar_t);
 
     static bool            scrollTermForward();
     static bool            scrollTermReverse();
@@ -281,13 +281,8 @@ class FTerm final
     // function pointer -> static function
     static int             (*Fputchar)(int);
 
-    static void            putstringf (const char[], ...)
-#if defined(__clang__)
-      __attribute__ ((__format__ (__printf__, 1, 2)))
-#elif defined(__GNUC__)
-      __attribute__ ((format (printf, 1, 2)))
-#endif
-                           ;
+    template<typename... Args>
+    static void            putstringf (const char[], Args&&...);
     static void            putstring (const char[], int = 1);
     static int             putchar_ASCII (int);
     static int             putchar_UTF8  (int);
@@ -303,6 +298,7 @@ class FTerm final
                            ;
   private:
     // Methods
+    static FStartOptions&  getStartOptions();
     static void            init_global_values (bool);
     static void            init_terminal_device_path();
     static void            oscPrefix();
@@ -386,6 +382,21 @@ class FTerm final
 };
 
 
+// non-member function forward declarations
+//----------------------------------------------------------------------
+wchar_t cp437_to_unicode (uChar);
+uChar unicode_to_cp437 (wchar_t);
+FString getFullWidth (const FString&);
+FString getHalfWidth (const FString&);
+std::size_t getColumnWidthToLength (const FString&, std::size_t);
+FString getColumnSubString (const FString&, std::size_t, std::size_t);
+std::size_t getColumnWidth (const FString&, std::size_t);
+std::size_t getColumnWidth (const FString&);
+std::size_t getColumnWidth (const wchar_t);
+std::size_t getColumnWidth (charData&);
+std::size_t getColumnWidth (const FTermBuffer&);
+
+
 // FTerm inline functions
 //----------------------------------------------------------------------
 inline const char* FTerm::getClassName() const
@@ -402,6 +413,16 @@ inline bool FTerm::setUTF8()
 //----------------------------------------------------------------------
 inline bool FTerm::unsetUTF8()
 { return setUTF8(false); }
+
+//----------------------------------------------------------------------
+template<typename... Args>
+inline void FTerm::putstringf (const char format[], Args&&... args)
+{
+  char buf[512]{};
+  char* str = buf;
+  std::snprintf (str, sizeof(buf), format, std::forward<Args>(args)...);
+  fsys->tputs (str, 1, FTerm::putchar_ASCII);
+}
 
 }  // namespace finalcut
 

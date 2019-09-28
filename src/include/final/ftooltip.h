@@ -107,8 +107,7 @@ class FToolTip : public FWindow
 
     // Data members
     FString       text{};
-    FString*      text_components{nullptr};
-    FStringList   text_split{};
+    FStringList   text_components{};
     std::size_t   max_line_width{0};
     std::size_t   text_num_lines{0};
 };

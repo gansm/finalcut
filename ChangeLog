@@ -1,3 +1,11 @@
+2019-09-28  Markus Gans  <guru.mail@muenster.de>
+	* Support for displaying full-width characters (2 columns wide) 
+	  on the terminal. This is particularly important for the correct 
+	  display of CJK characters
+
+2019-09-16  Markus Gans  <guru.mail@muenster.de>
+	* Improve FStartOptions implementation
+
 2019-09-08  Markus Gans  <guru.mail@muenster.de>
 	* Remove the lines of the #pragma pack() directive from the code 
 	  because they caused a misaligned address

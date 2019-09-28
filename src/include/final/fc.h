@@ -152,6 +152,9 @@ enum SpecialCharacter : wchar_t
   DownwardsArrow                      = 0x2193,  // ↓
   RightwardsArrow                     = 0x2192,  // →
   LeftwardsArrow                      = 0x2190,  // ←
+  SingleRightAngleQuotationMark       = 0x203a,  // › (1)
+  SingleLeftAngleQuotationMark        = 0x2039,  // ‹ (1)
+  HorizontalEllipsis                  = 0x2026,  // … (1)
   DoubleExclamationMark               = 0x203c,  // ‼
   SuperscriptLatinSmallLetterN        = 0x207f,  // ⁿ
   GreaterThanOrEqualTo                = 0x2265,  // ≥

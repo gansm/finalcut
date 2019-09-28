@@ -73,8 +73,8 @@ class FSystemTest : public finalcut::FSystem
 
   private:
     // Data members
-    std::string characters;
-    int cursor_type = 0;
+    std::string characters{};
+    int cursor_type{0};
     static keymap_t keymap;
     static keymap_t terminal_keymap;
 };
@@ -401,10 +401,10 @@ int FSystemTest::isTTY (int fd)
 //----------------------------------------------------------------------
 int FSystemTest::ioctl (int fd, uLong request, ...)
 {
-  va_list args;
-  void* argp;
-  std::string req_string;
-  int ret_val = -1;
+  va_list args{};
+  void* argp{};
+  std::string req_string{};
+  int ret_val{-1};
 
   va_start (args, request);
   argp = va_arg (args, void*);
@@ -481,7 +481,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
 //----------------------------------------------------------------------
 int FSystemTest::open (const char* pathname, int flags, ...)
 {
-  va_list args;
+  va_list args{};
   va_start (args, flags);
   mode_t mode = static_cast<mode_t>(va_arg (args, int));
   va_end (args);
@@ -622,12 +622,11 @@ void ftermfreebsdTest::freebsdConsoleTest()
   setenv ("COLUMNS", "80", 1);
   setenv ("LINES", "25", 1);
 
-  finalcut::FTermData* data;
   finalcut::FSystem* fsys = new test::FSystemTest();
-  finalcut::FTermDetection* term_detection;
+  finalcut::FTermDetection* term_detection{};
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  data = finalcut::FTerm::getFTermData();
+  finalcut::FTermData* data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
   encoding_list["UTF-8"] = finalcut::fc::UTF8;
@@ -698,45 +697,46 @@ void ftermfreebsdTest::freebsdConsoleTest()
     freebsd.setCursorStyle(freebsd.getCursorStyle());
     CPPUNIT_ASSERT ( freebsd.getCursorStyle() == finalcut::fc::blink_cursor );
 
-    CPPUNIT_ASSERT ( finalcut::fc::character[2][finalcut::fc::PC] == 21 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[3][finalcut::fc::PC] == 8 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[4][finalcut::fc::PC] == 10 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[5][finalcut::fc::PC] == 19 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[6][finalcut::fc::PC] == 18 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[8][finalcut::fc::PC] == 22 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[9][finalcut::fc::PC] == 24 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[10][finalcut::fc::PC] == 25 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[11][finalcut::fc::PC] == 26 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[12][finalcut::fc::PC] == 27 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[23][finalcut::fc::PC] == 4 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[25][finalcut::fc::PC] == 4 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[26][finalcut::fc::PC] == 4 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[57][finalcut::fc::PC] == 16 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[58][finalcut::fc::PC] == 17 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[59][finalcut::fc::PC] == 16 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[60][finalcut::fc::PC] == 17 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[105][finalcut::fc::PC] == 4 );
+    finalcut::fc::encoding enc = finalcut::fc::PC;
+    CPPUNIT_ASSERT ( finalcut::fc::character[2][enc] == 21 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[3][enc] == 8 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[4][enc] == 10 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[5][enc] == 19 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[6][enc] == 18 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[8][enc] == 22 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[9][enc] == 24 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[10][enc] == 25 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[11][enc] == 26 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[12][enc] == 27 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[23][enc] == 4 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[25][enc] == 4 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[26][enc] == 4 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[57][enc] == 16 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[58][enc] == 17 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[59][enc] == 16 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[60][enc] == 17 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[105][enc] == 4 );
 
     freebsd.initCharMap();
 
-    CPPUNIT_ASSERT ( finalcut::fc::character[2][finalcut::fc::PC] == 36 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[3][finalcut::fc::PC] == 42 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[4][finalcut::fc::PC] == 42 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[5][finalcut::fc::PC] == 33 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[6][finalcut::fc::PC] == 73 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[8][finalcut::fc::PC] == 95 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[9][finalcut::fc::PC] == 94 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[10][finalcut::fc::PC] == 118 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[11][finalcut::fc::PC] == 62 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[12][finalcut::fc::PC] == 60 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[23][finalcut::fc::PC] == 42 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[25][finalcut::fc::PC] == 42 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[26][finalcut::fc::PC] == 42 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[57][finalcut::fc::PC] == 62 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[58][finalcut::fc::PC] == 60 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[59][finalcut::fc::PC] == 62 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[60][finalcut::fc::PC] == 60 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[105][finalcut::fc::PC] == 42 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[2][enc] == 36 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[3][enc] == 42 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[4][enc] == 42 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[5][enc] == 33 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[6][enc] == 73 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[8][enc] == 95 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[9][enc] == 94 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[10][enc] == 118 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[11][enc] == 62 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[12][enc] == 60 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[23][enc] == 42 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[25][enc] == 42 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[26][enc] == 42 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[57][enc] == 62 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[58][enc] == 60 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[59][enc] == 62 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[60][enc] == 60 );
+    CPPUNIT_ASSERT ( finalcut::fc::character[105][enc] == 42 );
 
     term_detection->detect();
 

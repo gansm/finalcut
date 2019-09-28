@@ -1,5 +1,5 @@
 /***********************************************************************
-* 7segment.cpp - Seven-segment display example                         *
+* ui.cpp - Example of a user interface                                 *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
@@ -556,6 +556,7 @@ void MyDialog::initWidgets()
   // A multiple selection listbox
   myList.setGeometry(FPoint(38, 1), FSize(14, 17));
   myList.setText ("Items");
+
   myList.setStatusbarMessage ("99 items in a list");
   myList.setMultiSelection();
   myList.reserve(100);
@@ -737,7 +738,7 @@ void MyDialog::adjustSize()
 {
   auto h = getParentWidget()->getHeight() - 4;
   setHeight (h, false);
-  auto X = int((getDesktopWidth() - getWidth()) / 2);
+  int X = int((getDesktopWidth() - getWidth()) / 2);
 
   if ( X < 1 )
     X = 1;

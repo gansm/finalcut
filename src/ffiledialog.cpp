@@ -701,7 +701,7 @@ int FFileDialog::changeDir (const FString& dirname)
           filename.setText('/');
         else
         {
-          auto baseName = basename(C_STR(lastdir.c_str()));
+          auto baseName = basename(lastdir.c_str());
           selectDirectoryEntry (baseName);
         }
       }
@@ -728,10 +728,16 @@ int FFileDialog::changeDir (const FString& dirname)
 void FFileDialog::printPath (const FString& txt)
 {
   const auto& path = txt;
-  const uInt max_width = uInt(filebrowser.getWidth()) - 4;
+  const std::size_t max_width = filebrowser.getWidth() - 4;
+  std::size_t column_width = getColumnWidth(path);
 
-  if ( path.getLength() > max_width )
-    filebrowser.setText(".." + path.right(max_width - 2));
+  if ( column_width > max_width )
+  {
+    const std::size_t width = max_width - 2;
+    std::size_t first = column_width + 1 - width;
+    FString sub_str(getColumnSubString (path, first, width));
+    filebrowser.setText(".." + sub_str);
+  }
   else
     filebrowser.setText(path);
 }

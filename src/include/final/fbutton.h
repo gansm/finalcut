@@ -173,7 +173,7 @@ class FButton : public FWidget
     std::size_t  indent{0};
     std::size_t  center_offset{0};
     std::size_t  vcenter_offset{0};
-    std::size_t  txtlength{0};
+    std::size_t  column_width{0};
 };
 
 // FButton inline functions

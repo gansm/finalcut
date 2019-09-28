@@ -394,6 +394,7 @@ class FListView : public FWidget
     void                 drawSortIndicator (std::size_t&, std::size_t);
     void                 drawHeadlineLabel (const headerItems::const_iterator&);
     void                 drawHeaderBorder (std::size_t);
+    void                 drawBufferedHeadline();
     void                 drawColumnEllipsis ( const headerItems::const_iterator&
                                             , const FString& );
     void                 updateDrawing (bool, bool);
@@ -413,13 +414,13 @@ class FListView : public FWidget
     FObjectIterator      appendItem (FListViewItem*);
     void                 processClick();
     void                 processChanged();
-    void                 keySpace();
-    void                 keyLeft (int&);
-    void                 keyRight (int&);
-    void                 keyHome();
-    void                 keyEnd();
-    bool                 keyPlus();
-    bool                 keyMinus();
+    void                 toggleCheckbox();
+    void                 collapseAndScrollLeft (int&);
+    void                 expandAndScrollRight (int&);
+    void                 firstPos();
+    void                 lastPos();
+    bool                 expandSubtree();
+    bool                 collapseSubtree();
     void                 setRelativePosition (int);
     void                 stepForward();
     void                 stepBackward();

@@ -73,14 +73,14 @@ CheckList::CheckList (finalcut::FWidget* parent)
 {
   setText (L"Shopping list");
   setShadow();
-  setGeometry ( FPoint(int(1 + (parent->getWidth() - 30) / 2), 5)
-              , FSize(30, 13) );
+  setGeometry ( FPoint(int(1 + (parent->getWidth() - 28) / 2), 5)
+              , FSize(28, 13) );
   listView.ignorePadding();
   listView.setGeometry (FPoint(1, 2), FSize(getWidth(), getHeight() - 1));
 
   // Add columns to the view
   listView.addColumn ("Item");
-  listView.addColumn ("Priority", 12);
+  listView.addColumn ("Priority", 9);
 
   // Set the type of sorting
   listView.setColumnSortType (1, fc::by_name);

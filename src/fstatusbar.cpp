@@ -175,7 +175,7 @@ bool FStatusBar::hasActivatedKey()
 void FStatusBar::hide()
 {
   FWindow::hide();
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   FColor fg = wc.term_fg;
   FColor bg = wc.term_bg;
   setColor (fg, bg);
@@ -196,7 +196,7 @@ void FStatusBar::drawMessage()
 
   x = x_msg;
   int space_offset{1};
-  bool hasKeys = bool(! key_list.empty());
+  bool hasKeys( ! key_list.empty() );
   bool isLastActiveFocus{false};
   std::size_t termWidth = getDesktopWidth();
 
@@ -212,7 +212,7 @@ void FStatusBar::drawMessage()
   if ( isLastActiveFocus )
     space_offset = 0;
 
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   setColor (wc.statusbar_fg, wc.statusbar_bg);
   setPrintPos (FPoint(x, 1));
 
@@ -236,7 +236,7 @@ void FStatusBar::drawMessage()
         print (' ');
       }
 
-      std::size_t msg_length = getMessage().getLength();
+      auto msg_length = getColumnWidth(getMessage());
       x += int(msg_length);
 
       if ( x - 1 <= int(termWidth) )
@@ -244,8 +244,9 @@ void FStatusBar::drawMessage()
       else
       {
         // Print ellipsis
-        print ( getMessage().left(msg_length + termWidth - uInt(x) - 1) );
-        print ("..");
+        std::size_t len = msg_length + termWidth - uInt(x) - 1;
+        print() << getColumnSubString ( getMessage(), 1, len)
+                << "..";
       }
     }
   }
@@ -358,8 +359,8 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
     while ( iter != last )
     {
       int x1 = X
-        , kname_len = int(getKeyName((*iter)->getKey()).getLength())
-        , txt_length = int((*iter)->getText().getLength())
+        , kname_len = getKeyNameWidth(*iter)
+        , txt_length = getKeyTextWidth(*iter)
         , x2 = x1 + kname_len + txt_length + 1
         , mouse_x = ev->getX()
         , mouse_y = ev->getY();
@@ -401,8 +402,8 @@ void FStatusBar::onMouseUp (FMouseEvent* ev)
       while ( iter != last )
       {
         int x1 = X
-          , kname_len = int(getKeyName((*iter)->getKey()).getLength())
-          , txt_length = int((*iter)->getText().getLength())
+          , kname_len = getKeyNameWidth(*iter)
+          , txt_length = getKeyTextWidth(*iter)
           , x2 = x1 + kname_len + txt_length + 1;
 
         if ( (*iter)->hasMouseFocus() )
@@ -446,8 +447,8 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
     while ( iter != last )
     {
       int x1 = X
-        , kname_len = int(getKeyName((*iter)->getKey()).getLength())
-        , txt_length = int((*iter)->getText().getLength())
+        , kname_len = getKeyNameWidth(*iter)
+        , txt_length = getKeyTextWidth(*iter)
         , x2 = x1 + kname_len + txt_length + 1
         , mouse_x = ev->getX()
         , mouse_y = ev->getY();
@@ -518,10 +519,24 @@ void FStatusBar::init()
   if ( getRootWidget() )
     getRootWidget()->setBottomPadding(1, true);
 
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   setForegroundColor (wc.statusbar_fg);
   setBackgroundColor (wc.statusbar_bg);
   unsetFocusable();
+}
+
+//----------------------------------------------------------------------
+int FStatusBar::getKeyNameWidth (const FStatusKey* key)
+{
+  const FString& key_name = getKeyName(key->getKey());
+  return int(getColumnWidth(key_name));
+}
+
+//----------------------------------------------------------------------
+int FStatusBar::getKeyTextWidth (const FStatusKey* key)
+{
+  const FString& key_text = key->getText();
+  return int(getColumnWidth(key_text));
 }
 
 //----------------------------------------------------------------------
@@ -549,22 +564,22 @@ void FStatusBar::drawKeys()
     setReverse(true);
 
   auto iter = key_list.begin();
-  auto last = key_list.end();
 
-  while ( iter != last )
+  while ( iter != key_list.end() )
   {
-    keyname_len = int(getKeyName((*iter)->getKey()).getLength());
+    auto item = *iter;
+    keyname_len = getKeyNameWidth(item);
 
     if ( x + keyname_len + 2 < int(screenWidth) )
     {
-      if ( (*iter)->isActivated() || (*iter)->hasMouseFocus() )
+      if ( item->isActivated() || item->hasMouseFocus() )
         drawActiveKey (iter);
       else
         drawKey (iter);
     }
     else
     {
-      const FWidgetColors& wc = getFWidgetColors();
+      const auto& wc = getFWidgetColors();
       setColor (wc.statusbar_fg, wc.statusbar_bg);
 
       for (; x <= int(screenWidth); x++)
@@ -586,7 +601,7 @@ void FStatusBar::drawKey (keyList::const_iterator iter)
   // Draw not active key
 
   auto item = *iter;
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   setColor (wc.statusbar_hotkey_fg, wc.statusbar_hotkey_bg);
   x++;
   print (' ');
@@ -595,23 +610,22 @@ void FStatusBar::drawKey (keyList::const_iterator iter)
   setColor (wc.statusbar_fg, wc.statusbar_bg);
   x++;
   print ('-');
-  std::size_t txt_length = item->getText().getLength();
-  x += int(txt_length);
+  auto column_width = getColumnWidth (item->getText());
+  x += int(column_width);
 
   if ( x - 1 <= int(screenWidth) )
     print (item->getText());
   else
   {
     // Print ellipsis
-    std::size_t len = txt_length + screenWidth - std::size_t(x) - 1;
-    print (item->getText().left(len));
-    print ("..");
+    std::size_t len = column_width + screenWidth - std::size_t(x) - 1;
+    print() << getColumnSubString(item->getText(), 1, len)
+            << "..";
   }
 
   if ( iter + 1 != key_list.end()
     && ( (*(iter + 1))->isActivated() || (*(iter + 1))->hasMouseFocus() )
-    && x + int(getKeyName((*(iter + 1))->getKey()).getLength()) + 3
-     < int(screenWidth) )
+    && x + getKeyNameWidth(*(iter + 1)) + 3 < int(screenWidth) )
   {
     // Next element is active
     if ( isMonochron() )
@@ -649,7 +663,7 @@ void FStatusBar::drawActiveKey (keyList::const_iterator iter)
   if ( isMonochron() )
     setReverse(false);
 
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   setColor ( wc.statusbar_active_hotkey_fg
            , wc.statusbar_active_hotkey_bg );
   x++;
@@ -659,8 +673,8 @@ void FStatusBar::drawActiveKey (keyList::const_iterator iter)
   setColor (wc.statusbar_active_fg, wc.statusbar_active_bg);
   x++;
   print ('-');
-  std::size_t txt_length = item->getText().getLength();
-  x += int(txt_length);
+  auto column_width = getColumnWidth (item->getText());
+  x += int(column_width);
 
   if ( x <= int(screenWidth) )
   {
@@ -671,9 +685,9 @@ void FStatusBar::drawActiveKey (keyList::const_iterator iter)
   else
   {
     // Print ellipsis
-    print ( item->getText()
-                 .left(txt_length + screenWidth - std::size_t(x) - 1) );
-    print ("..");
+    std::size_t len = column_width + screenWidth - std::size_t(x) - 1;
+    print() << getColumnSubString(item->getText(), 1, len)
+            << "..";
   }
 
   if ( isMonochron() )

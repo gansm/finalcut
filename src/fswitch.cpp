@@ -143,7 +143,7 @@ inline void FSwitch::drawChecked()
 {
   wchar_t on[6]{L"  On "};
   wchar_t off[6]{L" Off "};
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
 
   if ( hasFocus() && ! button_pressed )
   {
@@ -194,7 +194,7 @@ inline void FSwitch::drawUnchecked()
   wchar_t on[6]{L"  On "};
   wchar_t off[6]{L" Off "};
 
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   setColor (wc.button_inactive_fg, wc.button_inactive_bg);
 
   if ( isMonochron() )

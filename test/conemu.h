@@ -551,7 +551,8 @@ inline pid_t ConEmu::forkConEmu()
     while ( ! *shared_state && i < timeout )
     {
       // Wait 10 ms (= 10,000,000 ns)
-      nanosleep ((const struct timespec[]){{0, 10000000L}}, NULL);
+      const struct timespec ms[]{{0, 10000000L}};
+      nanosleep (ms, NULL);
       i++;
     }
 

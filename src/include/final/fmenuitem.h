@@ -94,9 +94,10 @@ class FMenuItem : public FWidget
 
     // Accessors
     const char*         getClassName() const override;
-    uChar               getHotkey() const;
+    FKey                getHotkey() const;
     FMenu*              getMenu() const;
     std::size_t         getTextLength() const;
+    std::size_t         getTextWidth() const;
     FString             getText() const;
 
     // Mutators
@@ -159,7 +160,6 @@ class FMenuItem : public FWidget
 
     // Methods
     void                init (FWidget*);
-    uChar               hotKey();
     void                updateSuperMenuDimensions();
     void                processActivate();
     void                processDeactivate();
@@ -179,8 +179,9 @@ class FMenuItem : public FWidget
     FWidget*     super_menu{nullptr};
     FDialog*     associated_window{nullptr};
     std::size_t  text_length{0};
+    std::size_t  text_width{0};
     FKey         accel_key{0};
-    uChar        hotkey{0};
+    FKey         hotkey{0};
     bool         selected{false};
     bool         separator{false};
     bool         checkable{false};
@@ -202,7 +203,7 @@ inline const char* FMenuItem::getClassName() const
 { return "FMenuItem"; }
 
 //----------------------------------------------------------------------
-inline uChar FMenuItem::getHotkey() const
+inline FKey FMenuItem::getHotkey() const
 { return hotkey; }
 
 //----------------------------------------------------------------------
@@ -212,6 +213,10 @@ inline FMenu* FMenuItem::getMenu() const
 //----------------------------------------------------------------------
 inline std::size_t FMenuItem::getTextLength() const
 { return text_length; }
+
+//----------------------------------------------------------------------
+inline std::size_t FMenuItem::getTextWidth() const
+{ return text_width; }
 
 //----------------------------------------------------------------------
 inline FString FMenuItem::getText() const

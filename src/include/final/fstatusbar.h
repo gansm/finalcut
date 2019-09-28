@@ -238,6 +238,8 @@ class FStatusBar : public FWindow
 
     // Methods
     void                init();
+    int                 getKeyNameWidth (const FStatusKey*);
+    int                 getKeyTextWidth (const FStatusKey*);
     void                draw() override;
     void                drawKeys();
     void                drawKey (keyList::const_iterator);

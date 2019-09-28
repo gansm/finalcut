@@ -358,7 +358,7 @@ bool FTermLinux::loadNewFont()
 //----------------------------------------------------------------------
 bool FTermLinux::loadOldFont()
 {
-  bool retval = false;
+  bool retval{false};
 
   if ( FTerm::openConsole() == 0 )
   {

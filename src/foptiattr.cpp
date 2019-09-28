@@ -1220,10 +1220,10 @@ inline bool FOptiAttr::hasColorChanged (charData*& term, charData*& next)
 {
   if ( term && next )
   {
-    bool frev = ( on.attr.bit.reverse
+    bool frev ( ( on.attr.bit.reverse
                || on.attr.bit.standout
                || off.attr.bit.reverse
-               || off.attr.bit.standout ) && fake_reverse;
+               || off.attr.bit.standout ) && fake_reverse );
     return bool ( frev
                || term->fg_color != next->fg_color
                || term->bg_color != next->bg_color );
@@ -1483,10 +1483,10 @@ inline void FOptiAttr::change_current_color ( charData*& term
   auto& Sf = F_set_foreground.cap;
   auto& Sb = F_set_background.cap;
   auto& sp = F_set_color_pair.cap;
-  bool frev = ( off.attr.bit.reverse
+  bool frev ( ( off.attr.bit.reverse
              || off.attr.bit.standout
              || term->attr.bit.reverse
-             || term->attr.bit.standout ) && fake_reverse;
+             || term->attr.bit.standout ) && fake_reverse );
 
   if ( AF && AB )
   {

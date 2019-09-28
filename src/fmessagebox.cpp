@@ -61,7 +61,6 @@ FMessageBox::FMessageBox (const FMessageBox& mbox)
   , headline_text(mbox.headline_text)
   , text(mbox.text)
   , text_components(mbox.text_components)
-  , text_split(mbox.text_split)
   , max_line_width(mbox.max_line_width)
   , emphasis_color(mbox.emphasis_color)
   , num_buttons(mbox.num_buttons)
@@ -114,7 +113,6 @@ FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
     headline_text   = mbox.headline_text;
     text            = mbox.text;
     text_components = mbox.text_components;
-    text_split      = mbox.text_split;
     max_line_width  = mbox.max_line_width;
     center_text     = mbox.center_text;
     emphasis_color  = mbox.emphasis_color;
@@ -139,10 +137,10 @@ void FMessageBox::setHeadline (const FString& headline)
   for (uInt n{0}; n < num_buttons; n++)
     button[n]->setY (int(getHeight()) - 4, false);
 
-  std::size_t len = headline_text.getLength();
+  std::size_t column_width = getColumnWidth(headline_text);
 
-  if ( len > max_line_width )
-    max_line_width = len;
+  if ( column_width > max_line_width )
+    max_line_width = column_width;
 }
 
 //----------------------------------------------------------------------
@@ -311,9 +309,9 @@ void FMessageBox::calculateDimensions()
 {
   FSize size{};
   std::size_t headline_height{0};
-  text_split = text.split("\n");
+  text_components = text.split("\n");
   max_line_width = 0;
-  text_num_lines = uInt(text_split.size());
+  text_num_lines = std::size_t(text_components.size());
 
   if ( text_num_lines == 0 )
     return;
@@ -321,13 +319,12 @@ void FMessageBox::calculateDimensions()
   if ( ! headline_text.isNull() )
     headline_height = 2;
 
-  for (uInt i{0}; i < text_num_lines; i++)
+  for (auto&& line : text_components)
   {
-    text_components = &text_split[0];
-    std::size_t len = text_components[i].getLength();
+    std::size_t column_width = getColumnWidth(line);
 
-    if ( len > max_line_width )
-      max_line_width = len;
+    if ( column_width > max_line_width )
+      max_line_width = column_width;
   }
 
   size.setHeight (text_num_lines + 8 + headline_height);
@@ -344,21 +341,22 @@ void FMessageBox::draw()
 {
   FDialog::draw();
 
-  int head_offset = 0;
-  int center_x = 0;
+  int y{0};
+  int head_offset{0};
+  int center_x{0};
   // center the whole block
   int msg_x = int((getWidth() - max_line_width) / 2);
 
   if ( isMonochron() )
     setReverse(true);
 
-  if ( ! headline_text.isNull() )
+  if ( ! headline_text.isEmpty() )
   {
     setColor(emphasis_color, getBackgroundColor());
-    std::size_t headline_length = headline_text.getLength();
+    std::size_t headline_width = getColumnWidth(headline_text);
 
     if ( center_text )  // center one line
-      center_x = int((max_line_width - headline_length) / 2);
+      center_x = int((max_line_width - headline_width) / 2);
 
     print() << FPoint(1 + msg_x + center_x, 4) << headline_text;
     head_offset = 2;
@@ -366,15 +364,16 @@ void FMessageBox::draw()
 
   setColor();
 
-  for (int i{0}; i < int(text_num_lines); i++)
+  for (auto&& line : text_components)
   {
-    std::size_t line_length = text_components[i].getLength();
+    std::size_t line_width = getColumnWidth(line);
 
     if ( center_text )  // center one line
-      center_x = int((max_line_width - line_length) / 2);
+      center_x = int((max_line_width - line_width) / 2);
 
-    print() << FPoint(1 + msg_x + center_x, 4 + head_offset + i)
-            << text_components[i];
+    print() << FPoint(1 + msg_x + center_x, 4 + head_offset + y)
+            << line;
+    y++;
   }
 
   if ( isMonochron() )

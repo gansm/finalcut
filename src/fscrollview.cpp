@@ -373,8 +373,8 @@ void FScrollView::scrollTo (int x, int y)
   if ( xoffset > xoffset_end )
     xoffset = xoffset_end;
 
-  changeX = bool(xoffset_before != xoffset);
-  changeY = bool(yoffset_before != yoffset);
+  changeX = bool( xoffset_before != xoffset );
+  changeY = bool( yoffset_before != yoffset );
 
   if ( ! isShown() || ! viewport || ! (changeX || changeY) )
     return;
@@ -764,7 +764,7 @@ void FScrollView::init (FWidget* parent)
 
   initScrollbar (vbar, fc::vertical, &FScrollView::cb_VBarChange);
   initScrollbar (hbar, fc::horizontal, &FScrollView::cb_HBarChange);
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
   setGeometry (FPoint(1, 1), FSize(4, 4));

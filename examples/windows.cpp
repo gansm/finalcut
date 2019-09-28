@@ -342,12 +342,12 @@ void Window::activateWindow (finalcut::FDialog* win)
 //----------------------------------------------------------------------
 void Window::adjustSize()
 {
-  std::size_t w  = getDesktopWidth();
-  std::size_t h  = getDesktopHeight();
-  int X  = int(1 + (w - 40) / 2)
-    , Y  = int(1 + (h - 22) / 2)
-    , dx = ( w > 80 ) ? int(w - 80) / 2 : 0
-    , dy = ( h > 24 ) ? int(h - 24) / 2 : 0;
+  std::size_t w = getDesktopWidth();
+  std::size_t h = getDesktopHeight();
+  int X = int(1 + (w - 40) / 2);
+  int Y = int(1 + (h - 22) / 2);
+  int dx = ( w > 80 ) ? int(w - 80) / 2 : 0;
+  int dy = ( h > 24 ) ? int(h - 24) / 2 : 0;
 
   if ( Y < 2 )
     Y = 2;
@@ -360,9 +360,9 @@ void Window::adjustSize()
   {
     if ( (*iter)->is_open )
     {
-      int n = int(std::distance(first, iter))
-        , x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3
-        , y = dy + 11 + int(n / 3) * 3;
+      int n = int(std::distance(first, iter));
+      int x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
+      int y = dy + 11 + int(n / 3) * 3;
       (*iter)->dgl->setPos (FPoint(x, y));
     }
 

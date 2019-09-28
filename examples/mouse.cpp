@@ -457,7 +457,7 @@ void MouseDraw::draw()
 //----------------------------------------------------------------------
 void MouseDraw::drawBrush (int x, int y, bool swap_color)
 {
-  int Cols  = int(getWidth());
+  int Cols = int(getWidth());
   int Lines = int(getHeight());
 
   if ( x > 10 && x < Cols && y > 2 && y < Lines )

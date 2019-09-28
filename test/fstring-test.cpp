@@ -973,7 +973,7 @@ void FStringTest::iteratorTest()
   CPPUNIT_ASSERT ( str.front() == L'1' );
   CPPUNIT_ASSERT ( str.back() == L'9' );
 
-  finalcut::FString::iterator iter = str.begin();
+  finalcut::FString::const_iterator iter = str.begin();
   CPPUNIT_ASSERT ( (*iter) == L'1' );
   ++iter;
   CPPUNIT_ASSERT ( (*iter) == L'2' );
@@ -993,6 +993,17 @@ void FStringTest::iteratorTest()
   CPPUNIT_ASSERT ( (*iter) == L'9' );
   ++iter;
   CPPUNIT_ASSERT ( iter == str.end() );
+
+  finalcut::FString str2("bcdefg");
+  finalcut::FString::iterator iter2 = str2.begin();
+
+  while ( iter2 != str2.end() )
+  {
+    *iter2 -= 1;
+    ++iter2;
+  }
+
+  CPPUNIT_ASSERT ( str2 == L"abcdef" );
 }
 
 //----------------------------------------------------------------------

@@ -104,8 +104,8 @@ bool FTermOpenBSD::setBeep (int Hz, int ms)
 
   wskbd_bell_data bell;
   bell.which  = WSKBD_BELL_DOALL;
-  bell.pitch  = Hz;
-  bell.period = ms;
+  bell.pitch  = uInt(Hz);
+  bell.period = uInt(ms);
   bell.volume = 50;  // 50% volume
 
   if ( fsystem && fsystem->ioctl(0, WSKBDIO_SETBELL, &bell) < 0 )

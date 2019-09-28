@@ -1,7 +1,12 @@
 ![FINAL CUT](logo/svg/finalcut-logo.svg)
 ============================================
 
-### Building and code analysis
+# Library for creating terminal applications with text-based widgets
+The FINAL CUT is a C++ class library and widget toolkit with full mouse support for creating a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple text windows on the screen.
+
+The structure of the Qt framework was originally the inspiration for the C++ class design of FINAL CUT. It provides common controls like dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, status bars and so on.
+
+## Building and code analysis
 *Latest release:*<br />
 &#160;&#160;&#160;&#160;&#160;[![Latest Release](https://img.shields.io/github/release/gansm/finalcut.svg)](https://github.com/gansm/finalcut/releases) <br />
 *License:*<br />
@@ -15,12 +20,7 @@
 *Class Reference:*<br />
 &#160;&#160;&#160;&#160;&#160;[![documented](https://codedocs.xyz/gansm/finalcut.svg)](https://codedocs.xyz/gansm/finalcut/hierarchy.html)
 
-### Description
-The FINAL CUT is a C++ class library and widget toolkit with full mouse support for creating a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple text windows on the screen.
-
-The structure of the Qt framework was originally the inspiration for the C++ class design of FINAL CUT. It provides common controls like dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, status bars and so on.
-
-### Installation
+## Installation
 ```bash
 > git clone git://github.com/gansm/finalcut.git
 > cd finalcut
@@ -30,7 +30,7 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 > su -c "make install"
 ```
 
-### Supported platforms
+## Supported platforms
 * Linux
 * FreeBSD
 * NetBSD
@@ -39,13 +39,12 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 * Cygwin
 * Solaris
 
-### First steps
+## First steps
+Read here [how to use the library](doc/first-steps.md#first-steps-with-the-final-cut-widget-toolkit)
 
-[How to use the library](doc/first-steps.md#first-steps-with-the-final-cut-widget-toolkit)
+## Some screenshots
 
-### Screenshots
-
-The FFileDialog widget:
+The FFileDialog widget with incremental file name search:
 
 ![FFileDialog](doc/fileopen-dialog.png)
 

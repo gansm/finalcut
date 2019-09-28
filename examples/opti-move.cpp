@@ -108,7 +108,7 @@ void move (int xold, int yold, int xnew, int ynew)
             << " ";
   // get the move string
   char* buffer = finalcut::FTerm::moveCursorString (xold, yold, xnew, ynew);
-  uInt  len    = uInt(std::strlen(buffer));
+  uInt len = uInt(std::strlen(buffer));
 
   for (uInt i = 0; i < len; i++)
   {

@@ -79,6 +79,7 @@ class FCloseEvent;
 class FFocusEvent;
 class FKeyEvent;
 class FMouseEvent;
+class FStartOptions;
 class FTimerEvent;
 class FWheelEvent;
 class FMouseControl;
@@ -144,6 +145,7 @@ class FApplication : public FWidget
     // Methods
     void                  init (uInt64, uInt64);
     static void           cmd_options (const int&, char*[]);
+    static FStartOptions& getStartOptions();
     void                  findKeyboardWidget();
     bool                  isKeyPressed();
     void                  keyPressed();

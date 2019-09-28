@@ -1250,10 +1250,10 @@ void FWidget::drawShadow()
     return;
   }
 
-  int x1 = 1
-    , x2 = int(getWidth())
-    , y1 = 1
-    , y2 = int(getHeight());
+  int x1 = 1;
+  int x2 = int(getWidth());
+  int y1 = 1;
+  int y2 = int(getHeight());
 
   if ( flags.trans_shadow )
   {
@@ -1310,10 +1310,10 @@ void FWidget::drawFlatBorder()
   if ( ! isNewFont() )
     return;
 
-  int x1 = 1
-    , x2 = int(getWidth()) + 1
-    , y1 = 0
-    , y2 = int(getHeight()) + 1;
+  int x1 = 1;
+  int x2 = int(getWidth() + 1);
+  int y1 = 0;
+  int y2 = int(getHeight() + 1);
 
   if ( auto p = getParentWidget() )
     setColor (wcolors.dialog_fg, p->getBackgroundColor());
@@ -1377,10 +1377,10 @@ void FWidget::clearFlatBorder()
   if ( ! isNewFont() )
     return;
 
-  int x1 = 1
-    , x2 = int(getWidth()) + 1
-    , y1 = 0
-    , y2 = int(getHeight()) + 1;
+  int x1 = 1;
+  int x2 = int(getWidth() + 1);
+  int y1 = 0;
+  int y2 = int(getHeight() + 1);
 
   if ( auto p = getParentWidget() )
     setColor (wcolors.dialog_fg, p->getBackgroundColor());
@@ -1548,9 +1548,9 @@ void FWidget::adjustSize()
     else if ( ignore_padding && p )
     {
       woffset.setCoordinates ( p->getTermX() - 1
-                            , p->getTermY() - 1
-                            , p->getTermX() + int(p->getWidth()) - 2
-                            , p->getTermY() + int(p->getHeight()) - 2 );
+                             , p->getTermY() - 1
+                             , p->getTermX() + int(p->getWidth()) - 2
+                             , p->getTermY() + int(p->getHeight()) - 2 );
     }
     else if ( p )
       woffset = p->wclient_offset;

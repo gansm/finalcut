@@ -86,7 +86,8 @@ void FToggleButton::setGeometry ( const FPoint& pos, const FSize& s
 
   FSize size(s);
   std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
-  std::size_t min_width = button_width + text.getLength() - hotkey_mark;
+  std::size_t column_width = getColumnWidth(text);
+  std::size_t min_width = button_width + column_width - hotkey_mark;
 
   if ( size.getWidth() < min_width )
     size.setWidth(min_width);
@@ -109,7 +110,7 @@ bool FToggleButton::setNoUnderline (bool enable)
 bool FToggleButton::setEnable (bool enable)
 {
   FWidget::setEnable(enable);
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
 
   if ( enable )
   {
@@ -140,7 +141,7 @@ bool FToggleButton::setEnable (bool enable)
 bool FToggleButton::setFocus (bool enable)
 {
   FWidget::setFocus(enable);
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
 
   if ( enable )
   {
@@ -194,8 +195,8 @@ void FToggleButton::setText (const FString& txt)
 {
   text.setString(txt);
   std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
-
-  setWidth(button_width + text.getLength() - hotkey_mark);
+  std::size_t column_width = getColumnWidth(text);
+  setWidth(button_width + column_width - hotkey_mark);
 
   if ( isEnabled() )
   {
@@ -371,6 +372,9 @@ void FToggleButton::setHotkeyAccelerator()
 {
   FKey hotkey = getHotkey(text);
 
+  if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
+    hotkey -= 0xfee0;
+
   if ( hotkey )
   {
     if ( std::isalpha(int(hotkey)) || std::isdigit(int(hotkey)) )
@@ -534,7 +538,7 @@ void FToggleButton::setGroup (FButtonGroup* btngroup)
 void FToggleButton::init()
 {
   setGeometry (FPoint(1, 1), FSize(4, 1), false);  // initialize geometry values
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
 
   if ( isEnabled() )
   {
@@ -564,7 +568,7 @@ void FToggleButton::drawText ( wchar_t LabelText[]
   if ( isMonochron() )
     setReverse(true);
 
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
 
   if ( isEnabled() )
     setColor (wc.label_fg, wc.label_bg);

@@ -156,6 +156,9 @@ class FLineEdit : public FWidget
     void                adjustSize() override;
 
   private:
+    // Typedef
+    typedef std::pair<std::size_t, std::size_t> offsetPair;
+
     // Enumeration
     enum dragScroll
     {
@@ -164,19 +167,25 @@ class FLineEdit : public FWidget
       scrollRight = 2
     };
 
+    // Constants
+    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
+
     // Methods
     void                init();
     bool                hasHotkey();
     void                draw() override;
     void                drawInputField();
-    void                keyLeft();
-    void                keyRight();
-    void                keyHome();
-    void                keyEnd();
-    void                keyDel();
-    void                keyBackspace();
-    void                keyInsert();
-    void                keyEnter();
+    offsetPair          endPosToOffset (std::size_t);
+    std::size_t         clickPosToCursorPos (std::size_t);
+    void                adjustTextOffset();
+    void                cursorLeft();
+    void                cursorRight();
+    void                cursorHome();
+    void                cursorEnd();
+    void                deleteCurrentCharacter();
+    void                deletePreviousCharacter();
+    void                switchInsertMode();
+    void                acceptInput();
     bool                keyInput (FKey);
     wchar_t             characterFilter (const wchar_t);
     void                processActivate();
@@ -192,8 +201,9 @@ class FLineEdit : public FWidget
     int          scroll_repeat{100};
     bool         scroll_timer{false};
     bool         insert_mode{true};
-    std::size_t  cursor_pos{0};
+    std::size_t  cursor_pos{NOT_SET};
     std::size_t  text_offset{0};
+    std::size_t  char_width_offset{0};
     std::size_t  max_length{std::numeric_limits<std::size_t>::max()};
 };
 

@@ -490,6 +490,12 @@ void FApplication::cmd_options (const int& argc, char* argv[])
 }
 
 //----------------------------------------------------------------------
+inline FStartOptions& FApplication::getStartOptions()
+{
+  return FStartOptions::getFStartOptions();
+}
+
+//----------------------------------------------------------------------
 inline void FApplication::findKeyboardWidget()
 {
   // Find the widget that has the keyboard focus

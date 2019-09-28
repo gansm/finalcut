@@ -45,6 +45,7 @@ libfinal_la_SOURCES = \
 	fkey_map.cpp \
 	fcharmap.cpp \
 	ftextview.cpp \
+	fstartoptions.cpp \
 	fstatusbar.cpp \
 	ftermcap.cpp \
 	ftermcapquirks.cpp \
@@ -114,6 +115,7 @@ finalcutinclude_HEADERS = \
 	include/final/frect.h \
 	include/final/fscrollbar.h \
 	include/final/fscrollview.h \
+	include/final/fstartoptions.h \
 	include/final/fstatusbar.h \
 	include/final/fstring.h \
 	include/final/fsystem.h \

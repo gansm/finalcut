@@ -78,7 +78,8 @@ class FString
 {
   public:
     // Typedef
-    typedef const wchar_t* iterator;
+    typedef const wchar_t* const_iterator;
+    typedef wchar_t* iterator;
 
     // Constructors
     FString () = default;
@@ -191,12 +192,15 @@ class FString
     std::size_t getUTF8length() const;
     std::size_t capacity() const;
 
-    iterator begin() const;
-    iterator end()   const;
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
     wchar_t  front() const;
-    wchar_t  back()  const;
+    wchar_t  back() const;
 
-    FString& sprintf (const FString, ...);
+    template<typename... Args>
+    FString& sprintf (const FString, Args&&...);
     FString  clear();
 
     const wchar_t* wc_str() const;
@@ -369,11 +373,19 @@ inline std::size_t FString::capacity() const
 { return ( length > 0 ) ? bufsize - 1 : 0; }
 
 //----------------------------------------------------------------------
-inline FString::iterator FString::begin() const
+inline FString::iterator FString::begin()
 { return string; }
 
 //----------------------------------------------------------------------
-inline FString::iterator FString::end() const
+inline FString::iterator FString::end()
+{ return string + length; }
+
+//----------------------------------------------------------------------
+inline FString::const_iterator FString::begin() const
+{ return string; }
+
+//----------------------------------------------------------------------
+inline FString::const_iterator FString::end() const
 { return string + length; }
 
 //----------------------------------------------------------------------
@@ -388,6 +400,25 @@ inline wchar_t FString::back() const
 {
   assert( ! isEmpty() );
   return string[length - 1];
+}
+
+//----------------------------------------------------------------------
+template<typename... Args>
+inline FString& FString::sprintf (const FString format, Args&&... args)
+{
+  static constexpr int BUFSIZE = 4096;
+  wchar_t buffer[BUFSIZE]{};
+
+  if ( ! format )
+  {
+    clear();
+    return *this;
+  }
+
+  std::swprintf ( buffer, BUFSIZE
+                , format.wc_str(), std::forward<Args>(args)... );
+  _assign(buffer);
+  return *this;
 }
 
 //----------------------------------------------------------------------

@@ -145,8 +145,8 @@ void FTextView::scrollBy (int dx, int dy)
 //----------------------------------------------------------------------
 void FTextView::scrollTo (int x, int y)
 {
-  bool changeX = bool(x != xoffset);
-  bool changeY = bool(y != yoffset);
+  bool changeX( x != xoffset );
+  bool changeY( y != yoffset );
 
   if ( ! isShown() || ! (changeX || changeY) )
     return;
@@ -207,7 +207,7 @@ void FTextView::append (const FString& str)
 //----------------------------------------------------------------------
 void FTextView::insert (const FString& str, int pos)
 {
-  FString s;
+  FString s{};
 
   if ( pos < 0 || pos >= int(getRows()) )
     pos = int(getRows());
@@ -217,23 +217,22 @@ void FTextView::insert (const FString& str, int pos)
   else
     s = FString(str).rtrim().expandTabs(getTabstop());
 
-  auto iter = data.begin();
+
   auto text_split = s.split("\r\n");
-  auto num = text_split.size();
 
-  for (std::size_t i{0}; i < num; i++)
+  for (auto&& line : text_split)  // Line loop
   {
-    text_split[i] = text_split[i].removeBackspaces()
-                                 .removeDel()
-                                 .replaceControlCodes()
-                                 .rtrim();
-    auto len = text_split[i].getLength();
+    line = line.removeBackspaces()
+               .removeDel()
+               .replaceControlCodes()
+               .rtrim();
+    auto column_width = getColumnWidth(line);
 
-    if ( len > maxLineWidth )
+    if ( column_width > maxLineWidth )
     {
-      maxLineWidth = len;
+      maxLineWidth = column_width;
 
-      if ( len > getTextWidth() )
+      if ( column_width > getTextWidth() )
       {
         int hmax = ( maxLineWidth > getTextWidth() )
                    ? int(maxLineWidth) - int(getTextWidth())
@@ -242,12 +241,13 @@ void FTextView::insert (const FString& str, int pos)
         hbar->setPageSize (int(maxLineWidth), int(getTextWidth()));
         hbar->calculateSliderValues();
 
-        if ( ! hbar->isShown() )
+        if ( isShown() && ! hbar->isShown() )
           hbar->show();
       }
     }
   }
 
+  auto iter = data.begin();
   data.insert (iter + pos, text_split.begin(), text_split.end());
   int vmax = ( getRows() > getTextHeight() )
              ? int(getRows()) - int(getTextHeight())
@@ -256,10 +256,10 @@ void FTextView::insert (const FString& str, int pos)
   vbar->setPageSize (int(getRows()), int(getTextHeight()));
   vbar->calculateSliderValues();
 
-  if ( ! vbar->isShown() && getRows() > getTextHeight() )
+  if ( isShown() && ! vbar->isShown() && getRows() > getTextHeight() )
     vbar->show();
 
-  if ( vbar->isShown() && getRows() <= getTextHeight() )
+  if ( isShown() && vbar->isShown() && getRows() <= getTextHeight() )
     vbar->hide();
 
   processChanged();
@@ -597,7 +597,7 @@ void FTextView::init()
 {
   initScrollbar (vbar, fc::vertical, &FTextView::cb_VBarChange);
   initScrollbar (hbar, fc::horizontal, &FTextView::cb_HBarChange);
-  const FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
   nf_offset = isNewFont() ? 1 : 0;
@@ -662,6 +662,12 @@ void FTextView::draw()
   if ( isMonochron() )
     setReverse(false);
 
+  if ( ! isShown() )  // first drawing
+  {
+    vbar->show();
+    hbar->show();
+  }
+
   if ( vbar->isShown() )
     vbar->redraw();
 
@@ -703,38 +709,46 @@ void FTextView::drawText()
   if ( isMonochron() )
     setReverse(true);
 
-  for (std::size_t y{0}; y < num; y++)
+  for (std::size_t y{0}; y < num; y++)  // Line loop
   {
-    std::size_t i{};
-    std::size_t n = y + std::size_t(yoffset);
-    std::size_t x = std::size_t(xoffset) + 1;
-    FString line(data[n].mid (x, getTextWidth()));
-    const auto line_str = line.wc_str();
-    const auto len = line.getLength();
+    std::size_t n = std::size_t(yoffset) + y;
+    std::size_t pos = std::size_t(xoffset) + 1;
+    std::size_t trailing_whitespace{0};
+    auto text_width = getTextWidth();
+    FString line(getColumnSubString(data[n], pos, text_width));
+    auto column_width = getColumnWidth(line);
     print() << FPoint(2, 2 - nf_offset + int(y));
 
-    for (i = 0; i < len; i++)
+    for (auto&& ch : line)  // Column loop
     {
-      wchar_t ch = line_str[i];
-      bool utf8 = ( getEncoding() == fc::UTF8 ) ? true : false;
-
-      // only printable and 1 column per character
-      if ( ( (utf8 && std::iswprint(wint_t(ch)))
-          || (!utf8 && std::isprint(ch)) )
-          && wcwidth(ch) == 1 )
-      {
+      if ( isPrintable(ch) )
         print (ch);
-      }
       else
         print ('.');
     }
 
-    for (; i < getTextWidth(); i++)
-      print (' ');
+    if ( column_width <= text_width )
+      trailing_whitespace = text_width - column_width;
+
+    print() << FString(trailing_whitespace, L' ');
   }
 
   if ( isMonochron() )
     setReverse(false);
+}
+
+//----------------------------------------------------------------------
+inline bool FTextView::isPrintable (wchar_t ch)
+{
+  // Check for printable characters
+
+  bool utf8 = ( getEncoding() == fc::UTF8 ) ? true : false;
+
+  if ( (utf8 && std::iswprint(std::wint_t(ch)))
+    || (!utf8 && std::isprint(ch)) )
+    return true;
+
+  return false;
 }
 
 //----------------------------------------------------------------------

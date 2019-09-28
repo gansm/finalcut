@@ -643,7 +643,7 @@ void iteratorExample()
 {
   // Test: character access with std::iterator
   const finalcut::FString stringIterator{"iterator"};
-  finalcut::FString::iterator iter;
+  finalcut::FString::const_iterator iter;
   iter = stringIterator.begin();
   std::cout << " " << stringIterator << ": ";
 

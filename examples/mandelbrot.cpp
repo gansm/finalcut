@@ -76,7 +76,7 @@ void Mandelbrot::draw()
   int xoffset{2};
   int yoffset{2};
   int current_line{0};
-  int Cols  = int(getClientWidth());
+  int Cols = int(getClientWidth());
   int Lines = int(getClientHeight());
 
   double dX = (x_max - x_min) / (Cols - 1);
