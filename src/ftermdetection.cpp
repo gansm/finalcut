@@ -546,10 +546,11 @@ const FString FTermDetection::getXTermColorName (FColor color)
   struct timeval tv{};
   int stdin_no = FTermios::getStdIn();
 
-  char temp[512]{};
-  std::fprintf (stdout, OSC "4;%hu;?" BEL, color);  // get color
-  std::fflush(stdout);
+  // get color
+  std::fprintf (stdout, OSC "4;%hu;?" BEL, color);
+  std::fflush (stdout);
 
+  char temp[512]{};
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;

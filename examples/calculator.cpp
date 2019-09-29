@@ -898,9 +898,7 @@ lDouble& Calc::getValue()
 //----------------------------------------------------------------------
 void Calc::setDisplay (lDouble d)
 {
-  char buffer[33]{};
-  snprintf (buffer, sizeof(buffer), "%32.11Lg", d);
-  input = buffer;
+  input.sprintf("%32.11Lg", d);
 }
 
 //----------------------------------------------------------------------

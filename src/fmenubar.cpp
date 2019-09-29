@@ -534,7 +534,6 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
 
   if ( hotkeypos != NOT_SET )
   {
-    txt_length--;
     column_width--;
     to_char--;
   }

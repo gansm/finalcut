@@ -58,7 +58,6 @@
 
 #include <cctype>
 #include <climits>
-#include <cstdio>  // need for printf
 #include <cstdlib>
 #include <cstring>
 #include <iostream>

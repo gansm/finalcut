@@ -56,12 +56,12 @@ The Final Cut FProgressbar widget:
 
 Scrollable text in the FTextView widget:
 
- ![FTextView](doc/textview.png)
+![FTextView](doc/textview.png)
 
 
 The Mandelbrot set example:
 
- ![Mandelbrot set](doc/Mandelbrot.png)
+![Mandelbrot set](doc/Mandelbrot.png)
 
 
 newfont

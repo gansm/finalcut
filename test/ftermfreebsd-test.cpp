@@ -600,6 +600,7 @@ class ftermfreebsdTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
+    wchar_t charEncode (wchar_t);
 };
 
 //----------------------------------------------------------------------
@@ -697,46 +698,60 @@ void ftermfreebsdTest::freebsdConsoleTest()
     freebsd.setCursorStyle(freebsd.getCursorStyle());
     CPPUNIT_ASSERT ( freebsd.getCursorStyle() == finalcut::fc::blink_cursor );
 
-    finalcut::fc::encoding enc = finalcut::fc::PC;
-    CPPUNIT_ASSERT ( finalcut::fc::character[2][enc] == 21 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[3][enc] == 8 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[4][enc] == 10 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[5][enc] == 19 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[6][enc] == 18 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[8][enc] == 22 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[9][enc] == 24 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[10][enc] == 25 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[11][enc] == 26 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[12][enc] == 27 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[23][enc] == 4 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[25][enc] == 4 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[26][enc] == 4 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[57][enc] == 16 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[58][enc] == 17 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[59][enc] == 16 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[60][enc] == 17 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[105][enc] == 4 );
+    const auto c1 = finalcut::fc::Section;                      // §
+    const auto c2 = finalcut::fc::InverseBullet;                // ◘
+    const auto c3 = finalcut::fc::InverseWhiteCircle;           // ◙
+    const auto c4 = finalcut::fc::DoubleExclamationMark;        // ‼
+    const auto c5 = finalcut::fc::UpDownArrow;                  // ↕
+    const auto c6 = finalcut::fc::BlackRectangle;               // ▬
+    const auto c7 = finalcut::fc::UpwardsArrow;                 // ↑
+    const auto c8 = finalcut::fc::DownwardsArrow;               // ↓
+    const auto c9 = finalcut::fc::RightwardsArrow;              // →
+    const auto c10 = finalcut::fc::LeftwardsArrow;              // ←
+    const auto c11 = finalcut::fc::Bullet;                      // •
+    const auto c12 = finalcut::fc::BlackCircle;                 // ●
+    const auto c13 = finalcut::fc::BlackDiamondSuit;            // ◆
+    const auto c14 = finalcut::fc::BlackRightPointingTriangle;  // ▶
+    const auto c15 = finalcut::fc::BlackLeftPointingTriangle;   // ◀
+    const auto c16 = finalcut::fc::BlackRightPointingPointer;   // ►
+    const auto c17 = finalcut::fc::BlackLeftPointingPointer;    // ◄
+    CPPUNIT_ASSERT ( charEncode(c1) == 21 );   // §
+    CPPUNIT_ASSERT ( charEncode(c2) == 8 );    // ◘
+    CPPUNIT_ASSERT ( charEncode(c3) == 10 );   // ◙
+    CPPUNIT_ASSERT ( charEncode(c4) == 19 );   // ‼
+    CPPUNIT_ASSERT ( charEncode(c5) == 18 );   // ↕
+    CPPUNIT_ASSERT ( charEncode(c6) == 22 );   // ▬
+    CPPUNIT_ASSERT ( charEncode(c7) == 24 );   // ↑
+    CPPUNIT_ASSERT ( charEncode(c8) == 25 );   // ↓
+    CPPUNIT_ASSERT ( charEncode(c9) == 26 );   // →
+    CPPUNIT_ASSERT ( charEncode(c10) == 27 );  // ←
+    CPPUNIT_ASSERT ( charEncode(c11) == 4 );   // •
+    CPPUNIT_ASSERT ( charEncode(c12) == 4 );   // ●
+    CPPUNIT_ASSERT ( charEncode(c13) == 4 );   // ◆
+    CPPUNIT_ASSERT ( charEncode(c14) == 16 );  // ▶
+    CPPUNIT_ASSERT ( charEncode(c15) == 17 );  // ◀
+    CPPUNIT_ASSERT ( charEncode(c16) == 16 );  // ►
+    CPPUNIT_ASSERT ( charEncode(c17) == 17 );  // ◄
 
     freebsd.initCharMap();
 
-    CPPUNIT_ASSERT ( finalcut::fc::character[2][enc] == 36 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[3][enc] == 42 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[4][enc] == 42 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[5][enc] == 33 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[6][enc] == 73 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[8][enc] == 95 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[9][enc] == 94 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[10][enc] == 118 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[11][enc] == 62 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[12][enc] == 60 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[23][enc] == 42 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[25][enc] == 42 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[26][enc] == 42 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[57][enc] == 62 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[58][enc] == 60 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[59][enc] == 62 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[60][enc] == 60 );
-    CPPUNIT_ASSERT ( finalcut::fc::character[105][enc] == 42 );
+    CPPUNIT_ASSERT ( charEncode(c1) == 36 );   // $
+    CPPUNIT_ASSERT ( charEncode(c2) == 42 );   // *
+    CPPUNIT_ASSERT ( charEncode(c3) == 42 );   // *
+    CPPUNIT_ASSERT ( charEncode(c4) == 33 );   // !
+    CPPUNIT_ASSERT ( charEncode(c5) == 73 );   // I
+    CPPUNIT_ASSERT ( charEncode(c6) == 95 );   // _
+    CPPUNIT_ASSERT ( charEncode(c7) == 94 );   // ^
+    CPPUNIT_ASSERT ( charEncode(c8) == 118 );  // v
+    CPPUNIT_ASSERT ( charEncode(c9) == 62 );   // >
+    CPPUNIT_ASSERT ( charEncode(c10) == 60 );  // <
+    CPPUNIT_ASSERT ( charEncode(c11) == 42 );  // *
+    CPPUNIT_ASSERT ( charEncode(c12) == 42 );  // *
+    CPPUNIT_ASSERT ( charEncode(c13) == 42 );  // *
+    CPPUNIT_ASSERT ( charEncode(c14) == 62 );  // >
+    CPPUNIT_ASSERT ( charEncode(c15) == 60 );  // <
+    CPPUNIT_ASSERT ( charEncode(c16) == 62 );  // >
+    CPPUNIT_ASSERT ( charEncode(c17) == 60 );  // <
 
     term_detection->detect();
 
@@ -798,6 +813,22 @@ void ftermfreebsdTest::freebsdConsoleTest()
   delete fsys;
 }
 
+//----------------------------------------------------------------------
+wchar_t ftermfreebsdTest::charEncode (wchar_t c)
+{
+  wchar_t ch_enc{L'\0'};
+
+  for (std::size_t i{0}; i <= finalcut::fc::lastCharItem; i++)
+  {
+    if ( finalcut::fc::character[i][finalcut::fc::UTF8] == uInt(c) )
+    {
+      ch_enc = wchar_t(finalcut::fc::character[i][finalcut::fc::PC]);
+      break;
+    }
+  }
+
+  return ch_enc;
+}
 
 // Put the test suite in the registry
 CPPUNIT_TEST_SUITE_REGISTRATION (ftermfreebsdTest);

@@ -825,7 +825,7 @@ inline FLineEdit::offsetPair FLineEdit::endPosToOffset (std::size_t pos)
     {
       if ( char_width == 1 )
       {
-        if ( pos > 0 && getColumnWidth(text[pos - 1]) == 2 )
+        if ( getColumnWidth(text[pos - 1]) == 2 )  // pos is always > 0
         {
           fullwidth_char_offset = 1;
           break;

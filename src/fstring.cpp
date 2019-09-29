@@ -30,6 +30,10 @@
 namespace finalcut
 {
 
+// static class attributes
+wchar_t       FString::null_char{L'\0'};
+const wchar_t FString::const_null_char{L'\0'};
+
 //----------------------------------------------------------------------
 // class FString
 //----------------------------------------------------------------------
@@ -1710,8 +1714,17 @@ const FString operator + (const FString& s, const char c)
 //----------------------------------------------------------------------
 std::ostream& operator << (std::ostream& outstr, const FString& s)
 {
+  const std::size_t width = std::size_t(outstr.width());
+
   if ( s.length > 0 )
-    outstr << s.wc_to_c_str( s.string );
+  {
+    outstr << s.wc_to_c_str(s.string);
+  }
+  else if ( width > 0 )
+  {
+    FString fill_str(width, outstr.fill());
+    outstr << s.wc_to_c_str(fill_str.string);
+  }
 
   return outstr;
 }
@@ -1735,8 +1748,17 @@ std::istream& operator >> (std::istream& instr, FString& s)
 //----------------------------------------------------------------------
 std::wostream& operator << (std::wostream& outstr, const FString& s)
 {
+  const std::size_t width = std::size_t(outstr.width());
+
   if ( s.length > 0 )
+  {
     outstr << s.string;
+  }
+  else if ( width > 0 )
+  {
+    FString fill_str(width, outstr.fill());
+    outstr << fill_str.string;
+  }
 
   return outstr;
 }

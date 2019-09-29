@@ -1,1 +1,2 @@
-usr/share/doc/libfinal-examples/examples/Makefile.gcc usr/share/doc/libfinal-examples/examples/Makefile
+usr/lib/libfinal/examples usr/share/doc/libfinal-examples/examples
+usr/lib/libfinal/examples/Makefile.gcc usr/lib/libfinal/examples/Makefile

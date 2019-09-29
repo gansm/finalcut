@@ -1,8 +1,8 @@
 ----------------------------------------------------------------------
-                            The Final Cut 
+                              FINAL CUT
 ----------------------------------------------------------------------
 
-The Final Cut is a C++ class library and widget toolkit with full mouse
+The FINAL CUT is a C++ class library and widget toolkit with full mouse
 support for creating a text-based user interface. The library supports
 the programmer to develop an application for the text console. It allows
 the simultaneous handling of multiple text windows on the screen.

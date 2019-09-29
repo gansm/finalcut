@@ -1,3 +1,10 @@
+2019-09-29  Markus Gans  <guru.mail@muenster.de>
+	* Streaming into an FTextView() object
+	* Fixes the streaming of empty FString objects into a stream with 
+	  a width > 0
+	* The FString operator [] now returns a null character ('\0') 
+	  if the position is equal to the string length
+
 2019-09-28  Markus Gans  <guru.mail@muenster.de>
 	* Support for displaying full-width characters (2 columns wide) 
 	  on the terminal. This is particularly important for the correct 

@@ -87,8 +87,7 @@ void term_boundaries (int& x, int& y)
 void move (int xold, int yold, int xnew, int ynew)
 {
   // prints the cursor move escape sequence
-  std::string sequence{};
-  char  from[26]{}, to[26]{}, byte[20]{};
+  finalcut::FString buffer{}, sequence{}, from{}, to{}, byte{};
   const std::string ctrl_character[] =
   {
     "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL",
@@ -100,36 +99,33 @@ void move (int xold, int yold, int xnew, int ynew)
 
   term_boundaries(xold, yold);
   term_boundaries(xnew, ynew);
-  snprintf (from, sizeof(from), "(%3d;%3d)", xold, yold);
-  snprintf (to, sizeof(to), "(%3d;%3d)", xnew, ynew);
-  std::cout << std::right << std::setw(10) << from
-            << " -> "
-            << std::left << std::setw(10) << to
-            << " ";
+
   // get the move string
-  char* buffer = finalcut::FTerm::moveCursorString (xold, yold, xnew, ynew);
-  uInt len = uInt(std::strlen(buffer));
+  buffer = finalcut::FTerm::moveCursorString (xold, yold, xnew, ynew);
 
-  for (uInt i = 0; i < len; i++)
+  for (auto&& ch : buffer)
   {
-    char ch = buffer[i];
-
     if ( ch < 0x21 )
-      sequence += ctrl_character[uInt(ch)];
+      sequence += ctrl_character[std::size_t(ch)];
     else
       sequence += ch;
 
     sequence += ' ';
   }
 
-  std::cout << std::setw(21) << sequence << " ";
+  from.sprintf ("(%3d;%3d)", xold, yold);
+  to.sprintf ("(%3d;%3d)", xnew, ynew);
+  std::size_t len = buffer.getLength();
 
   if ( len <= 1 )
-    snprintf (byte, sizeof(byte), "%d byte ", len);
+    byte.sprintf ("%d byte ", len);
   else
-    snprintf (byte, sizeof(byte), "%d bytes", len);
+    byte.sprintf ("%d bytes", len);
 
-  std::cout << std::right << std::setw(10) << byte << "\r\n";
+  std::cout << std::right << std::setw(10) << from << " -> "
+            << std::left << std::setw(10) << to << " "
+            << std::setw(21) << sequence << " "
+            << std::right << std::setw(10) << byte << "\r\n";
 }
 
 

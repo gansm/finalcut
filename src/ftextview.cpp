@@ -241,7 +241,7 @@ void FTextView::insert (const FString& str, int pos)
         hbar->setPageSize (int(maxLineWidth), int(getTextWidth()));
         hbar->calculateSliderValues();
 
-        if ( isShown() && ! hbar->isShown() )
+        if ( isShown() && isHorizontallyScrollable() )
           hbar->show();
       }
     }
@@ -256,10 +256,10 @@ void FTextView::insert (const FString& str, int pos)
   vbar->setPageSize (int(getRows()), int(getTextHeight()));
   vbar->calculateSliderValues();
 
-  if ( isShown() && ! vbar->isShown() && getRows() > getTextHeight() )
+  if ( isShown() && ! vbar->isShown() && isVerticallyScrollable() )
     vbar->show();
 
-  if ( isShown() && vbar->isShown() && getRows() <= getTextHeight() )
+  if ( isShown() && vbar->isShown() && ! isVerticallyScrollable() )
     vbar->hide();
 
   processChanged();
@@ -566,15 +566,15 @@ void FTextView::adjustSize()
 
   if ( isShown() )
   {
-    if ( last_line < int(height) + nf_offset - 1 )
-      vbar->hide();
-    else
-      vbar->show();
-
-    if ( max_width < int(width) - nf_offset - 1 )
-      hbar->hide();
-    else
+    if ( isHorizontallyScrollable() )
       hbar->show();
+    else
+      hbar->hide();
+
+    if ( isVerticallyScrollable() )
+      vbar->show();
+    else
+      vbar->hide();
   }
 }
 
@@ -662,18 +662,7 @@ void FTextView::draw()
   if ( isMonochron() )
     setReverse(false);
 
-  if ( ! isShown() )  // first drawing
-  {
-    vbar->show();
-    hbar->show();
-  }
-
-  if ( vbar->isShown() )
-    vbar->redraw();
-
-  if ( hbar->isShown() )
-    hbar->redraw();
-
+  drawScrollbars();
   drawText();
 
   if ( hasFocus() && getStatusBar() )
@@ -691,6 +680,20 @@ void FTextView::draw()
   setCursorPos (FPoint(int(getWidth()), int(getHeight())));
   updateTerminal();
   flush_out();
+}
+
+//----------------------------------------------------------------------
+void FTextView::drawScrollbars()
+{
+  if ( ! hbar->isShown() && isHorizontallyScrollable() )
+    hbar->show();
+  else
+    vbar->redraw();
+
+  if ( ! vbar->isShown() && isVerticallyScrollable() )
+    vbar->show();
+  else
+    hbar->redraw();
 }
 
 //----------------------------------------------------------------------

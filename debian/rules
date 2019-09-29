@@ -19,6 +19,7 @@ include /usr/share/dpkg/default.mk
 
 # main packaging script based on dh7 syntax
 %:
+	sed -i 's/doc\///g' README.md
 	dh $@  --with autotools-dev
 
 # debmake generated override targets

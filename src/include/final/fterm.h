@@ -418,10 +418,18 @@ inline bool FTerm::unsetUTF8()
 template<typename... Args>
 inline void FTerm::putstringf (const char format[], Args&&... args)
 {
-  char buf[512]{};
-  char* str = buf;
-  std::snprintf (str, sizeof(buf), format, std::forward<Args>(args)...);
-  fsys->tputs (str, 1, FTerm::putchar_ASCII);
+  int size = std::snprintf ( nullptr, 0, format
+                           , std::forward<Args>(args)... ) + 1;
+
+  if ( size == -1 )
+    return;
+
+  if ( ! fsys )
+    getFSystem();
+
+  std::vector<char> buf(size);
+  std::snprintf (&buf[0], size, format, std::forward<Args>(args)...);
+  fsys->tputs (&buf[0], 1, FTerm::putchar_ASCII);
 }
 
 }  // namespace finalcut

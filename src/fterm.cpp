@@ -835,8 +835,10 @@ int FTerm::closeConsole()
   if ( fd < 0 )  // console is already closed
     return 0;
 
-  if ( fsys )
-    ret = fsys->close(fd);  // close console
+  if ( ! fsys )
+    getFSystem();
+
+  ret = fsys->close(fd);  // close console
 
   data->setTTYFileDescriptor(-1);
 
@@ -900,10 +902,10 @@ void FTerm::detectTermSize()
 
   do
   {
-    if ( fsys )
-      ret = fsys->ioctl (FTermios::getStdOut(), TIOCGWINSZ, &win_size);
-    else
-      ret = -1;
+    if ( ! fsys )
+      getFSystem();
+
+    ret = fsys->ioctl (FTermios::getStdOut(), TIOCGWINSZ, &win_size);
   }
   while (errno == EINTR);
 
@@ -1199,12 +1201,18 @@ bool FTerm::scrollTermReverse()
 //----------------------------------------------------------------------
 void FTerm::putstring (const char str[], int affcnt)
 {
+  if ( ! fsys )
+    getFSystem();
+
   fsys->tputs (str, affcnt, FTerm::putchar_ASCII);
 }
 
 //----------------------------------------------------------------------
 int FTerm::putchar_ASCII (int c)
 {
+  if ( ! fsys )
+    getFSystem();
+
   if ( fsys->putchar(char(c)) == EOF )
     return 0;
   else
@@ -1214,6 +1222,9 @@ int FTerm::putchar_ASCII (int c)
 //----------------------------------------------------------------------
 int FTerm::putchar_UTF8 (int c)
 {
+  if ( ! fsys )
+    getFSystem();
+
   if ( c < 0x80 )
   {
     // 1 Byte (7-bit): 0xxxxxxx
@@ -1751,6 +1762,9 @@ void FTerm::init_term_encoding()
 {
   int stdout_no = FTermios::getStdOut();
   const char* termtype = data->getTermType();
+
+  if ( ! fsys )
+    getFSystem();
 
   if ( fsys->isTTY(stdout_no)
     && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
@@ -2357,6 +2371,9 @@ void FTerm::initBaudRate()
   uInt baud = FTermios::getBaudRate();
   data->setBaudrate(baud);
 
+  if ( ! fsys )
+    getFSystem();
+
   if ( fsys->isTTY(stdout_no) )
     opti_move->setBaudRate(int(baud));
 }
@@ -2501,10 +2518,9 @@ void FTerm::signal_handler (int signum)
       init_term_object->finish();
       std::fflush (stderr);
       std::fflush (stdout);
-      std::fprintf ( stderr
-                   , "\nProgram stopped: signal %d (%s)\n"
-                   , signum
-                   , strsignal(signum) );
+      std::cerr << "\nProgram stopped: signal "
+                << signum
+                << " (" << strsignal(signum) << ")" << std::endl;
       std::terminate();
   }
 }
@@ -2537,9 +2553,9 @@ wchar_t cp437_to_unicode (uChar c)
 
   for (std::size_t i{0}; i <= fc::lastCP437Item; i++)
   {
-    if ( fc::cp437_to_ucs[i][CP437] == c )  // found
+    if ( fc::cp437_ucs[i][CP437] == c )  // found
     {
-      ucs = fc::cp437_to_ucs[i][UNICODE];
+      ucs = fc::cp437_ucs[i][UNICODE];
       break;
     }
   }
@@ -2556,9 +2572,9 @@ uChar unicode_to_cp437 (wchar_t ucs)
 
   for (std::size_t i{0}; i <= fc::lastCP437Item; i++)
   {
-    if ( fc::cp437_to_ucs[i][UNICODE] == ucs )  // found
+    if ( fc::cp437_ucs[i][UNICODE] == ucs )  // found
     {
-      c = uChar(fc::cp437_to_ucs[i][CP437]);
+      c = uChar(fc::cp437_ucs[i][CP437]);
       break;
     }
   }

@@ -860,11 +860,12 @@ FVTerm::covered_state FVTerm::isCovered ( const FPoint& pos
   if ( ! area )
     return non_covered;
 
-  bool found( area == vdesktop );
   auto is_covered = non_covered;
 
   if ( FWidget::getWindowList() && ! FWidget::getWindowList()->empty() )
   {
+    bool found( area == vdesktop );
+
     for (auto& win_obj : *FWidget::getWindowList())
     {
       auto win = win_obj->getVWin();

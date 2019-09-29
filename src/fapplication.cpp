@@ -425,7 +425,7 @@ void FApplication::cmd_options (const int& argc, char* argv[])
       {C_STR("no-esc-for-alt-meta"),   no_argument,       0,  0 },
     #endif
 
-      {0,                              0,                 0,  0 }
+      {nullptr,                        0,           nullptr,  0 }
     };
 
     opterr = 0;

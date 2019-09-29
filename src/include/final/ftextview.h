@@ -85,6 +85,13 @@ class FTextView : public FWidget
     // Disable assignment operator (=)
     FTextView& operator = (const FTextView&) = delete;
 
+    // Overloaded operators
+    FTextView& operator = (const FString&);
+    template <typename typeT>
+    FTextView& operator << (const typeT&);
+    FTextView& operator << (fc::SpecialCharacter);
+    FTextView& operator << (const std::string&);
+
     // Accessors
     const char*         getClassName() const override;
     std::size_t         getColumns() const;
@@ -147,6 +154,7 @@ class FTextView : public FWidget
                                       , fc::orientation
                                       , FTextViewCallback );
     void                draw() override;
+    void                drawScrollbars();
     void                drawText();
     bool                isPrintable (wchar_t);
     void                processChanged();
@@ -167,6 +175,40 @@ class FTextView : public FWidget
 };
 
 // FListBox inline functions
+//----------------------------------------------------------------------
+FTextView& FTextView::operator = (const FString& s)
+{
+  setText(s);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+template <typename typeT>
+inline FTextView& FTextView::operator << (const typeT& s)
+{
+  std::wostringstream outstream;
+  outstream << s;
+
+  if ( ! outstream.str().empty() )
+    append (outstream.str());
+
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FTextView& FTextView::operator << (fc::SpecialCharacter c)
+{
+  append (static_cast<wchar_t>(c));  // Required under Solaris
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FTextView& FTextView::operator << (const std::string& string)
+{
+  append (string);
+  return *this;
+}
+
 //----------------------------------------------------------------------
 inline const char* FTextView::getClassName() const
 { return "FTextView"; }

@@ -1648,10 +1648,7 @@ void FListView::drawListLine ( const FListViewItem* item
         width -= (indent + 1);
 
         if ( item->isCheckable() )
-        {
-          static constexpr std::size_t checkbox_space = 4;
           width -= checkbox_space;
-        }
       }
 
       // Insert alignment spaces
@@ -1999,7 +1996,6 @@ void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
 std::size_t FListView::determineLineWidth (FListViewItem* item)
 {
   static constexpr std::size_t padding_space = 1;
-  static constexpr std::size_t checkbox_space = 4;
   std::size_t line_width = padding_space;  // leading space
   std::size_t column_idx{0};
   std::size_t entries = std::size_t(item->column_list.size());
@@ -2109,7 +2105,7 @@ void FListView::recalculateVerticalBar (std::size_t element_count)
 void FListView::mouseHeaderClicked()
 {
   int column{1};
-  int checkbox_offset = ( hasCheckableItems() ) ? 4 : 0;
+  int checkbox_offset = ( hasCheckableItems() ) ? checkbox_space : 0;
   int header_start = 2 + checkbox_offset;
   int header_pos = clicked_header_pos.getX() + xoffset;
 

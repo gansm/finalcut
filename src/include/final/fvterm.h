@@ -1047,15 +1047,8 @@ inline bool FVTerm::hasUTF8()
 template<typename... Args>
 inline int FVTerm::printf (const FString format, Args&&... args)
 {
-  static constexpr int BUFSIZE = 4096;
-  wchar_t buffer[BUFSIZE]{};
-
-  if ( format.isEmpty() )
-    return 0;
-
-  std::swprintf ( buffer, BUFSIZE
-                , format.wc_str(), std::forward<Args>(args)... );
-  FString str(buffer);
+  FString str{};
+  str.sprintf (format, std::forward<Args>(args)...);
   return print(str);
 }
 

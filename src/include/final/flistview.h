@@ -358,6 +358,9 @@ class FListView : public FWidget
     void                 adjustSize() override;
 
   private:
+    // Constants
+    static constexpr std::size_t checkbox_space = 4;
+
     // Typedef
     struct Header;  // forward declaration
     typedef std::vector<Header> headerItems;
