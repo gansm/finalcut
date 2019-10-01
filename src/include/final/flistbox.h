@@ -56,7 +56,9 @@ e Copyright 2014-2019 Markus Gans                                      *
 #include <memory>
 #include <vector>
 
+#include "final/fscrollbar.h"
 #include "final/fwidget.h"
+
 
 namespace finalcut
 {
@@ -236,10 +238,6 @@ class FListBox : public FWidget
     void                adjustSize() override;
 
   private:
-    // Typedef
-    typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
-    typedef void (FListBox::*FListBoxCallback)(FWidget*, FDataPtr);
-
     // Enumeration
     enum convert_type
     {
@@ -257,9 +255,6 @@ class FListBox : public FWidget
 
     // Methods
     void                init();
-    void                initScrollbar ( FScrollbarPtr&
-                                      , fc::orientation
-                                      , FListBoxCallback );
     void                draw() override;
     void                drawBorder() override;
     void                drawScrollbars();

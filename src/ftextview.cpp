@@ -65,30 +65,28 @@ const FString FTextView::getText() const
     return FString("");
 
   std::size_t len{0};
-  std::size_t rows = getRows();
 
-  for (std::size_t i{0} ; i < rows; i++)
-    len += data[i].getLength() + 1;
+  for (auto&& line : data)
+    len += line.getLength() + 1;  // String length + '\n'
 
-  FString s(len + 1);
-  std::size_t idx{0};
+  FString s(len);  // Reserves storage
+  auto iter = s.begin();
 
-  for (std::size_t i{0}; i < rows; i++)
+  for (auto&& line : data)
   {
-    const wchar_t* p = data[i].wc_str();
+    if ( ! line.isEmpty() )
+    {
+      if ( iter != s.begin() )
+      {
+        *iter = '\n';
+        ++iter;
+      }
 
-    if ( p )
-    {
-      while ( (s[idx++] = *p++) != 0 );
-      s[idx - 1] = '\n';
-    }
-    else
-    {
-      s[idx++] = '\n';
+      std::copy (line.begin(), line.end(), iter);
+      iter += std::distance(line.begin(), line.end());
     }
   }
 
-  s[idx - 1] = 0;
   return s;
 }
 
@@ -297,19 +295,28 @@ void FTextView::clear()
 
   // clear list from screen
   setColor();
+
+
+  if ( useFDialogBorder() )
+  {
+    auto parent = getParentWidget();
+    static_cast<FDialog*>(parent)->redraw();
+  }
+  else
+    drawBorder();
+
   std::size_t size = getWidth() - 2;
 
   if ( size == 0 )
     return;
 
-  char* blank = createBlankArray(size + 1);
-
   for (int y{0}; y < int(getTextHeight()); y++)
   {
-    print() << FPoint(2, 2 - nf_offset + y) << blank;
+    print() << FPoint(2, 2 - nf_offset + y)
+            << FString(size, L' ');
   }
 
-  destroyBlankArray (blank);
+  updateTerminal();
   processChanged();
 }
 
@@ -595,8 +602,8 @@ std::size_t FTextView::getTextWidth()
 //----------------------------------------------------------------------
 void FTextView::init()
 {
-  initScrollbar (vbar, fc::vertical, &FTextView::cb_VBarChange);
-  initScrollbar (hbar, fc::horizontal, &FTextView::cb_HBarChange);
+  initScrollbar (vbar, fc::vertical, this, &FTextView::cb_VBarChange);
+  initScrollbar (hbar, fc::horizontal, this, &FTextView::cb_HBarChange);
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
@@ -608,60 +615,10 @@ void FTextView::init()
 }
 
 //----------------------------------------------------------------------
-void FTextView::initScrollbar ( FScrollbarPtr& bar
-                              , fc::orientation o
-                              , FTextViewCallback callback )
-{
-  try
-  {
-    bar = std::make_shared<FScrollbar>(o, this);
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
-
-  bar->setMinimum(0);
-  bar->setValue(0);
-  bar->hide();
-
-  bar->addCallback
-  (
-    "change-value",
-    F_METHOD_CALLBACK (this, callback)
-  );
-}
-
-//----------------------------------------------------------------------
 void FTextView::draw()
 {
-  auto parent = getParentWidget();
-  bool is_text_dialog;
   setColor();
-
-  if ( isMonochron() )
-    setReverse(true);
-
-  if ( parent
-    && parent->isDialogWidget()
-    && isPaddingIgnored()
-    && getGeometry() == FRect ( 1
-                              , 2
-                              , parent->getWidth()
-                              , parent->getHeight() - 1) )
-  {
-    is_text_dialog = true;
-  }
-  else
-    is_text_dialog = false;
-
-  if ( ! (is_text_dialog || isNewFont()) )
-    drawBorder();
-
-  if ( isMonochron() )
-    setReverse(false);
-
+  drawBorder();
   drawScrollbars();
   drawText();
 
@@ -680,6 +637,21 @@ void FTextView::draw()
   setCursorPos (FPoint(int(getWidth()), int(getHeight())));
   updateTerminal();
   flush_out();
+}
+
+//----------------------------------------------------------------------
+void FTextView::drawBorder()
+{
+  if ( ! useFDialogBorder() )
+  {
+    if ( isMonochron() )
+      setReverse(true);
+
+    FWidget::drawBorder();
+
+    if ( isMonochron() )
+      setReverse(false);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -738,6 +710,26 @@ void FTextView::drawText()
 
   if ( isMonochron() )
     setReverse(false);
+}
+
+//----------------------------------------------------------------------
+inline bool FTextView::useFDialogBorder()
+{
+  auto parent = getParentWidget();
+  bool use_fdialog_border{false};
+
+  if ( parent
+    && parent->isDialogWidget()
+    && isPaddingIgnored()
+    && getGeometry() == FRect ( 1
+                              , 2
+                              , parent->getWidth()
+                              , parent->getHeight() - 1) )
+  {
+    use_fdialog_border = true;
+  }
+
+  return use_fdialog_border;
 }
 
 //----------------------------------------------------------------------

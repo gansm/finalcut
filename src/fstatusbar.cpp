@@ -174,15 +174,13 @@ bool FStatusBar::hasActivatedKey()
 //----------------------------------------------------------------------
 void FStatusBar::hide()
 {
-  FWindow::hide();
   const auto& wc = getFWidgetColors();
   FColor fg = wc.term_fg;
   FColor bg = wc.term_bg;
   setColor (fg, bg);
-  screenWidth = getDesktopWidth();
-  char* blank = createBlankArray(screenWidth + 1);
-  print() << FPoint(1, 1) << blank;
-  destroyBlankArray (blank);
+  print() << FPoint(1, 1) << FString(getDesktopWidth(), L' ');
+  updateTerminal();
+  FWindow::hide();
 }
 
 //----------------------------------------------------------------------
@@ -408,10 +406,9 @@ void FStatusBar::onMouseUp (FMouseEvent* ev)
 
         if ( (*iter)->hasMouseFocus() )
         {
-          int mouse_x, mouse_y;
           (*iter)->unsetMouseFocus();
-          mouse_x = ev->getX();
-          mouse_y = ev->getY();
+          int mouse_x = ev->getX();
+          int mouse_y = ev->getY();
 
           if ( mouse_x >= x1 && mouse_x <= x2 && mouse_y == 1 )
             (*iter)->setActive();

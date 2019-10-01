@@ -131,7 +131,7 @@ class FButtonGroup : public FScrollView
 
     // Methods
     void                init();
-    void                drawText (wchar_t[], std::size_t, std::size_t);
+    void                drawText (const FString&, std::size_t);
     void                directFocus();
 
     // Callback method

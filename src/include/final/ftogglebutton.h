@@ -151,7 +151,7 @@ class FToggleButton : public FWidget
 
     // Methods
     void                init();
-    void                drawText (wchar_t[], std::size_t , std::size_t);
+    void                drawText (FString&&, std::size_t);
 
     // Friend classes
     friend class FButtonGroup;

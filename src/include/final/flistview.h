@@ -57,6 +57,7 @@
 #include <stack>
 #include <vector>
 
+#include "final/fscrollbar.h"
 #include "final/ftermbuffer.h"
 #include "final/fwidget.h"
 
@@ -77,10 +78,10 @@ class FListViewItem : public FObject
   public:
     // Constructor
     FListViewItem (const FListViewItem&);  // copy constructor
-    explicit FListViewItem (FObjectIterator);
+    explicit FListViewItem (iterator);
     FListViewItem ( const FStringList&
                   , FDataPtr
-                  , FObjectIterator );
+                  , iterator );
 
     // Destructor
     virtual ~FListViewItem();
@@ -107,8 +108,8 @@ class FListViewItem : public FObject
     bool                isExpand() const;
 
     // Methods
-    FObjectIterator     insert (FListViewItem*);
-    FObjectIterator     insert (FListViewItem*, FObjectIterator);
+    iterator            insert (FListViewItem*);
+    iterator            insert (FListViewItem*, iterator);
     void                expand();
     void                collapse();
 
@@ -120,7 +121,7 @@ class FListViewItem : public FObject
     // Methods
     template <typename Compare>
     void                sort (Compare);
-    FObjectIterator     appendItem (FListViewItem*);
+    iterator            appendItem (FListViewItem*);
     void                replaceControlCodes();
     std::size_t         getVisibleLines();
     void                resetVisibleLineCounter();
@@ -128,7 +129,7 @@ class FListViewItem : public FObject
     // Data members
     FStringList      column_list{};
     FDataPtr         data_pointer{nullptr};
-    FObjectIterator  root{};
+    iterator         root{};
     std::size_t      visible_lines{1};
     bool             expandable{false};
     bool             is_expand{false};
@@ -187,13 +188,13 @@ class FListViewIterator
 {
   public:
     // Typedefs
-    typedef std::list<FObject*>         FObjectList;
-    typedef FObjectList::iterator       FObjectIterator;
-    typedef std::stack<FObjectIterator> FObjectIteratorStack;
+    typedef std::list<FObject*>   FObjectList;
+    typedef FObjectList::iterator iterator;
+    typedef std::stack<iterator>  iterator_stack;
 
     // Constructor
     FListViewIterator () = default;
-    FListViewIterator (FObjectIterator);
+    FListViewIterator (iterator);
 
     // Overloaded operators
     FListViewIterator& operator ++ ();     // prefix
@@ -216,12 +217,12 @@ class FListViewIterator
 
   private:
     // Methods
-    void                nextElement (FObjectIterator&);
-    void                prevElement (FObjectIterator&);
+    void                nextElement (iterator&);
+    void                prevElement (iterator&);
 
     // Data members
-    FObjectIteratorStack iter_path{};
-    FObjectIterator      node{};
+    iterator_stack       iter_path{};
+    iterator             node{};
     int                  position{0};
 };
 
@@ -250,6 +251,7 @@ inline const char* FListViewIterator::getClassName() const
 //----------------------------------------------------------------------
 inline int FListViewIterator::getPosition() const
 { return position; }
+
 
 //----------------------------------------------------------------------
 // class FListView
@@ -304,38 +306,38 @@ class FListView : public FWidget
     // Methods
     virtual int          addColumn (const FString&, int = USE_MAX_SIZE);
     void                 hide() override;
-    FObjectIterator      insert (FListViewItem*);
-    FObjectIterator      insert (FListViewItem*, FObjectIterator);
-    FObjectIterator      insert ( const FStringList&
+    iterator             insert (FListViewItem*);
+    iterator             insert (FListViewItem*, iterator);
+    iterator             insert ( const FStringList&
                                 , FDataPtr = nullptr );
-    FObjectIterator      insert ( const FStringList&
-                                , FObjectIterator );
-    FObjectIterator      insert ( const FStringList&
+    iterator             insert ( const FStringList&
+                                , iterator );
+    iterator             insert ( const FStringList&
                                 , FDataPtr
-                                , FObjectIterator );
+                                , iterator );
     template <typename T>
-    FObjectIterator      insert ( const std::initializer_list<T>&
+    iterator             insert ( const std::initializer_list<T>&
                                 , FDataPtr = nullptr );
     template <typename T>
-    FObjectIterator      insert ( const std::initializer_list<T>&
-                                , FObjectIterator );
+    iterator             insert ( const std::initializer_list<T>&
+                                , iterator );
     template <typename T>
-    FObjectIterator      insert ( const std::initializer_list<T>&
+    iterator             insert ( const std::initializer_list<T>&
                                 , FDataPtr
-                                , FObjectIterator );
+                                , iterator );
     template <typename ColT>
-    FObjectIterator      insert ( const std::vector<ColT>&
+    iterator             insert ( const std::vector<ColT>&
                                 , FDataPtr = nullptr );
     template <typename ColT>
-    FObjectIterator      insert ( const std::vector<ColT>&
-                                , FObjectIterator );
+    iterator             insert ( const std::vector<ColT>&
+                                , iterator );
     template <typename ColT>
-    FObjectIterator      insert ( const std::vector<ColT>&
+    iterator             insert ( const std::vector<ColT>&
                                 , FDataPtr
-                                , FObjectIterator );
+                                , iterator );
 
-    FObjectIterator      beginOfList();
-    FObjectIterator      endOfList();
+    iterator             beginOfList();
+    iterator             endOfList();
     virtual void         sort();
 
     // Event handlers
@@ -350,7 +352,7 @@ class FListView : public FWidget
     void                 onFocusOut (FFocusEvent*) override;
 
     // Data members
-    static FObjectIterator null_iter;
+    static iterator      null_iter;
 
   protected:
     // Methods
@@ -365,8 +367,6 @@ class FListView : public FWidget
     struct Header;  // forward declaration
     typedef std::vector<Header> headerItems;
     typedef std::vector<fc::sorting_type> sortTypes;
-    typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
-    typedef void (FListView::*FListViewCallback)(FWidget*, FDataPtr);
 
     // Constants
     static constexpr int USE_MAX_SIZE = -1;
@@ -377,9 +377,6 @@ class FListView : public FWidget
 
     // Methods
     void                 init();
-    void                 initScrollbar ( FScrollbarPtr&
-                                       , fc::orientation
-                                       , FListViewCallback );
     template <typename Compare>
     void                 sort (Compare);
     std::size_t          getAlignOffset ( fc::text_alignment
@@ -414,7 +411,7 @@ class FListView : public FWidget
     void                 dragUp (int);
     void                 dragDown (int);
     void                 stopDragScroll();
-    FObjectIterator      appendItem (FListViewItem*);
+    iterator             appendItem (FListViewItem*);
     void                 processClick();
     void                 processChanged();
     void                 toggleCheckbox();
@@ -441,7 +438,7 @@ class FListView : public FWidget
     void                 cb_HBarChange (FWidget*, FDataPtr);
 
     // Data members
-    FObjectIterator      root{};
+    iterator             root{};
     FObjectList          selflist{};
     FObjectList          itemlist{};
     FListViewIterator    current_iter{};
@@ -537,39 +534,39 @@ inline bool FListView::unsetTreeView()
 { return setTreeView(false); }
 
 //----------------------------------------------------------------------
-inline FObject::FObjectIterator FListView::insert (FListViewItem* item)
+inline FObject::iterator FListView::insert (FListViewItem* item)
 { return insert (item, root); }
 
 //----------------------------------------------------------------------
-inline FObject::FObjectIterator
+inline FObject::iterator
     FListView::insert (const FStringList& cols, FDataPtr d)
 { return insert (cols, d, root); }
 
 //----------------------------------------------------------------------
-inline FObject::FObjectIterator
+inline FObject::iterator
     FListView::insert ( const FStringList& cols
-                      , FObjectIterator parent_iter )
+                      , iterator parent_iter )
 { return insert (cols, 0, parent_iter); }
 
 //----------------------------------------------------------------------
 template<typename T>
-inline FObject::FObjectIterator
+inline FObject::iterator
     FListView::insert (const std::initializer_list<T>& list, FDataPtr d)
 { return insert (list, d, root); }
 
 //----------------------------------------------------------------------
 template<typename T>
-inline FObject::FObjectIterator
+inline FObject::iterator
     FListView::insert ( const std::initializer_list<T>& list
-                      , FObjectIterator parent_iter )
+                      , iterator parent_iter )
 { return insert (list, 0, parent_iter); }
 
 //----------------------------------------------------------------------
 template<typename T>
-FObject::FObjectIterator
+FObject::iterator
     FListView::insert ( const std::initializer_list<T>& list
                       , FDataPtr d
-                      , FObjectIterator parent_iter )
+                      , iterator parent_iter )
 {
   FStringList str_cols;
 
@@ -589,23 +586,23 @@ FObject::FObjectIterator
 
 //----------------------------------------------------------------------
 template <typename ColT>
-inline FObject::FObjectIterator
+inline FObject::iterator
     FListView::insert (const std::vector<ColT>& cols, FDataPtr d)
 { return insert (cols, d, root); }
 
 //----------------------------------------------------------------------
 template <typename ColT>
-inline FObject::FObjectIterator
+inline FObject::iterator
     FListView::insert ( const std::vector<ColT>& cols
-                      , FObjectIterator parent_iter )
+                      , iterator parent_iter )
 { return insert (cols, 0, parent_iter); }
 
 //----------------------------------------------------------------------
 template <typename ColT>
-FObject::FObjectIterator
+FObject::iterator
     FListView::insert ( const std::vector<ColT>& cols
                       , FDataPtr d
-                      , FObjectIterator parent_iter )
+                      , iterator parent_iter )
 {
   FStringList str_cols;
 
@@ -624,11 +621,11 @@ FObject::FObjectIterator
 }
 
 //----------------------------------------------------------------------
-inline FObject::FObjectIterator FListView::beginOfList()
+inline FObject::iterator FListView::beginOfList()
 { return itemlist.begin(); }
 
 //----------------------------------------------------------------------
-inline FObject::FObjectIterator FListView::endOfList()
+inline FObject::iterator FListView::endOfList()
 { return itemlist.end(); }
 
 //----------------------------------------------------------------------

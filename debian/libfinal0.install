@@ -1,3 +1,6 @@
 usr/lib/*/lib*.so
 usr/lib/*/lib*.so.*
-
+fonts/8x16graph.pcf.gz /usr/share/fonts/X11/misc/finalcut/
+fonts/fonts.alias /usr/share/fonts/X11/misc/finalcut/
+fonts/fonts.dir /usr/share/fonts/X11/misc/finalcut/
+fonts/newfont.txt /usr/share/fonts/X11/misc/finalcut/

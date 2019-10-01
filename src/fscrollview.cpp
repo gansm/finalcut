@@ -798,34 +798,6 @@ void FScrollView::init (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::initScrollbar ( FScrollbarPtr& bar
-                                , fc::orientation o
-                                , FScrollViewCallback callback )
-{
-  try
-  {
-    bar = std::make_shared<FScrollbar>(o, this);
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
-
-  term_area* area = getPrintArea();
-  bar->setPrintArea(area);
-  bar->setMinimum(0);
-  bar->setValue(0);
-  bar->hide();
-
-  bar->addCallback
-  (
-    "change-value",
-    F_METHOD_CALLBACK (this, callback)
-  );
-}
-
-//----------------------------------------------------------------------
 void FScrollView::calculateScrollbarPos()
 {
   std::size_t width  = getWidth();

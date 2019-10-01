@@ -525,10 +525,9 @@ class FWidget : public FVTerm, public FObject
 
 // non-member function forward declarations
 //----------------------------------------------------------------------
-char*       createBlankArray (std::size_t);
-void        destroyBlankArray (char[]);
 FKey        getHotkey (const FString&);
-std::size_t getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
+std::size_t getHotkeyPos (const FString& src, FString& dest);
+void        setHotkeyViaString (FWidget*, const FString&);
 void        drawBorder (FWidget*, FRect);
 
 // FWidget inline functions

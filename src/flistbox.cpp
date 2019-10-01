@@ -27,7 +27,6 @@
 #include "final/fcolorpair.h"
 #include "final/fevent.h"
 #include "final/flistbox.h"
-#include "final/fscrollbar.h"
 #include "final/fstring.h"
 #include "final/fstatusbar.h"
 #include "final/fwidgetcolors.h"
@@ -305,21 +304,16 @@ void FListBox::clear()
   const auto& wc = getFWidgetColors();
   setColor (wc.list_fg, wc.list_bg);
   std::size_t size = getWidth() - 2;
+  drawBorder();
+  drawHeadline();
 
   if ( size == 0 )
     return;
 
-  char* blank = createBlankArray(size + 1);
-
-  std::memset (blank, ' ', size);
-  blank[size] = '\0';
-
   for (int y{0}; y < int(getHeight()) - 2; y++)
   {
-    print() << FPoint(2, 2 + y) << blank;
+    print() << FPoint(2, 2 + y) << FString(size, L' ');
   }
-
-  destroyBlankArray (blank);
 }
 
 //----------------------------------------------------------------------
@@ -754,8 +748,8 @@ inline FString& FListBox::getString (listBoxItems::iterator iter)
 //----------------------------------------------------------------------
 void FListBox::init()
 {
-  initScrollbar (vbar, fc::vertical, &FListBox::cb_VBarChange);
-  initScrollbar (hbar, fc::horizontal, &FListBox::cb_HBarChange);
+  initScrollbar (vbar, fc::vertical, this, &FListBox::cb_VBarChange);
+  initScrollbar (hbar, fc::horizontal, this, &FListBox::cb_HBarChange);
   setGeometry (FPoint(1, 1), FSize(5, 4), false);  // initialize geometry values
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
@@ -765,32 +759,6 @@ void FListBox::init()
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1 + int(nf_offset));
-}
-
-//----------------------------------------------------------------------
-void FListBox::initScrollbar ( FScrollbarPtr& bar
-                             , fc::orientation o
-                             , FListBoxCallback callback )
-{
-  try
-  {
-    bar = std::make_shared<FScrollbar>(o, this);
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
-
-  bar->setMinimum(0);
-  bar->setValue(0);
-  bar->hide();
-
-  bar->addCallback
-  (
-    "change-value",
-    F_METHOD_CALLBACK (this, callback)
-  );
 }
 
 //----------------------------------------------------------------------

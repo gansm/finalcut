@@ -1626,17 +1626,15 @@ void FWidget::hideArea (const FSize& size)
   }
 
   setColor (fg, bg);
-  char* blank = createBlankArray(size.getWidth());
 
-  if ( blank == 0 )
+  if ( size.getWidth() == 0 )
     return;
 
   for (int y{0}; y < int(size.getHeight()); y++)
   {
-    print() << FPoint(1, 1 + y) << blank;
+    print() << FPoint(1, 1 + y) << FString(size.getWidth(), L' ');
   }
 
-  destroyBlankArray (blank);
   flush_out();
 }
 
@@ -2258,7 +2256,6 @@ void FWidget::drawTransparentShadow (int x1, int y1, int x2, int y2)
 void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
 {
   // non-transparent shadow
-  wchar_t block;
 
   if ( ! hasShadowCharacter() )
     return;
@@ -2273,7 +2270,6 @@ void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
   else if ( auto p = getParentWidget() )
     setColor (wcolors.shadow_fg, p->getBackgroundColor());
 
-  block = fc::FullBlock;  // █
   print (fc::LowerHalfBlock);  // ▄
 
   if ( isWindowWidget() )
@@ -2281,7 +2277,7 @@ void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
 
   for (std::size_t y{1}; y < getHeight(); y++)
   {
-    print() << FPoint(x2 + 1, y1 + int(y)) << block;  // █
+    print() << FPoint(x2 + 1, y1 + int(y)) << fc::FullBlock;  // █
   }
 
   print() << FPoint(x1 + 1, y2 + 1);
@@ -2310,37 +2306,11 @@ void FWidget::setColorTheme()
 
 // non-member functions
 //----------------------------------------------------------------------
-char* createBlankArray (std::size_t size)
-{
-  char* blank;
-
-  if ( size == 0 )
-    return 0;
-
-  try
-  {
-    blank = new char[size + 1];
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return 0;
-  }
-
-  std::memset(blank, ' ', size);
-  blank[size] = '\0';
-  return blank;
-}
-
-//----------------------------------------------------------------------
-void destroyBlankArray (char blank[])
-{
-  delete[] blank;
-}
-
-//----------------------------------------------------------------------
 FKey getHotkey (const FString& text)
 {
+  // Returns the hotkey character from a string
+  // e.g. "E&xit" returns 'x'
+
   if ( text.isEmpty() )
     return 0;
 
@@ -2362,33 +2332,63 @@ FKey getHotkey (const FString& text)
 }
 
 //----------------------------------------------------------------------
-std::size_t getHotkeyPos (wchar_t src[], wchar_t dest[], std::size_t length)
+std::size_t getHotkeyPos (const FString& src, FString& dest)
 {
   // Find hotkey position in string
   // + generate a new string without the '&'-sign
-  const wchar_t* txt = src;
+
   constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
   std::size_t hotkeypos{NOT_SET};
+  std::size_t i{0};
 
-  for (std::size_t i{0}; i < length; i++)
+  for (auto&& ch : src)
   {
-    if ( txt[i] == L'&' && hotkeypos == NOT_SET )
-    {
+    if ( ch == L'&' && hotkeypos == NOT_SET && src.getLength() != i + 1 )
       hotkeypos = i;
-      i++;
-      src++;
-    }
+    else
+      dest += ch;
 
-    *dest++ = *src++;
+    i++;
   }
 
   return hotkeypos;
+}
+//----------------------------------------------------------------------
+void setHotkeyViaString (FWidget* w, const FString& text)
+{
+  // Set hotkey accelerator via string
+
+  if ( ! w )
+    return;
+
+  FKey hotkey = getHotkey(text);
+
+  if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
+    hotkey -= 0xfee0;
+
+  if ( hotkey )
+  {
+    if ( std::isalpha(int(hotkey)) || std::isdigit(int(hotkey)) )
+    {
+      w->addAccelerator (FKey(std::tolower(int(hotkey))));
+      w->addAccelerator (FKey(std::toupper(int(hotkey))));
+      // Meta + hotkey
+      w->addAccelerator (fc::Fmkey_meta + FKey(std::tolower(int(hotkey))));
+    }
+    else
+      w->addAccelerator (hotkey);
+  }
+  else
+    w->delAccelerator();
 }
 
 //----------------------------------------------------------------------
 inline void drawBox (FWidget* w, const FRect& r)
 {
   // Use box-drawing characters to draw a border
+
+  if ( ! w )
+    return;
 
   w->print() << r.getUpperLeftPos() << fc::BoxDrawingsDownAndRight;  // ┌
 

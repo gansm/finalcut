@@ -233,7 +233,7 @@ int FMessageBox::error ( FWidget* parent
   mbox.beep();
   mbox.setHeadline("Warning:");
   mbox.setCenterText();
-  const FWidgetColors& wc = mbox.getFWidgetColors();
+  const auto& wc = mbox.getFWidgetColors();
   mbox.setForegroundColor(wc.error_box_fg);
   mbox.setBackgroundColor(wc.error_box_bg);
   mbox.emphasis_color = wc.error_box_emphasis_fg;

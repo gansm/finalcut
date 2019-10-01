@@ -1746,7 +1746,7 @@ charData FVTerm::getCharacter ( character_type char_type
 
   for (auto&& win_obj : *FWidget::getWindowList())
   {
-    bool significant_char;
+    bool significant_char{false};
 
     // char_type can be "overlapped_character"
     // or "covered_character"

@@ -43,14 +43,14 @@ bool                 FTermXTerminal::meta_sends_esc{false};
 bool                 FTermXTerminal::xterm_default_colors{false};
 std::size_t          FTermXTerminal::term_width{80};
 std::size_t          FTermXTerminal::term_height{24};
-const FString*       FTermXTerminal::xterm_font{nullptr};
-const FString*       FTermXTerminal::xterm_title{nullptr};
-const FString*       FTermXTerminal::foreground_color{nullptr};
-const FString*       FTermXTerminal::background_color{nullptr};
-const FString*       FTermXTerminal::cursor_color{nullptr};
-const FString*       FTermXTerminal::mouse_foreground_color{nullptr};
-const FString*       FTermXTerminal::mouse_background_color{nullptr};
-const FString*       FTermXTerminal::highlight_background_color{nullptr};
+FString              FTermXTerminal::xterm_font{};
+FString              FTermXTerminal::xterm_title{};
+FString              FTermXTerminal::foreground_color{};
+FString              FTermXTerminal::background_color{};
+FString              FTermXTerminal::cursor_color{};
+FString              FTermXTerminal::mouse_foreground_color{};
+FString              FTermXTerminal::mouse_background_color{};
+FString              FTermXTerminal::highlight_background_color{};
 FSystem*             FTermXTerminal::fsystem{nullptr};
 FTermDetection*      FTermXTerminal::term_detection{nullptr};
 fc::xtermCursorStyle FTermXTerminal::cursor_style{fc::unknown_cursor_style};
@@ -70,31 +70,7 @@ FTermXTerminal::FTermXTerminal()
 
 //----------------------------------------------------------------------
 FTermXTerminal::~FTermXTerminal()  // destructor
-{
-  if ( highlight_background_color )
-    delete highlight_background_color;
-
-  if ( mouse_background_color )
-    delete mouse_background_color;
-
-  if ( mouse_foreground_color )
-    delete mouse_foreground_color;
-
-  if ( cursor_color )
-    delete cursor_color;
-
-  if ( background_color )
-    delete background_color;
-
-  if ( foreground_color )
-    delete foreground_color;
-
-  if ( xterm_title )
-    delete xterm_title;
-
-  if ( xterm_font )
-    delete xterm_font;
-}
+{ }
 
 
 // public methods of FTermXTerminal
@@ -112,10 +88,7 @@ void FTermXTerminal::setFont (const FString& fontname)
 {
   // Change the XTerm font (needs the allowFontOps resource)
 
-  if ( xterm_font )
-    delete xterm_font;
-
-  xterm_font = new FString(fontname);
+  xterm_font = fontname;
   setXTermFont();
 }
 
@@ -124,10 +97,7 @@ void FTermXTerminal::setTitle (const FString& title)
 {
   // Set the xterm title
 
-  if ( xterm_title )
-    delete xterm_title;
-
-  xterm_title = new FString(title);
+  xterm_title = title;
   setXTermTitle();
 }
 
@@ -146,10 +116,7 @@ void FTermXTerminal::setForeground (const FString& fg)
 {
   // Set the XTerm text foreground color
 
-  if ( foreground_color )
-    delete foreground_color;
-
-  foreground_color = new FString(fg);
+  foreground_color = fg;
   setXTermForeground();
 }
 
@@ -158,10 +125,7 @@ void FTermXTerminal::setBackground (const FString& bg)
 {
   // Set the XTerm text background color
 
-  if ( background_color )
-    delete background_color;
-
-  background_color = new FString(bg);
+  background_color = bg;
   setXTermBackground();
 }
 
@@ -170,10 +134,7 @@ void FTermXTerminal::setCursorColor (const FString& cc)
 {
   // Set the text cursor color
 
-  if ( cursor_color )
-    delete cursor_color;
-
-  cursor_color = new FString(cc);
+  cursor_color = cc;
   setXTermCursorColor();
 }
 
@@ -182,10 +143,7 @@ void FTermXTerminal::setMouseForeground (const FString& mfg)
 {
   // Set the mouse foreground color
 
-  if ( mouse_foreground_color )
-    delete mouse_foreground_color;
-
-  mouse_foreground_color = new FString(mfg);
+  mouse_foreground_color = mfg;
   setXTermMouseForeground();
 }
 
@@ -194,10 +152,7 @@ void FTermXTerminal::setMouseBackground (const FString& mbg)
 {
   // Set the mouse background color
 
-  if ( mouse_background_color )
-    delete mouse_background_color;
-
-  mouse_background_color = new FString(mbg);
+  mouse_background_color = mbg;
   setXTermMouseBackground();
 }
 
@@ -206,10 +161,7 @@ void FTermXTerminal::setHighlightBackground (const FString& hbg)
 {
   // Set the highlight background color
 
-  if ( highlight_background_color )
-    delete highlight_background_color;
-
-  highlight_background_color = new FString(hbg);
+  highlight_background_color = hbg;
   setXTermHighlightBackground();
 }
 
@@ -266,10 +218,7 @@ void FTermXTerminal::resetForeground()
 {
   // Reset the XTerm text foreground color
 
-  if ( foreground_color )
-    delete foreground_color;
-
-  foreground_color = nullptr;
+  foreground_color.clear();
   resetXTermForeground();
 }
 
@@ -278,10 +227,7 @@ void FTermXTerminal::resetBackground()
 {
   // Reset the XTerm text background color
 
-  if ( background_color )
-    delete background_color;
-
-  background_color = nullptr;
+  background_color.clear();
   resetXTermBackground();
 }
 
@@ -290,10 +236,7 @@ void FTermXTerminal::resetCursorColor()
 {
   // Reset the text cursor color
 
-  if ( cursor_color )
-    delete cursor_color;
-
-  cursor_color = nullptr;
+  cursor_color.clear();
   resetXTermCursorColor();
 }
 
@@ -302,10 +245,7 @@ void FTermXTerminal::resetMouseForeground()
 {
   // Reset the mouse foreground color
 
-  if ( mouse_foreground_color )
-    delete mouse_foreground_color;
-
-  mouse_foreground_color = nullptr;
+  mouse_foreground_color.clear();
   resetXTermMouseForeground();
 }
 
@@ -314,10 +254,7 @@ void FTermXTerminal::resetMouseBackground()
 {
   // Reset the mouse background color
 
-  if ( mouse_background_color )
-    delete mouse_background_color;
-
-  mouse_background_color = nullptr;
+  mouse_background_color.clear();
   resetXTermMouseBackground();
 }
 
@@ -326,10 +263,7 @@ void FTermXTerminal::resetHighlightBackground()
 {
   // Reset the highlight background color
 
-  if ( highlight_background_color )
-    delete highlight_background_color;
-
-  highlight_background_color = nullptr;
+  highlight_background_color.clear();
   resetXTermHighlightBackground();
 }
 
@@ -364,12 +298,6 @@ void FTermXTerminal::captureFontAndTitle()
     || term_detection->isUrxvtTerminal() )
     && ! term_detection->isRxvtTerminal() )
   {
-    if ( xterm_font )
-      delete xterm_font;
-
-    if ( xterm_title )
-      delete xterm_title;
-
     FTermios::setCaptureSendCharacters();
     xterm_font  = captureXTermFont();
     xterm_title = captureXTermTitle();
@@ -420,7 +348,7 @@ void FTermXTerminal::setXTermTitle()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "0;%s" BEL, xterm_title->c_str());
+    FTerm::putstringf (OSC "0;%s" BEL, xterm_title.c_str());
     oscPostfix();
     std::fflush(stdout);
   }
@@ -449,7 +377,7 @@ void FTermXTerminal::setXTermFont()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "50;%s" BEL, xterm_font->c_str() );
+    FTerm::putstringf (OSC "50;%s" BEL, xterm_font.c_str() );
     oscPostfix();
   }
 }
@@ -466,7 +394,7 @@ void FTermXTerminal::setXTermForeground()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "10;%s" BEL, foreground_color->c_str());
+    FTerm::putstringf (OSC "10;%s" BEL, foreground_color.c_str());
     oscPostfix();
     std::fflush(stdout);
   }
@@ -484,7 +412,7 @@ void FTermXTerminal::setXTermBackground()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "11;%s" BEL, background_color->c_str());
+    FTerm::putstringf (OSC "11;%s" BEL, background_color.c_str());
     oscPostfix();
     std::fflush(stdout);
   }
@@ -502,7 +430,7 @@ void FTermXTerminal::setXTermCursorColor()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "12;%s" BEL, cursor_color->c_str());
+    FTerm::putstringf (OSC "12;%s" BEL, cursor_color.c_str());
     oscPostfix();
     std::fflush(stdout);
   }
@@ -519,7 +447,7 @@ void FTermXTerminal::setXTermMouseForeground()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "13;%s" BEL, mouse_foreground_color->c_str());
+    FTerm::putstringf (OSC "13;%s" BEL, mouse_foreground_color.c_str());
     oscPostfix();
     std::fflush(stdout);
   }
@@ -535,7 +463,7 @@ void FTermXTerminal::setXTermMouseBackground()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "14;%s" BEL, mouse_background_color->c_str());
+    FTerm::putstringf (OSC "14;%s" BEL, mouse_background_color.c_str());
     oscPostfix();
     std::fflush(stdout);
   }
@@ -552,7 +480,7 @@ void FTermXTerminal::setXTermHighlightBackground()
     || FTermcap::osc_support )
   {
     oscPrefix();
-    FTerm::putstringf (OSC "17;%s" BEL, highlight_background_color->c_str());
+    FTerm::putstringf (OSC "17;%s" BEL, highlight_background_color.c_str());
     oscPostfix();
     std::fflush(stdout);
   }
@@ -769,7 +697,7 @@ void FTermXTerminal::oscPostfix()
 }
 
 //----------------------------------------------------------------------
-const FString* FTermXTerminal::captureXTermFont()
+const FString FTermXTerminal::captureXTermFont()
 {
   if ( term_detection->isXTerminal()
     || term_detection->isScreenTerm()
@@ -796,36 +724,25 @@ const FString* FTermXTerminal::captureXTermFont()
 
       if ( std::scanf("\033]50;%148[^\n]s", temp) == 1 )
       {
-        FString* xtermfont;
         std::size_t n = std::strlen(temp);
 
         // BEL + '\0' = string terminator
         if ( n >= 5 && temp[n - 1] == BEL[0] && temp[n] == '\0' )
           temp[n - 1] = '\0';
 
-        try
-        {
-          xtermfont = new FString(temp);
-        }
-        catch (const std::bad_alloc& ex)
-        {
-          std::cerr << bad_alloc_str << ex.what() << std::endl;
-          return 0;
-        }
-
-        return xtermfont;
+        return FString(temp);
       }
     }
   }
 
-  return 0;
+  return FString{};
 }
 
 //----------------------------------------------------------------------
-const FString* FTermXTerminal::captureXTermTitle()
+const FString FTermXTerminal::captureXTermTitle()
 {
   if ( term_detection->isKdeTerminal() )
-    return 0;
+    return FString{};
 
   fd_set ifds{};
   struct timeval tv{};
@@ -851,29 +768,16 @@ const FString* FTermXTerminal::captureXTermTitle()
       // Esc + \ = OSC string terminator
       if ( n >= 2 && temp[n - 2] == ESC[0] && temp[n - 1] == '\\' )
       {
-        FString* xtermtitle;
-
         if ( n < 4 )
-          return 0;
+          return FString{};
 
         temp[n - 2] = '\0';
-
-        try
-        {
-          xtermtitle = new FString(temp);
-        }
-        catch (const std::bad_alloc& ex)
-        {
-          std::cerr << bad_alloc_str << ex.what() << std::endl;
-          return 0;
-        }
-
-        return xtermtitle;
+        return FString{temp};
       }
     }
   }
 
-  return 0;
+  return FString{};
 }
 
 //----------------------------------------------------------------------

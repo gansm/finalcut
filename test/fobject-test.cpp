@@ -388,7 +388,7 @@ void FObjectTest::iteratorTest()
   CPPUNIT_ASSERT ( child2->getParent() == obj );
   CPPUNIT_ASSERT ( child3->getParent() == obj );
 
-  finalcut::FObject::constFObjectIterator c_iter, c_last;
+  finalcut::FObject::const_iterator c_iter, c_last;
   c_iter = obj->begin();
   c_last = obj->end();
   int i = 0;
@@ -402,7 +402,7 @@ void FObjectTest::iteratorTest()
   CPPUNIT_ASSERT ( obj->numOfChildren() == i );
   CPPUNIT_ASSERT ( i == 3 );
 
-  finalcut::FObject::FObjectIterator iter, last;
+  finalcut::FObject::iterator iter, last;
   iter = obj->begin();
   last = obj->end();
   i = 0;

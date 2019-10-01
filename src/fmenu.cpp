@@ -1236,8 +1236,6 @@ inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
 {
   FString txt(m_item->getText());
   menuText txtdata{};
-  std::size_t txt_length = txt.getLength();
-  std::size_t to_char = txt_length;
   std::size_t column_width = getColumnWidth(txt);
   FKey accel_key   = m_item->accel_key;
   bool is_enabled  = m_item->isEnabled();
@@ -1252,25 +1250,11 @@ inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
   // Print leading blank space
   print (' ');
 
-  try
-  {
-    txtdata.text = new wchar_t[txt_length + 1]();
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
-
-  hotkeypos = finalcut::getHotkeyPos(txt.wc_str(), txtdata.text, txt_length);
+  hotkeypos = finalcut::getHotkeyPos(txt, txtdata.text);
 
   if ( hotkeypos != NOT_SET )
-  {
-    to_char--;
     column_width--;
-  }
 
-  txtdata.length = to_char;
   txtdata.no_underline = m_item->getFlags().no_underline;
   setCursorToHotkeyPosition (m_item);
 
@@ -1292,8 +1276,6 @@ inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
 
   if ( isMonochron() && is_enabled && is_selected )
     setReverse(true);
-
-  delete[] txtdata.text;
 }
 
 //----------------------------------------------------------------------
@@ -1347,7 +1329,7 @@ inline void FMenu::drawMenuText (menuText& data)
 {
   // Print menu text
 
-  for (std::size_t z{0}; z < data.length; z++)
+  for (std::size_t z{0}; z < data.text.getLength(); z++)
   {
     if ( ! std::iswprint(std::wint_t(data.text[z])) )
     {

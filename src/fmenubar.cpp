@@ -64,15 +64,13 @@ void FMenuBar::resetMenu()
 //----------------------------------------------------------------------
 void FMenuBar::hide()
 {
-  FWindow::hide();
   const auto& wc = getFWidgetColors();
   FColor fg = wc.term_fg;
   FColor bg = wc.term_bg;
   setColor (fg, bg);
-  screenWidth = getDesktopWidth();
-  char* blank = createBlankArray (screenWidth + 1);
-  print() << FPoint(1, 1) << blank;
-  destroyBlankArray (blank);
+  print() << FPoint(1, 1) << FString(getDesktopWidth(), L' ');
+  updateTerminal();
+  FWindow::hide();
 }
 
 //----------------------------------------------------------------------
@@ -482,14 +480,13 @@ void FMenuBar::drawItems()
   if ( isMonochron() )
     setReverse(true);
 
-  screenWidth = getDesktopWidth();
   std::size_t x{1};
 
   for (auto&& item : list)
     drawItem (item, x);
 
   // Print spaces to end of line
-  for (; x <= screenWidth; x++)
+  for (; x <= getDesktopWidth(); x++)
     print (' ');
 
   if ( isMonochron() )
@@ -503,8 +500,6 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
   txtdata.startpos = x + 1;
   txtdata.no_underline = menuitem->getFlags().no_underline;
   FString txt(menuitem->getText());
-  std::size_t to_char{};
-  std::size_t txt_length = txt.getLength();
   std::size_t column_width = getColumnWidth(txt);
   bool is_enabled  = menuitem->isEnabled();
   bool is_selected = menuitem->isSelected();
@@ -513,32 +508,14 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
   setLineAttributes (menuitem);
   drawLeadingSpace (x);
 
-  try
-  {
-    txtdata.text = new wchar_t[txt_length + 1]();
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
+  if ( x - 1 > screenWidth )
+    txt = txt.left(getColumnWidth(txt) - screenWidth - x - 1);
 
-  if ( x - 1 <= screenWidth )
-    to_char = txt_length;
-  else
-    to_char = txt_length - screenWidth - x - 1;
-
-  std::size_t hotkeypos = finalcut::getHotkeyPos ( txt.wc_str()
-                                                 , txtdata.text
-                                                 , txt_length );
+  std::size_t hotkeypos = finalcut::getHotkeyPos(txt, txtdata.text);
 
   if ( hotkeypos != NOT_SET )
-  {
     column_width--;
-    to_char--;
-  }
 
-  txtdata.length = to_char;
   x += column_width;
 
   if ( ! is_enabled || is_selected )
@@ -556,8 +533,6 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
 
   if ( isMonochron() && is_enabled && is_selected )
     setReverse(true);
-
-  delete[] txtdata.text;
 }
 
 //----------------------------------------------------------------------
@@ -616,7 +591,7 @@ inline void FMenuBar::drawMenuText (menuText& data)
 {
   // Print menu text
 
-  for (std::size_t z{0}; z < data.length; z++)
+  for (std::size_t z{0}; z < data.text.getLength(); z++)
   {
     if ( data.startpos > screenWidth - z )
       break;

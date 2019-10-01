@@ -32,7 +32,6 @@
 #include "final/fcolorpair.h"
 #include "final/fevent.h"
 #include "final/flistview.h"
-#include "final/fscrollbar.h"
 #include "final/fstatusbar.h"
 #include "final/fstring.h"
 #include "final/ftermbuffer.h"
@@ -42,7 +41,7 @@ namespace finalcut
 {
 
 // Static class attribute
-FObject::FObjectIterator FListView::null_iter;
+FObject::iterator FListView::null_iter;
 
 // Function prototypes
 uInt64 firstNumberFromString (const FString&);
@@ -55,14 +54,13 @@ bool sortDescendingByNumber (const FObject*, const FObject*);
 //----------------------------------------------------------------------
 uInt64 firstNumberFromString (const FString& str)
 {
-  auto last = str.end();
   auto iter = str.begin();
 
-  while ( iter != last )
+  while ( iter != str.end() )
   {
     if ( wchar_t(*iter) >= L'0' && wchar_t(*iter) <= L'9' )
     {
-      if ( wchar_t(*(iter - 1)) == L'-' )
+      if ( iter != str.begin() && wchar_t(*(iter - 1)) == L'-' )
         --iter;
 
       break;
@@ -73,10 +71,10 @@ uInt64 firstNumberFromString (const FString& str)
 
   auto first_pos = iter;
 
-  if ( first_pos == last )
+  if ( first_pos == str.end() )
     return 0;
 
-  while ( iter != last )
+  while ( iter != str.end() )
   {
     if ( wchar_t(*iter) < L'0' || wchar_t(*iter) > L'9' )
       break;
@@ -86,7 +84,7 @@ uInt64 firstNumberFromString (const FString& str)
 
   auto last_pos = iter;
 
-  if ( last_pos == last )
+  if ( last_pos == str.end() )
     return 0;
 
   uInt64 number;
@@ -186,7 +184,7 @@ FListViewItem::FListViewItem (const FListViewItem& item)
 }
 
 //----------------------------------------------------------------------
-FListViewItem::FListViewItem (FObjectIterator parent_iter)
+FListViewItem::FListViewItem (iterator parent_iter)
   : FObject((*parent_iter)->getParent())
 {
   insert (this, parent_iter);
@@ -195,7 +193,7 @@ FListViewItem::FListViewItem (FObjectIterator parent_iter)
 //----------------------------------------------------------------------
 FListViewItem::FListViewItem ( const FStringList& cols
                              , FDataPtr data
-                             , FObjectIterator parent_iter )
+                             , iterator parent_iter )
   : FObject(nullptr)
   , column_list(cols)
   , data_pointer(data)
@@ -279,7 +277,7 @@ void FListViewItem::setText (int column, const FString& text)
 }
 
 //----------------------------------------------------------------------
-FObject::FObjectIterator FListViewItem::insert (FListViewItem* child)
+FObject::iterator FListViewItem::insert (FListViewItem* child)
 {
   // Add a FListViewItem as child element
   if ( ! child )
@@ -289,8 +287,8 @@ FObject::FObjectIterator FListViewItem::insert (FListViewItem* child)
 }
 
 //----------------------------------------------------------------------
-FObject::FObjectIterator FListViewItem::insert ( FListViewItem* child
-                                               , FObjectIterator parent_iter )
+FObject::iterator FListViewItem::insert ( FListViewItem* child
+                                        , iterator parent_iter )
 {
   if ( parent_iter == FListView::null_iter )
     return FListView::null_iter;
@@ -353,7 +351,7 @@ void FListViewItem::sort (Compare cmp)
 }
 
 //----------------------------------------------------------------------
-FObject::FObjectIterator FListViewItem::appendItem (FListViewItem* child)
+FObject::iterator FListViewItem::appendItem (FListViewItem* child)
 {
   expandable = true;
   resetVisibleLineCounter();
@@ -434,7 +432,7 @@ void FListViewItem::resetVisibleLineCounter()
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FListViewIterator::FListViewIterator (FObjectIterator iter)
+FListViewIterator::FListViewIterator (iterator iter)
   : node(iter)
 { }
 
@@ -496,7 +494,7 @@ FListViewIterator& FListViewIterator::operator -= (volatile int n)
 
 // private methods of FListViewIterator
 //----------------------------------------------------------------------
-void FListViewIterator::nextElement (FObjectIterator& iter)
+void FListViewIterator::nextElement (iterator& iter)
 {
   auto item = static_cast<FListViewItem*>(*iter);
 
@@ -526,7 +524,7 @@ void FListViewIterator::nextElement (FObjectIterator& iter)
 }
 
 //----------------------------------------------------------------------
-void FListViewIterator::prevElement (FObjectIterator& iter)
+void FListViewIterator::prevElement (iterator& iter)
 {
   auto start_iter = iter;
 
@@ -713,7 +711,7 @@ void FListView::setColumnSortType (int column, fc::sorting_type type)
   if ( column < 1 || header.empty() || column > int(header.size()) )
     return;
 
-  std::size_t size = std::size_t(column + 1);
+  std::size_t size = std::size_t(column) + 1;
 
   if ( sort_type.empty() || sort_type.size() < size )
     sort_type.resize(size);
@@ -760,10 +758,10 @@ void FListView::hide()
 }
 
 //----------------------------------------------------------------------
-FObject::FObjectIterator FListView::insert ( FListViewItem* item
-                                           , FObjectIterator parent_iter )
+FObject::iterator FListView::insert ( FListViewItem* item
+                                    , iterator parent_iter )
 {
-  FObjectIterator item_iter;
+  iterator item_iter;
 
   if ( parent_iter == FListView::null_iter )
     return FListView::null_iter;
@@ -799,9 +797,9 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
 }
 
 //----------------------------------------------------------------------
-FObject::FObjectIterator FListView::insert ( const FStringList& cols
-                                           , FDataPtr d
-                                           , FObjectIterator parent_iter )
+FObject::iterator FListView::insert ( const FStringList& cols
+                                    , FDataPtr d
+                                    , iterator parent_iter )
 {
   FListViewItem* item;
 
@@ -1379,8 +1377,8 @@ void FListView::adjustSize()
 //----------------------------------------------------------------------
 void FListView::init()
 {
-  initScrollbar (vbar, fc::vertical, &FListView::cb_VBarChange);
-  initScrollbar (hbar, fc::horizontal, &FListView::cb_HBarChange);
+  initScrollbar (vbar, fc::vertical, this, &FListView::cb_VBarChange);
+  initScrollbar (hbar, fc::horizontal, this, &FListView::cb_HBarChange);
   selflist.push_back(this);
   root = selflist.begin();
   null_iter = selflist.end();
@@ -1393,32 +1391,6 @@ void FListView::init()
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1 + int(nf_offset));
-}
-
-//----------------------------------------------------------------------
-void FListView::initScrollbar ( FScrollbarPtr& bar
-                              , fc::orientation o
-                              , FListViewCallback callback )
-{
-  try
-  {
-    bar = std::make_shared<FScrollbar>(o, this);
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
-
-  bar->setMinimum(0);
-  bar->setValue(0);
-  bar->hide();
-
-  bar->addCallback
-  (
-    "change-value",
-    F_METHOD_CALLBACK (this, callback)
-  );
 }
 
 //----------------------------------------------------------------------
@@ -2283,7 +2255,7 @@ void FListView::stopDragScroll()
 }
 
 //----------------------------------------------------------------------
-FObject::FObjectIterator FListView::appendItem (FListViewItem* item)
+FObject::iterator FListView::appendItem (FListViewItem* item)
 {
   item->root = root;
   addChild (item);

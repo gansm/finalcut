@@ -149,7 +149,7 @@ class FButton : public FWidget
     void                drawMarginLeft();
     void                drawMarginRight();
     void                drawTopBottomBackground();
-    void                drawButtonTextLine (wchar_t[]);
+    void                drawButtonTextLine (const FString&);
     void                draw() override;
     void                updateStatusBar();
     void                updateButtonColor();

@@ -83,9 +83,7 @@ The calculator example in newfont mode:
 
 Virtual terminal
 ----------------
-It uses a virtual terminal to print the character via an update method on the screen.
-The virtual windows are an overlying layer to realizing window movements.
-The update method transmits only the changes to the virtual terminal or the screen.
+FINAL CUT uses a virtual terminal to print character via an update method on the screen. It provides (as an overlying layer) virtual windows for the realization of window movements. The update methods only transfer differences to the virtual terminal or physical screen.
 
 <pre style="line-height: 1 !important;">
  print(...)
@@ -261,9 +259,7 @@ GNU Lesser General Public License Version 3
 
 Frequently Asked Questions
 --------------------------
-If you have any problems, please read the
-[FAQ](doc/faq.md#frequently-asked-questions)
-before you give up.
+For general questions about FINAL CUT, likely the answer is already included in the [FAQ](doc/faq.md#frequently-asked-questions).
 
 Please send bug reports to
 --------------------------

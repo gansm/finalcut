@@ -112,8 +112,7 @@ class FMenuBar : public FWindow, public FMenuList
     // Typedef
     typedef struct
     {
-      wchar_t* text;
-      std::size_t length;
+      FString text;
       std::size_t startpos;
       std::size_t hotkeypos;
       bool no_underline;

@@ -1,3 +1,7 @@
+2019-10-01  Markus Gans  <guru.mail@muenster.de>
+	* Replacing null-terminated wide strings with FString objects
+	* Fix for getColumnWidth() with newfont character
+
 2019-09-29  Markus Gans  <guru.mail@muenster.de>
 	* Streaming into an FTextView() object
 	* Fixes the streaming of empty FString objects into a stream with 

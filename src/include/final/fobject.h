@@ -72,9 +72,9 @@ class FObject
 {
   public:
     // Typedef
-    typedef std::list<FObject*> FObjectList;
-    typedef FObjectList::iterator FObjectIterator;
-    typedef FObjectList::const_iterator constFObjectIterator;
+    typedef std::list<FObject*>         FObjectList;
+    typedef FObjectList::iterator       iterator;
+    typedef FObjectList::const_iterator const_iterator;
 
     // Constructor
     explicit FObject (FObject* = nullptr);
@@ -95,10 +95,10 @@ class FObject
     FObjectList&         getChildren();
     const FObjectList&   getChildren() const;
     int                  numOfChildren() const;
-    FObjectIterator      begin();
-    FObjectIterator      end();
-    constFObjectIterator begin() const;
-    constFObjectIterator end() const;
+    iterator             begin();
+    iterator             end();
+    const_iterator       begin() const;
+    const_iterator       end() const;
 
     // Inquiries
     bool                 hasParent() const;
@@ -185,19 +185,19 @@ inline int FObject::numOfChildren() const
 { return int(children_list.size()); }
 
 //----------------------------------------------------------------------
-inline FObject::FObjectIterator FObject::begin()
+inline FObject::iterator FObject::begin()
 { return children_list.begin(); }
 
 //----------------------------------------------------------------------
-inline FObject::FObjectIterator FObject::end()
+inline FObject::iterator FObject::end()
 { return children_list.end(); }
 
 //----------------------------------------------------------------------
-inline FObject::constFObjectIterator FObject::begin() const
+inline FObject::const_iterator FObject::begin() const
 { return children_list.begin(); }
 
 //----------------------------------------------------------------------
-inline FObject::constFObjectIterator FObject::end() const
+inline FObject::const_iterator FObject::end() const
 { return children_list.end(); }
 
 //----------------------------------------------------------------------

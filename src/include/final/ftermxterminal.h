@@ -76,14 +76,14 @@ class FTermXTerminal final
     // Accessors
     const char*           getClassName() const;
     static fc::xtermCursorStyle getCursorStyle();
-    static const FString* getFont();
-    static const FString* getTitle();
-    static const FString* getForeground();
-    static const FString* getBackground();
-    static const FString* getCursorColor();
-    static const FString* getMouseForeground();
-    static const FString* getMouseBackground();
-    static const FString* getHighlightBackground();
+    static const FString  getFont();
+    static const FString  getTitle();
+    static const FString  getForeground();
+    static const FString  getBackground();
+    static const FString  getCursorColor();
+    static const FString  getMouseForeground();
+    static const FString  getMouseBackground();
+    static const FString  getHighlightBackground();
 
     // Inquiries
     static bool           hasFont();
@@ -128,8 +128,8 @@ class FTermXTerminal final
     static bool           canResetColor();
     static void           oscPrefix();
     static void           oscPostfix();
-    static const FString* captureXTermFont();
-    static const FString* captureXTermTitle();
+    static const FString  captureXTermFont();
+    static const FString  captureXTermTitle();
     static void           enableXTermMouse();
     static void           disableXTermMouse();
     static void           enableXTermMetaSendsESC();
@@ -141,14 +141,14 @@ class FTermXTerminal final
     static bool                 xterm_default_colors;
     static std::size_t          term_width;
     static std::size_t          term_height;
-    static const FString*       xterm_font;
-    static const FString*       xterm_title;
-    static const FString*       foreground_color;
-    static const FString*       background_color;
-    static const FString*       cursor_color;
-    static const FString*       mouse_foreground_color;
-    static const FString*       mouse_background_color;
-    static const FString*       highlight_background_color;
+    static FString              xterm_font;
+    static FString              xterm_title;
+    static FString              foreground_color;
+    static FString              background_color;
+    static FString              cursor_color;
+    static FString              mouse_foreground_color;
+    static FString              mouse_background_color;
+    static FString              highlight_background_color;
     static FSystem*             fsystem;
     static FTermDetection*      term_detection;
     static fc::xtermCursorStyle cursor_style;
@@ -169,44 +169,44 @@ inline fc::xtermCursorStyle FTermXTerminal::getCursorStyle()
 { return cursor_style; }
 
 //----------------------------------------------------------------------
-inline const FString* FTermXTerminal::getFont()
+inline const FString FTermXTerminal::getFont()
 { return xterm_font; }
 
 //----------------------------------------------------------------------
-inline const FString* FTermXTerminal::getTitle()
+inline const FString FTermXTerminal::getTitle()
 { return xterm_title; }
 
 //----------------------------------------------------------------------
-inline const FString* FTermXTerminal::getForeground()
+inline const FString FTermXTerminal::getForeground()
 { return foreground_color; }
 
 //----------------------------------------------------------------------
-inline const FString* FTermXTerminal::getBackground()
+inline const FString FTermXTerminal::getBackground()
 { return background_color; }
 
 //----------------------------------------------------------------------
-inline const FString* FTermXTerminal::getCursorColor()
+inline const FString FTermXTerminal::getCursorColor()
 { return cursor_color; }
 
 //----------------------------------------------------------------------
-inline const FString* FTermXTerminal::getMouseForeground()
+inline const FString FTermXTerminal::getMouseForeground()
 { return mouse_foreground_color; }
 
 //----------------------------------------------------------------------
-inline const FString* FTermXTerminal::getMouseBackground()
+inline const FString FTermXTerminal::getMouseBackground()
 { return mouse_background_color; }
 
 //----------------------------------------------------------------------
-inline const FString* FTermXTerminal::getHighlightBackground()
+inline const FString FTermXTerminal::getHighlightBackground()
 { return highlight_background_color; }
 
 //----------------------------------------------------------------------
 inline bool FTermXTerminal::hasFont()
-{ return bool(xterm_font && xterm_font->getLength() > 2); }
+{ return bool(xterm_font.getLength() > 2); }
 
 //----------------------------------------------------------------------
 inline bool FTermXTerminal::hasTitle()
-{ return bool(xterm_title && xterm_title->getLength() > 0); }
+{ return bool(xterm_title.getLength() > 0); }
 
 //----------------------------------------------------------------------
 inline void FTermXTerminal::setMouseSupport()

@@ -182,6 +182,7 @@ void FButtonGroup::hide()
   {
     for (auto&& item : buttonlist)
     {
+      // Hide items
       auto toggle_button = static_cast<FToggleButton*>(item);
       toggle_button->hide();
     }
@@ -205,15 +206,13 @@ void FButtonGroup::hide()
   if ( size == 0 )
     return;
 
-  char* blank = createBlankArray(size + 1);
+  // Hide border
+  unsetViewportPrint();
 
   for (int y{0}; y < int(getHeight()); y++)
-  {
-    FWidget::setPrintPos (FPoint(1, 1 + y));
-    print (blank);
-  }
+    print() << FPoint(1, 1 + y) << FString(size, L' ');
 
-  destroyBlankArray (blank);
+  setViewportPrint();
 }
 
 //----------------------------------------------------------------------
@@ -308,10 +307,10 @@ void FButtonGroup::onAccel (FAccelEvent*)
 //----------------------------------------------------------------------
 void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 {
+  in_ev->ignore();  // Change default value to ignore
+
   if ( hasCheckedButton() && ! buttonlist.empty() )
   {
-    in_ev->ignore();
-
     for (auto&& item : buttonlist)
     {
       auto toggle_button = static_cast<FToggleButton*>(item);
@@ -374,25 +373,7 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 //----------------------------------------------------------------------
 void FButtonGroup::setHotkeyAccelerator()
 {
-  FKey hotkey = getHotkey(text);
-
-  if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
-    hotkey -= 0xfee0;
-
-  if ( hotkey )
-  {
-    if ( std::isalpha(int(hotkey)) || std::isdigit(int(hotkey)) )
-    {
-      addAccelerator (FKey(std::tolower(int(hotkey))));
-      addAccelerator (FKey(std::toupper(int(hotkey))));
-      // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(int(hotkey))));
-    }
-    else
-      addAccelerator (hotkey);
-  }
-  else
-    delAccelerator();
+  setHotkeyViaString (this, text);
 }
 
 //----------------------------------------------------------------------
@@ -417,36 +398,18 @@ void FButtonGroup::drawLabel()
   if ( text.isNull() || text.isEmpty() )
     return;
 
-  wchar_t* LabelText{};
+  FString label_text{};
   FString txt{" " + text + " "};
-  std::size_t length = txt.getLength();
-
-  try
-  {
-    LabelText = new wchar_t[length + 1]();
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
-
-  wchar_t* src = const_cast<wchar_t*>(txt.wc_str());
-  wchar_t* dest = const_cast<wchar_t*>(LabelText);
   unsetViewportPrint();
-  auto hotkeypos = finalcut::getHotkeyPos(src, dest, length);
-
-  if ( hotkeypos != NOT_SET )
-    length--;
+  auto hotkeypos = finalcut::getHotkeyPos(txt, label_text);
 
   if ( hasBorder() )
     FWidget::setPrintPos (FPoint(2, 1));
   else
     FWidget::setPrintPos (FPoint(0, 1));
 
-  drawText (LabelText, hotkeypos, length);
+  drawText (label_text, hotkeypos);
   setViewportPrint();
-  delete[] LabelText;
 }
 
 
@@ -472,18 +435,18 @@ void FButtonGroup::init()
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::drawText ( wchar_t LabelText[]
-                            , std::size_t hotkeypos
-                            , std::size_t length )
+void FButtonGroup::drawText ( const FString& label_text
+                            , std::size_t hotkeypos )
 {
   const auto& wc = getFWidgetColors();
-  std::size_t column_width = getColumnWidth(LabelText);
+  std::size_t column_width = getColumnWidth(label_text);
+  std::size_t length = label_text.getLength();
   bool ellipsis{false};
 
   if ( column_width > getClientWidth() )
   {
     std::size_t len = getClientWidth() - 3;
-    FString s = finalcut::getColumnSubString (LabelText, 1, len);
+    FString s = finalcut::getColumnSubString (label_text, 1, len);
     length = s.getLength();
     ellipsis = true;
   }
@@ -505,7 +468,7 @@ void FButtonGroup::drawText ( wchar_t LabelText[]
       if ( ! getFlags().no_underline )
         setUnderline();
 
-      print (LabelText[z]);
+      print (label_text[z]);
 
       if ( ! getFlags().no_underline )
         unsetUnderline();
@@ -513,7 +476,7 @@ void FButtonGroup::drawText ( wchar_t LabelText[]
       setColor (wc.label_emphasis_fg, wc.label_bg);
     }
     else
-      print (LabelText[z]);
+      print (label_text[z]);
   }
 
   if ( ellipsis )  // Print ellipsis

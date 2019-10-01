@@ -101,7 +101,7 @@ std::ostream& operator << (std::ostream& outstr, const FPoint& p)
 //----------------------------------------------------------------------
 std::istream& operator >> (std::istream& instr, FPoint& p)
 {
-  int x, y;
+  int x{}, y{};
   instr >> x;
   instr >> y;
   p.setPoint (x, y);

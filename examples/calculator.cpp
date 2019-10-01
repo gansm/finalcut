@@ -80,7 +80,7 @@ void Button::setChecked (bool enable)
   }
   else
   {
-    const finalcut::FWidgetColors& wc = getFWidgetColors();
+    const auto& wc = getFWidgetColors();
     setBackgroundColor(wc.button_active_bg);
     setFocusForegroundColor(wc.button_active_focus_fg);
     setFocusBackgroundColor(wc.button_active_focus_bg);
@@ -328,7 +328,7 @@ void Calc::drawDispay()
   if ( isMonochron() )
     setReverse(false);
 
-  const finalcut::FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   print() << FColorPair(fc::Black, fc::LightGray)
           << FPoint(3, 3) << display << ' '
           << FColorPair(wc.dialog_fg, wc.dialog_bg);

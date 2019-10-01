@@ -153,10 +153,6 @@ class FScrollView : public FWidget
     void                copy2area();
 
   private:
-    // Typedef
-    typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
-    typedef void (FScrollView::*FScrollViewCallback)(FWidget*, FDataPtr);
-
     // Constants
     static constexpr int vertical_border_spacing = 2;
     static constexpr int horizontal_border_spacing = 2;
@@ -166,9 +162,10 @@ class FScrollView : public FWidget
 
     // Methods
     void                init (FWidget*);
+    template<typename Callback>
     void                initScrollbar ( FScrollbarPtr&
                                       , fc::orientation
-                                      , FScrollViewCallback );
+                                      , Callback );
     void                calculateScrollbarPos();
     void                setHorizontalScrollBarVisibility();
     void                setVerticalScrollBarVisibility();
@@ -268,6 +265,17 @@ inline void FScrollView::print (const FPoint& pos)
     FWidget::setPrintPos(pos);
   else
     setPrintPos(pos);
+}
+
+//----------------------------------------------------------------------
+template<typename Callback>
+inline void FScrollView::initScrollbar ( FScrollbarPtr& bar
+                                       , fc::orientation o
+                                       , Callback cb_handler )
+{
+  finalcut::initScrollbar (bar, o, this, cb_handler);
+  term_area* area = getPrintArea();
+  bar->setPrintArea(area);
 }
 
 }  // namespace finalcut

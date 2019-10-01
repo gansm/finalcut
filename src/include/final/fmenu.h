@@ -147,8 +147,7 @@ class FMenu : public FWindow, public FMenuList
 
     typedef struct
     {
-      wchar_t* text;
-      std::size_t length;
+      FString text;
       std::size_t hotkeypos;
       bool no_underline;
     } menuText;

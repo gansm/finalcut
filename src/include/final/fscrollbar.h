@@ -57,6 +57,12 @@
 namespace finalcut
 {
 
+// class forward declaration
+class FScrollbar;
+
+// Global typedef
+typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
+
 //----------------------------------------------------------------------
 // class FScrollbar
 //----------------------------------------------------------------------
@@ -160,6 +166,37 @@ class FScrollbar : public FWidget
     fc::orientation     bar_orientation{fc::vertical};
     int                 max_color{getMaxColor()};
 };
+
+
+// non-member function forward declarations
+//----------------------------------------------------------------------
+template<typename Callback>
+void initScrollbar ( FScrollbarPtr& bar
+                   , fc::orientation o
+                   , FWidget* cb_instance
+                   , Callback cb_handler )
+{
+  try
+  {
+    bar = std::make_shared<FScrollbar>(o, cb_instance);
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    return;
+  }
+
+  bar->setMinimum(0);
+  bar->setValue(0);
+  bar->hide();
+
+  bar->addCallback
+  (
+    "change-value",
+    F_METHOD_CALLBACK (cb_instance, cb_handler)
+  );
+}
+
 
 // FScrollbar inline functions
 //----------------------------------------------------------------------

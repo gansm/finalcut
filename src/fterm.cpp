@@ -759,7 +759,7 @@ bool FTerm::setOldFont()
     if ( font.getLength() > 2 )
     {
       // restore saved xterm font
-      xterm->setFont (font);
+      xterm->setFont(font);
     }
     else
     {
@@ -1855,14 +1855,14 @@ void FTerm::init_captureFontAndTitle()
   // Save the used xterm font and window title
 
   xterm->captureFontAndTitle();
-  const auto font = xterm->getFont();
-  const auto title = xterm->getTitle();
+  const auto& font = xterm->getFont();
+  const auto& title = xterm->getTitle();
 
-  if ( font )
-    data->setXtermFont(*font);
+  if ( ! font.isEmpty() )
+    data->setXtermFont(font);
 
-  if ( title )
-    data->setXtermTitle(*title);
+  if ( ! title.isEmpty() )
+    data->setXtermTitle(title);
 }
 
 //----------------------------------------------------------------------
@@ -2549,7 +2549,7 @@ wchar_t cp437_to_unicode (uChar c)
 {
   constexpr std::size_t CP437 = 0;
   constexpr std::size_t UNICODE = 1;
-  wchar_t ucs(c);
+  wchar_t ucs = c;
 
   for (std::size_t i{0}; i <= fc::lastCP437Item; i++)
   {
@@ -2740,15 +2740,20 @@ std::size_t getColumnWidth (const FString& s)
 //----------------------------------------------------------------------
 std::size_t getColumnWidth (const wchar_t wchar)
 {
-  int column_width = wcwidth (wchar);
+  int column_width{};
+
+  if ( wchar >= fc::NF_rev_left_arrow2 && wchar <= fc::NF_check_mark )
+    column_width = 1;
+  else
+    column_width = wcwidth(wchar);
+
   return ( column_width == -1 ) ? 0 : std::size_t(column_width);
 }
 
 //----------------------------------------------------------------------
 std::size_t getColumnWidth (charData& term_char)
 {
-  int column_width = wcwidth (term_char.code);
-  std::size_t char_width = ( column_width == -1 ) ? 0 : std::size_t(column_width);
+  std::size_t char_width = getColumnWidth(term_char.code);
 
   if ( char_width == 2 && FTerm::getEncoding() != fc::UTF8 )
   {
