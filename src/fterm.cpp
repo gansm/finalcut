@@ -991,12 +991,13 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
 
   const auto& Ic = TCAP(fc::t_initialize_color);
   const auto& Ip = TCAP(fc::t_initialize_pair);
+  bool state{false};
 
   index = FOptiAttr::vga2ansi(index);
 
   if ( Ic || Ip )
   {
-    const char* color_str = "";
+    const char* color_str{};
 
     int rr = (r * 1001) / 256
       , gg = (g * 1001) / 256
@@ -1007,16 +1008,21 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
     else if ( Ip )
       color_str = tparm(Ip, index, 0, 0, 0, rr, gg, bb, 0, 0);
 
-    putstring (color_str);
+    if ( color_str )
+    {
+      putstring (color_str);
+      state = true;
+    }
   }
 #if defined(__linux__)
   else
   {
-    linux->setPalette(index, r, g, b);
+    state = linux->setPalette(index, r, g, b);
   }
 #endif
 
-  std::fflush(stdout);
+  if ( state )
+    std::fflush(stdout);
 }
 
 //----------------------------------------------------------------------
