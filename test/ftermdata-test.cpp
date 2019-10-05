@@ -80,8 +80,8 @@ class FTermDataTest : public CPPUNIT_NS::TestFixture
 void FTermDataTest::classNameTest()
 {
   finalcut::FTermData d;
-  const char* const classname = d.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname, "FTermData") == 0 );
+  const finalcut::FString& classname = d.getClassName();
+  CPPUNIT_ASSERT ( classname == "FTermData" );
 }
 
 //----------------------------------------------------------------------

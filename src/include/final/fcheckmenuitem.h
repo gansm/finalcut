@@ -83,7 +83,7 @@ class FCheckMenuItem : public FMenuItem
     FCheckMenuItem& operator = (const FCheckMenuItem&) = delete;
 
     // Accessor
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
 
   private:
     // Methods
@@ -94,7 +94,7 @@ class FCheckMenuItem : public FMenuItem
 
 // FCheckMenuItem inline functions
 //----------------------------------------------------------------------
-inline const char* FCheckMenuItem::getClassName() const
+inline const FString FCheckMenuItem::getClassName() const
 { return "FCheckMenuItem"; }
 
 }  // namespace finalcut

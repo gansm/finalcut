@@ -453,33 +453,33 @@ void FFileDialog::clear()
 }
 
 //----------------------------------------------------------------------
-long FFileDialog::numOfDirs()
+sInt64 FFileDialog::numOfDirs()
 {
   if ( dir_entries.empty() )
     return 0;
 
-  long n = std::count_if ( std::begin(dir_entries)
-                         , std::end(dir_entries)
-                         , [] (dir_entry& entry)
-                           {
-                             return entry.directory
-                                 && std::strcmp(entry.name, ".") != 0;
-                           }
-                         );
+  sInt64 n = std::count_if ( std::begin(dir_entries)
+                           , std::end(dir_entries)
+                           , [] (dir_entry& entry)
+                             {
+                               return entry.directory
+                                   && std::strcmp(entry.name, ".") != 0;
+                             }
+                           );
   return n;
 }
 
 //----------------------------------------------------------------------
 void FFileDialog::sortDir()
 {
-  long start{};
+  sInt64 start{};
 
   if ( std::strcmp((*dir_entries.begin()).name, "..") == 0 )
     start = 1;
   else
     start = 0;
 
-  long dir_num = numOfDirs();
+  sInt64 dir_num = numOfDirs();
   // directories first
   std::sort ( dir_entries.begin() + start
             , dir_entries.end()

@@ -57,107 +57,107 @@ class FTermXTerminal final
     virtual ~FTermXTerminal();
 
     // Mutators
-    static void           redefineDefaultColors (bool);
-    static void           setCursorStyle (fc::xtermCursorStyle);
-    static void           setFont (const FString&);
-    static void           setTitle (const FString&);
-    static void           setTermSize (const FSize&);
-    static void           setForeground (const FString&);
-    static void           setBackground (const FString&);
-    static void           setCursorColor (const FString&);
-    static void           setMouseForeground (const FString&);
-    static void           setMouseBackground (const FString&);
-    static void           setHighlightBackground (const FString&);
+    void                  redefineDefaultColors (bool);
+    void                  setCursorStyle (fc::xtermCursorStyle);
+    void                  setFont (const FString&);
+    void                  setTitle (const FString&);
+    void                  setTermSize (const FSize&);
+    void                  setForeground (const FString&);
+    void                  setBackground (const FString&);
+    void                  setCursorColor (const FString&);
+    void                  setMouseForeground (const FString&);
+    void                  setMouseBackground (const FString&);
+    void                  setHighlightBackground (const FString&);
     static void           setMouseSupport (bool);
     static void           setMouseSupport();
     static void           unsetMouseSupport();
-    static void           metaSendsESC (bool);
+    void                  metaSendsESC (bool);
 
     // Accessors
-    const char*           getClassName() const;
-    static fc::xtermCursorStyle getCursorStyle();
-    static const FString  getFont();
-    static const FString  getTitle();
-    static const FString  getForeground();
-    static const FString  getBackground();
-    static const FString  getCursorColor();
-    static const FString  getMouseForeground();
-    static const FString  getMouseBackground();
-    static const FString  getHighlightBackground();
+    const FString         getClassName() const;
+    fc::xtermCursorStyle  getCursorStyle();
+    const FString         getFont();
+    const FString         getTitle();
+    const FString         getForeground();
+    const FString         getBackground();
+    const FString         getCursorColor();
+    const FString         getMouseForeground();
+    const FString         getMouseBackground();
+    const FString         getHighlightBackground();
 
     // Inquiries
-    static bool           hasFont();
-    static bool           hasTitle();
+    bool                  hasFont();
+    bool                  hasTitle();
 
     // Methods
-    static void           init();
-    static void           setDefaults();
-    static void           resetColorMap();
-    static void           resetForeground();
-    static void           resetBackground();
-    static void           resetCursorColor();
-    static void           resetMouseForeground();
-    static void           resetMouseBackground();
-    static void           resetHighlightBackground();
-    static void           resetDefaults();
-    static void           captureFontAndTitle();
+    void                  init();
+    void                  setDefaults();
+    void                  resetColorMap();
+    void                  resetForeground();
+    void                  resetBackground();
+    void                  resetCursorColor();
+    void                  resetMouseForeground();
+    void                  resetMouseBackground();
+    void                  resetHighlightBackground();
+    void                  resetDefaults();
+    void                  captureFontAndTitle();
 
   private:
     // Methods
-    static void           setXTermCursorStyle();
-    static void           setXTermFont();
-    static void           setXTermTitle();
-    static void           setXTermSize();
-    static void           setXTermForeground();
-    static void           setXTermBackground();
-    static void           setXTermCursorColor();
-    static void           setXTermMouseForeground();
-    static void           setXTermMouseBackground();
-    static void           setXTermHighlightBackground();
-    static void           setXTerm8ColorDefaults();
-    static void           setXTerm16ColorDefaults();
-    static void           setXTermDefaultsMouseCursor();
-    static bool           canSetXTermBackground();
-    static void           resetXTermColorMap();
-    static void           resetXTermForeground();
-    static void           resetXTermBackground();
-    static void           resetXTermCursorColor();
-    static void           resetXTermMouseForeground();
-    static void           resetXTermMouseBackground();
-    static void           resetXTermHighlightBackground();
-    static bool           canResetColor();
-    static void           oscPrefix();
-    static void           oscPostfix();
-    static const FString  captureXTermFont();
-    static const FString  captureXTermTitle();
+    void                  setXTermCursorStyle();
+    void                  setXTermFont();
+    void                  setXTermTitle();
+    void                  setXTermSize();
+    void                  setXTermForeground();
+    void                  setXTermBackground();
+    void                  setXTermCursorColor();
+    void                  setXTermMouseForeground();
+    void                  setXTermMouseBackground();
+    void                  setXTermHighlightBackground();
+    void                  setXTerm8ColorDefaults();
+    void                  setXTerm16ColorDefaults();
+    void                  setXTermDefaultsMouseCursor();
+    bool                  canSetXTermBackground();
+    void                  resetXTermColorMap();
+    void                  resetXTermForeground();
+    void                  resetXTermBackground();
+    void                  resetXTermCursorColor();
+    void                  resetXTermMouseForeground();
+    void                  resetXTermMouseBackground();
+    void                  resetXTermHighlightBackground();
+    bool                  canResetColor();
+    void                  oscPrefix();
+    void                  oscPostfix();
+    const FString         captureXTermFont();
+    const FString         captureXTermTitle();
     static void           enableXTermMouse();
     static void           disableXTermMouse();
-    static void           enableXTermMetaSendsESC();
-    static void           disableXTermMetaSendsESC();
+    void                  enableXTermMetaSendsESC();
+    void                  disableXTermMetaSendsESC();
 
     // Data members
-    static bool                 mouse_support;
-    static bool                 meta_sends_esc;
-    static bool                 xterm_default_colors;
-    static std::size_t          term_width;
-    static std::size_t          term_height;
-    static FString              xterm_font;
-    static FString              xterm_title;
-    static FString              foreground_color;
-    static FString              background_color;
-    static FString              cursor_color;
-    static FString              mouse_foreground_color;
-    static FString              mouse_background_color;
-    static FString              highlight_background_color;
-    static FSystem*             fsystem;
-    static FTermDetection*      term_detection;
-    static fc::xtermCursorStyle cursor_style;
+    static bool           mouse_support;
+    bool                  meta_sends_esc{false};
+    bool                  xterm_default_colors{false};
+    std::size_t           term_width{80};
+    std::size_t           term_height{24};
+    FString               xterm_font{};
+    FString               xterm_title{};
+    FString               foreground_color{};
+    FString               background_color{};
+    FString               cursor_color{};
+    FString               mouse_foreground_color{};
+    FString               mouse_background_color{};
+    FString               highlight_background_color{};
+    static FSystem*       fsystem;
+    FTermDetection*       term_detection{nullptr};
+    fc::xtermCursorStyle  cursor_style{fc::unknown_cursor_style};
 };
 
 
 // FTermXTerminal inline functions
 //----------------------------------------------------------------------
-inline const char* FTermXTerminal::getClassName() const
+inline const FString FTermXTerminal::getClassName() const
 { return "FTermXTerminal"; }
 
 //----------------------------------------------------------------------

@@ -567,7 +567,7 @@ void FMenuItem::init (FWidget* parent)
     addCallback  // for this element
     (
       "deactivate",
-      F_METHOD_CALLBACK (parent, &FMenuBar::cb_item_deactivated)
+      F_METHOD_CALLBACK (menubar_ptr, &FMenuBar::cb_item_deactivated)
     );
   }
   else if ( isMenu(parent) )  // Parent is menu

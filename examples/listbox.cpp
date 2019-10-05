@@ -45,7 +45,7 @@ FString& mapToString ( std::map<FString
                      , FString>::const_iterator iter );
 
 
-// Lazy conversion import function
+// Lazy conversion insert function
 void doubleToItem ( FListBoxItem& item
                   , FDataPtr container, int index)
 {
@@ -57,7 +57,7 @@ void doubleToItem ( FListBoxItem& item
   item.setData (FDataPtr(&(*iter)));
 }
 
-// Import converter functions
+// Insert converter functions
 FString& doubleToString (std::list<double>::const_iterator iter)
 {
   auto temp = temp_str.lock();
@@ -127,12 +127,12 @@ Listbox::Listbox (FWidget* parent)
   list2.setText ("double");
 
   //
-  // Import via lazy conversion on print
+  // Insert via lazy conversion on print
   //
   list2.insert (&double_list, doubleToItem);
 
   //
-  // Direct import of the complete list
+  // Direct insert of the complete list
   //
   //list2.insert (double_list.begin(), double_list.end(), doubleToString);
 

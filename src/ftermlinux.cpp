@@ -41,26 +41,6 @@
 namespace finalcut
 {
 
-// static class attributes
-#if defined(__linux__)
-  FTermLinux::modifier_key  FTermLinux::mod_key{};
-  console_font_op           FTermLinux::screen_font{};
-  unimapdesc                FTermLinux::screen_unicode_map{};
-
-  bool   FTermLinux::new_font{false};
-  bool   FTermLinux::vga_font{false};
-  bool   FTermLinux::has_saved_palette{false};
-
-  FTermData*                  FTermLinux::fterm_data{nullptr};
-  FSystem*                    FTermLinux::fsystem{nullptr};
-  FTermDetection*             FTermLinux::term_detection{nullptr};
-  fc::linuxConsoleCursorStyle FTermLinux::linux_console_cursor_style{};
-  FTermLinux::ColorMap        FTermLinux::saved_color_map{};
-  FTermLinux::ColorMap        FTermLinux::cmap{};
-  int                         FTermLinux::framebuffer_bpp{-1};
-#endif  // defined(__linux__)
-
-
 //----------------------------------------------------------------------
 // class FTermLinux
 //----------------------------------------------------------------------
@@ -830,8 +810,8 @@ void FTermLinux::writeAttributeController (uChar index, uChar data)
   const uInt16 input_status_1 = getInputStatusRegisterOne();
 
   fsystem->inPortByte (input_status_1);  // switch to index mode
-  fsystem->outPortByte (index & 0x1f, attrib_cntlr_write); // selects address register
-  fsystem->outPortByte (data, attrib_cntlr_write); // write to data register
+  fsystem->outPortByte (index & 0x1f, attrib_cntlr_write);  // selects address register
+  fsystem->outPortByte (data, attrib_cntlr_write);  // write to data register
 
   // Disable access to the palette and unblank the display
   fsystem->inPortByte (input_status_1);  // switch to index mode

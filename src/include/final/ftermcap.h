@@ -90,7 +90,7 @@ class FTermcap final
     ~FTermcap() = default;
 
     // Accessors
-    const char*      getClassName() const;
+    const FString    getClassName() const;
 
     // Methods
     static void init();
@@ -128,7 +128,7 @@ class FTermcap final
 
 // FTermcap inline functions
 //----------------------------------------------------------------------
-inline const char* FTermcap::getClassName() const
+inline const FString FTermcap::getClassName() const
 { return "FTermcap"; }
 
 }  // namespace finalcut

@@ -25,6 +25,7 @@
 #endif
 
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include "final/emptyfstring.h"
@@ -875,79 +876,11 @@ void FListView::sort()
 //----------------------------------------------------------------------
 void FListView::onKeyPress (FKeyEvent* ev)
 {
-  int position_before = current_iter.getPosition()
-    , xoffset_before = xoffset
-    , first_line_position_before = first_visible_line.getPosition()
-    , pagesize = int(getClientHeight()) - 1;
-  FKey key = ev->key();
+  int position_before = current_iter.getPosition();
+  int xoffset_before = xoffset;
+  first_line_position_before = first_visible_line.getPosition();
   clicked_expander_pos.setPoint(-1, -1);
-
-  switch ( key )
-  {
-    case fc::Fkey_return:
-    case fc::Fkey_enter:
-      processClick();
-      ev->accept();
-      break;
-
-    case fc::Fkey_space:
-      toggleCheckbox();
-      ev->accept();
-      break;
-
-    case fc::Fkey_up:
-      stepBackward();
-      ev->accept();
-      break;
-
-    case fc::Fkey_down:
-      stepForward();
-      ev->accept();
-      break;
-
-    case fc::Fkey_left:
-      collapseAndScrollLeft (first_line_position_before);
-      ev->accept();
-      break;
-
-    case fc::Fkey_right:
-      expandAndScrollRight (first_line_position_before);
-      ev->accept();
-      break;
-
-    case fc::Fkey_ppage:
-      stepBackward(pagesize);
-      ev->accept();
-      break;
-
-    case fc::Fkey_npage:
-      stepForward(pagesize);
-      ev->accept();
-      break;
-
-    case fc::Fkey_home:
-      firstPos();
-      ev->accept();
-      break;
-
-    case fc::Fkey_end:
-      lastPos();
-      ev->accept();
-      break;
-
-    case int('+'):
-      if ( expandSubtree() )
-        ev->accept();
-      break;
-
-    case int('-'):
-      if ( collapseSubtree() )
-        ev->accept();
-      break;
-
-    default:
-      ev->ignore();
-  }
+  processKeyAction(ev);  // Process the keystrokes
 
   if ( position_before != current_iter.getPosition() )
     processChanged();
@@ -982,9 +915,9 @@ void FListView::onMouseDown (FMouseEvent* ev)
       getStatusBar()->drawMessage();
   }
 
-  int first_line_position_before = first_visible_line.getPosition()
-    , mouse_x = ev->getX()
-    , mouse_y = ev->getY();
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
+  first_line_position_before = first_visible_line.getPosition();
 
   if ( mouse_x > 1 && mouse_x < int(getWidth()) )
   {
@@ -1119,9 +1052,9 @@ void FListView::onMouseMove (FMouseEvent* ev)
     return;
   }
 
-  int first_line_position_before = first_visible_line.getPosition()
-    , mouse_x = ev->getX()
-    , mouse_y = ev->getY();
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
+  first_line_position_before = first_visible_line.getPosition();
 
   if ( mouse_x > 1 && mouse_x < int(getWidth())
     && mouse_y > 1 && mouse_y < int(getHeight()) )
@@ -1194,8 +1127,8 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListView::onTimer (FTimerEvent*)
 {
-  int position_before = current_iter.getPosition()
-    , first_line_position_before = first_visible_line.getPosition();
+  int position_before = current_iter.getPosition();
+  first_line_position_before = first_visible_line.getPosition();
 
   switch ( int(drag_scroll) )
   {
@@ -1233,9 +1166,9 @@ void FListView::onTimer (FTimerEvent*)
 //----------------------------------------------------------------------
 void FListView::onWheel (FWheelEvent* ev)
 {
-  int position_before = current_iter.getPosition()
-    , first_line_position_before = first_visible_line.getPosition()
-    , pagesize{4};
+  int position_before = current_iter.getPosition();
+  int pagesize{4};
+  first_line_position_before = first_visible_line.getPosition();
 
   if ( drag_scroll != fc::noScroll )
     stopDragScroll();
@@ -1391,6 +1324,46 @@ void FListView::init()
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1 + int(nf_offset));
+  mapKeyFunctions();
+}
+
+//----------------------------------------------------------------------
+inline void FListView::mapKeyFunctions()
+{
+  key_map[fc::Fkey_return]  = std::bind(&FListView::processClick, this);
+  key_map[fc::Fkey_enter]   = std::bind(&FListView::processClick, this);
+  key_map[fc::Fkey_space]   = std::bind(&FListView::toggleCheckbox, this);
+  key_map[fc::Fkey_up]      = [&] { stepBackward(); };
+  key_map[fc::Fkey_down]    = [&] { stepForward(); };
+  key_map[fc::Fkey_left]    = std::bind(&FListView::collapseAndScrollLeft, this);
+  key_map[fc::Fkey_right]   = std::bind(&FListView::expandAndScrollRight, this);
+  key_map[fc::Fkey_ppage]   = [&] { stepBackward(int(getClientHeight()) - 1); };
+  key_map[fc::Fkey_npage]   = [&] { stepForward(int(getClientHeight()) - 1); };
+  key_map[fc::Fkey_home]    = std::bind(&FListView::firstPos, this);
+  key_map[fc::Fkey_end]     = std::bind(&FListView::lastPos, this);
+  key_map_result[FKey('+')] = std::bind(&FListView::expandSubtree, this);
+  key_map_result[FKey('-')] = std::bind(&FListView::collapseSubtree, this);
+}
+
+//----------------------------------------------------------------------
+void FListView::processKeyAction (FKeyEvent* ev)
+{
+  int idx = int(ev->key());
+
+  if ( key_map.find(idx) != key_map.end() )
+  {
+    key_map[idx]();
+    ev->accept();
+  }
+  else if ( key_map_result.find(idx) != key_map_result.end() )
+  {
+    if ( key_map_result[idx]() )
+      ev->accept();
+  }
+  else
+  {
+    ev->ignore();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -2291,7 +2264,7 @@ inline void FListView::toggleCheckbox()
 }
 
 //----------------------------------------------------------------------
-inline void FListView::collapseAndScrollLeft (int& first_line_position_before)
+inline void FListView::collapseAndScrollLeft()
 {
   if ( itemlist.empty() )
     return;
@@ -2348,7 +2321,7 @@ inline void FListView::collapseAndScrollLeft (int& first_line_position_before)
 }
 
 //----------------------------------------------------------------------
-inline void FListView::expandAndScrollRight (int& first_line_position_before)
+inline void FListView::expandAndScrollRight()
 {
   if ( itemlist.empty() )
     return;
@@ -2618,9 +2591,9 @@ void FListView::scrollBy (int dx, int dy)
 void FListView::cb_VBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
-  int distance{1}
-    , pagesize{4}
-    , first_line_position_before = first_visible_line.getPosition();
+  int distance{1};
+  int pagesize{4};
+  first_line_position_before = first_visible_line.getPosition();
 
   switch ( scrollType )
   {

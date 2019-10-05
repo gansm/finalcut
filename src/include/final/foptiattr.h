@@ -58,6 +58,8 @@
 
 #include <algorithm>  // need for std::swap
 
+#include "final/fstring.h"
+
 namespace finalcut
 {
 
@@ -128,7 +130,7 @@ class FOptiAttr final
     friend bool operator != (const charData&, const charData&);
 
     // Accessors
-    const char* getClassName() const;
+    const FString getClassName() const;
 
     // Mutators
     void  setTermEnvironment (termEnv&);
@@ -353,7 +355,7 @@ inline bool operator != ( const charData& lhs,
 { return ! ( lhs == rhs ); }
 
 //----------------------------------------------------------------------
-inline const char* FOptiAttr::getClassName() const
+inline const FString FOptiAttr::getClassName() const
 { return "FOptiAttr"; }
 
 //----------------------------------------------------------------------

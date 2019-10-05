@@ -98,7 +98,7 @@ class FLabel : public FWidget
     const FLabel& operator >> (FString&);
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     FWidget*            getAccelWidget();
     fc::text_alignment  getAlignment();
     FString&            getText();
@@ -165,7 +165,7 @@ class FLabel : public FWidget
 
 // FLabel inline functions
 //----------------------------------------------------------------------
-inline const char* FLabel::getClassName() const
+inline const FString FLabel::getClassName() const
 { return "FLabel"; }
 
 //----------------------------------------------------------------------

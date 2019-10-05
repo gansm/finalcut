@@ -377,7 +377,7 @@ void Window::addClickedCallback ( finalcut::FWidget* widget
                                 , WindowCallback call )
 {
   FMemberCallback callback
-      = reinterpret_cast<finalcut::FWidget::FMemberCallback>(call);
+      = reinterpret_cast<FMemberCallback>(call);
 
   widget->addCallback
   (
@@ -391,7 +391,7 @@ void Window::addClickedCallback ( finalcut::FWidget* widget
                                 , FAppCallback call )
 {
   FMemberCallback callback
-      = reinterpret_cast<finalcut::FWidget::FMemberCallback>(call);
+      = reinterpret_cast<FMemberCallback>(call);
 
   widget->addCallback
   (

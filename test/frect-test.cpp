@@ -94,8 +94,8 @@ class FRectTest : public CPPUNIT_NS::TestFixture
 void FRectTest::classNameTest()
 {
   finalcut::FRect r;
-  const char* const classname = r.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname, "FRect") == 0 );
+  const finalcut::FString& classname = r.getClassName();
+  CPPUNIT_ASSERT ( classname == "FRect" );
 }
 
 //----------------------------------------------------------------------

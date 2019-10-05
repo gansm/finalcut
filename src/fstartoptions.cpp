@@ -35,27 +35,24 @@ FStartOptions* FStartOptions::start_options{};
 // constructors and destructor
 //----------------------------------------------------------------------
 FStartOptions::FStartOptions()
- : cursor_optimisation{true}
- , mouse_support{true}
- , terminal_detection{true}
- , color_change{true}
- , vgafont{false}
- , newfont{false}
- , encoding{fc::UNKNOWN}
+  : cursor_optimisation{true}
+  , mouse_support{true}
+  , terminal_detection{true}
+  , color_change{true}
+  , vgafont{false}
+  , newfont{false}
+  , encoding{fc::UNKNOWN}
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
- , meta_sends_escape{true}
- , change_cursorstyle{true}
+  , meta_sends_escape{true}
+  , change_cursorstyle{true}
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
- , meta_sends_escape{true}
+  , meta_sends_escape{true}
 #endif
 { }
 
 //----------------------------------------------------------------------
 FStartOptions::~FStartOptions()  // destructor
-{
-  if ( start_options )
-    delete start_options;
-}
+{ }
 
 // public methods of FStartOptions
 //----------------------------------------------------------------------
@@ -75,6 +72,13 @@ FStartOptions& FStartOptions::getFStartOptions()
   }
 
   return *start_options;
+}
+
+//----------------------------------------------------------------------
+void FStartOptions::destroyObject()
+{
+  if ( start_options )
+    delete start_options;
 }
 
 //----------------------------------------------------------------------

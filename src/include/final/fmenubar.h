@@ -88,22 +88,22 @@ class FMenuBar : public FWindow, public FMenuList
     FMenuBar& operator = (const FMenuBar&) = delete;
 
     // Accessors
-    const char* getClassName() const override;
+    const FString getClassName() const override;
 
     // Methods
-    void         resetMenu();
-    void         hide() override;
-    void         adjustSize() override;
+    void          resetMenu();
+    void          hide() override;
+    void          adjustSize() override;
 
     // Event handlers
-    void         onKeyPress (FKeyEvent*) override;
-    void         onMouseDown (FMouseEvent*) override;
-    void         onMouseUp (FMouseEvent*) override;
-    void         onMouseMove (FMouseEvent*) override;
-    void         onAccel (FAccelEvent*) override;
+    void          onKeyPress (FKeyEvent*) override;
+    void          onMouseDown (FMouseEvent*) override;
+    void          onMouseUp (FMouseEvent*) override;
+    void          onMouseMove (FMouseEvent*) override;
+    void          onAccel (FAccelEvent*) override;
 
     // Callback methods
-    void         cb_item_deactivated (FWidget*, FDataPtr);
+    void          cb_item_deactivated (FWidget*, FDataPtr);
 
   private:
     // Constants
@@ -119,49 +119,49 @@ class FMenuBar : public FWindow, public FMenuList
     } menuText;
 
     // Inquiry
-    bool         isMenu (const FMenuItem*) const;
+    bool          isMenu (const FMenuItem*) const;
 
     // Methods
-    void         init();
-    void         calculateDimensions();
-    bool         selectNextItem();
-    bool         selectPrevItem();
-    bool         hotkeyMenu (FKeyEvent*&);
-    void         draw() override;
-    void         drawItems();
-    void         drawItem (FMenuItem*, std::size_t&);
-    void         setLineAttributes (FMenuItem*);
-    void         setCursorToHotkeyPosition (FMenuItem*, std::size_t);
-    void         drawMenuText (menuText&);
-    void         drawEllipsis (const menuText&, std::size_t);
-    void         drawLeadingSpace (std::size_t&);
-    void         drawTrailingSpace (std::size_t&);
-    void         adjustItems();
-    bool         activateMenu (FMenuItem*);
-    bool         clickItem (FMenuItem*);
-    void         unselectMenuItem (FMenuItem*);
-    void         selectMenuItem (FMenuItem*);
-    void         mouseDownOverList (const FMouseEvent*);
-    void         mouseUpOverList (const FMouseEvent*);
-    void         mouseMoveOverList (const FMouseEvent*);
-    void         passEventToMenu (const FMouseEvent*&);
-    void         leaveMenuBar();
+    void          init();
+    void          calculateDimensions();
+    bool          selectNextItem();
+    bool          selectPrevItem();
+    bool          hotkeyMenu (FKeyEvent*&);
+    void          draw() override;
+    void          drawItems();
+    void          drawItem (FMenuItem*, std::size_t&);
+    void          setLineAttributes (FMenuItem*);
+    void          setCursorToHotkeyPosition (FMenuItem*, std::size_t);
+    void          drawMenuText (menuText&);
+    void          drawEllipsis (const menuText&, std::size_t);
+    void          drawLeadingSpace (std::size_t&);
+    void          drawTrailingSpace (std::size_t&);
+    void          adjustItems();
+    bool          activateMenu (FMenuItem*);
+    bool          clickItem (FMenuItem*);
+    void          unselectMenuItem (FMenuItem*);
+    void          selectMenuItem (FMenuItem*);
+    void          mouseDownOverList (const FMouseEvent*);
+    void          mouseUpOverList (const FMouseEvent*);
+    void          mouseMoveOverList (const FMouseEvent*);
+    void          passEventToMenu (const FMouseEvent*&);
+    void          leaveMenuBar();
 
     // Friend classes
     friend class FMenu;
     friend class FMenuItem;
 
     // Data members
-    std::size_t screenWidth{80};
-    bool        mouse_down{false};
-    bool        drop_down{false};
-    bool        focus_changed{false};
+    std::size_t   screenWidth{80};
+    bool          mouse_down{false};
+    bool          drop_down{false};
+    bool          focus_changed{false};
 };
 
 
 // FMenuBar inline functions
 //----------------------------------------------------------------------
-inline const char* FMenuBar::getClassName() const
+inline const FString FMenuBar::getClassName() const
 { return "FMenuBar"; }
 
 //----------------------------------------------------------------------

@@ -290,14 +290,14 @@ void FVTerm::updateTerminal()
 
 //----------------------------------------------------------------------
 void FVTerm::addPreprocessingHandler ( FVTerm* instance
-                                     , FPreprocessingHandler handler )
+                                     , FVTermPreprocessing function )
 {
   if ( ! print_area )
     FVTerm::getPrintArea();
 
   if ( print_area )
   {
-    vterm_preprocessing obj{ instance, handler };
+    vterm_preprocessing obj{ instance, function };
     delPreprocessingHandler (instance);
     print_area->preprocessing_call.push_back(obj);
   }
@@ -1104,9 +1104,9 @@ void FVTerm::callPreprocessingHandler (term_area* area)
 
     while ( iter != end )
     {
-      FPreprocessingHandler handler = iter->handler;
       // call the preprocessing handler
-      (iter->instance->*handler)();
+      auto preprocessingHandler = iter->function;
+      preprocessingHandler();
       ++iter;
     }
   }
@@ -1838,7 +1838,8 @@ void FVTerm::flush_out()
 {
   while ( ! output_buffer->empty() )
   {
-    FTerm::Fputchar(output_buffer->front());
+    static FTerm::defaultPutChar& FTermPutchar = FTerm::putchar();
+    FTermPutchar (output_buffer->front());
     output_buffer->pop();
   }
 
@@ -2525,7 +2526,6 @@ FVTerm::exit_state FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
       whitespace++;
     else
       break;
-
   }
 
   if ( whitespace == 1 )

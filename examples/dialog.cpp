@@ -76,7 +76,7 @@ int main (int argc, char* argv[])
   btn.addCallback
   (
     "clicked",
-    F_FUNCTION_CALLBACK (&cb_quit),
+    &cb_quit,
     &app
   );
 

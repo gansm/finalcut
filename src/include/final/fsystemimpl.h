@@ -180,7 +180,8 @@ class FSystemImpl : public FSystem
     int tputs (const char* str, int affcnt, int (*putc)(int)) override
     {
 #if defined(__sun) && defined(__SVR4)
-      return ::tputs (C_STR(str), affcnt, reinterpret_cast<int (*)(char)>(putc));
+      return ::tputs ( C_STR(str)
+                     , affcnt, reinterpret_cast<int (*)(char)>(putc) );
 #else
       return ::tputs (str, affcnt, putc);
 #endif

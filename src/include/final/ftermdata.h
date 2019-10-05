@@ -69,7 +69,7 @@ class FTermData final
     FTermData& operator = (const FTermData&) = delete;
 
     // Accessors
-    const char*       getClassName() const;
+    const FString     getClassName() const;
     encodingMap&      getEncodingList();
     charSubstitution& getCharSubstitutionMap();
     fc::encoding      getTermEncoding() const;
@@ -132,8 +132,8 @@ class FTermData final
     FString           xterm_font{};
     FString           xterm_title{};
     fc::encoding      term_encoding{fc::UNKNOWN};
-    int               fd_tty{-1};  // Teletype (tty) file descriptor is still undefined
-
+    int               fd_tty{-1};  // Teletype (tty) file descriptor
+                                   // is still undefined
 #if DEBUG
     int               framebuffer_bpp{-1};
 #endif
@@ -158,7 +158,7 @@ class FTermData final
 
 // FTermData inline functions
 //----------------------------------------------------------------------
-inline const char* FTermData::getClassName() const
+inline const FString FTermData::getClassName() const
 { return "FTermData"; }
 
 //----------------------------------------------------------------------

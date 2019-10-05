@@ -95,6 +95,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <functional>
 #include <utility>
 #include <vector>
 
@@ -107,11 +108,14 @@
 
 // Callback macros
 #define F_FUNCTION_CALLBACK(h) \
-           reinterpret_cast<finalcut::FWidget::FCallback>((h))
+    reinterpret_cast<finalcut::FWidget::FCallbackPtr>((h))
 
 #define F_METHOD_CALLBACK(i,h) \
-           reinterpret_cast<finalcut::FWidget*>((i)) \
-         , reinterpret_cast<finalcut::FWidget::FMemberCallback>((h))
+    reinterpret_cast<finalcut::FWidget*>((i)), \
+    std::bind ( reinterpret_cast<finalcut::FWidget::FMemberCallback>((h)) \
+              , reinterpret_cast<finalcut::FWidget*>((i)) \
+              , std::placeholders::_1 \
+              , std::placeholders::_2 )
 
 namespace finalcut
 {
@@ -144,8 +148,9 @@ class FWidget : public FVTerm, public FObject
     // Typedefs
     typedef std::vector<FWidget*> widgetList;
     typedef std::vector<accelerator> Accelerators;
-    typedef void (*FCallback)(FWidget*, FDataPtr);
+    typedef void (*FCallbackPtr)(FWidget*, FDataPtr);
     typedef void (FWidget::*FMemberCallback)(FWidget*, FDataPtr);
+    typedef std::function<void(FWidget*, FDataPtr)> FCallback;
 
     struct widget_flags  // Properties of a widget ⚑
     {
@@ -183,7 +188,7 @@ class FWidget : public FVTerm, public FObject
     FWidget& operator = (const FWidget&) = delete;
 
     // Accessors
-    const char*           getClassName() const override;
+    const FString         getClassName() const override;
     FWidget*              getRootWidget() const;
     FWidget*              getParentWidget() const;
     static FWidget*&      getMainWidget();
@@ -315,7 +320,7 @@ class FWidget : public FVTerm, public FObject
                                       , FDataPtr = nullptr );
     void                  addCallback ( const FString&
                                       , FWidget*
-                                      , FMemberCallback
+                                      , FCallback
                                       , FDataPtr = nullptr );
     void                  delCallback (FCallback);
     void                  delCallback (FWidget*);
@@ -346,21 +351,13 @@ class FWidget : public FVTerm, public FObject
     struct callback_data
     {
       FString   cb_signal;
-      FCallback cb_handler;
+      FWidget*  cb_instance;
+      FCallback cb_function;
       FDataPtr  data;
-    };
-
-    struct member_callback_data
-    {
-      FString         cb_signal;
-      FWidget*        cb_instance;
-      FMemberCallback cb_handler;
-      FDataPtr        data;
     };
 
     // Typedefs
     typedef std::vector<callback_data> CallbackObjects;
-    typedef std::vector<member_callback_data> MemberCallbackObjects;
 
     // Accessor
     term_area*            getPrintArea() override;
@@ -370,7 +367,7 @@ class FWidget : public FVTerm, public FObject
     static widgetList*&   getAlwaysOnTopList();
     static widgetList*&   getWidgetCloseList();
     void                  addPreprocessingHandler ( FVTerm*
-                                                  , FPreprocessingHandler ) override;
+                                                  , FVTermPreprocessing ) override;
     void                  delPreprocessingHandler (FVTerm*) override;
 
     // Inquiry
@@ -417,6 +414,7 @@ class FWidget : public FVTerm, public FObject
     void                  insufficientSpaceAdjust();
     void                  KeyPressEvent (FKeyEvent*);
     void                  KeyDownEvent (FKeyEvent*);
+    FCallbackPtr          getCallbackPtr (FCallback);
     bool                  changeFocus (FWidget*, FWidget*, fc::FocusTypes);
     void                  processDestroy();
     virtual void          draw();
@@ -495,7 +493,6 @@ class FWidget : public FVTerm, public FObject
     FColor                background_color{fc::Default};
     FString               statusbar_message{};
     Accelerators*         accelerator_list{nullptr};
-    MemberCallbackObjects member_callback_objects{};
     CallbackObjects       callback_objects{};
 
     static FStatusBar*    statusbar;
@@ -532,7 +529,7 @@ void        drawBorder (FWidget*, FRect);
 
 // FWidget inline functions
 //----------------------------------------------------------------------
-inline const char* FWidget::getClassName() const
+inline const FString FWidget::getClassName() const
 { return "FWidget"; }
 
 //----------------------------------------------------------------------

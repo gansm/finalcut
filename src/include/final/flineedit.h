@@ -53,6 +53,8 @@
 #endif
 
 #include <limits>
+#include <utility>
+
 #include "final/fwidget.h"
 
 namespace finalcut
@@ -106,7 +108,7 @@ class FLineEdit : public FWidget
     const FLineEdit& operator >> (FString&);
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     FString             getText() const;
     std::size_t         getMaxLength() const;
     std::size_t         getCursorPosition() const;
@@ -210,7 +212,7 @@ class FLineEdit : public FWidget
 
 // FLineEdit inline functions
 //----------------------------------------------------------------------
-inline const char* FLineEdit::getClassName() const
+inline const FString FLineEdit::getClassName() const
 { return "FLineEdit"; }
 
 //----------------------------------------------------------------------

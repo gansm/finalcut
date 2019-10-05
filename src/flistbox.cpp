@@ -322,82 +322,7 @@ void FListBox::onKeyPress (FKeyEvent* ev)
   std::size_t current_before = current;
   int xoffset_before = xoffset;
   int yoffset_before = yoffset;
-  FKey key = ev->key();
-
-  switch ( key )
-  {
-    case fc::Fkey_return:
-    case fc::Fkey_enter:
-      acceptSelection();
-      ev->accept();
-      break;
-
-    case fc::Fkey_up:
-      onePosUp();
-      ev->accept();
-      break;
-
-    case fc::Fkey_down:
-      onePosDown();
-      ev->accept();
-      break;
-
-    case fc::Fkey_left:
-      scrollLeft();
-      ev->accept();
-      break;
-
-    case fc::Fkey_right:
-      scrollRight();
-      ev->accept();
-      break;
-
-    case fc::Fkey_ppage:
-      onePageUp();
-      ev->accept();
-      break;
-
-    case fc::Fkey_npage:
-      onePageDown();
-      ev->accept();
-      break;
-
-    case fc::Fkey_home:
-      firstPos();
-      ev->accept();
-      break;
-
-    case fc::Fkey_end:
-      lastPos();
-      ev->accept();
-      break;
-
-    case fc::Fkey_ic:  // insert key
-      if ( changeSelectionAndPosition() )
-        ev->accept();
-      break;
-
-    case fc::Fkey_space:
-      if ( spacebarProcessing() )
-        ev->accept();
-      break;
-
-    case fc::Fkey_erase:
-    case fc::Fkey_backspace:
-      if ( deletePreviousCharacter() )
-        ev->accept();
-      break;
-
-    case fc::Fkey_escape:
-    case fc::Fkey_escape_mintty:
-      if ( skipIncrementalSearch() )
-        ev->accept();
-      break;
-
-    default:
-      if ( keyIncSearchInput(key) )
-        ev->accept();
-  }
+  processKeyAction(ev);  // Process the keystrokes
 
   if ( current_before != current )
   {
@@ -759,6 +684,57 @@ void FListBox::init()
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1 + int(nf_offset));
+  mapKeyFunctions();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::mapKeyFunctions()
+{
+  key_map[fc::Fkey_return] = std::bind(&FListBox::acceptSelection, this);
+  key_map[fc::Fkey_enter]  = std::bind(&FListBox::acceptSelection, this);
+  key_map[fc::Fkey_up]     = std::bind(&FListBox::onePosUp, this);
+  key_map[fc::Fkey_down]   = std::bind(&FListBox::onePosDown, this);
+  auto left = static_cast<void(FListBox::*)()>(&FListBox::scrollLeft);
+  key_map[fc::Fkey_left]   = std::bind(left, this);
+  auto right = static_cast<void(FListBox::*)()>(&FListBox::scrollRight);
+  key_map[fc::Fkey_right]  = std::bind(right, this);
+  key_map[fc::Fkey_ppage]  = std::bind(&FListBox::onePageUp, this);
+  key_map[fc::Fkey_npage]  = std::bind(&FListBox::onePageDown, this);
+  key_map[fc::Fkey_home]   = std::bind(&FListBox::firstPos, this);
+  key_map[fc::Fkey_end]    = std::bind(&FListBox::lastPos, this);
+  key_map_result[fc::Fkey_ic] = \
+      std::bind(&FListBox::changeSelectionAndPosition, this);
+  key_map_result[fc::Fkey_space] = \
+      std::bind(&FListBox::spacebarProcessing, this);
+  key_map_result[fc::Fkey_erase] = \
+      std::bind(&FListBox::deletePreviousCharacter, this);
+  key_map_result[fc::Fkey_backspace] = \
+      std::bind(&FListBox::deletePreviousCharacter, this);
+  key_map_result[fc::Fkey_escape] = \
+      std::bind(&FListBox::skipIncrementalSearch, this);
+  key_map_result[fc::Fkey_escape_mintty] = \
+      std::bind(&FListBox::skipIncrementalSearch, this);
+}
+
+//----------------------------------------------------------------------
+void FListBox::processKeyAction (FKeyEvent* ev)
+{
+  int idx = int(ev->key());
+
+  if ( key_map.find(idx) != key_map.end() )
+  {
+    key_map[idx]();
+    ev->accept();
+  }
+  else if ( key_map_result.find(idx) != key_map_result.end() )
+  {
+    if ( key_map_result[idx]() )
+      ev->accept();
+  }
+  else if ( keyIncSearchInput(ev->key()) )
+  {
+    ev->accept();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1770,7 +1746,7 @@ void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
   if ( conv_type != lazy_convert || ! iter->getText().isNull() )
     return;
 
-  convertToItem (*iter, source_container, y + yoffset);
+  lazy_inserter (*iter, source_container, y + yoffset);
   std::size_t column_width = getColumnWidth(iter->text);
   recalculateHorizontalBar (column_width, hasBrackets(iter));
 

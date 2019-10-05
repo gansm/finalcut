@@ -19,7 +19,8 @@ Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
 Depends:
-    ${shlibs:Depends}
+    xfonts-utils
+  , ${shlibs:Depends}
   , ${misc:Depends}
 Suggests:
     coreutils

@@ -611,8 +611,8 @@ ftermfreebsdTest::ftermfreebsdTest()
 void ftermfreebsdTest::classNameTest()
 {
   const finalcut::FTermFreeBSD p{};
-  const char* const classname = p.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname, "FTermFreeBSD") == 0 );
+  const finalcut::FString& classname = p.getClassName();
+  CPPUNIT_ASSERT ( classname == "FTermFreeBSD" );
 }
 
 

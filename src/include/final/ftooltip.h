@@ -85,7 +85,7 @@ class FToolTip : public FWindow
     FToolTip& operator = (const FToolTip&) = delete;
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     const FString       getText() const;
 
     // Mutators
@@ -115,7 +115,7 @@ class FToolTip : public FWindow
 
 // FToolTip inline functions
 //----------------------------------------------------------------------
-inline const char* FToolTip::getClassName() const
+inline const FString FToolTip::getClassName() const
 { return "FToolTip"; }
 
 }  // namespace finalcut

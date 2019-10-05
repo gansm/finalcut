@@ -106,7 +106,7 @@ class FMessageBox : public FDialog
     FMessageBox& operator = (const FMessageBox&);
 
     // Accessor
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     const FString       getTitlebarText() const;
     const FString       getHeadline() const;
     const FString       getText() const;
@@ -168,7 +168,7 @@ class FMessageBox : public FDialog
 
 // FMessageBox inline functions
 //----------------------------------------------------------------------
-inline const char* FMessageBox::getClassName() const
+inline const FString FMessageBox::getClassName() const
 { return "FMessageBox"; }
 
 //----------------------------------------------------------------------

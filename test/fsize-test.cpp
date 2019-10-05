@@ -93,8 +93,8 @@ class FSizeTest : public CPPUNIT_NS::TestFixture
 void FSizeTest::classNameTest()
 {
   finalcut::FSize p;
-  const char* const classname = p.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname, "FSize") == 0 );
+  const finalcut::FString& classname = p.getClassName();
+  CPPUNIT_ASSERT ( classname == "FSize" );
 }
 
 //----------------------------------------------------------------------

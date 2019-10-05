@@ -126,7 +126,7 @@ int main (int argc, char* argv[])
   btn.addCallback ("clicked", cb_exit, &app);
   Exit.addCallback ("clicked", cb_exit, &app);
   Quit.addCallback ("clicked", cb_exit, &app);
-  key_F1.addCallback ("activate",cb_tooltip, &app);
+  key_F1.addCallback ("activate", cb_tooltip, &app);
 
   // Set dialog object as main widget
   app.setMainWidget(&dgl);

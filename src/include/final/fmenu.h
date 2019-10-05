@@ -90,7 +90,7 @@ class FMenu : public FWindow, public FMenuList
     FMenu& operator = (const FMenu&) = delete;
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     FString             getText() const;
     FMenuItem*          getItem();
 
@@ -237,7 +237,7 @@ class FMenu : public FWindow, public FMenuList
 
 // FMenu inline functions
 //----------------------------------------------------------------------
-inline const char* FMenu::getClassName() const
+inline const FString FMenu::getClassName() const
 { return "FMenu"; }
 
 //----------------------------------------------------------------------

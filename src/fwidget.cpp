@@ -821,6 +821,8 @@ int FWidget::numOfFocusableChildren()
 //----------------------------------------------------------------------
 bool FWidget::close()
 {
+  // Sends a close event and quits the application on acceptance
+
   FCloseEvent ev(fc::Close_Event);
   FApplication::sendEvent(this, &ev);
 
@@ -844,29 +846,31 @@ bool FWidget::close()
 
 //----------------------------------------------------------------------
 void FWidget::addCallback ( const FString& cb_signal
-                          , FCallback cb_handler
+                          , FCallback cb_function
                           , FDataPtr data )
 {
-  // add a (normal) function pointer as callback
-  callback_data obj{ cb_signal, cb_handler, data };
+  // Add a (normal) function pointer as callback
+
+  callback_data obj{ cb_signal, nullptr, cb_function, data };
   callback_objects.push_back(obj);
 }
 
 //----------------------------------------------------------------------
 void FWidget::addCallback ( const FString& cb_signal
-                          , FWidget* cb_instance
-                          , FMemberCallback cb_handler
+                          , FWidget*  cb_instance
+                          , FCallback cb_function
                           , FDataPtr data )
 {
-  // add a member function pointer as callback
-  member_callback_data obj{ cb_signal, cb_instance, cb_handler, data };
-  member_callback_objects.push_back(obj);
+  // Add a member function pointer as callback
+
+  callback_data obj{ cb_signal, cb_instance, cb_function, data };
+  callback_objects.push_back(obj);
 }
 
 //----------------------------------------------------------------------
-void FWidget::delCallback (FCallback cb_handler)
+void FWidget::delCallback (FCallback cb_function)
 {
-  // delete a cb_handler function pointer
+  // Delete cb_function form callback list
 
   if ( callback_objects.empty() )
     return;
@@ -875,7 +879,7 @@ void FWidget::delCallback (FCallback cb_handler)
 
   while ( iter != callback_objects.end() )
   {
-    if ( iter->cb_handler == cb_handler )
+    if ( getCallbackPtr(iter->cb_function) == getCallbackPtr(cb_function) )
       iter = callback_objects.erase(iter);
     else
       ++iter;
@@ -885,17 +889,17 @@ void FWidget::delCallback (FCallback cb_handler)
 //----------------------------------------------------------------------
 void FWidget::delCallback (FWidget* cb_instance)
 {
-  // delete all member function pointer from cb_instance
+  // Delete all member function pointer from cb_instance
 
-  if ( member_callback_objects.empty() )
+  if ( callback_objects.empty() )
     return;
 
-  auto iter = member_callback_objects.begin();
+  auto iter = callback_objects.begin();
 
-  while ( iter != member_callback_objects.end() )
+  while ( iter != callback_objects.end() )
   {
     if ( iter->cb_instance == cb_instance )
-      iter = member_callback_objects.erase(iter);
+      iter = callback_objects.erase(iter);
     else
       ++iter;
   }
@@ -904,58 +908,40 @@ void FWidget::delCallback (FWidget* cb_instance)
 //----------------------------------------------------------------------
 void FWidget::delCallbacks()
 {
-  // delete all callbacks from this widget
+  // Delete all callbacks from this widget
 
-  member_callback_objects.clear();  // member function pointer
-  callback_objects.clear();         // function pointer
+  callback_objects.clear();  // function pointer
 }
 
 //----------------------------------------------------------------------
 void FWidget::emitCallback (const FString& emit_signal)
 {
-  // member function pointer
+  // Initiate callback for the given signal
 
-  if ( ! member_callback_objects.empty() )
+  if ( callback_objects.empty() )
+    return;
+
+  auto iter = callback_objects.begin();
+  auto last = callback_objects.end();
+
+  while ( iter != last )
   {
-    auto m_iter = member_callback_objects.begin();
-    auto m_end = member_callback_objects.end();
-
-    while ( m_iter != m_end )
+    if ( iter->cb_signal == emit_signal )
     {
-      if ( m_iter->cb_signal == emit_signal )
-      {
-        auto callback = m_iter->cb_handler;
-        // call the member function pointer
-        (m_iter->cb_instance->*callback) (this, m_iter->data);
-      }
-
-      ++m_iter;
+      // Calling the stored function pointer
+      auto callback = iter->cb_function;
+      callback (this, iter->data);
     }
-  }
 
-  // function pointer
-  if ( ! callback_objects.empty() )
-  {
-    auto iter = callback_objects.begin();
-    auto last = callback_objects.end();
-
-    while ( iter != last )
-    {
-      if ( iter->cb_signal == emit_signal )
-      {
-        auto callback = iter->cb_handler;
-        // call the function pointer
-        callback (this, iter->data);
-      }
-
-      ++iter;
-    }
+    ++iter;
   }
 }
 
 //----------------------------------------------------------------------
 void FWidget::addAccelerator (FKey key, FWidget* obj)
 {
+  // Adding a keyboard accelerator for the given widget
+
   auto widget = static_cast<FWidget*>(FWindow::getWindowWidget(obj));
   accelerator accel = { key, obj };
 
@@ -969,6 +955,8 @@ void FWidget::addAccelerator (FKey key, FWidget* obj)
 //----------------------------------------------------------------------
 void FWidget::delAccelerator (FWidget* obj)
 {
+  // Deletes all accelerators of the given widget
+
   auto widget = static_cast<FWidget*>(FWindow::getWindowWidget(this));
 
   if ( ! widget || widget == statusbar || widget == menubar )
@@ -993,6 +981,8 @@ void FWidget::delAccelerator (FWidget* obj)
 //----------------------------------------------------------------------
 void FWidget::redraw()
 {
+  // Redraw the widget immediately unless it is hidden.
+
   if ( ! redraw_root_widget )
     redraw_root_widget = this;
 
@@ -1054,6 +1044,8 @@ void FWidget::resize()
 //----------------------------------------------------------------------
 void FWidget::show()
 {
+  // Make the widget visible and draw it
+
   if ( ! isVisible() )
     return;
 
@@ -1113,6 +1105,8 @@ void FWidget::show()
 //----------------------------------------------------------------------
 void FWidget::hide()
 {
+  // Hide the widget
+
   flags.hidden = true;
 
   if ( isVisible() )
@@ -1477,12 +1471,12 @@ FVTerm::term_area* FWidget::getPrintArea()
 
 //----------------------------------------------------------------------
 void FWidget::addPreprocessingHandler ( FVTerm* instance
-                                      , FPreprocessingHandler handler )
+                                      , FVTermPreprocessing function )
 {
   if ( ! getCurrentPrintArea() )
     FWidget::getPrintArea();
 
-  FVTerm::addPreprocessingHandler (instance, handler);
+  FVTerm::addPreprocessingHandler (instance, function);
 }
 
 //----------------------------------------------------------------------
@@ -2114,6 +2108,12 @@ void FWidget::KeyDownEvent (FKeyEvent* kev)
 
     widget = widget->getParentWidget();
   }
+}
+
+//----------------------------------------------------------------------
+FWidget::FCallbackPtr FWidget::getCallbackPtr (FCallback cb_function)
+{
+  return *cb_function.template target<FCallbackPtr>();
 }
 
 //----------------------------------------------------------------------

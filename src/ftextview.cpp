@@ -300,7 +300,9 @@ void FTextView::clear()
   if ( useFDialogBorder() )
   {
     auto parent = getParentWidget();
-    static_cast<FDialog*>(parent)->redraw();
+
+    if ( parent )
+      static_cast<FDialog*>(parent)->redraw();
   }
   else
     drawBorder();
@@ -323,50 +325,12 @@ void FTextView::clear()
 //----------------------------------------------------------------------
 void FTextView::onKeyPress (FKeyEvent* ev)
 {
-  switch ( ev->key() )
+  int idx = int(ev->key());
+
+  if ( key_map.find(idx) != key_map.end() )
   {
-    case fc::Fkey_up:
-      scrollBy (0, -1);
-      ev->accept();
-      break;
-
-    case fc::Fkey_down:
-      scrollBy (0, 1);
-      ev->accept();
-      break;
-
-    case fc::Fkey_left:
-      scrollBy (-1, 0);
-      ev->accept();
-      break;
-
-    case fc::Fkey_right:
-      scrollBy (1, 0);
-      ev->accept();
-      break;
-
-    case fc::Fkey_ppage:
-      scrollBy (0, int(-getTextHeight()));
-      ev->accept();
-      break;
-
-    case fc::Fkey_npage:
-      scrollBy (0, int(getTextHeight()));
-      ev->accept();
-      break;
-
-    case fc::Fkey_home:
-      scrollToY (0);
-      ev->accept();
-      break;
-
-    case fc::Fkey_end:
-      scrollToY (int(getRows() - getTextHeight()));
-      ev->accept();
-      break;
-
-    default:
-      break;
+    key_map[idx]();
+    ev->accept();
   }
 }
 
@@ -612,6 +576,20 @@ void FTextView::init()
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1 + nf_offset);
+  mapKeyFunctions();
+}
+
+//----------------------------------------------------------------------
+inline void FTextView::mapKeyFunctions()
+{
+  key_map[fc::Fkey_up]    = [&] { scrollBy (0, -1); };
+  key_map[fc::Fkey_down]  = [&] { scrollBy (0, 1); };
+  key_map[fc::Fkey_left]  = [&] { scrollBy (-1, 0); };
+  key_map[fc::Fkey_right] = [&] { scrollBy (1, 0); };
+  key_map[fc::Fkey_ppage] = [&] { scrollBy (0, int(-getTextHeight())); };
+  key_map[fc::Fkey_npage] = [&] { scrollBy (0, int(getTextHeight())); };
+  key_map[fc::Fkey_home]  = [&] { scrollToY (0); };
+  key_map[fc::Fkey_end]   = [&] { scrollToY (int(getRows() - getTextHeight())); };
 }
 
 //----------------------------------------------------------------------

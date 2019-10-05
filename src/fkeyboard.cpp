@@ -49,25 +49,6 @@ struct timeval FKeyboard::time_keypressed{};
   FTermLinux* FKeyboard::linux{nullptr};
 #endif
 
-//----------------------------------------------------------------------
-// class FKeyboardCommand
-//----------------------------------------------------------------------
-
-// constructors and destructor
-//----------------------------------------------------------------------
-FKeyboardCommand::FKeyboardCommand ( FApplication* object
-                                   , void(FApplication::*method)() )
-  : instance(object)
-  , handler(method)
-{ }
-
-// public methods of FKeyboardCommand
-//----------------------------------------------------------------------
-void FKeyboardCommand::execute()
-{
-  (instance->*handler)();
-}
-
 
 //----------------------------------------------------------------------
 // class FKeyboard

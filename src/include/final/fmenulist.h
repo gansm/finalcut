@@ -71,7 +71,7 @@ class FMenuList
     FMenuList& operator = (const FMenuList&) = delete;
 
     // Accessors
-    virtual const char*      getClassName() const;
+    virtual const FString    getClassName() const;
     std::size_t              getCount() const;
     FMenuItem*               getItem (int) const;
     FMenuItem*               getSelectedItem() const;
@@ -104,7 +104,7 @@ class FMenuList
 
 // FMenuList inline functions
 //----------------------------------------------------------------------
-inline const char* FMenuList::getClassName() const
+inline const FString FMenuList::getClassName() const
 { return "FMenuList"; }
 
 //----------------------------------------------------------------------

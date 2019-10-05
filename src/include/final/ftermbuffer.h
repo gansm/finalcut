@@ -37,6 +37,7 @@
 
 #include <sstream>  // std::stringstream
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace finalcut
@@ -78,7 +79,7 @@ class FTermBuffer
                                        , const FTermBuffer& );
 
     // Accessors
-    virtual const char*    getClassName() const;
+    virtual const FString  getClassName() const;
     std::size_t            getLength() const;
     const charDataVector&  getBuffer() const;
 
@@ -158,7 +159,7 @@ inline FTermBuffer& FTermBuffer::operator << (const FColorPair& pair)
 }
 
 //----------------------------------------------------------------------
-inline const char* FTermBuffer::getClassName() const
+inline const FString FTermBuffer::getClassName() const
 { return "FTermBuffer"; }
 
 //----------------------------------------------------------------------

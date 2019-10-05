@@ -36,6 +36,8 @@
 #endif
 
 #include <sys/time.h>
+#include <functional>
+#include "final/fstring.h"
 #include "final/ftypes.h"
 
 namespace finalcut
@@ -53,17 +55,21 @@ class FTermLinux;
 class FKeyboardCommand final
 {
   public:
-    // Constructor
-    explicit FKeyboardCommand ( FApplication* = nullptr
-                              , void(FApplication::*)() = nullptr);
+    // Constructors
+    FKeyboardCommand () = default;
+    explicit FKeyboardCommand (std::function<void()> fn)
+      : handler(fn)
+    { }
 
     // Method
-    void execute();
+    void execute()
+    {
+      handler();
+    }
 
   private:
     // Data members
-    FApplication* instance{nullptr};
-    void (FApplication::*handler)(){nullptr};
+    std::function<void()> handler{};
 };
 
 
@@ -93,34 +99,34 @@ class FKeyboard final
     FKeyboard& operator = (const FKeyboard&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const;
-    FKey                getKey();
-    const FString       getKeyName (FKey);
-    keybuffer&          getKeyBuffer();
-    timeval*            getKeyPressedTime();
+    virtual const FString getClassName() const;
+    FKey                  getKey();
+    const FString         getKeyName (FKey);
+    keybuffer&            getKeyBuffer();
+    timeval*              getKeyPressedTime();
 
     // Mutators
-    void                setTermcapMap (fc::fkeymap*);
-    void                setKeypressTimeout (const uInt64);
-    void                enableUTF8();
-    void                disableUTF8();
-    void                enableMouseSequences();
-    void                disableMouseSequences();
-    void                setPressCommand (FKeyboardCommand);
-    void                setReleaseCommand (FKeyboardCommand);
-    void                setEscPressedCommand (FKeyboardCommand);
+    void                  setTermcapMap (fc::fkeymap*);
+    void                  setKeypressTimeout (const uInt64);
+    void                  enableUTF8();
+    void                  disableUTF8();
+    void                  enableMouseSequences();
+    void                  disableMouseSequences();
+    void                  setPressCommand (FKeyboardCommand);
+    void                  setReleaseCommand (FKeyboardCommand);
+    void                  setEscPressedCommand (FKeyboardCommand);
 
     // Inquiry
-    bool                isInputDataPending();
+    bool                  isInputDataPending();
 
     // Methods
-    static void         init();
-    bool&               unprocessedInput();
-    bool                isKeyPressed();
-    void                clearKeyBuffer();
-    void                clearKeyBufferOnTimeout();
-    void                fetchKeyCode();
-    void                escapeKeyHandling();
+    static void           init();
+    bool&                 unprocessedInput();
+    bool                  isKeyPressed();
+    void                  clearKeyBuffer();
+    void                  clearKeyBufferOnTimeout();
+    void                  fetchKeyCode();
+    void                  escapeKeyHandling();
 
   private:
     // Constants
@@ -128,58 +134,58 @@ class FKeyboard final
     static constexpr FKey NOT_SET = static_cast<FKey>(-1);
 
     // Accessors
-    FKey                getMouseProtocolKey();
-    FKey                getTermcapKey();
-    FKey                getMetaKey();
-    FKey                getSingleKey();
+    FKey                  getMouseProtocolKey();
+    FKey                  getTermcapKey();
+    FKey                  getMetaKey();
+    FKey                  getSingleKey();
 
     // Mutators
-    bool                setNonBlockingInput (bool);
-    bool                setNonBlockingInput();
-    bool                unsetNonBlockingInput();
+    bool                  setNonBlockingInput (bool);
+    bool                  setNonBlockingInput();
+    bool                  unsetNonBlockingInput();
 
     // Inquiry
-    static bool         isKeypressTimeout();
+    static bool           isKeypressTimeout();
 
     // Methods
-    FKey                UTF8decode (const char[]);
-    ssize_t             readKey();
-    void                parseKeyBuffer();
-    FKey                parseKeyString();
-    FKey                keyCorrection (const FKey&);
-    void                substringKeyHandling();
-    void                keyPressed();
-    void                keyReleased();
-    void                escapeKeyPressed();
+    FKey                  UTF8decode (const char[]);
+    ssize_t               readKey();
+    void                  parseKeyBuffer();
+    FKey                  parseKeyString();
+    FKey                  keyCorrection (const FKey&);
+    void                  substringKeyHandling();
+    void                  keyPressed();
+    void                  keyReleased();
+    void                  escapeKeyPressed();
 
     // Data members
-    FKeyboardCommand    keypressed_cmd{};
-    FKeyboardCommand    keyreleased_cmd{};
-    FKeyboardCommand    escape_key_cmd{};
+    FKeyboardCommand      keypressed_cmd{};
+    FKeyboardCommand      keyreleased_cmd{};
+    FKeyboardCommand      escape_key_cmd{};
 
 #if defined(__linux__)
     #undef linux
-    static FTermLinux*  linux;
+    static FTermLinux*    linux;
 #endif
 
-    static timeval      time_keypressed;
-    static uInt64       key_timeout;
-    fc::fkeymap*        key_map{nullptr};
-    FKey                key{0};
-    char                read_buf[READ_BUF_SIZE]{'\0'};
-    char                fifo_buf[FIFO_BUF_SIZE]{'\0'};
-    int                 fifo_offset{0};
-    int                 stdin_status_flags{0};
-    bool                fifo_in_use{false};
-    bool                input_data_pending{false};
-    bool                utf8_input{false};
-    bool                mouse_support{true};
-    bool                non_blocking_stdin{false};
+    static timeval        time_keypressed;
+    static uInt64         key_timeout;
+    fc::fkeymap*          key_map{nullptr};
+    FKey                  key{0};
+    char                  read_buf[READ_BUF_SIZE]{'\0'};
+    char                  fifo_buf[FIFO_BUF_SIZE]{'\0'};
+    int                   fifo_offset{0};
+    int                   stdin_status_flags{0};
+    bool                  fifo_in_use{false};
+    bool                  input_data_pending{false};
+    bool                  utf8_input{false};
+    bool                  mouse_support{true};
+    bool                  non_blocking_stdin{false};
 };
 
 // FKeyboard inline functions
 //----------------------------------------------------------------------
-inline const char* FKeyboard::getClassName() const
+inline const FString FKeyboard::getClassName() const
 { return "FKeyboard"; }
 
 //----------------------------------------------------------------------

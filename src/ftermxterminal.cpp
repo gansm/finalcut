@@ -38,22 +38,8 @@ namespace finalcut
 {
 
 // static class attributes
-bool                 FTermXTerminal::mouse_support{false};
-bool                 FTermXTerminal::meta_sends_esc{false};
-bool                 FTermXTerminal::xterm_default_colors{false};
-std::size_t          FTermXTerminal::term_width{80};
-std::size_t          FTermXTerminal::term_height{24};
-FString              FTermXTerminal::xterm_font{};
-FString              FTermXTerminal::xterm_title{};
-FString              FTermXTerminal::foreground_color{};
-FString              FTermXTerminal::background_color{};
-FString              FTermXTerminal::cursor_color{};
-FString              FTermXTerminal::mouse_foreground_color{};
-FString              FTermXTerminal::mouse_background_color{};
-FString              FTermXTerminal::highlight_background_color{};
-FSystem*             FTermXTerminal::fsystem{nullptr};
-FTermDetection*      FTermXTerminal::term_detection{nullptr};
-fc::xtermCursorStyle FTermXTerminal::cursor_style{fc::unknown_cursor_style};
+bool     FTermXTerminal::mouse_support{false};
+FSystem* FTermXTerminal::fsystem{nullptr};
 
 
 //----------------------------------------------------------------------
@@ -786,7 +772,7 @@ void FTermXTerminal::enableXTermMouse()
   // Activate the xterm mouse support
 
   if ( mouse_support )
-    return;
+    return;  // The mouse is already activated
 
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
@@ -806,7 +792,7 @@ void FTermXTerminal::disableXTermMouse()
   // Deactivate the xterm mouse support
 
   if ( ! mouse_support )
-    return;
+    return;  // The mouse was already deactivated
 
   FTerm::putstring (CSI "?1006l"    // disable SGR mouse mode
                     CSI "?1015l"    // disable urxvt mouse mode

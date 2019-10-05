@@ -37,6 +37,8 @@
 
 #include <iostream>
 
+#include "final/fstring.h"
+
 namespace finalcut
 {
 
@@ -71,20 +73,20 @@ class FPoint
     friend std::istream& operator >> (std::istream&, FPoint&);
 
     // Accessors
-    virtual const char* getClassName();
-    int                 getX() const;
-    int                 getY() const;
-    void                setX (int);
-    void                setY (int);
-    void                setPoint (const FPoint&);
-    void                setPoint (int, int);
+    virtual const FString getClassName();
+    int                   getX() const;
+    int                   getY() const;
+    void                  setX (int);
+    void                  setY (int);
+    void                  setPoint (const FPoint&);
+    void                  setPoint (int, int);
 
     // Inquiry
-    bool                isOrigin() const;
+    bool                  isOrigin() const;
 
     // Point references
-    int&                x_ref();
-    int&                y_ref();
+    int&                  x_ref();
+    int&                  y_ref();
 
   private:
     // Data members
@@ -133,7 +135,7 @@ inline FPoint operator - (const FPoint& p)
 { return FPoint(-p.xpos, -p.ypos); }
 
 //----------------------------------------------------------------------
-inline const char* FPoint::getClassName()
+inline const FString FPoint::getClassName()
 { return "FPoint"; }
 
 //----------------------------------------------------------------------

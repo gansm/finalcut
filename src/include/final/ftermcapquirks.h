@@ -56,7 +56,7 @@ class FTermcapQuirks final
     virtual ~FTermcapQuirks();
 
     // Accessor
-    virtual const char* getClassName() const;
+    virtual const FString getClassName() const;
 
     // Methods
     static void terminalFixup();
@@ -85,7 +85,7 @@ class FTermcapQuirks final
 
 // FTermcapQuirks inline functions
 //----------------------------------------------------------------------
-inline const char* FTermcapQuirks::getClassName() const
+inline const FString FTermcapQuirks::getClassName() const
 { return "FTermcapQuirks"; }
 
 }  // namespace finalcut

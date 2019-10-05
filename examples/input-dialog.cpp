@@ -120,7 +120,7 @@ int main (int argc, char* argv[])
   check1.addCallback
   (
     "clicked",
-    F_FUNCTION_CALLBACK (&cb_publish),
+    &cb_publish,
     &check2
   );
 
@@ -128,7 +128,7 @@ int main (int argc, char* argv[])
   btn.addCallback
   (
     "clicked",
-    F_FUNCTION_CALLBACK (&cb_quit),
+    &cb_quit,
     &app
   );
 

@@ -67,9 +67,6 @@ static FTerm* init_term_object{nullptr};
 // global init state
 static bool term_initialized{false};
 
-// function pointer
-int (*FTerm::Fputchar)(int);
-
 // static class attributes
 FTermData*      FTerm::data          {nullptr};
 FSystem*        FTerm::fsys          {nullptr};
@@ -674,16 +671,16 @@ bool FTerm::setVGAFont()
     data->setTermEncoding (fc::PC);
 
     if ( isXTerminal() && data->hasUTF8Console() )
-      Fputchar = &FTerm::putchar_UTF8;
+      putchar() = &FTerm::putchar_UTF8;
     else
-      Fputchar = &FTerm::putchar_ASCII;
+      putchar() = &FTerm::putchar_ASCII;
   }
 #if defined(__linux__)
   else if ( isLinuxTerm() )
   {
     data->setVGAFont(linux->loadVGAFont());
     data->setTermEncoding (fc::PC);
-    Fputchar = &FTerm::putchar_ASCII;
+    putchar() = &FTerm::putchar_ASCII;
   }
 #endif  // defined(__linux__)
   else
@@ -716,16 +713,16 @@ bool FTerm::setNewFont()
     data->setTermEncoding (fc::PC);
 
     if ( isXTerminal() && data->hasUTF8Console() )
-      Fputchar = &FTerm::putchar_UTF8;
+      putchar() = &FTerm::putchar_UTF8;
     else
-      Fputchar = &FTerm::putchar_ASCII;
+      putchar() = &FTerm::putchar_ASCII;
   }
 #if defined(__linux__)
   else if ( isLinuxTerm() )
   {
     data->setNewFont(linux->loadNewFont());
     data->setTermEncoding (fc::PC);
-    Fputchar = &FTerm::putchar_ASCII;  // function pointer
+    putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
 #endif  // defined(__linux__)
   else
@@ -1086,25 +1083,25 @@ void FTerm::setEncoding (fc::encoding enc)
         || enc == fc::PC     // CP-437
         || enc == fc::ASCII );
 
-  // Set the new Fputchar function pointer
+  // Set the new putchar() function pointer
   switch ( enc )
   {
     case fc::UTF8:
-      Fputchar = &FTerm::putchar_UTF8;
+      putchar() = &FTerm::putchar_UTF8;
       break;
 
     case fc::VT100:
     case fc::PC:
       if ( isXTerminal() && data->hasUTF8Console() )
-        Fputchar = &FTerm::putchar_UTF8;
+        putchar() = &FTerm::putchar_UTF8;
       else
-        Fputchar = &FTerm::putchar_ASCII;
+        putchar() = &FTerm::putchar_ASCII;
       break;
 
     case fc::ASCII:
     case fc::UNKNOWN:
     case fc::NUM_OF_ENCODINGS:
-      Fputchar = &FTerm::putchar_ASCII;
+      putchar() = &FTerm::putchar_ASCII;
   }
 
   if ( isLinuxTerm() )
@@ -1196,6 +1193,13 @@ bool FTerm::scrollTermReverse()
   }
 
   return false;
+}
+
+//----------------------------------------------------------------------
+FTerm::defaultPutChar& FTerm::putchar()
+{
+  static defaultPutChar* fputchar = new defaultPutChar();
+  return *fputchar;
 }
 
 //----------------------------------------------------------------------
@@ -1719,7 +1723,7 @@ void FTerm::init_locale()
 //----------------------------------------------------------------------
 void FTerm::init_encoding()
 {
-  // detect encoding and set the Fputchar function pointer
+  // detect encoding and set the putchar() function pointer
 
   bool force_vt100{false};  // VT100 line drawing (G1 character set)
   init_encoding_set();
@@ -1771,7 +1775,7 @@ void FTerm::init_term_encoding()
   {
     data->setUTF8Console(true);
     data->setTermEncoding (fc::UTF8);
-    Fputchar = &FTerm::putchar_UTF8;  // function pointer
+    putchar() = &FTerm::putchar_UTF8;  // function pointer
     data->setUTF8(true);
     setUTF8(true);
     keyboard->enableUTF8();
@@ -1782,13 +1786,13 @@ void FTerm::init_term_encoding()
   {
     data->setVT100Console (true);
     data->setTermEncoding (fc::VT100);
-    Fputchar = &FTerm::putchar_ASCII;  // function pointer
+    putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
   else
   {
     data->setASCIIConsole (true);
     data->setTermEncoding (fc::ASCII);
-    Fputchar = &FTerm::putchar_ASCII;  // function pointer
+    putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
 }
 
@@ -1800,12 +1804,12 @@ void FTerm::init_individual_term_encoding()
     || (isTeraTerm() && ! data->isUTF8()) )
   {
     data->setTermEncoding (fc::PC);
-    Fputchar = &FTerm::putchar_ASCII;  // function pointer
+    putchar() = &FTerm::putchar_ASCII;  // function pointer
 
     if ( hasUTF8() && getStartOptions().encoding == fc::UNKNOWN )
     {
       if ( isXTerminal() )
-        Fputchar = &FTerm::putchar_UTF8;  // function pointer
+        putchar() = &FTerm::putchar_UTF8;  // function pointer
     }
   }
 }
@@ -1815,7 +1819,7 @@ void FTerm::init_force_vt100_encoding()
 {
   data->setVT100Console(true);
   data->setTermEncoding (fc::VT100);
-  Fputchar = &FTerm::putchar_ASCII;  // function pointer
+  putchar() = &FTerm::putchar_ASCII;  // function pointer
 }
 
 //----------------------------------------------------------------------
@@ -1829,7 +1833,7 @@ void FTerm::init_utf8_without_alt_charset()
   {
     data->setASCIIConsole(true);
     data->setTermEncoding (fc::ASCII);
-    Fputchar = &FTerm::putchar_ASCII;  // function pointer
+    putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
 }
 
@@ -2160,7 +2164,6 @@ inline void FTerm::allocationValues()
 #if DEBUG
   getFTermDebugData();
 #endif
-
 }
 
 //----------------------------------------------------------------------
@@ -2205,6 +2208,10 @@ inline void FTerm::deallocationValues()
 
   if ( data )
     delete data;
+
+  defaultPutChar* putchar_ptr = &(putchar());
+  delete putchar_ptr;
+  FStartOptions::destroyObject();
 }
 
 //----------------------------------------------------------------------
@@ -2597,11 +2604,12 @@ FString getFullWidth (const FString& str)
     {
       c += 0xfee0;
     }
-    else for (std::size_t i{0}; i <= fc::lastHalfWidthItem; i++)
+    else
     {
-      if ( fc::halfWidth_fullWidth[i][HALF] == c )  // found
+      for (std::size_t i{0}; i <= fc::lastHalfWidthItem; i++)
       {
-        c = fc::halfWidth_fullWidth[i][FULL];
+        if ( fc::halfWidth_fullWidth[i][HALF] == c )  // found
+          c = fc::halfWidth_fullWidth[i][FULL];
       }
     }
   }
@@ -2624,11 +2632,12 @@ FString getHalfWidth (const FString& str)
     {
       c -= 0xfee0;
     }
-    else for (std::size_t i{0}; i <= fc::lastHalfWidthItem; i++)
+    else
     {
-      if ( fc::halfWidth_fullWidth[i][FULL] == c )  // found
+      for (std::size_t i{0}; i <= fc::lastHalfWidthItem; i++)
       {
-        c = fc::halfWidth_fullWidth[i][HALF];
+        if ( fc::halfWidth_fullWidth[i][FULL] == c )  // found
+          c = fc::halfWidth_fullWidth[i][HALF];
       }
     }
   }

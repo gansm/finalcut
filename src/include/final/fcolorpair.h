@@ -36,6 +36,7 @@
 #endif
 
 #include "final/fc.h"
+#include "final/fstring.h"
 #include "final/ftypes.h"
 
 namespace finalcut
@@ -72,7 +73,7 @@ class FColorPair
     }
 
     // Accessor
-    const char* getClassName() const
+    const FString getClassName() const
     { return "FColorPair"; }
 
     FColor getForegroundColor() const

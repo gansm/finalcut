@@ -111,8 +111,8 @@ class FOptiAttrTest : public CPPUNIT_NS::TestFixture
 void FOptiAttrTest::classNameTest()
 {
   finalcut::FOptiAttr opti_attr;
-  const char* const classname = opti_attr.getClassName();
-  CPPUNIT_ASSERT_CSTRING ( classname, "FOptiAttr");
+  const finalcut::FString& classname = opti_attr.getClassName();
+  CPPUNIT_ASSERT ( classname == "FOptiAttr");
 }
 
 //----------------------------------------------------------------------

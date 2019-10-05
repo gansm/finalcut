@@ -147,7 +147,7 @@ static tcap_map tcap[] =
   { 0, "\0" }
 };
 
-} // namespace test
+}  // namespace test
 
 
 //----------------------------------------------------------------------
@@ -214,8 +214,8 @@ FTermcapQuirksTest::~FTermcapQuirksTest()
 void FTermcapQuirksTest::classNameTest()
 {
   finalcut::FTermcapQuirks q;
-  const char* const classname = q.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname, "FTermcapQuirks") == 0 );
+  const finalcut::FString& classname = q.getClassName();
+  CPPUNIT_ASSERT ( classname == "FTermcapQuirks" );
 }
 
 //----------------------------------------------------------------------

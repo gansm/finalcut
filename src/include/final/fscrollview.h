@@ -53,7 +53,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <memory>
+#include <unordered_map>
 
 #include "final/fscrollbar.h"
 #include "final/fwidget.h"
@@ -85,7 +85,7 @@ class FScrollView : public FWidget
     FScrollView& operator = (const FScrollView&) = delete;
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     std::size_t         getViewportWidth() const;
     std::size_t         getViewportHeight() const;
     const FSize         getViewportSize();
@@ -153,6 +153,9 @@ class FScrollView : public FWidget
     void                copy2area();
 
   private:
+    // Typedefs
+    typedef std::unordered_map<int, std::function<void()>> keyMap;
+
     // Constants
     static constexpr int vertical_border_spacing = 2;
     static constexpr int horizontal_border_spacing = 2;
@@ -162,11 +165,12 @@ class FScrollView : public FWidget
 
     // Methods
     void                init (FWidget*);
+    void                mapKeyFunctions();
+    void                calculateScrollbarPos();
     template<typename Callback>
     void                initScrollbar ( FScrollbarPtr&
                                       , fc::orientation
                                       , Callback );
-    void                calculateScrollbarPos();
     void                setHorizontalScrollBarVisibility();
     void                setVerticalScrollBarVisibility();
     void                setViewportCursor();
@@ -176,22 +180,23 @@ class FScrollView : public FWidget
     void                cb_HBarChange (FWidget*, FDataPtr);
 
     // Data members
-    FRect             scroll_geometry{1, 1, 1, 1};
-    FRect             viewport_geometry{};
-    term_area*        viewport{nullptr};  // virtual scroll content
-    FScrollbarPtr     vbar{nullptr};
-    FScrollbarPtr     hbar{nullptr};
-    uInt8             nf_offset{0};
-    bool              border{true};
-    bool              use_own_print_area{false};
-    bool              update_scrollbar{true};
-    fc::scrollBarMode vMode{fc::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
-    fc::scrollBarMode hMode{fc::Auto};
+    FRect              scroll_geometry{1, 1, 1, 1};
+    FRect              viewport_geometry{};
+    term_area*         viewport{nullptr};  // virtual scroll content
+    FScrollbarPtr      vbar{nullptr};
+    FScrollbarPtr      hbar{nullptr};
+    keyMap             key_map{};
+    uInt8              nf_offset{0};
+    bool               border{true};
+    bool               use_own_print_area{false};
+    bool               update_scrollbar{true};
+    fc::scrollBarMode  vMode{fc::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
+    fc::scrollBarMode  hMode{fc::Auto};
 };
 
 // FScrollView inline functions
 //----------------------------------------------------------------------
-inline const char* FScrollView::getClassName() const
+inline const FString FScrollView::getClassName() const
 { return "FScrollView"; }
 
 //----------------------------------------------------------------------

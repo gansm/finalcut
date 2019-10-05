@@ -84,7 +84,7 @@ class FToggleButton : public FWidget
     FToggleButton& operator = (const FToggleButton&) = delete;
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     FString&            getText();
 
     // Mutators
@@ -167,7 +167,7 @@ class FToggleButton : public FWidget
 
 // FRadioButton inline functions
 //----------------------------------------------------------------------
-inline const char* FToggleButton::getClassName() const
+inline const FString FToggleButton::getClassName() const
 { return "FToggleButton"; }
 
 //----------------------------------------------------------------------

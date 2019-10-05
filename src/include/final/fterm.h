@@ -110,9 +110,12 @@
 #include <clocale>
 #include <cmath>
 #include <csignal>
+#include <functional>
 #include <map>
 #include <queue>
+#include <utility>
 #include <string>
+#include <vector>
 
 #include "final/fc.h"
 #include "final/fstring.h"
@@ -154,7 +157,8 @@ class FTermXTerminal;
 class FTerm final
 {
   public:
-    struct initializationValues;  // forward declaration
+    // Typedef
+    typedef std::function<int(int)> defaultPutChar;
 
     // Constructor
     explicit FTerm (bool = false);
@@ -169,7 +173,7 @@ class FTerm final
     FTerm& operator = (const FTerm&) = delete;
 
     // Accessors
-    virtual const char*    getClassName() const;
+    virtual const FString  getClassName() const;
     static std::size_t     getLineNumber();
     static std::size_t     getColumnNumber();
     static const FString   getKeyName (FKey);
@@ -278,9 +282,7 @@ class FTerm final
     static bool            scrollTermForward();
     static bool            scrollTermReverse();
 
-    // function pointer -> static function
-    static int             (*Fputchar)(int);
-
+    static defaultPutChar& putchar();  // function pointer
     template<typename... Args>
     static void            putstringf (const char[], Args&&...);
     static void            putstring (const char[], int = 1);
@@ -399,7 +401,7 @@ std::size_t getColumnWidth (const FTermBuffer&);
 
 // FTerm inline functions
 //----------------------------------------------------------------------
-inline const char* FTerm::getClassName() const
+inline const FString FTerm::getClassName() const
 { return "FTerm"; }
 
 //----------------------------------------------------------------------
@@ -427,8 +429,9 @@ inline void FTerm::putstringf (const char format[], Args&&... args)
   if ( ! fsys )
     getFSystem();
 
-  std::vector<char> buf(size);
-  std::snprintf (&buf[0], size, format, std::forward<Args>(args)...);
+  std::size_t count = std::size_t(size);
+  std::vector<char> buf(count);
+  std::snprintf (&buf[0], count, format, std::forward<Args>(args)...);
   fsys->tputs (&buf[0], 1, FTerm::putchar_ASCII);
 }
 

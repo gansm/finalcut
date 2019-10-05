@@ -1,3 +1,8 @@
+2019-10-05  Markus Gans  <guru.mail@muenster.de>
+	* Internal redesign of the callback call
+	* Mapping of key functions in an associative container to simplify 
+	  onKeyPress() in FListBox, FListView, FTextView and FScrollView
+
 2019-10-01  Markus Gans  <guru.mail@muenster.de>
 	* Replacing null-terminated wide strings with FString objects
 	* Fix for getColumnWidth() with newfont character

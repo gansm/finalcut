@@ -52,7 +52,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <memory>
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "final/fwidget.h"
@@ -93,7 +94,7 @@ class FTextView : public FWidget
     FTextView& operator << (const std::string&);
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     std::size_t         getColumns() const;
     std::size_t         getRows() const;
     const FString       getText() const;
@@ -136,6 +137,9 @@ class FTextView : public FWidget
     void                adjustSize() override;
 
   private:
+    // Typedefs
+    typedef std::unordered_map<int, std::function<void()>> keyMap;
+
     // Accessors
     std::size_t         getTextHeight();
     std::size_t         getTextWidth();
@@ -146,6 +150,7 @@ class FTextView : public FWidget
 
     // Methods
     void                init();
+    void                mapKeyFunctions();
     void                draw() override;
     void                drawBorder() override;
     void                drawScrollbars();
@@ -162,6 +167,7 @@ class FTextView : public FWidget
     FStringList        data{};
     FScrollbarPtr      vbar{nullptr};
     FScrollbarPtr      hbar{nullptr};
+    keyMap             key_map{};
     bool               update_scrollbar{true};
     int                xoffset{0};
     int                yoffset{0};
@@ -205,7 +211,7 @@ inline FTextView& FTextView::operator << (const std::string& string)
 }
 
 //----------------------------------------------------------------------
-inline const char* FTextView::getClassName() const
+inline const FString FTextView::getClassName() const
 { return "FTextView"; }
 
 //----------------------------------------------------------------------

@@ -26,7 +26,6 @@
 
 #include "final/emptyfstring.h"
 #include "final/fc.h"
-#include "final/fconfig.h"
 #include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermdata.h"

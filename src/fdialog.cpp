@@ -165,7 +165,6 @@ int FDialog::exec()
 //----------------------------------------------------------------------
 void FDialog::setPos (const FPoint& pos, bool)
 {
-
   setPos_error = false;
 
   // Avoid to move widget completely outside the terminal

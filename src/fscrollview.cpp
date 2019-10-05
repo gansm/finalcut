@@ -464,52 +464,12 @@ void FScrollView::drawBorder()
 //----------------------------------------------------------------------
 void FScrollView::onKeyPress (FKeyEvent* ev)
 {
-  int yoffset_end = int(getScrollHeight() - getViewportHeight());
+  int idx = int(ev->key());
 
-  switch ( ev->key() )
+  if ( key_map.find(idx) != key_map.end() )
   {
-    case fc::Fkey_up:
-      scrollBy (0, -1);
-      ev->accept();
-      break;
-
-    case fc::Fkey_down:
-      scrollBy (0, 1);
-      ev->accept();
-      break;
-
-    case fc::Fkey_left:
-      scrollBy (-1, 0);
-      ev->accept();
-      break;
-
-    case fc::Fkey_right:
-      scrollBy (1, 0);
-      ev->accept();
-      break;
-
-    case fc::Fkey_ppage:
-      scrollBy (0, int(-getViewportHeight()));
-      ev->accept();
-      break;
-
-    case fc::Fkey_npage:
-      scrollBy (0, int(getViewportHeight()));
-      ev->accept();
-      break;
-
-    case fc::Fkey_home:
-      scrollToY (1);
-      ev->accept();
-      break;
-
-    case fc::Fkey_end:
-      scrollToY (1 + yoffset_end);
-      ev->accept();
-      break;
-
-    default:
-      break;
+    key_map[idx]();
+    ev->accept();
   }
 }
 
@@ -764,6 +724,7 @@ void FScrollView::init (FWidget* parent)
 
   initScrollbar (vbar, fc::vertical, &FScrollView::cb_VBarChange);
   initScrollbar (hbar, fc::horizontal, &FScrollView::cb_HBarChange);
+  mapKeyFunctions();
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
@@ -795,6 +756,24 @@ void FScrollView::init (FWidget* parent)
 
   if ( viewport )
     setChildPrintArea (viewport);
+}
+
+//----------------------------------------------------------------------
+inline void FScrollView::mapKeyFunctions()
+{
+  key_map[fc::Fkey_up]    = [&] { scrollBy (0, -1); };
+  key_map[fc::Fkey_down]  = [&] { scrollBy (0, 1); };
+  key_map[fc::Fkey_left]  = [&] { scrollBy (-1, 0); };
+  key_map[fc::Fkey_right] = [&] { scrollBy (1, 0); };
+  key_map[fc::Fkey_ppage] = [&] { scrollBy (0, int(-getViewportHeight())); };
+  key_map[fc::Fkey_npage] = [&] { scrollBy (0, int(getViewportHeight())); };
+  key_map[fc::Fkey_home]  = [&] { scrollToY (1); };
+  key_map[fc::Fkey_end]   = \
+      [&] ()
+      {
+        int yoffset_end = int(getScrollHeight() - getViewportHeight());
+        scrollToY (1 + yoffset_end);
+      };
 }
 
 //----------------------------------------------------------------------

@@ -53,7 +53,6 @@
 #endif
 
 #include <list>
-#include <memory>
 #include <stack>
 #include <vector>
 
@@ -90,7 +89,7 @@ class FListViewItem : public FObject
     FListViewItem& operator = (const FListViewItem&);
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     uInt                getColumnCount() const;
     int                 getSortColumn() const;
     FString             getText (int) const;
@@ -144,7 +143,7 @@ class FListViewItem : public FObject
 
 // FListViewItem inline functions
 //----------------------------------------------------------------------
-inline const char* FListViewItem::getClassName() const
+inline const FString FListViewItem::getClassName() const
 { return "FListViewItem"; }
 
 //----------------------------------------------------------------------
@@ -209,7 +208,7 @@ class FListViewIterator
     bool               operator != (const FListViewIterator&) const;
 
     // Accessor
-    const char*         getClassName() const;
+    const FString       getClassName() const;
     int                 getPosition() const;
 
     // Methods
@@ -245,7 +244,7 @@ inline bool FListViewIterator::operator != (const FListViewIterator& rhs) const
 { return node != rhs.node; }
 
 //----------------------------------------------------------------------
-inline const char* FListViewIterator::getClassName() const
+inline const FString FListViewIterator::getClassName() const
 { return "FListViewIterator"; }
 
 //----------------------------------------------------------------------
@@ -276,7 +275,7 @@ class FListView : public FWidget
     FListView& operator = (const FListView&) = delete;
 
     // Accessors
-    const char*          getClassName() const override;
+    const FString        getClassName() const override;
     std::size_t          getCount();
     fc::text_alignment   getColumnAlignment (int) const;
     FString              getColumnText (int) const;
@@ -360,6 +359,10 @@ class FListView : public FWidget
     void                 adjustSize() override;
 
   private:
+    // Typedefs
+    typedef std::unordered_map<int, std::function<void()>> keyMap;
+    typedef std::unordered_map<int, std::function<bool()>> keyMapResult;
+
     // Constants
     static constexpr std::size_t checkbox_space = 4;
 
@@ -377,6 +380,8 @@ class FListView : public FWidget
 
     // Methods
     void                 init();
+    void                 mapKeyFunctions();
+    void                 processKeyAction (FKeyEvent*);
     template <typename Compare>
     void                 sort (Compare);
     std::size_t          getAlignOffset ( fc::text_alignment
@@ -415,8 +420,8 @@ class FListView : public FWidget
     void                 processClick();
     void                 processChanged();
     void                 toggleCheckbox();
-    void                 collapseAndScrollLeft (int&);
-    void                 expandAndScrollRight (int&);
+    void                 collapseAndScrollLeft();
+    void                 expandAndScrollRight();
     void                 firstPos();
     void                 lastPos();
     bool                 expandSubtree();
@@ -451,10 +456,13 @@ class FListView : public FWidget
     sortTypes            sort_type{};
     FPoint               clicked_expander_pos{-1, -1};
     FPoint               clicked_header_pos{-1, -1};
+    keyMap               key_map{};
+    keyMapResult         key_map_result{};
     const FListViewItem* clicked_checkbox_item{nullptr};
     std::size_t          nf_offset{0};
     std::size_t          max_line_width{1};
     fc::dragScroll       drag_scroll{fc::noScroll};
+    int                  first_line_position_before{-1};
     int                  scroll_repeat{100};
     int                  scroll_distance{1};
     int                  xoffset{0};
@@ -492,7 +500,7 @@ struct FListView::Header
 
 // FListView inline functions
 //----------------------------------------------------------------------
-inline const char* FListView::getClassName() const
+inline const FString FListView::getClassName() const
 { return "FListView"; }
 
 //----------------------------------------------------------------------

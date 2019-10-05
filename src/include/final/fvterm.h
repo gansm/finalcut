@@ -51,15 +51,20 @@
 #include <queue>
 #include <sstream>  // std::stringstream
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "final/fc.h"
 #include "final/fterm.h"
 
 // Preprocessing handler macro
+//#define F_PREPROC_HANDLER(i,h)
+//           static_cast<FVTerm*>((i))
+//         , reinterpret_cast<FVTerm::FPreprocessingHandler>((h))
 #define F_PREPROC_HANDLER(i,h) \
-           static_cast<FVTerm*>((i)) \
-         , reinterpret_cast<FVTerm::FPreprocessingHandler>((h))
+    reinterpret_cast<FVTerm*>((i)), \
+    std::bind ( reinterpret_cast<FVTerm::FPreprocessingHandler>((h)) \
+              , reinterpret_cast<FVTerm*>((i)) )
 
 namespace finalcut
 {
@@ -94,13 +99,14 @@ class FVTerm
     } line_changes;
 
     typedef void (FVTerm::*FPreprocessingHandler)();
+    typedef std::function<void()> FVTermPreprocessing;
 
     struct term_area;  // forward declaration
 
     struct vterm_preprocessing
     {
-      FVTerm*               instance;
-      FPreprocessingHandler handler;
+      FVTerm* instance;
+      FVTermPreprocessing function;
     };
 
     typedef std::vector<vterm_preprocessing> FPreprocessing;
@@ -142,7 +148,7 @@ class FVTerm
     FVTerm& operator << (const FColorPair&);
 
     // Accessors
-    virtual const char*   getClassName() const;
+    virtual const FString getClassName() const;
     static FColor         getTermForegroundColor();
     static FColor         getTermBackgroundColor();
     term_area*&           getVWin();
@@ -288,7 +294,7 @@ class FVTerm
     void                  updateTerminal (terminal_update);
     void                  updateTerminal();
     virtual void          addPreprocessingHandler ( FVTerm*
-                                                  , FPreprocessingHandler );
+                                                  , FVTermPreprocessing );
     virtual void          delPreprocessingHandler (FVTerm*);
 
     template<typename... Args>
@@ -497,7 +503,6 @@ class FVTerm
     static uInt             clr_bol_length;
     static uInt             clr_eol_length;
     static uInt             cursor_address_length;
-
 };
 
 
@@ -589,7 +594,7 @@ inline FVTerm& FVTerm::operator << (const FColorPair& pair)
 }
 
 //----------------------------------------------------------------------
-inline const char* FVTerm::getClassName() const
+inline const FString FVTerm::getClassName() const
 { return "FVTerm"; }
 
 //----------------------------------------------------------------------

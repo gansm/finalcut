@@ -55,6 +55,7 @@
 #include <stdexcept>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "final/fc.h"
@@ -181,7 +182,7 @@ class FString
     friend std::wistream& operator >> (std::wistream&, FString&);
 
     // Accessor
-    virtual const char* getClassName();
+    virtual const FString getClassName();
 
     // inquiries
     bool isNull() const;
@@ -287,7 +288,7 @@ class FString
 
 // FString inline functions
 //----------------------------------------------------------------------
-inline const char* FString::getClassName()
+inline const FString FString::getClassName()
 { return "FString"; }
 
 //----------------------------------------------------------------------

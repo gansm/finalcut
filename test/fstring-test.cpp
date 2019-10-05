@@ -147,8 +147,8 @@ void FStringTest::tearDown()
 void FStringTest::classNameTest()
 {
   finalcut::FString str;
-  const char* const classname = str.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname, "FString") == 0 );
+  const finalcut::FString& classname = str.getClassName();
+  CPPUNIT_ASSERT ( classname == "FString" );
 }
 
 //----------------------------------------------------------------------

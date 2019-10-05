@@ -71,8 +71,8 @@ class FColorPairTest : public CPPUNIT_NS::TestFixture
 void FColorPairTest::classNameTest()
 {
   const finalcut::FColorPair p;
-  const char* const classname = p.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname, "FColorPair") == 0 );
+  const finalcut::FString& classname = p.getClassName();
+  CPPUNIT_ASSERT ( classname == "FColorPair" );
 }
 
 //----------------------------------------------------------------------

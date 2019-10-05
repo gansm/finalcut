@@ -59,6 +59,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <memory>
 #include <vector>
 
 #include "final/fwidget.h"
@@ -91,7 +92,7 @@ class FStatusKey : public FWidget
     FStatusKey& operator = (const FStatusKey&) = delete;
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     virtual FKey        getKey() const;
     virtual FString     getText() const;
 
@@ -132,7 +133,7 @@ class FStatusKey : public FWidget
 
 // FStatusKey inline functions
 //----------------------------------------------------------------------
-inline const char* FStatusKey::getClassName() const
+inline const FString FStatusKey::getClassName() const
 { return "FStatusKey"; }
 
 //----------------------------------------------------------------------
@@ -200,7 +201,7 @@ class FStatusBar : public FWindow
     FStatusBar& operator = (const FStatusBar&) = delete;
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     FStatusKey*         getStatusKey (int) const;
     FString             getMessage() const;
     std::size_t         getCount() const;
@@ -258,7 +259,7 @@ class FStatusBar : public FWindow
 
 // FStatusBar inline functions
 //----------------------------------------------------------------------
-inline const char* FStatusBar::getClassName() const
+inline const FString FStatusBar::getClassName() const
 { return "FStatusBar"; }
 
 //----------------------------------------------------------------------

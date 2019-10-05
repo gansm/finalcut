@@ -293,8 +293,8 @@ FKeyboardTest::~FKeyboardTest()
 void FKeyboardTest::classNameTest()
 {
   finalcut::FKeyboard k;
-  const char* const classname = k.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname, "FKeyboard") == 0 );
+  const finalcut::FString& classname = k.getClassName();
+  CPPUNIT_ASSERT ( classname == "FKeyboard" );
 }
 
 //----------------------------------------------------------------------
@@ -2779,17 +2779,12 @@ void FKeyboardTest::unknownKeyTest()
 void FKeyboardTest::init()
 {
   keyboard = new finalcut::FKeyboard();
-  finalcut::FApplication* object = \
-      reinterpret_cast<finalcut::FApplication*>(this);
-  void (finalcut::FApplication::*method1)()
-      = reinterpret_cast<void(finalcut::FApplication::*)()>(&FKeyboardTest::keyPressed);
-  void (finalcut::FApplication::*method2)()
-      = reinterpret_cast<void(finalcut::FApplication::*)()>(&FKeyboardTest::keyReleased);
-  void (finalcut::FApplication::*method3)()
-      = reinterpret_cast<void(finalcut::FApplication::*)()>(&FKeyboardTest::escapeKeyPressed);
-  finalcut::FKeyboardCommand key_cmd1 (object, method1);
-  finalcut::FKeyboardCommand key_cmd2 (object, method2);
-  finalcut::FKeyboardCommand key_cmd3 (object, method3);
+  auto cmd1 = std::bind(&FKeyboardTest::keyPressed, this);
+  auto cmd2 = std::bind(&FKeyboardTest::keyReleased, this);
+  auto cmd3 = std::bind(&FKeyboardTest::escapeKeyPressed, this);
+  finalcut::FKeyboardCommand key_cmd1 (cmd1);
+  finalcut::FKeyboardCommand key_cmd2 (cmd2);
+  finalcut::FKeyboardCommand key_cmd3 (cmd3);
   keyboard->setPressCommand (key_cmd1);
   keyboard->setReleaseCommand (key_cmd2);
   keyboard->setEscPressedCommand (key_cmd3);

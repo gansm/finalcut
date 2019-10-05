@@ -86,7 +86,7 @@ class FTermDetection final
     virtual ~FTermDetection();
 
     // Accessor
-    const char*           getClassName() const;
+    const FString         getClassName() const;
     static char*          getTermType();
     static int            getGnomeTerminalID();
     terminalType&         getTermTypeStruct();
@@ -222,7 +222,7 @@ class FTermDetection final
 
 // FTermDetection inline functions
 //----------------------------------------------------------------------
-inline const char* FTermDetection::getClassName() const
+inline const FString FTermDetection::getClassName() const
 { return "FTermDetection"; }
 
 //----------------------------------------------------------------------

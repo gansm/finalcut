@@ -141,7 +141,6 @@ void Scrollview::draw()
 
     for (int x{0}; x < int(getScrollWidth()); x++)
       print (32 + ((x + y) % 0x5f));
-
   }
 
   if ( isMonochron() )

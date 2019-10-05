@@ -52,6 +52,9 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <functional>
+#include <memory>
+
 #include "final/fwidget.h"
 
 namespace finalcut
@@ -100,7 +103,7 @@ class FScrollbar : public FWidget
     FScrollbar& operator = (const FScrollbar&) = delete;
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     int                 getValue() const;
     sType               getScrollType() const;
 
@@ -170,11 +173,11 @@ class FScrollbar : public FWidget
 
 // non-member function forward declarations
 //----------------------------------------------------------------------
-template<typename Callback>
+template<typename Instance, typename Callback>
 void initScrollbar ( FScrollbarPtr& bar
                    , fc::orientation o
-                   , FWidget* cb_instance
-                   , Callback cb_handler )
+                   , Instance cb_instance
+                   , const Callback& cb_handler )
 {
   try
   {
@@ -186,6 +189,7 @@ void initScrollbar ( FScrollbarPtr& bar
     return;
   }
 
+  using namespace std::placeholders;
   bar->setMinimum(0);
   bar->setValue(0);
   bar->hide();
@@ -193,14 +197,14 @@ void initScrollbar ( FScrollbarPtr& bar
   bar->addCallback
   (
     "change-value",
-    F_METHOD_CALLBACK (cb_instance, cb_handler)
+    std::bind(cb_handler, cb_instance, _1, _2)
   );
 }
 
 
 // FScrollbar inline functions
 //----------------------------------------------------------------------
-inline const char* FScrollbar::getClassName() const
+inline const FString FScrollbar::getClassName() const
 { return "FScrollbar"; }
 
 //----------------------------------------------------------------------

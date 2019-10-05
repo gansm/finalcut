@@ -370,9 +370,12 @@ void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
   // Set the keyboard keypress timeout
   if ( keyboard )
   {
-    FKeyboardCommand key_cmd1 (this, &FApplication::keyPressed);
-    FKeyboardCommand key_cmd2 (this, &FApplication::keyReleased);
-    FKeyboardCommand key_cmd3 (this, &FApplication::escapeKeyPressed);
+    auto cmd1 = std::bind(&FApplication::keyPressed, this);
+    auto cmd2 = std::bind(&FApplication::keyReleased, this);
+    auto cmd3 = std::bind(&FApplication::escapeKeyPressed, this);
+    FKeyboardCommand key_cmd1 (cmd1);
+    FKeyboardCommand key_cmd2 (cmd2);
+    FKeyboardCommand key_cmd3 (cmd3);
     keyboard->setPressCommand (key_cmd1);
     keyboard->setReleaseCommand (key_cmd2);
     keyboard->setEscPressedCommand (key_cmd3);

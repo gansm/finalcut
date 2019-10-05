@@ -82,7 +82,7 @@ class FButton : public FWidget
     FButton& operator = (const FString&);
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     FString&            getText();
 
     // Mutators
@@ -178,7 +178,7 @@ class FButton : public FWidget
 
 // FButton inline functions
 //----------------------------------------------------------------------
-inline const char* FButton::getClassName() const
+inline const FString FButton::getClassName() const
 { return "FButton"; }
 
 //----------------------------------------------------------------------
