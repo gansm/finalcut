@@ -1178,7 +1178,7 @@ void FMenu::draw()
   clearArea();
   drawBorder();
   drawItems();
-  drawShadow();
+  drawShadow(this);
 
   if ( isMonochron() )
     setReverse(false);

@@ -107,18 +107,12 @@ void FWindow::setActiveWindow (FWindow* window)
 {
   // activate FWindow object window
 
-  if ( ! getWindowList() )
+  if ( ! getWindowList() || getWindowList()->empty() )
     return;
 
-  if ( getWindowList()->empty() )
-    return;
-
-  auto iter = getWindowList()->begin();
-  auto end  = getWindowList()->end();
-
-  while ( iter != end )
+  for (auto&& win : *getWindowList())
   {
-    if ( *iter == window )
+    if ( win == window )
     {
       if ( ! window->isWindowActive() )
       {
@@ -129,17 +123,15 @@ void FWindow::setActiveWindow (FWindow* window)
     }
     else
     {
-      auto w = static_cast<FWindow*>(*iter);
+      auto w = static_cast<FWindow*>(win);
 
       if ( w->isWindowActive() )
       {
         w->deactivateWindow();
         FEvent ev(fc::WindowInactive_Event);
-        FApplication::sendEvent(*iter, &ev);
+        FApplication::sendEvent(win, &ev);
       }
     }
-
-    ++iter;
   }
 }
 
@@ -478,7 +470,7 @@ void FWindow::delWindow (FWidget* obj)
   {
     if ( (*iter) == obj )
     {
-      getWindowList()->erase (iter);
+      getWindowList()->erase(iter);
       return;
     }
 

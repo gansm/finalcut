@@ -57,10 +57,6 @@
 #include "final/fc.h"
 #include "final/fterm.h"
 
-// Preprocessing handler macro
-//#define F_PREPROC_HANDLER(i,h)
-//           static_cast<FVTerm*>((i))
-//         , reinterpret_cast<FVTerm::FPreprocessingHandler>((h))
 #define F_PREPROC_HANDLER(i,h) \
     reinterpret_cast<FVTerm*>((i)), \
     std::bind ( reinterpret_cast<FVTerm::FPreprocessingHandler>((h)) \
@@ -296,7 +292,6 @@ class FVTerm
     virtual void          addPreprocessingHandler ( FVTerm*
                                                   , FVTermPreprocessing );
     virtual void          delPreprocessingHandler (FVTerm*);
-
     template<typename... Args>
     int                   printf (const FString, Args&&...);
     int                   print (const FString&);
@@ -316,13 +311,6 @@ class FVTerm
     static void           redefineDefaultColors (bool);
 
   protected:
-    // Enumeration
-    enum character_type
-    {
-      overlapped_character,
-      covered_character
-    };
-
     // Accessor
     virtual term_area*    getPrintArea();
     term_area*            getChildPrintArea() const;
@@ -341,9 +329,6 @@ class FVTerm
     static void           setInsertCursor (bool);
     static void           setInsertCursor();
     static void           unsetInsertCursor();
-    static bool           setUTF8 (bool);
-    static bool           setUTF8();
-    static bool           unsetUTF8();
 
     // Inquiries
     bool                  hasPrintArea() const;
@@ -353,6 +338,7 @@ class FVTerm
     static bool           hasShadowCharacter();
 
     // Methods
+
     void                  createArea ( const FRect&
                                      , const FSize&
                                      , term_area*& );
@@ -361,15 +347,54 @@ class FVTerm
                                      , term_area* );
     static void           removeArea (term_area*&);
     static void           restoreVTerm (const FRect&);
+    bool                  updateVTermCursor (term_area*);
+    static void           setAreaCursor ( const FPoint&
+                                        , bool, term_area* );
+    static void           getArea (const FPoint&, term_area*);
+    static void           getArea (const FRect&, term_area*);
+    void                  putArea (term_area*);
+    static void           putArea (const FPoint&, term_area*);
+    void                  scrollAreaForward (term_area*);
+    void                  scrollAreaReverse (term_area*);
+    void                  clearArea (term_area*, int = ' ');
+    void                  processTerminalUpdate();
+    static void           startTerminalUpdate();
+    static void           finishTerminalUpdate();
+    static void           flush_out();
+    static void           initScreenSettings();
+    static void           changeTermSizeFinished();
+    static void           exitWithMessage (const FString&)
+    #if defined(__clang__) || defined(__GNUC__)
+      __attribute__((noreturn))
+    #endif
+                           ;
+  private:
+    // Enumerations
+    enum character_type
+    {
+      overlapped_character,
+      covered_character
+    };
+
+    enum exit_state
+    {
+      not_used,
+      used,
+      line_completely_printed
+    };
+
+    // Constants
+    //   Buffer size for character output on the terminal
+    static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
+
+    // Methods
     void                  setTextToDefault (term_area*, const FSize&);
     static bool           reallocateTextArea ( term_area*
                                              , std::size_t
                                              , std::size_t );
     static bool           reallocateTextArea ( term_area*
                                              , std::size_t );
-
     static covered_state  isCovered (const FPoint&, term_area*);
-
     static void           updateOverlappedColor ( term_area*
                                                 , const FPoint&
                                                 , const FPoint& );
@@ -387,50 +412,17 @@ class FVTerm
     static bool           updateVTermCharacter ( term_area*
                                                , const FPoint&
                                                , const FPoint& );
-    static void           callPreprocessingHandler (term_area*);
     void                  updateVTerm();
-    void                  updateVTerm (term_area*);
-    bool                  updateVTermCursor (term_area*);
+    static void           callPreprocessingHandler (term_area*);
+    bool                  hasChildAreaChanges (term_area*);
+    void                  clearChildAreaChanges (term_area*);
     static bool           isInsideArea (const FPoint&, term_area*);
-    static void           setAreaCursor ( const FPoint&
-                                        , bool, term_area* );
-    static void           getArea (const FPoint&, term_area*);
-    static void           getArea (const FRect&, term_area*);
-    static void           putArea (const FPoint&, term_area*);
-    void                  scrollAreaForward (term_area*);
-    void                  scrollAreaReverse (term_area*);
-    void                  clearArea (term_area*, int = ' ');
     static charData       generateCharacter (const FPoint&);
     static charData       getCharacter ( character_type
                                        , const FPoint&
                                        , FVTerm* );
     static charData       getCoveredCharacter (const FPoint&, FVTerm*);
     static charData       getOverlappedCharacter (const FPoint&, FVTerm*);
-    void                  processTerminalUpdate();
-    static void           startTerminalUpdate();
-    static void           finishTerminalUpdate();
-    static void           flush_out();
-    static void           initScreenSettings();
-    static void           changeTermSizeFinished();
-    static void           exitWithMessage (const FString&)
-    #if defined(__clang__) || defined(__GNUC__)
-      __attribute__((noreturn))
-    #endif
-                           ;
-  private:
-    // Enumeration
-    enum exit_state
-    {
-      not_used,
-      used,
-      line_completely_printed
-    };
-
-    // Constants
-    //   Buffer size for character output on the terminal
-    static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
-
-    // Methods
     void                  init (bool);
     static void           init_characterLengths (FOptiMove*);
     void                  finish();
@@ -534,7 +526,7 @@ struct FVTerm::term_area  // define virtual terminal character properties
     int input_cursor_x{-1};    // X-position input cursor
     int input_cursor_y{-1};    // Y-position input cursor
     FWidget* widget{nullptr};  // Widget that owns this term_area
-    FPreprocessing preprocessing_call{};
+    FPreprocessing preproc_list{};
     line_changes* changes{nullptr};
     charData* text{nullptr};   // Text data for the output
     bool input_cursor_visible{false};
@@ -1124,18 +1116,6 @@ inline void FVTerm::setInsertCursor()
 //----------------------------------------------------------------------
 inline void FVTerm::unsetInsertCursor()
 { return FTerm::setInsertCursor(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setUTF8 (bool enable)
-{ return FTerm::setUTF8(enable); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setUTF8()
-{ return FTerm::setUTF8(true); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::unsetUTF8()
-{ return FTerm::setUTF8(false); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::hasPrintArea() const

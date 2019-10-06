@@ -440,9 +440,9 @@ inline std::size_t FButton::clickAnimationIndent (FWidget* parent_widget)
 
   // noshadow + indent one character to the right
   if ( getFlags().flat )
-    clearFlatBorder();
+    clearFlatBorder(this);
   else if ( hasShadow() )
-    clearShadow();
+    clearShadow(this);
 
   if ( parent_widget )
     setColor ( parent_widget->getForegroundColor()
@@ -639,7 +639,7 @@ void FButton::draw()
     setReverse(false);  // Dark background
 
   if ( getFlags().flat && ! button_down )
-    drawFlatBorder();
+    drawFlatBorder(this);
 
   hotkeypos = finalcut::getHotkeyPos(text, button_text);
 
@@ -665,7 +665,7 @@ void FButton::draw()
 
   // Draw button shadow
   if ( ! getFlags().flat && getFlags().shadow && ! button_down )
-    drawShadow();
+    drawShadow(this);
 
   if ( isMonochron() )
     setReverse(false);  // Dark background

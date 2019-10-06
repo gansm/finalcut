@@ -168,7 +168,7 @@ class FFileDialog : public FDialog
 
     typedef std::vector<dir_entry> dirEntries;
 
-    // Method
+    // Methods
     void                 init();
     void                 widgetSettings (const FPoint&);
     void                 initCallbacks();

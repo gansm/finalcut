@@ -798,7 +798,7 @@ FWidget*& FApplication::determineClickedWidget()
   if ( window )
   {
     // Determine the widget at the current click position
-    auto child = childWidgetAt (window, mouse_position);
+    auto child = window->childWidgetAt (mouse_position);
     clicked = ( child != 0 ) ? child : window;
     setClickedWidget (clicked);
   }

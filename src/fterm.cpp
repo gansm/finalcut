@@ -2150,6 +2150,7 @@ void FTerm::useNormalScreenBuffer()
 //----------------------------------------------------------------------
 inline void FTerm::allocationValues()
 {
+  FStartOptions::getFStartOptions();
   getFTermData();
   getFSystem();
   getFOptiMove();

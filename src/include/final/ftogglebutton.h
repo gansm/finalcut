@@ -108,7 +108,7 @@ class FToggleButton : public FWidget
     // Inquiries
     bool                isChecked();
 
-    // Methods
+    // Method
     void                hide() override;
 
     // Event handlers

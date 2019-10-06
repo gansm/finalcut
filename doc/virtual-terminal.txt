@@ -23,12 +23,12 @@ printf(...)
   │   │createArea(area)                  │                                ║
   │   │                                  │                                ║
   │   │                                  │                                ║
-  └───┼─────────────►     ──────► updateVTerm(area) ────►                 ║
+  └───┼────────►                    putArea(area) ────►                   ║
       │                                  │                                ║
-      │                           putArea(x,y,area)                       ║
-      │                         ────────────────────►                     ║
-      │                           getArea(x,y,area)                       ║
-      │                        ◄────────────────────                      ║
+      │                           putArea(x,y,area) ────►                 ║
+      │                                  │                                ║
+      │                     ◄──── getArea(x,y,area)                       ║
+      │                                  │                                ║
       │                                  │                                ║
       │                                  │                                ║
       │                  resizeArea(area)│                                ║

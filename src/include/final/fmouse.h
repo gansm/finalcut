@@ -309,7 +309,7 @@ class FMouseX11 final : public FMouse
     // Constant
     static constexpr std::size_t MOUSE_BUF_SIZE = 4;
 
-    // Method
+    // Methods
     void         setKeyState (int);
     void         setMoveState (const FPoint&, int);
     void         setButtonState (int, struct timeval*);

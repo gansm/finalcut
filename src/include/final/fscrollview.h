@@ -123,7 +123,7 @@ class FScrollView : public FWidget
     bool                hasBorder();
     bool                isViewportPrint();
 
-    // Method
+    // Methods
     void                clearArea (int = ' ') override;
     void                scrollToX (int);
     void                scrollToY (int);
@@ -148,7 +148,7 @@ class FScrollView : public FWidget
     // Accessor
     term_area*          getPrintArea() override;
 
-    // Method
+    // Methods
     void                adjustSize() override;
     void                copy2area();
 

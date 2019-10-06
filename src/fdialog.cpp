@@ -748,7 +748,7 @@ void FDialog::drawDialogShadow()
   if ( isMonochron() && ! getFlags().trans_shadow )
     return;
 
-  drawShadow();
+  drawShadow(this);
 }
 
 //----------------------------------------------------------------------

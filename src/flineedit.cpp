@@ -791,7 +791,7 @@ void FLineEdit::drawInputField()
   }
 
   if ( getFlags().shadow )
-    drawShadow ();
+    drawShadow(this);
 
   // set the cursor to the insert pos.
   auto cursor_pos_column = getColumnWidth (text, cursor_pos);
