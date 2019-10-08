@@ -596,7 +596,7 @@ void FLineEdit::onAccel (FAccelEvent* ev)
       {
         getStatusBar()->drawMessage();
         updateTerminal();
-        flush_out();
+        flushOutputBuffer();
       }
     }
   }
@@ -623,7 +623,7 @@ void FLineEdit::onFocusIn (FFocusEvent*)
   {
     getStatusBar()->drawMessage();
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 }
 

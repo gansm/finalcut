@@ -117,8 +117,8 @@ class FApplication : public FWidget
 
     // Methods
     int                   exec();  // run
-    int                   enter_loop();
-    void                  exit_loop();
+    int                   enterLoop();
+    void                  exitLoop();
     static void           exit (int = 0);
     void                  quit();
     static bool           sendEvent (const FObject*, const FEvent*);

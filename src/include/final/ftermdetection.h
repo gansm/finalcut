@@ -77,7 +77,7 @@ class FTermDetection final
       uInt8 screen         : 1;
       uInt8 tmux           : 1;
       uInt8                : 5;  // padding bits
-    } terminalType;
+    } FTerminalType;
 
     // Constructors
     FTermDetection();
@@ -89,7 +89,7 @@ class FTermDetection final
     const FString         getClassName() const;
     static char*          getTermType();
     static int            getGnomeTerminalID();
-    terminalType&         getTermTypeStruct();
+    FTerminalType&        getTermTypeStruct();
 
 #if DEBUG
     static const FString& getAnswerbackString();
@@ -199,7 +199,7 @@ class FTermDetection final
     static const FString* sec_da;
     static FTermData*     fterm_data;
     static FSystem*       fsystem;
-    static terminalType   terminal_type;
+    static FTerminalType  terminal_type;
 
     static struct colorEnv
     {
@@ -234,7 +234,7 @@ inline int FTermDetection::getGnomeTerminalID()
 { return gnome_terminal_id; }
 
 //----------------------------------------------------------------------
-inline FTermDetection::terminalType& FTermDetection::getTermTypeStruct()
+inline FTermDetection::FTerminalType& FTermDetection::getTermTypeStruct()
 { return terminal_type; }
 
 #if DEBUG

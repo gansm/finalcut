@@ -118,7 +118,7 @@ void FOptiAttrTest::classNameTest()
 //----------------------------------------------------------------------
 void FOptiAttrTest::noArgumentTest()
 {
-  finalcut::charData* ch = new finalcut::charData();
+  finalcut::FChar* ch = new finalcut::FChar();
   finalcut::FOptiAttr oa;
   oa.initialize();
 
@@ -130,7 +130,7 @@ void FOptiAttrTest::noArgumentTest()
   CPPUNIT_ASSERT ( oa.isNormal(ch) );
 
   // Null test
-  finalcut::charData* ch_null = nullptr;
+  finalcut::FChar* ch_null = nullptr;
   CPPUNIT_ASSERT ( oa.changeAttribute(ch, ch) == 0 );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(ch, ch_null), C_STR("") );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(ch_null, ch), C_STR("") );
@@ -204,8 +204,8 @@ void FOptiAttrTest::fakeReverseTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Gray text on blue background
@@ -299,8 +299,8 @@ void FOptiAttrTest::ansiTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -764,8 +764,8 @@ void FOptiAttrTest::vt100Test()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -1235,8 +1235,8 @@ void FOptiAttrTest::xtermTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -1706,8 +1706,8 @@ void FOptiAttrTest::rxvtTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -2178,8 +2178,8 @@ void FOptiAttrTest::linuxTest()
   oa.set_orig_orig_colors (C_STR(OSC "R"));
   oa.initialize();
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -2661,8 +2661,8 @@ void FOptiAttrTest::puttyTest()
   oa.initialize();
 
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -3134,8 +3134,8 @@ void FOptiAttrTest::teratermTest()
   oa.initialize();
 
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -3609,8 +3609,8 @@ void FOptiAttrTest::ibmColorTest()
   oa.initialize();
 
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -4050,8 +4050,8 @@ void FOptiAttrTest::wyse50Test()
 
   oa.setTermEnvironment(optiattr_env);
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold

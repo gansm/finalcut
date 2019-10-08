@@ -53,8 +53,14 @@ class FTermXTerminal final
     // Constructors
     FTermXTerminal();
 
+    // Disable copy constructor
+    FTermXTerminal (const FTermXTerminal&) = delete;
+
     // Destructor
     virtual ~FTermXTerminal();
+
+    // Disable assignment operator (=)
+    FTermXTerminal& operator = (const FTermXTerminal&) = delete;
 
     // Mutators
     void                  redefineDefaultColors (bool);

@@ -268,7 +268,7 @@ void FLabel::onMouseDown (FMouseEvent* ev)
     {
       accel_widget->getStatusBar()->drawMessage();
       updateTerminal();
-      flush_out();
+      flushOutputBuffer();
     }
   }
 }
@@ -295,7 +295,7 @@ void FLabel::onAccel (FAccelEvent* ev)
       {
         accel_widget->getStatusBar()->drawMessage();
         updateTerminal();
-        flush_out();
+        flushOutputBuffer();
       }
     }
   }
@@ -464,7 +464,7 @@ void FLabel::printLine (FString&& line)
   else
   {
     to_column = width - 2;
-    to_char = getColumnWidthToLength(line, to_column);
+    to_char = getLengthFromColumnWidth(line, to_column);
   }
 
   if ( hasReverseMode() )

@@ -614,7 +614,7 @@ void FTextView::draw()
 
   setCursorPos (FPoint(int(getWidth()), int(getHeight())));
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------

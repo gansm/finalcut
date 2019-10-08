@@ -57,6 +57,7 @@ libfinal_la_SOURCES = \
 	ftermdetection.cpp \
 	ftermios.cpp \
 	fterm.cpp \
+	fterm_functions.cpp \
 	fvterm.cpp \
 	fevent.cpp \
 	foptiattr.cpp \
@@ -66,6 +67,7 @@ libfinal_la_SOURCES = \
 	fcolorpalette.cpp \
 	fwidgetcolors.cpp \
 	fwidget.cpp \
+	fwidget_functions.cpp \
 	fobject.cpp
 
 libfinal_la_LDFLAGS = -version-info @SO_VERSION@

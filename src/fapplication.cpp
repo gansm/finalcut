@@ -122,12 +122,12 @@ int FApplication::exec()  // run
   quit_now = false;
   quit_code = 0;
 
-  enter_loop();
+  enterLoop();
   return quit_code;
 }
 
 //----------------------------------------------------------------------
-int FApplication::enter_loop()  // event loop
+int FApplication::enterLoop()  // event loop
 {
   loop_level++;
   quit_now = false;
@@ -144,7 +144,7 @@ int FApplication::enter_loop()  // event loop
 }
 
 //----------------------------------------------------------------------
-void FApplication::exit_loop()
+void FApplication::exitLoop()
 {
   app_exit_loop = true;
 }
@@ -172,10 +172,7 @@ void FApplication::quit()
 bool FApplication::sendEvent ( const FObject* receiver
                              , const FEvent* event )
 {
-  if ( quit_now || app_exit_loop )
-    return false;
-
-  if ( ! receiver )
+  if ( quit_now || app_exit_loop || ! receiver )
     return false;
 
   if ( receiver->isWidget() )
@@ -672,7 +669,7 @@ void FApplication::processKeyboardEvent()
     return;
 
   findKeyboardWidget();
-  flush_out();
+  flushOutputBuffer();
   keyboard->clearKeyBufferOnTimeout();
 
   if ( isKeyPressed() )
@@ -776,10 +773,7 @@ FWidget*& FApplication::determineClickedWidget()
 {
   FWidget*& clicked = FWidget::getClickedWidget();
 
-  if ( clicked )
-    return clicked;
-
-  if ( ! mouse )
+  if ( clicked || ! mouse )
     return clicked;
 
   if ( ! mouse->isLeftButtonPressed()
@@ -861,7 +855,7 @@ void FApplication::closeOpenMenu()
     FWidget::getStatusBar()->drawMessage();
 
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------
@@ -875,13 +869,7 @@ void FApplication::unselectMenubarItems()
   if ( openmenu || (mouse && mouse->isMoved()) )
     return;
 
-  if ( ! menu_bar )
-    return;
-
-  if ( ! menu_bar->hasSelectedItem() )
-    return;
-
-  if ( ! mouse )
+  if ( ! (menu_bar && menu_bar->hasSelectedItem() && mouse) )
     return;
 
   const auto& mouse_position = mouse->getPos();
@@ -902,7 +890,7 @@ void FApplication::unselectMenubarItems()
       FWidget::getStatusBar()->drawMessage();
 
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 }
 
@@ -911,10 +899,7 @@ void FApplication::sendMouseEvent()
 {
   auto clicked = FWidget::getClickedWidget();
 
-  if ( ! clicked )
-    return;
-
-  if ( ! mouse )
+  if ( ! (clicked && mouse) )
     return;
 
   const auto& mouse_position = mouse->getPos();

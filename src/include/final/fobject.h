@@ -126,7 +126,7 @@ class FObject
     bool                  delAllTimer();
 
   protected:
-    struct timer_data
+    struct FTimerData
     {
       int       id;
       timeval   interval;
@@ -135,10 +135,10 @@ class FObject
     };
 
     // Typedefs
-    typedef std::vector<timer_data> TimerList;
+    typedef std::vector<FTimerData> FTimerList;
 
     // Accessor
-    TimerList*            getTimerList() const;
+    FTimerList*           getTimerList() const;
 
     // Mutator
     void                  setWidgetProperty (bool);
@@ -161,7 +161,7 @@ class FObject
     bool                  has_parent{false};
     bool                  widget_object{false};
     static bool           timer_modify_lock;
-    static TimerList*     timer_list;
+    static FTimerList*    timer_list;
 };
 
 
@@ -226,7 +226,7 @@ inline bool FObject::isTimerInUpdating() const
 { return timer_modify_lock; }
 
 //----------------------------------------------------------------------
-inline FObject::TimerList* FObject::getTimerList() const
+inline FObject::FTimerList* FObject::getTimerList() const
 { return timer_list; }
 
 //----------------------------------------------------------------------

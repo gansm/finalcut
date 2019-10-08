@@ -106,7 +106,7 @@ class FKeyboard final
     timeval*              getKeyPressedTime();
 
     // Mutators
-    void                  setTermcapMap (fc::fkeymap*);
+    void                  setTermcapMap (fc::FKeyMap*);
     void                  setKeypressTimeout (const uInt64);
     void                  enableUTF8();
     void                  disableUTF8();
@@ -170,7 +170,7 @@ class FKeyboard final
 
     static timeval        time_keypressed;
     static uInt64         key_timeout;
-    fc::fkeymap*          key_map{nullptr};
+    fc::FKeyMap*          key_map{nullptr};
     FKey                  key{0};
     char                  read_buf[READ_BUF_SIZE]{'\0'};
     char                  fifo_buf[FIFO_BUF_SIZE]{'\0'};

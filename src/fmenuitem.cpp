@@ -206,7 +206,7 @@ void FMenuItem::setText (const FString& txt)
 void FMenuItem::addAccelerator (FKey key, FWidget* obj)
 {
   auto root = getRootWidget();
-  accelerator accel = { key, obj };
+  FAccelerator accel = { key, obj };
 
   if ( root && root->getAcceleratorList() )
   {
@@ -270,7 +270,7 @@ void FMenuItem::openMenu()
   dd_menu->raiseWindow();
   dd_menu->redraw();
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------

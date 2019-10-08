@@ -146,7 +146,7 @@ class FScrollView : public FWidget
     using FVTerm::clearArea;
 
     // Accessor
-    term_area*          getPrintArea() override;
+    FTermArea*          getPrintArea() override;
 
     // Methods
     void                adjustSize() override;
@@ -182,7 +182,7 @@ class FScrollView : public FWidget
     // Data members
     FRect              scroll_geometry{1, 1, 1, 1};
     FRect              viewport_geometry{};
-    term_area*         viewport{nullptr};  // virtual scroll content
+    FTermArea*         viewport{nullptr};  // virtual scroll content
     FScrollbarPtr      vbar{nullptr};
     FScrollbarPtr      hbar{nullptr};
     keyMap             key_map{};
@@ -279,7 +279,7 @@ inline void FScrollView::initScrollbar ( FScrollbarPtr& bar
                                        , Callback cb_handler )
 {
   finalcut::initScrollbar (bar, o, this, cb_handler);
-  term_area* area = getPrintArea();
+  FTermArea* area = getPrintArea();
   bar->setPrintArea(area);
 }
 

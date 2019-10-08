@@ -660,91 +660,91 @@ void FTermcapQuirksTest::sunTest()
   CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_parm_left_cursor].string
                          , C_STR(CSI "%p1%dD") );
 
-  for (std::size_t i = 0; finalcut::fc::Fkey[i].tname[0] != 0; i++)
+  for (std::size_t i = 0; finalcut::fc::fkey[i].tname[0] != 0; i++)
   {
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "K2", 2) == 0 )  // center of keypad
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "K2", 2) == 0 )  // center of keypad
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "218z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "kb", 2) == 0 )  // backspace key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "kb", 2) == 0 )  // backspace key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR("\b") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "kD", 2) == 0
-      && std::strlen(finalcut::fc::Fkey[i].tname) == 2 )  // delete-character key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "kD", 2) == 0
+      && std::strlen(finalcut::fc::fkey[i].tname) == 2 )  // delete-character key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR("\177") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "@7", 2) == 0 )  // end key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "@7", 2) == 0 )  // end key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "220z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "k;", 2) == 0 )  // F10 function key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "k;", 2) == 0 )  // F10 function key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "233z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "F1", 2) == 0 )  // F11 function key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "F1", 2) == 0 )  // F11 function key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "234z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "F2", 2) == 0 )  // F12 function key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "F2", 2) == 0 )  // F12 function key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "235z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "kh", 2) == 0 )  // home key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "kh", 2) == 0 )  // home key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "214z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "kI", 2) == 0 )  // insert-character key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "kI", 2) == 0 )  // insert-character key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "247z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "kN", 2) == 0 )  // next-page key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "kN", 2) == 0 )  // next-page key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "222z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "%7", 2) == 0 )  // options key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "%7", 2) == 0 )  // options key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "194z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "kP", 2) == 0 )  // prev-page key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "kP", 2) == 0 )  // prev-page key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "216z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "&5", 2) == 0 )  // resume key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "&5", 2) == 0 )  // resume key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "193z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "&8", 2) == 0 )  // undo key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "&8", 2) == 0 )  // undo key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "195z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "K2", 2) == 0 )  // center of keypad
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "K2", 2) == 0 )  // center of keypad
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "218z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "kDx", 3) == 0 )  // keypad delete
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "kDx", 3) == 0 )  // keypad delete
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "249z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "@8x", 3) == 0 )  // enter/send key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "@8x", 3) == 0 )  // enter/send key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "250z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "KP1", 3) == 0 )  // keypad slash
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "KP1", 3) == 0 )  // keypad slash
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "212z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "KP2", 3) == 0 )  // keypad asterisk
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "KP2", 3) == 0 )  // keypad asterisk
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "213z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "KP3", 3) == 0 )  // keypad minus sign
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "KP3", 3) == 0 )  // keypad minus sign
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "254z") );
 
-    if ( std::strncmp(finalcut::fc::Fkey[i].tname, "KP4", 3) == 0 )  // keypad plus sign
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey[i].tname, "KP4", 3) == 0 )  // keypad plus sign
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
                              , C_STR(CSI "253z") );
   }
 

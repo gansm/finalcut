@@ -126,8 +126,8 @@ class FOptiAttr final
     FOptiAttr& operator = (const FOptiAttr&) = delete;
 
     // Friend operator functions
-    friend bool operator == (const charData&, const charData&);
-    friend bool operator != (const charData&, const charData&);
+    friend bool operator == (const FChar&, const FChar&);
+    friend bool operator != (const FChar&, const FChar&);
 
     // Accessors
     const FString getClassName() const;
@@ -175,12 +175,12 @@ class FOptiAttr final
     void  set_orig_orig_colors (char[]);
 
     // Inquiry
-    static bool   isNormal (charData*&);
+    static bool   isNormal (FChar*&);
 
     // Methods
     void          initialize();
     static FColor vga2ansi (FColor);
-    char*         changeAttribute (charData*&, charData*&);
+    char*         changeAttribute (FChar*&, FChar*&);
 
   private:
     // Typedefs and Enumerations
@@ -223,62 +223,62 @@ class FOptiAttr final
     };
 
     // Mutators
-    bool  setTermBold (charData*&);
-    bool  unsetTermBold (charData*&);
-    bool  setTermDim (charData*&);
-    bool  unsetTermDim (charData*&);
-    bool  setTermItalic (charData*&);
-    bool  unsetTermItalic (charData*&);
-    bool  setTermUnderline (charData*&);
-    bool  unsetTermUnderline (charData*&);
-    bool  setTermBlink (charData*&);
-    bool  unsetTermBlink (charData*&);
-    bool  setTermReverse (charData*&);
-    bool  unsetTermReverse (charData*&);
-    bool  setTermStandout (charData*&);
-    bool  unsetTermStandout (charData*&);
-    bool  setTermInvisible (charData*&);
-    bool  unsetTermInvisible (charData*&);
-    bool  setTermProtected (charData*&);
-    bool  unsetTermProtected (charData*&);
-    bool  setTermCrossedOut (charData*&);
-    bool  unsetTermCrossedOut (charData*&);
-    bool  setTermDoubleUnderline (charData*&);
-    bool  unsetTermDoubleUnderline (charData*&);
-    bool  setTermAttributes ( charData*&
+    bool  setTermBold (FChar*&);
+    bool  unsetTermBold (FChar*&);
+    bool  setTermDim (FChar*&);
+    bool  unsetTermDim (FChar*&);
+    bool  setTermItalic (FChar*&);
+    bool  unsetTermItalic (FChar*&);
+    bool  setTermUnderline (FChar*&);
+    bool  unsetTermUnderline (FChar*&);
+    bool  setTermBlink (FChar*&);
+    bool  unsetTermBlink (FChar*&);
+    bool  setTermReverse (FChar*&);
+    bool  unsetTermReverse (FChar*&);
+    bool  setTermStandout (FChar*&);
+    bool  unsetTermStandout (FChar*&);
+    bool  setTermInvisible (FChar*&);
+    bool  unsetTermInvisible (FChar*&);
+    bool  setTermProtected (FChar*&);
+    bool  unsetTermProtected (FChar*&);
+    bool  setTermCrossedOut (FChar*&);
+    bool  unsetTermCrossedOut (FChar*&);
+    bool  setTermDoubleUnderline (FChar*&);
+    bool  unsetTermDoubleUnderline (FChar*&);
+    bool  setTermAttributes ( FChar*&
                             , bool, bool, bool
                             , bool, bool, bool
                             , bool, bool, bool );
-    bool  unsetTermAttributes (charData*&);
-    bool  setTermAltCharset (charData*&);
-    bool  unsetTermAltCharset (charData*&);
-    bool  setTermPCcharset (charData*&);
-    bool  unsetTermPCcharset (charData*&);
-    bool  setTermDefaultColor (charData*&);
-    void  setAttributesOn (charData*&);
-    void  setAttributesOff (charData*&);
+    bool  unsetTermAttributes (FChar*&);
+    bool  setTermAltCharset (FChar*&);
+    bool  unsetTermAltCharset (FChar*&);
+    bool  setTermPCcharset (FChar*&);
+    bool  unsetTermPCcharset (FChar*&);
+    bool  setTermDefaultColor (FChar*&);
+    void  setAttributesOn (FChar*&);
+    void  setAttributesOff (FChar*&);
 
     // Inquiries
-    static bool  hasColor (charData*&);
-    static bool  hasAttribute (charData*&);
-    static bool  hasNoAttribute (charData*&);
+    static bool  hasColor (FChar*&);
+    static bool  hasAttribute (FChar*&);
+    static bool  hasNoAttribute (FChar*&);
 
     // Methods
-    bool  hasColorChanged (charData*&, charData*&);
-    void  resetColor (charData*&);
-    void  prevent_no_color_video_attributes (charData*&, bool = false);
-    void  deactivateAttributes (charData*&, charData*&);
-    void  changeAttributeSGR (charData*&, charData*&);
-    void  changeAttributeSeparately (charData*&, charData*&);
-    void  change_color (charData*&, charData*&);
-    void  change_to_default_color (charData*&, charData*&, FColor&, FColor&);
-    void  change_current_color (charData*&, FColor, FColor);
-    void  resetAttribute (charData*&);
-    void  reset (charData*&);
+    bool  hasColorChanged (FChar*&, FChar*&);
+    void  resetColor (FChar*&);
+    void  prevent_no_color_video_attributes (FChar*&, bool = false);
+    void  deactivateAttributes (FChar*&, FChar*&);
+    void  changeAttributeSGR (FChar*&, FChar*&);
+    void  changeAttributeSeparately (FChar*&, FChar*&);
+    void  change_color (FChar*&, FChar*&);
+    void  change_to_default_color (FChar*&, FChar*&, FColor&, FColor&);
+    void  change_current_color (FChar*&, FColor, FColor);
+    void  resetAttribute (FChar*&);
+    void  reset (FChar*&);
     bool  caused_reset_attributes (char[], uChar = all_tests);
     bool  hasCharsetEquivalence();
-    void  detectSwitchOn (charData*&, charData*&);
-    void  detectSwitchOff (charData*&, charData*&);
+    void  detectSwitchOn (FChar*&, FChar*&);
+    void  detectSwitchOff (FChar*&, FChar*&);
     bool  switchOn();
     bool  switchOff();
     bool  append_sequence (char[]);
@@ -320,9 +320,9 @@ class FOptiAttr final
     capability F_orig_pair{};
     capability F_orig_colors{};
 
-    charData   on{};
-    charData   off{};
-    charData   reset_byte_mask{};
+    FChar      on{};
+    FChar      off{};
+    FChar      reset_byte_mask{};
 
     int        max_color{1};
     int        attr_without_color{0};
@@ -337,10 +337,10 @@ class FOptiAttr final
 
 // FOptiAttr inline functions
 //----------------------------------------------------------------------
-inline bool operator == ( const charData& lhs,
-                          const charData& rhs )
+inline bool operator == ( const FChar& lhs,
+                          const FChar& rhs )
 {
-  return lhs.code         == rhs.code
+  return lhs.ch           == rhs.ch
       && lhs.fg_color     == rhs.fg_color
       && lhs.bg_color     == rhs.bg_color
       && lhs.attr.byte[0] == rhs.attr.byte[0]
@@ -350,8 +350,8 @@ inline bool operator == ( const charData& lhs,
 }
 
 //----------------------------------------------------------------------
-inline bool operator != ( const charData& lhs,
-                          const charData& rhs )
+inline bool operator != ( const FChar& lhs,
+                          const FChar& rhs )
 { return ! ( lhs == rhs ); }
 
 //----------------------------------------------------------------------

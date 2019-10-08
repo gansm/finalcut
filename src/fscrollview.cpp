@@ -589,7 +589,7 @@ void FScrollView::onChildFocusOut (FFocusEvent* out_ev)
 
 // protected methods of FScrollView
 //----------------------------------------------------------------------
-FVTerm::term_area* FScrollView::getPrintArea()
+FVTerm::FTermArea* FScrollView::getPrintArea()
 {
   // returns print area or viewport
 
@@ -675,13 +675,13 @@ void FScrollView::copy2area()
 
   for (int y{0}; y < y_end; y++)  // line loop
   {
-    charData* vc{};  // viewport character
-    charData* ac{};  // area character
+    FChar* vc{};  // viewport character
+    FChar* ac{};  // area character
     int v_line_len = viewport->width;
     int a_line_len = printarea->width + printarea->right_shadow;
-    vc = &viewport->text[(dy + y) * v_line_len + dx];
-    ac = &printarea->text[(ay + y) * a_line_len + ax];
-    std::memcpy (ac, vc, sizeof(charData) * unsigned(x_end));
+    vc = &viewport->data[(dy + y) * v_line_len + dx];
+    ac = &printarea->data[(ay + y) * a_line_len + ax];
+    std::memcpy (ac, vc, sizeof(FChar) * unsigned(x_end));
 
     if ( int(printarea->changes[ay + y].xmin) > ax )
       printarea->changes[ay + y].xmin = uInt(ax);

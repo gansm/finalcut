@@ -1,9 +1,9 @@
                         The virtual terminal (vterm)
                         ----------------------------
 
-FINAL CUT uses a virtual terminal to print character via an update
-method on the screen. It provides (as an overlying layer) virtual windows
-for the realization of window movements. The update methods only transfer
+FINAL CUT uses a virtual terminal to print character via an update method
+on the screen. It provides (as an overlying layer) virtual windows for
+the realization of window movements. The update methods only transfer
 differences to the virtual terminal or physical screen.
 
 
@@ -11,54 +11,46 @@ differences to the virtual terminal or physical screen.
  print(...)
 printf(...)
   │
-  │           ╔═════════════════════════[ vterm ]═════════════════════════╗
-  │           ║createVTerm()                                              ║
-  │           ║                                 ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐ ║
-  │           ║                                                           ║
-  │           ║                                 │ restoreVTerm(x,y,w,h) │ ║
-  │           ║                                                           ║
-  │           ║                                 └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ ║
-  │           ║                                                           ║
-  │   ┌───────╨─────[ vwin ]─────────────┐                                ║
-  │   │createArea(area)                  │                                ║
-  │   │                                  │                                ║
-  │   │                                  │                                ║
-  └───┼────────►                    putArea(area) ────►                   ║
-      │                                  │                                ║
-      │                           putArea(x,y,area) ────►                 ║
-      │                                  │                                ║
-      │                     ◄──── getArea(x,y,area)                       ║
-      │                                  │                                ║
-      │                                  │                                ║
-      │                                  │                                ║
-      │                  resizeArea(area)│                                ║
-      └───────╥──────────────────────────┘                                ║
-              ║                                                           ║
-              ║                                                           ║
-              ║                                                           ║
-              ║   │                                          resizeVTerm()║
-              ╚═══▼═══════════════════════════════════════════════════════╝
-                  │
-                  │    putVTerm()
-                  └──────────────────► updateTerminalLine(y)
-                    updateTerminal()             │
-                                                 ▼
-                                         ┌───────────────┐
-                                         │ output_buffer │
-                                         └───────────────┘
-                                                 │
-                                                 │ flush_out() 
-                                                 │     +
-                                                 │ Fputchar(char)
-                                                 │
-                                                 ▼
-                                         ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-                                         ▌               ▐
-                                         ▌    screen     ▐
-                                         ▌ ───────────── ▐
-                                         ▌ real terminal ▐
-                                         ▌               ▐
-                                         ▀▀▀▀▀▀▀███▀▀▀▀▀▀▀
-                                                ███
-                                             ▀▀▀▀▀▀▀▀▀
-
+  │          ╔════════════════════════[ vterm ]════════════════════════╗
+  │          ║createVTerm()                                            ║
+  │          ║                               ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐ ║
+  │          ║                                                         ║
+  │          ║                               │ restoreVTerm(x,y,w,h) │ ║
+  │  ┌───────╨────[ vwin ]────────────┐                                ║
+  │  │createArea(area)                │      └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ ║
+  │  │                                │                                ║
+  │  │                                │                                ║
+  └──┼────────►                  putArea(area) ────►                   ║
+     │                                │                                ║
+     │                         putArea(x,y,area) ────►                 ║
+     │                                │                                ║
+     │                   ◄──── getArea(x,y,area)                       ║
+     │                                │                                ║
+     │                                │                                ║
+     │                                │                                ║
+     │                resizeArea(area)│                                ║
+     └───────╥────────────────────────┘                                ║
+             ║                                                         ║
+             ║       │                                    resizeVTerm()║
+             ╚═══════▼═════════════════════════════════════════════════╝
+                     │
+                     │   putVTerm()
+                     └──────────────────► updateTerminalLine(y)
+                       updateTerminal()            │
+                                                   ▼
+                                           ┌───────────────┐
+                                           │ output_buffer │
+                                           └───────────────┘
+                                                   │
+                                                   │ flushOutputBuffer()
+                                                   │ and putchar(char)
+                                                   ▼
+                                           ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+                                           ▌               ▐
+                                           ▌    screen     ▐
+                                           ▌ ───────────── ▐
+                                           ▌ real terminal ▐
+                                           ▌               ▐
+                                           ▀▀▀▀▀▀▀███▀▀▀▀▀▀▀
+                                                  ███
+                                               ▀▀▀▀▀▀▀▀▀

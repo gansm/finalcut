@@ -40,9 +40,9 @@ typedef struct
   char* string;
   char  tname[4];
 }
-fkeymap;
+FKeyMap;
 
-fkeymap Fkey[] =
+FKeyMap fkey[] =
 {
   { finalcut::fc::Fkey_backspace , C_STR("\177")     , "kb" },  // backspace key
   { finalcut::fc::Fkey_catab     , 0                 , "ka" },  // clear-all-tabs key
@@ -2793,7 +2793,7 @@ void FKeyboardTest::init()
   CPPUNIT_ASSERT ( key_pressed == 0 );
   keyboard->enableUTF8();
   keyboard->enableMouseSequences();
-  keyboard->setTermcapMap (reinterpret_cast<finalcut::fc::fkeymap*>(test::Fkey));
+  keyboard->setTermcapMap (reinterpret_cast<finalcut::fc::FKeyMap*>(test::fkey));
 }
 
 //----------------------------------------------------------------------

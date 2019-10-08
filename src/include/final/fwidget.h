@@ -139,7 +139,7 @@ class FWidget : public FVTerm, public FObject
     using FVTerm::setColor;
     using FVTerm::print;
 
-    struct accelerator
+    struct FAccelerator
     {
       alignas(8) FKey key;
       FWidget* object;
@@ -147,12 +147,12 @@ class FWidget : public FVTerm, public FObject
 
     // Typedefs
     typedef std::vector<FWidget*> FWidgetList;
-    typedef std::vector<accelerator> Accelerators;
+    typedef std::vector<FAccelerator> FAcceleratorList;
     typedef void (*FCallbackPtr)(FWidget*, FDataPtr);
     typedef void (FWidget::*FMemberCallback)(FWidget*, FDataPtr);
     typedef std::function<void(FWidget*, FDataPtr)> FCallback;
 
-    struct widget_flags  // Properties of a widget ⚑
+    struct FWidgetFlags  // Properties of a widget ⚑
     {
       uInt32 shadow         : 1;
       uInt32 trans_shadow   : 1;
@@ -202,7 +202,7 @@ class FWidget : public FVTerm, public FObject
     static FStatusBar*    getStatusBar();
     virtual FWidget*      getFirstFocusableWidget (FObjectList);
     virtual FWidget*      getLastFocusableWidget (FObjectList);
-    Accelerators*         getAcceleratorList() const;
+    FAcceleratorList*     getAcceleratorList() const;
     FString               getStatusbarMessage() const;
     FColor                getForegroundColor() const;  // get the primary
     FColor                getBackgroundColor() const;  // widget colors
@@ -232,7 +232,7 @@ class FWidget : public FVTerm, public FObject
     const FRect&          getTermGeometryWithShadow();
     std::size_t           getDesktopWidth();
     std::size_t           getDesktopHeight();
-    const widget_flags&   getFlags() const;
+    const FWidgetFlags&   getFlags() const;
     FPoint                getCursorPos();
     FPoint                getPrintPos();
 
@@ -265,7 +265,7 @@ class FWidget : public FVTerm, public FObject
     void                  setForegroundColor (FColor);
     void                  setBackgroundColor (FColor);
     void                  setColor();
-    widget_flags&         setFlags();
+    FWidgetFlags&         setFlags();
     // Positioning and sizes mutators...
     virtual void          setX (int, bool = true);
     virtual void          setY (int, bool = true);
@@ -345,7 +345,7 @@ class FWidget : public FVTerm, public FObject
     static void           quit();
 
   protected:
-    struct callback_data
+    struct FCallbackData
     {
       FString   cb_signal;
       FWidget*  cb_instance;
@@ -354,16 +354,16 @@ class FWidget : public FVTerm, public FObject
     };
 
     // Typedefs
-    typedef std::vector<callback_data> CallbackObjects;
+    typedef std::vector<FCallbackData> FCallbackObjects;
 
     // Accessor
-    term_area*            getPrintArea() override;
+    FTermArea*            getPrintArea() override;
     const FWidgetColors&  getFWidgetColors() const;
     static uInt           getModalDialogCounter();
     static FWidgetList*&  getDialogList();
     static FWidgetList*&  getAlwaysOnTopList();
     static FWidgetList*&  getWidgetCloseList();
-    void                  addPreprocessingHandler (FVTerm*, FVTermPreprocessing) override;
+    void                  addPreprocessingHandler (FVTerm*, FPreprocessingFunction) override;
     void                  delPreprocessingHandler (FVTerm*) override;
 
     // Inquiry
@@ -466,7 +466,7 @@ class FWidget : public FVTerm, public FObject
       int right{0};
     } padding{};
 
-    struct widget_flags   flags{};
+    struct FWidgetFlags   flags{};
     bool                  ignore_padding{false};
 
     // widget size
@@ -486,8 +486,8 @@ class FWidget : public FVTerm, public FObject
     FColor                foreground_color{fc::Default};
     FColor                background_color{fc::Default};
     FString               statusbar_message{};
-    Accelerators*         accelerator_list{nullptr};
-    CallbackObjects       callback_objects{};
+    FAcceleratorList*     accelerator_list{nullptr};
+    FCallbackObjects      callback_objects{};
 
     static FStatusBar*    statusbar;
     static FMenuBar*      menubar;
@@ -515,8 +515,8 @@ class FWidget : public FVTerm, public FObject
     // Friend functions
     friend void detectTermSize();
     friend void drawShadow (FWidget*);
-    friend void drawTransparentShadow (FWidget*, int, int, int, int);
-    friend void drawBlockShadow (FWidget*, int, int, int, int);
+    friend void drawTransparentShadow (FWidget*);
+    friend void drawBlockShadow (FWidget*);
     friend void clearShadow (FWidget*);
     friend void drawFlatBorder (FWidget*);
     friend void clearFlatBorder (FWidget*);
@@ -524,18 +524,21 @@ class FWidget : public FVTerm, public FObject
 
 
 // non-member function forward declarations
+// implemented in fwidget_functions.cpp
 //----------------------------------------------------------------------
 void        detectTermSize();
 FKey        getHotkey (const FString&);
 std::size_t getHotkeyPos (const FString& src, FString& dest);
 void        setHotkeyViaString (FWidget*, const FString&);
-void        drawBorder (FWidget*, FRect);
 void        drawShadow (FWidget*);
-void        drawTransparentShadow (FWidget*, int, int, int, int);
-void        drawBlockShadow (FWidget*, int, int, int, int);
+void        drawTransparentShadow (FWidget*);
+void        drawBlockShadow (FWidget*);
 void        clearShadow (FWidget*);
 void        drawFlatBorder (FWidget*);
 void        clearFlatBorder (FWidget*);
+void        drawBorder (FWidget*, FRect);
+void        drawBox (FWidget*, const FRect&);
+void        drawNewFontBox (FWidget*, const FRect&);
 
 
 // FWidget inline functions
@@ -580,7 +583,7 @@ inline FStatusBar* FWidget::getStatusBar()
 { return statusbar; }
 
 //----------------------------------------------------------------------
-inline FWidget::Accelerators* FWidget::getAcceleratorList() const
+inline FWidget::FAcceleratorList* FWidget::getAcceleratorList() const
 { return accelerator_list; }
 
 //----------------------------------------------------------------------
@@ -722,7 +725,7 @@ inline std::size_t FWidget::getDesktopHeight()
 { return getLineNumber(); }
 
 //----------------------------------------------------------------------
-inline const FWidget::widget_flags& FWidget::getFlags() const
+inline const FWidget::FWidgetFlags& FWidget::getFlags() const
 { return flags; }
 
 //----------------------------------------------------------------------
@@ -833,7 +836,7 @@ inline void FWidget::setBackgroundColor (FColor color)
 }
 
 //----------------------------------------------------------------------
-inline FWidget::widget_flags& FWidget::setFlags()
+inline FWidget::FWidgetFlags& FWidget::setFlags()
 { return flags; }
 
 //----------------------------------------------------------------------

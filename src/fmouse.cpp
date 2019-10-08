@@ -215,7 +215,7 @@ void FMouse::clearButtonState()
 
 // protected methods of FMouse
 //----------------------------------------------------------------------
-inline FMouse::button& FMouse::getButtonState()
+inline FMouse::FMouseButton& FMouse::getButtonState()
 {
   return b_state;
 }

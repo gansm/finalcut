@@ -136,7 +136,7 @@ void ProgressDialog::onTimer (finalcut::FTimerEvent*)
 {
   auto p = progressBar.getPercentage();
   progressBar.setPercentage(++p);
-  flush_out();
+  flushOutputBuffer();
 
   if ( p != 100 )
     return;
@@ -154,7 +154,7 @@ void ProgressDialog::onTimer (finalcut::FTimerEvent*)
     getStatusBar()->drawMessage();
 
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------

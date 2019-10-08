@@ -36,11 +36,18 @@
 #endif
 
 #if defined(__linux__)
-  #include <linux/fb.h>        // Linux framebuffer console
+  #include <linux/fb.h>  // Linux framebuffer console
 
-  #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
-    #include <sys/io.h>        // <asm/io.h> is deprecated
-  #endif  // defined(__x86_64__) || defined(__i386) || defined(__arm__)
+  #if defined(__arm__) && defined(__GLIBC__) && defined(__GLIBC_PREREQ)
+    // ISA sysctl support on arm processors only up to glibc-2.29
+    #if !__GLIBC_PREREQ(2,30)
+      #define ARM_ISA_SYSCTL
+    #endif
+  #endif
+
+  #if defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
+    #include <sys/io.h>
+  #endif  // defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
 
   #include <sys/kd.h>
 #endif  // defined(__linux__)
@@ -150,7 +157,7 @@ class FTermLinux final
     void                 setLinuxCursorStyle (fc::linuxConsoleCursorStyle);
 
     // Methods
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
+#if defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
     uInt16               getInputStatusRegisterOne();
     uChar                readAttributeController (uChar);
     void                 writeAttributeController (uChar, uChar);
@@ -162,7 +169,7 @@ class FTermLinux final
     bool                 setVGAPalette (FColor, int, int, int);
     bool                 saveVGAPalette();
     bool                 resetVGAPalette();
-#endif  // defined(__x86_64__) || defined(__i386) || defined(__arm__)
+#endif  // defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
     FKey                 shiftKeyCorrection (const FKey&);
     FKey                 ctrlKeyCorrection (const FKey&);
     FKey                 altKeyCorrection (const FKey&);

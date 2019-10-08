@@ -149,7 +149,7 @@ class FMouse
       uChar wheel_down     : 1;  // 0..1
       uChar mouse_moved    : 1;  // 0..1
       uChar                : 4;  // padding bits
-    } button;  // bit field
+    } FMouseButton;  // bit field
 
     enum states
     {
@@ -160,7 +160,7 @@ class FMouse
     };
 
     // Accessors
-    button&             getButtonState();
+    FMouseButton&       getButtonState();
     FPoint&             getNewPos();
     uInt16              getMaxWidth();
     uInt16              getMaxHeight();
@@ -180,7 +180,7 @@ class FMouse
 
   private:
     // Data members
-    button              b_state{};
+    FMouseButton        b_state{};
     bool                mouse_event_occurred{false};
     bool                input_data_pending{false};
     uInt16              max_width{80};

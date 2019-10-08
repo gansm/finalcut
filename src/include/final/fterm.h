@@ -210,7 +210,7 @@ class FTerm final
 #endif
 
     // Inquiries
-    static bool            isNormal (charData*&);
+    static bool            isNormal (FChar*&);
     static bool            isRaw();
     static bool            hasUTF8();
     static bool            hasVT100();
@@ -290,8 +290,8 @@ class FTerm final
     static int             putchar_UTF8  (int);
 
     static void            initScreenSettings();
-    static char*           changeAttribute ( charData*&
-                                           , charData*& );
+    static char*           changeAttribute ( FChar*&
+                                           , FChar*& );
     static void            changeTermSizeFinished();
     static void            exitWithMessage (const FString&)
     #if defined(__clang__) || defined(__GNUC__)
@@ -385,17 +385,19 @@ class FTerm final
 
 
 // non-member function forward declarations
+// implemented in fterm_functions.cpp
 //----------------------------------------------------------------------
+uInt env2uint (const char*);
 wchar_t cp437_to_unicode (uChar);
 uChar unicode_to_cp437 (wchar_t);
 FString getFullWidth (const FString&);
 FString getHalfWidth (const FString&);
-std::size_t getColumnWidthToLength (const FString&, std::size_t);
 FString getColumnSubString (const FString&, std::size_t, std::size_t);
+std::size_t getLengthFromColumnWidth (const FString&, std::size_t);
 std::size_t getColumnWidth (const FString&, std::size_t);
 std::size_t getColumnWidth (const FString&);
 std::size_t getColumnWidth (const wchar_t);
-std::size_t getColumnWidth (charData&);
+std::size_t getColumnWidth (FChar&);
 std::size_t getColumnWidth (const FTermBuffer&);
 
 

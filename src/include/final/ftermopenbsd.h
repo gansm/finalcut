@@ -81,7 +81,7 @@ class FTermOpenBSD final
     FTermOpenBSD (const FTermOpenBSD&) = delete;
 
     // Destructor
-    virtual ~FTermOpenBSD() = default;
+    virtual ~FTermOpenBSD();
 
     // Disable assignment operator (=)
     FTermOpenBSD& operator = (const FTermOpenBSD&) = delete;

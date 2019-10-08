@@ -118,6 +118,7 @@ OBJS = \
 	fstartoptions.o \
 	ftermcap.o \
 	fterm.o \
+	fterm_functions.o \
 	ftermdebugdata.o \
 	ftermios.o \
 	ftermdetection.o \
@@ -134,6 +135,7 @@ OBJS = \
 	fcolorpalette.o \
 	fwidgetcolors.o \
 	fwidget.o \
+	fwidget_functions.o \
 	fevent.o \
 	fobject.o
 

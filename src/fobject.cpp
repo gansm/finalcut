@@ -32,7 +32,7 @@ namespace finalcut
 
 // static class attributes
 bool FObject::timer_modify_lock;
-FObject::TimerList* FObject::timer_list{nullptr};
+FObject::FTimerList* FObject::timer_list{nullptr};
 const FString* fc::emptyFString::empty_string{nullptr};
 
 
@@ -58,7 +58,7 @@ FObject::FObject (FObject* parent)
     {
       try
       {
-        timer_list = new TimerList;
+        timer_list = new FTimerList;
       }
       catch (const std::bad_alloc& ex)
       {
@@ -281,7 +281,7 @@ int FObject::addTimer (int interval)
   time_interval.tv_usec = (interval % 1000) * 1000;
   getCurrentTime (&currentTime);
   timeval timeout = currentTime + time_interval;
-  timer_data t{ id, time_interval, timeout, this };
+  FTimerData t{ id, time_interval, timeout, this };
 
   // insert in list sorted by timeout
   auto iter = timer_list->begin();

@@ -49,7 +49,7 @@ class FObject_protected : public finalcut::FObject
       return finalcut::FObject::event(ev);
     }
 
-    TimerList* getTimerList() const
+    FTimerList* getTimerList() const
     {
       return finalcut::FObject::getTimerList();
     }

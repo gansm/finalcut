@@ -83,9 +83,9 @@ void FKeyboard::fetchKeyCode()
 //----------------------------------------------------------------------
 const FString FKeyboard::getKeyName (FKey keynum)
 {
-  for (std::size_t i{0}; fc::FkeyName[i].string[0] != 0; i++)
-    if ( fc::FkeyName[i].num && fc::FkeyName[i].num == keynum )
-      return FString(fc::FkeyName[i].string);
+  for (std::size_t i{0}; fc::fkeyname[i].string[0] != 0; i++)
+    if ( fc::fkeyname[i].num && fc::fkeyname[i].num == keynum )
+      return FString(fc::fkeyname[i].string);
 
   if ( keynum > 32 && keynum < 127 )
     return FString(char(keynum));
@@ -94,7 +94,7 @@ const FString FKeyboard::getKeyName (FKey keynum)
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::setTermcapMap (fc::fkeymap* keymap)
+void FKeyboard::setTermcapMap (fc::FKeyMap* keymap)
 {
   key_map = keymap;
 }
@@ -231,7 +231,7 @@ inline FKey FKeyboard::getTermcapKey()
         fifo_buf[n] = '\0';
 
       input_data_pending = bool(fifo_buf[0] != '\0');
-      return fc::Fkey[i].num;
+      return fc::fkey[i].num;
     }
   }
 
@@ -245,9 +245,9 @@ inline FKey FKeyboard::getMetaKey()
 
   assert ( FIFO_BUF_SIZE > 0 );
 
-  for (std::size_t i{0}; fc::Fmetakey[i].string[0] != 0; i++)
+  for (std::size_t i{0}; fc::fmetakey[i].string[0] != 0; i++)
   {
-    char* kmeta = fc::Fmetakey[i].string;  // The string is never null
+    char* kmeta = fc::fmetakey[i].string;  // The string is never null
     std::size_t len = std::strlen(kmeta);
 
     if ( std::strncmp(kmeta, fifo_buf, len) == 0 )  // found
@@ -269,7 +269,7 @@ inline FKey FKeyboard::getMetaKey()
         fifo_buf[n] = '\0';
 
       input_data_pending = bool(fifo_buf[0] != '\0');
-      return fc::Fmetakey[i].num;
+      return fc::fmetakey[i].num;
     }
   }
 

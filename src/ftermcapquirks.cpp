@@ -402,71 +402,71 @@ void FTermcapQuirks::sunConsole()
       C_STR(CSI "%p1%dD");
 
   // Sun Microsystems workstation console keys
-  for (std::size_t i{0}; fc::Fkey[i].tname[0] != 0; i++)
+  for (std::size_t i{0}; fc::fkey[i].tname[0] != 0; i++)
   {
-    if ( std::strncmp(fc::Fkey[i].tname, "K2", 2) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "218z");  // center of keypad
+    if ( std::strncmp(fc::fkey[i].tname, "K2", 2) == 0 )
+      fc::fkey[i].string = C_STR(CSI "218z");  // center of keypad
 
-    if ( std::strncmp(fc::Fkey[i].tname, "kb", 2) == 0 )
-      fc::Fkey[i].string = C_STR("\b");  // backspace key
+    if ( std::strncmp(fc::fkey[i].tname, "kb", 2) == 0 )
+      fc::fkey[i].string = C_STR("\b");  // backspace key
 
-    if ( std::strncmp(fc::Fkey[i].tname, "kD", 2) == 0
-      && std::strlen(fc::Fkey[i].tname) == 2 )
-      fc::Fkey[i].string = C_STR("\177");  // delete-character key
+    if ( std::strncmp(fc::fkey[i].tname, "kD", 2) == 0
+      && std::strlen(fc::fkey[i].tname) == 2 )
+      fc::fkey[i].string = C_STR("\177");  // delete-character key
 
-    if ( std::strncmp(fc::Fkey[i].tname, "@7", 2) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "220z");  // end key
+    if ( std::strncmp(fc::fkey[i].tname, "@7", 2) == 0 )
+      fc::fkey[i].string = C_STR(CSI "220z");  // end key
 
-    if ( std::strncmp(fc::Fkey[i].tname, "k;", 2) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "233z");  // F10 function key
+    if ( std::strncmp(fc::fkey[i].tname, "k;", 2) == 0 )
+      fc::fkey[i].string = C_STR(CSI "233z");  // F10 function key
 
-    if ( std::strncmp(fc::Fkey[i].tname, "F1", 2) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "234z");  // F11 function key
+    if ( std::strncmp(fc::fkey[i].tname, "F1", 2) == 0 )
+      fc::fkey[i].string = C_STR(CSI "234z");  // F11 function key
 
-    if ( std::strncmp(fc::Fkey[i].tname, "F2", 2) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "235z");  // F12 function key
+    if ( std::strncmp(fc::fkey[i].tname, "F2", 2) == 0 )
+      fc::fkey[i].string = C_STR(CSI "235z");  // F12 function key
 
-    if ( std::strncmp(fc::Fkey[i].tname, "kh", 2) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "214z");  // home key
+    if ( std::strncmp(fc::fkey[i].tname, "kh", 2) == 0 )
+      fc::fkey[i].string = C_STR(CSI "214z");  // home key
 
-    if ( std::strncmp(fc::Fkey[i].tname, "kI", 2) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "247z");  // insert-character key
+    if ( std::strncmp(fc::fkey[i].tname, "kI", 2) == 0 )
+      fc::fkey[i].string = C_STR(CSI "247z");  // insert-character key
 
-    if ( std::strncmp(fc::Fkey[i].tname, "kN", 2) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "222z");  // next-page key
+    if ( std::strncmp(fc::fkey[i].tname, "kN", 2) == 0 )
+      fc::fkey[i].string = C_STR(CSI "222z");  // next-page key
 
-    if ( std::strncmp(fc::Fkey[i].tname, "%7", 2) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "194z");  // options key
+    if ( std::strncmp(fc::fkey[i].tname, "%7", 2) == 0 )
+      fc::fkey[i].string = C_STR(CSI "194z");  // options key
 
-    if ( std::strncmp(fc::Fkey[i].tname, "kP", 2) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "216z");  // prev-page key
+    if ( std::strncmp(fc::fkey[i].tname, "kP", 2) == 0 )
+      fc::fkey[i].string = C_STR(CSI "216z");  // prev-page key
 
-    if ( std::strncmp(fc::Fkey[i].tname, "&5", 2) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "193z");  // resume key
+    if ( std::strncmp(fc::fkey[i].tname, "&5", 2) == 0 )
+      fc::fkey[i].string = C_STR(CSI "193z");  // resume key
 
-    if ( std::strncmp(fc::Fkey[i].tname, "&8", 2) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "195z");  // undo key
+    if ( std::strncmp(fc::fkey[i].tname, "&8", 2) == 0 )
+      fc::fkey[i].string = C_STR(CSI "195z");  // undo key
 
-    if ( std::strncmp(fc::Fkey[i].tname, "K2", 2) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "218z");  // center of keypad
+    if ( std::strncmp(fc::fkey[i].tname, "K2", 2) == 0 )
+      fc::fkey[i].string = C_STR(CSI "218z");  // center of keypad
 
-    if ( std::strncmp(fc::Fkey[i].tname, "kDx", 3) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "249z");  // keypad delete
+    if ( std::strncmp(fc::fkey[i].tname, "kDx", 3) == 0 )
+      fc::fkey[i].string = C_STR(CSI "249z");  // keypad delete
 
-    if ( std::strncmp(fc::Fkey[i].tname, "@8x", 3) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "250z");  // enter/send key
+    if ( std::strncmp(fc::fkey[i].tname, "@8x", 3) == 0 )
+      fc::fkey[i].string = C_STR(CSI "250z");  // enter/send key
 
-    if ( std::strncmp(fc::Fkey[i].tname, "KP1", 3) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "212z");  // keypad slash
+    if ( std::strncmp(fc::fkey[i].tname, "KP1", 3) == 0 )
+      fc::fkey[i].string = C_STR(CSI "212z");  // keypad slash
 
-    if ( std::strncmp(fc::Fkey[i].tname, "KP2", 3) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "213z");  // keypad asterisk
+    if ( std::strncmp(fc::fkey[i].tname, "KP2", 3) == 0 )
+      fc::fkey[i].string = C_STR(CSI "213z");  // keypad asterisk
 
-    if ( std::strncmp(fc::Fkey[i].tname, "KP3", 3) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "254z");  // keypad minus sign
+    if ( std::strncmp(fc::fkey[i].tname, "KP3", 3) == 0 )
+      fc::fkey[i].string = C_STR(CSI "254z");  // keypad minus sign
 
-    if ( std::strncmp(fc::Fkey[i].tname, "KP4", 3) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "253z");  // keypad plus sign
+    if ( std::strncmp(fc::fkey[i].tname, "KP4", 3) == 0 )
+      fc::fkey[i].string = C_STR(CSI "253z");  // keypad plus sign
   }
 }
 

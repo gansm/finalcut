@@ -45,9 +45,9 @@ namespace finalcut
 {
 
 // static class attributes
-FTermDetection::terminalType FTermDetection::terminal_type{};
-FTermDetection::colorEnv     FTermDetection::color_env{};
-FTermDetection::secondaryDA  FTermDetection::secondary_da{};
+FTermDetection::FTerminalType FTermDetection::terminal_type{};
+FTermDetection::colorEnv      FTermDetection::color_env{};
+FTermDetection::secondaryDA   FTermDetection::secondary_da{};
 FTermData*     FTermDetection::fterm_data{nullptr};
 FSystem*       FTermDetection::fsystem{nullptr};
 char           FTermDetection::termtype[256]{};
