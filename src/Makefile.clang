@@ -3,7 +3,7 @@
 #-----------------------------------------------------------------------------
 
 # This is where make install will install the library
-VERSION = "0.5.0"
+VERSION = "0.5.1"
 MAJOR := $(shell echo ${VERSION} | cut -d. -f1)
 LIBDIR = /usr/local/lib
 INCLUDEDIR1 = include/final
