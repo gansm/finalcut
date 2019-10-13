@@ -114,7 +114,7 @@ void FTermLinux::setUTF8 (bool enable)
 }
 
 //----------------------------------------------------------------------
-#if defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
+#if defined(ISA_SYSCTL_SUPPORT)
 bool FTermLinux::setPalette (FColor index, int r, int g, int b)
 {
   if ( ! FTerm::isLinuxTerm() )
@@ -163,7 +163,10 @@ void FTermLinux::init()
   screen_font.data = nullptr;
   fterm_data->supportShadowCharacter (true);
   fterm_data->supportHalfBlockCharacter (true);
+
+#if defined(ISA_SYSCTL_SUPPORT)
   getVGAPalette();
+#endif
 
   if ( FTerm::openConsole() == 0 )
   {
@@ -174,7 +177,7 @@ void FTermLinux::init()
       getUnicodeMap();
       getScreenFont();
 
-#if defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
+#if defined(ISA_SYSCTL_SUPPORT)
       // Enable 16 background colors
       if ( setBlinkAsIntensity(true) == 0 )
         FTermcap::max_color = 16;
@@ -246,7 +249,7 @@ void FTermLinux::finish()
 {
   if ( FTerm::isLinuxTerm() )
   {
-#if defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
+#if defined(ISA_SYSCTL_SUPPORT)
     setBlinkAsIntensity (false);
 #endif
     setLinuxCursorStyle (fc::default_cursor);
@@ -383,7 +386,7 @@ bool FTermLinux::saveColorMap()
   if ( ! FTerm::isLinuxTerm() )
     return false;
 
-#if defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
+#if defined(ISA_SYSCTL_SUPPORT)
   return saveVGAPalette();
 #else
   return false;
@@ -396,7 +399,7 @@ bool FTermLinux::resetColorMap()
   if ( ! FTerm::isLinuxTerm() )
     return false;
 
-#if defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
+#if defined(ISA_SYSCTL_SUPPORT)
   return resetVGAPalette();
 #else
   return false;
@@ -752,7 +755,7 @@ void FTermLinux::setLinuxCursorStyle (CursorStyle style)
   FTerm::putstringf (CSI "?%dc", style);
 }
 
-#if defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
+#if defined(ISA_SYSCTL_SUPPORT)
 //----------------------------------------------------------------------
 inline uInt16 FTermLinux::getInputStatusRegisterOne()
 {
@@ -956,7 +959,7 @@ bool FTermLinux::resetVGAPalette()
 
   return true;
 }
-#endif  // defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
+#endif  // defined(ISA_SYSCTL_SUPPORT)
 
 //----------------------------------------------------------------------
 FKey FTermLinux::shiftKeyCorrection (const FKey& key_id)

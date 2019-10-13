@@ -467,7 +467,7 @@ const std::size_t lastCP437Item = \
     std::size_t((sizeof(cp437_ucs) / sizeof(cp437_ucs[0])) - 1);
 
 // Based on http://www.unicode.org/charts/PDF/UFF00.pdf
-wchar_t halfWidth_fullWidth[][2] =
+const wchar_t halfWidth_fullWidth[][2] =
 {
   // Fullwidth ASCII variants
   {0x0020, 0x3000},  // ' ' -> '　'

@@ -1334,8 +1334,8 @@ inline void FMenu::drawMenuText (menuText& data)
     if ( ! std::iswprint(std::wint_t(data.text[z])) )
     {
       if ( ! isNewFont()
-        && ( int(data.text[z]) < fc::NF_rev_left_arrow2
-          || int(data.text[z]) > fc::NF_check_mark )
+        && ( data.text[z] < fc::NF_rev_left_arrow2
+          || data.text[z] > fc::NF_check_mark )
         && ! charEncodable(wchar_t(data.text[z])) )
       {
         data.text[z] = L' ';

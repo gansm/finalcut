@@ -96,7 +96,7 @@ class FTermBuffer
     const FString          toString() const;
     void                   clear();
     template<typename... Args>
-    int                    writef (const FString, Args&&...);
+    int                    writef (const FString&, Args&&...);
     int                    write (const FString&);
     int                    write (wchar_t);
     void                   write (const FColorPair&);
@@ -131,9 +131,7 @@ inline FTermBuffer& FTermBuffer::operator << (const typeT& s)
 //----------------------------------------------------------------------
 inline FTermBuffer& FTermBuffer::operator << (const FCharVector& vec)
 {
-  for (auto&& tc : vec)
-    data.push_back(tc);
-
+  std::copy(vec.begin(), vec.end(), std::back_inserter(data));
   return *this;
 }
 
@@ -207,7 +205,7 @@ inline void FTermBuffer::clear()
 
 //----------------------------------------------------------------------
 template<typename... Args>
-inline int FTermBuffer::writef (const FString format, Args&&... args)
+inline int FTermBuffer::writef (const FString& format, Args&&... args)
 {
   FString str{};
   str.sprintf (format, std::forward<Args>(args)...);

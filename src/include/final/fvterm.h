@@ -293,7 +293,7 @@ class FVTerm
                                                   , FPreprocessingFunction );
     virtual void          delPreprocessingHandler (FVTerm*);
     template<typename... Args>
-    int                   printf (const FString, Args&&...);
+    int                   printf (const FString&, Args&&...);
     int                   print (const FString&);
     int                   print (FTermArea*, const FString&);
     int                   print (const FTermBuffer&);
@@ -1042,7 +1042,7 @@ inline bool FVTerm::hasUTF8()
 
 //----------------------------------------------------------------------
 template<typename... Args>
-inline int FVTerm::printf (const FString format, Args&&... args)
+inline int FVTerm::printf (const FString& format, Args&&... args)
 {
   FString str{};
   str.sprintf (format, std::forward<Args>(args)...);

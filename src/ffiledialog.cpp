@@ -25,7 +25,6 @@
   #include <strings.h>    // need for strcasecmp
 #endif
 
-#include <pwd.h>
 #include <vector>
 
 #include "final/fevent.h"
@@ -91,6 +90,7 @@ const FString fileChooser ( FWidget* parent
 
 // static class attributes
 FSystem*  FFileDialog::fsystem{nullptr};
+
 
 //----------------------------------------------------------------------
 // class FFileDialog

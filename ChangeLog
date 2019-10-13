@@ -1,3 +1,9 @@
+2019-10-13  Markus Gans  <guru.mail@muenster.de>
+	* Compile fix for Cygwin and Linux on arm architectures
+	* A small color palette optimization
+	* Corrected east asian ambiguous character width for OpenBSD, NetBSD, 
+	  FreeBSD and Solaris
+
 2019-10-05  Markus Gans  <guru.mail@muenster.de>
 	* Internal redesign of the callback call
 	* Mapping of key functions in an associative container to simplify 

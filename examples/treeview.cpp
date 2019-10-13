@@ -322,7 +322,7 @@ Treeview::Treeview (finalcut::FWidget* parent)
   listView.setTreeView();
 
   // Populate FListView with a list of items
-  static TreeItem continent[] =
+  static TreeItem continent_list[] =
   {
     { "Africa", "944,000,000", "31.2", africa },
     { "Asia", "4,010,000,000", "90.3", asia },
@@ -330,17 +330,14 @@ Treeview::Treeview (finalcut::FWidget* parent)
     { "North America", "523,000,000", "21", north_america },
     { "South America", "381,000,000", "21.4", south_america },
     { "Antarctica", "1000", "0", 0 },
-    { "Australia/Oceania", "34,000,000", "4", oceania },
-    { 0, 0, 0, 0 }
+    { "Australia/Oceania", "34,000,000", "4", oceania }
   };
 
-  auto continent_list = continent;
-
-  while ( continent_list->name )
+  for (const auto& continent : continent_list)
   {
-    auto& country_list = continent_list->child_element;
-    finalcut::FStringList continent_line ( continent_list->begin()
-                                         , continent_list->end() );
+    TreeItem* country_list = continent.child_element;
+    finalcut::FStringList continent_line ( continent.begin()
+                                         , continent.end() );
     const auto& iter = listView.insert (continent_line);
 
     while ( country_list && country_list->name )
@@ -350,8 +347,6 @@ Treeview::Treeview (finalcut::FWidget* parent)
       listView.insert (country_line, iter);
       country_list++;
     }
-
-    continent_list++;
   }
 
   // Quit button

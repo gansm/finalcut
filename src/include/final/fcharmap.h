@@ -45,7 +45,7 @@ extern const std::size_t lastKeyItem;
 extern wchar_t cp437_ucs[][2];
 extern const std::size_t lastCP437Item;
 
-extern wchar_t halfWidth_fullWidth[][2];
+extern const wchar_t halfWidth_fullWidth[][2];
 extern const std::size_t lastHalfWidthItem;
 
 }  // namespace fc

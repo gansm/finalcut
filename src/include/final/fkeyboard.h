@@ -57,7 +57,7 @@ class FKeyboardCommand final
   public:
     // Constructors
     FKeyboardCommand () = default;
-    explicit FKeyboardCommand (std::function<void()> fn)
+    explicit FKeyboardCommand (const std::function<void()>& fn)
       : handler(fn)
     { }
 

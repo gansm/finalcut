@@ -177,7 +177,7 @@ class FTextView : public FWidget
 
 // FListBox inline functions
 //----------------------------------------------------------------------
-FTextView& FTextView::operator = (const FString& s)
+inline FTextView& FTextView::operator = (const FString& s)
 {
   setText(s);
   return *this;

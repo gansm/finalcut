@@ -20,6 +20,10 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__CYGWIN__)
+  #include "final/fconfig.h"  // need for getpwuid_r and realpath
+#endif
+
 #include "final/fsystemimpl.h"
 
 namespace finalcut
@@ -37,6 +41,20 @@ FSystemImpl::FSystemImpl()
 //----------------------------------------------------------------------
 FSystemImpl::~FSystemImpl()  // destructor
 { }
+
+//----------------------------------------------------------------------
+int FSystemImpl::getpwuid_r ( uid_t uid, struct passwd* pwd
+                            , char* buf, size_t buflen
+                            , struct passwd** result )
+{
+  return ::getpwuid_r (uid, pwd, buf, buflen, result);
+}
+
+//----------------------------------------------------------------------
+char* FSystemImpl::realpath (const char* path, char* resolved_path)
+{
+  return ::realpath(path, resolved_path);
+}
 
 }  // namespace finalcut
 

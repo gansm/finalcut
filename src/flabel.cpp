@@ -474,8 +474,8 @@ void FLabel::printLine (FString&& line)
   {
     if ( ! std::iswprint(std::wint_t(line[z])) )
     {
-      if ( ! isNewFont() && ( int(line[z]) < fc::NF_rev_left_arrow2
-                           || int(line[z]) > fc::NF_check_mark ) )
+      if ( ! isNewFont() && ( line[z] < fc::NF_rev_left_arrow2
+                           || line[z] > fc::NF_check_mark ) )
       {
         line[z] = L' ';
       }

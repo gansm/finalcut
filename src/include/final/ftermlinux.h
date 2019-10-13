@@ -46,6 +46,7 @@
   #endif
 
   #if defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
+    #define ISA_SYSCTL_SUPPORT
     #include <sys/io.h>
   #endif  // defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
 
@@ -157,7 +158,7 @@ class FTermLinux final
     void                 setLinuxCursorStyle (fc::linuxConsoleCursorStyle);
 
     // Methods
-#if defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
+#if defined(ISA_SYSCTL_SUPPORT)
     uInt16               getInputStatusRegisterOne();
     uChar                readAttributeController (uChar);
     void                 writeAttributeController (uChar, uChar);
@@ -169,7 +170,7 @@ class FTermLinux final
     bool                 setVGAPalette (FColor, int, int, int);
     bool                 saveVGAPalette();
     bool                 resetVGAPalette();
-#endif  // defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
+#endif  // defined(ISA_SYSCTL_SUPPORT)
     FKey                 shiftKeyCorrection (const FKey&);
     FKey                 ctrlKeyCorrection (const FKey&);
     FKey                 altKeyCorrection (const FKey&);

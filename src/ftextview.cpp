@@ -20,11 +20,6 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#if defined(__CYGWIN__)
-  #include "final/fconfig.h"  // includes _GNU_SOURCE for wcwidth()
-#endif
-
-#include <wchar.h>
 #include <memory>
 
 #include "final/fapplication.h"
@@ -674,7 +669,9 @@ void FTextView::drawText()
 
     for (auto&& ch : line)  // Column loop
     {
-      if ( isPrintable(ch) )
+      if ( getColumnWidth(ch) == 0 )
+        continue;
+      else if ( isPrintable(ch) )
         print (ch);
       else
         print ('.');
