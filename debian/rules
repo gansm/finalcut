@@ -20,7 +20,7 @@ include /usr/share/dpkg/default.mk
 # main packaging script based on dh7 syntax
 %:
 	sed -i 's/doc\///g' README.md
-	test -f fonts/fonts.alias && mv fonts/fonts.alias fonts/xfonts-finalcut-newfont.alias || true
+	test -f fonts/fonts.alias && cp fonts/fonts.alias fonts/xfonts-finalcut-newfont.alias || true
 	dh $@  --with autotools-dev
 
 # debmake generated override targets

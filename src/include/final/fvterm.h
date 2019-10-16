@@ -316,6 +316,7 @@ class FVTerm
     FTermArea*            getChildPrintArea() const;
     FTermArea*            getCurrentPrintArea() const;
     FTermArea*            getVirtualDesktop() const;
+    FTermArea*            getVirtualTerminal() const;
     std::size_t           getLineNumber();
     std::size_t           getColumnNumber();
     static bool           charEncodable (wchar_t);
@@ -1072,6 +1073,10 @@ inline FVTerm::FTermArea* FVTerm::getCurrentPrintArea() const
 //----------------------------------------------------------------------
 inline FVTerm::FTermArea* FVTerm::getVirtualDesktop() const
 { return vdesktop; }
+
+//----------------------------------------------------------------------
+inline FVTerm::FTermArea* FVTerm::getVirtualTerminal() const
+{ return vterm; }
 
 //----------------------------------------------------------------------
 inline std::size_t FVTerm::getLineNumber()

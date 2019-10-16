@@ -900,6 +900,7 @@ class dialogWidget : public FDialog
       setGeometry (FPoint(28, 2), FSize(24, 21));
       scrollview.setGeometry(FPoint(1, 1), FSize(22, 11));
       scrollview.setScrollSize(FSize(60, 27));
+      const auto& wc = getFWidgetColors();
       setColor (wc.label_inactive_fg, wc.dialog_bg);
       scrollview.clearArea();
       FColorPair red (fc::LightRed, wc.dialog_bg);

@@ -1,3 +1,6 @@
+2019-10-15  Markus Gans  <guru.mail@muenster.de>
+	* Version 0.6.0
+
 2019-10-13  Markus Gans  <guru.mail@muenster.de>
 	* Compile fix for Cygwin and Linux on arm architectures
 	* A small color palette optimization

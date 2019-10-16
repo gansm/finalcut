@@ -5,6 +5,8 @@
 docdir = ${datadir}/doc/${PACKAGE}
 
 EXTRA_DIST = \
+	build_openbsd.txt \
+	build_solaris.txt \
 	calendar-draft.png \
 	calculator.png \
 	class-diagram.txt \
@@ -34,6 +36,8 @@ EXTRA_DIST = \
 	xgraphics
 
 doc_DATA = \
+	build_openbsd.txt \
+	build_solaris.txt \
 	calendar-draft.png \
 	calculator.png \
 	class-diagram.txt \

@@ -85,7 +85,6 @@ void FWidgetColors::set8ColorTheme()
   button_active_focus_bg            = fc::Red;
   button_active_fg                  = fc::LightGray;
   button_active_bg                  = fc::Blue;
-  button_active_bg                  = fc::Blue;
   button_inactive_fg                = fc::Black;
   button_inactive_bg                = fc::Blue;
   button_hotkey_fg                  = fc::LightGray;
