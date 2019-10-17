@@ -144,8 +144,7 @@ uInt character[][fc::NUM_OF_ENCODINGS] =
   {0x1af4,   0, 0xf4,   0},  // ]  -  NF_rev_menu_button3 (2)
   {0x1af5,   0, 0xf5,   0},  // ]  -  NF_shadow_box_right (2)
   {0x1afb,   0, 0xfb,   0},  // ✓  -  NF_check_mark (2)
-  {0x221a,   0, 0xfb, 'x'},  // √  -  square root
-  {0x25cf, '`', 0x04, '*'}   // ●  -  black circle
+  {0x221a,   0, 0xfb, 'x'}   // √  -  square root
 };
 
 /*
@@ -204,7 +203,7 @@ const std::size_t lastKeyItem = \
     std::size_t((sizeof(vt100_key_to_utf8) / sizeof(vt100_key_to_utf8[0])) - 1);
 
 
-wchar_t cp437_to_ucs[][2] =
+wchar_t cp437_ucs[][2] =
 {
   {0x00, 0x0000},  // null
   {0x01, 0x263a},  // white smiling face
@@ -465,10 +464,10 @@ wchar_t cp437_to_ucs[][2] =
 };
 
 const std::size_t lastCP437Item = \
-    std::size_t((sizeof(cp437_to_ucs) / sizeof(cp437_to_ucs[0])) - 1);
+    std::size_t((sizeof(cp437_ucs) / sizeof(cp437_ucs[0])) - 1);
 
 // Based on http://www.unicode.org/charts/PDF/UFF00.pdf
-wchar_t halfWidth_fullWidth[][2] =
+const wchar_t halfWidth_fullWidth[][2] =
 {
   // Fullwidth ASCII variants
   {0x0020, 0x3000},  // ' ' -> '　'

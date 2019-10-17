@@ -80,10 +80,6 @@ void FToolTip::draw()
 {
   int y{0};
   setColor();
-
-  if ( getMaxColor() < 16 )
-    setBold();
-
   clearArea();
   drawBorder();
 
@@ -92,8 +88,6 @@ void FToolTip::draw()
     print() << FPoint(3, 2 + y) << line;
     y++;
   }
-
-  unsetBold();
 }
 
 //----------------------------------------------------------------------

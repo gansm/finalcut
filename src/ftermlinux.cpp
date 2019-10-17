@@ -41,26 +41,6 @@
 namespace finalcut
 {
 
-// static class attributes
-#if defined(__linux__)
-  FTermLinux::modifier_key  FTermLinux::mod_key{};
-  console_font_op           FTermLinux::screen_font{};
-  unimapdesc                FTermLinux::screen_unicode_map{};
-
-  bool   FTermLinux::new_font{false};
-  bool   FTermLinux::vga_font{false};
-  bool   FTermLinux::has_saved_palette{false};
-
-  FTermData*                  FTermLinux::fterm_data{nullptr};
-  FSystem*                    FTermLinux::fsystem{nullptr};
-  FTermDetection*             FTermLinux::term_detection{nullptr};
-  fc::linuxConsoleCursorStyle FTermLinux::linux_console_cursor_style{};
-  FTermLinux::ColorMap        FTermLinux::saved_color_map{};
-  FTermLinux::ColorMap        FTermLinux::cmap{};
-  int                         FTermLinux::framebuffer_bpp{-1};
-#endif  // defined(__linux__)
-
-
 //----------------------------------------------------------------------
 // class FTermLinux
 //----------------------------------------------------------------------
@@ -134,7 +114,7 @@ void FTermLinux::setUTF8 (bool enable)
 }
 
 //----------------------------------------------------------------------
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
+#if defined(ISA_SYSCTL_SUPPORT)
 bool FTermLinux::setPalette (FColor index, int r, int g, int b)
 {
   if ( ! FTerm::isLinuxTerm() )
@@ -183,7 +163,10 @@ void FTermLinux::init()
   screen_font.data = nullptr;
   fterm_data->supportShadowCharacter (true);
   fterm_data->supportHalfBlockCharacter (true);
+
+#if defined(ISA_SYSCTL_SUPPORT)
   getVGAPalette();
+#endif
 
   if ( FTerm::openConsole() == 0 )
   {
@@ -194,7 +177,7 @@ void FTermLinux::init()
       getUnicodeMap();
       getScreenFont();
 
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
+#if defined(ISA_SYSCTL_SUPPORT)
       // Enable 16 background colors
       if ( setBlinkAsIntensity(true) == 0 )
         FTermcap::max_color = 16;
@@ -266,7 +249,7 @@ void FTermLinux::finish()
 {
   if ( FTerm::isLinuxTerm() )
   {
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
+#if defined(ISA_SYSCTL_SUPPORT)
     setBlinkAsIntensity (false);
 #endif
     setLinuxCursorStyle (fc::default_cursor);
@@ -403,7 +386,7 @@ bool FTermLinux::saveColorMap()
   if ( ! FTerm::isLinuxTerm() )
     return false;
 
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
+#if defined(ISA_SYSCTL_SUPPORT)
   return saveVGAPalette();
 #else
   return false;
@@ -416,7 +399,7 @@ bool FTermLinux::resetColorMap()
   if ( ! FTerm::isLinuxTerm() )
     return false;
 
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
+#if defined(ISA_SYSCTL_SUPPORT)
   return resetVGAPalette();
 #else
   return false;
@@ -772,7 +755,7 @@ void FTermLinux::setLinuxCursorStyle (CursorStyle style)
   FTerm::putstringf (CSI "?%dc", style);
 }
 
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
+#if defined(ISA_SYSCTL_SUPPORT)
 //----------------------------------------------------------------------
 inline uInt16 FTermLinux::getInputStatusRegisterOne()
 {
@@ -830,8 +813,8 @@ void FTermLinux::writeAttributeController (uChar index, uChar data)
   const uInt16 input_status_1 = getInputStatusRegisterOne();
 
   fsystem->inPortByte (input_status_1);  // switch to index mode
-  fsystem->outPortByte (index & 0x1f, attrib_cntlr_write); // selects address register
-  fsystem->outPortByte (data, attrib_cntlr_write); // write to data register
+  fsystem->outPortByte (index & 0x1f, attrib_cntlr_write);  // selects address register
+  fsystem->outPortByte (data, attrib_cntlr_write);  // write to data register
 
   // Disable access to the palette and unblank the display
   fsystem->inPortByte (input_status_1);  // switch to index mode
@@ -976,7 +959,7 @@ bool FTermLinux::resetVGAPalette()
 
   return true;
 }
-#endif  // defined(__x86_64__) || defined(__i386) || defined(__arm__)
+#endif  // defined(ISA_SYSCTL_SUPPORT)
 
 //----------------------------------------------------------------------
 FKey FTermLinux::shiftKeyCorrection (const FKey& key_id)

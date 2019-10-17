@@ -126,12 +126,10 @@ void CheckList::populate()
     { "Lemons", "Low" }
   };
 
-  constexpr int lastItem = int(sizeof(list) / sizeof(list[0])) - 1;
-
-  for (int i{0}; i <= lastItem; i++)
+  for (const auto& line : list)
   {
-    const finalcut::FStringList line (&list[i][0], &list[i][0] + 2);
-    auto iter = listView.insert (line);
+    const finalcut::FStringList string_line (&line[0], &line[0] + 2);
+    auto iter = listView.insert (string_line);
     auto item = static_cast<finalcut::FListViewItem*>(*iter);
     item->setCheckable(true);
   }

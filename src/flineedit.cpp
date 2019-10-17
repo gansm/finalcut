@@ -596,7 +596,7 @@ void FLineEdit::onAccel (FAccelEvent* ev)
       {
         getStatusBar()->drawMessage();
         updateTerminal();
-        flush_out();
+        flushOutputBuffer();
       }
     }
   }
@@ -623,7 +623,7 @@ void FLineEdit::onFocusIn (FFocusEvent*)
   {
     getStatusBar()->drawMessage();
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 }
 
@@ -791,7 +791,7 @@ void FLineEdit::drawInputField()
   }
 
   if ( getFlags().shadow )
-    drawShadow ();
+    drawShadow(this);
 
   // set the cursor to the insert pos.
   auto cursor_pos_column = getColumnWidth (text, cursor_pos);
@@ -825,7 +825,7 @@ inline FLineEdit::offsetPair FLineEdit::endPosToOffset (std::size_t pos)
     {
       if ( char_width == 1 )
       {
-        if ( pos > 0 && getColumnWidth(text[pos - 1]) == 2 )
+        if ( getColumnWidth(text[pos - 1]) == 2 )  // pos is always > 0
         {
           fullwidth_char_offset = 1;
           break;

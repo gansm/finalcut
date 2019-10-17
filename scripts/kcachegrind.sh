@@ -9,7 +9,7 @@ else
 fi
 
 # Is the file executable?
-test ! -x "$PROG" && echo "No executable file not found" && exit -1
+test ! -x "$PROG" && echo "No executable file not found" && exit 1
 
 
 LD_LIBRARY_PATH=../src/.libs/ valgrind --tool=callgrind -v "$PROG" 2>/dev/null

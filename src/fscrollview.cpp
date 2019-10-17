@@ -464,52 +464,12 @@ void FScrollView::drawBorder()
 //----------------------------------------------------------------------
 void FScrollView::onKeyPress (FKeyEvent* ev)
 {
-  int yoffset_end = int(getScrollHeight() - getViewportHeight());
+  int idx = int(ev->key());
 
-  switch ( ev->key() )
+  if ( key_map.find(idx) != key_map.end() )
   {
-    case fc::Fkey_up:
-      scrollBy (0, -1);
-      ev->accept();
-      break;
-
-    case fc::Fkey_down:
-      scrollBy (0, 1);
-      ev->accept();
-      break;
-
-    case fc::Fkey_left:
-      scrollBy (-1, 0);
-      ev->accept();
-      break;
-
-    case fc::Fkey_right:
-      scrollBy (1, 0);
-      ev->accept();
-      break;
-
-    case fc::Fkey_ppage:
-      scrollBy (0, int(-getViewportHeight()));
-      ev->accept();
-      break;
-
-    case fc::Fkey_npage:
-      scrollBy (0, int(getViewportHeight()));
-      ev->accept();
-      break;
-
-    case fc::Fkey_home:
-      scrollToY (1);
-      ev->accept();
-      break;
-
-    case fc::Fkey_end:
-      scrollToY (1 + yoffset_end);
-      ev->accept();
-      break;
-
-    default:
-      break;
+    key_map[idx]();
+    ev->accept();
   }
 }
 
@@ -629,7 +589,7 @@ void FScrollView::onChildFocusOut (FFocusEvent* out_ev)
 
 // protected methods of FScrollView
 //----------------------------------------------------------------------
-FVTerm::term_area* FScrollView::getPrintArea()
+FVTerm::FTermArea* FScrollView::getPrintArea()
 {
   // returns print area or viewport
 
@@ -715,13 +675,13 @@ void FScrollView::copy2area()
 
   for (int y{0}; y < y_end; y++)  // line loop
   {
-    charData* vc{};  // viewport character
-    charData* ac{};  // area character
+    FChar* vc{};  // viewport character
+    FChar* ac{};  // area character
     int v_line_len = viewport->width;
     int a_line_len = printarea->width + printarea->right_shadow;
-    vc = &viewport->text[(dy + y) * v_line_len + dx];
-    ac = &printarea->text[(ay + y) * a_line_len + ax];
-    std::memcpy (ac, vc, sizeof(charData) * unsigned(x_end));
+    vc = &viewport->data[(dy + y) * v_line_len + dx];
+    ac = &printarea->data[(ay + y) * a_line_len + ax];
+    std::memcpy (ac, vc, sizeof(FChar) * unsigned(x_end));
 
     if ( int(printarea->changes[ay + y].xmin) > ax )
       printarea->changes[ay + y].xmin = uInt(ax);
@@ -764,6 +724,7 @@ void FScrollView::init (FWidget* parent)
 
   initScrollbar (vbar, fc::vertical, &FScrollView::cb_VBarChange);
   initScrollbar (hbar, fc::horizontal, &FScrollView::cb_HBarChange);
+  mapKeyFunctions();
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
@@ -798,31 +759,21 @@ void FScrollView::init (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::initScrollbar ( FScrollbarPtr& bar
-                                , fc::orientation o
-                                , FScrollViewCallback callback )
+inline void FScrollView::mapKeyFunctions()
 {
-  try
-  {
-    bar = std::make_shared<FScrollbar>(o, this);
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
-
-  term_area* area = getPrintArea();
-  bar->setPrintArea(area);
-  bar->setMinimum(0);
-  bar->setValue(0);
-  bar->hide();
-
-  bar->addCallback
-  (
-    "change-value",
-    F_METHOD_CALLBACK (this, callback)
-  );
+  key_map[fc::Fkey_up]    = [&] { scrollBy (0, -1); };
+  key_map[fc::Fkey_down]  = [&] { scrollBy (0, 1); };
+  key_map[fc::Fkey_left]  = [&] { scrollBy (-1, 0); };
+  key_map[fc::Fkey_right] = [&] { scrollBy (1, 0); };
+  key_map[fc::Fkey_ppage] = [&] { scrollBy (0, int(-getViewportHeight())); };
+  key_map[fc::Fkey_npage] = [&] { scrollBy (0, int(getViewportHeight())); };
+  key_map[fc::Fkey_home]  = [&] { scrollToY (1); };
+  key_map[fc::Fkey_end]   = \
+      [&] ()
+      {
+        int yoffset_end = int(getScrollHeight() - getViewportHeight());
+        scrollToY (1 + yoffset_end);
+      };
 }
 
 //----------------------------------------------------------------------

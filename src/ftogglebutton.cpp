@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <utility>
+
 #include "final/fapplication.h"
 #include "final/fbuttongroup.h"
 #include "final/fevent.h"
@@ -233,7 +235,7 @@ void FToggleButton::onMouseDown (FMouseEvent* ev)
   {
     getStatusBar()->drawMessage();
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 }
 
@@ -310,7 +312,7 @@ void FToggleButton::onAccel (FAccelEvent* ev)
   {
     getStatusBar()->drawMessage();
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 
   processClick();
@@ -370,25 +372,7 @@ void FToggleButton::onFocusOut (FFocusEvent* out_ev)
 //----------------------------------------------------------------------
 void FToggleButton::setHotkeyAccelerator()
 {
-  FKey hotkey = getHotkey(text);
-
-  if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
-    hotkey -= 0xfee0;
-
-  if ( hotkey )
-  {
-    if ( std::isalpha(int(hotkey)) || std::isdigit(int(hotkey)) )
-    {
-      addAccelerator (FKey(std::tolower(int(hotkey))));
-      addAccelerator (FKey(std::toupper(int(hotkey))));
-      // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(int(hotkey))));
-    }
-    else
-      addAccelerator (hotkey);
-  }
-  else
-    delAccelerator();
+  setHotkeyViaString (this, text);
 }
 
 //----------------------------------------------------------------------
@@ -429,34 +413,14 @@ void FToggleButton::draw()
 //----------------------------------------------------------------------
 void FToggleButton::drawLabel()
 {
-  wchar_t* LabelText;
-
   if ( text.isNull() || text.isEmpty() )
     return;
 
-  std::size_t length = text.getLength();
-
-  try
-  {
-    LabelText = new wchar_t[length + 1]();
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
-
   FString txt(text);
-  wchar_t* src = const_cast<wchar_t*>(txt.wc_str());
-  wchar_t* dest = const_cast<wchar_t*>(LabelText);
-  auto hotkeypos = finalcut::getHotkeyPos(src, dest, length);
-
-  if ( hotkeypos != NOT_SET )
-    length--;
-
+  FString label_text{};
+  auto hotkeypos = finalcut::getHotkeyPos(txt, label_text);
   print() << FPoint(1 + int(label_offset_pos), 1);
-  drawText (LabelText, hotkeypos, length);
-  delete[] LabelText;
+  drawText (std::move(label_text), hotkeypos);
 }
 
 //----------------------------------------------------------------------
@@ -561,9 +525,7 @@ void FToggleButton::init()
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::drawText ( wchar_t LabelText[]
-                             , std::size_t hotkeypos
-                             , std::size_t length )
+void FToggleButton::drawText (FString&& label_text, std::size_t hotkeypos)
 {
   if ( isMonochron() )
     setReverse(true);
@@ -575,7 +537,7 @@ void FToggleButton::drawText ( wchar_t LabelText[]
   else
     setColor (wc.label_inactive_fg, wc.label_inactive_bg);
 
-  for (std::size_t z{0}; z < length; z++)
+  for (std::size_t z{0}; z < label_text.getLength(); z++)
   {
     if ( (z == hotkeypos) && flags.active )
     {
@@ -584,7 +546,7 @@ void FToggleButton::drawText ( wchar_t LabelText[]
       if ( ! flags.no_underline )
         setUnderline();
 
-      print ( LabelText[z] );
+      print ( label_text[z] );
 
       if ( ! flags.no_underline )
         unsetUnderline();
@@ -592,7 +554,7 @@ void FToggleButton::drawText ( wchar_t LabelText[]
       setColor (wc.label_fg, wc.label_bg);
     }
     else
-      print (LabelText[z]);
+      print (label_text[z]);
   }
 
   if ( isMonochron() )

@@ -147,8 +147,8 @@ void FStringTest::tearDown()
 void FStringTest::classNameTest()
 {
   finalcut::FString str;
-  const char* const classname = str.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname, "FString") == 0 );
+  const finalcut::FString& classname = str.getClassName();
+  CPPUNIT_ASSERT ( classname == "FString" );
 }
 
 //----------------------------------------------------------------------
@@ -558,6 +558,7 @@ void FStringTest::equalTest()
   constexpr wchar_t wch = L'a';
   CPPUNIT_ASSERT ( one_char == wch );
   CPPUNIT_ASSERT ( wch == one_char.wc_str()[0] );
+  CPPUNIT_ASSERT ( L'\0' == one_char.wc_str()[1] );  // pos == size
 
   const finalcut::FString str(L"abc");
   const finalcut::FString str2(L"abc");
@@ -875,14 +876,27 @@ void FStringTest::streamInsertionTest()
   out << lDouble(3.141592653589793238L);
   CPPUNIT_ASSERT ( out == L"3.14159265358979324" );
 
-  out = "abc";
+  out.clear();
   std::ostringstream ostream;
+  ostream << out;
+  CPPUNIT_ASSERT ( ostream.str() == "" );
+  ostream << std::setfill('*') << std::setw(5) << out;
+  CPPUNIT_ASSERT ( ostream.str() == "*****" );
+  out = "abc";
+  ostream.str("");
   ostream << out;
   CPPUNIT_ASSERT ( ostream.str() == "abc" );
 
+  out.clear();
   std::wostringstream wostream;
   wostream << out;
-  CPPUNIT_ASSERT ( wostream.str() == L"abc" );
+  CPPUNIT_ASSERT ( wostream.str() == L"" );
+  wostream << std::setfill(L'+') << std::setw(7) << out;
+  CPPUNIT_ASSERT ( wostream.str() == L"+++++++" );
+  out = L"def";
+  wostream.str(L"");
+  wostream << out;
+  CPPUNIT_ASSERT ( wostream.str() == L"def" );
 }
 
 //----------------------------------------------------------------------
@@ -957,12 +971,14 @@ void FStringTest::subscriptOperatorTest()
   CPPUNIT_ASSERT ( s[0] == L'\0' );
   CPPUNIT_ASSERT ( s[1] == L'\0' );
   CPPUNIT_ASSERT ( s[2] == L'\0' );
+  CPPUNIT_ASSERT ( s[3] == L'\0' );  // pos == size
   s[0] = L'A';
   s[1] = L'B';
   s[2] = L'C';
   CPPUNIT_ASSERT ( s[0] == L'A' );
   CPPUNIT_ASSERT ( s[1] == L'B' );
   CPPUNIT_ASSERT ( s[2] == L'C' );
+  CPPUNIT_ASSERT ( s[3] == L'\0' );  // pos == size
   CPPUNIT_ASSERT ( s == L"ABC" );
 }
 
@@ -1202,7 +1218,7 @@ void FStringTest::exceptionTest()
   CPPUNIT_ASSERT_THROW ( finalcut::FString("abc").toULong()
                        , std::invalid_argument );
 
-  CPPUNIT_ASSERT_THROW ( finalcut::FString("abc")[3]
+  CPPUNIT_ASSERT_THROW ( finalcut::FString("abc")[4]
                        , std::out_of_range );
 
   CPPUNIT_ASSERT_THROW ( finalcut::FString("abc")[-1]

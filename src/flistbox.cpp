@@ -27,7 +27,6 @@
 #include "final/fcolorpair.h"
 #include "final/fevent.h"
 #include "final/flistbox.h"
-#include "final/fscrollbar.h"
 #include "final/fstring.h"
 #include "final/fstatusbar.h"
 #include "final/fwidgetcolors.h"
@@ -305,21 +304,16 @@ void FListBox::clear()
   const auto& wc = getFWidgetColors();
   setColor (wc.list_fg, wc.list_bg);
   std::size_t size = getWidth() - 2;
+  drawBorder();
+  drawHeadline();
 
   if ( size == 0 )
     return;
 
-  char* blank = createBlankArray(size + 1);
-
-  std::memset (blank, ' ', size);
-  blank[size] = '\0';
-
   for (int y{0}; y < int(getHeight()) - 2; y++)
   {
-    print() << FPoint(2, 2 + y) << blank;
+    print() << FPoint(2, 2 + y) << FString(size, L' ');
   }
-
-  destroyBlankArray (blank);
 }
 
 //----------------------------------------------------------------------
@@ -328,82 +322,7 @@ void FListBox::onKeyPress (FKeyEvent* ev)
   std::size_t current_before = current;
   int xoffset_before = xoffset;
   int yoffset_before = yoffset;
-  FKey key = ev->key();
-
-  switch ( key )
-  {
-    case fc::Fkey_return:
-    case fc::Fkey_enter:
-      acceptSelection();
-      ev->accept();
-      break;
-
-    case fc::Fkey_up:
-      onePosUp();
-      ev->accept();
-      break;
-
-    case fc::Fkey_down:
-      onePosDown();
-      ev->accept();
-      break;
-
-    case fc::Fkey_left:
-      scrollLeft();
-      ev->accept();
-      break;
-
-    case fc::Fkey_right:
-      scrollRight();
-      ev->accept();
-      break;
-
-    case fc::Fkey_ppage:
-      onePageUp();
-      ev->accept();
-      break;
-
-    case fc::Fkey_npage:
-      onePageDown();
-      ev->accept();
-      break;
-
-    case fc::Fkey_home:
-      firstPos();
-      ev->accept();
-      break;
-
-    case fc::Fkey_end:
-      lastPos();
-      ev->accept();
-      break;
-
-    case fc::Fkey_ic:  // insert key
-      if ( changeSelectionAndPosition() )
-        ev->accept();
-      break;
-
-    case fc::Fkey_space:
-      if ( spacebarProcessing() )
-        ev->accept();
-      break;
-
-    case fc::Fkey_erase:
-    case fc::Fkey_backspace:
-      if ( deletePreviousCharacter() )
-        ev->accept();
-      break;
-
-    case fc::Fkey_escape:
-    case fc::Fkey_escape_mintty:
-      if ( skipIncrementalSearch() )
-        ev->accept();
-      break;
-
-    default:
-      if ( keyIncSearchInput(key) )
-        ev->accept();
-  }
+  processKeyAction(ev);  // Process the keystrokes
 
   if ( current_before != current )
   {
@@ -462,7 +381,7 @@ void FListBox::onMouseDown (FMouseEvent* ev)
       vbar->drawBar();
 
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 }
 
@@ -530,7 +449,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
       vbar->drawBar();
 
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 
   // Auto-scrolling when dragging mouse outside the widget
@@ -607,7 +526,7 @@ void FListBox::onTimer (FTimerEvent*)
     vbar->drawBar();
 
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------
@@ -653,7 +572,7 @@ void FListBox::onWheel (FWheelEvent* ev)
     vbar->drawBar();
 
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------
@@ -754,8 +673,8 @@ inline FString& FListBox::getString (listBoxItems::iterator iter)
 //----------------------------------------------------------------------
 void FListBox::init()
 {
-  initScrollbar (vbar, fc::vertical, &FListBox::cb_VBarChange);
-  initScrollbar (hbar, fc::horizontal, &FListBox::cb_HBarChange);
+  initScrollbar (vbar, fc::vertical, this, &FListBox::cb_VBarChange);
+  initScrollbar (hbar, fc::horizontal, this, &FListBox::cb_HBarChange);
   setGeometry (FPoint(1, 1), FSize(5, 4), false);  // initialize geometry values
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
@@ -765,32 +684,57 @@ void FListBox::init()
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1 + int(nf_offset));
+  mapKeyFunctions();
 }
 
 //----------------------------------------------------------------------
-void FListBox::initScrollbar ( FScrollbarPtr& bar
-                             , fc::orientation o
-                             , FListBoxCallback callback )
+inline void FListBox::mapKeyFunctions()
 {
-  try
-  {
-    bar = std::make_shared<FScrollbar>(o, this);
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
+  key_map[fc::Fkey_return] = std::bind(&FListBox::acceptSelection, this);
+  key_map[fc::Fkey_enter]  = std::bind(&FListBox::acceptSelection, this);
+  key_map[fc::Fkey_up]     = std::bind(&FListBox::onePosUp, this);
+  key_map[fc::Fkey_down]   = std::bind(&FListBox::onePosDown, this);
+  auto left = static_cast<void(FListBox::*)()>(&FListBox::scrollLeft);
+  key_map[fc::Fkey_left]   = std::bind(left, this);
+  auto right = static_cast<void(FListBox::*)()>(&FListBox::scrollRight);
+  key_map[fc::Fkey_right]  = std::bind(right, this);
+  key_map[fc::Fkey_ppage]  = std::bind(&FListBox::onePageUp, this);
+  key_map[fc::Fkey_npage]  = std::bind(&FListBox::onePageDown, this);
+  key_map[fc::Fkey_home]   = std::bind(&FListBox::firstPos, this);
+  key_map[fc::Fkey_end]    = std::bind(&FListBox::lastPos, this);
+  key_map_result[fc::Fkey_ic] = \
+      std::bind(&FListBox::changeSelectionAndPosition, this);
+  key_map_result[fc::Fkey_space] = \
+      std::bind(&FListBox::spacebarProcessing, this);
+  key_map_result[fc::Fkey_erase] = \
+      std::bind(&FListBox::deletePreviousCharacter, this);
+  key_map_result[fc::Fkey_backspace] = \
+      std::bind(&FListBox::deletePreviousCharacter, this);
+  key_map_result[fc::Fkey_escape] = \
+      std::bind(&FListBox::skipIncrementalSearch, this);
+  key_map_result[fc::Fkey_escape_mintty] = \
+      std::bind(&FListBox::skipIncrementalSearch, this);
+}
 
-  bar->setMinimum(0);
-  bar->setValue(0);
-  bar->hide();
+//----------------------------------------------------------------------
+void FListBox::processKeyAction (FKeyEvent* ev)
+{
+  int idx = int(ev->key());
 
-  bar->addCallback
-  (
-    "change-value",
-    F_METHOD_CALLBACK (this, callback)
-  );
+  if ( key_map.find(idx) != key_map.end() )
+  {
+    key_map[idx]();
+    ev->accept();
+  }
+  else if ( key_map_result.find(idx) != key_map_result.end() )
+  {
+    if ( key_map_result[idx]() )
+      ev->accept();
+  }
+  else if ( keyIncSearchInput(ev->key()) )
+  {
+    ev->accept();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1172,7 +1116,7 @@ inline void FListBox::updateDrawing (bool draw_vbar, bool draw_hbar)
     hbar->drawBar();
 
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------
@@ -1802,7 +1746,7 @@ void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
   if ( conv_type != lazy_convert || ! iter->getText().isNull() )
     return;
 
-  convertToItem (*iter, source_container, y + yoffset);
+  lazy_inserter (*iter, source_container, y + yoffset);
   std::size_t column_width = getColumnWidth(iter->text);
   recalculateHorizontalBar (column_width, hasBrackets(iter));
 
@@ -1872,7 +1816,7 @@ void FListBox::cb_VBarChange (FWidget*, FDataPtr)
       vbar->drawBar();
 
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 }
 
@@ -1925,7 +1869,7 @@ void FListBox::cb_HBarChange (FWidget*, FDataPtr)
   {
     drawList();
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 
   if ( scrollType >= FScrollbar::scrollStepBackward )
@@ -1936,7 +1880,7 @@ void FListBox::cb_HBarChange (FWidget*, FDataPtr)
       hbar->drawBar();
 
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 }
 

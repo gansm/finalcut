@@ -122,12 +122,12 @@ int FApplication::exec()  // run
   quit_now = false;
   quit_code = 0;
 
-  enter_loop();
+  enterLoop();
   return quit_code;
 }
 
 //----------------------------------------------------------------------
-int FApplication::enter_loop()  // event loop
+int FApplication::enterLoop()  // event loop
 {
   loop_level++;
   quit_now = false;
@@ -144,7 +144,7 @@ int FApplication::enter_loop()  // event loop
 }
 
 //----------------------------------------------------------------------
-void FApplication::exit_loop()
+void FApplication::exitLoop()
 {
   app_exit_loop = true;
 }
@@ -172,10 +172,7 @@ void FApplication::quit()
 bool FApplication::sendEvent ( const FObject* receiver
                              , const FEvent* event )
 {
-  if ( quit_now || app_exit_loop )
-    return false;
-
-  if ( ! receiver )
+  if ( quit_now || app_exit_loop || ! receiver )
     return false;
 
   if ( receiver->isWidget() )
@@ -370,9 +367,12 @@ void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
   // Set the keyboard keypress timeout
   if ( keyboard )
   {
-    FKeyboardCommand key_cmd1 (this, &FApplication::keyPressed);
-    FKeyboardCommand key_cmd2 (this, &FApplication::keyReleased);
-    FKeyboardCommand key_cmd3 (this, &FApplication::escapeKeyPressed);
+    auto cmd1 = std::bind(&FApplication::keyPressed, this);
+    auto cmd2 = std::bind(&FApplication::keyReleased, this);
+    auto cmd3 = std::bind(&FApplication::escapeKeyPressed, this);
+    FKeyboardCommand key_cmd1 (cmd1);
+    FKeyboardCommand key_cmd2 (cmd2);
+    FKeyboardCommand key_cmd3 (cmd3);
     keyboard->setPressCommand (key_cmd1);
     keyboard->setReleaseCommand (key_cmd2);
     keyboard->setEscPressedCommand (key_cmd3);
@@ -425,7 +425,7 @@ void FApplication::cmd_options (const int& argc, char* argv[])
       {C_STR("no-esc-for-alt-meta"),   no_argument,       0,  0 },
     #endif
 
-      {0,                              0,                 0,  0 }
+      {nullptr,                        0,           nullptr,  0 }
     };
 
     opterr = 0;
@@ -669,7 +669,7 @@ void FApplication::processKeyboardEvent()
     return;
 
   findKeyboardWidget();
-  flush_out();
+  flushOutputBuffer();
   keyboard->clearKeyBufferOnTimeout();
 
   if ( isKeyPressed() )
@@ -773,10 +773,7 @@ FWidget*& FApplication::determineClickedWidget()
 {
   FWidget*& clicked = FWidget::getClickedWidget();
 
-  if ( clicked )
-    return clicked;
-
-  if ( ! mouse )
+  if ( clicked || ! mouse )
     return clicked;
 
   if ( ! mouse->isLeftButtonPressed()
@@ -795,7 +792,7 @@ FWidget*& FApplication::determineClickedWidget()
   if ( window )
   {
     // Determine the widget at the current click position
-    auto child = childWidgetAt (window, mouse_position);
+    auto child = window->childWidgetAt (mouse_position);
     clicked = ( child != 0 ) ? child : window;
     setClickedWidget (clicked);
   }
@@ -858,7 +855,7 @@ void FApplication::closeOpenMenu()
     FWidget::getStatusBar()->drawMessage();
 
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------
@@ -872,13 +869,7 @@ void FApplication::unselectMenubarItems()
   if ( openmenu || (mouse && mouse->isMoved()) )
     return;
 
-  if ( ! menu_bar )
-    return;
-
-  if ( ! menu_bar->hasSelectedItem() )
-    return;
-
-  if ( ! mouse )
+  if ( ! (menu_bar && menu_bar->hasSelectedItem() && mouse) )
     return;
 
   const auto& mouse_position = mouse->getPos();
@@ -899,7 +890,7 @@ void FApplication::unselectMenubarItems()
       FWidget::getStatusBar()->drawMessage();
 
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 }
 
@@ -908,10 +899,7 @@ void FApplication::sendMouseEvent()
 {
   auto clicked = FWidget::getClickedWidget();
 
-  if ( ! clicked )
-    return;
-
-  if ( ! mouse )
+  if ( ! (clicked && mouse) )
     return;
 
   const auto& mouse_position = mouse->getPos();

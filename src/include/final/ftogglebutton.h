@@ -84,7 +84,7 @@ class FToggleButton : public FWidget
     FToggleButton& operator = (const FToggleButton&) = delete;
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     FString&            getText();
 
     // Mutators
@@ -108,7 +108,7 @@ class FToggleButton : public FWidget
     // Inquiries
     bool                isChecked();
 
-    // Methods
+    // Method
     void                hide() override;
 
     // Event handlers
@@ -151,7 +151,7 @@ class FToggleButton : public FWidget
 
     // Methods
     void                init();
-    void                drawText (wchar_t[], std::size_t , std::size_t);
+    void                drawText (FString&&, std::size_t);
 
     // Friend classes
     friend class FButtonGroup;
@@ -167,7 +167,7 @@ class FToggleButton : public FWidget
 
 // FRadioButton inline functions
 //----------------------------------------------------------------------
-inline const char* FToggleButton::getClassName() const
+inline const FString FToggleButton::getClassName() const
 { return "FToggleButton"; }
 
 //----------------------------------------------------------------------

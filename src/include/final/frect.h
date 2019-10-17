@@ -41,6 +41,8 @@
 
 #include <algorithm>
 
+#include "final/fstring.h"
+
 namespace finalcut
 {
 
@@ -78,61 +80,61 @@ class FRect
     friend std::istream& operator >> (std::istream&, FRect&);
 
     // Accessors
-    virtual const char* getClassName();
-    int                 getX1() const;
-    int                 getY1() const;
-    int                 getX2() const;
-    int                 getY2() const;
-    int                 getX() const;
-    int                 getY() const;
-    FPoint              getPos() const;
-    FPoint              getUpperLeftPos() const;
-    FPoint              getUpperRightPos() const;
-    FPoint              getLowerLeftPos() const;
-    FPoint              getLowerRightPos() const;
-    std::size_t         getWidth() const;
-    std::size_t         getHeight() const;
-    FSize               getSize() const;
+    virtual const FString getClassName();
+    int                   getX1() const;
+    int                   getY1() const;
+    int                   getX2() const;
+    int                   getY2() const;
+    int                   getX() const;
+    int                   getY() const;
+    FPoint                getPos() const;
+    FPoint                getUpperLeftPos() const;
+    FPoint                getUpperRightPos() const;
+    FPoint                getLowerLeftPos() const;
+    FPoint                getLowerRightPos() const;
+    std::size_t           getWidth() const;
+    std::size_t           getHeight() const;
+    FSize                 getSize() const;
 
     // Mutators
-    void                setX1 (int);
-    void                setY1 (int);
-    void                setX2 (int);
-    void                setY2 (int);
-    void                setX (int);
-    void                setY (int);
-    void                setPos (int, int);
-    void                setPos (const FPoint&);
-    void                setWidth (std::size_t);
-    void                setHeight (std::size_t);
-    void                setSize (std::size_t, std::size_t);
-    void                setSize (const FSize&);
-    void                setRect (const FRect&);
-    void                setRect (const FPoint&, const FSize&);
-    void                setRect (int, int, std::size_t, std::size_t);
-    void                setCoordinates (const FPoint&, const FPoint&);
-    void                setCoordinates (int, int, int, int);
+    void                  setX1 (int);
+    void                  setY1 (int);
+    void                  setX2 (int);
+    void                  setY2 (int);
+    void                  setX (int);
+    void                  setY (int);
+    void                  setPos (int, int);
+    void                  setPos (const FPoint&);
+    void                  setWidth (std::size_t);
+    void                  setHeight (std::size_t);
+    void                  setSize (std::size_t, std::size_t);
+    void                  setSize (const FSize&);
+    void                  setRect (const FRect&);
+    void                  setRect (const FPoint&, const FSize&);
+    void                  setRect (int, int, std::size_t, std::size_t);
+    void                  setCoordinates (const FPoint&, const FPoint&);
+    void                  setCoordinates (int, int, int, int);
 
     // Inquiry
-    bool                isEmpty() const;
+    bool                  isEmpty() const;
 
     // Coordinate references
-    int&                x1_ref();
-    int&                y1_ref();
-    int&                x2_ref();
-    int&                y2_ref();
+    int&                  x1_ref();
+    int&                  y1_ref();
+    int&                  x2_ref();
+    int&                  y2_ref();
 
     // Methods
-    void                move (int, int);
-    void                move (const FPoint&);
-    void                scaleBy (int, int);
-    void                scaleBy (const FPoint&);
-    bool                contains (int, int) const;
-    bool                contains (const FPoint&) const;
-    bool                contains (const FRect&) const;
-    bool                overlap  (const FRect&) const;
-    FRect               intersect (const FRect&) const;
-    FRect               combined (const FRect&) const;
+    void                  move (int, int);
+    void                  move (const FPoint&);
+    void                  scaleBy (int, int);
+    void                  scaleBy (const FPoint&);
+    bool                  contains (int, int) const;
+    bool                  contains (const FPoint&) const;
+    bool                  contains (const FRect&) const;
+    bool                  overlap  (const FRect&) const;
+    FRect                 intersect (const FRect&) const;
+    FRect                 combined (const FRect&) const;
 
   private:
     // Data members
@@ -171,7 +173,7 @@ inline FRect::FRect (int x, int y, std::size_t width, std::size_t height)
 { }
 
 //----------------------------------------------------------------------
-inline const char* FRect::getClassName()
+inline const FString FRect::getClassName()
 { return "FRect"; }
 
 //----------------------------------------------------------------------

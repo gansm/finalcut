@@ -35,6 +35,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include "final/fstring.h"
+
 namespace finalcut
 {
 
@@ -55,7 +57,7 @@ class FColorPalette final
     typedef void (*funcp)(FColor, int, int, int);
 
     // Accessor
-    virtual const char* getClassName() const;
+    virtual const FString getClassName() const;
 
     // Methods
     static void set8ColorPalette (funcp);
@@ -66,7 +68,7 @@ class FColorPalette final
 
 // FColorPalette inline functions
 //----------------------------------------------------------------------
-inline const char* FColorPalette::getClassName() const
+inline const FString FColorPalette::getClassName() const
 { return "FColorPalette"; }
 
 }  // namespace finalcut

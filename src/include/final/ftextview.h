@@ -52,7 +52,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <memory>
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "final/fwidget.h"
@@ -85,8 +86,15 @@ class FTextView : public FWidget
     // Disable assignment operator (=)
     FTextView& operator = (const FTextView&) = delete;
 
+    // Overloaded operators
+    FTextView& operator = (const FString&);
+    template <typename typeT>
+    FTextView& operator << (const typeT&);
+    FTextView& operator << (fc::SpecialCharacter);
+    FTextView& operator << (const std::string&);
+
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     std::size_t         getColumns() const;
     std::size_t         getRows() const;
     const FString       getText() const;
@@ -129,9 +137,8 @@ class FTextView : public FWidget
     void                adjustSize() override;
 
   private:
-    // Typedef
-    typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
-    typedef void (FTextView::*FTextViewCallback)(FWidget*, FDataPtr);
+    // Typedefs
+    typedef std::unordered_map<int, std::function<void()>> keyMap;
 
     // Accessors
     std::size_t         getTextHeight();
@@ -143,11 +150,12 @@ class FTextView : public FWidget
 
     // Methods
     void                init();
-    void                initScrollbar ( FScrollbarPtr&
-                                      , fc::orientation
-                                      , FTextViewCallback );
+    void                mapKeyFunctions();
     void                draw() override;
+    void                drawBorder() override;
+    void                drawScrollbars();
     void                drawText();
+    bool                useFDialogBorder();
     bool                isPrintable (wchar_t);
     void                processChanged();
 
@@ -159,6 +167,7 @@ class FTextView : public FWidget
     FStringList        data{};
     FScrollbarPtr      vbar{nullptr};
     FScrollbarPtr      hbar{nullptr};
+    keyMap             key_map{};
     bool               update_scrollbar{true};
     int                xoffset{0};
     int                yoffset{0};
@@ -168,7 +177,41 @@ class FTextView : public FWidget
 
 // FListBox inline functions
 //----------------------------------------------------------------------
-inline const char* FTextView::getClassName() const
+inline FTextView& FTextView::operator = (const FString& s)
+{
+  setText(s);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+template <typename typeT>
+inline FTextView& FTextView::operator << (const typeT& s)
+{
+  std::wostringstream outstream;
+  outstream << s;
+
+  if ( ! outstream.str().empty() )
+    append (outstream.str());
+
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FTextView& FTextView::operator << (fc::SpecialCharacter c)
+{
+  append (static_cast<wchar_t>(c));  // Required under Solaris
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FTextView& FTextView::operator << (const std::string& string)
+{
+  append (string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline const FString FTextView::getClassName() const
 { return "FTextView"; }
 
 //----------------------------------------------------------------------

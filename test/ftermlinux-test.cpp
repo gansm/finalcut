@@ -1511,8 +1511,8 @@ FTermLinuxTest::FTermLinuxTest()
 void FTermLinuxTest::classNameTest()
 {
   const finalcut::FTermLinux p{};
-  const char* const classname = p.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname, "FTermLinux") == 0 );
+  const finalcut::FString& classname = p.getClassName();
+  CPPUNIT_ASSERT ( classname == "FTermLinux" );
 }
 
 //----------------------------------------------------------------------
@@ -2250,7 +2250,7 @@ void FTermLinuxTest::modifierKeyTest()
 {
   FKey keycode{};
   FKey mod_keycode{};
-  const finalcut::FTermLinux linux{};
+  finalcut::FTermLinux linux{};
   finalcut::FSystem* fsys(new test::FSystemTest());
   test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
   test::FSystemTest::shiftstate& mod_key = fsystest->getShiftState();

@@ -110,9 +110,12 @@
 #include <clocale>
 #include <cmath>
 #include <csignal>
+#include <functional>
 #include <map>
 #include <queue>
+#include <utility>
 #include <string>
+#include <vector>
 
 #include "final/fc.h"
 #include "final/fstring.h"
@@ -154,7 +157,8 @@ class FTermXTerminal;
 class FTerm final
 {
   public:
-    struct initializationValues;  // forward declaration
+    // Typedef
+    typedef std::function<int(int)> defaultPutChar;
 
     // Constructor
     explicit FTerm (bool = false);
@@ -169,7 +173,7 @@ class FTerm final
     FTerm& operator = (const FTerm&) = delete;
 
     // Accessors
-    virtual const char*    getClassName() const;
+    virtual const FString  getClassName() const;
     static std::size_t     getLineNumber();
     static std::size_t     getColumnNumber();
     static const FString   getKeyName (FKey);
@@ -206,7 +210,7 @@ class FTerm final
 #endif
 
     // Inquiries
-    static bool            isNormal (charData*&);
+    static bool            isNormal (FChar*&);
     static bool            isRaw();
     static bool            hasUTF8();
     static bool            hasVT100();
@@ -278,9 +282,7 @@ class FTerm final
     static bool            scrollTermForward();
     static bool            scrollTermReverse();
 
-    // function pointer -> static function
-    static int             (*Fputchar)(int);
-
+    static defaultPutChar& putchar();  // function pointer
     template<typename... Args>
     static void            putstringf (const char[], Args&&...);
     static void            putstring (const char[], int = 1);
@@ -288,8 +290,8 @@ class FTerm final
     static int             putchar_UTF8  (int);
 
     static void            initScreenSettings();
-    static char*           changeAttribute ( charData*&
-                                           , charData*& );
+    static char*           changeAttribute ( FChar*&
+                                           , FChar*& );
     static void            changeTermSizeFinished();
     static void            exitWithMessage (const FString&)
     #if defined(__clang__) || defined(__GNUC__)
@@ -383,23 +385,25 @@ class FTerm final
 
 
 // non-member function forward declarations
+// implemented in fterm_functions.cpp
 //----------------------------------------------------------------------
+uInt env2uint (const char*);
 wchar_t cp437_to_unicode (uChar);
 uChar unicode_to_cp437 (wchar_t);
 FString getFullWidth (const FString&);
 FString getHalfWidth (const FString&);
-std::size_t getColumnWidthToLength (const FString&, std::size_t);
 FString getColumnSubString (const FString&, std::size_t, std::size_t);
+std::size_t getLengthFromColumnWidth (const FString&, std::size_t);
 std::size_t getColumnWidth (const FString&, std::size_t);
 std::size_t getColumnWidth (const FString&);
 std::size_t getColumnWidth (const wchar_t);
-std::size_t getColumnWidth (charData&);
+std::size_t getColumnWidth (FChar&);
 std::size_t getColumnWidth (const FTermBuffer&);
 
 
 // FTerm inline functions
 //----------------------------------------------------------------------
-inline const char* FTerm::getClassName() const
+inline const FString FTerm::getClassName() const
 { return "FTerm"; }
 
 //----------------------------------------------------------------------
@@ -418,10 +422,19 @@ inline bool FTerm::unsetUTF8()
 template<typename... Args>
 inline void FTerm::putstringf (const char format[], Args&&... args)
 {
-  char buf[512]{};
-  char* str = buf;
-  std::snprintf (str, sizeof(buf), format, std::forward<Args>(args)...);
-  fsys->tputs (str, 1, FTerm::putchar_ASCII);
+  int size = std::snprintf ( nullptr, 0, format
+                           , std::forward<Args>(args)... ) + 1;
+
+  if ( size == -1 )
+    return;
+
+  if ( ! fsys )
+    getFSystem();
+
+  std::size_t count = std::size_t(size);
+  std::vector<char> buf(count);
+  std::snprintf (&buf[0], count, format, std::forward<Args>(args)...);
+  fsys->tputs (&buf[0], 1, FTerm::putchar_ASCII);
 }
 
 }  // namespace finalcut

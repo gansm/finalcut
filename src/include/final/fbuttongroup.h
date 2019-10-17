@@ -83,7 +83,7 @@ class FButtonGroup : public FScrollView
     FButtonGroup& operator = (const FButtonGroup&) = delete;
 
     // Accessor
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     FToggleButton*      getFirstButton();
     FToggleButton*      getLastButton();
     FToggleButton*      getButton (int) const;
@@ -131,7 +131,7 @@ class FButtonGroup : public FScrollView
 
     // Methods
     void                init();
-    void                drawText (wchar_t[], std::size_t, std::size_t);
+    void                drawText (const FString&, std::size_t);
     void                directFocus();
 
     // Callback method
@@ -144,7 +144,7 @@ class FButtonGroup : public FScrollView
 
 // FButtonGroup inline functions
 //----------------------------------------------------------------------
-inline const char* FButtonGroup::getClassName() const
+inline const FString FButtonGroup::getClassName() const
 { return "FButtonGroup"; }
 
 //----------------------------------------------------------------------

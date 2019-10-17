@@ -3,7 +3,7 @@
 #-----------------------------------------------------------------------------
 
 # This is where make install will install the library
-VERSION = "0.5.1"
+VERSION = "0.6.0"
 MAJOR := $(shell echo ${VERSION} | cut -d. -f1)
 LIBDIR = /usr/local/lib
 INCLUDEDIR1 = include/final
@@ -118,6 +118,7 @@ OBJS = \
 	fstartoptions.o \
 	ftermcap.o \
 	fterm.o \
+	fterm_functions.o \
 	ftermdebugdata.o \
 	ftermios.o \
 	ftermdetection.o \
@@ -134,14 +135,14 @@ OBJS = \
 	fcolorpalette.o \
 	fwidgetcolors.o \
 	fwidget.o \
+	fwidget_functions.o \
 	fevent.o \
 	fobject.o
 
 TERMCAP := $(shell test -n "$$(ldd {/usr,}/lib64/libncursesw.so.5 2>/dev/null | grep libtinfo)" && echo "-ltinfo" || echo "-lncurses")
 
 ifdef DEBUG
-  OPTIMIZE = -O0 -fsanitize=bool,bounds,enum,float-cast-overflow,function,null
-#  OPTIMIZE = -O0 -fsanitize=undefined
+  OPTIMIZE = -O0 -fsanitize=undefined
 else
   OPTIMIZE = -O2
 endif

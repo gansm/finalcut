@@ -126,30 +126,30 @@ class FMouseTest : public CPPUNIT_NS::TestFixture
 void FMouseTest::classNameTest()
 {
   test::FMouse_protected m;
-  const char* const classname1 = m.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname1, "FMouse") == 0 );
+  const finalcut::FString& classname1 = m.getClassName();
+  CPPUNIT_ASSERT ( classname1 == "FMouse" );
 
 #ifdef F_HAVE_LIBGPM
   finalcut::FMouseGPM gpm_mouse;
-  const char* const classname2 = gpm_mouse.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname2, "FMouseGPM") == 0 );
+  const finalcut::FString& classname2 = gpm_mouse.getClassName();
+  CPPUNIT_ASSERT ( classname2 == "FMouseGPM" );
 #endif
 
   finalcut::FMouseX11 x11_mouse;
-  const char* const classname3 = x11_mouse.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname3, "FMouseX11") == 0 );
+  const finalcut::FString& classname3 = x11_mouse.getClassName();
+  CPPUNIT_ASSERT ( classname3 == "FMouseX11" );
 
   finalcut::FMouseSGR sgr_mouse;
-  const char* const classname4 = sgr_mouse.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname4, "FMouseSGR") == 0 );
+  const finalcut::FString& classname4 = sgr_mouse.getClassName();
+  CPPUNIT_ASSERT ( classname4 == "FMouseSGR" );
 
   finalcut::FMouseUrxvt urxvt_mouse;
-  const char* const classname5 = urxvt_mouse.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname5, "FMouseUrxvt") == 0 );
+  const finalcut::FString& classname5 = urxvt_mouse.getClassName();
+  CPPUNIT_ASSERT ( classname5 == "FMouseUrxvt" );
 
   finalcut::FMouseControl mouse_control;
-  const char* const classname6 = mouse_control.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname6, "FMouseControl") == 0 );
+  const finalcut::FString& classname6 = mouse_control.getClassName();
+  CPPUNIT_ASSERT ( classname6 == "FMouseControl" );
 }
 
 //----------------------------------------------------------------------

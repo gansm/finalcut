@@ -52,10 +52,19 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <functional>
+#include <memory>
+
 #include "final/fwidget.h"
 
 namespace finalcut
 {
+
+// class forward declaration
+class FScrollbar;
+
+// Global typedef
+typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
 
 //----------------------------------------------------------------------
 // class FScrollbar
@@ -94,7 +103,7 @@ class FScrollbar : public FWidget
     FScrollbar& operator = (const FScrollbar&) = delete;
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     int                 getValue() const;
     sType               getScrollType() const;
 
@@ -161,9 +170,41 @@ class FScrollbar : public FWidget
     int                 max_color{getMaxColor()};
 };
 
+
+// non-member function forward declarations
+//----------------------------------------------------------------------
+template<typename Instance, typename Callback>
+void initScrollbar ( FScrollbarPtr& bar
+                   , fc::orientation o
+                   , Instance cb_instance
+                   , const Callback& cb_handler )
+{
+  try
+  {
+    bar = std::make_shared<FScrollbar>(o, cb_instance);
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    return;
+  }
+
+  using namespace std::placeholders;
+  bar->setMinimum(0);
+  bar->setValue(0);
+  bar->hide();
+
+  bar->addCallback
+  (
+    "change-value",
+    std::bind(cb_handler, cb_instance, _1, _2)
+  );
+}
+
+
 // FScrollbar inline functions
 //----------------------------------------------------------------------
-inline const char* FScrollbar::getClassName() const
+inline const FString FScrollbar::getClassName() const
 { return "FScrollbar"; }
 
 //----------------------------------------------------------------------

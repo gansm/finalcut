@@ -38,6 +38,7 @@
 #include <limits>
 #include <iostream>
 
+#include "final/fstring.h"
 #include "final/ftypes.h"
 
 namespace finalcut
@@ -78,21 +79,21 @@ class FSize
     friend std::istream& operator >> (std::istream&, FSize&);
 
     // Accessors
-    virtual const char* getClassName();
-    std::size_t         getWidth() const;
-    std::size_t         getHeight() const;
-    std::size_t         getArea() const;
-    void                setWidth (std::size_t);
-    void                setHeight (std::size_t);
-    void                setSize (FSize);
-    void                setSize (std::size_t, std::size_t);
+    virtual const FString getClassName();
+    std::size_t           getWidth() const;
+    std::size_t           getHeight() const;
+    std::size_t           getArea() const;
+    void                  setWidth (std::size_t);
+    void                  setHeight (std::size_t);
+    void                  setSize (FSize);
+    void                  setSize (std::size_t, std::size_t);
 
     // Inquiry
-    bool                isEmpty() const;
+    bool                  isEmpty() const;
 
     // Side references
-    std::size_t&        width_ref();
-    std::size_t&        height_ref();
+    std::size_t&          width_ref();
+    std::size_t&          height_ref();
 
   private:
     // Data members
@@ -161,7 +162,7 @@ inline FSize operator - (const FSize& s1, const FSize& s2)
 }
 
 //----------------------------------------------------------------------
-inline const char* FSize::getClassName()
+inline const FString FSize::getClassName()
 { return "FSize"; }
 
 //----------------------------------------------------------------------

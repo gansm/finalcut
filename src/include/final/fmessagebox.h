@@ -106,7 +106,7 @@ class FMessageBox : public FDialog
     FMessageBox& operator = (const FMessageBox&);
 
     // Accessor
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     const FString       getTitlebarText() const;
     const FString       getHeadline() const;
     const FString       getText() const;
@@ -168,7 +168,7 @@ class FMessageBox : public FDialog
 
 // FMessageBox inline functions
 //----------------------------------------------------------------------
-inline const char* FMessageBox::getClassName() const
+inline const FString FMessageBox::getClassName() const
 { return "FMessageBox"; }
 
 //----------------------------------------------------------------------
@@ -233,7 +233,7 @@ int FMessageBox::error ( FWidget* parent
   mbox.beep();
   mbox.setHeadline("Warning:");
   mbox.setCenterText();
-  const FWidgetColors& wc = mbox.getFWidgetColors();
+  const auto& wc = mbox.getFWidgetColors();
   mbox.setForegroundColor(wc.error_box_fg);
   mbox.setBackgroundColor(wc.error_box_bg);
   mbox.emphasis_color = wc.error_box_emphasis_fg;

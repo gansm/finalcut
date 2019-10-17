@@ -38,6 +38,7 @@
 #include  <iostream>
 
 #include "final/fc.h"
+#include "final/fstring.h"
 #include "final/ftypes.h"
 
 namespace finalcut
@@ -63,10 +64,14 @@ class FStartOptions final
     FStartOptions& operator = (const FStartOptions&) = delete;
 
     // Accessors
+    virtual const FString getClassName();
     static FStartOptions& getFStartOptions();
 
     // Mutator
     void setDefault();
+
+    // Method
+    static void destroyObject();
 
     // Data members
     uInt8 cursor_optimisation : 1;
@@ -89,6 +94,10 @@ class FStartOptions final
 
     static FStartOptions*     start_options;
 };
+
+//----------------------------------------------------------------------
+inline const FString FStartOptions::getClassName()
+{ return "FStartOptions"; }
 
 }  // namespace finalcut
 

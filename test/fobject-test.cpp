@@ -49,7 +49,7 @@ class FObject_protected : public finalcut::FObject
       return finalcut::FObject::event(ev);
     }
 
-    TimerList* getTimerList() const
+    FTimerList* getTimerList() const
     {
       return finalcut::FObject::getTimerList();
     }
@@ -183,8 +183,8 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
 void FObjectTest::classNameTest()
 {
   finalcut::FObject o;
-  const char* const classname = o.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname, "FObject") == 0 );
+  const finalcut::FString& classname = o.getClassName();
+  CPPUNIT_ASSERT ( classname == "FObject" );
 }
 
 //----------------------------------------------------------------------
@@ -224,12 +224,12 @@ void FObjectTest::noArgumentTest()
 
 //----------------------------------------------------------------------
 void FObjectTest::childObjectTest()
-{/*
-  *  obj -> c1 -> c5 -> c6
-  *      -> c2
-  *      -> c3
-  *      -> c4
-  */
+{
+  //  obj -> c1 -> c5 -> c6
+  //      -> c2
+  //      -> c3
+  //      -> c4
+
   finalcut::FObject obj;
   auto c1 = new finalcut::FObject(&obj);
   auto c2 = new finalcut::FObject(&obj);
@@ -294,9 +294,9 @@ void FObjectTest::widgetObjectTest()
 
 //----------------------------------------------------------------------
 void FObjectTest::removeParentTest()
-{/*
-  *  obj -> child
-  */
+{
+  // obj -> child
+
   auto obj =  new finalcut::FObject();
   auto child = new finalcut::FObject(obj);
 
@@ -321,9 +321,9 @@ void FObjectTest::removeParentTest()
 
 //----------------------------------------------------------------------
 void FObjectTest::addTest()
-{/*
-  *  obj -> child
-  */
+{
+  // obj -> child
+
   auto obj =  new finalcut::FObject();
   auto child = new finalcut::FObject();
 
@@ -347,9 +347,9 @@ void FObjectTest::addTest()
 
 //----------------------------------------------------------------------
 void FObjectTest::delTest()
-{/*
-  *  obj -> child
-  */
+{
+  // obj -> child
+
   auto obj =  new finalcut::FObject();
   auto child = new finalcut::FObject(obj);
 
@@ -374,11 +374,11 @@ void FObjectTest::delTest()
 
 //----------------------------------------------------------------------
 void FObjectTest::iteratorTest()
-{/*
-  *  obj -> child1
-  *      -> child2
-  *      -> child3
-  */
+{
+  // obj -> child1
+  //     -> child2
+  //     -> child3
+
   auto obj =  new finalcut::FObject();
   auto child1 = new finalcut::FObject(obj);
   auto child2 = new finalcut::FObject(obj);
@@ -388,7 +388,7 @@ void FObjectTest::iteratorTest()
   CPPUNIT_ASSERT ( child2->getParent() == obj );
   CPPUNIT_ASSERT ( child3->getParent() == obj );
 
-  finalcut::FObject::constFObjectIterator c_iter, c_last;
+  finalcut::FObject::const_iterator c_iter, c_last;
   c_iter = obj->begin();
   c_last = obj->end();
   int i = 0;
@@ -402,7 +402,7 @@ void FObjectTest::iteratorTest()
   CPPUNIT_ASSERT ( obj->numOfChildren() == i );
   CPPUNIT_ASSERT ( i == 3 );
 
-  finalcut::FObject::FObjectIterator iter, last;
+  finalcut::FObject::iterator iter, last;
   iter = obj->begin();
   last = obj->end();
   i = 0;

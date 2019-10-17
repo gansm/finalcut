@@ -74,7 +74,7 @@ class FProgressbar : public FWidget
     virtual ~FProgressbar();
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     std::size_t         getPercentage();
 
     // Mutators
@@ -111,7 +111,7 @@ class FProgressbar : public FWidget
 
 // FProgressbar inline functions
 //----------------------------------------------------------------------
-inline const char* FProgressbar::getClassName() const
+inline const FString FProgressbar::getClassName() const
 { return "FProgressbar"; }
 
 //----------------------------------------------------------------------

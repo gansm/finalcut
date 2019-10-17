@@ -130,8 +130,8 @@ FTermDetectionTest::~FTermDetectionTest()
 void FTermDetectionTest::classNameTest()
 {
   finalcut::FTermDetection d;
-  const char* const classname = d.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname, "FTermDetection") == 0 );
+  const finalcut::FString& classname = d.getClassName();
+  CPPUNIT_ASSERT ( classname == "FTermDetection" );
 }
 
 //----------------------------------------------------------------------

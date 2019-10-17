@@ -53,10 +53,12 @@ e Copyright 2014-2019 Markus Gans                                      *
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <memory>
+#include <unordered_map>
 #include <vector>
 
+#include "final/fscrollbar.h"
 #include "final/fwidget.h"
+
 
 namespace finalcut
 {
@@ -84,32 +86,32 @@ class FListBoxItem
     FListBoxItem& operator = (const FListBoxItem&);
 
     // Accessors
-    virtual const char* getClassName() const;
-    virtual FString&    getText();
-    virtual FDataPtr    getData() const;
+    virtual const FString getClassName() const;
+    virtual FString&      getText();
+    virtual FDataPtr      getData() const;
 
     // Mutators
-    void                setText (const FString&);
-    void                setData (FDataPtr);
+    void                  setText (const FString&);
+    void                  setData (FDataPtr);
 
     // Methods
-    void                clear();
+    void                  clear();
 
   private:
+    // Data members
+    FString               text{};
+    FDataPtr              data_pointer{nullptr};
+    fc::brackets_type     brackets{fc::NoBrackets};
+    bool                  selected{false};
+
     // Friend classes
     friend class FListBox;
-
-    // Data members
-    FString           text{};
-    FDataPtr          data_pointer{nullptr};
-    fc::brackets_type brackets{fc::NoBrackets};
-    bool              selected{false};
 };
 
 
 // FListBoxItem inline functions
 //----------------------------------------------------------------------
-inline const char* FListBoxItem::getClassName() const
+inline const FString FListBoxItem::getClassName() const
 { return "FListBoxItem"; }
 
 //----------------------------------------------------------------------
@@ -163,7 +165,7 @@ class FListBox : public FWidget
     FListBox& operator = (const FListBox&) = delete;
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     std::size_t         getCount() const;
     FListBoxItem        getItem (std::size_t);
     FListBoxItem        getItem (listBoxItems::iterator) const;
@@ -236,9 +238,10 @@ class FListBox : public FWidget
     void                adjustSize() override;
 
   private:
-    // Typedef
-    typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
-    typedef void (FListBox::*FListBoxCallback)(FWidget*, FDataPtr);
+    // Typedefs
+    typedef std::unordered_map<int, std::function<void()>> keyMap;
+    typedef std::unordered_map<int, std::function<bool()>> keyMapResult;
+    typedef std::function<void(FListBoxItem&, FDataPtr, int)> lazyInsert;
 
     // Enumeration
     enum convert_type
@@ -257,9 +260,8 @@ class FListBox : public FWidget
 
     // Methods
     void                init();
-    void                initScrollbar ( FScrollbarPtr&
-                                      , fc::orientation
-                                      , FListBoxCallback );
+    void                mapKeyFunctions();
+    void                processKeyAction (FKeyEvent*);
     void                draw() override;
     void                drawBorder() override;
     void                drawScrollbars();
@@ -315,9 +317,7 @@ class FListBox : public FWidget
     void                cb_HBarChange (FWidget*, FDataPtr);
 
     // Function Pointer
-    void                (*convertToItem) ( FListBoxItem&
-                                         , FDataPtr
-                                         , int index ){nullptr};
+    lazyInsert      lazy_inserter{};
 
     // Data members
     listBoxItems    itemlist{};
@@ -326,6 +326,8 @@ class FListBox : public FWidget
     FScrollbarPtr   hbar{nullptr};
     FString         text{};
     FString         inc_search{};
+    keyMap          key_map{};
+    keyMapResult    key_map_result{};
     convert_type    conv_type{FListBox::no_convert};
     fc::dragScroll  drag_scroll{fc::noScroll};
     int             scroll_repeat{100};
@@ -374,7 +376,7 @@ inline FListBox::FListBox ( Container container
 }
 
 //----------------------------------------------------------------------
-inline const char* FListBox::getClassName() const
+inline const FString FListBox::getClassName() const
 { return "FListBox"; }
 
 //----------------------------------------------------------------------
@@ -493,7 +495,7 @@ void FListBox::insert (Container container, LazyConverter convert)
 {
   conv_type = lazy_convert;
   source_container = container;
-  convertToItem = convert;
+  lazy_inserter = convert;
   std::size_t size = container->size();
 
   if ( size > 0 )

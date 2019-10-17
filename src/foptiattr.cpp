@@ -450,7 +450,7 @@ void FOptiAttr::set_orig_orig_colors (char cap[])
 }
 
 //----------------------------------------------------------------------
-bool FOptiAttr::isNormal (charData*& ch)
+bool FOptiAttr::isNormal (FChar*& ch)
 {
   return hasNoAttribute(ch) && ! hasColor(ch);
 }
@@ -542,7 +542,7 @@ FColor FOptiAttr::vga2ansi (FColor color)
 }
 
 //----------------------------------------------------------------------
-char* FOptiAttr::changeAttribute (charData*& term, charData*& next)
+char* FOptiAttr::changeAttribute (FChar*& term, FChar*& next)
 {
   const bool next_has_color = hasColor(next);
   fake_reverse = false;
@@ -558,7 +558,7 @@ char* FOptiAttr::changeAttribute (charData*& term, charData*& next)
 
   // Simulate invisible characters
   if ( ! F_enter_secure_mode.cap && next->attr.bit.invisible )
-    next->encoded_code = ' ';
+    next->encoded_char = ' ';
 
   // Look for no changes
   if ( ! (switchOn() || switchOff() || hasColorChanged(term, next)) )
@@ -584,7 +584,7 @@ char* FOptiAttr::changeAttribute (charData*& term, charData*& next)
 
 // private methods of FOptiAttr
 //----------------------------------------------------------------------
-inline bool FOptiAttr::setTermBold (charData*& term)
+inline bool FOptiAttr::setTermBold (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -598,7 +598,7 @@ inline bool FOptiAttr::setTermBold (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::unsetTermBold (charData*& term)
+inline bool FOptiAttr::unsetTermBold (FChar*& term)
 {
   // Back to normal intensity (turns off bold + dim)
 
@@ -620,7 +620,7 @@ inline bool FOptiAttr::unsetTermBold (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::setTermDim (charData*& term)
+inline bool FOptiAttr::setTermDim (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -634,7 +634,7 @@ inline bool FOptiAttr::setTermDim (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::unsetTermDim (charData*& term)
+inline bool FOptiAttr::unsetTermDim (FChar*& term)
 {
   // Back to normal intensity (turns off bold + dim)
 
@@ -656,7 +656,7 @@ inline bool FOptiAttr::unsetTermDim (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::setTermItalic (charData*& term)
+inline bool FOptiAttr::setTermItalic (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -670,7 +670,7 @@ inline bool FOptiAttr::setTermItalic (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::unsetTermItalic (charData*& term)
+inline bool FOptiAttr::unsetTermItalic (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -687,7 +687,7 @@ inline bool FOptiAttr::unsetTermItalic (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::setTermUnderline (charData*& term)
+inline bool FOptiAttr::setTermUnderline (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -701,7 +701,7 @@ inline bool FOptiAttr::setTermUnderline (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::unsetTermUnderline (charData*& term)
+inline bool FOptiAttr::unsetTermUnderline (FChar*& term)
 {
   // Turns off every underlining
 
@@ -723,7 +723,7 @@ inline bool FOptiAttr::unsetTermUnderline (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::setTermBlink (charData*& term)
+inline bool FOptiAttr::setTermBlink (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -737,7 +737,7 @@ inline bool FOptiAttr::setTermBlink (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::unsetTermBlink (charData*& term)
+inline bool FOptiAttr::unsetTermBlink (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -754,7 +754,7 @@ inline bool FOptiAttr::unsetTermBlink (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::setTermReverse (charData*& term)
+inline bool FOptiAttr::setTermReverse (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -768,7 +768,7 @@ inline bool FOptiAttr::setTermReverse (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::unsetTermReverse (charData*& term)
+inline bool FOptiAttr::unsetTermReverse (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -785,7 +785,7 @@ inline bool FOptiAttr::unsetTermReverse (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::setTermStandout (charData*& term)
+inline bool FOptiAttr::setTermStandout (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -799,7 +799,7 @@ inline bool FOptiAttr::setTermStandout (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::unsetTermStandout (charData*& term)
+inline bool FOptiAttr::unsetTermStandout (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -816,7 +816,7 @@ inline bool FOptiAttr::unsetTermStandout (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::setTermInvisible (charData*& term)
+inline bool FOptiAttr::setTermInvisible (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -830,7 +830,7 @@ inline bool FOptiAttr::setTermInvisible (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::unsetTermInvisible (charData*& term)
+inline bool FOptiAttr::unsetTermInvisible (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -847,7 +847,7 @@ inline bool FOptiAttr::unsetTermInvisible (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::setTermProtected (charData*& term)
+inline bool FOptiAttr::setTermProtected (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -861,7 +861,7 @@ inline bool FOptiAttr::setTermProtected (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::unsetTermProtected (charData*& term)
+inline bool FOptiAttr::unsetTermProtected (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -878,7 +878,7 @@ inline bool FOptiAttr::unsetTermProtected (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::setTermCrossedOut (charData*& term)
+inline bool FOptiAttr::setTermCrossedOut (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -892,7 +892,7 @@ inline bool FOptiAttr::setTermCrossedOut (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::unsetTermCrossedOut (charData*& term)
+inline bool FOptiAttr::unsetTermCrossedOut (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -909,7 +909,7 @@ inline bool FOptiAttr::unsetTermCrossedOut (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::setTermDoubleUnderline (charData*& term)
+inline bool FOptiAttr::setTermDoubleUnderline (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -923,7 +923,7 @@ inline bool FOptiAttr::setTermDoubleUnderline (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::unsetTermDoubleUnderline (charData*& term)
+inline bool FOptiAttr::unsetTermDoubleUnderline (FChar*& term)
 {
   // Turns off every underlining
 
@@ -945,7 +945,7 @@ inline bool FOptiAttr::unsetTermDoubleUnderline (charData*& term)
 }
 
 //----------------------------------------------------------------------
-bool FOptiAttr::setTermAttributes ( charData*& term
+bool FOptiAttr::setTermAttributes ( FChar*& term
                                   , bool p1, bool p2, bool p3
                                   , bool p4, bool p5, bool p6
                                   , bool p7, bool p8, bool p9 )
@@ -985,7 +985,7 @@ bool FOptiAttr::setTermAttributes ( charData*& term
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::unsetTermAttributes (charData*& term)
+inline bool FOptiAttr::unsetTermAttributes (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -999,7 +999,7 @@ inline bool FOptiAttr::unsetTermAttributes (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::setTermAltCharset (charData*& term)
+inline bool FOptiAttr::setTermAltCharset (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -1016,7 +1016,7 @@ inline bool FOptiAttr::setTermAltCharset (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::unsetTermAltCharset (charData*& term)
+inline bool FOptiAttr::unsetTermAltCharset (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -1033,7 +1033,7 @@ inline bool FOptiAttr::unsetTermAltCharset (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::setTermPCcharset (charData*& term)
+inline bool FOptiAttr::setTermPCcharset (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -1050,7 +1050,7 @@ inline bool FOptiAttr::setTermPCcharset (charData*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::unsetTermPCcharset (charData*& term)
+inline bool FOptiAttr::unsetTermPCcharset (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -1067,7 +1067,7 @@ inline bool FOptiAttr::unsetTermPCcharset (charData*& term)
 }
 
 //----------------------------------------------------------------------
-bool FOptiAttr::setTermDefaultColor (charData*& term)
+bool FOptiAttr::setTermDefaultColor (FChar*& term)
 {
   if ( ! term )
     return false;
@@ -1090,7 +1090,7 @@ bool FOptiAttr::setTermDefaultColor (charData*& term)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::setAttributesOn (charData*& term)
+void FOptiAttr::setAttributesOn (FChar*& term)
 {
   if ( on.attr.bit.alt_charset )
     setTermAltCharset(term);
@@ -1133,7 +1133,7 @@ void FOptiAttr::setAttributesOn (charData*& term)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::setAttributesOff (charData*& term)
+void FOptiAttr::setAttributesOff (FChar*& term)
 {
   if ( off.attr.bit.pc_charset )
     unsetTermPCcharset(term);
@@ -1176,7 +1176,7 @@ void FOptiAttr::setAttributesOff (charData*& term)
 }
 
 //----------------------------------------------------------------------
-bool FOptiAttr::hasColor (charData*& attr)
+bool FOptiAttr::hasColor (FChar*& attr)
 {
   if ( attr
     && attr->fg_color == fc::Default
@@ -1187,7 +1187,7 @@ bool FOptiAttr::hasColor (charData*& attr)
 }
 
 //----------------------------------------------------------------------
-bool FOptiAttr::hasAttribute (charData*& attr)
+bool FOptiAttr::hasAttribute (FChar*& attr)
 {
   if ( attr )
   {
@@ -1210,13 +1210,13 @@ bool FOptiAttr::hasAttribute (charData*& attr)
 }
 
 //----------------------------------------------------------------------
-bool FOptiAttr::hasNoAttribute (charData*& attr)
+bool FOptiAttr::hasNoAttribute (FChar*& attr)
 {
   return ! hasAttribute(attr);
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::hasColorChanged (charData*& term, charData*& next)
+inline bool FOptiAttr::hasColorChanged (FChar*& term, FChar*& next)
 {
   if ( term && next )
   {
@@ -1233,7 +1233,7 @@ inline bool FOptiAttr::hasColorChanged (charData*& term, charData*& next)
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::resetColor (charData*& attr)
+inline void FOptiAttr::resetColor (FChar*& attr)
 {
   if ( attr )
   {
@@ -1243,7 +1243,7 @@ inline void FOptiAttr::resetColor (charData*& attr)
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::prevent_no_color_video_attributes ( charData*& attr
+inline void FOptiAttr::prevent_no_color_video_attributes ( FChar*& attr
                                                          , bool next_has_color )
 {
   // Ignore attributes which can not combined with a color
@@ -1304,8 +1304,8 @@ inline void FOptiAttr::prevent_no_color_video_attributes ( charData*& attr
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::deactivateAttributes ( charData*& term
-                                            , charData*& next )
+inline void FOptiAttr::deactivateAttributes ( FChar*& term
+                                            , FChar*& next )
 {
   if ( hasAttribute(term) )
   {
@@ -1328,8 +1328,8 @@ inline void FOptiAttr::deactivateAttributes ( charData*& term
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::changeAttributeSGR ( charData*& term
-                                          , charData*& next )
+inline void FOptiAttr::changeAttributeSGR ( FChar*& term
+                                          , FChar*& next )
 {
   bool pc_charset_usable{true};
 
@@ -1378,8 +1378,8 @@ inline void FOptiAttr::changeAttributeSGR ( charData*& term
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::changeAttributeSeparately ( charData*& term
-                                                 , charData*& next )
+inline void FOptiAttr::changeAttributeSeparately ( FChar*& term
+                                                 , FChar*& next )
 {
   setAttributesOff(term);
 
@@ -1391,7 +1391,7 @@ inline void FOptiAttr::changeAttributeSeparately ( charData*& term
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::change_color (charData*& term, charData*& next)
+void FOptiAttr::change_color (FChar*& term, FChar*& next)
 {
   if ( ! (term && next) )
     return;
@@ -1434,8 +1434,8 @@ void FOptiAttr::change_color (charData*& term, charData*& next)
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::change_to_default_color ( charData*& term
-                                               , charData*& next
+inline void FOptiAttr::change_to_default_color ( FChar*& term
+                                               , FChar*& next
                                                , FColor& fg, FColor& bg )
 {
   if ( ansi_default_color )
@@ -1474,7 +1474,7 @@ inline void FOptiAttr::change_to_default_color ( charData*& term
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::change_current_color ( charData*& term
+inline void FOptiAttr::change_current_color ( FChar*& term
                                             , FColor fg, FColor bg )
 {
   char* color_str{};
@@ -1522,7 +1522,7 @@ inline void FOptiAttr::change_current_color ( charData*& term
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::resetAttribute (charData*& attr)
+inline void FOptiAttr::resetAttribute (FChar*& attr)
 {
   if ( attr )
   {
@@ -1532,7 +1532,7 @@ inline void FOptiAttr::resetAttribute (charData*& attr)
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::reset (charData*& attr)
+inline void FOptiAttr::reset (FChar*& attr)
 {
   if ( attr )
   {
@@ -1593,7 +1593,7 @@ inline bool FOptiAttr::hasCharsetEquivalence()
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::detectSwitchOn (charData*& term, charData*& next)
+inline void FOptiAttr::detectSwitchOn (FChar*& term, FChar*& next)
 {
   if ( ! (term && next) )
     return;
@@ -1614,7 +1614,7 @@ inline void FOptiAttr::detectSwitchOn (charData*& term, charData*& next)
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::detectSwitchOff (charData*& term, charData*& next)
+inline void FOptiAttr::detectSwitchOff (FChar*& term, FChar*& next)
 {
   if ( ! (term && next) )
     return;

@@ -38,6 +38,7 @@
 #include <termios.h>
 #include <unistd.h>
 
+#include "final/fstring.h"
 #include "final/ftypes.h"
 
 namespace finalcut
@@ -57,43 +58,43 @@ class FTermios final
     virtual ~FTermios();
 
     // Accessors
-    const char*    getClassName() const;
-    static termios getTTY();
-    static int     getStdIn();
-    static int     getStdOut();
-    static int     getStdErr();
+    const FString   getClassName() const;
+    static termios  getTTY();
+    static int      getStdIn();
+    static int      getStdOut();
+    static int      getStdErr();
 
     // Inquiries
-    static bool    isRaw();
+    static bool     isRaw();
 
     // Methods
-    static void    init();
-    static void    setTTY (const termios&);
-    static void    storeTTYsettings();
-    static void    restoreTTYsettings();
-    static void    setHardwareEcho();
-    static void    unsetHardwareEcho();
-    static void    setCaptureSendCharacters();
-    static void    unsetCaptureSendCharacters();
-    static bool    setRawMode (bool);
-    static bool    setRawMode();
-    static bool    unsetRawMode();
-    static bool    setCookedMode();
-    static uInt    getBaudRate();
+    static void     init();
+    static void     setTTY (const termios&);
+    static void     storeTTYsettings();
+    static void     restoreTTYsettings();
+    static void     setHardwareEcho();
+    static void     unsetHardwareEcho();
+    static void     setCaptureSendCharacters();
+    static void     unsetCaptureSendCharacters();
+    static bool     setRawMode (bool);
+    static bool     setRawMode();
+    static bool     unsetRawMode();
+    static bool     setCookedMode();
+    static uInt     getBaudRate();
 
   private:
     // Data members
-    static int    stdin_no;
-    static int    stdout_no;
-    static int    stderr_no;
-    static bool   raw_mode;
-    static struct termios term_init;
+    static int     stdin_no;
+    static int     stdout_no;
+    static int     stderr_no;
+    static bool    raw_mode;
+    static struct  termios term_init;
 };
 
 
 // FTermios inline functions
 //----------------------------------------------------------------------
-inline const char* FTermios::getClassName() const
+inline const FString FTermios::getClassName() const
 { return "FTermios"; }
 
 //----------------------------------------------------------------------

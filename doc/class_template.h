@@ -116,7 +116,6 @@ class FClassName
     // Data members
 
     // Friend class
-
 };
 
 

@@ -346,7 +346,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
 
   if ( scroll_type == FScrollbar::scrollJump )
   {
-    int new_val;
+    int new_val{};
 
     if ( bar_orientation == fc::vertical )
     {

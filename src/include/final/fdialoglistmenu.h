@@ -89,7 +89,7 @@ class FDialogListMenu : public FMenu
     FDialogListMenu& operator = (const FDialogListMenu&) = delete;
 
     // Accessors
-    const char* getClassName() const override;
+    const FString getClassName() const override;
 
   private:
     // Method
@@ -99,7 +99,7 @@ class FDialogListMenu : public FMenu
 
 // FDialogListMenu inline functions
 //----------------------------------------------------------------------
-inline const char* FDialogListMenu::getClassName() const
+inline const FString FDialogListMenu::getClassName() const
 { return "FDialogListMenu"; }
 
 }  // namespace finalcut

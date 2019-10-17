@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <memory>
+#include <utility>
 
 #include "final/fapplication.h"
 #include "final/fcolorpair.h"
@@ -267,7 +268,7 @@ void FLabel::onMouseDown (FMouseEvent* ev)
     {
       accel_widget->getStatusBar()->drawMessage();
       updateTerminal();
-      flush_out();
+      flushOutputBuffer();
     }
   }
 }
@@ -294,7 +295,7 @@ void FLabel::onAccel (FAccelEvent* ev)
       {
         accel_widget->getStatusBar()->drawMessage();
         updateTerminal();
-        flush_out();
+        flushOutputBuffer();
       }
     }
   }
@@ -333,25 +334,7 @@ void FLabel::init()
 //----------------------------------------------------------------------
 void FLabel::setHotkeyAccelerator()
 {
-  FKey hotkey = getHotkey(text);
-
-  if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
-    hotkey -= 0xfee0;
-
-  if ( hotkey )
-  {
-    if ( std::isalpha(int(hotkey)) || std::isdigit(int(hotkey)) )
-    {
-      addAccelerator (FKey(std::tolower(int(hotkey))));
-      addAccelerator (FKey(std::toupper(int(hotkey))));
-      // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(int(hotkey))));
-    }
-    else
-      addAccelerator (hotkey);
-  }
-  else
-    delAccelerator();
+  setHotkeyViaString (this, text);
 }
 
 //----------------------------------------------------------------------
@@ -423,87 +406,48 @@ void FLabel::drawMultiLine()
 
   while ( y < text_lines && y < std::size_t(getHeight()) )
   {
-    wchar_t* label_text{};
-    std::size_t hotkeypos{NOT_SET};
-    std::size_t align_offset{};
+    FString label_text{};
+    hotkeypos = NOT_SET;
     auto length = multiline_text[y].getLength();
-    auto column_width = getColumnWidth(multiline_text[y]);
-
-    try
-    {
-      label_text = new wchar_t[length + 1]();
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
-      return;
-    }
-
-    auto src  = const_cast<wchar_t*>(multiline_text[y].wc_str());
-    auto dest = const_cast<wchar_t*>(label_text);
+    column_width = getColumnWidth(multiline_text[y]);
 
     if ( ! hotkey_printed )
-      hotkeypos = finalcut::getHotkeyPos(src, dest, length);
+      hotkeypos = finalcut::getHotkeyPos (multiline_text[y], label_text);
     else
-      std::wcsncpy(dest, src, length);
+      label_text = multiline_text[y];
 
     print() << FPoint(1, 1 + int(y));
 
     if ( hotkeypos != NOT_SET )
     {
       align_offset = getAlignOffset(length - 1);
-      printLine (label_text, length - 1, column_width, hotkeypos, align_offset);
       hotkey_printed = true;
     }
     else
-    {
       align_offset = getAlignOffset(length);
-      printLine (label_text, length, column_width, NOT_SET, align_offset);
-    }
 
+    printLine (std::move(label_text));
     y++;
-    delete[] label_text;
   }
 }
 
 //----------------------------------------------------------------------
 void FLabel::drawSingleLine()
 {
-  wchar_t* label_text{};
-  std::size_t hotkeypos{NOT_SET};
-  auto length = text.getLength();
-  auto column_width = getColumnWidth(text);
-
-  try
-  {
-    label_text = new wchar_t[length + 1]();
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
-
-  hotkeypos = finalcut::getHotkeyPos (text.wc_str(), label_text, length);
+  FString label_text{};
+  column_width = getColumnWidth(text);
+  hotkeypos = finalcut::getHotkeyPos (text, label_text);
 
   if ( hotkeypos != NOT_SET )
-  {
-    length--;
     column_width--;
-  }
 
   print() << FPoint(1, 1);
-  auto align_offset = getAlignOffset(column_width);
-  printLine (label_text, length, column_width, hotkeypos, align_offset);
-  delete[] label_text;
+  align_offset = getAlignOffset(column_width);
+  printLine (std::move(label_text));
 }
 
 //----------------------------------------------------------------------
-void FLabel::printLine ( wchar_t line[]
-                       , std::size_t length
-                       , std::size_t column_width
-                       , std::size_t hotkeypos
-                       , std::size_t align_offset )
+void FLabel::printLine (FString&& line)
 {
   std::size_t to_char{};
   std::size_t to_column{};
@@ -514,13 +458,13 @@ void FLabel::printLine ( wchar_t line[]
 
   if ( column_width <= width )
   {
-    to_char = length;
+    to_char = line.getLength();
     to_column = column_width;
   }
   else
   {
     to_column = width - 2;
-    to_char = getColumnWidthToLength(line, to_column);
+    to_char = getLengthFromColumnWidth(line, to_column);
   }
 
   if ( hasReverseMode() )
@@ -530,8 +474,8 @@ void FLabel::printLine ( wchar_t line[]
   {
     if ( ! std::iswprint(std::wint_t(line[z])) )
     {
-      if ( ! isNewFont() && ( int(line[z]) < fc::NF_rev_left_arrow2
-                           || int(line[z]) > fc::NF_check_mark ) )
+      if ( ! isNewFont() && ( line[z] < fc::NF_rev_left_arrow2
+                           || line[z] > fc::NF_check_mark ) )
       {
         line[z] = L' ';
       }

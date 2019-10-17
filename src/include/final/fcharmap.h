@@ -42,10 +42,10 @@ extern const std::size_t lastCharItem;
 extern int vt100_key_to_utf8[][2];
 extern const std::size_t lastKeyItem;
 
-extern wchar_t cp437_to_ucs[][2];
+extern wchar_t cp437_ucs[][2];
 extern const std::size_t lastCP437Item;
 
-extern wchar_t halfWidth_fullWidth[][2];
+extern const wchar_t halfWidth_fullWidth[][2];
 extern const std::size_t lastHalfWidthItem;
 
 }  // namespace fc

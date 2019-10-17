@@ -135,7 +135,7 @@ void FDialog::show()
   if ( isModal() )
   {
     auto fapp = FApplication::getApplicationObject();
-    fapp->enter_loop();
+    fapp->enterLoop();
 
     if ( this == getMainWidget() )
       fapp->quit();
@@ -150,7 +150,7 @@ void FDialog::hide()
   if ( isModal() )
   {
     auto fapp = FApplication::getApplicationObject();
-    fapp->exit_loop();
+    fapp->exitLoop();
   }
 }
 
@@ -165,7 +165,6 @@ int FDialog::exec()
 //----------------------------------------------------------------------
 void FDialog::setPos (const FPoint& pos, bool)
 {
-
   setPos_error = false;
 
   // Avoid to move widget completely outside the terminal
@@ -749,7 +748,7 @@ void FDialog::drawDialogShadow()
   if ( isMonochron() && ! getFlags().trans_shadow )
     return;
 
-  drawShadow();
+  drawShadow(this);
 }
 
 //----------------------------------------------------------------------
@@ -926,14 +925,10 @@ void FDialog::drawBorder()
               << fc::NF_rev_border_line_right;  // border right⎹
     }
 
-    print() << r.getLowerLeftPos()  // lower left corner border ⎣
-            << fc::NF_border_corner_lower_left;
-
-    for (int x = r.getX1() + 1; x < r.getX2(); x++)
-      print (fc::NF_border_line_bottom);  // low line _
-
-    // lower right corner border ⎦
-    print (fc::NF_rev_border_corner_lower_right);
+    print() << r.getLowerLeftPos()
+            << fc::NF_border_corner_lower_left        // ⎣
+            << FString(r.getWidth() - 2, fc::NF_border_line_bottom)  // _
+            << fc::NF_rev_border_corner_lower_right;  // ⎦
   }
   else
   {
@@ -1188,7 +1183,7 @@ void FDialog::leaveMenu()
     getStatusBar()->drawMessage();
 
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------
@@ -1233,7 +1228,7 @@ void FDialog::selectFirstMenuItem()
     getStatusBar()->drawMessage();
 
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------

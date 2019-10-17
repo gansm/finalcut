@@ -107,18 +107,12 @@ void FWindow::setActiveWindow (FWindow* window)
 {
   // activate FWindow object window
 
-  if ( ! getWindowList() )
+  if ( ! getWindowList() || getWindowList()->empty() )
     return;
 
-  if ( getWindowList()->empty() )
-    return;
-
-  auto iter = getWindowList()->begin();
-  auto end  = getWindowList()->end();
-
-  while ( iter != end )
+  for (auto&& win : *getWindowList())
   {
-    if ( *iter == window )
+    if ( win == window )
     {
       if ( ! window->isWindowActive() )
       {
@@ -129,17 +123,15 @@ void FWindow::setActiveWindow (FWindow* window)
     }
     else
     {
-      auto w = static_cast<FWindow*>(*iter);
+      auto w = static_cast<FWindow*>(win);
 
       if ( w->isWindowActive() )
       {
         w->deactivateWindow();
         FEvent ev(fc::WindowInactive_Event);
-        FApplication::sendEvent(*iter, &ev);
+        FApplication::sendEvent(win, &ev);
       }
     }
-
-    ++iter;
   }
 }
 
@@ -251,11 +243,9 @@ void FWindow::drawBorder()
   {
     FRect r(FPoint(1, 1), getSize());
     print() << r.getUpperLeftPos()
-            << fc::NF_border_corner_upper_left;    // ⎡
-    for (int x = r.getX1() + 1; x < r.getX2(); x++)
-      print (fc::NF_border_line_upper);            // ¯
-
-    print (fc::NF_rev_border_corner_upper_right);  // ⎤
+            << fc::NF_border_corner_upper_left                      // ⎡
+            << FString(r.getWidth() - 2, fc::NF_border_line_upper)  // ¯
+            << fc::NF_rev_border_corner_upper_right;                // ⎤
 
     for (int y = r.getY1() + 1; y < r.getY2(); y++)
     {
@@ -265,14 +255,10 @@ void FWindow::drawBorder()
               << fc::NF_rev_border_line_right;  // border right⎹
     }
 
-    print() << r.getLowerLeftPos()  // lower left corner border ⎣
-            << fc::NF_border_corner_lower_left;
-
-    for (int x = r.getX1() + 1; x < r.getX2(); x++)
-      print (fc::NF_border_line_bottom);  // low line _
-
-    // lower right corner border ⎦
-    print (fc::NF_rev_border_corner_lower_right);
+    print() << r.getLowerLeftPos()
+            << fc::NF_border_corner_lower_left                       // ⎣
+            << FString(r.getWidth() - 2, fc::NF_border_line_bottom)  // _
+            << fc::NF_rev_border_corner_lower_right;                 // ⎦
   }
   else
   {
@@ -478,7 +464,7 @@ void FWindow::delWindow (FWidget* obj)
   {
     if ( (*iter) == obj )
     {
-      getWindowList()->erase (iter);
+      getWindowList()->erase(iter);
       return;
     }
 

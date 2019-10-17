@@ -140,7 +140,7 @@ int main (int argc, char* argv[])
     ok.addCallback
     (
       "clicked",
-      F_FUNCTION_CALLBACK (&cb_quit),
+      &cb_quit,
       &dgl
     );
 

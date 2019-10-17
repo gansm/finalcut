@@ -36,11 +36,19 @@
 #endif
 
 #if defined(__linux__)
-  #include <linux/fb.h>        // Linux framebuffer console
+  #include <linux/fb.h>  // Linux framebuffer console
 
-  #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
-    #include <sys/io.h>        // <asm/io.h> is deprecated
-  #endif  // defined(__x86_64__) || defined(__i386) || defined(__arm__)
+  #if defined(__arm__) && defined(__GLIBC__) && defined(__GLIBC_PREREQ)
+    // ISA sysctl support on arm processors only up to glibc-2.29
+    #if !__GLIBC_PREREQ(2,30)
+      #define ARM_ISA_SYSCTL
+    #endif
+  #endif
+
+  #if defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
+    #define ISA_SYSCTL_SUPPORT
+    #include <sys/io.h>
+  #endif  // defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
 
   #include <sys/kd.h>
 #endif  // defined(__linux__)
@@ -85,45 +93,45 @@ class FTermLinux final
     FTermLinux& operator = (const FTermLinux&) = delete;
 
     // Accessors
-    const char*          getClassName() const;
-    static fc::linuxConsoleCursorStyle getCursorStyle();
-    static char*         getCursorStyleString();
-    static int           getFramebufferBpp();
+    const FString        getClassName() const;
+    fc::linuxConsoleCursorStyle getCursorStyle();
+    char*                getCursorStyleString();
+    int                  getFramebufferBpp();
 
     // Mutators
-    static bool          setCursorStyle (CursorStyle);
-    static bool          setPalette (FColor, int, int, int);
-    static void          setUTF8 (bool);
+    bool                 setCursorStyle (CursorStyle);
+    bool                 setPalette (FColor, int, int, int);
+    void                 setUTF8 (bool);
 
     // Inquiries
-    static bool          isLinuxConsole();
-    static bool          isVGAFontUsed();
-    static bool          isNewFontUsed();
+    bool                 isLinuxConsole();
+    bool                 isVGAFontUsed();
+    bool                 isNewFontUsed();
 
     // Methods
-    static void          init();
-    static void          initCharMap();
-    static void          finish();
-    static bool          loadVGAFont();
-    static bool          loadNewFont();
-    static bool          loadOldFont();
-    static bool          saveColorMap();
-    static bool          resetColorMap();
-    static void          setBeep (int, int);
-    static void          resetBeep();
+    void                 init();
+    void                 initCharMap();
+    void                 finish();
+    bool                 loadVGAFont();
+    bool                 loadNewFont();
+    bool                 loadOldFont();
+    bool                 saveColorMap();
+    bool                 resetColorMap();
+    void                 setBeep (int, int);
+    void                 resetBeep();
 
-    static FKey          modifierKeyCorrection (const FKey&);
+    FKey                 modifierKeyCorrection (const FKey&);
 
   private:
     // Typedef
-    static struct modifier_key  // bit field
+    struct modifier_key  // bit field
     {
       uChar shift  : 1;  // 0..1
       uChar alt_gr : 1;  // 0..1
       uChar ctrl   : 1;  // 0..1
       uChar alt    : 1;  // 0..1
       uChar        : 4;  // padding bits
-    } mod_key;
+    } mod_key{};
 
     typedef struct
     {
@@ -138,63 +146,63 @@ class FTermLinux final
     } ColorMap;
 
     // Accessors
-    static int           getFramebuffer_bpp();
-    static bool          getScreenFont();
-    static bool          getUnicodeMap ();
-    static modifier_key& getModifierKey();
+    int                  getFramebuffer_bpp();
+    bool                 getScreenFont();
+    bool                 getUnicodeMap ();
+    modifier_key&        getModifierKey();
 
     // Mutators
-    static int           setScreenFont ( uChar[], uInt, uInt, uInt
+    int                  setScreenFont ( uChar[], uInt, uInt, uInt
                                        , bool = false );
-    static int           setUnicodeMap (struct unimapdesc*);
-    static void          setLinuxCursorStyle (fc::linuxConsoleCursorStyle);
+    int                  setUnicodeMap (struct unimapdesc*);
+    void                 setLinuxCursorStyle (fc::linuxConsoleCursorStyle);
 
     // Methods
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
-    static uInt16        getInputStatusRegisterOne();
-    static uChar         readAttributeController (uChar);
-    static void          writeAttributeController (uChar, uChar);
-    static uChar         getAttributeMode();
-    static void          setAttributeMode (uChar);
-    static int           setBlinkAsIntensity (bool);
-    static void          getVGAPalette();
-    static void          setVGADefaultPalette();
-    static bool          setVGAPalette (FColor, int, int, int);
-    static bool          saveVGAPalette();
-    static bool          resetVGAPalette();
-#endif  // defined(__x86_64__) || defined(__i386) || defined(__arm__)
-    static FKey          shiftKeyCorrection (const FKey&);
-    static FKey          ctrlKeyCorrection (const FKey&);
-    static FKey          altKeyCorrection (const FKey&);
-    static FKey          shiftCtrlKeyCorrection (const FKey&);
-    static FKey          shiftAltKeyCorrection (const FKey&);
-    static FKey          ctrlAltKeyCorrection (const FKey&);
-    static FKey          shiftCtrlAltKeyCorrection (const FKey&);
-    static sInt16        getFontPos (wchar_t ucs);
-    static void          initSpecialCharacter();
-    static void          characterFallback (wchar_t, std::vector<wchar_t>);
+#if defined(ISA_SYSCTL_SUPPORT)
+    uInt16               getInputStatusRegisterOne();
+    uChar                readAttributeController (uChar);
+    void                 writeAttributeController (uChar, uChar);
+    uChar                getAttributeMode();
+    void                 setAttributeMode (uChar);
+    int                  setBlinkAsIntensity (bool);
+    void                 getVGAPalette();
+    void                 setVGADefaultPalette();
+    bool                 setVGAPalette (FColor, int, int, int);
+    bool                 saveVGAPalette();
+    bool                 resetVGAPalette();
+#endif  // defined(ISA_SYSCTL_SUPPORT)
+    FKey                 shiftKeyCorrection (const FKey&);
+    FKey                 ctrlKeyCorrection (const FKey&);
+    FKey                 altKeyCorrection (const FKey&);
+    FKey                 shiftCtrlKeyCorrection (const FKey&);
+    FKey                 shiftAltKeyCorrection (const FKey&);
+    FKey                 ctrlAltKeyCorrection (const FKey&);
+    FKey                 shiftCtrlAltKeyCorrection (const FKey&);
+    sInt16               getFontPos (wchar_t ucs);
+    void                 initSpecialCharacter();
+    void                 characterFallback (wchar_t, std::vector<wchar_t>);
 
     // Data members
 #if defined(__linux__)
-    static bool                   vga_font;
-    static bool                   new_font;
-    static bool                   has_saved_palette;
-    static FTermData*             fterm_data;
-    static FSystem*               fsystem;
-    static FTermDetection*        term_detection;
-    static CursorStyle            linux_console_cursor_style;
-    static console_font_op        screen_font;
-    static unimapdesc             screen_unicode_map;
-    static ColorMap               saved_color_map;
-    static ColorMap               cmap;
-    static int                    framebuffer_bpp;
+    bool                 vga_font{};
+    bool                 new_font{};
+    bool                 has_saved_palette{};
+    FTermData*           fterm_data{nullptr};
+    FSystem*             fsystem{nullptr};
+    FTermDetection*      term_detection{nullptr};
+    CursorStyle          linux_console_cursor_style{};
+    console_font_op      screen_font{};
+    unimapdesc           screen_unicode_map{};
+    ColorMap             saved_color_map{};
+    ColorMap             cmap{};
+    int                  framebuffer_bpp{-1};
 #endif  // defined(__linux__)
 };
 
 
 // FTermLinux inline functions
 //----------------------------------------------------------------------
-inline const char* FTermLinux::getClassName() const
+inline const FString FTermLinux::getClassName() const
 { return "FTermLinux"; }
 
 //----------------------------------------------------------------------

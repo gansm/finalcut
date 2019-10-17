@@ -26,7 +26,6 @@
 
 #include "final/emptyfstring.h"
 #include "final/fc.h"
-#include "final/fconfig.h"
 #include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermdata.h"
@@ -46,9 +45,9 @@ namespace finalcut
 {
 
 // static class attributes
-FTermDetection::terminalType FTermDetection::terminal_type{};
-FTermDetection::colorEnv     FTermDetection::color_env{};
-FTermDetection::secondaryDA  FTermDetection::secondary_da{};
+FTermDetection::FTerminalType FTermDetection::terminal_type{};
+FTermDetection::colorEnv      FTermDetection::color_env{};
+FTermDetection::secondaryDA   FTermDetection::secondary_da{};
 FTermData*     FTermDetection::fterm_data{nullptr};
 FSystem*       FTermDetection::fsystem{nullptr};
 char           FTermDetection::termtype[256]{};
@@ -546,10 +545,11 @@ const FString FTermDetection::getXTermColorName (FColor color)
   struct timeval tv{};
   int stdin_no = FTermios::getStdIn();
 
-  char temp[512]{};
-  std::fprintf (stdout, OSC "4;%hu;?" BEL, color);  // get color
-  std::fflush(stdout);
+  // get color
+  std::fprintf (stdout, OSC "4;%hu;?" BEL, color);
+  std::fflush (stdout);
 
+  char temp[512]{};
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;

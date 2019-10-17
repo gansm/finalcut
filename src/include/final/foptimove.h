@@ -58,10 +58,11 @@
 
 #include <cctype>
 #include <climits>
-#include <cstdio>  // need for printf
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+
+#include "final/fstring.h"
 
 namespace finalcut
 {
@@ -108,59 +109,59 @@ class FOptiMove final
     virtual ~FOptiMove();
 
     // Accessors
-    const char* getClassName() const;
-    uInt  getCursorHomeLength() const;
-    uInt  getCarriageReturnLength() const;
-    uInt  getCursorToLLLength() const;
-    uInt  getTabLength() const;
-    uInt  getBackTabLength() const;
-    uInt  getCursorUpLength() const;
-    uInt  getCursorDownLength() const;
-    uInt  getCursorLeftLength() const;
-    uInt  getCursorRightLength() const;
-    uInt  getCursorAddressLength() const;
-    uInt  getColumnAddressLength() const;
-    uInt  getRowAddressLength() const;
-    uInt  getParmUpCursorLength() const;
-    uInt  getParmDownCursorLength() const;
-    uInt  getParmLeftCursorLength() const;
-    uInt  getParmRightCursorLength() const;
-    uInt  getEraseCharsLength() const;
-    uInt  getRepeatCharLength() const;
-    uInt  getClrBolLength() const;
-    uInt  getClrEolLength() const;
+    const FString getClassName() const;
+    uInt          getCursorHomeLength() const;
+    uInt          getCarriageReturnLength() const;
+    uInt          getCursorToLLLength() const;
+    uInt          getTabLength() const;
+    uInt          getBackTabLength() const;
+    uInt          getCursorUpLength() const;
+    uInt          getCursorDownLength() const;
+    uInt          getCursorLeftLength() const;
+    uInt          getCursorRightLength() const;
+    uInt          getCursorAddressLength() const;
+    uInt          getColumnAddressLength() const;
+    uInt          getRowAddressLength() const;
+    uInt          getParmUpCursorLength() const;
+    uInt          getParmDownCursorLength() const;
+    uInt          getParmLeftCursorLength() const;
+    uInt          getParmRightCursorLength() const;
+    uInt          getEraseCharsLength() const;
+    uInt          getRepeatCharLength() const;
+    uInt          getClrBolLength() const;
+    uInt          getClrEolLength() const;
 
     // Mutators
-    void  setBaudRate (int);
-    void  setTabStop (int);
-    void  setTermSize (std::size_t, std::size_t);
-    void  setTermEnvironment (termEnv&);
-    void  set_cursor_home (char[]);
-    void  set_cursor_to_ll (char[]);
-    void  set_carriage_return (char[]);
-    void  set_tabular (char[]);
-    void  set_back_tab (char[]);
-    void  set_cursor_up (char[]);
-    void  set_cursor_down (char[]);
-    void  set_cursor_left (char[]);
-    void  set_cursor_right (char[]);
-    void  set_cursor_address (char[]);
-    void  set_column_address (char[]);
-    void  set_row_address (char[]);
-    void  set_parm_up_cursor (char[]);
-    void  set_parm_down_cursor (char[]);
-    void  set_parm_left_cursor (char[]);
-    void  set_parm_right_cursor (char[]);
-    void  set_erase_chars (char[]);
-    void  set_repeat_char (char[]);
-    void  set_clr_bol (char[]);
-    void  set_clr_eol (char[]);
-    void  set_auto_left_margin (bool);
-    void  set_eat_newline_glitch (bool);
+    void          setBaudRate (int);
+    void          setTabStop (int);
+    void          setTermSize (std::size_t, std::size_t);
+    void          setTermEnvironment (termEnv&);
+    void          set_cursor_home (char[]);
+    void          set_cursor_to_ll (char[]);
+    void          set_carriage_return (char[]);
+    void          set_tabular (char[]);
+    void          set_back_tab (char[]);
+    void          set_cursor_up (char[]);
+    void          set_cursor_down (char[]);
+    void          set_cursor_left (char[]);
+    void          set_cursor_right (char[]);
+    void          set_cursor_address (char[]);
+    void          set_column_address (char[]);
+    void          set_row_address (char[]);
+    void          set_parm_up_cursor (char[]);
+    void          set_parm_down_cursor (char[]);
+    void          set_parm_left_cursor (char[]);
+    void          set_parm_right_cursor (char[]);
+    void          set_erase_chars (char[]);
+    void          set_repeat_char (char[]);
+    void          set_clr_bol (char[]);
+    void          set_clr_eol (char[]);
+    void          set_auto_left_margin (bool);
+    void          set_eat_newline_glitch (bool);
 
     // Methods
-    void  check_boundaries (int&, int&, int&, int&);
-    char* moveCursor (int, int, int, int);
+    void          check_boundaries (int&, int&, int&, int&);
+    char*         moveCursor (int, int, int, int);
 
   private:
     // Constant
@@ -181,66 +182,66 @@ class FOptiMove final
     // maximum character distance to avoid direct cursor addressing
 
     // Methods
-    void calculateCharDuration();
-    int  capDuration (char[], int);
-    int  capDurationToLength (int);
-    int  repeatedAppend (const capability&, volatile int, char*);
-    int  relativeMove (char[], int, int, int, int);
-    int  verticalMove (char[], int, int);
-    void downMove (char[], int&, int, int);
-    void upMove (char[], int&, int, int);
-    int  horizontalMove (char[], int, int);
-    void rightMove (char[], int&, int, int);
-    void leftMove (char[], int&, int, int);
+    void          calculateCharDuration();
+    int           capDuration (char[], int);
+    int           capDurationToLength (int);
+    int           repeatedAppend (const capability&, volatile int, char*);
+    int           relativeMove (char[], int, int, int, int);
+    int           verticalMove (char[], int, int);
+    void          downMove (char[], int&, int, int);
+    void          upMove (char[], int&, int, int);
+    int           horizontalMove (char[], int, int);
+    void          rightMove (char[], int&, int, int);
+    void          leftMove (char[], int&, int, int);
 
-    bool isWideMove (int, int, int, int);
-    bool isMethod0Faster (int&, int, int);
-    bool isMethod1Faster (int&, int, int, int, int);
-    bool isMethod2Faster (int&, int, int, int);
-    bool isMethod3Faster (int&, int, int);
-    bool isMethod4Faster (int&, int, int);
-    bool isMethod5Faster (int&, int, int, int);
-    void moveByMethod (int, int, int, int, int);
+    bool          isWideMove (int, int, int, int);
+    bool          isMethod0Faster (int&, int, int);
+    bool          isMethod1Faster (int&, int, int, int, int);
+    bool          isMethod2Faster (int&, int, int, int);
+    bool          isMethod3Faster (int&, int, int);
+    bool          isMethod4Faster (int&, int, int);
+    bool          isMethod5Faster (int&, int, int, int);
+    void          moveByMethod (int, int, int, int, int);
 
     // Friend function
-    friend void printDurations (const FOptiMove&);
+    friend void   printDurations (const FOptiMove&);
 
     // Data members
-    capability  F_cursor_home{};
-    capability  F_carriage_return{};
-    capability  F_cursor_to_ll{};
-    capability  F_tab{};
-    capability  F_back_tab{};
-    capability  F_cursor_up{};
-    capability  F_cursor_down{};
-    capability  F_cursor_left{};
-    capability  F_cursor_right{};
-    capability  F_cursor_address{};
-    capability  F_column_address{};
-    capability  F_row_address{};
-    capability  F_parm_up_cursor{};
-    capability  F_parm_down_cursor{};
-    capability  F_parm_left_cursor{};
-    capability  F_parm_right_cursor{};
-    capability  F_erase_chars{};
-    capability  F_repeat_char{};
-    capability  F_clr_bol{};
-    capability  F_clr_eol{};
+    capability    F_cursor_home{};
+    capability    F_carriage_return{};
+    capability    F_cursor_to_ll{};
+    capability    F_tab{};
+    capability    F_back_tab{};
+    capability    F_cursor_up{};
+    capability    F_cursor_down{};
+    capability    F_cursor_left{};
+    capability    F_cursor_right{};
+    capability    F_cursor_address{};
+    capability    F_column_address{};
+    capability    F_row_address{};
+    capability    F_parm_up_cursor{};
+    capability    F_parm_down_cursor{};
+    capability    F_parm_left_cursor{};
+    capability    F_parm_right_cursor{};
+    capability    F_erase_chars{};
+    capability    F_repeat_char{};
+    capability    F_clr_bol{};
+    capability    F_clr_eol{};
 
-    std::size_t screen_width{80};
-    std::size_t screen_height{24};
-    int         char_duration{1};
-    int         baudrate{9600};
-    int         tabstop{0};
-    char        move_buf[BUF_SIZE]{'\0'};
-    bool        automatic_left_margin{false};
-    bool        eat_nl_glitch{false};
+    std::size_t   screen_width{80};
+    std::size_t   screen_height{24};
+    int           char_duration{1};
+    int           baudrate{9600};
+    int           tabstop{0};
+    char          move_buf[BUF_SIZE]{'\0'};
+    bool          automatic_left_margin{false};
+    bool          eat_nl_glitch{false};
 };
 
 
 // FOptiMove inline functions
 //----------------------------------------------------------------------
-inline const char* FOptiMove::getClassName() const
+inline const FString FOptiMove::getClassName() const
 { return "FOptiMove"; }
 
 //----------------------------------------------------------------------

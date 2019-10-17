@@ -39,6 +39,11 @@ namespace finalcut
 // class FTermOpenBSD
 //----------------------------------------------------------------------
 
+// constructors and destructor
+//----------------------------------------------------------------------
+FTermOpenBSD::~FTermOpenBSD()  // destructor
+{ }
+
 // public methods of FTermOpenBSD
 //----------------------------------------------------------------------
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)

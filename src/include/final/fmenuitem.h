@@ -93,7 +93,7 @@ class FMenuItem : public FWidget
     FMenuItem& operator = (const FMenuItem&) = delete;
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     FKey                getHotkey() const;
     FMenu*              getMenu() const;
     std::size_t         getTextLength() const;
@@ -199,7 +199,7 @@ class FMenuItem : public FWidget
 
 // FMenuItem inline functions
 //----------------------------------------------------------------------
-inline const char* FMenuItem::getClassName() const
+inline const FString FMenuItem::getClassName() const
 { return "FMenuItem"; }
 
 //----------------------------------------------------------------------

@@ -48,7 +48,7 @@ void FWidgetColors::set8ColorTheme()
   error_box_fg                      = fc::Black;
   error_box_emphasis_fg             = fc::Red;
   error_box_bg                      = fc::LightGray;
-  tooltip_fg                        = fc::LightGray;
+  tooltip_fg                        = fc::Black;
   tooltip_bg                        = fc::Cyan;
   shadow_fg                         = fc::Black;
   shadow_bg                         = fc::LightGray;  // only for transparent shadow
@@ -75,8 +75,8 @@ void FWidgetColors::set8ColorTheme()
   inputfield_active_bg              = fc::Cyan;
   inputfield_inactive_fg            = fc::Black;
   inputfield_inactive_bg            = fc::LightGray;
-  toggle_button_active_focus_fg     = fc::LightGray;
-  toggle_button_active_focus_bg     = fc::Red;
+  toggle_button_active_focus_fg     = fc::Black;
+  toggle_button_active_focus_bg     = fc::Cyan;
   toggle_button_active_fg           = fc::Black;
   toggle_button_active_bg           = fc::LightGray;
   toggle_button_inactive_fg         = fc::Cyan;

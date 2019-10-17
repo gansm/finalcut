@@ -98,7 +98,7 @@ class FLabel : public FWidget
     const FLabel& operator >> (FString&);
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     FWidget*            getAccelWidget();
     fc::text_alignment  getAlignment();
     FString&            getText();
@@ -146,14 +146,16 @@ class FLabel : public FWidget
     void                draw() override;
     void                drawMultiLine();
     void                drawSingleLine();
-    void                printLine ( wchar_t[], std::size_t, std::size_t
-                                  , std::size_t, std::size_t = 0 );
+    void                printLine (FString&&);
 
     // Data members
     FStringList         multiline_text{};
     FString             text{};
     FWidget*            accel_widget{nullptr};
     fc::text_alignment  alignment{fc::alignLeft};
+    std::size_t         align_offset{0};
+    std::size_t         hotkeypos{NOT_SET};
+    std::size_t         column_width{0};
     FColor              emphasis_color{getFWidgetColors().label_emphasis_fg};
     FColor              ellipsis_color{getFWidgetColors().label_ellipsis_fg};
     bool                multiline{false};
@@ -163,7 +165,7 @@ class FLabel : public FWidget
 
 // FLabel inline functions
 //----------------------------------------------------------------------
-inline const char* FLabel::getClassName() const
+inline const FString FLabel::getClassName() const
 { return "FLabel"; }
 
 //----------------------------------------------------------------------

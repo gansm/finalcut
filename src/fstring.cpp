@@ -30,6 +30,10 @@
 namespace finalcut
 {
 
+// static class attributes
+wchar_t       FString::null_char{L'\0'};
+const wchar_t FString::const_null_char{L'\0'};
+
 //----------------------------------------------------------------------
 // class FString
 //----------------------------------------------------------------------
@@ -843,7 +847,7 @@ FString& FString::setString (const FString& s)
 FString& FString::setNumber (sInt64 num)
 {
   bool neg{false};
-  wchar_t buf[30];
+  wchar_t buf[30]{};
   wchar_t* s = &buf[29];
 
   if ( num < 0 )
@@ -875,7 +879,7 @@ FString& FString::setNumber (sInt64 num)
 //----------------------------------------------------------------------
 FString& FString::setNumber (uInt64 num)
 {
-  wchar_t buf[30];
+  wchar_t buf[30]{};
   wchar_t* s = &buf[29];
   *s = '\0';
 
@@ -893,7 +897,7 @@ FString& FString::setNumber (uInt64 num)
 //----------------------------------------------------------------------
 FString& FString::setNumber (lDouble f_num, int precision)
 {
-  wchar_t format[20];  // = "%.<precision>Lg"
+  wchar_t format[20]{};  // = "%.<precision>Lg"
   wchar_t* s = &format[0];
   *s++ = L'%';
   *s++ = L'.';
@@ -926,7 +930,7 @@ FString& FString::setFormatedNumber (sInt64 num, char separator)
 {
   bool neg{false};
   int n{0};
-  wchar_t buf[30];
+  wchar_t buf[30]{};
   wchar_t* s = &buf[29];
 
   if ( separator == 0 )
@@ -965,7 +969,7 @@ FString& FString::setFormatedNumber (sInt64 num, char separator)
 FString& FString::setFormatedNumber (uInt64 num, char separator)
 {
   int n{0};
-  wchar_t buf[30];
+  wchar_t buf[30]{};
   wchar_t* s = &buf[29];
   *s = L'\0';
 
@@ -1324,7 +1328,7 @@ void FString::_assign (const wchar_t s[])
   if ( string && std::wcscmp(string, s) == 0 )
     return;  // string == s
 
-  uInt new_length= uInt(std::wcslen(s));
+  uInt new_length = uInt(std::wcslen(s));
 
   if ( ! string || new_length > capacity() )
   {
@@ -1710,8 +1714,17 @@ const FString operator + (const FString& s, const char c)
 //----------------------------------------------------------------------
 std::ostream& operator << (std::ostream& outstr, const FString& s)
 {
+  const std::size_t width = std::size_t(outstr.width());
+
   if ( s.length > 0 )
-    outstr << s.wc_to_c_str( s.string );
+  {
+    outstr << s.wc_to_c_str(s.string);
+  }
+  else if ( width > 0 )
+  {
+    FString fill_str(width, outstr.fill());
+    outstr << s.wc_to_c_str(fill_str.string);
+  }
 
   return outstr;
 }
@@ -1735,8 +1748,17 @@ std::istream& operator >> (std::istream& instr, FString& s)
 //----------------------------------------------------------------------
 std::wostream& operator << (std::wostream& outstr, const FString& s)
 {
+  const std::size_t width = std::size_t(outstr.width());
+
   if ( s.length > 0 )
+  {
     outstr << s.string;
+  }
+  else if ( width > 0 )
+  {
+    FString fill_str(width, outstr.fill());
+    outstr << fill_str.string;
+  }
 
   return outstr;
 }

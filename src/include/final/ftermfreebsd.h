@@ -95,7 +95,7 @@ class FTermFreeBSD final
     FTermFreeBSD& operator = (const FTermFreeBSD&) = delete;
 
     // Accessors
-    const char*        getClassName() const;
+    const FString      getClassName() const;
     static CursorStyle getCursorStyle();
 
     // Inquiry
@@ -135,7 +135,7 @@ class FTermFreeBSD final
 
 // FTermFreeBSD inline functions
 //----------------------------------------------------------------------
-inline const char* FTermFreeBSD::getClassName() const
+inline const FString FTermFreeBSD::getClassName() const
 { return "FTermFreeBSD"; }
 
 //----------------------------------------------------------------------

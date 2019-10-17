@@ -30,7 +30,7 @@ namespace finalcut
 namespace fc
 {
 
-fkeymap Fkey[] =
+FKeyMap fkey[] =
 {
   { fc::Fkey_backspace , 0, "kb" },  // backspace key
   { fc::Fkey_catab     , 0, "ka" },  // clear-all-tabs key
@@ -205,7 +205,7 @@ fkeymap Fkey[] =
   { 0                  , 0, "\0" }
 };
 
-fmetakeymap Fmetakey[] =
+FMetakeyMap fmetakey[] =
 {
   { fc::Fmkey_ic                   , "\033[2;3~"   },  // M-insert
   { fc::Fmkey_ic                   , "\033\033[2~" },  // M-insert
@@ -438,7 +438,7 @@ fmetakeymap Fmetakey[] =
   { 0                              , "\0"  }
 };
 
-keyname FkeyName[] =
+FKeyName fkeyname[] =
 {
   { fc::Fckey_a                   , "Ctrl+A" },
   { fc::Fckey_b                   , "Ctrl+B" },

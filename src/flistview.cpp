@@ -25,6 +25,7 @@
 #endif
 
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include "final/emptyfstring.h"
@@ -32,7 +33,6 @@
 #include "final/fcolorpair.h"
 #include "final/fevent.h"
 #include "final/flistview.h"
-#include "final/fscrollbar.h"
 #include "final/fstatusbar.h"
 #include "final/fstring.h"
 #include "final/ftermbuffer.h"
@@ -42,7 +42,7 @@ namespace finalcut
 {
 
 // Static class attribute
-FObject::FObjectIterator FListView::null_iter;
+FObject::iterator FListView::null_iter;
 
 // Function prototypes
 uInt64 firstNumberFromString (const FString&);
@@ -55,14 +55,13 @@ bool sortDescendingByNumber (const FObject*, const FObject*);
 //----------------------------------------------------------------------
 uInt64 firstNumberFromString (const FString& str)
 {
-  auto last = str.end();
   auto iter = str.begin();
 
-  while ( iter != last )
+  while ( iter != str.end() )
   {
     if ( wchar_t(*iter) >= L'0' && wchar_t(*iter) <= L'9' )
     {
-      if ( wchar_t(*(iter - 1)) == L'-' )
+      if ( iter != str.begin() && wchar_t(*(iter - 1)) == L'-' )
         --iter;
 
       break;
@@ -73,10 +72,10 @@ uInt64 firstNumberFromString (const FString& str)
 
   auto first_pos = iter;
 
-  if ( first_pos == last )
+  if ( first_pos == str.end() )
     return 0;
 
-  while ( iter != last )
+  while ( iter != str.end() )
   {
     if ( wchar_t(*iter) < L'0' || wchar_t(*iter) > L'9' )
       break;
@@ -86,7 +85,7 @@ uInt64 firstNumberFromString (const FString& str)
 
   auto last_pos = iter;
 
-  if ( last_pos == last )
+  if ( last_pos == str.end() )
     return 0;
 
   uInt64 number;
@@ -186,7 +185,7 @@ FListViewItem::FListViewItem (const FListViewItem& item)
 }
 
 //----------------------------------------------------------------------
-FListViewItem::FListViewItem (FObjectIterator parent_iter)
+FListViewItem::FListViewItem (iterator parent_iter)
   : FObject((*parent_iter)->getParent())
 {
   insert (this, parent_iter);
@@ -195,7 +194,7 @@ FListViewItem::FListViewItem (FObjectIterator parent_iter)
 //----------------------------------------------------------------------
 FListViewItem::FListViewItem ( const FStringList& cols
                              , FDataPtr data
-                             , FObjectIterator parent_iter )
+                             , iterator parent_iter )
   : FObject(nullptr)
   , column_list(cols)
   , data_pointer(data)
@@ -279,7 +278,7 @@ void FListViewItem::setText (int column, const FString& text)
 }
 
 //----------------------------------------------------------------------
-FObject::FObjectIterator FListViewItem::insert (FListViewItem* child)
+FObject::iterator FListViewItem::insert (FListViewItem* child)
 {
   // Add a FListViewItem as child element
   if ( ! child )
@@ -289,8 +288,8 @@ FObject::FObjectIterator FListViewItem::insert (FListViewItem* child)
 }
 
 //----------------------------------------------------------------------
-FObject::FObjectIterator FListViewItem::insert ( FListViewItem* child
-                                               , FObjectIterator parent_iter )
+FObject::iterator FListViewItem::insert ( FListViewItem* child
+                                        , iterator parent_iter )
 {
   if ( parent_iter == FListView::null_iter )
     return FListView::null_iter;
@@ -353,7 +352,7 @@ void FListViewItem::sort (Compare cmp)
 }
 
 //----------------------------------------------------------------------
-FObject::FObjectIterator FListViewItem::appendItem (FListViewItem* child)
+FObject::iterator FListViewItem::appendItem (FListViewItem* child)
 {
   expandable = true;
   resetVisibleLineCounter();
@@ -434,7 +433,7 @@ void FListViewItem::resetVisibleLineCounter()
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FListViewIterator::FListViewIterator (FObjectIterator iter)
+FListViewIterator::FListViewIterator (iterator iter)
   : node(iter)
 { }
 
@@ -496,7 +495,7 @@ FListViewIterator& FListViewIterator::operator -= (volatile int n)
 
 // private methods of FListViewIterator
 //----------------------------------------------------------------------
-void FListViewIterator::nextElement (FObjectIterator& iter)
+void FListViewIterator::nextElement (iterator& iter)
 {
   auto item = static_cast<FListViewItem*>(*iter);
 
@@ -526,7 +525,7 @@ void FListViewIterator::nextElement (FObjectIterator& iter)
 }
 
 //----------------------------------------------------------------------
-void FListViewIterator::prevElement (FObjectIterator& iter)
+void FListViewIterator::prevElement (iterator& iter)
 {
   auto start_iter = iter;
 
@@ -713,7 +712,7 @@ void FListView::setColumnSortType (int column, fc::sorting_type type)
   if ( column < 1 || header.empty() || column > int(header.size()) )
     return;
 
-  std::size_t size = std::size_t(column + 1);
+  std::size_t size = std::size_t(column) + 1;
 
   if ( sort_type.empty() || sort_type.size() < size )
     sort_type.resize(size);
@@ -760,10 +759,10 @@ void FListView::hide()
 }
 
 //----------------------------------------------------------------------
-FObject::FObjectIterator FListView::insert ( FListViewItem* item
-                                           , FObjectIterator parent_iter )
+FObject::iterator FListView::insert ( FListViewItem* item
+                                    , iterator parent_iter )
 {
-  FObjectIterator item_iter;
+  iterator item_iter;
 
   if ( parent_iter == FListView::null_iter )
     return FListView::null_iter;
@@ -799,9 +798,9 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
 }
 
 //----------------------------------------------------------------------
-FObject::FObjectIterator FListView::insert ( const FStringList& cols
-                                           , FDataPtr d
-                                           , FObjectIterator parent_iter )
+FObject::iterator FListView::insert ( const FStringList& cols
+                                    , FDataPtr d
+                                    , iterator parent_iter )
 {
   FListViewItem* item;
 
@@ -877,79 +876,11 @@ void FListView::sort()
 //----------------------------------------------------------------------
 void FListView::onKeyPress (FKeyEvent* ev)
 {
-  int position_before = current_iter.getPosition()
-    , xoffset_before = xoffset
-    , first_line_position_before = first_visible_line.getPosition()
-    , pagesize = int(getClientHeight()) - 1;
-  FKey key = ev->key();
+  int position_before = current_iter.getPosition();
+  int xoffset_before = xoffset;
+  first_line_position_before = first_visible_line.getPosition();
   clicked_expander_pos.setPoint(-1, -1);
-
-  switch ( key )
-  {
-    case fc::Fkey_return:
-    case fc::Fkey_enter:
-      processClick();
-      ev->accept();
-      break;
-
-    case fc::Fkey_space:
-      toggleCheckbox();
-      ev->accept();
-      break;
-
-    case fc::Fkey_up:
-      stepBackward();
-      ev->accept();
-      break;
-
-    case fc::Fkey_down:
-      stepForward();
-      ev->accept();
-      break;
-
-    case fc::Fkey_left:
-      collapseAndScrollLeft (first_line_position_before);
-      ev->accept();
-      break;
-
-    case fc::Fkey_right:
-      expandAndScrollRight (first_line_position_before);
-      ev->accept();
-      break;
-
-    case fc::Fkey_ppage:
-      stepBackward(pagesize);
-      ev->accept();
-      break;
-
-    case fc::Fkey_npage:
-      stepForward(pagesize);
-      ev->accept();
-      break;
-
-    case fc::Fkey_home:
-      firstPos();
-      ev->accept();
-      break;
-
-    case fc::Fkey_end:
-      lastPos();
-      ev->accept();
-      break;
-
-    case int('+'):
-      if ( expandSubtree() )
-        ev->accept();
-      break;
-
-    case int('-'):
-      if ( collapseSubtree() )
-        ev->accept();
-      break;
-
-    default:
-      ev->ignore();
-  }
+  processKeyAction(ev);  // Process the keystrokes
 
   if ( position_before != current_iter.getPosition() )
     processChanged();
@@ -984,9 +915,9 @@ void FListView::onMouseDown (FMouseEvent* ev)
       getStatusBar()->drawMessage();
   }
 
-  int first_line_position_before = first_visible_line.getPosition()
-    , mouse_x = ev->getX()
-    , mouse_y = ev->getY();
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
+  first_line_position_before = first_visible_line.getPosition();
 
   if ( mouse_x > 1 && mouse_x < int(getWidth()) )
   {
@@ -1037,7 +968,7 @@ void FListView::onMouseDown (FMouseEvent* ev)
         vbar->drawBar();
 
       updateTerminal();
-      flush_out();
+      flushOutputBuffer();
     }
   }
 }
@@ -1121,9 +1052,9 @@ void FListView::onMouseMove (FMouseEvent* ev)
     return;
   }
 
-  int first_line_position_before = first_visible_line.getPosition()
-    , mouse_x = ev->getX()
-    , mouse_y = ev->getY();
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
+  first_line_position_before = first_visible_line.getPosition();
 
   if ( mouse_x > 1 && mouse_x < int(getWidth())
     && mouse_y > 1 && mouse_y < int(getHeight()) )
@@ -1142,7 +1073,7 @@ void FListView::onMouseMove (FMouseEvent* ev)
       vbar->drawBar();
 
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 
   // auto-scrolling when dragging mouse outside the widget
@@ -1196,8 +1127,8 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListView::onTimer (FTimerEvent*)
 {
-  int position_before = current_iter.getPosition()
-    , first_line_position_before = first_visible_line.getPosition();
+  int position_before = current_iter.getPosition();
+  first_line_position_before = first_visible_line.getPosition();
 
   switch ( int(drag_scroll) )
   {
@@ -1229,15 +1160,15 @@ void FListView::onTimer (FTimerEvent*)
     vbar->drawBar();
 
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------
 void FListView::onWheel (FWheelEvent* ev)
 {
-  int position_before = current_iter.getPosition()
-    , first_line_position_before = first_visible_line.getPosition()
-    , pagesize{4};
+  int position_before = current_iter.getPosition();
+  int pagesize{4};
+  first_line_position_before = first_visible_line.getPosition();
 
   if ( drag_scroll != fc::noScroll )
     stopDragScroll();
@@ -1268,7 +1199,7 @@ void FListView::onWheel (FWheelEvent* ev)
     vbar->drawBar();
 
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------
@@ -1379,8 +1310,8 @@ void FListView::adjustSize()
 //----------------------------------------------------------------------
 void FListView::init()
 {
-  initScrollbar (vbar, fc::vertical, &FListView::cb_VBarChange);
-  initScrollbar (hbar, fc::horizontal, &FListView::cb_HBarChange);
+  initScrollbar (vbar, fc::vertical, this, &FListView::cb_VBarChange);
+  initScrollbar (hbar, fc::horizontal, this, &FListView::cb_HBarChange);
   selflist.push_back(this);
   root = selflist.begin();
   null_iter = selflist.end();
@@ -1393,32 +1324,46 @@ void FListView::init()
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1 + int(nf_offset));
+  mapKeyFunctions();
 }
 
 //----------------------------------------------------------------------
-void FListView::initScrollbar ( FScrollbarPtr& bar
-                              , fc::orientation o
-                              , FListViewCallback callback )
+inline void FListView::mapKeyFunctions()
 {
-  try
-  {
-    bar = std::make_shared<FScrollbar>(o, this);
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
+  key_map[fc::Fkey_return]  = std::bind(&FListView::processClick, this);
+  key_map[fc::Fkey_enter]   = std::bind(&FListView::processClick, this);
+  key_map[fc::Fkey_space]   = std::bind(&FListView::toggleCheckbox, this);
+  key_map[fc::Fkey_up]      = [&] { stepBackward(); };
+  key_map[fc::Fkey_down]    = [&] { stepForward(); };
+  key_map[fc::Fkey_left]    = std::bind(&FListView::collapseAndScrollLeft, this);
+  key_map[fc::Fkey_right]   = std::bind(&FListView::expandAndScrollRight, this);
+  key_map[fc::Fkey_ppage]   = [&] { stepBackward(int(getClientHeight()) - 1); };
+  key_map[fc::Fkey_npage]   = [&] { stepForward(int(getClientHeight()) - 1); };
+  key_map[fc::Fkey_home]    = std::bind(&FListView::firstPos, this);
+  key_map[fc::Fkey_end]     = std::bind(&FListView::lastPos, this);
+  key_map_result[FKey('+')] = std::bind(&FListView::expandSubtree, this);
+  key_map_result[FKey('-')] = std::bind(&FListView::collapseSubtree, this);
+}
 
-  bar->setMinimum(0);
-  bar->setValue(0);
-  bar->hide();
+//----------------------------------------------------------------------
+void FListView::processKeyAction (FKeyEvent* ev)
+{
+  int idx = int(ev->key());
 
-  bar->addCallback
-  (
-    "change-value",
-    F_METHOD_CALLBACK (this, callback)
-  );
+  if ( key_map.find(idx) != key_map.end() )
+  {
+    key_map[idx]();
+    ev->accept();
+  }
+  else if ( key_map_result.find(idx) != key_map_result.end() )
+  {
+    if ( key_map_result[idx]() )
+      ev->accept();
+  }
+  else
+  {
+    ev->ignore();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1648,10 +1593,7 @@ void FListView::drawListLine ( const FListViewItem* item
         width -= (indent + 1);
 
         if ( item->isCheckable() )
-        {
-          static constexpr std::size_t checkbox_space = 4;
           width -= checkbox_space;
-        }
       }
 
       // Insert alignment spaces
@@ -1881,7 +1823,7 @@ void FListView::drawBufferedHeadline()
   std::size_t offset{0};
   bool left_truncated_fullwidth{false};
   bool right_truncated_fullwidth{false};
-  std::vector<charData>::const_iterator first{}, last{};
+  std::vector<FChar>::const_iterator first{}, last{};
   last = headerline.end();
 
   // Search for the start position
@@ -1992,14 +1934,13 @@ void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
     hbar->drawBar();
 
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------
 std::size_t FListView::determineLineWidth (FListViewItem* item)
 {
   static constexpr std::size_t padding_space = 1;
-  static constexpr std::size_t checkbox_space = 4;
   std::size_t line_width = padding_space;  // leading space
   std::size_t column_idx{0};
   std::size_t entries = std::size_t(item->column_list.size());
@@ -2109,7 +2050,7 @@ void FListView::recalculateVerticalBar (std::size_t element_count)
 void FListView::mouseHeaderClicked()
 {
   int column{1};
-  int checkbox_offset = ( hasCheckableItems() ) ? 4 : 0;
+  int checkbox_offset = ( hasCheckableItems() ) ? checkbox_space : 0;
   int header_start = 2 + checkbox_offset;
   int header_pos = clicked_header_pos.getX() + xoffset;
 
@@ -2287,7 +2228,7 @@ void FListView::stopDragScroll()
 }
 
 //----------------------------------------------------------------------
-FObject::FObjectIterator FListView::appendItem (FListViewItem* item)
+FObject::iterator FListView::appendItem (FListViewItem* item)
 {
   item->root = root;
   addChild (item);
@@ -2323,7 +2264,7 @@ inline void FListView::toggleCheckbox()
 }
 
 //----------------------------------------------------------------------
-inline void FListView::collapseAndScrollLeft (int& first_line_position_before)
+inline void FListView::collapseAndScrollLeft()
 {
   if ( itemlist.empty() )
     return;
@@ -2380,7 +2321,7 @@ inline void FListView::collapseAndScrollLeft (int& first_line_position_before)
 }
 
 //----------------------------------------------------------------------
-inline void FListView::expandAndScrollRight (int& first_line_position_before)
+inline void FListView::expandAndScrollRight()
 {
   if ( itemlist.empty() )
     return;
@@ -2650,9 +2591,9 @@ void FListView::scrollBy (int dx, int dy)
 void FListView::cb_VBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
-  int distance{1}
-    , pagesize{4}
-    , first_line_position_before = first_visible_line.getPosition();
+  int distance{1};
+  int pagesize{4};
+  first_line_position_before = first_visible_line.getPosition();
 
   switch ( scrollType )
   {
@@ -2701,7 +2642,7 @@ void FListView::cb_VBarChange (FWidget*, FDataPtr)
       vbar->drawBar();
 
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 }
 
@@ -2753,7 +2694,7 @@ void FListView::cb_HBarChange (FWidget*, FDataPtr)
     drawHeadlines();
     drawList();
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 
   if ( scrollType >= FScrollbar::scrollStepBackward )
@@ -2764,7 +2705,7 @@ void FListView::cb_HBarChange (FWidget*, FDataPtr)
       hbar->drawBar();
 
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 }
 

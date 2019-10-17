@@ -46,8 +46,8 @@ const FString FTermBuffer::toString() const
   std::wstring wide_string{};
   wide_string.reserve(data.size());
 
-  for (auto&& tc : data)
-    wide_string.push_back(tc.code);
+  for (auto&& fchar : data)
+    wide_string.push_back(fchar.ch);
 
   return FString(wide_string);
 }
@@ -60,9 +60,9 @@ int FTermBuffer::write (const FString& string)
 
   for (auto&& c : string)
   {
-    charData  nc;  // next character
+    FChar nc;  // next character
     nc = FVTerm::getAttribute();
-    nc.code = c;
+    nc.ch = c;
     getColumnWidth(nc);  // add column width
     nc.attr.bit.no_changes = false;
     nc.attr.bit.printed = false;
@@ -75,8 +75,8 @@ int FTermBuffer::write (const FString& string)
 //----------------------------------------------------------------------
 int FTermBuffer::write (wchar_t ch)
 {
-  charData nc = FVTerm::getAttribute();  // next character
-  nc.code = ch;
+  FChar nc = FVTerm::getAttribute();  // next character
+  nc.ch = ch;
   getColumnWidth(nc);  // add column width
   nc.attr.bit.no_changes = false;
   nc.attr.bit.printed = false;
@@ -94,8 +94,8 @@ void FTermBuffer::write (const FColorPair& pair)
 
 // FTermBuffer non-member operators
 //----------------------------------------------------------------------
-FTermBuffer::charDataVector& operator << ( FTermBuffer::charDataVector& termString
-                                         , const FTermBuffer& buf )
+FTermBuffer::FCharVector& operator << ( FTermBuffer::FCharVector& termString
+                                      , const FTermBuffer& buf )
 {
   if ( ! buf.data.empty() )
     termString.assign(buf.data.begin(), buf.data.end());

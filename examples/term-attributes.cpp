@@ -262,7 +262,7 @@ void AttribDemo::printColorLine()
 //----------------------------------------------------------------------
 void AttribDemo::printAltCharset()
 {
-  const finalcut::FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   auto parent = static_cast<AttribDlg*>(getParent());
 
   if ( ! isMonochron() )
@@ -413,7 +413,7 @@ void AttribDemo::printProtected()
 void AttribDemo::draw()
 {
   // test alternate character set
-  const finalcut::FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   printAltCharset();
 
   std::vector<std::function<void()> > effect

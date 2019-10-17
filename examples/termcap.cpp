@@ -44,8 +44,6 @@ void string();
 
 struct data
 {
-  static int getNumberOfItems();
-
   struct alignas(alignof(std::string)) termcap_string
   {
     const std::string name;
@@ -143,13 +141,6 @@ data::termcap_string data::strings[] =
   { "t_keypad_local", fc::t_keypad_local },
   { "t_key_mouse", fc::t_key_mouse }
 };
-
-// data inline functions
-//----------------------------------------------------------------------
-inline int data::getNumberOfItems()
-{
-  return int ( sizeof(strings) / sizeof(strings[0]) ) - 1;
-}
 
 
 //----------------------------------------------------------------------
@@ -290,10 +281,10 @@ void string()
   finalcut::FTermcap::tcap_map (&tcap_strings)[] \
       = finalcut::FTermcap::strings;
 
-  for (int n{0}; n <= data::getNumberOfItems(); n++ )
+  for (const auto& entry : data::strings)
   {
-    const std::string name = data::strings[n].name;
-    const fc::termcaps cap = data::strings[n].cap;
+    const std::string name = entry.name;
+    const fc::termcaps cap = entry.cap;
     tcapString (name, tcap_strings[cap].string);
   }
 }

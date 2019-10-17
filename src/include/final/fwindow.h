@@ -88,7 +88,7 @@ class FWindow : public FWidget
     FWindow& operator = (const FWindow&) = delete;
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     static FWindow*     getWindowWidget (const FWidget*);
     static int          getWindowLayer (const FWidget*);
     FWidget*            getWindowFocusWidget() const;
@@ -182,7 +182,7 @@ class FWindow : public FWidget
 
 // FWindow inline functions
 //----------------------------------------------------------------------
-inline const char* FWindow::getClassName() const
+inline const FString FWindow::getClassName() const
 { return "FWindow"; }
 
 //----------------------------------------------------------------------

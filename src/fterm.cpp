@@ -67,9 +67,6 @@ static FTerm* init_term_object{nullptr};
 // global init state
 static bool term_initialized{false};
 
-// function pointer
-int (*FTerm::Fputchar)(int);
-
 // static class attributes
 FTermData*      FTerm::data          {nullptr};
 FSystem*        FTerm::fsys          {nullptr};
@@ -96,8 +93,6 @@ FMouseControl*  FTerm::mouse         {nullptr};
   FTermDebugData* FTerm::debug_data  {nullptr};
 #endif
 
-// function prototypes
-uInt env2uint (const char*);
 
 //----------------------------------------------------------------------
 // class FTerm
@@ -419,7 +414,7 @@ FTermDebugData& FTerm::getFTermDebugData()
 #endif  // DEBUG
 
 //----------------------------------------------------------------------
-bool FTerm::isNormal (charData*& ch)
+bool FTerm::isNormal (FChar*& ch)
 {
   return opti_attr->isNormal(ch);
 }
@@ -674,16 +669,16 @@ bool FTerm::setVGAFont()
     data->setTermEncoding (fc::PC);
 
     if ( isXTerminal() && data->hasUTF8Console() )
-      Fputchar = &FTerm::putchar_UTF8;
+      putchar() = &FTerm::putchar_UTF8;
     else
-      Fputchar = &FTerm::putchar_ASCII;
+      putchar() = &FTerm::putchar_ASCII;
   }
 #if defined(__linux__)
   else if ( isLinuxTerm() )
   {
     data->setVGAFont(linux->loadVGAFont());
     data->setTermEncoding (fc::PC);
-    Fputchar = &FTerm::putchar_ASCII;
+    putchar() = &FTerm::putchar_ASCII;
   }
 #endif  // defined(__linux__)
   else
@@ -716,16 +711,16 @@ bool FTerm::setNewFont()
     data->setTermEncoding (fc::PC);
 
     if ( isXTerminal() && data->hasUTF8Console() )
-      Fputchar = &FTerm::putchar_UTF8;
+      putchar() = &FTerm::putchar_UTF8;
     else
-      Fputchar = &FTerm::putchar_ASCII;
+      putchar() = &FTerm::putchar_ASCII;
   }
 #if defined(__linux__)
   else if ( isLinuxTerm() )
   {
     data->setNewFont(linux->loadNewFont());
     data->setTermEncoding (fc::PC);
-    Fputchar = &FTerm::putchar_ASCII;  // function pointer
+    putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
 #endif  // defined(__linux__)
   else
@@ -759,7 +754,7 @@ bool FTerm::setOldFont()
     if ( font.getLength() > 2 )
     {
       // restore saved xterm font
-      xterm->setFont (font);
+      xterm->setFont(font);
     }
     else
     {
@@ -835,8 +830,10 @@ int FTerm::closeConsole()
   if ( fd < 0 )  // console is already closed
     return 0;
 
-  if ( fsys )
-    ret = fsys->close(fd);  // close console
+  if ( ! fsys )
+    getFSystem();
+
+  ret = fsys->close(fd);  // close console
 
   data->setTTYFileDescriptor(-1);
 
@@ -900,10 +897,10 @@ void FTerm::detectTermSize()
 
   do
   {
-    if ( fsys )
-      ret = fsys->ioctl (FTermios::getStdOut(), TIOCGWINSZ, &win_size);
-    else
-      ret = -1;
+    if ( ! fsys )
+      getFSystem();
+
+    ret = fsys->ioctl (FTermios::getStdOut(), TIOCGWINSZ, &win_size);
   }
   while (errno == EINTR);
 
@@ -992,12 +989,13 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
 
   const auto& Ic = TCAP(fc::t_initialize_color);
   const auto& Ip = TCAP(fc::t_initialize_pair);
+  bool state{false};
 
   index = FOptiAttr::vga2ansi(index);
 
   if ( Ic || Ip )
   {
-    const char* color_str = "";
+    const char* color_str{};
 
     int rr = (r * 1001) / 256
       , gg = (g * 1001) / 256
@@ -1008,16 +1006,21 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
     else if ( Ip )
       color_str = tparm(Ip, index, 0, 0, 0, rr, gg, bb, 0, 0);
 
-    putstring (color_str);
+    if ( color_str )
+    {
+      putstring (color_str);
+      state = true;
+    }
   }
 #if defined(__linux__)
   else
   {
-    linux->setPalette(index, r, g, b);
+    state = linux->setPalette(index, r, g, b);
   }
 #endif
 
-  std::fflush(stdout);
+  if ( state )
+    std::fflush(stdout);
 }
 
 //----------------------------------------------------------------------
@@ -1084,25 +1087,25 @@ void FTerm::setEncoding (fc::encoding enc)
         || enc == fc::PC     // CP-437
         || enc == fc::ASCII );
 
-  // Set the new Fputchar function pointer
+  // Set the new putchar() function pointer
   switch ( enc )
   {
     case fc::UTF8:
-      Fputchar = &FTerm::putchar_UTF8;
+      putchar() = &FTerm::putchar_UTF8;
       break;
 
     case fc::VT100:
     case fc::PC:
       if ( isXTerminal() && data->hasUTF8Console() )
-        Fputchar = &FTerm::putchar_UTF8;
+        putchar() = &FTerm::putchar_UTF8;
       else
-        Fputchar = &FTerm::putchar_ASCII;
+        putchar() = &FTerm::putchar_ASCII;
       break;
 
     case fc::ASCII:
     case fc::UNKNOWN:
     case fc::NUM_OF_ENCODINGS:
-      Fputchar = &FTerm::putchar_ASCII;
+      putchar() = &FTerm::putchar_ASCII;
   }
 
   if ( isLinuxTerm() )
@@ -1197,14 +1200,27 @@ bool FTerm::scrollTermReverse()
 }
 
 //----------------------------------------------------------------------
+FTerm::defaultPutChar& FTerm::putchar()
+{
+  static defaultPutChar* fputchar = new defaultPutChar();
+  return *fputchar;
+}
+
+//----------------------------------------------------------------------
 void FTerm::putstring (const char str[], int affcnt)
 {
+  if ( ! fsys )
+    getFSystem();
+
   fsys->tputs (str, affcnt, FTerm::putchar_ASCII);
 }
 
 //----------------------------------------------------------------------
 int FTerm::putchar_ASCII (int c)
 {
+  if ( ! fsys )
+    getFSystem();
+
   if ( fsys->putchar(char(c)) == EOF )
     return 0;
   else
@@ -1214,6 +1230,9 @@ int FTerm::putchar_ASCII (int c)
 //----------------------------------------------------------------------
 int FTerm::putchar_UTF8 (int c)
 {
+  if ( ! fsys )
+    getFSystem();
+
   if ( c < 0x80 )
   {
     // 1 Byte (7-bit): 0xxxxxxx
@@ -1269,8 +1288,8 @@ void FTerm::initScreenSettings()
 }
 
 //----------------------------------------------------------------------
-char* FTerm::changeAttribute ( charData*& term_attr
-                             , charData*& next_attr )
+char* FTerm::changeAttribute ( FChar*& term_attr
+                             , FChar*& next_attr )
 {
   return opti_attr->changeAttribute (term_attr, next_attr);
 }
@@ -1708,7 +1727,7 @@ void FTerm::init_locale()
 //----------------------------------------------------------------------
 void FTerm::init_encoding()
 {
-  // detect encoding and set the Fputchar function pointer
+  // detect encoding and set the putchar() function pointer
 
   bool force_vt100{false};  // VT100 line drawing (G1 character set)
   init_encoding_set();
@@ -1752,12 +1771,15 @@ void FTerm::init_term_encoding()
   int stdout_no = FTermios::getStdOut();
   const char* termtype = data->getTermType();
 
+  if ( ! fsys )
+    getFSystem();
+
   if ( fsys->isTTY(stdout_no)
     && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
   {
     data->setUTF8Console(true);
     data->setTermEncoding (fc::UTF8);
-    Fputchar = &FTerm::putchar_UTF8;  // function pointer
+    putchar() = &FTerm::putchar_UTF8;  // function pointer
     data->setUTF8(true);
     setUTF8(true);
     keyboard->enableUTF8();
@@ -1768,13 +1790,13 @@ void FTerm::init_term_encoding()
   {
     data->setVT100Console (true);
     data->setTermEncoding (fc::VT100);
-    Fputchar = &FTerm::putchar_ASCII;  // function pointer
+    putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
   else
   {
     data->setASCIIConsole (true);
     data->setTermEncoding (fc::ASCII);
-    Fputchar = &FTerm::putchar_ASCII;  // function pointer
+    putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
 }
 
@@ -1786,12 +1808,12 @@ void FTerm::init_individual_term_encoding()
     || (isTeraTerm() && ! data->isUTF8()) )
   {
     data->setTermEncoding (fc::PC);
-    Fputchar = &FTerm::putchar_ASCII;  // function pointer
+    putchar() = &FTerm::putchar_ASCII;  // function pointer
 
     if ( hasUTF8() && getStartOptions().encoding == fc::UNKNOWN )
     {
       if ( isXTerminal() )
-        Fputchar = &FTerm::putchar_UTF8;  // function pointer
+        putchar() = &FTerm::putchar_UTF8;  // function pointer
     }
   }
 }
@@ -1801,7 +1823,7 @@ void FTerm::init_force_vt100_encoding()
 {
   data->setVT100Console(true);
   data->setTermEncoding (fc::VT100);
-  Fputchar = &FTerm::putchar_ASCII;  // function pointer
+  putchar() = &FTerm::putchar_ASCII;  // function pointer
 }
 
 //----------------------------------------------------------------------
@@ -1815,7 +1837,7 @@ void FTerm::init_utf8_without_alt_charset()
   {
     data->setASCIIConsole(true);
     data->setTermEncoding (fc::ASCII);
-    Fputchar = &FTerm::putchar_ASCII;  // function pointer
+    putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
 }
 
@@ -1841,14 +1863,14 @@ void FTerm::init_captureFontAndTitle()
   // Save the used xterm font and window title
 
   xterm->captureFontAndTitle();
-  const auto font = xterm->getFont();
-  const auto title = xterm->getTitle();
+  const auto& font = xterm->getFont();
+  const auto& title = xterm->getTitle();
 
-  if ( font )
-    data->setXtermFont(*font);
+  if ( ! font.isEmpty() )
+    data->setXtermFont(font);
 
-  if ( title )
-    data->setXtermTitle(*title);
+  if ( ! title.isEmpty() )
+    data->setXtermTitle(title);
 }
 
 //----------------------------------------------------------------------
@@ -2126,6 +2148,7 @@ void FTerm::useNormalScreenBuffer()
 //----------------------------------------------------------------------
 inline void FTerm::allocationValues()
 {
+  FStartOptions::getFStartOptions();
   getFTermData();
   getFSystem();
   getFOptiMove();
@@ -2146,7 +2169,6 @@ inline void FTerm::allocationValues()
 #if DEBUG
   getFTermDebugData();
 #endif
-
 }
 
 //----------------------------------------------------------------------
@@ -2191,6 +2213,10 @@ inline void FTerm::deallocationValues()
 
   if ( data )
     delete data;
+
+  defaultPutChar* putchar_ptr = &(putchar());
+  delete putchar_ptr;
+  FStartOptions::destroyObject();
 }
 
 //----------------------------------------------------------------------
@@ -2240,7 +2266,7 @@ void FTerm::init (bool disable_alt_screen)
   init_alt_charset();
 
   // Pass the terminal capabilities to the keyboard object
-  keyboard->setTermcapMap (fc::Fkey);
+  keyboard->setTermcapMap (fc::fkey);
 
   // Initializes locale information
   init_locale();
@@ -2356,6 +2382,9 @@ void FTerm::initBaudRate()
   int stdout_no = FTermios::getStdOut();
   uInt baud = FTermios::getBaudRate();
   data->setBaudrate(baud);
+
+  if ( ! fsys )
+    getFSystem();
 
   if ( fsys->isTTY(stdout_no) )
     opti_move->setBaudRate(int(baud));
@@ -2501,259 +2530,11 @@ void FTerm::signal_handler (int signum)
       init_term_object->finish();
       std::fflush (stderr);
       std::fflush (stdout);
-      std::fprintf ( stderr
-                   , "\nProgram stopped: signal %d (%s)\n"
-                   , signum
-                   , strsignal(signum) );
+      std::cerr << "\nProgram stopped: signal "
+                << signum
+                << " (" << strsignal(signum) << ")" << std::endl;
       std::terminate();
   }
-}
-
-// FTerm non-member functions
-//----------------------------------------------------------------------
-uInt env2uint (const char* env)
-{
-  FString str(getenv(env));
-
-  if ( str.isEmpty() )
-    return 0;
-
-  try
-  {
-    return str.toUInt();
-  }
-  catch (const std::exception&)
-  {
-    return 0;
-  }
-}
-
-//----------------------------------------------------------------------
-wchar_t cp437_to_unicode (uChar c)
-{
-  constexpr std::size_t CP437 = 0;
-  constexpr std::size_t UNICODE = 1;
-  wchar_t ucs(c);
-
-  for (std::size_t i{0}; i <= fc::lastCP437Item; i++)
-  {
-    if ( fc::cp437_to_ucs[i][CP437] == c )  // found
-    {
-      ucs = fc::cp437_to_ucs[i][UNICODE];
-      break;
-    }
-  }
-
-  return ucs;
-}
-
-//----------------------------------------------------------------------
-uChar unicode_to_cp437 (wchar_t ucs)
-{
-  constexpr std::size_t CP437 = 0;
-  constexpr std::size_t UNICODE = 1;
-  uChar c{'?'};
-
-  for (std::size_t i{0}; i <= fc::lastCP437Item; i++)
-  {
-    if ( fc::cp437_to_ucs[i][UNICODE] == ucs )  // found
-    {
-      c = uChar(fc::cp437_to_ucs[i][CP437]);
-      break;
-    }
-  }
-
-  return c;
-}
-
-//----------------------------------------------------------------------
-FString getFullWidth (const FString& str)
-{
-  // Converts half-width to full-width characters
-
-  FString s(str);
-  constexpr std::size_t HALF = 0;
-  constexpr std::size_t FULL = 1;
-
-  for (auto&& c : s)
-  {
-    if ( c > L'\x20' && c < L'\x7f' )  // half-width ASCII
-    {
-      c += 0xfee0;
-    }
-    else for (std::size_t i{0}; i <= fc::lastHalfWidthItem; i++)
-    {
-      if ( fc::halfWidth_fullWidth[i][HALF] == c )  // found
-      {
-        c = fc::halfWidth_fullWidth[i][FULL];
-      }
-    }
-  }
-
-  return s;
-}
-
-//----------------------------------------------------------------------
-FString getHalfWidth (const FString& str)
-{
-  // Converts full-width to half-width characters
-
-  FString s(str);
-  constexpr std::size_t HALF = 0;
-  constexpr std::size_t FULL = 1;
-
-  for (auto&& c : s)
-  {
-    if ( c > L'\xff00' && c < L'\xff5f' )  // full-width ASCII
-    {
-      c -= 0xfee0;
-    }
-    else for (std::size_t i{0}; i <= fc::lastHalfWidthItem; i++)
-    {
-      if ( fc::halfWidth_fullWidth[i][FULL] == c )  // found
-      {
-        c = fc::halfWidth_fullWidth[i][HALF];
-      }
-    }
-  }
-
-  return s;
-}
-
-//----------------------------------------------------------------------
-std::size_t getColumnWidthToLength ( const FString& str
-                                   , std::size_t col_len )
-{
-  std::size_t column_width{0}, length{0};
-
-  for (auto&& ch : str)
-  {
-    if ( column_width < col_len )
-    {
-      column_width += getColumnWidth(ch);
-      length++;
-    }
-  }
-
-  return length;
-}
-
-//----------------------------------------------------------------------
-FString getColumnSubString ( const FString& str
-                           , std::size_t col_pos, std::size_t col_len )
-{
-  FString s(str);
-  std::size_t col_first{1}, col_num{0}, first{1}, num{0};
-
-  if ( col_len == 0 || s.isEmpty() )
-    return FString(L"");
-
-  if ( col_pos == 0 )
-    col_pos = 1;
-
-  for (auto&& ch : s)
-  {
-    std::size_t width = getColumnWidth(ch);
-
-    if ( col_first < col_pos )
-    {
-      if ( col_first + width <= col_pos )
-      {
-        col_first += width;
-        first++;
-      }
-      else
-      {
-        ch = fc::SingleLeftAngleQuotationMark;  // ‹
-        num = col_num = 1;
-        col_pos = col_first;
-      }
-    }
-    else
-    {
-      if ( col_num + width <= col_len )
-      {
-        col_num += width;
-        num++;
-      }
-      else if ( col_num < col_len )
-      {
-        ch = fc::SingleRightAngleQuotationMark;  // ›
-        num++;
-        break;
-      }
-    }
-  }
-
-  if ( col_first < col_pos )  // String length < col_pos
-    return FString(L"");
-
-  return s.mid(first, num);
-}
-
-//----------------------------------------------------------------------
-std::size_t getColumnWidth (const FString& s, std::size_t pos)
-{
-  if ( s.isEmpty() )
-    return 0;
-
-  std::size_t column_width{0};
-  auto length = s.getLength();
-
-  if ( pos > length )
-    pos = length;
-
-  for (std::size_t i{0}; i < pos; i++)
-    column_width += getColumnWidth(s[i]);
-
-  return column_width;
-}
-
-//----------------------------------------------------------------------
-std::size_t getColumnWidth (const FString& s)
-{
-  if ( s.isEmpty() )
-    return 0;
-
-  const wchar_t* str = s.wc_str();
-  size_t len = std::wcslen(str);
-  int column_width = wcswidth (str, len);
-  return ( column_width == -1 ) ? 0 : std::size_t(column_width);
-}
-
-//----------------------------------------------------------------------
-std::size_t getColumnWidth (const wchar_t wchar)
-{
-  int column_width = wcwidth (wchar);
-  return ( column_width == -1 ) ? 0 : std::size_t(column_width);
-}
-
-//----------------------------------------------------------------------
-std::size_t getColumnWidth (charData& term_char)
-{
-  int column_width = wcwidth (term_char.code);
-  std::size_t char_width = ( column_width == -1 ) ? 0 : std::size_t(column_width);
-
-  if ( char_width == 2 && FTerm::getEncoding() != fc::UTF8 )
-  {
-    term_char.code = '.';
-    term_char.attr.bit.char_width = 1;
-  }
-  else
-    term_char.attr.bit.char_width = char_width & 0x03;
-
-  return char_width;
-}
-
-//----------------------------------------------------------------------
-std::size_t getColumnWidth (const FTermBuffer& termbuffer)
-{
-  std::size_t column_width{0};
-
-  for (auto&& tc : termbuffer)
-    column_width += tc.attr.bit.char_width;
-
-  return column_width;
 }
 
 }  // namespace finalcut

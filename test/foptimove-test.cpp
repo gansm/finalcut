@@ -109,8 +109,8 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
 void FOptiMoveTest::classNameTest()
 {
   finalcut::FOptiMove opti_move;
-  const char* const classname = opti_move.getClassName();
-  CPPUNIT_ASSERT_CSTRING ( classname, "FOptiMove");
+  const finalcut::FString& classname = opti_move.getClassName();
+  CPPUNIT_ASSERT ( classname == "FOptiMove");
 }
 
 //----------------------------------------------------------------------
@@ -698,7 +698,7 @@ void FOptiMoveTest::wyse50Test()
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), C_STR(ESC "=%%"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), C_STR("\036"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), C_STR("\r"));
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), C_STR("\r\n"));om.set_auto_left_margin (true);
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), C_STR("\r\n"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), C_STR("\f"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), C_STR("\b"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), C_STR("\f\f"));

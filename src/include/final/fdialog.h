@@ -96,7 +96,7 @@ class FDialog : public FWindow
     FDialog& operator = (const FDialog&) = delete;
 
     // Accessors
-    const char*         getClassName() const override;
+    const FString       getClassName() const override;
     FString             getText() const;
 
     // Mutators
@@ -238,7 +238,7 @@ class FDialog : public FWindow
 
 // FDialog inline functions
 //----------------------------------------------------------------------
-inline const char* FDialog::getClassName() const
+inline const FString FDialog::getClassName() const
 { return "FDialog"; }
 
 //----------------------------------------------------------------------

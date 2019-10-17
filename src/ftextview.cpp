@@ -20,11 +20,6 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#if defined(__CYGWIN__)
-  #include "final/fconfig.h"  // includes _GNU_SOURCE for wcwidth()
-#endif
-
-#include <wchar.h>
 #include <memory>
 
 #include "final/fapplication.h"
@@ -65,30 +60,28 @@ const FString FTextView::getText() const
     return FString("");
 
   std::size_t len{0};
-  std::size_t rows = getRows();
 
-  for (std::size_t i{0} ; i < rows; i++)
-    len += data[i].getLength() + 1;
+  for (auto&& line : data)
+    len += line.getLength() + 1;  // String length + '\n'
 
-  FString s(len + 1);
-  std::size_t idx{0};
+  FString s(len);  // Reserves storage
+  auto iter = s.begin();
 
-  for (std::size_t i{0}; i < rows; i++)
+  for (auto&& line : data)
   {
-    const wchar_t* p = data[i].wc_str();
+    if ( ! line.isEmpty() )
+    {
+      if ( iter != s.begin() )
+      {
+        *iter = '\n';
+        ++iter;
+      }
 
-    if ( p )
-    {
-      while ( (s[idx++] = *p++) != 0 );
-      s[idx - 1] = '\n';
-    }
-    else
-    {
-      s[idx++] = '\n';
+      std::copy (line.begin(), line.end(), iter);
+      iter += std::distance(line.begin(), line.end());
     }
   }
 
-  s[idx - 1] = 0;
   return s;
 }
 
@@ -241,7 +234,7 @@ void FTextView::insert (const FString& str, int pos)
         hbar->setPageSize (int(maxLineWidth), int(getTextWidth()));
         hbar->calculateSliderValues();
 
-        if ( isShown() && ! hbar->isShown() )
+        if ( isShown() && isHorizontallyScrollable() )
           hbar->show();
       }
     }
@@ -256,10 +249,10 @@ void FTextView::insert (const FString& str, int pos)
   vbar->setPageSize (int(getRows()), int(getTextHeight()));
   vbar->calculateSliderValues();
 
-  if ( isShown() && ! vbar->isShown() && getRows() > getTextHeight() )
+  if ( isShown() && ! vbar->isShown() && isVerticallyScrollable() )
     vbar->show();
 
-  if ( isShown() && vbar->isShown() && getRows() <= getTextHeight() )
+  if ( isShown() && vbar->isShown() && ! isVerticallyScrollable() )
     vbar->hide();
 
   processChanged();
@@ -297,69 +290,42 @@ void FTextView::clear()
 
   // clear list from screen
   setColor();
+
+
+  if ( useFDialogBorder() )
+  {
+    auto parent = getParentWidget();
+
+    if ( parent )
+      static_cast<FDialog*>(parent)->redraw();
+  }
+  else
+    drawBorder();
+
   std::size_t size = getWidth() - 2;
 
   if ( size == 0 )
     return;
 
-  char* blank = createBlankArray(size + 1);
-
   for (int y{0}; y < int(getTextHeight()); y++)
   {
-    print() << FPoint(2, 2 - nf_offset + y) << blank;
+    print() << FPoint(2, 2 - nf_offset + y)
+            << FString(size, L' ');
   }
 
-  destroyBlankArray (blank);
+  updateTerminal();
   processChanged();
 }
 
 //----------------------------------------------------------------------
 void FTextView::onKeyPress (FKeyEvent* ev)
 {
-  switch ( ev->key() )
+  int idx = int(ev->key());
+
+  if ( key_map.find(idx) != key_map.end() )
   {
-    case fc::Fkey_up:
-      scrollBy (0, -1);
-      ev->accept();
-      break;
-
-    case fc::Fkey_down:
-      scrollBy (0, 1);
-      ev->accept();
-      break;
-
-    case fc::Fkey_left:
-      scrollBy (-1, 0);
-      ev->accept();
-      break;
-
-    case fc::Fkey_right:
-      scrollBy (1, 0);
-      ev->accept();
-      break;
-
-    case fc::Fkey_ppage:
-      scrollBy (0, int(-getTextHeight()));
-      ev->accept();
-      break;
-
-    case fc::Fkey_npage:
-      scrollBy (0, int(getTextHeight()));
-      ev->accept();
-      break;
-
-    case fc::Fkey_home:
-      scrollToY (0);
-      ev->accept();
-      break;
-
-    case fc::Fkey_end:
-      scrollToY (int(getRows() - getTextHeight()));
-      ev->accept();
-      break;
-
-    default:
-      break;
+    key_map[idx]();
+    ev->accept();
   }
 }
 
@@ -566,15 +532,15 @@ void FTextView::adjustSize()
 
   if ( isShown() )
   {
-    if ( last_line < int(height) + nf_offset - 1 )
-      vbar->hide();
-    else
-      vbar->show();
-
-    if ( max_width < int(width) - nf_offset - 1 )
-      hbar->hide();
-    else
+    if ( isHorizontallyScrollable() )
       hbar->show();
+    else
+      hbar->hide();
+
+    if ( isVerticallyScrollable() )
+      vbar->show();
+    else
+      vbar->hide();
   }
 }
 
@@ -595,8 +561,8 @@ std::size_t FTextView::getTextWidth()
 //----------------------------------------------------------------------
 void FTextView::init()
 {
-  initScrollbar (vbar, fc::vertical, &FTextView::cb_VBarChange);
-  initScrollbar (hbar, fc::horizontal, &FTextView::cb_HBarChange);
+  initScrollbar (vbar, fc::vertical, this, &FTextView::cb_VBarChange);
+  initScrollbar (hbar, fc::horizontal, this, &FTextView::cb_HBarChange);
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
@@ -605,75 +571,28 @@ void FTextView::init()
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1 + nf_offset);
+  mapKeyFunctions();
 }
 
 //----------------------------------------------------------------------
-void FTextView::initScrollbar ( FScrollbarPtr& bar
-                              , fc::orientation o
-                              , FTextViewCallback callback )
+inline void FTextView::mapKeyFunctions()
 {
-  try
-  {
-    bar = std::make_shared<FScrollbar>(o, this);
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
-
-  bar->setMinimum(0);
-  bar->setValue(0);
-  bar->hide();
-
-  bar->addCallback
-  (
-    "change-value",
-    F_METHOD_CALLBACK (this, callback)
-  );
+  key_map[fc::Fkey_up]    = [&] { scrollBy (0, -1); };
+  key_map[fc::Fkey_down]  = [&] { scrollBy (0, 1); };
+  key_map[fc::Fkey_left]  = [&] { scrollBy (-1, 0); };
+  key_map[fc::Fkey_right] = [&] { scrollBy (1, 0); };
+  key_map[fc::Fkey_ppage] = [&] { scrollBy (0, int(-getTextHeight())); };
+  key_map[fc::Fkey_npage] = [&] { scrollBy (0, int(getTextHeight())); };
+  key_map[fc::Fkey_home]  = [&] { scrollToY (0); };
+  key_map[fc::Fkey_end]   = [&] { scrollToY (int(getRows() - getTextHeight())); };
 }
 
 //----------------------------------------------------------------------
 void FTextView::draw()
 {
-  auto parent = getParentWidget();
-  bool is_text_dialog;
   setColor();
-
-  if ( isMonochron() )
-    setReverse(true);
-
-  if ( parent
-    && parent->isDialogWidget()
-    && isPaddingIgnored()
-    && getGeometry() == FRect ( 1
-                              , 2
-                              , parent->getWidth()
-                              , parent->getHeight() - 1) )
-  {
-    is_text_dialog = true;
-  }
-  else
-    is_text_dialog = false;
-
-  if ( ! (is_text_dialog || isNewFont()) )
-    drawBorder();
-
-  if ( isMonochron() )
-    setReverse(false);
-
-  if ( ! isShown() )  // first drawing
-  {
-    vbar->show();
-    hbar->show();
-  }
-
-  if ( vbar->isShown() )
-    vbar->redraw();
-
-  if ( hbar->isShown() )
-    hbar->redraw();
-
+  drawBorder();
+  drawScrollbars();
   drawText();
 
   if ( hasFocus() && getStatusBar() )
@@ -690,7 +609,36 @@ void FTextView::draw()
 
   setCursorPos (FPoint(int(getWidth()), int(getHeight())));
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
+}
+
+//----------------------------------------------------------------------
+void FTextView::drawBorder()
+{
+  if ( ! useFDialogBorder() )
+  {
+    if ( isMonochron() )
+      setReverse(true);
+
+    FWidget::drawBorder();
+
+    if ( isMonochron() )
+      setReverse(false);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTextView::drawScrollbars()
+{
+  if ( ! hbar->isShown() && isHorizontallyScrollable() )
+    hbar->show();
+  else
+    vbar->redraw();
+
+  if ( ! vbar->isShown() && isVerticallyScrollable() )
+    vbar->show();
+  else
+    hbar->redraw();
 }
 
 //----------------------------------------------------------------------
@@ -721,7 +669,9 @@ void FTextView::drawText()
 
     for (auto&& ch : line)  // Column loop
     {
-      if ( isPrintable(ch) )
+      if ( getColumnWidth(ch) == 0 )
+        continue;
+      else if ( isPrintable(ch) )
         print (ch);
       else
         print ('.');
@@ -735,6 +685,26 @@ void FTextView::drawText()
 
   if ( isMonochron() )
     setReverse(false);
+}
+
+//----------------------------------------------------------------------
+inline bool FTextView::useFDialogBorder()
+{
+  auto parent = getParentWidget();
+  bool use_fdialog_border{false};
+
+  if ( parent
+    && parent->isDialogWidget()
+    && isPaddingIgnored()
+    && getGeometry() == FRect ( 1
+                              , 2
+                              , parent->getWidth()
+                              , parent->getHeight() - 1) )
+  {
+    use_fdialog_border = true;
+  }
+
+  return use_fdialog_border;
 }
 
 //----------------------------------------------------------------------

@@ -117,7 +117,7 @@ class FFileDialog : public FDialog
     FFileDialog& operator = (const FFileDialog&);
 
     // Accessors
-    const char*          getClassName() const override;
+    const FString        getClassName() const override;
     const FString        getPath() const;
     const FString        getFilter() const;
     const FString        getSelectedFile() const;
@@ -168,13 +168,13 @@ class FFileDialog : public FDialog
 
     typedef std::vector<dir_entry> dirEntries;
 
-    // Method
+    // Methods
     void                 init();
     void                 widgetSettings (const FPoint&);
     void                 initCallbacks();
     bool                 pattern_match (const char* const, char[]);
     void                 clear();
-    long                 numOfDirs();
+    sInt64               numOfDirs();
     void                 sortDir();
     int                  readDir();
     void                 getEntry (const char* const, struct dirent*);
@@ -216,7 +216,7 @@ class FFileDialog : public FDialog
 
 // FMessageBox inline functions
 //----------------------------------------------------------------------
-inline const char* FFileDialog::getClassName() const
+inline const FString FFileDialog::getClassName() const
 { return "FFileDialog"; }
 
 //----------------------------------------------------------------------

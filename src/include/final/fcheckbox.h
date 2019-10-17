@@ -83,20 +83,20 @@ class FCheckBox : public FToggleButton
     FCheckBox& operator = (const FCheckBox&) = delete;
 
     // Accessor
-    const char* getClassName() const override;
+    const FString getClassName() const override;
 
   private:
     // Methods
-    void        init();
-    void        draw() override;
-    void        drawCheckButton();
-    void        drawChecked();
-    void        drawUnchecked();
+    void          init();
+    void          draw() override;
+    void          drawCheckButton();
+    void          drawChecked();
+    void          drawUnchecked();
 };
 
 // FCheckBox inline functions
 //----------------------------------------------------------------------
-inline const char* FCheckBox::getClassName() const
+inline const FString FCheckBox::getClassName() const
 { return "FCheckBox"; }
 
 }  // namespace finalcut

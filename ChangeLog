@@ -1,3 +1,28 @@
+2019-10-15  Markus Gans  <guru.mail@muenster.de>
+	* Version 0.6.0
+
+2019-10-13  Markus Gans  <guru.mail@muenster.de>
+	* Compile fix for Cygwin and Linux on arm architectures
+	* A small color palette optimization
+	* Corrected east asian ambiguous character width for OpenBSD, NetBSD, 
+	  FreeBSD and Solaris
+
+2019-10-05  Markus Gans  <guru.mail@muenster.de>
+	* Internal redesign of the callback call
+	* Mapping of key functions in an associative container to simplify 
+	  onKeyPress() in FListBox, FListView, FTextView and FScrollView
+
+2019-10-01  Markus Gans  <guru.mail@muenster.de>
+	* Replacing null-terminated wide strings with FString objects
+	* Fix for getColumnWidth() with newfont character
+
+2019-09-29  Markus Gans  <guru.mail@muenster.de>
+	* Streaming into an FTextView() object
+	* Fixes the streaming of empty FString objects into a stream with 
+	  a width > 0
+	* The FString operator [] now returns a null character ('\0') 
+	  if the position is equal to the string length
+
 2019-09-28  Markus Gans  <guru.mail@muenster.de>
 	* Support for displaying full-width characters (2 columns wide) 
 	  on the terminal. This is particularly important for the correct 

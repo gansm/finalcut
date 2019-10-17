@@ -381,7 +381,7 @@ std::ostream& operator << (std::ostream& outstr, const FRect& r)
 //----------------------------------------------------------------------
 std::istream& operator >> (std::istream& instr, FRect& r)
 {
-  int x1, y1, x2, y2;
+  int x1{}, y1{}, x2{}, y2{};
   instr >> x1;
   instr >> y1;
   instr >> x2;

@@ -33,9 +33,9 @@ namespace finalcut
 namespace fc
 {
 
-extern fkeymap Fkey[];
-extern fmetakeymap Fmetakey[];
-extern keyname FkeyName[];
+extern FKeyMap fkey[];
+extern FMetakeyMap fmetakey[];
+extern FKeyName fkeyname[];
 
 }  // namespace fc
 

@@ -111,14 +111,14 @@ class FOptiAttrTest : public CPPUNIT_NS::TestFixture
 void FOptiAttrTest::classNameTest()
 {
   finalcut::FOptiAttr opti_attr;
-  const char* const classname = opti_attr.getClassName();
-  CPPUNIT_ASSERT_CSTRING ( classname, "FOptiAttr");
+  const finalcut::FString& classname = opti_attr.getClassName();
+  CPPUNIT_ASSERT ( classname == "FOptiAttr");
 }
 
 //----------------------------------------------------------------------
 void FOptiAttrTest::noArgumentTest()
 {
-  finalcut::charData* ch = new finalcut::charData();
+  finalcut::FChar* ch = new finalcut::FChar();
   finalcut::FOptiAttr oa;
   oa.initialize();
 
@@ -130,7 +130,7 @@ void FOptiAttrTest::noArgumentTest()
   CPPUNIT_ASSERT ( oa.isNormal(ch) );
 
   // Null test
-  finalcut::charData* ch_null = nullptr;
+  finalcut::FChar* ch_null = nullptr;
   CPPUNIT_ASSERT ( oa.changeAttribute(ch, ch) == 0 );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(ch, ch_null), C_STR("") );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(ch_null, ch), C_STR("") );
@@ -204,8 +204,8 @@ void FOptiAttrTest::fakeReverseTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Gray text on blue background
@@ -299,8 +299,8 @@ void FOptiAttrTest::ansiTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -764,8 +764,8 @@ void FOptiAttrTest::vt100Test()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -934,7 +934,7 @@ void FOptiAttrTest::vt100Test()
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m\017$<2>") );
   CPPUNIT_ASSERT ( *from == *to );
-  CPPUNIT_ASSERT ( to->encoded_code == ' ' );
+  CPPUNIT_ASSERT ( to->encoded_char == ' ' );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Invisible off (with default colors)
@@ -1235,8 +1235,8 @@ void FOptiAttrTest::xtermTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -1706,8 +1706,8 @@ void FOptiAttrTest::rxvtTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -1882,7 +1882,7 @@ void FOptiAttrTest::rxvtTest()
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m\017") );
   CPPUNIT_ASSERT ( *from == *to );
-  CPPUNIT_ASSERT ( to->encoded_code == ' ' );
+  CPPUNIT_ASSERT ( to->encoded_char == ' ' );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Invisible off (with default colors)
@@ -2178,8 +2178,8 @@ void FOptiAttrTest::linuxTest()
   oa.set_orig_orig_colors (C_STR(OSC "R"));
   oa.initialize();
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -2354,7 +2354,7 @@ void FOptiAttrTest::linuxTest()
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m\017") );
   CPPUNIT_ASSERT ( *from == *to );
-  CPPUNIT_ASSERT ( to->encoded_code == ' ' );
+  CPPUNIT_ASSERT ( to->encoded_char == ' ' );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Invisible off (with default colors)
@@ -2661,8 +2661,8 @@ void FOptiAttrTest::puttyTest()
   oa.initialize();
 
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -2838,7 +2838,7 @@ void FOptiAttrTest::puttyTest()
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m\017") );
   CPPUNIT_ASSERT ( *from == *to );
-  CPPUNIT_ASSERT ( to->encoded_code == ' ' );
+  CPPUNIT_ASSERT ( to->encoded_char == ' ' );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Invisible off (with default colors)
@@ -3134,8 +3134,8 @@ void FOptiAttrTest::teratermTest()
   oa.initialize();
 
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -3312,7 +3312,7 @@ void FOptiAttrTest::teratermTest()
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m\017$<2>") );
   CPPUNIT_ASSERT ( *from == *to );
-  CPPUNIT_ASSERT ( to->encoded_code == ' ' );
+  CPPUNIT_ASSERT ( to->encoded_char == ' ' );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Invisible off (with default colors)
@@ -3609,8 +3609,8 @@ void FOptiAttrTest::ibmColorTest()
   oa.initialize();
 
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -3770,7 +3770,7 @@ void FOptiAttrTest::ibmColorTest()
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR("") );
   CPPUNIT_ASSERT ( *from == *to );
-  CPPUNIT_ASSERT ( to->encoded_code == ' ' );
+  CPPUNIT_ASSERT ( to->encoded_char == ' ' );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Invisible off (with default colors)
@@ -4050,8 +4050,8 @@ void FOptiAttrTest::wyse50Test()
 
   oa.setTermEnvironment(optiattr_env);
 
-  finalcut::charData* from = new finalcut::charData();
-  finalcut::charData* to = new finalcut::charData();
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold

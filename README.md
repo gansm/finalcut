@@ -1,5 +1,4 @@
 ![FINAL CUT](logo/svg/finalcut-logo.svg)
-============================================
 
 # Library for creating terminal applications with text-based widgets
 The FINAL CUT is a C++ class library and widget toolkit with full mouse support for creating a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple text windows on the screen.
@@ -7,18 +6,15 @@ The FINAL CUT is a C++ class library and widget toolkit with full mouse support 
 The structure of the Qt framework was originally the inspiration for the C++ class design of FINAL CUT. It provides common controls like dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, status bars and so on.
 
 ## Building and code analysis
-*Latest release:*<br />
-&#160;&#160;&#160;&#160;&#160;[![Latest Release](https://img.shields.io/github/release/gansm/finalcut.svg)](https://github.com/gansm/finalcut/releases) <br />
-*License:*<br />
-&#160;&#160;&#160;&#160;&#160;[![license](https://img.shields.io/github/license/gansm/finalcut.svg?colorA=#333)](COPYING) <br />
-*Travis CI:*<br />
-&#160;&#160;&#160;&#160;&#160;[![Build Status](https://travis-ci.org/gansm/finalcut.svg?branch=master)](https://travis-ci.org/gansm/finalcut) <br />
-*Coverity Scan:*<br />
-&#160;&#160;&#160;&#160;&#160;[![Coverity Scan Status](https://img.shields.io/coverity/scan/6508.svg)](https://scan.coverity.com/projects/6508) <br />
-*LGTM:*<br />
-&#160;&#160;&#160;&#160;&#160;[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/gansm/finalcut.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/gansm/finalcut/context:cpp) <br />
-*Class Reference:*<br />
-&#160;&#160;&#160;&#160;&#160;[![documented](https://codedocs.xyz/gansm/finalcut.svg)](https://codedocs.xyz/gansm/finalcut/hierarchy.html)
+|                    | Badge |
+|-------------------:|:------|
+| *Latest release*  | [![Latest Release](https://img.shields.io/github/release/gansm/finalcut.svg)](https://github.com/gansm/finalcut/releases) |
+| *License*         | [![license](https://img.shields.io/github/license/gansm/finalcut.svg?colorA=#333)](COPYING)      |
+| *Class Reference* | [![documented](https://codedocs.xyz/gansm/finalcut.svg)](https://codedocs.xyz/gansm/finalcut/hierarchy.html) |
+| *Travis CI*       | [![Build Status](https://travis-ci.org/gansm/finalcut.svg?branch=master)](https://travis-ci.org/gansm/finalcut)
+|*Coverity Scan*    | [![Coverity Scan Status](https://img.shields.io/coverity/scan/6508.svg)](https://scan.coverity.com/projects/6508 )|
+| *LGTM*            | [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/gansm/finalcut.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/gansm/finalcut/context:cpp) |
+| *CodeFactor* | [![CodeFactor](https://www.codefactor.io/repository/github/gansm/finalcut/badge)](https://www.codefactor.io/repository/github/gansm/finalcut) |
 
 ## Installation
 ```bash
@@ -40,7 +36,7 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 * Solaris
 
 ## First steps
-Read here [how to use the library](doc/first-steps.md#first-steps-with-the-final-cut-widget-toolkit)
+See the [first steps](doc/first-steps.md#first-steps-with-the-final-cut-widget-toolkit) documentation for information on how to use the library.
 
 ## Some screenshots
 
@@ -56,12 +52,12 @@ The Final Cut FProgressbar widget:
 
 Scrollable text in the FTextView widget:
 
- ![FTextView](doc/textview.png)
+![FTextView](doc/textview.png)
 
 
 The Mandelbrot set example:
 
- ![Mandelbrot set](doc/Mandelbrot.png)
+![Mandelbrot set](doc/Mandelbrot.png)
 
 
 newfont
@@ -83,64 +79,55 @@ The calculator example in newfont mode:
 
 Virtual terminal
 ----------------
-It uses a virtual terminal to print the character via an update method on the screen.
-The virtual windows are an overlying layer to realizing window movements.
-The update method transmits only the changes to the virtual terminal or the screen.
+FINAL CUT uses a virtual terminal to print character via an update method on the screen. It provides (as an overlying layer) virtual windows for the realization of window movements. The update methods only transfer differences to the virtual terminal or physical screen.
 
 <pre style="line-height: 1 !important;">
  print(...)
 printf(...)
   │
-  │           ╔═════════════════════════[ vterm ]═════════════════════════╗
-  │           ║createVTerm()                                              ║
-  │           ║                                 ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐ ║
-  │           ║                                                           ║
-  │           ║                                 │ restoreVTerm(x,y,w,h) │ ║
-  │           ║                                                           ║
-  │           ║                                 └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ ║
-  │           ║                                                           ║
-  │   ┌───────╨─────[ vwin ]─────────────┐                                ║
-  │   │createArea(area)                  │                                ║
-  │   │                                  │                                ║
-  │   │                                  │                                ║
-  └───┼─────────────►     ──────► updateVTerm(area) ────►                 ║
-      │                                  │                                ║
-      │                           putArea(x,y,area)                       ║
-      │                         ────────────────────►                     ║
-      │                           getArea(x,y,area)                       ║
-      │                        ◄────────────────────                      ║
-      │                                  │                                ║
-      │                                  │                                ║
-      │                  resizeArea(area)│                                ║
-      └───────╥──────────────────────────┘                                ║
-              ║                                                           ║
-              ║                                                           ║
-              ║                                                           ║
-              ║   │                                          resizeVTerm()║
-              ╚═══▼═══════════════════════════════════════════════════════╝
-                  │
-                  │    putVTerm()
-                  └──────────────────► updateTerminalLine(y)
-                    updateTerminal()             │
-                                                 ▼
-                                         ┌───────────────┐
-                                         │ output_buffer │
-                                         └───────────────┘
-                                                 │
-                                                 │ flush_out()
-                                                 │     +
-                                                 │ Fputchar(char)
-                                                 │
-                                                 ▼
-                                         ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-                                         ▌               ▐
-                                         ▌    screen     ▐
-                                         ▌ ───────────── ▐
-                                         ▌ real terminal ▐
-                                         ▌               ▐
-                                         ▀▀▀▀▀▀▀███▀▀▀▀▀▀▀
-                                                ███
-                                             ▀▀▀▀▀▀▀▀▀
+  │          ╔════════════════════════[ vterm ]════════════════════════╗
+  │          ║createVTerm()                                            ║
+  │          ║                               ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐ ║
+  │          ║                                                         ║
+  │          ║                               │ restoreVTerm(x,y,w,h) │ ║
+  │  ┌───────╨────[ vwin ]────────────┐                                ║
+  │  │createArea(area)                │      └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ ║
+  │  │                                │                                ║
+  │  │                                │                                ║
+  └──┼────────►                  putArea(area) ────►                   ║
+     │                                │                                ║
+     │                         putArea(x,y,area) ────►                 ║
+     │                                │                                ║
+     │                   ◄──── getArea(x,y,area)                       ║
+     │                                │                                ║
+     │                                │                                ║
+     │                                │                                ║
+     │                resizeArea(area)│                                ║
+     └───────╥────────────────────────┘                                ║
+             ║                                                         ║
+             ║       │                                    resizeVTerm()║
+             ╚═══════▼═════════════════════════════════════════════════╝
+                     │
+                     │   putVTerm()
+                     └──────────────────► updateTerminalLine(y)
+                       updateTerminal()            │
+                                                   ▼
+                                           ┌───────────────┐
+                                           │ output_buffer │
+                                           └───────────────┘
+                                                   │
+                                                   │ flushOutputBuffer()
+                                                   │ and putchar(char)
+                                                   ▼
+                                           ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+                                           ▌               ▐
+                                           ▌    screen     ▐
+                                           ▌ ───────────── ▐
+                                           ▌ real terminal ▐
+                                           ▌               ▐
+                                           ▀▀▀▀▀▀▀███▀▀▀▀▀▀▀
+                                                  ███
+                                               ▀▀▀▀▀▀▀▀▀
 </pre>
 
 
@@ -261,9 +248,7 @@ GNU Lesser General Public License Version 3
 
 Frequently Asked Questions
 --------------------------
-If you have any problems, please read the
-[FAQ](doc/faq.md#frequently-asked-questions)
-before you give up.
+For general questions about FINAL CUT, likely the answer is already included in the [FAQ](doc/faq.md#frequently-asked-questions).
 
 Please send bug reports to
 --------------------------

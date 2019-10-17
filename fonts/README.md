@@ -1,3 +1,7 @@
+# The FINAL CUT newfont
+## *A graphical text font for X11 and the Linux console*
+
+
 ### How can I use the new graphical font under the Linux text console?
 
 Simply start your program with the parameter `--newfont`.

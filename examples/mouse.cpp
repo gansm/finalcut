@@ -350,7 +350,7 @@ class MouseDraw : public finalcut::FDialog
     void cb_colorChanged (finalcut::FWidget*, FDataPtr);
 
     // Data members
-    term_area*   canvas{nullptr};
+    FTermArea*   canvas{nullptr};
     ColorChooser c_chooser{this};
     Brushes      brush{this};
 };
@@ -495,13 +495,13 @@ void MouseDraw::drawCanvas()
 
   for (int y{0}; y < y_end; y++)  // line loop
   {
-    finalcut::charData* canvaschar{};  // canvas character
-    finalcut::charData* winchar{};     // window character
-    canvaschar = &canvas->text[y * x_end];
-    winchar = &printarea->text[(ay + y) * w_line_len + ax];
+    finalcut::FChar* canvaschar{};  // canvas character
+    finalcut::FChar* winchar{};     // window character
+    canvaschar = &canvas->data[y * x_end];
+    winchar = &printarea->data[(ay + y) * w_line_len + ax];
     std::memcpy ( winchar
                 , canvaschar
-                , sizeof(finalcut::charData) * unsigned(x_end) );
+                , sizeof(finalcut::FChar) * unsigned(x_end) );
 
     if ( int(printarea->changes[ay + y].xmin) > ax )
       printarea->changes[ay + y].xmin = uInt(ax);

@@ -102,7 +102,7 @@ void FMenu::hide()
   const auto& t_geometry = getTermGeometryWithShadow();
   restoreVTerm (t_geometry);
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 
   if ( ! isSubMenu() )
   {
@@ -204,7 +204,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
         getStatusBar()->drawMessage();
 
       updateTerminal();
-      flush_out();
+      flushOutputBuffer();
     }
 
     return;
@@ -313,7 +313,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   {
     closeOpenedSubMenu();
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 }
 
@@ -584,7 +584,7 @@ void FMenu::openSubMenu (FMenu* sub_menu, bool select)
     getStatusBar()->drawMessage();
 
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------
@@ -696,7 +696,7 @@ void FMenu::mouseDownSubmenu (FMenuItem* m_item)
       getStatusBar()->drawMessage();
 
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
 }
 
@@ -764,7 +764,7 @@ bool FMenu::mouseUpOverList (FPoint mouse_pos)
             getStatusBar()->drawMessage();
 
           updateTerminal();
-          flush_out();
+          flushOutputBuffer();
         }
 
         return true;
@@ -1038,7 +1038,7 @@ bool FMenu::selectNextItem()
 
       redraw();
       updateTerminal();
-      flush_out();
+      flushOutputBuffer();
       break;
     }
 
@@ -1088,7 +1088,7 @@ bool FMenu::selectPrevItem()
 
       redraw();
       updateTerminal();
-      flush_out();
+      flushOutputBuffer();
       break;
     }
   }
@@ -1151,7 +1151,7 @@ bool FMenu::hotkeyMenu (FKeyEvent* ev)
           hide();
           hideSuperMenus();
           updateTerminal();
-          flush_out();
+          flushOutputBuffer();
           ev->accept();
           item->processClicked();
         }
@@ -1178,7 +1178,7 @@ void FMenu::draw()
   clearArea();
   drawBorder();
   drawItems();
-  drawShadow();
+  drawShadow(this);
 
   if ( isMonochron() )
     setReverse(false);
@@ -1236,8 +1236,6 @@ inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
 {
   FString txt(m_item->getText());
   menuText txtdata{};
-  std::size_t txt_length = txt.getLength();
-  std::size_t to_char = txt_length;
   std::size_t column_width = getColumnWidth(txt);
   FKey accel_key   = m_item->accel_key;
   bool is_enabled  = m_item->isEnabled();
@@ -1252,25 +1250,11 @@ inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
   // Print leading blank space
   print (' ');
 
-  try
-  {
-    txtdata.text = new wchar_t[txt_length + 1]();
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
-
-  hotkeypos = finalcut::getHotkeyPos(txt.wc_str(), txtdata.text, txt_length);
+  hotkeypos = finalcut::getHotkeyPos(txt, txtdata.text);
 
   if ( hotkeypos != NOT_SET )
-  {
-    to_char--;
     column_width--;
-  }
 
-  txtdata.length = to_char;
   txtdata.no_underline = m_item->getFlags().no_underline;
   setCursorToHotkeyPosition (m_item);
 
@@ -1292,8 +1276,6 @@ inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
 
   if ( isMonochron() && is_enabled && is_selected )
     setReverse(true);
-
-  delete[] txtdata.text;
 }
 
 //----------------------------------------------------------------------
@@ -1347,13 +1329,13 @@ inline void FMenu::drawMenuText (menuText& data)
 {
   // Print menu text
 
-  for (std::size_t z{0}; z < data.length; z++)
+  for (std::size_t z{0}; z < data.text.getLength(); z++)
   {
     if ( ! std::iswprint(std::wint_t(data.text[z])) )
     {
       if ( ! isNewFont()
-        && ( int(data.text[z]) < fc::NF_rev_left_arrow2
-          || int(data.text[z]) > fc::NF_check_mark )
+        && ( data.text[z] < fc::NF_rev_left_arrow2
+          || data.text[z] > fc::NF_check_mark )
         && ! charEncodable(wchar_t(data.text[z])) )
       {
         data.text[z] = L' ';
@@ -1512,7 +1494,7 @@ inline void FMenu::selectPrevMenu (FKeyEvent* ev)
       getStatusBar()->drawMessage();
 
     updateTerminal();
-    flush_out();
+    flushOutputBuffer();
   }
   else
     keypressMenuBar(ev);  // select previous menu
@@ -1585,7 +1567,7 @@ inline void FMenu::closeMenu()
     getStatusBar()->drawMessage();
 
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------

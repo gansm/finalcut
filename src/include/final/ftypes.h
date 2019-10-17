@@ -108,8 +108,8 @@ typedef std::unordered_map<wchar_t, wchar_t> charSubstitution;
 
 typedef struct
 {
-  wchar_t code;          // character code
-  wchar_t encoded_code;  // encoded output character
+  wchar_t ch;            // character code
+  wchar_t encoded_char;  // encoded output character
   FColor  fg_color;      // foreground color
   FColor  bg_color;      // background color
 
@@ -147,7 +147,7 @@ typedef struct
 
     uInt8 byte[4];
   } attr;
-} charData;
+} FChar;
 
 namespace fc
 {
@@ -158,21 +158,21 @@ typedef struct
   char* string;
   char  tname[4];
 }
-fkeymap;
+FKeyMap;
 
 typedef struct
 {
   FKey num;
   char string[8];
 }
-fmetakeymap;
+FMetakeyMap;
 
 typedef struct
 {
   FKey num;
   char string[25];
 }
-keyname;
+FKeyName;
 
 }  // namespace fc
 

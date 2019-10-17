@@ -83,21 +83,21 @@ class FRadioButton : public FToggleButton
     FRadioButton& operator = (const FRadioButton&) = delete;
 
     // Accessor
-    const char* getClassName() const override;
+    const FString getClassName() const override;
 
   private:
     // Methods
-    void        init();
-    void        draw() override;
-    void        drawRadioButton();
-    void        drawChecked();
-    void        drawUnchecked();
+    void          init();
+    void          draw() override;
+    void          drawRadioButton();
+    void          drawChecked();
+    void          drawUnchecked();
 };
 
 
 // FRadioButton inline functions
 //----------------------------------------------------------------------
-inline const char* FRadioButton::getClassName() const
+inline const FString FRadioButton::getClassName() const
 { return "FRadioButton"; }
 
 }  // namespace finalcut

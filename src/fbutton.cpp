@@ -251,14 +251,11 @@ void FButton::hide()
   if ( size == 0 )
     return;
 
-  char* blank = createBlankArray(size + 1);
-
   for (std::size_t y{0}; y < getHeight() + s + (f << 1); y++)
   {
-    print() << FPoint(1 - int(f), 1 + int(y - f)) << blank;
+    print() << FPoint(1 - int(f), 1 + int(y - f))
+            << FString(size, L' ');
   }
-
-  destroyBlankArray (blank);
 }
 
 //----------------------------------------------------------------------
@@ -422,25 +419,7 @@ void FButton::init()
 //----------------------------------------------------------------------
 void FButton::setHotkeyAccelerator()
 {
-  FKey hotkey = getHotkey(text);
-
-  if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
-    hotkey -= 0xfee0;
-
-  if ( hotkey )
-  {
-    if ( std::isalpha(int(hotkey)) || std::isdigit(int(hotkey)) )
-    {
-      addAccelerator (FKey(std::tolower(int(hotkey))));
-      addAccelerator (FKey(std::toupper(int(hotkey))));
-      // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(int(hotkey))));
-    }
-    else
-      addAccelerator (hotkey);
-  }
-  else
-    delAccelerator();
+  setHotkeyViaString (this, text);
 }
 
 //----------------------------------------------------------------------
@@ -461,9 +440,9 @@ inline std::size_t FButton::clickAnimationIndent (FWidget* parent_widget)
 
   // noshadow + indent one character to the right
   if ( getFlags().flat )
-    clearFlatBorder();
+    clearFlatBorder(this);
   else if ( hasShadow() )
-    clearShadow();
+    clearShadow(this);
 
   if ( parent_widget )
     setColor ( parent_widget->getForegroundColor()
@@ -560,7 +539,7 @@ inline void FButton::drawTopBottomBackground()
 }
 
 //----------------------------------------------------------------------
-inline void FButton::drawButtonTextLine (wchar_t button_text[])
+inline void FButton::drawButtonTextLine (const FString& button_text)
 {
   std::size_t pos{};
   print() << FPoint(2 + int(indent), 1 + int(vcenter_offset))
@@ -638,22 +617,11 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
 //----------------------------------------------------------------------
 void FButton::draw()
 {
-  wchar_t* button_text{};
+  FString button_text{};
   auto parent_widget = getParentWidget();
-  auto txtlength = text.getLength();
   column_width = getColumnWidth(text);
   space_char = int(' ');
   active_focus = getFlags().active && getFlags().focus;
-
-  try
-  {
-    button_text = new wchar_t[txtlength + 1]();
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return;
-  }
 
   if ( isMonochron() )
     setReverse(true);  // Light background
@@ -671,9 +639,9 @@ void FButton::draw()
     setReverse(false);  // Dark background
 
   if ( getFlags().flat && ! button_down )
-    drawFlatBorder();
+    drawFlatBorder(this);
 
-  hotkeypos = finalcut::getHotkeyPos(text.wc_str(), button_text, uInt(txtlength));
+  hotkeypos = finalcut::getHotkeyPos(text, button_text);
 
   if ( hotkeypos != NOT_SET )
     column_width--;
@@ -697,12 +665,11 @@ void FButton::draw()
 
   // Draw button shadow
   if ( ! getFlags().flat && getFlags().shadow && ! button_down )
-    drawShadow();
+    drawShadow(this);
 
   if ( isMonochron() )
     setReverse(false);  // Dark background
 
-  delete[] button_text;
   updateStatusBar();
 }
 

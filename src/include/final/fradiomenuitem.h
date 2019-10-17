@@ -83,18 +83,18 @@ class FRadioMenuItem : public FMenuItem
     FRadioMenuItem& operator = (const FRadioMenuItem&) = delete;
 
     // Accessor
-    const char* getClassName() const override;
+    const FString getClassName() const override;
 
   private:
     // Methods
-    void        init (FWidget*);
-    void        processToggle();
-    void        processClicked() override;
+    void          init (FWidget*);
+    void          processToggle();
+    void          processClicked() override;
 };
 
 // FRadioMenuItem inline functions
 //----------------------------------------------------------------------
-inline const char* FRadioMenuItem::getClassName() const
+inline const FString FRadioMenuItem::getClassName() const
 { return "FRadioMenuItem"; }
 
 }  // namespace finalcut

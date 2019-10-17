@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <fstream>
+#include <functional>
 #include <map>
 #include <iostream>
 #include <string>
@@ -95,6 +96,7 @@ ProgressDialog::ProgressDialog (finalcut::FWidget* parent)
   progressBar.setGeometry(FPoint(2, 3), FSize(34, 1), false);
   //progressBar.setPercentage(78);
 
+  using namespace std::placeholders;
   reset.addCallback
   (
     "clicked",
@@ -134,7 +136,7 @@ void ProgressDialog::onTimer (finalcut::FTimerEvent*)
 {
   auto p = progressBar.getPercentage();
   progressBar.setPercentage(++p);
-  flush_out();
+  flushOutputBuffer();
 
   if ( p != 100 )
     return;
@@ -152,7 +154,7 @@ void ProgressDialog::onTimer (finalcut::FTimerEvent*)
     getStatusBar()->drawMessage();
 
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------

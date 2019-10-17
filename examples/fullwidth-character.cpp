@@ -74,9 +74,9 @@ int main (int argc, char* argv[])
   scroll_text.setGeometry (FPoint(2, 8), FSize(32, 3));
   finalcut::FString text_line{"FINAL CUT supports "
                               "full-width characters."};
+  scroll_text << full(text_line);
   scroll_text.setStatusbarMessage ("You can scroll right and "
                                    "left with the arrow keys");
-  scroll_text.append(full(text_line));
 
   // Create a OK button
   finalcut::FButton btn("&ＯＫ", &dgl);
@@ -126,7 +126,7 @@ int main (int argc, char* argv[])
   btn.addCallback ("clicked", cb_exit, &app);
   Exit.addCallback ("clicked", cb_exit, &app);
   Quit.addCallback ("clicked", cb_exit, &app);
-  key_F1.addCallback ("activate",cb_tooltip, &app);
+  key_F1.addCallback ("activate", cb_tooltip, &app);
 
   // Set dialog object as main widget
   app.setMainWidget(&dgl);

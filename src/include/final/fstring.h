@@ -55,6 +55,7 @@
 #include <stdexcept>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "final/fc.h"
@@ -181,7 +182,7 @@ class FString
     friend std::wistream& operator >> (std::wistream&, FString&);
 
     // Accessor
-    virtual const char* getClassName();
+    virtual const FString getClassName();
 
     // inquiries
     bool isNull() const;
@@ -200,7 +201,7 @@ class FString
     wchar_t  back() const;
 
     template<typename... Args>
-    FString& sprintf (const FString, Args&&...);
+    FString& sprintf (const FString&, Args&&...);
     FString  clear();
 
     const wchar_t* wc_str() const;
@@ -280,20 +281,25 @@ class FString
     std::size_t   length{0};
     std::size_t   bufsize{0};
     mutable char* c_string{nullptr};
+    static wchar_t null_char;
+    static const wchar_t const_null_char;
 };
 
 
 // FString inline functions
 //----------------------------------------------------------------------
-inline const char* FString::getClassName()
+inline const FString FString::getClassName()
 { return "FString"; }
 
 //----------------------------------------------------------------------
 template <typename IndexT>
 inline wchar_t& FString::operator [] (const IndexT pos)
 {
-  if ( isNegative(pos) || pos >= IndexT(length) )
+  if ( isNegative(pos) || pos > IndexT(length) )
     throw std::out_of_range("");  // Invalid index position
+
+  if ( std::size_t(pos) == length )
+    return null_char;
 
   return string[std::size_t(pos)];
 }
@@ -302,8 +308,11 @@ inline wchar_t& FString::operator [] (const IndexT pos)
 template <typename IndexT>
 inline const wchar_t& FString::operator [] (const IndexT pos) const
 {
-  if ( isNegative(pos) || pos >= IndexT(length) )
+  if ( isNegative(pos) || pos > IndexT(length) )
     throw std::out_of_range("");  // Invalid index position
+
+  if ( std::size_t(pos) == length )
+    return const_null_char;
 
   return string[std::size_t(pos)];
 }
@@ -404,20 +413,20 @@ inline wchar_t FString::back() const
 
 //----------------------------------------------------------------------
 template<typename... Args>
-inline FString& FString::sprintf (const FString format, Args&&... args)
+inline FString& FString::sprintf (const FString& format, Args&&... args)
 {
   static constexpr int BUFSIZE = 4096;
-  wchar_t buffer[BUFSIZE]{};
+  wchar_t buf[BUFSIZE]{};
 
-  if ( ! format )
+  if ( format.isEmpty() )
   {
     clear();
     return *this;
   }
 
-  std::swprintf ( buffer, BUFSIZE
-                , format.wc_str(), std::forward<Args>(args)... );
-  _assign(buffer);
+  std::swprintf ( buf, BUFSIZE, format.wc_str()
+                , std::forward<Args>(args)... );
+  _assign(buf);
   return *this;
 }
 

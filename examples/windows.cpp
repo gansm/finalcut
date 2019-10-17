@@ -68,7 +68,7 @@ class SmallWindow : public finalcut::FDialog
 SmallWindow::SmallWindow (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
-  const finalcut::FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   wchar_t arrow_up, arrow_down;
   arrow_up = fc::BlackUpPointingTriangle;
   arrow_down = fc::BlackDownPointingTriangle;
@@ -377,7 +377,7 @@ void Window::addClickedCallback ( finalcut::FWidget* widget
                                 , WindowCallback call )
 {
   FMemberCallback callback
-      = reinterpret_cast<finalcut::FWidget::FMemberCallback>(call);
+      = reinterpret_cast<FMemberCallback>(call);
 
   widget->addCallback
   (
@@ -391,7 +391,7 @@ void Window::addClickedCallback ( finalcut::FWidget* widget
                                 , FAppCallback call )
 {
   FMemberCallback callback
-      = reinterpret_cast<finalcut::FWidget::FMemberCallback>(call);
+      = reinterpret_cast<FMemberCallback>(call);
 
   widget->addCallback
   (

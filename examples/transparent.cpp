@@ -89,7 +89,7 @@ void Transparent::draw()
 
   if ( type == shadow )
   {
-    const finalcut::FWidgetColors& wc = getFWidgetColors();
+    const auto& wc = getFWidgetColors();
     setColor(wc.shadow_bg, wc.shadow_fg);
     setTransShadow();
   }
@@ -267,7 +267,7 @@ void MainWindow::onTimer (finalcut::FTimerEvent*)
   line1 = line1.right(length - 1) + first_Char[0];
   line2 = line2.right(length - 1) + first_Char[1];
   redraw();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------

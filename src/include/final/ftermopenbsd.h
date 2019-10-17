@@ -45,7 +45,7 @@
   #define WSKBD_BELL_DOPITCH  0x1  // get/set pitch
   #define WSKBD_BELL_DOPERIOD 0x2  // get/set period
   #define WSKBD_BELL_DOVOLUME 0x4  // get/set volume
-  #define	WSKBD_BELL_DOALL    0x7  // all of the above
+  #define WSKBD_BELL_DOALL    0x7  // all of the above
 
   typedef uInt32 kbd_t;
 
@@ -81,13 +81,13 @@ class FTermOpenBSD final
     FTermOpenBSD (const FTermOpenBSD&) = delete;
 
     // Destructor
-    virtual ~FTermOpenBSD() = default;
+    virtual ~FTermOpenBSD();
 
     // Disable assignment operator (=)
     FTermOpenBSD& operator = (const FTermOpenBSD&) = delete;
 
     // Accessor
-    const char*        getClassName() const;
+    const FString      getClassName() const;
 
     // Inquiries
     static bool        isBSDConsole();
@@ -120,7 +120,7 @@ class FTermOpenBSD final
 
 // FTermOpenBSD inline functions
 //----------------------------------------------------------------------
-inline const char* FTermOpenBSD::getClassName() const
+inline const FString FTermOpenBSD::getClassName() const
 { return "FTermOpenBSD"; }
 
 //----------------------------------------------------------------------

@@ -61,10 +61,6 @@
   #undef buttons  // from term.h
 #endif
 
-#if defined(__CYGWIN__)
-  #undef __STRICT_ANSI__  // need for realpath and strdup
-#endif
-
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -180,7 +176,8 @@ class FSystemImpl : public FSystem
     int tputs (const char* str, int affcnt, int (*putc)(int)) override
     {
 #if defined(__sun) && defined(__SVR4)
-      return ::tputs (C_STR(str), affcnt, reinterpret_cast<int (*)(char)>(putc));
+      return ::tputs ( C_STR(str)
+                     , affcnt, reinterpret_cast<int (*)(char)>(putc) );
 #else
       return ::tputs (str, affcnt, putc);
 #endif
@@ -196,16 +193,10 @@ class FSystemImpl : public FSystem
       return ::geteuid();
     }
 
-    int getpwuid_r ( uid_t uid, struct passwd* pwd
-                   , char* buf, size_t buflen, struct passwd** result ) override
-    {
-      return ::getpwuid_r (uid, pwd, buf, buflen, result);
-    }
+    int getpwuid_r ( uid_t, struct passwd*, char*, size_t
+                   , struct passwd** ) override;
 
-    char* realpath (const char* path, char* resolved_path) override
-    {
-      return ::realpath(path, resolved_path);
-    }
+    char* realpath (const char*, char*) override;
 };
 
 }  // namespace finalcut

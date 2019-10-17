@@ -37,6 +37,7 @@
 
 #include <sstream>  // std::stringstream
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace finalcut
@@ -53,9 +54,9 @@ class FTermBuffer
 {
   public:
     // Typedef
-    typedef std::vector<charData>          charDataVector;
-    typedef charDataVector::iterator       iterator;
-    typedef charDataVector::const_iterator const_iterator;
+    typedef std::vector<FChar>          FCharVector;
+    typedef FCharVector::iterator       iterator;
+    typedef FCharVector::const_iterator const_iterator;
 
     // Constructor
     FTermBuffer() = default;
@@ -68,19 +69,19 @@ class FTermBuffer
     // Overloaded operators
     template <typename typeT>
     FTermBuffer& operator << (const typeT&);
-    FTermBuffer& operator << (const charDataVector&);
+    FTermBuffer& operator << (const FCharVector&);
     FTermBuffer& operator << (const std::string&);
     FTermBuffer& operator << (const std::wstring&);
     FTermBuffer& operator << (const FColorPair&);
 
     // Non-member operators
-    friend charDataVector& operator << ( charDataVector&
-                                       , const FTermBuffer& );
+    friend FCharVector& operator << ( FCharVector&
+                                    , const FTermBuffer& );
 
     // Accessors
-    virtual const char*    getClassName() const;
+    virtual const FString  getClassName() const;
     std::size_t            getLength() const;
-    const charDataVector&  getBuffer() const;
+    const FCharVector&     getBuffer() const;
 
     // Inquiry
     bool                   isEmpty() const;
@@ -90,19 +91,19 @@ class FTermBuffer
     iterator               end();
     const_iterator         begin() const;
     const_iterator         end() const;
-    charData               front() const;
-    charData               back() const;
+    FChar                  front() const;
+    FChar                  back() const;
     const FString          toString() const;
     void                   clear();
     template<typename... Args>
-    int                    writef (const FString, Args&&...);
+    int                    writef (const FString&, Args&&...);
     int                    write (const FString&);
     int                    write (wchar_t);
     void                   write (const FColorPair&);
     FTermBuffer&           write ();
 
   private:
-    charDataVector         data{};
+    FCharVector            data{};
 };
 
 
@@ -128,11 +129,9 @@ inline FTermBuffer& FTermBuffer::operator << (const typeT& s)
 }
 
 //----------------------------------------------------------------------
-inline FTermBuffer& FTermBuffer::operator << (const charDataVector& vec)
+inline FTermBuffer& FTermBuffer::operator << (const FCharVector& vec)
 {
-  for (auto&& tc : vec)
-    data.push_back(tc);
-
+  std::copy(vec.begin(), vec.end(), std::back_inserter(data));
   return *this;
 }
 
@@ -158,7 +157,7 @@ inline FTermBuffer& FTermBuffer::operator << (const FColorPair& pair)
 }
 
 //----------------------------------------------------------------------
-inline const char* FTermBuffer::getClassName() const
+inline const FString FTermBuffer::getClassName() const
 { return "FTermBuffer"; }
 
 //----------------------------------------------------------------------
@@ -166,7 +165,7 @@ inline std::size_t FTermBuffer::getLength() const
 { return data.size(); }
 
 //----------------------------------------------------------------------
-inline const FTermBuffer::charDataVector& FTermBuffer::getBuffer() const
+inline const FTermBuffer::FCharVector& FTermBuffer::getBuffer() const
 { return data; }
 
 //----------------------------------------------------------------------
@@ -190,11 +189,11 @@ inline FTermBuffer::const_iterator FTermBuffer::end() const
 { return data.end(); }
 
 //----------------------------------------------------------------------
-inline charData FTermBuffer::front() const
+inline FChar FTermBuffer::front() const
 { return data.front(); }
 
 //----------------------------------------------------------------------
-inline charData FTermBuffer::back() const
+inline FChar FTermBuffer::back() const
 { return data.back(); }
 
 //----------------------------------------------------------------------
@@ -206,17 +205,10 @@ inline void FTermBuffer::clear()
 
 //----------------------------------------------------------------------
 template<typename... Args>
-inline int FTermBuffer::writef (const FString format, Args&&... args)
+inline int FTermBuffer::writef (const FString& format, Args&&... args)
 {
-  static constexpr int BUFSIZE = 4096;
-  wchar_t buffer[BUFSIZE]{};
-
-  if ( format.isEmpty() )
-    return 0;
-
-  std::swprintf ( buffer, BUFSIZE
-                , format.wc_str(), std::forward<Args>(args)... );
-  FString str(buffer);
+  FString str{};
+  str.sprintf (format, std::forward<Args>(args)...);
   return write(str);
 }
 

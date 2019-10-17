@@ -88,8 +88,8 @@ class FPointTest : public CPPUNIT_NS::TestFixture
 void FPointTest::classNameTest()
 {
   finalcut::FPoint p;
-  const char* const classname = p.getClassName();
-  CPPUNIT_ASSERT ( std::strcmp(classname, "FPoint") == 0 );
+  const finalcut::FString& classname = p.getClassName();
+  CPPUNIT_ASSERT ( classname == "FPoint" );
 }
 
 //----------------------------------------------------------------------

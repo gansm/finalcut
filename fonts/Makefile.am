@@ -15,3 +15,13 @@ EXTRA_DIST = \
 	newfont.h \
 	unicodemap.h \
 	vgafont.h
+
+docdir = ${datadir}/doc/${PACKAGE}
+doc_DATA = \
+	newfont.txt
+
+fontdir = ${datadir}/fonts/X11/misc/${PACKAGE}
+font_DATA = \
+	8x16graph.pcf.gz \
+	fonts.alias \
+	fonts.dir

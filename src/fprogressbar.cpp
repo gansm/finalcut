@@ -131,9 +131,9 @@ void FProgressbar::draw()
   drawProgressBar();
 
   if ( getFlags().shadow )
-    drawShadow ();
+    drawShadow(this);
 
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------
@@ -179,7 +179,7 @@ void FProgressbar::drawProgressBar()
     setReverse(false);
 
   updateTerminal();
-  flush_out();
+  flushOutputBuffer();
 }
 
 //----------------------------------------------------------------------

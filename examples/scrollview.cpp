@@ -131,7 +131,7 @@ void Scrollview::draw()
   if ( isMonochron() )
     setReverse(true);
 
-  const finalcut::FWidgetColors& wc = getFWidgetColors();
+  const auto& wc = getFWidgetColors();
   setColor (wc.label_inactive_fg, wc.dialog_bg);
   clearArea();
 
@@ -141,7 +141,6 @@ void Scrollview::draw()
 
     for (int x{0}; x < int(getScrollWidth()); x++)
       print (32 + ((x + y) % 0x5f));
-
   }
 
   if ( isMonochron() )
