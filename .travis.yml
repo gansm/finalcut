@@ -9,7 +9,7 @@ addons:
     sources:
      - ubuntu-toolchain-r-test
     packages:
-     - g++-6
+     - g++-7
      - autotools-dev
      - automake
      - autoconf
@@ -51,7 +51,7 @@ matrix:
   - os: linux
     env:
       - TEST="Coverity Scan"
-      - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+      - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
     addons:
       coverity_scan:
         project:
@@ -62,10 +62,11 @@ matrix:
         build_command: "make V=1 -j10"
         branch_pattern: master
     before_install:
+      - eval "${MATRIX_EVAL}"
       - lsb_release -a
       - uname -a
       - whoami
-      - sudo apt-get install g++-6 gpm libgpm-dev libcppunit-dev autoconf-archive
+      - sudo apt-get install g++-7 gpm libgpm-dev libcppunit-dev autoconf-archive
       # Work around broken certificate of scan.coverity.com
       - sudo curl -s -L https://entrust.com/root-certificates/entrust_l1k.cer -o /usr/local/share/ca-certificates/entrust_l1k.crt
       - sudo update-ca-certificates
@@ -82,8 +83,9 @@ matrix:
   - os: linux
     env:
       - TEST="Coveralls"
-      - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+      - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
     before_install:
+      - eval "${MATRIX_EVAL}"
       - lsb_release -a
       - uname -a
       - pip install --user cpp-coveralls
