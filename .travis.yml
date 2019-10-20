@@ -51,6 +51,7 @@ matrix:
   - os: linux
     env:
       - TEST="Coverity Scan"
+      - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
     addons:
       coverity_scan:
         project:
@@ -81,6 +82,7 @@ matrix:
   - os: linux
     env:
       - TEST="Coveralls"
+      - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
     before_install:
       - lsb_release -a
       - uname -a
