@@ -53,6 +53,9 @@ matrix:
       - TEST="Coverity Scan"
       - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
     addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
       coverity_scan:
         project:
           name: gansm/finalcut
