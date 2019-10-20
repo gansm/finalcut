@@ -7,6 +7,7 @@ compiler:
 addons:
   apt:
     packages:
+     - g++-5
      - autotools-dev
      - automake
      - autoconf
