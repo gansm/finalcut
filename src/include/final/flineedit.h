@@ -70,11 +70,17 @@ class FLabel;
 class FLineEdit : public FWidget
 {
   public:
-    // Enumeration
+    // Enumerations
     enum label_o
     {
       label_above = 0,
-      label_left = 1
+      label_left  = 1
+    };
+
+    enum inputType
+    {
+      textfield = 0,
+      password  = 1
     };
 
     // Using-declaration
@@ -121,6 +127,7 @@ class FLineEdit : public FWidget
     void                setMaxLength (std::size_t);
     void                setCursorPosition (std::size_t);
     void                setLabelText (const FString&);
+    void                setInputType (const inputType);
     void                setLabelOrientation (const label_o);
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
@@ -177,6 +184,11 @@ class FLineEdit : public FWidget
     bool                hasHotkey();
     void                draw() override;
     void                drawInputField();
+    std::size_t         printTextField();
+    std::size_t         printPassword();
+    std::size_t         getCursorColumnPos();
+    const FString       getPasswordText() const;
+    bool                isPasswordField() const;
     offsetPair          endPosToOffset (std::size_t);
     std::size_t         clickPosToCursorPos (std::size_t);
     void                adjustTextOffset();
@@ -195,17 +207,20 @@ class FLineEdit : public FWidget
 
     // Data members
     FString      text{""};
+    FString      print_text{""};
     FString      label_text{""};
     FLabel*      label{};
     std::wstring input_filter{};
     dragScroll   drag_scroll{FLineEdit::noScroll};
     label_o      label_orientation{FLineEdit::label_left};
+    inputType    input_type{FLineEdit::textfield};
     int          scroll_repeat{100};
     bool         scroll_timer{false};
     bool         insert_mode{true};
     std::size_t  cursor_pos{NOT_SET};
     std::size_t  text_offset{0};
     std::size_t  char_width_offset{0};
+    std::size_t  x_pos{0};
     std::size_t  max_length{std::numeric_limits<std::size_t>::max()};
 };
 
@@ -238,6 +253,10 @@ inline void FLineEdit::setInputFilter (const FString& regex_string)
 //----------------------------------------------------------------------
 inline void FLineEdit::clearInputFilter()
 { input_filter.clear(); }
+
+//----------------------------------------------------------------------
+inline void FLineEdit::setInputType (const inputType type)
+{ input_type = type; }
 
 //----------------------------------------------------------------------
 inline bool FLineEdit::setEnable()

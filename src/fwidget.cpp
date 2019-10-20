@@ -124,11 +124,7 @@ FWidget::~FWidget()  // destructor
     quit();
   }
 
-  if ( accelerator_list )
-  {
-    delete accelerator_list;
-    accelerator_list = nullptr;
-  }
+  accelerator_list.clear();
 
   // finish the program
   if ( rootObject == this )
@@ -929,8 +925,8 @@ void FWidget::addAccelerator (FKey key, FWidget* obj)
   if ( ! widget || widget == statusbar || widget == menubar )
     widget = getRootWidget();
 
-  if ( widget && widget->accelerator_list )
-    widget->accelerator_list->push_back(accel);
+  if ( widget )
+    widget->accelerator_list.push_back(accel);
 }
 
 //----------------------------------------------------------------------
@@ -944,15 +940,14 @@ void FWidget::delAccelerator (FWidget* obj)
     widget = getRootWidget();
 
   if ( widget
-    && widget->accelerator_list
-    && ! widget->accelerator_list->empty() )
+    && ! widget->accelerator_list.empty() )
   {
-    auto iter = widget->accelerator_list->begin();
+    auto iter = widget->accelerator_list.begin();
 
-    while ( iter != widget->accelerator_list->end() )
+    while ( iter != widget->accelerator_list.end() )
     {
       if ( iter->object == obj )
-        iter = widget->accelerator_list->erase(iter);
+        iter = widget->accelerator_list.erase(iter);
       else
         ++iter;
     }
@@ -1394,23 +1389,6 @@ void FWidget::hideArea (const FSize& size)
 }
 
 //----------------------------------------------------------------------
-void FWidget::createWidgetAcceleratorList()
-{
-  if ( accelerator_list == 0 )
-  {
-    try
-    {
-      accelerator_list = new FAcceleratorList();
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
-      std::abort();
-    }
-  }
-}
-
-//----------------------------------------------------------------------
 bool FWidget::focusNextChild()
 {
   if ( isDialogWidget() || ! hasParent() )
@@ -1734,9 +1712,6 @@ void FWidget::init()
   foreground_color = wcolors.term_fg;
   background_color = wcolors.term_bg;
   init_desktop = false;
-
-  // Create the root object accelerator list
-  createWidgetAcceleratorList();
 }
 
 //----------------------------------------------------------------------

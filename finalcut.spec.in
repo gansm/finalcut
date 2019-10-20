@@ -13,10 +13,13 @@ License:        LGPL-3.0-or-later
 Group:          Development/Libraries/C and C++
 URL:            https://github.com/gansm/finalcut/
 Source:         https://github.com/gansm/finalcut/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+BuildRequires:  autoconf
+BuildRequires:  autoconf-archive
 BuildRequires:  automake
-BuildRequires:  gcc-c++
+BuildRequires:  gcc-c++ >= 5.1
 BuildRequires:  glib2-devel
 BuildRequires:  gpm-devel
+BuildRequires:  gdb
 BuildRequires:  libtool
 BuildRequires:  ncurses-devel
 
@@ -35,12 +38,13 @@ Group:          Development/Libraries/C and C++
 Requires:       libfinal%{sover} = %{version}
 Requires:       bdftopcf
 Requires:       coreutils
-Requires:       gcc-c++
+Requires:       gcc-c++ >= 5.1
 Requires:       grep
 Requires:       gzip
 Requires:       sed
 Requires:       vim
 Provides:       libfinal-devel = %{version}
+Obsoletes:      libfinal-devel < %{version}
 Recommends:     libfinal-examples = %{version}
 
 %description -n libfinal-devel
@@ -56,6 +60,8 @@ radio buttons, input lines, list boxes, status bars and so on.
 Summary:        Example files for the FINAL CUT library
 Group:          Development/Languages/C and C++
 BuildArch:      noarch
+Provides:       libfinal-examples = %{version}
+Obsoletes:      libfinal-examples < %{version}
 
 %description -n libfinal-examples
 FINAL CUT is a class library and widget toolkit with full mouse
@@ -108,8 +114,10 @@ make %{?_smp_mflags} V=1
 make install libdir=%{buildroot}%{_libdir}/ \
              includedir=%{buildroot}%{_includedir} \
              bindir=%{buildroot}%{_bindir} \
-             docdir=%{buildroot}%{_docdir}/%{name}/
+             docdir=%{buildroot}%{_docdir}/%{name}/ \
+             fontdir=%{buildroot}%{_miscfontsdir}/%{name}/
 mkdir -p %{buildroot}%{_docdir}/%{name}/examples
+mkdir -p %{buildroot}%{_miscfontsdir}/%{name}/
 cp -p examples/*.cpp %{buildroot}%{_docdir}/%{name}/examples
 cp -p examples/Makefile.clang %{buildroot}%{_docdir}/%{name}/examples
 cp -p examples/Makefile.gcc %{buildroot}%{_docdir}/%{name}/examples

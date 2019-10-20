@@ -71,25 +71,28 @@ int main (int argc, char* argv[])
 
   // Create input fields
   finalcut::FLineEdit name_field (&dgl);
+  finalcut::FLineEdit pw_field (&dgl);
   finalcut::FLineEdit email_field (&dgl);
-  finalcut::FLineEdit org_field (&dgl);
   finalcut::FLineEdit city_field (&dgl);
   finalcut::FLineEdit st_field (&dgl);
   finalcut::FLineEdit c_field (&dgl);
 
+  // Set input type to password
+  pw_field.setInputType (finalcut::FLineEdit::password);
+
   name_field.setLabelText (L"&Name");
+  pw_field.setLabelText (L"&Password");
   email_field.setLabelText (L"&Email");
-  org_field.setLabelText (L"Or&ganization");
   city_field.setLabelText (L"&City");
   st_field.setLabelText (L"&State");
   c_field.setLabelText (L"&Country");
 
-  name_field.setGeometry (FPoint(15, 1), FSize(19, 1));
-  email_field.setGeometry (FPoint(15, 3), FSize(19, 1));
-  org_field.setGeometry (FPoint(15, 5), FSize(19, 1));
-  city_field.setGeometry (FPoint(15, 7), FSize(19, 1));
-  st_field.setGeometry (FPoint(15, 9), FSize(19, 1));
-  c_field.setGeometry (FPoint(15, 11), FSize(4, 1));
+  name_field.setGeometry (FPoint(11, 1), FSize(23, 1));
+  pw_field.setGeometry (FPoint(11, 3), FSize(23, 1));
+  email_field.setGeometry (FPoint(11, 5), FSize(23, 1));
+  city_field.setGeometry (FPoint(11, 7), FSize(23, 1));
+  st_field.setGeometry (FPoint(11, 9), FSize(23, 1));
+  c_field.setGeometry (FPoint(11, 11), FSize(4, 1));
 
   // Create the button group
   finalcut::FButtonGroup radioButtonGroup ("Sex", &dgl);

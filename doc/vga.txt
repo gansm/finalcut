@@ -265,7 +265,7 @@ bit 0-1  Write Mode: Controls how data from the CPU is transformed before
               data byte. The data written is modified by the function code in
               the Data Rotate register (3CEh index 3) as a function of the CPU
               data and the latches, then data is rotated as specified by the
-              same register.  
+              same register.
            1: Mode 1 is used for video to video transfers.
               A read access will load the data latches with the contents of
               the addressed byte of video memory. A write access will write
@@ -275,7 +275,7 @@ bit 0-1  Write Mode: Controls how data from the CPU is transformed before
            2: Mode 2 writes a color to all pixels in the addressed byte of
               video memory. Bit 0 of the CPU data is written to plane 0 et
               cetera. Individual bits can be enabled or disabled through the
-              Bit Mask register (3CEh index 8). 
+              Bit Mask register (3CEh index 8).
            3: (VGA Only) Mode 3 can be used to fill an area with a color and
               pattern. The CPU data is rotated according to 3CEh index 3 bits
               0-2 and anded with the Bit Mask Register (3CEh index 8). For
@@ -332,7 +332,7 @@ bit 0-4  Horizontal Blanking ends when the last 5 (6 for VGA) bits of the
          Total has been reached.
       7  (VGA Only) Access to Vertical Retrace registers if set. If clear
          reads to 3d4h index 10h and 11h access the Lightpen read back
-         registers ?? 
+         registers ??
 
 3d4h index  4  (r/W):  CRTC: Start Horizontal Retrace Register
 bit 0-7  Horizontal Retrace starts when the Character Counter reaches this
@@ -481,10 +481,10 @@ Note: This register is not documented by IBM and may not be available on all
       clones.
 
 3d4h index 24h (R):  Attribute Controller Toggle Register.       (VGA - Undoc)
-bit 0-4  Attribute Controller Index. 
+bit 0-4  Attribute Controller Index.
          The current value of the Attribute Index Register.
       5  Palette Address Source. Same as 3C0h bit 5.
-      7  If set next read or write to 3C0h will access the data register.       
+      7  If set next read or write to 3C0h will access the data register.
 Note: This register is not documented by IBM and may not be available on all
       clones.
 
@@ -514,3 +514,4 @@ bit   0  (EGA Only) Output to pin 21 of the Feature Connector.
          is the logical OR of the vertical sync and the vertical display
          enable.
 Note: On the VGA this register can be read from port 3CAh.
+

@@ -36,9 +36,19 @@
 #endif
 
 #if defined(__linux__)
-  #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
-    #include <sys/io.h>        // <asm/io.h> is deprecated
-  #endif  // defined(__x86_64__) || defined(__i386) || defined(__arm__)
+
+  #if defined(__arm__) && defined(__GLIBC__) && defined(__GLIBC_PREREQ)
+    // ISA sysctl support on arm processors only up to glibc-2.29
+    #if !__GLIBC_PREREQ(2,30)
+      #define ARM_ISA_SYSCTL
+    #endif
+  #endif
+
+  #if defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
+    #define ISA_SYSCTL_SUPPORT
+    #include <sys/io.h>
+  #endif  // defined(__x86_64__) || defined(__i386) || defined(ARM_ISA_SYSCTL)
+
 #endif  // defined(__linux__)
 
 #if defined(__sun) && defined(__SVR4)
@@ -88,8 +98,7 @@ class FSystemImpl : public FSystem
     virtual ~FSystemImpl();
 
     // Methods
-#if defined(__linux__)
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
+#if defined(ISA_SYSCTL_SUPPORT)
     uChar inPortByte (uShort port) override
     {
       return ::inb (port);
@@ -100,16 +109,9 @@ class FSystemImpl : public FSystem
       return 0;
     }
 #endif
-#else
-    uChar inPortByte (uShort) override
-    {
-      return 0;
-    }
-#endif
 
 
-#if defined(__linux__)
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
+#if defined(ISA_SYSCTL_SUPPORT)
     void outPortByte (uChar value, uShort port) override
     {
       ::outb (value, port);
@@ -118,11 +120,6 @@ class FSystemImpl : public FSystem
     void outPortByte (uChar, uShort) override
     { }
 #endif
-#else
-    void outPortByte (uChar, uShort) override
-    { }
-#endif
-
 
     int isTTY (int fd) override
     {

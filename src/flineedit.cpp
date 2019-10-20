@@ -263,6 +263,8 @@ void FLineEdit::setText (const FString& txt)
   else
     text.setString("");
 
+  print_text = ( isPasswordField() ) ? getPasswordText() : text;
+
   if ( isShown() )
   {
     cursorEnd();
@@ -276,7 +278,10 @@ void FLineEdit::setMaxLength (std::size_t max)
   max_length = max;
 
   if ( text.getLength() > max_length )
+  {
     text.setString(text.left(max_length));
+    print_text = ( isPasswordField() ) ? getPasswordText() : text;
+  }
 
   if ( isShown() )
   {
@@ -343,6 +348,7 @@ void FLineEdit::clear()
   text_offset = 0;
   char_width_offset = 0;
   text.clear();
+  print_text.clear();
 }
 
 //----------------------------------------------------------------------
@@ -439,7 +445,7 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
 
   if ( mouse_x >= xmin && mouse_x <= int(getWidth()) && mouse_y == 1 )
   {
-    std::size_t len = text.getLength();
+    std::size_t len = print_text.getLength();
     cursor_pos = clickPosToCursorPos (std::size_t(mouse_x) - 2);
 
     if ( cursor_pos >= len )
@@ -470,7 +476,7 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  std::size_t len = text.getLength();
+  std::size_t len = print_text.getLength();
   int mouse_x = ev->getX();
   int mouse_y = ev->getY();
 
@@ -531,7 +537,7 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FLineEdit::onTimer (FTimerEvent*)
 {
-  auto len = text.getLength();
+  auto len = print_text.getLength();
 
   switch ( int(drag_scroll) )
   {
@@ -765,20 +771,24 @@ void FLineEdit::drawInputField()
   if ( isActiveFocus && getMaxColor() < 16 )
     setBold();
 
-  auto text_offset_column = getColumnWidth (text, text_offset);
-  std::size_t start_column = text_offset_column - char_width_offset + 1;
-  const FString& show_text = \
-      getColumnSubString(text, start_column, getWidth() - 2);
+  std::size_t text_offset_column = [&] () -> std::size_t
+  {
+    switch ( input_type )
+    {
+      case FLineEdit::textfield:
+        return printTextField();
 
-  if ( show_text )
-    print (show_text);
+      case FLineEdit::password:
+        return printPassword();
+    }
 
-  std::size_t x = getColumnWidth(show_text);
+    return 0;
+  }();
 
-  while ( x + 1 < getWidth() )
+  while ( x_pos + 1 < getWidth() )
   {
     print (' ');
-    x++;
+    x_pos++;
   }
 
   if ( isActiveFocus && getMaxColor() < 16 )
@@ -794,7 +804,7 @@ void FLineEdit::drawInputField()
     drawShadow(this);
 
   // set the cursor to the insert pos.
-  auto cursor_pos_column = getColumnWidth (text, cursor_pos);
+  auto cursor_pos_column = getCursorColumnPos();
   int xpos = int(2 + cursor_pos_column
                    - text_offset_column
                    + char_width_offset);
@@ -802,18 +812,73 @@ void FLineEdit::drawInputField()
 }
 
 //----------------------------------------------------------------------
+inline std::size_t FLineEdit::printTextField()
+{
+  std::size_t text_offset_column = getColumnWidth (print_text, text_offset);
+  std::size_t start_column = text_offset_column - char_width_offset + 1;
+  const FString& show_text = \
+      getColumnSubString(print_text, start_column, getWidth() - 2);
+
+  if ( ! show_text.isEmpty() )
+    print (show_text);
+
+  x_pos = getColumnWidth(show_text);
+  return text_offset_column;
+}
+
+//----------------------------------------------------------------------
+inline std::size_t FLineEdit::printPassword()
+{
+  std::size_t text_offset_column = text_offset;
+  FString show_text(print_text.mid(1 + text_offset, getWidth() - 2));
+
+  if ( ! show_text.isEmpty() )
+    print() << FString(show_text.getLength(), fc::Bullet);  // •
+
+  x_pos = show_text.getLength();
+  return text_offset_column;
+}
+
+//----------------------------------------------------------------------
+inline std::size_t FLineEdit::getCursorColumnPos()
+{
+  switch ( input_type )
+  {
+    case FLineEdit::textfield:
+      return getColumnWidth (print_text, cursor_pos);
+
+    case FLineEdit::password:
+      return cursor_pos;
+  }
+
+  return 0;
+}
+
+//----------------------------------------------------------------------
+inline const FString FLineEdit::getPasswordText() const
+{
+  return FString(text.getLength(), fc::Bullet);  // •
+}
+
+//----------------------------------------------------------------------
+inline bool FLineEdit::isPasswordField() const
+{
+  return bool( input_type == FLineEdit::password );
+}
+
+//----------------------------------------------------------------------
 inline FLineEdit::offsetPair FLineEdit::endPosToOffset (std::size_t pos)
 {
   std::size_t input_width = getWidth() - 2;
   std::size_t fullwidth_char_offset{0};
-  std::size_t len = text.getLength();
+  std::size_t len = print_text.getLength();
 
   if ( pos >= len )
     pos = len - 1;
 
   while ( pos > 0 && input_width > 0 )
   {
-    std::size_t char_width = getColumnWidth(text[pos]);
+    std::size_t char_width = getColumnWidth(print_text[pos]);
 
     if ( input_width >= char_width )
       input_width -= char_width;
@@ -825,7 +890,7 @@ inline FLineEdit::offsetPair FLineEdit::endPosToOffset (std::size_t pos)
     {
       if ( char_width == 1 )
       {
-        if ( getColumnWidth(text[pos - 1]) == 2 )  // pos is always > 0
+        if ( getColumnWidth(print_text[pos - 1]) == 2 )  // pos is always > 0
         {
           fullwidth_char_offset = 1;
           break;
@@ -850,12 +915,12 @@ std::size_t FLineEdit::clickPosToCursorPos (std::size_t pos)
 {
   std::size_t click_width{0};
   std::size_t idx = text_offset;
-  std::size_t len = text.getLength();
+  std::size_t len = print_text.getLength();
   pos -= char_width_offset;
 
   while ( click_width < pos && idx < len )
   {
-    std::size_t char_width = getColumnWidth(text[idx]);
+    std::size_t char_width = getColumnWidth(print_text[idx]);
     idx++;
     click_width += char_width;
 
@@ -870,25 +935,25 @@ std::size_t FLineEdit::clickPosToCursorPos (std::size_t pos)
 void FLineEdit::adjustTextOffset()
 {
   std::size_t input_width = getWidth() - 2;
-  std::size_t len = text.getLength();
-  std::size_t len_column = getColumnWidth (text);
-  std::size_t text_offset_column = getColumnWidth (text, text_offset);
-  std::size_t cursor_pos_column = getColumnWidth (text, cursor_pos);
+  std::size_t len = print_text.getLength();
+  std::size_t len_column = getColumnWidth (print_text);
+  std::size_t text_offset_column = getColumnWidth (print_text, text_offset);
+  std::size_t cursor_pos_column = getColumnWidth (print_text, cursor_pos);
   std::size_t first_char_width{0};
   std::size_t cursor_char_width{1};
   char_width_offset = 0;
 
   if ( cursor_pos < len )
-    cursor_char_width = getColumnWidth(text[cursor_pos]);
+    cursor_char_width = getColumnWidth(print_text[cursor_pos]);
 
   if ( len > 0 )
-    first_char_width = getColumnWidth(text[0]);
+    first_char_width = getColumnWidth(print_text[0]);
 
   // Text alignment right for long lines
   while ( text_offset > 0 && len_column - text_offset_column < input_width )
   {
     text_offset--;
-    text_offset_column = getColumnWidth (text, text_offset);
+    text_offset_column = getColumnWidth (print_text, text_offset);
   }
 
   // Right cursor overflow
@@ -897,7 +962,7 @@ void FLineEdit::adjustTextOffset()
     offsetPair offset_pair = endPosToOffset(cursor_pos);
     text_offset = offset_pair.first;
     char_width_offset = offset_pair.second;
-    text_offset_column = getColumnWidth (text, text_offset);
+    text_offset_column = getColumnWidth (print_text, text_offset);
   }
 
   // Right full-width cursor overflow
@@ -965,6 +1030,7 @@ inline void FLineEdit::deleteCurrentCharacter()
   if ( len > 0 && cursor_pos < len )
   {
     text.remove(cursor_pos, 1);
+    print_text = ( isPasswordField() ) ? getPasswordText() : text;
     processChanged();
   }
 
@@ -1035,6 +1101,7 @@ inline bool FLineEdit::keyInput (FKey key)
       text.setString(ch);
 
     cursor_pos++;
+    print_text = ( isPasswordField() ) ? getPasswordText() : text;
     adjustTextOffset();
     processChanged();
     return true;

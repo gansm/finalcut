@@ -716,11 +716,10 @@ bool FApplication::processAccelerator (const FWidget*& widget)
   bool accpt{false};
 
   if ( widget
-    && widget->getAcceleratorList()
-    && ! widget->getAcceleratorList()->empty() )
+    && ! widget->getAcceleratorList().empty() )
   {
-    auto iter = widget->getAcceleratorList()->begin();
-    auto last = widget->getAcceleratorList()->end();
+    auto iter = widget->getAcceleratorList().begin();
+    auto last = widget->getAcceleratorList().end();
 
     while ( iter != last )
     {

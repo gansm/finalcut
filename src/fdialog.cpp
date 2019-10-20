@@ -794,9 +794,6 @@ void FDialog::init()
     old_focus->redraw();
   }
 
-  // Create your own accelerator list for this dialog
-  createWidgetAcceleratorList();
-
   // Add the dialog menu
   initDialogMenu();
 }

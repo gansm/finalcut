@@ -1,3 +1,8 @@
+2019-10-20  Markus Gans  <guru.mail@muenster.de>
+	* New method setInputType() in FLineEdit that allows to obscure 
+	  password entries
+	* FAcceleratorList reimplemented as non-pointer
+
 2019-10-15  Markus Gans  <guru.mail@muenster.de>
 	* Version 0.6.0
 

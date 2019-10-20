@@ -208,10 +208,10 @@ void FMenuItem::addAccelerator (FKey key, FWidget* obj)
   auto root = getRootWidget();
   FAccelerator accel = { key, obj };
 
-  if ( root && root->getAcceleratorList() )
+  if ( root )
   {
     accel_key = key;
-    root->getAcceleratorList()->push_back(accel);
+    root->setAcceleratorList().push_back(accel);
   }
 
   updateSuperMenuDimensions();
@@ -223,17 +223,16 @@ void FMenuItem::delAccelerator (FWidget* obj)
   auto root = getRootWidget();
 
   if ( root
-    && root->getAcceleratorList()
-    && ! root->getAcceleratorList()->empty() )
+    && ! root->getAcceleratorList().empty() )
   {
-    auto iter = root->getAcceleratorList()->begin();
+    auto iter = root->getAcceleratorList().begin();
 
-    while ( iter != root->getAcceleratorList()->end() )
+    while ( iter != root->getAcceleratorList().end() )
     {
       if ( iter->object == obj )
       {
         accel_key = 0;
-        iter = root->getAcceleratorList()->erase(iter);
+        iter = root->setAcceleratorList().erase(iter);
       }
       else
         ++iter;
