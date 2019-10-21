@@ -7,21 +7,21 @@ compiler:
 addons:
   apt:
     sources:
-     - ubuntu-toolchain-r-test
+      - ubuntu-toolchain-r-test
     packages:
-     - g++-7
-     - autotools-dev
-     - automake
-     - autoconf
-     - autoconf-archive
-     - libtool
-     - pkg-config
-     - libglib2.0-dev
-     - libncurses5-dev
-     - gpm
-     - libgpm-dev
-     - gperf
-     - libcppunit-dev
+      - g++-7
+      - autotools-dev
+      - automake
+      - autoconf
+      - autoconf-archive
+      - libtool
+      - pkg-config
+      - libglib2.0-dev
+      - libncurses5-dev
+      - gpm
+      - libgpm-dev
+      - gperf
+      - libcppunit-dev
   homebrew:
     packages:
       - autoconf-archive
@@ -56,12 +56,18 @@ matrix:
       apt:
         sources:
           - ubuntu-toolchain-r-test
+        packages:
+          - g++-7
+          - gpm
+          - libgpm-dev
+          - libcppunit-dev
+          - autoconf-archive
       coverity_scan:
         project:
           name: gansm/finalcut
           description: Build submitted via Travis CI
         notification_email: guru.mail@muenster.de
-        build_command_prepend: "autoreconf -v --install --force && ./configure --prefix=/usr CPPFLAGS='-DDEBUG' CXXFLAGS='-g -O0 -DDEBUG -DUNIT_TEST' --with-unit-test && make clean"
+        build_command_prepend: "cov-configure --template --comptype gcc --compiler gcc-7  && autoreconf -v --install --force && ./configure --prefix=/usr CPPFLAGS='-DDEBUG' CXXFLAGS='-g -O0 -DDEBUG -DUNIT_TEST' --with-unit-test && make clean"
         build_command: "make V=1 -j10"
         branch_pattern: master
     before_install:
@@ -69,7 +75,6 @@ matrix:
       - lsb_release -a
       - uname -a
       - whoami
-      - sudo apt-get install g++-7 gpm libgpm-dev libcppunit-dev autoconf-archive
       # Work around broken certificate of scan.coverity.com
       - sudo curl -s -L https://entrust.com/root-certificates/entrust_l1k.cer -o /usr/local/share/ca-certificates/entrust_l1k.crt
       - sudo update-ca-certificates
