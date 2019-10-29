@@ -1,7 +1,2 @@
 ! fonts.alias
-8x16graph  -misc-8x16graph-medium-r-normal--17-160-75-75-p-80-iso8859-1
--misc-8x16graph-medium-r-normal--17-160-75-75-p-80-ibm-cp437  -misc-8x16graph-medium-r-normal--17-160-75-75-p-80-iso8859-1
-
-!----------------------------------------
-! Note: urxvt can't load a ibm-cp437 font
-!----------------------------------------
+8x16graph  -misc-8x16graph-Medium-R-Normal--16-160-75-75-C-80-ISO10646-1

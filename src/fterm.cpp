@@ -666,19 +666,11 @@ bool FTerm::setVGAFont()
     // Set font in xterm to vga
     xterm->setFont("vga");
     data->setNewFont(false);
-    data->setTermEncoding (fc::PC);
-
-    if ( isXTerminal() && data->hasUTF8Console() )
-      putchar() = &FTerm::putchar_UTF8;
-    else
-      putchar() = &FTerm::putchar_ASCII;
   }
 #if defined(__linux__)
   else if ( isLinuxTerm() )
   {
     data->setVGAFont(linux->loadVGAFont());
-    data->setTermEncoding (fc::PC);
-    putchar() = &FTerm::putchar_ASCII;
   }
 #endif  // defined(__linux__)
   else
@@ -708,19 +700,11 @@ bool FTerm::setNewFont()
     data->setNewFont(true);
     // Set font in xterm to 8x16graph
     xterm->setFont("8x16graph");
-    data->setTermEncoding (fc::PC);
-
-    if ( isXTerminal() && data->hasUTF8Console() )
-      putchar() = &FTerm::putchar_UTF8;
-    else
-      putchar() = &FTerm::putchar_ASCII;
   }
 #if defined(__linux__)
   else if ( isLinuxTerm() )
   {
     data->setNewFont(linux->loadNewFont());
-    data->setTermEncoding (fc::PC);
-    putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
 #endif  // defined(__linux__)
   else

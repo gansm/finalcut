@@ -1,3 +1,6 @@
+2019-10-28  Markus Gans  <guru.mail@muenster.de>
+	* Unicode support for 8x16graph font
+
 2019-10-20  Markus Gans  <guru.mail@muenster.de>
 	* New method setInputType() in FLineEdit that allows to obscure 
 	  password entries

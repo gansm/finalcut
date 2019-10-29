@@ -315,9 +315,9 @@ bool FTermLinux::loadNewFont()
 
       // Unicode character mapping
       struct unimapdesc unimap;
-      unimap.entry_ct = uInt16 ( sizeof(fc::unicode_cp437_pairs)
+      unimap.entry_ct = uInt16 ( sizeof(fc::unicode_newfont_pairs)
                                / sizeof(unipair) );
-      unimap.entries = &fc::unicode_cp437_pairs[0];
+      unimap.entries = &fc::unicode_newfont_pairs[0];
       setUnicodeMap(&unimap);
     }
     else

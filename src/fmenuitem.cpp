@@ -222,8 +222,7 @@ void FMenuItem::delAccelerator (FWidget* obj)
 {
   auto root = getRootWidget();
 
-  if ( root
-    && ! root->setAcceleratorList().empty() )
+  if ( root && ! root->setAcceleratorList().empty() )
   {
     auto list = root->setAcceleratorList();
     auto iter = list.begin();
