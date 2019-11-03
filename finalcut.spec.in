@@ -85,19 +85,6 @@ The C++ class design was inspired by the Qt framework. It provides
 common controls like dialog windows, push buttons, check boxes,
 radio buttons, input lines, list boxes, status bars and so on.
 
-%package -n libfinal-static
-Summary:        Console widget toolkit
-Group:          System/Libraries
-
-%description -n libfinal-static
-FINAL CUT is a class library and widget toolkit with full mouse
-support for creating a text-based user interface. The library supports
-the programmer to develop an application for the text console. It allows
-the simultaneous handling of multiple windows on the screen.
-The C++ class design was inspired by the Qt framework. It provides
-common controls like dialog windows, push buttons, check boxes,
-radio buttons, input lines, list boxes, status bars and so on.
-
 %prep
 %setup -q
 
@@ -107,7 +94,7 @@ export CPPFLAGS="%{optflags} -Wall -Wextra -Wpedantic"
 %ifnarch %ix86 x86_64
 export CPPFLAGS="$CPPFLAGS -Wno-error=unused-parameter"
 %endif
-%configure
+%configure --disable-static
 make %{?_smp_mflags} V=1
 
 %install
@@ -148,9 +135,5 @@ rm %{buildroot}%{_docdir}/%{name}/ChangeLog %{buildroot}%{_docdir}/%{name}/COPYI
 
 %files -n libfinal%{sover}
 %{_libdir}/libfinal.so.*
-
-%files -n libfinal-static
-%defattr (-,root,root)
-%{_libdir}/libfinal.a
 
 %changelog

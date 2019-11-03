@@ -1,3 +1,8 @@
+2019-11-03  Markus Gans  <guru.mail@muenster.de>
+	* Newfont specialization for 8x16 and 9x16 pixel character
+	* Fixes the display of reverse characters on the 16 color 
+	  Linux console
+
 2019-10-28  Markus Gans  <guru.mail@muenster.de>
 	* Unicode support for 8x16graph font
 

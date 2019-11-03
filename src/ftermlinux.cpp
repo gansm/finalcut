@@ -307,8 +307,13 @@ bool FTermLinux::loadNewFont()
   {
     if ( isLinuxConsole() )
     {
-      // Set the graphical font 8x16
-      int ret = setScreenFont(fc::__8x16graph, 256, 8, 16);
+      // Set the graphical font
+      int ret;
+
+      if ( has9BitCharacters() )
+        ret = setScreenFont(fc::__9x16graph, 256, 8, 16);  // set 9×16
+      else
+        ret = setScreenFont(fc::__8x16graph, 256, 8, 16);  // set 8×16
 
       if ( ret != 0 )
         new_font = false;
@@ -874,6 +879,39 @@ int FTermLinux::setBlinkAsIntensity (bool enable)
     return -1;  // error on KDDISABIO
 
   return 0;
+}
+
+//----------------------------------------------------------------------
+bool FTermLinux::has9BitCharacters()
+{
+  // Are 9-bit wide characters used?
+
+  // 9-bit character:
+  //  0xc0...0xdf - copying the eighth pixel into the ninth pixel
+  //     The rest - the ninth pixel has the background color
+
+  if ( ! fsystem )
+    fsystem = FTerm::getFSystem();
+
+  int fd_tty = FTerm::getTTYFileDescriptor();
+
+  if ( fsystem->getuid() != 0 )  // Direct hardware access requires root privileges
+    return false;
+
+  if ( fd_tty < 0 )
+    return false;
+
+  // Enable access to VGA I/O ports  (from 0x3B4 with num = 0x2C)
+  if ( fsystem->ioctl(fd_tty, KDENABIO, 0) < 0 )
+    return false;  // error on KDENABIO
+
+  bool nine_bit_char( getAttributeMode() & 0x04 );
+
+    // Disable access to VGA I/O ports
+  if ( fsystem->ioctl(fd_tty, KDDISABIO, 0) < 0 )
+    return false;  // error on KDDISABIO
+
+  return nine_bit_char;
 }
 
 //----------------------------------------------------------------------

@@ -22,6 +22,8 @@ EXTRA_DIST = \
 	ncurses.supp \
 	newfont1.png \
 	newfont2.png \
+	newfont-8x16.txt \
+	newfont-9x16.txt \
 	progress-bar.png \
 	readme.txt \
 	coding-style.txt \
@@ -53,6 +55,8 @@ doc_DATA = \
 	ncurses.supp \
 	newfont1.png \
 	newfont2.png \
+	newfont-8x16.txt \
+	newfont-9x16.txt \
 	progress-bar.png \
 	readme.txt \
 	coding-style.txt \

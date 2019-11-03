@@ -165,6 +165,7 @@ class FTermLinux final
     uChar                getAttributeMode();
     void                 setAttributeMode (uChar);
     int                  setBlinkAsIntensity (bool);
+    bool                 has9BitCharacters();
     void                 getVGAPalette();
     void                 setVGADefaultPalette();
     bool                 setVGAPalette (FColor, int, int, int);

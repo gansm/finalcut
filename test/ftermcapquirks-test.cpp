@@ -409,7 +409,7 @@ void FTermcapQuirksTest::linuxTest()
                          , C_STR(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;22%;m") );
   CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_background].string
                          , C_STR(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m") );
-  CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 26 );
+  CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 30 );
 
   CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_attributes].string
                          , C_STR(CSI "0"

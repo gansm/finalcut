@@ -1010,6 +1010,56 @@ inline void FWidget::processDestroy()
 
 // Non-member elements for NewFont
 //----------------------------------------------------------------------
+const wchar_t NF_menu_button[4] =
+{
+  fc::NF_rev_menu_button1,
+  fc::NF_rev_menu_button2,
+  fc::NF_rev_menu_button3,
+  '\0'
+};
+
+const wchar_t NF_button_up[3] =
+{
+  fc::NF_rev_up_pointing_triangle1,
+  fc::NF_rev_up_pointing_triangle2,
+  '\0'
+};
+
+const wchar_t NF_button_down[3] =
+{
+  fc::NF_rev_down_pointing_triangle1,
+  fc::NF_rev_down_pointing_triangle2,
+  '\0'
+};
+
+const wchar_t NF_button_arrow_up[3] =
+{
+  fc::NF_rev_up_arrow1,
+  fc::NF_rev_up_arrow2,
+  '\0'
+};
+
+const wchar_t NF_button_arrow_down[3] =
+{
+  fc::NF_rev_down_arrow1,
+  fc::NF_rev_down_arrow2,
+  '\0'
+};
+
+const wchar_t NF_button_arrow_left[3] =
+{
+  fc::NF_rev_left_arrow1,
+  fc::NF_rev_left_arrow2,
+  '\0'
+};
+
+const wchar_t NF_button_arrow_right[3] =
+{
+  fc::NF_rev_right_arrow1,
+  fc::NF_rev_right_arrow2,
+  '\0'
+};
+
 const wchar_t NF_Drive[5] =
 {
   fc::NF_shadow_box_left,

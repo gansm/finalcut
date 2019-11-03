@@ -586,19 +586,15 @@ void FScrollbar::drawButtons()
 
     if ( bar_orientation == fc::vertical )
     {
-      print() << fc::NF_rev_up_arrow1
-              << fc::NF_rev_up_arrow2
+      print() << NF_button_arrow_up
               << FPoint(1, int(length))
-              << fc::NF_rev_down_arrow1
-              << fc::NF_rev_down_arrow2;
+              << NF_button_arrow_down;
     }
     else  // horizontal
     {
-      print() << fc::NF_rev_left_arrow1
-              << fc::NF_rev_left_arrow2
+      print() << NF_button_arrow_left
               << FPoint(int(length) - 1, 1)
-              << fc::NF_rev_right_arrow1
-              << fc::NF_rev_right_arrow2;
+              << NF_button_arrow_right;
     }
   }
   else

@@ -980,9 +980,7 @@ void FDialog::drawBarButton()
 
   if ( isNewFont() )
   {
-    print (fc::NF_rev_menu_button1);
-    print (fc::NF_rev_menu_button2);
-    print (fc::NF_rev_menu_button3);
+    print (finalcut::NF_menu_button);
   }
   else if ( isMonochron() )
   {
@@ -1034,8 +1032,7 @@ inline void FDialog::drawRestoreSizeButton()
 {
   if ( isNewFont() )
   {
-    print (fc::NF_rev_down_pointing_triangle1);
-    print (fc::NF_rev_down_pointing_triangle2);
+    print (finalcut::NF_button_down);
   }
   else
   {
@@ -1059,8 +1056,7 @@ inline void FDialog::drawZoomedButton()
 {
   if ( isNewFont() )
   {
-    print (fc::NF_rev_up_pointing_triangle1);
-    print (fc::NF_rev_up_pointing_triangle2);
+    print (finalcut::NF_button_up);
   }
   else
   {

@@ -180,8 +180,8 @@ void FTermcapQuirks::linux()
         C_STR(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;22%;m");
     TCAP(fc::t_set_a_background) = \
         C_STR(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
-    // Avoid underline, blink and dim mode
-    FTermcap::attr_without_color = 26;
+    // Avoid underline, blink, dim mode and reverse
+    FTermcap::attr_without_color = 30;
   }
   else
   {
