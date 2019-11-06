@@ -620,7 +620,8 @@ void FTextView::drawBorder()
     if ( isMonochron() )
       setReverse(true);
 
-    FWidget::drawBorder();
+    FRect box(FPoint(1, 1), getSize());
+    finalcut::drawListBorder (this, box);
 
     if ( isMonochron() )
       setReverse(false);

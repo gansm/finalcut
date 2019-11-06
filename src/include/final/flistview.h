@@ -126,14 +126,14 @@ class FListViewItem : public FObject
     void                resetVisibleLineCounter();
 
     // Data members
-    FStringList      column_list{};
-    FDataPtr         data_pointer{nullptr};
-    iterator         root{};
-    std::size_t      visible_lines{1};
-    bool             expandable{false};
-    bool             is_expand{false};
-    bool             checkable{false};
-    bool             is_checked{false};
+    FStringList         column_list{};
+    FDataPtr            data_pointer{nullptr};
+    iterator            root{};
+    std::size_t         visible_lines{1};
+    bool                expandable{false};
+    bool                is_expand{false};
+    bool                checkable{false};
+    bool                is_checked{false};
 
     // Friend class
     friend class FListView;
@@ -208,21 +208,21 @@ class FListViewIterator
     bool               operator != (const FListViewIterator&) const;
 
     // Accessor
-    const FString       getClassName() const;
-    int                 getPosition() const;
+    const FString      getClassName() const;
+    int                getPosition() const;
 
     // Methods
-    void                parentElement();
+    void               parentElement();
 
   private:
     // Methods
-    void                nextElement (iterator&);
-    void                prevElement (iterator&);
+    void               nextElement (iterator&);
+    void               prevElement (iterator&);
 
     // Data members
-    iterator_stack       iter_path{};
-    iterator             node{};
-    int                  position{0};
+    iterator_stack     iter_path{};
+    iterator           node{};
+    int                position{0};
 };
 
 
