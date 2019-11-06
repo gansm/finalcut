@@ -348,7 +348,7 @@ void clearFlatBorder (FWidget* w)
 }
 
 //----------------------------------------------------------------------
-void drawBorder (FWidget* w, FRect r)
+inline void checkBorder (FWidget* w, FRect r)
 {
   if ( r.x1_ref() > r.x2_ref() )
     std::swap (r.x1_ref(), r.x2_ref());
@@ -367,9 +367,26 @@ void drawBorder (FWidget* w, FRect r)
 
   if ( r.y2_ref() > int(w->getHeight()) )
     r.y2_ref() = int(w->getHeight());
+}
+
+//----------------------------------------------------------------------
+void drawBorder (FWidget* w, FRect r)
+{
+  checkBorder (w, r);
 
   if ( w->isNewFont() )
     drawNewFontBox (w, r);
+  else
+    drawBox (w, r);
+}
+
+//----------------------------------------------------------------------
+void drawListBorder (FWidget* w, const FRect& r)
+{
+  checkBorder (w, r);
+
+  if ( w->isNewFont() )
+    drawNewFontListBox (w, r);
   else
     drawBox (w, r);
 }
@@ -383,7 +400,7 @@ inline void drawBox (FWidget* w, const FRect& r)
     return;
 
   w->print() << r.getUpperLeftPos()
-             << fc::BoxDrawingsDownAndRight  // ┌
+             << fc::BoxDrawingsDownAndRight   // ┌
              << FString(r.getWidth() - 2, fc::BoxDrawingsHorizontal)  // ─
              << fc::BoxDrawingsDownAndLeft;   // ┐
 
@@ -396,7 +413,7 @@ inline void drawBox (FWidget* w, const FRect& r)
   }
 
   w->print() << r.getLowerLeftPos()
-             << fc::BoxDrawingsUpAndRight  // └
+             << fc::BoxDrawingsUpAndRight     // └
              << FString(r.getWidth() - 2, fc::BoxDrawingsHorizontal)  // ─
              << fc::BoxDrawingsUpAndLeft;     // ┘
 }
@@ -408,21 +425,43 @@ inline void drawNewFontBox (FWidget* w, const FRect& r)
 
   w->print() << r.getUpperLeftPos()
              << fc::NF_border_corner_middle_upper_left    // ┌
-             << FString(r.getWidth() - 2, fc::BoxDrawingsHorizontal)  // ─
+             << FString(r.getWidth() - 2, fc::NF_border_line_horizontal)  // ─
              << fc::NF_border_corner_middle_upper_right;  // ┐
 
   for (int y = r.getY1() + 1; y < r.getY2(); y++)
   {
     w->print() << FPoint(r.getX1(), y)
-               << fc::NF_border_line_left        // border left ⎸
+               << fc::NF_border_line_vertical   // │
                << FPoint(r.getX2(), y)
-               << fc::NF_rev_border_line_right;  // border right⎹
+               << fc::NF_border_line_vertical;  // │
   }
 
   w->print() << r.getLowerLeftPos()
              << fc::NF_border_corner_middle_lower_left    // └
-             << FString(r.getWidth() - 2, fc::BoxDrawingsHorizontal)  // ─
+             << FString(r.getWidth() - 2, fc::NF_border_line_horizontal)  // ─
              << fc::NF_border_corner_middle_lower_right;  // ┘
+}
+
+//----------------------------------------------------------------------
+inline void drawNewFontListBox (FWidget* w, const FRect& r)
+{
+  w->print() << r.getUpperLeftPos()
+             << fc::NF_border_line_middle_left_down  // ┌
+             << FString(r.getWidth() - 2, fc::NF_border_line_horizontal)  // ─
+             << fc::NF_border_line_left_down;        // ╷
+
+  for (int y = r.getY1() + 1; y < r.getY2(); y++)
+  {
+    w->print() << FPoint(r.getX1(), y)
+               << fc::NF_border_line_left   // border left ⎸
+               << FPoint(r.getX2(), y)
+               << fc::NF_border_line_left;  // border left ⎸
+  }
+
+  w->print() << r.getLowerLeftPos()
+             << fc::NF_border_line_middle_right_up  // └
+             << FString(r.getWidth() - 2, fc::NF_border_line_horizontal)  // ─
+             << fc::NF_border_line_left_up;         // ╵
 }
 
 }  // namespace finalcut

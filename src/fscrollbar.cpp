@@ -524,7 +524,9 @@ inline void FScrollbar::drawVerticalBackgroundLine()
 
   if ( isMonochron() || max_color < 16 )
     print (fc::MediumShade);  // ▒
-  else
+  else if ( isNewFont() )
+    print (fc::NF_rev_border_line_right);  // ⎹
+      else
     print (' ');
 }
 
@@ -567,7 +569,7 @@ void FScrollbar::drawHorizontalBar()
 inline void FScrollbar::drawHorizontalBackgroundColumn()
 {
   if ( isNewFont() && max_color > 8 )
-    print (fc::NF_border_line_upper);  // ¯
+    print (fc::NF_border_line_up_and_down);  // ニ
   else if ( isMonochron() || max_color < 16 )
     print (fc::MediumShade);  // ▒
   else

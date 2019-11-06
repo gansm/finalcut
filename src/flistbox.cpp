@@ -171,7 +171,7 @@ void FListBox::setGeometry ( const FPoint& pos, const FSize& size
   if ( isNewFont() )
   {
     vbar->setGeometry (FPoint(int(getWidth()), 2), FSize(2, getHeight() - 2));
-    hbar->setGeometry (FPoint(1, int(getHeight())), FSize(getWidth() - 2 - nf_offset, 1));
+    hbar->setGeometry (FPoint(1, int(getHeight())), FSize(getWidth() - 2, 1));
   }
   else
   {
@@ -645,7 +645,7 @@ void FListBox::adjustSize()
   hbar->setMaximum (hmax);
   hbar->setPageSize (int(max_line_width), int(width) - 2);
   hbar->setY (int(getHeight()));
-  hbar->setWidth (width + nf_offset, false);
+  hbar->setWidth (width, false);
   hbar->resize();
 
   if ( isShown() )
@@ -683,7 +683,7 @@ void FListBox::init()
   setTopPadding(1);
   setLeftPadding(1);
   setBottomPadding(1);
-  setRightPadding(1 + int(nf_offset));
+  setRightPadding(1);
   mapKeyFunctions();
 }
 
@@ -756,7 +756,7 @@ void FListBox::draw()
 
     for (int y{2}; y < int(getHeight()); y++)
     {
-      print() << FPoint(int(getWidth()), y)
+      print() << FPoint(int(getWidth()) - 1, y)
               << ' ';  // clear right side of the scrollbar
     }
   }
@@ -785,14 +785,8 @@ void FListBox::draw()
 //----------------------------------------------------------------------
 void FListBox::drawBorder()
 {
-  if ( isNewFont() )
-  {
-    FRect box(FPoint(1, 1), getSize());
-    box.scaleBy(-1, 0);
-    finalcut::drawBorder (this, box);
-  }
-  else
-    FWidget::drawBorder();
+  FRect box(FPoint(1, 1), getSize());
+  finalcut::drawListBorder (this, box);
 }
 
 //----------------------------------------------------------------------
@@ -1136,7 +1130,7 @@ void FListBox::recalculateHorizontalBar (std::size_t len, bool has_brackets)
                ? int(max_line_width - getWidth() + nf_offset + 4)
                : 0;
     hbar->setMaximum (hmax);
-    hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset - 4));
+    hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset) - 4);
     hbar->calculateSliderValues();
 
     if ( isShown() )

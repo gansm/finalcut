@@ -73,10 +73,12 @@ CheckList::CheckList (finalcut::FWidget* parent)
 {
   setText (L"Shopping list");
   setShadow();
+  std::size_t nf_offset = ( isNewFont() ) ? 1 : 0;
   setGeometry ( FPoint(int(1 + (parent->getWidth() - 28) / 2), 5)
-              , FSize(28, 13) );
+              , FSize(28 + nf_offset, 13) );
   listView.ignorePadding();
-  listView.setGeometry (FPoint(1, 2), FSize(getWidth(), getHeight() - 1));
+  listView.setGeometry ( FPoint(1 + int(nf_offset), 2)
+                       , FSize(getWidth() - nf_offset, getHeight() - 1) );
 
   // Add columns to the view
   listView.addColumn ("Item");

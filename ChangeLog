@@ -1,3 +1,6 @@
+2019-11-06  Markus Gans  <guru.mail@muenster.de>
+	* Improved display of the NewFont midline 
+
 2019-11-03  Markus Gans  <guru.mail@muenster.de>
 	* Newfont specialization for 8x16 and 9x16 pixel character
 	* Fixes the display of reverse characters on the 16 color 

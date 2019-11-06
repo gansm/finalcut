@@ -536,9 +536,12 @@ void        drawBlockShadow (FWidget*);
 void        clearShadow (FWidget*);
 void        drawFlatBorder (FWidget*);
 void        clearFlatBorder (FWidget*);
+void        checkBorder (FWidget*, FRect);
 void        drawBorder (FWidget*, FRect);
+void        drawListBorder (FWidget*, const FRect&);
 void        drawBox (FWidget*, const FRect&);
 void        drawNewFontBox (FWidget*, const FRect&);
+void        drawNewFontListBox (FWidget*, const FRect&);
 
 
 // FWidget inline functions

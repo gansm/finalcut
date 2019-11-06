@@ -1323,7 +1323,7 @@ void FListView::init()
   setTopPadding(1);
   setLeftPadding(1);
   setBottomPadding(1);
-  setRightPadding(1 + int(nf_offset));
+  setRightPadding(1);
   mapKeyFunctions();
 }
 
@@ -1423,7 +1423,7 @@ void FListView::draw()
 
     for (int y{2}; y < int(getHeight()); y++)
     {
-      print() << FPoint(int(getWidth()), y)
+      print() << FPoint(int(getWidth()) - 1, y)
               << ' ';  // clear right side of the scrollbar
     }
   }
@@ -1452,14 +1452,8 @@ void FListView::draw()
 //----------------------------------------------------------------------
 void FListView::drawBorder()
 {
-  if ( isNewFont() )
-  {
-    FRect box(FPoint(1, 1), getSize());
-    box.scaleBy(-1, 0);
-    finalcut::drawBorder (this, box);
-  }
-  else
-    FWidget::drawBorder();
+  FRect box(FPoint(1, 1), getSize());
+  finalcut::drawListBorder (this, box);
 }
 
 //----------------------------------------------------------------------

@@ -201,8 +201,10 @@ enum SpecialCharacter : wchar_t
   LowerHalfBlock                      = 0x2584,  // ▄
   LeftHalfBlock                       = 0x258c,  // ▌
   RightHalfBlock                      = 0x2590,  // ▐
+  NF_border_line_vertical             = 0xe1b3,  // │ (2)
   NF_rev_left_arrow2                  = 0xe1b4,  // ⊐ (2)
   NF_rev_right_arrow2                 = 0xe1b5,  // ► (2)
+  NF_border_line_left_up              = 0xe1b6,  // ╵ (2)
   NF_radio_button3                    = 0xe1b7,  // ) (2)
   NF_rev_border_corner_upper_right    = 0xe1b8,  // ⎤ (2)
   NF_rev_border_line_right            = 0xe1b9,  // ⎹ (2)
@@ -211,10 +213,12 @@ enum SpecialCharacter : wchar_t
   NF_border_line_left                 = 0xe1bc,  // ⎸ (2)
   NF_rev_up_arrow2                    = 0xe1bd,  //⎹◣ (2)
   NF_rev_down_arrow2                  = 0xe1be,  //⎹◤ (2)
+  NF_border_line_left_down            = 0xe1bf,  // ╷ (2)
   NF_border_corner_middle_lower_left  = 0xe1c0,  // └ (2)
   NF_rev_up_arrow1                    = 0xe1c1,  // ◢⎸ (2)
   NF_rev_down_arrow1                  = 0xe1c2,  // ◥⎸ (2)
   NF_border_line_vertical_right       = 0xe1c3,  // ├ (2)
+  NF_border_line_horizontal           = 0xe1c4,  // │ (2)
   NF_border_line_up_and_down          = 0xe1c5,  // ニ (2)
   NF_shadow_box_middle                = 0xe1c6,  // ニ (2)
   NF_shadow_box_hdd                   = 0xe1c7,  // ニ (2)
@@ -225,8 +229,8 @@ enum SpecialCharacter : wchar_t
   NF_border_corner_middle_upper_left  = 0xe1cc,  // ┌ (2)
   NF_shadow_box_cd                    = 0xe1cd,  // ニ (2)
   NF_shadow_box_left                  = 0xe1ce,  // [ (2)
-  NF_border_corner_middle_lower_right = 0xe1cf,  //  ┘ (2)
-  NF_border_corner_middle_upper_right = 0xe1d0,  //  ┐ (2)
+  NF_border_line_middle_left_down     = 0xe1cf,  // ┌ (2)
+  NF_border_line_middle_right_up      = 0xe1d0,  // └ (2)
   NF_shadow_box_net                   = 0xe1d1,  // ニ (2)
   NF_rev_up_pointing_triangle1        = 0xe1d2,  // ◢ (2)
   NF_border_corner_lower_left         = 0xe1d3,  // ⎣ (2)
@@ -241,11 +245,13 @@ enum SpecialCharacter : wchar_t
   NF_rev_border_line_right_and_left   = 0xe1e7,  // || (2)
   NF_rev_up_pointing_triangle2        = 0xe1e8,  // ◣ (2)
   NF_rev_down_pointing_triangle2      = 0xe1e9,  // ◤ (2)
+  NF_border_corner_middle_lower_right = 0xe1ea,  //  ┘ (2)
+  NF_border_corner_middle_upper_right = 0xe1eb,  //  ┐ (2)
   NF_rev_menu_button3                 = 0xe1f4,  // ] (2)
   NF_shadow_box_right                 = 0xe1f5,  // ] (2)
   NF_Bullet                           = 0xe1f9,  // ● (2)
   NF_check_mark                       = 0xe1fb,  // ✓ (2)
-  NF_x_superior                       = 0xe1fc,  // ˣ
+  NF_x_superior                       = 0xe1fc,  // ˣ (2)
   SquareRoot                          = 0x221a   // √
 };
 /*
