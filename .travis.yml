@@ -75,7 +75,7 @@ matrix:
       - lsb_release -a
       - uname -a
       - whoami
-      - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-certificates.crt
+      - echo -n | openssl s_client -CApath /etc/ssl/certs/ -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-certificates.crt
     script:
       - autoreconf -v --install --force
       - ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -DUNIT_TEST" --with-unit-test
