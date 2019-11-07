@@ -67,7 +67,7 @@ matrix:
           name: gansm/finalcut
           description: Build submitted via Travis CI
         notification_email: guru.mail@muenster.de
-        build_command_prepend: "cov-configure --template --comptype gcc --compiler gcc-7  && autoreconf -v --install --force && ./configure --prefix=/usr CPPFLAGS='-DDEBUG' CXXFLAGS='-g -O0 -DDEBUG -DUNIT_TEST' --with-unit-test && make clean"
+        build_command_prepend: "cov-configure --comptype gcc --compiler gcc-7 --template && autoreconf -v --install --force && ./configure --prefix=/usr CPPFLAGS='-DDEBUG' CXXFLAGS='-g -O0 -DDEBUG -DUNIT_TEST' --with-unit-test && make clean"
         build_command: "make V=1 -j10"
         branch_pattern: master
     before_install:
@@ -75,9 +75,7 @@ matrix:
       - lsb_release -a
       - uname -a
       - whoami
-      # Work around broken certificate of scan.coverity.com
-      - sudo curl -s -L https://entrust.com/root-certificates/entrust_l1k.cer -o /usr/local/share/ca-certificates/entrust_l1k.crt
-      - sudo update-ca-certificates
+      - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
     script:
       - autoreconf -v --install --force
       - ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -DUNIT_TEST" --with-unit-test
