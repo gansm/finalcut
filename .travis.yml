@@ -82,7 +82,7 @@ matrix:
       - make V=1 -j10
       - make check
       - cat test/*.log
-    before_install:
+    after_script:
       - echo "--------------- scm_log.txt ---------------"
       - cat /home/travis/build/gansm/finalcut/cov-int/scm_log.txt
       - echo "-------------------------------------------"
