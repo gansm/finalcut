@@ -149,38 +149,12 @@ void FSpinBox::setSuffix (const FString& text)
 }
 
 //----------------------------------------------------------------------
-void FSpinBox::draw()
+void FSpinBox::hide()
 {
-  const auto& wc = getFWidgetColors();
-
-  FColorPair inc_button_color = [&] () -> FColorPair
-  {
-    if ( value == max )
-      return FColorPair ( wc.scrollbar_button_inactive_fg
-                        , wc.scrollbar_button_inactive_bg );
-    else
-      return FColorPair ( wc.scrollbar_button_fg
-                        , wc.scrollbar_button_bg );
-  }();
-
-  FColorPair dec_button_color = [&] () -> FColorPair
-  {
-    if ( value == min )
-      return FColorPair ( wc.scrollbar_button_inactive_fg
-                        , wc.scrollbar_button_inactive_bg );
-    else
-      return FColorPair ( wc.scrollbar_button_fg
-                        , wc.scrollbar_button_bg );
-  }();
-
-  print() << FPoint(getWidth() - 1, 1)
-          << dec_button_color
-          << fc::BlackDownPointingTriangle  // ▼
-          << inc_button_color
-          << fc::BlackUpPointingTriangle;   // ▲
-
-  if ( getFlags().shadow )
-    drawShadow(this);
+  input_field.hide();
+  FWidget::hide();
+  FSize shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
+  hideArea (getSize() + shadow);
 }
 
 //----------------------------------------------------------------------
@@ -309,7 +283,7 @@ void FSpinBox::onTimer (FTimerEvent*)
       updateInputField();
       break;
 
-    default:
+    case FSpinBox::noSpin:
       break;
   }
 }
@@ -333,6 +307,41 @@ void FSpinBox::init()
     "changed",
     F_METHOD_CALLBACK (this, &FSpinBox::cb_inputFieldChange)
   );
+}
+
+//----------------------------------------------------------------------
+void FSpinBox::draw()
+{
+  const auto& wc = getFWidgetColors();
+
+  FColorPair inc_button_color = [&] () -> FColorPair
+  {
+    if ( value == max )
+      return FColorPair ( wc.scrollbar_button_inactive_fg
+                        , wc.scrollbar_button_inactive_bg );
+    else
+      return FColorPair ( wc.scrollbar_button_fg
+                        , wc.scrollbar_button_bg );
+  }();
+
+  FColorPair dec_button_color = [&] () -> FColorPair
+  {
+    if ( value == min )
+      return FColorPair ( wc.scrollbar_button_inactive_fg
+                        , wc.scrollbar_button_inactive_bg );
+    else
+      return FColorPair ( wc.scrollbar_button_fg
+                        , wc.scrollbar_button_bg );
+  }();
+
+  print() << FPoint(int(getWidth()) - 1, 1)
+          << dec_button_color
+          << fc::BlackDownPointingTriangle  // ▼
+          << inc_button_color
+          << fc::BlackUpPointingTriangle;   // ▲
+
+  if ( getFlags().shadow )
+    drawShadow(this);
 }
 
 //----------------------------------------------------------------------

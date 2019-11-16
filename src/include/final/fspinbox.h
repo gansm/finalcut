@@ -114,7 +114,7 @@ class FSpinBox : public FWidget
     bool                hasShadow();
 
     // Methods
-    void                draw() override;
+    void                hide() override;
 
     // Event handlers
     void                onKeyPress (FKeyEvent*) override;
@@ -134,6 +134,7 @@ class FSpinBox : public FWidget
 
     // Methods
     void                init();
+    void                draw() override;
     void                updateInputField();
     void                increaseValue();
     void                decreaseValue();

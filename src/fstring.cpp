@@ -277,7 +277,7 @@ FString& FString::operator << (const uInt num)
 }
 
 //----------------------------------------------------------------------
-FString& FString::operator << (const long num)
+FString& FString::operator << (const sInt64 num)
 {
   FString numstr(FString().setNumber(num));
   _insert (length, numstr.length, numstr.string);
@@ -285,7 +285,7 @@ FString& FString::operator << (const long num)
 }
 
 //----------------------------------------------------------------------
-FString& FString::operator << (const uLong num)
+FString& FString::operator << (const uInt64 num)
 {
   FString numstr(FString().setNumber(num));
   _insert (length, numstr.length, numstr.string);

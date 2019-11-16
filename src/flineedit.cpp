@@ -112,7 +112,7 @@ FLineEdit& FLineEdit::operator << (const int num)
 }
 
 //----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (const uLong num)
+FLineEdit& FLineEdit::operator << (const uInt64 num)
 {
   FString num_str;
   num_str << num;
@@ -121,7 +121,7 @@ FLineEdit& FLineEdit::operator << (const uLong num)
 }
 
 //----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (const long num)
+FLineEdit& FLineEdit::operator << (const sInt64 num)
 {
   FString num_str;
   num_str << num;

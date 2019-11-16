@@ -90,8 +90,8 @@ class FLabel : public FWidget
     FLabel& operator << (const wchar_t);
     FLabel& operator << (const uInt);
     FLabel& operator << (const int);
-    FLabel& operator << (const uLong);
-    FLabel& operator << (const long);
+    FLabel& operator << (const uInt64);
+    FLabel& operator << (const sInt64);
     FLabel& operator << (const float);
     FLabel& operator << (const double);
     FLabel& operator << (const lDouble);

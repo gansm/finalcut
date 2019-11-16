@@ -43,12 +43,13 @@ INCLUDE_HEADERS = \
 	fsystemimpl.h \
 	fscrollbar.h \
 	fscrollview.h \
+	fspinbox.h \
 	fstatusbar.h \
 	fstring.h \
 	fmouse.h \
 	fkeyboard.h \
-	ftermcap.h \
 	fstartoptions.h \
+	ftermcap.h \
 	fterm.h \
 	ftermdata.h \
 	ftermdebugdata.h \
@@ -104,6 +105,7 @@ OBJS = \
 	fdialog.o \
 	fwindow.o \
 	fscrollview.o \
+	fspinbox.o \
 	fmessagebox.o \
 	ftooltip.o \
 	ffiledialog.o \

@@ -106,8 +106,8 @@ class FLineEdit : public FWidget
     FLineEdit& operator << (const wchar_t);
     FLineEdit& operator << (const uInt);
     FLineEdit& operator << (const int);
-    FLineEdit& operator << (const uLong);
-    FLineEdit& operator << (const long);
+    FLineEdit& operator << (const uInt64);
+    FLineEdit& operator << (const sInt64);
     FLineEdit& operator << (const float);
     FLineEdit& operator << (const double);
     FLineEdit& operator << (const lDouble);

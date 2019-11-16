@@ -38,6 +38,15 @@ class Background : public finalcut::FDialog
   public:
     explicit Background (finalcut::FWidget* = nullptr);
 
+    // Disable copy constructor
+    Background (const Background&) = delete;
+
+    // Destructor
+    ~Background();
+
+    // Disable assignment operator (=)
+    Background& operator = (const Background&) = delete;
+
   private:
     // Callback method
     void cb_changed (finalcut::FWidget*, FDataPtr);
@@ -79,9 +88,9 @@ Background::Background (finalcut::FWidget* parent)
   // Set the initial palette values
   const auto& wc = getFWidgetColors();
   finalcut::FTerm::setPalette ( wc.term_bg
-                              , red.getValue()
-                              , green.getValue()
-                              , blue.getValue() );
+                              , int(red.getValue())
+                              , int(green.getValue())
+                              , int(blue.getValue()) );
 
   // Quit button
   quit.setGeometry(FPoint(19, 5), FSize(10, 1));
@@ -113,13 +122,17 @@ Background::Background (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
+Background::~Background()  // destructor
+{ }
+
+//----------------------------------------------------------------------
 void Background::cb_changed (finalcut::FWidget*, FDataPtr)
 {
   const auto& wc = getFWidgetColors();
   finalcut::FTerm::setPalette ( wc.term_bg
-                              , red.getValue()
-                              , green.getValue()
-                              , blue.getValue() );
+                              , int(red.getValue())
+                              , int(green.getValue())
+                              , int(blue.getValue()) );
   redraw();
   updateTerminal();
 }

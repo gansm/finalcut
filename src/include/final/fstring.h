@@ -118,8 +118,8 @@ class FString
     FString& operator << (const uInt16);
     FString& operator << (const int);
     FString& operator << (const uInt);
-    FString& operator << (const long);
-    FString& operator << (const uLong);
+    FString& operator << (const sInt64);
+    FString& operator << (const uInt64);
     FString& operator << (const float);
     FString& operator << (const double);
     FString& operator << (const lDouble);

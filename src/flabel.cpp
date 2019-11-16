@@ -107,7 +107,7 @@ FLabel& FLabel::operator << (const int num)
 }
 
 //----------------------------------------------------------------------
-FLabel& FLabel::operator << (const uLong num)
+FLabel& FLabel::operator << (const uInt64 num)
 {
   FString num_str;
   num_str << num;
@@ -116,7 +116,7 @@ FLabel& FLabel::operator << (const uLong num)
 }
 
 //----------------------------------------------------------------------
-FLabel& FLabel::operator << (const long num)
+FLabel& FLabel::operator << (const sInt64 num)
 {
   FString num_str;
   num_str << num;
