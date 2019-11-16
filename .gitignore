@@ -39,6 +39,7 @@ examples/.libs/
 examples/calculator
 examples/dialog
 examples/string-operations
+examples/background-color
 examples/opti-move
 examples/termcap
 examples/hello

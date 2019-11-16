@@ -72,7 +72,7 @@ class FToolTip;
 class FDialog : public FWindow
 {
   public:
-     // Using-declaration
+    // Using-declaration
     using FWindow::setResizeable;
 
     // Enumeration

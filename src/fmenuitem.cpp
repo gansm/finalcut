@@ -112,56 +112,36 @@ bool FMenuItem::setFocus (bool enable)
 {
   FWidget::setFocus(enable);
 
-  if ( enable )
+  if ( ! enable || ! isEnabled() || selected )
+    return enable;
+
+  auto menu_list = getFMenuList(*getSuperMenu());
+  setSelected();
+
+  if ( menu_list )
   {
-    if ( isEnabled() )
-    {
-      if ( ! selected )
-      {
-        auto menu_list = getFMenuList(*getSuperMenu());
-        setSelected();
-
-        if ( menu_list )
-        {
-          menu_list->unselectItem();
-          menu_list->setSelectedItem(this);
-        }
-
-        if ( getStatusBar() )
-          getStatusBar()->drawMessage();
-
-        auto parent = getSuperMenu();
-
-        if ( isMenuBar(parent) )
-        {
-          auto menubar_ptr = static_cast<FMenuBar*>(parent);
-
-          if ( menubar_ptr )
-            menubar_ptr->redraw();
-        }
-        else if ( isMenu(parent) )
-        {
-          auto menu_ptr = static_cast<FMenu*>(parent);
-
-          if ( menu_ptr )
-            menu_ptr->redraw();
-        }
-      }
-
-      if ( getStatusBar() )
-      {
-        const auto& msg = getStatusbarMessage();
-        const auto& curMsg = getStatusBar()->getMessage();
-
-        if ( curMsg != msg )
-          getStatusBar()->setMessage(msg);
-      }
-    }
+    menu_list->unselectItem();
+    menu_list->setSelectedItem(this);
   }
-  else
+
+  if ( getStatusBar() )
+    getStatusBar()->drawMessage();
+
+  auto parent = getSuperMenu();
+
+  if ( isMenuBar(parent) )
   {
-    if ( isEnabled() && getStatusBar() )
-      getStatusBar()->clearMessage();
+    auto menubar_ptr = static_cast<FMenuBar*>(parent);
+
+    if ( menubar_ptr )
+      menubar_ptr->redraw();
+  }
+  else if ( isMenu(parent) )
+  {
+    auto menu_ptr = static_cast<FMenu*>(parent);
+
+    if ( menu_ptr )
+      menu_ptr->redraw();
   }
 
   return enable;

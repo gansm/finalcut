@@ -28,6 +28,28 @@ namespace finalcut
 
 // FWidget non-member functions
 //----------------------------------------------------------------------
+bool isFocusNextKey (FKey key)
+{
+  if ( key == fc::Fkey_tab
+    || key == fc::Fkey_right
+    || key == fc::Fkey_down )
+  return true;
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+bool isFocusPrevKey (FKey key)
+{
+  if ( key == fc::Fkey_btab
+    || key == fc::Fkey_left
+    || key == fc::Fkey_up )
+  return true;
+
+  return false;
+}
+
+//----------------------------------------------------------------------
 FKey getHotkey (const FString& text)
 {
   // Returns the hotkey character from a string

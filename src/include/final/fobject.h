@@ -113,6 +113,7 @@ class FObject
     void                  removeParent();
     void                  addChild (FObject*);
     void                  delChild (FObject*);
+    void                  setParent (FObject*);
 
     // Event handler
     virtual bool          event (FEvent*);

@@ -21,6 +21,8 @@
 ***********************************************************************/
 
 #include <limits>
+
+#include "final/fpoint.h"
 #include "final/fsize.h"
 
 namespace finalcut
@@ -98,6 +100,26 @@ void FSize::setSize (std::size_t w, std::size_t h)
 bool FSize::isEmpty() const
 {
   return width == 0 && height == 0;
+}
+
+//----------------------------------------------------------------------
+void FSize::scaleBy (int dx, int dy)
+{
+  if ( dx < 0 )
+    width -= std::size_t(-dx);
+  else
+    width += std::size_t(dx);
+
+  if ( dx < 0 )
+    height -= std::size_t(-dy);
+  else
+    height += std::size_t(dy);
+}
+
+//----------------------------------------------------------------------
+void FSize::scaleBy (const FPoint& d)
+{
+  scaleBy (d.getX(), d.getY());
 }
 
 //----------------------------------------------------------------------

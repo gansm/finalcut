@@ -70,6 +70,9 @@ class FLabel;
 class FLineEdit : public FWidget
 {
   public:
+    // Using-declaration
+    using FWidget::setGeometry;
+
     // Enumerations
     enum label_o
     {
@@ -82,9 +85,6 @@ class FLineEdit : public FWidget
       textfield = 0,
       password  = 1
     };
-
-    // Using-declaration
-    using FWidget::setGeometry;
 
     // Constructor
     explicit FLineEdit (FWidget* = nullptr);
@@ -118,7 +118,8 @@ class FLineEdit : public FWidget
     FString             getText() const;
     std::size_t         getMaxLength() const;
     std::size_t         getCursorPosition() const;
-    int                 getLabelOrientation();
+    FLabel*             getLabelObject() const;
+    label_o             getLabelOrientation();
 
     // Mutators
     void                setText (const FString&);
@@ -129,6 +130,7 @@ class FLineEdit : public FWidget
     void                setLabelText (const FString&);
     void                setInputType (const inputType);
     void                setLabelOrientation (const label_o);
+    void                setLabelAssociatedWidget (FWidget*);
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     bool                setEnable(bool) override;
@@ -154,6 +156,7 @@ class FLineEdit : public FWidget
     void                onMouseDown (FMouseEvent*) override;
     void                onMouseUp (FMouseEvent*) override;
     void                onMouseMove (FMouseEvent*) override;
+    void                onWheel (FWheelEvent*) override;
     void                onTimer (FTimerEvent*) override;
     void                onAccel (FAccelEvent*) override;
     void                onHide (FHideEvent*) override;
@@ -206,22 +209,26 @@ class FLineEdit : public FWidget
     void                processChanged();
 
     // Data members
-    FString      text{""};
-    FString      print_text{""};
-    FString      label_text{""};
-    FLabel*      label{};
-    std::wstring input_filter{};
-    dragScroll   drag_scroll{FLineEdit::noScroll};
-    label_o      label_orientation{FLineEdit::label_left};
-    inputType    input_type{FLineEdit::textfield};
-    int          scroll_repeat{100};
-    bool         scroll_timer{false};
-    bool         insert_mode{true};
-    std::size_t  cursor_pos{NOT_SET};
-    std::size_t  text_offset{0};
-    std::size_t  char_width_offset{0};
-    std::size_t  x_pos{0};
-    std::size_t  max_length{std::numeric_limits<std::size_t>::max()};
+    FString       text{""};
+    FString       print_text{""};
+    FString       label_text{""};
+    FLabel*       label{};
+    FWidget*      label_associated_widget{this};
+    std::wstring  input_filter{};
+    dragScroll    drag_scroll{FLineEdit::noScroll};
+    label_o       label_orientation{FLineEdit::label_left};
+    inputType     input_type{FLineEdit::textfield};
+    int           scroll_repeat{100};
+    bool          scroll_timer{false};
+    bool          insert_mode{true};
+    std::size_t   cursor_pos{NOT_SET};
+    std::size_t   text_offset{0};
+    std::size_t   char_width_offset{0};
+    std::size_t   x_pos{0};
+    std::size_t   max_length{std::numeric_limits<std::size_t>::max()};
+
+    // Friend class
+    friend class FSpinBox;
 };
 
 
@@ -243,8 +250,12 @@ inline std::size_t FLineEdit::getCursorPosition() const
 { return cursor_pos; }
 
 //----------------------------------------------------------------------
-inline int FLineEdit::getLabelOrientation()
-{ return int(label_orientation); }
+inline FLabel* FLineEdit::getLabelObject() const
+{ return label; }
+
+//----------------------------------------------------------------------
+inline FLineEdit::label_o FLineEdit::getLabelOrientation()
+{ return label_orientation; }
 
 //----------------------------------------------------------------------
 inline void FLineEdit::setInputFilter (const FString& regex_string)
@@ -257,6 +268,10 @@ inline void FLineEdit::clearInputFilter()
 //----------------------------------------------------------------------
 inline void FLineEdit::setInputType (const inputType type)
 { input_type = type; }
+
+//----------------------------------------------------------------------
+inline void FLineEdit::setLabelAssociatedWidget (FWidget* w)
+{ label_associated_widget = w; }
 
 //----------------------------------------------------------------------
 inline bool FLineEdit::setEnable()

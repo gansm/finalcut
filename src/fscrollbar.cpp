@@ -273,7 +273,7 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
     return;
   }
 
-  // Process left button
+  // Process left mouse button
   scroll_type = getClickedScrollType(mouse_x, mouse_y);
 
   if ( scroll_type == FScrollbar::noScroll )
@@ -341,7 +341,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
     return;
   }
 
-  // Process left button
+  // Process left mouse button
   int new_scroll_type = getClickedScrollType(mouse_x, mouse_y);
 
   if ( scroll_type == FScrollbar::scrollJump )

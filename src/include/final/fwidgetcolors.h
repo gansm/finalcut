@@ -134,6 +134,8 @@ class FWidgetColors final
     FColor scrollbar_bg{fc::Default};
     FColor scrollbar_button_fg{fc::Default};
     FColor scrollbar_button_bg{fc::Default};
+    FColor scrollbar_button_inactive_fg{fc::Default};
+    FColor scrollbar_button_inactive_bg{fc::Default};
     FColor progressbar_fg{fc::Default};
     FColor progressbar_bg{fc::Default};
 };

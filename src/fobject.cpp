@@ -175,6 +175,21 @@ void FObject::delChild (FObject* obj)
 }
 
 //----------------------------------------------------------------------
+void FObject::setParent (FObject* parent)
+{
+  // Sets a new parent object
+
+  if ( ! parent )
+    return;
+
+  removeParent();
+
+  parent_obj = parent;
+  has_parent = true;
+  parent->children_list.push_back(this);
+}
+
+//----------------------------------------------------------------------
 bool FObject::event (FEvent* ev)
 {
   // Receives events on this object

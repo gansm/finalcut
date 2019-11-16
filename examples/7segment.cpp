@@ -33,7 +33,7 @@ using finalcut::FSize;
 
 
 //----------------------------------------------------------------------
-// class TextWindow
+// class SegmentView
 //----------------------------------------------------------------------
 
 class SegmentView : public finalcut::FDialog

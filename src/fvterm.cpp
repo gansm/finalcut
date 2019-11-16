@@ -2864,41 +2864,16 @@ inline void FVTerm::markAsPrinted (uInt from, uInt to, uInt line)
 inline void FVTerm::newFontChanges (FChar*& next_char)
 {
   // NewFont special cases
-  if ( isNewFont() )
-  {
-    switch ( next_char->ch )
-    {
-      case fc::LowerHalfBlock:
-        next_char->ch = fc::UpperHalfBlock;
-        // fall through
-      case fc::NF_rev_left_arrow2:
-      case fc::NF_rev_right_arrow2:
-      case fc::NF_rev_border_corner_upper_right:
-      case fc::NF_rev_border_line_right:
-      case fc::NF_rev_border_line_vertical_left:
-      case fc::NF_rev_border_corner_lower_right:
-      case fc::NF_rev_up_arrow2:
-      case fc::NF_rev_down_arrow2:
-      case fc::NF_rev_up_arrow1:
-      case fc::NF_rev_down_arrow1:
-      case fc::NF_rev_left_arrow1:
-      case fc::NF_rev_right_arrow1:
-      case fc::NF_rev_menu_button1:
-      case fc::NF_rev_menu_button2:
-      case fc::NF_rev_up_pointing_triangle1:
-      case fc::NF_rev_down_pointing_triangle1:
-      case fc::NF_rev_up_pointing_triangle2:
-      case fc::NF_rev_down_pointing_triangle2:
-      case fc::NF_rev_menu_button3:
-      case fc::NF_rev_border_line_right_and_left:
-        // Show in reverse video
-        next_char->attr.bit.reverse = true;
-        break;
+  if ( ! isNewFont() )
+    return;
 
-      default:
-        break;
-    }
+  if ( next_char->ch == fc::LowerHalfBlock )
+  {
+    next_char->ch = fc::UpperHalfBlock;
+    next_char->attr.bit.reverse = true;
   }
+  else if ( isReverseNewFontchar(next_char->ch) )
+    next_char->attr.bit.reverse = true;  // Show in reverse video
 }
 
 //----------------------------------------------------------------------

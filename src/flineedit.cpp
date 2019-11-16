@@ -40,7 +40,7 @@ namespace finalcut
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FLineEdit::FLineEdit(FWidget* parent)
+FLineEdit::FLineEdit (FWidget* parent)
   : FWidget(parent)
   , label{new FLabel("", parent)}
 {
@@ -196,35 +196,21 @@ bool FLineEdit::setEnable (bool enable)
 //----------------------------------------------------------------------
 bool FLineEdit::setFocus (bool enable)
 {
-  const auto& wc = getFWidgetColors();
   FWidget::setFocus(enable);
 
-  if ( enable )
+  if ( isEnabled() )
   {
-    if ( isEnabled() )
+    const auto& wc = getFWidgetColors();
+
+    if ( enable )
     {
       setForegroundColor (wc.inputfield_active_focus_fg);
       setBackgroundColor (wc.inputfield_active_focus_bg);
-
-      if ( getStatusBar() )
-      {
-        const auto& msg = getStatusbarMessage();
-        const auto& curMsg = getStatusBar()->getMessage();
-
-        if ( curMsg != msg )
-          getStatusBar()->setMessage(msg);
-      }
     }
-  }
-  else
-  {
-    if ( isEnabled() )
+    else
     {
       setForegroundColor (wc.inputfield_active_fg);
       setBackgroundColor (wc.inputfield_active_bg);
-
-      if ( getStatusBar() )
-        getStatusBar()->clearMessage();
     }
   }
 
@@ -535,6 +521,19 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
+void FLineEdit::onWheel (FWheelEvent* ev)
+{
+  // Sends the wheel event to the parent widget
+
+  auto widget = getParentWidget();
+
+  if ( widget )
+  {
+    FApplication::sendEvent(widget, ev);
+  }
+}
+
+//----------------------------------------------------------------------
 void FLineEdit::onTimer (FTimerEvent*)
 {
   auto len = print_text.getLength();
@@ -652,6 +651,10 @@ void FLineEdit::onFocusOut (FFocusEvent*)
 void FLineEdit::adjustLabel()
 {
   auto label_width = getColumnWidth(label_text);
+  auto w = label_associated_widget;
+
+  if ( ! w )
+    return;
 
   if ( hasHotkey() )
     label_width--;
@@ -662,12 +665,12 @@ void FLineEdit::adjustLabel()
   switch ( label_orientation )
   {
     case label_above:
-      label->setGeometry ( FPoint(getX(), getY() - 1)
+      label->setGeometry ( FPoint(w->getX(), w->getY() - 1)
                          , FSize(label_width, 1) );
       break;
 
     case label_left:
-      label->setGeometry ( FPoint(getX() - int(label_width) - 1, getY())
+      label->setGeometry ( FPoint(w->getX() - int(label_width) - 1, w->getY())
                          , FSize(label_width, 1) );
       break;
   }

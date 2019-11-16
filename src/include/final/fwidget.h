@@ -410,6 +410,7 @@ class FWidget : public FVTerm, public FObject
     void                    insufficientSpaceAdjust();
     void                    KeyPressEvent (FKeyEvent*);
     void                    KeyDownEvent (FKeyEvent*);
+    void                    setWindowFocus (bool);
     FCallbackPtr            getCallbackPtr (FCallback);
     bool                    changeFocus (FWidget*, FWidget*, fc::FocusTypes);
     void                    processDestroy();
@@ -417,6 +418,7 @@ class FWidget : public FVTerm, public FObject
     void                    drawWindows();
     void                    drawChildren();
     static void             setColorTheme();
+    void                    setStatusbarText (bool);
 
     // Data members
     FPoint                  widget_cursor_position{-1, -1};
@@ -527,6 +529,8 @@ class FWidget : public FVTerm, public FObject
 // implemented in fwidget_functions.cpp
 //----------------------------------------------------------------------
 void        detectTermSize();
+bool        isFocusNextKey (FKey);
+bool        isFocusPrevKey (FKey);
 FKey        getHotkey (const FString&);
 std::size_t getHotkeyPos (const FString& src, FString& dest);
 void        setHotkeyViaString (FWidget*, const FString&);

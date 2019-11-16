@@ -150,6 +150,30 @@ const wchar_t ambiguous_width_list[] =
 #endif
 };
 
+const wchar_t reverse_newfont_list[] =
+{
+  fc::NF_rev_left_arrow2,
+  fc::NF_rev_right_arrow2,
+  fc::NF_rev_border_corner_upper_right,
+  fc::NF_rev_border_line_right,
+  fc::NF_rev_border_line_vertical_left,
+  fc::NF_rev_border_corner_lower_right,
+  fc::NF_rev_up_arrow2,
+  fc::NF_rev_down_arrow2,
+  fc::NF_rev_up_arrow1,
+  fc::NF_rev_down_arrow1,
+  fc::NF_rev_left_arrow1,
+  fc::NF_rev_right_arrow1,
+  fc::NF_rev_menu_button1,
+  fc::NF_rev_menu_button2,
+  fc::NF_rev_up_pointing_triangle1,
+  fc::NF_rev_down_pointing_triangle1,
+  fc::NF_rev_up_pointing_triangle2,
+  fc::NF_rev_down_pointing_triangle2,
+  fc::NF_rev_menu_button3,
+  fc::NF_rev_border_line_right_and_left
+};
+
 
 // FTerm non-member functions
 //----------------------------------------------------------------------
@@ -175,6 +199,18 @@ inline bool hasAmbiguousWidth (wchar_t wchar)
 {
   const auto& begin = std::begin(ambiguous_width_list);
   const auto& end = std::end(ambiguous_width_list);
+
+  if ( std::find(begin, end, wchar) != end )  // found
+    return true;
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+bool isReverseNewFontchar (wchar_t wchar)
+{
+  const auto& begin = std::begin(reverse_newfont_list);
+  const auto& end = std::end(reverse_newfont_list);
 
   if ( std::find(begin, end, wchar) != end )  // found
     return true;

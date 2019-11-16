@@ -25,6 +25,7 @@ noinst_PROGRAMS = \
 	calculator \
 	watch \
 	term-attributes \
+	background-color \
 	transparent \
 	keyboard \
 	mouse \
@@ -50,6 +51,7 @@ mandelbrot_SOURCES = mandelbrot.cpp
 calculator_SOURCES = calculator.cpp
 watch_SOURCES = watch.cpp
 term_attributes_SOURCES = term-attributes.cpp
+background_color_SOURCES = background-color.cpp
 termcap_SOURCES = termcap.cpp
 transparent_SOURCES = transparent.cpp
 keyboard_SOURCES = keyboard.cpp

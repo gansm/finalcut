@@ -142,11 +142,11 @@ inline void FListBoxItem::clear()
 class FListBox : public FWidget
 {
   public:
-    // Typedef
-    typedef std::vector<FListBoxItem> listBoxItems;
-
     // Using-declaration
     using FWidget::setGeometry;
+
+    // Typedef
+    typedef std::vector<FListBoxItem> listBoxItems;
 
     // Constructor
     explicit FListBox (FWidget* = nullptr);
@@ -188,9 +188,6 @@ class FListBox : public FWidget
     void                setMultiSelection ();
     void                unsetMultiSelection ();
     bool                setDisable() override;
-    bool                setFocus (bool) override;
-    bool                setFocus() override;
-    bool                unsetFocus() override;
     void                setText (const FString&);
 
     // Inquiries
@@ -441,14 +438,6 @@ inline void FListBox::unsetMultiSelection()
 //----------------------------------------------------------------------
 inline bool FListBox::setDisable()
 { return setEnable(false); }
-
-//----------------------------------------------------------------------
-inline bool FListBox::setFocus()
-{ return setFocus(true); }
-
-//----------------------------------------------------------------------
-inline bool FListBox::unsetFocus()
-{ return setFocus(false); }
 
 //----------------------------------------------------------------------
 inline bool FListBox::isSelected (std::size_t index)

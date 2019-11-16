@@ -44,6 +44,9 @@
 namespace finalcut
 {
 
+// class forward declaration
+class FPoint;
+
 //----------------------------------------------------------------------
 // class FSize
 //----------------------------------------------------------------------
@@ -94,6 +97,10 @@ class FSize
     // Side references
     std::size_t&          width_ref();
     std::size_t&          height_ref();
+
+    // Methods
+    void                  scaleBy (int, int);
+    void                  scaleBy (const FPoint&);
 
   private:
     // Data members

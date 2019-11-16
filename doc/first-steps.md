@@ -1,5 +1,5 @@
 
-First steps with the Final Cut widget toolkit 
+First steps with the FINAL CUT widget toolkit 
 =============================================
 
 Table of Contents

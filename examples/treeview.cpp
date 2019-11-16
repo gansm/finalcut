@@ -353,7 +353,7 @@ Treeview::Treeview (finalcut::FWidget* parent)
   Quit.setGeometry(FPoint(24, 16), FSize(10, 1));
   Quit.setText (L"&Quit");
 
-  // Add some function callbacks
+  // Callback function
   Quit.addCallback
   (
     "clicked",

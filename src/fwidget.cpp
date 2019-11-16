@@ -284,23 +284,11 @@ bool FWidget::setFocus (bool enable)
     FWidget::setFocusWidget(this);
   }
 
-  auto window = FWindow::getWindowWidget(this);
+  // Activates the window with the focused widget
+  setWindowFocus (enable);
 
-  // set window focus
-  if ( enable && window )
-  {
-    if ( ! window->isWindowActive() )
-    {
-      bool has_raised = window->raiseWindow();
-      FWindow::setActiveWindow(window);
-
-      if ( has_raised && window->isVisible() && window->isShown() )
-        window->redraw();
-    }
-
-    window->setWindowFocusWidget(this);
-  }
-
+  // Set status bar text for widget focus
+  setStatusbarText (enable);
   return (flags.focus = enable);
 }
 
@@ -1794,17 +1782,7 @@ inline void FWidget::insufficientSpaceAdjust()
 //----------------------------------------------------------------------
 void FWidget::KeyPressEvent (FKeyEvent* kev)
 {
-  bool accpt_focus{false};
-
-  if ( kev->key() == fc::Fkey_tab )
-    accpt_focus = focusNextChild();
-  else if ( kev->key() == fc::Fkey_btab )
-    accpt_focus = focusPrevChild();
-
-  if ( accpt_focus )
-    return;
-
-  FWidget* widget(this);
+    FWidget* widget(this);
 
   while ( widget )
   {
@@ -1812,15 +1790,20 @@ void FWidget::KeyPressEvent (FKeyEvent* kev)
 
     if ( ! kev->isAccepted() )
     {
-      if ( kev->key() == fc::Fkey_right
-        || kev->key() == fc::Fkey_down )
-        accpt_focus = focusNextChild();
-      else if ( kev->key() == fc::Fkey_left
-             || kev->key() == fc::Fkey_up )
-        accpt_focus = focusPrevChild();
+      FKey key = kev->key();
 
-      if ( accpt_focus )
+      if ( [&] () -> bool
+           {
+             if ( isFocusNextKey(key) )
+               return focusNextChild();
+             else if ( isFocusPrevKey(key) )
+               return focusPrevChild();
+
+             return false;
+           }() )
+      {
         return;
+      }
     }
 
     if ( kev->isAccepted() || widget->isRootWidget() )
@@ -1844,6 +1827,31 @@ void FWidget::KeyDownEvent (FKeyEvent* kev)
 
     widget = widget->getParentWidget();
   }
+}
+
+//----------------------------------------------------------------------
+void FWidget::setWindowFocus (bool enable)
+{
+  // set the window focus
+
+  if ( ! enable )
+    return;
+
+  auto window = FWindow::getWindowWidget(this);
+
+  if ( ! window )
+    return;
+
+  if ( ! window->isWindowActive() )
+  {
+    bool has_raised = window->raiseWindow();
+    FWindow::setActiveWindow(window);
+
+    if ( has_raised && window->isVisible() && window->isShown() )
+      window->redraw();
+  }
+
+  window->setWindowFocusWidget(this);
 }
 
 //----------------------------------------------------------------------
@@ -1952,6 +1960,26 @@ void FWidget::setColorTheme()
     wcolors.set8ColorTheme();
   else
     wcolors.set16ColorTheme();
+}
+
+//----------------------------------------------------------------------
+void FWidget::setStatusbarText (bool enable)
+{
+  if ( ! isEnabled() || ! getStatusBar() )
+    return;
+
+  if ( enable )
+  {
+    const auto& msg = getStatusbarMessage();
+    const auto& curMsg = getStatusBar()->getMessage();
+
+    if ( curMsg != msg )
+      getStatusBar()->setMessage(msg);
+  }
+  else
+  {
+    getStatusBar()->clearMessage();
+  }
 }
 
 

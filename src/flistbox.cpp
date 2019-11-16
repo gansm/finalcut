@@ -181,31 +181,6 @@ void FListBox::setGeometry ( const FPoint& pos, const FSize& size
 }
 
 //----------------------------------------------------------------------
-bool FListBox::setFocus (bool enable)
-{
-  FWidget::setFocus(enable);
-
-  if ( enable )
-  {
-    if ( getStatusBar() )
-    {
-      const auto& msg = getStatusbarMessage();
-      const auto& curMsg = getStatusBar()->getMessage();
-
-      if ( curMsg != msg )
-        getStatusBar()->setMessage(msg);
-    }
-  }
-  else
-  {
-    if ( getStatusBar() )
-      getStatusBar()->clearMessage();
-  }
-
-  return enable;
-}
-
-//----------------------------------------------------------------------
 void FListBox::setText (const FString& txt)
 {
   text.setString(txt);

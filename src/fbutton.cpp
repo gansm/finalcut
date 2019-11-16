@@ -151,27 +151,6 @@ bool FButton::setEnable (bool enable)
 bool FButton::setFocus (bool enable)
 {
   FWidget::setFocus(enable);
-
-  if ( enable )
-  {
-    if ( isEnabled() )
-    {
-      if ( getStatusBar() )
-      {
-        const auto& msg = getStatusbarMessage();
-        const auto& curMsg = getStatusBar()->getMessage();
-
-        if ( curMsg != msg )
-          getStatusBar()->setMessage(msg);
-      }
-    }
-  }
-  else
-  {
-    if ( isEnabled() && getStatusBar() )
-      getStatusBar()->clearMessage();
-  }
-
   updateButtonColor();
   return enable;
 }

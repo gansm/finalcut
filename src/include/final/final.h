@@ -62,6 +62,7 @@
 #include <final/fscrollbar.h>
 #include <final/fscrollview.h>
 #include <final/fsize.h>
+#include <final/fspinbox.h>
 #include <final/fstartoptions.h>
 #include <final/fstatusbar.h>
 #include <final/fstring.h>

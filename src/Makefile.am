@@ -44,7 +44,7 @@ libfinal_la_SOURCES = \
 	ffiledialog.cpp \
 	fkey_map.cpp \
 	fcharmap.cpp \
-	ftextview.cpp \
+	fspinbox.cpp \
 	fstartoptions.cpp \
 	fstatusbar.cpp \
 	ftermcap.cpp \
@@ -58,6 +58,7 @@ libfinal_la_SOURCES = \
 	ftermios.cpp \
 	fterm.cpp \
 	fterm_functions.cpp \
+	ftextview.cpp \
 	fvterm.cpp \
 	fevent.cpp \
 	foptiattr.cpp \
@@ -117,6 +118,7 @@ finalcutinclude_HEADERS = \
 	include/final/frect.h \
 	include/final/fscrollbar.h \
 	include/final/fscrollview.h \
+	include/final/fspinbox.h \
 	include/final/fstartoptions.h \
 	include/final/fstatusbar.h \
 	include/final/fstring.h \
@@ -133,8 +135,8 @@ finalcutinclude_HEADERS = \
 	include/final/ftermios.h \
 	include/final/fterm.h \
 	include/final/ftermdata.h \
-	include/final/fvterm.h \
 	include/final/ftextview.h \
+	include/final/fvterm.h \
 	include/final/ftogglebutton.h \
 	include/final/fcolorpalette.h \
 	include/final/fwidgetcolors.h \

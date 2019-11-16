@@ -117,6 +117,8 @@ void FWidgetColors::set8ColorTheme()
   scrollbar_bg                      = fc::LightGray;
   scrollbar_button_fg               = fc::Black;
   scrollbar_button_bg               = fc::LightGray;
+  scrollbar_button_inactive_fg      = fc::Cyan;
+  scrollbar_button_inactive_bg      = fc::LightGray;
   progressbar_fg                    = fc::Blue;
   progressbar_bg                    = fc::LightGray;
 }
@@ -206,6 +208,8 @@ void FWidgetColors::set16ColorTheme()
   scrollbar_bg                      = fc::LightBlue;
   scrollbar_button_fg               = fc::Black;
   scrollbar_button_bg               = fc::LightGray;
+  scrollbar_button_inactive_fg      = fc::DarkGray;
+  scrollbar_button_inactive_bg      = fc::LightGray;
   progressbar_fg                    = fc::DarkGray;
   progressbar_bg                    = fc::LightBlue;
 

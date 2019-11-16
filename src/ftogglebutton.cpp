@@ -143,37 +143,23 @@ bool FToggleButton::setEnable (bool enable)
 bool FToggleButton::setFocus (bool enable)
 {
   FWidget::setFocus(enable);
-  const auto& wc = getFWidgetColors();
 
-  if ( enable )
+  if ( isEnabled() )
   {
-    if ( isEnabled() )
+    const auto& wc = getFWidgetColors();
+
+    if ( enable )
     {
       if ( isRadioButton()  )
         focus_inside_group = false;
 
       setForegroundColor (wc.toggle_button_active_focus_fg);
       setBackgroundColor (wc.toggle_button_active_focus_bg);
-
-      if ( getStatusBar() )
-      {
-        const auto& msg = getStatusbarMessage();
-        const auto& curMsg = getStatusBar()->getMessage();
-
-        if ( curMsg != msg )
-          getStatusBar()->setMessage(msg);
-      }
     }
-  }
-  else
-  {
-    if ( isEnabled() )
+    else
     {
       setForegroundColor (wc.toggle_button_active_fg);
       setBackgroundColor (wc.toggle_button_active_bg);
-
-      if ( getStatusBar() )
-        getStatusBar()->clearMessage();
     }
   }
 

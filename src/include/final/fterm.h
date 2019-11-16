@@ -388,6 +388,7 @@ class FTerm final
 // implemented in fterm_functions.cpp
 //----------------------------------------------------------------------
 uInt env2uint (const char*);
+bool isReverseNewFontchar (wchar_t);
 wchar_t cp437_to_unicode (uChar);
 uChar unicode_to_cp437 (wchar_t);
 FString getFullWidth (const FString&);
