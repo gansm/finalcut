@@ -261,15 +261,7 @@ FString& FString::operator << (const uInt16 num)
 }
 
 //----------------------------------------------------------------------
-FString& FString::operator << (const int num)
-{
-  FString numstr(FString().setNumber(num));
-  _insert (length, numstr.length, numstr.string);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FString& FString::operator << (const uInt num)
+FString& FString::operator << (const sInt32 num)
 {
   FString numstr(FString().setNumber(num));
   _insert (length, numstr.length, numstr.string);
@@ -278,6 +270,14 @@ FString& FString::operator << (const uInt num)
 
 //----------------------------------------------------------------------
 FString& FString::operator << (const sInt64 num)
+{
+  FString numstr(FString().setNumber(num));
+  _insert (length, numstr.length, numstr.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::operator << (const uInt32 num)
 {
   FString numstr(FString().setNumber(num));
   _insert (length, numstr.length, numstr.string);
@@ -367,28 +367,28 @@ const FString& FString::operator >> (uInt16& num)
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (int& num)
+const FString& FString::operator >> (sInt32& num)
 {
   num = toInt();
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (uInt& num)
+const FString& FString::operator >> (uInt32& num)
 {
   num = toUInt();
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (long& num)
+const FString& FString::operator >> (sInt64& num)
 {
   num = toLong();
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (uLong& num)
+const FString& FString::operator >> (uInt64& num)
 {
   num = toULong();
   return *this;

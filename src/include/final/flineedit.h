@@ -104,8 +104,10 @@ class FLineEdit : public FWidget
     FLineEdit& operator << (const FString&);
     FLineEdit& operator << (fc::SpecialCharacter);
     FLineEdit& operator << (const wchar_t);
-    FLineEdit& operator << (const uInt);
-    FLineEdit& operator << (const int);
+    FLineEdit& operator << (const uInt16);
+    FLineEdit& operator << (const sInt16);
+    FLineEdit& operator << (const uInt32);
+    FLineEdit& operator << (const sInt32);
     FLineEdit& operator << (const uInt64);
     FLineEdit& operator << (const sInt64);
     FLineEdit& operator << (const float);

@@ -89,7 +89,7 @@ FLabel& FLabel::operator << (const wchar_t c)
 }
 
 //----------------------------------------------------------------------
-FLabel& FLabel::operator << (const uInt num)
+FLabel& FLabel::operator << (const uInt16 num)
 {
   FString num_str;
   num_str << num;
@@ -98,7 +98,25 @@ FLabel& FLabel::operator << (const uInt num)
 }
 
 //----------------------------------------------------------------------
-FLabel& FLabel::operator << (const int num)
+FLabel& FLabel::operator << (const sInt16 num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLabel& FLabel::operator << (const uInt32 num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLabel& FLabel::operator << (const sInt32 num)
 {
   FString num_str;
   num_str << num;

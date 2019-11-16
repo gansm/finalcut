@@ -94,7 +94,7 @@ FLineEdit& FLineEdit::operator << (const wchar_t c)
 }
 
 //----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (const uInt num)
+FLineEdit& FLineEdit::operator << (const uInt16 num)
 {
   FString num_str;
   num_str << num;
@@ -103,7 +103,25 @@ FLineEdit& FLineEdit::operator << (const uInt num)
 }
 
 //----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (const int num)
+FLineEdit& FLineEdit::operator << (const sInt16 num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLineEdit& FLineEdit::operator << (const uInt32 num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLineEdit& FLineEdit::operator << (const sInt32 num)
 {
   FString num_str;
   num_str << num;

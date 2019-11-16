@@ -88,8 +88,10 @@ class FLabel : public FWidget
     FLabel& operator << (const FString&);
     FLabel& operator << (fc::SpecialCharacter);
     FLabel& operator << (const wchar_t);
-    FLabel& operator << (const uInt);
-    FLabel& operator << (const int);
+    FLabel& operator << (const uInt16);
+    FLabel& operator << (const sInt16);
+    FLabel& operator << (const uInt32);
+    FLabel& operator << (const sInt32);
     FLabel& operator << (const uInt64);
     FLabel& operator << (const sInt64);
     FLabel& operator << (const float);
