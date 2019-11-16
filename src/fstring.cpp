@@ -293,6 +293,16 @@ FString& FString::operator << (const uInt64 num)
 }
 
 //----------------------------------------------------------------------
+#if defined(__APPLE__) && defined(__MACH__)
+FString& FString::operator << (const std::size_t num)
+{
+  FString numstr(FString().setNumber(num));
+  _insert (length, numstr.length, numstr.string);
+  return *this;
+}
+#endif
+
+//----------------------------------------------------------------------
 FString& FString::operator << (const float num)
 {
   FString numstr(FString().setNumber(num));

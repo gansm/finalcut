@@ -120,6 +120,9 @@ class FString
     FString& operator << (const uInt32);
     FString& operator << (const sInt64);
     FString& operator << (const uInt64);
+#if defined(__APPLE__) && defined(__MACH__)
+    FString& operator << (const std::size_t);
+#endif
     FString& operator << (const float);
     FString& operator << (const double);
     FString& operator << (const lDouble);
