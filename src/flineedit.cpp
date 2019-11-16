@@ -73,13 +73,6 @@ FLineEdit& FLineEdit::operator = (const FString& s)
 }
 
 //----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (const FString& s)
-{
-  setText(text + s);
-  return *this;
-}
-
-//----------------------------------------------------------------------
 FLineEdit& FLineEdit::operator << (fc::SpecialCharacter c)
 {
   setText(text + static_cast<wchar_t>(c));
@@ -90,87 +83,6 @@ FLineEdit& FLineEdit::operator << (fc::SpecialCharacter c)
 FLineEdit& FLineEdit::operator << (const wchar_t c)
 {
   setText(text + c);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (const uInt16 num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (const sInt16 num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (const uInt32 num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (const sInt32 num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (const uInt64 num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (const sInt64 num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (const float num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (const double num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLineEdit& FLineEdit::operator << (const lDouble num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
   return *this;
 }
 

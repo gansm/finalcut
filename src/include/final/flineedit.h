@@ -101,18 +101,10 @@ class FLineEdit : public FWidget
 
     // Overloaded operators
     FLineEdit& operator = (const FString&);
-    FLineEdit& operator << (const FString&);
+    template <typename typeT>
+    FLineEdit& operator << (const typeT&);
     FLineEdit& operator << (fc::SpecialCharacter);
     FLineEdit& operator << (const wchar_t);
-    FLineEdit& operator << (const uInt16);
-    FLineEdit& operator << (const sInt16);
-    FLineEdit& operator << (const uInt32);
-    FLineEdit& operator << (const sInt32);
-    FLineEdit& operator << (const uInt64);
-    FLineEdit& operator << (const sInt64);
-    FLineEdit& operator << (const float);
-    FLineEdit& operator << (const double);
-    FLineEdit& operator << (const lDouble);
     const FLineEdit& operator >> (FString&);
 
     // Accessors
@@ -235,6 +227,16 @@ class FLineEdit : public FWidget
 
 
 // FLineEdit inline functions
+//----------------------------------------------------------------------
+template <typename typeT>
+inline FLineEdit& FLineEdit::operator << (const typeT& s)
+{
+  FString str{};
+  str << s;
+  setText(text + str);
+  return *this;
+}
+
 //----------------------------------------------------------------------
 inline const FString FLineEdit::getClassName() const
 { return "FLineEdit"; }

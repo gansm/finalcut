@@ -85,18 +85,10 @@ class FLabel : public FWidget
 
     // Overloaded operators
     FLabel& operator = (const FString&);
-    FLabel& operator << (const FString&);
+    template <typename typeT>
+    FLabel& operator << (const typeT&);
     FLabel& operator << (fc::SpecialCharacter);
     FLabel& operator << (const wchar_t);
-    FLabel& operator << (const uInt16);
-    FLabel& operator << (const sInt16);
-    FLabel& operator << (const uInt32);
-    FLabel& operator << (const sInt32);
-    FLabel& operator << (const uInt64);
-    FLabel& operator << (const sInt64);
-    FLabel& operator << (const float);
-    FLabel& operator << (const double);
-    FLabel& operator << (const lDouble);
     const FLabel& operator >> (FString&);
 
     // Accessors
@@ -166,6 +158,16 @@ class FLabel : public FWidget
 };
 
 // FLabel inline functions
+//----------------------------------------------------------------------
+template <typename typeT>
+inline FLabel& FLabel::operator << (const typeT& s)
+{
+  FString str{};
+  str << s;
+  setText(text + str);
+  return *this;
+}
+
 //----------------------------------------------------------------------
 inline const FString FLabel::getClassName() const
 { return "FLabel"; }

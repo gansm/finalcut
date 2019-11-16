@@ -68,13 +68,6 @@ FLabel& FLabel::operator = (const FString& s)
 }
 
 //----------------------------------------------------------------------
-FLabel& FLabel::operator << (const FString& s)
-{
-  setText(text + s);
-  return *this;
-}
-
-//----------------------------------------------------------------------
 FLabel& FLabel::operator << (fc::SpecialCharacter c)
 {
   setText(text + static_cast<wchar_t>(c));
@@ -85,87 +78,6 @@ FLabel& FLabel::operator << (fc::SpecialCharacter c)
 FLabel& FLabel::operator << (const wchar_t c)
 {
   setText(text + c);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLabel& FLabel::operator << (const uInt16 num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLabel& FLabel::operator << (const sInt16 num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLabel& FLabel::operator << (const uInt32 num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLabel& FLabel::operator << (const sInt32 num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLabel& FLabel::operator << (const uInt64 num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLabel& FLabel::operator << (const sInt64 num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLabel& FLabel::operator << (const float num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLabel& FLabel::operator << (const double num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FLabel& FLabel::operator << (const lDouble num)
-{
-  FString num_str;
-  num_str << num;
-  setText(text + num_str);
   return *this;
 }
 
