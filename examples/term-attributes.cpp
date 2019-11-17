@@ -253,7 +253,7 @@ void AttribDemo::printColorLine()
 {
   auto parent = static_cast<AttribDlg*>(getParent());
 
-  for (FColor color{0}; color < uInt(colors); color++)
+  for (FColor color{0}; color < FColor(colors); color++)
   {
     print() << FColorPair(color, parent->bgcolor) << " # ";
   }

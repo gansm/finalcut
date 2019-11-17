@@ -833,6 +833,18 @@ void FStringTest::streamInsertionTest()
   CPPUNIT_ASSERT ( out == L"A" );
 
   out.clear();
+  out << sInt8(INT_LEAST8_MAX);
+  CPPUNIT_ASSERT ( out == L"127" );
+
+  out.clear();
+  out << sInt8(INT_LEAST8_MIN);
+  CPPUNIT_ASSERT ( out == L"-128" );
+
+  out.clear();
+  out << uInt8(UINT_LEAST8_MAX);
+  CPPUNIT_ASSERT ( out == L"255" );
+
+  out.clear();
   out << sInt16(INT_LEAST16_MAX);
   CPPUNIT_ASSERT ( out == L"32767" );
 
@@ -843,6 +855,38 @@ void FStringTest::streamInsertionTest()
   out.clear();
   out << uInt16(UINT_LEAST16_MAX);
   CPPUNIT_ASSERT ( out == L"65535" );
+
+  out.clear();
+  out << sInt32(INT_LEAST32_MAX);
+  CPPUNIT_ASSERT ( out == L"2147483647" );
+
+  out.clear();
+  out << sInt32(INT_LEAST32_MIN);
+  CPPUNIT_ASSERT ( out == L"-2147483648" );
+
+  out.clear();
+  out << uInt32(UINT_LEAST32_MAX);
+  CPPUNIT_ASSERT ( out == L"4294967295" );
+
+  out.clear();
+  out << sInt64(INT_LEAST64_MAX);
+  CPPUNIT_ASSERT ( out == L"9223372036854775807" );
+
+  out.clear();
+  out << sInt64(INT_LEAST64_MIN);
+  CPPUNIT_ASSERT ( out == L"-9223372036854775808" );
+
+  out.clear();
+  out << uInt64(UINT_LEAST64_MAX);
+  CPPUNIT_ASSERT ( out == L"18446744073709551615" );
+
+  out.clear();
+  out << std::wint_t(WINT_MAX);
+  CPPUNIT_ASSERT ( out == L"4294967295" );
+
+  out.clear();
+  out << std::size_t(999999999);
+  CPPUNIT_ASSERT ( out == L"999999999" );
 
   out.clear();
   out << int(1234567);
@@ -1166,21 +1210,23 @@ void FStringTest::convertToNumberTest()
 //----------------------------------------------------------------------
 void FStringTest::convertFromNumberTest()
 {
-  constexpr sInt8   n1  = -12;
-  constexpr uInt8   n2  =  12u;
-  constexpr sInt16  n3  = -1234;
-  constexpr uInt16  n4  =  1234u;
-  constexpr int     n5  = -12345;
-  constexpr uInt    n6  =  12345u;
-  constexpr sInt32  n7  = -12345;
-  constexpr uInt32  n8  =  12345u;
-  constexpr long    n9  = -12345678;
-  constexpr uLong   n10 =  12345678u;
-  constexpr sInt64  n11 = -12345678;
-  constexpr uInt64  n12 =  12345678u;
-  constexpr float   n13 =  1234.56f;
-  constexpr double  n14 =  1234.5678;
-  constexpr lDouble n15 =  12345.67890L;
+  constexpr sInt8       n1  = -12;
+  constexpr uInt8       n2  =  12u;
+  constexpr sInt16      n3  = -1234;
+  constexpr uInt16      n4  =  1234u;
+  constexpr int         n5  = -12345;
+  constexpr uInt        n6  =  12345u;
+  constexpr sInt32      n7  = -12345;
+  constexpr uInt32      n8  =  12345u;
+  constexpr long        n9  = -12345678;
+  constexpr uLong       n10 =  12345678u;
+  constexpr sInt64      n11 = -12345678;
+  constexpr uInt64      n12 =  12345678u;
+  constexpr std::wint_t n13 =  12345678;
+  constexpr std::size_t n14 =  12345678;
+  constexpr float       n15 =  1234.56f;
+  constexpr double      n16 =  1234.5678;
+  constexpr lDouble     n17 =  12345.67890L;
 
   CPPUNIT_ASSERT ( finalcut::getPrecision<float>() == FLT_DIG );
   CPPUNIT_ASSERT ( finalcut::getPrecision<double>() == DBL_DIG );
@@ -1198,17 +1244,19 @@ void FStringTest::convertFromNumberTest()
   CPPUNIT_ASSERT ( finalcut::FString().setNumber(n10) == "12345678" );
   CPPUNIT_ASSERT ( finalcut::FString().setNumber(n11) == "-12345678" );
   CPPUNIT_ASSERT ( finalcut::FString().setNumber(n12) == "12345678" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n13) == "1234.56" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n14) == "1234.5678" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n15) == "12345.6789" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n13, 0) == "1e+03" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n14, 0) == "1e+03" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n15, 0) == "1e+04" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n13, 100)
-                   == "1234.56005859375" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n14, 100)
-                   == "1234.567800000000033833202905952930450439453125" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n13) == "12345678" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n14) == "12345678" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n15) == "1234.56" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n16) == "1234.5678" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n17) == "12345.6789" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n15, 0) == "1e+03" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n16, 0) == "1e+03" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n17, 0) == "1e+04" );
   CPPUNIT_ASSERT ( finalcut::FString().setNumber(n15, 100)
+                   == "1234.56005859375" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n16, 100)
+                   == "1234.567800000000033833202905952930450439453125" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n17, 100)
                    == "12345.67889999999999961488583721802569925785064697265625" );
 }
 

@@ -149,6 +149,7 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     void childObjectTest();
     void widgetObjectTest();
     void removeParentTest();
+    void setParentTest();
     void addTest();
     void delTest();
     void iteratorTest();
@@ -167,6 +168,7 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (childObjectTest);
     CPPUNIT_TEST (widgetObjectTest);
     CPPUNIT_TEST (removeParentTest);
+    CPPUNIT_TEST (setParentTest);
     CPPUNIT_TEST (addTest);
     CPPUNIT_TEST (delTest);
     CPPUNIT_TEST (iteratorTest);
@@ -317,6 +319,51 @@ void FObjectTest::removeParentTest()
 
   delete child;
   delete obj;  // also deletes the child object
+}
+
+//----------------------------------------------------------------------
+void FObjectTest::setParentTest()
+{
+  // obj -> child
+  // => newobj -> child
+
+  auto obj =  new finalcut::FObject();
+  auto child = new finalcut::FObject(obj);
+
+  CPPUNIT_ASSERT ( obj->hasChildren() );
+  CPPUNIT_ASSERT ( obj->numOfChildren() == 1 );
+  CPPUNIT_ASSERT ( obj->isChild(child) );
+  CPPUNIT_ASSERT ( obj->isDirectChild(child) );
+
+  CPPUNIT_ASSERT ( child->hasParent() );
+  CPPUNIT_ASSERT ( child->getParent() == obj );
+
+  auto newobj =  new finalcut::FObject();
+
+  CPPUNIT_ASSERT ( ! newobj->hasChildren() );
+  CPPUNIT_ASSERT ( newobj->numOfChildren() == 0 );
+  CPPUNIT_ASSERT ( ! newobj->isChild(child) );
+  CPPUNIT_ASSERT ( ! newobj->isDirectChild(child) );
+
+  child->setParent(newobj);
+
+  CPPUNIT_ASSERT ( ! obj->hasChildren() );
+  CPPUNIT_ASSERT ( obj->numOfChildren() == 0 );
+  CPPUNIT_ASSERT ( ! obj->isChild(child) );
+  CPPUNIT_ASSERT ( ! obj->isDirectChild(child) );
+
+  CPPUNIT_ASSERT ( newobj->hasChildren() );
+  CPPUNIT_ASSERT ( newobj->numOfChildren() == 1 );
+  CPPUNIT_ASSERT ( newobj->isChild(child) );
+  CPPUNIT_ASSERT ( newobj->isDirectChild(child) );
+
+  CPPUNIT_ASSERT ( child->hasParent() );
+  CPPUNIT_ASSERT ( child->getParent() != obj );
+  CPPUNIT_ASSERT ( child->getParent() == newobj );
+
+  delete obj;
+  delete child;
+  delete newobj;  // also deletes the child object
 }
 
 //----------------------------------------------------------------------

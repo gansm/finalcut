@@ -1,3 +1,6 @@
+2019-11-17  Markus Gans  <guru.mail@muenster.de>
+	* Revision of FString number input stream
+
 2019-11-16  Markus Gans  <guru.mail@muenster.de>
 	* New Widget class FSpinBox to provide spin boxes
 

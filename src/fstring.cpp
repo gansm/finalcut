@@ -245,88 +245,6 @@ FString& FString::operator << (const char c)
 }
 
 //----------------------------------------------------------------------
-FString& FString::operator << (const sInt16 num)
-{
-  FString numstr(FString().setNumber(num));
-  _insert (length, numstr.length, numstr.string);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FString& FString::operator << (const uInt16 num)
-{
-  FString numstr(FString().setNumber(num));
-  _insert (length, numstr.length, numstr.string);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FString& FString::operator << (const sInt32 num)
-{
-  FString numstr(FString().setNumber(num));
-  _insert (length, numstr.length, numstr.string);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FString& FString::operator << (const sInt64 num)
-{
-  FString numstr(FString().setNumber(num));
-  _insert (length, numstr.length, numstr.string);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FString& FString::operator << (const uInt32 num)
-{
-  FString numstr(FString().setNumber(num));
-  _insert (length, numstr.length, numstr.string);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FString& FString::operator << (const uInt64 num)
-{
-  FString numstr(FString().setNumber(num));
-  _insert (length, numstr.length, numstr.string);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-#if defined(__APPLE__) && defined(__MACH__)
-FString& FString::operator << (const std::size_t num)
-{
-  FString numstr(FString().setNumber(num));
-  _insert (length, numstr.length, numstr.string);
-  return *this;
-}
-#endif
-
-//----------------------------------------------------------------------
-FString& FString::operator << (const float num)
-{
-  FString numstr(FString().setNumber(num));
-  _insert (length, numstr.length, numstr.string);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FString& FString::operator << (const double num)
-{
-  FString numstr(FString().setNumber(num));
-  _insert (length, numstr.length, numstr.string);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FString& FString::operator << (const lDouble num)
-{
-  FString numstr(FString().setNumber(num));
-  _insert (length, numstr.length, numstr.string);
-  return *this;
-}
-
-//----------------------------------------------------------------------
 const FString& FString::operator >> (FString& s)
 {
   s._insert (s.length, length, string);
@@ -856,30 +774,23 @@ FString& FString::setString (const FString& s)
 //----------------------------------------------------------------------
 FString& FString::setNumber (sInt64 num)
 {
-  bool neg{false};
   wchar_t buf[30]{};
   wchar_t* s = &buf[29];
+  uInt64 abs_num = static_cast<uInt64>(num);
 
   if ( num < 0 )
-  {
-    neg = true;
-    num = -num;
-  }
-  else
-  {
-    neg = false;
-  }
+    abs_num = -num;
 
   *s = '\0';
 
   do
   {
-    *--s = L"0123456789"[num % 10];
-    num /= 10;
+    *--s = L"0123456789"[abs_num % 10];
+    abs_num /= 10;
   }
-  while ( num );
+  while ( abs_num );
 
-  if ( neg )
+  if ( num < 0 )
     *--s = '-';
 
   _assign (s);
@@ -938,37 +849,30 @@ FString& FString::setNumber (lDouble f_num, int precision)
 //----------------------------------------------------------------------
 FString& FString::setFormatedNumber (sInt64 num, char separator)
 {
-  bool neg{false};
   int n{0};
   wchar_t buf[30]{};
   wchar_t* s = &buf[29];
+  uInt64 abs_num = static_cast<uInt64>(num);
 
   if ( separator == 0 )
     separator = ' ';
 
   if ( num < 0 )
-  {
-    neg = true;
-    num = -num;
-  }
-  else
-  {
-    neg = false;
-  }
+    abs_num = -num;
 
   *s = L'\0';
 
   do
   {
-    *--s = L"0123456789"[num % 10];
-    num /= 10;
+    *--s = L"0123456789"[abs_num % 10];
+    abs_num /= 10;
 
-    if ( num && ++n % 3 == 0 )
+    if ( abs_num && ++n % 3 == 0 )
       *--s = separator;
   }
-  while ( num );
+  while ( abs_num );
 
-  if ( neg )
+  if ( num < 0 )
     *--s = '-';
 
   _assign (s);

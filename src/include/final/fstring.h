@@ -114,18 +114,11 @@ class FString
     FString& operator << (fc::SpecialCharacter);
     FString& operator << (const wchar_t);
     FString& operator << (const char);
-    FString& operator << (const sInt16);
-    FString& operator << (const uInt16);
-    FString& operator << (const sInt32);
-    FString& operator << (const uInt32);
-    FString& operator << (const sInt64);
-    FString& operator << (const uInt64);
-#if defined(__APPLE__) && defined(__MACH__)
-    FString& operator << (const std::size_t);
-#endif
-    FString& operator << (const float);
-    FString& operator << (const double);
-    FString& operator << (const lDouble);
+    template <typename NumT
+            , typename std::enable_if< std::is_integral<NumT>::value
+                                    || std::is_floating_point<NumT>::value
+                                     , NumT>::type* = nullptr >
+    FString& operator << (const NumT);
 
     const FString& operator >> (FString&);
     const FString& operator >> (std::wstring&);
@@ -291,8 +284,16 @@ class FString
 
 // FString inline functions
 //----------------------------------------------------------------------
-inline const FString FString::getClassName()
-{ return "FString"; }
+template <typename NumT
+        , typename std::enable_if< std::is_integral<NumT>::value
+                                || std::is_floating_point<NumT>::value
+                                 , NumT>::type* = nullptr >
+inline FString& FString::operator << (const NumT val)
+{
+  FString numstr(FString().setNumber(val));
+  _insert (length, numstr.length, numstr.string);
+  return *this;
+}
 
 //----------------------------------------------------------------------
 template <typename IndexT>
@@ -367,6 +368,10 @@ inline bool FString::operator > (const CharT& s) const
   const FString tmp(s);
   return *this > tmp;
 }
+
+//----------------------------------------------------------------------
+inline const FString FString::getClassName()
+{ return "FString"; }
 
 //----------------------------------------------------------------------
 inline bool FString::isNull() const
