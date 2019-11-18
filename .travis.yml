@@ -110,10 +110,14 @@ matrix:
   # macOS
   #
   - os: osx
+    osx_image: xcode8
     env:
       - TEST="macOS"
-    script:
+      - MATRIX_EVAL="brew install gcc && CC=gcc-7 && CXX=g++-7"
+    before_install:
+      - eval "${MATRIX_EVAL}"
       - uname -a
+    script:
       - autoreconf -v --install --force
       - ./configure --prefix=/usr
       - make -j10
