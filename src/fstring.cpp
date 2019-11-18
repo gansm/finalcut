@@ -779,7 +779,7 @@ FString& FString::setNumber (sInt64 num)
   uInt64 abs_num = static_cast<uInt64>(num);
 
   if ( num < 0 )
-    abs_num = -num;
+    abs_num = static_cast<uInt64>(-num);
 
   *s = '\0';
 
@@ -858,7 +858,7 @@ FString& FString::setFormatedNumber (sInt64 num, char separator)
     separator = ' ';
 
   if ( num < 0 )
-    abs_num = -num;
+    abs_num = static_cast<uInt64>(-num);
 
   *s = L'\0';
 
