@@ -117,7 +117,7 @@ class FString
     template <typename NumT
             , typename std::enable_if< std::is_integral<NumT>::value
                                     || std::is_floating_point<NumT>::value
-                                     , NumT>::type* = nullptr >
+                                     , int>::type = 0 >
     FString& operator << (const NumT);
 
     const FString& operator >> (FString&);
@@ -287,7 +287,7 @@ class FString
 template <typename NumT
         , typename std::enable_if< std::is_integral<NumT>::value
                                 || std::is_floating_point<NumT>::value
-                                 , NumT>::type* = nullptr >
+                                 , int>::type = 0 >
 inline FString& FString::operator << (const NumT val)
 {
   FString numstr(FString().setNumber(val));
