@@ -1,15 +1,13 @@
 language: cpp
-dist: trusty
+dist: xenial
 sudo: required
 compiler:
   - gcc
 
 addons:
   apt:
-    sources:
-      - ubuntu-toolchain-r-test
     packages:
-      - g++-7
+      - g++
       - autotools-dev
       - automake
       - autoconf
@@ -50,13 +48,10 @@ matrix:
   - os: linux
     env:
       - TEST="Coverity Scan"
-      - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
     addons:
       apt:
-        sources:
-          - ubuntu-toolchain-r-test
         packages:
-          - g++-7
+          - g++
           - gpm
           - libgpm-dev
           - libcppunit-dev
@@ -66,25 +61,21 @@ matrix:
           name: gansm/finalcut
           description: Build submitted via Travis CI
         notification_email: guru.mail@muenster.de
-        build_command_prepend: "cov-configure --comptype gcc --compiler gcc-7 --template && autoreconf -v --install --force && ./configure --prefix=/usr CPPFLAGS='-DDEBUG' CXXFLAGS='-g -O0 -DDEBUG -DUNIT_TEST' --with-unit-test && make clean"
+        build_command_prepend: "autoreconf -v --install --force && ./configure --prefix=/usr CPPFLAGS='-DDEBUG' CXXFLAGS='-g -O0 -DDEBUG -DUNIT_TEST' --with-unit-test && make clean"
         build_command: "make V=1 -j10"
         branch_pattern: master
     before_install:
-      - eval "${MATRIX_EVAL}"
       - lsb_release -a
       - uname -a
       - whoami
       - echo -n | openssl s_client -CApath /etc/ssl/certs/ -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-certificates.crt
     script:
+      - cat /home/travis/build/gansm/finalcut/cov-int/scm_log.txt
       - autoreconf -v --install --force
       - ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -DUNIT_TEST" --with-unit-test
       - make V=1 -j10
       - make check
       - cat test/*.log
-    after_script:
-      - echo "--------------- scm_log.txt ---------------"
-      - cat /home/travis/build/gansm/finalcut/cov-int/scm_log.txt
-      - echo "-------------------------------------------"
 
   #
   # Coveralls + Codecov
@@ -92,9 +83,7 @@ matrix:
   - os: linux
     env:
       - TEST="Coveralls"
-      - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
     before_install:
-      - eval "${MATRIX_EVAL}"
       - lsb_release -a
       - uname -a
       - pip install --user cpp-coveralls
@@ -119,4 +108,3 @@ matrix:
       - autoreconf -v --install --force
       - ./configure --prefix=/usr
       - make -j10
-

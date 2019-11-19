@@ -232,18 +232,18 @@ class AttribDemo : public finalcut::FWidget
     void draw() override;
 
     // Data member
-    int colors;
+    FColor last_color;
 };
 
 //----------------------------------------------------------------------
 AttribDemo::AttribDemo (finalcut::FWidget* parent)
   : finalcut::FWidget(parent)
-  , colors(getMaxColor())
+  , last_color(FColor(getMaxColor()))
 {
   if ( isMonochron() )
-    colors = 1;
-  else if ( colors > 16 )
-    colors = 16;
+    last_color = 1;
+  else if ( last_color > 16 )
+    last_color = 16;
 
   unsetFocusable();
 }
@@ -253,7 +253,7 @@ void AttribDemo::printColorLine()
 {
   auto parent = static_cast<AttribDlg*>(getParent());
 
-  for (FColor color{0}; color < FColor(colors); color++)
+  for (FColor color{0}; color < last_color; color++)
   {
     print() << FColorPair(color, parent->bgcolor) << " # ";
   }
