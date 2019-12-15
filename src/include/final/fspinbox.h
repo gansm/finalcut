@@ -164,11 +164,11 @@ inline sInt64 FSpinBox::getValue()
 { return value; }
 
 //----------------------------------------------------------------------
-FString FSpinBox::getPrefix() const
+inline FString FSpinBox::getPrefix() const
 { return pfix; }
 
 //----------------------------------------------------------------------
-FString FSpinBox::getSuffix() const
+inline FString FSpinBox::getSuffix() const
 { return sfix; }
 
 //----------------------------------------------------------------------
