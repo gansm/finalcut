@@ -64,14 +64,6 @@ class FPoint
     FPoint& operator += (const FPoint&);
     FPoint& operator -= (const FPoint&);
 
-    friend bool operator == (const FPoint&, const FPoint&);
-    friend bool operator != (const FPoint&, const FPoint&);
-    friend FPoint operator +  (const FPoint&, const FPoint&);
-    friend FPoint operator -  (const FPoint&, const FPoint&);
-    friend FPoint operator -  (const FPoint&);
-    friend std::ostream& operator << (std::ostream&, const FPoint&);
-    friend std::istream& operator >> (std::istream&, FPoint&);
-
     // Accessors
     virtual const FString getClassName();
     int                   getX() const;
@@ -88,10 +80,23 @@ class FPoint
     int&                  x_ref();
     int&                  y_ref();
 
+    // Methods
+    void                  move (int, int);
+    void                  move (const FPoint&);
+
   private:
     // Data members
     int xpos{0};
     int ypos{0};
+
+    // Friend operator functions
+    friend bool operator == (const FPoint&, const FPoint&);
+    friend bool operator != (const FPoint&, const FPoint&);
+    friend FPoint operator +  (const FPoint&, const FPoint&);
+    friend FPoint operator -  (const FPoint&, const FPoint&);
+    friend FPoint operator -  (const FPoint&);
+    friend std::ostream& operator << (std::ostream&, const FPoint&);
+    friend std::istream& operator >> (std::istream&, FPoint&);
 };
 
 
@@ -113,26 +118,6 @@ inline FPoint::FPoint (int x, int y)
   : xpos(x)
   , ypos(y)
 { }
-
-//----------------------------------------------------------------------
-inline bool operator == (const FPoint& p1, const FPoint& p2)
-{ return p1.xpos == p2.xpos && p1.ypos == p2.ypos; }
-
-//----------------------------------------------------------------------
-inline bool operator != (const FPoint& p1, const FPoint& p2)
-{ return p1.xpos != p2.xpos || p1.ypos != p2.ypos; }
-
-//----------------------------------------------------------------------
-inline FPoint operator + (const FPoint& p1, const FPoint& p2)
-{ return FPoint(p1.xpos + p2.xpos, p1.ypos + p2.ypos); }
-
-//----------------------------------------------------------------------
-inline FPoint operator - (const FPoint& p1, const FPoint& p2)
-{ return FPoint(p1.xpos - p2.xpos, p1.ypos - p2.ypos); }
-
-//----------------------------------------------------------------------
-inline FPoint operator - (const FPoint& p)
-{ return FPoint(-p.xpos, -p.ypos); }
 
 //----------------------------------------------------------------------
 inline const FString FPoint::getClassName()
@@ -157,6 +142,28 @@ inline int& FPoint::x_ref()
 //----------------------------------------------------------------------
 inline int& FPoint::y_ref()
 { return ypos; }
+
+
+// FPoint non-member operators
+//----------------------------------------------------------------------
+inline bool operator == (const FPoint& p1, const FPoint& p2)
+{ return p1.xpos == p2.xpos && p1.ypos == p2.ypos; }
+
+//----------------------------------------------------------------------
+inline bool operator != (const FPoint& p1, const FPoint& p2)
+{ return p1.xpos != p2.xpos || p1.ypos != p2.ypos; }
+
+//----------------------------------------------------------------------
+inline FPoint operator + (const FPoint& p1, const FPoint& p2)
+{ return FPoint(p1.xpos + p2.xpos, p1.ypos + p2.ypos); }
+
+//----------------------------------------------------------------------
+inline FPoint operator - (const FPoint& p1, const FPoint& p2)
+{ return FPoint(p1.xpos - p2.xpos, p1.ypos - p2.ypos); }
+
+//----------------------------------------------------------------------
+inline FPoint operator - (const FPoint& p)
+{ return FPoint(-p.xpos, -p.ypos); }
 
 }  // namespace finalcut
 

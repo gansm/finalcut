@@ -127,19 +127,23 @@ class FLineEdit : public FWidget
     void                setLabelAssociatedWidget (FWidget*);
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
-    bool                setEnable(bool) override;
+    bool                setEnable (bool) override;
     bool                setEnable() override;
     bool                unsetEnable() override;
     bool                setDisable() override;
-    bool                setFocus(bool) override;
+    bool                setFocus (bool) override;
     bool                setFocus() override;
     bool                unsetFocus() override;
-    bool                setShadow(bool);
+    bool                setShadow (bool);
     bool                setShadow();
     bool                unsetShadow();
+    bool                setReadOnly (bool);
+    bool                setReadOnly();
+    bool                unsetReadOnly();
 
     // Inquiry
-    bool                hasShadow();
+    bool                hasShadow() const;
+    bool                isReadOnly() const;
 
     // Methods
     void                hide() override;
@@ -215,14 +219,12 @@ class FLineEdit : public FWidget
     int           scroll_repeat{100};
     bool          scroll_timer{false};
     bool          insert_mode{true};
+    bool          read_only{false};
     std::size_t   cursor_pos{NOT_SET};
     std::size_t   text_offset{0};
     std::size_t   char_width_offset{0};
     std::size_t   x_pos{0};
     std::size_t   max_length{std::numeric_limits<std::size_t>::max()};
-
-    // Friend class
-    friend class FSpinBox;
 };
 
 
@@ -306,8 +308,20 @@ inline bool FLineEdit::unsetShadow()
 { return setShadow(false); }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::hasShadow()
+inline bool FLineEdit::setReadOnly()
+{ return setReadOnly(true); }
+
+//----------------------------------------------------------------------
+inline bool FLineEdit::unsetReadOnly()
+{ return setReadOnly(true); }
+
+//----------------------------------------------------------------------
+inline bool FLineEdit::hasShadow() const
 { return getFlags().shadow; }
+
+//----------------------------------------------------------------------
+inline bool FLineEdit::isReadOnly() const
+{ return read_only; }
 
 }  // namespace finalcut
 

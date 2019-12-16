@@ -307,6 +307,7 @@ class FVTerm
     virtual void          print (const FPoint&);
     virtual void          print (const FColorPair&);
     virtual FVTerm&       print();
+    static void           flush();
     static void           beep();
     static void           redefineDefaultColors (bool);
 
@@ -361,7 +362,6 @@ class FVTerm
     void                  processTerminalUpdate();
     static void           startTerminalUpdate();
     static void           finishTerminalUpdate();
-    static void           flushOutputBuffer();
     static void           initScreenSettings();
     static void           changeTermSizeFinished();
     static void           exitWithMessage (const FString&)

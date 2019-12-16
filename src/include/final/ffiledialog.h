@@ -140,11 +140,6 @@ class FFileDialog : public FDialog
     static const FString fileSaveChooser ( FWidget*
                                          , const FString& = FString()
                                          , const FString& = FString() );
-    // Friend function
-    friend const FString fileChooser ( FWidget*
-                                     , const FString&
-                                     , const FString&
-                                     , FFileDialog::DialogType);
 
   protected:
     // Method
@@ -212,6 +207,10 @@ class FFileDialog : public FDialog
                            , const FFileDialog::dir_entry& );
     friend bool sortDirFirst ( const FFileDialog::dir_entry&
                              , const FFileDialog::dir_entry& );
+    friend const FString fileChooser ( FWidget*
+                                     , const FString&
+                                     , const FString&
+                                     , FFileDialog::DialogType);
 };
 
 // FMessageBox inline functions

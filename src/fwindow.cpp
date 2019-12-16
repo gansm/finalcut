@@ -23,7 +23,9 @@
 #include <utility>
 
 #include "final/fapplication.h"
+#include "final/fcombobox.h"
 #include "final/fevent.h"
+#include "final/fmenu.h"
 #include "final/fmenubar.h"
 #include "final/fstatusbar.h"
 #include "final/fwindow.h"
@@ -869,6 +871,48 @@ void FWindow::processAlwaysOnTop()
 
     ++iter;
   }
+}
+
+// non-member functions
+//----------------------------------------------------------------------
+void closeDropDown (FWidget* widget, const FPoint& mouse_position)
+{
+  // Close the pop down windows
+
+  bool is_dialog_menu{false};
+  auto openmenu = FWidget::getOpenMenu();
+
+  if ( ! openmenu )
+   return;
+
+  if ( openmenu->isInstanceOf("FMenu") )
+  {
+    bool contains_menu_structure;
+    auto menu = static_cast<FMenu*>(openmenu);
+    std::tie(contains_menu_structure, is_dialog_menu) = \
+        closeOpenMenus (menu, mouse_position);
+
+    if ( contains_menu_structure )
+      return;
+  }
+
+  if ( openmenu->isInstanceOf("FDropDownListBox") )
+  {
+    auto drop_down = static_cast<FDropDownListBox*>(openmenu);
+
+    if ( ! closeComboBox(drop_down, mouse_position) )
+      return;
+  }
+
+  // No widget was been clicked and the menu is no dialog menu
+  if ( ! (FWidget::getClickedWidget() || is_dialog_menu) )
+    FWindow::switchToPrevWindow(widget);
+
+  if ( FWidget::getStatusBar() )
+    FWidget::getStatusBar()->drawMessage();
+
+  widget->updateTerminal();
+  FVTerm::flush();
 }
 
 }  // namespace finalcut

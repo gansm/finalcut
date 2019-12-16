@@ -53,16 +53,16 @@ FPoint& FPoint::operator = (FPoint&& p)
 //----------------------------------------------------------------------
 FPoint& FPoint::operator += (const FPoint& p)
 {
-  xpos = xpos + p.xpos;
-  ypos = ypos + p.ypos;
+  xpos += p.xpos;
+  ypos += p.ypos;
   return *this;
 }
 
 //----------------------------------------------------------------------
 FPoint& FPoint::operator -= (const FPoint& p)
 {
-  xpos = xpos - p.xpos;
-  ypos = ypos - p.ypos;
+  xpos -= p.xpos;
+  ypos -= p.ypos;
   return *this;
 }
 
@@ -89,6 +89,20 @@ void FPoint::setPoint (int x, int y)
 bool FPoint::isOrigin() const
 {
   return xpos == 0 && ypos == 0;
+}
+
+//----------------------------------------------------------------------
+void FPoint::move (int dx, int dy)
+{
+  xpos += dx;
+  ypos += dy;
+}
+
+//----------------------------------------------------------------------
+void FPoint::move (const FPoint& d)
+{
+  xpos += d.getX();
+  ypos += d.getY();
 }
 
 //----------------------------------------------------------------------

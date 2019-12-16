@@ -307,6 +307,7 @@ class FWidget : public FVTerm, public FObject
     bool                    isMenuWidget() const;
     bool                    isVisible() const;
     bool                    isShown() const;
+    bool                    isHidden() const;
     bool                    isEnabled() const;
     bool                    hasVisibleCursor() const;
     bool                    hasFocus() const;
@@ -410,6 +411,7 @@ class FWidget : public FVTerm, public FObject
     void                    insufficientSpaceAdjust();
     void                    KeyPressEvent (FKeyEvent*);
     void                    KeyDownEvent (FKeyEvent*);
+    void                    emitWheelCallback (FWheelEvent*);
     void                    setWindowFocus (bool);
     FCallbackPtr            getCallbackPtr (FCallback);
     bool                    changeFocus (FWidget*, FWidget*, fc::FocusTypes);
@@ -918,6 +920,10 @@ inline bool FWidget::isVisible() const
 //----------------------------------------------------------------------
 inline bool FWidget::isShown() const
 { return flags.shown; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isHidden() const
+{ return flags.hidden; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isWindowWidget() const

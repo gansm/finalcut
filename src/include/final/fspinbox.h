@@ -83,6 +83,7 @@ class FSpinBox : public FWidget
     FSpinBox& operator = (const FSpinBox&) = delete;
 
     // Accessors
+    const FString       getClassName() const override;
     sInt64              getValue();
     FString             getPrefix() const;
     FString             getSuffix() const;
@@ -159,6 +160,10 @@ class FSpinBox : public FWidget
 
 
 // FSpinBox inline functions
+//----------------------------------------------------------------------
+inline const FString FSpinBox::getClassName() const
+{ return "FSpinBox"; }
+
 //----------------------------------------------------------------------
 inline sInt64 FSpinBox::getValue()
 { return value; }

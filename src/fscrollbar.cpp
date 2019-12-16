@@ -129,8 +129,7 @@ void FScrollbar::setPageSize (int document_size, int page_size)
 //----------------------------------------------------------------------
 void FScrollbar::setOrientation (fc::orientation o)
 {
-  std::size_t nf{0};
-  length = ( getHeight() > getWidth() ) ? getHeight() : getWidth();
+  length = ( o == fc::vertical ) ? getHeight() : getWidth();
 
   if ( o == fc::vertical && bar_orientation == fc::horizontal )
   {
@@ -141,12 +140,9 @@ void FScrollbar::setOrientation (fc::orientation o)
   {
     setWidth(length);
     setHeight(1);
-
-    if ( isNewFont() )
-      nf = 2;
   }
 
-  slider_length = bar_length = length - nf - 2;
+  calculateSliderValues();
   bar_orientation = o;
 }
 
@@ -158,10 +154,9 @@ void FScrollbar::setGeometry ( const FPoint& pos, const FSize& size
 
   FWidget::setGeometry (pos, size, adjust);
 
-  std::size_t nf{0};
   std::size_t w = size.getWidth();
   std::size_t h = size.getHeight();
-  length = ( h > w ) ? h : w;
+  length = ( bar_orientation == fc::vertical ) ? h : w;
 
   if ( bar_orientation == fc::vertical )
   {
@@ -172,12 +167,9 @@ void FScrollbar::setGeometry ( const FPoint& pos, const FSize& size
   {
     setWidth(length);
     setHeight(1);
-
-    if ( isNewFont() )
-      nf = 2;
   }
 
-  slider_length = bar_length = length - nf - 2;
+  calculateSliderValues();
 }
 
 //----------------------------------------------------------------------

@@ -153,9 +153,6 @@ class FToggleButton : public FWidget
     void                init();
     void                drawText (FString&&, std::size_t);
 
-    // Friend classes
-    friend class FButtonGroup;
-
     // Data members
     FButtonGroup* button_group{nullptr};
     FString       text{};
@@ -163,6 +160,9 @@ class FToggleButton : public FWidget
     std::size_t   button_width{0};  // plus margin spaces
     bool          focus_inside_group{true};
     bool          checked{false};
+
+    // Friend classes
+    friend class FButtonGroup;
 };
 
 // FRadioButton inline functions

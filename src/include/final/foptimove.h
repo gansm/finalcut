@@ -203,9 +203,6 @@ class FOptiMove final
     bool          isMethod5Faster (int&, int, int, int);
     void          moveByMethod (int, int, int, int, int);
 
-    // Friend function
-    friend void   printDurations (const FOptiMove&);
-
     // Data members
     capability    F_cursor_home{};
     capability    F_carriage_return{};
@@ -236,6 +233,9 @@ class FOptiMove final
     char          move_buf[BUF_SIZE]{'\0'};
     bool          automatic_left_margin{false};
     bool          eat_nl_glitch{false};
+
+    // Friend function
+    friend void   printDurations (const FOptiMove&);
 };
 
 

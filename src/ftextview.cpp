@@ -609,7 +609,7 @@ void FTextView::draw()
 
   setCursorPos (FPoint(int(getWidth()), int(getHeight())));
   updateTerminal();
-  flushOutputBuffer();
+  flush();
 }
 
 //----------------------------------------------------------------------
@@ -634,12 +634,12 @@ void FTextView::drawScrollbars()
   if ( ! hbar->isShown() && isHorizontallyScrollable() )
     hbar->show();
   else
-    vbar->redraw();
+    hbar->redraw();
 
   if ( ! vbar->isShown() && isVerticallyScrollable() )
     vbar->show();
   else
-    hbar->redraw();
+    vbar->redraw();
 }
 
 //----------------------------------------------------------------------

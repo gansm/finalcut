@@ -150,7 +150,7 @@ class FMenuItem : public FWidget
     void                setSuperMenu (FWidget*);
 
     // Inquiries
-    bool                isWindowsMenu (FWidget*) const;
+    bool                isDialog (FWidget*) const;
     bool                isMenuBar (FWidget*) const;
     bool                isMenu (FWidget*) const;
 

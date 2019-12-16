@@ -364,7 +364,7 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
   {
     getStatusBar()->drawMessage();
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 }
 
@@ -539,7 +539,7 @@ void FButtonGroup::directFocus()
   {
     getStatusBar()->drawMessage();
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 }
 

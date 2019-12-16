@@ -35,6 +35,7 @@
 #include <final/fobject.h>
 #include <final/fcolorpalette.h>
 #include <final/fcolorpair.h>
+#include <final/fcombobox.h>
 #include <final/fcharmap.h>
 #include <final/fcheckbox.h>
 #include <final/fcheckmenuitem.h>

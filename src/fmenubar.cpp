@@ -971,7 +971,7 @@ void FMenuBar::leaveMenuBar()
     getStatusBar()->drawMessage();
 
   updateTerminal();
-  flushOutputBuffer();
+  flush();
   mouse_down = false;
 }
 

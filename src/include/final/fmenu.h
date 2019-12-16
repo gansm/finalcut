@@ -159,11 +159,12 @@ class FMenu : public FWindow, public FMenuList
     void         setSuperMenu (FWidget*);
 
     // Inquiries
-    bool         isWindowsMenu (const FWidget*) const;
+    bool         isDialog (const FWidget*) const;
     bool         isMenuBar (const FWidget*) const;
     bool         isMenu (const FWidget*) const;
     bool         isRadioMenuItem (const FWidget*) const;
     bool         isSubMenu() const;
+    bool         isDialogMenu() const;
     bool         isMouseOverMenu (const FPoint&);
     bool         isMouseOverSubMenu (const FPoint&);
     bool         isMouseOverSuperMenu (const FPoint&);
@@ -215,14 +216,6 @@ class FMenu : public FWindow, public FMenuList
     void         closeMenu();
     void         processActivate();
 
-    // Friend classes
-    friend class FApplication;
-    friend class FCheckMenuItem;
-    friend class FDialog;
-    friend class FMenuBar;
-    friend class FMenuItem;
-    friend class FRadioMenuItem;
-
     // Data members
     FMenuItem    menuitem{};
     FWidget*     super_menu{nullptr};
@@ -232,7 +225,21 @@ class FMenu : public FWindow, public FMenuList
     std::size_t  hotkeypos{NOT_SET};
     bool         mouse_down{false};
     bool         has_checkable_items{false};
+
+    // Friend functions
+    friend std::tuple<bool, bool> closeOpenMenus (FMenu*, const FPoint&);
+
+    // Friend classes
+    friend class FCheckMenuItem;
+    friend class FDialog;
+    friend class FMenuBar;
+    friend class FMenuItem;
+    friend class FRadioMenuItem;
 };
+
+// non-member function forward declarations
+//----------------------------------------------------------------------
+std::tuple<bool, bool> closeOpenMenus (FMenu*, const FPoint&);
 
 
 // FMenu inline functions

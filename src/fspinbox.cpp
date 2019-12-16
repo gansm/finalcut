@@ -97,6 +97,7 @@ bool FSpinBox::setShadow (bool enable)
 
   return getFlags().shadow;
 }
+
 //----------------------------------------------------------------------
 void FSpinBox::setValue (sInt64 n)
 {

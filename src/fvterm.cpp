@@ -144,7 +144,7 @@ void FVTerm::setTermXY (int x, int y)
   if ( move_str )
     appendOutputBuffer(move_str);
 
-  flushOutputBuffer();
+  flush();
   term_pos->setPoint(x, y);
 }
 
@@ -158,7 +158,7 @@ void FVTerm::hideCursor (bool enable)
   if ( visibility_str )
     appendOutputBuffer(visibility_str);
 
-  flushOutputBuffer();
+  flush();
 }
 
 //----------------------------------------------------------------------
@@ -588,6 +588,21 @@ void FVTerm::print (const FPoint& p)
 void FVTerm::print (const FColorPair& pair)
 {
   setColor (pair.getForegroundColor(), pair.getBackgroundColor());
+}
+
+//----------------------------------------------------------------------
+void FVTerm::flush()
+{
+  // Flush the output buffer
+
+  while ( ! output_buffer->empty() )
+  {
+    static FTerm::defaultPutChar& FTermPutchar = FTerm::putchar();
+    FTermPutchar (output_buffer->front());
+    output_buffer->pop();
+  }
+
+  std::fflush(stdout);
 }
 
 
@@ -1278,19 +1293,6 @@ void FVTerm::finishTerminalUpdate()
   terminal_update_complete = true;
 }
 
-//----------------------------------------------------------------------
-void FVTerm::flushOutputBuffer()
-{
-  while ( ! output_buffer->empty() )
-  {
-    static FTerm::defaultPutChar& FTermPutchar = FTerm::putchar();
-    FTermPutchar (output_buffer->front());
-    output_buffer->pop();
-  }
-
-  std::fflush(stdout);
-}
-
 
 // private methods of FVTerm
 //----------------------------------------------------------------------
@@ -1940,7 +1942,7 @@ void FVTerm::finish()
   if ( FTerm::hasAlternateScreen() )
     clearTerm();
 
-  flushOutputBuffer();
+  flush();
 
   if ( output_buffer )
     delete output_buffer;
@@ -2089,7 +2091,7 @@ bool FVTerm::clearTerm (int fillchar)
     setTermXY (0, 0);
   }
 
-  flushOutputBuffer();
+  flush();
   return true;
 }
 
@@ -3047,7 +3049,7 @@ int FVTerm::appendOutputBuffer (int ch)
   output_buffer->push(ch);
 
   if ( output_buffer->size() >= TERMINAL_OUTPUT_BUFFER_SIZE )
-    flushOutputBuffer();
+    flush();
 
   return ch;
 }

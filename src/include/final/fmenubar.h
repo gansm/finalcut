@@ -147,15 +147,15 @@ class FMenuBar : public FWindow, public FMenuList
     void          passEventToMenu (const FMouseEvent*&);
     void          leaveMenuBar();
 
-    // Friend classes
-    friend class FMenu;
-    friend class FMenuItem;
-
     // Data members
     std::size_t   screenWidth{80};
     bool          mouse_down{false};
     bool          drop_down{false};
     bool          focus_changed{false};
+
+    // Friend classes
+    friend class FMenu;
+    friend class FMenuItem;
 };
 
 

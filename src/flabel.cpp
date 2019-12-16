@@ -198,7 +198,7 @@ void FLabel::onMouseDown (FMouseEvent* ev)
     {
       accel_widget->getStatusBar()->drawMessage();
       updateTerminal();
-      flushOutputBuffer();
+      flush();
     }
   }
 }
@@ -225,7 +225,7 @@ void FLabel::onAccel (FAccelEvent* ev)
       {
         accel_widget->getStatusBar()->drawMessage();
         updateTerminal();
-        flushOutputBuffer();
+        flush();
       }
     }
   }

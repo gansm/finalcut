@@ -968,7 +968,7 @@ void FListView::onMouseDown (FMouseEvent* ev)
         vbar->drawBar();
 
       updateTerminal();
-      flushOutputBuffer();
+      flush();
     }
   }
 }
@@ -1073,7 +1073,7 @@ void FListView::onMouseMove (FMouseEvent* ev)
       vbar->drawBar();
 
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 
   // auto-scrolling when dragging mouse outside the widget
@@ -1160,7 +1160,7 @@ void FListView::onTimer (FTimerEvent*)
     vbar->drawBar();
 
   updateTerminal();
-  flushOutputBuffer();
+  flush();
 }
 
 //----------------------------------------------------------------------
@@ -1199,7 +1199,7 @@ void FListView::onWheel (FWheelEvent* ev)
     vbar->drawBar();
 
   updateTerminal();
-  flushOutputBuffer();
+  flush();
 }
 
 //----------------------------------------------------------------------
@@ -1462,12 +1462,12 @@ void FListView::drawScrollbars()
   if ( ! hbar->isShown() && isHorizontallyScrollable() )
     hbar->show();
   else
-    vbar->redraw();
+    hbar->redraw();
 
   if ( ! vbar->isShown() && isVerticallyScrollable() )
     vbar->show();
   else
-    hbar->redraw();
+    vbar->redraw();
 }
 
 //----------------------------------------------------------------------
@@ -1928,7 +1928,7 @@ void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
     hbar->drawBar();
 
   updateTerminal();
-  flushOutputBuffer();
+  flush();
 }
 
 //----------------------------------------------------------------------
@@ -2636,7 +2636,7 @@ void FListView::cb_VBarChange (FWidget*, FDataPtr)
       vbar->drawBar();
 
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 }
 
@@ -2688,7 +2688,7 @@ void FListView::cb_HBarChange (FWidget*, FDataPtr)
     drawHeadlines();
     drawList();
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 
   if ( scrollType >= FScrollbar::scrollStepBackward )
@@ -2699,7 +2699,7 @@ void FListView::cb_HBarChange (FWidget*, FDataPtr)
       hbar->drawBar();
 
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 }
 

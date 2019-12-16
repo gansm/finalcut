@@ -122,6 +122,7 @@ void FSize::scaleBy (const FPoint& d)
   scaleBy (d.getX(), d.getY());
 }
 
+// FSize non-member operators
 //----------------------------------------------------------------------
 std::ostream& operator << (std::ostream& outstr, const FSize& s)
 {

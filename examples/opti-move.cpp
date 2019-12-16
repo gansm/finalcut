@@ -86,7 +86,7 @@ void term_boundaries (int& x, int& y)
 //----------------------------------------------------------------------
 void move (int xold, int yold, int xnew, int ynew)
 {
-  // prints the cursor move escape sequence
+  // Prints the cursor move escape sequence
   finalcut::FString buffer{}, sequence{}, from{}, to{}, byte{};
   const std::string ctrl_character[] =
   {
@@ -100,7 +100,7 @@ void move (int xold, int yold, int xnew, int ynew)
   term_boundaries(xold, yold);
   term_boundaries(xnew, ynew);
 
-  // get the move string
+  // Get the move string
   buffer = finalcut::FTerm::moveCursorString (xold, yold, xnew, ynew);
 
   for (auto&& ch : buffer)

@@ -267,7 +267,7 @@ void MainWindow::onTimer (finalcut::FTimerEvent*)
   line1 = line1.right(length - 1) + first_Char[0];
   line2 = line2.right(length - 1) + first_Char[1];
   redraw();
-  flushOutputBuffer();
+  flush();
 }
 
 //----------------------------------------------------------------------

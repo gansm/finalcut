@@ -159,7 +159,7 @@ class FListBox : public FWidget
     FListBox (const FListBox&) = delete;
 
     // Destructor
-    virtual  ~FListBox();
+    virtual ~FListBox();
 
     // Disable assignment operator (=)
     FListBox& operator = (const FListBox&) = delete;
@@ -167,8 +167,10 @@ class FListBox : public FWidget
     // Accessors
     const FString       getClassName() const override;
     std::size_t         getCount() const;
-    FListBoxItem        getItem (std::size_t);
-    FListBoxItem        getItem (listBoxItems::iterator) const;
+    FListBoxItem&       getItem (std::size_t);
+    const FListBoxItem& getItem (std::size_t) const;
+    FListBoxItem&       getItem (listBoxItems::iterator);
+    const FListBoxItem& getItem (listBoxItems::const_iterator) const;
     std::size_t         currentItem() const;
     FString&            getText();
 
@@ -308,7 +310,7 @@ class FListBox : public FWidget
     void                processChanged();
     void                lazyConvert (listBoxItems::iterator, int);
     listBoxItems::iterator index2iterator (std::size_t);
-
+    listBoxItems::const_iterator index2iterator (std::size_t index) const;
     // Callback methods
     void                cb_VBarChange (FWidget*, FDataPtr);
     void                cb_HBarChange (FWidget*, FDataPtr);
@@ -340,6 +342,7 @@ class FListBox : public FWidget
     bool            multi_select{false};
     bool            mouse_select{false};
     bool            scroll_timer{false};
+    bool            click_on_list{false};
 };
 
 
@@ -381,14 +384,25 @@ inline std::size_t FListBox::getCount() const
 { return itemlist.size(); }
 
 //----------------------------------------------------------------------
-inline FListBoxItem FListBox::getItem (std::size_t index)
+inline FListBoxItem& FListBox::getItem (std::size_t index)
 {
   listBoxItems::iterator iter = index2iterator(index - 1);
   return *iter;
 }
 
 //----------------------------------------------------------------------
-inline FListBoxItem FListBox::getItem (listBoxItems::iterator iter) const
+inline const FListBoxItem& FListBox::getItem (std::size_t index) const
+{
+  listBoxItems::const_iterator iter = index2iterator(index - 1);
+  return *iter;
+}
+
+//----------------------------------------------------------------------
+inline FListBoxItem& FListBox::getItem (listBoxItems::iterator iter)
+{ return *iter; }
+
+//----------------------------------------------------------------------
+inline const FListBoxItem& FListBox::getItem (listBoxItems::const_iterator iter) const
 { return *iter; }
 
 //----------------------------------------------------------------------
@@ -535,6 +549,15 @@ inline FListBox::listBoxItems::iterator \
     FListBox::index2iterator (std::size_t index)
 {
   listBoxItems::iterator iter = itemlist.begin();
+  std::advance (iter, index);
+  return iter;
+}
+
+//----------------------------------------------------------------------
+inline FListBox::listBoxItems::const_iterator \
+    FListBox::index2iterator (std::size_t index) const
+{
+  listBoxItems::const_iterator iter = itemlist.begin();
   std::advance (iter, index);
   return iter;
 }

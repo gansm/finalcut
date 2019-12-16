@@ -74,10 +74,6 @@ class FTermBuffer
     FTermBuffer& operator << (const std::wstring&);
     FTermBuffer& operator << (const FColorPair&);
 
-    // Non-member operators
-    friend FCharVector& operator << ( FCharVector&
-                                    , const FTermBuffer& );
-
     // Accessors
     virtual const FString  getClassName() const;
     std::size_t            getLength() const;
@@ -104,6 +100,10 @@ class FTermBuffer
 
   private:
     FCharVector            data{};
+
+    // Non-member operators
+    friend FCharVector& operator << ( FCharVector&
+                                    , const FTermBuffer& );
 };
 
 

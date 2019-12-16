@@ -221,7 +221,7 @@ void FToggleButton::onMouseDown (FMouseEvent* ev)
   {
     getStatusBar()->drawMessage();
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 }
 
@@ -298,7 +298,7 @@ void FToggleButton::onAccel (FAccelEvent* ev)
   {
     getStatusBar()->drawMessage();
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 
   processClick();

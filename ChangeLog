@@ -1,3 +1,7 @@
+2019-12-16  Markus Gans  <guru.mail@muenster.de>
+	* New widget class FComboBox to provide a dropdown list 
+	  with an input field
+
 2019-11-17  Markus Gans  <guru.mail@muenster.de>
 	* Revision of FString number input stream
 

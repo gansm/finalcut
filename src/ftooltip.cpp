@@ -76,21 +76,6 @@ void FToolTip::setText (const FString& txt)
 }
 
 //----------------------------------------------------------------------
-void FToolTip::draw()
-{
-  int y{0};
-  setColor();
-  clearArea();
-  drawBorder();
-
-  for (auto&& line : text_components)
-  {
-    print() << FPoint(3, 2 + y) << line;
-    y++;
-  }
-}
-
-//----------------------------------------------------------------------
 void FToolTip::show()
 {
   if ( ! isVisible() )
@@ -126,6 +111,21 @@ void FToolTip::init()
   setForegroundColor (wc.tooltip_fg);
   setBackgroundColor (wc.tooltip_bg);
   calculateDimensions();
+}
+
+//----------------------------------------------------------------------
+void FToolTip::draw()
+{
+  int y{0};
+  setColor();
+  clearArea();
+  drawBorder();
+
+  for (auto&& line : text_components)
+  {
+    print() << FPoint(3, 2 + y) << line;
+    y++;
+  }
 }
 
 //----------------------------------------------------------------------

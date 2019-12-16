@@ -119,15 +119,15 @@ class FStatusKey : public FWidget
     FStatusBar*         getConnectedStatusbar() const;
     void                setConnectedStatusbar (FStatusBar*);
 
-    // Friend class
-    friend class FStatusBar;
-
     // Data members
     FString     text{};
     FStatusBar* bar{nullptr};
     FKey        key{0};
     bool        active{false};
     bool        mouse_focus{false};
+
+    // Friend class
+    friend class FStatusBar;
 };
 
 

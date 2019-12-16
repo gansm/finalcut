@@ -50,9 +50,7 @@
 #endif
 
 /* Define to 1 if GPM mouse is enabled */
-#ifndef F_HAVE_LIBGPM
-#define F_HAVE_LIBGPM 1
-#endif
+/* #undef HAVE_LIBGPM */
 
 /* Define to 1 if you have the <linux/fb.h> header file. */
 #ifndef F_HAVE_LINUX_FB_H

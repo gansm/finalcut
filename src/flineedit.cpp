@@ -167,6 +167,17 @@ bool FLineEdit::setShadow (bool enable)
 }
 
 //----------------------------------------------------------------------
+bool FLineEdit::setReadOnly (bool enable)
+{
+  if ( enable )
+    unsetVisibleCursor();
+  else
+    setVisibleCursor();
+
+  return (read_only = enable);
+}
+
+//----------------------------------------------------------------------
 void FLineEdit::setText (const FString& txt)
 {
   if ( txt )
@@ -183,7 +194,9 @@ void FLineEdit::setText (const FString& txt)
 
   if ( isShown() )
   {
-    cursorEnd();
+    if ( ! isReadOnly() )
+      cursorEnd();
+
     adjustTextOffset();
   }
 }
@@ -201,7 +214,9 @@ void FLineEdit::setMaxLength (std::size_t max)
 
   if ( isShown() )
   {
-    cursorEnd();
+    if ( ! isReadOnly() )
+      cursorEnd();
+
     adjustTextOffset();
   }
 }
@@ -209,6 +224,9 @@ void FLineEdit::setMaxLength (std::size_t max)
 //----------------------------------------------------------------------
 void FLineEdit::setCursorPosition (std::size_t pos)
 {
+  if ( isReadOnly() )
+    return;
+
   if ( pos == 0 )
     cursor_pos = 1;
   else
@@ -260,7 +278,9 @@ void FLineEdit::hide()
 //----------------------------------------------------------------------
 void FLineEdit::clear()
 {
-  cursor_pos = 0;
+  if ( ! isReadOnly() )
+    cursor_pos = 0;
+
   text_offset = 0;
   char_width_offset = 0;
   text.clear();
@@ -270,6 +290,9 @@ void FLineEdit::clear()
 //----------------------------------------------------------------------
 void FLineEdit::onKeyPress (FKeyEvent* ev)
 {
+  if ( isReadOnly() )
+    return;
+
   FKey key = ev->key();
 
   switch ( key )
@@ -338,7 +361,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FLineEdit::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != fc::LeftButton || isReadOnly() )
     return;
 
   if ( ! hasFocus() )
@@ -389,7 +412,7 @@ void FLineEdit::onMouseUp (FMouseEvent*)
 //----------------------------------------------------------------------
 void FLineEdit::onMouseMove (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != fc::LeftButton || isReadOnly() )
     return;
 
   std::size_t len = print_text.getLength();
@@ -531,7 +554,7 @@ void FLineEdit::onAccel (FAccelEvent* ev)
       {
         getStatusBar()->drawMessage();
         updateTerminal();
-        flushOutputBuffer();
+        flush();
       }
     }
   }
@@ -542,23 +565,26 @@ void FLineEdit::onAccel (FAccelEvent* ev)
 //----------------------------------------------------------------------
 void FLineEdit::onHide (FHideEvent*)
 {
-  if ( ! insert_mode )
+  if ( ! insert_mode && ! isReadOnly() )
     setInsertCursor();
 }
 
 //----------------------------------------------------------------------
 void FLineEdit::onFocusIn (FFocusEvent*)
 {
-  if ( insert_mode )
-    setInsertCursor();
-  else
-    unsetInsertCursor();
+  if ( ! isReadOnly() )
+  {
+    if ( insert_mode )
+      setInsertCursor();
+    else
+      unsetInsertCursor();
+  }
 
   if ( getStatusBar() )
   {
     getStatusBar()->drawMessage();
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 }
 
@@ -571,7 +597,7 @@ void FLineEdit::onFocusOut (FFocusEvent*)
     getStatusBar()->drawMessage();
   }
 
-  if ( ! insert_mode )
+  if ( ! insert_mode && ! isReadOnly() )
     setInsertCursor();
 }
 
@@ -623,7 +649,12 @@ void FLineEdit::init()
 {
   const auto& wc = getFWidgetColors();
   label->setAccelWidget(this);
-  setVisibleCursor();
+
+  if ( isReadOnly() )
+    unsetVisibleCursor();
+  else
+    setVisibleCursor();
+
   setShadow();
 
   if ( isEnabled() )
@@ -658,7 +689,7 @@ bool FLineEdit::hasHotkey()
 //----------------------------------------------------------------------
 void FLineEdit::draw()
 {
-  if ( cursor_pos == NOT_SET )
+  if ( cursor_pos == NOT_SET && isReadOnly() )
     cursorEnd();
 
   if ( ! isShown() )

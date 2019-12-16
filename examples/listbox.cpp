@@ -65,7 +65,7 @@ FString& doubleToString (std::list<double>::const_iterator iter)
 }
 
 FString& mapToString ( std::map<FString
-                     , FString>::const_iterator iter )
+                              , FString>::const_iterator iter )
 {
   auto temp = temp_str.lock();
   return *temp = iter->first + ": " + iter->second;

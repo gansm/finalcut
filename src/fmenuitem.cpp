@@ -249,7 +249,7 @@ void FMenuItem::openMenu()
   dd_menu->raiseWindow();
   dd_menu->redraw();
   updateTerminal();
-  flushOutputBuffer();
+  flush();
 }
 
 //----------------------------------------------------------------------
@@ -296,7 +296,7 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
     passMouseEvent (mbar, ev, fc::MouseDoubleClick_Event);
   }
 
-  if ( isWindowsMenu(super_menu) )
+  if ( isDialog(super_menu) )
   {
     auto dgl = static_cast<FDialog*>(super_menu);
     passMouseEvent (dgl, ev, fc::MouseDoubleClick_Event);
@@ -321,7 +321,7 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
     passMouseEvent (mbar, ev, fc::MouseDown_Event);
   }
 
-  if ( isWindowsMenu(super_menu) )
+  if ( isDialog(super_menu) )
   {
     auto dgl = static_cast<FDialog*>(super_menu);
     passMouseEvent (dgl, ev, fc::MouseDown_Event);
@@ -346,7 +346,7 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
     passMouseEvent (mbar, ev, fc::MouseUp_Event);
   }
 
-  if ( isWindowsMenu(super_menu) )
+  if ( isDialog(super_menu) )
   {
     auto dgl = static_cast<FDialog*>(super_menu);
     passMouseEvent (dgl, ev, fc::MouseUp_Event);
@@ -371,7 +371,7 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
     passMouseEvent (mbar, ev, fc::MouseMove_Event);
   }
 
-  if ( isWindowsMenu(super_menu) )
+  if ( isDialog(super_menu) )
   {
     auto dgl = static_cast<FDialog*>(super_menu);
     passMouseEvent (dgl, ev, fc::MouseMove_Event);
@@ -458,7 +458,7 @@ void FMenuItem::onFocusOut (FFocusEvent*)
 
 // protected methods of FMenuItem
 //----------------------------------------------------------------------
-bool FMenuItem::isWindowsMenu (FWidget* w) const
+bool FMenuItem::isDialog (FWidget* w) const
 {
   return ( w ) ? w->isDialogWidget() : false;
 }

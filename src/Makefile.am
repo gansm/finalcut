@@ -45,6 +45,7 @@ libfinal_la_SOURCES = \
 	fkey_map.cpp \
 	fcharmap.cpp \
 	fspinbox.cpp \
+	fcombobox.cpp \
 	fstartoptions.cpp \
 	fstatusbar.cpp \
 	ftermcap.cpp \
@@ -119,6 +120,7 @@ finalcutinclude_HEADERS = \
 	include/final/fscrollbar.h \
 	include/final/fscrollview.h \
 	include/final/fspinbox.h \
+	include/final/fcombobox.h \
 	include/final/fstartoptions.h \
 	include/final/fstatusbar.h \
 	include/final/fstring.h \

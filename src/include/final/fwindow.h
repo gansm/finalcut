@@ -179,6 +179,10 @@ class FWindow : public FWidget
     bool                zoomed{false};
 };
 
+// non-member function forward declarations
+//----------------------------------------------------------------------
+void closeDropDown (FWidget*, const FPoint&);
+
 
 // FWindow inline functions
 //----------------------------------------------------------------------

@@ -23,6 +23,7 @@
 #include <memory>
 
 #include "final/fapplication.h"
+#include "final/fcombobox.h"
 #include "final/fdialog.h"
 #include "final/fevent.h"
 #include "final/fmenuitem.h"
@@ -1176,7 +1177,7 @@ void FDialog::leaveMenu()
     getStatusBar()->drawMessage();
 
   updateTerminal();
-  flushOutputBuffer();
+  flush();
 }
 
 //----------------------------------------------------------------------
@@ -1193,6 +1194,7 @@ void FDialog::openMenu()
   }
   else
   {
+    finalcut::closeOpenComboBox();
     setOpenMenu(dialog_menu);
     FPoint pos(getPos());
     pos.y_ref()++;
@@ -1221,7 +1223,7 @@ void FDialog::selectFirstMenuItem()
     getStatusBar()->drawMessage();
 
   updateTerminal();
-  flushOutputBuffer();
+  flush();
 }
 
 //----------------------------------------------------------------------

@@ -44,6 +44,7 @@ INCLUDE_HEADERS = \
 	fscrollbar.h \
 	fscrollview.h \
 	fspinbox.h \
+	fcombobox.h \
 	fstatusbar.h \
 	fstring.h \
 	fmouse.h \
@@ -106,6 +107,7 @@ OBJS = \
 	fwindow.o \
 	fscrollview.o \
 	fspinbox.o \
+	fcombobox.o \
 	fmessagebox.o \
 	ftooltip.o \
 	ffiledialog.o \

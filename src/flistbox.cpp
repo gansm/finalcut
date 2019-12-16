@@ -202,6 +202,9 @@ void FListBox::insert (FListBoxItem listItem)
 
   itemlist.push_back (listItem);
 
+  if ( current == 0 )
+    current = 1;
+
   std::size_t element_count = getCount();
   recalculateVerticalBar (element_count);
 }
@@ -300,12 +303,7 @@ void FListBox::onKeyPress (FKeyEvent* ev)
   processKeyAction(ev);  // Process the keystrokes
 
   if ( current_before != current )
-  {
     processChanged();
-
-    if ( ! isMultiSelection() )
-      processSelect();
-  }
 
   if ( ev->isAccepted() )
   {
@@ -330,12 +328,14 @@ void FListBox::onMouseDown (FMouseEvent* ev)
   getWidgetFocus();
 
   int yoffset_before = yoffset;
+  std::size_t current_before = current;
   int mouse_x = ev->getX();
   int mouse_y = ev->getY();
 
   if ( mouse_x > 1 && mouse_x < int(getWidth())
     && mouse_y > 1 && mouse_y < int(getHeight()) )
   {
+    click_on_list = true;
     std::size_t element_count = getCount();
     current = std::size_t(yoffset + mouse_y - 1);
 
@@ -347,6 +347,11 @@ void FListBox::onMouseDown (FMouseEvent* ev)
     if ( ev->getButton() == fc::RightButton )
       multiSelection(current);
 
+    if ( current_before != current )
+    {
+      processChanged();
+    }
+
     if ( isShown() )
       drawList();
 
@@ -356,13 +361,15 @@ void FListBox::onMouseDown (FMouseEvent* ev)
       vbar->drawBar();
 
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 }
 
 //----------------------------------------------------------------------
 void FListBox::onMouseUp (FMouseEvent* ev)
 {
+  click_on_list = false;
+
   if ( drag_scroll != fc::noScroll )
     stopDragScroll();
 
@@ -374,8 +381,6 @@ void FListBox::onMouseUp (FMouseEvent* ev)
     if ( mouse_x > 1 && mouse_x < int(getWidth())
       && mouse_y > 1 && mouse_y < int(getHeight()) )
     {
-      processChanged();
-
       if ( ! isMultiSelection() )
         processSelect();
     }
@@ -400,6 +405,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
   if ( mouse_x > 1 && mouse_x < int(getWidth())
     && mouse_y > 1 && mouse_y < int(getHeight()) )
   {
+    click_on_list = true;
     std::size_t element_count = getCount();
     current = std::size_t(yoffset + mouse_y - 1);
 
@@ -408,11 +414,16 @@ void FListBox::onMouseMove (FMouseEvent* ev)
 
     inc_search.clear();
 
-    // Handle multiple selections
-    if ( ev->getButton() == fc::RightButton
-      && current_before != current )
+    if ( current_before != current )
     {
-      multiSelectionUpTo(current);
+      // Handle multiple selections + changes
+      if ( ev->getButton() == fc::RightButton)
+      {
+        processChanged();
+        multiSelectionUpTo(current);
+      }
+      else if ( ev->getButton() == fc::LeftButton)
+        processChanged();
     }
 
     if ( isShown() )
@@ -424,13 +435,13 @@ void FListBox::onMouseMove (FMouseEvent* ev)
       vbar->drawBar();
 
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 
   // Auto-scrolling when dragging mouse outside the widget
-  if ( mouse_y < 2 )
+  if ( click_on_list && mouse_y < 2 )
     dragUp (ev->getButton());
-  else if ( mouse_y >= int(getHeight()) )
+  else if ( click_on_list && mouse_y >= int(getHeight()) )
     dragDown (ev->getButton());
   else
     stopDragScroll();
@@ -485,6 +496,7 @@ void FListBox::onTimer (FTimerEvent*)
   if ( current_before != current )
   {
     inc_search.clear();
+    processChanged();
 
     // Handle multiple selections
     if ( drag_scroll == fc::scrollUpSelect
@@ -501,7 +513,7 @@ void FListBox::onTimer (FTimerEvent*)
     vbar->drawBar();
 
   updateTerminal();
-  flushOutputBuffer();
+  flush();
 }
 
 //----------------------------------------------------------------------
@@ -533,9 +545,6 @@ void FListBox::onWheel (FWheelEvent* ev)
   {
     inc_search.clear();
     processChanged();
-
-    if ( ! isMultiSelection() )
-      processSelect();
   }
 
   if ( isShown() )
@@ -547,7 +556,7 @@ void FListBox::onWheel (FWheelEvent* ev)
     vbar->drawBar();
 
   updateTerminal();
-  flushOutputBuffer();
+  flush();
 }
 
 //----------------------------------------------------------------------
@@ -770,12 +779,12 @@ void FListBox::drawScrollbars()
   if ( ! hbar->isShown() && isHorizontallyScrollable() )
     hbar->show();
   else
-    vbar->redraw();
+    hbar->redraw();
 
   if ( ! vbar->isShown() && isVerticallyScrollable() )
     vbar->show();
   else
-    hbar->redraw();
+    vbar->redraw();
 }
 
 
@@ -1085,7 +1094,7 @@ inline void FListBox::updateDrawing (bool draw_vbar, bool draw_hbar)
     hbar->drawBar();
 
   updateTerminal();
-  flushOutputBuffer();
+  flush();
 }
 
 //----------------------------------------------------------------------
@@ -1769,9 +1778,6 @@ void FListBox::cb_VBarChange (FWidget*, FDataPtr)
   {
     inc_search.clear();
     processChanged();
-
-    if ( ! isMultiSelection() )
-      processSelect();
   }
 
   if ( isShown() )
@@ -1785,7 +1791,7 @@ void FListBox::cb_VBarChange (FWidget*, FDataPtr)
       vbar->drawBar();
 
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 }
 
@@ -1838,7 +1844,7 @@ void FListBox::cb_HBarChange (FWidget*, FDataPtr)
   {
     drawList();
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 
   if ( scrollType >= FScrollbar::scrollStepBackward )
@@ -1849,7 +1855,7 @@ void FListBox::cb_HBarChange (FWidget*, FDataPtr)
       hbar->drawBar();
 
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 }
 

@@ -72,13 +72,6 @@ class FRect
     FRect& operator = (const FRect&);
     FRect& operator = (FRect&&);
 
-    friend FRect operator +  (const FRect&, const FSize&);
-    friend FRect operator -  (const FRect&, const FSize&);
-    friend bool  operator == (const FRect&, const FRect&);
-    friend bool  operator != (const FRect&, const FRect&);
-    friend std::ostream& operator << (std::ostream&, const FRect&);
-    friend std::istream& operator >> (std::istream&, FRect&);
-
     // Accessors
     virtual const FString getClassName();
     int                   getX1() const;
@@ -142,6 +135,14 @@ class FRect
     int Y1{0};
     int X2{-1};
     int Y2{-1};
+
+    // Friend operator functions
+    friend FRect operator +  (const FRect&, const FSize&);
+    friend FRect operator -  (const FRect&, const FSize&);
+    friend bool  operator == (const FRect&, const FRect&);
+    friend bool  operator != (const FRect&, const FRect&);
+    friend std::ostream& operator << (std::ostream&, const FRect&);
+    friend std::istream& operator >> (std::istream&, FRect&);
 };
 
 // FRect inline functions

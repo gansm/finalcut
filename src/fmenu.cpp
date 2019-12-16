@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <memory>
+#include <tuple>
 #include <vector>
 
 #include "final/fapplication.h"
@@ -102,7 +103,7 @@ void FMenu::hide()
   const auto& t_geometry = getTermGeometryWithShadow();
   restoreVTerm (t_geometry);
   updateTerminal();
-  flushOutputBuffer();
+  flush();
 
   if ( ! isSubMenu() )
   {
@@ -204,7 +205,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
         getStatusBar()->drawMessage();
 
       updateTerminal();
-      flushOutputBuffer();
+      flush();
     }
 
     return;
@@ -313,7 +314,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   {
     closeOpenedSubMenu();
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 }
 
@@ -347,7 +348,7 @@ void FMenu::cb_menuitem_toggled (FWidget* widget, FDataPtr)
 
 // private methods of FMenu
 //----------------------------------------------------------------------
-bool FMenu::isWindowsMenu (const FWidget* w) const
+bool FMenu::isDialog (const FWidget* w) const
 {
   return w->isDialogWidget();
 }
@@ -379,6 +380,13 @@ bool FMenu::isSubMenu() const
     return true;
   else
     return false;
+}
+
+//----------------------------------------------------------------------
+bool FMenu::isDialogMenu() const
+{
+  auto super = getSuperMenu();
+  return ( super ) ? super->isDialogWidget() : false;
 }
 
 //----------------------------------------------------------------------
@@ -584,7 +592,7 @@ void FMenu::openSubMenu (FMenu* sub_menu, bool select)
     getStatusBar()->drawMessage();
 
   updateTerminal();
-  flushOutputBuffer();
+  flush();
 }
 
 //----------------------------------------------------------------------
@@ -635,7 +643,7 @@ void FMenu::hideSuperMenus()
     m->hide();
     m->hideSuperMenus();
   }
-  else if ( isWindowsMenu(super) )
+  else if ( isDialog(super) )
   {
     auto dgl = static_cast<FDialog*>(super);
     dgl->leaveMenu();
@@ -696,7 +704,7 @@ void FMenu::mouseDownSubmenu (FMenuItem* m_item)
       getStatusBar()->drawMessage();
 
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 }
 
@@ -764,7 +772,7 @@ bool FMenu::mouseUpOverList (FPoint mouse_pos)
             getStatusBar()->drawMessage();
 
           updateTerminal();
-          flushOutputBuffer();
+          flush();
         }
 
         return true;
@@ -1038,7 +1046,7 @@ bool FMenu::selectNextItem()
 
       redraw();
       updateTerminal();
-      flushOutputBuffer();
+      flush();
       break;
     }
 
@@ -1088,7 +1096,7 @@ bool FMenu::selectPrevItem()
 
       redraw();
       updateTerminal();
-      flushOutputBuffer();
+      flush();
       break;
     }
   }
@@ -1151,7 +1159,7 @@ bool FMenu::hotkeyMenu (FKeyEvent* ev)
           hide();
           hideSuperMenus();
           updateTerminal();
-          flushOutputBuffer();
+          flush();
           ev->accept();
           item->processClicked();
         }
@@ -1494,7 +1502,7 @@ inline void FMenu::selectPrevMenu (FKeyEvent* ev)
       getStatusBar()->drawMessage();
 
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
   else
     keypressMenuBar(ev);  // select previous menu
@@ -1559,7 +1567,7 @@ inline void FMenu::closeMenu()
     if ( getStatusBar() )
       getStatusBar()->clearMessage();
 
-    if ( ! (super && isWindowsMenu(super)) )
+    if ( ! (super && isDialog(super)) )
       switchToPrevWindow(this);
   }
 
@@ -1567,13 +1575,39 @@ inline void FMenu::closeMenu()
     getStatusBar()->drawMessage();
 
   updateTerminal();
-  flushOutputBuffer();
+  flush();
 }
 
 //----------------------------------------------------------------------
 void FMenu::processActivate()
 {
   emitCallback("activate");
+}
+
+
+// non-member functions
+//----------------------------------------------------------------------
+std::tuple<bool, bool> closeOpenMenus ( FMenu* menu
+                                      , const FPoint& mouse_position )
+{
+  // Close the open menu
+
+  bool is_dialog_menu{false};
+
+  if ( ! menu )
+    return std::make_tuple(false, false);
+
+  if ( menu->containsMenuStructure(mouse_position) )
+    return std::make_tuple(true, false);
+
+  if ( menu->isDialogMenu() )
+    is_dialog_menu = true;
+
+  menu->unselectItem();
+  menu->hide();
+  menu->hideSubMenus();
+  menu->hideSuperMenus();
+  return std::make_tuple (false, is_dialog_menu);
 }
 
 }  // namespace finalcut

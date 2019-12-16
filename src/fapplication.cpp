@@ -669,7 +669,7 @@ void FApplication::processKeyboardEvent()
     return;
 
   findKeyboardWidget();
-  flushOutputBuffer();
+  flush();
   keyboard->clearKeyBufferOnTimeout();
 
   if ( isKeyPressed() )
@@ -815,46 +815,15 @@ void FApplication::unsetMoveSizeMode()
 }
 
 //----------------------------------------------------------------------
-void FApplication::closeOpenMenu()
+void FApplication::closeDropDown()
 {
   // Close the open menu
 
-  auto openmenu = FWidget::getOpenMenu();
-  auto menu = static_cast<FMenu*>(openmenu);
-
-  if ( ! openmenu || ( mouse && mouse->isMoved()) )
+  if ( mouse && mouse->isMoved() )
     return;
 
-  if ( mouse )
-  {
-    const auto& mouse_position = mouse->getPos();
-
-    if ( menu->containsMenuStructure(mouse_position) )
-      return;
-  }
-
-  bool is_window_menu{false};
-  auto super = menu->getSuperMenu();
-
-  if ( super && menu->isWindowsMenu(super) )
-    is_window_menu = true;
-  else
-    is_window_menu = false;
-
-  menu->unselectItem();
-  menu->hide();
-  menu->hideSubMenus();
-  menu->hideSuperMenus();
-
-  // No widget was been clicked and the menu is no dialog menu
-  if ( ! (FWidget::getClickedWidget() || is_window_menu) )
-    FWindow::switchToPrevWindow(this);
-
-  if ( FWidget::getStatusBar() )
-    FWidget::getStatusBar()->drawMessage();
-
-  updateTerminal();
-  flushOutputBuffer();
+  const auto& mouse_position = mouse->getPos();
+  finalcut::closeDropDown (this, mouse_position);
 }
 
 //----------------------------------------------------------------------
@@ -889,7 +858,7 @@ void FApplication::unselectMenubarItems()
       FWidget::getStatusBar()->drawMessage();
 
     updateTerminal();
-    flushOutputBuffer();
+    flush();
   }
 }
 
@@ -1124,7 +1093,7 @@ void FApplication::processMouseEvent()
 
   determineClickedWidget();
   unsetMoveSizeMode();
-  closeOpenMenu();
+  closeDropDown();
   unselectMenubarItems();
   sendMouseEvent();
 
@@ -1135,14 +1104,14 @@ void FApplication::processMouseEvent()
 //----------------------------------------------------------------------
 void FApplication::processResizeEvent()
 {
-  if ( hasChangedTermSize() )
-  {
-    FResizeEvent r_ev(fc::Resize_Event);
-    sendEvent(app_object, &r_ev);
+  if ( ! hasChangedTermSize() )
+    return;
 
-    if ( r_ev.isAccepted() )
-      changeTermSizeFinished();
-  }
+  FResizeEvent r_ev(fc::Resize_Event);
+  sendEvent(app_object, &r_ev);
+
+  if ( r_ev.isAccepted() )
+    changeTermSizeFinished();
 }
 
 //----------------------------------------------------------------------

@@ -410,6 +410,9 @@ use `delCallbacks()` to remove all existing callbacks from an object.
   <dt>FScrollbar</dt>
   <dd>"change-value"</dd>
 
+  <dt>FSpinBox</dt>
+  <dd>"changed"</dd>
+
   <dt>FStatusBar</dt>
   <dd>"activate"</dd>
 
@@ -420,7 +423,7 @@ use `delCallbacks()` to remove all existing callbacks from an object.
   <dd>"clicked"<br />"toggled"</dd>
 
   <dt>FWidget</dt>
-  <dd>"destroy"</dd>
+  <dd>"destroy"<br />"focus-in"<br />"focus-out"<br />"mouse-press"<br />"mouse-release"<br />"mouse-move"<br />"mouse-wheel-down"<br />"mouse-wheel-up"</dd>
 </dl>
 
 &nbsp;

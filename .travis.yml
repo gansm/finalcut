@@ -50,7 +50,11 @@ matrix:
       - TEST="Coverity Scan"
     addons:
       apt:
+        sources:
+          - ubuntu-toolchain-r-test
         packages:
+          - ca-certificates
+          - gcc
           - g++
           - gpm
           - libgpm-dev

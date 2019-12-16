@@ -973,7 +973,7 @@ void FWidget::redraw()
   if ( redraw_root_widget == this )
   {
     updateTerminal();
-    flushOutputBuffer();
+    flush();
     redraw_root_widget = nullptr;
   }
 }
@@ -1053,7 +1053,7 @@ void FWidget::show()
   {
     finishTerminalUpdate();
     updateTerminal();
-    flushOutputBuffer();
+    flush();
     show_root_widget = nullptr;
   }
 
@@ -1373,7 +1373,7 @@ void FWidget::hideArea (const FSize& size)
     print() << FPoint(1, 1 + y) << FString(size.getWidth(), L' ');
   }
 
-  flushOutputBuffer();
+  flush();
 }
 
 //----------------------------------------------------------------------
@@ -1519,10 +1519,12 @@ bool FWidget::event (FEvent* ev)
       break;
 
     case fc::MouseDown_Event:
+      emitCallback("mouse-press");
       onMouseDown (static_cast<FMouseEvent*>(ev));
       break;
 
     case fc::MouseUp_Event:
+      emitCallback("mouse-release");
       onMouseUp (static_cast<FMouseEvent*>(ev));
       break;
 
@@ -1531,18 +1533,22 @@ bool FWidget::event (FEvent* ev)
       break;
 
     case fc::MouseWheel_Event:
+      emitWheelCallback(static_cast<FWheelEvent*>(ev));
       onWheel (static_cast<FWheelEvent*>(ev));
       break;
 
     case fc::MouseMove_Event:
+      emitCallback("mouse-move");
       onMouseMove (static_cast<FMouseEvent*>(ev));
       break;
 
     case fc::FocusIn_Event:
+      emitCallback("focus-in");
       onFocusIn (static_cast<FFocusEvent*>(ev));
       break;
 
     case fc::FocusOut_Event:
+      emitCallback("focus-out");
       onFocusOut (static_cast<FFocusEvent*>(ev));
       break;
 
@@ -1830,6 +1836,17 @@ void FWidget::KeyDownEvent (FKeyEvent* kev)
 }
 
 //----------------------------------------------------------------------
+void FWidget::emitWheelCallback (FWheelEvent* ev)
+{
+  int wheel = ev->getWheel();
+
+  if ( wheel == fc::WheelUp )
+    emitCallback("mouse-wheel-up");
+  else if ( wheel == fc::WheelDown )
+    emitCallback("mouse-wheel-down");
+}
+
+//----------------------------------------------------------------------
 void FWidget::setWindowFocus (bool enable)
 {
   // set the window focus
@@ -1894,7 +1911,7 @@ bool FWidget::changeFocus ( FWidget* follower, FWidget* parent
       redraw();
       follower->redraw();
       updateTerminal();
-      flushOutputBuffer();
+      flush();
     }
   }
 

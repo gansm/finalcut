@@ -161,22 +161,6 @@ class FString
 
     operator const char* () const { return c_str(); }
 
-    // Non-member operators
-    friend const FString operator + (const FString&, const FString&);
-    friend const FString operator + (const FString&, const wchar_t);
-    friend const FString operator + (const std::wstring&, const FString&);
-    friend const FString operator + (const wchar_t[], const FString&);
-    friend const FString operator + (const std::string&, const FString&);
-    friend const FString operator + (const char[], const FString&);
-    friend const FString operator + (const wchar_t, const FString&);
-    friend const FString operator + (const char, const FString&);
-    friend const FString operator + (const FString&, const char);
-
-    friend std::ostream&  operator << (std::ostream&, const FString&);
-    friend std::istream&  operator >> (std::istream&, FString& s);
-    friend std::wostream& operator << (std::wostream&, const FString&);
-    friend std::wistream& operator >> (std::wistream&, FString&);
-
     // Accessor
     virtual const FString getClassName();
 
@@ -279,6 +263,22 @@ class FString
     mutable char* c_string{nullptr};
     static wchar_t null_char;
     static const wchar_t const_null_char;
+
+    // Friend Non-member operator functions
+    friend const FString operator + (const FString&, const FString&);
+    friend const FString operator + (const FString&, const wchar_t);
+    friend const FString operator + (const std::wstring&, const FString&);
+    friend const FString operator + (const wchar_t[], const FString&);
+    friend const FString operator + (const std::string&, const FString&);
+    friend const FString operator + (const char[], const FString&);
+    friend const FString operator + (const wchar_t, const FString&);
+    friend const FString operator + (const char, const FString&);
+    friend const FString operator + (const FString&, const char);
+
+    friend std::ostream&  operator << (std::ostream&, const FString&);
+    friend std::istream&  operator >> (std::istream&, FString& s);
+    friend std::wostream& operator << (std::wostream&, const FString&);
+    friend std::wistream& operator >> (std::wistream&, FString&);
 };
 
 

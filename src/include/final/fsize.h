@@ -69,18 +69,6 @@ class FSize
     FSize& operator += (const FSize&);
     FSize& operator -= (const FSize&);
 
-    friend bool operator <  (const FSize&, const FSize&);
-    friend bool operator <= (const FSize&, const FSize&);
-    friend bool operator == (const FSize&, const FSize&);
-    friend bool operator != (const FSize&, const FSize&);
-    friend bool operator >= (const FSize&, const FSize&);
-    friend bool operator >  (const FSize&, const FSize&);
-    friend FSize operator + (const FSize&, const FSize&);
-    friend FSize operator - (const FSize&, const FSize&);
-
-    friend std::ostream& operator << (std::ostream&, const FSize&);
-    friend std::istream& operator >> (std::istream&, FSize&);
-
     // Accessors
     virtual const FString getClassName();
     std::size_t           getWidth() const;
@@ -106,6 +94,19 @@ class FSize
     // Data members
     std::size_t width{0};
     std::size_t height{0};
+
+    // Friend operator functions
+    friend bool operator <  (const FSize&, const FSize&);
+    friend bool operator <= (const FSize&, const FSize&);
+    friend bool operator == (const FSize&, const FSize&);
+    friend bool operator != (const FSize&, const FSize&);
+    friend bool operator >= (const FSize&, const FSize&);
+    friend bool operator >  (const FSize&, const FSize&);
+    friend FSize operator + (const FSize&, const FSize&);
+    friend FSize operator - (const FSize&, const FSize&);
+
+    friend std::ostream& operator << (std::ostream&, const FSize&);
+    friend std::istream& operator >> (std::istream&, FSize&);
 };
 
 // FSize inline functions
@@ -127,6 +128,32 @@ inline FSize::FSize (std::size_t w, std::size_t h)
   , height(h)
 { }
 
+//----------------------------------------------------------------------
+inline const FString FSize::getClassName()
+{ return "FSize"; }
+
+//----------------------------------------------------------------------
+inline std::size_t FSize::getWidth() const
+{ return width; }
+
+//----------------------------------------------------------------------
+inline std::size_t FSize::getHeight() const
+{ return height; }
+
+//----------------------------------------------------------------------
+inline std::size_t FSize::getArea() const
+{ return width * height; }
+
+//----------------------------------------------------------------------
+inline std::size_t& FSize::width_ref()
+{ return width; }
+
+//----------------------------------------------------------------------
+inline std::size_t& FSize::height_ref()
+{ return height; }
+
+
+// FSize non-member operators
 //----------------------------------------------------------------------
 inline bool operator < (const FSize& s1, const FSize& s2)
 { return s1.width < s2.width && s1.height < s2.height; }
@@ -167,30 +194,6 @@ inline FSize operator - (const FSize& s1, const FSize& s2)
   std::size_t h = ( s1.height >= s2.height ) ? s1.height - s2.height : 0;
   return FSize(w, h);
 }
-
-//----------------------------------------------------------------------
-inline const FString FSize::getClassName()
-{ return "FSize"; }
-
-//----------------------------------------------------------------------
-inline std::size_t FSize::getWidth() const
-{ return width; }
-
-//----------------------------------------------------------------------
-inline std::size_t FSize::getHeight() const
-{ return height; }
-
-//----------------------------------------------------------------------
-inline std::size_t FSize::getArea() const
-{ return width * height; }
-
-//----------------------------------------------------------------------
-inline std::size_t& FSize::width_ref()
-{ return width; }
-
-//----------------------------------------------------------------------
-inline std::size_t& FSize::height_ref()
-{ return height; }
 
 }  // namespace finalcut
 

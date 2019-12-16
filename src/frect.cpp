@@ -229,19 +229,19 @@ void FRect::setCoordinates (int x1, int y1, int x2, int y2)
 //----------------------------------------------------------------------
 void FRect::move (int dx, int dy)
 {
-  X1 = X1 + dx;
-  Y1 = Y1 + dy;
-  X2 = X2 + dx;
-  Y2 = Y2 + dy;
+  X1 += dx;
+  Y1 += dy;
+  X2 += dx;
+  Y2 += dy;
 }
 
 //----------------------------------------------------------------------
 void FRect::move (const FPoint& d)
 {
-  X1 = X1 + d.getX();
-  Y1 = Y1 + d.getY();
-  X2 = X2 + d.getX();
-  Y2 = Y2 + d.getY();
+  X1 += d.getX();
+  Y1 += d.getY();
+  X2 += d.getX();
+  Y2 += d.getY();
 }
 
 //----------------------------------------------------------------------
@@ -332,6 +332,7 @@ FRect& FRect::operator = (FRect&& r)
   return *this;
 }
 
+// FRect non-member operators
 //----------------------------------------------------------------------
 FRect operator + (const FRect& r, const FSize& s)
 {

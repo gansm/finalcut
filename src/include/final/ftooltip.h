@@ -92,7 +92,6 @@ class FToolTip : public FWindow
     void                setText (const FString&);
 
     // Methods
-    void                draw() override;
     void                show() override;
     void                hide() override;
 
@@ -102,6 +101,7 @@ class FToolTip : public FWindow
   private:
     // Methods
     void                init();
+    void                draw() override;
     void                calculateDimensions();
     void                adjustSize() override;
 
