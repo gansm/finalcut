@@ -393,7 +393,7 @@ void FLabel::printLine (FString&& line)
   }
   else
   {
-    to_column = width - 2;
+    to_column = ( width >= 2 ) ? width - 2 : 0;
     to_char = getLengthFromColumnWidth(line, to_column);
   }
 
@@ -436,7 +436,8 @@ void FLabel::printLine (FString&& line)
   if ( column_width > width )
   {
     // Print ellipsis
-    print() << FColorPair(ellipsis_color, getBackgroundColor()) << "..";
+    print() << FColorPair(ellipsis_color, getBackgroundColor())
+            << FString("..").left(width);
     setColor();
   }
   else if ( align_offset + to_column < width )

@@ -100,9 +100,6 @@ class FDropDownListBox : public FWindow
     void                show() override;
     void                hide() override;
 
-    // Event handlers
-    void                onKeyPress (FKeyEvent*) override;
-
   private:
     // Methods
     void                init();

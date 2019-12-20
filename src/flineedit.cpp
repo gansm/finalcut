@@ -689,7 +689,7 @@ bool FLineEdit::hasHotkey()
 //----------------------------------------------------------------------
 void FLineEdit::draw()
 {
-  if ( cursor_pos == NOT_SET && isReadOnly() )
+  if ( cursor_pos == NOT_SET && ! isReadOnly() )
     cursorEnd();
 
   if ( ! isShown() )

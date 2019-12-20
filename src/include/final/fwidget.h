@@ -289,8 +289,8 @@ class FWidget : public FVTerm, public FObject
     void                    setMinimumHeight (std::size_t);
     void                    setMinimumSize (const FSize&);
     void                    setMaximumWidth (std::size_t);
-    void                    setMaximumHeight (const FSize&);
-    void                    setMaximumSize (std::size_t, std::size_t);
+    void                    setMaximumHeight (std::size_t);
+    void                    setMaximumSize (const FSize&);
     void                    setFixedSize (const FSize&);
     bool                    setCursorPos (const FPoint&);
     void                    unsetCursorPos();
@@ -882,13 +882,12 @@ inline void FWidget::setMaximumWidth (std::size_t max_width)
 { size_hints.setMaximum (FSize(max_width, size_hints.max_height)); }
 
 //----------------------------------------------------------------------
-inline void FWidget::setMaximumHeight (const FSize& size)
-{ size_hints.setMaximum (size); }
+inline void FWidget::setMaximumHeight (std::size_t max_height)
+{ size_hints.setMaximum (FSize(size_hints.max_width, max_height)); }
 
 //----------------------------------------------------------------------
-inline void FWidget::setMaximumSize ( std::size_t max_width
-                                    , std::size_t max_height )
-{ size_hints.setMaximum (FSize(max_width, max_height)); }
+inline void FWidget::setMaximumSize (const FSize& size)
+{ size_hints.setMaximum (size); }
 
 //----------------------------------------------------------------------
 inline void FWidget::setFixedSize (const FSize& size)

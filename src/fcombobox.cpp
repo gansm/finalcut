@@ -106,20 +106,6 @@ void FDropDownListBox::hide()
   flush();
 }
 
-//----------------------------------------------------------------------
-void FDropDownListBox::onKeyPress (FKeyEvent* ev)
-{
-  switch ( ev->key() )
-  {
-    case fc::Fkey_escape:
-    case fc::Fkey_escape_mintty:
-      hide();
-      break;
-
-    default:
-      break;
-  }
-}
 
 // private methods of FDropDownListBox
 //----------------------------------------------------------------------
@@ -368,6 +354,8 @@ void FComboBox::onKeyPress (FKeyEvent* ev)
 
     case fc::Fmkey_up:
     case fc::Fckey_up:
+    case fc::Fkey_escape:
+    case fc::Fkey_escape_mintty:
       hideDropDown();
       ev->accept();
       break;

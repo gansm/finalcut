@@ -1,3 +1,8 @@
+2019-12-20  Markus Gans  <guru.mail@muenster.de>
+	* Fixed the drawing of FLabel widget with the default size 
+	  of 1×1 character.
+	  Thanks to terranpro for reporting this issue
+
 2019-12-16  Markus Gans  <guru.mail@muenster.de>
 	* New widget class FComboBox to provide a dropdown list 
 	  with an input field
