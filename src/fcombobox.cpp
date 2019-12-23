@@ -512,17 +512,14 @@ void FComboBox::initCallbacks()
     F_METHOD_CALLBACK (this, &FComboBox::cb_setInputField)
   );
 
-  list_window.list.addCallback
-  (
-    "row-selected",
-    F_METHOD_CALLBACK (this, &FComboBox::cb_closeComboBox)
-  );
-
-  list_window.list.addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &FComboBox::cb_closeComboBox)
-  );
+  for (const auto& signal : {"row-selected", "clicked"})
+  {
+    list_window.list.addCallback
+    (
+      signal,
+      F_METHOD_CALLBACK (this, &FComboBox::cb_closeComboBox)
+    );
+  }
 }
 
 //----------------------------------------------------------------------

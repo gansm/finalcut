@@ -142,35 +142,23 @@ Background::Background (finalcut::FWidget* parent)
     F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
   );
 
-  red.addCallback
-  (
-    "changed",
-    F_METHOD_CALLBACK (this, &Background::cb_changed)
-  );
+  for (const auto spinbox : {&red, &green, &blue})
+  {
+    spinbox->addCallback
+    (
+      "changed",
+      F_METHOD_CALLBACK (this, &Background::cb_changed)
+    );
+  }
 
-  green.addCallback
-  (
-    "changed",
-    F_METHOD_CALLBACK (this, &Background::cb_changed)
-  );
-
-  blue.addCallback
-  (
-    "changed",
-    F_METHOD_CALLBACK (this, &Background::cb_changed)
-  );
-
-  color_choice.addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &Background::cb_choice)
-  );
-
-  color_choice.addCallback
-  (
-    "row-changed",
-    F_METHOD_CALLBACK (this, &Background::cb_choice)
-  );
+  for (const auto& signal : {"row-changed", "clicked"})
+  {
+    color_choice.addCallback
+    (
+      signal,
+      F_METHOD_CALLBACK (this, &Background::cb_choice)
+    );
+  }
 }
 
 //----------------------------------------------------------------------

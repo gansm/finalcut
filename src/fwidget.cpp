@@ -1646,6 +1646,7 @@ void FWidget::onAccel (FAccelEvent*)
 //----------------------------------------------------------------------
 void FWidget::onResize (FResizeEvent* ev)
 {
+  // The terminal was resized
   rootObject->resize();
   rootObject->redraw();
   ev->accept();
@@ -1779,7 +1780,7 @@ inline void FWidget::insufficientSpaceAdjust()
     adjust_wsize.y2_ref()--;
 
   if ( getHeight() < size_hints.min_height )
-    adjust_wsize.setWidth(size_hints.min_height);
+    adjust_wsize.setHeight(size_hints.min_height);
 
   if ( getHeight() == 0 )
     adjust_wsize.setHeight(1);
