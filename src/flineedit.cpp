@@ -255,6 +255,15 @@ void FLineEdit::setLabelOrientation (const label_o o)
 }
 
 //----------------------------------------------------------------------
+void FLineEdit::setSize (const FSize& size, bool adjust)
+{
+  FWidget::setSize (size, adjust);
+
+  if ( isShown() )
+    adjustTextOffset();
+}
+
+//----------------------------------------------------------------------
 void FLineEdit::setGeometry ( const FPoint& pos, const FSize& size
                             , bool adjust )
 {

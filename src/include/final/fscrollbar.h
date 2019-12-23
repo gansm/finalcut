@@ -115,6 +115,7 @@ class FScrollbar : public FWidget
     void                setSteps (double);
     void                setPageSize (int, int);
     void                setOrientation (fc::orientation);
+    void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
 
@@ -148,6 +149,7 @@ class FScrollbar : public FWidget
     void                jumpToClickPos (int);
     void                avoidScrollOvershoot();
     void                processScroll();
+    void                changeOnResize();
 
     // Data members
     sType               scroll_type{FScrollbar::noScroll};

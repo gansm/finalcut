@@ -159,6 +159,7 @@ class FComboBox : public FWidget
     FLineEdit::label_o  getLabelOrientation();
 
     // Mutators
+    void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     bool                setEnable (bool) override;

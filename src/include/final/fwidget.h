@@ -850,7 +850,10 @@ inline void FWidget::setBackgroundColor (FColor color)
 
 //----------------------------------------------------------------------
 inline FWidget::FWidgetFlags& FWidget::setFlags()
-{ return flags; }
+{
+  // Gives direct access to the widget flags
+  return flags;
+}
 
 //----------------------------------------------------------------------
 inline void FWidget::setGeometry (const FRect& box, bool adjust)
@@ -875,7 +878,10 @@ inline void FWidget::setMinimumHeight (std::size_t min_height)
 
 //----------------------------------------------------------------------
 inline void FWidget::setMinimumSize (const FSize& size)
-{ size_hints.setMinimum (size); }
+{
+  // Sets the lower size limit to which the widget can be resized
+  size_hints.setMinimum (size);
+}
 
 //----------------------------------------------------------------------
 inline void FWidget::setMaximumWidth (std::size_t max_width)
@@ -887,11 +893,16 @@ inline void FWidget::setMaximumHeight (std::size_t max_height)
 
 //----------------------------------------------------------------------
 inline void FWidget::setMaximumSize (const FSize& size)
-{ size_hints.setMaximum (size); }
+{
+  // Sets the upper size limit to which the widget can be resized
+  size_hints.setMaximum (size);
+}
 
 //----------------------------------------------------------------------
 inline void FWidget::setFixedSize (const FSize& size)
 {
+  // Sets the minimum and maximum size limit to fixed sizes to prevent
+  // the widget resizing
   size_hints.setMinimum (size);
   size_hints.setMaximum (size);
 }

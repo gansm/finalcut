@@ -86,28 +86,22 @@ const FString FTextView::getText() const
 }
 
 //----------------------------------------------------------------------
+void FTextView::setSize (const FSize& size, bool adjust)
+{
+  // Sets the text view size
+
+  FWidget::setSize (size, adjust);
+  changeOnResize();
+}
+
+//----------------------------------------------------------------------
 void FTextView::setGeometry ( const FPoint& pos, const FSize& size
                             , bool adjust)
 {
-  // Set the text view geometry
+  // Sets the text view geometry
 
   FWidget::setGeometry(pos, size, adjust);
-  std::size_t width  = getWidth();
-  std::size_t height = getHeight();
-
-  if ( isNewFont() )
-  {
-    vbar->setGeometry (FPoint(int(width), 1), FSize(2, height - 1));
-    hbar->setGeometry (FPoint(1, int(height)), FSize(width - 2, 1));
-  }
-  else
-  {
-    vbar->setGeometry (FPoint(int(width), 2), FSize(1, height - 2));
-    hbar->setGeometry (FPoint(2, int(height)), FSize(width - 2, 1));
-  }
-
-  vbar->resize();
-  hbar->resize();
+  changeOnResize();
 }
 
 //----------------------------------------------------------------------
@@ -726,6 +720,27 @@ inline bool FTextView::isPrintable (wchar_t ch)
 void FTextView::processChanged()
 {
   emitCallback("changed");
+}
+
+//----------------------------------------------------------------------
+void FTextView::changeOnResize()
+{
+  std::size_t width  = getWidth();
+  std::size_t height = getHeight();
+
+  if ( isNewFont() )
+  {
+    vbar->setGeometry (FPoint(int(width), 1), FSize(2, height - 1));
+    hbar->setGeometry (FPoint(1, int(height)), FSize(width - 2, 1));
+  }
+  else
+  {
+    vbar->setGeometry (FPoint(int(width), 2), FSize(1, height - 2));
+    hbar->setGeometry (FPoint(2, int(height)), FSize(width - 2, 1));
+  }
+
+  vbar->resize();
+  hbar->resize();
 }
 
 //----------------------------------------------------------------------

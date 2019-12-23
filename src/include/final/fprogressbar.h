@@ -79,6 +79,7 @@ class FProgressbar : public FWidget
 
     // Mutators
     void                setPercentage (std::size_t);
+    void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     bool                setShadow (bool);

@@ -70,10 +70,19 @@ void FProgressbar::setPercentage (std::size_t percentage_value)
 }
 
 //----------------------------------------------------------------------
+void FProgressbar::setSize (const FSize& size, bool adjust)
+{
+  // Sets the progress bar size
+
+  FWidget::setSize (size, adjust);
+  bar_length = size.getWidth();
+}
+
+//----------------------------------------------------------------------
 void FProgressbar::setGeometry ( const FPoint& pos, const FSize& size
                                , bool adjust )
 {
-  // Set the progress bar geometry
+  // Sets the progress bar geometry
 
   FWidget::setGeometry (pos, size, adjust);
   bar_length = size.getWidth();

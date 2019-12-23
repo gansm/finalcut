@@ -161,23 +161,18 @@ void FListBox::showInsideBrackets ( std::size_t index
 }
 
 //----------------------------------------------------------------------
+void FListBox::setSize (const FSize& size, bool adjust)
+{
+  FWidget::setSize (size, adjust);
+  changeOnResize();
+}
+
+//----------------------------------------------------------------------
 void FListBox::setGeometry ( const FPoint& pos, const FSize& size
                            , bool adjust )
 {
-  // Set the widget geometry
-
-  FWidget::setGeometry(pos, size, adjust);
-
-  if ( isNewFont() )
-  {
-    vbar->setGeometry (FPoint(int(getWidth()), 2), FSize(2, getHeight() - 2));
-    hbar->setGeometry (FPoint(1, int(getHeight())), FSize(getWidth() - 2, 1));
-  }
-  else
-  {
-    vbar->setGeometry (FPoint(int(getWidth()), 2), FSize(1, getHeight() - 2));
-    hbar->setGeometry (FPoint(2, int(getHeight())), FSize(getWidth() - 2, 1));
-  }
+  FWidget::setGeometry (pos, size, adjust);
+  changeOnResize();
 }
 
 //----------------------------------------------------------------------
@@ -1716,6 +1711,21 @@ void FListBox::processSelect()
 void FListBox::processChanged()
 {
   emitCallback("row-changed");
+}
+
+//----------------------------------------------------------------------
+void FListBox::changeOnResize()
+{
+  if ( isNewFont() )
+  {
+    vbar->setGeometry (FPoint(int(getWidth()), 2), FSize(2, getHeight() - 2));
+    hbar->setGeometry (FPoint(1, int(getHeight())), FSize(getWidth() - 2, 1));
+  }
+  else
+  {
+    vbar->setGeometry (FPoint(int(getWidth()), 2), FSize(1, getHeight() - 2));
+    hbar->setGeometry (FPoint(2, int(getHeight())), FSize(getWidth() - 2, 1));
+  }
 }
 
 //----------------------------------------------------------------------

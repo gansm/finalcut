@@ -101,6 +101,7 @@ class FTextView : public FWidget
     const FStringList&  getLines() const;
 
     // Mutators
+    void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     void                setText (const FString&);
@@ -158,6 +159,7 @@ class FTextView : public FWidget
     bool                useFDialogBorder();
     bool                isPrintable (wchar_t);
     void                processChanged();
+    void                changeOnResize();
 
     // Callback methods
     void                cb_VBarChange (FWidget*, FDataPtr);

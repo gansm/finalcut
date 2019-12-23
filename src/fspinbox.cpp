@@ -54,6 +54,15 @@ FSpinBox::~FSpinBox()  // destructor
 
 // public methods of FSpinBox
 //----------------------------------------------------------------------
+void FSpinBox::setSize (const FSize& size, bool adjust)
+{
+  FWidget::setSize (size, adjust);
+  FSize input_field_size(size);
+  input_field_size.scaleBy(-2, 0);
+  input_field.setSize (input_field_size, adjust);
+}
+
+//----------------------------------------------------------------------
 void FSpinBox::setGeometry ( const FPoint& pos, const FSize& size
                            , bool adjust )
 {

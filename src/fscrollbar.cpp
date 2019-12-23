@@ -147,29 +147,22 @@ void FScrollbar::setOrientation (fc::orientation o)
 }
 
 //----------------------------------------------------------------------
+void FScrollbar::setSize (const FSize& size, bool adjust)
+{
+  // Set the scrollbar size
+
+  FWidget::setSize (size, adjust);
+  changeOnResize();
+}
+
+//----------------------------------------------------------------------
 void FScrollbar::setGeometry ( const FPoint& pos, const FSize& size
                              , bool adjust )
 {
   // Set the scrollbar geometry
 
   FWidget::setGeometry (pos, size, adjust);
-
-  std::size_t w = size.getWidth();
-  std::size_t h = size.getHeight();
-  length = ( bar_orientation == fc::vertical ) ? h : w;
-
-  if ( bar_orientation == fc::vertical )
-  {
-    setWidth(isNewFont() ? 2 : 1);
-    setHeight(length);
-  }
-  else  // horizontal
-  {
-    setWidth(length);
-    setHeight(1);
-  }
-
-  calculateSliderValues();
+  changeOnResize();
 }
 
 //----------------------------------------------------------------------
@@ -800,6 +793,28 @@ void FScrollbar::processScroll()
 {
   emitCallback("change-value");
   avoidScrollOvershoot();
+}
+
+//----------------------------------------------------------------------
+void FScrollbar::changeOnResize()
+{
+  const FSize& size = getSize();
+  std::size_t w = size.getWidth();
+  std::size_t h = size.getHeight();
+  length = ( bar_orientation == fc::vertical ) ? h : w;
+
+  if ( bar_orientation == fc::vertical )
+  {
+    setWidth(isNewFont() ? 2 : 1);
+    setHeight(length);
+  }
+  else  // horizontal
+  {
+    setWidth(length);
+    setHeight(1);
+  }
+
+  calculateSliderValues();
 }
 
 }  // namespace finalcut

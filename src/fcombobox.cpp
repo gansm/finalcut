@@ -182,6 +182,15 @@ FComboBox::~FComboBox()  // destructor
 
 // public methods of FComboBox
 //----------------------------------------------------------------------
+void FComboBox::setSize (const FSize& size, bool adjust)
+{
+  FWidget::setSize (size, adjust);
+  FSize input_field_size(size);
+  input_field_size.scaleBy(-(1 + nf), 0);
+  input_field.setSize (input_field_size, adjust);
+}
+
+//----------------------------------------------------------------------
 void FComboBox::setGeometry ( const FPoint& pos, const FSize& size
                             , bool adjust )
 {

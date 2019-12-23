@@ -184,6 +184,7 @@ class FListBox : public FWidget
     void                showInsideBrackets (std::size_t, fc::brackets_type);
     void                showNoBrackets (std::size_t);
     void                showNoBrackets (listBoxItems::iterator);
+    void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     void                setMultiSelection (bool);
@@ -308,6 +309,7 @@ class FListBox : public FWidget
     void                processClick();
     void                processSelect();
     void                processChanged();
+    void                changeOnResize();
     void                lazyConvert (listBoxItems::iterator, int);
     listBoxItems::iterator index2iterator (std::size_t);
     listBoxItems::const_iterator index2iterator (std::size_t index) const;

@@ -88,6 +88,7 @@ class FToggleButton : public FWidget
     FString&            getText();
 
     // Mutators
+    void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     bool                setNoUnderline (bool);
@@ -152,6 +153,7 @@ class FToggleButton : public FWidget
     // Methods
     void                init();
     void                drawText (FString&&, std::size_t);
+    void                correctSize (FSize&);
 
     // Data members
     FButtonGroup* button_group{nullptr};

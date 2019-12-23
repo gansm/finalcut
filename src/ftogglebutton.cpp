@@ -81,25 +81,34 @@ FToggleButton::~FToggleButton()  // destructor
 
 // public methods of FToggleButton
 //----------------------------------------------------------------------
+void FToggleButton::setSize (const FSize& s, bool adjust)
+{
+  // Set the toggle button size
+
+  FSize size(s);
+  correctSize(size);
+  const FRect geometry(getPos(), size);
+
+  if ( hasGroup() )
+    getGroup()->checkScrollSize(geometry);
+
+  FWidget::setSize (size, adjust);
+}
+
+//----------------------------------------------------------------------
 void FToggleButton::setGeometry ( const FPoint& pos, const FSize& s
                                 , bool adjust )
 {
   // Set the toggle button geometry
 
   FSize size(s);
-  std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
-  std::size_t column_width = getColumnWidth(text);
-  std::size_t min_width = button_width + column_width - hotkey_mark;
-
-  if ( size.getWidth() < min_width )
-    size.setWidth(min_width);
-
+  correctSize(size);
   const FRect geometry(pos, size);
 
   if ( hasGroup() )
     getGroup()->checkScrollSize(geometry);
 
-  FWidget::setGeometry(pos, size, adjust);
+  FWidget::setGeometry (pos, size, adjust);
 }
 
 //----------------------------------------------------------------------
@@ -545,6 +554,17 @@ void FToggleButton::drawText (FString&& label_text, std::size_t hotkeypos)
 
   if ( isMonochron() )
     setReverse(false);
+}
+
+//----------------------------------------------------------------------
+void FToggleButton::correctSize (FSize& size)
+{
+  std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
+  std::size_t column_width = getColumnWidth(text);
+  std::size_t min_width = button_width + column_width - hotkey_mark;
+
+  if ( size.getWidth() < min_width )
+    size.setWidth(min_width);
 }
 
 }  // namespace finalcut

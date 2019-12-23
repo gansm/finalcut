@@ -285,6 +285,7 @@ class FListView : public FWidget
     FListViewItem*       getCurrentItem();
 
     // Mutators
+    void                 setSize (const FSize&, bool = true) override;
     void                 setGeometry ( const FPoint&, const FSize&
                                      , bool = true ) override;
     void                 setColumnAlignment (int, fc::text_alignment);
@@ -419,6 +420,7 @@ class FListView : public FWidget
     iterator             appendItem (FListViewItem*);
     void                 processClick();
     void                 processChanged();
+    void                 changeOnResize();
     void                 toggleCheckbox();
     void                 collapseAndScrollLeft();
     void                 expandAndScrollRight();

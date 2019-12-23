@@ -1,3 +1,6 @@
+2019-12-23  Markus Gans  <guru.mail@muenster.de>
+	* Better setSize() implementation in some widgets
+
 2019-12-20  Markus Gans  <guru.mail@muenster.de>
 	* Fixed the drawing of FLabel widget with the default size 
 	  of 1×1 character.
