@@ -68,6 +68,7 @@ class FOptiAttrTest : public CPPUNIT_NS::TestFixture
     void classNameTest();
     void noArgumentTest();
     void vga2ansiTest();
+    void sgrOptimizerTest();
     void fakeReverseTest();
     void ansiTest();
     void vt100Test();
@@ -90,6 +91,7 @@ class FOptiAttrTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (vga2ansiTest);
+    CPPUNIT_TEST (sgrOptimizerTest);
     CPPUNIT_TEST (fakeReverseTest);
     CPPUNIT_TEST (ansiTest);
     CPPUNIT_TEST (vt100Test);
@@ -139,6 +141,149 @@ void FOptiAttrTest::noArgumentTest()
 }
 
 //----------------------------------------------------------------------
+void FOptiAttrTest::sgrOptimizerTest()
+{
+  // Test with FOptiAttr
+  // -------------------
+  finalcut::FStartOptions::getFStartOptions().sgr_optimizer = true;
+  finalcut::FOptiAttr oa;
+  oa.setDefaultColorSupport();  // ANSI default color
+  oa.setMaxColor (8);
+  oa.setNoColorVideo (3);       // Avoid standout (1) + underline mode (2)
+  oa.set_enter_bold_mode (C_STR(CSI "1m"));
+  oa.set_exit_bold_mode (C_STR(CSI "22m"));
+  oa.set_enter_dim_mode (C_STR(CSI "2m"));
+  oa.set_exit_dim_mode (C_STR(CSI "22m"));
+  oa.set_enter_italics_mode (C_STR(CSI "3m"));
+  oa.set_exit_italics_mode (C_STR(CSI "23m"));
+  oa.set_enter_underline_mode  (0);
+  oa.set_exit_underline_mode  (0);
+  oa.set_enter_blink_mode (C_STR(CSI "5m"));
+  oa.set_exit_blink_mode (C_STR(CSI "25m"));
+  oa.set_enter_reverse_mode (C_STR(CSI "7m"));
+  oa.set_exit_reverse_mode (C_STR(CSI "27m"));
+  oa.set_enter_standout_mode  (0);
+  oa.set_exit_standout_mode  (0);
+  oa.set_enter_secure_mode (C_STR(CSI "8m"));
+  oa.set_exit_secure_mode (C_STR(CSI "28m"));
+  oa.set_enter_protected_mode (0);
+  oa.set_exit_protected_mode (C_STR(CSI "0m"));
+  oa.set_enter_crossed_out_mode (C_STR(CSI "9m"));
+  oa.set_exit_crossed_out_mode (C_STR(CSI "29m"));
+  oa.set_enter_dbl_underline_mode (C_STR(CSI "21m"));
+  oa.set_exit_dbl_underline_mode (C_STR(CSI "24m"));
+  oa.set_set_attributes (C_STR(CSI "0;10"
+                               "%?%p3%t;7%;"
+                               "%?%p4%t;5%;"
+                               "%?%p5%t;2%;"
+                               "%?%p6%t;1%;"
+                               "%?%p7%t;8%;"
+                               "%?%p9%t;11%;m"));
+  oa.set_exit_attribute_mode (C_STR(CSI "0m"));
+  oa.set_enter_alt_charset_mode (C_STR(CSI "11m"));
+  oa.set_exit_alt_charset_mode (C_STR(CSI "10m"));
+  oa.set_enter_pc_charset_mode (C_STR(CSI "11m"));
+  oa.set_exit_pc_charset_mode (C_STR(CSI "10m"));
+  oa.set_a_foreground_color (C_STR(CSI "3%p1%dm"));
+  oa.set_a_background_color (C_STR(CSI "4%p1%dm"));
+  oa.set_foreground_color (0);
+  oa.set_background_color (0);
+  oa.set_term_color_pair (0);
+  oa.set_orig_pair (C_STR(CSI "39;49m"));
+  oa.set_orig_orig_colors (0);
+  oa.initialize();
+
+  finalcut::FChar* from = new finalcut::FChar();
+  finalcut::FChar* to = new finalcut::FChar();
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+
+  // Blue text on white background + bold + dim + italic
+  to->fg_color = finalcut::fc::Blue;
+  to->bg_color = finalcut::fc::White;
+  to->attr.bit.bold = true;
+  to->attr.bit.dim = true;
+  to->attr.bit.italic = true;
+  CPPUNIT_ASSERT ( *from != *to );
+  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+                         , C_STR(CSI "0;10;2;1;3;34;47m") );
+  CPPUNIT_ASSERT ( *from == *to );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+
+  // Yellow text on Black Yellow + bold
+  to->fg_color = finalcut::fc::Yellow;
+  to->bg_color = finalcut::fc::Black;
+  to->attr.bit.bold = true;
+  to->attr.bit.dim = false;
+  to->attr.bit.italic = false;
+  CPPUNIT_ASSERT ( *from != *to );
+  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+                         , C_STR(CSI "0;10;1;33;40m") );
+  CPPUNIT_ASSERT ( *from == *to );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+
+
+  // Test only the optimizer
+  // -----------------------
+  char buffer[8192] = { CSI "0;10m" CSI "11m"  CSI "36m" CSI "44m" };
+  finalcut::SGRoptimizer sgr_optimizer(buffer);
+  sgr_optimizer.optimize();
+  CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "0;10;11;36;44m") );
+
+  std::strcpy(buffer, CSI "0;1m" CSI "34m");
+  sgr_optimizer.optimize();
+  CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "0;1;34m") );
+
+  std::strcpy(buffer, CSI "m" CSI "34m");
+  sgr_optimizer.optimize();
+  CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "0;34m") );
+
+  std::strcpy(buffer, CSI "1m" CSI "m" CSI "45m");
+  sgr_optimizer.optimize();
+  CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "1;0;45m") );
+
+  std::strcpy(buffer, CSI "47m");
+  sgr_optimizer.optimize();
+  CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "47m") );
+
+  std::strcpy(buffer, CSI "47m" CSI "m" CSI "1m");
+  sgr_optimizer.optimize();
+  CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "47;0;1m") );
+
+  std::strcpy(buffer, CSI "49m" CSI "m" CSI "0m");
+  sgr_optimizer.optimize();
+  CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "49;0;0m") );
+
+  std::strcpy(buffer, CSI "m" CSI "m" CSI "m");
+  sgr_optimizer.optimize();
+  CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "0;0;0m") );
+
+  std::strcpy(buffer, CSI "m");
+  sgr_optimizer.optimize();
+  CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "m") );
+
+  std::strcpy(buffer, CSI "0;10;1;7m" CSI "3m" CSI "39m" CSI "49m");
+  sgr_optimizer.optimize();
+  CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "0;10;1;7;3;39;49m") );
+
+  std::strcpy(buffer, CSI "m" CSI "38;5;20m" CSI "48;5;229m");
+  sgr_optimizer.optimize();
+  CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "0;38;5;20;48;5;229m") );
+
+  std::strcpy(buffer, CSI "m" CSI "1m" CSI "2m" CSI "3m" CSI "4m"
+                      CSI "5m" CSI "7m" CSI "8m" CSI "9m");
+  sgr_optimizer.optimize();
+  CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "0;1;2;3;4;5;7;8;9m") );
+
+  std::strcpy(buffer, CSI "0m" CSI "46;36;1m");
+  sgr_optimizer.optimize();
+  CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "0;46;36;1m") );
+
+  std::strcpy(buffer, CSI "m" CSI "38;2;0;139;139m" CSI "48;2;240;255;240m");
+  sgr_optimizer.optimize();
+  CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "0;38;2;0;139;139;48;2;240;255;240m") );
+}
+
+//----------------------------------------------------------------------
 void FOptiAttrTest::vga2ansiTest()
 {
   finalcut::FOptiAttr oa;
@@ -163,6 +308,7 @@ void FOptiAttrTest::vga2ansiTest()
 //----------------------------------------------------------------------
 void FOptiAttrTest::fakeReverseTest()
 {
+  finalcut::FStartOptions::getFStartOptions().sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (8);
@@ -251,6 +397,7 @@ void FOptiAttrTest::ansiTest()
 {
   // Simulate an ansi terminal
 
+  finalcut::FStartOptions::getFStartOptions().sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (8);
@@ -718,6 +865,7 @@ void FOptiAttrTest::vt100Test()
 {
   // Simulate a vt100 terminal
 
+  finalcut::FStartOptions::getFStartOptions().sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
   oa.setMaxColor (1);
@@ -1179,6 +1327,7 @@ void FOptiAttrTest::xtermTest()
 {
   // Simulate an xterm-256color terminal
 
+  finalcut::FStartOptions::getFStartOptions().sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (256);
@@ -1660,6 +1809,7 @@ void FOptiAttrTest::rxvtTest()
 {
   // Simulate an rxvt terminal
 
+  finalcut::FStartOptions::getFStartOptions().sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (8);
@@ -2131,6 +2281,7 @@ void FOptiAttrTest::linuxTest()
 {
   // Simulate a Linux terminal with 16 colors
 
+  finalcut::FStartOptions::getFStartOptions().sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (16);
@@ -2605,6 +2756,7 @@ void FOptiAttrTest::puttyTest()
 {
   // Simulate a putty-256color terminal
 
+  finalcut::FStartOptions::getFStartOptions().sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
   oa.setMaxColor (256);
@@ -3087,6 +3239,7 @@ void FOptiAttrTest::teratermTest()
 {
   // Simulate a Tera Term terminal
 
+  finalcut::FStartOptions::getFStartOptions().sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
   oa.setMaxColor (16);
@@ -3553,6 +3706,7 @@ void FOptiAttrTest::ibmColorTest()
 {
   // Simulate IBM color definitions
 
+  finalcut::FStartOptions::getFStartOptions().sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
   oa.setMaxColor (8);
@@ -3991,6 +4145,7 @@ void FOptiAttrTest::wyse50Test()
 {
   // Simulate an Wyse-50 terminal
 
+  finalcut::FStartOptions::getFStartOptions().sgr_optimizer = false;
   finalcut::FOptiAttr oa;
   finalcut::FOptiAttr::termEnv optiattr_env =
   {

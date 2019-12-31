@@ -320,6 +320,8 @@ void FApplication::showParameterUsage()
     << "     Disable terminal detection\n"
     << "  --no-color-change      "
     << "     Do not redefine the color palette\n"
+    << "  --no-sgr-optimizer     "
+    << "     Do not optimize SGR sequences\n"
     << "  --vgafont              "
     << "     Set the standard vga 8x16 font\n"
     << "  --newfont              "
@@ -415,6 +417,7 @@ void FApplication::cmd_options (const int& argc, char* argv[])
       {C_STR("no-optimized-cursor"),   no_argument,       0,  0 },
       {C_STR("no-terminal-detection"), no_argument,       0,  0 },
       {C_STR("no-color-change"),       no_argument,       0,  0 },
+      {C_STR("no-sgr-optimizer"),      no_argument,       0,  0 },
       {C_STR("vgafont"),               no_argument,       0,  0 },
       {C_STR("newfont"),               no_argument,       0,  0 },
 
@@ -468,6 +471,9 @@ void FApplication::cmd_options (const int& argc, char* argv[])
 
       if ( std::strcmp(long_options[idx].name, "no-color-change")  == 0 )
         getStartOptions().color_change = false;
+
+      if ( std::strcmp(long_options[idx].name, "no-sgr-optimizer")  == 0 )
+        getStartOptions().sgr_optimizer = false;
 
       if ( std::strcmp(long_options[idx].name, "vgafont")  == 0 )
         getStartOptions().vgafont = true;
@@ -819,7 +825,7 @@ void FApplication::closeDropDown()
 {
   // Close the open menu
 
-  if ( mouse && mouse->isMoved() )
+  if ( ! mouse || (mouse && mouse->isMoved()) )
     return;
 
   const auto& mouse_position = mouse->getPos();

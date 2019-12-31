@@ -127,10 +127,13 @@ Background::Background (finalcut::FWidget* parent)
   blue.setValue (0xec);
 
   // Set the initial palette values
-  finalcut::FTerm::setPalette ( finalcut::fc::LightMagenta
-                              , int(red.getValue())
-                              , int(green.getValue())
-                              , int(blue.getValue()) );
+  if ( finalcut::FTerm::canChangeColorPalette() )
+  {
+    finalcut::FTerm::setPalette ( finalcut::fc::LightMagenta
+                                , int(red.getValue())
+                                , int(green.getValue())
+                                , int(blue.getValue()) );
+  }
 
   // Quit button
   quit.setGeometry(FPoint(19, 8), FSize(10, 1));
@@ -168,6 +171,9 @@ Background::~Background()  // destructor
 //----------------------------------------------------------------------
 void Background::cb_changed (finalcut::FWidget*, FDataPtr)
 {
+  if ( ! finalcut::FTerm::canChangeColorPalette() )
+    return;
+
   finalcut::FTerm::setPalette ( finalcut::fc::LightMagenta
                               , int(red.getValue())
                               , int(green.getValue())
@@ -179,6 +185,9 @@ void Background::cb_changed (finalcut::FWidget*, FDataPtr)
 //----------------------------------------------------------------------
 void Background::cb_choice (finalcut::FWidget*, FDataPtr)
 {
+  if ( ! finalcut::FTerm::canChangeColorPalette() )
+    return;
+
   uChar r{}, g{}, b{};
   FDataPtr data_ptr = color_choice.getItemData();
   RGB* rgb = reinterpret_cast<RGB*>(data_ptr);
@@ -202,7 +211,10 @@ void Background::cb_choice (finalcut::FWidget*, FDataPtr)
 int main (int argc, char* argv[])
 {
   finalcut::FApplication app(argc, argv);
-  app.setBackgroundColor(finalcut::fc::LightMagenta);
+
+  if ( finalcut::FTerm::canChangeColorPalette() )
+    app.setBackgroundColor(finalcut::fc::LightMagenta);
+
   Background dialog(&app);
   app.setMainWidget(&dialog);
   dialog.show();

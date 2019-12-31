@@ -24,6 +24,7 @@
 
 #include "final/fc.h"
 #include "final/foptiattr.h"
+#include "final/fstartoptions.h"
 
 namespace finalcut
 {
@@ -577,6 +578,9 @@ char* FOptiAttr::changeAttribute (FChar*& term, FChar*& next)
   {
     changeAttributeSeparately (term, next);
   }
+
+  if ( FStartOptions::getFStartOptions().sgr_optimizer )
+    sgr_optimizer.optimize();
 
   return attr_buf;
 }
@@ -1651,14 +1655,12 @@ inline bool FOptiAttr::switchOff()
 //----------------------------------------------------------------------
 inline bool FOptiAttr::append_sequence (char seq[])
 {
-  if ( seq )
-  {
-    std::strncat (attr_ptr, seq, sizeof(attr_buf) - std::strlen(attr_ptr));
-    attr_buf[sizeof(attr_buf) - 1] = '\0';
-    return true;
-  }
-  else
+  if ( ! seq )
     return false;
+
+  std::strncat (attr_ptr, seq, sizeof(attr_buf) - std::strlen(attr_ptr));
+  attr_buf[sizeof(attr_buf) - 1] = '\0';
+  return true;
 }
 
 }  // namespace finalcut

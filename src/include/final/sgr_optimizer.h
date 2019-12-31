@@ -1,5 +1,5 @@
 /***********************************************************************
-* fstartoptions.h - Contains the start options for initialization      *
+* sgr_optimizer.h - Combines SGR (Select Graphic Rendition) attributes *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
@@ -23,83 +23,71 @@
 /*  Standalone class
  *  ════════════════
  *
- * ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- * ▕ FStartOptions ▏
- * ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ * ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ * ▕ SGRoptimizer ▏
+ * ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
  */
 
-#ifndef FSTARTOPTIONS_H
-#define FSTARTOPTIONS_H
+#ifndef SGR_OPTIMIZER_H
+#define SGR_OPTIMIZER_H
 
 #if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include  <iostream>
-
-#include "final/fc.h"
-#include "final/fstring.h"
-#include "final/ftypes.h"
+#include <vector>
 
 namespace finalcut
 {
 
 //----------------------------------------------------------------------
-// class FStartOptions
+// class SGRoptimizer
 //----------------------------------------------------------------------
 
-class FStartOptions final
+class SGRoptimizer final
 {
   public:
-    // Constructors
-    FStartOptions();
+    // Constants
+    static constexpr std::size_t ATTR_BUF_SIZE{8192};
 
-    // Disable copy constructor
-    FStartOptions (const FStartOptions&) = delete;
+    // Typedefs
+    typedef char attributebuffer[ATTR_BUF_SIZE];
+
+    // Constructors
+    SGRoptimizer (attributebuffer&);
 
     // Destructor
-    virtual ~FStartOptions();
+    virtual ~SGRoptimizer();
+
+    // Disable copy constructor
+    SGRoptimizer (const SGRoptimizer&) = delete;
 
     // Disable assignment operator (=)
-    FStartOptions& operator = (const FStartOptions&) = delete;
-
-    // Accessors
-    virtual const FString getClassName();
-    static FStartOptions& getFStartOptions();
-
-    // Mutator
-    void setDefault();
+    SGRoptimizer& operator = (const SGRoptimizer&) = delete;
 
     // Method
-    static void destroyObject();
+    void optimize();
 
-    // Data members
-    uInt8 cursor_optimisation : 1;
-    uInt8 mouse_support       : 1;
-    uInt8 terminal_detection  : 1;
-    uInt8 color_change        : 1;
-    uInt8 sgr_optimizer       : 1;
-    uInt8 vgafont             : 1;
-    uInt8 newfont             : 1;
-    uInt8                     : 1;  // padding bits
-    fc::encoding encoding;
+  private:
+    // Constants
+    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
-#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-    uInt8 meta_sends_escape   : 1;
-    uInt8 change_cursorstyle  : 1;
-    uInt8                     : 6;  // padding bits
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
-    uInt8 meta_sends_escape   : 1;
-    uInt8                     : 7;  // padding bits
-#endif
+    // Methods
+    void findParameter();
+    void combineParameter();
 
-    static FStartOptions*     start_options;
+    // Data member
+    attributebuffer& seq;
+
+    struct parameter
+    {
+      std::size_t start;
+      std::size_t end;
+    };
+
+    std::vector<parameter> csi_parameter{};
 };
-
-//----------------------------------------------------------------------
-inline const FString FStartOptions::getClassName()
-{ return "FStartOptions"; }
 
 }  // namespace finalcut
 
-#endif  // FSTARTOPTIONS_H
+#endif  // SGR_OPTIMIZER_H

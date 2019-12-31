@@ -62,6 +62,7 @@ libfinal_la_SOURCES = \
 	ftextview.cpp \
 	fvterm.cpp \
 	fevent.cpp \
+	sgr_optimizer.cpp \
 	foptiattr.cpp \
 	foptimove.cpp \
 	ftermbuffer.cpp \
@@ -111,6 +112,7 @@ finalcutinclude_HEADERS = \
 	include/final/fobject.h \
 	include/final/fpoint.h \
 	include/final/fsize.h \
+	include/final/sgr_optimizer.h \
 	include/final/foptiattr.h \
 	include/final/foptimove.h \
 	include/final/ftermbuffer.h \

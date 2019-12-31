@@ -1,3 +1,8 @@
+2019-12-31  Markus Gans  <guru.mail@muenster.de>
+	* The new SGRoptimizer class allows several consecutive parameters 
+	  from the SGR (Select Graphic Rendition) attributes to be combined 
+	  into one
+
 2019-12-23  Markus Gans  <guru.mail@muenster.de>
 	* Correction for height and width alignment in adjustSize()
 	* Better setSize() implementation in some widgets

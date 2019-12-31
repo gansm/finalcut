@@ -39,6 +39,7 @@ FStartOptions::FStartOptions()
   , mouse_support{true}
   , terminal_detection{true}
   , color_change{true}
+  , sgr_optimizer{true}
   , vgafont{false}
   , newfont{false}
   , encoding{fc::UNKNOWN}

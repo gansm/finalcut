@@ -23,9 +23,9 @@
 /*  Standalone class
  *  ════════════════
  *
- * ▕▔▔▔▔▔▔▔▔▔▔▔▏
- * ▕ FOptiAttr ▏
- * ▕▁▁▁▁▁▁▁▁▁▁▁▏
+ *   ▕▔▔▔▔▔▔▔▔▔▔▔▏1     1▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *   ▕ FOptiAttr ▏- - - -▕ SGRoptimizer ▏
+ *   ▕▁▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
  */
 
 #ifndef FOPTIATTR_H
@@ -59,6 +59,7 @@
 #include <algorithm>  // need for std::swap
 
 #include "final/fstring.h"
+#include "final/sgr_optimizer.h"
 
 namespace finalcut
 {
@@ -129,46 +130,46 @@ class FOptiAttr final
     const FString getClassName() const;
 
     // Mutators
-    void  setTermEnvironment (termEnv&);
-    void  setMaxColor (const int&);
-    void  setNoColorVideo (int);
-    void  setDefaultColorSupport();
-    void  unsetDefaultColorSupport();
-    void  set_enter_bold_mode (char[]);
-    void  set_exit_bold_mode (char[]);
-    void  set_enter_dim_mode (char[]);
-    void  set_exit_dim_mode (char[]);
-    void  set_enter_italics_mode (char[]);
-    void  set_exit_italics_mode (char[]);
-    void  set_enter_underline_mode (char[]);
-    void  set_exit_underline_mode (char[]);
-    void  set_enter_blink_mode (char[]);
-    void  set_exit_blink_mode (char[]);
-    void  set_enter_reverse_mode (char[]);
-    void  set_exit_reverse_mode (char[]);
-    void  set_enter_secure_mode (char[]);
-    void  set_exit_secure_mode (char[]);
-    void  set_enter_protected_mode (char[]);
-    void  set_exit_protected_mode (char[]);
-    void  set_enter_crossed_out_mode (char[]);
-    void  set_exit_crossed_out_mode (char[]);
-    void  set_enter_dbl_underline_mode (char[]);
-    void  set_exit_dbl_underline_mode (char[]);
-    void  set_enter_standout_mode (char[]);
-    void  set_exit_standout_mode (char[]);
-    void  set_set_attributes (char[]);
-    void  set_exit_attribute_mode (char[]);
-    void  set_enter_alt_charset_mode (char[]);
-    void  set_exit_alt_charset_mode (char[]);
-    void  set_enter_pc_charset_mode (char[]);
-    void  set_exit_pc_charset_mode (char[]);
-    void  set_a_foreground_color (char[]);
-    void  set_a_background_color (char[]);
-    void  set_foreground_color (char[]);
-    void  set_background_color (char[]);
-    void  set_term_color_pair (char[]);
-    void  set_orig_pair (char[]);
-    void  set_orig_orig_colors (char[]);
+    void          setTermEnvironment (termEnv&);
+    void          setMaxColor (const int&);
+    void          setNoColorVideo (int);
+    void          setDefaultColorSupport();
+    void          unsetDefaultColorSupport();
+    void          set_enter_bold_mode (char[]);
+    void          set_exit_bold_mode (char[]);
+    void          set_enter_dim_mode (char[]);
+    void          set_exit_dim_mode (char[]);
+    void          set_enter_italics_mode (char[]);
+    void          set_exit_italics_mode (char[]);
+    void          set_enter_underline_mode (char[]);
+    void          set_exit_underline_mode (char[]);
+    void          set_enter_blink_mode (char[]);
+    void          set_exit_blink_mode (char[]);
+    void          set_enter_reverse_mode (char[]);
+    void          set_exit_reverse_mode (char[]);
+    void          set_enter_secure_mode (char[]);
+    void          set_exit_secure_mode (char[]);
+    void          set_enter_protected_mode (char[]);
+    void          set_exit_protected_mode (char[]);
+    void          set_enter_crossed_out_mode (char[]);
+    void          set_exit_crossed_out_mode (char[]);
+    void          set_enter_dbl_underline_mode (char[]);
+    void          set_exit_dbl_underline_mode (char[]);
+    void          set_enter_standout_mode (char[]);
+    void          set_exit_standout_mode (char[]);
+    void          set_set_attributes (char[]);
+    void          set_exit_attribute_mode (char[]);
+    void          set_enter_alt_charset_mode (char[]);
+    void          set_exit_alt_charset_mode (char[]);
+    void          set_enter_pc_charset_mode (char[]);
+    void          set_exit_pc_charset_mode (char[]);
+    void          set_a_foreground_color (char[]);
+    void          set_a_background_color (char[]);
+    void          set_foreground_color (char[]);
+    void          set_background_color (char[]);
+    void          set_term_color_pair (char[]);
+    void          set_orig_pair (char[]);
+    void          set_orig_orig_colors (char[]);
 
     // Inquiry
     static bool   isNormal (FChar*&);
@@ -180,6 +181,8 @@ class FOptiAttr final
 
   private:
     // Typedefs and Enumerations
+    typedef char attributebuffer[SGRoptimizer::ATTR_BUF_SIZE];
+
     typedef struct
     {
       char* cap;
@@ -219,115 +222,117 @@ class FOptiAttr final
     };
 
     // Mutators
-    bool  setTermBold (FChar*&);
-    bool  unsetTermBold (FChar*&);
-    bool  setTermDim (FChar*&);
-    bool  unsetTermDim (FChar*&);
-    bool  setTermItalic (FChar*&);
-    bool  unsetTermItalic (FChar*&);
-    bool  setTermUnderline (FChar*&);
-    bool  unsetTermUnderline (FChar*&);
-    bool  setTermBlink (FChar*&);
-    bool  unsetTermBlink (FChar*&);
-    bool  setTermReverse (FChar*&);
-    bool  unsetTermReverse (FChar*&);
-    bool  setTermStandout (FChar*&);
-    bool  unsetTermStandout (FChar*&);
-    bool  setTermInvisible (FChar*&);
-    bool  unsetTermInvisible (FChar*&);
-    bool  setTermProtected (FChar*&);
-    bool  unsetTermProtected (FChar*&);
-    bool  setTermCrossedOut (FChar*&);
-    bool  unsetTermCrossedOut (FChar*&);
-    bool  setTermDoubleUnderline (FChar*&);
-    bool  unsetTermDoubleUnderline (FChar*&);
-    bool  setTermAttributes ( FChar*&
-                            , bool, bool, bool
-                            , bool, bool, bool
-                            , bool, bool, bool );
-    bool  unsetTermAttributes (FChar*&);
-    bool  setTermAltCharset (FChar*&);
-    bool  unsetTermAltCharset (FChar*&);
-    bool  setTermPCcharset (FChar*&);
-    bool  unsetTermPCcharset (FChar*&);
-    bool  setTermDefaultColor (FChar*&);
-    void  setAttributesOn (FChar*&);
-    void  setAttributesOff (FChar*&);
+    bool          setTermBold (FChar*&);
+    bool          unsetTermBold (FChar*&);
+    bool          setTermDim (FChar*&);
+    bool          unsetTermDim (FChar*&);
+    bool          setTermItalic (FChar*&);
+    bool          unsetTermItalic (FChar*&);
+    bool          setTermUnderline (FChar*&);
+    bool          unsetTermUnderline (FChar*&);
+    bool          setTermBlink (FChar*&);
+    bool          unsetTermBlink (FChar*&);
+    bool          setTermReverse (FChar*&);
+    bool          unsetTermReverse (FChar*&);
+    bool          setTermStandout (FChar*&);
+    bool          unsetTermStandout (FChar*&);
+    bool          setTermInvisible (FChar*&);
+    bool          unsetTermInvisible (FChar*&);
+    bool          setTermProtected (FChar*&);
+    bool          unsetTermProtected (FChar*&);
+    bool          setTermCrossedOut (FChar*&);
+    bool          unsetTermCrossedOut (FChar*&);
+    bool          setTermDoubleUnderline (FChar*&);
+    bool          unsetTermDoubleUnderline (FChar*&);
+    bool          setTermAttributes ( FChar*&
+                                    , bool, bool, bool
+                                    , bool, bool, bool
+                                    , bool, bool, bool );
+    bool          unsetTermAttributes (FChar*&);
+    bool          setTermAltCharset (FChar*&);
+    bool          unsetTermAltCharset (FChar*&);
+    bool          setTermPCcharset (FChar*&);
+    bool          unsetTermPCcharset (FChar*&);
+    bool          setTermDefaultColor (FChar*&);
+    void          setAttributesOn (FChar*&);
+    void          setAttributesOff (FChar*&);
 
     // Inquiries
-    static bool  hasColor (FChar*&);
-    static bool  hasAttribute (FChar*&);
-    static bool  hasNoAttribute (FChar*&);
+    static bool   hasColor (FChar*&);
+    static bool   hasAttribute (FChar*&);
+    static bool   hasNoAttribute (FChar*&);
 
     // Methods
-    bool  hasColorChanged (FChar*&, FChar*&);
-    void  resetColor (FChar*&);
-    void  prevent_no_color_video_attributes (FChar*&, bool = false);
-    void  deactivateAttributes (FChar*&, FChar*&);
-    void  changeAttributeSGR (FChar*&, FChar*&);
-    void  changeAttributeSeparately (FChar*&, FChar*&);
-    void  change_color (FChar*&, FChar*&);
-    void  change_to_default_color (FChar*&, FChar*&, FColor&, FColor&);
-    void  change_current_color (FChar*&, FColor, FColor);
-    void  resetAttribute (FChar*&);
-    void  reset (FChar*&);
-    bool  caused_reset_attributes (char[], uChar = all_tests);
-    bool  hasCharsetEquivalence();
-    void  detectSwitchOn (FChar*&, FChar*&);
-    void  detectSwitchOff (FChar*&, FChar*&);
-    bool  switchOn();
-    bool  switchOff();
-    bool  append_sequence (char[]);
+    bool          hasColorChanged (FChar*&, FChar*&);
+    void          resetColor (FChar*&);
+    void          prevent_no_color_video_attributes (FChar*&, bool = false);
+    void          deactivateAttributes (FChar*&, FChar*&);
+    void          changeAttributeSGR (FChar*&, FChar*&);
+    void          changeAttributeSeparately (FChar*&, FChar*&);
+    void          change_color (FChar*&, FChar*&);
+    void          change_to_default_color (FChar*&, FChar*&, FColor&, FColor&);
+    void          change_current_color (FChar*&, FColor, FColor);
+    void          resetAttribute (FChar*&);
+    void          reset (FChar*&);
+    bool          caused_reset_attributes (char[], uChar = all_tests);
+    bool          hasCharsetEquivalence();
+    void          detectSwitchOn (FChar*&, FChar*&);
+    void          detectSwitchOff (FChar*&, FChar*&);
+    bool          switchOn();
+    bool          switchOff();
+    bool          append_sequence (char[]);
 
     // Data members
-    capability F_enter_bold_mode{};
-    capability F_exit_bold_mode{};
-    capability F_enter_dim_mode{};
-    capability F_exit_dim_mode{};
-    capability F_enter_italics_mode{};
-    capability F_exit_italics_mode{};
-    capability F_enter_underline_mode{};
-    capability F_exit_underline_mode{};
-    capability F_enter_blink_mode{};
-    capability F_exit_blink_mode{};
-    capability F_enter_reverse_mode{};
-    capability F_exit_reverse_mode{};
-    capability F_enter_standout_mode{};
-    capability F_exit_standout_mode{};
-    capability F_enter_secure_mode{};
-    capability F_exit_secure_mode{};
-    capability F_enter_protected_mode{};
-    capability F_exit_protected_mode{};
-    capability F_enter_crossed_out_mode{};
-    capability F_exit_crossed_out_mode{};
-    capability F_enter_dbl_underline_mode{};
-    capability F_exit_dbl_underline_mode{};
-    capability F_set_attributes{};
-    capability F_exit_attribute_mode{};
-    capability F_enter_alt_charset_mode{};
-    capability F_exit_alt_charset_mode{};
-    capability F_enter_pc_charset_mode{};
-    capability F_exit_pc_charset_mode{};
-    capability F_set_a_foreground{};
-    capability F_set_a_background{};
-    capability F_set_foreground{};
-    capability F_set_background{};
-    capability F_set_color_pair{};
-    capability F_orig_pair{};
-    capability F_orig_colors{};
+    capability    F_enter_bold_mode{};
+    capability    F_exit_bold_mode{};
+    capability    F_enter_dim_mode{};
+    capability    F_exit_dim_mode{};
+    capability    F_enter_italics_mode{};
+    capability    F_exit_italics_mode{};
+    capability    F_enter_underline_mode{};
+    capability    F_exit_underline_mode{};
+    capability    F_enter_blink_mode{};
+    capability    F_exit_blink_mode{};
+    capability    F_enter_reverse_mode{};
+    capability    F_exit_reverse_mode{};
+    capability    F_enter_standout_mode{};
+    capability    F_exit_standout_mode{};
+    capability    F_enter_secure_mode{};
+    capability    F_exit_secure_mode{};
+    capability    F_enter_protected_mode{};
+    capability    F_exit_protected_mode{};
+    capability    F_enter_crossed_out_mode{};
+    capability    F_exit_crossed_out_mode{};
+    capability    F_enter_dbl_underline_mode{};
+    capability    F_exit_dbl_underline_mode{};
+    capability    F_set_attributes{};
+    capability    F_exit_attribute_mode{};
+    capability    F_enter_alt_charset_mode{};
+    capability    F_exit_alt_charset_mode{};
+    capability    F_enter_pc_charset_mode{};
+    capability    F_exit_pc_charset_mode{};
+    capability    F_set_a_foreground{};
+    capability    F_set_a_background{};
+    capability    F_set_foreground{};
+    capability    F_set_background{};
+    capability    F_set_color_pair{};
+    capability    F_orig_pair{};
+    capability    F_orig_colors{};
 
-    FChar      on{};
-    FChar      off{};
-    FChar      reset_byte_mask{};
+    FChar         on{};
+    FChar         off{};
+    FChar         reset_byte_mask{};
 
-    int        max_color{1};
-    int        attr_without_color{0};
-    char*      attr_ptr{attr_buf};
-    char       attr_buf[8192]{'\0'};
-    bool       ansi_default_color{false};
-    bool       alt_equal_pc_charset{false};
-    bool       monochron{true};
-    bool       fake_reverse{false};
+    SGRoptimizer  sgr_optimizer{attr_buf};
+
+    int           max_color{1};
+    int           attr_without_color{0};
+    char*         attr_ptr{attr_buf};
+    char          attr_buf[SGRoptimizer::ATTR_BUF_SIZE]{'\0'};
+    bool          ansi_default_color{false};
+    bool          alt_equal_pc_charset{false};
+    bool          monochron{true};
+    bool          fake_reverse{false};
 };
 
 

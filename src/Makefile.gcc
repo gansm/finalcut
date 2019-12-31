@@ -31,6 +31,7 @@ INCLUDE_HEADERS = \
 	fcheckmenuitem.h \
 	fmessagebox.h \
 	ftooltip.h \
+	sgr_optimizer.h \
 	foptiattr.h \
 	foptimove.h \
 	ftermbuffer.h \
@@ -132,6 +133,7 @@ OBJS = \
 	ftermopenbsd.o \
 	ftermlinux.o \
 	fvterm.o \
+	sgr_optimizer.o \
 	foptiattr.o \
 	foptimove.o \
 	ftermbuffer.o \

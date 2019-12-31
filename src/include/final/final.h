@@ -27,6 +27,7 @@
 #define USE_FINAL_H
 
 #include <final/emptyfstring.h>
+#include <final/sgr_optimizer.h>
 #include <final/fkey_map.h>
 #include <final/fapplication.h>
 #include <final/fbuttongroup.h>

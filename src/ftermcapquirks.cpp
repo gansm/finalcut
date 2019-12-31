@@ -201,9 +201,9 @@ void FTermcapQuirks::linux()
                 "%?%p4%t;5%;m"
                 "%?%p9%t\016%e\017%;");
 
-  TCAP(fc::t_enter_alt_charset_mode) = C_STR("\016");
-  TCAP(fc::t_exit_alt_charset_mode) = C_STR("\017");
-  TCAP(fc::t_exit_attribute_mode) = C_STR(CSI "0m\017");
+  TCAP(fc::t_enter_alt_charset_mode) = C_STR(SO);
+  TCAP(fc::t_exit_alt_charset_mode) = C_STR(SI);
+  TCAP(fc::t_exit_attribute_mode) = C_STR(CSI "0m" SI);
   TCAP(fc::t_exit_bold_mode) = C_STR(CSI "22m");
   TCAP(fc::t_exit_blink_mode) = C_STR(CSI "25m");
   TCAP(fc::t_exit_reverse_mode) = C_STR(CSI "27m");
