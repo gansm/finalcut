@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2019 Markus Gans                                      *
+* Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -290,8 +290,7 @@ class FTerm final
     static int             putchar_UTF8  (int);
 
     static void            initScreenSettings();
-    static char*           changeAttribute ( FChar*&
-                                           , FChar*& );
+    static char*           changeAttribute (FChar*&, FChar*&);
     static void            changeTermSizeFinished();
     static void            exitWithMessage (const FString&)
     #if defined(__clang__) || defined(__GNUC__)
@@ -389,6 +388,7 @@ class FTerm final
 //----------------------------------------------------------------------
 uInt env2uint (const char*);
 bool isReverseNewFontchar (wchar_t);
+bool hasFullWidthSupports();
 wchar_t cp437_to_unicode (uChar);
 uChar unicode_to_cp437 (wchar_t);
 FString getFullWidth (const FString&);

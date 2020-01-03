@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2019 Markus Gans                                      *
+* Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -730,15 +730,12 @@ void FListView::setColumnSort (int column, fc::sorting_order order)
 //----------------------------------------------------------------------
 int FListView::addColumn (const FString& label, int width)
 {
-  Header new_column;
+  Header new_column{};
   new_column.name = label;
   new_column.width = width;
 
   if ( new_column.width == USE_MAX_SIZE )
-  {
-    new_column.fixed_width = false;
     new_column.width = int(getColumnWidth(label));
-  }
   else
     new_column.fixed_width = true;
 
@@ -1944,12 +1941,10 @@ std::size_t FListView::determineLineWidth (FListViewItem* item)
 
     if ( ! fixed_width )
     {
-      std::size_t len{};
+      std::size_t len{0};
 
       if ( column_idx < entries )
         len = getColumnWidth(item->column_list[column_idx]);
-      else
-        len = 0;
 
       if ( len > width )
         header_item.width = int(len);

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2019 Markus Gans                                      *
+* Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -1272,8 +1272,7 @@ void FTerm::initScreenSettings()
 }
 
 //----------------------------------------------------------------------
-char* FTerm::changeAttribute ( FChar*& term_attr
-                             , FChar*& next_attr )
+char* FTerm::changeAttribute (FChar*& term_attr, FChar*& next_attr)
 {
   return opti_attr->changeAttribute (term_attr, next_attr);
 }

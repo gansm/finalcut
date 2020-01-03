@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2019 Markus Gans                                      *
+* Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -241,16 +241,14 @@ Brushes::~Brushes()
 //----------------------------------------------------------------------
 void Brushes::draw()
 {
-  int pos{};
+  int pos{0};
   setColor();
   drawBorder();
   print() << FPoint(2, 3)
           << FColorPair(fg_color, bg_color) << "   "
           << finalcut::FString(3, fc::MediumShade);
 
-  if ( brush == L' ' )
-    pos = 0;
-  else
+  if ( brush != L' ' )
     pos = 3;
 
   setColor();

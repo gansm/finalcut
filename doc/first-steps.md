@@ -27,7 +27,7 @@ How to use the library
 At the beginning of this introduction to the Final Cut
 we will start with a small example.
 
-The following example creates an empty 30??10 character dialog.
+The following example creates an empty 30&times;10 character dialog.
 
 **File:** *dialog.cpp*
 ```cpp
@@ -702,12 +702,12 @@ class dialogWidget : public FDialog
     void setTemperature()
     {
       label.clear();
-      label << t << "??C";
+      label << t << "°C";
       label.redraw();
     }
 
     int t = 20;
-    FLabel label{FString() << t << "??C", this};
+    FLabel label{FString() << t << "°C", this};
     FButton plus {"&+", this};
     FButton minus {"&-", this};
 };

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -453,6 +453,18 @@ char* FTermDetection::termtype_256color_quirks()
 {
   char* new_termtype{nullptr};
 
+  if ( color_env.string2
+    || (color_env.string1
+      && std::strncmp(color_env.string1, "gnome-terminal", 14) == 0) )
+  {
+    terminal_type.gnome_terminal = true;
+    // Each gnome-terminal should be able to use 256 colors
+    color256 = true;
+
+    if ( ! isScreenTerm() )
+      return (new_termtype = C_STR("gnome-256color"));
+  }
+
   if ( ! color256 )
     return new_termtype;
 
@@ -485,18 +497,6 @@ char* FTermDetection::termtype_256color_quirks()
 
   if ( color_env.string3 && std::strlen(color_env.string3) > 0 )
     decscusr_support = true;
-
-  if ( color_env.string2
-    || (color_env.string1
-      && std::strncmp(color_env.string1, "gnome-terminal", 14) == 0) )
-  {
-    terminal_type.gnome_terminal = true;
-    // Each gnome-terminal should be able to use 256 colors
-    color256 = true;
-
-    if ( ! isScreenTerm() )
-      new_termtype = C_STR("gnome-256color");
-  }
 
   return new_termtype;
 }

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2019 Markus Gans                                      *
+* Copyright 2013-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -117,11 +117,12 @@ bool FApplication::isQuit()
 int FApplication::exec()  // run
 {
   if ( quit_now )
+  {
+    quit_now = false;
     return EXIT_FAILURE;
+  }
 
-  quit_now = false;
   quit_code = 0;
-
   enterLoop();
   return quit_code;
 }
@@ -825,7 +826,7 @@ void FApplication::closeDropDown()
 {
   // Close the open menu
 
-  if ( ! mouse || (mouse && mouse->isMoved()) )
+  if ( ! mouse || mouse->isMoved() )
     return;
 
   const auto& mouse_position = mouse->getPos();

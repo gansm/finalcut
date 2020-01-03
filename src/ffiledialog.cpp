@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -472,12 +472,10 @@ sInt64 FFileDialog::numOfDirs()
 //----------------------------------------------------------------------
 void FFileDialog::sortDir()
 {
-  sInt64 start{};
+  sInt64 start{0};
 
   if ( std::strcmp((*dir_entries.begin()).name, "..") == 0 )
     start = 1;
-  else
-    start = 0;
 
   sInt64 dir_num = numOfDirs();
   // directories first

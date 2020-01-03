@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -485,7 +485,7 @@ bool FMenuItem::isMenu (FWidget* w) const
 //----------------------------------------------------------------------
 FMenuList* FMenuItem::getFMenuList (FWidget& widget)
 {
-  FMenuList* menu_list{};
+  FMenuList* menu_list{nullptr};
 
   if ( isMenu(&widget) )
   {
@@ -497,8 +497,6 @@ FMenuList* FMenuItem::getFMenuList (FWidget& widget)
     auto Menubar = static_cast<FMenuBar*>(&widget);
     menu_list = static_cast<FMenuList*>(Menubar);
   }
-  else
-    menu_list = nullptr;
 
   return menu_list;
 }

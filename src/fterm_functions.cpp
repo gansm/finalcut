@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019 Markus Gans                                           *
+* Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -33,6 +33,17 @@
 
 namespace finalcut
 {
+
+// Enumeration
+enum fullWidthSupport
+{
+  unknown_fullwidth_support = -1,
+  supports_fullwidth = 0,
+  no_fullwidth_support = 1
+};
+
+// global state
+static fullWidthSupport has_fullwidth_support = unknown_fullwidth_support;
 
 // Function prototypes
 bool hasAmbiguousWidth (wchar_t);
@@ -216,6 +227,29 @@ bool isReverseNewFontchar (wchar_t wchar)
     return true;
 
   return false;
+}
+
+//----------------------------------------------------------------------
+bool hasFullWidthSupports()
+{
+  // Checks if the terminal has full-width character support
+
+  if ( has_fullwidth_support == unknown_fullwidth_support )
+  {
+    if ( FTerm::isCygwinTerminal()
+      || FTerm::isTeraTerm()
+      || FTerm::isRxvtTerminal()
+      || FTerm::isFreeBSDTerm()
+      || FTerm::isNetBSDTerm()
+      || FTerm::isOpenBSDTerm()
+      || FTerm::isSunTerminal()
+      || FTerm::isAnsiTerminal() )
+      has_fullwidth_support = no_fullwidth_support;
+    else
+      has_fullwidth_support = supports_fullwidth;
+  }
+
+  return ( has_fullwidth_support == supports_fullwidth) ? true : false;
 }
 
 //----------------------------------------------------------------------
@@ -428,7 +462,8 @@ std::size_t getColumnWidth (const wchar_t wchar)
   else
 #endif
 
-  if ( wchar >= fc::NF_rev_left_arrow2 && wchar <= fc::NF_check_mark )
+  if ( (wchar >= fc::NF_rev_left_arrow2 && wchar <= fc::NF_check_mark)
+    || ! hasFullWidthSupports() )
     column_width = 1;
   else
     column_width = wcwidth(wchar);
