@@ -1,5 +1,7 @@
 2020-01-09  Markus Gans  <guru.mail@muenster.de>
-	* The setCurrentItem() method was added to the FComboBox widget class.
+	* With setText() and clearText() the text in the edit line can be changed 
+	  without changing the content of the combo box
+	* The setCurrentItem() method was added to the FComboBox widget class. 
 	  Thanks cybin for the sample code
 
 2020-01-03  Markus Gans  <guru.mail@muenster.de>

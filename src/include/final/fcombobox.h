@@ -177,6 +177,8 @@ class FComboBox : public FWidget
     bool                unsetEditable();
     void                setCurrentItem (std::size_t);
     void                setMaxVisibleItems (std::size_t);
+    void                setText (const FString&);
+    void                clearText();
     void                setLabelText (const FString&);
     void                setLabelOrientation (const FLineEdit::label_o);
 
@@ -303,8 +305,7 @@ inline bool FComboBox::hasShadow()
 
 //----------------------------------------------------------------------
 template <typename T>
-void FComboBox::insert ( const std::initializer_list<T>& list
-                       , FDataPtr d )
+void FComboBox::insert (const std::initializer_list<T>& list, FDataPtr d)
 {
   for (auto& item : list)
   {
@@ -315,8 +316,7 @@ void FComboBox::insert ( const std::initializer_list<T>& list
 
 //----------------------------------------------------------------------
 template <typename ItemT>
-void FComboBox::insert ( const ItemT& item
-                       , FDataPtr d )
+void FComboBox::insert (const ItemT& item, FDataPtr d)
 {
   FListBoxItem listItem (FString() << item, d);
   insert (listItem);
@@ -325,6 +325,14 @@ void FComboBox::insert ( const ItemT& item
 //----------------------------------------------------------------------
 inline void FComboBox::reserve (std::size_t new_cap)
 { list_window.list.reserve(new_cap); }
+
+//----------------------------------------------------------------------
+inline void FComboBox::setText (const FString& s)
+{ input_field.setText(s); }
+
+//----------------------------------------------------------------------
+inline void FComboBox::clearText()
+{ input_field.clear(); }
 
 //----------------------------------------------------------------------
 inline void FComboBox::setLabelText (const FString& s)
