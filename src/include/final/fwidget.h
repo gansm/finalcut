@@ -278,9 +278,6 @@ class FWidget : public FVTerm, public FObject
     void                    setLeftPadding (int, bool = true);
     void                    setBottomPadding (int, bool = true);
     void                    setRightPadding (int, bool = true);
-    void                    setParentOffset();
-    void                    setTermOffset();
-    void                    setTermOffsetWithPadding();
     void                    setTermSize (const FSize&);
     virtual void            setGeometry (const FRect&, bool = true);
     virtual void            setGeometry (const FPoint&, const FSize&, bool = true);
@@ -376,6 +373,9 @@ class FWidget : public FVTerm, public FObject
     virtual void            setMenuBar (FMenuBar*);
     FWidgetColors&          setFWidgetColors();
     static uInt&            setModalDialogCounter();
+    void                    setParentOffset();
+    void                    setTermOffset();
+    void                    setTermOffsetWithPadding();
 
     // Methods
     virtual void            adjustSize();

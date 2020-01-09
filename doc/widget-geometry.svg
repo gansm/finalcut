@@ -570,13 +570,13 @@
   <text
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88055563px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;-inkscape-font-specification:'FreeSans, Arial, Bitstream Vera Sans, DejaVu Sans, Open Sans, sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458299"
      font-size="3.88055611"
-     x="57.889885"
+     x="57.5"
      y="15.47997"
      id="text89-30">
     <tspan
        style="stroke-width:0.26458299"
        y="15.47997"
-       x="57.889885"
+       x="57.5"
        sodipodi:role="line"
        id="tspan4726-3">= FPoint(25,6), FPoint(56,17)</tspan>
   </text>
@@ -609,13 +609,13 @@
   <text
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88055587px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;-inkscape-font-specification:'FreeSans, Arial, Bitstream Vera Sans, DejaVu Sans, Open Sans, sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458299"
      font-size="3.88055611"
-     x="57.889893"
+     x="57.5"
      y="26.094063"
      id="text89-30-4">
     <tspan
        style="stroke-width:0.26458299"
        y="26.094063"
-       x="57.889893"
+       x="57.5"
        sodipodi:role="line"
        id="tspan4726-3-0">= FPoint(25,6), FPoint(56,17)</tspan>
   </text>
@@ -648,13 +648,13 @@
   <text
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88055587px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;-inkscape-font-specification:'FreeSans, Arial, Bitstream Vera Sans, DejaVu Sans, Open Sans, sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458299"
      font-size="3.88055611"
-     x="57.882675"
+     x="57.3"
      y="118.13409"
      id="text89-30-4-0-2">
     <tspan
        style="stroke-width:0.26458299"
        y="118.13409"
-       x="57.882675"
+       x="57.3"
        sodipodi:role="line"
        id="tspan4726-3-0-9-5">= FPoint(25,6), FPoint(58,18)</tspan>
   </text>
@@ -674,13 +674,13 @@
   <text
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88055587px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;-inkscape-font-specification:'FreeSans, Arial, Bitstream Vera Sans, DejaVu Sans, Open Sans, sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458299"
      font-size="3.88055611"
-     x="57.893173"
+     x="57.3"
      y="128.8925"
      id="text89-30-4-0-2-5">
     <tspan
        style="stroke-width:0.26458299"
        y="128.8925"
-       x="57.893173"
+       x="57.3"
        sodipodi:role="line"
        id="tspan4726-3-0-9-5-9">= FPoint(25,6), FPoint(58,18)</tspan>
   </text>
@@ -700,13 +700,13 @@
   <text
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88055587px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;-inkscape-font-specification:'FreeSans, Arial, Bitstream Vera Sans, DejaVu Sans, Open Sans, sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458299"
      font-size="3.88055611"
-     x="173.40904"
+     x="173.0"
      y="15.480049"
      id="text89-30-5">
     <tspan
        style="stroke-width:0.26458299"
        y="15.480049"
-       x="173.40904"
+       x="173.0"
        sodipodi:role="line"
        id="tspan4726-3-4">= FPoint(19,8), FPoint(28,8)</tspan>
   </text>
@@ -739,13 +739,13 @@
   <text
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88055587px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;-inkscape-font-specification:'FreeSans, Arial, Bitstream Vera Sans, DejaVu Sans, Open Sans, sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458299"
      font-size="3.88055611"
-     x="173.40904"
+     x="173.0"
      y="26.094126"
      id="text89-30-4-9">
     <tspan
        style="stroke-width:0.26458299"
        y="26.094126"
-       x="173.40904"
+       x="173.0"
        sodipodi:role="line"
        id="tspan4726-3-0-3">= FPoint(44,15), FPoint(53,15)</tspan>
   </text>
@@ -778,13 +778,13 @@
   <text
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88055587px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;-inkscape-font-specification:'FreeSans, Arial, Bitstream Vera Sans, DejaVu Sans, Open Sans, sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458299"
      font-size="3.88055611"
-     x="173.40181"
+     x="173.0"
      y="118.13422"
      id="text89-30-4-0-2-1">
     <tspan
        style="stroke-width:0.26458299"
        y="118.13422"
-       x="173.40181"
+       x="173.0"
        sodipodi:role="line"
        id="tspan4726-3-0-9-5-0">= FPoint(19,8), FPoint(29,9)</tspan>
   </text>
@@ -804,13 +804,13 @@
   <text
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88055587px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;-inkscape-font-specification:'FreeSans, Arial, Bitstream Vera Sans, DejaVu Sans, Open Sans, sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458299"
      font-size="3.88055611"
-     x="173.41237"
+     x="173.0"
      y="128.89259"
      id="text89-30-4-0-2-5-1">
     <tspan
        style="stroke-width:0.26458299"
        y="128.89259"
-       x="173.41237"
+       x="173.0"
        sodipodi:role="line"
        id="tspan4726-3-0-9-5-9-0">= FPoint(44,15), FPoint(54,16)</tspan>
   </text>

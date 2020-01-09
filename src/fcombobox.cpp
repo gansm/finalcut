@@ -251,6 +251,23 @@ bool FComboBox::setEditable (bool enable)
 }
 
 //----------------------------------------------------------------------
+void FComboBox::setCurrentItem (std::size_t index)
+{
+  if ( index > getCount() )
+    index = getCount();
+  else if ( index < 1 )
+    index = 1;
+
+  if ( index == list_window.list.currentItem() )
+    return;
+
+  list_window.list.setCurrentItem(index);
+  input_field = list_window.list.getItem(index).getText();
+  input_field.redraw();
+  processChanged();
+}
+
+//----------------------------------------------------------------------
 void FComboBox::setMaxVisibleItems (std::size_t items)
 {
   // Sets the maximum height of the combo box in elements
@@ -277,8 +294,8 @@ void FComboBox::remove (std::size_t item)
 
   if ( ! list_window.isEmpty() )
   {
-    std::size_t i = list_window.list.currentItem();
-    input_field = list_window.list.getItem(i).getText();
+    std::size_t index = list_window.list.currentItem();
+    input_field = list_window.list.getItem(index).getText();
     input_field.redraw();
   }
 
@@ -552,15 +569,15 @@ void FComboBox::draw()
 //----------------------------------------------------------------------
 void FComboBox::onePosUp()
 {
-  std::size_t i = list_window.list.currentItem();
+  std::size_t index = list_window.list.currentItem();
 
-  if ( i > 1 )
-    i--;
+  if ( index > 1 )
+    index--;
   else
     return;
 
-  list_window.list.setCurrentItem(i);
-  input_field = list_window.list.getItem(i).getText();
+  list_window.list.setCurrentItem(index);
+  input_field = list_window.list.getItem(index).getText();
   input_field.redraw();
   processChanged();
 }
@@ -568,15 +585,15 @@ void FComboBox::onePosUp()
 //----------------------------------------------------------------------
 void FComboBox::onePosDown()
 {
-  std::size_t i = list_window.list.currentItem();
+  std::size_t index = list_window.list.currentItem();
 
-  if ( i < list_window.list.getCount() )
-    i++;
+  if ( index < getCount() )
+    index++;
   else
     return;
 
-  list_window.list.setCurrentItem(i);
-  input_field = list_window.list.getItem(i).getText();
+  list_window.list.setCurrentItem(index);
+  input_field = list_window.list.getItem(index).getText();
   input_field.redraw();
   processChanged();
 }
@@ -620,8 +637,8 @@ void FComboBox::processChanged()
 void FComboBox::cb_setInputField (FWidget*, FDataPtr)
 {
   auto& list = list_window.list;
-  std::size_t i = list.currentItem();
-  input_field = list.getItem(i).getText();
+  std::size_t index = list.currentItem();
+  input_field = list.getItem(index).getText();
   input_field.redraw();
   processChanged();
 }

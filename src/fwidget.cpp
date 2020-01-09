@@ -521,34 +521,6 @@ void FWidget::setRightPadding (int right, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setParentOffset()
-{
-  auto p = getParentWidget();
-
-  if ( p )
-    woffset = p->wclient_offset;
-}
-
-//----------------------------------------------------------------------
-void FWidget::setTermOffset()
-{
-  auto r = getRootWidget();
-  int w = int(r->getWidth());
-  int h = int(r->getHeight());
-  woffset.setCoordinates (0, 0, w - 1, h - 1);
-}
-
-//----------------------------------------------------------------------
-void FWidget::setTermOffsetWithPadding()
-{
-  auto r = getRootWidget();
-  woffset.setCoordinates ( r->getLeftPadding()
-                         , r->getTopPadding()
-                         , int(r->getWidth()) - 1 - r->getRightPadding()
-                         , int(r->getHeight()) - 1 - r->getBottomPadding() );
-}
-
-//----------------------------------------------------------------------
 void FWidget::setTermSize (const FSize& size)
 {
   // Set xterm size to width x height
@@ -1271,6 +1243,34 @@ void FWidget::setMenuBar (FMenuBar* mbar)
     delete menubar;
 
   menubar = mbar;
+}
+
+//----------------------------------------------------------------------
+void FWidget::setParentOffset()
+{
+  auto p = getParentWidget();
+
+  if ( p )
+    woffset = p->wclient_offset;
+}
+
+//----------------------------------------------------------------------
+void FWidget::setTermOffset()
+{
+  auto r = getRootWidget();
+  int w = int(r->getWidth());
+  int h = int(r->getHeight());
+  woffset.setCoordinates (0, 0, w - 1, h - 1);
+}
+
+//----------------------------------------------------------------------
+void FWidget::setTermOffsetWithPadding()
+{
+  auto r = getRootWidget();
+  woffset.setCoordinates ( r->getLeftPadding()
+                         , r->getTopPadding()
+                         , int(r->getWidth()) - 1 - r->getRightPadding()
+                         , int(r->getHeight()) - 1 - r->getBottomPadding() );
 }
 
 //----------------------------------------------------------------------

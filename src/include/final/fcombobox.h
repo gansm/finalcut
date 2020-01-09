@@ -175,6 +175,7 @@ class FComboBox : public FWidget
     bool                setEditable (bool);
     bool                setEditable();
     bool                unsetEditable();
+    void                setCurrentItem (std::size_t);
     void                setMaxVisibleItems (std::size_t);
     void                setLabelText (const FString&);
     void                setLabelOrientation (const FLineEdit::label_o);
@@ -252,8 +253,8 @@ inline FString FComboBox::getText() const
 //----------------------------------------------------------------------
 inline FDataPtr FComboBox::getItemData()
 {
-  std::size_t i = list_window.list.currentItem();
-  return list_window.list.getItem(i).getData();
+  std::size_t index = list_window.list.currentItem();
+  return list_window.list.getItem(index).getData();
 }
 
 //----------------------------------------------------------------------

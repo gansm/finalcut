@@ -1,3 +1,7 @@
+2020-01-09  Markus Gans  <guru.mail@muenster.de>
+	* The setCurrentItem() method was added to the FComboBox widget class.
+	  Thanks cybin for the sample code
+
 2020-01-03  Markus Gans  <guru.mail@muenster.de>
 	* Illustrations to explain the widget layout
 
