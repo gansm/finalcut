@@ -16,7 +16,11 @@ Table of Contents
 - [Callback lambda expression](#example-of-an-lambda-expression-callback)
 - [Callback method](#example-of-a-callback-function)
 - [Custom signals](#send-custom-signals)
-- [Dynamic layout](#dynamic-layout)
+- [Widget layout](#widget-layout)
+  - [Coordinates](#coordinates)
+  - [Lengths](#lengths)
+  - [Areas](#areas)
+  - [Dynamic layout](#dynamic-layout)
 - [Scroll view](#scroll-view)
 <!-- /TOC -->
 
@@ -732,8 +736,99 @@ g++ -O2 -lfinal -std=c++11 emit-signal.cpp -o emit-signal
 ```
 
 
-Dynamic layout
---------------
+Widget layout
+-------------
+
+### Coordinates ###
+
+The positioning of a widget in the terminal works via a coordinate system. It consists of x characters in the horizontal and y characters in the vertical. The upper left corner has the coordinates (1, 1). With the commands getDesktopWidth() and getDesktopHeight(), the width and height of the terminal get retrieved. These two values result in the position of the lower right terminal corner. The position of a widget is retrievable with getX(), getY(), and getPos() or is definable with setX(), setY(), and setPos(). The data type for each coordinate is an int. All positions represent an FPoint() object. The positioning of the widget is always relative to its parent widget. The top parent widget in a chain of children contains the terminal desktop. There the absolute terminal positions are still identical to the relative positions (getPos == get_Term_Pos). In the case of a child widget, the positioning is corresponding to the upper left corner of the parent widget plus a possible padding space (can be determined with getLeftPadding() and getTopPadding()). If you want to ignore padding spaces, you must force this with the ignorePadding() method.
+
+<figure class="image">
+  <img src="widget-coordinates.svg" alt="widget-coordinates">
+  <figcaption>Figure 1.  Widget coordinates</figcaption>
+</figure>
+
+
+```cpp
+int              getX() const;
+int              getY() const;
+const FPoint     getPos() const;
+int              getTermX() const;
+int              getTermY() const;
+const FPoint     getTermPos() const;
+virtual void     setX (int x, bool adjust = true);
+virtual void     setY (int y, bool adjust = true);
+virtual void     setPos (const Fpoint& p, bool adjust = true);
+```
+
+If you set the value of adjust to false when calling setX(), setY(), or setPos(), this will prevent the explicit call of adjustSize() afterward.  This is important to avoid adjustSize() loops or to block the adjustSize() call from being repeated unnecessarily often.
+
+
+### Lengths ###
+
+The dimensions of a widget can be retrieved and defined separately in width and height. The methods getWidth() and getHeight() respectively setWidth() and setHeight() are used for this. Because a length cannot be negative, all lengths are of type std::size_t. 
+The maximum size of a child widget automatically results from the size of the parent widget, which is retrievable with getClientWidth() and getClientHeight(). Some widgets have a border, a title bar, or both, which can reduce the maximum size of the child widget.
+	widget width >= client widget width
+	widget height >= client widget height
+Corresponding padding space ensures the correct distance here. The padding space can be retrieved separately for all four sides with the widget methods getTopPadding(), getLeftPadding(), getBottomPadding(), and getRightPadding(). You can set the required padding space for the widget using the setTopPadding(), setLeftPadding(), setBottomPadding() and setRightPadding() methods.
+	widget width = left padding + client width + right padding
+	widget height = top padding + client height + bottom padding
+
+<figure class="image">
+  <img src="widget-lengths.svg" alt="widget-lengths">
+  <figcaption>Figure 2.  Width and height of a widget</figcaption>
+</figure>
+
+
+```cpp
+std::size_t    getWidth() const;
+std::size_t    getHeight() const;
+std::size_t    getClientWidth() const;
+std::size_t    getClientHeight() const;
+int            getTopPadding() const;
+int            getLeftPadding() const;
+int            getBottomPadding() const;
+int            getRightPadding() const;
+virtual void   setWidth (std::size_t width, bool adjust = true);
+virtual void   setHeight (std::size_t height, bool adjust = true);
+void           setTopPadding (int top, bool adjust = true);
+void           setLeftPadding (int left, bool adjust = true);
+void           setBottomPadding (int bottom, bool adjust = true);
+void           setRightPadding (int right, bool adjust = true);
+```
+
+If the value of adjust is set to false for setWidth(), setHeight(), setTopPadding(), setLeftPadding(), setBottomPadding() or setRightPadding(), then adjustSize() is not explicitly called afterwards. This is important to prevent adjustSize() loops or to avoid that adjustSize() is called unnecessarily often.
+
+
+### Areas ###
+
+The terminal area in which a widget appears determines its geometry. The geometry of a widget is composed of its position and its size. A widget position is always of object type FPoint() and a widget size of type FSize(). The widget geometry can get as FRect object via the widget method getGeometry() and set with the method setGeometry(). The getTermGeometry() method gets the total values of the terminal geometry.
+If you are only interested in the size of a widget, you can also use the method getSize(). To set the widget size, you can use the method setSize().
+The position of a shadow is outside the widget. The shadow size itself as FSize() object is retrievable via the getShadow() method. You can set the widget shadow size with the setShadowSize() method. If you want to get the geometry values of a widget, including its shadow, you can use the method getGeometryWithShadow() from the FWidget class. If you want to have the entire geometry with shadow for the absolute geometry values as a FRect object, you can call the method getTermGeometryWithShadow().
+
+<figure class="image">
+  <img src="widget-geometry.svg" alt="widget-geometry">
+  <figcaption>Figure 3.  Geometry of widgets</figcaption>
+</figure>
+
+
+```cpp
+const FSize    getSize() const;
+const FRect&   getGeometry() const;
+const FRect&   getTermGeometry();
+const FSize&   getShadow() const;
+const FRect&   getGeometryWithShadow();
+const FRect&   getTermGeometryWithShadow();
+virtual void   setSize (const FSize& size, bool adjust = true);
+virtual void   setGeometry (const FRect& box, bool adjust = true);
+virtual void   setGeometry (const Fpoint& p, const FSize& s, bool adjust = true);
+virtual void   setShadowSize (const FSize& size);
+```
+
+If you explicitly set the value of adjust to false when using the setSize(), setGeometry() or setShadowSize() mutators, the adjustSize() method is no longer called automatically. This can be used to prevent recursive adjustSize() calls or to avoid unnecessary adjustSize() calls.
+
+
+### Dynamic layout ###
 
 A modern terminal emulation like xterm has no fixed resolution. 
 They offer the possibility to change the height and width of the 

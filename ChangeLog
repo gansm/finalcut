@@ -1,3 +1,6 @@
+2020-01-12  Markus Gans  <guru.mail@muenster.de>
+	* Add a "widget layout" chapter to the first steps document
+
 2020-01-09  Markus Gans  <guru.mail@muenster.de>
 	* With setText() and clearText() the text in the edit line can be changed 
 	  without changing the content of the combo box
