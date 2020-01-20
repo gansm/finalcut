@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -106,12 +106,22 @@ bool FSize::isEmpty() const
 void FSize::scaleBy (int dx, int dy)
 {
   if ( dx < 0 )
-    width -= std::size_t(-dx);
+  {
+    if ( std::size_t(-dx) < width )
+      width -= std::size_t(-dx);
+    else
+      width = std::size_t(-dx) - width;
+  }
   else
     width += std::size_t(dx);
 
-  if ( dx < 0 )
-    height -= std::size_t(-dy);
+  if ( dy < 0 )
+  {
+    if ( std::size_t(-dy) < height )
+      height -= std::size_t(-dy);
+    else
+      height = std::size_t(-dy) - height;
+  }
   else
     height += std::size_t(dy);
 }

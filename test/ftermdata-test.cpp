@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -97,6 +97,7 @@ void FTermDataTest::defaultDataTest()
   CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), C_STR("") );
   CPPUNIT_ASSERT ( data.getXtermFont() == finalcut::FString() );
   CPPUNIT_ASSERT ( data.getXtermTitle() == finalcut::FString() );
+  CPPUNIT_ASSERT ( data.getExitMessage() == finalcut::FString() );
 
 #if DEBUG
   CPPUNIT_ASSERT ( data.getFramebufferBpp() == -1 );
@@ -191,6 +192,10 @@ void FTermDataTest::dataTest()
   CPPUNIT_ASSERT ( data.getXtermTitle() == finalcut::FString() );
   data.setXtermTitle("Terminal");
   CPPUNIT_ASSERT ( data.getXtermTitle() == finalcut::FString("Terminal") );
+
+  CPPUNIT_ASSERT ( data.getExitMessage() == finalcut::FString() );
+  data.setExitMessage("No tty found");
+  CPPUNIT_ASSERT ( data.getExitMessage() == finalcut::FString("No tty found") );
 
 #if DEBUG
   CPPUNIT_ASSERT ( data.getFramebufferBpp() == -1 );

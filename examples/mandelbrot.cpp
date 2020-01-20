@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -78,6 +78,9 @@ void Mandelbrot::draw()
   int current_line{0};
   int Cols = int(getClientWidth());
   int Lines = int(getClientHeight());
+
+  if ( Cols < 2 || Lines < 2 )
+    return;
 
   double dX = (x_max - x_min) / (Cols - 1);
   double dY = (y_max - y_min) / Lines;

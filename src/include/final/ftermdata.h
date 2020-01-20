@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -80,6 +80,7 @@ class FTermData final
     char*             getTermFileName();
     const FString&    getXtermFont() const;
     const FString&    getXtermTitle() const;
+    const FString&    getExitMessage() const;
 #if DEBUG
     int               getFramebufferBpp() const;
 #endif
@@ -120,6 +121,7 @@ class FTermData final
     void              setTermFileName (const char[]);
     void              setXtermFont (const FString&);
     void              setXtermTitle (const FString&);
+    void              setExitMessage (const FString&);
 #if DEBUG
     void              setFramebufferBpp (int);
 #endif
@@ -131,6 +133,7 @@ class FTermData final
     FRect             term_geometry{};  // current terminal geometry
     FString           xterm_font{};
     FString           xterm_title{};
+    FString           exit_message{};
     fc::encoding      term_encoding{fc::UNKNOWN};
     int               fd_tty{-1};  // Teletype (tty) file descriptor
                                    // is still undefined
@@ -200,6 +203,10 @@ inline const FString& FTermData::getXtermFont() const
 //----------------------------------------------------------------------
 inline const FString& FTermData::getXtermTitle() const
 { return xterm_title; }
+
+//----------------------------------------------------------------------
+inline const FString& FTermData::getExitMessage() const
+{ return exit_message; }
 
 //----------------------------------------------------------------------
 #if DEBUG
@@ -350,6 +357,10 @@ inline void FTermData::setXtermFont (const FString& font)
 //----------------------------------------------------------------------
 inline void FTermData::setXtermTitle (const FString& title)
 { xterm_title = title; }
+
+//----------------------------------------------------------------------
+inline void FTermData::setExitMessage (const FString& message)
+{ exit_message = message; }
 
 //----------------------------------------------------------------------
 #if DEBUG && defined(__linux__)

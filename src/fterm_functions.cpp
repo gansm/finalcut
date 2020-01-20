@@ -430,7 +430,16 @@ std::size_t getColumnWidth (const FString& s, std::size_t pos)
     pos = length;
 
   for (std::size_t i{0}; i < pos; i++)
-    column_width += getColumnWidth(s[i]);
+  {
+    try
+    {
+      column_width += getColumnWidth(s[i]);
+    }
+    catch (const std::out_of_range& ex)
+    {
+      std::cerr << "Out of Range error: " << ex.what() << std::endl;
+    }
+  }
 
   return column_width;
 }

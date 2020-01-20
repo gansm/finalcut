@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2019 Markus Gans                                      *
+* Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -917,7 +917,16 @@ void FLineEdit::adjustTextOffset()
   char_width_offset = 0;
 
   if ( cursor_pos < len )
-    cursor_char_width = getColumnWidth(print_text[cursor_pos]);
+  {
+    try
+    {
+      cursor_char_width = getColumnWidth(print_text[cursor_pos]);
+    }
+    catch (const std::out_of_range& ex)
+    {
+      std::cerr << "Out of Range error: " << ex.what() << std::endl;
+    }
+  }
 
   if ( len > 0 )
     first_char_width = getColumnWidth(print_text[0]);

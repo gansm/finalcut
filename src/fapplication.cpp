@@ -31,6 +31,7 @@
 #include "final/fmouse.h"
 #include "final/fstartoptions.h"
 #include "final/fstatusbar.h"
+#include "final/ftermdata.h"
 #include "final/ftermios.h"
 #include "final/fwidgetcolors.h"
 #include "final/fwindow.h"
@@ -75,8 +76,13 @@ FApplication::FApplication ( const int& _argc
   , app_argv{_argv}
 {
   if ( app_object )
-    throw std::runtime_error( "FApplication: There should be "
-                              "only one application object" );
+  {
+    auto ftermdata = getFTerm().getFTermData();
+    ftermdata->setExitMessage("FApplication: There should be "
+                              "only one application object");
+    FApplication::exit(EXIT_FAILURE);
+    return;
+  }
 
   app_object = this;
 
@@ -96,6 +102,7 @@ FApplication::~FApplication()  // destructor
   if ( event_queue )
     delete event_queue;
 
+  event_queue = nullptr;
   app_object = nullptr;
 }
 
@@ -153,12 +160,6 @@ void FApplication::exitLoop()
 //----------------------------------------------------------------------
 void FApplication::exit (int retcode)
 {
-  if ( ! app_object )  // no global app object
-    return;
-
-  if ( quit_now )  // don't overwrite quit code
-    return;
-
   quit_now  = true;
   quit_code = retcode;
 }

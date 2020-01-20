@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -59,7 +59,7 @@ uInt                  FWidget::modal_dialog_counter{};
 // constructors and destructor
 //----------------------------------------------------------------------
 FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
-  : FVTerm(bool(! parent), disable_alt_screen)
+  : FVTerm( ! (bool(parent) || rootObject), disable_alt_screen)
   , FObject(parent)
 {
   // init bit field with 0
@@ -73,9 +73,15 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
 
   if ( ! parent )
   {
-    if  ( rootObject )
-      throw std::runtime_error( "FWidget: No parent defined! "
-                                "There should be only one root object" );
+    if ( rootObject )
+    {
+      auto ftermdata = getFTerm().getFTermData();
+      ftermdata->setExitMessage("FWidget: No parent defined! "
+                                "There should be only one root object");
+      FApplication::exit(EXIT_FAILURE);
+      return;
+    }
+
     rootObject = this;
     show_root_widget = nullptr;
     redraw_root_widget = nullptr;

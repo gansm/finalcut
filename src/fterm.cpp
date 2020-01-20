@@ -2440,6 +2440,12 @@ void FTerm::finish()
   if ( data->isNewFont() || data->isVGAFont() )
     setOldFont();
 
+  // Print exit message
+  const auto& exit_message = data->getExitMessage();
+
+  if ( ! exit_message.isEmpty() )
+    std::cerr << exit_message << std::endl;
+
   deallocationValues();
 }
 

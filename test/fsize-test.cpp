@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019 Markus Gans                                           *
+* Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -400,6 +400,16 @@ void FSizeTest::scaleTest()
   CPPUNIT_ASSERT ( s1.getWidth() == 15 );
   CPPUNIT_ASSERT ( s1.getHeight() == 15 );
   CPPUNIT_ASSERT ( s1 == finalcut::FSize(15, 15) );
+
+  s1.scaleBy(-20, 0);
+  CPPUNIT_ASSERT ( s1.getWidth() == 5 );
+  CPPUNIT_ASSERT ( s1.getHeight() == 15 );
+  CPPUNIT_ASSERT ( s1 == finalcut::FSize(5, 15) );
+
+  s1.scaleBy(0, -20);
+  CPPUNIT_ASSERT ( s1.getWidth() == 5 );
+  CPPUNIT_ASSERT ( s1.getHeight() == 5 );
+  CPPUNIT_ASSERT ( s1 == finalcut::FSize(5, 5) );
 }
 
 //----------------------------------------------------------------------

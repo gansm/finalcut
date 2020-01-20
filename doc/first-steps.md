@@ -775,7 +775,7 @@ int              getTermY() const;
 const FPoint     getTermPos() const;
 virtual void     setX (int x, bool adjust = true);
 virtual void     setY (int y, bool adjust = true);
-virtual void     setPos (const Fpoint& p, bool adjust = true);
+virtual void     setPos (const FPoint& p, bool adjust = true);
 ```
 
 If you set the value of `adjust` to `false` when calling `setX()`, 
@@ -878,7 +878,7 @@ const FRect&   getGeometryWithShadow();
 const FRect&   getTermGeometryWithShadow();
 virtual void   setSize (const FSize& size, bool adjust = true);
 virtual void   setGeometry (const FRect& box, bool adjust = true);
-virtual void   setGeometry (const Fpoint& p, const FSize& s, bool adjust = true);
+virtual void   setGeometry (const FPoint& p, const FSize& s, bool adjust = true);
 virtual void   setShadowSize (const FSize& size);
 ```
 
