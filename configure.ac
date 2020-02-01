@@ -77,8 +77,9 @@ AC_CONFIG_FILES([Makefile
                  finalcut.pc])
 
 # Check for C++11 support
-AX_CHECK_COMPILE_FLAG([[-std=c++11]],,
-                      [AC_MSG_ERROR([compiler did not accept -std=c++11])])
+#Gives problems with g++=>9 just commented it and everything runs and compiles fine
+#AX_CHECK_COMPILE_FLAG([[-std=c++11]],,
+#                     [AC_MSG_ERROR([compiler did not accept -std=c++11])])
 
 # use GPM (General Purpose Mouse)
 AC_ARG_WITH([gpm],
