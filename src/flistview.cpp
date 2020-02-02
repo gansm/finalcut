@@ -1839,7 +1839,16 @@ inline FString FListView::getCheckBox (const FListViewItem* item)
     checkbox.setString("[ ] ");
 
     if ( item->isChecked() )
-      checkbox[1] = fc::Times;  // Times ×
+    {
+      try
+      {
+        checkbox[1] = fc::Times;  // Times ×
+      }
+      catch (const std::out_of_range&)
+      {
+        return checkbox;
+      }
+    }
   }
 
   return checkbox;
