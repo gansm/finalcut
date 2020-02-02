@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -81,7 +81,7 @@ void FKeyboard::fetchKeyCode()
 }
 
 //----------------------------------------------------------------------
-const FString FKeyboard::getKeyName (FKey keynum)
+const FString FKeyboard::getKeyName (const FKey keynum)
 {
   for (std::size_t i{0}; fc::fkeyname[i].string[0] != 0; i++)
     if ( fc::fkeyname[i].num && fc::fkeyname[i].num == keynum )
@@ -118,13 +118,13 @@ bool FKeyboard::isKeyPressed()
 {
   fd_set ifds{};
   struct timeval tv{};
-  int stdin_no = FTermios::getStdIn();
+  const int stdin_no = FTermios::getStdIn();
 
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
   tv.tv_usec = 100000;  // 100 ms
-  int result = select (stdin_no + 1, &ifds, 0, 0, &tv);
+  const int result = select (stdin_no + 1, &ifds, 0, 0, &tv);
 
   if ( result > 0 && FD_ISSET(stdin_no, &ifds) )
     FD_CLR (stdin_no, &ifds);
@@ -185,7 +185,7 @@ inline FKey FKeyboard::getMouseProtocolKey()
   if ( ! mouse_support )
     return NOT_SET;
 
-  std::size_t buf_len = std::strlen(fifo_buf);
+  const std::size_t buf_len = std::strlen(fifo_buf);
 
   // x11 mouse tracking
   if ( buf_len >= 6 && fifo_buf[1] == '[' && fifo_buf[2] == 'M' )
@@ -217,8 +217,8 @@ inline FKey FKeyboard::getTermcapKey()
 
   for (std::size_t i{0}; key_map[i].tname[0] != 0; i++)
   {
-    char* k = key_map[i].string;
-    std::size_t len = ( k ) ? std::strlen(k) : 0;
+    const char* k = key_map[i].string;
+    const std::size_t len = ( k ) ? std::strlen(k) : 0;
 
     if ( k && std::strncmp(k, fifo_buf, len) == 0 )  // found
     {
@@ -247,8 +247,8 @@ inline FKey FKeyboard::getMetaKey()
 
   for (std::size_t i{0}; fc::fmetakey[i].string[0] != 0; i++)
   {
-    char* kmeta = fc::fmetakey[i].string;  // The string is never null
-    std::size_t len = std::strlen(kmeta);
+    const char* kmeta = fc::fmetakey[i].string;  // The string is never null
+    const std::size_t len = std::strlen(kmeta);
 
     if ( std::strncmp(kmeta, fifo_buf, len) == 0 )  // found
     {
@@ -283,7 +283,7 @@ inline FKey FKeyboard::getSingleKey()
 
   std::size_t n{};
   std::size_t len{1};
-  uChar firstchar = uChar(fifo_buf[0]);
+  const uChar firstchar = uChar(fifo_buf[0]);
   FKey keycode{};
 
   // Look for a utf-8 character
@@ -362,7 +362,7 @@ FKey FKeyboard::UTF8decode (const char utf8[])
 
   for (std::size_t i{0}; i < len; ++i)
   {
-    uChar ch = uChar(utf8[i]);
+    const uChar ch = uChar(utf8[i]);
 
     if ( (ch & 0xc0) == 0x80 )
     {
@@ -403,7 +403,7 @@ FKey FKeyboard::UTF8decode (const char utf8[])
 inline ssize_t FKeyboard::readKey()
 {
   setNonBlockingInput();
-  ssize_t bytes = read(FTermios::getStdIn(), &read_buf, READ_BUF_SIZE - 1);
+  const ssize_t bytes = read(FTermios::getStdIn(), &read_buf, READ_BUF_SIZE - 1);
   unsetNonBlockingInput();
   return bytes;
 }
@@ -459,7 +459,7 @@ void FKeyboard::parseKeyBuffer()
 //----------------------------------------------------------------------
 FKey FKeyboard::parseKeyString()
 {
-  uChar firstchar = uChar(fifo_buf[0]);
+  const uChar firstchar = uChar(fifo_buf[0]);
 
   if ( firstchar == ESC[0] )
   {

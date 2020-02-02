@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -183,7 +183,6 @@ void FObject::setParent (FObject* parent)
     return;
 
   removeParent();
-
   parent_obj = parent;
   has_parent = true;
   parent->children_list.push_back(this);
@@ -256,7 +255,7 @@ bool FObject::isTimeout (timeval* time, uInt64 timeout)
     diff.tv_usec += 1000000;
   }
 
-  uInt64 diff_usec = uInt64((diff.tv_sec * 1000000) + diff.tv_usec);
+  const uInt64 diff_usec = uInt64((diff.tv_sec * 1000000) + diff.tv_usec);
   return ( diff_usec > timeout );
 }
 
@@ -275,7 +274,7 @@ int FObject::addTimer (int interval)
   if ( ! timer_list->empty() )
   {
     auto iter = timer_list->begin();
-    auto last = timer_list->end();
+    const auto& last = timer_list->end();
 
     while ( iter != last )
     {
@@ -300,14 +299,13 @@ int FObject::addTimer (int interval)
 
   // insert in list sorted by timeout
   auto iter = timer_list->begin();
-  auto last = timer_list->end();
+  const auto& last = timer_list->end();
 
   while ( iter != last && iter->timeout < t.timeout )
     ++iter;
 
   timer_list->insert (iter, t);
   timer_modify_lock = false;
-
   return id;
 }
 
@@ -321,7 +319,7 @@ bool FObject::delTimer (int id)
 
   timer_modify_lock = true;
   auto iter = timer_list->begin();
-  auto last = timer_list->end();
+  const auto& last = timer_list->end();
 
   while ( iter != last && iter->id != id )
     ++iter;

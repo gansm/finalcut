@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -106,7 +106,7 @@ void FListBox::setCurrentItem (std::size_t index)
   if ( index == current )
     return;
 
-  std::size_t element_count = getCount();
+  const std::size_t element_count = getCount();
 
   if ( index > element_count )
     current = element_count;
@@ -125,12 +125,12 @@ void FListBox::setCurrentItem (std::size_t index)
 //----------------------------------------------------------------------
 void FListBox::setCurrentItem (listBoxItems::iterator iter)
 {
-  std::size_t index = std::size_t(std::distance(itemlist.begin(), iter)) + 1;
+  const auto index = std::size_t(std::distance(itemlist.begin(), iter)) + 1;
   setCurrentItem(index);
 }
 
 //----------------------------------------------------------------------
-void FListBox::showInsideBrackets ( std::size_t index
+void FListBox::showInsideBrackets ( const std::size_t index
                                   , fc::brackets_type b )
 {
   auto iter = index2iterator(index - 1);
@@ -139,7 +139,7 @@ void FListBox::showInsideBrackets ( std::size_t index
   if ( b == fc::NoBrackets )
     return;
 
-  std::size_t column_width = getColumnWidth(iter->getText()) + 2;
+  const auto column_width = getColumnWidth(iter->getText()) + 2;
 
   if ( column_width > max_line_width )
   {
@@ -147,9 +147,9 @@ void FListBox::showInsideBrackets ( std::size_t index
 
     if ( column_width >= getWidth() - nf_offset - 3 )
     {
-      int hmax = ( max_line_width > getWidth() - nf_offset - 4 )
-                 ? int(max_line_width - getWidth() + nf_offset + 4)
-                 : 0;
+      const int hmax = ( max_line_width > getWidth() - nf_offset - 4 )
+                       ? int(max_line_width - getWidth() + nf_offset + 4)
+                       : 0;
       hbar->setMaximum (hmax);
       hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset - 4));
       hbar->setValue (xoffset);
@@ -191,8 +191,8 @@ void FListBox::hide()
 //----------------------------------------------------------------------
 void FListBox::insert (FListBoxItem listItem)
 {
-  std::size_t column_width = getColumnWidth(listItem.text);
-  bool has_brackets(listItem.brackets);
+  const std::size_t column_width = getColumnWidth(listItem.text);
+  const bool has_brackets(listItem.brackets);
   recalculateHorizontalBar (column_width, has_brackets);
 
   itemlist.push_back (listItem);
@@ -211,29 +211,29 @@ void FListBox::remove (std::size_t item)
     return;
 
   itemlist.erase (itemlist.begin() + int(item) - 1);
-  std::size_t element_count = getCount();
+  const std::size_t element_count = getCount();
   max_line_width = 0;
 
   for (auto&& listbox_item : itemlist)
   {
-    std::size_t column_width = getColumnWidth(listbox_item.getText());
+    const auto column_width = getColumnWidth(listbox_item.getText());
 
     if ( column_width > max_line_width )
       max_line_width = column_width;
   }
 
-  int hmax = ( max_line_width > getWidth() - nf_offset - 4 )
-             ? int(max_line_width - getWidth() + nf_offset + 4)
-             : 0;
+  const int hmax = ( max_line_width > getWidth() - nf_offset - 4 )
+                   ? int(max_line_width - getWidth() + nf_offset + 4)
+                   : 0;
   hbar->setMaximum (hmax);
   hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset - 4));
 
   if ( hbar->isShown() && isHorizontallyScrollable() )
     hbar->hide();
 
-  int vmax = ( element_count + 2 > getHeight() )
-             ? int(element_count - getHeight()) + 2
-             : 0;
+  const int vmax = ( element_count + 2 > getHeight() )
+                   ? int(element_count - getHeight()) + 2
+                   : 0;
   vbar->setMaximum (vmax);
   vbar->setPageSize (int(element_count), int(getHeight()) - 2);
 
@@ -276,7 +276,7 @@ void FListBox::clear()
   // clear list from screen
   const auto& wc = getFWidgetColors();
   setColor (wc.list_fg, wc.list_bg);
-  std::size_t size = getWidth() - 2;
+  const std::size_t size = getWidth() - 2;
   drawBorder();
   drawHeadline();
 
@@ -292,9 +292,9 @@ void FListBox::clear()
 //----------------------------------------------------------------------
 void FListBox::onKeyPress (FKeyEvent* ev)
 {
-  std::size_t current_before = current;
-  int xoffset_before = xoffset;
-  int yoffset_before = yoffset;
+  const std::size_t current_before = current;
+  const int xoffset_before = xoffset;
+  const int yoffset_before = yoffset;
   processKeyAction(ev);  // Process the keystrokes
 
   if ( current_before != current )
@@ -302,8 +302,8 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 
   if ( ev->isAccepted() )
   {
-    bool draw_vbar( yoffset_before != yoffset );
-    bool draw_hbar( xoffset_before != xoffset );
+    const bool draw_vbar( yoffset_before != yoffset );
+    const bool draw_hbar( xoffset_before != xoffset );
     updateDrawing (draw_vbar, draw_hbar);
   }
 }
@@ -322,16 +322,16 @@ void FListBox::onMouseDown (FMouseEvent* ev)
 
   getWidgetFocus();
 
-  int yoffset_before = yoffset;
-  std::size_t current_before = current;
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
+  const int yoffset_before = yoffset;
+  const std::size_t current_before = current;
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
 
   if ( mouse_x > 1 && mouse_x < int(getWidth())
     && mouse_y > 1 && mouse_y < int(getHeight()) )
   {
     click_on_list = true;
-    std::size_t element_count = getCount();
+    const std::size_t element_count = getCount();
     current = std::size_t(yoffset + mouse_y - 1);
 
     if ( current > element_count )
@@ -370,8 +370,8 @@ void FListBox::onMouseUp (FMouseEvent* ev)
 
   if ( ev->getButton() == fc::LeftButton )
   {
-    int mouse_x = ev->getX();
-    int mouse_y = ev->getY();
+    const int mouse_x = ev->getX();
+    const int mouse_y = ev->getY();
 
     if ( mouse_x > 1 && mouse_x < int(getWidth())
       && mouse_y > 1 && mouse_y < int(getHeight()) )
@@ -392,16 +392,16 @@ void FListBox::onMouseMove (FMouseEvent* ev)
   if ( ev->getButton() == fc::RightButton && ! isMultiSelection() )
     return;
 
-  std::size_t current_before = current;
-  int yoffset_before = yoffset;
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
+  const std::size_t current_before = current;
+  const int yoffset_before = yoffset;
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
 
   if ( mouse_x > 1 && mouse_x < int(getWidth())
     && mouse_y > 1 && mouse_y < int(getHeight()) )
   {
     click_on_list = true;
-    std::size_t element_count = getCount();
+    const std::size_t element_count = getCount();
     current = std::size_t(yoffset + mouse_y - 1);
 
     if ( current > element_count )
@@ -448,8 +448,8 @@ void FListBox::onMouseDoubleClick (FMouseEvent* ev)
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
 
   if ( mouse_x > 1 && mouse_x < int(getWidth())
     && mouse_y > 1 && mouse_y < int(getHeight()) )
@@ -464,8 +464,8 @@ void FListBox::onMouseDoubleClick (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onTimer (FTimerEvent*)
 {
-  std::size_t current_before = current;
-  int yoffset_before = yoffset;
+  const std::size_t current_before = current;
+  const int yoffset_before = yoffset;
 
   switch ( int(drag_scroll) )
   {
@@ -514,10 +514,10 @@ void FListBox::onTimer (FTimerEvent*)
 //----------------------------------------------------------------------
 void FListBox::onWheel (FWheelEvent* ev)
 {
-  std::size_t current_before = current;
-  int yoffset_before = yoffset;
-  int pagesize{4};
-  int wheel = ev->getWheel();
+  const std::size_t current_before = current;
+  const int yoffset_before = yoffset;
+  static constexpr int wheel_distance = 4;
+  const int wheel = ev->getWheel();
 
   if ( drag_scroll != fc::noScroll )
     stopDragScroll();
@@ -525,11 +525,11 @@ void FListBox::onWheel (FWheelEvent* ev)
   switch ( wheel )
   {
     case fc::WheelUp:
-      wheelUp (pagesize);
+      wheelUp (wheel_distance);
       break;
 
     case fc::WheelDown:
-      wheelDown (pagesize);
+      wheelDown (wheel_distance);
       break;
 
     default:
@@ -581,7 +581,7 @@ void FListBox::onFocusOut (FFocusEvent*)
 //----------------------------------------------------------------------
 void FListBox::adjustYOffset (std::size_t element_count)
 {
-  std::size_t height = getClientHeight();
+  const std::size_t height = getClientHeight();
 
   if ( height == 0 || element_count == 0 )
     return;
@@ -603,24 +603,24 @@ void FListBox::adjustYOffset (std::size_t element_count)
 void FListBox::adjustSize()
 {
   FWidget::adjustSize();
-  std::size_t element_count = getCount();
-  std::size_t width = getClientWidth();
-  std::size_t height = getClientHeight();
+  const std::size_t element_count = getCount();
+  const std::size_t width = getClientWidth();
+  const std::size_t height = getClientHeight();
 
   adjustYOffset (element_count);
 
-  int vmax = ( element_count > height )
-             ? int(element_count - height)
-             : 0;
+  const int vmax = ( element_count > height )
+                   ? int(element_count - height)
+                   : 0;
   vbar->setMaximum (vmax);
   vbar->setPageSize (int(element_count), int(height));
   vbar->setX (int(getWidth()));
   vbar->setHeight (height, false);
   vbar->resize();
 
-  int hmax = ( max_line_width + 2 > width )
-             ? int(max_line_width - width + 2)
-             : 0;
+  const int hmax = ( max_line_width + 2 > width )
+                   ? int(max_line_width - width + 2)
+                   : 0;
   hbar->setMaximum (hmax);
   hbar->setPageSize (int(max_line_width), int(width) - 2);
   hbar->setY (int(getHeight()));
@@ -698,7 +698,7 @@ inline void FListBox::mapKeyFunctions()
 //----------------------------------------------------------------------
 void FListBox::processKeyAction (FKeyEvent* ev)
 {
-  int idx = int(ev->key());
+  const int idx = int(ev->key());
 
   if ( key_map.find(idx) != key_map.end() )
   {
@@ -789,8 +789,8 @@ void FListBox::drawHeadline()
   if ( text.isNull() || text.isEmpty() )
     return;
 
-  FString txt(" " + text + " ");
-  auto column_width = getColumnWidth(txt);
+  const FString txt(" " + text + " ");
+  const auto column_width = getColumnWidth(txt);
   print() << FPoint(2, 1);
   const auto& wc = getFWidgetColors();
 
@@ -826,8 +826,8 @@ void FListBox::drawList()
     && last_current != int(current) )
   {
     // speed up: redraw only the changed rows
-    std::size_t last_pos = current - std::size_t(yoffset) - 1;
-    std::size_t current_pos = std::size_t(last_current - yoffset) - 1;
+    const auto last_pos = current - std::size_t(yoffset) - 1;
+    const auto current_pos = std::size_t(last_current - yoffset) - 1;
     start = std::min(last_pos, current_pos);
     num = std::max(last_pos, current_pos) + 1;
   }
@@ -837,7 +837,7 @@ void FListBox::drawList()
   for (std::size_t y = start; y < num && iter != itemlist.end() ; y++)
   {
     bool serach_mark{false};
-    bool lineHasBrackets = hasBrackets(iter);
+    const bool lineHasBrackets = hasBrackets(iter);
 
     // Import data via lazy conversion
     lazyConvert (iter, int(y));
@@ -869,12 +869,12 @@ inline void FListBox::drawListLine ( int y
                                    , listBoxItems::iterator iter
                                    , bool serach_mark )
 {
-  std::size_t inc_len = inc_search.getLength();
+  const std::size_t inc_len = inc_search.getLength();
   const auto& wc = getFWidgetColors();
-  bool isCurrentLine( y + yoffset + 1 == int(current) );
-  std::size_t first = std::size_t(xoffset) + 1;
-  std::size_t max_width = getWidth() - nf_offset - 4;
-  FString element(getColumnSubString (getString(iter), first, max_width));
+  const bool isCurrentLine( y + yoffset + 1 == int(current) );
+  const std::size_t first = std::size_t(xoffset) + 1;
+  const std::size_t max_width = getWidth() - nf_offset - 4;
+  const FString element(getColumnSubString (getString(iter), first, max_width));
   std::size_t column_width = getColumnWidth(element);
 
   if ( isMonochron() && isCurrentLine && getFlags().focus )
@@ -924,9 +924,9 @@ inline void FListBox::drawListBracketsLine ( int y
                                            , listBoxItems::iterator iter
                                            , bool serach_mark )
 {
-  std::size_t inc_len = inc_search.getLength()
-            , b{0};
-  bool isCurrentLine( y + yoffset + 1 == int(current) );
+  std::size_t b{0};
+  const std::size_t inc_len = inc_search.getLength();
+  const bool isCurrentLine( y + yoffset + 1 == int(current) );
 
   if ( isMonochron() && isCurrentLine && getFlags().focus )
     print (fc::BlackRightPointingPointer);  // ►
@@ -939,11 +939,11 @@ inline void FListBox::drawListBracketsLine ( int y
     printLeftBracket (iter->brackets);
   }
 
-  std::size_t first = std::size_t(xoffset);
-  std::size_t max_width = getWidth() - nf_offset - 4 - b;
-  FString element(getColumnSubString (getString(iter), first, max_width));
+  const std::size_t first = std::size_t(xoffset);
+  const std::size_t max_width = getWidth() - nf_offset - 4 - b;
+  const FString element(getColumnSubString (getString(iter), first, max_width));
   std::size_t column_width = getColumnWidth(element);
-  std::size_t text_width = getColumnWidth(getString(iter));
+  const std::size_t text_width = getColumnWidth(getString(iter));
   std::size_t i{0};
   const auto& wc = getFWidgetColors();
 
@@ -987,9 +987,9 @@ inline void FListBox::setLineAttributes ( int y
                                         , bool lineHasBrackets
                                         , bool& serach_mark )
 {
-  bool isCurrentLine( y + yoffset + 1 == int(current) );
-  std::size_t inc_len = inc_search.getLength();
-  std::size_t inc_width = getColumnWidth(inc_search);
+  const bool isCurrentLine( y + yoffset + 1 == int(current) );
+  const std::size_t inc_len = inc_search.getLength();
+  const std::size_t inc_width = getColumnWidth(inc_search);
   const auto& wc = getFWidgetColors();
   print() << FPoint(2, 2 + int(y));
 
@@ -1035,7 +1035,7 @@ inline void FListBox::setLineAttributes ( int y
       {
         setColor ( wc.current_element_focus_fg
                  , wc.current_element_focus_bg );
-        int b = ( lineHasBrackets ) ? 1: 0;
+        const int b = ( lineHasBrackets ) ? 1: 0;
 
         if ( inc_len > 0 )  // incremental search
         {
@@ -1105,9 +1105,9 @@ void FListBox::recalculateHorizontalBar (std::size_t len, bool has_brackets)
 
   if ( len >= getWidth() - nf_offset - 3 )
   {
-    int hmax = ( max_line_width > getWidth() - nf_offset - 4 )
-               ? int(max_line_width - getWidth() + nf_offset + 4)
-               : 0;
+    const int hmax = ( max_line_width > getWidth() - nf_offset - 4 )
+                     ? int(max_line_width - getWidth() + nf_offset + 4)
+                     : 0;
     hbar->setMaximum (hmax);
     hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset) - 4);
     hbar->calculateSliderValues();
@@ -1125,9 +1125,9 @@ void FListBox::recalculateHorizontalBar (std::size_t len, bool has_brackets)
 //----------------------------------------------------------------------
 void FListBox::recalculateVerticalBar (std::size_t element_count)
 {
-  int vmax = ( element_count + 2 > getHeight() )
-             ? int(element_count - getHeight() + 2)
-             : 0;
+  const int vmax = ( element_count + 2 > getHeight() )
+                   ? int(element_count - getHeight() + 2)
+                   : 0;
   vbar->setMaximum (vmax);
   vbar->setPageSize (int(element_count), int(getHeight()) - 2);
   vbar->calculateSliderValues();
@@ -1237,7 +1237,7 @@ void FListBox::wheelUp (int pagesize)
 //----------------------------------------------------------------------
 void FListBox::wheelDown (int pagesize)
 {
-  std::size_t element_count = getCount();
+  const std::size_t element_count = getCount();
   int yoffset_end = int(element_count - getClientHeight());
 
   if ( yoffset_end < 0 )
@@ -1276,7 +1276,7 @@ bool FListBox::dragScrollUp()
 //----------------------------------------------------------------------
 bool FListBox::dragScrollDown()
 {
-  std::size_t element_count = getCount();
+  const std::size_t element_count = getCount();
 
   if ( current == element_count )
   {
@@ -1370,8 +1370,8 @@ void FListBox::prevListItem (int distance)
 //----------------------------------------------------------------------
 void FListBox::nextListItem (int distance)
 {
-  std::size_t element_count = getCount();
-  int yoffset_end = int(element_count - getClientHeight());
+  const std::size_t element_count = getCount();
+  const int yoffset_end = int(element_count - getClientHeight());
 
   if ( current == element_count )
     return;
@@ -1393,7 +1393,8 @@ void FListBox::nextListItem (int distance)
 void FListBox::scrollToX (int val)
 {
   static constexpr std::size_t padding_space = 2;  // 1 leading + 1 trailing space
-  std::size_t xoffset_end = max_line_width - getClientWidth() + padding_space;
+  const std::size_t xoffset_end = max_line_width - getClientWidth()
+                                + padding_space;
 
   if ( xoffset == val )
     return;
@@ -1410,13 +1411,13 @@ void FListBox::scrollToX (int val)
 //----------------------------------------------------------------------
 void FListBox::scrollToY (int val)
 {
-  std::size_t element_count = getCount();
-  int yoffset_end = int(element_count - getClientHeight());
+  const std::size_t element_count = getCount();
+  const int yoffset_end = int(element_count - getClientHeight());
 
   if ( yoffset == val )
     return;
 
-  int c = int(current) - yoffset;
+  const int c = int(current) - yoffset;
   yoffset = val;
 
   if ( yoffset > yoffset_end )
@@ -1450,7 +1451,8 @@ void FListBox::scrollLeft (int distance)
 void FListBox::scrollRight (int distance)
 {
   static constexpr std::size_t padding_space = 2;  // 1 leading + 1 trailing space
-  std::size_t xoffset_end = max_line_width - getClientWidth() + padding_space;
+  const std::size_t xoffset_end = max_line_width - getClientWidth()
+                                + padding_space;
   xoffset += distance;
 
   if ( xoffset == int(xoffset_end) )
@@ -1494,7 +1496,7 @@ inline void FListBox::onePosDown()
 //----------------------------------------------------------------------
 inline void FListBox::onePageUp()
 {
-  int pagesize = int(getClientHeight()) - 1;
+  const int pagesize = int(getClientHeight()) - 1;
   prevListItem (pagesize);
   inc_search.clear();
 }
@@ -1502,7 +1504,7 @@ inline void FListBox::onePageUp()
 //----------------------------------------------------------------------
 inline void FListBox::onePageDown()
 {
-  int pagesize = int(getClientHeight()) - 1;
+  const int pagesize = int(getClientHeight()) - 1;
   nextListItem (pagesize);
   inc_search.clear();
 }
@@ -1518,8 +1520,8 @@ inline void FListBox::firstPos()
 //----------------------------------------------------------------------
 inline void FListBox::lastPos()
 {
-  std::size_t element_count = getCount();
-  int yoffset_end = int(element_count - getClientHeight());
+  const std::size_t element_count = getCount();
+  const int yoffset_end = int(element_count - getClientHeight());
   current = element_count;
 
   if ( current > getClientHeight() )
@@ -1550,7 +1552,7 @@ inline void FListBox::acceptSelection()
 //----------------------------------------------------------------------
 inline bool FListBox::spacebarProcessing()
 {
-  std::size_t inc_len = inc_search.getLength();
+  const std::size_t inc_len = inc_search.getLength();
 
   if ( inc_len > 0 )  // Enter a spacebar for incremental search
   {
@@ -1623,7 +1625,7 @@ inline bool FListBox::changeSelectionAndPosition()
 //----------------------------------------------------------------------
 inline bool FListBox::deletePreviousCharacter()
 {
-  std::size_t inc_len = inc_search.getLength();
+  const std::size_t inc_len = inc_search.getLength();
 
   if ( inc_len > 0 )
   {
@@ -1735,7 +1737,7 @@ void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
     return;
 
   lazy_inserter (*iter, source_container, y + yoffset);
-  std::size_t column_width = getColumnWidth(iter->text);
+  const auto column_width = getColumnWidth(iter->text);
   recalculateHorizontalBar (column_width, hasBrackets(iter));
 
   if ( hbar->isShown() )
@@ -1746,10 +1748,10 @@ void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
 void FListBox::cb_VBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType;
-  std::size_t current_before = current;
-  int distance{1}
-    , pagesize{4}
-    , yoffset_before = yoffset;
+  const std::size_t current_before = current;
+  static constexpr int wheel_distance = 4;
+  int distance{1};
+  const int yoffset_before = yoffset;
   scrollType = vbar->getScrollType();
 
   switch ( scrollType )
@@ -1776,11 +1778,11 @@ void FListBox::cb_VBarChange (FWidget*, FDataPtr)
       break;
 
     case FScrollbar::scrollWheelUp:
-      wheelUp (pagesize);
+      wheelUp (wheel_distance);
       break;
 
     case FScrollbar::scrollWheelDown:
-      wheelDown (pagesize);
+      wheelDown (wheel_distance);
       break;
   }
 
@@ -1809,10 +1811,10 @@ void FListBox::cb_VBarChange (FWidget*, FDataPtr)
 void FListBox::cb_HBarChange (FWidget*, FDataPtr)
 {
   static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
+  static constexpr int wheel_distance = 4;
   FScrollbar::sType scrollType;
-  int distance{1}
-    , pagesize{4}
-    , xoffset_before = xoffset;
+  int distance{1};
+  const int xoffset_before = xoffset;
   scrollType = hbar->getScrollType();
 
   switch ( scrollType )
@@ -1839,11 +1841,11 @@ void FListBox::cb_HBarChange (FWidget*, FDataPtr)
       break;
 
     case FScrollbar::scrollWheelUp:
-      scrollLeft (pagesize);
+      scrollLeft (wheel_distance);
       break;
 
     case FScrollbar::scrollWheelDown:
-      scrollRight (pagesize);
+      scrollRight (wheel_distance);
       break;
   }
 

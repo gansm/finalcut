@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2019 Markus Gans                                      *
+* Copyright 2016-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -50,7 +50,7 @@ FToolTip::FToolTip (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FToolTip::~FToolTip()  // destructor
 {
-  auto fapp = FApplication::getApplicationObject();
+  const auto& fapp = FApplication::getApplicationObject();
 
   if ( fapp->isQuit() )
     return;
@@ -131,8 +131,6 @@ void FToolTip::draw()
 //----------------------------------------------------------------------
 void FToolTip::calculateDimensions()
 {
-  int x{}, y{};
-  auto r = getRootWidget();
   max_line_width = 0;
   text_components = text.split("\n");
   text_num_lines = std::size_t(text_components.size());
@@ -148,8 +146,10 @@ void FToolTip::calculateDimensions()
       max_line_width = column_width;
   }
 
-  std::size_t h = text_num_lines + 2;
-  std::size_t w = max_line_width + 4;
+  int x{}, y{};
+  const std::size_t h = text_num_lines + 2;
+  const std::size_t w = max_line_width + 4;
+  const auto& r = getRootWidget();
 
   if ( r )
   {

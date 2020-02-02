@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -138,7 +138,7 @@ bool FTermLinux::isLinuxConsole()
     fsystem = FTerm::getFSystem();
 
   char arg{0};
-  int fd_tty = FTerm::getTTYFileDescriptor();
+  const int fd_tty = FTerm::getTTYFileDescriptor();
 
   // Get keyboard type an compare
   return ( fsystem->isTTY(fd_tty)
@@ -217,8 +217,8 @@ void FTermLinux::initCharMap()
   {
     for (std::size_t i{0}; i <= fc::lastCharItem; i++ )
     {
-      auto ucs = wchar_t(fc::character[i][fc::UTF8]);
-      sInt16 fontpos = getFontPos(ucs);
+      const auto ucs = wchar_t(fc::character[i][fc::UTF8]);
+      const sInt16 fontpos = getFontPos(ucs);
 
       // Fix for a non-cp437 Linux console with PC charset encoding
       if ( fontpos > 255 || fontpos == NOT_FOUND )
@@ -267,7 +267,7 @@ bool FTermLinux::loadVGAFont()
     if ( isLinuxConsole() )
     {
       // Set the standard vga font 8x16
-      int ret = setScreenFont(fc::__8x16std, 256, 8, 16);
+      const int ret = setScreenFont(fc::__8x16std, 256, 8, 16);
 
       if ( ret != 0 )
         vga_font = false;
@@ -354,11 +354,11 @@ bool FTermLinux::loadOldFont()
     {
       if ( screen_font.data )
       {
-        int ret = setScreenFont ( screen_font.data
-                                , screen_font.charcount
-                                , screen_font.width
-                                , screen_font.height
-                                , true );
+        const int ret = setScreenFont ( screen_font.data
+                                      , screen_font.charcount
+                                      , screen_font.width
+                                      , screen_font.height
+                                      , true );
         delete[] screen_font.data;
         screen_font.data = nullptr;
 
@@ -532,7 +532,7 @@ int FTermLinux::getFramebuffer_bpp()
 bool FTermLinux::getScreenFont()
 {
   struct console_font_op font{};
-  int fd_tty = FTerm::getTTYFileDescriptor();
+  const int fd_tty = FTerm::getTTYFileDescriptor();
   int ret{-1};
 
   if ( fd_tty < 0 )
@@ -581,7 +581,7 @@ bool FTermLinux::getScreenFont()
 //----------------------------------------------------------------------
 bool FTermLinux::getUnicodeMap()
 {
-  int fd_tty = FTerm::getTTYFileDescriptor();
+  const int fd_tty = FTerm::getTTYFileDescriptor();
   int ret{-1};
 
   if ( fd_tty < 0 )
@@ -596,7 +596,7 @@ bool FTermLinux::getUnicodeMap()
 
   if ( ret != 0 )
   {
-    std::size_t count = screen_unicode_map.entry_ct;
+    const std::size_t count = screen_unicode_map.entry_ct;
 
     if ( errno != ENOMEM || count == 0 )
       return false;
@@ -657,7 +657,7 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
                               , bool direct)
 {
   struct console_font_op font{};
-  int fd_tty = FTerm::getTTYFileDescriptor();
+  const int fd_tty = FTerm::getTTYFileDescriptor();
   int ret{-1};
 
   if ( fd_tty < 0 )
@@ -720,7 +720,7 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
 int FTermLinux::setUnicodeMap (struct unimapdesc* unimap)
 {
   struct unimapinit advice;
-  int fd_tty = FTerm::getTTYFileDescriptor();
+  const int fd_tty = FTerm::getTTYFileDescriptor();
   int ret{-1};
 
   if ( fd_tty < 0 )
@@ -771,7 +771,7 @@ inline uInt16 FTermLinux::getInputStatusRegisterOne()
 
   // Miscellaneous output (read port)
   static constexpr uInt16 misc_read = 0x3cc;
-  uChar misc_value = fsystem->inPortByte(misc_read);
+  const uChar misc_value = fsystem->inPortByte(misc_read);
   const uInt16 io_base = ( misc_value & 0x01 ) ? 0x3d0 : 0x3b0;
   // 0x3ba : Input status 1 mono/MDA (read port)
   // 0x3da : Input status 1 color/CGA (read port)
@@ -794,7 +794,7 @@ uChar FTermLinux::readAttributeController (uChar index)
 
   fsystem->inPortByte (input_status_1);  // switch to index mode
   fsystem->outPortByte (index & 0x1f, attrib_cntlr_write);  // selects address register
-  uChar res = fsystem->inPortByte (attrib_cntlr_read);  // read from data register
+  const uChar res = fsystem->inPortByte (attrib_cntlr_read);  // read from data register
 
   // Disable access to the palette and unblank the display
   fsystem->inPortByte (input_status_1);  // switch to index mode
@@ -853,7 +853,7 @@ int FTermLinux::setBlinkAsIntensity (bool enable)
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
 
-  int fd_tty = FTerm::getTTYFileDescriptor();
+  const int fd_tty = FTerm::getTTYFileDescriptor();
 
   // Test if the blink-bit is used by the screen font (512 characters)
   if ( screen_font.charcount > 256 )
@@ -893,7 +893,7 @@ bool FTermLinux::has9BitCharacters()
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
 
-  int fd_tty = FTerm::getTTYFileDescriptor();
+  const int fd_tty = FTerm::getTTYFileDescriptor();
 
   if ( fsystem->getuid() != 0 )  // Direct hardware access requires root privileges
     return false;
@@ -905,7 +905,7 @@ bool FTermLinux::has9BitCharacters()
   if ( fsystem->ioctl(fd_tty, KDENABIO, 0) < 0 )
     return false;  // error on KDENABIO
 
-  bool nine_bit_char( getAttributeMode() & 0x04 );
+  const bool nine_bit_char( getAttributeMode() & 0x04 );
 
     // Disable access to VGA I/O ports
   if ( fsystem->ioctl(fd_tty, KDDISABIO, 0) < 0 )
@@ -1282,9 +1282,9 @@ FKey FTermLinux::shiftCtrlAltKeyCorrection (const FKey& key_id)
 //----------------------------------------------------------------------
 inline void FTermLinux::initSpecialCharacter()
 {
-  wchar_t c1 = fc::UpperHalfBlock;
-  wchar_t c2 = fc::LowerHalfBlock;
-  wchar_t c3 = fc::FullBlock;
+  const wchar_t c1 = fc::UpperHalfBlock;
+  const wchar_t c2 = fc::LowerHalfBlock;
+  const wchar_t c3 = fc::FullBlock;
 
   if ( FTerm::charEncode(c1, fc::PC) == FTerm::charEncode(c1, fc::ASCII)
     || FTerm::charEncode(c2, fc::PC) == FTerm::charEncode(c2, fc::ASCII)
@@ -1293,8 +1293,8 @@ inline void FTermLinux::initSpecialCharacter()
     fterm_data->supportShadowCharacter (false);
   }
 
-  wchar_t c4 = fc::RightHalfBlock;
-  wchar_t c5 = fc::LeftHalfBlock;
+  const wchar_t c4 = fc::RightHalfBlock;
+  const wchar_t c5 = fc::LeftHalfBlock;
 
   if ( FTerm::charEncode(c4, fc::PC) == FTerm::charEncode(c4, fc::ASCII)
     || FTerm::charEncode(c5, fc::PC) == FTerm::charEncode(c5, fc::ASCII) )

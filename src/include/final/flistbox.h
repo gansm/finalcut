@@ -176,7 +176,7 @@ class FListBox : public FWidget
     void                selectItem (listBoxItems::iterator);
     void                unselectItem (std::size_t);
     void                unselectItem (listBoxItems::iterator);
-    void                showInsideBrackets (std::size_t, fc::brackets_type);
+    void                showInsideBrackets (const std::size_t, fc::brackets_type);
     void                showNoBrackets (std::size_t);
     void                showNoBrackets (listBoxItems::iterator);
     void                setSize (const FSize&, bool = true) override;
@@ -496,7 +496,7 @@ void FListBox::insert (Container container, LazyConverter convert)
   conv_type = lazy_convert;
   source_container = container;
   lazy_inserter = convert;
-  std::size_t size = container->size();
+  const std::size_t size = container->size();
 
   if ( size > 0 )
     itemlist.resize(size);

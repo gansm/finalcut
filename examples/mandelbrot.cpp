@@ -67,23 +67,23 @@ void Mandelbrot::draw()
 {
   finalcut::FDialog::draw();
 
-  double x_min{-2.20};
-  double x_max{+1.00};
-  double y_min{-1.05};
-  double y_max{+1.05};
-  int max_iter{99};
+  const double x_min{-2.20};
+  const double x_max{+1.00};
+  const double y_min{-1.05};
+  const double y_max{+1.05};
+  const int max_iter{99};
 
-  int xoffset{2};
-  int yoffset{2};
+  const int xoffset{2};
+  const int yoffset{2};
+  const int Cols = int(getClientWidth());
+  const int Lines = int(getClientHeight());
   int current_line{0};
-  int Cols = int(getClientWidth());
-  int Lines = int(getClientHeight());
 
   if ( Cols < 2 || Lines < 2 )
     return;
 
-  double dX = (x_max - x_min) / (Cols - 1);
-  double dY = (y_max - y_min) / Lines;
+  const double dX = (x_max - x_min) / (Cols - 1);
+  const double dY = (y_max - y_min) / Lines;
 
   for (double y0 = y_min; y0 < y_max && current_line < Lines; y0 += dY)
   {
@@ -98,7 +98,7 @@ void Mandelbrot::draw()
 
       while ( x * x + y * y < 4 && iter < max_iter )
       {
-        double xtemp = x * x - y * y + x0;
+        const double xtemp = x * x - y * y + x0;
         y = 2 * x * y + y0;
         x = xtemp;
         iter++;
@@ -138,8 +138,8 @@ void Mandelbrot::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Mandelbrot::adjustSize()
 {
-  std::size_t h = getDesktopHeight() - 1;
-  std::size_t w = getDesktopWidth() - 10;
+  const std::size_t h = getDesktopHeight() - 1;
+  const std::size_t w = getDesktopWidth() - 10;
   setGeometry(FPoint(6, 1), FSize(w, h), false);
   finalcut::FDialog::adjustSize();
 }

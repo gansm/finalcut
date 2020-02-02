@@ -55,7 +55,7 @@ FWidget*       FWidget::move_size_widget     {nullptr};  // move/size by keyboar
 FWidget*       FApplication::keyboard_widget {nullptr};  // has the keyboard focus
 FKeyboard*     FApplication::keyboard        {nullptr};  // keyboard access
 FMouseControl* FApplication::mouse           {nullptr};  // mouse control
-int            FApplication::loop_level      {0};  // event loop level
+int            FApplication::loop_level      {0};        // event loop level
 int            FApplication::quit_code       {0};
 bool           FApplication::quit_now        {false};
 
@@ -140,7 +140,7 @@ int FApplication::enterLoop()  // event loop
   loop_level++;
   quit_now = false;
 
-  bool old_app_exit_loop = app_exit_loop;
+  const bool old_app_exit_loop = app_exit_loop;
   app_exit_loop = false;
 
   while ( ! (quit_now || app_exit_loop) )
@@ -350,11 +350,11 @@ void FApplication::showParameterUsage()
 //----------------------------------------------------------------------
 void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 {
-  int ret = FMessageBox::info ( w, "Quit"
-                              , "Do you really want\n"
-                                "to quit the program ?"
-                              , FMessageBox::Yes
-                              , FMessageBox::No );
+  const int ret = FMessageBox::info ( w, "Quit"
+                                    , "Do you really want\n"
+                                      "to quit the program ?"
+                                    , FMessageBox::Yes
+                                    , FMessageBox::No );
   if ( ret == FMessageBox::Yes )
     ev->accept();
   else
@@ -435,7 +435,7 @@ void FApplication::cmd_options (const int& argc, char* argv[])
 
     opterr = 0;
     int idx{0};
-    int c = getopt_long (argc, argv, "", long_options, &idx);
+    const int c = getopt_long (argc, argv, "", long_options, &idx);
 
     if ( c == -1 )
       break;
@@ -597,8 +597,8 @@ inline void FApplication::performKeyboardAction()
       break;
 
     default:
-      bool acceptKeyDown = sendKeyDownEvent (keyboard_widget);
-      bool acceptKeyPress = sendKeyPressEvent (keyboard_widget);
+      const bool acceptKeyDown = sendKeyDownEvent (keyboard_widget);
+      const bool acceptKeyPress = sendKeyPressEvent (keyboard_widget);
 
       if ( ! (acceptKeyDown || acceptKeyPress) )
         sendKeyboardAccelerator();
@@ -693,9 +693,9 @@ bool FApplication::processDialogSwitchAccelerator()
   if ( keyboard->getKey() >= fc::Fmkey_1
     && keyboard->getKey() <= fc::Fmkey_9 )
   {
-    FKey key = keyboard->getKey();
-    std::size_t n = key - fc::Fmkey_0;
-    std::size_t s = getDialogList()->size();
+    const FKey key = keyboard->getKey();
+    const std::size_t n = key - fc::Fmkey_0;
+    const std::size_t s = getDialogList()->size();
 
     if ( s > 0 && s >= n )
     {
@@ -727,7 +727,7 @@ bool FApplication::processAccelerator (const FWidget*& widget)
     && ! widget->getAcceleratorList().empty() )
   {
     auto iter = widget->getAcceleratorList().begin();
-    auto last = widget->getAcceleratorList().end();
+    const auto& last = widget->getAcceleratorList().end();
 
     while ( iter != last )
     {
@@ -791,7 +791,7 @@ FWidget*& FApplication::determineClickedWidget()
     && ! mouse->isWheelDown() )
     return clicked;
 
-  const auto& mouse_position = mouse->getPos();
+  auto mouse_position = mouse->getPos();
 
   // Determine the window object on the current click position
   auto window = FWindow::getWindowWidgetAt (mouse_position);
@@ -830,7 +830,7 @@ void FApplication::closeDropDown()
   if ( ! mouse || mouse->isMoved() )
     return;
 
-  const auto& mouse_position = mouse->getPos();
+  auto mouse_position = mouse->getPos();
   finalcut::closeDropDown (this, mouse_position);
 }
 
@@ -839,7 +839,7 @@ void FApplication::unselectMenubarItems()
 {
   // Unselect the menu bar items
 
-  auto openmenu = FWidget::getOpenMenu();
+  const auto& openmenu = FWidget::getOpenMenu();
   auto menu_bar = FWidget::getMenuBar();
 
   if ( openmenu || (mouse && mouse->isMoved()) )
@@ -890,7 +890,7 @@ void FApplication::sendMouseEvent()
   if ( mouse->isMetaKeyPressed() )
     key_state |= fc::MetaButton;
 
-  auto widgetMousePos = clicked->termToWidgetPos(mouse_position);
+  const auto& widgetMousePos = clicked->termToWidgetPos(mouse_position);
 
   if ( mouse->isMoved() )
   {

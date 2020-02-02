@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -130,7 +130,7 @@ class FMouse
     bool                  isInputDataPending();
 
     // Methods
-    static FMouse*        createMouseObject (mouse_type);
+    static FMouse*        createMouseObject (const mouse_type);
     void                  clearButtonState();
     virtual void          setRawData (FKeyboard::keybuffer&) = 0;
     virtual void          processEvent (struct timeval*) = 0;
@@ -312,7 +312,7 @@ class FMouseX11 final : public FMouse
     // Methods
     void         setKeyState (int);
     void         setMoveState (const FPoint&, int);
-    void         setButtonState (int, struct timeval*);
+    void         setButtonState (const int, struct timeval*);
 
     // Data member
     char  x11_mouse[MOUSE_BUF_SIZE]{'\0'};
@@ -370,8 +370,8 @@ class FMouseSGR final : public FMouse
     // Methods
     void          setKeyState (int);
     void          setMoveState (const FPoint&, int);
-    void          setPressedButtonState (int, struct timeval*);
-    void          setReleasedButtonState (int);
+    void          setPressedButtonState (const int, struct timeval*);
+    void          setReleasedButtonState (const int);
 
     // Data members
     char  sgr_mouse[MOUSE_BUF_SIZE]{'\0'};
@@ -430,7 +430,7 @@ class FMouseUrxvt final : public FMouse
     // Methods
     void          setKeyState (int);
     void          setMoveState (const FPoint&, int);
-    void          setButtonState (int, struct timeval*);
+    void          setButtonState (const int, struct timeval*);
 
     // Data members
     char  urxvt_mouse[MOUSE_BUF_SIZE]{'\0'};

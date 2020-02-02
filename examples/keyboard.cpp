@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -53,7 +53,7 @@ Keyboard::Keyboard (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  FKey key_id = ev->key();
+  const FKey key_id = ev->key();
   bool is_last_line{false};
 
   if ( getPrintPos().getY() == int(getDesktopHeight()) )

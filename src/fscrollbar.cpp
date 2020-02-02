@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2019 Markus Gans                                      *
+* Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -208,7 +208,7 @@ void FScrollbar::calculateSliderValues()
     return;
   }
 
-  std::size_t v = ( min < 0 ) ? std::size_t(val - min) : std::size_t(val);
+  const std::size_t v = ( min < 0 ) ? std::size_t(val - min) : std::size_t(val);
 
   if ( slider_length >= bar_length )
     slider_pos = 0;
@@ -249,8 +249,8 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
   if ( min == max )
     return;
 
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
 
   if ( ev->getButton() == fc::MiddleButton )
   {
@@ -317,8 +317,8 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
     && ev->getButton() != fc::MiddleButton )
     return;
 
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
 
   if ( ev->getButton() == fc::MiddleButton )
   {
@@ -327,7 +327,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
   }
 
   // Process left mouse button
-  int new_scroll_type = getClickedScrollType(mouse_x, mouse_y);
+  const int new_scroll_type = getClickedScrollType(mouse_x, mouse_y);
 
   if ( scroll_type == FScrollbar::scrollJump )
   {
@@ -335,14 +335,14 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
 
     if ( bar_orientation == fc::vertical )
     {
-      int dy = mouse_y - slider_click_pos;
+      const int dy = mouse_y - slider_click_pos;
       slider_click_pos = mouse_y;
       new_val = int( round ( double((max - min) * (slider_pos + dy))
                            / double(bar_length - slider_length) ) );
     }
     else  // horizontal
     {
-      int dx = mouse_x - slider_click_pos;
+      const int dx = mouse_x - slider_click_pos;
       slider_click_pos = mouse_x;
       new_val = int( round ( double((max - min) * (slider_pos + dx))
                            / double(bar_length - slider_length) ) );
@@ -376,7 +376,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FScrollbar::onWheel (FWheelEvent* ev)
 {
-  int wheel = ev->getWheel();
+  const int wheel = ev->getWheel();
 
   if ( scroll_type != FScrollbar::noScroll )
   {
@@ -411,7 +411,7 @@ void FScrollbar::onTimer (FTimerEvent*)
     || ( scroll_type == FScrollbar::scrollPageForward
       && slider_pos == slider_click_stop_pos ) )
   {
-    int max_slider_pos = int(bar_length - slider_length);
+    const int max_slider_pos = int(bar_length - slider_length);
 
     if ( scroll_type == FScrollbar::scrollPageBackward
       && slider_pos == 0 )
@@ -449,7 +449,9 @@ void FScrollbar::draw()
   if ( length < 2 )
     return;
 
-  drawButtons();
+  if ( isShown() )
+    drawButtons();
+
   current_slider_pos = -1;
   drawBar();
 }
@@ -739,7 +741,7 @@ void FScrollbar::jumpToClickPos (int x, int y)
   }
   else  // horizontal
   {
-    int nf = isNewFont() ? 1 : 0;
+    const int nf = isNewFont() ? 1 : 0;
 
     if ( x > 1 + nf && x < int(getWidth()) - nf )
     {
@@ -799,8 +801,8 @@ void FScrollbar::processScroll()
 void FScrollbar::changeOnResize()
 {
   const FSize& size = getSize();
-  std::size_t w = size.getWidth();
-  std::size_t h = size.getHeight();
+  const std::size_t w = size.getWidth();
+  const std::size_t h = size.getHeight();
   length = ( bar_orientation == fc::vertical ) ? h : w;
 
   if ( bar_orientation == fc::vertical )

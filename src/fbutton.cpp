@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2019 Markus Gans                                      *
+* Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -217,15 +217,15 @@ void FButton::hide()
   }
   else
   {
-    const auto& wc = getFWidgetColors();
+    auto wc = getFWidgetColors();
     fg = wc.dialog_fg;
     bg = wc.dialog_bg;
   }
 
   setColor (fg, bg);
-  std::size_t s = hasShadow() ? 1 : 0;
-  std::size_t f = isFlat() ? 1 : 0;
-  std::size_t size = getWidth() + s + (f << 1);
+  const std::size_t s = hasShadow() ? 1 : 0;
+  const std::size_t f = isFlat() ? 1 : 0;
+  const std::size_t size = getWidth() + s + (f << 1);
 
   if ( size == 0 )
     return;
@@ -243,7 +243,7 @@ void FButton::onKeyPress (FKeyEvent* ev)
   if ( ! isEnabled() )
     return;
 
-  FKey key = ev->key();
+  const FKey key = ev->key();
 
   switch ( key )
   {
@@ -285,7 +285,7 @@ void FButton::onMouseDown (FMouseEvent* ev)
       getStatusBar()->drawMessage();
   }
 
-  FPoint tPos(ev->getTermPos());
+  const FPoint tPos(ev->getTermPos());
 
   if ( getTermGeometry().contains(tPos) )
     setDown();
@@ -312,7 +312,7 @@ void FButton::onMouseMove (FMouseEvent* ev)
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  FPoint tPos(ev->getTermPos());
+  const FPoint tPos(ev->getTermPos());
 
   if ( click_animation )
   {
@@ -575,7 +575,7 @@ inline void FButton::drawButtonTextLine (const FString& button_text)
       print (button_text[z]);
     }
 
-    auto char_width = getColumnWidth (button_text[z]);
+    const auto char_width = getColumnWidth (button_text[z]);
     columns += char_width;
     pos += char_width;
   }
@@ -597,7 +597,7 @@ inline void FButton::drawButtonTextLine (const FString& button_text)
 void FButton::draw()
 {
   FString button_text{};
-  auto parent_widget = getParentWidget();
+  const auto& parent_widget = getParentWidget();
   column_width = getColumnWidth(text);
   space_char = int(' ');
   active_focus = getFlags().active && getFlags().focus;

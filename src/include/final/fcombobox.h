@@ -250,7 +250,7 @@ inline FString FComboBox::getText() const
 //----------------------------------------------------------------------
 inline FDataPtr FComboBox::getItemData()
 {
-  std::size_t index = list_window.list.currentItem();
+  const std::size_t index = list_window.list.currentItem();
   return list_window.list.getItem(index).getData();
 }
 

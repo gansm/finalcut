@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2019 Markus Gans                                      *
+* Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -106,10 +106,10 @@ int main (int argc, char* argv[])
     finalcut::FDialog dgl(&app);
     dgl.setModal();
     dgl.setText ("UNIX select");
-    std::size_t w{20};
-    std::size_t h{13};
-    int x = int(app.getDesktopWidth() - w) / 2;
-    int y = int(app.getDesktopHeight() - h) / 2;
+    const std::size_t w{20};
+    const std::size_t h{13};
+    const int x = int(app.getDesktopWidth() - w) / 2;
+    const int y = int(app.getDesktopHeight() - h) / 2;
     dgl.setGeometry (FPoint(x, y), FSize(w, h));
 
     // Create a button group

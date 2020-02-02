@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -288,8 +288,8 @@ void Menu::defaultCallback (finalcut::FMenuList* mb)
 //----------------------------------------------------------------------
 void Menu::adjustSize()
 {
-  int pw = int(getDesktopWidth());
-  int ph = int(getDesktopHeight());
+  const int pw = int(getDesktopWidth());
+  const int ph = int(getDesktopHeight());
   setX (1 + (pw - int(getWidth())) / 2, false);
   setY (1 + (ph - int(getHeight())) / 4, false);
   finalcut::FDialog::adjustSize();
@@ -304,7 +304,7 @@ void Menu::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Menu::cb_message (finalcut::FWidget* widget, FDataPtr)
 {
-  auto menuitem = static_cast<finalcut::FMenuItem*>(widget);
+  const auto& menuitem = static_cast<finalcut::FMenuItem*>(widget);
   auto text = menuitem->getText();
   text = text.replace('&', "");
   finalcut::FMessageBox::info ( this

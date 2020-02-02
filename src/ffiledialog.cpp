@@ -167,7 +167,7 @@ FFileDialog& FFileDialog::operator = (const FFileDialog& fdlg)
 //----------------------------------------------------------------------
 const FString FFileDialog::getSelectedFile() const
 {
-  uLong n = uLong(filebrowser.currentItem() - 1);
+  const uLong n = uLong(filebrowser.currentItem() - 1);
 
   if ( dir_entries[n].directory )
     return FString("");
@@ -244,7 +244,7 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
   if ( ! filebrowser.hasFocus() )
     return;
 
-  FKey key = ev->key();
+  const FKey key = ev->key();
 
   switch ( key )
   {
@@ -281,7 +281,7 @@ const FString FFileDialog::fileSaveChooser ( FWidget* parent
 void FFileDialog::adjustSize()
 {
   std::size_t max_width{}, max_height{};
-  auto root_widget = getRootWidget();
+  const auto& root_widget = getRootWidget();
 
   if ( root_widget )
   {
@@ -304,8 +304,8 @@ void FFileDialog::adjustSize()
     h = 30;
 
   setHeight (h, false);
-  int X = 1 + int((max_width - getWidth()) / 2);
-  int Y = 1 + int((max_height - getHeight()) / 3);
+  const int X = 1 + int((max_width - getWidth()) / 2);
+  const int Y = 1 + int((max_height - getHeight()) / 3);
   setPos(FPoint(X, Y), false);
   filebrowser.setHeight (h - 8, false);
   hidden_check.setY (int(h) - 4, false);
@@ -328,7 +328,7 @@ void FFileDialog::init()
     fsystem = FTerm::getFSystem();
 
   setGeometry(FPoint(1, 1), FSize(w, h), false);
-  auto parent_widget = getParentWidget();
+  const auto& parent_widget = getParentWidget();
 
   if ( parent_widget )
   {
@@ -458,14 +458,14 @@ sInt64 FFileDialog::numOfDirs()
   if ( dir_entries.empty() )
     return 0;
 
-  sInt64 n = std::count_if ( std::begin(dir_entries)
-                           , std::end(dir_entries)
-                           , [] (dir_entry& entry)
-                             {
-                               return entry.directory
-                                   && std::strcmp(entry.name, ".") != 0;
-                             }
-                           );
+  const sInt64 n = std::count_if ( std::begin(dir_entries)
+                                 , std::end(dir_entries)
+                                 , [] (dir_entry& entry)
+                                   {
+                                     return entry.directory
+                                         && std::strcmp(entry.name, ".") != 0;
+                                   }
+                                 );
   return n;
 }
 
@@ -477,7 +477,7 @@ void FFileDialog::sortDir()
   if ( std::strcmp((*dir_entries.begin()).name, "..") == 0 )
     start = 1;
 
-  sInt64 dir_num = numOfDirs();
+  const sInt64 dir_num = numOfDirs();
   // directories first
   std::sort ( dir_entries.begin() + start
             , dir_entries.end()
@@ -727,13 +727,13 @@ void FFileDialog::printPath (const FString& txt)
 {
   const auto& path = txt;
   const std::size_t max_width = filebrowser.getWidth() - 4;
-  std::size_t column_width = getColumnWidth(path);
+  const std::size_t column_width = getColumnWidth(path);
 
   if ( column_width > max_width )
   {
     const std::size_t width = max_width - 2;
-    std::size_t first = column_width + 1 - width;
-    FString sub_str(getColumnSubString (path, first, width));
+    const std::size_t first = column_width + 1 - width;
+    const FString sub_str(getColumnSubString (path, first, width));
     filebrowser.setText(".." + sub_str);
   }
   else
@@ -750,7 +750,7 @@ const FString FFileDialog::getHomeDir()
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
 
-  uid_t euid = fsystem->geteuid();
+  const uid_t euid = fsystem->geteuid();
 
   if ( fsystem->getpwuid_r(euid, &pwd, buf, sizeof(buf), &pwd_ptr) )
     return FString("");

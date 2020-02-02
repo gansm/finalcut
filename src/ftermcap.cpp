@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -84,7 +84,7 @@ void FTermcap::termcap()
   static char string_buf[2048]{};
   char* buffer = string_buf;
   int status = uninitialized;
-  bool color256 = term_detection->canDisplay256Colors();
+  const bool color256 = term_detection->canDisplay256Colors();
 
   // Open termcap file
 #if defined(__sun) && defined(__SVR4)

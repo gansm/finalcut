@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -182,16 +182,16 @@ inline bool operator > (const FSize& s1, const FSize& s2)
 inline FSize operator + (const FSize& s1, const FSize& s2)
 {
   constexpr std::size_t max = std::numeric_limits<std::size_t>::max();
-  std::size_t w = ( s1.width < max - s2.width) ? s1.width + s2.width : max;
-  std::size_t h = ( s1.height < max - s2.height) ? s1.height + s2.height : max;
+  const std::size_t w = ( s1.width < max - s2.width) ? s1.width + s2.width : max;
+  const std::size_t h = ( s1.height < max - s2.height) ? s1.height + s2.height : max;
   return FSize(w, h);
 }
 
 //----------------------------------------------------------------------
 inline FSize operator - (const FSize& s1, const FSize& s2)
 {
-  std::size_t w = ( s1.width >= s2.width ) ? s1.width - s2.width : 0;
-  std::size_t h = ( s1.height >= s2.height ) ? s1.height - s2.height : 0;
+  const std::size_t w = ( s1.width >= s2.width ) ? s1.width - s2.width : 0;
+  const std::size_t h = ( s1.height >= s2.height ) ? s1.height - s2.height : 0;
   return FSize(w, h);
 }
 

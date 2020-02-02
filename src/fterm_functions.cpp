@@ -190,7 +190,7 @@ const wchar_t reverse_newfont_list[] =
 //----------------------------------------------------------------------
 uInt env2uint (const char* env)
 {
-  FString str(getenv(env));
+  const FString str(getenv(env));
 
   if ( str.isEmpty() )
     return 0;
@@ -424,7 +424,7 @@ std::size_t getColumnWidth (const FString& s, std::size_t pos)
     return 0;
 
   std::size_t column_width{0};
-  auto length = s.getLength();
+  const auto length = s.getLength();
 
   if ( pos > length )
     pos = length;
@@ -483,7 +483,7 @@ std::size_t getColumnWidth (const wchar_t wchar)
 //----------------------------------------------------------------------
 std::size_t getColumnWidth (FChar& term_char)
 {
-  std::size_t char_width = getColumnWidth(term_char.ch);
+  const std::size_t char_width = getColumnWidth(term_char.ch);
 
   if ( char_width == 2 && FTerm::getEncoding() != fc::UTF8 )
   {

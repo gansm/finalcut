@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -600,8 +600,8 @@ int FOptiMove::repeatedAppend ( const capability& o
                               , volatile int count
                               , char* dst )
 {
-  std::size_t src_len = std::strlen(o.cap);
-  std::size_t dst_len = ( dst != nullptr ) ? std::strlen(dst) : 0;
+  const std::size_t src_len = std::strlen(o.cap);
+  const std::size_t dst_len = ( dst != nullptr ) ? std::strlen(dst) : 0;
   int total{0};
 
   if ( (dst_len + uInt(count) * src_len) < BUF_SIZE - 1 )
@@ -698,7 +698,7 @@ inline int FOptiMove::verticalMove (char move[], int from_y, int to_y)
 inline void FOptiMove::downMove ( char move[], int& vtime
                                 , int from_y, int to_y )
 {
-  int num = to_y - from_y;
+  const int num = to_y - from_y;
 
   if ( F_parm_down_cursor.cap && F_parm_down_cursor.duration < vtime )
   {
@@ -726,7 +726,7 @@ inline void FOptiMove::downMove ( char move[], int& vtime
 inline void FOptiMove::upMove ( char move[], int& vtime
                               , int from_y, int to_y )
 {
-  int num = from_y - to_y;
+  const int num = from_y - to_y;
 
   if ( F_parm_up_cursor.cap && F_parm_up_cursor.duration < vtime )
   {
@@ -801,7 +801,7 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
 
       while ( true )
       {
-        int tab_pos = pos + tabstop - (pos % tabstop);
+        const int tab_pos = pos + tabstop - (pos % tabstop);
 
         if ( tab_pos > to_x )
           break;
@@ -856,7 +856,7 @@ inline void FOptiMove::leftMove ( char hmove[], int& htime
 
       while ( true )
       {
-        int tab_pos = ( pos > 0 ) ? ((pos - 1) / tabstop) * tabstop : -1;
+        const int tab_pos = ( pos > 0 ) ? ((pos - 1) / tabstop) * tabstop : -1;
 
         if ( tab_pos < to_x )
           break;
@@ -898,7 +898,7 @@ inline bool FOptiMove::isMethod0Faster ( int& move_time
                                        , int xnew, int ynew )
 {
   // Test method 0: direct cursor addressing
-  char* move_xy = tgoto(F_cursor_address.cap, xnew, ynew);
+  const char* move_xy = tgoto(F_cursor_address.cap, xnew, ynew);
 
   if ( move_xy )
   {
@@ -922,7 +922,7 @@ inline bool FOptiMove::isMethod1Faster ( int& move_time
   if ( xold >= 0 && yold >= 0 )
   {
     char null_result[BUF_SIZE];
-    int  new_time = relativeMove (null_result, xold, yold, xnew, ynew);
+    const int new_time = relativeMove (null_result, xold, yold, xnew, ynew);
 
     if ( new_time < LONG_DURATION && new_time < move_time )
     {
@@ -944,7 +944,7 @@ inline bool FOptiMove::isMethod2Faster ( int& move_time
   if ( yold >= 0 && F_carriage_return.cap )
   {
     char null_result[BUF_SIZE];
-    int  new_time = relativeMove (null_result, 0, yold, xnew, ynew);
+    const int new_time = relativeMove (null_result, 0, yold, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_carriage_return.duration + new_time < move_time )
@@ -966,7 +966,7 @@ inline bool FOptiMove::isMethod3Faster ( int& move_time
   if ( F_cursor_home.cap )
   {
     char null_result[BUF_SIZE];
-    int  new_time = relativeMove (null_result, 0, 0, xnew, ynew);
+    const int new_time = relativeMove (null_result, 0, 0, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_cursor_home.duration + new_time < move_time )
@@ -987,9 +987,9 @@ inline bool FOptiMove::isMethod4Faster ( int& move_time
   if ( F_cursor_to_ll.cap )
   {
     char null_result[BUF_SIZE];
-    int  new_time = relativeMove ( null_result
-                                 , 0, int(screen_height) - 1
-                                 , xnew, ynew );
+    const int new_time = relativeMove ( null_result
+                                      , 0, int(screen_height) - 1
+                                      , xnew, ynew );
 
     if ( new_time < LONG_DURATION
       && F_cursor_to_ll.duration + new_time < move_time )
@@ -1014,9 +1014,9 @@ inline bool FOptiMove::isMethod5Faster ( int& move_time
     && F_cursor_left.cap )
   {
     char null_result[BUF_SIZE];
-    int  new_time = relativeMove ( null_result
-                                 , int(screen_width) - 1, yold - 1
-                                 , xnew, ynew );
+    const int new_time = relativeMove ( null_result
+                                      , int(screen_width) - 1, yold - 1
+                                      , xnew, ynew );
 
     if ( new_time < LONG_DURATION
       && F_carriage_return.cap

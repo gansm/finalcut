@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -691,7 +691,7 @@ const FString FTermXTerminal::captureXTermFont()
   {
     fd_set ifds{};
     struct timeval tv{};
-    int stdin_no = FTermios::getStdIn();
+    const int stdin_no = FTermios::getStdIn();
 
     oscPrefix();
     FTerm::putstring (OSC "50;?" BEL);  // get font
@@ -710,7 +710,7 @@ const FString FTermXTerminal::captureXTermFont()
 
       if ( std::scanf("\033]50;%148[^\n]s", temp) == 1 )
       {
-        std::size_t n = std::strlen(temp);
+        const std::size_t n = std::strlen(temp);
 
         // BEL + '\0' = string terminator
         if ( n >= 5 && temp[n - 1] == BEL[0] && temp[n] == '\0' )
@@ -732,7 +732,7 @@ const FString FTermXTerminal::captureXTermTitle()
 
   fd_set ifds{};
   struct timeval tv{};
-  int stdin_no = FTermios::getStdIn();
+  const int stdin_no = FTermios::getStdIn();
 
   FTerm::putstring (CSI "21t");  // get title
   std::fflush(stdout);
@@ -749,7 +749,7 @@ const FString FTermXTerminal::captureXTermTitle()
 
     if ( std::scanf("\033]l%509[^\n]s", temp) == 1 )
     {
-      std::size_t n = std::strlen(temp);
+      const std::size_t n = std::strlen(temp);
 
       // Esc + \ = OSC string terminator
       if ( n >= 2 && temp[n - 2] == ESC[0] && temp[n - 1] == '\\' )

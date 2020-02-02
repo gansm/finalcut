@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2019 Markus Gans                                      *
+* Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -200,14 +200,14 @@ void SegmentView::draw()
 
   for (auto&& ch : Input.getText().toUpper())
   {
-    FColorPair color(fc::LightRed, fc::Black);
+    const FColorPair color(fc::LightRed, fc::Black);
     get7Segment(ch);
 
     for (std::size_t i{0}; i < 3; i++)
       tbuffer[i] << color << line[i] << " ";
   }
 
-  std::size_t length = tbuffer[0].getLength();
+  const std::size_t length = tbuffer[0].getLength();
 
   if ( length < 36 )
     left_space << finalcut::FString(36 - length, ' ');

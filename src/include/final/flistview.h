@@ -104,6 +104,7 @@ class FListViewItem : public FObject
     // Methods
     iterator            insert (FListViewItem*);
     iterator            insert (FListViewItem*, iterator);
+    void                remove (FListViewItem*);
     void                expand();
     void                collapse();
 
@@ -204,7 +205,7 @@ class FListViewIterator
 
     // Accessor
     const FString      getClassName() const;
-    int                getPosition() const;
+    int&               getPosition();
 
     // Methods
     void               parentElement();
@@ -243,7 +244,7 @@ inline const FString FListViewIterator::getClassName() const
 { return "FListViewIterator"; }
 
 //----------------------------------------------------------------------
-inline int FListViewIterator::getPosition() const
+inline int& FListViewIterator::getPosition()
 { return position; }
 
 
@@ -330,7 +331,8 @@ class FListView : public FWidget
     iterator             insert ( const std::vector<ColT>&
                                 , FDataPtr
                                 , iterator );
-
+    void                 remove (FListViewItem*);
+    void                 clear();
     iterator             beginOfList();
     iterator             endOfList();
     virtual void         sort();
@@ -380,7 +382,7 @@ class FListView : public FWidget
     void                 processKeyAction (FKeyEvent*);
     template <typename Compare>
     void                 sort (Compare);
-    std::size_t          getAlignOffset ( fc::text_alignment
+    std::size_t          getAlignOffset ( const fc::text_alignment
                                         , std::size_t
                                         , std::size_t );
     void                 draw() override;
@@ -389,6 +391,7 @@ class FListView : public FWidget
     void                 drawHeadlines();
     void                 drawList();
     void                 drawListLine (const FListViewItem*, bool, bool);
+    void                 clearList();
     void                 setLineAttributes (bool, bool);
     FString              getCheckBox (const FListViewItem* item);
     FString              getLinePrefix (const FListViewItem*, std::size_t);

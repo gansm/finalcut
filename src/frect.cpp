@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -123,7 +123,7 @@ void FRect::setY2 (int n)
 //----------------------------------------------------------------------
 void FRect::setX (int n)
 {
-  int dX = X2 - X1;
+  const int dX = X2 - X1;
   X1 = n;
   X2 = X1 + dX;
 }
@@ -131,7 +131,7 @@ void FRect::setX (int n)
 //----------------------------------------------------------------------
 void FRect::setY (int n)
 {
-  int dY = Y2 - Y1;
+  const int dY = Y2 - Y1;
   Y1 = n;
   Y2 = Y1 + dY;
 }
@@ -139,8 +139,8 @@ void FRect::setY (int n)
 //----------------------------------------------------------------------
 void FRect::setPos (int x, int y)
 {
-  int dX = X2 - X1;
-  int dY = Y2 - Y1;
+  const int dX = X2 - X1;
+  const int dY = Y2 - Y1;
   X1 = x;
   Y1 = y;
   X2 = X1 + dX;
@@ -150,8 +150,8 @@ void FRect::setPos (int x, int y)
 //----------------------------------------------------------------------
 void FRect::setPos (const FPoint& p)
 {
-  int dX = X2 - X1;
-  int dY = Y2 - Y1;
+  const int dX = X2 - X1;
+  const int dY = Y2 - Y1;
   X1 = p.getX();
   Y1 = p.getY();
   X2 = X1 + dX;

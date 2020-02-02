@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2019 Markus Gans                                      *
+* Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -56,7 +56,7 @@ const FString FTermBuffer::toString() const
 int FTermBuffer::write (const FString& string)
 {
   assert ( ! string.isNull() );
-  int len = int(string.getLength());
+  const int len = int(string.getLength());
 
   for (auto&& c : string)
   {

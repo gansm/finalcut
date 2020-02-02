@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -204,14 +204,14 @@ inline int FRect::getY() const
 //----------------------------------------------------------------------
 inline std::size_t FRect::getWidth() const
 {
-  int w = X2 - X1 + 1;
+  const int w = X2 - X1 + 1;
   return ( w < 0 ) ? 0 : std::size_t(w);
 }
 
 //----------------------------------------------------------------------
 inline std::size_t FRect::getHeight() const
 {
-  int h = Y2 - Y1 + 1;
+  const int h = Y2 - Y1 + 1;
   return ( h < 0 ) ? 0 : std::size_t(h);
 }
 

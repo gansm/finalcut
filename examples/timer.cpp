@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -48,11 +48,11 @@ class Timer : public finalcut::FWidget
 Timer::Timer (finalcut::FWidget* parent)
   : finalcut::FWidget(parent)
 {
-  addTimer (60000);        // 1-minute timer
-  int id = addTimer (50);  // 50-millisecond timer
-  addTimer (1000);         // 1-second timer
+  addTimer (60000);              // 1-minute timer
+  const int id = addTimer (50);  // 50-millisecond timer
+  addTimer (1000);               // 1-second timer
   delTimer (id);
-  addTimer (250);          // 250-millisecond timer
+  addTimer (250);                // 250-millisecond timer
 
   setFWidgetColors().term_fg = fc::Default;
   setFWidgetColors().term_bg = fc::Default;
@@ -72,7 +72,7 @@ void Timer::draw()
 void Timer::onTimer (finalcut::FTimerEvent* ev)
 {
   bool is_last_line{false};
-  int timer_id = ev->getTimerId();
+  const int timer_id = ev->getTimerId();
 
   if ( getPrintPos().getY() == int(getDesktopHeight()) )
     is_last_line = true;

@@ -243,7 +243,7 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (fc::sides side)
 //----------------------------------------------------------------------
 FPoint FWidget::getPrintPos()
 {
-  const auto cur = getPrintCursor();
+  const auto& cur = getPrintCursor();
   return FPoint ( cur.getX() - woffset.getX1() - getX() + 1
                 , cur.getY() - woffset.getY1() - getY() + 1 );
 }
@@ -545,8 +545,8 @@ void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
 {
   // Sets the geometry of the widget relative to its parent
 
-  int x = p.getX();
-  int y = p.getY();
+  const int x = p.getX();
+  const int y = p.getY();
   std::size_t w = s.getWidth();
   std::size_t h = s.getHeight();
   w = std::min (w, size_hints.max_width);
@@ -572,8 +572,8 @@ void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
   ( h < 1 ) ? wsize.setHeight(1) : wsize.setHeight(h);
 
   adjust_wsize = wsize;
-  int term_x = getTermX();
-  int term_y = getTermY();
+  const int term_x = getTermX();
+  const int term_y = getTermY();
 
   wclient_offset.setCoordinates ( term_x - 1 + padding.left
                                 , term_y - 1 + padding.top
@@ -602,7 +602,7 @@ bool FWidget::setCursorPos (const FPoint& pos)
   if ( ! FWindow::getWindowWidget(this) )
     return false;
 
-  auto area = getPrintArea();
+  const auto& area = getPrintArea();
 
   if ( area->widget )
   {
@@ -628,8 +628,8 @@ bool FWidget::setCursorPos (const FPoint& pos)
 //----------------------------------------------------------------------
 void FWidget::setPrintPos (const FPoint& pos)
 {
-  FPoint p{ woffset.getX1() + getX() + pos.getX() - 1,
-            woffset.getY1() + getY() + pos.getY() - 1 };
+  const FPoint p{ woffset.getX1() + getX() + pos.getX() - 1,
+                  woffset.getY1() + getY() + pos.getY() - 1 };
   setPrintCursor(p);
 }
 
@@ -678,7 +678,7 @@ void FWidget::setDoubleFlatLine (fc::sides side, int pos, bool bit)
   assert ( pos >= 1 );
 
   uLong length{};
-  uLong index = uLong(pos - 1);
+  const uLong index = uLong(pos - 1);
 
   switch ( side )
   {
@@ -754,7 +754,7 @@ int FWidget::numOfFocusableChildren()
   {
     if ( child->isWidget() )
     {
-      auto widget = static_cast<FWidget*>(child);
+      const auto& widget = static_cast<FWidget*>(child);
 
       if ( widget->isShown()
         && widget->acceptFocus()
@@ -961,7 +961,7 @@ void FWidget::resize()
 {
   if ( isRootWidget() )
   {
-    FRect old_term_geometry (getTermGeometry());
+    const FRect old_term_geometry (getTermGeometry());
     detectTermSize();
     FRect term_geometry (getTermGeometry());
     term_geometry.move (-1, -1);
@@ -997,7 +997,7 @@ void FWidget::show()
     initScreenSettings();
 
     // draw the vdesktop
-    auto r = getRootWidget();
+    const auto& r = getRootWidget();
     setColor(r->getForegroundColor(), r->getBackgroundColor());
     clearArea (getVirtualDesktop());
     init_desktop = true;
@@ -1072,7 +1072,7 @@ bool FWidget::focusFirstChild()
     return false;
 
   auto iter = FObject::begin();
-  auto last = FObject::end();
+  const auto last = FObject::end();
 
   while ( iter != last )
   {
@@ -1104,6 +1104,7 @@ bool FWidget::focusFirstChild()
 
     ++iter;
   }
+
   return false;
 }
 
@@ -1114,7 +1115,7 @@ bool FWidget::focusLastChild()
     return false;
 
   auto iter  = FObject::end();
-  auto first = FObject::begin();
+  const auto first = FObject::begin();
 
   do
   {
@@ -1217,7 +1218,7 @@ void FWidget::delPreprocessingHandler (FVTerm* instance)
 //----------------------------------------------------------------------
 bool FWidget::isChildPrintArea() const
 {
-  auto p_obj = static_cast<FWidget*>(getParent());
+  const auto& p_obj = static_cast<FWidget*>(getParent());
 
   if ( p_obj
     && p_obj->getChildPrintArea()
@@ -1254,7 +1255,7 @@ void FWidget::setMenuBar (FMenuBar* mbar)
 //----------------------------------------------------------------------
 void FWidget::setParentOffset()
 {
-  auto p = getParentWidget();
+  const auto& p = getParentWidget();
 
   if ( p )
     woffset = p->wclient_offset;
@@ -1263,16 +1264,16 @@ void FWidget::setParentOffset()
 //----------------------------------------------------------------------
 void FWidget::setTermOffset()
 {
-  auto r = getRootWidget();
-  int w = int(r->getWidth());
-  int h = int(r->getHeight());
+  const auto& r = getRootWidget();
+  const int w = int(r->getWidth());
+  const int h = int(r->getHeight());
   woffset.setCoordinates (0, 0, w - 1, h - 1);
 }
 
 //----------------------------------------------------------------------
 void FWidget::setTermOffsetWithPadding()
 {
-  auto r = getRootWidget();
+  const auto& r = getRootWidget();
   woffset.setCoordinates ( r->getLeftPadding()
                          , r->getTopPadding()
                          , int(r->getWidth()) - 1 - r->getRightPadding()
@@ -1284,7 +1285,7 @@ void FWidget::adjustSize()
 {
   if ( ! isRootWidget() )
   {
-    auto p = getParentWidget();
+    const auto& p = getParentWidget();
 
     if ( isWindowWidget() )
     {
@@ -1356,7 +1357,7 @@ void FWidget::hideArea (const FSize& size)
     return;
 
   FColor fg{}, bg{};
-  auto parent_widget = getParentWidget();
+  const auto& parent_widget = getParentWidget();
 
   if ( parent_widget )
   {
@@ -1388,7 +1389,7 @@ bool FWidget::focusNextChild()
   if ( isDialogWidget() || ! hasParent() )
     return false;
 
-  auto parent = getParentWidget();
+  const auto& parent = getParentWidget();
 
   if ( ! parent
     || ! parent->hasChildren()
@@ -1396,7 +1397,7 @@ bool FWidget::focusNextChild()
     return false;
 
   auto iter = parent->begin();
-  auto last = parent->end();
+  const auto last = parent->end();
 
   while ( iter != last )
   {
@@ -1406,7 +1407,7 @@ bool FWidget::focusNextChild()
       continue;
     }
 
-    auto w = static_cast<FWidget*>(*iter);
+    const auto& w = static_cast<FWidget*>(*iter);
 
     if ( w != this )
     {
@@ -1451,15 +1452,15 @@ bool FWidget::focusPrevChild()
   if ( isDialogWidget() || ! hasParent() )
     return false;
 
-  auto parent = getParentWidget();
+  const auto& parent = getParentWidget();
 
   if ( ! parent
     || ! parent->hasChildren()
     || parent->numOfFocusableChildren() <= 1 )
     return false;
 
-  auto iter  = parent->end();
-  auto first = parent->begin();
+  auto iter = parent->end();
+  const auto first = parent->begin();
 
   do
   {
@@ -1468,7 +1469,7 @@ bool FWidget::focusPrevChild()
     if ( ! (*iter)->isWidget() )
       continue;
 
-    auto w = static_cast<FWidget*>(*iter);
+    const auto& w = static_cast<FWidget*>(*iter);
 
     if ( w != this )
       continue;
@@ -1495,7 +1496,7 @@ bool FWidget::focusPrevChild()
            || ! prev->isShown()
            || prev->isWindowWidget() );
 
-    bool accpt = changeFocus (prev, parent, fc::FocusPreviousWidget);
+    const bool accpt = changeFocus (prev, parent, fc::FocusPreviousWidget);
 
     if ( ! accpt )
       return false;
@@ -1795,7 +1796,7 @@ inline void FWidget::insufficientSpaceAdjust()
 //----------------------------------------------------------------------
 void FWidget::KeyPressEvent (FKeyEvent* kev)
 {
-    FWidget* widget(this);
+  FWidget* widget(this);
 
   while ( widget )
   {
@@ -1803,7 +1804,7 @@ void FWidget::KeyPressEvent (FKeyEvent* kev)
 
     if ( ! kev->isAccepted() )
     {
-      FKey key = kev->key();
+      const FKey key = kev->key();
 
       if ( [&] () -> bool
            {
@@ -1845,7 +1846,7 @@ void FWidget::KeyDownEvent (FKeyEvent* kev)
 //----------------------------------------------------------------------
 void FWidget::emitWheelCallback (FWheelEvent* ev)
 {
-  int wheel = ev->getWheel();
+  const int wheel = ev->getWheel();
 
   if ( wheel == fc::WheelUp )
     emitCallback("mouse-wheel-up");
@@ -1948,8 +1949,8 @@ void FWidget::drawWindows()
     if ( window->isShown() )
     {
       auto v_win = window->getVWin();
-      int w = v_win->width  + v_win->right_shadow;
-      int h = v_win->height + v_win->bottom_shadow;
+      const int w = v_win->width  + v_win->right_shadow;
+      const int h = v_win->height + v_win->bottom_shadow;
       std::fill_n (v_win->data, w * h, default_char);
       window->redraw();
     }
@@ -2011,7 +2012,7 @@ void FWidget::setStatusbarText (bool enable)
 //----------------------------------------------------------------------
 void detectTermSize()
 {
-  auto r = rootObject;
+  const auto& r = rootObject;
   FTerm::detectTermSize();
   r->adjust_wsize.setRect (1, 1, r->getDesktopWidth(), r->getDesktopHeight());
   r->woffset.setRect (0, 0, r->getDesktopWidth(), r->getDesktopHeight());

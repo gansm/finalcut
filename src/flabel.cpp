@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -163,7 +163,7 @@ void FLabel::onMouseDown (FMouseEvent* ev)
     // send click to the parent widget
     if ( auto parent = getParentWidget() )
     {
-      int b = ev->getButton();
+      const int b = ev->getButton();
       const auto& tp = ev->getTermPos();
       const auto& p = parent->termToWidgetPos(tp);
 
@@ -245,7 +245,7 @@ void FLabel::cb_accel_widget_destroyed (FWidget*, FDataPtr)
 //----------------------------------------------------------------------
 void FLabel::init()
 {
-  auto parent_widget = getParentWidget();
+  const auto& parent_widget = getParentWidget();
   unsetFocusable();
 
   if ( parent_widget )
@@ -268,9 +268,9 @@ void FLabel::setHotkeyAccelerator()
 }
 
 //----------------------------------------------------------------------
-std::size_t FLabel::getAlignOffset (std::size_t length)
+std::size_t FLabel::getAlignOffset (const std::size_t length)
 {
-  std::size_t width(getWidth());
+  const std::size_t width(getWidth());
 
   switch ( alignment )
   {
@@ -331,14 +331,14 @@ void FLabel::draw()
 void FLabel::drawMultiLine()
 {
   std::size_t y{0};
-  std::size_t text_lines = multiline_text.size();
+  const std::size_t text_lines = multiline_text.size();
   bool hotkey_printed{false};
 
   while ( y < text_lines && y < std::size_t(getHeight()) )
   {
     FString label_text{};
     hotkeypos = NOT_SET;
-    auto length = multiline_text[y].getLength();
+    const auto length = multiline_text[y].getLength();
     column_width = getColumnWidth(multiline_text[y]);
 
     if ( ! hotkey_printed )
@@ -381,7 +381,7 @@ void FLabel::printLine (FString&& line)
 {
   std::size_t to_char{};
   std::size_t to_column{};
-  std::size_t width(getWidth());
+  const std::size_t width(getWidth());
 
   if ( align_offset > 0 )
     print (FString(align_offset, ' '));  // leading spaces
@@ -443,7 +443,7 @@ void FLabel::printLine (FString&& line)
   else if ( align_offset + to_column < width )
   {
     // Print trailing spaces
-    std::size_t len = width - align_offset - to_column;
+    const std::size_t len = width - align_offset - to_column;
     print (FString(len, ' '));
   }
 

@@ -423,8 +423,8 @@ inline bool FTerm::unsetUTF8()
 template<typename... Args>
 inline void FTerm::putstringf (const char format[], Args&&... args)
 {
-  int size = std::snprintf ( nullptr, 0, format
-                           , std::forward<Args>(args)... ) + 1;
+  const int size = std::snprintf ( nullptr, 0, format
+                                 , std::forward<Args>(args)... ) + 1;
 
   if ( size == -1 )
     return;
@@ -432,7 +432,7 @@ inline void FTerm::putstringf (const char format[], Args&&... args)
   if ( ! fsys )
     getFSystem();
 
-  std::size_t count = std::size_t(size);
+  const std::size_t count = std::size_t(size);
   std::vector<char> buf(count);
   std::snprintf (&buf[0], count, format, std::forward<Args>(args)...);
   fsys->tputs (&buf[0], 1, FTerm::putchar_ASCII);

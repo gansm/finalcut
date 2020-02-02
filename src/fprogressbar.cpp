@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -111,7 +111,7 @@ bool FProgressbar::setShadow (bool enable)
 void FProgressbar::hide()
 {
   FWidget::hide();
-  FSize shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
+  const FSize shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
   hideArea (getSize() + shadow);
   print() << FPoint(int(getWidth()) - 4, 0)
           << ("      ");  // hide percentage
@@ -148,7 +148,7 @@ void FProgressbar::draw()
 //----------------------------------------------------------------------
 void FProgressbar::drawProgressLabel()
 {
-  auto parent_widget = getParentWidget();
+  const auto& parent_widget = getParentWidget();
 
   if ( parent_widget )
     setColor ( parent_widget->getForegroundColor()
@@ -156,7 +156,7 @@ void FProgressbar::drawProgressLabel()
   else
   {
     const auto& wc = getFWidgetColors();
-    setColor ( wc.dialog_fg, wc.dialog_bg );
+    setColor (wc.dialog_fg, wc.dialog_bg);
   }
 
   if ( isMonochron() )
@@ -199,9 +199,9 @@ std::size_t FProgressbar::drawProgressIndicator()
   if ( isMonochron() )
     setReverse(true);
 
-  double length = double(bar_length * percentage) / 100;
-  auto len = std::size_t(trunc(length));
   const auto& wc = getFWidgetColors();
+  const double length = double(bar_length * percentage) / 100;
+  auto len = std::size_t(trunc(length));
   print() << FColorPair (wc.progressbar_fg, wc.progressbar_fg)
           << FString (len, fc::FullBlock);  // █
 
@@ -233,7 +233,7 @@ void FProgressbar::drawProgressBackground (std::size_t len)
 {
   // Draw the progress background
 
-  std::size_t bg_len = bar_length - len;
+  const std::size_t bg_len = bar_length - len;
   const auto& wc = getFWidgetColors();
   setColor (wc.progressbar_fg, wc.progressbar_bg);
 

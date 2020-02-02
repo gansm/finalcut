@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2019 Markus Gans                                      *
+* Copyright 2016-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -64,8 +64,8 @@ bool keyPressed()
 void term_boundaries (int& x, int& y)
 {
   // checks and corrects the terminal boundaries
-  int term_width  = int(app->getDesktopWidth());
-  int term_height = int(app->getDesktopHeight());
+  const int term_width  = int(app->getDesktopWidth());
+  const int term_height = int(app->getDesktopHeight());
 
   if ( x < 0 )
     x = 0;
@@ -115,7 +115,7 @@ void move (int xold, int yold, int xnew, int ynew)
 
   from.sprintf ("(%3d;%3d)", xold, yold);
   to.sprintf ("(%3d;%3d)", xnew, ynew);
-  std::size_t len = buffer.getLength();
+  const std::size_t len = buffer.getLength();
 
   if ( len <= 1 )
     byte.sprintf ("%d byte ", len);

@@ -738,7 +738,7 @@ void MyDialog::initWidgetsCallbacks()
 //----------------------------------------------------------------------
 void MyDialog::adjustSize()
 {
-  auto h = getParentWidget()->getHeight() - 4;
+  const auto h = getParentWidget()->getHeight() - 4;
   setHeight (h, false);
   int X = int((getDesktopWidth() - getWidth()) / 2);
 
@@ -788,8 +788,8 @@ void MyDialog::cb_about (finalcut::FWidget*, FDataPtr)
 //----------------------------------------------------------------------
 void MyDialog::cb_terminfo (finalcut::FWidget*, FDataPtr)
 {
-  auto x = getDesktopWidth();
-  auto y = getDesktopHeight();
+  const auto x = getDesktopWidth();
+  const auto y = getDesktopHeight();
   finalcut::FMessageBox info1 \
   (
     "Environment"
@@ -918,7 +918,7 @@ void MyDialog::cb_updateNumber (finalcut::FWidget* widget, FDataPtr data)
 {
   auto& list = *(static_cast<finalcut::FListBox*>(widget));
   auto& num = *(static_cast<finalcut::FLabel*>(data));
-  const auto& count = list.getCount();
+  const auto count = list.getCount();
   int select_num = 0;
 
   for (std::size_t n{1}; n <= count; n++)
@@ -948,7 +948,7 @@ void MyDialog::cb_activateButton (finalcut::FWidget* widget, FDataPtr data)
 void MyDialog::cb_view (finalcut::FWidget*, FDataPtr data)
 {
   finalcut::FString file;
-  auto item = static_cast<finalcut::FMenuItem*>(data);
+  const auto& item = static_cast<finalcut::FMenuItem*>(data);
 
   if ( item && ! item->getText().isEmpty() )
     file = item->getText();

@@ -203,7 +203,7 @@ bool FTermDetection::getTTYtype()
     term_basename++;
 
   std::FILE* fp{};
-  char  str[BUFSIZ]{};
+  char str[BUFSIZ]{};
 
   if ( fsystem && (fp = fsystem->fopen(ttytypename, "r")) != 0 )
   {
@@ -543,7 +543,7 @@ const FString FTermDetection::getXTermColorName (FColor color)
   FString color_str{""};
   fd_set ifds{};
   struct timeval tv{};
-  int stdin_no = FTermios::getStdIn();
+  const int stdin_no = FTermios::getStdIn();
 
   // get color
   std::fprintf (stdout, OSC "4;%hu;?" BEL, color);
@@ -627,7 +627,7 @@ const FString FTermDetection::getAnswerbackMsg()
   fd_set ifds{};
   struct timeval tv{};
   char temp[10]{};
-  int stdin_no = FTermios::getStdIn();
+  const int stdin_no = FTermios::getStdIn();
 
   std::putchar (ENQ[0]);  // Send enquiry character
   std::fflush(stdout);
@@ -671,9 +671,9 @@ char* FTermDetection::parseSecDA (char current_termtype[])
   // remove the last byte ("c")
   temp.remove(temp.getLength() - 1, 1);
   // split into components
-  FStringList sec_da_list = temp.split(';');
+  const FStringList sec_da_list = temp.split(';');
 
-  uLong num_components = sec_da_list.size();
+  const uLong num_components = sec_da_list.size();
 
   // The second device attribute (SEC_DA) always has 3 parameters,
   // otherwise it usually has a copy of the device attribute (primary DA)
@@ -728,16 +728,16 @@ const FString FTermDetection::getSecDA()
 {
   FString sec_da_str{""};
 
-  int a{0}
-    , b{0}
-    , c{0}
-    , stdin_no{FTermios::getStdIn()}
-    , stdout_no{FTermios::getStdOut()};
+  int a{0};
+  int b{0};
+  int c{0};
+  const int stdin_no{FTermios::getStdIn()};
+  const int stdout_no{FTermios::getStdOut()};
   fd_set ifds{};
   struct timeval tv{};
 
   // Get the secondary device attributes
-  ssize_t ret = write(stdout_no, SECDA, std::strlen(SECDA));
+  const ssize_t ret = write(stdout_no, SECDA, std::strlen(SECDA));
 
   if ( ret == -1 )
     return sec_da_str;

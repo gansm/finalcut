@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -122,7 +122,7 @@ void AttribDlg::onKeyPress (finalcut::FKeyEvent* ev)
 //----------------------------------------------------------------------
 void AttribDlg::onWheel (finalcut::FWheelEvent* ev)
 {
-  int wheel = ev->getWheel();
+  const int wheel = ev->getWheel();
 
   if ( wheel == fc::WheelUp )
     cb_next();
@@ -251,7 +251,7 @@ AttribDemo::AttribDemo (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 void AttribDemo::printColorLine()
 {
-  auto parent = static_cast<AttribDlg*>(getParent());
+  const auto& parent = static_cast<AttribDlg*>(getParent());
 
   for (FColor color{0}; color < last_color; color++)
   {
@@ -263,7 +263,7 @@ void AttribDemo::printColorLine()
 void AttribDemo::printAltCharset()
 {
   const auto& wc = getFWidgetColors();
-  auto parent = static_cast<AttribDlg*>(getParent());
+  const auto& parent = static_cast<AttribDlg*>(getParent());
 
   if ( ! isMonochron() )
     setColor (wc.label_fg, wc.label_bg);
@@ -416,7 +416,7 @@ void AttribDemo::draw()
   const auto& wc = getFWidgetColors();
   printAltCharset();
 
-  std::vector<std::function<void()> > effect
+  const std::vector<std::function<void()> > effect
   {
     [&] { printDim(); },
     [&] { printNormal(); },
@@ -448,7 +448,7 @@ void AttribDemo::draw()
     setColor(wc.label_fg, wc.label_bg);
 
   print() << FPoint(1, 15);
-  FColor bg = static_cast<AttribDlg*>(getParent())->bgcolor;
+  const FColor bg = static_cast<AttribDlg*>(getParent())->bgcolor;
   print (" Background color:");
 
   if ( bg == fc::Default )

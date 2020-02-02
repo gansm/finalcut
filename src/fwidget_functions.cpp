@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019 Markus Gans                                           *
+* Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -28,7 +28,7 @@ namespace finalcut
 
 // FWidget non-member functions
 //----------------------------------------------------------------------
-bool isFocusNextKey (FKey key)
+bool isFocusNextKey (const FKey key)
 {
   if ( key == fc::Fkey_tab
     || key == fc::Fkey_right
@@ -39,7 +39,7 @@ bool isFocusNextKey (FKey key)
 }
 
 //----------------------------------------------------------------------
-bool isFocusPrevKey (FKey key)
+bool isFocusPrevKey (const FKey key)
 {
   if ( key == fc::Fkey_btab
     || key == fc::Fkey_left
@@ -58,7 +58,7 @@ FKey getHotkey (const FString& text)
   if ( text.isEmpty() )
     return 0;
 
-  std::size_t length = text.getLength();
+  const std::size_t length = text.getLength();
 
   for (std::size_t i{0}; i < length; i++)
   {
@@ -150,8 +150,8 @@ void drawTransparentShadow (FWidget* w)
 {
   // transparent shadow
 
-  std::size_t width = w->getWidth();
-  std::size_t height = w->getHeight();
+  const std::size_t width = w->getWidth();
+  const std::size_t height = w->getHeight();
   w->setTransparent();
   w->print() << FPoint(int(width) + 1, 1) << "  ";
   w->unsetTransparent();
@@ -185,8 +185,8 @@ void drawBlockShadow (FWidget* w)
   if ( ! w->hasShadowCharacter() )
     return;
 
-  std::size_t width = w->getWidth();
-  std::size_t height = w->getHeight();
+  const std::size_t width = w->getWidth();
+  const std::size_t height = w->getHeight();
   w->print() << FPoint(int(width) + 1, 1);
 
   if ( w->isWindowWidget() )
@@ -224,8 +224,8 @@ void clearShadow (FWidget* w)
   if ( w->isMonochron() )
     return;
 
-  std::size_t width = w->getWidth();
-  std::size_t height = w->getHeight();
+  const std::size_t width = w->getWidth();
+  const std::size_t height = w->getHeight();
 
   if ( w->isWindowWidget() )
   {
@@ -264,8 +264,8 @@ void drawFlatBorder (FWidget* w)
   else
     w->setColor (w->wcolors.dialog_fg, w->wcolors.dialog_bg);
 
-  std::size_t width = w->getWidth();
-  std::size_t height = w->getHeight();
+  const std::size_t width = w->getWidth();
+  const std::size_t height = w->getHeight();
 
   for (std::size_t y{0}; y < height; y++)
   {
@@ -324,8 +324,8 @@ void clearFlatBorder (FWidget* w)
   else
     w->setColor (w->wcolors.dialog_fg, w->wcolors.dialog_bg);
 
-  std::size_t width = w->getWidth();
-  std::size_t height = w->getHeight();
+  const std::size_t width = w->getWidth();
+  const std::size_t height = w->getHeight();
 
   for (std::size_t y{0}; y < height; y++)
   {
@@ -370,7 +370,7 @@ void clearFlatBorder (FWidget* w)
 }
 
 //----------------------------------------------------------------------
-inline void checkBorder (FWidget* w, FRect r)
+inline void checkBorder (FWidget* w, FRect& r)
 {
   if ( r.x1_ref() > r.x2_ref() )
     std::swap (r.x1_ref(), r.x2_ref());
@@ -403,7 +403,7 @@ void drawBorder (FWidget* w, FRect r)
 }
 
 //----------------------------------------------------------------------
-void drawListBorder (FWidget* w, const FRect& r)
+void drawListBorder (FWidget* w, FRect r)
 {
   checkBorder (w, r);
 

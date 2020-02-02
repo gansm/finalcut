@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -411,7 +411,7 @@ void FToggleButton::drawLabel()
   if ( text.isNull() || text.isEmpty() )
     return;
 
-  FString txt(text);
+  const FString txt(text);
   FString label_text{};
   auto hotkeypos = finalcut::getHotkeyPos(txt, label_text);
   print() << FPoint(1 + int(label_offset_pos), 1);
@@ -436,7 +436,7 @@ void FToggleButton::onKeyPress (FKeyEvent* ev)
   if ( ! isEnabled() )
     return;
 
-  FKey key = ev->key();
+  const FKey key = ev->key();
 
   switch ( key )
   {
@@ -559,9 +559,9 @@ void FToggleButton::drawText (FString&& label_text, std::size_t hotkeypos)
 //----------------------------------------------------------------------
 void FToggleButton::correctSize (FSize& size)
 {
-  std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
-  std::size_t column_width = getColumnWidth(text);
-  std::size_t min_width = button_width + column_width - hotkey_mark;
+  const std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
+  const std::size_t column_width = getColumnWidth(text);
+  const std::size_t min_width = button_width + column_width - hotkey_mark;
 
   if ( size.getWidth() < min_width )
     size.setWidth(min_width);

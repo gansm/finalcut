@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -129,7 +129,7 @@ void FButtonGroup::setText (const FString& txt)
 //----------------------------------------------------------------------
 bool FButtonGroup::isChecked (int index) const
 {
-  auto button = getButton(index);
+  const auto& button = getButton(index);
 
   if ( button )
     return button->isChecked();
@@ -145,7 +145,7 @@ bool FButtonGroup::hasFocusedButton() const
 
   for (auto&& item : buttonlist)
   {
-    auto toggle_button = static_cast<FToggleButton*>(item);
+    const auto& toggle_button = static_cast<FToggleButton*>(item);
 
     if ( toggle_button->hasFocus() )
       return true;
@@ -162,7 +162,7 @@ bool FButtonGroup::hasCheckedButton() const
 
   for (auto&& item : buttonlist)
   {
-    auto toggle_button = static_cast<FToggleButton*>(item);
+    const auto& toggle_button = static_cast<FToggleButton*>(item);
 
     if ( toggle_button->isChecked() )
       return true;
@@ -176,7 +176,7 @@ void FButtonGroup::hide()
 {
   FColor fg{}, bg{};
   FWidget::hide();
-  auto parent_widget = getParentWidget();
+  const auto& parent_widget = getParentWidget();
 
   if ( ! buttonlist.empty() )
   {
@@ -201,7 +201,7 @@ void FButtonGroup::hide()
   }
 
   setColor (fg, bg);
-  std::size_t size = getWidth();
+  const std::size_t size = getWidth();
 
   if ( size == 0 )
     return;
@@ -253,7 +253,7 @@ void FButtonGroup::remove (FToggleButton* button)
 
   while ( iter != buttonlist.end() )
   {
-    auto toggle_button = static_cast<FToggleButton*>(*iter);
+    const auto& toggle_button = static_cast<FToggleButton*>(*iter);
 
     if ( toggle_button == button )
     {
@@ -280,11 +280,11 @@ void FButtonGroup::checkScrollSize (const FRect& r)
 {
   // Check and adjust the scroll size
 
-  FRect scrollgeometry (1, 1, getScrollWidth(), getScrollHeight());
+  const FRect scrollgeometry (1, 1, getScrollWidth(), getScrollHeight());
 
   if ( ! scrollgeometry.contains(r) )
   {
-    FRect r_combined (scrollgeometry.combined(r));
+    const FRect r_combined (scrollgeometry.combined(r));
     setScrollSize (r_combined.getSize());
   }
 }
@@ -399,9 +399,9 @@ void FButtonGroup::drawLabel()
     return;
 
   FString label_text{};
-  FString txt{" " + text + " "};
+  const FString txt{" " + text + " "};
   unsetViewportPrint();
-  auto hotkeypos = finalcut::getHotkeyPos(txt, label_text);
+  const auto hotkeypos = finalcut::getHotkeyPos(txt, label_text);
 
   if ( hasBorder() )
     FWidget::setPrintPos (FPoint(2, 1));
@@ -438,14 +438,14 @@ void FButtonGroup::drawText ( const FString& label_text
                             , std::size_t hotkeypos )
 {
   const auto& wc = getFWidgetColors();
-  std::size_t column_width = getColumnWidth(label_text);
+  const std::size_t column_width = getColumnWidth(label_text);
   std::size_t length = label_text.getLength();
   bool ellipsis{false};
 
   if ( column_width > getClientWidth() )
   {
-    std::size_t len = getClientWidth() - 3;
-    FString s = finalcut::getColumnSubString (label_text, 1, len);
+    const std::size_t len = getClientWidth() - 3;
+    const FString s = finalcut::getColumnSubString (label_text, 1, len);
     length = s.getLength();
     ellipsis = true;
   }
@@ -546,7 +546,7 @@ void FButtonGroup::directFocus()
 //----------------------------------------------------------------------
 void FButtonGroup::cb_buttonToggled (FWidget* widget, FDataPtr)
 {
-  auto button = static_cast<FToggleButton*>(widget);
+  const auto& button = static_cast<FToggleButton*>(widget);
 
   if ( ! button->isChecked() )
     return;

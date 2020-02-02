@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2019 Markus Gans                                      *
+* Copyright 2016-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -1458,7 +1458,7 @@ inline void FOptiAttr::change_to_default_color ( FChar*& term
     else if ( bg == fc::Default && term->bg_color != fc::Default )
     {
       char* sgr_49;
-      auto& op = F_orig_pair.cap;
+      const auto& op = F_orig_pair.cap;
 
       if ( op && std::strncmp (op, CSI "39;49;25m", 11) == 0 )
         sgr_49 = C_STR(CSI "49;25m");
@@ -1482,20 +1482,20 @@ inline void FOptiAttr::change_current_color ( FChar*& term
                                             , FColor fg, FColor bg )
 {
   char* color_str{};
-  auto& AF = F_set_a_foreground.cap;
-  auto& AB = F_set_a_background.cap;
-  auto& Sf = F_set_foreground.cap;
-  auto& Sb = F_set_background.cap;
-  auto& sp = F_set_color_pair.cap;
-  bool frev ( ( off.attr.bit.reverse
-             || off.attr.bit.standout
-             || term->attr.bit.reverse
-             || term->attr.bit.standout ) && fake_reverse );
+  const auto& AF = F_set_a_foreground.cap;
+  const auto& AB = F_set_a_background.cap;
+  const auto& Sf = F_set_foreground.cap;
+  const auto& Sb = F_set_background.cap;
+  const auto& sp = F_set_color_pair.cap;
+  const bool frev ( ( off.attr.bit.reverse
+                   || off.attr.bit.standout
+                   || term->attr.bit.reverse
+                   || term->attr.bit.standout ) && fake_reverse );
 
   if ( AF && AB )
   {
-    auto ansi_fg = vga2ansi(fg);
-    auto ansi_bg = vga2ansi(bg);
+    const auto ansi_fg = vga2ansi(fg);
+    const auto ansi_bg = vga2ansi(bg);
 
     if ( (term->fg_color != fg || frev)
       && (color_str = tparm(AF, ansi_fg, 0, 0, 0, 0, 0, 0, 0, 0)) )
@@ -1552,9 +1552,9 @@ bool FOptiAttr::caused_reset_attributes (char cap[], uChar test)
 
   if ( cap )
   {
-    auto& ue = F_exit_underline_mode.cap;
-    auto& se = F_exit_standout_mode.cap;
-    auto& me = F_exit_attribute_mode.cap;
+    const auto& ue = F_exit_underline_mode.cap;
+    const auto& se = F_exit_standout_mode.cap;
+    const auto& me = F_exit_attribute_mode.cap;
 
     if ( (test & test_ansi_reset) && std::strncmp (cap, CSI "m", 3) == 0 )
       return true;
@@ -1582,10 +1582,10 @@ inline bool FOptiAttr::hasCharsetEquivalence()
 {
   // Detect if alt charset and pc charset are the same sequences
 
-  auto& alt_on  = F_enter_alt_charset_mode.cap;
-  auto& alt_off = F_enter_pc_charset_mode.cap;
-  auto& pc_on   = F_enter_pc_charset_mode.cap;
-  auto& pc_off  = F_exit_pc_charset_mode.cap;
+  const auto& alt_on  = F_enter_alt_charset_mode.cap;
+  const auto& alt_off = F_enter_pc_charset_mode.cap;
+  const auto& pc_on   = F_enter_pc_charset_mode.cap;
+  const auto& pc_off  = F_exit_pc_charset_mode.cap;
 
   if ( alt_on && pc_on && std::strcmp (alt_on, pc_on) == 0 )
     return true;

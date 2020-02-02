@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2019 Markus Gans                                      *
+* Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -174,11 +174,11 @@ void tcapString (const std::string& name, const char cap_str[])
     return;
   }
 
-  uInt len = uInt(std::strlen(cap_str));
+  const uInt len = uInt(std::strlen(cap_str));
 
   for (uInt i{0}; i < len; i++)
   {
-    uChar c = uChar(cap_str[i]);
+    const uChar c = uChar(cap_str[i]);
 
     if ( c > 127 )
     {
@@ -209,7 +209,7 @@ void tcapString (const std::string& name, const char cap_str[])
 #if DEBUG
 void debug (finalcut::FApplication& TermApp)
 {
-  auto& fterm = TermApp.getFTerm();
+  const auto& fterm = TermApp.getFTerm();
   auto& debug_data = fterm.getFTermDebugData();
   const finalcut::FString& ab_s = debug_data.getAnswerbackString();
   const finalcut::FString& sec_da = debug_data.getSecDAString();
@@ -278,7 +278,7 @@ void numeric()
 void string()
 {
   std::cout << "\r\n[String]\r\n";
-  finalcut::FTermcap::tcap_map (&tcap_strings)[] \
+  const finalcut::FTermcap::tcap_map (&tcap_strings)[] \
       = finalcut::FTermcap::strings;
 
   for (const auto& entry : data::strings)
@@ -294,7 +294,7 @@ void string()
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
-  bool disable_alt_screen{true};
+  const bool disable_alt_screen{true};
   finalcut::FApplication TermApp (argc, argv, disable_alt_screen);
 
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";

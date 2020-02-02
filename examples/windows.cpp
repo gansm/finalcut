@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2019 Markus Gans                                      *
+* Copyright 2016-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -69,9 +69,8 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
   const auto& wc = getFWidgetColors();
-  wchar_t arrow_up, arrow_down;
-  arrow_up = fc::BlackUpPointingTriangle;
-  arrow_down = fc::BlackDownPointingTriangle;
+  const wchar_t arrow_up = fc::BlackUpPointingTriangle;
+  const wchar_t arrow_down = fc::BlackDownPointingTriangle;
 
   left_arrow = arrow_up;
   left_arrow.setForegroundColor (wc.label_inactive_fg);
@@ -330,7 +329,7 @@ void Window::activateWindow (finalcut::FDialog* win)
   if ( ! win || win->isWindowHidden() || win->isWindowActive() )
     return;
 
-  bool has_raised = finalcut::FWindow::raiseWindow(win);
+  const bool has_raised = finalcut::FWindow::raiseWindow(win);
   win->activateDialog();
 
   if ( has_raised )
@@ -342,27 +341,27 @@ void Window::activateWindow (finalcut::FDialog* win)
 //----------------------------------------------------------------------
 void Window::adjustSize()
 {
-  std::size_t w = getDesktopWidth();
-  std::size_t h = getDesktopHeight();
-  int X = int(1 + (w - 40) / 2);
+  const std::size_t w = getDesktopWidth();
+  const std::size_t h = getDesktopHeight();
+  const int X = int(1 + (w - 40) / 2);
   int Y = int(1 + (h - 22) / 2);
-  int dx = ( w > 80 ) ? int(w - 80) / 2 : 0;
-  int dy = ( h > 24 ) ? int(h - 24) / 2 : 0;
+  const int dx = ( w > 80 ) ? int(w - 80) / 2 : 0;
+  const int dy = ( h > 24 ) ? int(h - 24) / 2 : 0;
 
   if ( Y < 2 )
     Y = 2;
 
   setPos (FPoint(X, Y));
-  auto first = windows.begin();
+  const auto& first = windows.begin();
   auto iter = first;
 
   while ( iter != windows.end() )
   {
     if ( (*iter)->is_open )
     {
-      int n = int(std::distance(first, iter));
-      int x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
-      int y = dy + 11 + int(n / 3) * 3;
+      const int n = int(std::distance(first, iter));
+      const int x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
+      const int y = dy + 11 + int(n / 3) * 3;
       (*iter)->dgl->setPos (FPoint(x, y));
     }
 
@@ -409,12 +408,12 @@ void Window::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Window::cb_createWindows (finalcut::FWidget*, FDataPtr)
 {
-  auto first = windows.begin();
+  const auto& first = windows.begin();
   auto iter = first;
-  auto w = getRootWidget()->getWidth();
-  auto h = getRootWidget()->getHeight();
-  int dx = ( w > 80 ) ? int(w - 80) / 2 : 0;
-  int dy = ( h > 24 ) ? int(h - 24) / 2 : 0;
+  const auto w = getRootWidget()->getWidth();
+  const auto h = getRootWidget()->getHeight();
+  const int dx = ( w > 80 ) ? int(w - 80) / 2 : 0;
+  const int dy = ( h > 24 ) ? int(h - 24) / 2 : 0;
 
   while ( iter != windows.end() )
   {
@@ -425,9 +424,9 @@ void Window::cb_createWindows (finalcut::FWidget*, FDataPtr)
       win_dat->dgl = win;
       win_dat->is_open = true;
       win->setText(win_dat->title);
-      int n = int(std::distance(first, iter))
-        , x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3
-        , y = dy + 11 + int(n / 3) * 3;
+      const int n = int(std::distance(first, iter));
+      const int x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
+      const int y = dy + 11 + int(n / 3) * 3;
       win->setGeometry (FPoint(x, y), FSize(20, 8));
       win->setMinimumSize (FSize(20, 8));
       win->setResizeable();
@@ -454,7 +453,7 @@ void Window::cb_closeWindows (finalcut::FWidget*, FDataPtr)
     return;
 
   auto iter = getDialogList()->end();
-  auto first = getDialogList()->begin();
+  const auto& first = getDialogList()->begin();
   activateWindow(this);
 
   do

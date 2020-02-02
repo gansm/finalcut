@@ -76,8 +76,8 @@ ColorChooser::ColorChooser (finalcut::FWidget* parent)
 
   if ( parent )
   {
-    FColor fg = parent->getForegroundColor();
-    FColor bg = parent->getBackgroundColor();
+    const FColor fg = parent->getForegroundColor();
+    const FColor bg = parent->getBackgroundColor();
     setForegroundColor(fg);
     setBackgroundColor(bg);
     headline.setForegroundColor(fg);
@@ -98,17 +98,17 @@ ColorChooser::~ColorChooser()
 //----------------------------------------------------------------------
 void ColorChooser::onMouseDown (finalcut::FMouseEvent* ev)
 {
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
 
   if ( ev->getButton() == fc::MiddleButton )
     return;
 
   for (int c{0}; c < 16; c++)
   {
-    int xmin = 2 + (c / 8) * 3;
-    int xmax = 4 + (c / 8) * 3;
-    int y = 3 + c % 8;
+    const int xmin = 2 + (c / 8) * 3;
+    const int xmax = 4 + (c / 8) * 3;
+    const int y = 3 + c % 8;
 
     if ( mouse_x >= xmin && mouse_x <= xmax && mouse_y == y )
     {
@@ -219,8 +219,8 @@ Brushes::Brushes (finalcut::FWidget* parent)
 
   if ( parent )
   {
-    FColor fg = parent->getForegroundColor();
-    FColor bg = parent->getBackgroundColor();
+    const FColor fg = parent->getForegroundColor();
+    const FColor bg = parent->getBackgroundColor();
     setForegroundColor(fg);
     setBackgroundColor(bg);
     headline.setForegroundColor(fg);
@@ -267,8 +267,8 @@ void Brushes::drawBorder()
 //----------------------------------------------------------------------
 void Brushes::onMouseDown (finalcut::FMouseEvent* ev)
 {
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
 
   if ( ev->getButton() != fc::LeftButton )
     return;
@@ -381,12 +381,12 @@ MouseDraw::~MouseDraw()
 void MouseDraw::setGeometry ( const FPoint& p, const FSize& s, bool adjust)
 {
   finalcut::FDialog::setGeometry (p, s, adjust);
-  std::size_t w = s.getWidth();
-  std::size_t h = s.getHeight();
-  finalcut::FRect scroll_geometry (FPoint(0, 0), FSize(w - 11, h - 3));
-  FSize no_shadow(0, 0);
-  int old_w = canvas->width;
-  int old_h = canvas->height;
+  const std::size_t w = s.getWidth();
+  const std::size_t h = s.getHeight();
+  const finalcut::FRect scroll_geometry (FPoint(0, 0), FSize(w - 11, h - 3));
+  const FSize no_shadow(0, 0);
+  const int old_w = canvas->width;
+  const int old_h = canvas->height;
   resizeArea (scroll_geometry, no_shadow, canvas);
 
   if ( old_w != canvas->width || old_h != canvas->height )
@@ -420,7 +420,7 @@ void MouseDraw::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void MouseDraw::draw()
 {
-  int y_max = int(getHeight());
+  const int y_max = int(getHeight());
   finalcut::FDialog::draw();
   setColor();
 
@@ -455,8 +455,8 @@ void MouseDraw::draw()
 //----------------------------------------------------------------------
 void MouseDraw::drawBrush (int x, int y, bool swap_color)
 {
-  int Cols = int(getWidth());
-  int Lines = int(getHeight());
+  const int Cols = int(getWidth());
+  const int Lines = int(getHeight());
 
   if ( x > 10 && x < Cols && y > 2 && y < Lines )
   {
@@ -485,11 +485,11 @@ void MouseDraw::drawCanvas()
     return;
 
   auto printarea = getCurrentPrintArea();
-  int ax = 9 + getTermX() - printarea->offset_left
-    , ay = 1 + getTermY() - printarea->offset_top
-    , y_end = canvas->height
-    , x_end = canvas->width
-    , w_line_len = printarea->width + printarea->right_shadow;
+  const int ax = 9 + getTermX() - printarea->offset_left;
+  const int ay = 1 + getTermY() - printarea->offset_top;
+  const int y_end = canvas->height;
+  const int x_end = canvas->width;
+  const int w_line_len = printarea->width + printarea->right_shadow;
 
   for (int y{0}; y < y_end; y++)  // line loop
   {
@@ -514,9 +514,9 @@ void MouseDraw::drawCanvas()
 //----------------------------------------------------------------------
 void MouseDraw::adjustSize()
 {
-  std::size_t w{60}, h{18};
-  int x = 1 + int((getParentWidget()->getWidth() - w) / 2);
-  int y = 1 + int((getParentWidget()->getHeight() - h) / 2);
+  const std::size_t w{60}, h{18};
+  const int x = 1 + int((getParentWidget()->getWidth() - w) / 2);
+  const int y = 1 + int((getParentWidget()->getHeight() - h) / 2);
   setGeometry (FPoint(x, y), FSize(w, h), false);
   finalcut::FDialog::adjustSize();
 }

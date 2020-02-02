@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -178,7 +178,7 @@ inline bool FMouse::isInputDataPending()
 }
 
 //----------------------------------------------------------------------
-inline FMouse* FMouse::createMouseObject (mouse_type mt)
+inline FMouse* FMouse::createMouseObject (const mouse_type mt)
 {
   switch ( mt )
   {
@@ -491,7 +491,7 @@ bool FMouseGPM::getGpmKeyPressed (bool is_pending)
 {
   setPending(is_pending);
   has_gpm_mouse_data = false;
-  int type = gpmEvent();
+  const int type = gpmEvent();
 
   switch ( type )
   {
@@ -519,7 +519,7 @@ void FMouseGPM::drawGpmPointer()
 //----------------------------------------------------------------------
 int FMouseGPM::gpmEvent (bool clear)
 {
-  int max = ( gpm_fd > stdin_no ) ? gpm_fd : stdin_no;
+  const int max = ( gpm_fd > stdin_no ) ? gpm_fd : stdin_no;
   fd_set ifds{};
   struct timeval tv{};
 
@@ -528,7 +528,7 @@ int FMouseGPM::gpmEvent (bool clear)
   FD_SET(gpm_fd, &ifds);
   tv.tv_sec  = 0;
   tv.tv_usec = 100000;  // 100 ms
-  int result = select (max + 1, &ifds, 0, 0, &tv);
+  const int result = select (max + 1, &ifds, 0, 0, &tv);
 
   if ( result > 0 && FD_ISSET(stdin_no, &ifds) )
   {
@@ -572,7 +572,7 @@ void FMouseX11::setRawData (FKeyboard::keybuffer& fifo_buf)
   // Import the X11 xterm mouse protocol (SGR-Mode) raw mouse data
 
   static constexpr std::size_t len = 6;
-  std::size_t fifo_buf_size{sizeof(fifo_buf)};
+  const std::size_t fifo_buf_size{sizeof(fifo_buf)};
   std::size_t n{};
   x11_mouse[0] = fifo_buf[3];
   x11_mouse[1] = fifo_buf[4];
@@ -598,9 +598,9 @@ void FMouseX11::processEvent (struct timeval* time)
   // Parse and interpret the X11 xterm mouse string
 
   const auto& mouse_position = getPos();
-  uChar x = uChar(x11_mouse[1] - 0x20);
-  uChar y = uChar(x11_mouse[2] - 0x20);
-  int btn = x11_mouse[0];
+  const uChar x = uChar(x11_mouse[1] - 0x20);
+  const uChar y = uChar(x11_mouse[2] - 0x20);
+  const int btn = x11_mouse[0];
   setNewPos (x, y);
   clearButtonState();
   setKeyState (btn);
@@ -652,7 +652,7 @@ void FMouseX11::setMoveState (const FPoint& mouse_position, int btn)
 }
 
 //----------------------------------------------------------------------
-void FMouseX11::setButtonState (int btn, struct timeval* time)
+void FMouseX11::setButtonState (const int btn, struct timeval* time)
 {
   // Get the x11 mouse button state
 
@@ -749,7 +749,7 @@ void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf)
 {
   // Import the X11 xterm mouse protocol (SGR-Mode) raw mouse data
 
-  std::size_t fifo_buf_size = sizeof(fifo_buf);
+  const std::size_t fifo_buf_size = sizeof(fifo_buf);
   std::size_t len = std::strlen(fifo_buf);
   std::size_t n{3};
 
@@ -784,7 +784,7 @@ void FMouseSGR::processEvent (struct timeval* time)
   int btn{0};
 
   // parse the SGR mouse string
-  char* p = sgr_mouse;
+  const char* p = sgr_mouse;
 
   while ( *p && *p != ';' )
   {
@@ -877,7 +877,7 @@ void FMouseSGR::setMoveState (const FPoint& mouse_position, int btn)
 }
 
 //----------------------------------------------------------------------
-void FMouseSGR::setPressedButtonState (int btn, struct timeval* time)
+void FMouseSGR::setPressedButtonState (const int btn, struct timeval* time)
 {
   // Gets the extended x11 mouse mode (SGR) status for pressed buttons
 
@@ -929,7 +929,7 @@ void FMouseSGR::setPressedButtonState (int btn, struct timeval* time)
 }
 
 //----------------------------------------------------------------------
-void FMouseSGR::setReleasedButtonState (int btn)
+void FMouseSGR::setReleasedButtonState (const int btn)
 {
   // Gets the extended x11 mouse mode (SGR) status for released buttons
 
@@ -978,7 +978,7 @@ void FMouseUrxvt::setRawData (FKeyboard::keybuffer& fifo_buf)
 {
   // Import the X11 xterm mouse protocol (Urxvt-Mode) raw mouse data
 
-  std::size_t fifo_buf_size = sizeof(fifo_buf);
+  const std::size_t fifo_buf_size = sizeof(fifo_buf);
   std::size_t len = std::strlen(fifo_buf);
   std::size_t n{2};
 
@@ -1015,7 +1015,7 @@ void FMouseUrxvt::processEvent (struct timeval* time)
   int btn{0};
 
   // Parse the Urxvt mouse string
-  char* p = urxvt_mouse;
+  const char* p = urxvt_mouse;
   bool x_neg{false};
   bool y_neg{false};
 
@@ -1132,7 +1132,7 @@ void FMouseUrxvt::setMoveState (const FPoint& mouse_position, int btn)
 }
 
 //----------------------------------------------------------------------
-void FMouseUrxvt::setButtonState (int btn, struct timeval* time)
+void FMouseUrxvt::setButtonState (const int btn, struct timeval* time)
 {
   // Get the urxvt mouse button state
 
@@ -1236,7 +1236,7 @@ FMouseControl::~FMouseControl()  // destructor
 //----------------------------------------------------------------------
 FPoint& FMouseControl::getPos()
 {
-  auto mouse_object = getMouseWithEvent();
+  const auto& mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->getPos();
@@ -1303,7 +1303,7 @@ void FMouseControl::useXtermMouse (bool enable)
 //----------------------------------------------------------------------
 bool FMouseControl::hasData()
 {
-  auto mouse_object = getMouseWithData();
+  const auto& mouse_object = getMouseWithData();
 
   if ( mouse_object )  // with data
     return true;
@@ -1314,7 +1314,7 @@ bool FMouseControl::hasData()
 //----------------------------------------------------------------------
 bool FMouseControl::hasEvent()
 {
-  auto mouse_object = getMouseWithEvent();
+  const auto& mouse_object = getMouseWithEvent();
 
   if ( mouse_object )  // with event
     return true;
@@ -1325,7 +1325,7 @@ bool FMouseControl::hasEvent()
 //----------------------------------------------------------------------
 bool FMouseControl::isLeftButtonPressed()
 {
-  auto mouse_object = getMouseWithEvent();
+  const auto& mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isLeftButtonPressed();
@@ -1336,7 +1336,7 @@ bool FMouseControl::isLeftButtonPressed()
 //----------------------------------------------------------------------
 bool FMouseControl::isLeftButtonReleased()
 {
-  auto mouse_object = getMouseWithEvent();
+  const auto& mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isLeftButtonReleased();
@@ -1347,7 +1347,7 @@ bool FMouseControl::isLeftButtonReleased()
 //----------------------------------------------------------------------
 bool FMouseControl::isLeftButtonDoubleClick()
 {
-  auto mouse_object = getMouseWithEvent();
+  const auto& mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isLeftButtonDoubleClick();
@@ -1358,7 +1358,7 @@ bool FMouseControl::isLeftButtonDoubleClick()
 //----------------------------------------------------------------------
 bool FMouseControl::isRightButtonPressed()
 {
-  auto mouse_object = getMouseWithEvent();
+  const auto& mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isRightButtonPressed();
@@ -1369,7 +1369,7 @@ bool FMouseControl::isRightButtonPressed()
 //----------------------------------------------------------------------
 bool FMouseControl::isRightButtonReleased()
 {
-  auto mouse_object = getMouseWithEvent();
+  const auto& mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isRightButtonReleased();
@@ -1380,7 +1380,7 @@ bool FMouseControl::isRightButtonReleased()
 //----------------------------------------------------------------------
 bool FMouseControl::isMiddleButtonPressed()
 {
-  auto mouse_object = getMouseWithEvent();
+  const auto& mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isMiddleButtonPressed();
@@ -1391,7 +1391,7 @@ bool FMouseControl::isMiddleButtonPressed()
 //----------------------------------------------------------------------
 bool FMouseControl::isMiddleButtonReleased()
 {
-  auto mouse_object = getMouseWithEvent();
+  const auto& mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isMiddleButtonReleased();
@@ -1402,7 +1402,7 @@ bool FMouseControl::isMiddleButtonReleased()
 //----------------------------------------------------------------------
 bool FMouseControl::isShiftKeyPressed()
 {
-  auto mouse_object = getMouseWithEvent();
+  const auto& mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isShiftKeyPressed();
@@ -1413,7 +1413,7 @@ bool FMouseControl::isShiftKeyPressed()
 //----------------------------------------------------------------------
 bool FMouseControl::isControlKeyPressed()
 {
-  auto mouse_object = getMouseWithEvent();
+  const auto& mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isControlKeyPressed();
@@ -1424,7 +1424,7 @@ bool FMouseControl::isControlKeyPressed()
 //----------------------------------------------------------------------
 bool FMouseControl::isMetaKeyPressed()
 {
-  auto mouse_object = getMouseWithEvent();
+  const auto& mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isMetaKeyPressed();
@@ -1435,7 +1435,7 @@ bool FMouseControl::isMetaKeyPressed()
 //----------------------------------------------------------------------
 bool FMouseControl::isWheelUp()
 {
-  auto mouse_object = getMouseWithEvent();
+  const auto& mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isWheelUp();
@@ -1446,7 +1446,7 @@ bool FMouseControl::isWheelUp()
 //----------------------------------------------------------------------
 bool FMouseControl::isWheelDown()
 {
-  auto mouse_object = getMouseWithEvent();
+  const auto& mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isWheelDown();
@@ -1457,7 +1457,7 @@ bool FMouseControl::isWheelDown()
 //----------------------------------------------------------------------
 bool FMouseControl::isMoved()
 {
-  auto mouse_object = getMouseWithEvent();
+  const auto& mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isMoved();
@@ -1485,8 +1485,8 @@ bool FMouseControl::isGpmMouseEnabled()
   if ( mouse_protocol.empty() )
     return false;
 
-  auto mouse = mouse_protocol[FMouse::gpm];
-  auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
+  const auto& mouse = mouse_protocol[FMouse::gpm];
+  const auto& gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
     return gpm_mouse->isGpmMouseEnabled();

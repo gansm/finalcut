@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019 Markus Gans                                           *
+* Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -58,7 +58,7 @@ void SGRoptimizer::findParameter()
 {
   // Find ANSI X3.64 terminal SGR (Select Graphic Rendition) strings
 
-  std::size_t len = std::strlen(seq);
+  const std::size_t len = std::strlen(seq);
   csi_parameter.clear();
 
   if ( len < 6 )

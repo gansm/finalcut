@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2019 Markus Gans                                      *
+* Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -446,7 +446,7 @@ FString FString::toUpper() const
 //----------------------------------------------------------------------
 sInt16 FString::toShort() const
 {
-  long num = toLong();
+  const long num = toLong();
 
   if ( num > SHRT_MAX )
     throw std::overflow_error ("overflow");
@@ -460,7 +460,7 @@ sInt16 FString::toShort() const
 //----------------------------------------------------------------------
 uInt16 FString::toUShort() const
 {
-  uLong num = uLong(toULong());
+  const uLong num = uLong(toULong());
 
   if ( num > USHRT_MAX )
     throw std::overflow_error ("overflow");
@@ -485,7 +485,7 @@ int FString::toInt() const
 //----------------------------------------------------------------------
 uInt FString::toUInt() const
 {
-  uLong num = uLong(toULong());
+  const uLong num = uLong(toULong());
 
   if ( num > UINT_MAX )
     throw std::overflow_error ("overflow");
@@ -500,7 +500,7 @@ long FString::toLong() const
   long num{0};
   long tenth_limit{LONG_MAX / 10};
   long tenth_limit_digit{LONG_MAX % 10};
-  FString s(trim());
+  const FString s(trim());
   const wchar_t* p = s.string;
 
   if ( ! p )
@@ -551,9 +551,9 @@ long FString::toLong() const
 uLong FString::toULong() const
 {
   uLong num{0};
-  uLong tenth_limit{ULONG_MAX / 10};
-  uLong tenth_limit_digit{ULONG_MAX % 10};
-  FString s(trim());
+  const uLong tenth_limit{ULONG_MAX / 10};
+  const uLong tenth_limit_digit{ULONG_MAX % 10};
+  const FString s(trim());
   const wchar_t* p = s.string;
 
   if ( ! p )
@@ -573,7 +573,7 @@ uLong FString::toULong() const
 
   while ( std::iswdigit(std::wint_t(*p)) )
   {
-    uChar d = uChar(*p - L'0');
+    const uChar d = uChar(*p - L'0');
 
     if ( num > tenth_limit
       || (num == tenth_limit && d > tenth_limit_digit) )
@@ -594,7 +594,7 @@ uLong FString::toULong() const
 //----------------------------------------------------------------------
 float FString::toFloat() const
 {
-  double num = toDouble();
+  const double num = toDouble();
 
   if ( num > double(FLT_MAX) || num < double(-FLT_MAX) )
     throw std::overflow_error ("overflow");
@@ -615,7 +615,7 @@ double FString::toDouble() const
     throw std::invalid_argument ("empty value");
 
   wchar_t* p{};
-  double ret = std::wcstod(string, &p);
+  const double ret = std::wcstod(string, &p);
 
   if ( p != 0 && *p != '\0' )
     throw std::invalid_argument ("no valid floating point value");
@@ -635,7 +635,7 @@ double FString::toDouble() const
 //----------------------------------------------------------------------
 FString FString::ltrim() const
 {
-  FString s(string);
+  const FString s(string);
 
   // handle NULL and empty string
   if ( ! (string && *string) )
@@ -679,7 +679,7 @@ FString FString::trim() const
   if ( ! (string && *string) )
     return *this;
 
-  FString s(ltrim());
+  const FString s(ltrim());
   return s.rtrim();
 }
 
@@ -704,7 +704,7 @@ FString FString::left (std::size_t len) const
 //----------------------------------------------------------------------
 FString FString::right (std::size_t len) const
 {
-  FString s(string);
+  const FString s(string);
 
   // handle NULL and empty string
   if ( ! (string && *string) )
@@ -721,7 +721,7 @@ FString FString::right (std::size_t len) const
 //----------------------------------------------------------------------
 FString FString::mid (std::size_t pos, std::size_t len) const
 {
-  FString s(string);
+  const FString s(string);
 
   // handle NULL and empty string
   if ( ! (string && *string) )
@@ -745,7 +745,7 @@ FString FString::mid (std::size_t pos, std::size_t len) const
 //----------------------------------------------------------------------
 FStringList FString::split (const FString& delimiter)
 {
-  FString s(string);
+  const FString s(string);
   FStringList string_list{};
 
   // handle NULL and empty string
@@ -1025,8 +1025,8 @@ FString FString::replace (const FString& from, const FString& to)
     return s;
 
   const wchar_t* p = s.string;
-  std::size_t from_length = from.getLength();
-  std::size_t to_length = to.getLength();
+  const std::size_t from_length = from.getLength();
+  const std::size_t to_length = to.getLength();
   std::size_t pos{0};
 
   while ( *p )
@@ -1083,13 +1083,13 @@ FString FString::expandTabs (int tabstop) const
   if ( tabstop <= 0 )
     return instr;
 
-  FStringList tab_split = instr.split("\t");
-  uLong last = tab_split.size();
+  const FStringList tab_split = instr.split("\t");
+  const uLong last = tab_split.size();
 
   for (std::size_t i{0}; i < last; i++)
   {
-    std::size_t len = tab_split[i].getLength();
-    std::size_t tab_len = std::size_t(tabstop);
+    const std::size_t len = tab_split[i].getLength();
+    const std::size_t tab_len = std::size_t(tabstop);
 
     if ( i == last - 1 )
       outstr += tab_split[i];
@@ -1419,8 +1419,8 @@ inline char* FString::wc_to_c_str (const wchar_t s[]) const
   if ( c_string )
     delete[](c_string);
 
-  int size = int(std::wcslen(s)) + 1;
-  int dest_size = size * int(CHAR_SIZE);
+  const int size = int(std::wcslen(s)) + 1;
+  const int dest_size = size * int(CHAR_SIZE);
   const wchar_t* src = s;
   std::mbstate_t state{};
   std::memset (&state, '\0', sizeof(mbstate_t));
@@ -1438,7 +1438,7 @@ inline char* FString::wc_to_c_str (const wchar_t s[]) const
     return 0;
   }
 
-  int mblength = \
+  const int mblength = \
       int(std::wcsrtombs (c_string, &src, std::size_t(dest_size), &state));
 
   if ( mblength == -1 && errno != EILSEQ )
@@ -1471,8 +1471,8 @@ inline wchar_t* FString::c_to_wc_str (const char s[]) const
     }
   }
 
-  int size = int(std::strlen(s)) + 1;
-  int dest_size = size * int(CHAR_SIZE);
+  const int size = int(std::strlen(s)) + 1;
+  const int dest_size = size * int(CHAR_SIZE);
   const char* src = s;
   wchar_t* dest{};
   std::mbstate_t state{};
@@ -1490,7 +1490,7 @@ inline wchar_t* FString::c_to_wc_str (const char s[]) const
     return 0;
   }
 
-  int wclength = \
+  const int wclength = \
       int(std::mbsrtowcs (dest, &src, std::size_t(dest_size), &state));
 
   if ( wclength == -1 )
@@ -1636,7 +1636,7 @@ std::ostream& operator << (std::ostream& outstr, const FString& s)
   }
   else if ( width > 0 )
   {
-    FString fill_str(width, outstr.fill());
+    const FString fill_str(width, outstr.fill());
     outstr << s.wc_to_c_str(fill_str.string);
   }
 
@@ -1670,7 +1670,7 @@ std::wostream& operator << (std::wostream& outstr, const FString& s)
   }
   else if ( width > 0 )
   {
-    FString fill_str(width, outstr.fill());
+    const FString fill_str(width, outstr.fill());
     outstr << fill_str.string;
   }
 

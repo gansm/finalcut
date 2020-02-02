@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019 Markus Gans                                           *
+* Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -51,14 +51,14 @@ FDropDownListBox::FDropDownListBox (FWidget* parent)
 //----------------------------------------------------------------------
 FDropDownListBox::~FDropDownListBox()  // destructor
 {
-  auto fapp = FApplication::getApplicationObject();
+  const auto& fapp = FApplication::getApplicationObject();
 
   if ( fapp->isQuit() )
     return;
 
   FWindow* parent_win{nullptr};
 
-  if ( auto parent = getParentWidget() )
+  if ( const auto& parent = getParentWidget() )
     parent_win = getWindowWidget(parent);
 
   if ( parent_win )
@@ -294,7 +294,7 @@ void FComboBox::remove (std::size_t item)
 
   if ( ! list_window.isEmpty() )
   {
-    std::size_t index = list_window.list.currentItem();
+    const std::size_t index = list_window.list.currentItem();
     input_field = list_window.list.getItem(index).getText();
     input_field.redraw();
   }
@@ -329,12 +329,8 @@ void FComboBox::showDropDown()
   FPoint p(getTermPos());
   p.move(0 - int(nf), 1);
   setClickedWidget(&list_window.list);
-  std::size_t w = getWidth();
-  std::size_t h = getCount();
-
-  if ( h > max_items)
-    h = max_items;
-
+  const std::size_t w = getWidth();
+  const std::size_t h = ( getCount() <= max_items ) ? getCount() : max_items;
   list_window.setGeometry(p, FSize(w + std::size_t(nf), h + border));
   list_window.show();
   list_window.list.setFocus();
@@ -418,8 +414,8 @@ void FComboBox::onMouseDown (FMouseEvent* ev)
       getStatusBar()->drawMessage();
   }
 
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
 
   if ( mouse_x >= int(getWidth()) - nf
     && mouse_x <= int(getWidth()) && mouse_y == 1 )
@@ -481,7 +477,7 @@ bool FComboBox::isMouseOverListWindow (const FPoint& termpos)
 {
   if ( list_window.isShown() )
   {
-    const auto& list_geometry = list_window.getTermGeometry();
+    auto list_geometry = list_window.getTermGeometry();
 
     if ( list_geometry.contains(termpos) )
       return true;
@@ -494,7 +490,7 @@ bool FComboBox::isMouseOverListWindow (const FPoint& termpos)
 void FComboBox::init()
 {
   setShadow();
-  auto parent_widget = getParentWidget();
+  const auto& parent_widget = getParentWidget();
   FLabel* label = input_field.getLabelObject();
   label->setParent(getParent());
   label->setForegroundColor (parent_widget->getForegroundColor());
@@ -544,7 +540,7 @@ void FComboBox::draw()
 {
   const auto& wc = getFWidgetColors();
 
-  FColorPair button_color = [&] () -> FColorPair
+  const FColorPair button_color = [&] () -> FColorPair
   {
     if ( list_window.isEmpty() )
       return FColorPair ( wc.scrollbar_button_inactive_fg
@@ -605,7 +601,7 @@ void FComboBox::passEventToListWindow (FMouseEvent*& ev)
 
   const auto& t = ev->getTermPos();
   const auto& p = list_window.list.termToWidgetPos(t);
-  int b = ev->getButton();
+  const int b = ev->getButton();
 
   try
   {
@@ -637,7 +633,7 @@ void FComboBox::processChanged()
 void FComboBox::cb_setInputField (FWidget*, FDataPtr)
 {
   auto& list = list_window.list;
-  std::size_t index = list.currentItem();
+  const std::size_t index = list.currentItem();
   input_field = list.getItem(index).getText();
   input_field.redraw();
   processChanged();
@@ -653,7 +649,7 @@ void FComboBox::cb_closeComboBox (FWidget*, FDataPtr)
 //----------------------------------------------------------------------
 void FComboBox::cb_inputFieldSwitch (FWidget*, FDataPtr)
 {
-  auto mouse = getFMouseControl();
+  const auto& mouse = getFMouseControl();
 
   if ( mouse && ! mouse->isLeftButtonPressed() )
     return;
@@ -685,14 +681,14 @@ void FComboBox::cb_inputFieldSwitch (FWidget*, FDataPtr)
 //----------------------------------------------------------------------
 void FComboBox::cb_inputFieldHandOver (FWidget*, FDataPtr)
 {
-  auto mouse = getFMouseControl();
+  const auto& mouse = getFMouseControl();
 
   if ( ! mouse || list_window.isHidden() )
     return;
 
   const auto& t = mouse->getPos();
-  auto p = list_window.list.termToWidgetPos(t);
-  int b = ( mouse->isLeftButtonPressed() ) ? fc::LeftButton : 0;
+  const auto& p = list_window.list.termToWidgetPos(t);
+  const int b = ( mouse->isLeftButtonPressed() ) ? fc::LeftButton : 0;
 
   try
   {

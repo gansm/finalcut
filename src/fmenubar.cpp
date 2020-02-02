@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -931,7 +931,7 @@ void FMenuBar::passEventToMenu (const FMouseEvent*& ev)
     return;
 
   // Mouse event handover to the menu
-  const auto& menu = getSelectedItem()->getMenu();
+  auto menu = getSelectedItem()->getMenu();
   const auto& menu_geometry = menu->getTermGeometry();
 
   if ( menu->getCount() > 0
@@ -939,7 +939,7 @@ void FMenuBar::passEventToMenu (const FMouseEvent*& ev)
   {
     const auto& t = ev->getTermPos();
     const auto& p = menu->termToWidgetPos(t);
-    int b = ev->getButton();
+    const int b = ev->getButton();
 
     try
     {

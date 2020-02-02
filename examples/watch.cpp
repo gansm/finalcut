@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -76,7 +76,7 @@ Watch::Watch (FWidget* parent)
   : finalcut::FDialog(parent)
 {
   setText ("Watch");
-  int pw = int(getParentWidget()->getWidth());
+  const int pw = int(getParentWidget()->getWidth());
   setGeometry (FPoint(1 + (pw - 22) / 2, 3), FSize(22, 13));
 
   // Labels
@@ -126,7 +126,7 @@ void Watch::printTime()
   finalcut::FString str{};
   std::tm now{};
 
-  std::time_t t = std::time(0);  // get current time
+  const std::time_t t = std::time(0);  // get current time
   localtime_r(&t, &now);
 
   if ( sec )
@@ -190,7 +190,7 @@ void Watch::cb_seconds (finalcut::FWidget*, FDataPtr)
 //----------------------------------------------------------------------
 void Watch::adjustSize()
 {
-  int pw = int(getParentWidget()->getWidth());
+  const int pw = int(getParentWidget()->getWidth());
   setX (1 + (pw - 22) / 2, false);
   finalcut::FDialog::adjustSize();
 }

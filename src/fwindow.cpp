@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -56,7 +56,7 @@ FWindow::FWindow(FWidget* parent)
 //----------------------------------------------------------------------
 FWindow::~FWindow()  // destructor
 {
-  auto fapp = FApplication::getApplicationObject();
+  const auto& fapp = FApplication::getApplicationObject();
 
   if ( previous_window == this )
     previous_window = nullptr;
@@ -243,7 +243,7 @@ void FWindow::drawBorder()
 {
   if ( isNewFont() )  // Draw a newfont outer frame
   {
-    FRect r(FPoint(1, 1), getSize());
+    const FRect r(FPoint(1, 1), getSize());
     print() << r.getUpperLeftPos()
             << fc::NF_border_corner_upper_left                      // ⎡
             << FString(r.getWidth() - 2, fc::NF_border_line_upper)  // ¯
@@ -328,7 +328,7 @@ void FWindow::setPos (const FPoint& p, bool adjust)
 //----------------------------------------------------------------------
 void FWindow::setWidth (std::size_t w, bool adjust)
 {
-  std::size_t old_width = getWidth();
+  const std::size_t old_width = getWidth();
   FWidget::setWidth (w, adjust);
 
   if ( isVirtualWindow() && getWidth() != old_width )
@@ -342,7 +342,7 @@ void FWindow::setWidth (std::size_t w, bool adjust)
 //----------------------------------------------------------------------
 void FWindow::setHeight (std::size_t h, bool adjust)
 {
-  std::size_t old_height = getHeight();
+  const std::size_t old_height = getHeight();
   FWidget::setHeight (h, adjust);
 
   if ( isVirtualWindow() && getHeight() != old_height )
@@ -356,8 +356,8 @@ void FWindow::setHeight (std::size_t h, bool adjust)
 //----------------------------------------------------------------------
 void FWindow::setSize (const FSize& size, bool adjust)
 {
-  std::size_t old_width = getWidth();
-  std::size_t old_height = getHeight();
+  const std::size_t old_width = getWidth();
+  const std::size_t old_height = getHeight();
   FWidget::setSize (size, adjust);
 
   if ( isVirtualWindow()
@@ -374,10 +374,10 @@ void FWindow::setGeometry ( const FPoint& p, const FSize& size, bool adjust)
 {
   // Sets the geometry of the widget
 
-  int old_x = getX();
-  int old_y = getY();
+  const int old_x = getX();
+  const int old_y = getY();
   FPoint pos(p);
-  FSize old_size(getSize());
+  const FSize old_size(getSize());
 
   if ( pos.getY() < 1 )
     pos.setY(1);
@@ -422,8 +422,8 @@ FWindow* FWindow::getWindowWidgetAt (int x, int y)
   // returns the window object to the corresponding coordinates
   if ( getWindowList() && ! getWindowList()->empty() )
   {
-    auto iter  = getWindowList()->end();
-    auto begin = getWindowList()->begin();
+    auto iter = getWindowList()->end();
+    const auto begin = getWindowList()->begin();
 
     do
     {
@@ -514,7 +514,7 @@ int FWindow::getWindowLayer (const FWidget* obj)
     window = obj;
 
   auto iter = getWindowList()->begin();
-  auto end  = getWindowList()->end();
+  const auto end  = getWindowList()->end();
 
   while ( iter != end )
   {
@@ -544,8 +544,8 @@ void FWindow::swapWindow (FWidget* obj1, FWidget* obj2)
   if ( obj2->getFlags().modal )
     return;
 
-  auto iter  = getWindowList()->begin();
-  auto end   = getWindowList()->end();
+  auto iter = getWindowList()->begin();
+  const auto end = getWindowList()->end();
   auto iter1 = end;
   auto iter2 = end;
 
@@ -649,7 +649,7 @@ bool FWindow::zoomWindow()
   if ( zoomed )
   {
     zoomed = false;
-    FRect oldGeometry (getTermGeometryWithShadow());
+    const FRect oldGeometry (getTermGeometryWithShadow());
     setGeometry (normalGeometry);
     restoreVTerm (oldGeometry);
     redraw();
@@ -659,7 +659,7 @@ bool FWindow::zoomWindow()
     zoomed = true;
     // save the current geometry
     normalGeometry = getGeometry();
-    FRect oldGeometry (getTermGeometryWithShadow());
+    const FRect oldGeometry (getTermGeometryWithShadow());
     setGeometry (FPoint(1, 1), FSize(getMaxWidth(), getMaxHeight()));
     restoreVTerm (oldGeometry);
     redraw();
@@ -678,7 +678,7 @@ void FWindow::switchToPrevWindow (FWidget* widget)
   if ( widget )
     widget->updateTerminal (FVTerm::stop_refresh);
 
-  bool is_activated = activatePrevWindow();
+  const bool is_activated = activatePrevWindow();
   auto active_win = static_cast<FWindow*>(getActiveWindow());
 
   if ( ! is_activated )
@@ -686,8 +686,8 @@ void FWindow::switchToPrevWindow (FWidget* widget)
     // no previous window -> looking for another window
     if ( getWindowList() && getWindowList()->size() > 1 )
     {
-      auto iter  = getWindowList()->end();
-      auto begin = getWindowList()->begin();
+      auto iter = getWindowList()->end();
+      const auto begin = getWindowList()->begin();
 
       do
       {
@@ -715,7 +715,7 @@ void FWindow::switchToPrevWindow (FWidget* widget)
     if ( ! active_win->isWindowActive() )
       setActiveWindow(active_win);
 
-    if ( focus)
+    if ( focus )
     {
       focus->setFocus();
 
@@ -733,7 +733,7 @@ void FWindow::switchToPrevWindow (FWidget* widget)
 bool FWindow::activatePrevWindow()
 {
   // activate the previous window
-  auto w = previous_window;
+  const auto& w = previous_window;
 
   if ( w )
   {
@@ -770,8 +770,8 @@ void FWindow::setShadowSize (const FSize& size)
 //----------------------------------------------------------------------
 void FWindow::adjustSize()
 {
-  int old_x = getTermX();
-  int old_y = getTermY();
+  const int old_x = getTermX();
+  const int old_y = getTermY();
   FWidget::adjustSize();
 
   if ( zoomed )

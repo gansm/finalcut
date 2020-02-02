@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2019 Markus Gans                                      *
+* Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -338,7 +338,7 @@ Treeview::Treeview (finalcut::FWidget* parent)
     TreeItem* country_list = continent.child_element;
     finalcut::FStringList continent_line ( continent.begin()
                                          , continent.end() );
-    const auto& iter = listView.insert (continent_line);
+    auto iter = listView.insert (continent_line);
 
     while ( country_list && country_list->name )
     {

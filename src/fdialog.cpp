@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2019 Markus Gans                                      *
+* Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -57,8 +57,8 @@ FDialog::FDialog (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FDialog::~FDialog()  // destructor
 {
-  auto fapp = FApplication::getApplicationObject();
-  bool is_quit = fapp->isQuit();
+  const auto& fapp = FApplication::getApplicationObject();
+  const bool is_quit = fapp->isQuit();
   delete dialog_menu;
   dgl_menuitem = nullptr;
 
@@ -176,14 +176,14 @@ void FDialog::setPos (const FPoint& pos, bool)
     return;
   }
 
-  int dx = getX() - pos.getX();
-  int dy = getY() - pos.getY();
-  int old_x = getTermX();
-  int old_y = getTermY();
+  const int dx = getX() - pos.getX();
+  const int dy = getY() - pos.getY();
+  const int old_x = getTermX();
+  const int old_y = getTermY();
   const auto& shadow = getShadow();
-  std::size_t width = getWidth() + shadow.getWidth();  // width + right shadow
-  std::size_t height = getHeight() + shadow.getHeight();  // height + bottom shadow
-  FRect old_geometry (getTermGeometryWithShadow());
+  const std::size_t width = getWidth() + shadow.getWidth();  // width + right shadow
+  const std::size_t height = getHeight() + shadow.getHeight();  // height + bottom shadow
+  const FRect old_geometry (getTermGeometryWithShadow());
 
   // move to the new position
   FWindow::setPos(pos, false);
@@ -193,8 +193,8 @@ void FDialog::setPos (const FPoint& pos, bool)
   if ( getTermGeometry().overlap(old_geometry) )
   {
     FRect restore{};
-    std::size_t d_width = std::size_t(std::abs(dx));
-    std::size_t d_height = std::size_t(std::abs(dy));
+    const std::size_t d_width = std::size_t(std::abs(dx));
+    const std::size_t d_height = std::size_t(std::abs(dy));
 
     // dx > 0 : move left
     // dx = 0 : move vertical
@@ -285,16 +285,16 @@ void FDialog::setSize (const FSize& size, bool adjust)
     return;
   }
 
-  int x = getTermX();
-  int y = getTermY();
-  int dw = int(getWidth()) - int(size.getWidth());
-  int dh = int(getHeight()) - int(size.getHeight());
+  const int x = getTermX();
+  const int y = getTermY();
+  const int dw = int(getWidth()) - int(size.getWidth());
+  const int dh = int(getHeight()) - int(size.getHeight());
   const auto& shadow = getShadow();
   FWindow::setSize (size, adjust);
 
   // get adjust width and height
-  std::size_t w = getWidth() + shadow.getWidth();
-  std::size_t h = getHeight() + shadow.getHeight();
+  const std::size_t w = getWidth() + shadow.getWidth();
+  const std::size_t h = getHeight() + shadow.getHeight();
 
   // dw > 0 : scale down width
   // dw = 0 : scale only height
@@ -303,8 +303,8 @@ void FDialog::setSize (const FSize& size, bool adjust)
   // dh = 0 : scale only width
   // dh < 0 : scale up height
 
-  std::size_t d_width = std::size_t(dw);
-  std::size_t d_height = std::size_t(dh);
+  const std::size_t d_width = std::size_t(dw);
+  const std::size_t d_height = std::size_t(dh);
 
   // restoring the non-covered terminal areas
   if ( dw > 0 )
@@ -437,9 +437,9 @@ void FDialog::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseDown (FMouseEvent* ev)
 {
-  int width = int(getWidth());
+  const int width = int(getWidth());
 
-  mouseStates ms =
+  const mouseStates ms =
   {
     ev->getX(),
     ev->getY(),
@@ -498,7 +498,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseUp (FMouseEvent* ev)
 {
-  mouseStates ms =
+  const mouseStates ms =
   {
     ev->getX(),
     ev->getY(),
@@ -509,15 +509,15 @@ void FDialog::onMouseUp (FMouseEvent* ev)
 
   if ( ev->getButton() == fc::LeftButton )
   {
-    int titlebar_x = titlebar_click_pos.getX()
-      , titlebar_y = titlebar_click_pos.getY();
+    const int titlebar_x = titlebar_click_pos.getX();
+    const int titlebar_y = titlebar_click_pos.getY();
 
     if ( ! titlebar_click_pos.isOrigin()
       && titlebar_x > int(getTermX()) + 3
       && titlebar_x < getTermX() + int(getWidth())
       && titlebar_y == int(getTermY()) )
     {
-      FPoint deltaPos(ms.termPos - titlebar_click_pos);
+      const FPoint deltaPos(ms.termPos - titlebar_click_pos);
       move (deltaPos);
       titlebar_click_pos = ms.termPos;
     }
@@ -547,7 +547,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseMove (FMouseEvent* ev)
 {
-  mouseStates ms =
+  const mouseStates ms =
   {
     ev->getX(),
     ev->getY(),
@@ -561,7 +561,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 
   if ( ! titlebar_click_pos.isOrigin() )
   {
-    FPoint deltaPos(ms.termPos - titlebar_click_pos);
+    const FPoint deltaPos(ms.termPos - titlebar_click_pos);
     move (deltaPos);
     titlebar_click_pos = ms.termPos;
   }
@@ -577,7 +577,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 {
-  mouseStates ms =
+  const mouseStates ms =
   {
     ev->getX(),
     ev->getY(),
@@ -589,10 +589,10 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  int x = getTermX();
-  int y = getTermY();
-  FRect title_button(x, y, 3, 1);
-  FPoint tPos(ms.termPos);
+  const int x = getTermX();
+  const int y = getTermY();
+  const FRect title_button(x, y, 3, 1);
+  const FPoint tPos(ms.termPos);
 
   if ( title_button.contains(tPos) )
   {
@@ -629,7 +629,7 @@ void FDialog::onAccel (FAccelEvent*)
 {
   if ( ! (isWindowHidden() || isWindowActive()) )
   {
-    bool has_raised = raiseWindow();
+    const bool has_raised = raiseWindow();
     activateDialog();
 
     if ( has_raised )
@@ -913,7 +913,7 @@ void FDialog::drawBorder()
 
   if ( isNewFont() )  // Draw a newfont U-shaped frame
   {
-    FRect r(FPoint(1, 1), getSize());
+    const FRect r(FPoint(1, 1), getSize());
 
     for (int y = r.getY1() + 1; y < r.getY2(); y++)
     {
@@ -1092,9 +1092,9 @@ void FDialog::drawTextBar()
   else
     setColor (wc.titlebar_inactive_fg, wc.titlebar_inactive_bg);
 
-  auto width = getWidth();
-  auto zoom_btn = getZoomButtonWidth();
-  auto length = getColumnWidth(tb_text);
+  const auto width = getWidth();
+  const auto zoom_btn = getZoomButtonWidth();
+  const auto length = getColumnWidth(tb_text);
 
   if ( width > length + MENU_BTN + zoom_btn )
     center_offset = (width - length - MENU_BTN - zoom_btn) / 2;
@@ -1154,7 +1154,7 @@ void FDialog::setCursorToFocusWidget()
     && focus->isShown()
     && focus->hasVisibleCursor() )
   {
-    FPoint cursor_pos(focus->getCursorPos());
+    const FPoint cursor_pos(focus->getCursorPos());
     focus->setCursorPos(cursor_pos);
     updateVTermCursor(getVWin());
   }
@@ -1310,7 +1310,7 @@ void FDialog::pressZoomButton (const mouseStates& ms)
 //----------------------------------------------------------------------
 inline bool FDialog::isMouseOverMenu (const FPoint& termpos)
 {
-  const auto& menu_geometry = dialog_menu->getTermGeometry();
+  auto menu_geometry = dialog_menu->getTermGeometry();
 
   if ( dialog_menu->getCount() > 0 && menu_geometry.contains(termpos) )
     return true;
@@ -1329,7 +1329,7 @@ inline void FDialog::passEventToSubMenu ( const mouseStates& ms
 
   const auto& g = ms.termPos;
   const auto& p = dialog_menu->termToWidgetPos(g);
-  int b = ev->getButton();
+  const int b = ev->getButton();
 
   try
   {
@@ -1415,7 +1415,7 @@ inline void FDialog::moveSizeKey (FKeyEvent* ev)
 //----------------------------------------------------------------------
 inline void FDialog::raiseActivateDialog()
 {
-  bool has_raised = raiseWindow();
+  const bool has_raised = raiseWindow();
   activateDialog();
 
   if ( has_raised )
@@ -1425,7 +1425,7 @@ inline void FDialog::raiseActivateDialog()
 //----------------------------------------------------------------------
 inline void FDialog::lowerActivateDialog()
 {
-  bool has_lowered = lowerWindow();
+  const bool has_lowered = lowerWindow();
 
   if ( ! isWindowActive() )
     activateDialog();
@@ -1472,13 +1472,13 @@ void FDialog::resizeMouseDown (const mouseStates& ms)
   if ( isResizeable() && isLowerRightResizeCorner(ms) )
   {
     resize_click_pos = ms.termPos;
-    FPoint lower_right_pos(getTermGeometry().getLowerRightPos());
+    const FPoint lower_right_pos(getTermGeometry().getLowerRightPos());
 
     if ( ms.termPos != lower_right_pos )
     {
-      FPoint deltaPos(ms.termPos - lower_right_pos);
-      int w = lower_right_pos.getX() + deltaPos.getX() - getTermX() + 1;
-      int h = lower_right_pos.getY() + deltaPos.getY() - getTermY() + 1;
+      const FPoint deltaPos(ms.termPos - lower_right_pos);
+      const int w = lower_right_pos.getX() + deltaPos.getX() - getTermX() + 1;
+      const int h = lower_right_pos.getY() + deltaPos.getY() - getTermY() + 1;
       const FSize& size = FSize(std::size_t(w), std::size_t(h));
       setSize (size, true);
     }
@@ -1495,12 +1495,12 @@ void FDialog::resizeMouseUpMove (const mouseStates& ms, bool mouse_up)
   // Resize the dialog
   if ( isResizeable() && ! resize_click_pos.isOrigin() )
   {
-    auto r = getRootWidget();
+    const auto& r = getRootWidget();
     resize_click_pos = ms.termPos;
-    int x2 = resize_click_pos.getX()
-      , y2 = resize_click_pos.getY()
-      , x2_offset{0}
-      , y2_offset{0};
+    const int x2 = resize_click_pos.getX();
+    const int y2 = resize_click_pos.getY();
+    int x2_offset{0};
+    int y2_offset{0};
 
     if ( r )
     {
@@ -1511,7 +1511,7 @@ void FDialog::resizeMouseUpMove (const mouseStates& ms, bool mouse_up)
     if ( ms.termPos != getTermGeometry().getLowerRightPos() )
     {
       int w{}, h{};
-      FPoint deltaPos(ms.termPos - resize_click_pos);
+      const FPoint deltaPos(ms.termPos - resize_click_pos);
 
       if ( x2 - x2_offset <= int(getMaxWidth()) )
         w = resize_click_pos.getX() + deltaPos.getX() - getTermX() + 1;

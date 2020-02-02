@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2019 Markus Gans                                      *
+* Copyright 2016-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -105,7 +105,7 @@ void Transparent::draw()
   else
     setTransparent();
 
-  finalcut::FString line(getClientWidth(), '.');
+  const finalcut::FString line(getClientWidth(), '.');
 
   for (int n{1}; n <= int(getClientHeight()); n++)
   {

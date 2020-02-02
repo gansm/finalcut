@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2019 Markus Gans                                      *
+* Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -118,8 +118,8 @@ Scrollview::~Scrollview()
 void Scrollview::setScrollSize (const FSize& size)
 {
   FScrollView::setScrollSize (size);
-  int width = int(size.getWidth());
-  int height = int(size.getHeight());
+  const int width = int(size.getWidth());
+  const int height = int(size.getHeight());
   go_south.setPos (FPoint(width - 5, 1));
   go_west.setPos (FPoint(width - 5, height - 1));
   go_north.setPos (FPoint(1, height - 1));

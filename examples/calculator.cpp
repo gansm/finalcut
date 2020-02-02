@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2019 Markus Gans                                      *
+* Copyright 2016-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -92,7 +92,7 @@ void Button::setChecked (bool enable)
 //----------------------------------------------------------------------
 void Button::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  FKey key = ev->key();
+  const FKey key = ev->key();
 
   // catch the enter key
   if ( key == fc::Fkey_return || key == fc::Fkey_enter )
@@ -210,7 +210,7 @@ class Calc : public finalcut::FDialog
     void           clearInfixOperator();
     void           calcInfixOperator();
     void           adjustSize() override;
-    const wchar_t* getButtonText (std::size_t);
+    const wchar_t* getButtonText (const std::size_t);
     void           mapKeyFunctions();
 
     // Data members
@@ -257,9 +257,9 @@ Calc::Calc (FWidget* parent)
       btn->setGeometry(FPoint(30, 15), FSize(5, 3));
     else
     {
-      std::size_t n = ( key <= Three ) ? 0 : 1;
-      int x = int(key + n) % 5 * 7 + 2;
-      int y = int(key + n) / 5 * 2 + 3;
+      const std::size_t n = ( key <= Three ) ? 0 : 1;
+      const int x = int(key + n) % 5 * 7 + 2;
+      const int y = int(key + n) / 5 * 2 + 3;
       btn->setGeometry(FPoint(x, y), FSize(5, 1));
     }
 
@@ -338,17 +338,17 @@ void Calc::drawDispay()
 
   if ( isNewFont() )
   {
-    wchar_t bottom_line     {fc::NF_border_line_bottom};
-    wchar_t top_bottom_line {fc::NF_border_line_up_and_down};
-    wchar_t top_line        {fc::NF_border_line_upper};
-    wchar_t right_line      {fc::NF_rev_border_line_right};
-    wchar_t left_line       {fc::NF_border_line_left};
+    const wchar_t bottom_line     {fc::NF_border_line_bottom};
+    const wchar_t top_bottom_line {fc::NF_border_line_up_and_down};
+    const wchar_t top_line        {fc::NF_border_line_upper};
+    const wchar_t right_line      {fc::NF_rev_border_line_right};
+    const wchar_t left_line       {fc::NF_border_line_left};
     print() << FPoint(3, 2) << finalcut::FString(33, bottom_line);
     print() << FPoint(2, 3) << right_line;
     print() << FPoint(36, 3) << left_line;
     print() << FPoint(3, 4);
-    finalcut::FString top_bottom_line_5 (5, top_bottom_line);
-    finalcut::FString top_line_2 (2, top_line);
+    const finalcut::FString top_bottom_line_5 (5, top_bottom_line);
+    const finalcut::FString top_line_2 (2, top_line);
     print ( top_bottom_line_5 + top_line_2
           + top_bottom_line_5 + top_line_2
           + top_bottom_line_5 + top_line_2
@@ -357,9 +357,9 @@ void Calc::drawDispay()
   }
   else
   {
-    wchar_t vertical_and_right {fc::BoxDrawingsVerticalAndRight};
-    wchar_t horizontal         {fc::BoxDrawingsHorizontal};
-    wchar_t vertical_and_left  {fc::BoxDrawingsVerticalAndLeft};
+    const wchar_t vertical_and_right {fc::BoxDrawingsVerticalAndRight};
+    const wchar_t horizontal         {fc::BoxDrawingsHorizontal};
+    const wchar_t vertical_and_left  {fc::BoxDrawingsVerticalAndLeft};
     finalcut::FString separator ( finalcut::FString(vertical_and_right)
                                 + finalcut::FString(35, horizontal)
                                 + finalcut::FString(vertical_and_left) );
@@ -601,7 +601,7 @@ void Calc::pi (lDouble& x)
 //----------------------------------------------------------------------
 void Calc::open_bracket (lDouble&)
 {
-  stack_data d{ a, infix_operator };
+  const stack_data d{ a, infix_operator };
   bracket_stack.push(d);
   clearInfixOperator();
   input = "";
@@ -617,7 +617,7 @@ void Calc::close_bracket (lDouble&)
 
   calcInfixOperator();
   setDisplay(a);
-  stack_data d = bracket_stack.top();
+  const stack_data d = bracket_stack.top();
   bracket_stack.pop();
   b = d.term;
   infix_operator = d.infix_operator;
@@ -841,7 +841,7 @@ void Calc::draw()
 bool Calc::isDataEntryKey (int key)
 {
   // Test if key is in {'.', '0'..'9'}
-  int data_entry_keys[] =
+  const int data_entry_keys[] =
   {
     Decimal_point,
     Zero,
@@ -856,7 +856,7 @@ bool Calc::isDataEntryKey (int key)
     Nine
   };
 
-  int* iter = std::find (data_entry_keys, data_entry_keys + 11, key);
+  const int* iter = std::find (data_entry_keys, data_entry_keys + 11, key);
 
   if ( iter != data_entry_keys + 11 )
     return true;
@@ -868,7 +868,7 @@ bool Calc::isDataEntryKey (int key)
 bool Calc::isOperatorKey(int key)
 {
   // Test if key is in {'*', '/', '+', '-', '^', '='}
-  int operators[] =
+  const int operators[] =
   {
     Multiply,
     Divide,
@@ -878,7 +878,7 @@ bool Calc::isOperatorKey(int key)
     Equals
   };
 
-  int* iter = std::find (operators, operators + 6, key);
+  const int* iter = std::find (operators, operators + 6, key);
 
   if ( iter != operators + 6 )
     return true;
@@ -980,8 +980,8 @@ void Calc::calcInfixOperator()
 //----------------------------------------------------------------------
 void Calc::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  std::size_t len = input.getLength();
-  FKey key = ev->key();
+  const std::size_t len = input.getLength();
+  const FKey key = ev->key();
 
   switch ( key )
   {
@@ -1040,7 +1040,7 @@ void Calc::onClose (finalcut::FCloseEvent* ev)
 void Calc::cb_buttonClicked (finalcut::FWidget*, FDataPtr data)
 {
   lDouble& x = getValue();
-  Calc::button key = *(static_cast<Calc::button*>(data));
+  const Calc::button key = *(static_cast<Calc::button*>(data));
 
   // Call the key function
   (this->*key_map[key])(x);
@@ -1071,15 +1071,15 @@ void Calc::cb_buttonClicked (finalcut::FWidget*, FDataPtr data)
 //----------------------------------------------------------------------
 void Calc::adjustSize()
 {
-  std::size_t pw = getDesktopWidth();
-  std::size_t ph = getDesktopHeight();
+  const std::size_t pw = getDesktopWidth();
+  const std::size_t ph = getDesktopHeight();
   setX (1 + int(pw - getWidth()) / 2, false);
   setY (1 + int(ph - getHeight()) / 2, false);
   finalcut::FDialog::adjustSize();
 }
 
 //----------------------------------------------------------------------
-const wchar_t* Calc::getButtonText (std::size_t key)
+const wchar_t* Calc::getButtonText (const std::size_t key)
 {
   static const wchar_t* const button_text[Calc::NUM_OF_BUTTONS] =
   {

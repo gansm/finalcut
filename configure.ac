@@ -13,6 +13,9 @@ AM_INIT_AUTOMAKE
 AC_PROG_CC
 AC_PROG_CXX
 
+m4_pattern_forbid([^AX_CHECK_COMPILE_FLAG\b],
+		  [Macro AX_CHECK_COMPILE_FLAG not found. Please install GNU autoconf-archive])
+
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS( \

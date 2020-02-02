@@ -185,7 +185,7 @@ void FMenuItem::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FMenuItem::addAccelerator (FKey key, FWidget* obj)
 {
-  auto root = getRootWidget();
+  const auto& root = getRootWidget();
   FAccelerator accel = { key, obj };
 
   if ( root )
@@ -475,8 +475,8 @@ bool FMenuItem::isMenu (FWidget* w) const
   if ( ! w )
     return false;
 
-  bool m1 = w->isInstanceOf("FMenu");
-  bool m2 = w->isInstanceOf("FDialogListMenu");
+  const bool m1 = w->isInstanceOf("FMenu");
+  const bool m2 = w->isInstanceOf("FDialogListMenu");
   return bool( m1 || m2 );
 }
 
@@ -583,7 +583,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 
   if ( getDialogList() && ! getDialogList()->empty() )
   {
-    auto first = getDialogList()->begin();
+    const auto& first = getDialogList()->begin();
     auto iter = first;
 
     while ( iter != getDialogList()->end() && *iter )
@@ -593,7 +593,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
       if ( win )
       {
         FMenuItem* win_item{};
-        uInt32 n = uInt32(std::distance(first, iter));
+        const uInt32 n = uInt32(std::distance(first, iter));
         // get the dialog title
         const auto& name = win->getText();
 
@@ -644,7 +644,7 @@ void FMenuItem::passMouseEvent ( T widget, FMouseEvent* ev
 
   const auto& t = ev->getTermPos();
   const auto& p2 = widget->termToWidgetPos(t);
-  int b = ev->getButton();
+  const int b = ev->getButton();
   std::shared_ptr<FMouseEvent> _ev;
 
   try
@@ -694,7 +694,7 @@ void FMenuItem::cb_switchToDialog (FWidget*, FDataPtr data)
 void FMenuItem::cb_destroyDialog (FWidget* widget, FDataPtr)
 {
   auto win = static_cast<FDialog*>(widget);
-  auto fapp = FApplication::getApplicationObject();
+  const auto& fapp = FApplication::getApplicationObject();
 
   if ( win && fapp )
   {

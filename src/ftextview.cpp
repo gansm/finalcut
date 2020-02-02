@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -132,15 +132,15 @@ void FTextView::scrollBy (int dx, int dy)
 //----------------------------------------------------------------------
 void FTextView::scrollTo (int x, int y)
 {
-  bool changeX( x != xoffset );
-  bool changeY( y != yoffset );
+  const bool changeX( x != xoffset );
+  const bool changeY( y != yoffset );
 
   if ( ! isShown() || ! (changeX || changeY) )
     return;
 
   if ( changeX && isHorizontallyScrollable() )
   {
-    int xoffset_end = int(maxLineWidth - getTextWidth());
+    const int xoffset_end = int(maxLineWidth - getTextWidth());
     xoffset = x;
 
     if ( xoffset < 0 )
@@ -158,7 +158,7 @@ void FTextView::scrollTo (int x, int y)
 
   if ( changeY && isVerticallyScrollable() )
   {
-    int yoffset_end = int(getRows() - getTextHeight());
+    const int yoffset_end = int(getRows() - getTextHeight());
     yoffset = y;
 
     if ( yoffset < 0 )
@@ -213,7 +213,7 @@ void FTextView::insert (const FString& str, int pos)
                .removeDel()
                .replaceControlCodes()
                .rtrim();
-    auto column_width = getColumnWidth(line);
+    const auto column_width = getColumnWidth(line);
 
     if ( column_width > maxLineWidth )
     {
@@ -221,9 +221,9 @@ void FTextView::insert (const FString& str, int pos)
 
       if ( column_width > getTextWidth() )
       {
-        int hmax = ( maxLineWidth > getTextWidth() )
-                   ? int(maxLineWidth) - int(getTextWidth())
-                   : 0;
+        const int hmax = ( maxLineWidth > getTextWidth() )
+                         ? int(maxLineWidth) - int(getTextWidth())
+                         : 0;
         hbar->setMaximum (hmax);
         hbar->setPageSize (int(maxLineWidth), int(getTextWidth()));
         hbar->calculateSliderValues();
@@ -236,9 +236,9 @@ void FTextView::insert (const FString& str, int pos)
 
   auto iter = data.begin();
   data.insert (iter + pos, text_split.begin(), text_split.end());
-  int vmax = ( getRows() > getTextHeight() )
-             ? int(getRows()) - int(getTextHeight())
-             : 0;
+  const int vmax = ( getRows() > getTextHeight() )
+                   ? int(getRows()) - int(getTextHeight())
+                   : 0;
   vbar->setMaximum (vmax);
   vbar->setPageSize (int(getRows()), int(getTextHeight()));
   vbar->calculateSliderValues();
@@ -296,7 +296,7 @@ void FTextView::clear()
   else
     drawBorder();
 
-  std::size_t size = getWidth() - 2;
+  const std::size_t size = getWidth() - 2;
 
   if ( size == 0 )
     return;
@@ -314,7 +314,7 @@ void FTextView::clear()
 //----------------------------------------------------------------------
 void FTextView::onKeyPress (FKeyEvent* ev)
 {
-  int idx = int(ev->key());
+  const int idx = int(ev->key());
 
   if ( key_map.find(idx) != key_map.end() )
   {
@@ -346,13 +346,13 @@ void FTextView::onMouseDown (FMouseEvent* ev)
   if ( ! parent )
     return;
 
-  auto dialog = static_cast<FDialog*>(parent);
+  const auto& dialog = static_cast<FDialog*>(parent);
 
   if ( parent->isDialogWidget()
     && dialog->isResizeable()
     && ! dialog->isZoomed() )
   {
-    int b = ev->getButton();
+    const int b = ev->getButton();
     const auto& tp = ev->getTermPos();
     const auto& p = parent->termToWidgetPos(tp);
     parent->setFocus();
@@ -377,11 +377,11 @@ void FTextView::onMouseUp (FMouseEvent* ev)
 
   if ( parent && parent->isDialogWidget() )
   {
-    auto dialog = static_cast<FDialog*>(parent);
+    const auto& dialog = static_cast<FDialog*>(parent);
 
     if ( dialog->isResizeable() && ! dialog->isZoomed() )
     {
-      int b = ev->getButton();
+      const int b = ev->getButton();
       const auto& tp = ev->getTermPos();
       const auto& p = parent->termToWidgetPos(tp);
       parent->setFocus();
@@ -410,11 +410,11 @@ void FTextView::onMouseMove (FMouseEvent* ev)
 
   if ( parent && parent->isDialogWidget() )
   {
-    auto dialog = static_cast<FDialog*>(parent);
+    const auto& dialog = static_cast<FDialog*>(parent);
 
     if ( dialog->isResizeable() && ! dialog->isZoomed() )
     {
-      int b = ev->getButton();
+      const int b = ev->getButton();
       const auto& tp = ev->getTermPos();
       const auto& p = parent->termToWidgetPos(tp);
       parent->setFocus();
@@ -436,7 +436,7 @@ void FTextView::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FTextView::onWheel (FWheelEvent* ev)
 {
-  int distance{4};
+  static constexpr int distance = 4;
 
   switch ( ev->getWheel() )
   {
@@ -481,10 +481,10 @@ void FTextView::onFocusOut (FFocusEvent*)
 void FTextView::adjustSize()
 {
   FWidget::adjustSize();
-  std::size_t width = getWidth();
-  std::size_t height = getHeight();
-  int last_line = int(getRows());
-  int max_width = int(maxLineWidth);
+  const std::size_t width = getWidth();
+  const std::size_t height = getHeight();
+  const int last_line = int(getRows());
+  const int max_width = int(maxLineWidth);
 
   if ( xoffset >= max_width - int(width) - nf_offset )
     xoffset = max_width - int(width) - nf_offset - 1;
@@ -501,9 +501,9 @@ void FTextView::adjustSize()
   if ( height < 3 )
     return;
 
-  int vmax = ( last_line > int(height) - 2 + nf_offset )
-             ? last_line - int(height) + 2 - nf_offset
-             : 0;
+  const int vmax = ( last_line > int(height) - 2 + nf_offset )
+                   ? last_line - int(height) + 2 - nf_offset
+                   : 0;
   vbar->setMaximum (vmax);
   vbar->setPageSize (last_line, int(height) - 2 + nf_offset);
   vbar->setX (int(width));
@@ -514,9 +514,9 @@ void FTextView::adjustSize()
   if ( width < 3 )
     return;
 
-  int hmax = ( max_width > int(width) - nf_offset - 2 )
-             ? max_width - int(width) + nf_offset + 2
-             : 0;
+  const int hmax = ( max_width > int(width) - nf_offset - 2 )
+                   ? max_width - int(width) + nf_offset + 2
+                   : 0;
   hbar->setMaximum (hmax);
   hbar->setPageSize (max_width, int(width) - nf_offset - 2);
   hbar->setY (int(height));
@@ -614,7 +614,7 @@ void FTextView::drawBorder()
     if ( isMonochron() )
       setReverse(true);
 
-    FRect box(FPoint(1, 1), getSize());
+    const FRect box(FPoint(1, 1), getSize());
     finalcut::drawListBorder (this, box);
 
     if ( isMonochron() )
@@ -654,12 +654,12 @@ void FTextView::drawText()
 
   for (std::size_t y{0}; y < num; y++)  // Line loop
   {
-    std::size_t n = std::size_t(yoffset) + y;
-    std::size_t pos = std::size_t(xoffset) + 1;
+    const std::size_t n = std::size_t(yoffset) + y;
+    const std::size_t pos = std::size_t(xoffset) + 1;
+    const auto text_width = getTextWidth();
+    const FString line(getColumnSubString(data[n], pos, text_width));
+    const auto column_width = getColumnWidth(line);
     std::size_t trailing_whitespace{0};
-    auto text_width = getTextWidth();
-    FString line(getColumnSubString(data[n], pos, text_width));
-    auto column_width = getColumnWidth(line);
     print() << FPoint(2, 2 - nf_offset + int(y));
 
     for (auto&& ch : line)  // Column loop
@@ -685,7 +685,7 @@ void FTextView::drawText()
 //----------------------------------------------------------------------
 inline bool FTextView::useFDialogBorder()
 {
-  auto parent = getParentWidget();
+  const auto& parent = getParentWidget();
   bool use_fdialog_border{false};
 
   if ( parent
@@ -707,7 +707,7 @@ inline bool FTextView::isPrintable (wchar_t ch)
 {
   // Check for printable characters
 
-  bool utf8 = ( getEncoding() == fc::UTF8 ) ? true : false;
+  const bool utf8 = ( getEncoding() == fc::UTF8 ) ? true : false;
 
   if ( (utf8 && std::iswprint(std::wint_t(ch)))
     || (!utf8 && std::isprint(ch)) )
@@ -725,8 +725,8 @@ void FTextView::processChanged()
 //----------------------------------------------------------------------
 void FTextView::changeOnResize()
 {
-  std::size_t width  = getWidth();
-  std::size_t height = getHeight();
+  const std::size_t width  = getWidth();
+  const std::size_t height = getHeight();
 
   if ( isNewFont() )
   {
@@ -746,9 +746,9 @@ void FTextView::changeOnResize()
 //----------------------------------------------------------------------
 void FTextView::cb_VBarChange (FWidget*, FDataPtr)
 {
-  FScrollbar::sType scrollType = vbar->getScrollType();
+  const FScrollbar::sType scrollType = vbar->getScrollType();
+  static constexpr int wheel_distance = 4;
   int distance{1};
-  int wheel_distance{4};
 
   if ( scrollType >= FScrollbar::scrollStepBackward )
     update_scrollbar = true;
@@ -797,9 +797,9 @@ void FTextView::cb_VBarChange (FWidget*, FDataPtr)
 //----------------------------------------------------------------------
 void FTextView::cb_HBarChange (FWidget*, FDataPtr)
 {
-  FScrollbar::sType scrollType = hbar->getScrollType();
+  const FScrollbar::sType scrollType = hbar->getScrollType();
+  static constexpr int wheel_distance = 4;
   int distance{1};
-  int wheel_distance{4};
 
   if ( scrollType >= FScrollbar::scrollStepBackward )
     update_scrollbar = true;

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -137,7 +137,7 @@ void FMessageBox::setHeadline (const FString& headline)
   for (uInt n{0}; n < num_buttons; n++)
     button[n]->setY (int(getHeight()) - 4, false);
 
-  std::size_t column_width = getColumnWidth(headline_text);
+  const std::size_t column_width = getColumnWidth(headline_text);
 
   if ( column_width > max_line_width )
     max_line_width = column_width;
@@ -166,7 +166,7 @@ void FMessageBox::adjustSize()
 {
   std::size_t max_width{};
   std::size_t max_height{};
-  auto root_widget = getRootWidget();
+  const auto& root_widget = getRootWidget();
 
   if ( root_widget )
   {
@@ -180,8 +180,8 @@ void FMessageBox::adjustSize()
     max_height = 24;
   }
 
-  int x = 1 + int((max_width - getWidth()) / 2);
-  int y = 1 + int((max_height - getHeight()) / 3);
+  const int x = 1 + int((max_width - getWidth()) / 2);
+  const int y = 1 + int((max_height - getHeight()) / 3);
   setPos(FPoint(x, y), false);
   FDialog::adjustSize();
 }
@@ -189,7 +189,7 @@ void FMessageBox::adjustSize()
 //----------------------------------------------------------------------
 void FMessageBox::cb_processClick (FWidget*, FDataPtr data)
 {
-  int reply = *(static_cast<int*>(data));
+  const int reply = *(static_cast<int*>(data));
   done (reply);
 }
 
@@ -321,7 +321,7 @@ void FMessageBox::calculateDimensions()
 
   for (auto&& line : text_components)
   {
-    std::size_t column_width = getColumnWidth(line);
+    const std::size_t column_width = getColumnWidth(line);
 
     if ( column_width > max_line_width )
       max_line_width = column_width;
@@ -345,7 +345,7 @@ void FMessageBox::draw()
   int head_offset{0};
   int center_x{0};
   // center the whole block
-  int msg_x = int((getWidth() - max_line_width) / 2);
+  const int msg_x = int((getWidth() - max_line_width) / 2);
 
   if ( isMonochron() )
     setReverse(true);
@@ -353,7 +353,7 @@ void FMessageBox::draw()
   if ( ! headline_text.isEmpty() )
   {
     setColor(emphasis_color, getBackgroundColor());
-    std::size_t headline_width = getColumnWidth(headline_text);
+    const std::size_t headline_width = getColumnWidth(headline_text);
 
     if ( center_text )  // center one line
       center_x = int((max_line_width - headline_width) / 2);
@@ -366,7 +366,7 @@ void FMessageBox::draw()
 
   for (auto&& line : text_components)
   {
-    std::size_t line_width = getColumnWidth(line);
+    const std::size_t line_width = getColumnWidth(line);
 
     if ( center_text )  // center one line
       center_x = int((max_line_width - line_width) / 2);
@@ -428,13 +428,13 @@ void FMessageBox::adjustButtons()
   if ( btn_width + 4 >= getWidth() )
   {
     std::size_t max_width;
-    auto root_widget = getRootWidget();
+    const auto& root_widget = getRootWidget();
     setWidth(btn_width + 5);
     max_width = ( root_widget ) ? root_widget->getClientWidth() : 80;
     setX (int((max_width - getWidth()) / 2));
   }
 
-  int btn_x = int((getWidth() - btn_width) / 2);
+  const int btn_x = int((getWidth() - btn_width) / 2);
 
   for (std::size_t n{0}; n < num_buttons; n++)
   {
@@ -442,7 +442,7 @@ void FMessageBox::adjustButtons()
       button[n]->setX(btn_x);
     else
     {
-      int btn_size = int(button[n]->getWidth());
+      const int btn_size = int(button[n]->getWidth());
       button[n]->setX(btn_x + int(n) * (btn_size + int(gap)));
     }
   }

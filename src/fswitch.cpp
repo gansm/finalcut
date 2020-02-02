@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -142,7 +142,7 @@ void FSwitch::drawCheckButton()
 inline void FSwitch::drawChecked()
 {
   wchar_t on[6]{L"  On "};
-  wchar_t off[6]{L" Off "};
+  const wchar_t off[6]{L" Off "};
   const auto& wc = getFWidgetColors();
 
   if ( hasFocus() && ! button_pressed )
@@ -191,7 +191,7 @@ inline void FSwitch::drawChecked()
 //----------------------------------------------------------------------
 inline void FSwitch::drawUnchecked()
 {
-  wchar_t on[6]{L"  On "};
+  const wchar_t on[6]{L"  On "};
   wchar_t off[6]{L" Off "};
 
   const auto& wc = getFWidgetColors();

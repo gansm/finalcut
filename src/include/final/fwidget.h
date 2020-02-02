@@ -526,8 +526,8 @@ class FWidget : public FVTerm, public FObject
 // implemented in fwidget_functions.cpp
 //----------------------------------------------------------------------
 void        detectTermSize();
-bool        isFocusNextKey (FKey);
-bool        isFocusPrevKey (FKey);
+bool        isFocusNextKey (const FKey);
+bool        isFocusPrevKey (const FKey);
 FKey        getHotkey (const FString&);
 std::size_t getHotkeyPos (const FString& src, FString& dest);
 void        setHotkeyViaString (FWidget*, const FString&);
@@ -537,9 +537,9 @@ void        drawBlockShadow (FWidget*);
 void        clearShadow (FWidget*);
 void        drawFlatBorder (FWidget*);
 void        clearFlatBorder (FWidget*);
-void        checkBorder (FWidget*, FRect);
+void        checkBorder (FWidget*, FRect&);
 void        drawBorder (FWidget*, FRect);
-void        drawListBorder (FWidget*, const FRect&);
+void        drawListBorder (FWidget*, FRect);
 void        drawBox (FWidget*, const FRect&);
 void        drawNewFontBox (FWidget*, const FRect&);
 void        drawNewFontListBox (FWidget*, const FRect&);

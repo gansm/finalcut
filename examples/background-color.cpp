@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019 Markus Gans                                           *
+* Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -189,8 +189,8 @@ void Background::cb_choice (finalcut::FWidget*, FDataPtr)
     return;
 
   uChar r{}, g{}, b{};
-  FDataPtr data_ptr = color_choice.getItemData();
-  RGB* rgb = reinterpret_cast<RGB*>(data_ptr);
+  const FDataPtr data_ptr = color_choice.getItemData();
+  const RGB* rgb = reinterpret_cast<RGB*>(data_ptr);
   std::tie(r, g, b) = *rgb;
   red.setValue(r);
   green.setValue(g);

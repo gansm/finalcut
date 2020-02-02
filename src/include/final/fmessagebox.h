@@ -207,7 +207,7 @@ int FMessageBox::info ( FWidget* parent
                    , FString() << message
                    , button0, button1, button2
                    , parent );
-  int reply = mbox.exec();
+  const int reply = mbox.exec();
   return reply;
 }
 
@@ -232,7 +232,7 @@ int FMessageBox::error ( FWidget* parent
   mbox.setForegroundColor(wc.error_box_fg);
   mbox.setBackgroundColor(wc.error_box_bg);
   mbox.emphasis_color = wc.error_box_emphasis_fg;
-  int reply = mbox.exec();
+  const int reply = mbox.exec();
   return reply;
 }
 

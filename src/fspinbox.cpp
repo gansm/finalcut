@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019 Markus Gans                                           *
+* Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -163,7 +163,7 @@ void FSpinBox::hide()
 {
   input_field.hide();
   FWidget::hide();
-  FSize shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
+  const FSize shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
   hideArea (getSize() + shadow);
 }
 
@@ -173,7 +173,7 @@ void FSpinBox::onKeyPress (FKeyEvent* ev)
   if ( ! isEnabled() )
     return;
 
-  FKey key = ev->key();
+  const FKey key = ev->key();
 
   switch ( key )
   {
@@ -215,8 +215,8 @@ void FSpinBox::onMouseDown (FMouseEvent* ev)
   if ( min == max )
     return;
 
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
 
   if ( mouse_x == int(getWidth()) - 1 && mouse_y == 1 )
   {
@@ -248,7 +248,7 @@ void FSpinBox::onMouseUp (FMouseEvent*)
 //----------------------------------------------------------------------
 void FSpinBox::onWheel (FWheelEvent* ev)
 {
-  int wheel = ev->getWheel();
+  const int wheel = ev->getWheel();
 
   delOwnTimer();
   forceFocus();
@@ -324,7 +324,7 @@ void FSpinBox::draw()
 {
   const auto& wc = getFWidgetColors();
 
-  FColorPair inc_button_color = [&] () -> FColorPair
+  const FColorPair inc_button_color = [&] () -> FColorPair
   {
     if ( value == max )
       return FColorPair ( wc.scrollbar_button_inactive_fg
@@ -334,7 +334,7 @@ void FSpinBox::draw()
                         , wc.scrollbar_button_bg );
   }();
 
-  FColorPair dec_button_color = [&] () -> FColorPair
+  const FColorPair dec_button_color = [&] () -> FColorPair
   {
     if ( value == min )
       return FColorPair ( wc.scrollbar_button_inactive_fg
@@ -415,7 +415,7 @@ void FSpinBox::forceFocus()
 //----------------------------------------------------------------------
 void FSpinBox::cb_inputFieldChange (finalcut::FWidget* w, FDataPtr)
 {
-  auto lineedit = static_cast<FLineEdit*>(w);
+  const auto& lineedit = static_cast<FLineEdit*>(w);
 
   if ( lineedit->getText().isEmpty() )
     value = 0;
@@ -427,7 +427,7 @@ void FSpinBox::cb_inputFieldChange (finalcut::FWidget* w, FDataPtr)
 
     if ( std::regex_search(text, match, regex) )
     {
-      FString tmp(match[0]);
+      const FString tmp(match[0]);
       value = tmp.toLong();
     }
     else

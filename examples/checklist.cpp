@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2019 Markus Gans                                      *
+* Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -73,7 +73,7 @@ CheckList::CheckList (finalcut::FWidget* parent)
 {
   setText (L"Shopping list");
   setShadow();
-  std::size_t nf_offset = ( isNewFont() ) ? 1 : 0;
+  const std::size_t nf_offset = ( isNewFont() ) ? 1 : 0;
   setGeometry ( FPoint(int(1 + (parent->getWidth() - 28) / 2), 5)
               , FSize(28 + nf_offset, 13) );
   listView.ignorePadding();
