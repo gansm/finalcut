@@ -50,6 +50,12 @@ int main (int argc, char* argv[])
   return app.exec();
 }
 ```
+<figure class="image">
+  <img src="first-steps_dialog.cpp.png" alt="dialog.cpp">
+  <figcaption>Figure 1.  A blank dialog</figcaption>
+</figure>
+<br />
+
 *(Note: You can close the dialog with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
 
@@ -191,6 +197,12 @@ int main (int argc, char* argv[])
   return app.exec();
 }
 ```
+<figure class="image">
+  <img src="first-steps_memory.cpp.png" alt="memory.cpp">
+  <figcaption>Figure 2.  FObject manages its child objects</figcaption>
+</figure>
+<br />
+
 *(Note: You can close the window with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
 
@@ -319,6 +331,12 @@ int main (int argc, char* argv[])
   return app.exec();
 }
 ```
+<figure class="image">
+  <img src="first-steps_timer.cpp.png" alt="timer.cpp">
+  <figcaption>Figure 3.  FObject::onTimer event handler</figcaption>
+</figure>
+<br />
+
 *(Note: You can close the window with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
 
@@ -477,6 +495,12 @@ int main (int argc, char* argv[])
   return app.exec();
 }
 ```
+<figure class="image">
+  <img src="first-steps_callback-function.cpp.png" alt="callback-function.cpp">
+  <figcaption>Figure 4.  Button with a callback function</figcaption>
+</figure>
+<br />
+
 *(Note: You can close the dialog with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
 
@@ -535,6 +559,12 @@ int main (int argc, char* argv[])
   return app.exec();
 }
 ```
+<figure class="image">
+  <img src="first-steps_callback-lambda.cpp.png" alt="callback-lambda.cpp">
+  <figcaption>Figure 5.  Button with lambda expression callback.</figcaption>
+</figure>
+<br />
+
 *(Note: You can close the dialog with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
 
@@ -587,6 +617,12 @@ int main (int argc, char* argv[])
   return app.exec();
 }
 ```
+<figure class="image">
+  <img src="first-steps_callback-method.cpp.png" alt="callback-method.cpp">
+  <figcaption>Figure 6.  Button with a callback method</figcaption>
+</figure>
+<br />
+
 *(Note: You can close the window with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
 
@@ -619,7 +655,7 @@ class dialogWidget : public FDialog
     {
       setGeometry (FPoint(25, 5), FSize(22, 7));
       setText ("Emit signal");
-      FSize size(5, 1);
+      const FSize size(5, 1);
       label.setGeometry (FPoint(8, 1), size);
       label.setAlignment (fc::alignRight);
       label.setForegroundColor (fc::Black);
@@ -725,6 +761,12 @@ int main (int argc, char* argv[])
   return app.exec();
 }
 ```
+<figure class="image">
+  <img src="first-steps_emit-signal.cpp.png" alt="emit-signal.cpp">
+  <figcaption>Figure 7.  Callbacks with custom signals</figcaption>
+</figure>
+<br />
+
 *(Note: You can close the window with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
 
@@ -762,7 +804,7 @@ If you want to ignore padding spaces, you must force this with the
 
 <figure class="image">
   <img src="widget-coordinates.svg" alt="widget-coordinates">
-  <figcaption>Figure 1.  Widget coordinates</figcaption>
+  <figcaption>Figure 8.  Widget coordinates</figcaption>
 </figure>
 <br /><br />
 
@@ -812,7 +854,7 @@ methods.
 
 <figure class="image">
   <img src="widget-lengths.svg" alt="widget-lengths">
-  <figcaption>Figure 2.  Width and height of a widget</figcaption>
+  <figcaption>Figure 9.  Width and height of a widget</figcaption>
 </figure>
 <br /><br />
 
@@ -865,7 +907,7 @@ absolute geometry values as a `FRect` object, you can call the method
 
 <figure class="image">
   <img src="widget-geometry.svg" alt="widget-geometry">
-  <figcaption>Figure 3.  Geometry of widgets</figcaption>
+  <figcaption>Figure 10.  Geometry of widgets</figcaption>
 </figure>
 <br /><br />
 
@@ -946,11 +988,11 @@ class dialogWidget : public FDialog
 
     void adjustWidgets()
     {
-      auto bx = int(getWidth() - button.getWidth() - 3);
-      auto by = int(getHeight() - 4);
+      const auto bx = int(getWidth() - button.getWidth() - 3);
+      const auto by = int(getHeight() - 4);
       button.setPos (FPoint(bx, by), false);
       input.setWidth (getWidth() - 4);
-      auto ly = int(getHeight() / 2) - 1;
+      const auto ly = int(getHeight() / 2) - 1;
       input.setY (ly, false);
     }
 
@@ -996,6 +1038,12 @@ int main (int argc, char* argv[])
   return app.exec();
 }
 ```
+<figure class="image">
+  <img src="first-steps_size-adjustment.cpp.png" alt="size-adjustment.cpp">
+  <figcaption>Figure 11.  Dynamic layout</figcaption>
+</figure>
+<br />
+
 *(Note: You can close the window with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
 
@@ -1118,6 +1166,12 @@ int main (int argc, char* argv[])
   return app.exec();
 }
 ```
+<figure class="image">
+  <img src="first-steps_scrollview.cpp.png" alt="scrollview.cpp">
+  <figcaption>Figure 12.  Dialog with a scrolling viewport</figcaption>
+</figure>
+<br />
+
 *(Note: You can close the window with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
 

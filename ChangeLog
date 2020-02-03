@@ -1,3 +1,6 @@
+2020-02-04  Markus Gans  <guru.mail@muenster.de>
+	* Add screenshorts to the first steps document
+
 2020-02-02  Markus Gans  <guru.mail@muenster.de>
 	* The methods clear() and remove() were added to FListView
 	* Add some const type qualifiers
