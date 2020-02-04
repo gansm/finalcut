@@ -54,7 +54,7 @@ int main (int argc, char* argv[])
   <img src="first-steps_dialog.cpp.png" alt="dialog.cpp">
   <figcaption>Figure 1.  A blank dialog</figcaption>
 </figure>
-<br />
+<br /><br />
 
 *(Note: You can close the dialog with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
@@ -201,7 +201,7 @@ int main (int argc, char* argv[])
   <img src="first-steps_memory.cpp.png" alt="memory.cpp">
   <figcaption>Figure 2.  FObject manages its child objects</figcaption>
 </figure>
-<br />
+<br /><br />
 
 *(Note: You can close the window with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
@@ -335,7 +335,7 @@ int main (int argc, char* argv[])
   <img src="first-steps_timer.cpp.png" alt="timer.cpp">
   <figcaption>Figure 3.  FObject::onTimer event handler</figcaption>
 </figure>
-<br />
+<br /><br />
 
 *(Note: You can close the window with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
@@ -499,7 +499,7 @@ int main (int argc, char* argv[])
   <img src="first-steps_callback-function.cpp.png" alt="callback-function.cpp">
   <figcaption>Figure 4.  Button with a callback function</figcaption>
 </figure>
-<br />
+<br /><br />
 
 *(Note: You can close the dialog with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
@@ -563,7 +563,7 @@ int main (int argc, char* argv[])
   <img src="first-steps_callback-lambda.cpp.png" alt="callback-lambda.cpp">
   <figcaption>Figure 5.  Button with lambda expression callback.</figcaption>
 </figure>
-<br />
+<br /><br />
 
 *(Note: You can close the dialog with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
@@ -621,7 +621,7 @@ int main (int argc, char* argv[])
   <img src="first-steps_callback-method.cpp.png" alt="callback-method.cpp">
   <figcaption>Figure 6.  Button with a callback method</figcaption>
 </figure>
-<br />
+<br /><br />
 
 *(Note: You can close the window with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
@@ -765,7 +765,7 @@ int main (int argc, char* argv[])
   <img src="first-steps_emit-signal.cpp.png" alt="emit-signal.cpp">
   <figcaption>Figure 7.  Callbacks with custom signals</figcaption>
 </figure>
-<br />
+<br /><br />
 
 *(Note: You can close the window with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
@@ -1042,7 +1042,7 @@ int main (int argc, char* argv[])
   <img src="first-steps_size-adjustment.cpp.png" alt="size-adjustment.cpp">
   <figcaption>Figure 11.  Dynamic layout</figcaption>
 </figure>
-<br />
+<br /><br />
 
 *(Note: You can close the window with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
@@ -1170,7 +1170,7 @@ int main (int argc, char* argv[])
   <img src="first-steps_scrollview.cpp.png" alt="scrollview.cpp">
   <figcaption>Figure 12.  Dialog with a scrolling viewport</figcaption>
 </figure>
-<br />
+<br /><br />
 
 *(Note: You can close the window with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
