@@ -353,7 +353,8 @@ class FListView : public FWidget
 
   protected:
     // Methods
-    void                 adjustViewport (int);
+    void                 adjustViewport (const int);
+    void                 adjustScrollbars (const std::size_t);
     void                 adjustSize() override;
 
   private:
@@ -383,8 +384,9 @@ class FListView : public FWidget
     template <typename Compare>
     void                 sort (Compare);
     std::size_t          getAlignOffset ( const fc::text_alignment
-                                        , std::size_t
-                                        , std::size_t );
+                                        , const std::size_t
+                                        , const std::size_t );
+    iterator             getListEnd (FListViewItem*);
     void                 draw() override;
     void                 drawBorder() override;
     void                 drawScrollbars();

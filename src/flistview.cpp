@@ -560,20 +560,27 @@ void FListViewIterator::nextElement (iterator& iter)
   }
   else
   {
-    ++iter;
     position++;
+    bool forward{};
 
-    if ( ! iter_path.empty() )
+    do
     {
-      const auto& parent_iter = iter_path.top();
+      forward = false;  // Reset forward
+      ++iter;
 
-      if ( iter == (*parent_iter)->end() )
+      if ( ! iter_path.empty() )
       {
-        iter = parent_iter;
-        iter_path.pop();
-        ++iter;
+        const auto& parent_iter = iter_path.top();
+
+        if ( iter == (*parent_iter)->end() )
+        {
+          iter = parent_iter;
+          iter_path.pop();
+          forward = true;
+        }
       }
     }
+    while ( forward );
   }
 }
 
@@ -1142,7 +1149,7 @@ void FListView::onMouseUp (FMouseEvent* ev)
             else
               item->expand();
 
-            adjustSize();
+            adjustScrollbars (getCount());
 
             if ( isShown() )
               draw();
@@ -1225,11 +1232,12 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
 
   const int mouse_x = ev->getX();
   const int mouse_y = ev->getY();
+  const std::size_t element_count = getCount();
 
   if ( mouse_x > 1 && mouse_x < int(getWidth())
     && mouse_y > 1 && mouse_y < int(getHeight()) )
   {
-    if ( first_visible_line.getPosition() + mouse_y - 1 > int(getCount()) )
+    if ( first_visible_line.getPosition() + mouse_y - 1 > int(element_count) )
       return;
 
     if ( itemlist.empty() )
@@ -1244,7 +1252,7 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
       else
         item->expand();
 
-      adjustSize();
+      adjustScrollbars (element_count);
 
       if ( isShown() )
         draw();
@@ -1356,7 +1364,7 @@ void FListView::onFocusOut (FFocusEvent*)
 
 // protected methods of FListView
 //----------------------------------------------------------------------
-void FListView::adjustViewport (int element_count)
+void FListView::adjustViewport (const int element_count)
 {
   const int height = int(getClientHeight());
 
@@ -1396,15 +1404,10 @@ void FListView::adjustViewport (int element_count)
 }
 
 //----------------------------------------------------------------------
-void FListView::adjustSize()
+void FListView::adjustScrollbars (const std::size_t element_count)
 {
-  FWidget::adjustSize();
-  const std::size_t element_count = getCount();
   const std::size_t width = getClientWidth();
   const std::size_t height = getClientHeight();
-
-  adjustViewport (int(element_count));
-
   const int vmax = ( element_count > height )
                    ? int(element_count - height)
                    : 0;
@@ -1435,6 +1438,15 @@ void FListView::adjustSize()
     else
       vbar->hide();
   }
+}
+
+//----------------------------------------------------------------------
+void FListView::adjustSize()
+{
+  FWidget::adjustSize();
+  const std::size_t element_count = getCount();
+  adjustViewport (int(element_count));
+  adjustScrollbars (element_count);
 }
 
 
@@ -1512,8 +1524,8 @@ void FListView::sort (Compare cmp)
 
 //----------------------------------------------------------------------
 std::size_t FListView::getAlignOffset ( const fc::text_alignment align
-                                      , std::size_t column_width
-                                      , std::size_t width )
+                                      , const std::size_t column_width
+                                      , const std::size_t width )
 {
   switch ( align )
   {
@@ -1534,6 +1546,22 @@ std::size_t FListView::getAlignOffset ( const fc::text_alignment align
   }
 
   return 0;
+}
+
+//----------------------------------------------------------------------
+FObject::iterator FListView::getListEnd (FListViewItem* item)
+{
+  auto parent = item->getParent();
+
+  if ( ! parent )
+    return null_iter;
+
+  if ( this == parent )
+    return itemlist.end();
+  else if ( parent->isInstanceOf("FListViewItem") )
+    return static_cast<FListViewItem*>(parent)->end();
+  else
+    return null_iter;
 }
 
 //----------------------------------------------------------------------
@@ -1643,14 +1671,17 @@ void FListView::drawList()
 
   uInt y{0};
   const uInt page_height = uInt(getHeight()) - 2;
+  const auto& itemlist_end = itemlist.end();
+  auto path_end = itemlist_end;
   auto iter = first_visible_line;
 
-  while ( iter != itemlist.end() && y < page_height )
+  while ( iter != path_end && iter != itemlist_end && y < page_height )
   {
     const bool is_current_line( iter == current_iter );
     const auto& item = static_cast<FListViewItem*>(*iter);
     const int tree_offset = ( tree_view ) ? int(item->getDepth() << 1) + 1 : 0;
     const int checkbox_offset = ( item->isCheckable() ) ? 1 : 0;
+    path_end = getListEnd(item);
     print() << FPoint(2, 2 + int(y));
 
     // Draw one FListViewItem
@@ -1758,8 +1789,15 @@ void FListView::drawListLine ( const FListViewItem* item
 
   for (std::size_t i{0}; i < len; i++)
   {
-    char_width += getColumnWidth(line[i]);
-    print() << line[i];
+    try
+    {
+      char_width += getColumnWidth(line[i]);
+      print() << line[i];
+    }
+    catch (const std::out_of_range&)
+    {
+      return;
+    }
   }
 
   for (std::size_t i = char_width; i < width; i++)
@@ -2185,11 +2223,12 @@ void FListView::recalculateHorizontalBar (std::size_t len)
 //----------------------------------------------------------------------
 void FListView::recalculateVerticalBar (std::size_t element_count)
 {
-  const int vmax = ( element_count + 2 > getHeight() )
-                   ? int(element_count - getHeight() + 2)
+  const std::size_t height = getClientHeight();
+  const int vmax = ( element_count > height )
+                   ? int(element_count - height)
                    : 0;
   vbar->setMaximum (vmax);
-  vbar->setPageSize (int(element_count), int(getHeight()) - 2);
+  vbar->setPageSize (int(element_count), int(height));
   vbar->calculateSliderValues();
 
   if ( isShown() )
@@ -2445,9 +2484,8 @@ inline void FListView::collapseAndScrollLeft()
     {
       // Collapse element
       item->collapse();
-      adjustSize();
-      const std::size_t  element_count = getCount();
-      recalculateVerticalBar (element_count);
+      adjustScrollbars (getCount());
+      vbar->calculateSliderValues();
       // Force vertical scrollbar redraw
       first_line_position_before = -1;
     }
@@ -2498,7 +2536,7 @@ inline void FListView::expandAndScrollRight()
   {
     // Expand element
     item->expand();
-    adjustSize();
+    adjustScrollbars (getCount());
     // Force vertical scrollbar redraw
     first_line_position_before = -1;
   }
@@ -2549,7 +2587,7 @@ inline bool FListView::expandSubtree()
   if ( tree_view && item->isExpandable() && ! item->isExpand() )
   {
     item->expand();
-    adjustSize();
+    adjustScrollbars (getCount());
     return true;
   }
 
@@ -2567,7 +2605,7 @@ inline bool FListView::collapseSubtree()
   if ( tree_view && item->isExpandable() && item->isExpand() )
   {
     item->collapse();
-    adjustSize();
+    adjustScrollbars (getCount());
     return true;
   }
 

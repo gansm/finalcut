@@ -616,7 +616,7 @@ FScrollbar::sType FScrollbar::getClickedScrollType (int x, int y)
 {
   if ( bar_orientation == fc::vertical )
   {
-    return  getVerticalClickedScrollType(y);
+    return getVerticalClickedScrollType(y);
   }
   else  // horizontal
   {

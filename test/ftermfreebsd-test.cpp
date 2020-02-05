@@ -365,7 +365,7 @@ keymap_t FSystemTest::keymap =
 
 // static class attributes
 //----------------------------------------------------------------------
-keymap_t  FSystemTest::terminal_keymap{};
+keymap_t FSystemTest::terminal_keymap{};
 
 // constructors and destructor
 //----------------------------------------------------------------------

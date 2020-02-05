@@ -481,8 +481,8 @@ void FMenu::calculateDimensions()
   for (auto&& item : getItemList())
   {
     std::size_t item_width = item->getTextWidth() + 2;
-    const FKey  accel_key  = item->accel_key;
-    const bool  has_menu   = item->hasMenu();
+    const FKey accel_key = item->accel_key;
+    const bool has_menu = item->hasMenu();
 
     if ( has_menu )
     {

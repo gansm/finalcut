@@ -2595,7 +2595,7 @@ void FKeyboardTest::sequencesTest()
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_sdc );
   clear();
 
-  // shifted end  key
+  // shifted end key
   input("\033[1;2F");
   processInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
@@ -2637,7 +2637,7 @@ void FKeyboardTest::sequencesTest()
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_sprevious );
   clear();
 
-  // shifted right-arrow  key
+  // shifted right-arrow key
   input("\033[1;2C");
   processInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;

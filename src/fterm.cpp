@@ -1333,7 +1333,7 @@ void FTerm::init_global_values (bool disable_alt_screen)
 void FTerm::init_terminal_device_path()
 {
   char termfilename[256]{};
-  const int  stdout_no = FTermios::getStdOut();
+  const int stdout_no = FTermios::getStdOut();
 
   if ( ttyname_r(stdout_no, termfilename, sizeof(termfilename)) )
     termfilename[0] = '\0';

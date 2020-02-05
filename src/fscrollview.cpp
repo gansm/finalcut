@@ -344,10 +344,10 @@ void FScrollView::scrollTo (int x, int y)
 {
   int& xoffset = viewport_geometry.x1_ref();
   int& yoffset = viewport_geometry.y1_ref();
-  const int  xoffset_before = xoffset;
-  const int  yoffset_before = yoffset;
-  const int  xoffset_end = int(getScrollWidth() - getViewportWidth());
-  const int  yoffset_end = int(getScrollHeight() - getViewportHeight());
+  const int xoffset_before = xoffset;
+  const int yoffset_before = yoffset;
+  const int xoffset_end = int(getScrollWidth() - getViewportWidth());
+  const int yoffset_end = int(getScrollHeight() - getViewportHeight());
   const std::size_t save_width = viewport_geometry.getWidth();
   const std::size_t save_height = viewport_geometry.getHeight();
   x--;
