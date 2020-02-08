@@ -6,6 +6,7 @@ Table of Contents
 -----------------
 
 <!-- TOC -->
+- [Basic functions](#basic-functions)
 - [How to use the library](#how-to-use-the-library)
 - [Memory Management](#memory-management)
 - [Event Processing](#event-processing)
@@ -23,6 +24,19 @@ Table of Contents
   - [Dynamic layout](#dynamic-layout)
 - [Scroll view](#scroll-view)
 <!-- /TOC -->
+
+
+Basic functions
+---------------
+
+FINAL CUT is a library for creating text-based terminal applications. It runs on several Unix-like platforms. The release of FINAL CUT is licensed under the terms of the GNU Lesser General Public License v3.0 ([GNU LGPL v3](https://www.gnu.org/licenses/lgpl-3.0-standalone.html)), which allows flexible licensing of applications. FINAL CUT has a [C++](https://en.wikipedia.org/wiki/C%2B%2B)-based object-oriented architecture for creating fast and lean programs.
+
+FINAL CUT is a [widget toolkit](http://en.wikipedia.org/wiki/Widget_toolkit). A user interface created consists of several widgets. FINAL CUT draws widgets on virtual windows and then mapped them on a virtual terminal. It uses the terminal capabilities from the [Termcap library](https://en.wikipedia.org/wiki/Termcap) to display the character matrix of the virtual terminal on the screen or a terminal emulator. It uses various optimization methods to improve the speed of the display.
+
+<figure class="image">
+  <img src="final-cut-application-structure.svg" alt="application structure">
+  <figcaption>Figure 1.  Structure of a FINAL CUT application</figcaption>
+</figure>
 
 
 How to use the library
@@ -52,7 +66,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_dialog.cpp.png" alt="dialog.cpp">
-  <figcaption>Figure 1.  A blank dialog</figcaption>
+  <figcaption>Figure 2.  A blank dialog</figcaption>
 </figure>
 <br /><br />
 
@@ -199,7 +213,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_memory.cpp.png" alt="memory.cpp">
-  <figcaption>Figure 2.  FObject manages its child objects</figcaption>
+  <figcaption>Figure 3.  FObject manages its child objects</figcaption>
 </figure>
 <br /><br />
 
@@ -333,7 +347,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_timer.cpp.png" alt="timer.cpp">
-  <figcaption>Figure 3.  FObject::onTimer event handler</figcaption>
+  <figcaption>Figure 4.  FObject::onTimer event handler</figcaption>
 </figure>
 <br /><br />
 
@@ -497,7 +511,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_callback-function.cpp.png" alt="callback-function.cpp">
-  <figcaption>Figure 4.  Button with a callback function</figcaption>
+  <figcaption>Figure 5.  Button with a callback function</figcaption>
 </figure>
 <br /><br />
 
@@ -561,7 +575,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_callback-lambda.cpp.png" alt="callback-lambda.cpp">
-  <figcaption>Figure 5.  Button with lambda expression callback.</figcaption>
+  <figcaption>Figure 6.  Button with lambda expression callback.</figcaption>
 </figure>
 <br /><br />
 
@@ -619,7 +633,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_callback-method.cpp.png" alt="callback-method.cpp">
-  <figcaption>Figure 6.  Button with a callback method</figcaption>
+  <figcaption>Figure 7.  Button with a callback method</figcaption>
 </figure>
 <br /><br />
 
@@ -763,7 +777,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_emit-signal.cpp.png" alt="emit-signal.cpp">
-  <figcaption>Figure 7.  Callbacks with custom signals</figcaption>
+  <figcaption>Figure 8.  Callbacks with custom signals</figcaption>
 </figure>
 <br /><br />
 
@@ -803,8 +817,8 @@ If you want to ignore padding spaces, you must force this with the
 `ignorePadding()` method.
 
 <figure class="image">
-  <img src="widget-coordinates.svg" alt="widget-coordinates">
-  <figcaption>Figure 8.  Widget coordinates</figcaption>
+  <img src="widget-coordinates.svg" alt="widget coordinates">
+  <figcaption>Figure 9.  Widget coordinates</figcaption>
 </figure>
 <br /><br />
 
@@ -853,8 +867,8 @@ methods.
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;widget height = top padding + client height + bottom padding
 
 <figure class="image">
-  <img src="widget-lengths.svg" alt="widget-lengths">
-  <figcaption>Figure 9.  Width and height of a widget</figcaption>
+  <img src="widget-lengths.svg" alt="widget lengths">
+  <figcaption>Figure 10.  Width and height of a widget</figcaption>
 </figure>
 <br /><br />
 
@@ -906,8 +920,8 @@ absolute geometry values as a `FRect` object, you can call the method
 `getTermGeometryWithShadow()`.
 
 <figure class="image">
-  <img src="widget-geometry.svg" alt="widget-geometry">
-  <figcaption>Figure 10.  Geometry of widgets</figcaption>
+  <img src="widget-geometry.svg" alt="widget geometry">
+  <figcaption>Figure 11.  Geometry of widgets</figcaption>
 </figure>
 <br /><br />
 
@@ -1040,7 +1054,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_size-adjustment.cpp.png" alt="size-adjustment.cpp">
-  <figcaption>Figure 11.  Dynamic layout</figcaption>
+  <figcaption>Figure 12.  Dynamic layout</figcaption>
 </figure>
 <br /><br />
 
@@ -1168,7 +1182,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_scrollview.cpp.png" alt="scrollview.cpp">
-  <figcaption>Figure 12.  Dialog with a scrolling viewport</figcaption>
+  <figcaption>Figure 13.  Dialog with a scrolling viewport</figcaption>
 </figure>
 <br /><br />
 
