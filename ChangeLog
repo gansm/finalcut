@@ -1,4 +1,5 @@
-2020-02-08  Markus Gans  <guru.mail@muenster.de>
+2020-02-09  Markus Gans  <guru.mail@muenster.de>
+	* Adding a tty check for stdin
 	* An application structure diagram was added to the document 
 	  of the first steps
 

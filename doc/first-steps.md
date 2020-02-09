@@ -29,9 +29,22 @@ Table of Contents
 Basic functions
 ---------------
 
-FINAL CUT is a library for creating text-based terminal applications. It runs on several Unix-like platforms. The release of FINAL CUT is licensed under the terms of the GNU Lesser General Public License v3.0 ([GNU LGPL v3](https://www.gnu.org/licenses/lgpl-3.0-standalone.html)), which allows flexible licensing of applications. FINAL CUT has a [C++](https://en.wikipedia.org/wiki/C%2B%2B)-based object-oriented architecture for creating fast and lean programs.
+FINAL CUT is a library for creating text-based terminal applications.
+It runs on several Unix-like platforms. The release of FINAL CUT is
+licensed under the terms of the GNU Lesser General Public License v3.0
+([GNU LGPL v3](https://www.gnu.org/licenses/lgpl-3.0-standalone.html)),
+which allows flexible licensing of applications. FINAL CUT was written
+in the programming language [C++](https://en.wikipedia.org/wiki/C%2B%2B).
+The object-oriented design allows the creation of fast and lean programs.
 
-FINAL CUT is a [widget toolkit](http://en.wikipedia.org/wiki/Widget_toolkit). A user interface created consists of several widgets. FINAL CUT draws widgets on virtual windows and then mapped them on a virtual terminal. It uses the terminal capabilities from the [Termcap library](https://en.wikipedia.org/wiki/Termcap) to display the character matrix of the virtual terminal on the screen or a terminal emulator. It uses various optimization methods to improve the speed of the display.
+FINAL CUT is a [widget toolkit](http://en.wikipedia.org/wiki/Widget_toolkit).
+A user interface usually consists of several
+[widgets](https://en.wikipedia.org/wiki/Software_widget). FINAL CUT
+draws widgets on virtual windows and then mapped them on a virtual
+terminal. It uses the terminal capabilities from the
+[Termcap library](https://en.wikipedia.org/wiki/Termcap) to display
+the character matrix of the virtual terminal on the screen or a terminal
+emulator. It uses various optimization methods to improve the drawing speed.
 
 <figure class="image">
   <img src="final-cut-application-structure.svg" alt="application structure">

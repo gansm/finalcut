@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -72,7 +72,10 @@ void FTermios::init()
 termios FTermios::getTTY()
 {
   struct termios t{};
-  tcgetattr (stdin_no, &t);
+
+  if ( tcgetattr(stdin_no, &t) == -1 )
+    std::runtime_error("Cannot find tty");
+
   return t;
 }
 
@@ -86,7 +89,14 @@ void FTermios::setTTY (const termios& t)
 void FTermios::storeTTYsettings()
 {
   // Store termios settings
-  term_init = getTTY();
+  try
+  {
+    term_init = getTTY();
+  }
+  catch (...)
+  {
+    throw std::current_exception();
+  }
 }
 
 //----------------------------------------------------------------------

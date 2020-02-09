@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 
+#include "final/fapplication.h"
 #include "final/fc.h"
 #include "final/fcharmap.h"
 #include "final/fcolorpalette.h"
@@ -2211,24 +2212,9 @@ void FTerm::init (bool disable_alt_screen)
   allocationValues();
   init_global_values(disable_alt_screen);
 
-  // Initialize termios
-  FTermios::init();
-
-  // Get pathname of the terminal device
-  init_terminal_device_path();
-
-  // Initialize Linux or *BSD console
-  initOSspecifics();
-
-  // Save termios settings
-  FTermios::storeTTYsettings();
-
-  // Get output baud rate
-  initBaudRate();
-
-  // Terminal detection
-  term_detection->detect();
-  setTermType (term_detection->getTermType());
+  // Initialize the terminal
+  if ( ! init_terminal() )
+    return;
 
   // Set maximum number of colors for detected terminals
   init_fixed_max_color();
@@ -2310,6 +2296,49 @@ void FTerm::init (bool disable_alt_screen)
 
   // The terminal is now initialized
   term_initialized = true;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::init_terminal()
+{
+  // Initialize termios
+  FTermios::init();
+
+  // Check if stdin is a tty
+  if ( ! fsys->isTTY(FTermios::getStdIn()) )
+  {
+    data->setExitMessage("FTerm: Standard input is not a TTY.");
+    FApplication::exit(EXIT_FAILURE);
+    return false;
+  }
+
+  // Get pathname of the terminal device
+  init_terminal_device_path();
+
+  // Initialize Linux or *BSD console
+  initOSspecifics();
+
+  // Save termios settings
+  try
+  {
+    FTermios::storeTTYsettings();
+  }
+  catch (const std::runtime_error& ex)
+  {
+    FString msg = "FTerm: " + FString(ex.what());
+    data->setExitMessage(msg);
+    FApplication::exit(EXIT_FAILURE);
+    return false;
+  }
+
+  // Get output baud rate
+  initBaudRate();
+
+  // Terminal detection
+  term_detection->detect();
+  setTermType (term_detection->getTermType());
+
+  return true;
 }
 
 //----------------------------------------------------------------------

@@ -343,6 +343,7 @@ class FTerm final
     void                   allocationValues();
     void                   deallocationValues();
     void                   init (bool);
+    bool                   init_terminal();
     void                   initOSspecifics();
     void                   initTermspecifics();
     void                   initBaudRate();
