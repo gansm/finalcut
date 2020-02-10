@@ -372,6 +372,7 @@ void FListViewItem::expand()
   if ( isExpand() || ! hasChildren() )
     return;
 
+  resetVisibleLineCounter();
   is_expand = true;
 }
 
@@ -381,8 +382,8 @@ void FListViewItem::collapse()
   if ( ! isExpand() )
     return;
 
+  resetVisibleLineCounter();
   is_expand = false;
-  visible_lines = 1;
 }
 
 // private methods of FListView
@@ -434,11 +435,10 @@ std::size_t FListViewItem::getVisibleLines()
   if ( visible_lines > 1 )
     return visible_lines;
 
+  visible_lines = 1;
+
   if ( ! isExpand() || ! hasChildren() )
-  {
-    visible_lines = 1;
     return visible_lines;
-  }
 
   auto iter = FObject::begin();
 
@@ -2484,7 +2484,7 @@ inline void FListView::collapseAndScrollLeft()
     {
       // Collapse element
       item->collapse();
-      adjustScrollbars (getCount());
+      adjustSize();
       vbar->calculateSliderValues();
       // Force vertical scrollbar redraw
       first_line_position_before = -1;
