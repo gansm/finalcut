@@ -6,7 +6,7 @@ Frequently Asked Questions
 What is FINAL CUT?
 ------------------
 
-The Final Cut is a [C++](https://en.wikipedia.org/wiki/C%2B%2B) class library 
+The FINAL CUT is a [C++](https://en.wikipedia.org/wiki/C%2B%2B) class library 
 and a widget toolkit with full mouse support for creating a text-based user 
 interface. It's based on the Termcap library and has its own cursor 
 optimization and window management.

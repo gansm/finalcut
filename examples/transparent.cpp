@@ -91,7 +91,7 @@ void Transparent::draw()
   {
     const auto& wc = getFWidgetColors();
     setColor(wc.shadow_bg, wc.shadow_fg);
-    setTransShadow();
+    setColorOverlay();
   }
   else if ( type == inherit_background )
   {
@@ -113,7 +113,7 @@ void Transparent::draw()
   }
 
   if ( type == shadow )
-    unsetTransShadow();
+    unsetColorOverlay();
   else if ( type == inherit_background )
     unsetInheritBackground();
   else

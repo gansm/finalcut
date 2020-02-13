@@ -45,7 +45,7 @@ The FFileDialog widget with incremental file name search:
 ![FFileDialog](doc/fileopen-dialog.png)
 
 
-The Final Cut FProgressbar widget:
+The FINAL CUT FProgressbar widget:
 
 ![FProgressbar](doc/progress-bar.png)
 

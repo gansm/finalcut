@@ -38,11 +38,11 @@ namespace finalcut
 FOptiAttr::FOptiAttr()
 {
   // Set bits that must not be reset
-  reset_byte_mask.attr.bit.transparent  = true;
-  reset_byte_mask.attr.bit.trans_shadow = true;
-  reset_byte_mask.attr.bit.inherit_bg   = true;
-  reset_byte_mask.attr.bit.no_changes   = true;
-  reset_byte_mask.attr.bit.printed      = true;
+  reset_byte_mask.attr.bit.transparent   = true;
+  reset_byte_mask.attr.bit.color_overlay = true;
+  reset_byte_mask.attr.bit.inherit_bg    = true;
+  reset_byte_mask.attr.bit.no_changes    = true;
+  reset_byte_mask.attr.bit.printed       = true;
 }
 
 //----------------------------------------------------------------------

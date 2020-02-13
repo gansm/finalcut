@@ -226,9 +226,9 @@ class FVTerm
     static bool           setTransparent();
     static bool           unsetTransparent();
 
-    static bool           setTransShadow (bool);
-    static bool           setTransShadow();
-    static bool           unsetTransShadow();
+    static bool           setColorOverlay (bool);
+    static bool           setColorOverlay();
+    static bool           unsetColorOverlay();
 
     static bool           setInheritBackground (bool);
     static bool           setInheritBackground();
@@ -838,16 +838,16 @@ inline bool FVTerm::unsetTransparent()
 { return setTransparent(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setTransShadow (bool enable)
-{ return (next_attribute.attr.bit.trans_shadow = enable); }
+inline bool FVTerm::setColorOverlay (bool enable)
+{ return (next_attribute.attr.bit.color_overlay = enable); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::setTransShadow()
-{ return setTransShadow(true); }
+inline bool FVTerm::setColorOverlay()
+{ return setColorOverlay(true); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::unsetTransShadow()
-{ return setTransShadow(false); }
+inline bool FVTerm::unsetColorOverlay()
+{ return setColorOverlay(false); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setInheritBackground (bool enable)
@@ -939,7 +939,7 @@ inline bool FVTerm::isTransparent()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isTransShadow()
-{ return next_attribute.attr.bit.trans_shadow; }
+{ return next_attribute.attr.bit.color_overlay; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isInheritBackground()

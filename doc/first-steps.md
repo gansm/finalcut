@@ -55,7 +55,7 @@ emulator. It uses various optimization methods to improve the drawing speed.
 How to use the library
 ----------------------
 
-At the beginning of this introduction to the Final Cut
+At the beginning of this introduction to the FINAL CUT
 we will start with a small example.
 
 The following example creates an empty 30&times;10 character dialog.

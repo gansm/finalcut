@@ -133,7 +133,7 @@ typedef struct
       uInt8 alt_charset       : 1;  // alternate character set (vt100)
       uInt8 pc_charset        : 1;  // pc character set (CP437)
       uInt8 transparent       : 1;  // transparent
-      uInt8 trans_shadow      : 1;  // transparent shadow
+      uInt8 color_overlay     : 1;  // color overlay
       uInt8 inherit_bg        : 1;  // inherit background
       // Attribute byte #2
       uInt8 no_changes        : 1;  // no changes required

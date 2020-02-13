@@ -1,3 +1,6 @@
+2020-02-13  Markus Gans  <guru.mail@muenster.de>
+	* Rename setTransShadow() to setColorOverlay()
+
 2020-02-11  Markus Gans  <guru.mail@muenster.de>
 	* Fix collapse() and expand() in FListViewItem()
 

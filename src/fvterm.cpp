@@ -528,17 +528,17 @@ int FVTerm::print (FTermArea* area, FChar& term_char)
 
     if ( *ac != nc )  // compare with an overloaded operator
     {
-      if ( ( ! ac->attr.bit.transparent  && nc.attr.bit.transparent )
-        || ( ! ac->attr.bit.trans_shadow && nc.attr.bit.trans_shadow )
-        || ( ! ac->attr.bit.inherit_bg   && nc.attr.bit.inherit_bg ) )
+      if ( ( ! ac->attr.bit.transparent && nc.attr.bit.transparent )
+        || ( ! ac->attr.bit.color_overlay && nc.attr.bit.color_overlay )
+        || ( ! ac->attr.bit.inherit_bg && nc.attr.bit.inherit_bg ) )
       {
         // add one transparent character form line
         area->changes[ay].trans_count++;
       }
 
-      if ( ( ac->attr.bit.transparent  && ! nc.attr.bit.transparent )
-        || ( ac->attr.bit.trans_shadow && ! nc.attr.bit.trans_shadow )
-        || ( ac->attr.bit.inherit_bg   && ! nc.attr.bit.inherit_bg ) )
+      if ( ( ac->attr.bit.transparent && ! nc.attr.bit.transparent )
+        || ( ac->attr.bit.color_overlay && ! nc.attr.bit.color_overlay )
+        || ( ac->attr.bit.inherit_bg && ! nc.attr.bit.inherit_bg ) )
       {
         // remove one transparent character from line
         area->changes[ay].trans_count--;
@@ -1231,7 +1231,7 @@ void FVTerm::clearArea (FTermArea* area, int fillchar)
     area->changes[i].xmax = w - 1;
 
     if ( nc.attr.bit.transparent
-      || nc.attr.bit.trans_shadow
+      || nc.attr.bit.color_overlay
       || nc.attr.bit.inherit_bg )
       area->changes[i].trans_count = w;
     else if ( area->right_shadow != 0 )
@@ -1404,7 +1404,7 @@ FVTerm::covered_state FVTerm::isCovered ( const FPoint& pos
         const int y = pos.getY();
         auto tmp = &win->data[(y - win_y) * width + (x - win_x)];
 
-        if ( tmp->attr.bit.trans_shadow )
+        if ( tmp->attr.bit.color_overlay )
         {
           is_covered = half_covered;
         }
@@ -1589,7 +1589,7 @@ bool FVTerm::updateVTermCharacter ( FTermArea* area
   }
   else  // Not transparent
   {
-    if ( ac->attr.bit.trans_shadow )  // Transparent shadow
+    if ( ac->attr.bit.color_overlay )  // Transparent shadow
     {
       updateShadedCharacter (area, area_pos, terminal_pos);
     }
@@ -1737,7 +1737,7 @@ FChar FVTerm::generateCharacter (const FPoint& pos)
 
       if ( ! tmp->attr.bit.transparent )   // Current character not transparent
       {
-        if ( tmp->attr.bit.trans_shadow )  // Transparent shadow
+        if ( tmp->attr.bit.color_overlay )  // Transparent shadow
         {
           // Keep the current vterm character
           if ( sc != &s_ch )
@@ -1969,7 +1969,7 @@ void FVTerm::putAreaCharacter ( const FPoint& pos, FVTerm* obj
   }
   else  // Mot transparent
   {
-    if ( ac->attr.bit.trans_shadow )  // Transparent shadow
+    if ( ac->attr.bit.color_overlay )  // Transparent shadow
     {
       // Get covered character + add the current color
       FChar ch = getCoveredCharacter (pos, obj);
@@ -2016,7 +2016,7 @@ void FVTerm::getAreaCharacter ( const FPoint& pos, FTermArea* area
   // Current character not transparent
   if ( ! tmp->attr.bit.transparent )
   {
-    if ( tmp->attr.bit.trans_shadow )  // transparent shadow
+    if ( tmp->attr.bit.color_overlay )  // transparent shadow
     {
       // Keep the current vterm character
       std::memcpy (&s_ch, cc, sizeof(s_ch));

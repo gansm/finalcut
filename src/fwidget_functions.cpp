@@ -156,22 +156,22 @@ void drawTransparentShadow (FWidget* w)
   w->print() << FPoint(int(width) + 1, 1) << "  ";
   w->unsetTransparent();
   w->setColor (w->wcolors.shadow_bg, w->wcolors.shadow_fg);
-  w->setTransShadow();
+  w->setColorOverlay();
 
   for (std::size_t y{1}; y < height; y++)
   {
     w->print() << FPoint(int(width) + 1, int(y) + 1) << "  ";
   }
 
-  w->unsetTransShadow();
+  w->unsetColorOverlay();
   w->setTransparent();
   w->print() << FPoint(1, int(height) + 1) << "  ";
   w->unsetTransparent();
   w->setColor (w->wcolors.shadow_bg, w->wcolors.shadow_fg);
-  w->setTransShadow();
+  w->setColorOverlay();
   w->print() << FString(width, L' ');
 
-  w->unsetTransShadow();
+  w->unsetColorOverlay();
 
   if ( w->isMonochron() )
     w->setReverse(false);
