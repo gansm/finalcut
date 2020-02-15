@@ -26,6 +26,7 @@
 #include "final/fc.h"
 #include "final/fcolorpair.h"
 #include "final/fstring.h"
+#include "final/fstyle.h"
 #include "final/ftermbuffer.h"
 #include "final/fvterm.h"
 #include "final/ftypes.h"
@@ -83,6 +84,43 @@ int FTermBuffer::write (wchar_t ch)
 
   data.push_back(nc);
   return 1;
+}
+
+//----------------------------------------------------------------------
+void FTermBuffer::write (const FStyle& style)
+{
+    FAttribute attr = style.getStyle();
+
+  if ( attr == 0 )
+    FVTerm::setNormal();
+  else if ( (attr & fc::Bold) != 0 )
+    FVTerm::setBold();
+  else if ( (attr & fc::Dim) != 0 )
+    FVTerm::setDim();
+  else if ( (attr & fc::Italic) != 0 )
+    FVTerm::setItalic();
+  else if ( (attr & fc::Underline) != 0 )
+    FVTerm::setUnderline();
+  else if ( (attr & fc::Blink) != 0 )
+    FVTerm::setBlink();
+  else if ( (attr & fc::Reverse) != 0 )
+    FVTerm::setReverse();
+  else if ( (attr & fc::Standout) != 0 )
+    FVTerm::setStandout();
+  else if ( (attr & fc::Invisible) != 0 )
+    FVTerm::setInvisible();
+  else if ( (attr & fc::Protected) != 0 )
+    FVTerm::setProtected();
+  else if ( (attr & fc::CrossedOut) != 0 )
+    FVTerm::setCrossedOut();
+  else if ( (attr & fc::DoubleUnderline) != 0 )
+    FVTerm::setDoubleUnderline();
+  else if ( (attr & fc::Transparent) != 0 )
+    FVTerm::setTransparent();
+  else if ( (attr & fc::ColorOverlay) != 0 )
+    FVTerm::setColorOverlay();
+  else if ( (attr & fc::InheritBackground) != 0 )
+    FVTerm::setInheritBackground();
 }
 
 //----------------------------------------------------------------------

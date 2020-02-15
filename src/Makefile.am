@@ -83,6 +83,7 @@ finalcutinclude_HEADERS = \
 	include/final/fbuttongroup.h \
 	include/final/fcheckbox.h \
 	include/final/fcolorpair.h \
+	include/final/fstyle.h \
 	include/final/fconfig.h \
 	include/final/fswitch.h \
 	include/final/fdialog.h \

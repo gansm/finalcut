@@ -31,6 +31,7 @@
 #include "final/fkeyboard.h"
 #include "final/foptiattr.h"
 #include "final/foptimove.h"
+#include "final/fstyle.h"
 #include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermdata.h"
@@ -530,7 +531,7 @@ int FVTerm::print (FTermArea* area, FChar& term_char)
     {
       if ( ( ! ac->attr.bit.transparent && nc.attr.bit.transparent )
         || ( ! ac->attr.bit.color_overlay && nc.attr.bit.color_overlay )
-        || ( ! ac->attr.bit.inherit_bg && nc.attr.bit.inherit_bg ) )
+        || ( ! ac->attr.bit.inherit_background && nc.attr.bit.inherit_background ) )
       {
         // add one transparent character form line
         area->changes[ay].trans_count++;
@@ -538,7 +539,7 @@ int FVTerm::print (FTermArea* area, FChar& term_char)
 
       if ( ( ac->attr.bit.transparent && ! nc.attr.bit.transparent )
         || ( ac->attr.bit.color_overlay && ! nc.attr.bit.color_overlay )
-        || ( ac->attr.bit.inherit_bg && ! nc.attr.bit.inherit_bg ) )
+        || ( ac->attr.bit.inherit_background && ! nc.attr.bit.inherit_background ) )
       {
         // remove one transparent character from line
         area->changes[ay].trans_count--;
@@ -581,6 +582,43 @@ int FVTerm::print (FTermArea* area, FChar& term_char)
 void FVTerm::print (const FPoint& p)
 {
   setPrintCursor (p);
+}
+
+//----------------------------------------------------------------------
+void FVTerm::print (const FStyle& style)
+{
+  FAttribute attr = style.getStyle();
+
+  if ( attr == 0 )
+    setNormal();
+  else if ( (attr & fc::Bold) != 0 )
+    setBold();
+  else if ( (attr & fc::Dim) != 0 )
+    setDim();
+  else if ( (attr & fc::Italic) != 0 )
+    setItalic();
+  else if ( (attr & fc::Underline) != 0 )
+    setUnderline();
+  else if ( (attr & fc::Blink) != 0 )
+    setBlink();
+  else if ( (attr & fc::Reverse) != 0 )
+    setReverse();
+  else if ( (attr & fc::Standout) != 0 )
+    setStandout();
+  else if ( (attr & fc::Invisible) != 0 )
+    setInvisible();
+  else if ( (attr & fc::Protected) != 0 )
+    setProtected();
+  else if ( (attr & fc::CrossedOut) != 0 )
+    setCrossedOut();
+  else if ( (attr & fc::DoubleUnderline) != 0 )
+    setDoubleUnderline();
+  else if ( (attr & fc::Transparent) != 0 )
+    setTransparent();
+  else if ( (attr & fc::ColorOverlay) != 0 )
+    setColorOverlay();
+  else if ( (attr & fc::InheritBackground) != 0 )
+    setInheritBackground();
 }
 
 //----------------------------------------------------------------------
@@ -1232,7 +1270,7 @@ void FVTerm::clearArea (FTermArea* area, int fillchar)
 
     if ( nc.attr.bit.transparent
       || nc.attr.bit.color_overlay
-      || nc.attr.bit.inherit_bg )
+      || nc.attr.bit.inherit_background )
       area->changes[i].trans_count = w;
     else if ( area->right_shadow != 0 )
       area->changes[i].trans_count = uInt(area->right_shadow);
@@ -1593,7 +1631,7 @@ bool FVTerm::updateVTermCharacter ( FTermArea* area
     {
       updateShadedCharacter (area, area_pos, terminal_pos);
     }
-    else if ( ac->attr.bit.inherit_bg )
+    else if ( ac->attr.bit.inherit_background )
     {
       updateInheritBackground (area, area_pos, terminal_pos);
     }
@@ -1758,7 +1796,7 @@ FChar FVTerm::generateCharacter (const FPoint& pos)
 
           sc = &s_ch;
         }
-        else if ( tmp->attr.bit.inherit_bg )
+        else if ( tmp->attr.bit.inherit_background )
         {
           // Add the covered background to this character
           std::memcpy (&i_ch, tmp, sizeof(i_ch));
@@ -1988,7 +2026,7 @@ void FVTerm::putAreaCharacter ( const FPoint& pos, FVTerm* obj
 
       std::memcpy (tc, &ch, sizeof(*tc));
     }
-    else if ( ac->attr.bit.inherit_bg )
+    else if ( ac->attr.bit.inherit_background )
     {
       // Add the covered background to this character
       FChar ch{};
@@ -2026,7 +2064,7 @@ void FVTerm::getAreaCharacter ( const FPoint& pos, FTermArea* area
       s_ch.attr.bit.standout = false;
       cc = &s_ch;
     }
-    else if ( tmp->attr.bit.inherit_bg )
+    else if ( tmp->attr.bit.inherit_background )
     {
       // Add the covered background to this character
       std::memcpy (&i_ch, tmp, sizeof(i_ch));

@@ -77,6 +77,7 @@ class FSystem;
 class FTerm;
 class FTermBuffer;
 class FTermDebugData;
+class FStyle;
 class FWidget;
 
 //----------------------------------------------------------------------
@@ -141,6 +142,7 @@ class FVTerm
     FVTerm& operator << (const FTermBuffer&);
     FVTerm& operator << (const std::vector<FChar>&);
     FVTerm& operator << (const FPoint&);
+    FVTerm& operator << (const FStyle&);
     FVTerm& operator << (const FColorPair&);
 
     // Accessors
@@ -305,6 +307,7 @@ class FVTerm
     int                   print (FChar&);
     int                   print (FTermArea*, FChar&);
     virtual void          print (const FPoint&);
+    virtual void          print (const FStyle&);
     virtual void          print (const FColorPair&);
     virtual FVTerm&       print();
     static void           flush();
@@ -580,6 +583,13 @@ inline FVTerm& FVTerm::operator << (const FPoint& pos)
 }
 
 //----------------------------------------------------------------------
+inline FVTerm& FVTerm::operator << (const FStyle& t_style)
+{
+  print (t_style);
+  return *this;
+}
+
+//----------------------------------------------------------------------
 inline FVTerm& FVTerm::operator << (const FColorPair& pair)
 {
   print (pair);
@@ -851,7 +861,7 @@ inline bool FVTerm::unsetColorOverlay()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setInheritBackground (bool enable)
-{ return (next_attribute.attr.bit.inherit_bg = enable); }
+{ return (next_attribute.attr.bit.inherit_background = enable); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setInheritBackground()
@@ -943,7 +953,7 @@ inline bool FVTerm::isTransShadow()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isInheritBackground()
-{ return next_attribute.attr.bit.inherit_bg; }
+{ return next_attribute.attr.bit.inherit_background; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isMonochron()

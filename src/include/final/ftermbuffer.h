@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2019 Markus Gans                                      *
+* Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -44,6 +44,7 @@ namespace finalcut
 {
 
 // class forward declaration
+class FStyle;
 class FColorPair;
 
 //----------------------------------------------------------------------
@@ -72,6 +73,7 @@ class FTermBuffer
     FTermBuffer& operator << (const FCharVector&);
     FTermBuffer& operator << (const std::string&);
     FTermBuffer& operator << (const std::wstring&);
+    FTermBuffer& operator << (const FStyle&);
     FTermBuffer& operator << (const FColorPair&);
 
     // Accessors
@@ -95,6 +97,7 @@ class FTermBuffer
     int                    writef (const FString&, Args&&...);
     int                    write (const FString&);
     int                    write (wchar_t);
+    void                   write (const FStyle&);
     void                   write (const FColorPair&);
     FTermBuffer&           write ();
 
@@ -146,6 +149,13 @@ inline FTermBuffer& FTermBuffer::operator << (const std::string& string)
 inline FTermBuffer& FTermBuffer::operator << (const std::wstring& wstring)
 {
   write (wstring);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FTermBuffer& FTermBuffer::operator << (const FStyle& style)
+{
+  write (style);
   return *this;
 }
 

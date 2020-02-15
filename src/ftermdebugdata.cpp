@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019 Markus Gans                                           *
+* Copyright 2019-2020 Markus Gans                                       *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -35,10 +35,10 @@ FTermData*      FTermDebugData::data           {nullptr};
 FTermDetection* FTermDebugData::term_detection {nullptr};
 
 //----------------------------------------------------------------------
-// class FClassName
+// class FTermDebugData
 //----------------------------------------------------------------------
 
-// public methods of FClassName
+// public methods of FTermDebugData
 //----------------------------------------------------------------------
 void FTermDebugData::init()
 {

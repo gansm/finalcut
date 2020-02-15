@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fcolorpair.h"
+#include "final/fstyle.h"
 #include "final/fwidget.h"
 #include "final/fwidgetcolors.h"
 
@@ -152,26 +154,26 @@ void drawTransparentShadow (FWidget* w)
 
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
-  w->setTransparent();
-  w->print() << FPoint(int(width) + 1, 1) << "  ";
-  w->unsetTransparent();
-  w->setColor (w->wcolors.shadow_bg, w->wcolors.shadow_fg);
-  w->setColorOverlay();
+  w->print() << FStyle (fc::Transparent)
+             << FPoint (int(width) + 1, 1)
+             << "  "
+             << FStyle (fc::Reset)
+             << FColorPair (w->wcolors.shadow_bg, w->wcolors.shadow_fg)
+             << FStyle (fc::ColorOverlay);
 
   for (std::size_t y{1}; y < height; y++)
   {
     w->print() << FPoint(int(width) + 1, int(y) + 1) << "  ";
   }
 
-  w->unsetColorOverlay();
-  w->setTransparent();
-  w->print() << FPoint(1, int(height) + 1) << "  ";
-  w->unsetTransparent();
-  w->setColor (w->wcolors.shadow_bg, w->wcolors.shadow_fg);
-  w->setColorOverlay();
-  w->print() << FString(width, L' ');
-
-  w->unsetColorOverlay();
+  w->print() << FStyle (fc::Transparent)
+             << FPoint (1, int(height) + 1)
+             << "  "
+             << FStyle (fc::Reset)
+             << FColorPair (w->wcolors.shadow_bg, w->wcolors.shadow_fg)
+             << FStyle (fc::ColorOverlay)
+             << FString (width, L' ')
+             << FStyle (fc::Reset);
 
   if ( w->isMonochron() )
     w->setReverse(false);
@@ -191,31 +193,32 @@ void drawBlockShadow (FWidget* w)
 
   if ( w->isWindowWidget() )
   {
-    w->setColor (w->wcolors.shadow_fg, w->wcolors.shadow_bg);
-    w->setInheritBackground();  // current background color will be ignored
+    w->print() << FColorPair (w->wcolors.shadow_fg, w->wcolors.shadow_bg)
+               << FStyle (fc::InheritBackground);  // current background color will be ignored
   }
   else if ( auto p = w->getParentWidget() )
-    w->setColor (w->wcolors.shadow_fg, p->getBackgroundColor());
+    w->print() << FColorPair (w->wcolors.shadow_fg, p->getBackgroundColor());
 
   w->print (fc::LowerHalfBlock);  // ▄
 
   if ( w->isWindowWidget() )
-    w->unsetInheritBackground();
+    w->print() << FStyle (fc::InheritBackground);
 
   for (std::size_t y{1}; y < height; y++)
   {
-    w->print() << FPoint(int(width) + 1, int(y) + 1) << fc::FullBlock;  // █
+    w->print() << FPoint(int(width) + 1, int(y) + 1)
+               << fc::FullBlock;  // █
   }
 
   w->print() << FPoint(2, int(height) + 1);
 
   if ( w->isWindowWidget() )
-    w->setInheritBackground();
+    w->print() << FStyle (fc::InheritBackground);
 
   w->print() << FString(width, fc::UpperHalfBlock);  // ▀
 
   if ( w->isWindowWidget() )
-    w->unsetInheritBackground();
+    w->print() << FStyle (fc::Reset);
 }
 
 //----------------------------------------------------------------------
@@ -229,17 +232,18 @@ void clearShadow (FWidget* w)
 
   if ( w->isWindowWidget() )
   {
-    w->setColor (w->wcolors.shadow_fg, w->wcolors.shadow_bg);
-    w->setInheritBackground();  // current background color will be ignored
+    w->print() << FColorPair (w->wcolors.shadow_fg, w->wcolors.shadow_bg)
+               << FStyle (fc::InheritBackground);  // current background color will be ignored
   }
   else if ( auto p = w->getParentWidget() )
-    w->setColor (w->wcolors.shadow_fg, p->getBackgroundColor());
+    w->print() << FColorPair (w->wcolors.shadow_fg, p->getBackgroundColor());
 
   if ( int(width) <= w->woffset.getX2() )
   {
     for (std::size_t y{1}; y <= height; y++)
     {
-      w->print() << FPoint(int(width) + 1, int(y)) << ' ';  // clear █
+      w->print() << FPoint(int(width) + 1, int(y))
+                 << ' ';  // clear █
     }
   }
 
@@ -250,7 +254,7 @@ void clearShadow (FWidget* w)
   }
 
   if ( w->isWindowWidget() )
-    w->unsetInheritBackground();
+    w->print() << FStyle (fc::Reset);
 }
 
 //----------------------------------------------------------------------

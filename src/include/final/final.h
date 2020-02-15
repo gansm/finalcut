@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -68,6 +68,7 @@
 #include <final/fstartoptions.h>
 #include <final/fstatusbar.h>
 #include <final/fstring.h>
+#include <final/fstyle.h>
 #include <final/fswitch.h>
 #include <final/fsystem.h>
 #include <final/fterm.h>

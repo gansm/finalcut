@@ -1,9 +1,9 @@
 /***********************************************************************
-* fcolorpair.h - Foreground and background color of a character        *
+* fstyle.h - Style attribute of a character                            *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2020 Markus Gans                                           *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -23,13 +23,13 @@
 /*  Standalone class
  *  ════════════════
  *
- * ▕▔▔▔▔▔▔▔▔▔▔▔▔▏
- * ▕ FColorPair ▏
- * ▕▁▁▁▁▁▁▁▁▁▁▁▁▏
+ * ▕▔▔▔▔▔▔▔▔▏
+ * ▕ FStyle ▏
+ * ▕▁▁▁▁▁▁▁▁▏
  */
 
-#ifndef FCOLORPAIR_H
-#define FCOLORPAIR_H
+#ifndef FSTYLE_H
+#define FSTYLE_H
 
 #if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
   #error "Only <final/final.h> can be included directly."
@@ -43,76 +43,51 @@ namespace finalcut
 {
 
 //----------------------------------------------------------------------
-// class FColorPair
+// class FStyle
 //----------------------------------------------------------------------
 
-class FColorPair
+class FStyle
 {
   public:
     // Constructors
-    explicit FColorPair (FColor fg = fc::Default, FColor bg = fc::Default)
-      : fg_color{fg}
-      , bg_color{bg}
+    explicit FStyle (FAttribute attr = fc::Reset)
+      : attribute{attr}
     { }
 
     // Copy constructor
-    FColorPair (const FColorPair& pair)
-      : fg_color{pair.fg_color}
-      , bg_color{pair.bg_color}
+    FStyle (const FStyle& style)
+      : attribute{style.attribute}
     { }
 
     // Destructor
-    ~FColorPair() = default;
+    ~FStyle() = default;
 
     // Assignment operator (=)
-    FColorPair& operator = (const FColorPair& pair)
+    FStyle& operator = (const FStyle& style)
     {
-      fg_color = pair.fg_color;
-      bg_color = pair.bg_color;
+      attribute = style.attribute;
       return *this;
     }
 
     // Accessor
     const FString getClassName() const
-    { return "FColorPair"; }
+    { return "FStyle"; }
 
-    FColor getForegroundColor() const
-    { return fg_color; }
-
-    FColor getBackgroundColor() const
-    { return bg_color; }
+    FColor getStyle() const
+    { return attribute; }
 
     // Mutators
-    void setForegroundColor (FColor color)
-    { fg_color = color; }
+    void setStyle (const FStyle& style)
+    { attribute = style.attribute; }
 
-    void setBackgroundColor (FColor color)
-    { bg_color = color; }
-
-    void setColorPair (const FColorPair& pair)
-    {
-      fg_color = pair.fg_color;
-      bg_color = pair.bg_color;
-    }
-
-    void setColorPair (FColor fg, FColor bg)
-    {
-      fg_color = fg;
-      bg_color = bg;
-    }
-
-    // Methods
-    void swap()
-    {
-      std::swap (fg_color, bg_color);
-    }
+    void setStyle (FAttribute attr)
+    { attribute = attr; }
 
   private:
     // Data members
-    FColor fg_color;  // Foreground color
-    FColor bg_color;  // Background color
+    FAttribute attribute;  // Save character attributes
 };
 
 }  // namespace finalcut
 
-#endif  // FCOLORPAIR_H
+#endif  // FSTYLE_H

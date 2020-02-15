@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -934,6 +934,26 @@ enum colornames : FColor
   Grey89            = 254,  // #e4e4e4
   Grey93            = 255,  // #eeeeee
   Default           = static_cast<FColor>(-1)
+};
+
+// Console style names
+enum stylenames : FAttribute
+{
+  Reset             = 0,
+  Bold              = 1,
+  Dim               = 2,
+  Italic            = 4,
+  Underline         = 8,
+  Blink             = 16,
+  Reverse           = 32,
+  Standout          = 64,
+  Invisible         = 128,
+  Protected         = 256,
+  CrossedOut        = 512,
+  DoubleUnderline   = 1024,
+  Transparent       = 2048,
+  ColorOverlay      = 4096,
+  InheritBackground = 8192
 };
 
 // Mouse/keyboard state values

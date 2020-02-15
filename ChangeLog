@@ -1,3 +1,6 @@
+2020-02-16  Markus Gans  <guru.mail@muenster.de>
+	* Printing a FStyle object allows you to change video attributes
+
 2020-02-13  Markus Gans  <guru.mail@muenster.de>
 	* Rename setTransShadow() to setColorOverlay()
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2019 Markus Gans                                      *
+* Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -59,6 +59,7 @@ typedef std::int64_t   sInt64;
 typedef long double    lDouble;
 
 typedef uInt16         FColor;
+typedef uInt16         FAttribute;
 typedef uInt32         FKey;
 typedef void*          FDataPtr;
 
@@ -118,31 +119,31 @@ typedef struct
     struct
     {
       // Attribute byte #0
-      uInt8 bold              : 1;  // bold
-      uInt8 dim               : 1;  // dim
-      uInt8 italic            : 1;  // italic
-      uInt8 underline         : 1;  // underline
-      uInt8 blink             : 1;  // blink
-      uInt8 reverse           : 1;  // reverse
-      uInt8 standout          : 1;  // standout
-      uInt8 invisible         : 1;  // invisible
+      uInt8 bold               : 1;  // bold
+      uInt8 dim                : 1;  // dim
+      uInt8 italic             : 1;  // italic
+      uInt8 underline          : 1;  // underline
+      uInt8 blink              : 1;  // blink
+      uInt8 reverse            : 1;  // reverse
+      uInt8 standout           : 1;  // standout
+      uInt8 invisible          : 1;  // invisible
       // Attribute byte #1
-      uInt8 protect           : 1;  // protect mode
-      uInt8 crossed_out       : 1;  // crossed out
-      uInt8 dbl_underline     : 1;  // double underline
-      uInt8 alt_charset       : 1;  // alternate character set (vt100)
-      uInt8 pc_charset        : 1;  // pc character set (CP437)
-      uInt8 transparent       : 1;  // transparent
-      uInt8 color_overlay     : 1;  // color overlay
-      uInt8 inherit_bg        : 1;  // inherit background
+      uInt8 protect            : 1;  // protect mode
+      uInt8 crossed_out        : 1;  // crossed out
+      uInt8 dbl_underline      : 1;  // double underline
+      uInt8 alt_charset        : 1;  // alternate character set (vt100)
+      uInt8 pc_charset         : 1;  // pc character set (CP437)
+      uInt8 transparent        : 1;  // transparent
+      uInt8 color_overlay      : 1;  // color overlay
+      uInt8 inherit_background : 1;  // inherit background
       // Attribute byte #2
-      uInt8 no_changes        : 1;  // no changes required
-      uInt8 printed           : 1;  // is printed to VTerm
-      uInt8 fullwidth_padding : 1;  // padding char (after a full-width char)
-      uInt8 char_width        : 2;  // number of character cells on screen
-      uInt8                   : 3;  // padding bits
+      uInt8 no_changes         : 1;  // no changes required
+      uInt8 printed            : 1;  // is printed to VTerm
+      uInt8 fullwidth_padding  : 1;  // padding char (after a full-width char)
+      uInt8 char_width         : 2;  // number of character cells on screen
+      uInt8                    : 3;  // padding bits
       // Attribute byte #3
-      uInt8                   : 8;  // padding byte
+      uInt8                    : 8;  // padding byte
     } bit;
 
     uInt8 byte[4];

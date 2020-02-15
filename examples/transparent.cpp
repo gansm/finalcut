@@ -23,8 +23,10 @@
 #include <final/final.h>
 
 namespace fc = finalcut::fc;
+using finalcut::FColorPair;
 using finalcut::FPoint;
 using finalcut::FSize;
+using finalcut::FStyle;
 
 
 //----------------------------------------------------------------------
@@ -90,37 +92,31 @@ void Transparent::draw()
   if ( type == shadow )
   {
     const auto& wc = getFWidgetColors();
-    setColor(wc.shadow_bg, wc.shadow_fg);
-    setColorOverlay();
+    print() << FColorPair (wc.shadow_bg, wc.shadow_fg)
+            << FStyle (fc::ColorOverlay);
   }
   else if ( type == inherit_background )
   {
     if ( getMaxColor() > 8 )
-      setColor(fc::Blue, fc::Black);
+      print() << FColorPair (fc::Blue, fc::Black);
     else
-      setColor(fc::Green, fc::Black);
+      print() << FColorPair (fc::Green, fc::Black);
 
-    setInheritBackground();
+    print() << FStyle (fc::InheritBackground);
   }
   else
-    setTransparent();
+    print() << FStyle (fc::Transparent);
 
   const finalcut::FString line(getClientWidth(), '.');
 
+  // Fill window area
   for (int n{1}; n <= int(getClientHeight()); n++)
   {
-    print() << FPoint(2, 2 + n) << line;
+    print() << FPoint(2, 2 + n)
+            << line;
   }
 
-  if ( type == shadow )
-    unsetColorOverlay();
-  else if ( type == inherit_background )
-    unsetInheritBackground();
-  else
-    unsetTransparent();
-
-  if ( isMonochron() )
-    setReverse(false);
+  print() <<  FStyle (fc::Reset);
 }
 
 //----------------------------------------------------------------------
