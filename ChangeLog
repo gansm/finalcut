@@ -1,5 +1,6 @@
 2020-02-19  Markus Gans  <guru.mail@muenster.de>
 	* Some small code improvements
+	* SGRoptimizer improved
 
 2020-02-16  Markus Gans  <guru.mail@muenster.de>
 	* Printing a FStyle object allows you to change video attributes
