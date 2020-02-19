@@ -59,7 +59,6 @@ FOptiMove::~FOptiMove()  // destructor
 void FOptiMove::setBaudRate (int baud)
 {
   assert ( baud >= 0 );
-
   baudrate = baud;
   calculateCharDuration();
 }
@@ -497,7 +496,7 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
       || yold < 0
       || isWideMove (xold, yold, xnew, ynew) )
     {
-      return ( move_time < LONG_DURATION ) ? move_buf : 0;
+      return ( move_time < LONG_DURATION ) ? move_buf : nullptr;
     }
   }
 
@@ -527,7 +526,7 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
   if ( move_time < LONG_DURATION )
     return move_buf;
   else
-    return 0;
+    return nullptr;
 }
 
 

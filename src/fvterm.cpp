@@ -764,15 +764,15 @@ void FVTerm::removeArea (FTermArea*& area)
 {
   // remove the virtual window
 
-  if ( area != 0 )
+  if ( area != nullptr )
   {
-    if ( area->changes != 0 )
+    if ( area->changes != nullptr )
     {
       delete[] area->changes;
       area->changes = nullptr;
     }
 
-    if ( area->data != 0 )
+    if ( area->data != nullptr )
     {
       delete[] area->data;
       area->data = nullptr;
@@ -1363,10 +1363,10 @@ inline bool FVTerm::reallocateTextArea ( FTermArea* area
   // Reallocate "height" lines for changes
   // and "size" bytes for the text area
 
-  if ( area->changes != 0 )
+  if ( area->changes != nullptr )
     delete[] area->changes;
 
-  if ( area->data != 0 )
+  if ( area->data != nullptr )
     delete[] area->data;
 
   try
@@ -1388,7 +1388,7 @@ inline bool FVTerm::reallocateTextArea (FTermArea* area, std::size_t size)
 {
   // Reallocate "size" bytes for the text area
 
-  if ( area->data != 0 )
+  if ( area->data != nullptr )
     delete[] area->data;
 
   try
@@ -1702,15 +1702,15 @@ bool FVTerm::hasChildAreaChanges (FTermArea* area)
   if ( ! area )
     return false;
 
-  for (auto&& pcall : area->preproc_list)
-  {
-    if ( pcall.instance
-      && pcall.instance->child_print_area
-      && pcall.instance->child_print_area->has_changes )
-      return true;
-  }
-
-  return false;
+  return std::any_of ( area->preproc_list.begin()
+                     , area->preproc_list.end()
+                     , [] (const FVTermPreprocessing& pcall) -> bool
+                       {
+                         return pcall.instance
+                             && pcall.instance->child_print_area
+                             && pcall.instance->child_print_area->has_changes;
+                       }
+                     );
 }
 
 //----------------------------------------------------------------------
@@ -2155,7 +2155,7 @@ bool FVTerm::clearFullArea (FTermArea* area, FChar& nc)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::clearAreaWithShadow (FTermArea* area, FChar& nc)
+void FVTerm::clearAreaWithShadow (FTermArea* area, const FChar& nc)
 {
   FChar t_char = nc;
   const int total_width = area->width + area->right_shadow;
@@ -2530,7 +2530,7 @@ void FVTerm::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
 
 //----------------------------------------------------------------------
 inline void FVTerm::skipPaddingCharacter ( uInt& x, uInt y
-                                         , FChar*& print_char )
+                                         , const FChar* const& print_char )
 {
   if ( isFullWidthChar(print_char) )  // full-width character
   {
@@ -2661,13 +2661,13 @@ FVTerm::exit_state FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y)
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isFullWidthChar (FChar*& ch)
+inline bool FVTerm::isFullWidthChar (const FChar* const& ch)
 {
   return bool(ch->attr.bit.char_width == 2);
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isFullWidthPaddingChar (FChar*& ch)
+inline bool FVTerm::isFullWidthPaddingChar (const FChar* const& ch)
 {
   return ch->attr.bit.fullwidth_padding;
 }

@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -46,10 +47,14 @@ const FString FTermBuffer::toString() const
 {
   std::wstring wide_string{};
   wide_string.reserve(data.size());
-
-  for (auto&& fchar : data)
-    wide_string.push_back(fchar.ch);
-
+  std::transform ( data.begin()
+                 , data.end()
+                 , std::back_inserter(wide_string)
+                 , [] (const FChar& fchar) -> wchar_t
+                   {
+                     return fchar.ch;
+                   }
+                 );
   return FString(wide_string);
 }
 

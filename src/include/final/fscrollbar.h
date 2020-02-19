@@ -92,7 +92,7 @@ class FScrollbar : public FWidget
     FScrollbar (const FScrollbar&) = delete;
 
     // Destructor
-    virtual ~FScrollbar();
+    ~FScrollbar() override;
 
     // Disable assignment operator (=)
     FScrollbar& operator = (const FScrollbar&) = delete;

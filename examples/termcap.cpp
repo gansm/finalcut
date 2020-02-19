@@ -168,7 +168,7 @@ void tcapString (const std::string& name, const char cap_str[])
   std::string sequence{};
   std::cout << name << ": ";
 
-  if ( cap_str == 0 )
+  if ( cap_str == nullptr )
   {
     std::cout << "\r\n";
     return;

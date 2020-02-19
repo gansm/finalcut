@@ -197,7 +197,7 @@ bool FTermDetection::getTTYtype()
   const char* termfilename = fterm_data->getTermFileName();
   const char* term_basename = std::strrchr(termfilename, '/');
 
-  if ( term_basename == 0 )
+  if ( term_basename == nullptr )
     term_basename = termfilename;
   else
     term_basename++;
@@ -205,10 +205,10 @@ bool FTermDetection::getTTYtype()
   std::FILE* fp{};
   char str[BUFSIZ]{};
 
-  if ( fsystem && (fp = fsystem->fopen(ttytypename, "r")) != 0 )
+  if ( fsystem && (fp = fsystem->fopen(ttytypename, "r")) != nullptr )
   {
     // Read and parse the file
-    while ( fgets(str, sizeof(str) - 1, fp) != 0 )
+    while ( fgets(str, sizeof(str) - 1, fp) != nullptr )
     {
       const char* type{nullptr};  // nullptr == not found
       const char* name{nullptr};
@@ -218,15 +218,15 @@ bool FTermDetection::getTTYtype()
       {
         if ( std::isspace(uChar(*p)) )
           *p = '\0';
-        else if ( type == 0 )
+        else if ( type == nullptr )
           type = p;
-        else if ( name == 0 && p != str && p[-1] == '\0' )
+        else if ( name == nullptr && p != str && p[-1] == '\0' )
           name = p;
 
         p++;
       }
 
-      if ( type != 0 && name != 0 && ! std::strcmp(name, term_basename) )
+      if ( type != nullptr && name != nullptr && ! std::strcmp(name, term_basename) )
       {
         // Save name in termtype
         std::strncpy (termtype, type, sizeof(termtype));
@@ -252,7 +252,7 @@ bool FTermDetection::getTTYSFileEntry()
   const char* termfilename = fterm_data->getTermFileName();
   const char* term_basename = std::strrchr(termfilename, '/');
 
-  if ( term_basename == 0 )
+  if ( term_basename == nullptr )
     term_basename = termfilename;
   else
     term_basename++;
@@ -264,7 +264,7 @@ bool FTermDetection::getTTYSFileEntry()
   {
     const char* type = ttys_entryt->ty_type;
 
-    if ( type != 0 )
+    if ( type != nullptr )
     {
       // Save name in termtype
       std::strncpy (termtype, type, sizeof(termtype));
@@ -424,25 +424,25 @@ bool FTermDetection::get256colorEnvString()
   color_env.string6 = std::getenv("KONSOLE_DCOP");
   color_env.string7 = std::getenv("COLORFGBG");
 
-  if ( color_env.string1 != 0 )
+  if ( color_env.string1 != nullptr )
     return true;
 
-  if ( color_env.string2 != 0 )
+  if ( color_env.string2 != nullptr )
     return true;
 
-  if ( color_env.string3 != 0 )
+  if ( color_env.string3 != nullptr )
     return true;
 
-  if ( color_env.string4 != 0 )
+  if ( color_env.string4 != nullptr )
     return true;
 
-  if ( color_env.string5 != 0 )
+  if ( color_env.string5 != nullptr )
     return true;
 
-  if ( color_env.string6 != 0 )
+  if ( color_env.string6 != nullptr )
     return true;
 
-  if ( color_env.string7 != 0 )
+  if ( color_env.string7 != nullptr )
     return true;
 
   return false;
@@ -556,7 +556,7 @@ const FString FTermDetection::getXTermColorName (FColor color)
   tv.tv_usec = 150000;  // 150 ms
 
   // read the terminal answer
-  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0 )
   {
     if ( std::scanf("\033]4;%10hu;%509[^\n]s", &color, temp) == 2 )
     {
@@ -590,7 +590,7 @@ char* FTermDetection::parseAnswerbackMsg (char current_termtype[])
   catch (const std::bad_alloc& ex)
   {
     std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return 0;
+    return nullptr;
   }
 
   if ( *answer_back == "PuTTY" )
@@ -638,8 +638,8 @@ const FString FTermDetection::getAnswerbackMsg()
   tv.tv_usec = 150000;  // 150 ms
 
   // Read the answerback message
-  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
-    if ( std::fgets (temp, sizeof(temp) - 1, stdin) != 0 )
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0 )
+    if ( std::fgets (temp, sizeof(temp) - 1, stdin) != nullptr )
       answerback = temp;
 
   return answerback;
@@ -749,7 +749,7 @@ const FString FTermDetection::getSecDA()
   tv.tv_usec = 600000;  // 600 ms
 
   // Read the answer
-  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) == 1
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) == 1
     && std::scanf("\033[>%10d;%10d;%10dc", &a, &b, &c) == 3 )
       sec_da_str.sprintf("\033[>%d;%d;%dc", a, b, c);
 
@@ -801,7 +801,7 @@ char* FTermDetection::secDA_Analysis (char current_termtype[])
       break;
 
     case 82:  // rxvt
-      new_termtype = secDA_Analysis_82(current_termtype);
+      new_termtype = secDA_Analysis_82();
       break;
 
     case 83:  // screen
@@ -813,7 +813,7 @@ char* FTermDetection::secDA_Analysis (char current_termtype[])
       break;
 
     case 85:  // rxvt-unicode
-      new_termtype = secDA_Analysis_85(current_termtype);
+      new_termtype = secDA_Analysis_85();
       break;
 
     default:
@@ -933,11 +933,11 @@ inline char* FTermDetection::secDA_Analysis_77 (char[])
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_82 (char current_termtype[])
+inline char* FTermDetection::secDA_Analysis_82()
 {
   // Terminal ID 82 - rxvt
 
-  char* new_termtype = current_termtype;
+  char* new_termtype{};
   terminal_type.rxvt = true;
 
   if ( std::strncmp(termtype, "rxvt-", 5) != 0
@@ -971,11 +971,11 @@ inline char* FTermDetection::secDA_Analysis_84 (char current_termtype[])
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_85 (char current_termtype[])
+inline char* FTermDetection::secDA_Analysis_85()
 {
   // Terminal ID 85 - rxvt-unicode
 
-  char* new_termtype = current_termtype;
+  char* new_termtype{};
   terminal_type.rxvt = true;
   terminal_type.urxvt = true;
 

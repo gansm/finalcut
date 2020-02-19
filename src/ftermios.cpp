@@ -74,7 +74,7 @@ termios FTermios::getTTY()
   struct termios t{};
 
   if ( tcgetattr(stdin_no, &t) == -1 )
-    std::runtime_error("Cannot find tty");
+    throw std::runtime_error("Cannot find tty");
 
   return t;
 }

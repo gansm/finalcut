@@ -96,7 +96,7 @@ class FApplication : public FWidget
     FApplication (const FApplication&) = delete;
 
     // Destructor
-    virtual ~FApplication();
+    ~FApplication() override;
 
     // Disable assignment operator (=)
     FApplication& operator = (const FApplication&) = delete;
@@ -154,7 +154,7 @@ class FApplication : public FWidget
     void                  sendKeyboardAccelerator();
     void                  processKeyboardEvent();
     bool                  processDialogSwitchAccelerator();
-    bool                  processAccelerator (const FWidget*&);
+    bool                  processAccelerator (const FWidget* const&);
     bool                  getMouseEvent();
     FWidget*&             determineClickedWidget();
     void                  unsetMoveSizeMode();

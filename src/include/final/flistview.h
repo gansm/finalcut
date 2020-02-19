@@ -78,7 +78,7 @@ class FListViewItem : public FObject
                   , iterator );
 
     // Destructor
-    virtual ~FListViewItem();
+    ~FListViewItem() override;
 
     // Assignment operator (=)
     FListViewItem& operator = (const FListViewItem&);
@@ -265,7 +265,7 @@ class FListView : public FWidget
     FListView (const FListView&) = delete;
 
     // Destructor
-    virtual ~FListView();
+    ~FListView() override;
 
     // Disable assignment operator (=)
     FListView& operator = (const FListView&) = delete;
@@ -556,7 +556,7 @@ inline FObject::iterator
 inline FObject::iterator
     FListView::insert ( const FStringList& cols
                       , iterator parent_iter )
-{ return insert (cols, 0, parent_iter); }
+{ return insert (cols, nullptr, parent_iter); }
 
 //----------------------------------------------------------------------
 template<typename T>

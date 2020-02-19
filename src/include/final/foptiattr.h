@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2019 Markus Gans                                      *
+* Copyright 2016-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -172,7 +172,7 @@ class FOptiAttr final
     void          set_orig_orig_colors (char[]);
 
     // Inquiry
-    static bool   isNormal (FChar*&);
+    static bool   isNormal (const FChar* const&);
 
     // Methods
     void          initialize();
@@ -258,12 +258,12 @@ class FOptiAttr final
     void          setAttributesOff (FChar*&);
 
     // Inquiries
-    static bool   hasColor (FChar*&);
-    static bool   hasAttribute (FChar*&);
-    static bool   hasNoAttribute (FChar*&);
+    static bool   hasColor (const FChar* const&);
+    static bool   hasAttribute (const FChar* const&);
+    static bool   hasNoAttribute (const FChar* const&);
 
     // Methods
-    bool          hasColorChanged (FChar*&, FChar*&);
+    bool          hasColorChanged (const FChar* const&, const FChar* const&);
     void          resetColor (FChar*&);
     void          prevent_no_color_video_attributes (FChar*&, bool = false);
     void          deactivateAttributes (FChar*&, FChar*&);
@@ -271,13 +271,13 @@ class FOptiAttr final
     void          changeAttributeSeparately (FChar*&, FChar*&);
     void          change_color (FChar*&, FChar*&);
     void          change_to_default_color (FChar*&, FChar*&, FColor&, FColor&);
-    void          change_current_color (FChar*&, FColor, FColor);
+    void          change_current_color (const FChar* const&, FColor, FColor);
     void          resetAttribute (FChar*&);
     void          reset (FChar*&);
     bool          caused_reset_attributes (char[], uChar = all_tests);
     bool          hasCharsetEquivalence();
-    void          detectSwitchOn (FChar*&, FChar*&);
-    void          detectSwitchOff (FChar*&, FChar*&);
+    void          detectSwitchOn (const FChar* const&, const FChar* const&);
+    void          detectSwitchOff (const FChar* const&, const FChar* const&);
     bool          switchOn();
     bool          switchOff();
     bool          append_sequence (char[]);

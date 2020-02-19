@@ -595,7 +595,7 @@ void FComboBox::onePosDown()
 }
 
 //----------------------------------------------------------------------
-void FComboBox::passEventToListWindow (FMouseEvent*& ev)
+void FComboBox::passEventToListWindow (FMouseEvent* const& ev)
 {
   // Mouse event handover to list window
 

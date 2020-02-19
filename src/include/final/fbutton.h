@@ -68,7 +68,7 @@ class FButton : public FWidget
     FButton (const FButton&) = delete;
 
     // Destructor
-    virtual ~FButton();
+    ~FButton() override;
 
     // Disable assignment operator (=)
     FButton& operator = (const FButton&) = delete;

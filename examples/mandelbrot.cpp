@@ -38,7 +38,7 @@ class Mandelbrot : public finalcut::FDialog
     explicit Mandelbrot (finalcut::FWidget* = nullptr);
 
     // Destructor
-    ~Mandelbrot();
+    ~Mandelbrot() override;
 
     // Event handlers
     void onKeyPress (finalcut::FKeyEvent*) override;
@@ -138,8 +138,15 @@ void Mandelbrot::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Mandelbrot::adjustSize()
 {
-  const std::size_t h = getDesktopHeight() - 1;
-  const std::size_t w = getDesktopWidth() - 10;
+  std::size_t h = getDesktopHeight();
+  std::size_t w = getDesktopWidth();
+
+  if ( h > 1 )
+    h--;
+
+  if ( w > 10 )
+    w -= 10;
+
   setGeometry(FPoint(6, 1), FSize(w, h), false);
   finalcut::FDialog::adjustSize();
 }

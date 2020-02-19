@@ -72,7 +72,7 @@ class FButtonGroup : public FScrollView
     FButtonGroup (const FButtonGroup&) = delete;
 
     // Destructor
-    virtual ~FButtonGroup();
+    ~FButtonGroup() override;
 
     // Disable assignment operator (=)
     FButtonGroup& operator = (const FButtonGroup&) = delete;

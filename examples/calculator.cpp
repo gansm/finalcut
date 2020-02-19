@@ -113,7 +113,7 @@ class Calc : public finalcut::FDialog
     explicit Calc (finalcut::FWidget* parent = nullptr);
 
     // Destructor
-    ~Calc();
+    ~Calc() override;
 
     // Event handlers
     void           onKeyPress (finalcut::FKeyEvent*) override;

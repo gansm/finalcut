@@ -183,7 +183,7 @@ inline FMouse* FMouse::createMouseObject (const mouse_type mt)
   switch ( mt )
   {
     case none:
-      return 0;
+      return nullptr;
 
     case gpm:
 #ifdef F_HAVE_LIBGPM
@@ -528,7 +528,7 @@ int FMouseGPM::gpmEvent (bool clear)
   FD_SET(gpm_fd, &ifds);
   tv.tv_sec  = 0;
   tv.tv_usec = 100000;  // 100 ms
-  const int result = select (max + 1, &ifds, 0, 0, &tv);
+  const int result = select (max + 1, &ifds, nullptr, nullptr, &tv);
 
   if ( result > 0 && FD_ISSET(stdin_no, &ifds) )
   {
@@ -1249,7 +1249,7 @@ void FMouseControl::clearEvent()
 {
   FMouse* mouse_object;
 
-  while ( (mouse_object = getMouseWithEvent()) != 0 )
+  while ( (mouse_object = getMouseWithEvent()) != nullptr )
     mouse_object->clearEvent();
 }
 
@@ -1612,7 +1612,7 @@ FMouse* FMouseControl::getMouseWithData()
                      }
                    );
 
-  return ( iter != mouse_protocol.end() ) ? iter->second : 0;
+  return ( iter != mouse_protocol.end() ) ? iter->second : nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -1628,7 +1628,7 @@ FMouse* FMouseControl::getMouseWithEvent()
                      }
                    );
 
-  return ( iter != mouse_protocol.end() ) ? iter->second : 0;
+  return ( iter != mouse_protocol.end() ) ? iter->second : nullptr;
 }
 
 //----------------------------------------------------------------------

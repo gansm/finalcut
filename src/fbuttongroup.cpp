@@ -75,10 +75,10 @@ FButtonGroup::~FButtonGroup()  // destructor
 FToggleButton* FButtonGroup::getButton (int index) const
 {
   if ( buttonlist.empty() )
-    return 0;
+    return nullptr;
 
   if ( index <= 0 || index > int(getCount()) )
-    return 0;
+    return nullptr;
 
   auto iter = buttonlist.begin();
   std::advance (iter, index - 1);

@@ -82,7 +82,7 @@ class FMenuItem : public FWidget
     FMenuItem (const FMenuItem&) = delete;
 
     // Destructor
-    virtual ~FMenuItem();
+    ~FMenuItem() override;
 
     // Disable assignment operator (=)
     FMenuItem& operator = (const FMenuItem&) = delete;
@@ -293,7 +293,7 @@ inline bool FMenuItem::hasHotkey() const
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::hasMenu() const
-{ return bool(menu != 0); }
+{ return bool(menu != nullptr); }
 
 //----------------------------------------------------------------------
 inline FWidget* FMenuItem::getSuperMenu() const

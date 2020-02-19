@@ -72,7 +72,7 @@ class FCheckMenuItem : public FMenuItem
     FCheckMenuItem (const FCheckMenuItem&) = delete;
 
     // Destructor
-    virtual ~FCheckMenuItem();
+    ~FCheckMenuItem() override;
 
     // Disable assignment operator (=)
     FCheckMenuItem& operator = (const FCheckMenuItem&) = delete;

@@ -46,7 +46,7 @@ class CheckList : public finalcut::FDialog
     CheckList (const CheckList&) = delete;
 
     // Destructor
-    ~CheckList();
+    ~CheckList() override;
 
     // Disable assignment operator (=)
     CheckList& operator = (const CheckList&) = delete;

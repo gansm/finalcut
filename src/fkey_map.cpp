@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -32,177 +32,177 @@ namespace fc
 
 FKeyMap fkey[] =
 {
-  { fc::Fkey_backspace , 0, "kb" },  // backspace key
-  { fc::Fkey_catab     , 0, "ka" },  // clear-all-tabs key
-  { fc::Fkey_clear     , 0, "kC" },  // clear-screen or erase key
-  { fc::Fkey_ctab      , 0, "kt" },  // clear-tab key
-  { fc::Fkey_dc        , 0, "kD" },  // delete-character key
-  { fc::Fkey_dc        , 0, "kDx"},  // keypad delete
-  { fc::Fkey_dl        , 0, "kL" },  // delete-line key
-  { fc::Fkey_down      , 0, "kd" },  // down-arrow key
-  { fc::Fkey_down      , 0, "kdx"},  // down-arrow key
-  { fc::Fkey_eic       , 0, "kM" },  // sent by rmir or smir in insert mode
-  { fc::Fkey_eol       , 0, "kE" },  // clear-to-end-of-line key
-  { fc::Fkey_eos       , 0, "kS" },  // clear-to-end-of-screen key
-  { fc::Fkey_f0        , 0, "k0" },  // F0 function key
-  { fc::Fkey_f1        , 0, "k1" },  // F1 function key
-  { fc::Fkey_f1        , 0, "k1x"},  // F1 function key
-  { fc::Fkey_f1        , 0, "k1X"},  // F1 function key
-  { fc::Fkey_f2        , 0, "k2" },  // F2 function key
-  { fc::Fkey_f2        , 0, "k2x"},  // F2 function key
-  { fc::Fkey_f2        , 0, "k2X"},  // F2 function key
-  { fc::Fkey_f3        , 0, "k3" },  // F3 function key
-  { fc::Fkey_f3        , 0, "k3x"},  // F3 function key
-  { fc::Fkey_f3        , 0, "k3X"},  // F3 function key
-  { fc::Fkey_f4        , 0, "k4" },  // F4 function key
-  { fc::Fkey_f4        , 0, "k4x"},  // F4 function key
-  { fc::Fkey_f4        , 0, "k4X"},  // F4 function key
-  { fc::Fkey_f5        , 0, "k5" },  // F5 function key
-  { fc::Fkey_f6        , 0, "k6" },  // F6 function key
-  { fc::Fkey_f7        , 0, "k7" },  // F7 function key
-  { fc::Fkey_f8        , 0, "k8" },  // F8 fucntion key
-  { fc::Fkey_f9        , 0, "k9" },  // F9 function key
-  { fc::Fkey_f10       , 0, "k;" },  // F10 function key
-  { fc::Fkey_home      , 0, "kh" },  // home key
-  { fc::Fkey_home      , 0, "khx"},  // home key
-  { fc::Fkey_ic        , 0, "kI" },  // insert-character key
-  { fc::Fkey_il        , 0, "kA" },  // insert-line key
-  { fc::Fkey_left      , 0, "kl" },  // left-arrow key
-  { fc::Fkey_left      , 0, "klx"},  // left-arrow key
-  { fc::Fkey_ll        , 0, "kH" },  // last-line key
-  { fc::Fkey_npage     , 0, "kN" },  // next-page key
-  { fc::Fkey_ppage     , 0, "kP" },  // prev-page key
-  { fc::Fkey_right     , 0, "kr" },  // right-arrow key
-  { fc::Fkey_right     , 0, "krx"},  // right-arrow key
-  { fc::Fkey_sf        , 0, "kF" },  // scroll-forward key (shift-up)
-  { fc::Fkey_sr        , 0, "kR" },  // scroll-backward key (shift-down)
-  { fc::Fkey_stab      , 0, "kT" },  // set-tab key
-  { fc::Fkey_up        , 0, "ku" },  // up-arrow key
-  { fc::Fkey_up        , 0, "kux"},  // up-arrow key
-  { fc::Fkey_a1        , 0, "K1" },  // upper left of keypad
-  { fc::Fkey_a3        , 0, "K3" },  // upper right of keypad
-  { fc::Fkey_b2        , 0, "K2" },  // center of keypad
-  { fc::Fkey_c1        , 0, "K4" },  // lower left of keypad
-  { fc::Fkey_c3        , 0, "K5" },  // lower right of keypad
-  { fc::Fkey_btab      , 0, "kB" },  // back-tab key
-  { fc::Fkey_beg       , 0, "@1" },  // begin key
-  { fc::Fkey_cancel    , 0, "@2" },  // cancel key
-  { fc::Fkey_close     , 0, "@3" },  // close key
-  { fc::Fkey_command   , 0, "@4" },  // command key
-  { fc::Fkey_copy      , 0, "@5" },  // copy key
-  { fc::Fkey_create    , 0, "@6" },  // create key
-  { fc::Fkey_end       , 0, "@7" },  // end key
-  { fc::Fkey_end       , 0, "@7x"},  // end key
-  { fc::Fkey_end       , 0, "@7X"},  // end key
-  { fc::Fkey_enter     , 0, "@8" },  // enter/send key
-  { fc::Fkey_enter     , 0, "@8x"},  // enter/send key
-  { fc::Fkey_exit      , 0, "@9" },  // exit key
-  { fc::Fkey_find      , 0, "@0" },  // find key
-  { fc::Fkey_slash     , 0, "KP1"},  // keypad slash
-  { fc::Fkey_asterisk  , 0, "KP2"},  // keypad asterisk
-  { fc::Fkey_minus_sign, 0, "KP3"},  // keypad minus sign
-  { fc::Fkey_plus_sign , 0, "KP4"},  // keypad plus sign
-  { fc::Fkey_help      , 0, "%1" },  // help key
-  { fc::Fkey_mark      , 0, "%2" },  // mark key
-  { fc::Fkey_message   , 0, "%3" },  // message key
-  { fc::Fkey_move      , 0, "%4" },  // move key
-  { fc::Fkey_next      , 0, "%5" },  // next key
-  { fc::Fkey_open      , 0, "%6" },  // open key
-  { fc::Fkey_options   , 0, "%7" },  // options key
-  { fc::Fkey_previous  , 0, "%8" },  // previous key
-  { fc::Fkey_print     , 0, "%9" },  // print key
-  { fc::Fkey_redo      , 0, "%0" },  // redo key
-  { fc::Fkey_reference , 0, "&1" },  // reference key
-  { fc::Fkey_refresh   , 0, "&2" },  // refresh key
-  { fc::Fkey_replace   , 0, "&3" },  // replace key
-  { fc::Fkey_restart   , 0, "&4" },  // restart key
-  { fc::Fkey_resume    , 0, "&5" },  // resume key
-  { fc::Fkey_save      , 0, "&6" },  // save key
-  { fc::Fkey_suspend   , 0, "&7" },  // suspend key
-  { fc::Fkey_undo      , 0, "&8" },  // undo key
-  { fc::Fkey_sbeg      , 0, "&9" },  // shifted begin key
-  { fc::Fkey_scancel   , 0, "&0" },  // shifted cancel key
-  { fc::Fkey_scommand  , 0, "*1" },  // shifted command key
-  { fc::Fkey_scopy     , 0, "*2" },  // shifted copy key
-  { fc::Fkey_screate   , 0, "*3" },  // shifted create key
-  { fc::Fkey_sdc       , 0, "*4" },  // shifted delete-character key
-  { fc::Fkey_sdl       , 0, "*5" },  // shifted delete-line key
-  { fc::Fkey_select    , 0, "*6" },  // select key
-  { fc::Fkey_send      , 0, "*7" },  // shifted end key
-  { fc::Fkey_seol      , 0, "*8" },  // shifted clear-to-end-of-line key
-  { fc::Fkey_sexit     , 0, "*9" },  // shifted exit key
-  { fc::Fkey_sfind     , 0, "*0" },  // shifted find key
-  { fc::Fkey_shelp     , 0, "#1" },  // shifted help key
-  { fc::Fkey_shome     , 0, "#2" },  // shifted home key
-  { fc::Fkey_sic       , 0, "#3" },  // shifted insert-character key
-  { fc::Fkey_sleft     , 0, "#4" },  // shifted left-arrow key
-  { fc::Fkey_smessage  , 0, "%a" },  // shifted message key
-  { fc::Fkey_smove     , 0, "%b" },  // shifted move key
-  { fc::Fkey_snext     , 0, "%c" },  // shifted next key
-  { fc::Fkey_soptions  , 0, "%d" },  // shifted options key
-  { fc::Fkey_sprevious , 0, "%e" },  // shifted previous key
-  { fc::Fkey_sprint    , 0, "%f" },  // shifted print key
-  { fc::Fkey_sredo     , 0, "%g" },  // shifted redo key
-  { fc::Fkey_sreplace  , 0, "%h" },  // shifted replace key
-  { fc::Fkey_sright    , 0, "%i" },  // shifted right-arrow key
-  { fc::Fkey_srsume    , 0, "%j" },  // shifted resume key
-  { fc::Fkey_ssave     , 0, "!1" },  // shifted save key
-  { fc::Fkey_ssuspend  , 0, "!2" },  // shifted suspend key
-  { fc::Fkey_sundo     , 0, "!3" },  // shifted undo key
-  { fc::Fkey_f11       , 0, "F1" },  // F11 function key
-  { fc::Fkey_f12       , 0, "F2" },  // F12 function key
-  { fc::Fkey_f13       , 0, "F3" },  // F13 function key
-  { fc::Fkey_f14       , 0, "F4" },  // F14 function key
-  { fc::Fkey_f15       , 0, "F5" },  // F15 function key
-  { fc::Fkey_f16       , 0, "F6" },  // F16 function key
-  { fc::Fkey_f17       , 0, "F7" },  // F17 function key
-  { fc::Fkey_f18       , 0, "F8" },  // F18 function key
-  { fc::Fkey_f19       , 0, "F9" },  // F19 function key
-  { fc::Fkey_f20       , 0, "FA" },  // F20 function key
-  { fc::Fkey_f21       , 0, "FB" },  // F21 function key
-  { fc::Fkey_f22       , 0, "FC" },  // F22 function key
-  { fc::Fkey_f23       , 0, "FD" },  // F23 function key
-  { fc::Fkey_f24       , 0, "FE" },  // F24 function key
-  { fc::Fkey_f25       , 0, "FF" },  // F25 function key
-  { fc::Fkey_f26       , 0, "FG" },  // F26 function key
-  { fc::Fkey_f27       , 0, "FH" },  // F27 function key
-  { fc::Fkey_f28       , 0, "FI" },  // F28 function key
-  { fc::Fkey_f29       , 0, "FJ" },  // F29 function key
-  { fc::Fkey_f30       , 0, "FK" },  // F30 function key
-  { fc::Fkey_f31       , 0, "FL" },  // F31 function key
-  { fc::Fkey_f32       , 0, "FM" },  // F32 function key
-  { fc::Fkey_f33       , 0, "FN" },  // F33 function key
-  { fc::Fkey_f34       , 0, "FO" },  // F34 function key
-  { fc::Fkey_f35       , 0, "FP" },  // F35 function key
-  { fc::Fkey_f36       , 0, "FQ" },  // F36 function key
-  { fc::Fkey_f37       , 0, "FR" },  // F37 function key
-  { fc::Fkey_f38       , 0, "FS" },  // F38 function key
-  { fc::Fkey_f39       , 0, "FT" },  // F39 function key
-  { fc::Fkey_f40       , 0, "FU" },  // F40 function key
-  { fc::Fkey_f41       , 0, "FV" },  // F41 function key
-  { fc::Fkey_f42       , 0, "FW" },  // F42 function key
-  { fc::Fkey_f43       , 0, "FX" },  // F43 function key
-  { fc::Fkey_f44       , 0, "FY" },  // F44 function key
-  { fc::Fkey_f45       , 0, "FZ" },  // F45 function key
-  { fc::Fkey_f46       , 0, "Fa" },  // F46 function key
-  { fc::Fkey_f47       , 0, "Fb" },  // F47 function key
-  { fc::Fkey_f48       , 0, "Fc" },  // F48 function key
-  { fc::Fkey_f49       , 0, "Fd" },  // F49 function key
-  { fc::Fkey_f50       , 0, "Fe" },  // F50 function key
-  { fc::Fkey_f51       , 0, "Ff" },  // F51 function key
-  { fc::Fkey_f52       , 0, "Fg" },  // F52 function key
-  { fc::Fkey_f53       , 0, "Fh" },  // F53 function key
-  { fc::Fkey_f54       , 0, "Fi" },  // F54 function key
-  { fc::Fkey_f55       , 0, "Fj" },  // F55 function key
-  { fc::Fkey_f56       , 0, "Fk" },  // F56 function key
-  { fc::Fkey_f57       , 0, "Fl" },  // F57 function key
-  { fc::Fkey_f58       , 0, "Fm" },  // F58 function key
-  { fc::Fkey_f59       , 0, "Fn" },  // F59 function key
-  { fc::Fkey_f60       , 0, "Fo" },  // F60 function key
-  { fc::Fkey_f61       , 0, "Fp" },  // F61 function key
-  { fc::Fkey_f62       , 0, "Fq" },  // F62 function key
-  { fc::Fkey_f63       , 0, "Fr" },  // F63 function key
-  { 0                  , 0, "\0" }
+  { fc::Fkey_backspace , nullptr, "kb" },  // backspace key
+  { fc::Fkey_catab     , nullptr, "ka" },  // clear-all-tabs key
+  { fc::Fkey_clear     , nullptr, "kC" },  // clear-screen or erase key
+  { fc::Fkey_ctab      , nullptr, "kt" },  // clear-tab key
+  { fc::Fkey_dc        , nullptr, "kD" },  // delete-character key
+  { fc::Fkey_dc        , nullptr, "kDx"},  // keypad delete
+  { fc::Fkey_dl        , nullptr, "kL" },  // delete-line key
+  { fc::Fkey_down      , nullptr, "kd" },  // down-arrow key
+  { fc::Fkey_down      , nullptr, "kdx"},  // down-arrow key
+  { fc::Fkey_eic       , nullptr, "kM" },  // sent by rmir or smir in insert mode
+  { fc::Fkey_eol       , nullptr, "kE" },  // clear-to-end-of-line key
+  { fc::Fkey_eos       , nullptr, "kS" },  // clear-to-end-of-screen key
+  { fc::Fkey_f0        , nullptr, "k0" },  // F0 function key
+  { fc::Fkey_f1        , nullptr, "k1" },  // F1 function key
+  { fc::Fkey_f1        , nullptr, "k1x"},  // F1 function key
+  { fc::Fkey_f1        , nullptr, "k1X"},  // F1 function key
+  { fc::Fkey_f2        , nullptr, "k2" },  // F2 function key
+  { fc::Fkey_f2        , nullptr, "k2x"},  // F2 function key
+  { fc::Fkey_f2        , nullptr, "k2X"},  // F2 function key
+  { fc::Fkey_f3        , nullptr, "k3" },  // F3 function key
+  { fc::Fkey_f3        , nullptr, "k3x"},  // F3 function key
+  { fc::Fkey_f3        , nullptr, "k3X"},  // F3 function key
+  { fc::Fkey_f4        , nullptr, "k4" },  // F4 function key
+  { fc::Fkey_f4        , nullptr, "k4x"},  // F4 function key
+  { fc::Fkey_f4        , nullptr, "k4X"},  // F4 function key
+  { fc::Fkey_f5        , nullptr, "k5" },  // F5 function key
+  { fc::Fkey_f6        , nullptr, "k6" },  // F6 function key
+  { fc::Fkey_f7        , nullptr, "k7" },  // F7 function key
+  { fc::Fkey_f8        , nullptr, "k8" },  // F8 fucntion key
+  { fc::Fkey_f9        , nullptr, "k9" },  // F9 function key
+  { fc::Fkey_f10       , nullptr, "k;" },  // F10 function key
+  { fc::Fkey_home      , nullptr, "kh" },  // home key
+  { fc::Fkey_home      , nullptr, "khx"},  // home key
+  { fc::Fkey_ic        , nullptr, "kI" },  // insert-character key
+  { fc::Fkey_il        , nullptr, "kA" },  // insert-line key
+  { fc::Fkey_left      , nullptr, "kl" },  // left-arrow key
+  { fc::Fkey_left      , nullptr, "klx"},  // left-arrow key
+  { fc::Fkey_ll        , nullptr, "kH" },  // last-line key
+  { fc::Fkey_npage     , nullptr, "kN" },  // next-page key
+  { fc::Fkey_ppage     , nullptr, "kP" },  // prev-page key
+  { fc::Fkey_right     , nullptr, "kr" },  // right-arrow key
+  { fc::Fkey_right     , nullptr, "krx"},  // right-arrow key
+  { fc::Fkey_sf        , nullptr, "kF" },  // scroll-forward key (shift-up)
+  { fc::Fkey_sr        , nullptr, "kR" },  // scroll-backward key (shift-down)
+  { fc::Fkey_stab      , nullptr, "kT" },  // set-tab key
+  { fc::Fkey_up        , nullptr, "ku" },  // up-arrow key
+  { fc::Fkey_up        , nullptr, "kux"},  // up-arrow key
+  { fc::Fkey_a1        , nullptr, "K1" },  // upper left of keypad
+  { fc::Fkey_a3        , nullptr, "K3" },  // upper right of keypad
+  { fc::Fkey_b2        , nullptr, "K2" },  // center of keypad
+  { fc::Fkey_c1        , nullptr, "K4" },  // lower left of keypad
+  { fc::Fkey_c3        , nullptr, "K5" },  // lower right of keypad
+  { fc::Fkey_btab      , nullptr, "kB" },  // back-tab key
+  { fc::Fkey_beg       , nullptr, "@1" },  // begin key
+  { fc::Fkey_cancel    , nullptr, "@2" },  // cancel key
+  { fc::Fkey_close     , nullptr, "@3" },  // close key
+  { fc::Fkey_command   , nullptr, "@4" },  // command key
+  { fc::Fkey_copy      , nullptr, "@5" },  // copy key
+  { fc::Fkey_create    , nullptr, "@6" },  // create key
+  { fc::Fkey_end       , nullptr, "@7" },  // end key
+  { fc::Fkey_end       , nullptr, "@7x"},  // end key
+  { fc::Fkey_end       , nullptr, "@7X"},  // end key
+  { fc::Fkey_enter     , nullptr, "@8" },  // enter/send key
+  { fc::Fkey_enter     , nullptr, "@8x"},  // enter/send key
+  { fc::Fkey_exit      , nullptr, "@9" },  // exit key
+  { fc::Fkey_find      , nullptr, "@0" },  // find key
+  { fc::Fkey_slash     , nullptr, "KP1"},  // keypad slash
+  { fc::Fkey_asterisk  , nullptr, "KP2"},  // keypad asterisk
+  { fc::Fkey_minus_sign, nullptr, "KP3"},  // keypad minus sign
+  { fc::Fkey_plus_sign , nullptr, "KP4"},  // keypad plus sign
+  { fc::Fkey_help      , nullptr, "%1" },  // help key
+  { fc::Fkey_mark      , nullptr, "%2" },  // mark key
+  { fc::Fkey_message   , nullptr, "%3" },  // message key
+  { fc::Fkey_move      , nullptr, "%4" },  // move key
+  { fc::Fkey_next      , nullptr, "%5" },  // next key
+  { fc::Fkey_open      , nullptr, "%6" },  // open key
+  { fc::Fkey_options   , nullptr, "%7" },  // options key
+  { fc::Fkey_previous  , nullptr, "%8" },  // previous key
+  { fc::Fkey_print     , nullptr, "%9" },  // print key
+  { fc::Fkey_redo      , nullptr, "%0" },  // redo key
+  { fc::Fkey_reference , nullptr, "&1" },  // reference key
+  { fc::Fkey_refresh   , nullptr, "&2" },  // refresh key
+  { fc::Fkey_replace   , nullptr, "&3" },  // replace key
+  { fc::Fkey_restart   , nullptr, "&4" },  // restart key
+  { fc::Fkey_resume    , nullptr, "&5" },  // resume key
+  { fc::Fkey_save      , nullptr, "&6" },  // save key
+  { fc::Fkey_suspend   , nullptr, "&7" },  // suspend key
+  { fc::Fkey_undo      , nullptr, "&8" },  // undo key
+  { fc::Fkey_sbeg      , nullptr, "&9" },  // shifted begin key
+  { fc::Fkey_scancel   , nullptr, "&0" },  // shifted cancel key
+  { fc::Fkey_scommand  , nullptr, "*1" },  // shifted command key
+  { fc::Fkey_scopy     , nullptr, "*2" },  // shifted copy key
+  { fc::Fkey_screate   , nullptr, "*3" },  // shifted create key
+  { fc::Fkey_sdc       , nullptr, "*4" },  // shifted delete-character key
+  { fc::Fkey_sdl       , nullptr, "*5" },  // shifted delete-line key
+  { fc::Fkey_select    , nullptr, "*6" },  // select key
+  { fc::Fkey_send      , nullptr, "*7" },  // shifted end key
+  { fc::Fkey_seol      , nullptr, "*8" },  // shifted clear-to-end-of-line key
+  { fc::Fkey_sexit     , nullptr, "*9" },  // shifted exit key
+  { fc::Fkey_sfind     , nullptr, "*0" },  // shifted find key
+  { fc::Fkey_shelp     , nullptr, "#1" },  // shifted help key
+  { fc::Fkey_shome     , nullptr, "#2" },  // shifted home key
+  { fc::Fkey_sic       , nullptr, "#3" },  // shifted insert-character key
+  { fc::Fkey_sleft     , nullptr, "#4" },  // shifted left-arrow key
+  { fc::Fkey_smessage  , nullptr, "%a" },  // shifted message key
+  { fc::Fkey_smove     , nullptr, "%b" },  // shifted move key
+  { fc::Fkey_snext     , nullptr, "%c" },  // shifted next key
+  { fc::Fkey_soptions  , nullptr, "%d" },  // shifted options key
+  { fc::Fkey_sprevious , nullptr, "%e" },  // shifted previous key
+  { fc::Fkey_sprint    , nullptr, "%f" },  // shifted print key
+  { fc::Fkey_sredo     , nullptr, "%g" },  // shifted redo key
+  { fc::Fkey_sreplace  , nullptr, "%h" },  // shifted replace key
+  { fc::Fkey_sright    , nullptr, "%i" },  // shifted right-arrow key
+  { fc::Fkey_srsume    , nullptr, "%j" },  // shifted resume key
+  { fc::Fkey_ssave     , nullptr, "!1" },  // shifted save key
+  { fc::Fkey_ssuspend  , nullptr, "!2" },  // shifted suspend key
+  { fc::Fkey_sundo     , nullptr, "!3" },  // shifted undo key
+  { fc::Fkey_f11       , nullptr, "F1" },  // F11 function key
+  { fc::Fkey_f12       , nullptr, "F2" },  // F12 function key
+  { fc::Fkey_f13       , nullptr, "F3" },  // F13 function key
+  { fc::Fkey_f14       , nullptr, "F4" },  // F14 function key
+  { fc::Fkey_f15       , nullptr, "F5" },  // F15 function key
+  { fc::Fkey_f16       , nullptr, "F6" },  // F16 function key
+  { fc::Fkey_f17       , nullptr, "F7" },  // F17 function key
+  { fc::Fkey_f18       , nullptr, "F8" },  // F18 function key
+  { fc::Fkey_f19       , nullptr, "F9" },  // F19 function key
+  { fc::Fkey_f20       , nullptr, "FA" },  // F20 function key
+  { fc::Fkey_f21       , nullptr, "FB" },  // F21 function key
+  { fc::Fkey_f22       , nullptr, "FC" },  // F22 function key
+  { fc::Fkey_f23       , nullptr, "FD" },  // F23 function key
+  { fc::Fkey_f24       , nullptr, "FE" },  // F24 function key
+  { fc::Fkey_f25       , nullptr, "FF" },  // F25 function key
+  { fc::Fkey_f26       , nullptr, "FG" },  // F26 function key
+  { fc::Fkey_f27       , nullptr, "FH" },  // F27 function key
+  { fc::Fkey_f28       , nullptr, "FI" },  // F28 function key
+  { fc::Fkey_f29       , nullptr, "FJ" },  // F29 function key
+  { fc::Fkey_f30       , nullptr, "FK" },  // F30 function key
+  { fc::Fkey_f31       , nullptr, "FL" },  // F31 function key
+  { fc::Fkey_f32       , nullptr, "FM" },  // F32 function key
+  { fc::Fkey_f33       , nullptr, "FN" },  // F33 function key
+  { fc::Fkey_f34       , nullptr, "FO" },  // F34 function key
+  { fc::Fkey_f35       , nullptr, "FP" },  // F35 function key
+  { fc::Fkey_f36       , nullptr, "FQ" },  // F36 function key
+  { fc::Fkey_f37       , nullptr, "FR" },  // F37 function key
+  { fc::Fkey_f38       , nullptr, "FS" },  // F38 function key
+  { fc::Fkey_f39       , nullptr, "FT" },  // F39 function key
+  { fc::Fkey_f40       , nullptr, "FU" },  // F40 function key
+  { fc::Fkey_f41       , nullptr, "FV" },  // F41 function key
+  { fc::Fkey_f42       , nullptr, "FW" },  // F42 function key
+  { fc::Fkey_f43       , nullptr, "FX" },  // F43 function key
+  { fc::Fkey_f44       , nullptr, "FY" },  // F44 function key
+  { fc::Fkey_f45       , nullptr, "FZ" },  // F45 function key
+  { fc::Fkey_f46       , nullptr, "Fa" },  // F46 function key
+  { fc::Fkey_f47       , nullptr, "Fb" },  // F47 function key
+  { fc::Fkey_f48       , nullptr, "Fc" },  // F48 function key
+  { fc::Fkey_f49       , nullptr, "Fd" },  // F49 function key
+  { fc::Fkey_f50       , nullptr, "Fe" },  // F50 function key
+  { fc::Fkey_f51       , nullptr, "Ff" },  // F51 function key
+  { fc::Fkey_f52       , nullptr, "Fg" },  // F52 function key
+  { fc::Fkey_f53       , nullptr, "Fh" },  // F53 function key
+  { fc::Fkey_f54       , nullptr, "Fi" },  // F54 function key
+  { fc::Fkey_f55       , nullptr, "Fj" },  // F55 function key
+  { fc::Fkey_f56       , nullptr, "Fk" },  // F56 function key
+  { fc::Fkey_f57       , nullptr, "Fl" },  // F57 function key
+  { fc::Fkey_f58       , nullptr, "Fm" },  // F58 function key
+  { fc::Fkey_f59       , nullptr, "Fn" },  // F59 function key
+  { fc::Fkey_f60       , nullptr, "Fo" },  // F60 function key
+  { fc::Fkey_f61       , nullptr, "Fp" },  // F61 function key
+  { fc::Fkey_f62       , nullptr, "Fq" },  // F62 function key
+  { fc::Fkey_f63       , nullptr, "Fr" },  // F63 function key
+  { 0                  , nullptr, "\0" }
 };
 
 FMetakeyMap fmetakey[] =

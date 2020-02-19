@@ -72,7 +72,7 @@ class FRadioButton : public FToggleButton
     FRadioButton (const FRadioButton&) = delete;
 
     // Destructor
-    virtual ~FRadioButton();
+    ~FRadioButton() override;
 
     // Disable assignment operator (=)
     FRadioButton& operator = (const FRadioButton&) = delete;

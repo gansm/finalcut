@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2019 Markus Gans                                      *
+* Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -86,7 +86,7 @@ class Listbox : public FDialog
     Listbox (const Listbox&) = delete;
 
     // Destructor
-    ~Listbox();
+    ~Listbox() override;
 
     // Disable assignment operator (=)
     Listbox& operator = (const Listbox&) = delete;

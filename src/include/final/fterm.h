@@ -210,7 +210,7 @@ class FTerm final
 #endif
 
     // Inquiries
-    static bool            isNormal (FChar*&);
+    static bool            isNormal (const FChar* const&);
     static bool            isRaw();
     static bool            hasUTF8();
     static bool            hasVT100();
@@ -424,8 +424,7 @@ inline bool FTerm::unsetUTF8()
 template<typename... Args>
 inline void FTerm::putstringf (const char format[], Args&&... args)
 {
-  const int size = std::snprintf ( nullptr, 0, format
-                                 , std::forward<Args>(args)... ) + 1;
+  const int size = std::snprintf (nullptr, 0, format, args...) + 1;
 
   if ( size == -1 )
     return;

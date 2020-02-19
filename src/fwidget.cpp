@@ -162,14 +162,14 @@ FWidget* FWidget::getParentWidget() const
   if ( p_obj && p_obj->isWidget() )
     return static_cast<FWidget*>(p_obj);
   else
-    return 0;
+    return nullptr;
 }
 
 //----------------------------------------------------------------------
 FWidget* FWidget::getFirstFocusableWidget (FObjectList list)
 {
   if ( list.empty() )
-    return 0;
+    return nullptr;
 
   auto iter = list.begin();
 
@@ -186,14 +186,14 @@ FWidget* FWidget::getFirstFocusableWidget (FObjectList list)
     ++iter;
   }
 
-  return 0;
+  return nullptr;
 }
 
 //----------------------------------------------------------------------
 FWidget* FWidget::getLastFocusableWidget (FObjectList list)
 {
   if ( list.empty() )
-    return 0;
+    return nullptr;
 
   auto iter  = list.end();
 
@@ -211,7 +211,7 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList list)
   }
   while ( iter != list.begin() );
 
-  return 0;
+  return nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -720,7 +720,7 @@ void FWidget::setDoubleFlatLine (fc::sides side, int pos, bool bit)
 FWidget* FWidget::childWidgetAt (const FPoint& pos)
 {
   if ( ! hasChildren() )
-    return 0;
+    return nullptr;
 
   for (auto&& child : getChildren())
   {
@@ -735,11 +735,11 @@ FWidget* FWidget::childWidgetAt (const FPoint& pos)
       && widget->getTermGeometry().contains(pos) )
     {
       auto sub_child = widget->childWidgetAt(pos);
-      return ( sub_child != 0 ) ? sub_child : widget;
+      return ( sub_child != nullptr ) ? sub_child : widget;
     }
   }
 
-  return 0;
+  return nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -995,11 +995,11 @@ void FWidget::show()
   {
     // Sets the initial screen settings
     initScreenSettings();
-
-    // draw the vdesktop
+    // Draw the vdesktop
     const auto& r = getRootWidget();
     setColor(r->getForegroundColor(), r->getBackgroundColor());
     clearArea (getVirtualDesktop());
+    // Destop is now initialized
     init_desktop = true;
   }
 

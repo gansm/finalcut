@@ -41,7 +41,7 @@ class Scrollview : public finalcut::FScrollView
     Scrollview (const Scrollview&) = delete;
 
     // Destructor
-    ~Scrollview  ();
+    ~Scrollview() override;
 
     // Disable assignment operator (=)
     Scrollview& operator = (const Scrollview&) = delete;
@@ -197,7 +197,7 @@ class Scrollviewdemo : public finalcut::FDialog
     explicit Scrollviewdemo (finalcut::FWidget* = nullptr);
 
     // Destructor
-    ~Scrollviewdemo();
+    ~Scrollviewdemo() override;
 
     // Event handler
     void onClose (finalcut::FCloseEvent*) override;

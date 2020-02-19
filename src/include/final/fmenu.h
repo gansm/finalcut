@@ -79,7 +79,7 @@ class FMenu : public FWindow, public FMenuList
     FMenu (const FMenu&) = delete;
 
     // Destructor
-    virtual ~FMenu();
+    ~FMenu() override;
 
     // Disable assignment operator (=)
     FMenu& operator = (const FMenu&) = delete;
@@ -183,9 +183,9 @@ class FMenu : public FWindow, public FMenuList
     void         mouseMoveDeselection (FMenuItem*, mouseStates&);
     void         mouseUpOverBorder();
     void         mouseMoveOverBorder (mouseStates&);
-    void         passEventToSubMenu (FMouseEvent*&);
-    void         passEventToSuperMenu (FMouseEvent*&);
-    void         passEventToMenuBar (FMouseEvent*&);
+    void         passEventToSubMenu (FMouseEvent* const&);
+    void         passEventToSuperMenu (FMouseEvent* const&);
+    void         passEventToMenuBar (FMouseEvent* const&);
     bool         containsMenuStructure (const FPoint&);
     bool         containsMenuStructure (int, int);
     FMenu*       superMenuAt (const FPoint&);

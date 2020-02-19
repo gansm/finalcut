@@ -269,6 +269,12 @@ void FOptiAttrTest::sgrOptimizerTest()
   sgr_optimizer.optimize();
   CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "0;38;5;20;48;5;229m") );
 
+
+ std::strcpy(buffer, CSI "m" CSI "38;5;20m" XXXX<<< CSI "48;5;229m");
+  sgr_optimizer.optimize();
+  CPPUNIT_ASSERT_CSTRING ( buffer, C_STR(CSI "0;38;5;20;48;5;229m") );
+
+
   std::strcpy(buffer, CSI "m" CSI "1m" CSI "2m" CSI "3m" CSI "4m"
                       CSI "5m" CSI "7m" CSI "8m" CSI "9m");
   sgr_optimizer.optimize();

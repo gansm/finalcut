@@ -95,7 +95,7 @@ class FMessageBox : public FDialog
                 , int, int, int
                 , FWidget* = nullptr );
     // Destructor
-    virtual ~FMessageBox();
+    ~FMessageBox() override;
 
     // Assignment operator (=)
     FMessageBox& operator = (const FMessageBox&);

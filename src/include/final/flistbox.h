@@ -154,7 +154,7 @@ class FListBox : public FWidget
     FListBox (const FListBox&) = delete;
 
     // Destructor
-    virtual ~FListBox();
+    ~FListBox() override;
 
     // Disable assignment operator (=)
     FListBox& operator = (const FListBox&) = delete;

@@ -78,7 +78,7 @@ class FDialogListMenu : public FMenu
     FDialogListMenu (const FDialogListMenu&) = delete;
 
     // Destructor
-    virtual ~FDialogListMenu();
+    ~FDialogListMenu() override;
 
     // Disable assignment operator (=)
     FDialogListMenu& operator = (const FDialogListMenu&) = delete;

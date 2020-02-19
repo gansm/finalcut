@@ -77,7 +77,7 @@ class FDropDownListBox : public FWindow
     FDropDownListBox (const FDropDownListBox&) = delete;
 
     // Destructor
-    virtual ~FDropDownListBox ();
+    ~FDropDownListBox () override;
 
     // Disable assignment operator (=)
     FDropDownListBox& operator = (const FDropDownListBox&) = delete;
@@ -139,7 +139,7 @@ class FComboBox : public FWidget
     FComboBox (const FComboBox&) = delete;
 
     // Destructor
-    ~FComboBox();
+    ~FComboBox() override;
 
     // Disable assignment operator (=)
     FComboBox& operator = (const FComboBox&) = delete;
@@ -211,7 +211,7 @@ class FComboBox : public FWidget
     void                draw() override;
     void                onePosUp();
     void                onePosDown();
-    void                passEventToListWindow (FMouseEvent*&);
+    void                passEventToListWindow (FMouseEvent* const&);
     void                processClick();
     void                processChanged();
 

@@ -74,7 +74,7 @@ class FToolTip : public FWindow
     FToolTip (const FToolTip&) = delete;
 
     // Destructor
-    virtual ~FToolTip ();
+    ~FToolTip () override;
 
     // Disable assignment operator (=)
     FToolTip& operator = (const FToolTip&) = delete;

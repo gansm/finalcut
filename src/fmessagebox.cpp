@@ -31,7 +31,7 @@ namespace finalcut
 
 static const char* const button_text[] =
 {
-  0,
+  nullptr,
   "&OK",
   "&Cancel",
   "&Yes",
@@ -39,7 +39,7 @@ static const char* const button_text[] =
   "&Abort",
   "&Retry",
   "&Ignore",
-  0
+  nullptr
 };
 
 //----------------------------------------------------------------------

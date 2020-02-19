@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019 Markus Gans                                           *
+* Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -95,7 +95,7 @@ class FSystemImpl : public FSystem
     FSystemImpl();
 
     // Destructor
-    virtual ~FSystemImpl();
+    ~FSystemImpl() override;
 
     // Methods
 #if defined(ISA_SYSCTL_SUPPORT)

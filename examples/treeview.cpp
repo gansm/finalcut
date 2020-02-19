@@ -122,7 +122,7 @@ class Treeview : public finalcut::FDialog
     Treeview (const Treeview&) = delete;
 
     // Destructor
-    ~Treeview();
+    ~Treeview() override;
 
     // Disable assignment operator (=)
     Treeview& operator = (const Treeview&) = delete;
@@ -174,124 +174,124 @@ struct Treeview::TreeItem
 //----------------------------------------------------------------------
 Treeview::TreeItem Treeview::africa[] =
 {
-  { "Algeria", "40,400,000", "15.9", 0 },
-  { "Angola", "25,789,024", "20.69", 0 },
-  { "Botswana", "2,250,260", "3.7", 0 },
-  { "Cameroon", "22,534,532", "39.7", 0 },
-  { "Chad", "13,670,084", "8.6", 0 },
-  { "Egypt", "94,666,000", "87", 0 },
-  { "Ethiopia", "102,374,044", "92.7", 0 },
-  { "Ivory Coast", "23,740,424", "63.9", 0 },
-  { "Libya", "6,541,948", "3.55", 0 },
-  { "Madagascar", "24,430,325", "35.2", 0 },
-  { "Mali", "14,517,176", "11.7", 0 },
-  { "Mauritania", "4,301,018", "3.4", 0 },
-  { "Mozambique", "24,692,144", "28.7", 0 },
-  { "Namibia", "2,113,077", "2.54", 0 },
-  { "Niger", "20,672,987", "12.1", 0 },
-  { "Nigeria", "185,989,640", "197.2", 0 },
-  { "Somalia", "14,317,996", "19.31", 0 },
-  { "South Africa", "54,956,900", "42.4", 0 },
-  { "South Sudan", "12,340,000", "13.33", 0 },
-  { "Sudan", "39,578,828", "21.3", 0 },
-  { "Tanzania", "51,820,00", "47.5", 0 },
-  { "Zambia", "16,212,000", "17.2", 0 },
-  { 0, 0, 0, 0 }
+  { "Algeria", "40,400,000", "15.9", nullptr },
+  { "Angola", "25,789,024", "20.69", nullptr },
+  { "Botswana", "2,250,260", "3.7", nullptr },
+  { "Cameroon", "22,534,532", "39.7", nullptr },
+  { "Chad", "13,670,084", "8.6", nullptr },
+  { "Egypt", "94,666,000", "87", nullptr },
+  { "Ethiopia", "102,374,044", "92.7", nullptr },
+  { "Ivory Coast", "23,740,424", "63.9", nullptr },
+  { "Libya", "6,541,948", "3.55", nullptr },
+  { "Madagascar", "24,430,325", "35.2", nullptr },
+  { "Mali", "14,517,176", "11.7", nullptr },
+  { "Mauritania", "4,301,018", "3.4", nullptr },
+  { "Mozambique", "24,692,144", "28.7", nullptr },
+  { "Namibia", "2,113,077", "2.54", nullptr },
+  { "Niger", "20,672,987", "12.1", nullptr },
+  { "Nigeria", "185,989,640", "197.2", nullptr },
+  { "Somalia", "14,317,996", "19.31", nullptr },
+  { "South Africa", "54,956,900", "42.4", nullptr },
+  { "South Sudan", "12,340,000", "13.33", nullptr },
+  { "Sudan", "39,578,828", "21.3", nullptr },
+  { "Tanzania", "51,820,00", "47.5", nullptr },
+  { "Zambia", "16,212,000", "17.2", nullptr },
+  { nullptr, nullptr, nullptr, nullptr }
 };
 
 Treeview::TreeItem Treeview::asia[] =
 {
-  { "Afghanistan", "34,656,032", "49.88", 0 },
-  { "China", "1,403,500,365", "145.0", 0 },
-  { "India", "1,324,171,354", "393.9", 0 },
-  { "Indonesia", "261,115,456", "124.66", 0 },
-  { "Iran", "80,829,192", "48.0", 0 },
-  { "Iraq", "37,202,572", "82.7", 0 },
-  { "Japan", "126,740,000", "336.0", 0 },
-  { "Kazakhstan", "17,987,736", "6.49", 0 },
-  { "Mongolia", "3,081,677", "1.97", 0 },
-  { "Myanmar", "51,486,253", "76.0", 0 },
-  { "Pakistan", "207,774,520", "244.4", 0 },
-  { "Russia", "144,463,451", "8.4", 0 },
-  { "Saudi Arabia", "33,000,000", "15.0", 0 },
-  { "Thailand", "68,863,514", "132.1", 0 },
-  { "Turkey", "79,814,871", "102.0", 0 },
-  { "Turkmenistan", "5,662,544", "10.5", 0 },
-  { "Uzbekistan", "32,979,000", "70.5", 0 },
-  { "Vietnam", "94,569,072", "276.03", 0 },
-  { "Yemen", "27,584,213", "44.7", 0 },
-  { 0, 0, 0, 0 }
+  { "Afghanistan", "34,656,032", "49.88", nullptr },
+  { "China", "1,403,500,365", "145.0", nullptr },
+  { "India", "1,324,171,354", "393.9", nullptr },
+  { "Indonesia", "261,115,456", "124.66", nullptr },
+  { "Iran", "80,829,192", "48.0", nullptr },
+  { "Iraq", "37,202,572", "82.7", nullptr },
+  { "Japan", "126,740,000", "336.0", nullptr },
+  { "Kazakhstan", "17,987,736", "6.49", nullptr },
+  { "Mongolia", "3,081,677", "1.97", nullptr },
+  { "Myanmar", "51,486,253", "76.0", nullptr },
+  { "Pakistan", "207,774,520", "244.4", nullptr },
+  { "Russia", "144,463,451", "8.4", nullptr },
+  { "Saudi Arabia", "33,000,000", "15.0", nullptr },
+  { "Thailand", "68,863,514", "132.1", nullptr },
+  { "Turkey", "79,814,871", "102.0", nullptr },
+  { "Turkmenistan", "5,662,544", "10.5", nullptr },
+  { "Uzbekistan", "32,979,000", "70.5", nullptr },
+  { "Vietnam", "94,569,072", "276.03", nullptr },
+  { "Yemen", "27,584,213", "44.7", nullptr },
+  { nullptr, nullptr, nullptr, nullptr }
 };
 
 Treeview::TreeItem Treeview::europe[] =
 {
-  { "Austria", "8,794,267", "104.0", 0 },
-  { "Belarus", "9,498,700", "45.8", 0 },
-  { "Bulgaria", "7,101,859", "64.9", 0 },
-  { "Czech Republic", "10,610,947", "134.0", 0 },
-  { "Finland", "5,506,312", "16.0", 0 },
-  { "France", "66,991,000", "103.0", 0 },
-  { "Germany", "82,175,700", "227.0", 0 },
-  { "Greece", "11,183,716", "82.0", 0 },
-  { "Hungary", "9,797,561", "105.3", 0 },
-  { "Iceland", "332,529", "3.2", 0 },
-  { "Italy", "60,589,445", "201.3", 0 },
-  { "Norway", "5,267,146", "15.8", 0 },
-  { "Poland", "38,634,007", "123.0", 0 },
-  { "Portugal", "10,309,573", "115.0", 0 },
-  { "Romania", "19,638,000", "84.4", 0 },
-  { "Serbia", "7,058,322", "91.1", 0 },
-  { "Spain", "46,468,102", "92.0", 0 },
-  { "Sweden", "10,065,389", "22.0", 0 },
-  { "United Kingdom", "65,648,000", "270.7", 0 },
-  { 0, 0, 0, 0 }
+  { "Austria", "8,794,267", "104.0", nullptr },
+  { "Belarus", "9,498,700", "45.8", nullptr },
+  { "Bulgaria", "7,101,859", "64.9", nullptr },
+  { "Czech Republic", "10,610,947", "134.0", nullptr },
+  { "Finland", "5,506,312", "16.0", nullptr },
+  { "France", "66,991,000", "103.0", nullptr },
+  { "Germany", "82,175,700", "227.0", nullptr },
+  { "Greece", "11,183,716", "82.0", nullptr },
+  { "Hungary", "9,797,561", "105.3", nullptr },
+  { "Iceland", "332,529", "3.2", nullptr },
+  { "Italy", "60,589,445", "201.3", nullptr },
+  { "Norway", "5,267,146", "15.8", nullptr },
+  { "Poland", "38,634,007", "123.0", nullptr },
+  { "Portugal", "10,309,573", "115.0", nullptr },
+  { "Romania", "19,638,000", "84.4", nullptr },
+  { "Serbia", "7,058,322", "91.1", nullptr },
+  { "Spain", "46,468,102", "92.0", nullptr },
+  { "Sweden", "10,065,389", "22.0", nullptr },
+  { "United Kingdom", "65,648,000", "270.7", nullptr },
+  { nullptr, nullptr, nullptr, nullptr }
 };
 
 
 Treeview::TreeItem Treeview::north_america[] =
 {
-  { "Canada", "35,151,728", "3.92", 0 },
-  { "Cuba", "11,239,224", "102.3", 0 },
-  { "Greenland", "56,483", "0.028", 0 },
-  { "Guatemala", "16,582,469", "129.0", 0 },
-  { "Honduras", "9,112,867", "64.0", 0 },
-  { "Mexico", "119,530,753", "61.0", 0 },
-  { "Nicaragua", "6,167,237", "51.0", 0 },
-  { "USA", "325,365,189", "35.0", 0 },
-  { 0, 0, 0, 0 }
+  { "Canada", "35,151,728", "3.92", nullptr },
+  { "Cuba", "11,239,224", "102.3", nullptr },
+  { "Greenland", "56,483", "0.028", nullptr },
+  { "Guatemala", "16,582,469", "129.0", nullptr },
+  { "Honduras", "9,112,867", "64.0", nullptr },
+  { "Mexico", "119,530,753", "61.0", nullptr },
+  { "Nicaragua", "6,167,237", "51.0", nullptr },
+  { "USA", "325,365,189", "35.0", nullptr },
+  { nullptr, nullptr, nullptr, nullptr }
 };
 
 Treeview::TreeItem Treeview::south_america[] =
 {
-  { "Argentina", "43,847,430", "14.4", 0 },
-  { "Bolivia", "11,410,651", "10.4", 0 },
-  { "Brazil", "208,064,000", "24.35", 0 },
-  { "Chile", "18,006,407", "24.0", 0 },
-  { "Colombia", "49,364,592", "40.74", 0 },
-  { "Ecuador", "16,385,068", "58.95", 0 },
-  { "Guyana", "773,303", "3.502", 0 },
-  { "Paraguay", "6,725,308", "17.2", 0 },
-  { "Peru", "31,826,018", "23.0", 0 },
-  { "Venezuela", "31,568,179", "33.75", 0 },
-  { 0, 0, 0, 0 }
+  { "Argentina", "43,847,430", "14.4", nullptr },
+  { "Bolivia", "11,410,651", "10.4", nullptr },
+  { "Brazil", "208,064,000", "24.35", nullptr },
+  { "Chile", "18,006,407", "24.0", nullptr },
+  { "Colombia", "49,364,592", "40.74", nullptr },
+  { "Ecuador", "16,385,068", "58.95", nullptr },
+  { "Guyana", "773,303", "3.502", nullptr },
+  { "Paraguay", "6,725,308", "17.2", nullptr },
+  { "Peru", "31,826,018", "23.0", nullptr },
+  { "Venezuela", "31,568,179", "33.75", nullptr },
+  { nullptr, nullptr, nullptr, nullptr }
 };
 
 Treeview::TreeItem Treeview::oceania[] =
 {
-  { "Australia", "24,675,900", "3.2", 0 },
-  { "Papua New Guinea", "7,059,653", "15.0", 0 },
-  { "Papua", "3,486,432", "11.0", 0 },
-  { "New Zealand", "4,823,090", "17.5", 0 },
-  { "West Papua", "877,437", "6.3", 0 },
-  { "Solomon Islands", "599,419", "18.1", 0 },
-  { "New Caledonia", "268,767", "14.5", 0 },
-  { "Fiji", "898,76", "46.4", 0 },
-  { "Hawaii", "1,428,557", "82.6", 0 },
-  { "Vanuatu", "270,402", "19.7", 0 },
-  { "French Polynesia", "280,208", "76.0", 0 },
-  { "Samoa", "192,342", "68.0", 0 },
-  { "Kiribati", "110,136", "152.0", 0 },
-  { 0, 0, 0, 0 }
+  { "Australia", "24,675,900", "3.2", nullptr },
+  { "Papua New Guinea", "7,059,653", "15.0", nullptr },
+  { "Papua", "3,486,432", "11.0", nullptr },
+  { "New Zealand", "4,823,090", "17.5", nullptr },
+  { "West Papua", "877,437", "6.3", nullptr },
+  { "Solomon Islands", "599,419", "18.1", nullptr },
+  { "New Caledonia", "268,767", "14.5", nullptr },
+  { "Fiji", "898,76", "46.4", nullptr },
+  { "Hawaii", "1,428,557", "82.6", nullptr },
+  { "Vanuatu", "270,402", "19.7", nullptr },
+  { "French Polynesia", "280,208", "76.0", nullptr },
+  { "Samoa", "192,342", "68.0", nullptr },
+  { "Kiribati", "110,136", "152.0", nullptr },
+  { nullptr, nullptr, nullptr, nullptr }
 };
 
 // constructors and destructor
@@ -329,7 +329,7 @@ Treeview::Treeview (finalcut::FWidget* parent)
     { "Europe", "733,000,000", "69.9", europe },
     { "North America", "523,000,000", "21", north_america },
     { "South America", "381,000,000", "21.4", south_america },
-    { "Antarctica", "1000", "0", 0 },
+    { "Antarctica", "1000", "0", nullptr },
     { "Australia/Oceania", "34,000,000", "4", oceania }
   };
 

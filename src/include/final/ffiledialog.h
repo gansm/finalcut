@@ -106,7 +106,7 @@ class FFileDialog : public FDialog
                 , FWidget* = nullptr );
 
     // Destructor
-    virtual ~FFileDialog();
+    ~FFileDialog() override;
 
     // Assignment operator (=)
     FFileDialog& operator = (const FFileDialog&);

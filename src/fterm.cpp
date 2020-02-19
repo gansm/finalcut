@@ -183,7 +183,7 @@ int FTerm::getMaxColor()
 //----------------------------------------------------------------------
 FTermData* FTerm::getFTermData()
 {
-  if ( data == 0 )
+  if ( data == nullptr )
   {
     try
     {
@@ -202,7 +202,7 @@ FTermData* FTerm::getFTermData()
 //----------------------------------------------------------------------
 FSystem* FTerm::getFSystem()
 {
-  if ( fsys == 0 )
+  if ( fsys == nullptr )
   {
     try
     {
@@ -221,7 +221,7 @@ FSystem* FTerm::getFSystem()
 //----------------------------------------------------------------------
 FOptiMove* FTerm::getFOptiMove()
 {
-  if ( opti_move == 0 )
+  if ( opti_move == nullptr )
   {
     try
     {
@@ -240,7 +240,7 @@ FOptiMove* FTerm::getFOptiMove()
 //----------------------------------------------------------------------
 FOptiAttr* FTerm::getFOptiAttr()
 {
-  if ( opti_attr == 0 )
+  if ( opti_attr == nullptr )
   {
     try
     {
@@ -259,7 +259,7 @@ FOptiAttr* FTerm::getFOptiAttr()
 //----------------------------------------------------------------------
 FTermDetection* FTerm::getFTermDetection()
 {
-  if ( term_detection == 0 )
+  if ( term_detection == nullptr )
   {
     try
     {
@@ -278,7 +278,7 @@ FTermDetection* FTerm::getFTermDetection()
 //----------------------------------------------------------------------
 FTermXTerminal* FTerm::getFTermXTerminal()
 {
-  if ( xterm == 0 )
+  if ( xterm == nullptr )
   {
     try
     {
@@ -297,7 +297,7 @@ FTermXTerminal* FTerm::getFTermXTerminal()
 //----------------------------------------------------------------------
 FKeyboard* FTerm::getFKeyboard()
 {
-  if ( keyboard == 0 )
+  if ( keyboard == nullptr )
   {
     try
     {
@@ -316,7 +316,7 @@ FKeyboard* FTerm::getFKeyboard()
 //----------------------------------------------------------------------
 FMouseControl* FTerm::getFMouseControl()
 {
-  if ( mouse == 0 )
+  if ( mouse == nullptr )
   {
     try
     {
@@ -336,7 +336,7 @@ FMouseControl* FTerm::getFMouseControl()
 //----------------------------------------------------------------------
 FTermLinux* FTerm::getFTermLinux()
 {
-  if ( linux == 0 )
+  if ( linux == nullptr )
   {
     try
     {
@@ -356,7 +356,7 @@ FTermLinux* FTerm::getFTermLinux()
 //----------------------------------------------------------------------
 FTermFreeBSD* FTerm::getFTermFreeBSD()
 {
-  if ( freebsd == 0 )
+  if ( freebsd == nullptr )
   {
     try
     {
@@ -376,7 +376,7 @@ FTermFreeBSD* FTerm::getFTermFreeBSD()
 //----------------------------------------------------------------------
 FTermOpenBSD* FTerm::getFTermOpenBSD()
 {
-  if ( openbsd == 0 )
+  if ( openbsd == nullptr )
   {
     try
     {
@@ -397,7 +397,7 @@ FTermOpenBSD* FTerm::getFTermOpenBSD()
 //----------------------------------------------------------------------
 FTermDebugData& FTerm::getFTermDebugData()
 {
-  if ( debug_data == 0 )
+  if ( debug_data == nullptr )
   {
     try
     {
@@ -415,7 +415,7 @@ FTermDebugData& FTerm::getFTermDebugData()
 #endif  // DEBUG
 
 //----------------------------------------------------------------------
-bool FTerm::isNormal (FChar*& ch)
+bool FTerm::isNormal (const FChar* const& ch)
 {
   return opti_attr->isNormal(ch);
 }
@@ -782,7 +782,7 @@ int FTerm::openConsole()
     "/dev/vc/0",
     "/dev/systty",
     "/dev/console",
-    0
+    nullptr
   };
 
   if ( fd >= 0 )  // console is already opened
@@ -791,7 +791,7 @@ int FTerm::openConsole()
   if ( ! *termfilename || ! fsys )
     return 0;
 
-  for (std::size_t i{0}; terminal_devices[i] != 0; i++)
+  for (std::size_t i{0}; terminal_devices[i] != nullptr; i++)
   {
     fd = fsys->open(terminal_devices[i], O_RDWR, 0);
     data->setTTYFileDescriptor(fd);
@@ -847,7 +847,7 @@ char* FTerm::cursorsVisibilityString (bool enable)
   char* visibility_str{nullptr};
 
   if ( data->isCursorHidden() == enable )
-    return 0;
+    return nullptr;
 
   if ( enable )
   {
@@ -1689,7 +1689,7 @@ void FTerm::init_locale()
 
   // Try to found a meaningful content for locale_name
   if ( locale_name )
-    locale_name = std::setlocale (LC_CTYPE, 0);
+    locale_name = std::setlocale (LC_CTYPE, nullptr);
   else
   {
     locale_name = std::getenv("LC_ALL");
@@ -1770,7 +1770,7 @@ void FTerm::init_term_encoding()
   }
   else if ( fsys->isTTY(stdout_no)
          && (std::strlen(termtype) > 0)
-         && (TCAP(fc::t_exit_alt_charset_mode) != 0) )
+         && (TCAP(fc::t_exit_alt_charset_mode) != nullptr) )
   {
     data->setVT100Console (true);
     data->setTermEncoding (fc::VT100);
@@ -1983,7 +1983,7 @@ char* FTerm::disableCursorString()
   if ( vi )
     return vi;
 
-  return 0;
+  return nullptr;
 }
 
 //----------------------------------------------------------------------

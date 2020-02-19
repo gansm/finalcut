@@ -437,7 +437,7 @@ class FVTerm
                                            , FChar*& );
     bool                  clearTerm (int = ' ');
     bool                  clearFullArea (FTermArea*, FChar&);
-    static void           clearAreaWithShadow (FTermArea*, FChar&);
+    static void           clearAreaWithShadow (FTermArea*, const FChar&);
     static bool           canClearToEOL (uInt, uInt);
     static bool           canClearLeadingWS (uInt&, uInt);
     static bool           canClearTrailingWS (uInt&, uInt);
@@ -448,11 +448,11 @@ class FVTerm
     void                  printFullWidthCharacter (uInt&, uInt, FChar*&);
     void                  printFullWidthPaddingCharacter (uInt&, uInt, FChar*&);
     void                  printHalfCovertFullWidthCharacter (uInt&, uInt, FChar*&);
-    void                  skipPaddingCharacter (uInt&, uInt, FChar*&);
+    void                  skipPaddingCharacter (uInt&, uInt, const FChar* const&);
     exit_state            eraseCharacters (uInt&, uInt, uInt, bool);
     exit_state            repeatCharacter (uInt&, uInt, uInt);
-    bool                  isFullWidthChar (FChar*&);
-    bool                  isFullWidthPaddingChar (FChar*&);
+    bool                  isFullWidthChar (const FChar* const&);
+    bool                  isFullWidthPaddingChar (const FChar* const&);
     static void           cursorWrap();
     bool                  printWrap (FTermArea*);
     void                  printPaddingCharacter (FTermArea*, FChar&);

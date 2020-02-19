@@ -105,10 +105,10 @@ FObject* FObject::getChild (int index) const
   // returns the child for the index number
 
   if ( ! hasChildren() )
-    return 0;
+    return nullptr;
 
   if ( index <= 0 || index > numOfChildren() )
-    return 0;
+    return nullptr;
 
   auto iter = begin();
   std::advance (iter, index - 1);
@@ -213,7 +213,7 @@ void FObject::getCurrentTime (timeval* time)
 {
   // Get the current time as timeval struct
 
-  gettimeofday(time, 0);
+  gettimeofday(time, nullptr);
 
   // NTP fix
   while ( time->tv_usec >= 1000000 )

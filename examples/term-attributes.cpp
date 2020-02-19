@@ -44,7 +44,7 @@ class AttribDlg : public finalcut::FDialog
     AttribDlg (const AttribDlg&) = delete;
 
     // Destructor
-    ~AttribDlg();
+    ~AttribDlg() override;
 
     // Disable assignment operator (=)
     AttribDlg& operator = (const AttribDlg&) = delete;
@@ -200,7 +200,7 @@ class AttribDemo : public finalcut::FWidget
     explicit AttribDemo (FWidget* = nullptr);
 
     // Destructor
-    ~AttribDemo()
+    ~AttribDemo() override
     { }
 
     // Event handler

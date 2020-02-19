@@ -704,7 +704,7 @@ const FString FTermXTerminal::captureXTermFont()
     tv.tv_usec = 150000;  // 150 ms
 
     // Read the terminal answer
-    if ( select(stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
+    if ( select(stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0 )
     {
       char temp[150]{};
 
@@ -743,7 +743,7 @@ const FString FTermXTerminal::captureXTermTitle()
   tv.tv_usec = 150000;  // 150 ms
 
   // read the terminal answer
-  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0 )
   {
     char temp[512]{};
 

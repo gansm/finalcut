@@ -451,7 +451,7 @@ void FOptiAttr::set_orig_orig_colors (char cap[])
 }
 
 //----------------------------------------------------------------------
-bool FOptiAttr::isNormal (FChar*& ch)
+bool FOptiAttr::isNormal (const FChar* const& ch)
 {
   return hasNoAttribute(ch) && ! hasColor(ch);
 }
@@ -563,7 +563,7 @@ char* FOptiAttr::changeAttribute (FChar*& term, FChar*& next)
 
   // Look for no changes
   if ( ! (switchOn() || switchOff() || hasColorChanged(term, next)) )
-    return 0;
+    return nullptr;
 
   if ( hasNoAttribute(next) )
   {
@@ -1180,7 +1180,7 @@ void FOptiAttr::setAttributesOff (FChar*& term)
 }
 
 //----------------------------------------------------------------------
-bool FOptiAttr::hasColor (FChar*& attr)
+bool FOptiAttr::hasColor (const FChar* const& attr)
 {
   if ( attr
     && attr->fg_color == fc::Default
@@ -1191,7 +1191,7 @@ bool FOptiAttr::hasColor (FChar*& attr)
 }
 
 //----------------------------------------------------------------------
-bool FOptiAttr::hasAttribute (FChar*& attr)
+bool FOptiAttr::hasAttribute (const FChar* const& attr)
 {
   if ( attr )
   {
@@ -1214,13 +1214,14 @@ bool FOptiAttr::hasAttribute (FChar*& attr)
 }
 
 //----------------------------------------------------------------------
-bool FOptiAttr::hasNoAttribute (FChar*& attr)
+bool FOptiAttr::hasNoAttribute (const FChar* const& attr)
 {
   return ! hasAttribute(attr);
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::hasColorChanged (FChar*& term, FChar*& next)
+inline bool FOptiAttr::hasColorChanged ( const FChar* const& term
+                                       , const FChar* const& next )
 {
   if ( term && next )
   {
@@ -1478,7 +1479,7 @@ inline void FOptiAttr::change_to_default_color ( FChar*& term
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::change_current_color ( FChar*& term
+inline void FOptiAttr::change_current_color ( const FChar* const& term
                                             , FColor fg, FColor bg )
 {
   char* color_str{};
@@ -1597,7 +1598,7 @@ inline bool FOptiAttr::hasCharsetEquivalence()
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::detectSwitchOn (FChar*& term, FChar*& next)
+inline void FOptiAttr::detectSwitchOn (const FChar* const& term, const FChar* const& next)
 {
   if ( ! (term && next) )
     return;
@@ -1618,7 +1619,7 @@ inline void FOptiAttr::detectSwitchOn (FChar*& term, FChar*& next)
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::detectSwitchOff (FChar*& term, FChar*& next)
+inline void FOptiAttr::detectSwitchOff (const FChar* const& term, const FChar* const& next)
 {
   if ( ! (term && next) )
     return;

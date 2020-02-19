@@ -41,7 +41,7 @@ class Watch : public finalcut::FDialog
     Watch (const Watch&) = delete;
 
     // Destructor
-    ~Watch();
+    ~Watch() override;
 
     // Disable assignment operator (=)
     Watch& operator = (const Watch&) = delete;
@@ -126,7 +126,7 @@ void Watch::printTime()
   finalcut::FString str{};
   std::tm now{};
 
-  const std::time_t t = std::time(0);  // get current time
+  const std::time_t t = std::time(nullptr);  // get current time
   localtime_r(&t, &now);
 
   if ( sec )

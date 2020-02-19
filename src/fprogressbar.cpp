@@ -167,7 +167,7 @@ void FProgressbar::drawProgressLabel()
   if ( percentage > 100 )
     print ("--- %");
   else
-    printf ("%3d %%", percentage);
+    printf ("%3zu %%", percentage);
 
   if ( isMonochron() )
     setReverse(false);

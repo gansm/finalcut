@@ -709,7 +709,7 @@ inline FPoint FScrollView::getViewportCursorPos()
 //----------------------------------------------------------------------
 void FScrollView::init (FWidget* parent)
 {
-  assert ( parent != 0 );
+  assert ( parent != nullptr );
   assert ( ! parent->isInstanceOf("FScrollView") );
 
   initScrollbar (vbar, fc::vertical, &FScrollView::cb_VBarChange);

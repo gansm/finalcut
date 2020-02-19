@@ -440,7 +440,7 @@ FWindow* FWindow::getWindowWidgetAt (int x, int y)
     while ( iter != begin );
   }
 
-  return 0;
+  return nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -489,7 +489,7 @@ FWindow* FWindow::getWindowWidget (const FWidget* obj)
   if ( obj->isWindowWidget() )
     return const_cast<FWindow*>(reinterpret_cast<const FWindow*>(obj));
   else
-    return 0;
+    return nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -507,7 +507,7 @@ int FWindow::getWindowLayer (const FWidget* obj)
 
   if ( ! obj->isWindowWidget() )
   {
-    if ( (window = getWindowWidget(obj)) == 0 )
+    if ( (window = getWindowWidget(obj)) == nullptr )
       return -1;
   }
   else

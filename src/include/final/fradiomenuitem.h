@@ -72,7 +72,7 @@ class FRadioMenuItem : public FMenuItem
     FRadioMenuItem (const FRadioMenuItem&) = delete;
 
     // Destructor
-    virtual ~FRadioMenuItem();
+    ~FRadioMenuItem() override;
 
     // Disable assignment operator (=)
     FRadioMenuItem& operator = (const FRadioMenuItem&) = delete;

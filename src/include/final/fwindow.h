@@ -77,7 +77,7 @@ class FWindow : public FWidget
     FWindow (const FWindow&) = delete;
 
     // Destructor
-    virtual ~FWindow ();
+    ~FWindow () override;
 
     // Disable assignment operator (=)
     FWindow& operator = (const FWindow&) = delete;

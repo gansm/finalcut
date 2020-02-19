@@ -81,7 +81,7 @@ class FStatusKey : public FWidget
     FStatusKey (const FStatusKey&) = delete;
 
     // Destructor
-    virtual ~FStatusKey();
+    ~FStatusKey() override;
 
     // Disable assignment operator (=)
     FStatusKey& operator = (const FStatusKey&) = delete;
@@ -190,7 +190,7 @@ class FStatusBar : public FWindow
     FStatusBar (const FStatusBar&) = delete;
 
     // Destructor
-    virtual ~FStatusBar();
+    ~FStatusBar() override;
 
     // Disable assignment operator (=)
     FStatusBar& operator = (const FStatusBar&) = delete;

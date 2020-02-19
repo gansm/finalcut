@@ -298,7 +298,7 @@ FWidget* FApplication::processParameters (const int& argc, char* argv[])
 
   getStartOptions().setDefault();
   cmd_options (argc, argv);
-  return 0;
+  return nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -414,20 +414,20 @@ void FApplication::cmd_options (const int& argc, char* argv[])
   {
     static struct option long_options[] =
     {
-      {C_STR("encoding"),              required_argument, 0,  0 },
-      {C_STR("no-mouse"),              no_argument,       0,  0 },
-      {C_STR("no-optimized-cursor"),   no_argument,       0,  0 },
-      {C_STR("no-terminal-detection"), no_argument,       0,  0 },
-      {C_STR("no-color-change"),       no_argument,       0,  0 },
-      {C_STR("no-sgr-optimizer"),      no_argument,       0,  0 },
-      {C_STR("vgafont"),               no_argument,       0,  0 },
-      {C_STR("newfont"),               no_argument,       0,  0 },
+      {C_STR("encoding"),              required_argument, nullptr,  0 },
+      {C_STR("no-mouse"),              no_argument,       nullptr,  0 },
+      {C_STR("no-optimized-cursor"),   no_argument,       nullptr,  0 },
+      {C_STR("no-terminal-detection"), no_argument,       nullptr,  0 },
+      {C_STR("no-color-change"),       no_argument,       nullptr,  0 },
+      {C_STR("no-sgr-optimizer"),      no_argument,       nullptr,  0 },
+      {C_STR("vgafont"),               no_argument,       nullptr,  0 },
+      {C_STR("newfont"),               no_argument,       nullptr,  0 },
 
     #if defined(__FreeBSD__) || defined(__DragonFly__)
-      {C_STR("no-esc-for-alt-meta"),   no_argument,       0,  0 },
-      {C_STR("no-cursorstyle-change"), no_argument,       0,  0 },
+      {C_STR("no-esc-for-alt-meta"),   no_argument,       nullptr,  0 },
+      {C_STR("no-cursorstyle-change"), no_argument,       nullptr,  0 },
     #elif defined(__NetBSD__) || defined(__OpenBSD__)
-      {C_STR("no-esc-for-alt-meta"),   no_argument,       0,  0 },
+      {C_STR("no-esc-for-alt-meta"),   no_argument,       nullptr,  0 },
     #endif
 
       {nullptr,                        0,           nullptr,  0 }
@@ -719,7 +719,7 @@ bool FApplication::processDialogSwitchAccelerator()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processAccelerator (const FWidget*& widget)
+bool FApplication::processAccelerator (const FWidget* const& widget)
 {
   bool accpt{false};
 
@@ -750,7 +750,7 @@ bool FApplication::processAccelerator (const FWidget*& widget)
         sendEvent (iter->object, &a_ev);
         accpt = a_ev.isAccepted();
         break;
-      };
+      }
 
       ++iter;
     }
@@ -800,7 +800,7 @@ FWidget*& FApplication::determineClickedWidget()
   {
     // Determine the widget at the current click position
     auto child = window->childWidgetAt (mouse_position);
-    clicked = ( child != 0 ) ? child : window;
+    clicked = ( child != nullptr ) ? child : window;
     setClickedWidget (clicked);
   }
 

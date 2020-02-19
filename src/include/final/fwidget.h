@@ -177,7 +177,7 @@ class FWidget : public FVTerm, public FObject
     FWidget (const FWidget&) = delete;
 
     // Destructor
-    virtual ~FWidget();
+    ~FWidget() override;
 
     // Disable assignment operator (=)
     FWidget& operator = (const FWidget&) = delete;

@@ -204,7 +204,7 @@ class FMouseGPM final : public FMouse
     FMouseGPM();
 
     // Destructor
-    virtual ~FMouseGPM();
+    ~FMouseGPM() override;
 
     // Accessors
     const FString        getClassName() const override;
@@ -272,7 +272,7 @@ class FMouseX11 final : public FMouse
     FMouseX11() = default;
 
     // Destructor
-    virtual ~FMouseX11() = default;
+    ~FMouseX11() override = default;
 
     // Accessors
     const FString        getClassName() const override;
@@ -331,7 +331,7 @@ class FMouseSGR final : public FMouse
     FMouseSGR() = default;
 
     // Destructor
-    virtual ~FMouseSGR() = default;
+    ~FMouseSGR() override = default;
 
     // Accessors
     const FString getClassName() const override;
@@ -390,7 +390,7 @@ class FMouseUrxvt final : public FMouse
     FMouseUrxvt() = default;
 
     // Destructor
-    virtual ~FMouseUrxvt() = default;
+    ~FMouseUrxvt() override = default;
 
     // Accessors
     const FString getClassName() const override;

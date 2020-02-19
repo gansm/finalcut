@@ -52,7 +52,7 @@ class Transparent : public finalcut::FDialog
     Transparent (const Transparent&) = delete;
 
     // Destructor
-    ~Transparent();
+    ~Transparent() override;
 
     // Disable assignment operator (=)
     Transparent& operator = (const Transparent&) = delete;
@@ -149,7 +149,7 @@ class MainWindow : public finalcut::FDialog
     MainWindow (const MainWindow&) = delete;
 
     // Destructor
-    ~MainWindow();
+    ~MainWindow() override;
 
     // Disable assignment operator (=)
     MainWindow& operator = (const MainWindow&) = delete;

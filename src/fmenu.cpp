@@ -895,7 +895,7 @@ void FMenu::mouseMoveOverBorder (mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToSubMenu (FMouseEvent*& ev)
+void FMenu::passEventToSubMenu (FMouseEvent* const& ev)
 {
   // Mouse event handover to sub-menu
 
@@ -918,7 +918,7 @@ void FMenu::passEventToSubMenu (FMouseEvent*& ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToSuperMenu (FMouseEvent*& ev)
+void FMenu::passEventToSuperMenu (FMouseEvent* const& ev)
 {
   // Mouse event handover to super-menu
 
@@ -942,7 +942,7 @@ void FMenu::passEventToSuperMenu (FMouseEvent*& ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToMenuBar (FMouseEvent*& ev)
+void FMenu::passEventToMenuBar (FMouseEvent* const& ev)
 {
   // Mouse event handover to the menu bar
 
@@ -989,7 +989,7 @@ FMenu* FMenu::superMenuAt (int x, int y)
   // Check mouse click position for super menu
 
   if ( getTermGeometry().contains(x, y) )
-    return 0;
+    return nullptr;
 
   auto super = getSuperMenu();
 
@@ -1006,7 +1006,7 @@ FMenu* FMenu::superMenuAt (int x, int y)
     }
   }
 
-  return 0;
+  return nullptr;
 }
 
 //----------------------------------------------------------------------

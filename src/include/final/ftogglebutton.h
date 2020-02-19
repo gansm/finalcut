@@ -73,7 +73,7 @@ class FToggleButton : public FWidget
     FToggleButton (const FToggleButton&) = delete;
 
     // Destructor
-    virtual ~FToggleButton();
+    ~FToggleButton() override;
 
     // Disable assignment operator (=)
     FToggleButton& operator = (const FToggleButton&) = delete;

@@ -397,7 +397,7 @@ const char* FString::c_str() const
   else if ( string )
     return const_cast<char*>("");
   else
-    return 0;
+    return nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -410,7 +410,7 @@ char* FString::c_str()
   else if ( string )
     return const_cast<char*>("");
   else
-    return 0;
+    return nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -617,7 +617,7 @@ double FString::toDouble() const
   wchar_t* p{};
   const double ret = std::wcstod(string, &p);
 
-  if ( p != 0 && *p != '\0' )
+  if ( p != nullptr && *p != '\0' )
     throw std::invalid_argument ("no valid floating point value");
 
   if ( errno == ERANGE )
@@ -758,7 +758,7 @@ FStringList FString::split (const FString& delimiter)
   while ( token )
   {
     string_list.push_back (FString(token));
-    token = extractToken (&rest, 0, delimiter.wc_str());
+    token = extractToken (&rest, nullptr, delimiter.wc_str());
   }
 
   return string_list;
@@ -1205,7 +1205,7 @@ bool FString::includes (const FString& s) const
   if ( ! (string && s.string) )
     return false;
 
-  return ( std::wcsstr(string, s.string) != 0 );
+  return ( std::wcsstr(string, s.string) != nullptr );
 }
 
 
@@ -1398,7 +1398,7 @@ void FString::_remove (std::size_t pos, std::size_t len)
 inline char* FString::wc_to_c_str (const wchar_t s[]) const
 {
   if ( ! s )  // handle NULL string
-    return 0;
+    return nullptr;
 
   if ( ! *s )  // handle empty string
   {
@@ -1410,7 +1410,7 @@ inline char* FString::wc_to_c_str (const wchar_t s[]) const
     catch (const std::bad_alloc& ex)
     {
       std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
-      return 0;
+      return nullptr;
     }
 
     return c_string;
@@ -1435,7 +1435,7 @@ inline char* FString::wc_to_c_str (const wchar_t s[]) const
   catch (const std::bad_alloc& ex)
   {
     std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
-    return 0;
+    return nullptr;
   }
 
   const int mblength = \
@@ -1455,7 +1455,7 @@ inline char* FString::wc_to_c_str (const wchar_t s[]) const
 inline wchar_t* FString::c_to_wc_str (const char s[]) const
 {
   if ( ! s )   // handle NULL string
-    return 0;
+    return nullptr;
 
   if ( ! *s )  // handle empty string
   {
@@ -1467,7 +1467,7 @@ inline wchar_t* FString::c_to_wc_str (const char s[]) const
     catch (const std::bad_alloc& ex)
     {
       std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
-      return 0;
+      return nullptr;
     }
   }
 
@@ -1487,7 +1487,7 @@ inline wchar_t* FString::c_to_wc_str (const char s[]) const
   catch (const std::bad_alloc& ex)
   {
     std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
-    return 0;
+    return nullptr;
   }
 
   const int wclength = \
@@ -1500,7 +1500,7 @@ inline wchar_t* FString::c_to_wc_str (const char s[]) const
     else
     {
       delete[] dest;
-      return 0;
+      return nullptr;
     }
   }
 
@@ -1512,7 +1512,7 @@ inline wchar_t* FString::c_to_wc_str (const char s[]) const
   else
   {
     delete[] dest;
-    return 0;
+    return nullptr;
   }
 }
 
@@ -1524,10 +1524,10 @@ inline wchar_t* FString::extractToken ( wchar_t* rest[]
   wchar_t* token = ( s ) ? const_cast<wchar_t*>(s) : *rest;
 
   if ( ! token )
-    return 0;
+    return nullptr;
 
   if ( ! token[0] )
-    return 0;
+    return nullptr;
 
   *rest = std::wcspbrk(token, delim);
 

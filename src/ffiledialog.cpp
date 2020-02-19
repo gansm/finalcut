@@ -204,7 +204,7 @@ void FFileDialog::setPath (const FString& dir)
     return;
   }
 
-  if ( fsystem->realpath(dir.c_str(), resolved_path) != 0 )
+  if ( fsystem->realpath(dir.c_str(), resolved_path) != nullptr )
     r_dir.setString(resolved_path);
   else
     r_dir.setString(dir);
@@ -460,7 +460,7 @@ sInt64 FFileDialog::numOfDirs()
 
   const sInt64 n = std::count_if ( std::begin(dir_entries)
                                  , std::end(dir_entries)
-                                 , [] (dir_entry& entry)
+                                 , [] (const dir_entry& entry)
                                    {
                                      return entry.directory
                                          && std::strcmp(entry.name, ".") != 0;
@@ -614,7 +614,7 @@ void FFileDialog::followSymLink (const char* const dir, dir_entry& entry)
                , sizeof(symLink) - std::strlen(symLink) - 1);
   symLink[sizeof(symLink) - 1] = '\0';
 
-  if ( fsystem->realpath(symLink, resolved_path) == 0 )
+  if ( fsystem->realpath(symLink, resolved_path) == nullptr )
     return;  // Cannot follow the symlink
 
   if ( lstat(resolved_path, &sb) == -1 )
@@ -789,7 +789,7 @@ void FFileDialog::cb_processActivate (FWidget*, FDataPtr)
     {
       found = std::any_of ( std::begin(dir_entries)
                           , std::end(dir_entries)
-                          , [&input] (dir_entry& entry)
+                          , [&input] (const dir_entry& entry)
                             {
                               return entry.name
                                   && input

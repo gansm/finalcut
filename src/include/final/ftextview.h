@@ -76,7 +76,7 @@ class FTextView : public FWidget
     FTextView (const FTextView&) = delete;
 
     // Destructor
-    virtual ~FTextView();
+    ~FTextView() override;
 
     // Disable assignment operator (=)
     FTextView& operator = (const FTextView&) = delete;

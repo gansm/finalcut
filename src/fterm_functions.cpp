@@ -25,6 +25,7 @@
 #endif
 
 #include <algorithm>
+#include <numeric>
 
 #include "final/fcharmap.h"
 #include "final/fterm.h"
@@ -497,14 +498,16 @@ std::size_t getColumnWidth (FChar& term_char)
 }
 
 //----------------------------------------------------------------------
-std::size_t getColumnWidth (const FTermBuffer& termbuffer)
+std::size_t getColumnWidth (const FTermBuffer& tb)
 {
-  std::size_t column_width{0};
-
-  for (auto&& tc : termbuffer)
-    column_width += tc.attr.bit.char_width;
-
-  return column_width;
+  return std::accumulate ( std::next(tb.begin())
+                         , tb.end()
+                         , tb.front().attr.bit.char_width
+                         , [] (std::size_t s, FChar c) -> std::size_t
+                           {
+                             return std::move(s) + c.attr.bit.char_width;
+                           }
+                         );
 }
 
 }  // namespace finalcut

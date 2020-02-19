@@ -89,7 +89,7 @@ class FLineEdit : public FWidget
     FLineEdit (const FLineEdit&) = delete;
 
     // Destructor
-    virtual ~FLineEdit();
+    ~FLineEdit() override;
 
     // Disable assignment operator (=)
     FLineEdit& operator = (const FLineEdit&) = delete;

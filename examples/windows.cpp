@@ -42,7 +42,7 @@ class SmallWindow : public finalcut::FDialog
     SmallWindow (const SmallWindow&) = delete;
 
     // Destructor
-    ~SmallWindow();
+    ~SmallWindow() override;
 
     // Disable assignment operator (=)
     SmallWindow& operator = (const SmallWindow&) = delete;
@@ -173,7 +173,7 @@ class Window : public finalcut::FDialog
     Window (const Window&) = delete;
 
     // Destructor
-    ~Window();
+    ~Window() override;
 
     // Disable assignment operator (=)
     Window& operator = (const Window&) = delete;

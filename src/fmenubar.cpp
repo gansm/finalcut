@@ -925,7 +925,7 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::passEventToMenu (const FMouseEvent*& ev)
+void FMenuBar::passEventToMenu (const FMouseEvent* const& ev)
 {
   if ( ! hasSelectedItem() || ! getSelectedItem()->hasMenu() )
     return;

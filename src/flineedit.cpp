@@ -1107,10 +1107,7 @@ inline bool FLineEdit::keyInput (FKey key)
     else if ( len > 0 )
     {
       if ( insert_mode )
-      {
         text.insert(ch, cursor_pos);
-        len++;
-      }
       else
         text.overwrite(ch, cursor_pos);
     }

@@ -41,7 +41,7 @@ class Menu : public finalcut::FDialog
     Menu (const Menu&) = delete;
 
     // Destructor
-    ~Menu();
+    ~Menu() override;
 
     // Disable assignment operator (=)
     Menu& operator = (const Menu&) = delete;

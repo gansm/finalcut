@@ -43,7 +43,7 @@ class ColorChooser : public finalcut::FWidget
     ColorChooser (const ColorChooser&) = delete;
 
     // Destructor
-    ~ColorChooser();
+    ~ColorChooser() override;
 
     // Disable assignment operator (=)
     ColorChooser& operator = (const ColorChooser&) = delete;
@@ -182,7 +182,7 @@ class Brushes : public finalcut::FWidget
     Brushes (const Brushes&) = delete;
 
     // Destructor
-    ~Brushes();
+    ~Brushes() override;
 
     // Disable assignment operator (=)
     Brushes& operator = (const Brushes&) = delete;
@@ -321,7 +321,7 @@ class MouseDraw : public finalcut::FDialog
     MouseDraw (const MouseDraw&) = delete;
 
     // Destructor
-    ~MouseDraw();
+    ~MouseDraw() override;
 
     // Disable assignment operator (=)
     MouseDraw& operator = (const MouseDraw&) = delete;
