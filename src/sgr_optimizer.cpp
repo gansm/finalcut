@@ -21,7 +21,7 @@
 ***********************************************************************/
 
 #include <cstring>
-#include <iostream>
+
 #include "final/fc.h"
 #include "final/sgr_optimizer.h"
 
@@ -87,7 +87,7 @@ void SGRoptimizer::findParameter()
     }
 
     // Other content
-    if ( ! csi_parameter.empty() && i  > csi_parameter.back().end + 2 )
+    if ( ! csi_parameter.empty() && i > csi_parameter.back().end + 2 )
       break;
 
     if ( esc && seq[i] == '[' )  // Esc [

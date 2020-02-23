@@ -47,8 +47,7 @@ class FStyleTest : public CPPUNIT_NS::TestFixture
     void noArgumentTest();
     void copyConstructorTest();
     void assignmentTest();
-    void setColorTest();
-    void swapTest();
+    void setStyleTest();
 
   private:
     // Adds code needed to register the test suite
@@ -59,7 +58,7 @@ class FStyleTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (copyConstructorTest);
     CPPUNIT_TEST (assignmentTest);
-    CPPUNIT_TEST (setColorTest);
+    CPPUNIT_TEST (setStyleTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -122,7 +121,7 @@ void FStyleTest::assignmentTest()
 }
 
 //----------------------------------------------------------------------
-void FStyleTest::setColorTest()
+void FStyleTest::setStyleTest()
 {
   finalcut::FStyle style1;
   style1.setStyle (finalcut::fc::Reverse);
@@ -147,6 +146,8 @@ void FStyleTest::setColorTest()
   CPPUNIT_ASSERT ( style5.getStyle() == finalcut::fc::ColorOverlay );
   style5.setStyle (finalcut::fc::InheritBackground);
   CPPUNIT_ASSERT ( style5.getStyle() == finalcut::fc::InheritBackground );
+  style5.setStyle (finalcut::fc::Reset + finalcut::fc::Dim);
+  CPPUNIT_ASSERT ( style5.getStyle() == finalcut::fc::Dim );
 }
 
 // Put the test suite in the registry

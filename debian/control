@@ -19,17 +19,13 @@ Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
 Depends:
-    xfonts-utils
   , ${shlibs:Depends}
   , ${misc:Depends}
 Suggests:
-    coreutils
+  fonts-libfinal
+  , coreutils
   , ncurses-term
-  , grep
-  , sed
   , vim-common
-  , gzip
-  , xfonts-utils
 Description: Shared library for the final cut widget toolkit
  The Final Cut is a class library and widget toolkit with full mouse
  support for creating a text-based user interface. The library supports
@@ -89,3 +85,19 @@ Description: Test and example programs for the final cut widget toolkit
  .
  This package contains programs that demonstrate the possibilities of
  the final cut library.
+
+Package: fonts-libfinal
+Architecture: all
+Multi-Arch: foreign
+Section: fonts
+Depends:
+  ${misc:Depends}
+  , xfonts-utils
+Suggests:
+  xserver | xfs
+  , grep
+  , sed
+  , gzip
+Description: X11 bitmap font for FINAL CUT
+ Special X11 bitmap font used by FINAL CUT to display graphic objects.
+
