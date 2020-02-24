@@ -23,6 +23,7 @@ addons:
   homebrew:
     packages:
       - autoconf-archive
+    update: true
 
 env:
   global:
