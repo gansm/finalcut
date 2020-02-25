@@ -1846,6 +1846,9 @@ void FTerm::init_captureFontAndTitle()
 {
   // Save the used xterm font and window title
 
+  if ( ! FStartOptions::getFStartOptions().terminal_data_request )
+    return;
+
   xterm->captureFontAndTitle();
   const auto& font = xterm->getFont();
   const auto& title = xterm->getTitle();

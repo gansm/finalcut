@@ -38,6 +38,7 @@ FStartOptions::FStartOptions()
   : cursor_optimisation{true}
   , mouse_support{true}
   , terminal_detection{true}
+  , terminal_data_request{true}
   , color_change{true}
   , sgr_optimizer{true}
   , vgafont{false}

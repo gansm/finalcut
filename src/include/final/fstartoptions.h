@@ -74,23 +74,23 @@ class FStartOptions final
     static void destroyObject();
 
     // Data members
-    uInt8 cursor_optimisation : 1;
-    uInt8 mouse_support       : 1;
-    uInt8 terminal_detection  : 1;
-    uInt8 color_change        : 1;
-    uInt8 sgr_optimizer       : 1;
-    uInt8 vgafont             : 1;
-    uInt8 newfont             : 1;
-    uInt8                     : 1;  // padding bits
+    uInt8 cursor_optimisation   : 1;
+    uInt8 mouse_support         : 1;
+    uInt8 terminal_detection    : 1;
+    uInt8 terminal_data_request : 1;
+    uInt8 color_change          : 1;
+    uInt8 sgr_optimizer         : 1;
+    uInt8 vgafont               : 1;
+    uInt8 newfont               : 1;
     fc::encoding encoding;
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-    uInt8 meta_sends_escape   : 1;
-    uInt8 change_cursorstyle  : 1;
-    uInt8                     : 6;  // padding bits
+    uInt8 meta_sends_escape     : 1;
+    uInt8 change_cursorstyle    : 1;
+    uInt8                       : 6;  // padding bits
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
-    uInt8 meta_sends_escape   : 1;
-    uInt8                     : 7;  // padding bits
+    uInt8 meta_sends_escape     : 1;
+    uInt8                       : 7;  // padding bits
 #endif
 
     static FStartOptions*     start_options;

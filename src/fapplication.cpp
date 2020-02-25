@@ -306,41 +306,43 @@ void FApplication::showParameterUsage()
 {
   std::cout \
     << "Generic options:\n"
-    << "  -h, --help           "
-    << "       Display this help and exit\n"
+    << "  -h, --help                "
+    << "    Display this help and exit\n"
     << "\n"
     << "The Final Cut options:\n"
-    << "  --encoding <name>    "
-    << "       Sets the character encoding mode\n"
-    << "                       "
-    << "       {utf8, vt100, pc, ascii}\n"
-    << "  --no-mouse             "
-    << "     Disable mouse support\n"
-    << "  --no-optimized-cursor  "
-    << "     Disable cursor optimization\n"
-    << "  --no-terminal-detection"
-    << "     Disable terminal detection\n"
-    << "  --no-color-change      "
-    << "     Do not redefine the color palette\n"
-    << "  --no-sgr-optimizer     "
-    << "     Do not optimize SGR sequences\n"
-    << "  --vgafont              "
-    << "     Set the standard vga 8x16 font\n"
-    << "  --newfont              "
-    << "     Enables the graphical font\n"
+    << "  --encoding <name>         "
+    << "    Sets the character encoding mode\n"
+    << "                            "
+    << "    {utf8, vt100, pc, ascii}\n"
+    << "  --no-mouse                "
+    << "    Disable mouse support\n"
+    << "  --no-optimized-cursor     "
+    << "    Disable cursor optimization\n"
+    << "  --no-terminal-detection   "
+    << "    Disable terminal detection\n"
+    << "  --no-terminal-data-request"
+    << "    Do not determine terminal font and title\n"
+    << "  --no-color-change         "
+    << "    Do not redefine the color palette\n"
+    << "  --no-sgr-optimizer        "
+    << "    Do not optimize SGR sequences\n"
+    << "  --vgafont                 "
+    << "    Set the standard vga 8x16 font\n"
+    << "  --newfont                 "
+    << "    Enables the graphical font\n"
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
     << "\n"
     << "FreeBSD console options:\n"
-    << "  --no-esc-for-alt-meta  "
-    << "     Do not send a ESC prefix for the alt/meta key\n"
-    << "  --no-cursorstyle-change"
-    << "     Do not change the current cursor style\n"
+    << "  --no-esc-for-alt-meta     "
+    << "    Do not send a ESC prefix for the alt/meta key\n"
+    << "  --no-cursorstyle-change   "
+    << "    Do not change the current cursor style\n"
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
     << "\n"
     << "NetBSD/OpenBSD console options:\n"
-    << "  --no-esc-for-alt-meta  "
-    << "     Do not send a ESC prefix for the alt/meta key\n"
+    << "  --no-esc-for-alt-meta     "
+    << "    Do not send a ESC prefix for the alt/meta key\n"
 #endif
 
     << std::endl;  // newline character + flushes the output stream
@@ -414,23 +416,24 @@ void FApplication::cmd_options (const int& argc, char* argv[])
   {
     static struct option long_options[] =
     {
-      {C_STR("encoding"),              required_argument, nullptr,  0 },
-      {C_STR("no-mouse"),              no_argument,       nullptr,  0 },
-      {C_STR("no-optimized-cursor"),   no_argument,       nullptr,  0 },
-      {C_STR("no-terminal-detection"), no_argument,       nullptr,  0 },
-      {C_STR("no-color-change"),       no_argument,       nullptr,  0 },
-      {C_STR("no-sgr-optimizer"),      no_argument,       nullptr,  0 },
-      {C_STR("vgafont"),               no_argument,       nullptr,  0 },
-      {C_STR("newfont"),               no_argument,       nullptr,  0 },
+      {C_STR("encoding"),                 required_argument, nullptr,  0 },
+      {C_STR("no-mouse"),                 no_argument,       nullptr,  0 },
+      {C_STR("no-optimized-cursor"),      no_argument,       nullptr,  0 },
+      {C_STR("no-terminal-detection"),    no_argument,       nullptr,  0 },
+      {C_STR("no-terminal-data-request"), no_argument,       nullptr,  0 },
+      {C_STR("no-color-change"),          no_argument,       nullptr,  0 },
+      {C_STR("no-sgr-optimizer"),         no_argument,       nullptr,  0 },
+      {C_STR("vgafont"),                  no_argument,       nullptr,  0 },
+      {C_STR("newfont"),                  no_argument,       nullptr,  0 },
 
     #if defined(__FreeBSD__) || defined(__DragonFly__)
-      {C_STR("no-esc-for-alt-meta"),   no_argument,       nullptr,  0 },
-      {C_STR("no-cursorstyle-change"), no_argument,       nullptr,  0 },
+      {C_STR("no-esc-for-alt-meta"),      no_argument,       nullptr,  0 },
+      {C_STR("no-cursorstyle-change"),    no_argument,       nullptr,  0 },
     #elif defined(__NetBSD__) || defined(__OpenBSD__)
-      {C_STR("no-esc-for-alt-meta"),   no_argument,       nullptr,  0 },
+      {C_STR("no-esc-for-alt-meta"),      no_argument,       nullptr,  0 },
     #endif
 
-      {nullptr,                        0,           nullptr,  0 }
+      {nullptr,                           0,                 nullptr,  0 }
     };
 
     opterr = 0;
@@ -470,6 +473,9 @@ void FApplication::cmd_options (const int& argc, char* argv[])
 
       if ( std::strcmp(long_options[idx].name, "no-terminal-detection")  == 0 )
         getStartOptions().terminal_detection = false;
+
+      if ( std::strcmp(long_options[idx].name, "no-terminal-data-request")  == 0 )
+        getStartOptions().terminal_data_request = false;
 
       if ( std::strcmp(long_options[idx].name, "no-color-change")  == 0 )
         getStartOptions().color_change = false;

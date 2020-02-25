@@ -1,3 +1,7 @@
+2020-02-25  Markus Gans  <guru.mail@muenster.de>
+	* New command line switch "--no-terminal-data-request" to disable 
+	  font and title determination
+
 2020-02-19  Markus Gans  <guru.mail@muenster.de>
 	* Some small code improvements
 	* SGRoptimizer improved
