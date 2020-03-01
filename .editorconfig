@@ -1,0 +1,37 @@
+# EditorConfig helps maintain consistent coding styles 
+# for multiple developers working on the same project 
+# across various editors and IDEs.
+#
+# http://editorconfig.org
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length=72
+
+[ChangeLog]
+trim_trailing_whitespace = false
+
+[*.txt]
+trim_trailing_whitespace = false
+
+[*.md]
+trim_trailing_whitespace = false
+
+# Domain-Specific Properties
+[*.h]
+curly_bracket_next_line = true
+spaces_around_operators = true
+indent_brace_style = Allman
+
+[*.cpp]
+curly_bracket_next_line = true
+spaces_around_operators = true
+indent_brace_style = Allman
+
