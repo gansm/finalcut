@@ -401,7 +401,7 @@ class FWidget : public FVTerm, public FObject
 
   private:
     // Methods
-    void                    init();
+    void                    initRootWidget();
     void                    finish();
     void                    insufficientSpaceAdjust();
     void                    KeyPressEvent (FKeyEvent*);

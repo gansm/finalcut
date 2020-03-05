@@ -330,6 +330,30 @@ void FKeyboardTest::noArgumentTest()
   keyboard->escapeKeyHandling();
 
   CPPUNIT_ASSERT ( keyboard->getKey() == 0 );
+
+  // Keypress timeout
+  CPPUNIT_ASSERT ( keyboard->getKeypressTimeout() == 100 * 1000 );
+  
+  keyboard->setKeypressTimeout(0);  // 0 ms
+  CPPUNIT_ASSERT ( keyboard->getKeypressTimeout() == 0 );
+
+  keyboard->setKeypressTimeout(100000);  // 100 ms
+  CPPUNIT_ASSERT ( keyboard->getKeypressTimeout() == 100 * 1000 );
+
+  // Read blocking time
+  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 100 * 1000 );
+  
+  keyboard->setReadBlockingTime(1000000);  // 1000 ms
+  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 1000 * 1000 );
+
+  keyboard->setReadBlockingTime(0);  // 0 ms
+  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 0 );
+
+  keyboard->setReadBlockingTime(50000);  // 50 ms
+  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 50 * 1000 );
+
+  keyboard->setReadBlockingTime(100000);  // 100 ms
+  CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 100 * 1000 );
 }
 
 //----------------------------------------------------------------------
@@ -2823,13 +2847,11 @@ void FKeyboardTest::input (std::string s)
 //----------------------------------------------------------------------
 void FKeyboardTest::processInput()
 {
+  keyboard->escapeKeyHandling();  // special case: Esc key
   keyboard->clearKeyBufferOnTimeout();
 
   if ( keyboard->isKeyPressed() )
     keyboard->fetchKeyCode();
-
-  // special case: Esc key
-  keyboard->escapeKeyHandling();
 }
 
 //----------------------------------------------------------------------

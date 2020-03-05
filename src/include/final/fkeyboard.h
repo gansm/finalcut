@@ -104,10 +104,13 @@ class FKeyboard final
     const FString         getKeyName (const FKey);
     keybuffer&            getKeyBuffer();
     timeval*              getKeyPressedTime();
+    static uInt64         getKeypressTimeout();
+    static uInt64         getReadBlockingTime();
 
     // Mutators
     void                  setTermcapMap (fc::FKeyMap*);
-    void                  setKeypressTimeout (const uInt64);
+    static void           setKeypressTimeout (const uInt64);
+    static void           setReadBlockingTime (const uInt64);
     void                  enableUTF8();
     void                  disableUTF8();
     void                  enableMouseSequences();
@@ -130,7 +133,6 @@ class FKeyboard final
 
   private:
     // Constants
-    static constexpr std::size_t READ_BUF_SIZE{1024};
     static constexpr FKey NOT_SET = static_cast<FKey>(-1);
 
     // Accessors
@@ -169,10 +171,11 @@ class FKeyboard final
 #endif
 
     static timeval        time_keypressed;
+    static uInt64         read_blocking_time;
     static uInt64         key_timeout;
     fc::FKeyMap*          key_map{nullptr};
     FKey                  key{0};
-    char                  read_buf[READ_BUF_SIZE]{'\0'};
+    uChar                 read_character{};
     char                  fifo_buf[FIFO_BUF_SIZE]{'\0'};
     int                   fifo_offset{0};
     int                   stdin_status_flags{0};
@@ -201,8 +204,20 @@ inline timeval* FKeyboard::getKeyPressedTime()
 { return &time_keypressed; }
 
 //----------------------------------------------------------------------
+inline uInt64 FKeyboard::getKeypressTimeout()
+{ return key_timeout; }
+
+//----------------------------------------------------------------------
+inline uInt64 FKeyboard::getReadBlockingTime()
+{ return read_blocking_time; }
+
+//----------------------------------------------------------------------
 inline void FKeyboard::setKeypressTimeout (const uInt64 timeout)
 { key_timeout = timeout; }
+
+//----------------------------------------------------------------------
+inline void FKeyboard::setReadBlockingTime (const uInt64 blocking_time)
+{ read_blocking_time = blocking_time; }
 
 //----------------------------------------------------------------------
 inline void FKeyboard::enableUTF8()

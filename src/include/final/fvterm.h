@@ -236,6 +236,10 @@ class FVTerm
     static bool           setInheritBackground();
     static bool           unsetInheritBackground();
 
+    static void           setNonBlockingRead (bool);
+    static void           setNonBlockingRead();
+    static void           unsetNonBlockingRead();
+
     static void           setTermTitle (const FString&);
     static void           setEncoding (fc::encoding);
     static bool           setVGAFont();
@@ -870,6 +874,14 @@ inline bool FVTerm::setInheritBackground()
 //----------------------------------------------------------------------
 inline bool FVTerm::unsetInheritBackground()
 { return setInheritBackground(false); }
+
+//----------------------------------------------------------------------
+inline void FVTerm::setNonBlockingRead()
+{ setNonBlockingRead(true); }
+
+//----------------------------------------------------------------------
+inline void FVTerm::unsetNonBlockingRead()
+{ setNonBlockingRead(false); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setTermTitle (const FString& title)

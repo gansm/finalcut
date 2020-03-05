@@ -1,3 +1,7 @@
+2020-03-05  Markus Gans  <guru.mail@muenster.de>
+	* Unbuffered reading of keystrokes for better latency
+	* Mouse adjustments when resizing an rxvt terminal
+
 2020-02-25  Markus Gans  <guru.mail@muenster.de>
 	* New command line switch "--no-terminal-data-request" to disable 
 	  font and title determination

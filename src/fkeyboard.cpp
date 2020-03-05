@@ -42,7 +42,8 @@ namespace finalcut
 {
 
 // static class attributes
-uInt64 FKeyboard::key_timeout{100000};  // 100 ms (default timeout for keypress)
+uInt64 FKeyboard::read_blocking_time{100000};  // preset to 100 ms
+uInt64 FKeyboard::key_timeout{100000};         // preset to 100 ms
 struct timeval FKeyboard::time_keypressed{};
 
 #if defined(__linux__)
@@ -123,7 +124,7 @@ bool FKeyboard::isKeyPressed()
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = 100000;  // 100 ms
+  tv.tv_usec = FKeyboard::read_blocking_time;  // preset to 100 ms
   const int result = select (stdin_no + 1, &ifds, nullptr, nullptr, &tv);
 
   if ( result > 0 && FD_ISSET(stdin_no, &ifds) )
@@ -290,6 +291,7 @@ inline FKey FKeyboard::getSingleKey()
   if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
   {
     char utf8char[5]{};  // Init array with '\0'
+    const std::size_t buf_len = std::strlen(fifo_buf);
 
     if ( (firstchar & 0xe0) == 0xc0 )
       len = 2;
@@ -297,6 +299,9 @@ inline FKey FKeyboard::getSingleKey()
       len = 3;
     else if ( (firstchar & 0xf8) == 0xf0 )
       len = 4;
+
+    if ( buf_len <  len && ! isKeypressTimeout() )
+      return fc::need_more_data;
 
     for (std::size_t i{0}; i < len ; i++)
       utf8char[i] = char(fifo_buf[i] & 0xff);
@@ -403,7 +408,7 @@ FKey FKeyboard::UTF8decode (const char utf8[])
 inline ssize_t FKeyboard::readKey()
 {
   setNonBlockingInput();
-  const ssize_t bytes = read(FTermios::getStdIn(), &read_buf, READ_BUF_SIZE - 1);
+  const ssize_t bytes = read(FTermios::getStdIn(), &read_character, 1);
   unsetNonBlockingInput();
   return bytes;
 }
@@ -418,12 +423,8 @@ void FKeyboard::parseKeyBuffer()
   {
     if ( bytesread + fifo_offset <= int(FIFO_BUF_SIZE) )
     {
-      for (std::size_t i{0}; i < std::size_t(bytesread); i++)
-      {
-        fifo_buf[fifo_offset] = read_buf[i];
-        fifo_offset++;
-      }
-
+      fifo_buf[fifo_offset] = char(read_character);
+      fifo_offset++;
       fifo_in_use = true;
     }
 
@@ -453,7 +454,7 @@ void FKeyboard::parseKeyBuffer()
     key = 0;
   }
 
-  std::fill_n (read_buf, READ_BUF_SIZE, '\0');
+  read_character = 0;
 }
 
 //----------------------------------------------------------------------

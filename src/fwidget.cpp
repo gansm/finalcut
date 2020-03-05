@@ -36,7 +36,7 @@ namespace finalcut
 {
 
 // global FWidget object
-static FWidget* rootObject{nullptr};
+static FWidget* root_widget{nullptr};
 
 // static class attributes
 FStatusBar*           FWidget::statusbar{nullptr};
@@ -59,7 +59,7 @@ uInt                  FWidget::modal_dialog_counter{};
 // constructors and destructor
 //----------------------------------------------------------------------
 FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
-  : FVTerm( ! (bool(parent) || rootObject), disable_alt_screen)
+  : FVTerm( ! (bool(parent) || root_widget), disable_alt_screen)
   , FObject(parent)
 {
   // init bit field with 0
@@ -73,7 +73,7 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
 
   if ( ! parent )
   {
-    if ( rootObject )
+    if ( root_widget )
     {
       auto ftermdata = getFTerm().getFTermData();
       ftermdata->setExitMessage("FWidget: No parent defined! "
@@ -82,12 +82,12 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
       return;
     }
 
-    rootObject = this;
+    root_widget = this;
     show_root_widget = nullptr;
     redraw_root_widget = nullptr;
     modal_dialog_counter = 0;
     statusbar = nullptr;
-    init();
+    initRootWidget();
   }
   else
   {
@@ -133,7 +133,7 @@ FWidget::~FWidget()  // destructor
   accelerator_list.clear();
 
   // finish the program
-  if ( rootObject == this )
+  if ( root_widget == this )
     finish();
 }
 
@@ -454,7 +454,7 @@ void FWidget::setTopPadding (int top, bool adjust)
   {
     if ( isRootWidget() )
     {
-      auto r = rootObject;
+      auto r = root_widget;
       r->wclient_offset.setY1 (r->padding.top);
       adjustSizeGlobal();
     }
@@ -475,7 +475,7 @@ void FWidget::setLeftPadding (int left, bool adjust)
   {
     if ( isRootWidget() )
     {
-      auto r = rootObject;
+      auto r = root_widget;
       r->wclient_offset.setX1 (r->padding.left);
       adjustSizeGlobal();
     }
@@ -496,7 +496,7 @@ void FWidget::setBottomPadding (int bottom, bool adjust)
   {
     if ( isRootWidget() )
     {
-      auto r = rootObject;
+      auto r = root_widget;
       r->wclient_offset.setY2 (int(r->getHeight()) - 1 - r->padding.bottom);
       adjustSizeGlobal();
     }
@@ -517,7 +517,7 @@ void FWidget::setRightPadding (int right, bool adjust)
   {
     if ( isRootWidget() )
     {
-      auto r = rootObject;
+      auto r = root_widget;
       r->wclient_offset.setX2  (int(r->getWidth()) - 1 - r->padding.right);
       adjustSizeGlobal();
     }
@@ -533,8 +533,8 @@ void FWidget::setTermSize (const FSize& size)
 
   if ( isXTerminal() )
   {
-    rootObject->wsize.setRect(FPoint(1, 1), size);
-    rootObject->adjust_wsize = rootObject->wsize;
+    root_widget->wsize.setRect(FPoint(1, 1), size);
+    root_widget->adjust_wsize = root_widget->wsize;
     FTerm::setTermSize(size);  // width = columns / height = lines
     detectTermSize();
   }
@@ -995,7 +995,7 @@ void FWidget::show()
   {
     // Sets the initial screen settings
     initScreenSettings();
-    // Draw the vdesktop
+    // Initializing vdesktop
     const auto& r = getRootWidget();
     setColor(r->getForegroundColor(), r->getBackgroundColor());
     clearArea (getVirtualDesktop());
@@ -1292,7 +1292,7 @@ void FWidget::adjustSize()
       if ( ignore_padding && ! isDialogWidget() )
         setTermOffset();
       else
-        woffset = rootObject->wclient_offset;
+        woffset = root_widget->wclient_offset;
     }
     else if ( ignore_padding && p )
     {
@@ -1654,8 +1654,8 @@ void FWidget::onAccel (FAccelEvent*)
 void FWidget::onResize (FResizeEvent* ev)
 {
   // The terminal was resized
-  rootObject->resize();
-  rootObject->redraw();
+  root_widget->resize();
+  root_widget->redraw();
   ev->accept();
 }
 
@@ -1676,7 +1676,7 @@ void FWidget::onClose (FCloseEvent* ev)
 
 // private methods of FWidget
 //----------------------------------------------------------------------
-void FWidget::init()
+void FWidget::initRootWidget()
 {
   try
   {
@@ -2012,7 +2012,7 @@ void FWidget::setStatusbarText (bool enable)
 //----------------------------------------------------------------------
 void detectTermSize()
 {
-  const auto& r = rootObject;
+  const auto& r = root_widget;
   FTerm::detectTermSize();
   r->adjust_wsize.setRect (1, 1, r->getDesktopWidth(), r->getDesktopHeight());
   r->woffset.setRect (0, 0, r->getDesktopWidth(), r->getDesktopHeight());

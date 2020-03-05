@@ -684,13 +684,11 @@ void FApplication::processKeyboardEvent()
 
   findKeyboardWidget();
   flush();
+  keyboard->escapeKeyHandling();  // special case: Esc key
   keyboard->clearKeyBufferOnTimeout();
 
   if ( isKeyPressed() )
     keyboard->fetchKeyCode();
-
-  // special case: Esc key
-  keyboard->escapeKeyHandling();
 }
 
 //----------------------------------------------------------------------
@@ -1120,6 +1118,12 @@ void FApplication::processResizeEvent()
 {
   if ( ! hasChangedTermSize() )
     return;
+
+  if ( mouse )
+  {
+    mouse->setMaxWidth (uInt16(getDesktopWidth()));
+    mouse->setMaxHeight (uInt16(getDesktopHeight()));
+  }
 
   FResizeEvent r_ev(fc::Resize_Event);
   sendEvent(app_object, &r_ev);

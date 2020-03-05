@@ -527,7 +527,7 @@ int FMouseGPM::gpmEvent (bool clear)
   FD_SET(stdin_no, &ifds);
   FD_SET(gpm_fd, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = 100000;  // 100 ms
+  tv.tv_usec = FKeyboard::getReadBlockingTime();  // preset to 100 ms
   const int result = select (max + 1, &ifds, nullptr, nullptr, &tv);
 
   if ( result > 0 && FD_ISSET(stdin_no, &ifds) )

@@ -166,7 +166,7 @@ void drawTransparentShadow (FWidget* w)
     w->print() << FPoint(int(width) + 1, int(y) + 1) << "  ";
   }
 
-  w->print() << FStyle (fc::Transparent)
+  w->print() << FStyle (fc::Reset) << FStyle (fc::Transparent)
              << FPoint (1, int(height) + 1)
              << "  "
              << FStyle (fc::Reset)
