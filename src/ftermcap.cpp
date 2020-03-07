@@ -275,47 +275,40 @@ void FTermcap::termcapKeys (char*& buffer)
   }
 
   // VT100 key codes for the arrow and function keys
-  termcapKeysVt100 (buffer);
+  termcapKeysVt100();
 }
 
 //----------------------------------------------------------------------
-void FTermcap::termcapKeysVt100 (char*& buffer)
+void FTermcap::termcapKeysVt100()
 {
   // Some terminals (e.g. PuTTY) send vt100 key codes for
   // the arrow and function keys.
 
-  const char* key_up_string = tgetstr(C_STR("ku"), &buffer);
-
-  if ( (key_up_string && (std::strcmp(key_up_string, ESC "OA") == 0))
-    || ( TCAP(fc::t_cursor_up)
-      && (std::strcmp(TCAP(fc::t_cursor_up), CSI "A") == 0) ) )
+  for (std::size_t i{0}; fc::fkey[i].tname[0] != 0; i++)
   {
-    for (std::size_t i{0}; fc::fkey[i].tname[0] != 0; i++)
-    {
-      if ( std::strncmp(fc::fkey[i].tname, "kux", 3) == 0 )
-        fc::fkey[i].string = C_STR(CSI "A");  // Key up
+    if ( std::strncmp(fc::fkey[i].tname, "kux", 3) == 0 )
+      fc::fkey[i].string = C_STR(CSI "A");  // Key up
 
-      if ( std::strncmp(fc::fkey[i].tname, "kdx", 3) == 0 )
-        fc::fkey[i].string = C_STR(CSI "B");  // Key down
+    if ( std::strncmp(fc::fkey[i].tname, "kdx", 3) == 0 )
+      fc::fkey[i].string = C_STR(CSI "B");  // Key down
 
-      if ( std::strncmp(fc::fkey[i].tname, "krx", 3) == 0 )
-        fc::fkey[i].string = C_STR(CSI "C");  // Key right
+    if ( std::strncmp(fc::fkey[i].tname, "krx", 3) == 0 )
+      fc::fkey[i].string = C_STR(CSI "C");  // Key right
 
-      if ( std::strncmp(fc::fkey[i].tname, "klx", 3) == 0 )
-        fc::fkey[i].string = C_STR(CSI "D");  // Key left
+    if ( std::strncmp(fc::fkey[i].tname, "klx", 3) == 0 )
+      fc::fkey[i].string = C_STR(CSI "D");  // Key left
 
-      if ( std::strncmp(fc::fkey[i].tname, "k1X", 3) == 0 )
-        fc::fkey[i].string = C_STR(ESC "OP");  // PF1
+    if ( std::strncmp(fc::fkey[i].tname, "k1X", 3) == 0 )
+      fc::fkey[i].string = C_STR(ESC "OP");  // PF1
 
-      if ( std::strncmp(fc::fkey[i].tname, "k2X", 3) == 0 )
-        fc::fkey[i].string = C_STR(ESC "OQ");  // PF2
+    if ( std::strncmp(fc::fkey[i].tname, "k2X", 3) == 0 )
+      fc::fkey[i].string = C_STR(ESC "OQ");  // PF2
 
-      if ( std::strncmp(fc::fkey[i].tname, "k3X", 3) == 0 )
-        fc::fkey[i].string = C_STR(ESC "OR");  // PF3
+    if ( std::strncmp(fc::fkey[i].tname, "k3X", 3) == 0 )
+      fc::fkey[i].string = C_STR(ESC "OR");  // PF3
 
-      if ( std::strncmp(fc::fkey[i].tname, "k4X", 3) == 0 )
-        fc::fkey[i].string = C_STR(ESC "OS");  // PF4
-    }
+    if ( std::strncmp(fc::fkey[i].tname, "k4X", 3) == 0 )
+      fc::fkey[i].string = C_STR(ESC "OS");  // PF4
   }
 }
 

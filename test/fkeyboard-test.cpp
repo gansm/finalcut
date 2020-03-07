@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -333,7 +333,7 @@ void FKeyboardTest::noArgumentTest()
 
   // Keypress timeout
   CPPUNIT_ASSERT ( keyboard->getKeypressTimeout() == 100 * 1000 );
-  
+
   keyboard->setKeypressTimeout(0);  // 0 ms
   CPPUNIT_ASSERT ( keyboard->getKeypressTimeout() == 0 );
 
@@ -342,7 +342,7 @@ void FKeyboardTest::noArgumentTest()
 
   // Read blocking time
   CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 100 * 1000 );
-  
+
   keyboard->setReadBlockingTime(1000000);  // 1000 ms
   CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 1000 * 1000 );
 

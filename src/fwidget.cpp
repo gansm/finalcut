@@ -1820,7 +1820,9 @@ void FWidget::KeyPressEvent (FKeyEvent* kev)
       }
     }
 
-    if ( kev->isAccepted() || widget->isRootWidget() )
+    if ( kev->isAccepted()
+      || widget->isRootWidget()
+      || widget->getFlags().modal )
       return;
 
     widget = widget->getParentWidget();

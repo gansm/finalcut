@@ -260,7 +260,7 @@ inline FKey FKeyboard::getMetaKey()
                       || fifo_buf[1] == ']' ) )
       {
         if ( ! isKeypressTimeout() )
-          return fc::need_more_data;
+          return fc::Fkey_incomplete;
       }
 
       for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove founded entry
@@ -301,7 +301,7 @@ inline FKey FKeyboard::getSingleKey()
       len = 4;
 
     if ( buf_len <  len && ! isKeypressTimeout() )
-      return fc::need_more_data;
+      return fc::Fkey_incomplete;
 
     for (std::size_t i{0}; i < len ; i++)
       utf8char[i] = char(fifo_buf[i] & 0xff);
@@ -431,12 +431,12 @@ void FKeyboard::parseKeyBuffer()
     // Read the rest from the fifo buffer
     while ( ! isKeypressTimeout()
          && fifo_offset > 0
-         && key != fc::need_more_data )
+         && key != fc::Fkey_incomplete )
     {
       key = parseKeyString();
       key = keyCorrection(key);
 
-      if ( key != fc::need_more_data )
+      if ( key != fc::Fkey_incomplete )
         keyPressed();
 
       fifo_offset = int(std::strlen(fifo_buf));
@@ -480,7 +480,7 @@ FKey FKeyboard::parseKeyString()
       return keycode;
 
     if ( ! isKeypressTimeout() )
-      return fc::need_more_data;
+      return fc::Fkey_incomplete;
   }
 
   return getSingleKey();

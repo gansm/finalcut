@@ -360,6 +360,14 @@ void FTermcapQuirks::putty()
     TCAP(fc::t_exit_pc_charset_mode) = \
         C_STR(CSI "10m");
 
+  if ( ! TCAP(fc::t_keypad_xmit) )
+    TCAP(fc::t_keypad_xmit) = \
+        C_STR(CSI "?1h" ESC "=");
+
+  if ( ! TCAP(fc::t_keypad_local) )
+    TCAP(fc::t_keypad_local) = \
+        C_STR(CSI "?1l" ESC ">");
+
   if ( ! TCAP(fc::t_key_mouse) )
     TCAP(fc::t_key_mouse) = \
         C_STR(CSI "M");

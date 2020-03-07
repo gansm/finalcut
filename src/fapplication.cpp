@@ -208,7 +208,10 @@ bool FApplication::sendEvent ( const FObject* receiver
           case fc::MouseMove_Event:
           case fc::FocusIn_Event:
           case fc::FocusOut_Event:
+          case fc::ChildFocusIn_Event:
+          case fc::ChildFocusOut_Event:
           case fc::Accelerator_Event:
+            keyboard->clearKeyBuffer();
             return false;
 
           default:

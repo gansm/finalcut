@@ -827,6 +827,7 @@ FKeyName fkeyname[] =
   { fc::Fkey_mouse                , "xterm mouse" },
   { fc::Fkey_extended_mouse       , "SGR extended mouse" },
   { fc::Fkey_urxvt_mouse          , "urxvt mouse extension" },
+  { fc::Fkey_incomplete           , "incomplete key string" },
   { 0                             , "\0" }
 };
 

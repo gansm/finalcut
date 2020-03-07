@@ -1,3 +1,6 @@
+2020-03-07  Markus Gans  <guru.mail@muenster.de>
+	* Fixes keyboard input buffer problem when opening a modal dialog
+
 2020-03-05  Markus Gans  <guru.mail@muenster.de>
 	* Unbuffered reading of keystrokes for better latency
 	* Mouse adjustments when resizing an rxvt terminal

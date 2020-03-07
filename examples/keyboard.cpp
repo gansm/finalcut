@@ -54,13 +54,16 @@ Keyboard::Keyboard (finalcut::FWidget* parent)
 void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
 {
   const FKey key_id = ev->key();
+  finalcut::FString key_name = getKeyName(key_id);
   bool is_last_line{false};
+
+  if ( key_name.isEmpty() )
+    key_name = wchar_t(key_id);
 
   if ( getPrintPos().getY() == int(getDesktopHeight()) )
     is_last_line = true;
 
-  print() << "Key " << getKeyName(key_id).c_str()
-          << " (id " << key_id << ")\n";
+  print() << "Key " << key_name << " (id " << key_id << ")\n";
 
   if ( is_last_line )
     scrollAreaForward (getVirtualDesktop());

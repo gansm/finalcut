@@ -459,7 +459,7 @@ enum keys : FKey
   Fkey_f61                   = 0x01000192,
   Fkey_f62                   = 0x01000193,
   Fkey_f63                   = 0x01000194,
-  need_more_data             = 0x80000000
+  Fkey_incomplete            = UINT32_MAX
 };
 
 // Keyboard - modifier key combinations

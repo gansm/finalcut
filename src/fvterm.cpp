@@ -186,7 +186,7 @@ FColor FVTerm::rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b)
 void FVTerm::setNonBlockingRead (bool enable)
 {
   uInt64 blocking_time = (enable) ? 0 : 100000;  // 0 or 100 ms
-  FKeyboard::setReadBlockingTime (blocking_time); 
+  FKeyboard::setReadBlockingTime (blocking_time);
 }
 
 //----------------------------------------------------------------------
