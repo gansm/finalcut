@@ -1353,63 +1353,56 @@ inline void FDialog::moveSizeKey (FKeyEvent* ev)
   {
     case fc::Fkey_up:
       moveUp(1);
-      ev->accept();
       break;
 
     case fc::Fkey_down:
       moveDown(1);
-      ev->accept();
       break;
 
     case fc::Fkey_left:
       moveLeft(1);
-      ev->accept();
       break;
 
     case fc::Fkey_right:
       moveRight(1);
-      ev->accept();
       break;
 
     case fc::Fmkey_up:
     case fc::Fkey_sr:
-      if ( reduceHeight(1) )
-        ev->accept();
+      reduceHeight(1);
       break;
 
     case fc::Fmkey_down:
     case fc::Fkey_sf:
-      if ( expandHeight(1) )
-        ev->accept();
+      expandHeight(1);
       break;
 
     case fc::Fmkey_left:
     case fc::Fkey_sleft:
-      if ( reduceWidth(1) )
-        ev->accept();
+      reduceWidth(1);
       break;
 
     case fc::Fmkey_right:
     case fc::Fkey_sright:
-      if ( expandWidth(1) )
-        ev->accept();
+      expandWidth(1);
       break;
 
     case fc::Fkey_return:
     case fc::Fkey_enter:
       acceptMoveSize();
-      ev->accept();
       break;
 
     case fc::Fkey_escape:
     case fc::Fkey_escape_mintty:
       cancelMoveSize();
-      ev->accept();
       return;
 
     default:
       break;
   }
+
+  // Accept for all, so that parent widgets will not receive keystrokes
+  ev->accept();
 }
 
 //----------------------------------------------------------------------

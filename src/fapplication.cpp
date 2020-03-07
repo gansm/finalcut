@@ -355,6 +355,7 @@ void FApplication::showParameterUsage()
 //----------------------------------------------------------------------
 void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 {
+  app_object->unsetMoveSizeMode();
   const int ret = FMessageBox::info ( w, "Quit"
                                     , "Do you really want\n"
                                       "to quit the program ?"

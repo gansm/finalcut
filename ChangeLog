@@ -1,5 +1,7 @@
 2020-03-07  Markus Gans  <guru.mail@muenster.de>
 	* Fixes keyboard input buffer problem when opening a modal dialog
+	* Exit the move-resize-mode when the close confirmation dialog 
+	  is displayed
 
 2020-03-05  Markus Gans  <guru.mail@muenster.de>
 	* Unbuffered reading of keystrokes for better latency
