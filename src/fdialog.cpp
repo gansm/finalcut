@@ -26,6 +26,7 @@
 #include "final/fcombobox.h"
 #include "final/fdialog.h"
 #include "final/fevent.h"
+#include "final/fkeyboard.h"
 #include "final/fmenuitem.h"
 #include "final/fstatusbar.h"
 #include "final/ftooltip.h"
@@ -98,7 +99,10 @@ bool FDialog::setModal (bool enable)
   setFlags().modal = enable;
 
   if ( enable )
+  {
     setModalDialogCounter()++;
+    getFKeyboard()->clearKeyBuffer();
+  }
   else
     setModalDialogCounter()--;
 
