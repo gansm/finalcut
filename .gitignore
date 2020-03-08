@@ -58,6 +58,7 @@ examples/listview
 examples/checklist
 examples/treeview
 examples/mandelbrot
+examples/rotozoomer
 examples/keyboard
 examples/mouse
 examples/timer

@@ -22,6 +22,7 @@ noinst_PROGRAMS = \
 	termcap \
 	string-operations \
 	mandelbrot \
+	rotozoomer \
 	calculator \
 	watch \
 	term-attributes \
@@ -48,6 +49,7 @@ treeview_SOURCES = treeview.cpp
 opti_move_SOURCES = opti-move.cpp
 string_operations_SOURCES = string-operations.cpp
 mandelbrot_SOURCES = mandelbrot.cpp
+rotozoomer_SOURCES = rotozoomer.cpp
 calculator_SOURCES = calculator.cpp
 watch_SOURCES = watch.cpp
 term_attributes_SOURCES = term-attributes.cpp

@@ -1,3 +1,7 @@
+2020-03-08  Markus Gans  <guru.mail@muenster.de>
+	* A rotozoomer example was added to demonstrate the drawing speed 
+	  of FINAL CUT
+
 2020-03-07  Markus Gans  <guru.mail@muenster.de>
 	* Fixes keyboard input buffer problem when opening a modal dialog
 	* Exit the move-resize-mode when the close confirmation dialog 
