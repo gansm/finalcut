@@ -4,7 +4,7 @@ Benchmark
 The Rotozoomer example can perform a benchmark run with the parameter "-b" to determine the FINAL CUT character speed in the terminal.
 
 
-[![rotozoomer-benchmark](https://asciinema.org/a/voRnNvr7M97BxiDWVhMr3IVIN.svg)](https://asciinema.org/a/voRnNvr7M97BxiDWVhMr3IVIN)
+[![rotozoomer-benchmark](https://asciinema.org/a/smuTNcVd7uJ9InchzXmGhDtIX.svg)](https://asciinema.org/a/smuTNcVd7uJ9InchzXmGhDtIX)
 
 
 Speed tests
