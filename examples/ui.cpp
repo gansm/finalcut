@@ -293,7 +293,7 @@ class MyDialog : public finalcut::FDialog
     void cb_clearInput (finalcut::FWidget*, FDataPtr);
     void cb_input2buttonText (finalcut::FWidget*, FDataPtr);
     void cb_setTitlebar (finalcut::FWidget*, FDataPtr);
-    void cb_ProgressBar (finalcut::FWidget*, FDataPtr);
+    void cb_showProgressBar (finalcut::FWidget*, FDataPtr);
     void cb_updateNumber (finalcut::FWidget*, FDataPtr);
     void cb_activateButton (finalcut::FWidget*, FDataPtr);
     void cb_view (finalcut::FWidget*, FDataPtr);
@@ -671,7 +671,7 @@ void MyDialog::initButtons()
   MyButton5.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &MyDialog::cb_ProgressBar)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_showProgressBar)
   );
 
   MyButton6.addCallback
@@ -907,7 +907,7 @@ void MyDialog::cb_setTitlebar (finalcut::FWidget* widget, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_ProgressBar (finalcut::FWidget*, FDataPtr)
+void MyDialog::cb_showProgressBar (finalcut::FWidget*, FDataPtr)
 {
   auto p_dgl = new ProgressDialog(this);
   p_dgl->show();

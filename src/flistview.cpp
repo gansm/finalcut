@@ -1454,8 +1454,8 @@ void FListView::adjustSize()
 //----------------------------------------------------------------------
 void FListView::init()
 {
-  initScrollbar (vbar, fc::vertical, this, &FListView::cb_VBarChange);
-  initScrollbar (hbar, fc::horizontal, this, &FListView::cb_HBarChange);
+  initScrollbar (vbar, fc::vertical, this, &FListView::cb_vbarChange);
+  initScrollbar (hbar, fc::horizontal, this, &FListView::cb_hbarChange);
   selflist.push_back(this);
   root = selflist.begin();
   null_iter = selflist.end();
@@ -2791,7 +2791,7 @@ void FListView::scrollBy (int dx, int dy)
 }
 
 //----------------------------------------------------------------------
-void FListView::cb_VBarChange (FWidget*, FDataPtr)
+void FListView::cb_vbarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
@@ -2850,7 +2850,7 @@ void FListView::cb_VBarChange (FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FListView::cb_HBarChange (FWidget*, FDataPtr)
+void FListView::cb_hbarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;

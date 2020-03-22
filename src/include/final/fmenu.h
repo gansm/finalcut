@@ -121,7 +121,7 @@ class FMenu : public FWindow, public FMenuList
     void                onAccel (FAccelEvent*) override;
 
     // Callback method
-    void                cb_menuitem_toggled (FWidget*, FDataPtr);
+    void                cb_menuitemToggled (FWidget*, FDataPtr);
 
   private:
     // Constants

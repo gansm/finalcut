@@ -1009,7 +1009,7 @@ void FWidget::show()
     show_root_widget = this;
   }
 
-  draw();
+  draw();  // Draw the widget
   flags.hidden = false;
   flags.shown = true;
 

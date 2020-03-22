@@ -140,7 +140,7 @@ void FTextView::scrollTo (int x, int y)
 
   if ( changeX && isHorizontallyScrollable() )
   {
-    const int xoffset_end = int(maxLineWidth - getTextWidth());
+    const int xoffset_end = int(max_line_width - getTextWidth());
     xoffset = x;
 
     if ( xoffset < 0 )
@@ -215,17 +215,17 @@ void FTextView::insert (const FString& str, int pos)
                .rtrim();
     const auto column_width = getColumnWidth(line);
 
-    if ( column_width > maxLineWidth )
+    if ( column_width > max_line_width )
     {
-      maxLineWidth = column_width;
+      max_line_width = column_width;
 
       if ( column_width > getTextWidth() )
       {
-        const int hmax = ( maxLineWidth > getTextWidth() )
-                         ? int(maxLineWidth) - int(getTextWidth())
+        const int hmax = ( max_line_width > getTextWidth() )
+                         ? int(max_line_width) - int(getTextWidth())
                          : 0;
         hbar->setMaximum (hmax);
-        hbar->setPageSize (int(maxLineWidth), int(getTextWidth()));
+        hbar->setPageSize (int(max_line_width), int(getTextWidth()));
         hbar->calculateSliderValues();
 
         if ( isShown() && isHorizontallyScrollable() )
@@ -272,7 +272,7 @@ void FTextView::clear()
   data.shrink_to_fit();
   xoffset = 0;
   yoffset = 0;
-  maxLineWidth = 0;
+  max_line_width = 0;
 
   vbar->setMinimum(0);
   vbar->setValue(0);
@@ -484,7 +484,7 @@ void FTextView::adjustSize()
   const std::size_t width = getWidth();
   const std::size_t height = getHeight();
   const int last_line = int(getRows());
-  const int max_width = int(maxLineWidth);
+  const int max_width = int(max_line_width);
 
   if ( xoffset >= max_width - int(width) - nf_offset )
     xoffset = max_width - int(width) - nf_offset - 1;
@@ -555,8 +555,8 @@ std::size_t FTextView::getTextWidth()
 //----------------------------------------------------------------------
 void FTextView::init()
 {
-  initScrollbar (vbar, fc::vertical, this, &FTextView::cb_VBarChange);
-  initScrollbar (hbar, fc::horizontal, this, &FTextView::cb_HBarChange);
+  initScrollbar (vbar, fc::vertical, this, &FTextView::cb_vbarChange);
+  initScrollbar (hbar, fc::horizontal, this, &FTextView::cb_hbarChange);
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
@@ -744,7 +744,7 @@ void FTextView::changeOnResize()
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_VBarChange (FWidget*, FDataPtr)
+void FTextView::cb_vbarChange (FWidget*, FDataPtr)
 {
   const FScrollbar::sType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
@@ -795,7 +795,7 @@ void FTextView::cb_VBarChange (FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_HBarChange (FWidget*, FDataPtr)
+void FTextView::cb_hbarChange (FWidget*, FDataPtr)
 {
   const FScrollbar::sType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;

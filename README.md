@@ -77,6 +77,11 @@ The calculator example in newfont mode:
 ![calculator](doc/calculator.png)
 
 
+Benchmark
+---------
+Here you can find a test for ![measuring the character speed](doc/benchmark.md) in the terminal.
+
+
 Virtual terminal
 ----------------
 FINAL CUT uses a virtual terminal to print character via an update method on the screen. It provides (as an overlying layer) virtual windows for the realization of window movements. The update methods only transfer differences to the virtual terminal or physical screen.

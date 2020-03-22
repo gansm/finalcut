@@ -441,8 +441,8 @@ class FListView : public FWidget
     bool                 hasCheckableItems() const;
 
     // Callback methods
-    void                 cb_VBarChange (FWidget*, FDataPtr);
-    void                 cb_HBarChange (FWidget*, FDataPtr);
+    void                 cb_vbarChange (FWidget*, FDataPtr);
+    void                 cb_hbarChange (FWidget*, FDataPtr);
 
     // Data members
     iterator             root{};

@@ -98,7 +98,7 @@ class FMenuBar : public FWindow, public FMenuList
     void          onAccel (FAccelEvent*) override;
 
     // Callback methods
-    void          cb_item_deactivated (FWidget*, FDataPtr);
+    void          cb_itemDeactivated (FWidget*, FDataPtr);
 
   private:
     // Constants

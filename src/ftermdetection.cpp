@@ -940,11 +940,10 @@ inline char* FTermDetection::secDA_Analysis_82()
   char* new_termtype{};
   terminal_type.rxvt = true;
 
-  if ( std::strncmp(termtype, "rxvt-", 5) != 0
-    && std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
+  if ( std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
     new_termtype = C_STR("rxvt-16color");
   else
-    new_termtype = termtype;
+    new_termtype = C_STR("rxvt");
 
   return new_termtype;
 }

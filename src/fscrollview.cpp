@@ -305,7 +305,7 @@ bool FScrollView::setBorder (bool enable)
 //----------------------------------------------------------------------
 void FScrollView::setHorizontalScrollBarMode (fc::scrollBarMode mode)
 {
-  hMode = mode;
+  h_mode = mode;
 
   if ( isShown() )
     setHorizontalScrollBarVisibility();
@@ -314,7 +314,7 @@ void FScrollView::setHorizontalScrollBarMode (fc::scrollBarMode mode)
 //----------------------------------------------------------------------
 void FScrollView::setVerticalScrollBarMode (fc::scrollBarMode mode)
 {
-  vMode = mode;
+  v_mode = mode;
 
   if ( isShown() )
     setVerticalScrollBarVisibility();
@@ -712,8 +712,8 @@ void FScrollView::init (FWidget* parent)
   assert ( parent != nullptr );
   assert ( ! parent->isInstanceOf("FScrollView") );
 
-  initScrollbar (vbar, fc::vertical, &FScrollView::cb_VBarChange);
-  initScrollbar (hbar, fc::horizontal, &FScrollView::cb_HBarChange);
+  initScrollbar (vbar, fc::vertical, &FScrollView::cb_vbarChange);
+  initScrollbar (hbar, fc::horizontal, &FScrollView::cb_hbarChange);
   mapKeyFunctions();
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
@@ -790,7 +790,7 @@ void FScrollView::calculateScrollbarPos()
 //----------------------------------------------------------------------
 void FScrollView::setHorizontalScrollBarVisibility()
 {
-  switch ( hMode )
+  switch ( h_mode )
   {
     case fc::Auto:
       if ( getScrollWidth() > getViewportWidth() )
@@ -812,7 +812,7 @@ void FScrollView::setHorizontalScrollBarVisibility()
 //----------------------------------------------------------------------
 void FScrollView::setVerticalScrollBarVisibility()
 {
-  switch ( vMode )
+  switch ( v_mode )
   {
     case fc::Auto:
       if ( getScrollHeight() > getViewportHeight() )
@@ -852,7 +852,7 @@ void FScrollView::setViewportCursor()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::cb_VBarChange (FWidget*, FDataPtr)
+void FScrollView::cb_vbarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
@@ -903,7 +903,7 @@ void FScrollView::cb_VBarChange (FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::cb_HBarChange (FWidget*, FDataPtr)
+void FScrollView::cb_hbarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;

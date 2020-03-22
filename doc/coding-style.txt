@@ -10,6 +10,14 @@ Formatting
 * Use one blank line before and after a for, if, switch, 
   while, do..while code block
 * In parameter lists, leave a space after each comma
+* Starting curly brace "{" in a new line
+
+Naming
+------
+* class name: upperCamelCase
+* Function: lowerCamelCase
+* Callback function: cb_lowerCamelCase (beginning with "cb_" as prefix)
+* Variable: lower_case_underscored
 
 Class declaration order
 -----------------------

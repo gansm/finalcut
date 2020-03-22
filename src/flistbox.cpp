@@ -652,8 +652,8 @@ inline FString& FListBox::getString (listBoxItems::iterator iter)
 //----------------------------------------------------------------------
 void FListBox::init()
 {
-  initScrollbar (vbar, fc::vertical, this, &FListBox::cb_VBarChange);
-  initScrollbar (hbar, fc::horizontal, this, &FListBox::cb_HBarChange);
+  initScrollbar (vbar, fc::vertical, this, &FListBox::cb_vbarChange);
+  initScrollbar (hbar, fc::horizontal, this, &FListBox::cb_hbarChange);
   setGeometry (FPoint(1, 1), FSize(5, 4), false);  // initialize geometry values
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
@@ -1745,7 +1745,7 @@ void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_VBarChange (FWidget*, FDataPtr)
+void FListBox::cb_vbarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType;
   const std::size_t current_before = current;
@@ -1808,7 +1808,7 @@ void FListBox::cb_VBarChange (FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_HBarChange (FWidget*, FDataPtr)
+void FListBox::cb_hbarChange (FWidget*, FDataPtr)
 {
   static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
   static constexpr int wheel_distance = 4;

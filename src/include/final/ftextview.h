@@ -157,8 +157,8 @@ class FTextView : public FWidget
     void                changeOnResize();
 
     // Callback methods
-    void                cb_VBarChange (FWidget*, FDataPtr);
-    void                cb_HBarChange (FWidget*, FDataPtr);
+    void                cb_vbarChange (FWidget*, FDataPtr);
+    void                cb_hbarChange (FWidget*, FDataPtr);
 
     // Data members
     FStringList        data{};
@@ -169,7 +169,7 @@ class FTextView : public FWidget
     int                xoffset{0};
     int                yoffset{0};
     int                nf_offset{0};
-    std::size_t        maxLineWidth{0};
+    std::size_t        max_line_width{0};
 };
 
 // FListBox inline functions
@@ -213,7 +213,7 @@ inline const FString FTextView::getClassName() const
 
 //----------------------------------------------------------------------
 inline std::size_t FTextView::getColumns() const
-{ return maxLineWidth; }
+{ return max_line_width; }
 
 //----------------------------------------------------------------------
 inline std::size_t FTextView::getRows() const
@@ -256,7 +256,7 @@ inline void FTextView::deleteLine (int pos)
 
 //----------------------------------------------------------------------
 inline bool FTextView::isHorizontallyScrollable()
-{ return bool( maxLineWidth > getTextWidth() ); }
+{ return bool( max_line_width > getTextWidth() ); }
 
 //----------------------------------------------------------------------
 inline bool FTextView::isVerticallyScrollable()

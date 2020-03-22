@@ -171,8 +171,8 @@ class FScrollView : public FWidget
     void                setViewportCursor();
 
     // Callback methods
-    void                cb_VBarChange (FWidget*, FDataPtr);
-    void                cb_HBarChange (FWidget*, FDataPtr);
+    void                cb_vbarChange (FWidget*, FDataPtr);
+    void                cb_hbarChange (FWidget*, FDataPtr);
 
     // Data members
     FRect              scroll_geometry{1, 1, 1, 1};
@@ -185,8 +185,8 @@ class FScrollView : public FWidget
     bool               border{true};
     bool               use_own_print_area{false};
     bool               update_scrollbar{true};
-    fc::scrollBarMode  vMode{fc::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
-    fc::scrollBarMode  hMode{fc::Auto};
+    fc::scrollBarMode  v_mode{fc::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
+    fc::scrollBarMode  h_mode{fc::Auto};
 };
 
 // FScrollView inline functions

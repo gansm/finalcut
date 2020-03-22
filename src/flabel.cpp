@@ -99,7 +99,7 @@ void FLabel::setAccelWidget (FWidget* widget)
   accel_widget->addCallback
   (
     "destroy",
-    F_METHOD_CALLBACK (this, &FLabel::cb_accel_widget_destroyed)
+    F_METHOD_CALLBACK (this, &FLabel::cb_accelWidgetDestroyed)
   );
 }
 
@@ -234,7 +234,7 @@ void FLabel::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FLabel::cb_accel_widget_destroyed (FWidget*, FDataPtr)
+void FLabel::cb_accelWidgetDestroyed (FWidget*, FDataPtr)
 {
   accel_widget = nullptr;
   delAccelerator();

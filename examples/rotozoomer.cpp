@@ -20,11 +20,15 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <chrono>
+#include <iomanip>
+
 #include <cmath>
 
 #include <final/final.h>
 
 namespace fc = finalcut::fc;
+using namespace std::chrono;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -42,10 +46,13 @@ class RotoZoomer : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit RotoZoomer (finalcut::FWidget* = nullptr);
+    explicit RotoZoomer (finalcut::FWidget* = nullptr, bool = false, int = 314);
 
     // Destructor
     ~RotoZoomer() override;
+
+    // Accessors
+    finalcut::FString getReport();
 
     // Event handlers
     void onShow (finalcut::FShowEvent*) override;
@@ -57,17 +64,25 @@ class RotoZoomer : public finalcut::FDialog
     // Methods
     void draw() override;
     void rotozoomer (double, double, double, double);
+    void generateReport();
     void adjustSize() override;
 
     // Data member
-    wchar_t data[256]{};
-    int path{0};
+    bool                     benchmark{false};
+    int                      loops{0};
+    int                      path{0};
+    wchar_t                  data[256]{};
+    finalcut::FString        report;
+    time_point<system_clock> start{};
+    time_point<system_clock> end{};
 };
 
 
 //----------------------------------------------------------------------
-RotoZoomer::RotoZoomer (finalcut::FWidget* parent)
+RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool b, int i)
   : finalcut::FDialog(parent)
+  , benchmark(b)
+  , loops(i)
 {
   setText ("Rotozoomer effect");
 
@@ -107,12 +122,14 @@ RotoZoomer::~RotoZoomer()
 //----------------------------------------------------------------------
 void RotoZoomer::draw()
 {
+  if ( benchmark && start == time_point<system_clock>() )
+    start = system_clock::now();
+
   finalcut::FDialog::draw();
   double cx = double(80.0 / 2.0 + (80.0 / 2.0 * std::sin(double(path) / 50.0)));
   double cy = double(23.0 + (23.0 * std::cos(double(path) / 50.0)));
   double r  = double(128.0 + 96.0 * std::cos(double(path) / 10.0));
   double a  = double(path) / 50.0;
-  print() << finalcut::FColorPair(fc::White, fc::Black);
   rotozoomer (cx, cy, r, a);
 }
 
@@ -160,15 +177,60 @@ void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
 }
 
 //----------------------------------------------------------------------
+void RotoZoomer::generateReport()
+{
+  finalcut::FString term_type = getTermType();
+  finalcut::FString dimension_str{};
+  finalcut::FString time_str{};
+  finalcut::FString fps_str{};
+  std::wostringstream rep;
+  dimension_str << getDesktopWidth()
+                << "x" << getDesktopHeight();
+  int elapsed_ms = duration_cast<milliseconds>(end - start).count();
+  time_str << double(elapsed_ms) / 1000 << "ms";
+  fps_str << double(loops) * 1000.0 / double(elapsed_ms);
+
+  rep << finalcut::FString(55, '-') << "\n"
+      << "Terminal            Size    Time      Loops  Frame rate\n"
+      << finalcut::FString(55, '-') << "\n"
+      << std::left << std::setw(20) << term_type
+      << std::setw(8) << dimension_str
+      << std::setw(10) << time_str
+      << std::setw(7) << loops
+      << std::setw(7) << fps_str.left(7) << "fps\n";
+  report << rep.str();
+}
+
+//----------------------------------------------------------------------
+inline finalcut::FString RotoZoomer::getReport()
+{
+  return report;
+}
+
+//----------------------------------------------------------------------
 void RotoZoomer::onShow (finalcut::FShowEvent*)
 {
-  addTimer(33);
+  if ( ! benchmark )
+    addTimer(33);
+  else
+  {
+    for (path = 1; path < loops; path++)
+    {
+      redraw();
+      updateTerminal();
+    }
+
+    end = system_clock::now();
+    generateReport();
+    flush();
+    quit();
+  }
 }
 
 //----------------------------------------------------------------------
 void RotoZoomer::onTimer (finalcut::FTimerEvent*)
 {
-  if ( path >= 314 )
+  if ( path >= 314 )  // More than 360 degrees
     path = 0;
   else
     path++;
@@ -196,22 +258,27 @@ void RotoZoomer::onKeyPress (finalcut::FKeyEvent* ev)
 //----------------------------------------------------------------------
 void RotoZoomer::onClose (finalcut::FCloseEvent* ev)
 {
-  finalcut::FApplication::closeConfirmationDialog (this, ev);
+  if ( ! benchmark )
+    finalcut::FApplication::closeConfirmationDialog (this, ev);
 }
 
 //----------------------------------------------------------------------
 void RotoZoomer::adjustSize()
 {
-  std::size_t h = getDesktopHeight();
-  std::size_t w = getDesktopWidth();
+  if ( ! benchmark )
+  {
+    std::size_t h = getDesktopHeight();
+    std::size_t w = getDesktopWidth();
 
-  if ( h > 1 )
-    h--;
+    if ( h > 1 )
+      h--;
 
-  if ( w > 8 )
-    w -= 8;
+    if ( w > 8 )
+      w -= 8;
 
-  setGeometry(FPoint(5, 1), FSize(w, h), false);
+    setGeometry(FPoint(5, 1), FSize(w, h), false);
+  }
+
   finalcut::FDialog::adjustSize();
 }
 
@@ -220,19 +287,54 @@ void RotoZoomer::adjustSize()
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
-  // Create the application object
-  finalcut::FApplication app(argc, argv);
-  app.setNonBlockingRead();
+  constexpr int iterations = 314;
+  bool benchmark{false};
+  finalcut::FString report{};
+  int quit_code{0};
 
-  // Create a simple dialog box
-  RotoZoomer p(&app);
-  p.setGeometry (FPoint(5, 1), FSize(72, 23));
-  p.setShadow();
+  if ( argv[1] && ( strcmp(argv[1], "--help") == 0
+                  || strcmp(argv[1], "-h") == 0 ) )
+  {
+    std::cout << "RotoZoomer options:\n"
+              << "  -b, --benchmark               "
+              << "Starting a benchmark run\n\n";
+  }
+  else if ( argv[1] && ( strcmp(argv[1], "--benchmark") == 0
+                      || strcmp(argv[1], "-b") == 0 ) )
+  {
+    benchmark = true;
+  }
 
-  // Set the RotoZoomer object as main widget
-  app.setMainWidget(&p);
+  {
+    // Create the application object
+    finalcut::FApplication app(argc, argv);
+    app.setNonBlockingRead();
 
-  // Show and start the application
-  p.show();
-  return app.exec();
+    // Create a simple dialog box
+    RotoZoomer roto(&app, benchmark, iterations);
+
+    if ( benchmark )
+      roto.setGeometry (FPoint(1, 1), FSize(80, 24));
+    else
+      roto.setGeometry (FPoint(5, 1), FSize(72, 23));
+
+    roto.setShadow();
+
+    // Set the RotoZoomer object as main widget
+    app.setMainWidget(&roto);
+
+    // Show and start the application
+    roto.show();
+    quit_code = app.exec();
+
+    if ( benchmark )
+      report = roto.getReport();
+  }
+
+  if ( benchmark )
+  {
+    std::cout << "Benchmark:\n" << report;
+  }
+
+  return quit_code;
 }
