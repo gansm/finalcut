@@ -348,9 +348,6 @@ class FListView : public FWidget
     void                 onFocusIn (FFocusEvent*) override;
     void                 onFocusOut (FFocusEvent*) override;
 
-    // Data members
-    static iterator      null_iter;
-
   protected:
     // Methods
     void                 adjustViewport (const int);
@@ -372,6 +369,12 @@ class FListView : public FWidget
 
     // Constants
     static constexpr int USE_MAX_SIZE = -1;
+
+    // Accessors
+    static iterator&     getNullIterator();
+
+    // Mutators
+    static void          setNullIterator (iterator&);
 
     // Inquiry
     bool                 isHorizontallyScrollable();

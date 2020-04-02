@@ -36,7 +36,7 @@ function replacementFound ()
 
 if [ $# != 2 ]
 then
-  echo "usage:  $(basename $0) font1.bdf font2.bdf > newfont.bdf"
+  echo "usage:  $(basename "$0") font1.bdf font2.bdf > newfont.bdf"
   exit 1
 fi
 

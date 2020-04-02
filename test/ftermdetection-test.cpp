@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -1482,7 +1482,6 @@ void FTermDetectionTest::ttytypeTest()
   ttytype << "vt100" << "\t" << "ttyp6" << std::endl;
   ttytype.close();
 
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   detect.setTerminalDetection(true);
   detect.setTtyTypeFileName(C_STR("new-root-dir/etc/ttytype"));
@@ -1501,6 +1500,7 @@ void FTermDetectionTest::ttytypeTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
+    finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
 
     // Test /dev/tty3 with linux
     data.setTermFileName(C_STR("/dev/tty3"));

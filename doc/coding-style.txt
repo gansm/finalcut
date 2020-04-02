@@ -14,7 +14,7 @@ Formatting
 
 Naming
 ------
-* class name: upperCamelCase
+* class name: UpperCamelCase
 * Function: lowerCamelCase
 * Callback function: cb_lowerCamelCase (beginning with "cb_" as prefix)
 * Variable: lower_case_underscored

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019 Markus Gans                                           *
+* Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -1416,8 +1416,8 @@ void FSystemTest::initVScreenInfo()
   fb_terminal_info.blue.length = 8;
   fb_terminal_info.blue.msb_right = 0;
   fb_terminal_info.transp.offset = 0;
-  fb_terminal_info.blue.length = 0;
-  fb_terminal_info.blue.msb_right = 0;
+  fb_terminal_info.transp.length = 0;
+  fb_terminal_info.transp.msb_right = 0;
   fb_terminal_info.nonstd = 0;
   fb_terminal_info.activate = 0;
   fb_terminal_info.height = 0xffffffff;

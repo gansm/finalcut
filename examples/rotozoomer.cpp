@@ -79,10 +79,10 @@ class RotoZoomer : public finalcut::FDialog
 
 
 //----------------------------------------------------------------------
-RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool b, int i)
+RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool b, int l)
   : finalcut::FDialog(parent)
   , benchmark(b)
-  , loops(i)
+  , loops(l)
 {
   setText ("Rotozoomer effect");
 
@@ -186,7 +186,7 @@ void RotoZoomer::generateReport()
   std::wostringstream rep;
   dimension_str << getDesktopWidth()
                 << "x" << getDesktopHeight();
-  int elapsed_ms = duration_cast<milliseconds>(end - start).count();
+  int elapsed_ms = int(duration_cast<milliseconds>(end - start).count());
   time_str << double(elapsed_ms) / 1000 << "ms";
   fps_str << double(loops) * 1000.0 / double(elapsed_ms);
 

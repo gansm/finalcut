@@ -41,9 +41,6 @@
 namespace finalcut
 {
 
-// Static class attribute
-FObject::iterator FListView::null_iter;
-
 // Function prototypes
 uInt64 firstNumberFromString (const FString&);
 bool sortAscendingByName (const FObject*, const FObject*);
@@ -298,7 +295,7 @@ FObject::iterator FListViewItem::insert (FListViewItem* child)
 {
   // Add a FListViewItem as child element
   if ( ! child )
-    return FListView::null_iter;
+    return FListView::getNullIterator();
 
   return appendItem(child);
 }
@@ -307,8 +304,8 @@ FObject::iterator FListViewItem::insert (FListViewItem* child)
 FObject::iterator FListViewItem::insert ( FListViewItem* child
                                         , iterator parent_iter )
 {
-  if ( parent_iter == FListView::null_iter )
-    return FListView::null_iter;
+  if ( parent_iter == FListView::getNullIterator() )
+    return FListView::getNullIterator();
 
   if ( *parent_iter )
   {
@@ -326,13 +323,13 @@ FObject::iterator FListViewItem::insert ( FListViewItem* child
     }
   }
 
-  return FListView::null_iter;
+  return FListView::getNullIterator();
 }
 
 //----------------------------------------------------------------------
 void FListViewItem::remove (FListViewItem* item)
 {
-  if ( item == nullptr || item == *FListView::null_iter )
+  if ( item == nullptr || item == *FListView::getNullIterator() )
     return;
 
   auto parent = item->getParent();
@@ -816,8 +813,8 @@ FObject::iterator FListView::insert ( FListViewItem* item
 {
   iterator item_iter;
 
-  if ( parent_iter == FListView::null_iter )
-    return FListView::null_iter;
+  if ( parent_iter == getNullIterator() )
+    return getNullIterator();
 
   beforeInsertion(item);  // preprocessing
 
@@ -840,10 +837,10 @@ FObject::iterator FListView::insert ( FListViewItem* item
       item_iter = parent->appendItem (item);
     }
     else
-      item_iter = FListView::null_iter;
+      item_iter = getNullIterator();
   }
   else
-    item_iter = FListView::null_iter;
+    item_iter = getNullIterator();
 
   afterInsertion();  // post-processing
   return item_iter;
@@ -856,20 +853,20 @@ FObject::iterator FListView::insert ( const FStringList& cols
 {
   FListViewItem* item;
 
-  if ( cols.empty() || parent_iter == FListView::null_iter )
-    return FListView::null_iter;
+  if ( cols.empty() || parent_iter == getNullIterator() )
+    return getNullIterator();
 
   if ( ! *parent_iter )
     parent_iter = root;
 
   try
   {
-    item = new FListViewItem (cols, d, FListView::null_iter);
+    item = new FListViewItem (cols, d, getNullIterator());
   }
   catch (const std::bad_alloc& ex)
   {
     std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return FListView::null_iter;
+    return getNullIterator();
   }
 
   item->replaceControlCodes();
@@ -933,9 +930,9 @@ void FListView::remove (FListViewItem* item)
 
   if ( itemlist.empty() )
   {
-    current_iter = FListView::null_iter;
-    first_visible_line = FListView::null_iter;
-    last_visible_line = FListView::null_iter;
+    current_iter = getNullIterator();
+    first_visible_line = getNullIterator();
+    last_visible_line = getNullIterator();
     clearList();
   }
   else
@@ -951,9 +948,9 @@ void FListView::remove (FListViewItem* item)
 void FListView::clear()
 {
   itemlist.clear();
-  current_iter = FListView::null_iter;
-  first_visible_line = FListView::null_iter;
-  last_visible_line = FListView::null_iter;
+  current_iter = getNullIterator();
+  first_visible_line = getNullIterator();
+  last_visible_line = getNullIterator();
   recalculateVerticalBar (0);
   first_line_position_before = -1;
   xoffset = 0;
@@ -1452,13 +1449,26 @@ void FListView::adjustSize()
 
 // private methods of FListView
 //----------------------------------------------------------------------
+FObject::iterator& FListView::getNullIterator()
+{
+  static iterator null_iter;  // Saves the global null iterator
+  return null_iter;
+}
+
+//----------------------------------------------------------------------
+void FListView::setNullIterator (iterator& null_iter)
+{
+  getNullIterator() = null_iter;
+}
+
+//----------------------------------------------------------------------
 void FListView::init()
 {
   initScrollbar (vbar, fc::vertical, this, &FListView::cb_vbarChange);
   initScrollbar (hbar, fc::horizontal, this, &FListView::cb_hbarChange);
   selflist.push_back(this);
   root = selflist.begin();
-  null_iter = selflist.end();
+  getNullIterator() = selflist.end();
   setGeometry (FPoint(1, 1), FSize(5, 4), false);  // initialize geometry values
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
@@ -1554,14 +1564,14 @@ FObject::iterator FListView::getListEnd (FListViewItem* item)
   auto parent = item->getParent();
 
   if ( ! parent )
-    return null_iter;
+    return getNullIterator();
 
   if ( this == parent )
     return itemlist.end();
   else if ( parent->isInstanceOf("FListViewItem") )
     return static_cast<FListViewItem*>(parent)->end();
   else
-    return null_iter;
+    return getNullIterator();
 }
 
 //----------------------------------------------------------------------

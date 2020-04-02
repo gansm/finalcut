@@ -52,7 +52,7 @@ static FVTerm* init_object{nullptr};
 bool                 FVTerm::terminal_update_complete{false};
 bool                 FVTerm::terminal_update_pending{false};
 bool                 FVTerm::force_terminal_update{false};
-bool                 FVTerm::stop_terminal_updates{false};
+bool                 FVTerm::no_terminal_updates{false};
 int                  FVTerm::skipped_terminal_update{};
 uInt                 FVTerm::erase_char_length{};
 uInt                 FVTerm::repeat_char_length{};
@@ -149,6 +149,24 @@ void FVTerm::setTermXY (int x, int y)
 }
 
 //----------------------------------------------------------------------
+void FVTerm::setTerminalUpdates (terminal_update refresh_state)
+{
+  switch ( refresh_state )
+  {
+    case stop_terminal_updates:
+      no_terminal_updates = true;
+      break;
+
+    case continue_terminal_updates:
+    case start_terminal_updates:
+      no_terminal_updates = false;
+  }
+
+  if ( refresh_state == start_terminal_updates )
+    updateTerminal();
+}
+
+//----------------------------------------------------------------------
 void FVTerm::hideCursor (bool enable)
 {
   // Hides or shows the input cursor on the terminal
@@ -228,29 +246,11 @@ void FVTerm::putVTerm()
 }
 
 //----------------------------------------------------------------------
-void FVTerm::updateTerminal (terminal_update refresh_state)
-{
-  switch ( refresh_state )
-  {
-    case stop_refresh:
-      stop_terminal_updates = true;
-      break;
-
-    case continue_refresh:
-    case start_refresh:
-      stop_terminal_updates = false;
-  }
-
-  if ( refresh_state == start_refresh )
-    updateTerminal();
-}
-
-//----------------------------------------------------------------------
 void FVTerm::updateTerminal()
 {
   // Updates pending changes to the terminal
 
-  if ( stop_terminal_updates
+  if ( no_terminal_updates
     || FApplication::getApplicationObject()->isQuit() )
     return;
 

@@ -305,7 +305,7 @@ bool FMenuBar::selectNextItem()
       if ( next == *iter )
         return false;
 
-      updateTerminal (FVTerm::stop_refresh);
+      setTerminalUpdates (FVTerm::stop_terminal_updates);
       unselectItem();
       next->setSelected();
       setSelectedItem(next);
@@ -328,7 +328,7 @@ bool FMenuBar::selectNextItem()
         getStatusBar()->drawMessage();
 
       redraw();
-      updateTerminal (FVTerm::start_refresh);
+      setTerminalUpdates (FVTerm::start_terminal_updates);
       break;
     }
 
@@ -369,7 +369,7 @@ bool FMenuBar::selectPrevItem()
       if ( prev == *iter )
         return false;
 
-      updateTerminal (FVTerm::stop_refresh);
+      setTerminalUpdates (FVTerm::stop_terminal_updates);
       unselectItem();
       prev->setSelected();
       prev->setFocus();
@@ -392,7 +392,7 @@ bool FMenuBar::selectPrevItem()
 
       setSelectedItem(prev);
       redraw();
-      updateTerminal (FVTerm::stop_refresh);
+      setTerminalUpdates (FVTerm::stop_terminal_updates);
       break;
     }
   }

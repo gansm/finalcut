@@ -1138,7 +1138,7 @@ void FApplication::processResizeEvent()
 //----------------------------------------------------------------------
 void FApplication::processCloseWidget()
 {
-  updateTerminal (FVTerm::stop_refresh);
+  setTerminalUpdates (FVTerm::stop_terminal_updates);
 
   if ( getWidgetCloseList() && ! getWidgetCloseList()->empty() )
   {
@@ -1153,7 +1153,7 @@ void FApplication::processCloseWidget()
     getWidgetCloseList()->clear();
   }
 
-  updateTerminal (FVTerm::start_refresh);
+  setTerminalUpdates (FVTerm::start_terminal_updates);
 }
 
 //----------------------------------------------------------------------

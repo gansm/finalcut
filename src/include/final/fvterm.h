@@ -117,9 +117,9 @@ class FVTerm
 
     enum terminal_update
     {
-      stop_refresh,
-      continue_refresh,
-      start_refresh
+      stop_terminal_updates,      // No terminal refresh
+      continue_terminal_updates,  // Resuming terminal refresh
+      start_terminal_updates      // Allowing terminal refresh
     };
 
     // Constructor
@@ -164,10 +164,12 @@ class FVTerm
 
     // Mutators
     void                  setTermXY (int, int);
+    void                  setTerminalUpdates (terminal_update);
     void                  hideCursor (bool);
     void                  hideCursor();
     void                  showCursor();
     void                  setPrintCursor (const FPoint&);
+
     FColor                rgb2ColorIndex (uInt8, uInt8, uInt8);
     static void           setColor (FColor, FColor);
     static void           setNormal();
@@ -293,7 +295,6 @@ class FVTerm
     void                  createVTerm (const FSize&);
     void                  resizeVTerm (const FSize&);
     void                  putVTerm();
-    void                  updateTerminal (terminal_update);
     void                  updateTerminal();
     virtual void          addPreprocessingHandler ( FVTerm*
                                                   , FPreprocessingFunction );
@@ -496,7 +497,7 @@ class FVTerm
     static bool             terminal_update_complete;
     static bool             terminal_update_pending;
     static bool             force_terminal_update;
-    static bool             stop_terminal_updates;
+    static bool             no_terminal_updates;
     static int              skipped_terminal_update;
     static uInt             erase_char_length;
     static uInt             repeat_char_length;
