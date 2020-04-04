@@ -128,7 +128,7 @@ ProgressDialog::~ProgressDialog()  // destructor
 //----------------------------------------------------------------------
 void ProgressDialog::onShow (finalcut::FShowEvent*)
 {
-  addTimer(15);
+  addTimer(15);  // Starts the timer every 15 ms
 }
 
 //----------------------------------------------------------------------

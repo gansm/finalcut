@@ -121,7 +121,7 @@ class FOptiAttr final
     FOptiAttr (const FOptiAttr&) = delete;
 
     // Destructor
-    virtual ~FOptiAttr();
+    ~FOptiAttr();
 
     // Disable assignment operator (=)
     FOptiAttr& operator = (const FOptiAttr&) = delete;

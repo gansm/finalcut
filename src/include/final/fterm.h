@@ -167,13 +167,13 @@ class FTerm final
     FTerm (const FTerm&) = delete;
 
     // Destructor
-    virtual ~FTerm();
+    ~FTerm();
 
     // Disable assignment operator (=)
     FTerm& operator = (const FTerm&) = delete;
 
     // Accessors
-    virtual const FString  getClassName() const;
+    const FString          getClassName() const;
     static std::size_t     getLineNumber();
     static std::size_t     getColumnNumber();
     static const FString   getKeyName (FKey);

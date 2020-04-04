@@ -57,7 +57,7 @@ class FTermXTerminal final
     FTermXTerminal (const FTermXTerminal&) = delete;
 
     // Destructor
-    virtual ~FTermXTerminal();
+    ~FTermXTerminal();
 
     // Disable assignment operator (=)
     FTermXTerminal& operator = (const FTermXTerminal&) = delete;

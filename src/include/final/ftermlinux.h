@@ -87,7 +87,7 @@ class FTermLinux final
     FTermLinux (const FTermLinux&) = delete;
 
     // Destructor
-    virtual ~FTermLinux();
+    ~FTermLinux();
 
     // Disable assignment operator (=)
     FTermLinux& operator = (const FTermLinux&) = delete;

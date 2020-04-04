@@ -156,11 +156,11 @@ void Watch::cb_clock (finalcut::FWidget*, FDataPtr)
   if ( clock_sw.isChecked() )
   {
     printTime();
-    addTimer(1000);
+    addTimer(1000);  // Call onTimer() every second (1000 ms)
   }
   else
   {
-    delAllTimer();
+    delAllTimer();  // Delete all timers and stop updating the time
     time_str = "--:--:--";
     time_str.redraw();
   }

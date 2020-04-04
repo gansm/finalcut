@@ -82,7 +82,7 @@ class FTermDetection final
     FTermDetection();
 
     // Destructor
-    virtual ~FTermDetection();
+    ~FTermDetection();
 
     // Accessor
     const FString         getClassName() const;

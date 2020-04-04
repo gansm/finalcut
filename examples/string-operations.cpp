@@ -623,7 +623,7 @@ void indexExample()
 {
   // Test: get character access at a specified index position
   finalcut::FString index{5};  // string with five characters
-  index = "index";
+  index.setString("index");
 
   try
   {

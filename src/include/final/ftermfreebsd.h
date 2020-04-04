@@ -89,7 +89,7 @@ class FTermFreeBSD final
     FTermFreeBSD (const FTermFreeBSD&) = delete;
 
     // Destructor
-    virtual ~FTermFreeBSD() = default;
+    ~FTermFreeBSD() = default;
 
     // Disable assignment operator (=)
     FTermFreeBSD& operator = (const FTermFreeBSD&) = delete;

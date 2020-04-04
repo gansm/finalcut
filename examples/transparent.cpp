@@ -250,7 +250,7 @@ void MainWindow::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void MainWindow::onShow (finalcut::FShowEvent*)
 {
-  addTimer(100);
+  addTimer(100);  // Call onTimer() every 100 ms
 }
 
 //----------------------------------------------------------------------

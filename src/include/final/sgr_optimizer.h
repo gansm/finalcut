@@ -57,7 +57,7 @@ class SGRoptimizer final
     explicit SGRoptimizer (attributebuffer&);
 
     // Destructor
-    virtual ~SGRoptimizer();
+    ~SGRoptimizer();
 
     // Disable copy constructor
     SGRoptimizer (const SGRoptimizer&) = delete;

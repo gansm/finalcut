@@ -87,7 +87,7 @@ class FTermcap final
     FTermcap() = default;
 
     // Destructor
-    virtual ~FTermcap() = default;
+    ~FTermcap() = default;
 
     // Accessors
     const FString    getClassName() const;

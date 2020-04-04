@@ -211,7 +211,7 @@ inline finalcut::FString RotoZoomer::getReport()
 void RotoZoomer::onShow (finalcut::FShowEvent*)
 {
   if ( ! benchmark )
-    addTimer(33);
+    addTimer(33);  // Starts the timer every 33 milliseconds
   else
   {
     for (path = 1; path < loops; path++)

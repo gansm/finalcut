@@ -53,10 +53,10 @@ class FTermcapQuirks final
     FTermcapQuirks();
 
     // Destructor
-    virtual ~FTermcapQuirks();
+    ~FTermcapQuirks();
 
     // Accessor
-    virtual const FString getClassName() const;
+    const FString getClassName() const;
 
     // Methods
     static void terminalFixup();

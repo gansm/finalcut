@@ -2738,12 +2738,11 @@ void FListView::stepBackward (int distance)
 //----------------------------------------------------------------------
 void FListView::scrollToX (int x)
 {
-  const int xoffset_end = int(max_line_width) - int(getClientWidth());
-
   if ( xoffset == x )
     return;
 
   xoffset = x;
+  const int xoffset_end = int(max_line_width) - int(getClientWidth());
 
   if ( xoffset > xoffset_end )
     xoffset = xoffset_end;

@@ -58,13 +58,13 @@ class FStartOptions final
     FStartOptions (const FStartOptions&) = delete;
 
     // Destructor
-    virtual ~FStartOptions();
+    ~FStartOptions();
 
     // Disable assignment operator (=)
     FStartOptions& operator = (const FStartOptions&) = delete;
 
     // Accessors
-    virtual const FString getClassName();
+    const FString getClassName();
     static FStartOptions& getFStartOptions();
 
     // Mutator

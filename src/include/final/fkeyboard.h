@@ -93,13 +93,13 @@ class FKeyboard final
     FKeyboard (const FKeyboard&) = delete;
 
     // Destructor
-    virtual ~FKeyboard();
+    ~FKeyboard();
 
     // Disable assignment operator (=)
     FKeyboard& operator = (const FKeyboard&) = delete;
 
     // Accessors
-    virtual const FString getClassName() const;
+    const FString         getClassName() const;
     FKey                  getKey();
     const FString         getKeyName (const FKey);
     keybuffer&            getKeyBuffer();

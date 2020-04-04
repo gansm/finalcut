@@ -106,7 +106,7 @@ class FOptiMove final
     explicit FOptiMove (int = 0);
 
     // Destructor
-    virtual ~FOptiMove();
+    ~FOptiMove();
 
     // Accessors
     const FString getClassName() const;

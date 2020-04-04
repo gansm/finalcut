@@ -51,13 +51,13 @@ class FColorPalette final
     FColorPalette() = default;
 
     // Destructor
-    virtual ~FColorPalette();
+    ~FColorPalette();
 
     // Typedefs
     typedef void (*funcp)(FColor, int, int, int);
 
     // Accessor
-    virtual const FString getClassName() const;
+    const FString getClassName() const;
 
     // Methods
     static void set8ColorPalette (funcp);
