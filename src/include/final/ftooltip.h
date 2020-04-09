@@ -85,6 +85,12 @@ class FToolTip : public FWindow
 
     // Mutators
     void                setText (const FString&);
+    bool                setBorder (bool);
+    bool                setBorder();
+    bool                unsetBorder();
+
+    // Inquiries
+    bool                hasBorder() const;
 
     // Methods
     void                show() override;
@@ -112,6 +118,18 @@ class FToolTip : public FWindow
 //----------------------------------------------------------------------
 inline const FString FToolTip::getClassName() const
 { return "FToolTip"; }
+
+//----------------------------------------------------------------------
+inline bool FToolTip::setBorder()
+{ return setBorder(true); }
+
+//----------------------------------------------------------------------
+inline bool FToolTip::unsetBorder()
+{ return setBorder(false); }
+
+//----------------------------------------------------------------------
+inline bool FToolTip::hasBorder() const
+{ return ! getFlags().no_border; }
 
 }  // namespace finalcut
 

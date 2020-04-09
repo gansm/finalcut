@@ -76,6 +76,14 @@ void FToolTip::setText (const FString& txt)
 }
 
 //----------------------------------------------------------------------
+bool FToolTip::setBorder (bool enable)
+{
+  setFlags().no_border = ! enable;
+  calculateDimensions();
+  return hasBorder();
+}
+
+//----------------------------------------------------------------------
 void FToolTip::show()
 {
   if ( ! isVisible() )
@@ -116,14 +124,18 @@ void FToolTip::init()
 //----------------------------------------------------------------------
 void FToolTip::draw()
 {
-  int y{0};
+  bool border = hasBorder();
+  int y{( border ) ? 2 : 1};
+  int x{( border ) ? 3 : 2};
   setColor();
   clearArea();
-  drawBorder();
+
+  if ( border )
+    drawBorder();
 
   for (auto&& line : text_components)
   {
-    print() << FPoint(3, 2 + y) << line;
+    print() << FPoint(x, y) << line;
     y++;
   }
 }
@@ -147,8 +159,8 @@ void FToolTip::calculateDimensions()
   }
 
   int x{}, y{};
-  const std::size_t h = text_num_lines + 2;
-  const std::size_t w = max_line_width + 4;
+  const std::size_t h = ( hasBorder() ) ? text_num_lines + 2 : text_num_lines;
+  const std::size_t w = ( hasBorder() ) ? max_line_width + 4 : max_line_width + 2;
   const auto& r = getRootWidget();
 
   if ( r )

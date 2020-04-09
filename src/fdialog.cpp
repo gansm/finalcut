@@ -116,6 +116,28 @@ bool FDialog::setScrollable (bool enable)
   return (setFlags().scrollable = enable);
 }
 
+
+//----------------------------------------------------------------------
+bool FDialog::setBorder (bool enable)
+{
+  if ( enable )
+  {
+    setTopPadding(2);
+    setLeftPadding(1);
+    setBottomPadding(1);
+    setRightPadding(1);
+  }
+  else
+  {
+    setTopPadding(1);
+    setLeftPadding(0);
+    setBottomPadding(0);
+    setRightPadding(0);
+  }
+
+  return (setFlags().no_border = ! enable);
+}
+
 //----------------------------------------------------------------------
 bool FDialog::setResizeable (bool enable)
 {
@@ -906,6 +928,9 @@ void FDialog::initCloseMenuItem (FMenu* menu)
 //----------------------------------------------------------------------
 void FDialog::drawBorder()
 {
+  if ( ! hasBorder() )
+    return;
+
   if ( (getMoveSizeWidget() == this || ! resize_click_pos.isOrigin() )
     && ! isZoomed() )
   {

@@ -1,3 +1,7 @@
+2020-04-09  Markus Gans  <guru.mail@muenster.de>
+	* A dialog can now be displayed without a framing border.
+	  Many thanks to basedtho for this tip
+
 2020-03-22  Markus Gans  <guru.mail@muenster.de>
 	* A small benchmakt test was added to the Rotozoomer example
 

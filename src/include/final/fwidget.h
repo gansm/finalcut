@@ -166,8 +166,9 @@ class FWidget : public FVTerm, public FObject
       uInt32 menu_widget    : 1;
       uInt32 always_on_top  : 1;
       uInt32 flat           : 1;
+      uInt32 no_border      : 1;
       uInt32 no_underline   : 1;
-      uInt32                : 14;  // padding bits
+      uInt32                : 13;  // padding bits
     };
 
     // Constructor

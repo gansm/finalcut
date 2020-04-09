@@ -72,7 +72,7 @@ class RotoZoomer : public finalcut::FDialog
     int                      loops{0};
     int                      path{0};
     wchar_t                  data[256]{};
-    finalcut::FString        report;
+    finalcut::FString        report{};
     time_point<system_clock> start{};
     time_point<system_clock> end{};
 };

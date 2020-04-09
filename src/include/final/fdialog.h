@@ -105,11 +105,15 @@ class FDialog : public FWindow
     bool                setScrollable (bool);
     bool                setScrollable();
     bool                unsetScrollable();
+    bool                setBorder (bool);
+    bool                setBorder();
+    bool                unsetBorder();
     void                setText (const FString&);
 
     // Inquiries
     bool                isModal() const;
     bool                isScrollable() const;
+    bool                hasBorder() const;
 
     // Methods
     void                show() override;
@@ -265,6 +269,14 @@ inline bool FDialog::unsetScrollable()
 { return setScrollable(false); }
 
 //----------------------------------------------------------------------
+inline bool FDialog::setBorder()
+{ return setBorder(true); }
+
+//----------------------------------------------------------------------
+inline bool FDialog::unsetBorder()
+{ return setBorder(false); }
+
+//----------------------------------------------------------------------
 inline void FDialog::setText (const FString& txt)
 { tb_text.setString(txt); }
 
@@ -275,6 +287,10 @@ inline bool FDialog::isModal() const
 //----------------------------------------------------------------------
 inline bool FDialog::isScrollable() const
 { return getFlags().scrollable; }
+
+//----------------------------------------------------------------------
+inline bool FDialog::hasBorder() const
+{ return ! getFlags().no_border; }
 
 }  // namespace finalcut
 
