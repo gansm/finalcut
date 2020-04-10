@@ -992,11 +992,11 @@ void FStringTest::streamExtractionTest()
 
   float in_12;
   finalcut::FString("2.71828") >> in_12;
-  CPPUNIT_ASSERT ( in_12 == 2.71828f );
+  CPPUNIT_ASSERT ( std::fabs(in_12 - 2.71828f) <= FLT_EPSILON );
 
   double in_13;
   finalcut::FString("2.7182818284590452353") >> in_13;
-  CPPUNIT_ASSERT ( in_13 == 2.7182818284590452353 );
+  CPPUNIT_ASSERT ( std::fabs(in_13 - 2.7182818284590452353) <= DBL_EPSILON  );
 
   finalcut::FString in;
   std::istringstream istream("abc");

@@ -999,7 +999,7 @@ void Calc::onKeyPress (finalcut::FKeyEvent* ev)
         else
         {
           input = input.left(input.getLength() - 1);
-          x = lDouble(std::atof(input.c_str()));
+          x = std::strtold(input.c_str(), nullptr);
         }
 
         drawDispay();

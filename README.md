@@ -79,7 +79,7 @@ The calculator example in newfont mode:
 
 Benchmark
 ---------
-Here you can find a test for ![measuring the character speed](doc/benchmark.md#benchmark) in the terminal.
+Here you can find a test for [measuring the character speed](doc/benchmark.md#benchmark) in the terminal.
 
 
 Virtual terminal

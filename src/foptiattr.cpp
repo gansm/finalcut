@@ -1195,19 +1195,19 @@ bool FOptiAttr::hasAttribute (const FChar* const& attr)
 {
   if ( attr )
   {
-    return attr->attr.bit.bold          == 1
-        || attr->attr.bit.dim           == 1
-        || attr->attr.bit.italic        == 1
-        || attr->attr.bit.underline     == 1
-        || attr->attr.bit.blink         == 1
-        || attr->attr.bit.reverse       == 1
-        || attr->attr.bit.standout      == 1
-        || attr->attr.bit.invisible     == 1
-        || attr->attr.bit.protect       == 1
-        || attr->attr.bit.crossed_out   == 1
-        || attr->attr.bit.dbl_underline == 1
-        || attr->attr.bit.alt_charset   == 1
-        || attr->attr.bit.pc_charset    == 1;
+    return attr->attr.bit.bold
+        || attr->attr.bit.dim
+        || attr->attr.bit.italic
+        || attr->attr.bit.underline
+        || attr->attr.bit.blink
+        || attr->attr.bit.reverse
+        || attr->attr.bit.standout
+        || attr->attr.bit.invisible
+        || attr->attr.bit.protect
+        || attr->attr.bit.crossed_out
+        || attr->attr.bit.dbl_underline
+        || attr->attr.bit.alt_charset
+        || attr->attr.bit.pc_charset;
   }
 
   return false;
