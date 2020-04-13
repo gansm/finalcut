@@ -35,7 +35,7 @@ bool isFocusNextKey (const FKey key)
   if ( key == fc::Fkey_tab
     || key == fc::Fkey_right
     || key == fc::Fkey_down )
-  return true;
+    return true;
 
   return false;
 }
@@ -46,7 +46,7 @@ bool isFocusPrevKey (const FKey key)
   if ( key == fc::Fkey_btab
     || key == fc::Fkey_left
     || key == fc::Fkey_up )
-  return true;
+    return true;
 
   return false;
 }
@@ -67,7 +67,10 @@ FKey getHotkey (const FString& text)
     try
     {
       if ( i + 1 < length && text[i] == '&' )
-        return FKey(text[++i]);
+      {
+        i++;
+        return FKey(text[i]);
+      }
     }
     catch (const std::out_of_range&)
     {
@@ -154,11 +157,12 @@ void drawTransparentShadow (FWidget* w)
 
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
+  const auto& wcolors = FWidget::wcolors;
   w->print() << FStyle (fc::Transparent)
              << FPoint (int(width) + 1, 1)
              << "  "
              << FStyle (fc::Reset)
-             << FColorPair (w->wcolors.shadow_bg, w->wcolors.shadow_fg)
+             << FColorPair (wcolors.shadow_bg, wcolors.shadow_fg)
              << FStyle (fc::ColorOverlay);
 
   for (std::size_t y{1}; y < height; y++)
@@ -170,7 +174,7 @@ void drawTransparentShadow (FWidget* w)
              << FPoint (1, int(height) + 1)
              << "  "
              << FStyle (fc::Reset)
-             << FColorPair (w->wcolors.shadow_bg, w->wcolors.shadow_fg)
+             << FColorPair (wcolors.shadow_bg, wcolors.shadow_fg)
              << FStyle (fc::ColorOverlay)
              << FString (width, L' ')
              << FStyle (fc::Reset);
@@ -189,15 +193,16 @@ void drawBlockShadow (FWidget* w)
 
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
+  const auto& wcolors = FWidget::wcolors;
   w->print() << FPoint(int(width) + 1, 1);
 
   if ( w->isWindowWidget() )
   {
-    w->print() << FColorPair (w->wcolors.shadow_fg, w->wcolors.shadow_bg)
+    w->print() << FColorPair (wcolors.shadow_fg, wcolors.shadow_bg)
                << FStyle (fc::InheritBackground);  // current background color will be ignored
   }
   else if ( auto p = w->getParentWidget() )
-    w->print() << FColorPair (w->wcolors.shadow_fg, p->getBackgroundColor());
+    w->print() << FColorPair (wcolors.shadow_fg, p->getBackgroundColor());
 
   w->print (fc::LowerHalfBlock);  // ▄
 
@@ -229,14 +234,15 @@ void clearShadow (FWidget* w)
 
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
+  const auto& wcolors = FWidget::wcolors;
 
   if ( w->isWindowWidget() )
   {
-    w->print() << FColorPair (w->wcolors.shadow_fg, w->wcolors.shadow_bg)
+    w->print() << FColorPair (wcolors.shadow_fg, wcolors.shadow_bg)
                << FStyle (fc::InheritBackground);  // current background color will be ignored
   }
   else if ( auto p = w->getParentWidget() )
-    w->print() << FColorPair (w->wcolors.shadow_fg, p->getBackgroundColor());
+    w->print() << FColorPair (wcolors.shadow_fg, p->getBackgroundColor());
 
   if ( int(width) <= w->woffset.getX2() )
   {
@@ -263,13 +269,14 @@ void drawFlatBorder (FWidget* w)
   if ( ! w->isNewFont() )
     return;
 
-  if ( auto p = w->getParentWidget() )
-    w->setColor (w->wcolors.dialog_fg, p->getBackgroundColor());
-  else
-    w->setColor (w->wcolors.dialog_fg, w->wcolors.dialog_bg);
-
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
+  const auto& wcolors = FWidget::wcolors;
+
+  if ( auto p = w->getParentWidget() )
+    w->setColor (wcolors.dialog_fg, p->getBackgroundColor());
+  else
+    w->setColor (wcolors.dialog_fg, wcolors.dialog_bg);
 
   for (std::size_t y{0}; y < height; y++)
   {
@@ -323,13 +330,14 @@ void clearFlatBorder (FWidget* w)
   if ( ! w->isNewFont() )
     return;
 
-  if ( auto p = w->getParentWidget() )
-    w->setColor (w->wcolors.dialog_fg, p->getBackgroundColor());
-  else
-    w->setColor (w->wcolors.dialog_fg, w->wcolors.dialog_bg);
-
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
+  const auto& wcolors = FWidget::wcolors;
+
+  if ( auto p = w->getParentWidget() )
+    w->setColor (wcolors.dialog_fg, p->getBackgroundColor());
+  else
+    w->setColor (wcolors.dialog_fg, wcolors.dialog_bg);
 
   for (std::size_t y{0}; y < height; y++)
   {
@@ -374,7 +382,7 @@ void clearFlatBorder (FWidget* w)
 }
 
 //----------------------------------------------------------------------
-inline void checkBorder (FWidget* w, FRect& r)
+inline void checkBorder (const FWidget* w, FRect& r)
 {
   if ( r.x1_ref() > r.x2_ref() )
     std::swap (r.x1_ref(), r.x2_ref());
@@ -396,25 +404,27 @@ inline void checkBorder (FWidget* w, FRect& r)
 }
 
 //----------------------------------------------------------------------
-void drawBorder (FWidget* w, FRect r)
+void drawBorder (FWidget* w, const FRect& r)
 {
-  checkBorder (w, r);
+  FRect rect = r;
+  checkBorder (w, rect);
 
   if ( w->isNewFont() )
-    drawNewFontBox (w, r);
+    drawNewFontBox (w, rect);
   else
-    drawBox (w, r);
+    drawBox (w, rect);
 }
 
 //----------------------------------------------------------------------
-void drawListBorder (FWidget* w, FRect r)
+void drawListBorder (FWidget* w, const FRect& r)
 {
-  checkBorder (w, r);
+  FRect rect = r;
+  checkBorder (w, rect);
 
   if ( w->isNewFont() )
-    drawNewFontListBox (w, r);
+    drawNewFontListBox (w, rect);
   else
-    drawBox (w, r);
+    drawBox (w, rect);
 }
 
 //----------------------------------------------------------------------

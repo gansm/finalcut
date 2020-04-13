@@ -75,7 +75,7 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
   {
     if ( root_widget )
     {
-      auto ftermdata = getFTerm().getFTermData();
+      auto ftermdata = FTerm::getFTermData();
       ftermdata->setExitMessage("FWidget: No parent defined! "
                                 "There should be only one root object");
       FApplication::exit(EXIT_FAILURE);
@@ -835,7 +835,7 @@ void FWidget::delCallback (FCallback cb_function)
 }
 
 //----------------------------------------------------------------------
-void FWidget::delCallback (FWidget* cb_instance)
+void FWidget::delCallback (const FWidget* cb_instance)
 {
   // Delete all member function pointer from cb_instance
 
@@ -1156,8 +1156,7 @@ void FWidget::move (const FPoint& pos)
 //----------------------------------------------------------------------
 void FWidget::quit()
 {
-  auto fapp = FApplication::getApplicationObject();
-  fapp->exit(0);
+  FApplication::exit(0);
 }
 
 
@@ -1197,8 +1196,8 @@ FVTerm::FTermArea* FWidget::getPrintArea()
 }
 
 //----------------------------------------------------------------------
-void FWidget::addPreprocessingHandler ( FVTerm* instance
-                                      , FPreprocessingFunction function )
+void FWidget::addPreprocessingHandler ( const FVTerm* instance
+                                      , const FPreprocessingFunction& function )
 {
   if ( ! getCurrentPrintArea() )
     FWidget::getPrintArea();
@@ -1207,7 +1206,7 @@ void FWidget::addPreprocessingHandler ( FVTerm* instance
 }
 
 //----------------------------------------------------------------------
-void FWidget::delPreprocessingHandler (FVTerm* instance)
+void FWidget::delPreprocessingHandler (const FVTerm* instance)
 {
   if ( ! getCurrentPrintArea() )
     FWidget::getPrintArea();
@@ -1356,7 +1355,8 @@ void FWidget::hideArea (const FSize& size)
   if ( size.isEmpty() )
     return;
 
-  FColor fg{}, bg{};
+  FColor fg{};
+  FColor bg{};
   const auto& parent_widget = getParentWidget();
 
   if ( parent_widget )
@@ -1806,7 +1806,7 @@ void FWidget::KeyPressEvent (FKeyEvent* kev)
     {
       const FKey key = kev->key();
 
-      if ( [&] () -> bool
+      if ( [&] ()
            {
              if ( isFocusNextKey(key) )
                return focusNextChild();
@@ -1846,7 +1846,7 @@ void FWidget::KeyDownEvent (FKeyEvent* kev)
 }
 
 //----------------------------------------------------------------------
-void FWidget::emitWheelCallback (FWheelEvent* ev)
+void FWidget::emitWheelCallback (const FWheelEvent* ev)
 {
   const int wheel = ev->getWheel();
 
@@ -1888,7 +1888,7 @@ FWidget::FCallbackPtr FWidget::getCallbackPtr (FCallback cb_function)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::changeFocus ( FWidget* follower, FWidget* parent
+bool FWidget::changeFocus ( FWidget* follower, const FWidget* parent
                           , fc::FocusTypes ft )
 {
   FFocusEvent out (fc::FocusOut_Event);

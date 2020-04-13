@@ -113,7 +113,7 @@ const FString& FTermDetection::getSecDAString()
 #endif
 
 //----------------------------------------------------------------------
-void FTermDetection::setTtyTypeFileName (char ttytype_filename[])
+void FTermDetection::setTtyTypeFileName (const char ttytype_filename[])
 {
   if ( ! ttytype_filename )
     return;
@@ -205,40 +205,42 @@ bool FTermDetection::getTTYtype()
   std::FILE* fp{};
   char str[BUFSIZ]{};
 
-  if ( fsystem && (fp = fsystem->fopen(ttytypename, "r")) != nullptr )
+  if ( ! fsystem )
+    return false;
+
+  if ( (fp = fsystem->fopen(ttytypename, "r")) == nullptr )
+    return false;
+
+  // Read and parse the file
+  while ( fgets(str, sizeof(str) - 1, fp) != nullptr )
   {
-    // Read and parse the file
-    while ( fgets(str, sizeof(str) - 1, fp) != nullptr )
+    const char* type{nullptr};  // nullptr == not found
+    const char* name{nullptr};
+    char* p = str;
+
+    while ( *p )
     {
-      const char* type{nullptr};  // nullptr == not found
-      const char* name{nullptr};
-      char* p = str;
+      if ( std::isspace(uChar(*p)) )
+        *p = '\0';
+      else if ( type == nullptr )
+        type = p;
+      else if ( name == nullptr && p != str && p[-1] == '\0' )
+        name = p;
 
-      while ( *p )
-      {
-        if ( std::isspace(uChar(*p)) )
-          *p = '\0';
-        else if ( type == nullptr )
-          type = p;
-        else if ( name == nullptr && p != str && p[-1] == '\0' )
-          name = p;
-
-        p++;
-      }
-
-      if ( type != nullptr && name != nullptr && ! std::strcmp(name, term_basename) )
-      {
-        // Save name in termtype
-        std::strncpy (termtype, type, sizeof(termtype));
-        termtype[sizeof(termtype) - 1] = '\0';
-        fsystem->fclose(fp);
-        return true;
-      }
+      p++;
     }
 
-    fsystem->fclose(fp);
+    if ( type != nullptr && name != nullptr && ! std::strcmp(name, term_basename) )
+    {
+      // Save name in termtype
+      std::strncpy (termtype, type, sizeof(termtype));
+      termtype[sizeof(termtype) - 1] = '\0';
+      fsystem->fclose(fp);
+      return true;
+    }
   }
 
+  fsystem->fclose(fp);
   return false;
 }
 
@@ -257,7 +259,7 @@ bool FTermDetection::getTTYSFileEntry()
   else
     term_basename++;
 
-  struct ttyent* ttys_entryt;
+  const struct ttyent* ttys_entryt;
   ttys_entryt = getttynam(term_basename);
 
   if ( ttys_entryt )
@@ -890,7 +892,7 @@ inline char* FTermDetection::secDA_Analysis_24 (char current_termtype[])
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_32 (char[])
+inline char* FTermDetection::secDA_Analysis_32 (const char[])
 {
   // Terminal ID 32 - Tera Term
 
@@ -910,7 +912,7 @@ inline char* FTermDetection::secDA_Analysis_65 (char current_termtype[])
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_67 (char[])
+inline char* FTermDetection::secDA_Analysis_67 (const char[])
 {
   // Terminal ID 67 - cygwin
 
@@ -921,7 +923,7 @@ inline char* FTermDetection::secDA_Analysis_67 (char[])
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_77 (char[])
+inline char* FTermDetection::secDA_Analysis_77 (const char[])
 {
   // Terminal ID 77 - mintty
 

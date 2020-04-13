@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -34,7 +34,7 @@ FColorPalette::~FColorPalette()  // destructor
 
 // public methods of FColorPalette
 //----------------------------------------------------------------------
-void FColorPalette::set8ColorPalette (funcp setPalette)
+void FColorPalette::set8ColorPalette (func setPalette)
 {
   setPalette (fc::Black, 0x00, 0x00, 0x00);
   setPalette (fc::Blue, 0x10, 0x3b, 0x9e);
@@ -56,7 +56,7 @@ void FColorPalette::set8ColorPalette (funcp setPalette)
 }
 
 //----------------------------------------------------------------------
-void FColorPalette::set16ColorPalette (funcp setPalette)
+void FColorPalette::set16ColorPalette (func setPalette)
 {
   setPalette (fc::Black, 0x00, 0x00, 0x00);
   setPalette (fc::Blue, 0x10, 0x3b, 0x9e);
@@ -77,13 +77,13 @@ void FColorPalette::set16ColorPalette (funcp setPalette)
 }
 
 //----------------------------------------------------------------------
-void FColorPalette::reset8ColorPalette (funcp setPalette)
+void FColorPalette::reset8ColorPalette (func setPalette)
 {
   reset16ColorPalette(setPalette);
 }
 
 //----------------------------------------------------------------------
-void FColorPalette::reset16ColorPalette (funcp setPalette)
+void FColorPalette::reset16ColorPalette (func setPalette)
 {
   setPalette (fc::Black, 0x00, 0x00, 0x00);
   setPalette (fc::Blue, 0x00, 0x00, 0xaa);

@@ -130,7 +130,7 @@ class FWidgetColors;
 class FWidget : public FVTerm, public FObject
 {
   public:
-     // Using-declaration
+    // Using-declaration
     using FVTerm::setColor;
     using FVTerm::print;
 
@@ -320,7 +320,7 @@ class FWidget : public FVTerm, public FObject
                                         , FCallback
                                         , FDataPtr = nullptr );
     void                    delCallback (FCallback);
-    void                    delCallback (FWidget*);
+    void                    delCallback (const FWidget*);
     void                    delCallbacks();
     void                    emitCallback (const FString&);
     void                    addAccelerator (FKey);
@@ -342,6 +342,20 @@ class FWidget : public FVTerm, public FObject
   protected:
     struct FCallbackData
     {
+      FCallbackData()
+        : cb_signal()
+        , cb_instance(nullptr)
+        , cb_function()
+        , data(nullptr)
+      { }
+
+      FCallbackData (FString s, FWidget* i, FCallback c, FDataPtr d)
+        : cb_signal(s)
+        , cb_instance(i)
+        , cb_function(c)
+        , data(d)
+      { }
+
       FString   cb_signal;
       FWidget*  cb_instance;
       FCallback cb_function;
@@ -358,8 +372,9 @@ class FWidget : public FVTerm, public FObject
     static FWidgetList*&    getDialogList();
     static FWidgetList*&    getAlwaysOnTopList();
     static FWidgetList*&    getWidgetCloseList();
-    void                    addPreprocessingHandler (FVTerm*, FPreprocessingFunction) override;
-    void                    delPreprocessingHandler (FVTerm*) override;
+    void                    addPreprocessingHandler ( const FVTerm*
+                                                    , const FPreprocessingFunction& ) override;
+    void                    delPreprocessingHandler (const FVTerm*) override;
 
     // Inquiry
     bool                    isChildPrintArea() const;
@@ -407,10 +422,10 @@ class FWidget : public FVTerm, public FObject
     void                    insufficientSpaceAdjust();
     void                    KeyPressEvent (FKeyEvent*);
     void                    KeyDownEvent (FKeyEvent*);
-    void                    emitWheelCallback (FWheelEvent*);
+    void                    emitWheelCallback (const FWheelEvent*);
     void                    setWindowFocus (bool);
     FCallbackPtr            getCallbackPtr (FCallback);
-    bool                    changeFocus (FWidget*, FWidget*, fc::FocusTypes);
+    bool                    changeFocus (FWidget*, const FWidget*, fc::FocusTypes);
     void                    processDestroy();
     virtual void            draw();
     void                    drawWindows();
@@ -538,9 +553,9 @@ void        drawBlockShadow (FWidget*);
 void        clearShadow (FWidget*);
 void        drawFlatBorder (FWidget*);
 void        clearFlatBorder (FWidget*);
-void        checkBorder (FWidget*, FRect&);
-void        drawBorder (FWidget*, FRect);
-void        drawListBorder (FWidget*, FRect);
+void        checkBorder (const FWidget*, FRect&);
+void        drawBorder (FWidget*, const FRect&);
+void        drawListBorder (FWidget*, const FRect&);
 void        drawBox (FWidget*, const FRect&);
 void        drawNewFontBox (FWidget*, const FRect&);
 void        drawNewFontListBox (FWidget*, const FRect&);

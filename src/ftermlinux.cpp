@@ -75,7 +75,7 @@ char* FTermLinux::getCursorStyleString()
 
   static char buf[16]{};
   std::fill (std::begin(buf), std::end(buf), '\0');
-  std::sprintf (buf, CSI "?%dc", getCursorStyle());
+  std::snprintf (buf, sizeof(buf), CSI "?%dc", getCursorStyle());
   return buf;
 }
 
@@ -452,7 +452,7 @@ FKey FTermLinux::modifierKeyCorrection (const FKey& key_id)
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
 
-  modifier_key& m = getModifierKey();
+  const modifier_key& m = getModifierKey();
 
   if ( ! (m.shift || m.ctrl || m.alt) )
   {

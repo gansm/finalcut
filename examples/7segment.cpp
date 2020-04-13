@@ -93,7 +93,7 @@ SegmentView::SegmentView (finalcut::FWidget* parent)
   Input.addCallback
   (
     "changed",
-    [] (finalcut::FWidget*, FDataPtr data)
+    [] (const finalcut::FWidget*, FDataPtr data)
     {
       auto dialog = static_cast<SegmentView*>(data);
       dialog->redraw();
@@ -177,7 +177,7 @@ void SegmentView::get7Segment (const wchar_t c)
       // Hexadecimal digit from 0 up to f
       if ( code.find(c) != code.end() )
       {
-        sevenSegment& s = code[c];
+        const sevenSegment& s = code[c];
         constexpr char h[2]{' ', '_'};
         constexpr char v[2]{' ', '|'};
 
@@ -227,7 +227,7 @@ int main (int argc, char* argv[])
 {
   finalcut::FApplication app(argc, argv);
   SegmentView dialog(&app);
-  app.setMainWidget(&dialog);
+  finalcut::FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
 }

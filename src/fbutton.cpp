@@ -206,7 +206,8 @@ void FButton::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FButton::hide()
 {
-  FColor fg{}, bg{};
+  FColor fg{};
+  FColor bg{};
   auto parent_widget = getParentWidget();
   FWidget::hide();
 
@@ -412,7 +413,7 @@ inline void FButton::detectHotkey()
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FButton::clickAnimationIndent (FWidget* parent_widget)
+inline std::size_t FButton::clickAnimationIndent (const FWidget* parent_widget)
 {
   if ( ! button_down || ! click_animation )
     return 0;
@@ -436,7 +437,7 @@ inline std::size_t FButton::clickAnimationIndent (FWidget* parent_widget)
 }
 
 //----------------------------------------------------------------------
-inline void FButton::clearRightMargin (FWidget* parent_widget)
+inline void FButton::clearRightMargin (const FWidget* parent_widget)
 {
   if ( button_down || isNewFont() )
     return;
@@ -547,8 +548,7 @@ inline void FButton::drawButtonTextLine (const FString& button_text)
     setBold();
 
   for ( std::size_t z{0}, columns{0}
-      ; pos < center_offset + column_width && columns + 2 < getWidth()
-      ; z++)
+      ; pos < center_offset + column_width && columns + 2 < getWidth(); )
   {
     if ( z == hotkeypos && getFlags().active )
     {
@@ -575,9 +575,10 @@ inline void FButton::drawButtonTextLine (const FString& button_text)
       print (button_text[z]);
     }
 
-    const auto char_width = getColumnWidth (button_text[z]);
+    const auto char_width = getColumnWidth(button_text[z]);
     columns += char_width;
     pos += char_width;
+    z++;
   }
 
   if ( column_width + 1 >= getWidth() )

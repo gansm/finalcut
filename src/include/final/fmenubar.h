@@ -98,7 +98,7 @@ class FMenuBar : public FWindow, public FMenuList
     void          onAccel (FAccelEvent*) override;
 
     // Callback methods
-    void          cb_itemDeactivated (FWidget*, FDataPtr);
+    void          cb_itemDeactivated (FWidget*, const FDataPtr);
 
   private:
     // Constants
@@ -125,14 +125,14 @@ class FMenuBar : public FWindow, public FMenuList
     void          draw() override;
     void          drawItems();
     void          drawItem (FMenuItem*, std::size_t&);
-    void          setLineAttributes (FMenuItem*);
+    void          setLineAttributes (const FMenuItem*);
     void          setCursorToHotkeyPosition (FMenuItem*, std::size_t);
     void          drawMenuText (menuText&);
     void          drawEllipsis (const menuText&, std::size_t);
     void          drawLeadingSpace (std::size_t&);
     void          drawTrailingSpace (std::size_t&);
     void          adjustItems();
-    bool          activateMenu (FMenuItem*);
+    bool          activateMenu (const FMenuItem*);
     bool          clickItem (FMenuItem*);
     void          unselectMenuItem (FMenuItem*);
     void          selectMenuItem (FMenuItem*);

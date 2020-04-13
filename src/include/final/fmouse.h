@@ -172,7 +172,7 @@ class FMouse
     void                setNewPos (int, int);
     void                setPending (bool);
     void                setEvent();
-    void                setMousePressedTime (timeval*);
+    void                setMousePressedTime (const timeval*);
     void                resetMousePressedTime();
 
     // Inquiry
@@ -448,8 +448,14 @@ class FMouseControl
     // Constructor
     FMouseControl();
 
+    // Disable copy constructor
+    FMouseControl (const FMouseControl&) = delete;
+
     // Destructor
     virtual ~FMouseControl();
+
+    // Disable assignment operator (=)
+    FMouseControl& operator = (const FMouseControl&) = delete;
 
     // Accessors
     virtual const FString getClassName() const;

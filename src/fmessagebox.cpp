@@ -187,7 +187,7 @@ void FMessageBox::adjustSize()
 }
 
 //----------------------------------------------------------------------
-void FMessageBox::cb_processClick (FWidget*, FDataPtr data)
+void FMessageBox::cb_processClick (const FWidget*, FDataPtr data)
 {
   const int reply = *(static_cast<int*>(data));
   done (reply);
@@ -383,7 +383,8 @@ void FMessageBox::draw()
 //----------------------------------------------------------------------
 void FMessageBox::resizeButtons()
 {
-  std::size_t len[3]{}, max_size{};
+  std::size_t len[3]{};
+  std::size_t max_size{};
 
   for (std::size_t n{0}; n < num_buttons; n++)
   {

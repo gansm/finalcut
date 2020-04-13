@@ -50,9 +50,7 @@ FToolTip::FToolTip (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FToolTip::~FToolTip()  // destructor
 {
-  const auto& fapp = FApplication::getApplicationObject();
-
-  if ( fapp->isQuit() )
+  if ( FApplication::isQuit() )
     return;
 
   FWindow* parent_win{nullptr};
@@ -158,7 +156,8 @@ void FToolTip::calculateDimensions()
       max_line_width = column_width;
   }
 
-  int x{}, y{};
+  int x{};
+  int y{};
   const std::size_t h = ( hasBorder() ) ? text_num_lines + 2 : text_num_lines;
   const std::size_t w = ( hasBorder() ) ? max_line_width + 4 : max_line_width + 2;
   const auto& r = getRootWidget();

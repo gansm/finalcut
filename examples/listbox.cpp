@@ -120,8 +120,8 @@ Listbox::Listbox (FWidget* parent)
 
   // listbox 2
   //----------
-  for (double i{1.0}; i <= 15.0; i++)
-    double_list.push_back(2 * i + (i / 100));
+  for (int i{1}; i <= 15; i++)
+    double_list.push_back(2 * double(i) + (double(i) / 100));
 
   list2.setGeometry(FPoint(21, 1), FSize(10, 10));
   list2.setText ("double");
@@ -189,7 +189,7 @@ int main (int argc, char* argv[])
   d.setShadow();
 
   // Set dialog d as main widget
-  app.setMainWidget(&d);
+  finalcut::FWidget::setMainWidget(&d);
 
   // Show and start the application
   d.show();

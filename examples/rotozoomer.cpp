@@ -305,8 +305,7 @@ int main (int argc, char* argv[])
     benchmark = true;
   }
 
-  {
-    // Create the application object
+  {  // Create the application object in this scope
     finalcut::FApplication app(argc, argv);
     app.setNonBlockingRead();
 
@@ -321,7 +320,7 @@ int main (int argc, char* argv[])
     roto.setShadow();
 
     // Set the RotoZoomer object as main widget
-    app.setMainWidget(&roto);
+    finalcut::FWidget::setMainWidget(&roto);
 
     // Show and start the application
     roto.show();
@@ -329,7 +328,7 @@ int main (int argc, char* argv[])
 
     if ( benchmark )
       report = roto.getReport();
-  }
+  }  // Hide and destroy the application object
 
   if ( benchmark )
   {

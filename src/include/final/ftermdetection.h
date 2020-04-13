@@ -81,8 +81,14 @@ class FTermDetection final
     // Constructors
     FTermDetection();
 
+    // Disable copy constructor
+    FTermDetection (const FTermDetection&) = delete;
+
     // Destructor
     ~FTermDetection();
+
+    // Disable assignment operator (=)
+    FTermDetection& operator = (const FTermDetection&) = delete;
 
     // Accessor
     const FString         getClassName() const;
@@ -143,7 +149,7 @@ class FTermDetection final
     static void           setScreenTerm (bool);
     static void           setTmuxTerm (bool);
     static void           setTerminalDetection (bool);
-    static void           setTtyTypeFileName (char[]);
+    static void           setTtyTypeFileName (const char[]);
 
     // Methods
     static void           detect();
@@ -172,10 +178,10 @@ class FTermDetection final
     static char*          secDA_Analysis_0 (char[]);
     static char*          secDA_Analysis_1 (char[]);
     static char*          secDA_Analysis_24 (char[]);
-    static char*          secDA_Analysis_32 (char[]);
+    static char*          secDA_Analysis_32 (const char[]);
     static char*          secDA_Analysis_65 (char[]);
-    static char*          secDA_Analysis_67 (char[]);
-    static char*          secDA_Analysis_77 (char[]);
+    static char*          secDA_Analysis_67 (const char[]);
+    static char*          secDA_Analysis_77 (const char[]);
     static char*          secDA_Analysis_82 ();
     static char*          secDA_Analysis_83 (char[]);
     static char*          secDA_Analysis_84 (char[]);

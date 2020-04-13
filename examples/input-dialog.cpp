@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -26,14 +26,14 @@ using finalcut::FPoint;
 using finalcut::FSize;
 
 // function prototypes
-void cb_quit (finalcut::FWidget*, FDataPtr);
+void cb_quit (const finalcut::FWidget*, FDataPtr);
 void cb_publish (finalcut::FWidget*, FDataPtr);
 
 
 //----------------------------------------------------------------------
 // callback functions
 //----------------------------------------------------------------------
-void cb_quit (finalcut::FWidget*, FDataPtr data)
+void cb_quit (const finalcut::FWidget*, FDataPtr data)
 {
   auto app = static_cast<finalcut::FApplication*>(data);
   app->quit();
@@ -136,7 +136,7 @@ int main (int argc, char* argv[])
   );
 
   // Set dialog object as main widget
-  app.setMainWidget(&dgl);
+  finalcut::FWidget::setMainWidget(&dgl);
 
   // Show and start the application
   dgl.show();

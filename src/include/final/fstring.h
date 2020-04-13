@@ -88,7 +88,7 @@ class FString
     explicit FString (std::size_t);
     FString (std::size_t, wchar_t);
     FString (const FString&);        // implicit conversion copy constructor
-    FString (FString&&);             // implicit conversion move constructor
+    FString (FString&&) noexcept;    // implicit conversion move constructor
     FString (const std::wstring&);   // implicit conversion constructor
     FString (const wchar_t[]);       // implicit conversion constructor
     FString (const std::string&);    // implicit conversion constructor
@@ -102,7 +102,7 @@ class FString
 
     // Overloaded operators
     FString& operator = (const FString&);
-    FString& operator = (FString&&);
+    FString& operator = (FString&&) noexcept;
 
     const FString& operator += (const FString&);
 

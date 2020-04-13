@@ -324,7 +324,7 @@ void FSpinBox::draw()
 {
   const auto& wc = getFWidgetColors();
 
-  const FColorPair inc_button_color = [&] () -> FColorPair
+  const FColorPair inc_button_color = [&] ()
   {
     if ( value == max )
       return FColorPair ( wc.scrollbar_button_inactive_fg
@@ -334,7 +334,7 @@ void FSpinBox::draw()
                         , wc.scrollbar_button_bg );
   }();
 
-  const FColorPair dec_button_color = [&] () -> FColorPair
+  const FColorPair dec_button_color = [&] ()
   {
     if ( value == min )
       return FColorPair ( wc.scrollbar_button_inactive_fg
@@ -413,7 +413,7 @@ void FSpinBox::forceFocus()
 }
 
 //----------------------------------------------------------------------
-void FSpinBox::cb_inputFieldChange (finalcut::FWidget* w, FDataPtr)
+void FSpinBox::cb_inputFieldChange (finalcut::FWidget* w, const FDataPtr)
 {
   const auto& lineedit = static_cast<FLineEdit*>(w);
 

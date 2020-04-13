@@ -130,7 +130,7 @@ class FOptiAttr final
     const FString getClassName() const;
 
     // Mutators
-    void          setTermEnvironment (termEnv&);
+    void          setTermEnvironment (const termEnv&);
     void          setMaxColor (const int&);
     void          setNoColorVideo (int);
     void          setDefaultColorSupport();
@@ -274,13 +274,13 @@ class FOptiAttr final
     void          change_current_color (const FChar* const&, FColor, FColor);
     void          resetAttribute (FChar*&);
     void          reset (FChar*&);
-    bool          caused_reset_attributes (char[], uChar = all_tests);
+    bool          caused_reset_attributes (const char[], uChar = all_tests);
     bool          hasCharsetEquivalence();
     void          detectSwitchOn (const FChar* const&, const FChar* const&);
     void          detectSwitchOff (const FChar* const&, const FChar* const&);
     bool          switchOn();
     bool          switchOff();
-    bool          append_sequence (char[]);
+    bool          append_sequence (const char[]);
 
     // Data members
     capability    F_enter_bold_mode{};

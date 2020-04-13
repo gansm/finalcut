@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -101,7 +101,8 @@ void FMenuList::clear()
 //----------------------------------------------------------------------
 void FMenuList::selectFirstItem()
 {
-  std::vector<FMenuItem*>::const_iterator iter, end;
+  std::vector<FMenuItem*>::const_iterator iter;
+  std::vector<FMenuItem*>::const_iterator end;
   iter = item_list.begin();
   end = item_list.end();
 

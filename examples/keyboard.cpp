@@ -104,7 +104,7 @@ int main (int argc, char* argv[])
   key.addAccelerator('q');
 
   // Set the keyboard object as main widget
-  app.setMainWidget(&key);
+  finalcut::FWidget::setMainWidget(&key);
 
   // Show and start the application
   key.show();

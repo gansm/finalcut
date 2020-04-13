@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019 Markus Gans                                           *
+* Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -105,14 +105,14 @@ int main (int argc, char* argv[])
 
   // Callback lambda expressions
   auto cb_exit = \
-      [] (finalcut::FWidget*, FDataPtr data)
+      [] (const finalcut::FWidget*, FDataPtr data)
       {
         auto a = static_cast<finalcut::FApplication*>(data);
         a->quit();
       };
 
   auto cb_tooltip = \
-      [] (finalcut::FWidget*, FDataPtr data)
+      [] (const finalcut::FWidget*, FDataPtr data)
       {
         auto a = static_cast<finalcut::FApplication*>(data);
         finalcut::FToolTip tooltip(a);
@@ -129,7 +129,7 @@ int main (int argc, char* argv[])
   key_F1.addCallback ("activate", cb_tooltip, &app);
 
   // Set dialog object as main widget
-  app.setMainWidget(&dgl);
+  finalcut::FWidget::setMainWidget(&dgl);
 
   // Show and start the application
   dgl.show();

@@ -417,7 +417,7 @@ FTermDebugData& FTerm::getFTermDebugData()
 //----------------------------------------------------------------------
 bool FTerm::isNormal (const FChar* const& ch)
 {
-  return opti_attr->isNormal(ch);
+  return FOptiAttr::isNormal(ch);
 }
 
 //----------------------------------------------------------------------
@@ -1543,7 +1543,7 @@ void FTerm::init_teraterm_charmap()
 //----------------------------------------------------------------------
 void FTerm::init_keyboard()
 {
-  keyboard->init();
+  FKeyboard::init();
 }
 
 //----------------------------------------------------------------------
@@ -1559,8 +1559,7 @@ void FTerm::init_quirks()
 {
   // Initialize terminal quirks
 
-  FTermcapQuirks quirks;
-  quirks.terminalFixup();  // Fix terminal quirks
+  FTermcapQuirks::terminalFixup();  // Fix terminal quirks
 }
 
 //----------------------------------------------------------------------
@@ -2201,7 +2200,7 @@ inline void FTerm::deallocationValues()
   if ( data )
     delete data;
 
-  defaultPutChar* putchar_ptr = &(putchar());
+  const defaultPutChar* putchar_ptr = &(putchar());
   delete putchar_ptr;
   FStartOptions::destroyObject();
 }
@@ -2338,9 +2337,8 @@ bool FTerm::init_terminal()
   initBaudRate();
 
   // Terminal detection
-  term_detection->detect();
+  FTermDetection::detect();
   setTermType (term_detection->getTermType());
-
   return true;
 }
 

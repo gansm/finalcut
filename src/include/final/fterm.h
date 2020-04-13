@@ -430,12 +430,14 @@ inline void FTerm::putstringf (const char format[], Args&&... args)
     return;
 
   if ( ! fsys )
-    getFSystem();
+    getFSystem();  // Trying to set fsys
 
   const std::size_t count = std::size_t(size);
   std::vector<char> buf(count);
   std::snprintf (&buf[0], count, format, std::forward<Args>(args)...);
-  fsys->tputs (&buf[0], 1, FTerm::putchar_ASCII);
+
+  if ( fsys )
+    fsys->tputs (&buf[0], 1, FTerm::putchar_ASCII);
 }
 
 }  // namespace finalcut

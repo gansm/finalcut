@@ -102,7 +102,17 @@ class FVTerm
 
     struct FVTermPreprocessing
     {
-      FVTerm* instance;
+      FVTermPreprocessing()
+        : instance(nullptr)
+        , function(nullptr)
+      { }
+
+      FVTermPreprocessing (const FVTerm* i, const FPreprocessingFunction& f)
+        : instance(i)
+        , function(f)
+      { }
+
+      const FVTerm* instance;
       FPreprocessingFunction function;
     };
 
@@ -296,9 +306,9 @@ class FVTerm
     void                  resizeVTerm (const FSize&);
     void                  putVTerm();
     void                  updateTerminal();
-    virtual void          addPreprocessingHandler ( FVTerm*
-                                                  , FPreprocessingFunction );
-    virtual void          delPreprocessingHandler (FVTerm*);
+    virtual void          addPreprocessingHandler ( const FVTerm*
+                                                  , const FPreprocessingFunction& );
+    virtual void          delPreprocessingHandler (const FVTerm*);
     template<typename... Args>
     int                   printf (const FString&, Args&&...);
     int                   print (const FString&);
@@ -310,6 +320,7 @@ class FVTerm
     int                   print (wchar_t);
     int                   print (FTermArea*, wchar_t);
     int                   print (FChar&);
+    int                   print (FTermArea*, const FChar&);
     int                   print (FTermArea*, FChar&);
     virtual void          print (const FPoint&);
     virtual void          print (const FStyle&);
@@ -360,10 +371,10 @@ class FVTerm
     bool                  updateVTermCursor (FTermArea*);
     static void           setAreaCursor ( const FPoint&
                                         , bool, FTermArea* );
-    static void           getArea (const FPoint&, FTermArea*);
-    static void           getArea (const FRect&, FTermArea*);
+    static void           getArea (const FPoint&, const FTermArea*);
+    static void           getArea (const FRect&, const FTermArea*);
     void                  putArea (FTermArea*);
-    static void           putArea (const FPoint&, FTermArea*);
+    static void           putArea (const FPoint&, const FTermArea*);
     void                  scrollAreaForward (FTermArea*);
     void                  scrollAreaReverse (FTermArea*);
     void                  clearArea (FTermArea*, int = ' ');
@@ -397,22 +408,22 @@ class FVTerm
     static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
 
     // Methods
-    void                  setTextToDefault (FTermArea*, const FSize&);
+    void                  setTextToDefault (const FTermArea*, const FSize&);
     static bool           reallocateTextArea ( FTermArea*
                                              , std::size_t
                                              , std::size_t );
     static bool           reallocateTextArea ( FTermArea*
                                              , std::size_t );
-    static covered_state  isCovered (const FPoint&, FTermArea*);
-    static void           updateOverlappedColor ( FTermArea*
+    static covered_state  isCovered (const FPoint&, const FTermArea*);
+    static void           updateOverlappedColor ( const FTermArea*
                                                 , const FPoint&
                                                 , const FPoint& );
-    static void           updateOverlappedCharacter ( FTermArea*
+    static void           updateOverlappedCharacter ( const FTermArea*
                                                     , const FPoint& );
-    static void           updateShadedCharacter ( FTermArea*
+    static void           updateShadedCharacter ( const FTermArea*
                                                 , const FPoint&
                                                 , const FPoint& );
-    static void           updateInheritBackground ( FTermArea*
+    static void           updateInheritBackground ( const FTermArea*
                                                   , const FPoint&
                                                   , const FPoint& );
     static void           updateCharacter ( FTermArea*
@@ -422,10 +433,10 @@ class FVTerm
                                                , const FPoint&
                                                , const FPoint& );
     void                  updateVTerm();
-    static void           callPreprocessingHandler (FTermArea*);
+    static void           callPreprocessingHandler (const FTermArea*);
     bool                  hasChildAreaChanges (FTermArea*);
-    void                  clearChildAreaChanges (FTermArea*);
-    static bool           isInsideArea (const FPoint&, FTermArea*);
+    void                  clearChildAreaChanges (const FTermArea*);
+    static bool           isInsideArea (const FPoint&, const FTermArea*);
     static FChar          generateCharacter (const FPoint&);
     static FChar          getCharacter ( character_type
                                        , const FPoint&
@@ -433,16 +444,16 @@ class FVTerm
     static FChar          getCoveredCharacter (const FPoint&, FVTerm*);
     static FChar          getOverlappedCharacter (const FPoint&, FVTerm*);
     void                  init (bool);
-    static void           init_characterLengths (FOptiMove*);
+    static void           init_characterLengths (const FOptiMove*);
     void                  finish();
-    static void           putAreaLine (FChar*, FChar*, int);
+    static void           putAreaLine (const FChar*, FChar*, int);
     static void           putAreaCharacter ( const FPoint&, FVTerm*
                                            , FChar*, FChar* );
-    static void           getAreaCharacter ( const FPoint&, FTermArea*
+    static void           getAreaCharacter ( const FPoint&, const FTermArea*
                                            , FChar*& );
     bool                  clearTerm (int = ' ');
-    bool                  clearFullArea (FTermArea*, FChar&);
-    static void           clearAreaWithShadow (FTermArea*, const FChar&);
+    bool                  clearFullArea (const FTermArea*, FChar&);
+    static void           clearAreaWithShadow (const FTermArea*, const FChar&);
     static bool           canClearToEOL (uInt, uInt);
     static bool           canClearLeadingWS (uInt&, uInt);
     static bool           canClearTrailingWS (uInt&, uInt);

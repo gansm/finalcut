@@ -195,7 +195,7 @@ class FDialog : public FWindow
     void                leaveZoomButton (const mouseStates&);
     void                pressZoomButton (const mouseStates&);
     bool                isMouseOverMenu (const FPoint&);
-    void                passEventToSubMenu (const mouseStates&, FMouseEvent*);
+    void                passEventToSubMenu (const mouseStates&, const FMouseEvent*);
     void                moveSizeKey (FKeyEvent*);
     void                raiseActivateDialog();
     void                lowerActivateDialog();
@@ -207,12 +207,12 @@ class FDialog : public FWindow
     void                acceptMoveSize();
     void                cancelMoveSize();
     static void         addDialog (FWidget*);
-    static void         delDialog (FWidget*);
+    static void         delDialog (const FWidget*);
 
     // Callback methods
-    void                cb_move (FWidget*, FDataPtr);
-    void                cb_zoom (FWidget*, FDataPtr);
-    void                cb_close (FWidget*, FDataPtr);
+    void                cb_move (const FWidget*, const FDataPtr);
+    void                cb_zoom (const FWidget*, const FDataPtr);
+    void                cb_close (const FWidget*, const FDataPtr);
 
     // Data members
     FString             tb_text{};  // title bar text

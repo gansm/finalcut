@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -35,6 +35,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <functional>
+
 #include "final/fstring.h"
 
 namespace finalcut
@@ -47,23 +49,23 @@ namespace finalcut
 class FColorPalette final
 {
   public:
+    // Using-declaration
+    using func = std::function<void(FColor, int, int, int)>;
+
     // Constructor
     FColorPalette() = default;
 
     // Destructor
     ~FColorPalette();
 
-    // Typedefs
-    typedef void (*funcp)(FColor, int, int, int);
-
     // Accessor
     const FString getClassName() const;
 
     // Methods
-    static void set8ColorPalette (funcp);
-    static void set16ColorPalette (funcp);
-    static void reset8ColorPalette (funcp);
-    static void reset16ColorPalette (funcp);
+    static void set8ColorPalette (func);
+    static void set16ColorPalette (func);
+    static void reset8ColorPalette (func);
+    static void reset16ColorPalette (func);
 };
 
 // FColorPalette inline functions

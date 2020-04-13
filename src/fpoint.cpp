@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -42,7 +42,7 @@ FPoint& FPoint::operator = (const FPoint& p)
 }
 
 //----------------------------------------------------------------------
-FPoint& FPoint::operator = (FPoint&& p)
+FPoint& FPoint::operator = (FPoint&& p) noexcept
 {
   xpos = p.xpos;
   ypos = p.ypos;
@@ -115,7 +115,8 @@ std::ostream& operator << (std::ostream& outstr, const FPoint& p)
 //----------------------------------------------------------------------
 std::istream& operator >> (std::istream& instr, FPoint& p)
 {
-  int x{}, y{};
+  int x{};
+  int y{};
   instr >> x;
   instr >> y;
   p.setPoint (x, y);

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -1174,13 +1174,13 @@ void FStringTest::convertToNumberTest()
   CPPUNIT_ASSERT ( str.toShort() == -127 );
 
   str = "255";
-  CPPUNIT_ASSERT ( str.toUShort() == 255u );
+  CPPUNIT_ASSERT ( str.toUShort() == 255U );
 
   str = "-32768";
   CPPUNIT_ASSERT ( str.toInt() == -32768 );
 
   str = "65535";
-  CPPUNIT_ASSERT ( str.toUInt() == 65535u );
+  CPPUNIT_ASSERT ( str.toUInt() == 65535U );
 
   str = "-2147483647";
   CPPUNIT_ASSERT ( str.toLong() == -2147483647 );
@@ -1189,16 +1189,16 @@ void FStringTest::convertToNumberTest()
   CPPUNIT_ASSERT ( str.toLong() == 987654321 );
 
   str = "4294967295";
-  CPPUNIT_ASSERT ( str.toULong() == 4294967295u );
+  CPPUNIT_ASSERT ( str.toULong() == 4294967295U );
 
   str = "+1234567890";
-  CPPUNIT_ASSERT ( str.toULong() == 1234567890u );
+  CPPUNIT_ASSERT ( str.toULong() == 1234567890U );
 
   str = "3.14159";
-  CPPUNIT_ASSERT ( str.toFloat() == 3.14159f );
+  CPPUNIT_ASSERT ( str.toFloat() == 3.14159F );
 
   str = "-3.14159";
-  CPPUNIT_ASSERT ( str.toFloat() == -3.14159f );
+  CPPUNIT_ASSERT ( str.toFloat() == -3.14159F );
 
   str = "3.141592653589793238";
   CPPUNIT_ASSERT ( str.toDouble() == 3.141592653589793238 );
@@ -1211,20 +1211,20 @@ void FStringTest::convertToNumberTest()
 void FStringTest::convertFromNumberTest()
 {
   constexpr sInt8       n1  = -12;
-  constexpr uInt8       n2  =  12u;
+  constexpr uInt8       n2  =  12U;
   constexpr sInt16      n3  = -1234;
-  constexpr uInt16      n4  =  1234u;
+  constexpr uInt16      n4  =  1234U;
   constexpr int         n5  = -12345;
-  constexpr uInt        n6  =  12345u;
+  constexpr uInt        n6  =  12345U;
   constexpr sInt32      n7  = -12345;
-  constexpr uInt32      n8  =  12345u;
+  constexpr uInt32      n8  =  12345U;
   constexpr long        n9  = -12345678;
-  constexpr uLong       n10 =  12345678u;
+  constexpr uLong       n10 =  12345678U;
   constexpr sInt64      n11 = -12345678;
-  constexpr uInt64      n12 =  12345678u;
+  constexpr uInt64      n12 =  12345678U;
   constexpr std::wint_t n13 =  12345678;
   constexpr std::size_t n14 =  12345678;
-  constexpr float       n15 =  1234.56f;
+  constexpr float       n15 =  1234.56F;
   constexpr double      n16 =  1234.5678;
   constexpr lDouble     n17 =  12345.67890L;
 

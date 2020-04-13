@@ -54,14 +54,14 @@ class Menu : public finalcut::FDialog
     void configureColorMenuItems();
     void configureStyleMenuItems();
     void configureBorderMenuItems();
-    void defaultCallback (finalcut::FMenuList*);
+    void defaultCallback (const finalcut::FMenuList*);
     void adjustSize() override;
 
     // Event handler
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
-    void cb_message (finalcut::FWidget*, FDataPtr);
+    void cb_message (finalcut::FWidget*, const FDataPtr);
 
     // Data members
     finalcut::FString        line{13, fc::BoxDrawingsHorizontal};
@@ -258,7 +258,7 @@ void Menu::configureBorderMenuItems()
 }
 
 //----------------------------------------------------------------------
-void Menu::defaultCallback (finalcut::FMenuList* mb)
+void Menu::defaultCallback (const finalcut::FMenuList* mb)
 {
   for (uInt i{1}; i <= mb->getCount(); i++)
   {
@@ -302,7 +302,7 @@ void Menu::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Menu::cb_message (finalcut::FWidget* widget, FDataPtr)
+void Menu::cb_message (finalcut::FWidget* widget, const FDataPtr)
 {
   const auto& menuitem = static_cast<finalcut::FMenuItem*>(widget);
   auto text = menuitem->getText();
@@ -330,7 +330,7 @@ int main (int argc, char* argv[])
   main_dlg.setShadow();
 
   // Set dialog main_dlg as main widget
-  app.setMainWidget (&main_dlg);
+  finalcut::FWidget::setMainWidget (&main_dlg);
 
   // Show and start the application
   main_dlg.show();

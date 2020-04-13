@@ -101,7 +101,7 @@ class FButtonGroup : public FScrollView
     void                hide() override;
     void                insert (FToggleButton*);
     void                remove (FToggleButton*);
-    void                checkScrollSize (FToggleButton*);
+    void                checkScrollSize (const FToggleButton*);
     void                checkScrollSize (const FRect&);
 
     // Event handlers
@@ -130,7 +130,7 @@ class FButtonGroup : public FScrollView
     void                directFocus();
 
     // Callback method
-    void                cb_buttonToggled (FWidget*, FDataPtr);
+    void                cb_buttonToggled (FWidget*, const FDataPtr);
 
     // Data members
     FString        text{};

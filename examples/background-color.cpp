@@ -54,8 +54,8 @@ class Background : public finalcut::FDialog
 
   private:
     // Callback method
-    void cb_changed (finalcut::FWidget*, FDataPtr);
-    void cb_choice (finalcut::FWidget*, FDataPtr);
+    void cb_changed (const finalcut::FWidget*, const FDataPtr);
+    void cb_choice (const finalcut::FWidget*, const FDataPtr);
 
     // Data members
     finalcut::FComboBox color_choice{this};
@@ -169,7 +169,7 @@ Background::~Background()  // destructor
 { }
 
 //----------------------------------------------------------------------
-void Background::cb_changed (finalcut::FWidget*, FDataPtr)
+void Background::cb_changed (const finalcut::FWidget*, const FDataPtr)
 {
   if ( ! finalcut::FTerm::canChangeColorPalette() )
     return;
@@ -183,12 +183,14 @@ void Background::cb_changed (finalcut::FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Background::cb_choice (finalcut::FWidget*, FDataPtr)
+void Background::cb_choice (const finalcut::FWidget*, const FDataPtr)
 {
   if ( ! finalcut::FTerm::canChangeColorPalette() )
     return;
 
-  uChar r{}, g{}, b{};
+  uChar r{};
+  uChar g{};
+  uChar b{};
   const FDataPtr data_ptr = color_choice.getItemData();
   const RGB* rgb = reinterpret_cast<RGB*>(data_ptr);
   std::tie(r, g, b) = *rgb;
@@ -216,7 +218,7 @@ int main (int argc, char* argv[])
     app.setBackgroundColor(finalcut::fc::LightMagenta);
 
   Background dialog(&app);
-  app.setMainWidget(&dialog);
+  finalcut::FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
 }

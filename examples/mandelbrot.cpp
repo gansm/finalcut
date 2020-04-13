@@ -84,13 +84,15 @@ void Mandelbrot::draw()
 
   const double dX = (x_max - x_min) / (Cols - 1);
   const double dY = (y_max - y_min) / Lines;
+  double y0 = y_min;
 
-  for (double y0 = y_min; y0 < y_max && current_line < Lines; y0 += dY)
+  while ( y0 < y_max && current_line < Lines )
   {
     current_line++;
     print() << FPoint(xoffset, yoffset + current_line);
+    double x0 = x_min;
 
-    for (double x0 = x_min; x0 < x_max; x0 += dX)
+    while ( x0 < x_max )
     {
       double x{0.0};
       double y{0.0};
@@ -110,7 +112,10 @@ void Mandelbrot::draw()
         setColor(fc::Black, 0);
 
       print(' ');
+      x0 += dX;
     }
+
+    y0 += dY;
   }
 }
 
@@ -165,7 +170,7 @@ int main (int argc, char* argv[])
   mb.setShadow();
 
   // Set the mandelbrot object as main widget
-  app.setMainWidget(&mb);
+  finalcut::FWidget::setMainWidget(&mb);
 
   // Show and start the application
   mb.show();

@@ -107,10 +107,7 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
 
 //----------------------------------------------------------------------
 SmallWindow::~SmallWindow()
-{
-  // Remove own timer
-  delOwnTimer();
-}
+{ }
 
 //----------------------------------------------------------------------
 void SmallWindow::adjustSize()
@@ -180,8 +177,8 @@ class Window : public finalcut::FDialog
 
   private:
     // Typedefs
-    typedef void (Window::*WindowCallback)(finalcut::FWidget*, FDataPtr);
-    typedef void (finalcut::FApplication::*FAppCallback)(finalcut::FWidget*, FDataPtr);
+    typedef void (Window::*WindowCallback)(const finalcut::FWidget*, const FDataPtr);
+    typedef void (finalcut::FApplication::*FAppCallback)(const finalcut::FWidget*, const FDataPtr);
 
     struct win_data
     {
@@ -206,16 +203,20 @@ class Window : public finalcut::FDialog
     void adjustSize() override;
     void addClickedCallback (finalcut::FWidget*, WindowCallback);
     void addClickedCallback (finalcut::FWidget*, FAppCallback);
+    template <typename IteratorT>
+    finalcut::FDialog* getNext (IteratorT);
+    template <typename IteratorT>
+    finalcut::FDialog* getPrevious (IteratorT iter);
 
     // Event handlers
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback methods
-    void cb_createWindows (finalcut::FWidget*, FDataPtr);
-    void cb_closeWindows (finalcut::FWidget*, FDataPtr);
-    void cb_next (finalcut::FWidget*, FDataPtr);
-    void cb_previous (finalcut::FWidget*, FDataPtr);
-    void cb_destroyWindow (finalcut::FWidget*, FDataPtr);
+    void cb_createWindows (const finalcut::FWidget*, const FDataPtr);
+    void cb_closeWindows (const finalcut::FWidget*, const FDataPtr);
+    void cb_next (const finalcut::FWidget*, const FDataPtr);
+    void cb_previous (const finalcut::FWidget*, const FDataPtr);
+    void cb_destroyWindow (const finalcut::FWidget*, FDataPtr);
 
     // Data members
     std::vector<win_data*>    windows{};
@@ -400,13 +401,58 @@ void Window::addClickedCallback ( finalcut::FWidget* widget
 }
 
 //----------------------------------------------------------------------
+template <typename IteratorT>
+finalcut::FDialog* Window::getNext (IteratorT iter)
+{
+  auto next_element = iter;
+  finalcut::FDialog* next{nullptr};
+
+  do
+  {
+    ++next_element;
+
+    if ( next_element == getDialogList()->end() )
+      next_element = getDialogList()->begin();
+
+    next = static_cast<finalcut::FDialog*>(*next_element);
+  } while ( ! next->isEnabled()
+          || ! next->acceptFocus()
+          || ! next->isVisible()
+          || ! next->isWindowWidget() );
+
+  return next;
+}
+
+//----------------------------------------------------------------------
+template <typename IteratorT>
+finalcut::FDialog* Window::getPrevious (IteratorT iter)
+{
+  auto prev_element = iter;
+  finalcut::FDialog* prev;
+
+  do
+  {
+    if ( prev_element == getDialogList()->begin() )
+      prev_element = getDialogList()->end();
+
+    --prev_element;
+    prev = static_cast<finalcut::FDialog*>(*prev_element);
+  } while ( ! prev->isEnabled()
+          || ! prev->acceptFocus()
+          || ! prev->isVisible()
+          || ! prev->isWindowWidget() );
+
+  return prev;
+}
+
+//----------------------------------------------------------------------
 void Window::onClose (finalcut::FCloseEvent* ev)
 {
   finalcut::FApplication::closeConfirmationDialog (this, ev);
 }
 
 //----------------------------------------------------------------------
-void Window::cb_createWindows (finalcut::FWidget*, FDataPtr)
+void Window::cb_createWindows (const finalcut::FWidget*, const FDataPtr)
 {
   const auto& first = windows.begin();
   auto iter = first;
@@ -447,7 +493,7 @@ void Window::cb_createWindows (finalcut::FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_closeWindows (finalcut::FWidget*, FDataPtr)
+void Window::cb_closeWindows (const finalcut::FWidget*, const FDataPtr)
 {
   if ( ! getDialogList() || getDialogList()->empty() )
     return;
@@ -467,7 +513,7 @@ void Window::cb_closeWindows (finalcut::FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_next (finalcut::FWidget*, FDataPtr)
+void Window::cb_next (const finalcut::FWidget*, const FDataPtr)
 {
   if ( ! getDialogList() || getDialogList()->empty() )
     return;
@@ -478,23 +524,7 @@ void Window::cb_next (finalcut::FWidget*, FDataPtr)
   {
     if ( static_cast<finalcut::FWindow*>(*iter)->isWindowActive() )
     {
-      finalcut::FDialog* next;
-      auto next_element = iter;
-
-      do
-      {
-        ++next_element;
-
-        if ( next_element == getDialogList()->end() )
-          next_element = getDialogList()->begin();
-
-        next = static_cast<finalcut::FDialog*>(*next_element);
-      } while ( ! next->isEnabled()
-             || ! next->acceptFocus()
-             || ! next->isVisible()
-             || ! next->isWindowWidget() );
-
-      activateWindow(next);
+      activateWindow(getNext(iter));
       break;
     }
 
@@ -503,7 +533,7 @@ void Window::cb_next (finalcut::FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_previous (finalcut::FWidget*, FDataPtr)
+void Window::cb_previous (const finalcut::FWidget*, const FDataPtr)
 {
   if ( ! getDialogList() || getDialogList()->empty() )
     return;
@@ -517,22 +547,7 @@ void Window::cb_previous (finalcut::FWidget*, FDataPtr)
     if ( (*iter)->isDialogWidget()
       && static_cast<finalcut::FWindow*>(*iter)->isWindowActive() )
     {
-      finalcut::FDialog* prev;
-      auto prev_element = iter;
-
-      do
-      {
-        if ( prev_element == getDialogList()->begin() )
-          prev_element = getDialogList()->end();
-
-        --prev_element;
-        prev = static_cast<finalcut::FDialog*>(*prev_element);
-      } while ( ! prev->isEnabled()
-             || ! prev->acceptFocus()
-             || ! prev->isVisible()
-             || ! prev->isWindowWidget() );
-
-      activateWindow(prev);
+      activateWindow(getPrevious(iter));
       break;
     }
   }
@@ -540,7 +555,7 @@ void Window::cb_previous (finalcut::FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_destroyWindow (finalcut::FWidget*, FDataPtr data)
+void Window::cb_destroyWindow (const finalcut::FWidget*, FDataPtr data)
 {
   auto win_dat = static_cast<win_data*>(data);
 
@@ -568,7 +583,7 @@ int main (int argc, char* argv[])
                        , FSize(40, 6) );
 
   // Set dialog main_dlg as main widget
-  app.setMainWidget (&main_dlg);
+  finalcut::FWidget::setMainWidget (&main_dlg);
 
   // Show and start the application
   main_dlg.show();

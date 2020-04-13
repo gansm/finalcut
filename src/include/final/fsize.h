@@ -56,8 +56,8 @@ class FSize
   public:
     // Constructors
     FSize () = default;
-    FSize (const FSize&);  // copy constructor
-    FSize (FSize&&);       // move constructor
+    FSize (const FSize&);      // copy constructor
+    FSize (FSize&&) noexcept;  // move constructor
     FSize (std::size_t, std::size_t);
 
     // Destructor
@@ -65,7 +65,7 @@ class FSize
 
     // Overloaded operators
     FSize& operator =  (const FSize&);
-    FSize& operator =  (FSize&&);
+    FSize& operator =  (FSize&&) noexcept;
     FSize& operator += (const FSize&);
     FSize& operator -= (const FSize&);
 
@@ -117,7 +117,7 @@ inline FSize::FSize (const FSize& s)  // copy constructor
 { }
 
 //----------------------------------------------------------------------
-inline FSize::FSize (FSize&& s)  // move constructor
+inline FSize::FSize (FSize&& s) noexcept  // move constructor
   : width(s.width)
   , height(s.height)
 { s.width = s.height = 0; }

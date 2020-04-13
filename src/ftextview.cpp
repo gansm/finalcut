@@ -575,7 +575,7 @@ inline void FTextView::mapKeyFunctions()
   key_map[fc::Fkey_down]  = [&] { scrollBy (0, 1); };
   key_map[fc::Fkey_left]  = [&] { scrollBy (-1, 0); };
   key_map[fc::Fkey_right] = [&] { scrollBy (1, 0); };
-  key_map[fc::Fkey_ppage] = [&] { scrollBy (0, int(-getTextHeight())); };
+  key_map[fc::Fkey_ppage] = [&] { scrollBy (0, -int(getTextHeight())); };
   key_map[fc::Fkey_npage] = [&] { scrollBy (0, int(getTextHeight())); };
   key_map[fc::Fkey_home]  = [&] { scrollToY (0); };
   key_map[fc::Fkey_end]   = [&] { scrollToY (int(getRows() - getTextHeight())); };
@@ -744,7 +744,7 @@ void FTextView::changeOnResize()
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_vbarChange (FWidget*, FDataPtr)
+void FTextView::cb_vbarChange (const FWidget*, const FDataPtr)
 {
   const FScrollbar::sType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
@@ -795,7 +795,7 @@ void FTextView::cb_vbarChange (FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_hbarChange (FWidget*, FDataPtr)
+void FTextView::cb_hbarChange (const FWidget*, const FDataPtr)
 {
   const FScrollbar::sType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;

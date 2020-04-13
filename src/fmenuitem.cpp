@@ -458,19 +458,19 @@ void FMenuItem::onFocusOut (FFocusEvent*)
 
 // protected methods of FMenuItem
 //----------------------------------------------------------------------
-bool FMenuItem::isDialog (FWidget* w) const
+bool FMenuItem::isDialog (const FWidget* w) const
 {
   return ( w ) ? w->isDialogWidget() : false;
 }
 
 //----------------------------------------------------------------------
-bool FMenuItem::isMenuBar (FWidget* w) const
+bool FMenuItem::isMenuBar (const FWidget* w) const
 {
   return ( w ) ? w->isInstanceOf("FMenuBar") : false;
 }
 
 //----------------------------------------------------------------------
-bool FMenuItem::isMenu (FWidget* w) const
+bool FMenuItem::isMenu (const FWidget* w) const
 {
   if ( ! w )
     return false;
@@ -636,7 +636,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 
 //----------------------------------------------------------------------
 template <typename T>
-void FMenuItem::passMouseEvent ( T widget, FMouseEvent* ev
+void FMenuItem::passMouseEvent ( T widget, const FMouseEvent* ev
                                , fc::events ev_type )
 {
   if ( ! widget )
@@ -678,7 +678,7 @@ void FMenuItem::passMouseEvent ( T widget, FMouseEvent* ev
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::cb_switchToDialog (FWidget*, FDataPtr data)
+void FMenuItem::cb_switchToDialog (const FWidget*, FDataPtr data)
 {
   auto win = static_cast<FDialog*>(data);
 
@@ -691,7 +691,7 @@ void FMenuItem::cb_switchToDialog (FWidget*, FDataPtr data)
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::cb_destroyDialog (FWidget* widget, FDataPtr)
+void FMenuItem::cb_destroyDialog (FWidget* widget, const FDataPtr)
 {
   auto win = static_cast<FDialog*>(widget);
   const auto& fapp = FApplication::getApplicationObject();

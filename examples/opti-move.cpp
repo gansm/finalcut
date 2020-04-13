@@ -87,7 +87,11 @@ void term_boundaries (int& x, int& y)
 void move (int xold, int yold, int xnew, int ynew)
 {
   // Prints the cursor move escape sequence
-  finalcut::FString buffer{}, sequence{}, from{}, to{}, byte{};
+  finalcut::FString buffer{};
+  finalcut::FString sequence{};
+  finalcut::FString from{};
+  finalcut::FString to{};
+  finalcut::FString byte{};
   const std::string ctrl_character[] =
   {
     "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL",
@@ -186,7 +190,7 @@ int main (int argc, char* argv[])
 
   // Show terminal speed and milliseconds for all cursor movement sequence
   std::cout << "\r" << line;
-  const finalcut::FOptiMove& opti_move = *TermApp.getFTerm().getFOptiMove();
+  const finalcut::FOptiMove& opti_move = *finalcut::FTerm::getFOptiMove();
   finalcut::printDurations(opti_move);
 
   // Waiting for keypress

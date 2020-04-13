@@ -134,7 +134,7 @@ class FMessageBox : public FDialog
     void                adjustSize() override;
 
     // Callback method
-    void                cb_processClick (FWidget*, FDataPtr);
+    void                cb_processClick (const FWidget*, FDataPtr);
 
   private:
     // Methods

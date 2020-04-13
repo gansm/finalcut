@@ -51,9 +51,7 @@ FDropDownListBox::FDropDownListBox (FWidget* parent)
 //----------------------------------------------------------------------
 FDropDownListBox::~FDropDownListBox()  // destructor
 {
-  const auto& fapp = FApplication::getApplicationObject();
-
-  if ( fapp->isQuit() )
+  if ( FApplication::isQuit() )
     return;
 
   FWindow* parent_win{nullptr};
@@ -540,7 +538,7 @@ void FComboBox::draw()
 {
   const auto& wc = getFWidgetColors();
 
-  const FColorPair button_color = [&] () -> FColorPair
+  const FColorPair button_color = [&] ()
   {
     if ( list_window.isEmpty() )
       return FColorPair ( wc.scrollbar_button_inactive_fg
@@ -630,7 +628,7 @@ void FComboBox::processChanged()
 }
 
 //----------------------------------------------------------------------
-void FComboBox::cb_setInputField (FWidget*, FDataPtr)
+void FComboBox::cb_setInputField (const FWidget*, const FDataPtr)
 {
   auto& list = list_window.list;
   const std::size_t index = list.currentItem();
@@ -640,14 +638,14 @@ void FComboBox::cb_setInputField (FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FComboBox::cb_closeComboBox (FWidget*, FDataPtr)
+void FComboBox::cb_closeComboBox (const FWidget*, const FDataPtr)
 {
   hideDropDown();
   processClick();
 }
 
 //----------------------------------------------------------------------
-void FComboBox::cb_inputFieldSwitch (FWidget*, FDataPtr)
+void FComboBox::cb_inputFieldSwitch (const FWidget*, const FDataPtr)
 {
   const auto& mouse = getFMouseControl();
 
@@ -679,7 +677,7 @@ void FComboBox::cb_inputFieldSwitch (FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FComboBox::cb_inputFieldHandOver (FWidget*, FDataPtr)
+void FComboBox::cb_inputFieldHandOver (const FWidget*, const FDataPtr)
 {
   const auto& mouse = getFMouseControl();
 

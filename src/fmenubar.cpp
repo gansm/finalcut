@@ -218,7 +218,7 @@ void FMenuBar::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::cb_itemDeactivated (FWidget* widget, FDataPtr)
+void FMenuBar::cb_itemDeactivated (FWidget* widget, const FDataPtr)
 {
   auto menuitem = static_cast<FMenuItem*>(widget);
 
@@ -536,7 +536,7 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
 }
 
 //----------------------------------------------------------------------
-inline void FMenuBar::setLineAttributes (FMenuItem* menuitem)
+inline void FMenuBar::setLineAttributes (const FMenuItem* menuitem)
 {
   bool is_enabled  = menuitem->isEnabled();
   bool is_selected = menuitem->isSelected();
@@ -726,7 +726,7 @@ void FMenuBar::selectMenuItem (FMenuItem* item)
 }
 
 //----------------------------------------------------------------------
-bool FMenuBar::activateMenu (FMenuItem* item)
+bool FMenuBar::activateMenu (const FMenuItem* item)
 {
   if ( ! item->hasMenu() )
     return false;

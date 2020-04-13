@@ -269,7 +269,7 @@ void FMouse::setPending (bool is_pending)
 }
 
 //----------------------------------------------------------------------
-void FMouse::setMousePressedTime (timeval* time)
+void FMouse::setMousePressedTime (const timeval* time)
 {
   time_mousepressed = *time;
 }
@@ -400,6 +400,9 @@ bool FMouseGPM::gpmMouse (bool enable)
 {
   // activate/deactivate the gpm mouse support
 
+  static constexpr int gpm_error = -1;
+  static constexpr int gpm_xterm_is_in_use = -2;
+
   if ( enable )
   {
     Gpm_Connect conn;
@@ -409,17 +412,8 @@ bool FMouseGPM::gpmMouse (bool enable)
     conn.minMod      = 0;
     Gpm_Open(&conn, 0);
 
-    switch ( gpm_fd )
-    {
-      case -1:  // error
-        return false;
-
-      case -2:  // xterm is in use
-        return false;
-
-      default:
-        break;
-    }
+    if ( gpm_fd == gpm_error || gpm_fd == gpm_xterm_is_in_use )
+      return false;
   }
   else
   {

@@ -49,23 +49,24 @@ class AttribDlg : public finalcut::FDialog
     // Disable assignment operator (=)
     AttribDlg& operator = (const AttribDlg&) = delete;
 
+    // Methods
+    FColor getBGColor();
+
     // Event handlers
     void onKeyPress (finalcut::FKeyEvent*) override;
     void onWheel (finalcut::FWheelEvent*) override;
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback methods
-    void cb_next (finalcut::FWidget* = nullptr, FDataPtr = nullptr);
-    void cb_back (finalcut::FWidget* = nullptr, FDataPtr = nullptr);
-
-    // Data members
-    FColor bgcolor;
+    void cb_next (const finalcut::FWidget* = nullptr, const FDataPtr = nullptr);
+    void cb_back (const finalcut::FWidget* = nullptr, const FDataPtr = nullptr);
 
   private:
     // Method
     void adjustSize() override;
 
     // Data members
+    FColor bgcolor;
     finalcut::FButton next_button{"&Next >", this};
     finalcut::FButton back_button{"< &Back", this};
 };
@@ -105,6 +106,12 @@ AttribDlg::~AttribDlg()
 { }
 
 //----------------------------------------------------------------------
+FColor AttribDlg::getBGColor()
+{
+  return bgcolor;
+}
+
+//----------------------------------------------------------------------
 void AttribDlg::onKeyPress (finalcut::FKeyEvent* ev)
 {
   if ( ! ev )
@@ -137,7 +144,7 @@ void AttribDlg::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::cb_next (finalcut::FWidget*, FDataPtr)
+void AttribDlg::cb_next (const finalcut::FWidget*, const FDataPtr)
 {
   if ( isMonochron() )
     return;
@@ -153,7 +160,7 @@ void AttribDlg::cb_next (finalcut::FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::cb_back (finalcut::FWidget*, FDataPtr)
+void AttribDlg::cb_back (const finalcut::FWidget*, const FDataPtr)
 {
   if ( isMonochron() )
     return;
@@ -255,7 +262,7 @@ void AttribDemo::printColorLine()
 
   for (FColor color{0}; color < last_color; color++)
   {
-    print() << FColorPair(color, parent->bgcolor) << " # ";
+    print() << FColorPair(color, parent->getBGColor()) << " # ";
   }
 }
 
@@ -270,19 +277,19 @@ void AttribDemo::printAltCharset()
 
   print() << FPoint(1, 1) << "alternate charset: ";
 
-  if ( parent->bgcolor == fc::Default )
+  if ( parent->getBGColor() == fc::Default )
   {
     setColor (fc::Default, fc::Default);
   }
   else
   {
-    if ( (parent->bgcolor <= 8)
-      || (parent->bgcolor >= 16 && parent->bgcolor <= 231
-        && (parent->bgcolor - 16) % 36 <= 17)
-      || (parent->bgcolor >= 232 && parent->bgcolor <= 243) )
-      setColor (fc::White, parent->bgcolor);
+    if ( (parent->getBGColor() <= 8)
+      || (parent->getBGColor() >= 16 && parent->getBGColor() <= 231
+        && (parent->getBGColor() - 16) % 36 <= 17)
+      || (parent->getBGColor() >= 232 && parent->getBGColor() <= 243) )
+      setColor (fc::White, parent->getBGColor());
     else
-      setColor (fc::Black, parent->bgcolor);
+      setColor (fc::Black, parent->getBGColor());
   }
 
   setAltCharset();
@@ -448,7 +455,7 @@ void AttribDemo::draw()
     setColor(wc.label_fg, wc.label_bg);
 
   print() << FPoint(1, 15);
-  const FColor bg = static_cast<AttribDlg*>(getParent())->bgcolor;
+  const FColor bg = static_cast<AttribDlg*>(getParent())->getBGColor();
   print (" Background color:");
 
   if ( bg == fc::Default )
@@ -481,7 +488,7 @@ int main (int argc, char* argv[])
   demo.setGeometry (FPoint(1, 1), FSize(67, 19));
 
   // Set the dialog object as main widget
-  app.setMainWidget(&dialog);
+  finalcut::FWidget::setMainWidget(&dialog);
 
   // Show and start the application
   dialog.show();

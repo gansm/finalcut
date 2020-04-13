@@ -483,6 +483,10 @@ void FListViewItem::resetVisibleLineCounter()
 
 // constructor and destructor
 //----------------------------------------------------------------------
+FListViewIterator::FListViewIterator()
+{ }
+
+//----------------------------------------------------------------------
 FListViewIterator::FListViewIterator (iterator iter)
   : node(iter)
 { }
@@ -1456,7 +1460,7 @@ FObject::iterator& FListView::getNullIterator()
 }
 
 //----------------------------------------------------------------------
-void FListView::setNullIterator (iterator& null_iter)
+void FListView::setNullIterator (const iterator& null_iter)
 {
   getNullIterator() = null_iter;
 }
@@ -1559,7 +1563,7 @@ std::size_t FListView::getAlignOffset ( const fc::text_alignment align
 }
 
 //----------------------------------------------------------------------
-FObject::iterator FListView::getListEnd (FListViewItem* item)
+FObject::iterator FListView::getListEnd (const FListViewItem* item)
 {
   auto parent = item->getParent();
 
@@ -2028,7 +2032,8 @@ void FListView::drawBufferedHeadline()
   std::size_t offset{0};
   bool left_truncated_fullwidth{false};
   bool right_truncated_fullwidth{false};
-  std::vector<FChar>::const_iterator first{}, last{};
+  std::vector<FChar>::const_iterator first{};
+  std::vector<FChar>::const_iterator last{};
   last = headerline.end();
 
   // Search for the start position
@@ -2800,7 +2805,7 @@ void FListView::scrollBy (int dx, int dy)
 }
 
 //----------------------------------------------------------------------
-void FListView::cb_vbarChange (FWidget*, FDataPtr)
+void FListView::cb_vbarChange (const FWidget*, const FDataPtr)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
@@ -2859,7 +2864,7 @@ void FListView::cb_vbarChange (FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FListView::cb_hbarChange (FWidget*, FDataPtr)
+void FListView::cb_hbarChange (const FWidget*, const FDataPtr)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;

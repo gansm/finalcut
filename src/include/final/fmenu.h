@@ -121,7 +121,7 @@ class FMenu : public FWindow, public FMenuList
     void                onAccel (FAccelEvent*) override;
 
     // Callback method
-    void                cb_menuitemToggled (FWidget*, FDataPtr);
+    void                cb_menuitemToggled (FWidget*, const FDataPtr);
 
   private:
     // Constants
@@ -175,7 +175,7 @@ class FMenu : public FWindow, public FMenuList
     void         hideSubMenus();
     void         hideSuperMenus();
     bool         mouseDownOverList (FPoint);
-    void         mouseDownSubmenu (FMenuItem*);
+    void         mouseDownSubmenu (const FMenuItem*);
     void         mouseDownSelection (FMenuItem*, bool&);
     bool         mouseUpOverList (FPoint);
     void         mouseMoveOverList (FPoint, mouseStates&);
@@ -198,12 +198,12 @@ class FMenu : public FWindow, public FMenuList
     void         drawItems();
     void         drawSeparator (int);
     void         drawMenuLine (FMenuItem*, int);
-    void         drawCheckMarkPrefix (FMenuItem*);
+    void         drawCheckMarkPrefix (const FMenuItem*);
     void         drawMenuText (menuText&);
     void         drawSubMenuIndicator (std::size_t&);
     void         drawAcceleratorKey (std::size_t&, FKey);
     void         drawTrailingSpaces (std::size_t);
-    void         setLineAttributes (FMenuItem*, int);
+    void         setLineAttributes (const FMenuItem*, int);
     void         setCursorToHotkeyPosition (FMenuItem*);
     void         selectPrevMenu (FKeyEvent*);
     void         selectNextMenu (FKeyEvent*);

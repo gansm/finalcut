@@ -73,7 +73,7 @@ FString::FString (const FString& s)  // copy constructor
 }
 
 //----------------------------------------------------------------------
-FString::FString (FString&& s)  // move constructor
+FString::FString (FString&& s) noexcept  // move constructor
 {
   if ( ! s.isNull() )
     _assign (std::move(s.string));
@@ -171,7 +171,7 @@ FString& FString::operator = (const FString& s)
 }
 
 //----------------------------------------------------------------------
-FString& FString::operator = (FString&& s)
+FString& FString::operator = (FString&& s) noexcept
 {
   _assign (std::move(s.string));
   return *this;
@@ -775,7 +775,7 @@ FString& FString::setString (const FString& s)
 FString& FString::setNumber (sInt64 num)
 {
   wchar_t buf[30]{};
-  wchar_t* s = &buf[29];
+  wchar_t* s = &buf[29];  // Pointer to the last character
   uInt64 abs_num = static_cast<uInt64>(num);
 
   if ( num < 0 )
@@ -801,7 +801,7 @@ FString& FString::setNumber (sInt64 num)
 FString& FString::setNumber (uInt64 num)
 {
   wchar_t buf[30]{};
-  wchar_t* s = &buf[29];
+  wchar_t* s = &buf[29];  // Pointer to the last character
   *s = '\0';
 
   do
@@ -851,7 +851,7 @@ FString& FString::setFormatedNumber (sInt64 num, char separator)
 {
   int n{0};
   wchar_t buf[30]{};
-  wchar_t* s = &buf[29];
+  wchar_t* s = &buf[29];  // Pointer to the last character
   uInt64 abs_num = static_cast<uInt64>(num);
 
   if ( separator == 0 )
@@ -866,8 +866,9 @@ FString& FString::setFormatedNumber (sInt64 num, char separator)
   {
     *--s = L"0123456789"[abs_num % 10];
     abs_num /= 10;
+    n++;
 
-    if ( abs_num && ++n % 3 == 0 )
+    if ( abs_num && n % 3 == 0 )
       *--s = separator;
   }
   while ( abs_num );
@@ -884,7 +885,7 @@ FString& FString::setFormatedNumber (uInt64 num, char separator)
 {
   int n{0};
   wchar_t buf[30]{};
-  wchar_t* s = &buf[29];
+  wchar_t* s = &buf[29];  // Pointer to the last character
   *s = L'\0';
 
   if ( separator == 0 )
@@ -894,8 +895,9 @@ FString& FString::setFormatedNumber (uInt64 num, char separator)
   {
     *--s = L"0123456789"[num % 10];
     num /= 10;
+    n++;
 
-    if ( num && ++n % 3 == 0 )
+    if ( num && n % 3 == 0 )
       *--s = separator;
   }
   while ( num );
@@ -1380,7 +1382,8 @@ void FString::_remove (std::size_t pos, std::size_t len)
       return;
     }
 
-    std::size_t x{}, y{};
+    std::size_t x{};
+    std::size_t y{};
 
     for (x = 0; x < pos; x++)             // left side
       sptr[y++] = string[x];

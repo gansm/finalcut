@@ -280,7 +280,8 @@ const FString FFileDialog::fileSaveChooser ( FWidget* parent
 //----------------------------------------------------------------------
 void FFileDialog::adjustSize()
 {
-  std::size_t max_width{}, max_height{};
+  std::size_t max_width{};
+  std::size_t max_height{};
   const auto& root_widget = getRootWidget();
 
   if ( root_widget )
@@ -322,7 +323,8 @@ void FFileDialog::init()
 {
   static constexpr std::size_t w = 42;
   static constexpr std::size_t h = 15;
-  int x{}, y{};
+  int x{};
+  int y{};
 
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
@@ -417,7 +419,7 @@ void FFileDialog::initCallbacks()
 
 //----------------------------------------------------------------------
 inline bool FFileDialog::pattern_match ( const char* const pattern
-                                       , char fname[] )
+                                       , const char fname[] )
 {
   char search[128]{};
 
@@ -557,7 +559,7 @@ int FFileDialog::readDir()
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::getEntry (const char* const dir, struct dirent* d_entry)
+void FFileDialog::getEntry (const char* const dir, const struct dirent* d_entry)
 {
   const char* const filter = filter_pattern.c_str();
   dir_entry entry{};
@@ -759,7 +761,7 @@ const FString FFileDialog::getHomeDir()
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processActivate (FWidget*, FDataPtr)
+void FFileDialog::cb_processActivate (const FWidget*, const FDataPtr)
 {
   if ( filename.getText().includes('*')
     || filename.getText().includes('?') )
@@ -808,7 +810,7 @@ void FFileDialog::cb_processActivate (FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processRowChanged (FWidget*, FDataPtr)
+void FFileDialog::cb_processRowChanged (const FWidget*, const FDataPtr)
 {
   const std::size_t n = filebrowser.currentItem();
 
@@ -826,7 +828,7 @@ void FFileDialog::cb_processRowChanged (FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processClicked (FWidget*, FDataPtr)
+void FFileDialog::cb_processClicked (const FWidget*, const FDataPtr)
 {
   const uLong n = uLong(filebrowser.currentItem() - 1);
 
@@ -837,19 +839,19 @@ void FFileDialog::cb_processClicked (FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processCancel (FWidget*, FDataPtr)
+void FFileDialog::cb_processCancel (const FWidget*, const FDataPtr)
 {
   done (FDialog::Reject);
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processOpen (FWidget*, FDataPtr)
+void FFileDialog::cb_processOpen (const FWidget*, const FDataPtr)
 {
   done (FDialog::Accept);
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processShowHidden (FWidget*, FDataPtr)
+void FFileDialog::cb_processShowHidden (const FWidget*, const FDataPtr)
 {
   setShowHiddenFiles(! show_hidden);
 }

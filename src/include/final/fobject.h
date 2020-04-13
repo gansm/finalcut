@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -120,7 +120,7 @@ class FObject
 
     // Timer methods
     static void           getCurrentTime (timeval*);
-    static bool           isTimeout (timeval*, uInt64);
+    static bool           isTimeout (const timeval*, uInt64);
     int                   addTimer (int);
     bool                  delTimer (int);
     bool                  delOwnTimer();

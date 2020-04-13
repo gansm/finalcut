@@ -162,12 +162,12 @@ class FFileDialog : public FDialog
     void                 init();
     void                 widgetSettings (const FPoint&);
     void                 initCallbacks();
-    bool                 pattern_match (const char* const, char[]);
+    bool                 pattern_match (const char* const, const char[]);
     void                 clear();
     sInt64               numOfDirs();
     void                 sortDir();
     int                  readDir();
-    void                 getEntry (const char* const, struct dirent*);
+    void                 getEntry (const char* const, const struct dirent*);
     void                 followSymLink (const char* const, dir_entry&);
     void                 dirEntriesToList();
     void                 selectDirectoryEntry (const char* const);
@@ -176,12 +176,12 @@ class FFileDialog : public FDialog
     static const FString getHomeDir();
 
     // Callback methods
-    void                 cb_processActivate (FWidget*, FDataPtr);
-    void                 cb_processRowChanged (FWidget*, FDataPtr);
-    void                 cb_processClicked (FWidget*, FDataPtr);
-    void                 cb_processCancel (FWidget*, FDataPtr);
-    void                 cb_processOpen (FWidget*, FDataPtr);
-    void                 cb_processShowHidden (FWidget*, FDataPtr);
+    void                 cb_processActivate (const FWidget*, const FDataPtr);
+    void                 cb_processRowChanged (const FWidget*, const FDataPtr);
+    void                 cb_processClicked (const FWidget*, const FDataPtr);
+    void                 cb_processCancel (const FWidget*, const FDataPtr);
+    void                 cb_processOpen (const FWidget*, const FDataPtr);
+    void                 cb_processShowHidden (const FWidget*, const FDataPtr);
 
     // Data members
     static FSystem*  fsystem;

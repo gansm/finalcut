@@ -1181,7 +1181,8 @@ void FListBox::multiSelection (std::size_t pos)
 //----------------------------------------------------------------------
 void FListBox::multiSelectionUpTo (std::size_t pos)
 {
-  std::size_t from{}, to{};
+  std::size_t from{};
+  std::size_t to{};
 
   if ( ! isMultiSelection() )
     return;
@@ -1745,7 +1746,7 @@ void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_vbarChange (FWidget*, FDataPtr)
+void FListBox::cb_vbarChange (const FWidget*, const FDataPtr)
 {
   FScrollbar::sType scrollType;
   const std::size_t current_before = current;
@@ -1808,7 +1809,7 @@ void FListBox::cb_vbarChange (FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_hbarChange (FWidget*, FDataPtr)
+void FListBox::cb_hbarChange (const FWidget*, const FDataPtr)
 {
   static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
   static constexpr int wheel_distance = 4;

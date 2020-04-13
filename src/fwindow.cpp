@@ -56,8 +56,6 @@ FWindow::FWindow(FWidget* parent)
 //----------------------------------------------------------------------
 FWindow::~FWindow()  // destructor
 {
-  const auto& fapp = FApplication::getApplicationObject();
-
   if ( previous_window == this )
     previous_window = nullptr;
 
@@ -70,7 +68,7 @@ FWindow::~FWindow()  // destructor
 
   delWindow (this);
 
-  if ( ! fapp->isQuit() )
+  if ( ! FApplication::isQuit() )
   {
     const auto& t_geometry = getTermGeometryWithShadow();
     restoreVTerm (t_geometry);
@@ -454,7 +452,7 @@ void FWindow::addWindow (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-void FWindow::delWindow (FWidget* obj)
+void FWindow::delWindow (const FWidget* obj)
 {
   // delete the window object obj from the window list
   if ( ! getWindowList() || getWindowList()->empty() )
@@ -528,7 +526,7 @@ int FWindow::getWindowLayer (const FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-void FWindow::swapWindow (FWidget* obj1, FWidget* obj2)
+void FWindow::swapWindow (const FWidget* obj1, const FWidget* obj2)
 {
   // swaps the window layer between obj1 and obj2
 
@@ -681,31 +679,30 @@ void FWindow::switchToPrevWindow (FWidget* widget)
   const bool is_activated = activatePrevWindow();
   auto active_win = static_cast<FWindow*>(getActiveWindow());
 
-  if ( ! is_activated )
+
+  if ( ! is_activated
+    && getWindowList() && getWindowList()->size() > 1 )
   {
     // no previous window -> looking for another window
-    if ( getWindowList() && getWindowList()->size() > 1 )
+    auto iter = getWindowList()->end();
+    const auto begin = getWindowList()->begin();
+
+    do
     {
-      auto iter = getWindowList()->end();
-      const auto begin = getWindowList()->begin();
+      --iter;
+      auto w = static_cast<FWindow*>(*iter);
 
-      do
+      if ( w
+        && w != active_win
+        && ! (w->isWindowHidden() || w->isWindowActive())
+        && w != static_cast<FWindow*>(getStatusBar())
+        && w != static_cast<FWindow*>(getMenuBar()) )
       {
-        --iter;
-        auto w = static_cast<FWindow*>(*iter);
-
-        if ( w
-          && w != active_win
-          && ! (w->isWindowHidden() || w->isWindowActive())
-          && w != static_cast<FWindow*>(getStatusBar())
-          && w != static_cast<FWindow*>(getMenuBar()) )
-        {
-          setActiveWindow(w);
-          break;
-        }
+        setActiveWindow(w);
+        break;
       }
-      while ( iter != begin );
     }
+    while ( iter != begin );
   }
 
   if ( active_win )
@@ -833,7 +830,7 @@ void FWindow::onWindowLowered (FEvent*)
 
 // private methods of FWindow
 //----------------------------------------------------------------------
-void FWindow::deleteFromAlwaysOnTopList (FWidget* obj)
+void FWindow::deleteFromAlwaysOnTopList (const FWidget* obj)
 {
   // delete the window object obj from the always-on-top list
   if ( ! getAlwaysOnTopList() || getAlwaysOnTopList()->empty() )

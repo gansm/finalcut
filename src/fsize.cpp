@@ -45,7 +45,7 @@ FSize& FSize::operator = (const FSize& s)
 }
 
 //----------------------------------------------------------------------
-FSize& FSize::operator = (FSize&& s)
+FSize& FSize::operator = (FSize&& s) noexcept
 {
   width = s.width;
   height = s.height;
@@ -143,7 +143,8 @@ std::ostream& operator << (std::ostream& outstr, const FSize& s)
 //----------------------------------------------------------------------
 std::istream& operator >> (std::istream& instr, FSize& s)
 {
-  std::size_t w, h;
+  std::size_t w;
+  std::size_t h;
   instr >> w;
   instr >> h;
   s.setSize (w, h);

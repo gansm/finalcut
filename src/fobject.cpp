@@ -120,11 +120,9 @@ bool FObject::isChild (const FObject* obj) const
 {
   // Find out if obj is a child object of mine
 
-  FObject* p_obj{nullptr};
-
-  while ( obj && (p_obj = obj->getParent()) )
+  while ( obj )
   {
-    obj = p_obj;
+    obj = obj->getParent();
 
     if ( obj == this )
       return true;
@@ -238,7 +236,7 @@ void FObject::getCurrentTime (timeval* time)
 }
 
 //----------------------------------------------------------------------
-bool FObject::isTimeout (timeval* time, uInt64 timeout)
+bool FObject::isTimeout (const timeval* time, uInt64 timeout)
 {
   // Checks whether the specified time span (timeout in µs) has elapse
 

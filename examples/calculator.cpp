@@ -120,7 +120,7 @@ class Calc : public finalcut::FDialog
     void           onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
-    void           cb_buttonClicked (finalcut::FWidget*, FDataPtr);
+    void           cb_buttonClicked (const finalcut::FWidget*, FDataPtr);
 
   private:
     // Typedef and Enumeration
@@ -1037,10 +1037,10 @@ void Calc::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Calc::cb_buttonClicked (finalcut::FWidget*, FDataPtr data)
+void Calc::cb_buttonClicked (const finalcut::FWidget*, FDataPtr data)
 {
   lDouble& x = getValue();
-  const Calc::button key = *(static_cast<Calc::button*>(data));
+  const Calc::button& key = *(static_cast<Calc::button*>(data));
 
   // Call the key function
   (this->*key_map[key])(x);
@@ -1174,7 +1174,7 @@ int main (int argc, char* argv[])
   Calc calculator(&app);
 
   // Set calculator object as main widget
-  app.setMainWidget(&calculator);
+  finalcut::FWidget::setMainWidget(&calculator);
 
   // Show and start the application
   calculator.show();

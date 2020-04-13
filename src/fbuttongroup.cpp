@@ -174,7 +174,8 @@ bool FButtonGroup::hasCheckedButton() const
 //----------------------------------------------------------------------
 void FButtonGroup::hide()
 {
-  FColor fg{}, bg{};
+  FColor fg{};
+  FColor bg{};
   FWidget::hide();
   const auto& parent_widget = getParentWidget();
 
@@ -268,7 +269,7 @@ void FButtonGroup::remove (FToggleButton* button)
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::checkScrollSize (FToggleButton* button)
+void FButtonGroup::checkScrollSize (const FToggleButton* button)
 {
   // Check and adjust the scroll size
 
@@ -544,7 +545,7 @@ void FButtonGroup::directFocus()
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::cb_buttonToggled (FWidget* widget, FDataPtr)
+void FButtonGroup::cb_buttonToggled (FWidget* widget, const FDataPtr)
 {
   const auto& button = static_cast<FToggleButton*>(widget);
 

@@ -59,8 +59,8 @@ class FRect
   public:
     // Constructors
     FRect () = default;
-    FRect (const FRect&);  // copy constructor
-    FRect (FRect&&);       // move constructor
+    FRect (const FRect&);      // copy constructor
+    FRect (FRect&&) noexcept;  // move constructor
     FRect (int, int, std::size_t, std::size_t);
     FRect (const FPoint&, const FSize&);
     FRect (const FPoint&, const FPoint&);
@@ -70,7 +70,7 @@ class FRect
 
     // Overloaded operators
     FRect& operator = (const FRect&);
-    FRect& operator = (FRect&&);
+    FRect& operator = (FRect&&) noexcept;
 
     // Accessors
     virtual const FString getClassName();
@@ -155,7 +155,7 @@ inline FRect::FRect (const FRect& r)  // copy constructor
 { }
 
 //----------------------------------------------------------------------
-inline FRect::FRect (FRect&& r)  // move constructor
+inline FRect::FRect (FRect&& r) noexcept  // move constructor
   : X1(r.X1)
   , Y1(r.Y1)
   , X2(r.X2)

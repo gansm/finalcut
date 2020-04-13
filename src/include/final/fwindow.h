@@ -136,8 +136,8 @@ class FWindow : public FWidget
     static FWindow*     getWindowWidgetAt (const FPoint&);
     static FWindow*     getWindowWidgetAt (int, int);
     static void         addWindow (FWidget*);
-    static void         delWindow (FWidget*);
-    static void         swapWindow (FWidget*, FWidget*);
+    static void         delWindow (const FWidget*);
+    static void         swapWindow (const FWidget*, const FWidget*);
     static bool         raiseWindow (FWidget*);
     bool                raiseWindow ();
     static bool         lowerWindow (FWidget*);
@@ -163,7 +163,7 @@ class FWindow : public FWidget
 
   private:
     // Methods
-    static void         deleteFromAlwaysOnTopList (FWidget*);
+    static void         deleteFromAlwaysOnTopList (const FWidget*);
     static void         processAlwaysOnTop();
 
     // Data members

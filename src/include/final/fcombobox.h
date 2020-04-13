@@ -216,10 +216,10 @@ class FComboBox : public FWidget
     void                processChanged();
 
     // Callback methods
-    void                cb_setInputField (FWidget*, FDataPtr);
-    void                cb_closeComboBox (FWidget*, FDataPtr);
-    void                cb_inputFieldSwitch (FWidget*, FDataPtr);
-    void                cb_inputFieldHandOver (FWidget*, FDataPtr);
+    void                cb_setInputField (const FWidget*, const FDataPtr);
+    void                cb_closeComboBox (const FWidget*, const FDataPtr);
+    void                cb_inputFieldSwitch (const FWidget*, const FDataPtr);
+    void                cb_inputFieldHandOver (const FWidget*, const FDataPtr);
 
     // Data members
     FLineEdit           input_field{this};

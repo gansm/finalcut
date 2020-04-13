@@ -52,7 +52,7 @@ FOptiAttr::~FOptiAttr()  // destructor
 
 // public methods of FOptiAttr
 //----------------------------------------------------------------------
-void FOptiAttr::setTermEnvironment (termEnv& term_env)
+void FOptiAttr::setTermEnvironment (const termEnv& term_env)
 {
   // Set all required termcap values at once
   // and initialize the FOptiAttr environment
@@ -1498,31 +1498,38 @@ inline void FOptiAttr::change_current_color ( const FChar* const& term
     const auto ansi_fg = vga2ansi(fg);
     const auto ansi_bg = vga2ansi(bg);
 
-    if ( (term->fg_color != fg || frev)
-      && (color_str = tparm(AF, ansi_fg, 0, 0, 0, 0, 0, 0, 0, 0)) )
+    if ( term->fg_color != fg || frev )
+    {
+      color_str = tparm(AF, ansi_fg, 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
+    }
 
-    if ( (term->bg_color != bg || frev)
-      && (color_str = tparm(AB, ansi_bg, 0, 0, 0, 0, 0, 0, 0, 0)) )
+    if ( term->bg_color != bg || frev )
+    {
+      color_str = tparm(AB, ansi_bg, 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
+    }
   }
   else if ( Sf && Sb )
   {
-    if ( (term->fg_color != fg || frev)
-      && (color_str = tparm(Sf, fg, 0, 0, 0, 0, 0, 0, 0, 0)) )
+    if ( term->fg_color != fg || frev )
+    {
+      color_str = tparm(Sf, fg, 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
+    }
 
-    if ( (term->bg_color != bg || frev)
-      && (color_str = tparm(Sb, bg, 0, 0, 0, 0, 0, 0, 0, 0)) )
+    if ( term->bg_color != bg || frev )
+    {
+      color_str = tparm(Sb, bg, 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
+    }
   }
   else if ( sp )
   {
     fg = vga2ansi(fg);
     bg = vga2ansi(bg);
-
-    if ( (color_str = tparm(sp, fg, bg, 0, 0, 0, 0, 0, 0, 0)) )
-      append_sequence (color_str);
+    color_str = tparm(sp, fg, bg, 0, 0, 0, 0, 0, 0, 0);
+    append_sequence (color_str);
   }
 }
 
@@ -1547,7 +1554,7 @@ inline void FOptiAttr::reset (FChar*& attr)
 }
 
 //----------------------------------------------------------------------
-bool FOptiAttr::caused_reset_attributes (char cap[], uChar test)
+bool FOptiAttr::caused_reset_attributes (const char cap[], uChar test)
 {
   // test if "cap" reset all attributes
 
@@ -1654,7 +1661,7 @@ inline bool FOptiAttr::switchOff()
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::append_sequence (char seq[])
+inline bool FOptiAttr::append_sequence (const char seq[])
 {
   if ( ! seq )
     return false;

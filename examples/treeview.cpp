@@ -335,7 +335,7 @@ Treeview::Treeview (finalcut::FWidget* parent)
 
   for (const auto& continent : continent_list)
   {
-    TreeItem* country_list = continent.child_element;
+    const TreeItem* country_list = continent.child_element;
     finalcut::FStringList continent_line ( continent.begin()
                                          , continent.end() );
     auto iter = listView.insert (continent_line);
@@ -412,7 +412,7 @@ int main (int argc, char* argv[])
   d.setShadow();
 
   // Set dialog d as main widget
-  app.setMainWidget(&d);
+  finalcut::FWidget::setMainWidget(&d);
 
   // Show and start the application
   d.show();

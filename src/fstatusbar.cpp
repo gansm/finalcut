@@ -479,7 +479,7 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FStatusBar::cb_statuskey_activated (FWidget* widget, FDataPtr)
+void FStatusBar::cb_statuskey_activated (FWidget* widget, const FDataPtr)
 {
   if ( ! key_list.empty() )
   {

@@ -309,8 +309,8 @@ class FListBox : public FWidget
     listBoxItems::iterator index2iterator (std::size_t);
     listBoxItems::const_iterator index2iterator (std::size_t index) const;
     // Callback methods
-    void                cb_vbarChange (FWidget*, FDataPtr);
-    void                cb_hbarChange (FWidget*, FDataPtr);
+    void                cb_vbarChange (const FWidget*, const FDataPtr);
+    void                cb_hbarChange (const FWidget*, const FDataPtr);
 
     // Function Pointer
     lazyInsert      lazy_inserter{};

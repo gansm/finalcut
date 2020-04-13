@@ -80,7 +80,7 @@ void FOptiMove::setTermSize (std::size_t w, std::size_t h)
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::setTermEnvironment (termEnv& term_env)
+void FOptiMove::setTermEnvironment (const termEnv& term_env)
 {
   // Set all required termcap values at once
 
@@ -548,7 +548,7 @@ void FOptiMove::calculateCharDuration()
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::capDuration (char cap[], int affcnt)
+int FOptiMove::capDuration (const char cap[], int affcnt)
 {
   // calculate the duration in milliseconds of a given operation
   // cap    - the term capability
@@ -558,8 +558,9 @@ int FOptiMove::capDuration (char cap[], int affcnt)
     return LONG_DURATION;
 
   float ms{0};
+  const char* p = cap;
 
-  for (const char* p = cap; *p; p++)
+  while ( *p )
   {
     // check for delay with padding character
     if ( p[0] == '$' && p[1] == '<' && std::strchr(p, '>') )
@@ -572,14 +573,21 @@ int FOptiMove::capDuration (char cap[], int affcnt)
           num = num * 10 + float(*p - '0');
         else if ( *p == '*' )
           num *= float(affcnt);
-        else if ( *p == '.' && *++p != '>' && std::isdigit(uChar(*p)) )
-          num += float((*p - '0') / 10.0);
+        else if ( *p == '.' )
+        {
+          ++p;
+
+          if ( *p != '>' && std::isdigit(uChar(*p)) )
+            num += float((*p - '0') / 10.0);
+        }
       }
 
       ms += num * 10;
     }
     else
       ms += float(char_duration);
+
+    p++;
   }
 
   return int(ms);

@@ -159,7 +159,7 @@ class FScrollView : public FWidget
     FPoint              getViewportCursorPos();
 
     // Methods
-    void                init (FWidget*);
+    void                init (const FWidget*);
     void                mapKeyFunctions();
     void                calculateScrollbarPos();
     template<typename Callback>
@@ -171,8 +171,8 @@ class FScrollView : public FWidget
     void                setViewportCursor();
 
     // Callback methods
-    void                cb_vbarChange (FWidget*, FDataPtr);
-    void                cb_hbarChange (FWidget*, FDataPtr);
+    void                cb_vbarChange (const FWidget*, const FDataPtr);
+    void                cb_hbarChange (const FWidget*, const FDataPtr);
 
     // Data members
     FRect              scroll_geometry{1, 1, 1, 1};

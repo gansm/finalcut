@@ -345,7 +345,7 @@ class MouseDraw : public finalcut::FDialog
     void onMouseMove (finalcut::FMouseEvent*) override;
 
     // Callback methods
-    void cb_colorChanged (finalcut::FWidget*, FDataPtr);
+    void cb_colorChanged (const finalcut::FWidget*, const FDataPtr);
 
     // Data members
     FTermArea*   canvas{nullptr};
@@ -493,7 +493,7 @@ void MouseDraw::drawCanvas()
 
   for (int y{0}; y < y_end; y++)  // line loop
   {
-    finalcut::FChar* canvaschar{};  // canvas character
+    const finalcut::FChar* canvaschar{};  // canvas character
     finalcut::FChar* winchar{};     // window character
     canvaschar = &canvas->data[y * x_end];
     winchar = &printarea->data[(ay + y) * w_line_len + ax];
@@ -514,7 +514,8 @@ void MouseDraw::drawCanvas()
 //----------------------------------------------------------------------
 void MouseDraw::adjustSize()
 {
-  const std::size_t w{60}, h{18};
+  const std::size_t w{60};
+  const std::size_t h{18};
   const int x = 1 + int((getParentWidget()->getWidth() - w) / 2);
   const int y = 1 + int((getParentWidget()->getHeight() - h) / 2);
   setGeometry (FPoint(x, y), FSize(w, h), false);
@@ -550,7 +551,7 @@ void MouseDraw::onMouseMove (finalcut::FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void MouseDraw::cb_colorChanged (finalcut::FWidget*, FDataPtr)
+void MouseDraw::cb_colorChanged (const finalcut::FWidget*, const FDataPtr)
 {
   brush.setForeground (c_chooser.getForeground());
   brush.setBackground (c_chooser.getBackground());
@@ -571,7 +572,7 @@ int main (int argc, char* argv[])
   mouse_draw.setGeometry (FPoint(12, 4), FSize(60, 18));
 
   // Set dialog object mouse_draw as main widget
-  app.setMainWidget(&mouse_draw);
+  finalcut::FWidget::setMainWidget(&mouse_draw);
 
   // Show and start the application
   mouse_draw.show();

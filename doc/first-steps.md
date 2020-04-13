@@ -72,7 +72,7 @@ int main (int argc, char* argv[])
   const finalcut::FPoint position(25, 5);
   const finalcut::FSize size(30, 10);
   dialog.setGeometry (position, size);
-  app.setMainWidget(&dialog);
+  finalcut::FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
 }
@@ -135,7 +135,7 @@ The position of the window in the terminal is at x=25 and
 y=5 (note: x=1 and y=1 represents the upper left corner).
 
 ```cpp
-app.setMainWidget(&dialog);
+finalcut::FWidget::setMainWidget(&dialog);
 ```
 The `dialog` object was now selected as the main widget for the application.
 When you close the main widget, the entire application quits.
@@ -219,7 +219,7 @@ int main (int argc, char* argv[])
                                "incididunt ut labore et dolore magna aliqua."
                              , dialog );
   label->setGeometry (FPoint(2, 4), FSize(36, 1));
-  app.setMainWidget(dialog);
+  FWidget::setMainWidget(dialog);
   dialog->show();
   return app.exec();
 }
@@ -353,7 +353,7 @@ int main (int argc, char* argv[])
 {
   FApplication app(argc, argv);
   dialogWidget dialog(&app);
-  app.setMainWidget(&dialog);
+  FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
 }
@@ -517,7 +517,7 @@ int main (int argc, char* argv[])
     &label
   );
 
-  app.setMainWidget(&dialog);
+  FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
 }
@@ -581,7 +581,7 @@ int main (int argc, char* argv[])
     &dialog
   );
 
-  app.setMainWidget(&dialog);
+  FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
 }
@@ -639,7 +639,7 @@ int main (int argc, char* argv[])
 {
   FApplication app(argc, argv);
   dialogWidget dialog(&app);
-  app.setMainWidget(&dialog);
+  FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
 }
@@ -783,7 +783,7 @@ int main (int argc, char* argv[])
 {
   FApplication app(argc, argv);
   dialogWidget dialog(&app);
-  app.setMainWidget(&dialog);
+  FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
 }
@@ -1060,7 +1060,7 @@ int main (int argc, char* argv[])
 {
   FApplication app(argc, argv);
   dialogWidget dialog(&app);
-  app.setMainWidget(&dialog);
+  FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
 }
@@ -1188,7 +1188,7 @@ int main (int argc, char* argv[])
 {
   FApplication app(argc, argv);
   dialogWidget dialog(&app);
-  app.setMainWidget(&dialog);
+  FWidget::setMainWidget(&dialog);
   dialog.show();
   return app.exec();
 }

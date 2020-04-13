@@ -665,7 +665,7 @@ void FScrollView::copy2area()
 
   for (int y{0}; y < y_end; y++)  // line loop
   {
-    FChar* vc{};  // viewport character
+    const FChar* vc{};  // viewport character
     FChar* ac{};  // area character
     const int v_line_len = viewport->width;
     const int a_line_len = printarea->width + printarea->right_shadow;
@@ -707,7 +707,7 @@ inline FPoint FScrollView::getViewportCursorPos()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::init (FWidget* parent)
+void FScrollView::init (const FWidget* parent)
 {
   assert ( parent != nullptr );
   assert ( ! parent->isInstanceOf("FScrollView") );
@@ -755,7 +755,7 @@ inline void FScrollView::mapKeyFunctions()
   key_map[fc::Fkey_down]  = [&] { scrollBy (0, 1); };
   key_map[fc::Fkey_left]  = [&] { scrollBy (-1, 0); };
   key_map[fc::Fkey_right] = [&] { scrollBy (1, 0); };
-  key_map[fc::Fkey_ppage] = [&] { scrollBy (0, int(-getViewportHeight())); };
+  key_map[fc::Fkey_ppage] = [&] { scrollBy (0, -int(getViewportHeight())); };
   key_map[fc::Fkey_npage] = [&] { scrollBy (0, int(getViewportHeight())); };
   key_map[fc::Fkey_home]  = [&] { scrollToY (1); };
   key_map[fc::Fkey_end]   = \
@@ -852,7 +852,7 @@ void FScrollView::setViewportCursor()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::cb_vbarChange (FWidget*, FDataPtr)
+void FScrollView::cb_vbarChange (const FWidget*, const FDataPtr)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
@@ -903,7 +903,7 @@ void FScrollView::cb_vbarChange (FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::cb_hbarChange (FWidget*, FDataPtr)
+void FScrollView::cb_hbarChange (const FWidget*, const FDataPtr)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;

@@ -145,9 +145,9 @@ class FMenuItem : public FWidget
     void                setSuperMenu (FWidget*);
 
     // Inquiries
-    bool                isDialog (FWidget*) const;
-    bool                isMenuBar (FWidget*) const;
-    bool                isMenu (FWidget*) const;
+    bool                isDialog (const FWidget*) const;
+    bool                isMenuBar (const FWidget*) const;
+    bool                isMenu (const FWidget*) const;
 
   private:
     // Accessor
@@ -160,11 +160,11 @@ class FMenuItem : public FWidget
     void                processDeactivate();
     void                createDialogList (FMenu*);
     template <typename T>
-    void                passMouseEvent (T, FMouseEvent*, fc::events);
+    void                passMouseEvent (T, const FMouseEvent*, fc::events);
 
     // Callback methods
-    void                cb_switchToDialog (FWidget*, FDataPtr);
-    void                cb_destroyDialog (FWidget*, FDataPtr);
+    void                cb_switchToDialog (const FWidget*, FDataPtr);
+    void                cb_destroyDialog (FWidget*, const FDataPtr);
 
     virtual void        processClicked();
 

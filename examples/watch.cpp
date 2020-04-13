@@ -54,8 +54,8 @@ class Watch : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback methods
-    void cb_clock (finalcut::FWidget*, FDataPtr);
-    void cb_seconds (finalcut::FWidget*, FDataPtr);
+    void cb_clock (const finalcut::FWidget*, const FDataPtr);
+    void cb_seconds (const finalcut::FWidget*, const FDataPtr);
 
   protected:
     // Method
@@ -77,7 +77,7 @@ Watch::Watch (FWidget* parent)
 {
   setText ("Watch");
   const int pw = int(getParentWidget()->getWidth());
-  setGeometry (FPoint(1 + (pw - 22) / 2, 3), FSize(22, 13));
+  FDialog::setGeometry (FPoint(1 + (pw - 22) / 2, 3), FSize(22, 13));
 
   // Labels
   time_label.setGeometry(FPoint(5, 2), FSize(5, 1));
@@ -116,9 +116,7 @@ Watch::Watch (FWidget* parent)
 
 //----------------------------------------------------------------------
 Watch::~Watch()
-{
-  delOwnTimer();
-}
+{ }
 
 //----------------------------------------------------------------------
 void Watch::printTime()
@@ -151,7 +149,7 @@ void Watch::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Watch::cb_clock (finalcut::FWidget*, FDataPtr)
+void Watch::cb_clock (const finalcut::FWidget*, const FDataPtr)
 {
   if ( clock_sw.isChecked() )
   {
@@ -167,7 +165,7 @@ void Watch::cb_clock (finalcut::FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Watch::cb_seconds (finalcut::FWidget*, FDataPtr)
+void Watch::cb_seconds (const finalcut::FWidget*, const FDataPtr)
 {
   if ( seconds_sw.isChecked() )
     sec = true;
@@ -207,7 +205,7 @@ int main (int argc, char* argv[])
   Watch w(&app);
 
   // Set dialog w as main widget
-  app.setMainWidget(&w);
+  finalcut::FWidget::setMainWidget(&w);
 
   // Show and start the application
   w.show();

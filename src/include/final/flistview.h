@@ -188,7 +188,7 @@ class FListViewIterator
     typedef std::stack<iterator>  iterator_stack;
 
     // Constructor
-    FListViewIterator () = default;
+    FListViewIterator ();
     FListViewIterator (iterator);
 
     // Overloaded operators
@@ -374,7 +374,7 @@ class FListView : public FWidget
     static iterator&     getNullIterator();
 
     // Mutators
-    static void          setNullIterator (iterator&);
+    static void          setNullIterator (const iterator&);
 
     // Inquiry
     bool                 isHorizontallyScrollable();
@@ -389,7 +389,7 @@ class FListView : public FWidget
     std::size_t          getAlignOffset ( const fc::text_alignment
                                         , const std::size_t
                                         , const std::size_t );
-    iterator             getListEnd (FListViewItem*);
+    iterator             getListEnd (const FListViewItem*);
     void                 draw() override;
     void                 drawBorder() override;
     void                 drawScrollbars();
@@ -444,8 +444,8 @@ class FListView : public FWidget
     bool                 hasCheckableItems() const;
 
     // Callback methods
-    void                 cb_vbarChange (FWidget*, FDataPtr);
-    void                 cb_hbarChange (FWidget*, FDataPtr);
+    void                 cb_vbarChange (const FWidget*, const FDataPtr);
+    void                 cb_hbarChange (const FWidget*, const FDataPtr);
 
     // Data members
     iterator             root{};
@@ -494,7 +494,8 @@ class FListView : public FWidget
 struct FListView::Header
 {
   public:
-    Header() = default;
+    Header()
+    { }
 
     FString name{};
     fc::text_alignment alignment{fc::alignLeft};
@@ -586,7 +587,7 @@ FObject::iterator
   std::transform ( std::begin(list)
                  , std::end(list)
                  , std::back_inserter(str_cols)
-                 , [] (const T& col) -> const FString
+                 , [] (const T& col)
                    {
                      const FString s(FString() << col);
                      return s;
@@ -622,7 +623,7 @@ FObject::iterator
   std::transform ( std::begin(cols)
                  , std::end(cols)
                  , std::back_inserter(str_cols)
-                 , [] (const ColT& col) -> const FString
+                 , [] (const ColT& col)
                    {
                      const FString s(FString() << col);
                      return s;

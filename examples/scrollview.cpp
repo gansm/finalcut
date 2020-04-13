@@ -54,10 +54,10 @@ class Scrollview : public finalcut::FScrollView
     void draw() override;
 
     // Callback methods
-    void cb_goEast (finalcut::FWidget*, FDataPtr);
-    void cb_goSouth (finalcut::FWidget*, FDataPtr);
-    void cb_goWest (finalcut::FWidget*, FDataPtr);
-    void cb_goNorth (finalcut::FWidget*, FDataPtr);
+    void cb_goEast (const finalcut::FWidget*, const FDataPtr);
+    void cb_goSouth (const finalcut::FWidget*, const FDataPtr);
+    void cb_goWest (const finalcut::FWidget*, const FDataPtr);
+    void cb_goNorth (const finalcut::FWidget*, const FDataPtr);
 
     // Data members
     wchar_t pointer_right{fc::BlackRightPointingPointer};
@@ -150,7 +150,7 @@ void Scrollview::draw()
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_goEast (finalcut::FWidget*, FDataPtr)
+void Scrollview::cb_goEast (const finalcut::FWidget*, const FDataPtr)
 {
   scrollToX (int(getScrollWidth() - getViewportWidth()) + 1);
   go_south.setFocus();
@@ -159,7 +159,7 @@ void Scrollview::cb_goEast (finalcut::FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_goSouth (finalcut::FWidget*, FDataPtr)
+void Scrollview::cb_goSouth (const finalcut::FWidget*, const FDataPtr)
 {
   scrollToY (int(getScrollHeight() - getViewportHeight()) + 1);
   go_west.setFocus();
@@ -168,7 +168,7 @@ void Scrollview::cb_goSouth (finalcut::FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_goWest (finalcut::FWidget*, FDataPtr)
+void Scrollview::cb_goWest (const finalcut::FWidget*, const FDataPtr)
 {
   scrollToX (1);
   go_north.setFocus();
@@ -177,7 +177,7 @@ void Scrollview::cb_goWest (finalcut::FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_goNorth (finalcut::FWidget*, FDataPtr)
+void Scrollview::cb_goNorth (const finalcut::FWidget*, const FDataPtr)
 {
   scrollToY (1);
   go_east.setFocus();
@@ -203,7 +203,7 @@ class Scrollviewdemo : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
-    void cb_quit (finalcut::FWidget* = nullptr, FDataPtr = nullptr);
+    void cb_quit (const finalcut::FWidget* = nullptr, const FDataPtr = nullptr);
 
     // Data members
     Scrollview sview{this};
@@ -244,7 +244,7 @@ Scrollviewdemo::~Scrollviewdemo()
 { }
 
 //----------------------------------------------------------------------
-void Scrollviewdemo::cb_quit (finalcut::FWidget*, FDataPtr)
+void Scrollviewdemo::cb_quit (const finalcut::FWidget*, const FDataPtr)
 {
   close();
 }
@@ -268,7 +268,7 @@ int main (int argc, char* argv[])
   Scrollviewdemo svdemo(&app);
 
   // Set dialog main_dlg as main widget
-  app.setMainWidget(&svdemo);
+  finalcut::FWidget::setMainWidget(&svdemo);
 
   // Show and start the application
   svdemo.show();

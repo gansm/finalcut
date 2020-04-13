@@ -60,9 +60,7 @@ FMenu::FMenu (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FMenu::~FMenu()  // destructor
 {
-  const auto& fapp = FApplication::getApplicationObject();
-
-  if ( ! fapp->isQuit() )
+  if ( ! FApplication::isQuit() )
     switchToPrevWindow(this);  // Switch to previous window
 }
 
@@ -319,7 +317,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::cb_menuitemToggled (FWidget* widget, FDataPtr)
+void FMenu::cb_menuitemToggled (FWidget* widget, const FDataPtr)
 {
   const auto& m_item = static_cast<FMenuItem*>(widget);
 
@@ -678,7 +676,7 @@ bool FMenu::mouseDownOverList (FPoint mouse_pos)
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseDownSubmenu (FMenuItem* m_item)
+void FMenu::mouseDownSubmenu (const FMenuItem* m_item)
 {
   if ( ! hasSelectedItem() )
     return;
@@ -1288,7 +1286,7 @@ inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
 }
 
 //----------------------------------------------------------------------
-inline void FMenu::drawCheckMarkPrefix (FMenuItem* m_item)
+inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
 {
   const bool is_checked   = m_item->isChecked();
   const bool is_checkable = m_item->checkable;
@@ -1415,7 +1413,7 @@ inline void FMenu::drawTrailingSpaces (std::size_t startpos)
 }
 
 //----------------------------------------------------------------------
-inline void FMenu::setLineAttributes (FMenuItem* m_item, int y)
+inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
 {
   const bool is_enabled  = m_item->isEnabled();
   const bool is_selected = m_item->isSelected();

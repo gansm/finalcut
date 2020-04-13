@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2019 Markus Gans                                      *
+* Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -455,7 +455,8 @@ void stringSplittingExample()
   std::cout << "     split: \""
             << split_str << "\" into substrings ->";
   finalcut::FStringList parts{ split_str.split(",") };
-  finalcut::FStringList::iterator it, end;
+  finalcut::FStringList::iterator it;
+  finalcut::FStringList::iterator end;
   end = parts.end();
 
   for (it = parts.begin(); it != end; ++it)
@@ -533,8 +534,10 @@ void convertToNumberExample()
 void convertNumberToStringExample()
 {
   // Test: convert integer and double value to a string
-  finalcut::FString num1{}, num2{}, num3{};
-  num1.setNumber(137u);
+  finalcut::FString num1{};
+  finalcut::FString num2{};
+  finalcut::FString num3{};
+  num1.setNumber(137U);
   num2.setNumber(-512);
   num3.setNumber(3.141592653589793238L, 12);
   std::cout << " setNumber:  "
@@ -550,14 +553,15 @@ void formatedNumberExample()
 {
   // Test: convert and format a integer number with thousand separator
   std::setlocale (LC_NUMERIC, "");
-  finalcut::FString fnum1{}, fnum2{};
+  finalcut::FString fnum1{};
+  finalcut::FString fnum2{};
 #if defined(__LP64__) || defined(_LP64)
   // 64-bit architecture
-  fnum1.setFormatedNumber(0xffffffffffffffffu, '\'');
+  fnum1.setFormatedNumber(0xffffffffffffffffU, '\'');
   fnum2.setFormatedNumber(-9223372036854775807);
 #else
   // 32-bit architecture
-  fnum1.setFormatedNumber(0xffffffffu, '\'');
+  fnum1.setFormatedNumber(0xffffffffU, '\'');
   fnum2.setFormatedNumber(-2147483647);
 #endif
   std::cout << "setFormatedNumber: "

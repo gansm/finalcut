@@ -110,7 +110,7 @@ int main (int argc, char* argv[])
   t.addAccelerator('q');
 
   // Set the timer object t as main widget
-  app.setMainWidget(&t);
+  finalcut::FWidget::setMainWidget(&t);
 
   // Show and start the application
   t.show();

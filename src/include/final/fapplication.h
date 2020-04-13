@@ -130,7 +130,7 @@ class FApplication : public FWidget
     static void           closeConfirmationDialog (FWidget*, FCloseEvent*);
 
     // Callback method
-    void cb_exitApp (FWidget*, FDataPtr);
+    void cb_exitApp (const FWidget*, const FDataPtr);
 
   private:
     // Typedefs
@@ -148,9 +148,9 @@ class FApplication : public FWidget
     void                  escapeKeyPressed();
     void                  performKeyboardAction();
     void                  sendEscapeKeyPressEvent();
-    bool                  sendKeyDownEvent (FWidget*);
-    bool                  sendKeyPressEvent (FWidget*);
-    bool                  sendKeyUpEvent (FWidget*);
+    bool                  sendKeyDownEvent (const FWidget*);
+    bool                  sendKeyPressEvent (const FWidget*);
+    bool                  sendKeyUpEvent (const FWidget*);
     void                  sendKeyboardAccelerator();
     void                  processKeyboardEvent();
     bool                  processDialogSwitchAccelerator();
@@ -210,7 +210,7 @@ inline char** FApplication::getArgv() const
 { return app_argv; }
 
 //----------------------------------------------------------------------
-inline void FApplication::cb_exitApp (FWidget*, FDataPtr)
+inline void FApplication::cb_exitApp (const FWidget*, const FDataPtr)
 { close(); }
 
 }  // namespace finalcut

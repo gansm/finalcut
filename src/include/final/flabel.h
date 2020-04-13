@@ -122,7 +122,7 @@ class FLabel : public FWidget
     void                onAccel (FAccelEvent*) override;
 
     // Callback method
-    void                cb_accelWidgetDestroyed (FWidget*, FDataPtr);
+    void                cb_accelWidgetDestroyed (const FWidget*, const FDataPtr);
 
   private:
     // Constants

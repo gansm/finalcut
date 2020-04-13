@@ -58,12 +58,10 @@ FDialog::FDialog (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FDialog::~FDialog()  // destructor
 {
-  const auto& fapp = FApplication::getApplicationObject();
-  const bool is_quit = fapp->isQuit();
   delete dialog_menu;
   dgl_menuitem = nullptr;
 
-  if ( ! is_quit )
+  if ( ! FApplication::isQuit() )
     switchToPrevWindow(this);
 
   delDialog(this);
@@ -1349,7 +1347,7 @@ inline bool FDialog::isMouseOverMenu (const FPoint& termpos)
 
 //----------------------------------------------------------------------
 inline void FDialog::passEventToSubMenu ( const mouseStates& ms
-                                        , FMouseEvent* ev )
+                                        , const FMouseEvent* ev )
 {
   // Mouse event handover to the dialog menu
   if ( ! ms.mouse_over_menu
@@ -1532,7 +1530,8 @@ void FDialog::resizeMouseUpMove (const mouseStates& ms, bool mouse_up)
 
     if ( ms.termPos != getTermGeometry().getLowerRightPos() )
     {
-      int w{}, h{};
+      int w{};
+      int h{};
       const FPoint deltaPos(ms.termPos - resize_click_pos);
 
       if ( x2 - x2_offset <= int(getMaxWidth()) )
@@ -1613,7 +1612,7 @@ void FDialog::addDialog (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-void FDialog::delDialog (FWidget* obj)
+void FDialog::delDialog (const FWidget* obj)
 {
   // Delete the dialog object obj from the dialog list
   if ( ! getDialogList() || getDialogList()->empty() )
@@ -1634,7 +1633,7 @@ void FDialog::delDialog (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-void FDialog::cb_move (FWidget*, FDataPtr)
+void FDialog::cb_move (const FWidget*, const FDataPtr)
 {
   if ( isZoomed() )
     return;
@@ -1685,7 +1684,7 @@ void FDialog::cb_move (FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FDialog::cb_zoom (FWidget*, FDataPtr)
+void FDialog::cb_zoom (const FWidget*, const FDataPtr)
 {
   dialog_menu->unselectItem();
   dialog_menu->hide();
@@ -1696,7 +1695,7 @@ void FDialog::cb_zoom (FWidget*, FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FDialog::cb_close (FWidget*, FDataPtr)
+void FDialog::cb_close (const FWidget*, const FDataPtr)
 {
   dialog_menu->unselectItem();
   dialog_menu->hide();

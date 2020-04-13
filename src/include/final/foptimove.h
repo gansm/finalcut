@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -135,7 +135,7 @@ class FOptiMove final
     void          setBaudRate (int);
     void          setTabStop (int);
     void          setTermSize (std::size_t, std::size_t);
-    void          setTermEnvironment (termEnv&);
+    void          setTermEnvironment (const termEnv&);
     void          set_cursor_home (char[]);
     void          set_cursor_to_ll (char[]);
     void          set_carriage_return (char[]);
@@ -183,7 +183,7 @@ class FOptiMove final
 
     // Methods
     void          calculateCharDuration();
-    int           capDuration (char[], int);
+    int           capDuration (const char[], int);
     int           capDurationToLength (int);
     int           repeatedAppend (const capability&, volatile int, char*);
     int           relativeMove (char[], int, int, int, int);

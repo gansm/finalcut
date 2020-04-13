@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2019 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -51,8 +51,8 @@ class FPoint
   public:
     // Constructors
     FPoint () = default;
-    FPoint (const FPoint&);  // copy constructor
-    FPoint (FPoint&&);       // move constructor
+    FPoint (const FPoint&);      // copy constructor
+    FPoint (FPoint&&) noexcept;  // move constructor
     FPoint (int, int);
 
     // Destructor
@@ -60,7 +60,7 @@ class FPoint
 
     // Overloaded operators
     FPoint& operator =  (const FPoint&);
-    FPoint& operator =  (FPoint&&);
+    FPoint& operator =  (FPoint&&) noexcept;
     FPoint& operator += (const FPoint&);
     FPoint& operator -= (const FPoint&);
 
@@ -108,7 +108,7 @@ inline FPoint::FPoint (const FPoint& p)  // copy constructor
 { }
 
 //----------------------------------------------------------------------
-inline FPoint::FPoint (FPoint&& p)  // move constructor
+inline FPoint::FPoint (FPoint&& p) noexcept  // move constructor
   : xpos(p.xpos)
   , ypos(p.ypos)
 { p.xpos = p.ypos = 0; }

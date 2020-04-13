@@ -282,7 +282,7 @@ int main (int argc, char* argv[])
   main_dlg.setGeometry (FPoint(8, 16), FSize(26, 7));
 
   // Set dialog main_dlg as main widget
-  app.setMainWidget (&main_dlg);
+  finalcut::FWidget::setMainWidget (&main_dlg);
 
   // Show and start the application
   main_dlg.show();

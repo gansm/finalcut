@@ -77,7 +77,7 @@ FApplication::FApplication ( const int& _argc
 {
   if ( app_object )
   {
-    auto ftermdata = getFTerm().getFTermData();
+    auto ftermdata = FTerm::getFTermData();
     ftermdata->setExitMessage("FApplication: There should be "
                               "only one application object");
     FApplication::exit(EXIT_FAILURE);
@@ -625,7 +625,7 @@ inline void FApplication::sendEscapeKeyPressEvent()
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyDownEvent (FWidget* widget)
+inline bool FApplication::sendKeyDownEvent (const FWidget* widget)
 {
   // Send key down event
   FKeyEvent k_down_ev (fc::KeyDown_Event, keyboard->getKey());
@@ -634,7 +634,7 @@ inline bool FApplication::sendKeyDownEvent (FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyPressEvent (FWidget* widget)
+inline bool FApplication::sendKeyPressEvent (const FWidget* widget)
 {
   // Send key press event
   FKeyEvent k_press_ev (fc::KeyPress_Event, keyboard->getKey());
@@ -643,7 +643,7 @@ inline bool FApplication::sendKeyPressEvent (FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyUpEvent (FWidget* widget)
+inline bool FApplication::sendKeyUpEvent (const FWidget* widget)
 {
   // Send key up event
   FKeyEvent k_up_ev (fc::KeyUp_Event, keyboard->getKey());

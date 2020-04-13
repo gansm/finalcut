@@ -352,7 +352,10 @@ FString getColumnSubString ( const FString& str
                            , std::size_t col_pos, std::size_t col_len )
 {
   FString s(str);
-  std::size_t col_first{1}, col_num{0}, first{1}, num{0};
+  std::size_t col_first{1};
+  std::size_t col_num{0};
+  std::size_t first{1};
+  std::size_t num{0};
 
   if ( col_len == 0 || s.isEmpty() )
     return FString(L"");
@@ -404,7 +407,8 @@ FString getColumnSubString ( const FString& str
 std::size_t getLengthFromColumnWidth ( const FString& str
                                      , std::size_t col_len )
 {
-  std::size_t column_width{0}, length{0};
+  std::size_t column_width{0};
+  std::size_t length{0};
 
   for (auto&& ch : str)
   {

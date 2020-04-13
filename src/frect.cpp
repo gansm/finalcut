@@ -321,7 +321,7 @@ FRect& FRect::operator = (const FRect& r)
 }
 
 //----------------------------------------------------------------------
-FRect& FRect::operator = (FRect&& r)
+FRect& FRect::operator = (FRect&& r) noexcept
 {
   X1 = r.X1;
   Y1 = r.Y1;
@@ -382,7 +382,10 @@ std::ostream& operator << (std::ostream& outstr, const FRect& r)
 //----------------------------------------------------------------------
 std::istream& operator >> (std::istream& instr, FRect& r)
 {
-  int x1{}, y1{}, x2{}, y2{};
+  int x1{};
+  int y1{};
+  int x2{};
+  int y2{};
   instr >> x1;
   instr >> y1;
   instr >> x2;

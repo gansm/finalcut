@@ -1,3 +1,6 @@
+2020-04-13  Markus Gans  <guru.mail@muenster.de>
+	* Several small code improvements
+
 2020-04-09  Markus Gans  <guru.mail@muenster.de>
 	* A dialog can now be displayed without a framing border.
 	  Many thanks to basedtho for this tip
