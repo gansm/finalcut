@@ -57,6 +57,28 @@ FRect::~FRect()  // destructor
 
 // public methods of FRect
 //----------------------------------------------------------------------
+FRect& FRect::operator = (const FRect& r)
+{
+  X1 = r.X1;
+  Y1 = r.Y1;
+  X2 = r.X2;
+  Y2 = r.Y2;
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FRect& FRect::operator = (FRect&& r) noexcept
+{
+  X1 = r.X1;
+  Y1 = r.Y1;
+  X2 = r.X2;
+  Y2 = r.Y2;
+  r.X1 = r.Y1 = 0;
+  r.X2 = r.Y2 = -1;
+  return *this;
+}
+
+//----------------------------------------------------------------------
 bool FRect::isEmpty() const
 {
   return X2 == X1 - 1 && Y2 == Y1 - 1;
@@ -310,27 +332,6 @@ FRect FRect::combined (const FRect& r) const
   return new_rect;
 }
 
-//----------------------------------------------------------------------
-FRect& FRect::operator = (const FRect& r)
-{
-  X1 = r.X1;
-  Y1 = r.Y1;
-  X2 = r.X2;
-  Y2 = r.Y2;
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FRect& FRect::operator = (FRect&& r) noexcept
-{
-  X1 = r.X1;
-  Y1 = r.Y1;
-  X2 = r.X2;
-  Y2 = r.Y2;
-  r.X1 = r.Y1 = 0;
-  r.X2 = r.Y2 = -1;
-  return *this;
-}
 
 // FRect non-member operators
 //----------------------------------------------------------------------

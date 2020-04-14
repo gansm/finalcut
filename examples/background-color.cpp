@@ -34,7 +34,7 @@ using finalcut::FSize;
 // class Background
 //----------------------------------------------------------------------
 
-class Background : public finalcut::FDialog
+class Background final : public finalcut::FDialog
 {
   public:
     // Typedef

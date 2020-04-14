@@ -76,7 +76,7 @@ FString& mapToString ( std::map<FString
 // class Listbox
 //----------------------------------------------------------------------
 
-class Listbox : public FDialog
+class Listbox final : public FDialog
 {
   public:
     // Constructor

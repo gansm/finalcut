@@ -34,7 +34,7 @@ using finalcut::FColorPair;
 // class AttribDlg
 //----------------------------------------------------------------------
 
-class AttribDlg : public finalcut::FDialog
+class AttribDlg final : public finalcut::FDialog
 {
   public:
     // Constructor
@@ -200,7 +200,7 @@ void AttribDlg::adjustSize()
 // class AttribDemo
 //----------------------------------------------------------------------
 
-class AttribDemo : public finalcut::FWidget
+class AttribDemo final : public finalcut::FWidget
 {
   public:
     // Constructor
@@ -425,19 +425,18 @@ void AttribDemo::draw()
 
   const std::vector<std::function<void()> > effect
   {
-    [&] { printDim(); },
-    [&] { printNormal(); },
-    [&] { printBold(); },
-    [&] { printBoldDim(); },
-    [&] { printItalic(); },
-    [&] { printUnderline(); },
-    [&] { printDblUnderline(); },
-    [&] { printCrossesOut(); },
-    [&] { printBlink(); },
-    [&] { printReverse(); },
-    [&] { printStandout(); },
-    [&] { printInvisible(); },
-    [&] { printProtected(); },
+    [this] { printNormal(); },
+    [this] { printBold(); },
+    [this] { printBoldDim(); },
+    [this] { printItalic(); },
+    [this] { printUnderline(); },
+    [this] { printDblUnderline(); },
+    [this] { printCrossesOut(); },
+    [this] { printBlink(); },
+    [this] { printReverse(); },
+    [this] { printStandout(); },
+    [this] { printInvisible(); },
+    [this] { printProtected(); },
   };
 
   for (std::size_t y{0}; y < getParentWidget()->getHeight() - 7; y++)

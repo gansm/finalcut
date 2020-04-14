@@ -538,7 +538,7 @@ void FComboBox::draw()
 {
   const auto& wc = getFWidgetColors();
 
-  const FColorPair button_color = [&] ()
+  const FColorPair button_color = [this, &wc] ()
   {
     if ( list_window.isEmpty() )
       return FColorPair ( wc.scrollbar_button_inactive_fg

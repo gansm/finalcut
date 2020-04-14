@@ -88,8 +88,9 @@ FApplication::FApplication ( const int& _argc
 
   if ( ! (_argc && _argv) )
   {
-    static char* empty{C_STR("")};
     app_argc = 0;
+    static char empty_str[1] = "";
+    auto empty = const_cast<char*>(empty_str);
     app_argv = static_cast<char**>(&empty);
   }
 
@@ -179,8 +180,7 @@ bool FApplication::sendEvent ( const FObject* receiver
 
   if ( receiver->isWidget() )
   {
-    const auto r_widget = static_cast<const FWidget*>(receiver);
-    auto widget = const_cast<FWidget*>(r_widget);
+    const auto widget = static_cast<const FWidget*>(receiver);
 
     if ( getModalDialogCounter() > 0 )
     {
@@ -363,7 +363,13 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
   if ( ret == FMessageBox::Yes )
     ev->accept();
   else
+  {
     ev->ignore();
+
+    // Status bar restore after closing the FMessageBox
+    if ( getStatusBar() )
+      getStatusBar()->drawMessage();
+  }
 }
 
 // private methods of FApplication

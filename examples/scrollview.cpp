@@ -31,7 +31,7 @@ using finalcut::FSize;
 // class Scrollview
 //----------------------------------------------------------------------
 
-class Scrollview : public finalcut::FScrollView
+class Scrollview final : public finalcut::FScrollView
 {
   public:
     // Constructor
@@ -190,7 +190,7 @@ void Scrollview::cb_goNorth (const finalcut::FWidget*, const FDataPtr)
 // class Scrollviewdemo
 //----------------------------------------------------------------------
 
-class Scrollviewdemo : public finalcut::FDialog
+class Scrollviewdemo final : public finalcut::FDialog
 {
   public:
     // Constructor

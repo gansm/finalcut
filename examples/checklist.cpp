@@ -36,7 +36,7 @@ using finalcut::FSize;
 // class CheckList
 //----------------------------------------------------------------------
 
-class CheckList : public finalcut::FDialog
+class CheckList final : public finalcut::FDialog
 {
   public:
     // Constructor

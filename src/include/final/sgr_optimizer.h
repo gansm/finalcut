@@ -56,11 +56,11 @@ class SGRoptimizer final
     // Constructors
     explicit SGRoptimizer (attributebuffer&);
 
-    // Destructor
-    ~SGRoptimizer();
-
     // Disable copy constructor
     SGRoptimizer (const SGRoptimizer&) = delete;
+
+    // Destructor
+    ~SGRoptimizer();
 
     // Disable assignment operator (=)
     SGRoptimizer& operator = (const SGRoptimizer&) = delete;

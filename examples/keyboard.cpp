@@ -26,7 +26,7 @@
 // class Keyboard
 //----------------------------------------------------------------------
 
-class Keyboard : public finalcut::FWidget
+class Keyboard final : public finalcut::FWidget
 {
   public:
     // Constructor

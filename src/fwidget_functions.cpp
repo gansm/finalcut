@@ -60,9 +60,10 @@ FKey getHotkey (const FString& text)
   if ( text.isEmpty() )
     return 0;
 
+  std::size_t i{0};
   const std::size_t length = text.getLength();
 
-  for (std::size_t i{0}; i < length; i++)
+  while ( i < length )
   {
     try
     {
@@ -76,7 +77,10 @@ FKey getHotkey (const FString& text)
     {
       return 0;
     }
+
+    i++;
   }
+
   return 0;
 }
 

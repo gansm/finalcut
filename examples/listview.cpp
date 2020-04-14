@@ -36,7 +36,7 @@ using finalcut::FSize;
 // class Listview
 //----------------------------------------------------------------------
 
-class Listview : public finalcut::FDialog
+class Listview final : public finalcut::FDialog
 {
   public:
     // Constructor

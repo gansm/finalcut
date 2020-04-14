@@ -32,7 +32,7 @@ using finalcut::FSize;
 // class SmallWindow
 //----------------------------------------------------------------------
 
-class SmallWindow : public finalcut::FDialog
+class SmallWindow final : public finalcut::FDialog
 {
   public:
     // Constructor
@@ -160,20 +160,20 @@ void SmallWindow::onTimer (finalcut::FTimerEvent*)
 // class Window
 //----------------------------------------------------------------------
 
-class Window : public finalcut::FDialog
+class Window final : public finalcut::FDialog
 {
   public:
     // Constructor
     explicit Window (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    Window (const Window&) = delete;
+    // Copy constructor
+    Window (const Window&) = default;
 
     // Destructor
     ~Window() override;
 
-    // Disable assignment operator (=)
-    Window& operator = (const Window&) = delete;
+    // Assignment operator (=)
+    Window& operator = (const Window&) = default;
 
   private:
     // Typedefs

@@ -33,7 +33,7 @@ using finalcut::FSize;
 // class ColorChooser
 //----------------------------------------------------------------------
 
-class ColorChooser : public finalcut::FWidget
+class ColorChooser final : public finalcut::FWidget
 {
   public:
     // Constructor
@@ -172,7 +172,7 @@ inline FColor ColorChooser::getBackground()
 // class Brushes
 //----------------------------------------------------------------------
 
-class Brushes : public finalcut::FWidget
+class Brushes final : public finalcut::FWidget
 {
   public:
     // Constructor
@@ -308,7 +308,7 @@ inline void Brushes::setBackground (FColor color)
 // class MouseDraw
 //----------------------------------------------------------------------
 
-class MouseDraw : public finalcut::FDialog
+class MouseDraw final : public finalcut::FDialog
 {
   public:
     // Using-declaration

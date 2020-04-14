@@ -100,7 +100,7 @@ matrix:
       - bash <(curl -s https://codecov.io/bash)
 
   #
-  # sonarcloud
+  # SonarCloud
   #
   - os: linux
     env:

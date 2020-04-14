@@ -491,8 +491,46 @@ FListViewIterator::FListViewIterator (iterator iter)
   : node(iter)
 { }
 
+//----------------------------------------------------------------------
+FListViewIterator::FListViewIterator (const FListViewIterator& i)
+  : iter_path(i.iter_path)  // copy constructor
+  , node(i.node)
+  , position(i.position)
+{ }
+
+//----------------------------------------------------------------------
+FListViewIterator::FListViewIterator (FListViewIterator&& i) noexcept
+  : iter_path(i.iter_path)  // move constructor
+  , node(i.node)
+  , position(i.position)
+{
+  i.iter_path = iterator_stack{};
+  i.node = iterator{};
+  i.position = 0;
+}
 
 // FListViewIterator operators
+//----------------------------------------------------------------------
+FListViewIterator& FListViewIterator::operator = (const FListViewIterator& i)
+{
+  iter_path = i.iter_path;
+  node = i.node;
+  position = i.position;
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FListViewIterator& FListViewIterator::operator = (FListViewIterator&& i) noexcept
+{
+  iter_path = i.iter_path;
+  node = i.node;
+  position = i.position;
+  i.iter_path = iterator_stack{};
+  i.node = iterator{};
+  i.position = 0;
+  return *this;
+}
+
 //----------------------------------------------------------------------
 FListViewIterator& FListViewIterator::operator ++ ()  // prefix
 {

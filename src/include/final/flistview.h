@@ -190,8 +190,12 @@ class FListViewIterator
     // Constructor
     FListViewIterator ();
     FListViewIterator (iterator);
+    FListViewIterator (const FListViewIterator&);  // copy constructor
+    FListViewIterator (FListViewIterator&&) noexcept;  // move constructor
 
     // Overloaded operators
+    FListViewIterator& operator = (const FListViewIterator&);
+    FListViewIterator& operator = (FListViewIterator&&) noexcept;
     FListViewIterator& operator ++ ();     // prefix
     FListViewIterator  operator ++ (int);  // postfix
     FListViewIterator& operator -- ();     // prefix

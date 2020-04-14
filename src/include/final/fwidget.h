@@ -340,27 +340,7 @@ class FWidget : public FVTerm, public FObject
     static void             quit();
 
   protected:
-    struct FCallbackData
-    {
-      FCallbackData()
-        : cb_signal()
-        , cb_instance(nullptr)
-        , cb_function()
-        , data(nullptr)
-      { }
-
-      FCallbackData (FString s, FWidget* i, FCallback c, FDataPtr d)
-        : cb_signal(s)
-        , cb_instance(i)
-        , cb_function(c)
-        , data(d)
-      { }
-
-      FString   cb_signal;
-      FWidget*  cb_instance;
-      FCallback cb_function;
-      FDataPtr  data;
-    };
+    struct FCallbackData;  // forward declaration
 
     // Typedefs
     typedef std::vector<FCallbackData> FCallbackObjects;
@@ -535,6 +515,79 @@ class FWidget : public FVTerm, public FObject
     friend void clearShadow (FWidget*);
     friend void drawFlatBorder (FWidget*);
     friend void clearFlatBorder (FWidget*);
+};
+
+//----------------------------------------------------------------------
+// struct FWidget::FCallbackData
+//----------------------------------------------------------------------
+struct FWidget::FCallbackData
+{
+  // Constructor
+  FCallbackData()
+    : cb_signal()
+    , cb_instance(nullptr)
+    , cb_function()
+    , data(nullptr)
+  { }
+
+  FCallbackData (FString s, FWidget* i, FCallback c, FDataPtr d)
+    : cb_signal(s)
+    , cb_instance(i)
+    , cb_function(c)
+    , data(d)
+  { }
+
+  FCallbackData (const FCallbackData& c)  // copy constructor
+    : cb_signal(c.cb_signal)
+    , cb_instance(c.cb_instance)
+    , cb_function(c.cb_function)
+    , data(c.data)
+  { }
+
+  FCallbackData (FCallbackData&& c) noexcept  // move constructor
+    : cb_signal(c.cb_signal)
+    , cb_instance(c.cb_instance)
+    , cb_function(c.cb_function)
+    , data(c.data)
+  {
+    c.cb_signal.clear();
+    c.cb_instance = nullptr;
+    c.cb_function = nullptr;
+    c.data = nullptr;
+  }
+
+  // Destructor
+  ~FCallbackData()
+  { }
+
+  // Overloaded operators
+  FCallbackData& operator = (const FCallbackData& c)
+  {
+    cb_signal = c.cb_signal;
+    cb_instance = c.cb_instance;
+    cb_function = c.cb_function;
+    data = c.data;
+    return *this;
+  }
+
+  FCallbackData& operator = (FCallbackData&& c) noexcept
+  {
+    cb_signal = c.cb_signal;
+    cb_instance = c.cb_instance;
+    cb_function = c.cb_function;
+    data = c.data;
+    c.cb_signal.clear();
+    c.cb_instance = nullptr;
+    c.cb_function = nullptr;
+    c.data = nullptr;
+    return *this;
+  }
+
+  // Data members
+  FString   cb_signal{};
+  FWidget*  cb_instance{};
+  FCallback cb_function{};
+  FDataPtr  data{};
 };
 
 

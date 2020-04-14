@@ -42,7 +42,7 @@ using finalcut::FSize;
 // class RotoZoomer
 //----------------------------------------------------------------------
 
-class RotoZoomer : public finalcut::FDialog
+class RotoZoomer final : public finalcut::FDialog
 {
   public:
     // Constructor

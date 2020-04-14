@@ -31,7 +31,7 @@ using finalcut::FSize;
 // class Mandelbrot
 //----------------------------------------------------------------------
 
-class Mandelbrot : public finalcut::FDialog
+class Mandelbrot final : public finalcut::FDialog
 {
   public:
     // Constructor

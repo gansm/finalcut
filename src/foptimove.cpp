@@ -566,8 +566,9 @@ int FOptiMove::capDuration (const char cap[], int affcnt)
     if ( p[0] == '$' && p[1] == '<' && std::strchr(p, '>') )
     {
       float num = 0;
+      p += 2;
 
-      for (p += 2; *p != '>'; p++)
+      while ( *p != '>' )
       {
         if ( std::isdigit(uChar(*p)) )
           num = num * 10 + float(*p - '0');
@@ -575,11 +576,13 @@ int FOptiMove::capDuration (const char cap[], int affcnt)
           num *= float(affcnt);
         else if ( *p == '.' )
         {
-          ++p;
+          p++;
 
           if ( *p != '>' && std::isdigit(uChar(*p)) )
             num += float((*p - '0') / 10.0);
         }
+
+        p++;
       }
 
       ms += num * 10;

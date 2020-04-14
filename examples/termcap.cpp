@@ -237,7 +237,9 @@ void debug (finalcut::FApplication& TermApp)
 }
 #else
 void debug (finalcut::FApplication&)
-{ }
+{
+  // FINAL CUT was compiled without debug option
+}
 #endif
 
 //----------------------------------------------------------------------

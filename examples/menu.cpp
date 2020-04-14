@@ -31,7 +31,7 @@ using finalcut::FSize;
 // class Menu
 //----------------------------------------------------------------------
 
-class Menu : public finalcut::FDialog
+class Menu final : public finalcut::FDialog
 {
   public:
     // Constructor

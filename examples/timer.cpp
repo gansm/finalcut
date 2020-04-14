@@ -29,7 +29,7 @@ namespace fc = finalcut::fc;
 // class Timer
 //----------------------------------------------------------------------
 
-class Timer : public finalcut::FWidget
+class Timer final : public finalcut::FWidget
 {
   public:
     // Constructor

@@ -33,7 +33,7 @@ using finalcut::FStyle;
 // class Transparent
 //----------------------------------------------------------------------
 
-class Transparent : public finalcut::FDialog
+class Transparent final : public finalcut::FDialog
 {
   public:
     // Typedef and Enumeration
@@ -74,6 +74,7 @@ Transparent::Transparent ( finalcut::FWidget* parent
   : finalcut::FDialog(parent)
   , type(tt)
 {
+  // Set statusbar text for this window
   setStatusbarMessage("Press Q to quit");
 }
 
@@ -139,7 +140,7 @@ void Transparent::onKeyPress (finalcut::FKeyEvent* ev)
 // class MainWindow
 //----------------------------------------------------------------------
 
-class MainWindow : public finalcut::FDialog
+class MainWindow final : public finalcut::FDialog
 {
   public:
     // Constructor
@@ -212,8 +213,8 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   ibg->setGeometry (FPoint(42, 3), FSize(29, 7));
   ibg->unsetTransparentShadow();
 
-  // Statusbar at the bottom
-  status_bar.setMessage("Press Q to quit");
+  // Set statusbar text for this window
+  setStatusbarMessage("Press Q to quit");
 
   unsetTransparentShadow();
   activateDialog();

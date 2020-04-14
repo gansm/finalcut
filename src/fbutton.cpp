@@ -521,7 +521,9 @@ inline void FButton::drawTopBottomBackground()
 //----------------------------------------------------------------------
 inline void FButton::drawButtonTextLine (const FString& button_text)
 {
+  std::size_t z{0};
   std::size_t pos{};
+  std::size_t columns{0};
   print() << FPoint(2 + int(indent), 1 + int(vcenter_offset))
           << FColorPair (button_fg, button_bg);
 
@@ -547,8 +549,7 @@ inline void FButton::drawButtonTextLine (const FString& button_text)
   if ( active_focus && (isMonochron() || getMaxColor() < 16) )
     setBold();
 
-  for ( std::size_t z{0}, columns{0}
-      ; pos < center_offset + column_width && columns + 2 < getWidth(); )
+  while ( pos < center_offset + column_width && columns + 2 < getWidth() )
   {
     if ( z == hotkeypos && getFlags().active )
     {

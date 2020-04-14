@@ -42,7 +42,7 @@ constexpr lDouble PI{3.141592653589793238L};
 // class Button
 //----------------------------------------------------------------------
 
-class Button : public finalcut::FButton
+class Button final : public finalcut::FButton
 {
   public:
     // Constructor
@@ -106,7 +106,7 @@ void Button::onKeyPress (finalcut::FKeyEvent* ev)
 // class Calc
 //----------------------------------------------------------------------
 
-class Calc : public finalcut::FDialog
+class Calc final : public finalcut::FDialog
 {
   public:
     // Constructor

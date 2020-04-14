@@ -31,7 +31,7 @@ using finalcut::FSize;
 // class Watch
 //----------------------------------------------------------------------
 
-class Watch : public finalcut::FDialog
+class Watch final : public finalcut::FDialog
 {
   public:
     // Constructor

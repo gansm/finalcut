@@ -36,7 +36,7 @@ using finalcut::FSize;
 // class SegmentView
 //----------------------------------------------------------------------
 
-class SegmentView : public finalcut::FDialog
+class SegmentView final : public finalcut::FDialog
 {
   public:
     explicit SegmentView (finalcut::FWidget* = nullptr);

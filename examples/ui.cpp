@@ -38,20 +38,20 @@ using finalcut::FSize;
 // class ProgressDialog
 //----------------------------------------------------------------------
 
-class ProgressDialog : public finalcut::FDialog
+class ProgressDialog final : public finalcut::FDialog
 {
   public:
     // Constructor
     explicit ProgressDialog (finalcut::FWidget* = nullptr);
 
-    // Disable copy constructor
-    ProgressDialog (const ProgressDialog&) = delete;
+    // Copy constructor
+    ProgressDialog (const ProgressDialog&) = default;
 
     // Destructor
     ~ProgressDialog() override;
 
-    // Disable assignment operator (=)
-    ProgressDialog& operator = (const ProgressDialog&) = delete;
+    // Assignment operator (=)
+    ProgressDialog& operator = (const ProgressDialog&) = default;
 
   private:
     // Event handlers
@@ -181,7 +181,7 @@ void ProgressDialog::cb_exit_bar (const finalcut::FWidget*, const FDataPtr)
 // class TextWindow
 //----------------------------------------------------------------------
 
-class TextWindow : public finalcut::FDialog
+class TextWindow final : public finalcut::FDialog
 {
   public:
     // Constructor
@@ -247,7 +247,7 @@ void TextWindow::adjustSize()
 // class MyDialog
 //----------------------------------------------------------------------
 
-class MyDialog : public finalcut::FDialog
+class MyDialog final : public finalcut::FDialog
 {
   public:
     // Constructor

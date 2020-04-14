@@ -99,22 +99,7 @@ class FVTerm
     typedef std::function<void()> FPreprocessingFunction;
 
     struct FTermArea;  // forward declaration
-
-    struct FVTermPreprocessing
-    {
-      FVTermPreprocessing()
-        : instance(nullptr)
-        , function(nullptr)
-      { }
-
-      FVTermPreprocessing (const FVTerm* i, const FPreprocessingFunction& f)
-        : instance(i)
-        , function(f)
-      { }
-
-      const FVTerm* instance;
-      FPreprocessingFunction function;
-    };
+    struct FVTermPreprocessing; // forward declaration
 
     typedef std::vector<FVTermPreprocessing> FPreprocessing;
 
@@ -527,14 +512,17 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   public:
     // Constructor
     FTermArea() = default;
+
     // Disable copy constructor
     FTermArea (const FTermArea&) = delete;
+
     // Destructor
     ~FTermArea() = default;
 
     // Disable assignment operator (=)
     FTermArea& operator = (const FTermArea&) = delete;
 
+    // Data members
     int offset_left{0};        // Distance from left terminal side
     int offset_top{0};         // Distance from top of the terminal
     int width{-1};             // Window width
@@ -552,6 +540,63 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
     bool input_cursor_visible{false};
     bool has_changes{false};
     bool visible{false};
+};
+
+
+//----------------------------------------------------------------------
+// struct FVTerm::FVTermPreprocessing
+//----------------------------------------------------------------------
+
+struct FVTerm::FVTermPreprocessing
+{
+  // Constructor
+  FVTermPreprocessing()
+    : instance(nullptr)
+    , function(nullptr)
+  { }
+
+  FVTermPreprocessing (const FVTerm* i, const FPreprocessingFunction& f)
+    : instance(i)
+    , function(f)
+  { }
+
+  FVTermPreprocessing (const FVTermPreprocessing& p)  // copy constructor
+    : instance(p.instance)
+    , function(p.function)
+  { }
+
+  FVTermPreprocessing (FVTermPreprocessing&& p) noexcept  // move constructor
+    : instance(p.instance)
+    , function(p.function)
+  {
+    p.instance = nullptr;
+    p.function = nullptr;
+  }
+
+  // Overloaded operators
+  FVTermPreprocessing& operator = (const FVTermPreprocessing& p)
+  {
+    instance = p.instance;
+    function = p.function;
+    return *this;
+  }
+
+  FVTermPreprocessing& operator = (FVTermPreprocessing&& p) noexcept
+  {
+    instance = p.instance;
+    function = p.function;
+    p.instance = nullptr;
+    p.function = nullptr;
+    return *this;
+  }
+
+  // Destructor
+  ~FVTermPreprocessing()
+  { }
+
+  // Data members
+  const FVTerm* instance{};
+  FPreprocessingFunction function{};
 };
 
 

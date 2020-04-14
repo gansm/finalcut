@@ -66,6 +66,7 @@ bool sortAscending ( const finalcut::FObject* lhs
       const sInt64 r_number = StringToNumber(r_item->getText(column));
       return bool( l_number < r_number );  // lhs < rhs
     }
+
     case 3:
     {
       std::setlocale(LC_NUMERIC, "C");
@@ -73,6 +74,9 @@ bool sortAscending ( const finalcut::FObject* lhs
       const double r_number = r_item->getText(column).toDouble();
       return bool( l_number < r_number );  // lhs < rhs
     }
+
+    default:
+      break;  // Don't do anything
   }
 
   return false;
@@ -102,6 +106,9 @@ bool sortDescending ( const finalcut::FObject* lhs
       const double r_number = r_item->getText(column).toDouble();
       return bool( l_number > r_number );  // lhs > rhs
     }
+
+    default:
+      break;  // Don't do anything
   }
 
   return false;
@@ -112,7 +119,7 @@ bool sortDescending ( const finalcut::FObject* lhs
 // class Treeview
 //----------------------------------------------------------------------
 
-class Treeview : public finalcut::FDialog
+class Treeview final : public finalcut::FDialog
 {
   public:
     // Constructor
