@@ -492,6 +492,10 @@ FListViewIterator::FListViewIterator (iterator iter)
 { }
 
 //----------------------------------------------------------------------
+FListViewIterator::~FListViewIterator()  // destructor
+{ }
+
+//----------------------------------------------------------------------
 FListViewIterator::FListViewIterator (const FListViewIterator& i)
   : iter_path(i.iter_path)  // copy constructor
   , node(i.node)
