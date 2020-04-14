@@ -44,14 +44,14 @@ class ProgressDialog final : public finalcut::FDialog
     // Constructor
     explicit ProgressDialog (finalcut::FWidget* = nullptr);
 
-    // Copy constructor
-    ProgressDialog (const ProgressDialog&) = default;
+    // Disable copy constructor
+    ProgressDialog (const ProgressDialog&) = delete;
 
     // Destructor
     ~ProgressDialog() override;
 
-    // Assignment operator (=)
-    ProgressDialog& operator = (const ProgressDialog&) = default;
+    // Disable assignment operator (=)
+    ProgressDialog& operator = (const ProgressDialog&) = delete;
 
   private:
     // Event handlers

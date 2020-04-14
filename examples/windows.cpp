@@ -166,14 +166,14 @@ class Window final : public finalcut::FDialog
     // Constructor
     explicit Window (finalcut::FWidget* = nullptr);
 
-    // Copy constructor
-    Window (const Window&) = default;
+    // Disable copy constructor
+    Window (const Window&) = delete;
 
     // Destructor
     ~Window() override;
 
-    // Assignment operator (=)
-    Window& operator = (const Window&) = default;
+    // Disable assignment operator (=)
+    Window& operator = (const Window&) = delete;
 
   private:
     // Typedefs
