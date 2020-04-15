@@ -95,7 +95,7 @@ class FKeyboard final
     // Destructor
     ~FKeyboard();
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FKeyboard& operator = (const FKeyboard&) = delete;
 
     // Accessors

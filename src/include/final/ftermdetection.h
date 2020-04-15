@@ -87,7 +87,7 @@ class FTermDetection final
     // Destructor
     ~FTermDetection();
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FTermDetection& operator = (const FTermDetection&) = delete;
 
     // Accessor

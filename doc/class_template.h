@@ -62,7 +62,7 @@ class FClassName
     // Destructor
     ~FClassName();
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FClassName& operator = (const FClassName&) = delete;
 
     // Overloaded operators

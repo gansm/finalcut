@@ -74,7 +74,7 @@ class FSpinBox : public FWidget
     // Destructor
     ~FSpinBox() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FSpinBox& operator = (const FSpinBox&) = delete;
 
     // Accessors

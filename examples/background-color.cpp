@@ -49,7 +49,7 @@ class Background final : public finalcut::FDialog
     // Destructor
     ~Background();
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     Background& operator = (const Background&) = delete;
 
   private:

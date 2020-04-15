@@ -108,7 +108,7 @@ class FFileDialog : public FDialog
     // Destructor
     ~FFileDialog() override;
 
-    // Assignment operator (=)
+    // copy assignment operator (=)
     FFileDialog& operator = (const FFileDialog&);
 
     // Accessors

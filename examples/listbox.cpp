@@ -88,7 +88,7 @@ class Listbox final : public FDialog
     // Destructor
     ~Listbox() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     Listbox& operator = (const Listbox&) = delete;
 
   private:

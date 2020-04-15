@@ -126,7 +126,7 @@ class FVTerm
     // Destructor
     virtual ~FVTerm();
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FVTerm& operator = (const FVTerm&) = delete;
 
     // Overloaded operators
@@ -519,7 +519,7 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
     // Destructor
     ~FTermArea() = default;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FTermArea& operator = (const FTermArea&) = delete;
 
     // Data members

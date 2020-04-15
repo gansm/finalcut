@@ -75,7 +75,7 @@ class FLabel : public FWidget
     // Destructor
     ~FLabel() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FLabel& operator = (const FLabel&) = delete;
 
     // Overloaded operators

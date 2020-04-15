@@ -67,7 +67,7 @@ class FTermData final
     ~FTermData()
     { }
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FTermData& operator = (const FTermData&) = delete;
 
     // Accessors

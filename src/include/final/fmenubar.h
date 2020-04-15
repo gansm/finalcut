@@ -79,7 +79,7 @@ class FMenuBar : public FWindow, public FMenuList
     // Destructor
     ~FMenuBar() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FMenuBar& operator = (const FMenuBar&) = delete;
 
     // Accessors

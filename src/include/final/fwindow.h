@@ -79,7 +79,7 @@ class FWindow : public FWidget
     // Destructor
     ~FWindow () override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FWindow& operator = (const FWindow&) = delete;
 
     // Accessors

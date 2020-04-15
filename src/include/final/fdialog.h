@@ -87,7 +87,7 @@ class FDialog : public FWindow
     // Destructor
     ~FDialog() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FDialog& operator = (const FDialog&) = delete;
 
     // Accessors

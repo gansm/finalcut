@@ -62,7 +62,7 @@ class FStyle
     // Destructor
     ~FStyle() = default;
 
-    // Assignment operator (=)
+    // copy assignment operator (=)
     FStyle& operator = (const FStyle& style)
     {
       attribute = style.attribute;

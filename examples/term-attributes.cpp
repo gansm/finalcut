@@ -46,7 +46,7 @@ class AttribDlg final : public finalcut::FDialog
     // Destructor
     ~AttribDlg() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     AttribDlg& operator = (const AttribDlg&) = delete;
 
     // Methods

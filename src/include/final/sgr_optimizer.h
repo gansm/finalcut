@@ -62,7 +62,7 @@ class SGRoptimizer final
     // Destructor
     ~SGRoptimizer();
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     SGRoptimizer& operator = (const SGRoptimizer&) = delete;
 
     // Method

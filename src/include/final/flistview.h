@@ -80,7 +80,7 @@ class FListViewItem : public FObject
     // Destructor
     ~FListViewItem() override;
 
-    // Assignment operator (=)
+    // copy assignment operator (=)
     FListViewItem& operator = (const FListViewItem&);
 
     // Accessors
@@ -274,7 +274,7 @@ class FListView : public FWidget
     // Destructor
     ~FListView() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FListView& operator = (const FListView&) = delete;
 
     // Accessors

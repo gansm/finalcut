@@ -85,7 +85,7 @@ class FObject
     // Destructor
     virtual ~FObject();
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FObject& operator = (const FObject&) = delete;
 
     // Accessors

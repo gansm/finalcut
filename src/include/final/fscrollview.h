@@ -76,7 +76,7 @@ class FScrollView : public FWidget
     // Destructor
     ~FScrollView() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FScrollView& operator = (const FScrollView&) = delete;
 
     // Accessors

@@ -74,7 +74,7 @@ class FSwitch : public FToggleButton
     // Destructor
     ~FSwitch() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FSwitch& operator = (const FSwitch&) = delete;
 
     // Accessor

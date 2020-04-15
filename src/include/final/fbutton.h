@@ -70,7 +70,7 @@ class FButton : public FWidget
     // Destructor
     ~FButton() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FButton& operator = (const FButton&) = delete;
 
     // Overloaded operator

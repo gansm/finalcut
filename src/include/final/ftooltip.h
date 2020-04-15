@@ -76,7 +76,7 @@ class FToolTip : public FWindow
     // Destructor
     ~FToolTip () override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FToolTip& operator = (const FToolTip&) = delete;
 
     // Accessors

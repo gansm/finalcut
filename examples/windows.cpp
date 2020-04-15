@@ -44,7 +44,7 @@ class SmallWindow final : public finalcut::FDialog
     // Destructor
     ~SmallWindow() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     SmallWindow& operator = (const SmallWindow&) = delete;
 
   private:
@@ -172,7 +172,7 @@ class Window final : public finalcut::FDialog
     // Destructor
     ~Window() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     Window& operator = (const Window&) = delete;
 
   private:
@@ -187,7 +187,7 @@ class Window final : public finalcut::FDialog
         // Disable copy constructor
         win_data (const win_data&) = delete;
 
-        // Disable assignment operator (=)
+        // Disable copy assignment operator (=)
         win_data& operator = (const win_data&) = delete;
 
         // Data members

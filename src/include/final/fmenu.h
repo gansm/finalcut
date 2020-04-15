@@ -81,7 +81,7 @@ class FMenu : public FWindow, public FMenuList
     // Destructor
     ~FMenu() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FMenu& operator = (const FMenu&) = delete;
 
     // Accessors

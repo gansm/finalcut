@@ -123,7 +123,7 @@ class FOptiAttr final
     // Destructor
     ~FOptiAttr();
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FOptiAttr& operator = (const FOptiAttr&) = delete;
 
     // Accessors

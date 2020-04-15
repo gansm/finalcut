@@ -169,7 +169,7 @@ class FTerm final
     // Destructor
     ~FTerm();
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FTerm& operator = (const FTerm&) = delete;
 
     // Accessors

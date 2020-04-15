@@ -43,7 +43,7 @@ class Menu final : public finalcut::FDialog
     // Destructor
     ~Menu() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     Menu& operator = (const Menu&) = delete;
 
   private:

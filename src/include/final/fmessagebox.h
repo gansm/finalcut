@@ -97,7 +97,7 @@ class FMessageBox : public FDialog
     // Destructor
     ~FMessageBox() override;
 
-    // Assignment operator (=)
+    // copy assignment operator (=)
     FMessageBox& operator = (const FMessageBox&);
 
     // Accessor

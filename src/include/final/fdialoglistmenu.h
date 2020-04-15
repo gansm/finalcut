@@ -80,7 +80,7 @@ class FDialogListMenu : public FMenu
     // Destructor
     ~FDialogListMenu() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FDialogListMenu& operator = (const FDialogListMenu&) = delete;
 
     // Accessors

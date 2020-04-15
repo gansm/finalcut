@@ -43,7 +43,7 @@ class Scrollview final : public finalcut::FScrollView
     // Destructor
     ~Scrollview() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     Scrollview& operator = (const Scrollview&) = delete;
 
     // Mutator

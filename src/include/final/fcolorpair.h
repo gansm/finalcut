@@ -64,7 +64,7 @@ class FColorPair
     // Destructor
     ~FColorPair() = default;
 
-    // Assignment operator (=)
+    // copy assignment operator (=)
     FColorPair& operator = (const FColorPair& pair)
     {
       fg_color = pair.fg_color;

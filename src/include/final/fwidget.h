@@ -180,7 +180,7 @@ class FWidget : public FVTerm, public FObject
     // Destructor
     ~FWidget() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FWidget& operator = (const FWidget&) = delete;
 
     // Accessors

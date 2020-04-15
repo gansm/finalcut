@@ -454,7 +454,7 @@ class FMouseControl
     // Destructor
     virtual ~FMouseControl();
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FMouseControl& operator = (const FMouseControl&) = delete;
 
     // Accessors

@@ -67,7 +67,7 @@ class FMenuList
     // Destructor
     virtual ~FMenuList();
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FMenuList& operator = (const FMenuList&) = delete;
 
     // Accessors

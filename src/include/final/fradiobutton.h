@@ -74,7 +74,7 @@ class FRadioButton : public FToggleButton
     // Destructor
     ~FRadioButton() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FRadioButton& operator = (const FRadioButton&) = delete;
 
     // Accessor

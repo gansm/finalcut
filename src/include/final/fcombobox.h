@@ -79,7 +79,7 @@ class FDropDownListBox : public FWindow
     // Destructor
     ~FDropDownListBox () override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FDropDownListBox& operator = (const FDropDownListBox&) = delete;
 
     // Accessors
@@ -141,7 +141,7 @@ class FComboBox : public FWidget
     // Destructor
     ~FComboBox() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FComboBox& operator = (const FComboBox&) = delete;
 
     // Overloaded operators

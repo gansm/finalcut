@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019 Markus Gans                                           *
+* Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -60,7 +60,7 @@ class FStartOptions final
     // Destructor
     ~FStartOptions();
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FStartOptions& operator = (const FStartOptions&) = delete;
 
     // Accessors

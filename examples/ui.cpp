@@ -50,7 +50,7 @@ class ProgressDialog final : public finalcut::FDialog
     // Destructor
     ~ProgressDialog() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     ProgressDialog& operator = (const ProgressDialog&) = delete;
 
   private:
@@ -193,7 +193,7 @@ class TextWindow final : public finalcut::FDialog
     // Destructor
     ~TextWindow() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     TextWindow& operator = (const TextWindow&) = delete;
 
     // Method
@@ -259,7 +259,7 @@ class MyDialog final : public finalcut::FDialog
     // Destructor
     ~MyDialog() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     MyDialog& operator = (const MyDialog&) = delete;
 
   private:

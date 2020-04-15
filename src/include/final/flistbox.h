@@ -77,7 +77,7 @@ class FListBoxItem
     // Destructor
     virtual ~FListBoxItem();
 
-    // Assignment operator (=)
+    // copy copy assignment operator (=)
     FListBoxItem& operator = (const FListBoxItem&);
 
     // Accessors
@@ -156,7 +156,7 @@ class FListBox : public FWidget
     // Destructor
     ~FListBox() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FListBox& operator = (const FListBox&) = delete;
 
     // Accessors

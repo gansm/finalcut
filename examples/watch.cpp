@@ -43,7 +43,7 @@ class Watch final : public finalcut::FDialog
     // Destructor
     ~Watch() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     Watch& operator = (const Watch&) = delete;
 
     // Method

@@ -48,7 +48,7 @@ class Listview final : public finalcut::FDialog
     // Destructor
     ~Listview() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     Listview& operator = (const Listview&) = delete;
 
   private:

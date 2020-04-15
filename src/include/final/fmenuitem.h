@@ -84,7 +84,7 @@ class FMenuItem : public FWidget
     // Destructor
     ~FMenuItem() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FMenuItem& operator = (const FMenuItem&) = delete;
 
     // Accessors

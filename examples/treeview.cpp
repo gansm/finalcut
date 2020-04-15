@@ -131,7 +131,7 @@ class Treeview final : public finalcut::FDialog
     // Destructor
     ~Treeview() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     Treeview& operator = (const Treeview&) = delete;
 
   private:

@@ -98,7 +98,7 @@ class FApplication : public FWidget
     // Destructor
     ~FApplication() override;
 
-    // Disable assignment operator (=)
+    // Disable copy assignment operator (=)
     FApplication& operator = (const FApplication&) = delete;
 
     // Accessors
