@@ -116,17 +116,17 @@ class FApplication : public FWidget
     void                  exitLoop();
     static void           exit (int = 0);
     void                  quit();
-    static bool           sendEvent (const FObject*, const FEvent*);
-    static void           queueEvent (const FObject*, const FEvent*);
-    static void           sendQueuedEvents ();
-    static bool           eventInQueue();
-    static bool           removeQueuedEvent (const FObject*);
+    static bool           sendEvent (FObject*, FEvent*);
+    void                  queueEvent (FObject*, FEvent*);
+    void                  sendQueuedEvents ();
+    bool                  eventInQueue();
+    bool                  removeQueuedEvent (const FObject*);
     static FWidget*       processParameters (const int&, char*[]);
     static void           showParameterUsage ()
     #if defined(__clang__) || defined(__GNUC__)
       __attribute__((noreturn))
     #endif
-                       ;
+                          ;
     static void           closeConfirmationDialog (FWidget*, FCloseEvent*);
 
     // Callback method
@@ -134,8 +134,8 @@ class FApplication : public FWidget
 
   private:
     // Typedefs
-    typedef std::pair<const FObject*, std::shared_ptr<const FEvent> > eventPair;
-    typedef std::deque<eventPair> eventQueue;
+    typedef std::pair<FObject*, std::shared_ptr<FEvent> > eventPair;
+    typedef std::deque<eventPair> FEventQueue;
 
     // Methods
     void                  init (uInt64, uInt64);
@@ -148,9 +148,9 @@ class FApplication : public FWidget
     void                  escapeKeyPressed();
     void                  performKeyboardAction();
     void                  sendEscapeKeyPressEvent();
-    bool                  sendKeyDownEvent (const FWidget*);
-    bool                  sendKeyPressEvent (const FWidget*);
-    bool                  sendKeyUpEvent (const FWidget*);
+    bool                  sendKeyDownEvent (FWidget*);
+    bool                  sendKeyPressEvent (FWidget*);
+    bool                  sendKeyUpEvent (FWidget*);
     void                  sendKeyboardAccelerator();
     void                  processKeyboardEvent();
     bool                  processDialogSwitchAccelerator();
@@ -178,20 +178,20 @@ class FApplication : public FWidget
     void                  processResizeEvent();
     void                  processCloseWidget();
     bool                  processNextEvent();
-    void                  performTimerAction ( const FObject*
-                                             , const FEvent* ) override;
+    void                  performTimerAction (FObject*, FEvent*) override;
+    static bool           isEventProcessable (FObject*, FEvent*);
 
     // Data members
-    int                   app_argc;
-    char**                app_argv;
+    int                   app_argc{};
+    char**                app_argv{};
     uInt64                key_timeout{100000};        // 100 ms
     uInt64                dblclick_interval{500000};  // 500 ms
-    static FMouseControl* mouse;
-    static eventQueue*    event_queue;
+    FEventQueue           event_queue{};
     static int            quit_code;
     static bool           quit_now;
     static int            loop_level;
     static bool           process_timer_event;
+    static FMouseControl* mouse;
     static FKeyboard*     keyboard;
     static FWidget*       keyboard_widget;
 };

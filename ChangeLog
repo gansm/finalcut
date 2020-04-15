@@ -1,5 +1,6 @@
 2020-04-15  Markus Gans  <guru.mail@muenster.de>
 	* Better support of general arrow keys
+	* Improved event handling code
 
 2020-04-13  Markus Gans  <guru.mail@muenster.de>
 	* Several small code improvements

@@ -427,7 +427,7 @@ uInt FObject::processTimerEvent()
 }
 
 //----------------------------------------------------------------------
-void FObject::performTimerAction (const FObject*, const FEvent*)
+void FObject::performTimerAction (FObject*, FEvent*)
 { }
 
 }  // namespace finalcut

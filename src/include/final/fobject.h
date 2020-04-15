@@ -153,8 +153,7 @@ class FObject
 
   private:
     // Method
-    virtual void          performTimerAction ( const FObject*
-                                             , const FEvent* );
+    virtual void          performTimerAction (FObject*, FEvent*);
 
     // Data members
     FObject*              parent_obj{nullptr};

@@ -405,7 +405,7 @@ class FWidget : public FVTerm, public FObject
     void                    emitWheelCallback (const FWheelEvent*);
     void                    setWindowFocus (bool);
     FCallbackPtr            getCallbackPtr (FCallback);
-    bool                    changeFocus (FWidget*, const FWidget*, fc::FocusTypes);
+    bool                    changeFocus (FWidget*, FWidget*, fc::FocusTypes);
     void                    processDestroy();
     virtual void            draw();
     void                    drawWindows();

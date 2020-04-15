@@ -105,7 +105,8 @@ FWidget::~FWidget()  // destructor
 {
   processDestroy();
   delCallbacks();
-  FApplication::removeQueuedEvent(this);
+  auto app_object = FApplication::getApplicationObject();
+  app_object->removeQueuedEvent(this);
 
   // unset clicked widget
   if ( this == getClickedWidget() )
@@ -1888,7 +1889,7 @@ FWidget::FCallbackPtr FWidget::getCallbackPtr (FCallback cb_function)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::changeFocus ( FWidget* follower, const FWidget* parent
+bool FWidget::changeFocus ( FWidget* follower, FWidget* parent
                           , fc::FocusTypes ft )
 {
   FFocusEvent out (fc::FocusOut_Event);

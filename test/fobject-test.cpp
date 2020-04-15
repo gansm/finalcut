@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -69,7 +69,7 @@ class FObject_protected : public finalcut::FObject
       return finalcut::FObject::isWidget();
     }
 
-    virtual void performTimerAction (const FObject*, const finalcut::FEvent*)
+    virtual void performTimerAction (FObject*, finalcut::FEvent*)
     {
       std::cout << ".";
       fflush(stdout);

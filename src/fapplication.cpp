@@ -59,8 +59,6 @@ int            FApplication::loop_level      {0};        // event loop level
 int            FApplication::quit_code       {0};
 bool           FApplication::quit_now        {false};
 
-FApplication::eventQueue* FApplication::event_queue{nullptr};
-
 
 //----------------------------------------------------------------------
 // class FApplication
@@ -100,10 +98,6 @@ FApplication::FApplication ( const int& _argc
 //----------------------------------------------------------------------
 FApplication::~FApplication()  // destructor
 {
-  if ( event_queue )
-    delete event_queue;
-
-  event_queue = nullptr;
   app_object = nullptr;
 }
 
@@ -172,75 +166,27 @@ void FApplication::quit()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::sendEvent ( const FObject* receiver
-                             , const FEvent* event )
+bool FApplication::sendEvent (FObject* receiver, FEvent* event )
 {
   if ( quit_now || app_exit_loop || ! receiver )
     return false;
 
-  if ( receiver->isWidget() )
-  {
-    const auto widget = static_cast<const FWidget*>(receiver);
+  if ( ! isEventProcessable (receiver, event) )
+    return false;
 
-    if ( getModalDialogCounter() > 0 )
-    {
-      const FWidget* window;
-
-      if ( widget->isWindowWidget() )
-        window = widget;
-      else
-        window = FWindow::getWindowWidget(widget);
-
-      // block events for widgets in non modal windows
-      if ( window
-        && ! window->getFlags().modal
-        && ! window->isMenuWidget() )
-      {
-        switch ( uInt(event->type()) )
-        {
-          case fc::KeyPress_Event:
-          case fc::KeyUp_Event:
-          case fc::KeyDown_Event:
-          case fc::MouseDown_Event:
-          case fc::MouseUp_Event:
-          case fc::MouseDoubleClick_Event:
-          case fc::MouseWheel_Event:
-          case fc::MouseMove_Event:
-          case fc::FocusIn_Event:
-          case fc::FocusOut_Event:
-          case fc::ChildFocusIn_Event:
-          case fc::ChildFocusOut_Event:
-          case fc::Accelerator_Event:
-            return false;
-
-          default:
-            break;
-        }
-      }
-    }
-
-    // Throw away mouse events for disabled widgets
-    if ( event->type() >= fc::MouseDown_Event
-      && event->type() <= fc::MouseMove_Event
-      && ! widget->isEnabled() )
-      return false;
-  }
-
-  // Sends event event directly to receiver
-  auto r = const_cast<FObject*>(receiver);
-  return r->event(const_cast<FEvent*>(event));
+  // Sends the event event directly to receiver
+  return receiver->event(event);
 }
 
 //----------------------------------------------------------------------
-void FApplication::queueEvent ( const FObject* receiver
-                              , const FEvent* event )
+void FApplication::queueEvent (FObject* receiver, FEvent* event)
 {
   if ( ! receiver )
     return;
 
   // queue this event
-  eventPair send_event (receiver, std::make_shared<const FEvent>(*event));
-  event_queue->push_back(send_event);
+  eventPair send_event (receiver, std::make_shared<FEvent>(*event));
+  event_queue.push_back(send_event);
 }
 
 //----------------------------------------------------------------------
@@ -248,9 +194,9 @@ void FApplication::sendQueuedEvents()
 {
   while ( eventInQueue() )
   {
-    sendEvent( event_queue->front().first,
-               event_queue->front().second.get() );
-    event_queue->pop_front();
+    sendEvent( event_queue.front().first,
+               event_queue.front().second.get() );
+    event_queue.pop_front();
   }
 }
 
@@ -258,7 +204,7 @@ void FApplication::sendQueuedEvents()
 bool FApplication::eventInQueue()
 {
   if ( app_object )
-    return ( ! event_queue->empty() );
+    return ( ! event_queue.empty() );
   else
     return false;
 }
@@ -273,13 +219,13 @@ bool FApplication::removeQueuedEvent (const FObject* receiver)
     return false;
 
   bool retval{false};
-  auto iter = event_queue->begin();
+  auto iter = event_queue.begin();
 
-  while ( iter != event_queue->end() )
+  while ( iter != event_queue.end() )
   {
     if ( iter->first == receiver )
     {
-      iter = event_queue->erase(iter);
+      iter = event_queue.erase(iter);
       retval = true;
     }
     else
@@ -404,16 +350,6 @@ void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
   // Set the default double click interval
   if ( mouse )
     mouse->setDblclickInterval (dblclick_time);
-
-  try
-  {
-    event_queue = new eventQueue;
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    std::abort();
-  }
 }
 
 //----------------------------------------------------------------------
@@ -631,7 +567,7 @@ inline void FApplication::sendEscapeKeyPressEvent()
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyDownEvent (const FWidget* widget)
+inline bool FApplication::sendKeyDownEvent (FWidget* widget)
 {
   // Send key down event
   FKeyEvent k_down_ev (fc::KeyDown_Event, keyboard->getKey());
@@ -640,7 +576,7 @@ inline bool FApplication::sendKeyDownEvent (const FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyPressEvent (const FWidget* widget)
+inline bool FApplication::sendKeyPressEvent (FWidget* widget)
 {
   // Send key press event
   FKeyEvent k_press_ev (fc::KeyPress_Event, keyboard->getKey());
@@ -649,7 +585,7 @@ inline bool FApplication::sendKeyPressEvent (const FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyUpEvent (const FWidget* widget)
+inline bool FApplication::sendKeyUpEvent (FWidget* widget)
 {
   // Send key up event
   FKeyEvent k_up_ev (fc::KeyUp_Event, keyboard->getKey());
@@ -1180,10 +1116,63 @@ bool FApplication::processNextEvent()
 }
 
 //----------------------------------------------------------------------
-void FApplication::performTimerAction ( const FObject* receiver
-                                      , const FEvent* event )
+void FApplication::performTimerAction (FObject* receiver, FEvent* event)
 {
   sendEvent (receiver, event);
+}
+
+//----------------------------------------------------------------------
+bool FApplication::isEventProcessable (FObject* receiver, FEvent* event )
+{
+  if ( ! receiver->isWidget() )  // No restrictions for non-widgets
+    return true;
+
+  const auto widget = static_cast<const FWidget*>(receiver);
+
+  if ( getModalDialogCounter() > 0 )
+  {
+    const FWidget* window;
+
+    if ( widget->isWindowWidget() )
+      window = widget;
+    else
+      window = FWindow::getWindowWidget(widget);
+
+    // block events for widgets in non modal windows
+    if ( window
+      && ! window->getFlags().modal
+      && ! window->isMenuWidget() )
+    {
+      switch ( uInt(event->type()) )
+      {
+        case fc::KeyPress_Event:
+        case fc::KeyUp_Event:
+        case fc::KeyDown_Event:
+        case fc::MouseDown_Event:
+        case fc::MouseUp_Event:
+        case fc::MouseDoubleClick_Event:
+        case fc::MouseWheel_Event:
+        case fc::MouseMove_Event:
+        case fc::FocusIn_Event:
+        case fc::FocusOut_Event:
+        case fc::ChildFocusIn_Event:
+        case fc::ChildFocusOut_Event:
+        case fc::Accelerator_Event:
+          return false;
+
+        default:
+          break;
+      }
+    }
+  }
+
+  // Throw away mouse events for disabled widgets
+  if ( event->type() >= fc::MouseDown_Event
+    && event->type() <= fc::MouseMove_Event
+    && ! widget->isEnabled() )
+    return false;
+
+  return true;
 }
 
 }  // namespace finalcut
