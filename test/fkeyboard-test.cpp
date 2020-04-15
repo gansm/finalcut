@@ -53,6 +53,7 @@ FKeyMap fkey[] =
   { finalcut::fc::Fkey_dl        , 0                 , "kL" },  // delete-line key
   { finalcut::fc::Fkey_down      , C_STR(ESC "OB")   , "kd" },  // down-arrow key
   { finalcut::fc::Fkey_down      , C_STR(CSI "B")    , "kdx"},  // down-arrow key
+  { finalcut::fc::Fkey_down      , C_STR(ESC "OB")   , "kd" },  // down-arrow key
   { finalcut::fc::Fkey_eic       , 0                 , "kM" },  // sent by rmir or smir in insert mode
   { finalcut::fc::Fkey_eol       , 0                 , "kE" },  // clear-to-end-of-line key
   { finalcut::fc::Fkey_eos       , 0                 , "kS" },  // clear-to-end-of-screen key
@@ -81,16 +82,19 @@ FKeyMap fkey[] =
   { finalcut::fc::Fkey_il        , 0                 , "kA" },  // insert-line key
   { finalcut::fc::Fkey_left      , C_STR(ESC "OD")   , "kl" },  // left-arrow key
   { finalcut::fc::Fkey_left      , C_STR(CSI "D")    , "klx"},  // left-arrow key
+  { finalcut::fc::Fkey_left      , C_STR(ESC "OD")   , "kl" },  // left-arrow key
   { finalcut::fc::Fkey_ll        , 0                 , "kH" },  // last-line key
   { finalcut::fc::Fkey_npage     , C_STR(CSI "6~")   , "kN" },  // next-page key
   { finalcut::fc::Fkey_ppage     , C_STR(CSI "5~")   , "kP" },  // prev-page key
   { finalcut::fc::Fkey_right     , C_STR(ESC "OC")   , "kr" },  // right-arrow key
   { finalcut::fc::Fkey_right     , C_STR(CSI "C")    , "krx"},  // right-arrow key
+  { finalcut::fc::Fkey_right     , C_STR(ESC "OC")   , "kr" },  // right-arrow key
   { finalcut::fc::Fkey_sf        , C_STR(CSI "1;2B") , "kF" },  // scroll-forward key (shift-up)
   { finalcut::fc::Fkey_sr        , C_STR(CSI "1;2A") , "kR" },  // scroll-backward key (shift-down)
   { finalcut::fc::Fkey_stab      , 0                 , "kT" },  // set-tab key
   { finalcut::fc::Fkey_up        , C_STR(ESC "OA")   , "ku" },  // up-arrow key
   { finalcut::fc::Fkey_up        , C_STR(CSI "A")    , "kux"},  // up-arrow key
+  { finalcut::fc::Fkey_up        , C_STR(ESC "OA")   , "ku" },  // up-arrow key
   { finalcut::fc::Fkey_a1        , 0                 , "K1" },  // upper left of keypad
   { finalcut::fc::Fkey_a3        , 0                 , "K3" },  // upper right of keypad
   { finalcut::fc::Fkey_b2        , C_STR(CSI "E")    , "K2" },  // center of keypad
