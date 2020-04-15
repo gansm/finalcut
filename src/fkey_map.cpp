@@ -41,6 +41,7 @@ FKeyMap fkey[] =
   { fc::Fkey_dl        , nullptr, "kL" },  // delete-line key
   { fc::Fkey_down      , nullptr, "kd" },  // down-arrow key
   { fc::Fkey_down      , nullptr, "kdx"},  // down-arrow key
+  { fc::Fkey_down      , nullptr, "kdX"},  // down-arrow key
   { fc::Fkey_eic       , nullptr, "kM" },  // sent by rmir or smir in insert mode
   { fc::Fkey_eol       , nullptr, "kE" },  // clear-to-end-of-line key
   { fc::Fkey_eos       , nullptr, "kS" },  // clear-to-end-of-screen key
@@ -69,16 +70,19 @@ FKeyMap fkey[] =
   { fc::Fkey_il        , nullptr, "kA" },  // insert-line key
   { fc::Fkey_left      , nullptr, "kl" },  // left-arrow key
   { fc::Fkey_left      , nullptr, "klx"},  // left-arrow key
+  { fc::Fkey_left      , nullptr, "klX"},  // left-arrow key
   { fc::Fkey_ll        , nullptr, "kH" },  // last-line key
   { fc::Fkey_npage     , nullptr, "kN" },  // next-page key
   { fc::Fkey_ppage     , nullptr, "kP" },  // prev-page key
   { fc::Fkey_right     , nullptr, "kr" },  // right-arrow key
   { fc::Fkey_right     , nullptr, "krx"},  // right-arrow key
+  { fc::Fkey_right     , nullptr, "krX"},  // right-arrow key
   { fc::Fkey_sf        , nullptr, "kF" },  // scroll-forward key (shift-up)
   { fc::Fkey_sr        , nullptr, "kR" },  // scroll-backward key (shift-down)
   { fc::Fkey_stab      , nullptr, "kT" },  // set-tab key
   { fc::Fkey_up        , nullptr, "ku" },  // up-arrow key
   { fc::Fkey_up        , nullptr, "kux"},  // up-arrow key
+  { fc::Fkey_up        , nullptr, "kuX"},  // up-arrow key
   { fc::Fkey_a1        , nullptr, "K1" },  // upper left of keypad
   { fc::Fkey_a3        , nullptr, "K3" },  // upper right of keypad
   { fc::Fkey_b2        , nullptr, "K2" },  // center of keypad
