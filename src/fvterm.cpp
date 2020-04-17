@@ -159,6 +159,7 @@ void FVTerm::setTerminalUpdates (terminal_update refresh_state)
 
     case continue_terminal_updates:
     case start_terminal_updates:
+    default:
       no_terminal_updates = false;
   }
 

@@ -1018,6 +1018,7 @@ void FListView::sort()
   {
     case fc::unknown:
     case fc::by_name:
+    default:
       if ( sort_order == fc::ascending )
       {
         sort (sortAscendingByName);
@@ -1586,6 +1587,7 @@ std::size_t FListView::getAlignOffset ( const fc::text_alignment align
   switch ( align )
   {
     case fc::alignLeft:
+    default:
       return 0;
 
     case fc::alignCenter:
@@ -2857,6 +2859,7 @@ void FListView::cb_vbarChange (const FWidget*, const FDataPtr)
   switch ( scrollType )
   {
     case FScrollbar::noScroll:
+    default:
       break;
 
     case FScrollbar::scrollPageBackward:
@@ -2916,6 +2919,7 @@ void FListView::cb_hbarChange (const FWidget*, const FDataPtr)
   switch ( scrollType )
   {
     case FScrollbar::noScroll:
+    default:
       break;
 
     case FScrollbar::scrollPageBackward:

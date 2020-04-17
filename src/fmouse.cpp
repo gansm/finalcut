@@ -183,6 +183,7 @@ inline FMouse* FMouse::createMouseObject (const mouse_type mt)
   switch ( mt )
   {
     case none:
+    default:
       return nullptr;
 
     case gpm:

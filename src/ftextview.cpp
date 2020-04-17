@@ -758,6 +758,7 @@ void FTextView::cb_vbarChange (const FWidget*, const FDataPtr)
   switch ( scrollType )
   {
     case FScrollbar::noScroll:
+    default:
       break;
 
     case FScrollbar::scrollPageBackward:
@@ -809,6 +810,7 @@ void FTextView::cb_hbarChange (const FWidget*, const FDataPtr)
   switch ( scrollType )
   {
     case FScrollbar::noScroll:
+    default:
       break;
 
     case FScrollbar::scrollPageBackward:

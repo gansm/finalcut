@@ -235,6 +235,7 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (fc::sides side)
       return double_flatline_mask.bottom;
 
     case fc::left:
+    default:
       return double_flatline_mask.left;
   }
 
@@ -665,6 +666,9 @@ void FWidget::setDoubleFlatLine (fc::sides side, bool bit)
       length = double_flatline_mask.left.size();
       double_flatline_mask.left.assign(length, bit);
       break;
+
+    default:
+      break;
   }
 }
 
@@ -713,6 +717,9 @@ void FWidget::setDoubleFlatLine (fc::sides side, int pos, bool bit)
       if ( index < length )
         double_flatline_mask.left[index] = bit;
 
+      break;
+
+    default:
       break;
   }
 }

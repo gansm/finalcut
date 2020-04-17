@@ -793,6 +793,7 @@ void FScrollView::setHorizontalScrollBarVisibility()
   switch ( h_mode )
   {
     case fc::Auto:
+    default:
       if ( getScrollWidth() > getViewportWidth() )
         hbar->show();
       else
@@ -815,6 +816,7 @@ void FScrollView::setVerticalScrollBarVisibility()
   switch ( v_mode )
   {
     case fc::Auto:
+    default:
       if ( getScrollHeight() > getViewportHeight() )
         vbar->show();
       else
@@ -870,6 +872,7 @@ void FScrollView::cb_vbarChange (const FWidget*, const FDataPtr)
   switch ( scrollType )
   {
     case FScrollbar::noScroll:
+    default:
       break;
 
     case FScrollbar::scrollPageBackward:
@@ -921,6 +924,7 @@ void FScrollView::cb_hbarChange (const FWidget*, const FDataPtr)
   switch ( scrollType )
   {
     case FScrollbar::noScroll:
+    default:
       break;
 
     case FScrollbar::scrollPageBackward:

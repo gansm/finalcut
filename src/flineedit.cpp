@@ -635,6 +635,7 @@ void FLineEdit::adjustLabel()
       break;
 
     case label_left:
+    default:
       label->setGeometry ( FPoint(w->getX() - int(label_width) - 1, w->getY())
                          , FSize(label_width, 1) );
       break;
@@ -749,6 +750,7 @@ void FLineEdit::drawInputField()
     switch ( input_type )
     {
       case FLineEdit::textfield:
+      default:
         return printTextField();
 
       case FLineEdit::password:
@@ -818,6 +820,7 @@ inline std::size_t FLineEdit::getCursorColumnPos()
   switch ( input_type )
   {
     case FLineEdit::textfield:
+    default:
       return getColumnWidth (print_text, cursor_pos);
 
     case FLineEdit::password:

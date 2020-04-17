@@ -275,6 +275,7 @@ std::size_t FLabel::getAlignOffset (const std::size_t length)
   switch ( alignment )
   {
     case fc::alignLeft:
+    default:
       return 0;
 
     case fc::alignCenter:

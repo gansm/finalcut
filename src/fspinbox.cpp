@@ -294,6 +294,7 @@ void FSpinBox::onTimer (FTimerEvent*)
       break;
 
     case FSpinBox::noSpin:
+    default:
       break;
   }
 }

@@ -1090,6 +1090,7 @@ void FTerm::setEncoding (fc::encoding enc)
     case fc::ASCII:
     case fc::UNKNOWN:
     case fc::NUM_OF_ENCODINGS:
+    default:
       putchar() = &FTerm::putchar_ASCII;
   }
 
@@ -2553,6 +2554,10 @@ void FTerm::signal_handler (int signum)
                 << signum
                 << " (" << strsignal(signum) << ")" << std::endl;
       std::terminate();
+      break;
+
+    default:
+      break;
   }
 }
 
