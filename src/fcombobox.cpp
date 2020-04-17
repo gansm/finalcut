@@ -428,10 +428,6 @@ void FComboBox::onMouseDown (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FComboBox::onMouseUp (FMouseEvent*)
-{ }
-
-//----------------------------------------------------------------------
 void FComboBox::onMouseMove (FMouseEvent* ev)
 {
   if ( ev->getButton() != fc::LeftButton )

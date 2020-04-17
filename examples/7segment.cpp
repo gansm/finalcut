@@ -39,6 +39,10 @@ using finalcut::FSize;
 class SegmentView final : public finalcut::FDialog
 {
   public:
+    // Using-declaration
+    using FDialog::setGeometry;
+
+    // Constructor
     explicit SegmentView (finalcut::FWidget* = nullptr);
 
   private:
@@ -55,10 +59,14 @@ class SegmentView final : public finalcut::FDialog
       unsigned char   : 1;  // padding bit
     } sevenSegment;
 
+    // Mutator
+    void setGeometry (const FRect&, bool = true) override;
+
     // Methods
     void hexEncoding();
     void get7Segment (const wchar_t);
     void draw() override;
+
 
     // Data members
     std::map<wchar_t, sevenSegment> code{};
@@ -106,6 +114,14 @@ SegmentView::SegmentView (finalcut::FWidget* parent)
     "clicked",
     F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
   );
+}
+
+//----------------------------------------------------------------------
+void SegmentView::setGeometry (const FRect& box, bool adjust)
+{
+  // Avoids calling a virtual function from the constructor
+  // (CERT, OOP50-CPP)
+  FDialog::setGeometry (box, adjust);
 }
 
 //----------------------------------------------------------------------

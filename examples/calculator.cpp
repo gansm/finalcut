@@ -32,6 +32,7 @@
 
 namespace fc = finalcut::fc;
 using finalcut::FPoint;
+using finalcut::FRect;
 using finalcut::FSize;
 using finalcut::FColorPair;
 
@@ -109,11 +110,17 @@ void Button::onKeyPress (finalcut::FKeyEvent* ev)
 class Calc final : public finalcut::FDialog
 {
   public:
+    // Using-declaration
+    using FDialog::setGeometry;
+
     // Constructor
     explicit Calc (finalcut::FWidget* parent = nullptr);
 
     // Destructor
     ~Calc() override;
+
+    // Mutator
+    void           setGeometry (const FRect&, bool = true) override;
 
     // Event handlers
     void           onKeyPress (finalcut::FKeyEvent*) override;
@@ -298,6 +305,105 @@ Calc::Calc (FWidget* parent)
 //----------------------------------------------------------------------
 Calc::~Calc()
 { }
+
+//----------------------------------------------------------------------
+void Calc::setGeometry (const FRect& box, bool adjust)
+{
+  // Avoids calling a virtual function from the constructor
+  // (CERT, OOP50-CPP)
+  FDialog::setGeometry (box, adjust);
+}
+
+//----------------------------------------------------------------------
+void Calc::onKeyPress (finalcut::FKeyEvent* ev)
+{
+  const std::size_t len = input.getLength();
+  const FKey key = ev->key();
+
+  switch ( key )
+  {
+    case fc::Fkey_erase:
+    case fc::Fkey_backspace:
+      if ( len > 0 )
+      {
+        lDouble& x = getValue();
+
+        if ( len == 1 )
+        {
+          input = "";
+          x = 0.0L;
+        }
+        else
+        {
+          input = input.left(input.getLength() - 1);
+          x = std::strtold(input.c_str(), nullptr);
+        }
+
+        drawDispay();
+        updateTerminal();
+      }
+
+      ev->accept();
+      break;
+
+    case fc::Fkey_escape:
+    case fc::Fkey_escape_mintty:
+      {
+        finalcut::FAccelEvent a_ev( fc::Accelerator_Event
+                                  , getFocusWidget() );
+        calculator_buttons[On]->onAccel(&a_ev);
+      }
+      ev->accept();
+      break;
+
+    case 'q':
+      close();
+      ev->accept();
+      break;
+
+    default:
+      finalcut::FDialog::onKeyPress(ev);
+      break;
+  }
+}
+
+//----------------------------------------------------------------------
+void Calc::onClose (finalcut::FCloseEvent* ev)
+{
+  finalcut::FApplication::closeConfirmationDialog (this, ev);
+}
+
+//----------------------------------------------------------------------
+void Calc::cb_buttonClicked (const finalcut::FWidget*, FDataPtr data)
+{
+  lDouble& x = getValue();
+  const Calc::button& key = *(static_cast<Calc::button*>(data));
+
+  // Call the key function
+  (this->*key_map[key])(x);
+
+  if ( ! input.isEmpty() )
+  {
+    if ( isDataEntryKey(key) )
+      x = lDouble(input.toDouble());
+    else
+    {
+      // Remove trailing zeros
+      while ( ! input.includes(L'e')
+           && input.includes(L'.')
+           && input.back() == L'0' )
+        input = input.left(input.getLength() - 1);
+    }
+  }
+
+  drawDispay();
+  updateTerminal();
+
+  if ( infix_operator && ! isDataEntryKey(key) )
+    input = "";
+
+  last_key = key;
+}
 
 //----------------------------------------------------------------------
 void Calc::drawDispay()
@@ -975,97 +1081,6 @@ void Calc::calcInfixOperator()
   }
 
   clearInfixOperator();
-}
-
-//----------------------------------------------------------------------
-void Calc::onKeyPress (finalcut::FKeyEvent* ev)
-{
-  const std::size_t len = input.getLength();
-  const FKey key = ev->key();
-
-  switch ( key )
-  {
-    case fc::Fkey_erase:
-    case fc::Fkey_backspace:
-      if ( len > 0 )
-      {
-        lDouble& x = getValue();
-
-        if ( len == 1 )
-        {
-          input = "";
-          x = 0.0L;
-        }
-        else
-        {
-          input = input.left(input.getLength() - 1);
-          x = std::strtold(input.c_str(), nullptr);
-        }
-
-        drawDispay();
-        updateTerminal();
-      }
-
-      ev->accept();
-      break;
-
-    case fc::Fkey_escape:
-    case fc::Fkey_escape_mintty:
-      {
-        finalcut::FAccelEvent a_ev( fc::Accelerator_Event
-                                  , getFocusWidget() );
-        calculator_buttons[On]->onAccel(&a_ev);
-      }
-      ev->accept();
-      break;
-
-    case 'q':
-      close();
-      ev->accept();
-      break;
-
-    default:
-      finalcut::FDialog::onKeyPress(ev);
-      break;
-  }
-}
-
-//----------------------------------------------------------------------
-void Calc::onClose (finalcut::FCloseEvent* ev)
-{
-  finalcut::FApplication::closeConfirmationDialog (this, ev);
-}
-
-//----------------------------------------------------------------------
-void Calc::cb_buttonClicked (const finalcut::FWidget*, FDataPtr data)
-{
-  lDouble& x = getValue();
-  const Calc::button& key = *(static_cast<Calc::button*>(data));
-
-  // Call the key function
-  (this->*key_map[key])(x);
-
-  if ( ! input.isEmpty() )
-  {
-    if ( isDataEntryKey(key) )
-      x = lDouble(input.toDouble());
-    else
-    {
-      // Remove trailing zeros
-      while ( ! input.includes(L'e')
-           && input.includes(L'.')
-           && input.back() == L'0' )
-        input = input.left(input.getLength() - 1);
-    }
-  }
-
-  drawDispay();
-  updateTerminal();
-
-  if ( infix_operator && ! isDataEntryKey(key) )
-    input = "";
-
-  last_key = key;
 }
 
 //----------------------------------------------------------------------

@@ -196,7 +196,6 @@ class FComboBox : public FWidget
     // Event handlers
     void                onKeyPress (FKeyEvent*) override;
     void                onMouseDown (FMouseEvent*) override;
-    void                onMouseUp (FMouseEvent*) override;
     void                onMouseMove (FMouseEvent*) override;
     void                onWheel (FWheelEvent*) override;
     void                onFocusOut (FFocusEvent*) override;

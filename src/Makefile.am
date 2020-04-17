@@ -67,7 +67,6 @@ libfinal_la_SOURCES = \
 	foptimove.cpp \
 	ftermbuffer.cpp \
 	fapplication.cpp \
-	fcolorpalette.cpp \
 	fwidgetcolors.cpp \
 	fwidget.cpp \
 	fwidget_functions.cpp \

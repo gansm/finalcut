@@ -139,7 +139,6 @@ OBJS = \
 	foptimove.o \
 	ftermbuffer.o \
 	fapplication.o \
-	fcolorpalette.o \
 	fwidgetcolors.o \
 	fwidget.o \
 	fwidget_functions.o \

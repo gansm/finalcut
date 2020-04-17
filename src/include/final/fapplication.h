@@ -179,7 +179,7 @@ class FApplication : public FWidget
     void                  processCloseWidget();
     bool                  processNextEvent();
     void                  performTimerAction (FObject*, FEvent*) override;
-    static bool           isEventProcessable (FObject*, FEvent*);
+    static bool           isEventProcessable (const FObject*, const FEvent*);
 
     // Data members
     int                   app_argc{};

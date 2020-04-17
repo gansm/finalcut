@@ -29,6 +29,7 @@
 
 namespace fc = finalcut::fc;
 using finalcut::FPoint;
+using finalcut::FRect;
 using finalcut::FSize;
 
 
@@ -39,6 +40,9 @@ using finalcut::FSize;
 class CheckList final : public finalcut::FDialog
 {
   public:
+    // Using-declaration
+    using FDialog::setGeometry;
+
     // Constructor
     explicit CheckList (finalcut::FWidget* = nullptr);
 
@@ -50,6 +54,9 @@ class CheckList final : public finalcut::FDialog
 
     // Disable copy assignment operator (=)
     CheckList& operator = (const CheckList&) = delete;
+
+    // Mutator
+    void setGeometry (const FRect&, bool = true) override;
 
   private:
     // Method
@@ -110,6 +117,14 @@ CheckList::CheckList (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 CheckList::~CheckList()  // destructor
 { }
+
+//----------------------------------------------------------------------
+void CheckList::setGeometry (const FRect& box, bool adjust)
+{
+  // Avoids calling a virtual function from the constructor
+  // (CERT, OOP50-CPP)
+  FDialog::setGeometry (box, adjust);
+}
 
 //----------------------------------------------------------------------
 void CheckList::populate()

@@ -27,6 +27,7 @@
 #include <final/final.h>
 
 using finalcut::FPoint;
+using finalcut::FRect;
 using finalcut::FSize;
 
 
@@ -37,10 +38,13 @@ using finalcut::FSize;
 class Background final : public finalcut::FDialog
 {
   public:
+    // Using-declaration
+    using FDialog::setGeometry;
+
     // Typedef
     typedef std::tuple<uChar,uChar,uChar>  RGB;
 
-    // Constructors
+    // Constructor
     explicit Background (finalcut::FWidget* = nullptr);
 
     // Disable copy constructor
@@ -53,6 +57,9 @@ class Background final : public finalcut::FDialog
     Background& operator = (const Background&) = delete;
 
   private:
+    // Mutator
+    void setGeometry (const FRect&, bool = true) override;
+
     // Callback method
     void cb_changed (const finalcut::FWidget*, const FDataPtr);
     void cb_choice (const finalcut::FWidget*, const FDataPtr);
@@ -167,6 +174,14 @@ Background::Background (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 Background::~Background()  // destructor
 { }
+
+//----------------------------------------------------------------------
+void Background::setGeometry (const FRect& box, bool adjust)
+{
+  // Avoids calling a virtual function from the constructor
+  // (CERT, OOP50-CPP)
+  FDialog::setGeometry (box, adjust);
+}
 
 //----------------------------------------------------------------------
 void Background::cb_changed (const finalcut::FWidget*, const FDataPtr)

@@ -287,25 +287,25 @@ void FTermcap::termcapKeysVt100()
   for (std::size_t i{0}; fc::fkey[i].tname[0] != 0; i++)
   {
     if ( std::strncmp(fc::fkey[i].tname, "kux", 3) == 0 )
-      fc::fkey[i].string = C_STR(CSI "A");  // Key up (standard  mode)
+      fc::fkey[i].string = C_STR(CSI "A");  // Key up (standard mode)
 
     if ( std::strncmp(fc::fkey[i].tname, "kuX", 3) == 0 )
       fc::fkey[i].string = C_STR(ESC "OA");  // Key up (application mode)
 
     if ( std::strncmp(fc::fkey[i].tname, "kdx", 3) == 0 )
-      fc::fkey[i].string = C_STR(CSI "B");  // Key down (standard  mode)
+      fc::fkey[i].string = C_STR(CSI "B");  // Key down (standard mode)
 
     if ( std::strncmp(fc::fkey[i].tname, "kdX", 3) == 0 )
       fc::fkey[i].string = C_STR(ESC "OB");  // Key down (application mode)
 
     if ( std::strncmp(fc::fkey[i].tname, "krx", 3) == 0 )
-      fc::fkey[i].string = C_STR(CSI "C");  // Key right (standard  mode)
+      fc::fkey[i].string = C_STR(CSI "C");  // Key right (standard mode)
 
     if ( std::strncmp(fc::fkey[i].tname, "krX", 3) == 0 )
       fc::fkey[i].string = C_STR(ESC "OC");  // Key right (application mode)
 
     if ( std::strncmp(fc::fkey[i].tname, "klx", 3) == 0 )
-      fc::fkey[i].string = C_STR(CSI "D");  // Key left (standard  mode)
+      fc::fkey[i].string = C_STR(CSI "D");  // Key left (standard mode)
 
     if ( std::strncmp(fc::fkey[i].tname, "klX", 3) == 0 )
       fc::fkey[i].string = C_STR(ESC "OD");  // Key left (application mode)

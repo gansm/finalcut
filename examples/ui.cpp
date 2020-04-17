@@ -31,6 +31,7 @@
 
 namespace fc = finalcut::fc;
 using finalcut::FPoint;
+using finalcut::FRect;
 using finalcut::FSize;
 
 
@@ -41,6 +42,9 @@ using finalcut::FSize;
 class ProgressDialog final : public finalcut::FDialog
 {
   public:
+    // Using-declaration
+    using FDialog::setGeometry;
+
     // Constructor
     explicit ProgressDialog (finalcut::FWidget* = nullptr);
 
@@ -52,6 +56,9 @@ class ProgressDialog final : public finalcut::FDialog
 
     // Disable copy assignment operator (=)
     ProgressDialog& operator = (const ProgressDialog&) = delete;
+
+    // Mutator
+    void setGeometry (const FRect&, bool = true) override;
 
   private:
     // Event handlers
@@ -123,6 +130,14 @@ ProgressDialog::~ProgressDialog()  // destructor
   delCallback(&quit);
   delCallback(&more);
   delCallback(&reset);
+}
+
+//----------------------------------------------------------------------
+void ProgressDialog::setGeometry (const FRect& box, bool adjust)
+{
+  // Avoids calling a virtual function from the constructor
+  // (CERT, OOP50-CPP)
+  FDialog::setGeometry (box, adjust);
 }
 
 //----------------------------------------------------------------------

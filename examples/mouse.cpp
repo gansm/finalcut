@@ -53,6 +53,9 @@ class ColorChooser final : public finalcut::FWidget
     FColor getBackground();
 
   private:
+    // Mutator
+    void setSize (const FSize&, bool = true) override;
+
     // Method
     void draw() override;
     void drawBorder() override;
@@ -65,6 +68,7 @@ class ColorChooser final : public finalcut::FWidget
     FColor bg_color{fc::Black};
     finalcut::FLabel headline{this};
 };
+
 
 //----------------------------------------------------------------------
 ColorChooser::ColorChooser (finalcut::FWidget* parent)
@@ -96,31 +100,23 @@ ColorChooser::~ColorChooser()
 { }
 
 //----------------------------------------------------------------------
-void ColorChooser::onMouseDown (finalcut::FMouseEvent* ev)
+inline FColor ColorChooser::getForeground()
 {
-  const int mouse_x = ev->getX();
-  const int mouse_y = ev->getY();
+  return fg_color;
+}
 
-  if ( ev->getButton() == fc::MiddleButton )
-    return;
+//----------------------------------------------------------------------
+inline FColor ColorChooser::getBackground()
+{
+  return bg_color;
+}
 
-  for (int c{0}; c < 16; c++)
-  {
-    const int xmin = 2 + (c / 8) * 3;
-    const int xmax = 4 + (c / 8) * 3;
-    const int y = 3 + c % 8;
-
-    if ( mouse_x >= xmin && mouse_x <= xmax && mouse_y == y )
-    {
-      if ( ev->getButton() == fc::LeftButton )
-        bg_color = FColor(c);
-      else if ( ev->getButton() == fc::RightButton )
-        fg_color = FColor(c);
-
-      redraw();
-      emitCallback("clicked");
-    }
-  }
+//----------------------------------------------------------------------
+void ColorChooser::setSize (const FSize& size, bool adjust)
+{
+  // Avoids calling a virtual function from the constructor
+  // (CERT, OOP50-CPP)
+  FWidget::setSize (size, adjust);
 }
 
 //----------------------------------------------------------------------
@@ -156,15 +152,31 @@ void ColorChooser::drawBorder()
 }
 
 //----------------------------------------------------------------------
-inline FColor ColorChooser::getForeground()
+void ColorChooser::onMouseDown (finalcut::FMouseEvent* ev)
 {
-  return fg_color;
-}
+  const int mouse_x = ev->getX();
+  const int mouse_y = ev->getY();
 
-//----------------------------------------------------------------------
-inline FColor ColorChooser::getBackground()
-{
-  return bg_color;
+  if ( ev->getButton() == fc::MiddleButton )
+    return;
+
+  for (int c{0}; c < 16; c++)
+  {
+    const int xmin = 2 + (c / 8) * 3;
+    const int xmax = 4 + (c / 8) * 3;
+    const int y = 3 + c % 8;
+
+    if ( mouse_x >= xmin && mouse_x <= xmax && mouse_y == y )
+    {
+      if ( ev->getButton() == fc::LeftButton )
+        bg_color = FColor(c);
+      else if ( ev->getButton() == fc::RightButton )
+        fg_color = FColor(c);
+
+      redraw();
+      emitCallback("clicked");
+    }
+  }
 }
 
 
@@ -195,6 +207,9 @@ class Brushes final : public finalcut::FWidget
     void setBackground (FColor);
 
   private:
+    // Mutator
+    void setSize (const FSize&, bool = true) override;
+
     // Method
     void draw() override;
     void drawBorder() override;
@@ -237,6 +252,14 @@ Brushes::Brushes (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 Brushes::~Brushes()
 { }
+
+//----------------------------------------------------------------------
+void Brushes::setSize (const FSize& size, bool adjust)
+{
+  // Avoids calling a virtual function from the constructor
+  // (CERT, OOP50-CPP)
+  FWidget::setSize (size, adjust);
+}
 
 //----------------------------------------------------------------------
 void Brushes::draw()

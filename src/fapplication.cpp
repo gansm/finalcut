@@ -1122,7 +1122,7 @@ void FApplication::performTimerAction (FObject* receiver, FEvent* event)
 }
 
 //----------------------------------------------------------------------
-bool FApplication::isEventProcessable (FObject* receiver, FEvent* event )
+bool FApplication::isEventProcessable (const FObject* receiver, const FEvent* event )
 {
   if ( ! receiver->isWidget() )  // No restrictions for non-widgets
     return true;

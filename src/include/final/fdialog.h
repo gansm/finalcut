@@ -151,8 +151,6 @@ class FDialog : public FWindow
     void                drawDialogShadow();
 
     // Event handlers
-    void                onShow (FShowEvent*) override;
-    void                onHide (FHideEvent*) override;
     void                onClose (FCloseEvent*) override;
 
   private:

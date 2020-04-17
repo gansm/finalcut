@@ -49,9 +49,6 @@ namespace finalcut
 class FColorPalette final
 {
   public:
-    // Using-declaration
-    using func = std::function<void(FColor, int, int, int)>;
-
     // Constructor
     FColorPalette() = default;
 
@@ -62,16 +59,100 @@ class FColorPalette final
     const FString getClassName() const;
 
     // Methods
-    static void set8ColorPalette (func);
-    static void set16ColorPalette (func);
-    static void reset8ColorPalette (func);
-    static void reset16ColorPalette (func);
+    template<typename funcT>
+    static void set8ColorPalette (funcT);
+    template<typename funcT>
+    static void set16ColorPalette (funcT);
+    template<typename funcT>
+    static void reset8ColorPalette (funcT);
+    template<typename funcT>
+    static void reset16ColorPalette (funcT);
 };
 
 // FColorPalette inline functions
 //----------------------------------------------------------------------
 inline const FString FColorPalette::getClassName() const
 { return "FColorPalette"; }
+
+// constructors and destructor
+//----------------------------------------------------------------------
+inline FColorPalette::~FColorPalette()  // destructor
+{ }
+
+// public methods of FColorPalette
+//----------------------------------------------------------------------
+template<typename funcT>
+void FColorPalette::set8ColorPalette (funcT set_palette)
+{
+  set_palette (fc::Black, 0x00, 0x00, 0x00);
+  set_palette (fc::Blue, 0x10, 0x3b, 0x9e);
+  set_palette (fc::Green, 0x18, 0x78, 0x18);
+  set_palette (fc::Cyan, 0xa0, 0xb2, 0xb2);
+  set_palette (fc::Red, 0xb2, 0x18, 0x18);
+  set_palette (fc::Magenta, 0xb2, 0x18, 0xb2);
+  set_palette (fc::Brown, 0xe8, 0x87, 0x1f);
+  set_palette (fc::LightGray, 0xe0, 0xe0, 0xe0);
+  // The same colors again...
+  set_palette (fc::DarkGray, 0x00, 0x00, 0x00);
+  set_palette (fc::LightBlue, 0x10, 0x3b, 0x9e);
+  set_palette (fc::LightGreen, 0x18, 0x78, 0x18);
+  set_palette (fc::Cyan, 0xa0, 0xb2, 0xb2);
+  set_palette (fc::LightRed, 0xb2, 0x18, 0x18);
+  set_palette (fc::LightMagenta, 0xb2, 0x18, 0xb2);
+  set_palette (fc::Yellow, 0xe8, 0x87, 0x1f);
+  set_palette (fc::White, 0xe0, 0xe0, 0xe0);
+}
+
+//----------------------------------------------------------------------
+template<typename funcT>
+void FColorPalette::set16ColorPalette (funcT set_palette)
+{
+  set_palette (fc::Black, 0x00, 0x00, 0x00);
+  set_palette (fc::Blue, 0x10, 0x3b, 0x9e);
+  set_palette (fc::Green, 0x18, 0x78, 0x18);
+  set_palette (fc::Cyan, 0x55, 0x6a, 0xcf);
+  set_palette (fc::Red, 0xba, 0x1a, 0x1a);
+  set_palette (fc::Magenta, 0xb2, 0x18, 0xb2);
+  set_palette (fc::Brown, 0xe8, 0x87, 0x1f);
+  set_palette (fc::LightGray, 0xbc, 0xbc, 0xbc);
+  set_palette (fc::DarkGray, 0x50, 0x50, 0x50);
+  set_palette (fc::LightBlue, 0x80, 0xa4, 0xec);
+  set_palette (fc::LightGreen, 0x5e, 0xeb, 0x5c);
+  set_palette (fc::LightCyan, 0x62, 0xbf, 0xf8);
+  set_palette (fc::LightRed, 0xee, 0x44, 0x44);
+  set_palette (fc::LightMagenta, 0xe9, 0xad, 0xff);
+  set_palette (fc::Yellow, 0xfb, 0xe8, 0x67);
+  set_palette (fc::White, 0xff, 0xff, 0xff);
+}
+
+//----------------------------------------------------------------------
+template<typename funcT>
+void FColorPalette::reset8ColorPalette (funcT set_palette)
+{
+  reset16ColorPalette(set_palette);
+}
+
+//----------------------------------------------------------------------
+template<typename funcT>
+void FColorPalette::reset16ColorPalette (funcT set_palette)
+{
+  set_palette (fc::Black, 0x00, 0x00, 0x00);
+  set_palette (fc::Blue, 0x00, 0x00, 0xaa);
+  set_palette (fc::Green, 0x00, 0xaa, 0x00);
+  set_palette (fc::Cyan, 0x00, 0x55, 0xaa);
+  set_palette (fc::Red, 0xaa, 0x00, 0x00);
+  set_palette (fc::Magenta, 0xaa, 0x00, 0xaa);
+  set_palette (fc::Brown, 0xaa, 0xaa, 0x00);
+  set_palette (fc::LightGray, 0xaa, 0xaa, 0xaa);
+  set_palette (fc::DarkGray, 0x55, 0x55, 0x55);
+  set_palette (fc::LightBlue, 0x55, 0x55, 0xff);
+  set_palette (fc::LightGreen, 0x55, 0xff, 0x55);
+  set_palette (fc::LightCyan, 0x55, 0xff, 0xff);
+  set_palette (fc::LightRed, 0xff, 0x55, 0x55);
+  set_palette (fc::LightMagenta, 0xff, 0x55, 0xff);
+  set_palette (fc::Yellow, 0xff, 0xff, 0x55);
+  set_palette (fc::White, 0xff, 0xff, 0xff);
+}
 
 }  // namespace finalcut
 

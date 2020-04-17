@@ -777,14 +777,6 @@ void FDialog::drawDialogShadow()
 }
 
 //----------------------------------------------------------------------
-void FDialog::onShow (FShowEvent*)
-{ }
-
-//----------------------------------------------------------------------
-void FDialog::onHide (FHideEvent*)
-{ }
-
-//----------------------------------------------------------------------
 void FDialog::onClose (FCloseEvent* ev)
 {
   ev->accept();
