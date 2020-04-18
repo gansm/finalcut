@@ -91,67 +91,67 @@ class FDialog : public FWindow
     FDialog& operator = (const FDialog&) = delete;
 
     // Accessors
-    const FString       getClassName() const override;
-    FString             getText() const;
+    const FString         getClassName() const override;
+    virtual const FString getText() const;
 
     // Mutators
-    bool                setDialogWidget (bool);
-    bool                setDialogWidget();
-    bool                unsetDialogWidget();
-    bool                setModal (bool);
-    bool                setModal();
-    bool                unsetModal();
-    bool                setResizeable (bool) override;
-    bool                setScrollable (bool);
-    bool                setScrollable();
-    bool                unsetScrollable();
-    bool                setBorder (bool);
-    bool                setBorder();
-    bool                unsetBorder();
-    void                setText (const FString&);
+    bool                  setDialogWidget (bool);
+    bool                  setDialogWidget();
+    bool                  unsetDialogWidget();
+    bool                  setModal (bool);
+    bool                  setModal();
+    bool                  unsetModal();
+    bool                  setResizeable (bool) override;
+    bool                  setScrollable (bool);
+    bool                  setScrollable();
+    bool                  unsetScrollable();
+    bool                  setBorder (bool);
+    bool                  setBorder();
+    bool                  unsetBorder();
+    virtual void          setText (const FString&);
 
     // Inquiries
-    bool                isModal() const;
-    bool                isScrollable() const;
-    bool                hasBorder() const;
+    bool                  isModal() const;
+    bool                  isScrollable() const;
+    bool                  hasBorder() const;
 
     // Methods
-    void                show() override;
-    void                hide() override;
-    int                 exec();
-    void                setPos (const FPoint&, bool = true) override;
-    void                move (const FPoint&) override;
-    bool                moveUp (int);
-    bool                moveDown (int);
-    bool                moveLeft (int);
-    bool                moveRight (int);
-    void                setSize (const FSize&, bool = true) override;
-    bool                reduceHeight (int);
-    bool                expandHeight (int);
-    bool                reduceWidth (int);
-    bool                expandWidth (int);
-    void                activateDialog();
+    void                  show() override;
+    void                  hide() override;
+    int                   exec();
+    void                  setPos (const FPoint&, bool = true) override;
+    void                  move (const FPoint&) override;
+    bool                  moveUp (int);
+    bool                  moveDown (int);
+    bool                  moveLeft (int);
+    bool                  moveRight (int);
+    void                  setSize (const FSize&, bool = true) override;
+    bool                  reduceHeight (int);
+    bool                  expandHeight (int);
+    bool                  reduceWidth (int);
+    bool                  expandWidth (int);
+    void                  activateDialog();
 
     // Event handlers
-    void                onKeyPress (FKeyEvent*) override;
-    void                onMouseDown (FMouseEvent*) override;
-    void                onMouseUp (FMouseEvent*) override;
-    void                onMouseMove (FMouseEvent*) override;
-    void                onMouseDoubleClick (FMouseEvent*) override;
-    void                onAccel (FAccelEvent*) override;
-    void                onWindowActive (FEvent*) override;
-    void                onWindowInactive (FEvent*) override;
-    void                onWindowRaised (FEvent*) override;
-    void                onWindowLowered (FEvent*) override;
+    void                  onKeyPress (FKeyEvent*) override;
+    void                  onMouseDown (FMouseEvent*) override;
+    void                  onMouseUp (FMouseEvent*) override;
+    void                  onMouseMove (FMouseEvent*) override;
+    void                  onMouseDoubleClick (FMouseEvent*) override;
+    void                  onAccel (FAccelEvent*) override;
+    void                  onWindowActive (FEvent*) override;
+    void                  onWindowInactive (FEvent*) override;
+    void                  onWindowRaised (FEvent*) override;
+    void                  onWindowLowered (FEvent*) override;
 
   protected:
     // Methods
-    virtual void        done (int);
-    void                draw() override;
-    void                drawDialogShadow();
+    virtual void          done (int);
+    void                  draw() override;
+    void                  drawDialogShadow();
 
     // Event handlers
-    void                onClose (FCloseEvent*) override;
+    void                  onClose (FCloseEvent*) override;
 
   private:
     // Typedef
@@ -169,65 +169,65 @@ class FDialog : public FWindow
     static constexpr bool PRINT_WIN_NUMBER = false;  // Only for debug
 
     // Methods
-    void                init();
-    void                initDialogMenu();
-    void                initMoveSizeMenuItem (FMenu*);
-    void                initZoomMenuItem (FMenu*);
-    void                initCloseMenuItem (FMenu*);
-    void                drawBorder() override;
-    void                drawTitleBar();
-    void                drawBarButton();
-    void                drawZoomButton();
-    void                drawRestoreSizeButton();
-    void                drawZoomedButton();
-    void                drawTextBar();
-    void                restoreOverlaidWindows();
-    void                setCursorToFocusWidget();
-    void                leaveMenu();
-    void                openMenu();
-    void                selectFirstMenuItem();
-    void                setZoomItem();
-    std::size_t         getZoomButtonWidth();
-    void                activateZoomButton (const mouseStates&);
-    void                deactivateZoomButton();
-    void                leaveZoomButton (const mouseStates&);
-    void                pressZoomButton (const mouseStates&);
-    bool                isMouseOverMenu (const FPoint&);
-    void                passEventToSubMenu (const mouseStates&, const FMouseEvent*);
-    void                moveSizeKey (FKeyEvent*);
-    void                raiseActivateDialog();
-    void                lowerActivateDialog();
-    bool                isOutsideTerminal (const FPoint&);
-    bool                isLowerRightResizeCorner (const mouseStates&);
-    void                resizeMouseDown (const mouseStates&);
-    void                resizeMouseUpMove (const mouseStates&, bool = false);
-    void                cancelMouseResize();
-    void                acceptMoveSize();
-    void                cancelMoveSize();
-    static void         addDialog (FWidget*);
-    static void         delDialog (const FWidget*);
+    void                  init();
+    void                  initDialogMenu();
+    void                  initMoveSizeMenuItem (FMenu*);
+    void                  initZoomMenuItem (FMenu*);
+    void                  initCloseMenuItem (FMenu*);
+    void                  drawBorder() override;
+    void                  drawTitleBar();
+    void                  drawBarButton();
+    void                  drawZoomButton();
+    void                  drawRestoreSizeButton();
+    void                  drawZoomedButton();
+    void                  drawTextBar();
+    void                  restoreOverlaidWindows();
+    void                  setCursorToFocusWidget();
+    void                  leaveMenu();
+    void                  openMenu();
+    void                  selectFirstMenuItem();
+    void                  setZoomItem();
+    std::size_t           getZoomButtonWidth();
+    void                  activateZoomButton (const mouseStates&);
+    void                  deactivateZoomButton();
+    void                  leaveZoomButton (const mouseStates&);
+    void                  pressZoomButton (const mouseStates&);
+    bool                  isMouseOverMenu (const FPoint&);
+    void                  passEventToSubMenu (const mouseStates&, const FMouseEvent*);
+    void                  moveSizeKey (FKeyEvent*);
+    void                  raiseActivateDialog();
+    void                  lowerActivateDialog();
+    bool                  isOutsideTerminal (const FPoint&);
+    bool                  isLowerRightResizeCorner (const mouseStates&);
+    void                  resizeMouseDown (const mouseStates&);
+    void                  resizeMouseUpMove (const mouseStates&, bool = false);
+    void                  cancelMouseResize();
+    void                  acceptMoveSize();
+    void                  cancelMoveSize();
+    static void           addDialog (FWidget*);
+    static void           delDialog (const FWidget*);
 
     // Callback methods
-    void                cb_move (const FWidget*, const FDataPtr);
-    void                cb_zoom (const FWidget*, const FDataPtr);
-    void                cb_close (const FWidget*, const FDataPtr);
+    void                  cb_move (const FWidget*, const FDataPtr);
+    void                  cb_zoom (const FWidget*, const FDataPtr);
+    void                  cb_close (const FWidget*, const FDataPtr);
 
     // Data members
-    FString             tb_text{};  // title bar text
-    int                 result_code{FDialog::Reject};
-    bool                zoom_button_pressed{false};
-    bool                zoom_button_active{false};
-    bool                setPos_error{false};
-    bool                setSize_error{false};
-    FPoint              titlebar_click_pos{};
-    FPoint              resize_click_pos{};
-    FRect               save_geometry{};  // required by keyboard move/size
-    FMenu*              dialog_menu{nullptr};
-    FMenuItem*          dgl_menuitem{nullptr};
-    FMenuItem*          move_size_item{nullptr};
-    FMenuItem*          zoom_item{nullptr};
-    FMenuItem*          close_item{nullptr};
-    FToolTip*           tooltip{nullptr};
+    FString               tb_text{};  // title bar text
+    int                   result_code{FDialog::Reject};
+    bool                  zoom_button_pressed{false};
+    bool                  zoom_button_active{false};
+    bool                  setPos_error{false};
+    bool                  setSize_error{false};
+    FPoint                titlebar_click_pos{};
+    FPoint                resize_click_pos{};
+    FRect                 save_geometry{};  // required by keyboard move/size
+    FMenu*                dialog_menu{nullptr};
+    FMenuItem*            dgl_menuitem{nullptr};
+    FMenuItem*            move_size_item{nullptr};
+    FMenuItem*            zoom_item{nullptr};
+    FMenuItem*            close_item{nullptr};
+    FToolTip*             tooltip{nullptr};
 
     // Friend function from FMenu
     friend void FMenu::hideSuperMenus();
@@ -239,7 +239,7 @@ inline const FString FDialog::getClassName() const
 { return "FDialog"; }
 
 //----------------------------------------------------------------------
-inline FString FDialog::getText() const
+inline const FString FDialog::getText() const
 { return tb_text; }
 
 //----------------------------------------------------------------------

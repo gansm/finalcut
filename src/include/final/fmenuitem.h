@@ -156,6 +156,8 @@ class FMenuItem : public FWidget
     // Methods
     void                init (FWidget*);
     void                updateSuperMenuDimensions();
+    void                processEnable();
+    void                processDisable();
     void                processActivate();
     void                processDeactivate();
     void                createDialogList (FMenu*);

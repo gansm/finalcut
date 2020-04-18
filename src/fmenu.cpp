@@ -317,6 +317,18 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
+void FMenu::cb_menuitemEnabled (FWidget*, const FDataPtr)
+{
+  setEnable();
+}
+
+//----------------------------------------------------------------------
+void FMenu::cb_menuitemDisabled (FWidget*, const FDataPtr)
+{
+  setDisable();
+}
+
+//----------------------------------------------------------------------
 void FMenu::cb_menuitemToggled (FWidget* widget, const FDataPtr)
 {
   const auto& m_item = static_cast<FMenuItem*>(widget);
@@ -467,7 +479,24 @@ void FMenu::init(FWidget* parent)
     setSuperMenu(parent);
   }
 
+  initCallbacks();
   calculateDimensions();
+}
+
+//----------------------------------------------------------------------
+void FMenu::initCallbacks()
+{
+  menuitem.addCallback
+  (
+    "enable",
+    F_METHOD_CALLBACK (this, &FMenu::cb_menuitemEnabled)
+  );
+
+  menuitem.addCallback
+  (
+    "disable",
+    F_METHOD_CALLBACK (this, &FMenu::cb_menuitemEnabled)
+  );
 }
 
 //----------------------------------------------------------------------
@@ -686,7 +715,7 @@ void FMenu::mouseDownSubmenu (const FMenuItem* m_item)
   if ( ! sel_item
     || ! sel_item->hasMenu()
     || sel_item->getMenu() != opened_sub_menu )
-  return;
+    return;
 
   if ( sel_item != m_item )
     hideSubMenus();

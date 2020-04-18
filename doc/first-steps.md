@@ -472,7 +472,7 @@ use `delCallbacks()` to remove all existing callbacks from an object.
   <dd>"clicked"<br />"toggled"</dd>
 
   <dt>FWidget</dt>
-  <dd>"destroy"<br />"focus-in"<br />"focus-out"<br />"mouse-press"<br />"mouse-release"<br />"mouse-move"<br />"mouse-wheel-down"<br />"mouse-wheel-up"</dd>
+  <dd>"destroy"<br />"enable"<br />"disable"<br />"focus-in"<br />"focus-out"<br />"mouse-press"<br />"mouse-release"<br />"mouse-move"<br />"mouse-wheel-down"<br />"mouse-wheel-up"</dd>
 </dl>
 
 &nbsp;

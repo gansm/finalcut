@@ -259,8 +259,8 @@ class FWidget : public FVTerm, public FObject
     bool                    ignorePadding (bool);    // ignore padding from
     bool                    ignorePadding();         // the parent widget
     bool                    acceptPadding();
-    void                    setForegroundColor (FColor);
-    void                    setBackgroundColor (FColor);
+    virtual void            setForegroundColor (FColor);
+    virtual void            setBackgroundColor (FColor);
     void                    setColor();
     FWidgetFlags&           setFlags();
     // Positioning and sizes mutators...
@@ -285,9 +285,9 @@ class FWidget : public FVTerm, public FObject
     void                    setMaximumHeight (std::size_t);
     void                    setMaximumSize (const FSize&);
     void                    setFixedSize (const FSize&);
-    bool                    setCursorPos (const FPoint&);
+    virtual bool            setCursorPos (const FPoint&);
     void                    unsetCursorPos();
-    void                    setPrintPos (const FPoint&);
+    virtual void            setPrintPos (const FPoint&);
     void                    setDoubleFlatLine (fc::sides, bool = true);
     void                    unsetDoubleFlatLine (fc::sides);
     void                    setDoubleFlatLine (fc::sides, int, bool = true);

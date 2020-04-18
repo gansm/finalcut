@@ -559,7 +559,7 @@ void FTermcapQuirks::ecma48()
   // Test for standard ECMA-48 (ANSI X3.64) terminal
   if ( ! TCAP(fc::t_exit_underline_mode)
     || std::strncmp(TCAP(fc::t_exit_underline_mode), CSI "24m", 5) != 0 )
-  return;
+    return;
 
   // Seems to be a ECMA-48 (ANSI X3.64) compatible terminal
   TCAP(fc::t_enter_dbl_underline_mode) = \

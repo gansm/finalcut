@@ -745,7 +745,7 @@ void FLineEdit::drawInputField()
   if ( isActiveFocus && getMaxColor() < 16 )
     setBold();
 
-  const std::size_t text_offset_column = [&] () -> std::size_t
+  const std::size_t text_offset_column = [this] () -> std::size_t
   {
     switch ( input_type )
     {

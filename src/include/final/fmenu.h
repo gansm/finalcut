@@ -71,6 +71,9 @@ class FMenuItem;
 class FMenu : public FWindow, public FMenuList
 {
   public:
+    // Using-declaration
+    using FMenuList::getItem;
+
     // Constructor
     explicit FMenu (FWidget* = nullptr);
     explicit FMenu (const FString&, FWidget* = nullptr);
@@ -104,7 +107,6 @@ class FMenu : public FWindow, public FMenuList
     void                setText (const FString&);
 
     // Inquiries
-    bool                isEnabled() const;
     bool                isSelected() const;
     bool                hasHotkey() const;
     bool                hasMenu() const;
@@ -121,6 +123,8 @@ class FMenu : public FWindow, public FMenuList
     void                onAccel (FAccelEvent*) override;
 
     // Callback method
+    void                cb_menuitemEnabled (FWidget*, const FDataPtr);
+    void                cb_menuitemDisabled (FWidget*, const FDataPtr);
     void                cb_menuitemToggled (FWidget*, const FDataPtr);
 
   private:
@@ -167,6 +171,7 @@ class FMenu : public FWindow, public FMenuList
 
     // Methods
     void         init(FWidget*);
+    void         initCallbacks();
     void         calculateDimensions();
     void         adjustItems();
     int          adjustX(int);
@@ -289,10 +294,6 @@ inline void FMenu::setMenu (FMenu* m)
 //----------------------------------------------------------------------
 inline void FMenu::setText (const FString& txt)
 { menuitem.setText(txt); }
-
-//----------------------------------------------------------------------
-inline bool FMenu::isEnabled() const
-{ return menuitem.isEnabled(); }
 
 //----------------------------------------------------------------------
 inline bool FMenu::isSelected() const

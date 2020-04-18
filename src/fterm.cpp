@@ -598,7 +598,7 @@ bool FTerm::canChangeColorPalette()
     || isOpenBSDTerm()
     || isSunTerminal()
     || isAnsiTerminal() )
-  return false;
+    return false;
 
   return FTermcap::can_change_color_palette;
 }

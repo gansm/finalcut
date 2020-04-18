@@ -571,14 +571,14 @@ void FTextView::init()
 //----------------------------------------------------------------------
 inline void FTextView::mapKeyFunctions()
 {
-  key_map[fc::Fkey_up]    = [&] { scrollBy (0, -1); };
-  key_map[fc::Fkey_down]  = [&] { scrollBy (0, 1); };
-  key_map[fc::Fkey_left]  = [&] { scrollBy (-1, 0); };
-  key_map[fc::Fkey_right] = [&] { scrollBy (1, 0); };
-  key_map[fc::Fkey_ppage] = [&] { scrollBy (0, -int(getTextHeight())); };
-  key_map[fc::Fkey_npage] = [&] { scrollBy (0, int(getTextHeight())); };
-  key_map[fc::Fkey_home]  = [&] { scrollToY (0); };
-  key_map[fc::Fkey_end]   = [&] { scrollToY (int(getRows() - getTextHeight())); };
+  key_map[fc::Fkey_up]    = [this] { scrollBy (0, -1); };
+  key_map[fc::Fkey_down]  = [this] { scrollBy (0, 1); };
+  key_map[fc::Fkey_left]  = [this] { scrollBy (-1, 0); };
+  key_map[fc::Fkey_right] = [this] { scrollBy (1, 0); };
+  key_map[fc::Fkey_ppage] = [this] { scrollBy (0, -int(getTextHeight())); };
+  key_map[fc::Fkey_npage] = [this] { scrollBy (0, int(getTextHeight())); };
+  key_map[fc::Fkey_home]  = [this] { scrollToY (0); };
+  key_map[fc::Fkey_end]   = [this] { scrollToY (int(getRows() - getTextHeight())); };
 }
 
 //----------------------------------------------------------------------

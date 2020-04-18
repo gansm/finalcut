@@ -565,6 +565,18 @@ void FMenuItem::updateSuperMenuDimensions()
 }
 
 //----------------------------------------------------------------------
+void FMenuItem::processEnable()
+{
+  emitCallback("enable");
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::processDisable()
+{
+  emitCallback("disable");
+}
+
+//----------------------------------------------------------------------
 void FMenuItem::processActivate()
 {
   emitCallback("activate");

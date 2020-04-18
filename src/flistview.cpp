@@ -1534,12 +1534,12 @@ inline void FListView::mapKeyFunctions()
   key_map[fc::Fkey_return]  = std::bind(&FListView::processClick, this);
   key_map[fc::Fkey_enter]   = std::bind(&FListView::processClick, this);
   key_map[fc::Fkey_space]   = std::bind(&FListView::toggleCheckbox, this);
-  key_map[fc::Fkey_up]      = [&] { stepBackward(); };
-  key_map[fc::Fkey_down]    = [&] { stepForward(); };
+  key_map[fc::Fkey_up]      = [this] { stepBackward(); };
+  key_map[fc::Fkey_down]    = [this] { stepForward(); };
   key_map[fc::Fkey_left]    = std::bind(&FListView::collapseAndScrollLeft, this);
   key_map[fc::Fkey_right]   = std::bind(&FListView::expandAndScrollRight, this);
-  key_map[fc::Fkey_ppage]   = [&] { stepBackward(int(getClientHeight()) - 1); };
-  key_map[fc::Fkey_npage]   = [&] { stepForward(int(getClientHeight()) - 1); };
+  key_map[fc::Fkey_ppage]   = [this] { stepBackward(int(getClientHeight()) - 1); };
+  key_map[fc::Fkey_npage]   = [this] { stepForward(int(getClientHeight()) - 1); };
   key_map[fc::Fkey_home]    = std::bind(&FListView::firstPos, this);
   key_map[fc::Fkey_end]     = std::bind(&FListView::lastPos, this);
   key_map_result[FKey('+')] = std::bind(&FListView::expandSubtree, this);

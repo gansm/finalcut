@@ -104,7 +104,7 @@ class FMessageBox : public FDialog
     const FString       getClassName() const override;
     const FString       getTitlebarText() const;
     const FString       getHeadline() const;
-    const FString       getText() const;
+    const FString       getText() const override;
 
     // Mutator
     void                setTitlebarText (const FString&);
@@ -112,7 +112,7 @@ class FMessageBox : public FDialog
     bool                setCenterText(bool);
     bool                setCenterText();
     bool                unsetCenterText();
-    void                setText (const FString&);
+    void                setText (const FString&) override;
 
     // Methods
     template <typename messageType>

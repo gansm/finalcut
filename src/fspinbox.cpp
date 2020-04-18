@@ -325,7 +325,7 @@ void FSpinBox::draw()
 {
   const auto& wc = getFWidgetColors();
 
-  const FColorPair inc_button_color = [&] ()
+  const FColorPair inc_button_color = [this, &wc] ()
   {
     if ( value == max )
       return FColorPair ( wc.scrollbar_button_inactive_fg
@@ -335,7 +335,7 @@ void FSpinBox::draw()
                         , wc.scrollbar_button_bg );
   }();
 
-  const FColorPair dec_button_color = [&] ()
+  const FColorPair dec_button_color = [this, &wc] ()
   {
     if ( value == min )
       return FColorPair ( wc.scrollbar_button_inactive_fg

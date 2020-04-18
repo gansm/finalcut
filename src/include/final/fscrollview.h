@@ -103,8 +103,8 @@ class FScrollView : public FWidget
     void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
-    void                setCursorPos (const FPoint&);
-    void                setPrintPos (const FPoint&);
+    bool                setCursorPos (const FPoint&) override;
+    void                setPrintPos (const FPoint&) override;
     bool                setViewportPrint (bool);
     bool                setViewportPrint();
     bool                unsetViewportPrint();

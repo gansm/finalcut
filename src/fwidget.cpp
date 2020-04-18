@@ -269,6 +269,11 @@ bool FWidget::setVisible (bool enable)
 //----------------------------------------------------------------------
 bool FWidget::setEnable (bool enable)
 {
+  if ( enable )
+    emitCallback("enable");
+  else
+    emitCallback("disable");
+
   return (flags.active = enable);
 }
 
@@ -1814,7 +1819,7 @@ void FWidget::KeyPressEvent (FKeyEvent* kev)
     {
       const FKey key = kev->key();
 
-      if ( [&] ()
+      if ( [this, &key] ()
            {
              if ( isFocusNextKey(key) )
                return focusNextChild();

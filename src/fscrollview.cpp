@@ -277,10 +277,10 @@ void FScrollView::setGeometry ( const FPoint& pos, const FSize& size
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setCursorPos (const FPoint& p)
+bool FScrollView::setCursorPos (const FPoint& p)
 {
-  FWidget::setCursorPos (FPoint ( p.getX() + getLeftPadding()
-                                , p.getY() + getTopPadding() ));
+  return FWidget::setCursorPos (FPoint ( p.getX() + getLeftPadding()
+                                       , p.getY() + getTopPadding() ));
 }
 
 //----------------------------------------------------------------------
@@ -751,15 +751,15 @@ void FScrollView::init (const FWidget* parent)
 //----------------------------------------------------------------------
 inline void FScrollView::mapKeyFunctions()
 {
-  key_map[fc::Fkey_up]    = [&] { scrollBy (0, -1); };
-  key_map[fc::Fkey_down]  = [&] { scrollBy (0, 1); };
-  key_map[fc::Fkey_left]  = [&] { scrollBy (-1, 0); };
-  key_map[fc::Fkey_right] = [&] { scrollBy (1, 0); };
-  key_map[fc::Fkey_ppage] = [&] { scrollBy (0, -int(getViewportHeight())); };
-  key_map[fc::Fkey_npage] = [&] { scrollBy (0, int(getViewportHeight())); };
-  key_map[fc::Fkey_home]  = [&] { scrollToY (1); };
+  key_map[fc::Fkey_up]    = [this] { scrollBy (0, -1); };
+  key_map[fc::Fkey_down]  = [this] { scrollBy (0, 1); };
+  key_map[fc::Fkey_left]  = [this] { scrollBy (-1, 0); };
+  key_map[fc::Fkey_right] = [this] { scrollBy (1, 0); };
+  key_map[fc::Fkey_ppage] = [this] { scrollBy (0, -int(getViewportHeight())); };
+  key_map[fc::Fkey_npage] = [this] { scrollBy (0, int(getViewportHeight())); };
+  key_map[fc::Fkey_home]  = [this] { scrollToY (1); };
   key_map[fc::Fkey_end]   = \
-      [&] ()
+      [this] ()
       {
         int yoffset_end = int(getScrollHeight() - getViewportHeight());
         scrollToY (1 + yoffset_end);

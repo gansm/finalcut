@@ -81,8 +81,8 @@ class FButton : public FWidget
     FString&            getText();
 
     // Mutators
-    void                setForegroundColor (FColor);
-    void                setBackgroundColor (FColor);
+    void                setForegroundColor (FColor) override;
+    void                setBackgroundColor (FColor) override;
     void                setHotkeyForegroundColor (FColor);
     void                setFocusForegroundColor (FColor);
     void                setFocusBackgroundColor (FColor);
