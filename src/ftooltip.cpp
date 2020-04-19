@@ -91,12 +91,6 @@ void FToolTip::show()
 }
 
 //----------------------------------------------------------------------
-void FToolTip::hide()
-{
-  FWindow::hide();
-}
-
-//----------------------------------------------------------------------
 void FToolTip::onMouseDown (FMouseEvent*)
 {
   setClickedWidget(nullptr);

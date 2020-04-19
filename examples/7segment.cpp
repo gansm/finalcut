@@ -59,9 +59,6 @@ class SegmentView final : public finalcut::FDialog
       unsigned char   : 1;  // padding bit
     } sevenSegment;
 
-    // Mutator
-    void setGeometry (const FRect&, bool = true) override;
-
     // Methods
     void hexEncoding();
     void get7Segment (const wchar_t);
@@ -79,12 +76,14 @@ class SegmentView final : public finalcut::FDialog
 SegmentView::SegmentView (finalcut::FWidget* parent)
   : FDialog(parent)
 {
+  // Dialog settings
+  //   Avoids calling a virtual function from the constructor
+  //   (CERT, OOP50-CPP)
+  FDialog::setText ("Seven-segment display");
+  FDialog::setGeometry (FPoint(25, 5), FSize(42, 15));
+
   // Set encoding
   hexEncoding();
-
-  // Dialog settings
-  setText ("Seven-segment display");
-  setGeometry (FPoint(25, 5), FSize(42, 15));
 
   // Input field
   Input.setGeometry (FPoint(2, 2), FSize(12, 1));
@@ -114,14 +113,6 @@ SegmentView::SegmentView (finalcut::FWidget* parent)
     "clicked",
     F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
   );
-}
-
-//----------------------------------------------------------------------
-void SegmentView::setGeometry (const FRect& box, bool adjust)
-{
-  // Avoids calling a virtual function from the constructor
-  // (CERT, OOP50-CPP)
-  FDialog::setGeometry (box, adjust);
 }
 
 //----------------------------------------------------------------------

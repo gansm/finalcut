@@ -189,7 +189,7 @@ void FListBox::hide()
 }
 
 //----------------------------------------------------------------------
-void FListBox::insert (FListBoxItem listItem)
+void FListBox::insert (const FListBoxItem& listItem)
 {
   const std::size_t column_width = getColumnWidth(listItem.text);
   const bool has_brackets(listItem.brackets);
@@ -374,10 +374,10 @@ void FListBox::onMouseUp (FMouseEvent* ev)
     const int mouse_y = ev->getY();
 
     if ( mouse_x > 1 && mouse_x < int(getWidth())
-      && mouse_y > 1 && mouse_y < int(getHeight()) )
+      && mouse_y > 1 && mouse_y < int(getHeight())
+      && ! isMultiSelection() )
     {
-      if ( ! isMultiSelection() )
-        processSelect();
+      processSelect();
     }
   }
 }
@@ -1754,11 +1754,18 @@ void FListBox::cb_vbarChange (const FWidget*, const FDataPtr)
   int distance{1};
   const int yoffset_before = yoffset;
   scrollType = vbar->getScrollType();
+  assert ( scrollType == FScrollbar::noScroll
+        || scrollType == FScrollbar::scrollJump
+        || scrollType == FScrollbar::scrollStepBackward
+        || scrollType == FScrollbar::scrollStepForward
+        || scrollType == FScrollbar::scrollPageBackward
+        || scrollType == FScrollbar::scrollPageForward
+        || scrollType == FScrollbar::scrollWheelUp
+        || scrollType == FScrollbar::scrollWheelDown );
 
   switch ( scrollType )
   {
     case FScrollbar::noScroll:
-    default:
       break;
 
     case FScrollbar::scrollPageBackward:
@@ -1818,11 +1825,18 @@ void FListBox::cb_hbarChange (const FWidget*, const FDataPtr)
   int distance{1};
   const int xoffset_before = xoffset;
   scrollType = hbar->getScrollType();
+  assert ( scrollType == FScrollbar::noScroll
+        || scrollType == FScrollbar::scrollJump
+        || scrollType == FScrollbar::scrollStepBackward
+        || scrollType == FScrollbar::scrollStepForward
+        || scrollType == FScrollbar::scrollPageBackward
+        || scrollType == FScrollbar::scrollPageForward
+        || scrollType == FScrollbar::scrollWheelUp
+        || scrollType == FScrollbar::scrollWheelDown );
 
   switch ( scrollType )
   {
     case FScrollbar::noScroll:
-    default:
       break;
 
     case FScrollbar::scrollPageBackward:

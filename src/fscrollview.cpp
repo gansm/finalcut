@@ -202,13 +202,10 @@ void FScrollView::setPos (const FPoint& p, bool adjust)
   scroll_geometry.setPos ( getTermX() + getLeftPadding() - 1
                          , getTermY() + getTopPadding() - 1 );
 
-  if ( ! adjust )
+  if ( ! adjust && viewport )
   {
-    if ( viewport )
-    {
-      viewport->offset_left = scroll_geometry.getX();
-      viewport->offset_top = scroll_geometry.getY();
-    }
+    viewport->offset_left = scroll_geometry.getX();
+    viewport->offset_top = scroll_geometry.getY();
   }
 }
 
@@ -790,10 +787,13 @@ void FScrollView::calculateScrollbarPos()
 //----------------------------------------------------------------------
 void FScrollView::setHorizontalScrollBarVisibility()
 {
+  assert ( v_mode == fc::Auto
+        || v_mode == fc::Hidden
+        || v_mode == fc::Scroll );
+
   switch ( h_mode )
   {
     case fc::Auto:
-    default:
       if ( getScrollWidth() > getViewportWidth() )
         hbar->show();
       else
@@ -813,10 +813,13 @@ void FScrollView::setHorizontalScrollBarVisibility()
 //----------------------------------------------------------------------
 void FScrollView::setVerticalScrollBarVisibility()
 {
+  assert ( v_mode == fc::Auto
+        || v_mode == fc::Hidden
+        || v_mode == fc::Scroll );
+
   switch ( v_mode )
   {
     case fc::Auto:
-    default:
       if ( getScrollHeight() > getViewportHeight() )
         vbar->show();
       else
@@ -859,6 +862,14 @@ void FScrollView::cb_vbarChange (const FWidget*, const FDataPtr)
   FScrollbar::sType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
+  assert ( scrollType == FScrollbar::noScroll
+        || scrollType == FScrollbar::scrollJump
+        || scrollType == FScrollbar::scrollStepBackward
+        || scrollType == FScrollbar::scrollStepForward
+        || scrollType == FScrollbar::scrollPageBackward
+        || scrollType == FScrollbar::scrollPageForward
+        || scrollType == FScrollbar::scrollWheelUp
+        || scrollType == FScrollbar::scrollWheelDown );
 
   if ( scrollType >= FScrollbar::scrollStepBackward )
   {
@@ -872,7 +883,6 @@ void FScrollView::cb_vbarChange (const FWidget*, const FDataPtr)
   switch ( scrollType )
   {
     case FScrollbar::noScroll:
-    default:
       break;
 
     case FScrollbar::scrollPageBackward:
@@ -911,6 +921,14 @@ void FScrollView::cb_hbarChange (const FWidget*, const FDataPtr)
   FScrollbar::sType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
+  assert ( scrollType == FScrollbar::noScroll
+        || scrollType == FScrollbar::scrollJump
+        || scrollType == FScrollbar::scrollStepBackward
+        || scrollType == FScrollbar::scrollStepForward
+        || scrollType == FScrollbar::scrollPageBackward
+        || scrollType == FScrollbar::scrollPageForward
+        || scrollType == FScrollbar::scrollWheelUp
+        || scrollType == FScrollbar::scrollWheelDown );
 
   if ( scrollType >= FScrollbar::scrollStepBackward )
   {
@@ -924,7 +942,6 @@ void FScrollView::cb_hbarChange (const FWidget*, const FDataPtr)
   switch ( scrollType )
   {
     case FScrollbar::noScroll:
-    default:
       break;
 
     case FScrollbar::scrollPageBackward:

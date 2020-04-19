@@ -122,9 +122,9 @@ void FSizeTest::moveConstructorTest()
 {
   finalcut::FSize s1 (120, 36);
   const finalcut::FSize s2 (std::move(s1));
-  CPPUNIT_ASSERT ( s1.getWidth() == 0 );
-  CPPUNIT_ASSERT ( s1.getHeight() == 0 );
-  CPPUNIT_ASSERT ( s1.isEmpty() );
+  CPPUNIT_ASSERT ( s1.getWidth() == 120 );
+  CPPUNIT_ASSERT ( s1.getHeight() == 36 );
+  CPPUNIT_ASSERT ( ! s1.isEmpty() );
   CPPUNIT_ASSERT ( s2.getWidth() == 120 );
   CPPUNIT_ASSERT ( s2.getHeight() == 36 );
 }
@@ -161,9 +161,9 @@ void FSizeTest::assignmentTest()
   // Move assignment operator
   finalcut::FSize s3;
   s3 = std::move(s2);
-  CPPUNIT_ASSERT ( s2.getWidth() == 0 );
-  CPPUNIT_ASSERT ( s2.getHeight() == 0 );
-  CPPUNIT_ASSERT ( s2.isEmpty() );
+  CPPUNIT_ASSERT ( s2.getWidth() == 5 );
+  CPPUNIT_ASSERT ( s2.getHeight() == 4 );
+  CPPUNIT_ASSERT ( ! s2.isEmpty() );
   CPPUNIT_ASSERT ( s3.getWidth() == 5 );
   CPPUNIT_ASSERT ( s3.getHeight() == 4 );
 

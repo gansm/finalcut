@@ -222,15 +222,15 @@ void streamToInterger()
     finalcut::FString("-321") >> stream_int;
     std::cout << "stream out: " << stream_int << std::endl;
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::underflow_error& ex)
   {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+    std::cerr << "underflow: " << ex.what() << std::endl;
   }
   catch (const std::overflow_error& ex)
   {
     std::cerr << "overflow: " << ex.what() << std::endl;
   }
-  catch (const std::exception& ex)
+  catch (const std::invalid_argument& ex)
   {
     std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
@@ -246,15 +246,15 @@ void streamToUnsignedInterger()
     finalcut::FString("123") >> stream_uint;
     std::cout << "stream out: " << stream_uint << std::endl;
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::underflow_error& ex)
   {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+    std::cerr << "underflow: " << ex.what() << std::endl;
   }
   catch (const std::overflow_error& ex)
   {
     std::cerr << "overflow: " << ex.what() << std::endl;
   }
-  catch (const std::exception& ex)
+  catch (const std::invalid_argument& ex)
   {
     std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
@@ -270,11 +270,15 @@ void streamToDouble()
     finalcut::FString("0.123456e+2") >> stream_double;
     std::cout << "stream out: " << stream_double << std::endl;
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::underflow_error& ex)
   {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+    std::cerr << "underflow: " << ex.what() << std::endl;
   }
-  catch (const std::exception& ex)
+  catch (const std::overflow_error& ex)
+  {
+    std::cerr << "overflow: " << ex.what() << std::endl;
+  }
+  catch (const std::invalid_argument& ex)
   {
     std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
@@ -290,11 +294,15 @@ void streamToFloat()
     finalcut::FString("0.123e-3") >> stream_float;
     std::cout << "stream out: " << stream_float << std::endl;
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::underflow_error& ex)
   {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+    std::cerr << "underflow: " << ex.what() << std::endl;
   }
-  catch (const std::exception& ex)
+  catch (const std::overflow_error& ex)
+  {
+    std::cerr << "overflow: " << ex.what() << std::endl;
+  }
+  catch (const std::invalid_argument& ex)
   {
     std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
@@ -486,11 +494,15 @@ void convertToNumberExample()
     const uLong ulong_num = finalcut::FString("123456789").toULong();
     std::cout << "   toULong:  " << ulong_num << std::endl;
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::underflow_error& ex)
   {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+    std::cerr << "underflow: " << ex.what() << std::endl;
   }
-  catch (const std::exception& ex)
+  catch (const std::overflow_error& ex)
+  {
+    std::cerr << "overflow: " << ex.what() << std::endl;
+  }
+  catch (const std::invalid_argument& ex)
   {
     std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
@@ -501,11 +513,15 @@ void convertToNumberExample()
     const long long_num = finalcut::FString("-9876543210").toLong();
     std::cout << "    toLong:  " << long_num << std::endl;
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::underflow_error& ex)
   {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+    std::cerr << "underflow: " << ex.what() << std::endl;
   }
-  catch (const std::exception& ex)
+  catch (const std::overflow_error& ex)
+  {
+    std::cerr << "overflow: " << ex.what() << std::endl;
+  }
+  catch (const std::invalid_argument& ex)
   {
     std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
@@ -522,11 +538,15 @@ void convertToNumberExample()
                                  << double_num << std::endl;
     std::cout.flags(save_flags);
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::underflow_error& ex)
   {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+    std::cerr << "underflow: " << ex.what() << std::endl;
   }
-  catch (const std::exception& ex)
+  catch (const std::overflow_error& ex)
+  {
+    std::cerr << "overflow: " << ex.what() << std::endl;
+  }
+  catch (const std::invalid_argument& ex)
   {
     std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }

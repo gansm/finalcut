@@ -66,7 +66,7 @@ class AttribDlg final : public finalcut::FDialog
     void adjustSize() override;
 
     // Data members
-    FColor bgcolor;
+    FColor bgcolor{getFWidgetColors().label_bg};
     finalcut::FButton next_button{"&Next >", this};
     finalcut::FButton back_button{"< &Back", this};
 };
@@ -74,11 +74,10 @@ class AttribDlg final : public finalcut::FDialog
 //----------------------------------------------------------------------
 AttribDlg::AttribDlg (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , bgcolor(getFWidgetColors().label_bg)
 {
-  setText ( "A terminal attributes test ("
-          + finalcut::FString(getTermType())
-          + ")");
+  FDialog::setText ( "A terminal attributes test ("
+                   + finalcut::FString(getTermType())
+                   + ")");
 
   next_button.setGeometry ( FPoint(int(getWidth()) - 13, int(getHeight()) - 4)
                           , FSize(10, 1) );

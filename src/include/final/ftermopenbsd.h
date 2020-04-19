@@ -102,8 +102,8 @@ class FTermOpenBSD final
     static bool        setBeep (int, int);
     static bool        resetBeep();
 
-  private:
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
+  private:
     // Methods
     static bool        saveBSDConsoleEncoding();
     static bool        setBSDConsoleEncoding (kbd_t);

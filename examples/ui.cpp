@@ -57,9 +57,6 @@ class ProgressDialog final : public finalcut::FDialog
     // Disable copy assignment operator (=)
     ProgressDialog& operator = (const ProgressDialog&) = delete;
 
-    // Mutator
-    void setGeometry (const FRect&, bool = true) override;
-
   private:
     // Event handlers
     void onShow (finalcut::FShowEvent*) override;
@@ -81,9 +78,12 @@ class ProgressDialog final : public finalcut::FDialog
 ProgressDialog::ProgressDialog (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
-  setGeometry ( FPoint(int((getParentWidget()->getWidth() - 40) / 2), 7)
-              , FSize(40, 10) );
-  setText("Progress bar");
+  // Dialog settings
+  //   Avoids calling a virtual function from the constructor
+  //   (CERT, OOP50-CPP)
+  FDialog::setGeometry ( FPoint(int((getParentWidget()->getWidth() - 40) / 2), 7)
+                       , FSize(40, 10) );
+  FDialog::setText("Progress bar");
   //setModal();
 
   reset.setText("&Reset");
@@ -133,14 +133,6 @@ ProgressDialog::~ProgressDialog()  // destructor
 }
 
 //----------------------------------------------------------------------
-void ProgressDialog::setGeometry (const FRect& box, bool adjust)
-{
-  // Avoids calling a virtual function from the constructor
-  // (CERT, OOP50-CPP)
-  FDialog::setGeometry (box, adjust);
-}
-
-//----------------------------------------------------------------------
 void ProgressDialog::onShow (finalcut::FShowEvent*)
 {
   addTimer(15);  // Starts the timer every 15 ms
@@ -150,7 +142,8 @@ void ProgressDialog::onShow (finalcut::FShowEvent*)
 void ProgressDialog::onTimer (finalcut::FTimerEvent*)
 {
   auto p = progressBar.getPercentage();
-  progressBar.setPercentage(++p);
+  p++;
+  progressBar.setPercentage(p);
   flush();
 
   if ( p != 100 )
@@ -182,7 +175,8 @@ void ProgressDialog::cb_reset_bar (const finalcut::FWidget*, const FDataPtr)
 void ProgressDialog::cb_more_bar (const finalcut::FWidget*, const FDataPtr)
 {
   auto p = progressBar.getPercentage();
-  progressBar.setPercentage(++p);
+  p++;
+  progressBar.setPercentage(p);
 }
 
 //----------------------------------------------------------------------
@@ -279,6 +273,7 @@ class MyDialog final : public finalcut::FDialog
 
   private:
     // Methods
+    void init();
     void initMenu();
     void initMenuCallbacks();
     void initFileMenuCallbacks();
@@ -376,6 +371,16 @@ class MyDialog final : public finalcut::FDialog
 MyDialog::MyDialog (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
+  init();
+}
+
+//----------------------------------------------------------------------
+MyDialog::~MyDialog()  // destructor
+{ }
+
+//----------------------------------------------------------------------
+void MyDialog::init()
+{
   initMenu();                // Initialize the program menu
   initMenuCallbacks();       // Initialize program menu callbacks
   initStatusBarCallbacks();  // Initialize status bar callbacks
@@ -383,10 +388,6 @@ MyDialog::MyDialog (finalcut::FWidget* parent)
   initWidgetsCallbacks();    // Initialize dialog widget callbacks
   initialized = true;
 }
-
-//----------------------------------------------------------------------
-MyDialog::~MyDialog()  // destructor
-{ }
 
 //----------------------------------------------------------------------
 void MyDialog::initMenu()

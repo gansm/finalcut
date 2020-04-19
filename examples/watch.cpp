@@ -75,7 +75,10 @@ class Watch final : public finalcut::FDialog
 Watch::Watch (FWidget* parent)
   : finalcut::FDialog(parent)
 {
-  setText ("Watch");
+  // Dialog settings
+  //   Avoids calling a virtual function from the constructor
+  //   (CERT, OOP50-CPP)
+  FDialog::setText ("Watch");
   const int pw = int(getParentWidget()->getWidth());
   FDialog::setGeometry (FPoint(1 + (pw - 22) / 2, 3), FSize(22, 13));
 

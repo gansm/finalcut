@@ -56,21 +56,13 @@ class FColorPair
     { }
 
     // Copy constructor
-    FColorPair (const FColorPair& pair)
-      : fg_color{pair.fg_color}
-      , bg_color{pair.bg_color}
-    { }
+    FColorPair (const FColorPair& pair) = default;
 
     // Destructor
     ~FColorPair() = default;
 
     // copy assignment operator (=)
-    FColorPair& operator = (const FColorPair& pair)
-    {
-      fg_color = pair.fg_color;
-      bg_color = pair.bg_color;
-      return *this;
-    }
+    FColorPair& operator = (const FColorPair& pair) = default;
 
     // Accessor
     const FString getClassName() const

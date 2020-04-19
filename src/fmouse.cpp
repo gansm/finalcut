@@ -180,17 +180,22 @@ inline bool FMouse::isInputDataPending()
 //----------------------------------------------------------------------
 inline FMouse* FMouse::createMouseObject (const mouse_type mt)
 {
+  assert ( mt == FMouse::none
+        || mt == FMouse::gpm
+        || mt == FMouse::x11
+        || mt == FMouse::sgr
+        || mt == FMouse::urxvt );
+
   switch ( mt )
   {
     case none:
-    default:
       return nullptr;
 
     case gpm:
 #ifdef F_HAVE_LIBGPM
       return new FMouseGPM;
 #else
-      break;
+      return nullptr;
 #endif
 
     case x11:
@@ -203,7 +208,7 @@ inline FMouse* FMouse::createMouseObject (const mouse_type mt)
       return new FMouseUrxvt;
   }
 
-  return new FMouseX11;
+  return nullptr;
 }
 
 //----------------------------------------------------------------------

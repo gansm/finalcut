@@ -490,14 +490,12 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
   check_boundaries (xold, yold, xnew, ynew);
 
   // Method 0: direct cursor addressing
-  if ( isMethod0Faster(move_time, xnew, ynew) )
-  {
-    if ( xold < 0
+  if ( isMethod0Faster(move_time, xnew, ynew)
+    && ( xold < 0
       || yold < 0
-      || isWideMove (xold, yold, xnew, ynew) )
-    {
-      return ( move_time < LONG_DURATION ) ? move_buf : nullptr;
-    }
+      || isWideMove (xold, yold, xnew, ynew) ) )
+  {
+    return ( move_time < LONG_DURATION ) ? move_buf : nullptr;
   }
 
   // Method 1: local movement

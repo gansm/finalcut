@@ -84,7 +84,7 @@ RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool b, int l)
   , benchmark(b)
   , loops(l)
 {
-  setText ("Rotozoomer effect");
+  FDialog::setText ("Rotozoomer effect");
 
   int h{0};
 

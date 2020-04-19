@@ -271,11 +271,13 @@ void FLabel::setHotkeyAccelerator()
 std::size_t FLabel::getAlignOffset (const std::size_t length)
 {
   const std::size_t width(getWidth());
+  assert ( alignment == fc::alignLeft
+        || alignment == fc::alignCenter
+        || alignment == fc::alignRight );
 
   switch ( alignment )
   {
     case fc::alignLeft:
-    default:
       return 0;
 
     case fc::alignCenter:
@@ -357,7 +359,7 @@ void FLabel::drawMultiLine()
     else
       align_offset = getAlignOffset(length);
 
-    printLine (std::move(label_text));
+    printLine (label_text);
     y++;
   }
 }
@@ -374,11 +376,11 @@ void FLabel::drawSingleLine()
 
   print() << FPoint(1, 1);
   align_offset = getAlignOffset(column_width);
-  printLine (std::move(label_text));
+  printLine (label_text);
 }
 
 //----------------------------------------------------------------------
-void FLabel::printLine (FString&& line)
+void FLabel::printLine (FString& line)
 {
   std::size_t to_char{};
   std::size_t to_column{};

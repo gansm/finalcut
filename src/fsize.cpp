@@ -47,9 +47,8 @@ FSize& FSize::operator = (const FSize& s)
 //----------------------------------------------------------------------
 FSize& FSize::operator = (FSize&& s) noexcept
 {
-  width = s.width;
-  height = s.height;
-  s.width = s.height = 0;
+  width = std::move(s.width);
+  height = std::move(s.height);
   return *this;
 }
 
@@ -83,7 +82,7 @@ void FSize::setHeight (std::size_t h)
 }
 
 //----------------------------------------------------------------------
-void FSize::setSize (FSize s)
+void FSize::setSize (const FSize& s)
 {
   width = s.width;
   height = s.height;

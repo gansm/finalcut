@@ -235,11 +235,11 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (fc::sides side)
       return double_flatline_mask.bottom;
 
     case fc::left:
-    default:
       return double_flatline_mask.left;
   }
 
-  return double_flatline_mask.left;
+  static std::vector<bool> empty;
+  return empty;
 }
 
 //----------------------------------------------------------------------
@@ -671,9 +671,6 @@ void FWidget::setDoubleFlatLine (fc::sides side, bool bit)
       length = double_flatline_mask.left.size();
       double_flatline_mask.left.assign(length, bit);
       break;
-
-    default:
-      break;
   }
 }
 
@@ -722,9 +719,6 @@ void FWidget::setDoubleFlatLine (fc::sides side, int pos, bool bit)
       if ( index < length )
         double_flatline_mask.left[index] = bit;
 
-      break;
-
-    default:
       break;
   }
 }
@@ -807,7 +801,7 @@ bool FWidget::close()
 
 //----------------------------------------------------------------------
 void FWidget::addCallback ( const FString& cb_signal
-                          , FCallback cb_function
+                          , const FCallback& cb_function
                           , FDataPtr data )
 {
   // Add a (normal) function pointer as callback
@@ -819,7 +813,7 @@ void FWidget::addCallback ( const FString& cb_signal
 //----------------------------------------------------------------------
 void FWidget::addCallback ( const FString& cb_signal
                           , FWidget*  cb_instance
-                          , FCallback cb_function
+                          , const FCallback& cb_function
                           , FDataPtr data )
 {
   // Add a member function pointer as callback
@@ -829,7 +823,7 @@ void FWidget::addCallback ( const FString& cb_signal
 }
 
 //----------------------------------------------------------------------
-void FWidget::delCallback (FCallback cb_function)
+void FWidget::delCallback (const FCallback& cb_function)
 {
   // Delete cb_function form callback list
 
@@ -1103,13 +1097,12 @@ bool FWidget::focusFirstChild()
     {
       widget->setFocus();
 
-      if ( widget->numOfChildren() >= 1 )
+      if ( widget->numOfChildren() >= 1
+        && ! widget->focusFirstChild()
+        && widget->isWindowWidget() )
       {
-        if ( ! widget->focusFirstChild() && widget->isWindowWidget() )
-        {
-          ++iter;
-          continue;
-        }
+        ++iter;
+        continue;
       }
 
       return true;
@@ -1145,11 +1138,9 @@ bool FWidget::focusLastChild()
     {
       widget->setFocus();
 
-      if ( widget->numOfChildren() >= 1 )
-      {
-        if ( ! widget->focusLastChild() && widget->isWindowWidget() )
-          continue;
-      }
+      if ( widget->numOfChildren() >= 1
+        && ! widget->focusLastChild() && widget->isWindowWidget() )
+        continue;
 
       return true;
     }

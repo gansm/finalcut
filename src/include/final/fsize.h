@@ -76,7 +76,7 @@ class FSize
     std::size_t           getArea() const;
     void                  setWidth (std::size_t);
     void                  setHeight (std::size_t);
-    void                  setSize (FSize);
+    void                  setSize (const FSize&);
     void                  setSize (std::size_t, std::size_t);
 
     // Inquiry
@@ -118,9 +118,9 @@ inline FSize::FSize (const FSize& s)  // copy constructor
 
 //----------------------------------------------------------------------
 inline FSize::FSize (FSize&& s) noexcept  // move constructor
-  : width(s.width)
-  , height(s.height)
-{ s.width = s.height = 0; }
+  : width(std::move(s.width))
+  , height(std::move(s.height))
+{ }
 
 //----------------------------------------------------------------------
 inline FSize::FSize (std::size_t w, std::size_t h)

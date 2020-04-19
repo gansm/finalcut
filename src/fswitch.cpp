@@ -43,8 +43,8 @@ FSwitch::FSwitch(FWidget* parent)
 //----------------------------------------------------------------------
 FSwitch::FSwitch (const FString& txt, FWidget* parent)
   : FToggleButton(txt, parent)
+  , switch_offset_pos(txt.getLength() + 1)
 {
-  switch_offset_pos = txt.getLength() + 1;
   setButtonWidth(11);
 }
 

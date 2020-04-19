@@ -189,8 +189,8 @@ class MainWindow final : public finalcut::FDialog
     }
 
     // Data members
-    finalcut::FString line1{};
-    finalcut::FString line2{};
+    finalcut::FString line1{"     .-.     .-.     .-."};
+    finalcut::FString line2{"`._.'   `._.'   `._.'   "};
     Transparent* transpwin{nullptr};
     Transparent* shadowwin{nullptr};
     Transparent* ibg{nullptr};
@@ -202,9 +202,6 @@ class MainWindow final : public finalcut::FDialog
 MainWindow::MainWindow (finalcut::FWidget* parent)
   : FDialog(parent)
 {
-  line1 = "     .-.     .-.     .-.";
-  line2 = "`._.'   `._.'   `._.'   ";
-
   // The memory allocation for the following three sub windows occurs
   // with the operator new. The lifetime of the generated widget
   // is managed by the parent object (this). The operator delete

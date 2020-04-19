@@ -684,8 +684,10 @@ void FMenuItem::passMouseEvent ( T widget, const FMouseEvent* ev
       break;
 
     case fc::MouseMove_Event:
-    default:
       widget->onMouseMove(_ev.get());
+      break;
+
+    default:
       break;
   }
 }

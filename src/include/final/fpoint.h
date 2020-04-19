@@ -109,9 +109,9 @@ inline FPoint::FPoint (const FPoint& p)  // copy constructor
 
 //----------------------------------------------------------------------
 inline FPoint::FPoint (FPoint&& p) noexcept  // move constructor
-  : xpos(p.xpos)
-  , ypos(p.ypos)
-{ p.xpos = p.ypos = 0; }
+  : xpos(std::move(p.xpos))
+  , ypos(std::move(p.ypos))
+{ }
 
 //----------------------------------------------------------------------
 inline FPoint::FPoint (int x, int y)

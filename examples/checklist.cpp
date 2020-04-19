@@ -55,9 +55,6 @@ class CheckList final : public finalcut::FDialog
     // Disable copy assignment operator (=)
     CheckList& operator = (const CheckList&) = delete;
 
-    // Mutator
-    void setGeometry (const FRect&, bool = true) override;
-
   private:
     // Method
     void populate();
@@ -78,11 +75,14 @@ class CheckList final : public finalcut::FDialog
 CheckList::CheckList (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
-  setText (L"Shopping list");
-  setShadow();
+  // Dialog settings
+  //   Avoids calling a virtual function from the constructor
+  //   (CERT, OOP50-CPP)
+  FDialog::setText (L"Shopping list");
   const std::size_t nf_offset = ( isNewFont() ) ? 1 : 0;
-  setGeometry ( FPoint(int(1 + (parent->getWidth() - 28) / 2), 5)
-              , FSize(28 + nf_offset, 13) );
+  FDialog::setGeometry ( FPoint(int(1 + (parent->getWidth() - 28) / 2), 5)
+                       , FSize(28 + nf_offset, 13) );
+  setShadow();
   listView.ignorePadding();
   listView.setGeometry ( FPoint(1 + int(nf_offset), 2)
                        , FSize(getWidth() - nf_offset, getHeight() - 1) );
@@ -117,14 +117,6 @@ CheckList::CheckList (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 CheckList::~CheckList()  // destructor
 { }
-
-//----------------------------------------------------------------------
-void CheckList::setGeometry (const FRect& box, bool adjust)
-{
-  // Avoids calling a virtual function from the constructor
-  // (CERT, OOP50-CPP)
-  FDialog::setGeometry (box, adjust);
-}
 
 //----------------------------------------------------------------------
 void CheckList::populate()

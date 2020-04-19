@@ -678,18 +678,19 @@ void FMenu::hideSuperMenus()
 }
 
 //----------------------------------------------------------------------
-bool FMenu::mouseDownOverList (FPoint mouse_pos)
+bool FMenu::mouseDownOverList (const FPoint& mouse_pos)
 {
   bool focus_changed{false};
-  mouse_pos -= FPoint(getRightPadding(), getTopPadding());
+  FPoint pos{mouse_pos};
+  pos -= FPoint(getRightPadding(), getTopPadding());
 
   for (auto&& item : getItemList())
   {
     const int x1 = item->getX();
     const int x2 = item->getX() + int(item->getWidth());
     const int y  = item->getY();
-    const int mouse_x = mouse_pos.getX();
-    const int mouse_y = mouse_pos.getY();
+    const int mouse_x = pos.getX();
+    const int mouse_y = pos.getY();
 
     if ( mouse_x >= x1
       && mouse_x < x2
@@ -764,17 +765,18 @@ void FMenu::mouseDownSelection (FMenuItem* m_item, bool& focus_changed)
 }
 
 //----------------------------------------------------------------------
-bool FMenu::mouseUpOverList (FPoint mouse_pos)
+bool FMenu::mouseUpOverList (const FPoint& mouse_pos)
 {
-  mouse_pos -= FPoint(getRightPadding(), getTopPadding());
+  FPoint pos{mouse_pos};
+  pos -= FPoint(getRightPadding(), getTopPadding());
 
   for (auto&& item : getItemList())
   {
     const int x1 = item->getX();
     const int x2 = item->getX() + int(item->getWidth());
     const int y  = item->getY();
-    const int mouse_x = mouse_pos.getX();
-    const int mouse_y = mouse_pos.getY();
+    const int mouse_x = pos.getX();
+    const int mouse_y = pos.getY();
 
     if ( item->isSelected()
       && mouse_x >= x1
@@ -819,17 +821,18 @@ bool FMenu::mouseUpOverList (FPoint mouse_pos)
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseMoveOverList (FPoint mouse_pos, mouseStates& ms)
+void FMenu::mouseMoveOverList (const FPoint& mouse_pos, mouseStates& ms)
 {
-  mouse_pos -= FPoint(getRightPadding(), getTopPadding());
+  FPoint pos{mouse_pos};
+  pos -= FPoint(getRightPadding(), getTopPadding());
 
   for (auto&& item : getItemList())
   {
     const int x1 = item->getX();
     const int x2 = item->getX() + int(item->getWidth());
     const int y  = item->getY();
-    const int mouse_x = mouse_pos.getX();
-    const int mouse_y = mouse_pos.getY();
+    const int mouse_x = pos.getX();
+    const int mouse_y = pos.getY();
 
     if ( mouse_x >= x1 && mouse_x < x2 && mouse_y == y )
       mouseMoveSelection (item, ms);
@@ -1367,15 +1370,13 @@ inline void FMenu::drawMenuText (menuText& data)
 
   for (std::size_t z{0}; z < data.text.getLength(); z++)
   {
-    if ( ! std::iswprint(std::wint_t(data.text[z])) )
+    if ( ! std::iswprint(std::wint_t(data.text[z]))
+      && ! isNewFont()
+      && ( data.text[z] < fc::NF_rev_left_arrow2
+        || data.text[z] > fc::NF_check_mark )
+      && ! charEncodable(wchar_t(data.text[z])) )
     {
-      if ( ! isNewFont()
-        && ( data.text[z] < fc::NF_rev_left_arrow2
-          || data.text[z] > fc::NF_check_mark )
-        && ! charEncodable(wchar_t(data.text[z])) )
-      {
-        data.text[z] = L' ';
-      }
+      data.text[z] = L' ';
     }
 
     if ( z == data.hotkeypos )

@@ -566,12 +566,9 @@ struct FVTerm::FVTermPreprocessing
   { }
 
   FVTermPreprocessing (FVTermPreprocessing&& p) noexcept  // move constructor
-    : instance(p.instance)
-    , function(p.function)
-  {
-    p.instance = nullptr;
-    p.function = nullptr;
-  }
+    : instance(std::move(p.instance))
+    , function(std::move(p.function))
+  { }
 
   // Overloaded operators
   FVTermPreprocessing& operator = (const FVTermPreprocessing& p)

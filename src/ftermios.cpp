@@ -24,6 +24,7 @@
   #undef __STRICT_ANSI__  // need for fileno
 #endif
 
+#include <system_error>
 #include <unordered_map>
 
 #include "final/ftermios.h"
@@ -74,7 +75,7 @@ termios FTermios::getTTY()
   struct termios t{};
 
   if ( tcgetattr(stdin_no, &t) == -1 )
-    throw std::runtime_error("Cannot find tty");
+    throw std::system_error(errno, std::generic_category());
 
   return t;
 }

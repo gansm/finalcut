@@ -281,8 +281,15 @@ void FSpinBox::onTimer (FTimerEvent*)
     addTimer(repeat_time);
   }
 
+  assert ( spining_state == FSpinBox::noSpin
+        || spining_state == FSpinBox::spinUp
+        || spining_state == FSpinBox::spinDown );
+
   switch ( spining_state )
   {
+    case FSpinBox::noSpin:
+      break;
+
     case FSpinBox::spinUp:
       increaseValue();
       updateInputField();
@@ -291,10 +298,6 @@ void FSpinBox::onTimer (FTimerEvent*)
     case FSpinBox::spinDown:
       decreaseValue();
       updateInputField();
-      break;
-
-    case FSpinBox::noSpin:
-    default:
       break;
   }
 }

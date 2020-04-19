@@ -44,9 +44,8 @@ FPoint& FPoint::operator = (const FPoint& p)
 //----------------------------------------------------------------------
 FPoint& FPoint::operator = (FPoint&& p) noexcept
 {
-  xpos = p.xpos;
-  ypos = p.ypos;
-  p.xpos = p.ypos = 0;
+  xpos = std::move(p.xpos);
+  ypos = std::move(p.ypos);
   return *this;
 }
 

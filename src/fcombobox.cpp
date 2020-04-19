@@ -277,7 +277,7 @@ void FComboBox::setMaxVisibleItems (std::size_t items)
 }
 
 //----------------------------------------------------------------------
-void FComboBox::insert (FListBoxItem listItem)
+void FComboBox::insert (const FListBoxItem& listItem)
 {
   list_window.list.insert(listItem);
 

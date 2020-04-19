@@ -55,7 +55,7 @@ class Mandelbrot final : public finalcut::FDialog
 Mandelbrot::Mandelbrot (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
-  setText ("Mandelbrot set");
+  FDialog::setText ("Mandelbrot set");
 }
 
 //----------------------------------------------------------------------

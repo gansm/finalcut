@@ -144,7 +144,7 @@ class FFileDialog : public FDialog
     // Typedef
     struct dir_entry
     {
-      char* name;
+      std::string name;
       // Type of file
       uChar fifo             : 1;
       uChar character_device : 1;

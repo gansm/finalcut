@@ -520,7 +520,7 @@ void FToggleButton::init()
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::drawText (FString&& label_text, std::size_t hotkeypos)
+void FToggleButton::drawText (const FString& label_text, std::size_t hotkeypos)
 {
   if ( isMonochron() )
     setReverse(true);

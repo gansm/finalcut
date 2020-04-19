@@ -200,9 +200,17 @@ uInt env2uint (const char* env)
   {
     return str.toUInt();
   }
-  catch (const std::exception&)
+  catch (const std::invalid_argument&)
   {
     return 0;
+  }
+  catch (const std::underflow_error&)
+  {
+    return std::numeric_limits<uInt>::min();
+  }
+  catch (const std::overflow_error&)
+  {
+    return std::numeric_limits<uInt>::max();
   }
 }
 
@@ -507,7 +515,7 @@ std::size_t getColumnWidth (const FTermBuffer& tb)
   return std::accumulate ( std::next(tb.begin())
                          , tb.end()
                          , tb.front().attr.bit.char_width
-                         , [] (std::size_t s, FChar c) -> std::size_t
+                         , [] (std::size_t s, FChar c)
                            {
                              return std::move(s) + c.attr.bit.char_width;
                            }

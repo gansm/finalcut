@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -117,8 +117,8 @@ void FPointTest::moveConstructorTest()
 {
   finalcut::FPoint p1 (25, 16);
   const finalcut::FPoint p2 (std::move(p1));
-  CPPUNIT_ASSERT ( p1.getX() == 0 );
-  CPPUNIT_ASSERT ( p1.getY() == 0 );
+  CPPUNIT_ASSERT ( p1.getX() == 25 );
+  CPPUNIT_ASSERT ( p1.getY() == 16 );
   CPPUNIT_ASSERT ( p2.getX() == 25 );
   CPPUNIT_ASSERT ( p2.getY() == 16 );
 }
@@ -153,9 +153,9 @@ void FPointTest::assignmentTest()
 
   // Move assignment operator
   finalcut::FPoint p3 = std::move(p2);
-  CPPUNIT_ASSERT ( p2.getX() == 0 );
-  CPPUNIT_ASSERT ( p2.getY() == 0 );
-  CPPUNIT_ASSERT ( p2.isOrigin() );
+  CPPUNIT_ASSERT ( p2.getX() == 40 );
+  CPPUNIT_ASSERT ( p2.getY() == 12 );
+  CPPUNIT_ASSERT ( ! p2.isOrigin() );
   CPPUNIT_ASSERT ( p3.getX() == 40 );
   CPPUNIT_ASSERT ( p3.getY() == 12 );
 

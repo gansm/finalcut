@@ -94,7 +94,6 @@ class FToolTip : public FWindow
 
     // Methods
     void                show() override;
-    void                hide() override;
 
     // Event handler
     void                onMouseDown (FMouseEvent*) override;

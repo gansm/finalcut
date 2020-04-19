@@ -82,7 +82,7 @@ class FStartOptions final
     uInt8 sgr_optimizer         : 1;
     uInt8 vgafont               : 1;
     uInt8 newfont               : 1;
-    fc::encoding encoding;
+    fc::encoding                encoding{fc::UNKNOWN};
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
     uInt8 meta_sends_escape     : 1;
@@ -93,7 +93,7 @@ class FStartOptions final
     uInt8                       : 7;  // padding bits
 #endif
 
-    static FStartOptions*     start_options;
+    static FStartOptions*       start_options;
 };
 
 //----------------------------------------------------------------------

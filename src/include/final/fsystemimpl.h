@@ -170,7 +170,7 @@ class FSystemImpl : public FSystem
 #endif
     }
 
-    int tputs (const char* str, int affcnt, int (*putc)(int)) override
+    int tputs (const char* str, int affcnt, fn_putc putc) override
     {
 #if defined(__sun) && defined(__SVR4)
       return ::tputs ( C_STR(str)

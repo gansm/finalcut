@@ -40,7 +40,7 @@ bool sortByName ( const FFileDialog::dir_entry& lhs
                 , const FFileDialog::dir_entry& rhs )
 {
   // lhs < rhs
-  return bool( strcasecmp(lhs.name, rhs.name) < 0 );
+  return bool( strcasecmp(lhs.name.c_str(), rhs.name.c_str()) < 0 );
 }
 
 //----------------------------------------------------------------------
@@ -189,13 +189,10 @@ void FFileDialog::setPath (const FString& dir)
     return;
   }
 
-  if ( S_ISLNK(sb.st_mode) )
+  if ( S_ISLNK(sb.st_mode) && lstat(dirname, &sb) != 0 )
   {
-    if ( lstat(dirname, &sb) != 0 )
-    {
-      directory = '/';
-      return;
-    }
+    directory = '/';
+    return;
   }
 
   if ( ! S_ISDIR(sb.st_mode) )
@@ -446,10 +443,6 @@ void FFileDialog::clear()
   if ( dir_entries.empty() )
     return;
 
-  // delete all directory entries;
-  for (auto&& entry : dir_entries)
-    std::free (entry.name);
-
   dir_entries.clear();
   dir_entries.shrink_to_fit();
 }
@@ -465,7 +458,7 @@ sInt64 FFileDialog::numOfDirs()
                                  , [] (const dir_entry& entry)
                                    {
                                      return entry.directory
-                                         && std::strcmp(entry.name, ".") != 0;
+                                         && std::strcmp(entry.name.c_str(), ".") != 0;
                                    }
                                  );
   return n;
@@ -476,7 +469,7 @@ void FFileDialog::sortDir()
 {
   sInt64 start{0};
 
-  if ( std::strcmp((*dir_entries.begin()).name, "..") == 0 )
+  if ( std::strcmp((*dir_entries.begin()).name.c_str(), "..") == 0 )
     start = 1;
 
   const sInt64 dir_num = numOfDirs();
@@ -564,7 +557,7 @@ void FFileDialog::getEntry (const char* const dir, const struct dirent* d_entry)
   const char* const filter = filter_pattern.c_str();
   dir_entry entry{};
 
-  entry.name = strdup(d_entry->d_name);
+  entry.name = d_entry->d_name;
 
 #if defined _DIRENT_HAVE_D_TYPE || defined HAVE_STRUCT_DIRENT_D_TYPE
   entry.fifo             = (d_entry->d_type & DT_FIFO) == DT_FIFO;
@@ -590,10 +583,10 @@ void FFileDialog::getEntry (const char* const dir, const struct dirent* d_entry)
 
   if ( entry.directory )
     dir_entries.push_back (entry);
-  else if ( pattern_match(filter, entry.name) )
+  else if ( pattern_match(filter, entry.name.c_str()) )
     dir_entries.push_back (entry);
   else
-    std::free(entry.name);
+    entry.name.clear();
 }
 
 //----------------------------------------------------------------------
@@ -612,7 +605,7 @@ void FFileDialog::followSymLink (const char* const dir, dir_entry& entry)
   std::strncpy (symLink, dir, sizeof(symLink));
   symLink[sizeof(symLink) - 1] = '\0';
   std::strncat ( symLink
-               , entry.name
+               , entry.name.c_str()
                , sizeof(symLink) - std::strlen(symLink) - 1);
   symLink[sizeof(symLink) - 1] = '\0';
 
@@ -655,7 +648,7 @@ void FFileDialog::selectDirectoryEntry (const char* const name)
 
   for (auto&& entry : dir_entries)
   {
-    if ( std::strcmp(entry.name, name) == 0 )
+    if ( std::strcmp(entry.name.c_str(), name) == 0 )
     {
       filebrowser.setCurrentItem(i);
       filename.setText(FString(name) + '/');
@@ -793,10 +786,10 @@ void FFileDialog::cb_processActivate (const FWidget*, const FDataPtr)
                           , std::end(dir_entries)
                           , [&input] (const dir_entry& entry)
                             {
-                              return entry.name
+                              return entry.name.c_str()
                                   && input
                                   && ! input.isNull()
-                                  && std::strcmp(entry.name, input) == 0
+                                  && std::strcmp(entry.name.c_str(), input) == 0
                                   && entry.directory;
                             }
                           );

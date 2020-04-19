@@ -151,16 +151,14 @@ void FVTerm::setTermXY (int x, int y)
 //----------------------------------------------------------------------
 void FVTerm::setTerminalUpdates (terminal_update refresh_state)
 {
-  switch ( refresh_state )
+  if ( refresh_state == stop_terminal_updates )
   {
-    case stop_terminal_updates:
-      no_terminal_updates = true;
-      break;
-
-    case continue_terminal_updates:
-    case start_terminal_updates:
-    default:
-      no_terminal_updates = false;
+    no_terminal_updates = true;
+  }
+  else if ( refresh_state == continue_terminal_updates
+         || refresh_state == start_terminal_updates )
+  {
+    no_terminal_updates = false;
   }
 
   if ( refresh_state == start_terminal_updates )
@@ -1176,20 +1174,17 @@ void FVTerm::scrollAreaForward (FTermArea* area)
   area->changes[y_max].xmax = uInt(area->width - 1);
   area->has_changes = true;
 
-  if ( area == vdesktop )
+  if ( area == vdesktop && TCAP(fc::t_scroll_forward) )
   {
-    if ( TCAP(fc::t_scroll_forward)  )
-    {
-      setTermXY (0, vdesktop->height);
-      FTerm::scrollTermForward();
-      putArea (FPoint(1, 1), vdesktop);
+    setTermXY (0, vdesktop->height);
+    FTerm::scrollTermForward();
+    putArea (FPoint(1, 1), vdesktop);
 
-      // avoid update lines from 0 to (y_max - 1)
-      for (int y{0}; y < y_max; y++)
-      {
-        area->changes[y].xmin = uInt(area->width - 1);
-        area->changes[y].xmax = 0;
-      }
+    // avoid update lines from 0 to (y_max - 1)
+    for (int y{0}; y < y_max; y++)
+    {
+      area->changes[y].xmin = uInt(area->width - 1);
+      area->changes[y].xmax = 0;
     }
   }
 }
@@ -1234,20 +1229,17 @@ void FVTerm::scrollAreaReverse (FTermArea* area)
   area->changes[0].xmax = uInt(area->width - 1);
   area->has_changes = true;
 
-  if ( area == vdesktop )
+  if ( area == vdesktop && TCAP(fc::t_scroll_reverse)  )
   {
-    if ( TCAP(fc::t_scroll_reverse)  )
-    {
-      setTermXY (0, 0);
-      FTerm::scrollTermReverse();
-      putArea (FPoint(1, 1), vdesktop);
+    setTermXY (0, 0);
+    FTerm::scrollTermReverse();
+    putArea (FPoint(1, 1), vdesktop);
 
-      // avoid update lines from 1 to y_max
-      for (int y{1}; y <= y_max; y++)
-      {
-        area->changes[y].xmin = uInt(area->width - 1);
-        area->changes[y].xmax = 0;
-      }
+    // avoid update lines from 1 to y_max
+    for (int y{1}; y <= y_max; y++)
+    {
+      area->changes[y].xmin = uInt(area->width - 1);
+      area->changes[y].xmax = 0;
     }
   }
 }
@@ -1721,7 +1713,7 @@ bool FVTerm::hasChildAreaChanges (FTermArea* area)
 
   return std::any_of ( area->preproc_list.begin()
                      , area->preproc_list.end()
-                     , [] (const FVTermPreprocessing& pcall) -> bool
+                     , [] (const FVTermPreprocessing& pcall)
                        {
                          return pcall.instance
                              && pcall.instance->child_print_area

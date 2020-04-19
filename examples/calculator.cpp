@@ -119,9 +119,6 @@ class Calc final : public finalcut::FDialog
     // Destructor
     ~Calc() override;
 
-    // Mutator
-    void           setGeometry (const FRect&, bool = true) override;
-
     // Event handlers
     void           onKeyPress (finalcut::FKeyEvent*) override;
     void           onClose (finalcut::FCloseEvent*) override;
@@ -249,11 +246,15 @@ class Calc final : public finalcut::FDialog
 Calc::Calc (FWidget* parent)
   : finalcut::FDialog(parent)
 {
+  // Dialog settings
+  //   Avoids calling a virtual function from the constructor
+  //   (CERT, OOP50-CPP)
+  FDialog::setText ("Calculator");
+  FDialog::setGeometry (FPoint(19, 6), FSize(37, 18));
+
   mapKeyFunctions();
   clearInfixOperator();
   std::setlocale(LC_NUMERIC, "C");
-  setText ("Calculator");
-  setGeometry (FPoint(19, 6), FSize(37, 18));
 
   for (std::size_t key{0}; key < Calc::NUM_OF_BUTTONS; key++)
   {
@@ -305,14 +306,6 @@ Calc::Calc (FWidget* parent)
 //----------------------------------------------------------------------
 Calc::~Calc()
 { }
-
-//----------------------------------------------------------------------
-void Calc::setGeometry (const FRect& box, bool adjust)
-{
-  // Avoids calling a virtual function from the constructor
-  // (CERT, OOP50-CPP)
-  FDialog::setGeometry (box, adjust);
-}
 
 //----------------------------------------------------------------------
 void Calc::onKeyPress (finalcut::FKeyEvent* ev)

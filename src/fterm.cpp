@@ -1070,7 +1070,9 @@ void FTerm::setEncoding (fc::encoding enc)
   assert ( enc == fc::UTF8
         || enc == fc::VT100  // VT100 line drawing
         || enc == fc::PC     // CP-437
-        || enc == fc::ASCII );
+        || enc == fc::ASCII
+        || enc == fc::UNKNOWN
+        || enc == fc::NUM_OF_ENCODINGS );
 
   // Set the new putchar() function pointer
   switch ( enc )
@@ -1090,7 +1092,6 @@ void FTerm::setEncoding (fc::encoding enc)
     case fc::ASCII:
     case fc::UNKNOWN:
     case fc::NUM_OF_ENCODINGS:
-    default:
       putchar() = &FTerm::putchar_ASCII;
   }
 
@@ -1794,11 +1795,10 @@ void FTerm::init_individual_term_encoding()
     data->setTermEncoding (fc::PC);
     putchar() = &FTerm::putchar_ASCII;  // function pointer
 
-    if ( hasUTF8() && getStartOptions().encoding == fc::UNKNOWN )
-    {
-      if ( isXTerminal() )
-        putchar() = &FTerm::putchar_UTF8;  // function pointer
-    }
+    if ( hasUTF8()
+      && getStartOptions().encoding == fc::UNKNOWN
+      && isXTerminal() )
+      putchar() = &FTerm::putchar_UTF8;  // function pointer
   }
 }
 
@@ -2326,7 +2326,7 @@ bool FTerm::init_terminal()
   {
     FTermios::storeTTYsettings();
   }
-  catch (const std::runtime_error& ex)
+  catch (const std::system_error& ex)
   {
     FString msg = "FTerm: " + FString(ex.what());
     data->setExitMessage(msg);
@@ -2554,7 +2554,6 @@ void FTerm::signal_handler (int signum)
                 << signum
                 << " (" << strsignal(signum) << ")" << std::endl;
       std::terminate();
-      break;
 
     default:
       break;

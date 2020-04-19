@@ -94,9 +94,17 @@ uInt64 firstNumberFromString (const FString& str)
   {
     number = uInt64(num_str.toLong());
   }
-  catch (const std::exception&)
+  catch (const std::invalid_argument&)
   {
     return 0;
+  }
+  catch (const std::underflow_error&)
+  {
+    return std::numeric_limits<uInt64>::min();
+  }
+  catch (const std::overflow_error&)
+  {
+    return std::numeric_limits<uInt64>::max();
   }
 
   return number;
@@ -504,14 +512,10 @@ FListViewIterator::FListViewIterator (const FListViewIterator& i)
 
 //----------------------------------------------------------------------
 FListViewIterator::FListViewIterator (FListViewIterator&& i) noexcept
-  : iter_path(i.iter_path)  // move constructor
-  , node(i.node)
-  , position(i.position)
-{
-  i.iter_path = iterator_stack{};
-  i.node = iterator{};
-  i.position = 0;
-}
+  : iter_path(std::move(i.iter_path))  // move constructor
+  , node(std::move(i.node))
+  , position(std::move(i.position))
+{ }
 
 // FListViewIterator operators
 //----------------------------------------------------------------------
@@ -526,12 +530,9 @@ FListViewIterator& FListViewIterator::operator = (const FListViewIterator& i)
 //----------------------------------------------------------------------
 FListViewIterator& FListViewIterator::operator = (FListViewIterator&& i) noexcept
 {
-  iter_path = i.iter_path;
-  node = i.node;
-  position = i.position;
-  i.iter_path = iterator_stack{};
-  i.node = iterator{};
-  i.position = 0;
+  iter_path = std::move(i.iter_path);
+  node = std::move(i.node);
+  position = std::move(i.position);
   return *this;
 }
 
@@ -1014,11 +1015,16 @@ void FListView::sort()
   if ( sort_column < 1 && sort_column > int(header.size()) )
     return;
 
-  switch ( getColumnSortType(sort_column) )
+  fc::sorting_type column_sort_type = getColumnSortType(sort_column);
+  assert ( column_sort_type == fc::by_name
+        || column_sort_type == fc::by_number
+        || column_sort_type == fc::user_defined
+        || column_sort_type == fc::unknown );
+
+  switch ( column_sort_type )
   {
     case fc::unknown:
     case fc::by_name:
-    default:
       if ( sort_order == fc::ascending )
       {
         sort (sortAscendingByName);
@@ -1584,10 +1590,13 @@ std::size_t FListView::getAlignOffset ( const fc::text_alignment align
                                       , const std::size_t column_width
                                       , const std::size_t width )
 {
+  assert ( align == fc::alignLeft
+        || align == fc::alignCenter
+        || align == fc::alignRight );
+
   switch ( align )
   {
     case fc::alignLeft:
-    default:
       return 0;
 
     case fc::alignCenter:
@@ -2855,11 +2864,18 @@ void FListView::cb_vbarChange (const FWidget*, const FDataPtr)
   static constexpr int wheel_distance = 4;
   int distance{1};
   first_line_position_before = first_visible_line.getPosition();
+  assert ( scrollType == FScrollbar::noScroll
+        || scrollType == FScrollbar::scrollJump
+        || scrollType == FScrollbar::scrollStepBackward
+        || scrollType == FScrollbar::scrollStepForward
+        || scrollType == FScrollbar::scrollPageBackward
+        || scrollType == FScrollbar::scrollPageForward
+        || scrollType == FScrollbar::scrollWheelUp
+        || scrollType == FScrollbar::scrollWheelDown );
 
   switch ( scrollType )
   {
     case FScrollbar::noScroll:
-    default:
       break;
 
     case FScrollbar::scrollPageBackward:
@@ -2884,12 +2900,12 @@ void FListView::cb_vbarChange (const FWidget*, const FDataPtr)
     }
 
     case FScrollbar::scrollWheelUp:
-    wheelUp (wheel_distance);
-    break;
+      wheelUp (wheel_distance);
+      break;
 
     case FScrollbar::scrollWheelDown:
-    wheelDown (wheel_distance);
-    break;
+      wheelDown (wheel_distance);
+      break;
   }
 
   if ( isShown() )
@@ -2915,11 +2931,18 @@ void FListView::cb_hbarChange (const FWidget*, const FDataPtr)
   static constexpr int wheel_distance = 4;
   int distance{1};
   const int xoffset_before = xoffset;
+  assert ( scrollType == FScrollbar::noScroll
+        || scrollType == FScrollbar::scrollJump
+        || scrollType == FScrollbar::scrollStepBackward
+        || scrollType == FScrollbar::scrollStepForward
+        || scrollType == FScrollbar::scrollPageBackward
+        || scrollType == FScrollbar::scrollPageForward
+        || scrollType == FScrollbar::scrollWheelUp
+        || scrollType == FScrollbar::scrollWheelDown );
 
   switch ( scrollType )
   {
     case FScrollbar::noScroll:
-    default:
       break;
 
     case FScrollbar::scrollPageBackward:

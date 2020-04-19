@@ -179,11 +179,11 @@ class FMenu : public FWindow, public FMenuList
     void         closeOpenedSubMenu();
     void         hideSubMenus();
     void         hideSuperMenus();
-    bool         mouseDownOverList (FPoint);
+    bool         mouseDownOverList (const FPoint&);
     void         mouseDownSubmenu (const FMenuItem*);
     void         mouseDownSelection (FMenuItem*, bool&);
-    bool         mouseUpOverList (FPoint);
-    void         mouseMoveOverList (FPoint, mouseStates&);
+    bool         mouseUpOverList (const FPoint&);
+    void         mouseMoveOverList (const FPoint&, mouseStates&);
     void         mouseMoveSelection (FMenuItem*, mouseStates&);
     void         mouseMoveDeselection (FMenuItem*, mouseStates&);
     void         mouseUpOverBorder();

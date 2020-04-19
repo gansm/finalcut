@@ -313,13 +313,13 @@ class FWidget : public FVTerm, public FObject
     virtual bool            close();
     void                    clearStatusbarMessage();
     void                    addCallback ( const FString&
-                                        , FCallback
+                                        , const FCallback&
                                         , FDataPtr = nullptr );
     void                    addCallback ( const FString&
                                         , FWidget*
-                                        , FCallback
+                                        , const FCallback&
                                         , FDataPtr = nullptr );
-    void                    delCallback (FCallback);
+    void                    delCallback (const FCallback&);
     void                    delCallback (const FWidget*);
     void                    delCallbacks();
     void                    emitCallback (const FString&);
@@ -524,13 +524,9 @@ struct FWidget::FCallbackData
 {
   // Constructor
   FCallbackData()
-    : cb_signal()
-    , cb_instance(nullptr)
-    , cb_function()
-    , data(nullptr)
   { }
 
-  FCallbackData (FString s, FWidget* i, FCallback c, FDataPtr d)
+  FCallbackData (const FString& s, FWidget* i, const FCallback& c, FDataPtr d)
     : cb_signal(s)
     , cb_instance(i)
     , cb_function(c)
@@ -545,16 +541,11 @@ struct FWidget::FCallbackData
   { }
 
   FCallbackData (FCallbackData&& c) noexcept  // move constructor
-    : cb_signal(c.cb_signal)
-    , cb_instance(c.cb_instance)
-    , cb_function(c.cb_function)
-    , data(c.data)
-  {
-    c.cb_signal.clear();
-    c.cb_instance = nullptr;
-    c.cb_function = nullptr;
-    c.data = nullptr;
-  }
+    : cb_signal(std::move(c.cb_signal))
+    , cb_instance(std::move(c.cb_instance))
+    , cb_function(std::move(c.cb_function))
+    , data(std::move(c.data))
+  { }
 
   // Destructor
   ~FCallbackData()
@@ -572,14 +563,10 @@ struct FWidget::FCallbackData
 
   FCallbackData& operator = (FCallbackData&& c) noexcept
   {
-    cb_signal = c.cb_signal;
-    cb_instance = c.cb_instance;
-    cb_function = c.cb_function;
-    data = c.data;
-    c.cb_signal.clear();
-    c.cb_instance = nullptr;
-    c.cb_function = nullptr;
-    c.data = nullptr;
+    cb_signal = std::move(c.cb_signal);
+    cb_instance = std::move(c.cb_instance);
+    cb_function = std::move(c.cb_function);
+    data = std::move(c.data);
     return *this;
   }
 

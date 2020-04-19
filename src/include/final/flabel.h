@@ -135,7 +135,7 @@ class FLabel : public FWidget
     void                draw() override;
     void                drawMultiLine();
     void                drawSingleLine();
-    void                printLine (FString&&);
+    void                printLine (FString&);
 
     // Data members
     FStringList         multiline_text{};

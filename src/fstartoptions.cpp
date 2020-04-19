@@ -43,7 +43,6 @@ FStartOptions::FStartOptions()
   , sgr_optimizer{true}
   , vgafont{false}
   , newfont{false}
-  , encoding{fc::UNKNOWN}
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   , meta_sends_escape{true}
   , change_cursorstyle{true}

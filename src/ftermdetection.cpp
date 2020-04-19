@@ -558,22 +558,20 @@ const FString FTermDetection::getXTermColorName (FColor color)
   tv.tv_usec = 150000;  // 150 ms
 
   // read the terminal answer
-  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0 )
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0
+    && std::scanf("\033]4;%10hu;%509[^\n]s", &color, temp) == 2 )
   {
-    if ( std::scanf("\033]4;%10hu;%509[^\n]s", &color, temp) == 2 )
-    {
-      std::size_t n = std::strlen(temp);
+    std::size_t n = std::strlen(temp);
 
-      // BEL + '\0' = string terminator
-      if ( n >= 6 && temp[n - 1] == BEL[0] && temp[n] == '\0' )
-        temp[n - 1] = '\0';
+    // BEL + '\0' = string terminator
+    if ( n >= 6 && temp[n - 1] == BEL[0] && temp[n] == '\0' )
+      temp[n - 1] = '\0';
 
-      // Esc + \ = OSC string terminator (mintty)
-      if ( n >= 6 && temp[n - 2] == ESC[0] && temp[n - 1] == '\\' )
-        temp[n - 2] = '\0';
+    // Esc + \ = OSC string terminator (mintty)
+    if ( n >= 6 && temp[n - 2] == ESC[0] && temp[n - 1] == '\\' )
+      temp[n - 2] = '\0';
 
-      color_str = temp;
-    }
+    color_str = temp;
   }
 
   return color_str;
@@ -640,9 +638,9 @@ const FString FTermDetection::getAnswerbackMsg()
   tv.tv_usec = 150000;  // 150 ms
 
   // Read the answerback message
-  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0 )
-    if ( std::fgets (temp, sizeof(temp) - 1, stdin) != nullptr )
-      answerback = temp;
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0
+    && std::fgets (temp, sizeof(temp) - 1, stdin) != nullptr )
+    answerback = temp;
 
   return answerback;
 }
@@ -712,16 +710,30 @@ char* FTermDetection::parseSecDA (char current_termtype[])
 //----------------------------------------------------------------------
 int FTermDetection::str2int (const FString& s)
 {
+  // This is not a general string to integer conversion method.
+  // It is only used in this class to convert the device attribute
+  // parameters into numbers.
+
+  constexpr int ERROR = -1;
+
   if ( ! s )
-    return -1;
+    return ERROR;
 
   try
   {
     return s.toInt();
   }
-  catch (const std::exception&)
+  catch (const std::invalid_argument&)
   {
-    return -1;
+    return ERROR;
+  }
+  catch (const std::underflow_error&)
+  {
+    return ERROR;
+  }
+  catch (const std::overflow_error&)
+  {
+    return ERROR;
   }
 }
 

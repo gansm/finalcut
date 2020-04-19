@@ -156,14 +156,11 @@ inline FRect::FRect (const FRect& r)  // copy constructor
 
 //----------------------------------------------------------------------
 inline FRect::FRect (FRect&& r) noexcept  // move constructor
-  : X1(r.X1)
-  , Y1(r.Y1)
-  , X2(r.X2)
-  , Y2(r.Y2)
-{
-  r.X1 = r.Y1 = 0;
-  r.X2 = r.Y2 = -1;
-}
+  : X1(std::move(r.X1))
+  , Y1(std::move(r.Y1))
+  , X2(std::move(r.X2))
+  , Y2(std::move(r.Y2))
+{ }
 
 //----------------------------------------------------------------------
 inline FRect::FRect (int x, int y, std::size_t width, std::size_t height)

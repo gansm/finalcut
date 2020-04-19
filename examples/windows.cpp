@@ -201,8 +201,8 @@ class Window final : public finalcut::FDialog
     void configureDialogButtons();
     void activateWindow (finalcut::FDialog*);
     void adjustSize() override;
-    void addClickedCallback (finalcut::FWidget*, WindowCallback);
-    void addClickedCallback (finalcut::FWidget*, FAppCallback);
+    template<typename CallbackT>
+    void addClickedCallback (finalcut::FWidget*, CallbackT);
     template <typename IteratorT>
     finalcut::FDialog* getNext (IteratorT);
     template <typename IteratorT>
@@ -373,22 +373,9 @@ void Window::adjustSize()
 }
 
 //----------------------------------------------------------------------
+template<typename CallbackT>
 void Window::addClickedCallback ( finalcut::FWidget* widget
-                                , WindowCallback call )
-{
-  FMemberCallback callback
-      = reinterpret_cast<FMemberCallback>(call);
-
-  widget->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, callback)
-  );
-}
-
-//----------------------------------------------------------------------
-void Window::addClickedCallback ( finalcut::FWidget* widget
-                                , FAppCallback call )
+                                , CallbackT call )
 {
   FMemberCallback callback
       = reinterpret_cast<FMemberCallback>(call);

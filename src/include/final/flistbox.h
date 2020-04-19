@@ -201,7 +201,7 @@ class FListBox : public FWidget
     void                insert (Iterator, Iterator, InsertConverter);
     template <typename Container, typename LazyConverter>
     void                insert (Container, LazyConverter);
-    void                insert (FListBoxItem);
+    void                insert (const FListBoxItem&);
     template <typename T>
     void                insert ( const std::initializer_list<T>& list
                                , fc::brackets_type = fc::NoBrackets

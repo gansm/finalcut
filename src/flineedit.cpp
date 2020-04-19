@@ -627,18 +627,15 @@ void FLineEdit::adjustLabel()
   assert ( label_orientation == label_above
         || label_orientation == label_left );
 
-  switch ( label_orientation )
+  if ( label_orientation == label_above )
   {
-    case label_above:
-      label->setGeometry ( FPoint(w->getX(), w->getY() - 1)
-                         , FSize(label_width, 1) );
-      break;
-
-    case label_left:
-    default:
-      label->setGeometry ( FPoint(w->getX() - int(label_width) - 1, w->getY())
-                         , FSize(label_width, 1) );
-      break;
+    label->setGeometry ( FPoint(w->getX(), w->getY() - 1)
+                       , FSize(label_width, 1) );
+  }
+  else if ( label_orientation == label_left )
+  {
+    label->setGeometry ( FPoint(w->getX() - int(label_width) - 1, w->getY())
+                       , FSize(label_width, 1) );
   }
 }
 
@@ -745,19 +742,21 @@ void FLineEdit::drawInputField()
   if ( isActiveFocus && getMaxColor() < 16 )
     setBold();
 
-  const std::size_t text_offset_column = [this] () -> std::size_t
+  const std::size_t text_offset_column = [this] ()
   {
+    assert ( input_type == FLineEdit::textfield
+          || input_type == FLineEdit::password );
+
     switch ( input_type )
     {
       case FLineEdit::textfield:
-      default:
         return printTextField();
 
       case FLineEdit::password:
         return printPassword();
     }
 
-    return 0;
+    return std::size_t(0);
   }();
 
   while ( x_pos + 1 < getWidth() )
@@ -817,14 +816,13 @@ inline std::size_t FLineEdit::printPassword()
 //----------------------------------------------------------------------
 inline std::size_t FLineEdit::getCursorColumnPos()
 {
-  switch ( input_type )
+  if ( input_type == FLineEdit::textfield )
   {
-    case FLineEdit::textfield:
-    default:
-      return getColumnWidth (print_text, cursor_pos);
-
-    case FLineEdit::password:
-      return cursor_pos;
+    return getColumnWidth (print_text, cursor_pos);
+  }
+  else if ( input_type == FLineEdit::password )
+  {
+    return cursor_pos;
   }
 
   return 0;

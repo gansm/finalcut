@@ -50,7 +50,7 @@ const FString FTermBuffer::toString() const
   std::transform ( data.begin()
                  , data.end()
                  , std::back_inserter(wide_string)
-                 , [] (const FChar& fchar) -> wchar_t
+                 , [] (const FChar& fchar)
                    {
                      return fchar.ch;
                    }

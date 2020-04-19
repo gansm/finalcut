@@ -596,14 +596,12 @@ inline void FMenuBar::drawMenuText (menuText& data)
     if ( data.startpos > screenWidth - z )
       break;
 
-    if ( ! std::iswprint(std::wint_t(data.text[z])) )
+    if ( ! std::iswprint(std::wint_t(data.text[z]))
+      && ! isNewFont()
+      && ( data.text[z] < fc::NF_rev_left_arrow2
+        || data.text[z] > fc::NF_check_mark ) )
     {
-      if ( ! isNewFont()
-        && ( data.text[z] < fc::NF_rev_left_arrow2
-          || data.text[z] > fc::NF_check_mark ) )
-      {
-        data.text[z] = L' ';
-      }
+      data.text[z] = L' ';
     }
 
     if ( z == data.hotkeypos )
@@ -849,11 +847,8 @@ void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
       && item->isSelected() )
     {
       // Mouse pointer over item
-      if ( ! activateMenu(item) )
-      {
-        if ( clickItem(item) )
-          return;
-      }
+      if ( ! activateMenu(item) && clickItem(item) )
+        return;
     }
     else
     {

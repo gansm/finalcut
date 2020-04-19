@@ -255,12 +255,13 @@ inline FKey FKeyboard::getMetaKey()
     {
       std::size_t n{};
 
-      if ( len == 2 && ( fifo_buf[1] == 'O'
-                      || fifo_buf[1] == '['
-                      || fifo_buf[1] == ']' ) )
+      if ( len == 2
+        && ( fifo_buf[1] == 'O'
+          || fifo_buf[1] == '['
+          || fifo_buf[1] == ']' )
+        && ! isKeypressTimeout() )
       {
-        if ( ! isKeypressTimeout() )
-          return fc::Fkey_incomplete;
+        return fc::Fkey_incomplete;
       }
 
       for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove founded entry

@@ -181,7 +181,7 @@ class FComboBox : public FWidget
     bool                hasShadow();
 
     // Methods
-    void                insert (FListBoxItem);
+    void                insert (const FListBoxItem&);
     template <typename T>
     void                insert ( const std::initializer_list<T>& list
                                , FDataPtr = nullptr );

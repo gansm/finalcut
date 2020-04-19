@@ -216,8 +216,8 @@ class Scrollviewdemo final : public finalcut::FDialog
 Scrollviewdemo::Scrollviewdemo (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
-  setGeometry (FPoint(16, 3), FSize(50, 19));
-  setText ("Scrolling viewport example");
+  FDialog::setGeometry (FPoint(16, 3), FSize(50, 19));
+  FDialog::setText ("Scrolling viewport example");
 
   // The scrolling viewport widget
   sview.setGeometry(FPoint(3, 2), FSize(44, 12));

@@ -115,9 +115,9 @@ class FKeyboard final
     void                  disableUTF8();
     void                  enableMouseSequences();
     void                  disableMouseSequences();
-    void                  setPressCommand (FKeyboardCommand);
-    void                  setReleaseCommand (FKeyboardCommand);
-    void                  setEscPressedCommand (FKeyboardCommand);
+    void                  setPressCommand (const FKeyboardCommand&);
+    void                  setReleaseCommand (const FKeyboardCommand&);
+    void                  setEscPressedCommand (const FKeyboardCommand&);
 
     // Inquiry
     bool                  isInputDataPending();
@@ -236,15 +236,15 @@ inline void FKeyboard::disableMouseSequences()
 { mouse_support = false; }
 
 //----------------------------------------------------------------------
-inline void FKeyboard::setPressCommand (FKeyboardCommand cmd)
+inline void FKeyboard::setPressCommand (const FKeyboardCommand& cmd)
 { keypressed_cmd = cmd; }
 
 //----------------------------------------------------------------------
-inline void FKeyboard::setReleaseCommand (FKeyboardCommand cmd)
+inline void FKeyboard::setReleaseCommand (const FKeyboardCommand& cmd)
 { keyreleased_cmd = cmd; }
 
 //----------------------------------------------------------------------
-inline void FKeyboard::setEscPressedCommand (FKeyboardCommand cmd)
+inline void FKeyboard::setEscPressedCommand (const FKeyboardCommand& cmd)
 { escape_key_cmd = cmd; }
 
 //----------------------------------------------------------------------

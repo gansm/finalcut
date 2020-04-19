@@ -82,8 +82,8 @@ ColorChooser::ColorChooser (finalcut::FWidget* parent)
   {
     const FColor fg = parent->getForegroundColor();
     const FColor bg = parent->getBackgroundColor();
-    setForegroundColor(fg);
-    setBackgroundColor(bg);
+    FWidget::setForegroundColor(fg);
+    FWidget::setBackgroundColor(bg);
     headline.setForegroundColor(fg);
     headline.setBackgroundColor(bg);
   }
@@ -236,8 +236,8 @@ Brushes::Brushes (finalcut::FWidget* parent)
   {
     const FColor fg = parent->getForegroundColor();
     const FColor bg = parent->getBackgroundColor();
-    setForegroundColor(fg);
-    setBackgroundColor(bg);
+    FWidget::setForegroundColor(fg);
+    FWidget::setBackgroundColor(bg);
     headline.setForegroundColor(fg);
     headline.setBackgroundColor(bg);
   }
@@ -381,7 +381,7 @@ class MouseDraw final : public finalcut::FDialog
 MouseDraw::MouseDraw (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
-  setText ("Drawing with the mouse");
+  FDialog::setText ("Drawing with the mouse");
   c_chooser.setPos (FPoint(1, 1));
   c_chooser.addCallback
   (
