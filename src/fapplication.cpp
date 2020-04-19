@@ -678,11 +678,8 @@ bool FApplication::processAccelerator (const FWidget* const& widget)
     auto iter = widget->getAcceleratorList().begin();
     const auto& last = widget->getAcceleratorList().end();
 
-    while ( iter != last )
+    while ( iter != last && ! quit_now && ! app_exit_loop )
     {
-      if ( quit_now || app_exit_loop )
-        break;
-
       if ( iter->key == keyboard->getKey() )
       {
         // unset the move/size mode

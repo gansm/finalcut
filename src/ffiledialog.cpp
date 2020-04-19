@@ -504,7 +504,7 @@ int FFileDialog::readDir()
   while ( true )
   {
     errno = 0;
-    struct dirent* next = readdir(directory_stream);
+    const struct dirent* next = readdir(directory_stream);
 
     if ( next )
     {

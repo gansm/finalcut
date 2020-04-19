@@ -1886,7 +1886,7 @@ void FWidget::setWindowFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
-FWidget::FCallbackPtr FWidget::getCallbackPtr (FCallback cb_function)
+FWidget::FCallbackPtr FWidget::getCallbackPtr (const FCallback& cb_function)
 {
   return *cb_function.template target<FCallbackPtr>();
 }

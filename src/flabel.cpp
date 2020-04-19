@@ -405,13 +405,12 @@ void FLabel::printLine (FString& line)
 
   for (std::size_t z{0}; z < to_char; z++)
   {
-    if ( ! std::iswprint(std::wint_t(line[z])) )
+    if ( ! std::iswprint(std::wint_t(line[z]))
+      && ! isNewFont()
+      && ( line[z] < fc::NF_rev_left_arrow2
+        || line[z] > fc::NF_check_mark ) )
     {
-      if ( ! isNewFont() && ( line[z] < fc::NF_rev_left_arrow2
-                           || line[z] > fc::NF_check_mark ) )
-      {
-        line[z] = L' ';
-      }
+      line[z] = L' ';
     }
 
     if ( z == hotkeypos && getFlags().active )

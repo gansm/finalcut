@@ -396,26 +396,6 @@ class FWidget : public FVTerm, public FObject
     virtual void            onClose (FCloseEvent*);
 
   private:
-    // Methods
-    void                    initRootWidget();
-    void                    finish();
-    void                    insufficientSpaceAdjust();
-    void                    KeyPressEvent (FKeyEvent*);
-    void                    KeyDownEvent (FKeyEvent*);
-    void                    emitWheelCallback (const FWheelEvent*);
-    void                    setWindowFocus (bool);
-    FCallbackPtr            getCallbackPtr (FCallback);
-    bool                    changeFocus (FWidget*, FWidget*, fc::FocusTypes);
-    void                    processDestroy();
-    virtual void            draw();
-    void                    drawWindows();
-    void                    drawChildren();
-    static void             setColorTheme();
-    void                    setStatusbarText (bool);
-
-    // Data members
-    FPoint                  widget_cursor_position{-1, -1};
-
     struct widget_size_hints
     {
       widget_size_hints() = default;
@@ -437,7 +417,7 @@ class FWidget : public FVTerm, public FObject
       std::size_t min_height{0};
       std::size_t max_width{INT_MAX};
       std::size_t max_height{INT_MAX};
-    } size_hints{};
+    };
 
     struct dbl_line_mask
     {
@@ -448,7 +428,7 @@ class FWidget : public FVTerm, public FObject
       std::vector<bool> right{};
       std::vector<bool> bottom{};
       std::vector<bool> left{};
-    } double_flatline_mask{};
+    };
 
     struct widget_padding
     {
@@ -459,9 +439,31 @@ class FWidget : public FVTerm, public FObject
       int left{0};
       int bottom{0};
       int right{0};
-    } padding{};
+    };
 
+    // Methods
+    void                    initRootWidget();
+    void                    finish();
+    void                    insufficientSpaceAdjust();
+    void                    KeyPressEvent (FKeyEvent*);
+    void                    KeyDownEvent (FKeyEvent*);
+    void                    emitWheelCallback (const FWheelEvent*);
+    void                    setWindowFocus (bool);
+    FCallbackPtr            getCallbackPtr (const FCallback&);
+    bool                    changeFocus (FWidget*, FWidget*, fc::FocusTypes);
+    void                    processDestroy();
+    virtual void            draw();
+    void                    drawWindows();
+    void                    drawChildren();
+    static void             setColorTheme();
+    void                    setStatusbarText (bool);
+
+    // Data members
     struct FWidgetFlags     flags{};
+    FPoint                  widget_cursor_position{-1, -1};
+    widget_size_hints       size_hints{};
+    dbl_line_mask           double_flatline_mask{};
+    widget_padding          padding{};
     bool                    ignore_padding{false};
 
     // widget size
@@ -843,7 +845,11 @@ inline bool FWidget::setDisable()
 //----------------------------------------------------------------------
 inline bool FWidget::setVisibleCursor (bool enable)
 {
-  flags.visible_cursor = ( enable ) ? true : (( hideable ) ? false : true);
+  if ( enable )
+    flags.visible_cursor = true;
+  else
+    flags.visible_cursor = ( hideable ) ? false : true;
+
   return flags.visible_cursor;
 }
 

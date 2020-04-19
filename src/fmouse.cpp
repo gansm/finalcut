@@ -294,7 +294,7 @@ void FMouse::setEvent()
 }
 
 //----------------------------------------------------------------------
-bool FMouse::isDblclickTimeout (timeval* time)
+bool FMouse::isDblclickTimeout (const timeval* time)
 {
   return FObject::isTimeout (time, dblclick_interval);
 }
@@ -652,7 +652,7 @@ void FMouseX11::setMoveState (const FPoint& mouse_position, int btn)
 }
 
 //----------------------------------------------------------------------
-void FMouseX11::setButtonState (const int btn, struct timeval* time)
+void FMouseX11::setButtonState (const int btn, const struct timeval* time)
 {
   // Get the x11 mouse button state
 
@@ -1132,7 +1132,7 @@ void FMouseUrxvt::setMoveState (const FPoint& mouse_position, int btn)
 }
 
 //----------------------------------------------------------------------
-void FMouseUrxvt::setButtonState (const int btn, struct timeval* time)
+void FMouseUrxvt::setButtonState (const int btn, const struct timeval* time)
 {
   // Get the urxvt mouse button state
 

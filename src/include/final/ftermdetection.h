@@ -155,6 +155,9 @@ class FTermDetection final
     static void           detect();
 
   private:
+    struct colorEnv;      // forward declaration
+    struct secondaryDA;   // forward declaration
+
     // Methods
     static void           deallocation();
     static void           getSystemTermType();
@@ -205,25 +208,35 @@ class FTermDetection final
     static FTermData*     fterm_data;
     static FSystem*       fsystem;
     static FTerminalType  terminal_type;
-
-    static struct colorEnv
-    {
-      char* string1{nullptr};
-      char* string2{nullptr};
-      char* string3{nullptr};
-      char* string4{nullptr};
-      char* string5{nullptr};
-      char* string6{nullptr};
-      char* string7{nullptr};
-    } color_env;
-
-    static struct secondaryDA
-    {
-      int terminal_id_type{-1};
-      int terminal_id_version{-1};
-      int terminal_id_hardware{-1};
-    } secondary_da;
+    static colorEnv       color_env;
+    static secondaryDA    secondary_da;
 };
+
+
+//----------------------------------------------------------------------
+// struct FTermDetection::colorEnv
+//----------------------------------------------------------------------
+struct FTermDetection::colorEnv
+{
+  char* string1{nullptr};
+  char* string2{nullptr};
+  char* string3{nullptr};
+  char* string4{nullptr};
+  char* string5{nullptr};
+  char* string6{nullptr};
+  char* string7{nullptr};
+};
+
+//----------------------------------------------------------------------
+// struct FTermDetection::secondaryDA
+//----------------------------------------------------------------------
+struct FTermDetection::secondaryDA
+{
+  int terminal_id_type{-1};
+  int terminal_id_version{-1};
+  int terminal_id_hardware{-1};
+};
+
 
 // FTermDetection inline functions
 //----------------------------------------------------------------------

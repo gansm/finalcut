@@ -918,9 +918,7 @@ inline char* FTermDetection::secDA_Analysis_65 (char current_termtype[])
 {
   // Terminal ID 65 - DEC VT525
 
-  char* new_termtype = current_termtype;
-  new_termtype = secDA_Analysis_vte(new_termtype);
-  return new_termtype;
+  return secDA_Analysis_1 (current_termtype);
 }
 
 //----------------------------------------------------------------------

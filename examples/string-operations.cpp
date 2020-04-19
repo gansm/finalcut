@@ -122,7 +122,7 @@ void streamingIntoFStringExample()
 
   // ...from wide string
   finalcut::FString streamer3;
-  wchar_t* wchar_str{const_cast<wchar_t*>(L"wchar_t*")};
+  const wchar_t* wchar_str{const_cast<wchar_t*>(L"wchar_t*")};
   streamer3 << wchar_str;
   std::cout << " stream in: " << streamer3 << std::endl;
 
@@ -133,7 +133,7 @@ void streamingIntoFStringExample()
 
   // ...from c-string
   finalcut::FString streamer5;
-  char* char_str{C_STR("char*")};
+  const char* char_str{C_STR("char*")};
   streamer5 << char_str;
   std::cout << " stream in: " << streamer5 << std::endl;
 

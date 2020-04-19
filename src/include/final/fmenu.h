@@ -73,6 +73,7 @@ class FMenu : public FWindow, public FMenuList
   public:
     // Using-declaration
     using FMenuList::getItem;
+    using FMenuList::isSelected;
 
     // Constructor
     explicit FMenu (FWidget* = nullptr);
@@ -123,8 +124,8 @@ class FMenu : public FWindow, public FMenuList
     void                onAccel (FAccelEvent*) override;
 
     // Callback method
-    void                cb_menuitemEnabled (FWidget*, const FDataPtr);
-    void                cb_menuitemDisabled (FWidget*, const FDataPtr);
+    void                cb_menuitemEnabled (const FWidget*, const FDataPtr);
+    void                cb_menuitemDisabled (const FWidget*, const FDataPtr);
     void                cb_menuitemToggled (FWidget*, const FDataPtr);
 
   private:

@@ -131,7 +131,7 @@ class FTermLinux final
       uChar ctrl   : 1;  // 0..1
       uChar alt    : 1;  // 0..1
       uChar        : 4;  // padding bits
-    } mod_key{};
+    };
 
     typedef struct
     {
@@ -197,6 +197,7 @@ class FTermLinux final
     ColorMap             saved_color_map{};
     ColorMap             cmap{};
     int                  framebuffer_bpp{-1};
+    modifier_key         mod_key{};
 #endif  // defined(__linux__)
 };
 

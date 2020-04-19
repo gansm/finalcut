@@ -217,35 +217,32 @@ void FStatusBar::drawMessage()
   if ( isMonochron() )
     setReverse(true);
 
-  if ( x + space_offset + 3 < int(termWidth) )
+  if ( x + space_offset + 3 < int(termWidth) && text )
   {
-    if ( text )
+    if ( ! isLastActiveFocus )
     {
-      if ( ! isLastActiveFocus )
-      {
-        x++;
-        print (' ');
-      }
+      x++;
+      print (' ');
+    }
 
-      if ( hasKeys )
-      {
-        x += 2;
-        print (fc::BoxDrawingsVertical);  // │
-        print (' ');
-      }
+    if ( hasKeys )
+    {
+      x += 2;
+      print (fc::BoxDrawingsVertical);  // │
+      print (' ');
+    }
 
-      const auto msg_length = getColumnWidth(getMessage());
-      x += int(msg_length);
+    const auto msg_length = getColumnWidth(getMessage());
+    x += int(msg_length);
 
-      if ( x - 1 <= int(termWidth) )
-        print (getMessage());
-      else
-      {
-        // Print ellipsis
-        const std::size_t len = msg_length + termWidth - uInt(x) - 1;
-        print() << getColumnSubString ( getMessage(), 1, len)
-                << "..";
-      }
+    if ( x - 1 <= int(termWidth) )
+      print (getMessage());
+    else
+    {
+      // Print ellipsis
+      const std::size_t len = msg_length + termWidth - uInt(x) - 1;
+      print() << getColumnSubString ( getMessage(), 1, len)
+              << "..";
     }
   }
 

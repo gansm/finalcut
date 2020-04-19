@@ -65,7 +65,8 @@ void SGRoptimizer::findParameter()
     return;
 
   std::size_t start{NOT_SET};
-  bool esc{false}, csi{false};
+  bool esc{false};
+  bool csi{false};
 
   // Find SGR parameter
   for (std::size_t i = 0; i < len; i++)

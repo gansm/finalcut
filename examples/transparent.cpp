@@ -57,9 +57,6 @@ class Transparent final : public finalcut::FDialog
     // Disable copy assignment operator (=)
     Transparent& operator = (const Transparent&) = delete;
 
-    // Mutator
-    void setStatusbarMessage (const finalcut::FString&) override;
-
   private:
     // Method
     void draw() override;
@@ -78,20 +75,14 @@ Transparent::Transparent ( finalcut::FWidget* parent
   , type(tt)
 {
   // Set statusbar text for this window
-  setStatusbarMessage("Press Q to quit");
+  // Avoids calling a virtual function from the constructor
+  // (CERT, OOP50-CPP)
+  FWidget::setStatusbarMessage("Press Q to quit");
 }
 
 //----------------------------------------------------------------------
 Transparent::~Transparent()
 { }
-
-//----------------------------------------------------------------------
-void Transparent::setStatusbarMessage (const finalcut::FString& msg)
-{
-  // Avoids calling a virtual function from the constructor
-  // (CERT, OOP50-CPP)
-  FWidget::setStatusbarMessage(msg);
-}
 
 //----------------------------------------------------------------------
 void Transparent::draw()

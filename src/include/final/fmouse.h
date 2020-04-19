@@ -176,7 +176,7 @@ class FMouse
     void                resetMousePressedTime();
 
     // Inquiry
-    bool                isDblclickTimeout (timeval*);
+    bool                isDblclickTimeout (const timeval*);
 
   private:
     // Data members
@@ -312,7 +312,7 @@ class FMouseX11 final : public FMouse
     // Methods
     void         setKeyState (int);
     void         setMoveState (const FPoint&, int);
-    void         setButtonState (const int, struct timeval*);
+    void         setButtonState (const int, const struct timeval*);
 
     // Data member
     char  x11_mouse[MOUSE_BUF_SIZE]{'\0'};
@@ -430,7 +430,7 @@ class FMouseUrxvt final : public FMouse
     // Methods
     void          setKeyState (int);
     void          setMoveState (const FPoint&, int);
-    void          setButtonState (const int, struct timeval*);
+    void          setButtonState (const int, const struct timeval*);
 
     // Data members
     char  urxvt_mouse[MOUSE_BUF_SIZE]{'\0'};

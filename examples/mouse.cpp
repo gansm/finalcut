@@ -74,7 +74,7 @@ class ColorChooser final : public finalcut::FWidget
 ColorChooser::ColorChooser (finalcut::FWidget* parent)
   : FWidget(parent)
 {
-  setSize (FSize(8, 12));
+  FWidget::setSize (FSize(8, 12));
   setFixedSize (FSize(8, 12));
   unsetFocusable();
 
@@ -228,7 +228,7 @@ class Brushes final : public finalcut::FWidget
 Brushes::Brushes (finalcut::FWidget* parent)
   : FWidget(parent)
 {
-  setSize (FSize(8, 4));
+  FWidget::setSize (FSize(8, 4));
   setFixedSize (FSize(8, 4));
   unsetFocusable();
 

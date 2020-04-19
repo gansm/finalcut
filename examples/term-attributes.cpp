@@ -238,13 +238,12 @@ class AttribDemo final : public finalcut::FWidget
     void draw() override;
 
     // Data member
-    FColor last_color;
+    FColor last_color{FColor(getMaxColor())};
 };
 
 //----------------------------------------------------------------------
 AttribDemo::AttribDemo (finalcut::FWidget* parent)
   : finalcut::FWidget(parent)
-  , last_color(FColor(getMaxColor()))
 {
   if ( isMonochron() )
     last_color = 1;

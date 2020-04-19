@@ -956,16 +956,16 @@ bool FOptiAttr::setTermAttributes ( FChar*& term
 {
   if ( term && F_set_attributes.cap )
   {
-    char* sgr = tparm ( F_set_attributes.cap
-                      , p1 && ! fake_reverse
-                      , p2
-                      , p3 && ! fake_reverse
-                      , p4
-                      , p5
-                      , p6
-                      , p7
-                      , p8
-                      , p9 );
+    const char* sgr = tparm ( F_set_attributes.cap
+                            , p1 && ! fake_reverse
+                            , p2
+                            , p3 && ! fake_reverse
+                            , p4
+                            , p5
+                            , p6
+                            , p7
+                            , p8
+                            , p9 );
     append_sequence (sgr);
     resetColor(term);
     term->attr.bit.standout      = p1;
@@ -1458,7 +1458,7 @@ inline void FOptiAttr::change_to_default_color ( FChar*& term
     }
     else if ( bg == fc::Default && term->bg_color != fc::Default )
     {
-      char* sgr_49;
+      const char* sgr_49;
       const auto& op = F_orig_pair.cap;
 
       if ( op && std::strncmp (op, CSI "39;49;25m", 11) == 0 )
@@ -1482,7 +1482,7 @@ inline void FOptiAttr::change_to_default_color ( FChar*& term
 inline void FOptiAttr::change_current_color ( const FChar* const& term
                                             , FColor fg, FColor bg )
 {
-  char* color_str{};
+  const char* color_str{};
   const auto& AF = F_set_a_foreground.cap;
   const auto& AB = F_set_a_background.cap;
   const auto& Sf = F_set_foreground.cap;

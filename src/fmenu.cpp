@@ -317,13 +317,13 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::cb_menuitemEnabled (FWidget*, const FDataPtr)
+void FMenu::cb_menuitemEnabled (const FWidget*, const FDataPtr)
 {
   setEnable();
 }
 
 //----------------------------------------------------------------------
-void FMenu::cb_menuitemDisabled (FWidget*, const FDataPtr)
+void FMenu::cb_menuitemDisabled (const FWidget*, const FDataPtr)
 {
   setDisable();
 }
