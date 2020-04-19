@@ -569,7 +569,7 @@ void FFileDialog::getEntry (const char* const dir, const struct dirent* d_entry)
   entry.socket           = (d_entry->d_type & DT_SOCK) == DT_SOCK;
 #else
   struct stat s{};
-  stat (entry.name, &s);
+  stat (entry.name.c_str(), &s);
   entry.fifo             = S_ISFIFO (s.st_mode);
   entry.character_device = S_ISCHR (s.st_mode);
   entry.directory        = S_ISDIR (s.st_mode);
