@@ -157,13 +157,13 @@ int FTerm::getTTYFileDescriptor()
 }
 
 //----------------------------------------------------------------------
-char* FTerm::getTermType()
+const char* FTerm::getTermType()
 {
   return data->getTermType();
 }
 
 //----------------------------------------------------------------------
-char* FTerm::getTermFileName()
+const char* FTerm::getTermFileName()
 {
   return data->getTermFileName();
 }
@@ -829,7 +829,7 @@ int FTerm::closeConsole()
 }
 
 //----------------------------------------------------------------------
-char* FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
+const char* FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
 {
   // Returns the cursor move string
 
@@ -840,11 +840,11 @@ char* FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
 }
 
 //----------------------------------------------------------------------
-char* FTerm::cursorsVisibilityString (bool enable)
+const char* FTerm::cursorsVisibilityString (bool enable)
 {
   // Hides or shows the input cursor on the terminal
 
-  char* visibility_str{nullptr};
+  const char* visibility_str{nullptr};
 
   if ( data->isCursorHidden() == enable )
     return nullptr;
@@ -1275,7 +1275,7 @@ void FTerm::initScreenSettings()
 }
 
 //----------------------------------------------------------------------
-char* FTerm::changeAttribute (FChar*& term_attr, FChar*& next_attr)
+const char* FTerm::changeAttribute (FChar*& term_attr, FChar*& next_attr)
 {
   return opti_attr->changeAttribute (term_attr, next_attr);
 }
@@ -1940,7 +1940,7 @@ void FTerm::setOverwriteCursorStyle()
 }
 
 //----------------------------------------------------------------------
-char* FTerm::enableCursorString()
+const char* FTerm::enableCursorString()
 {
   // Returns the cursor enable string
 
@@ -1977,7 +1977,7 @@ char* FTerm::enableCursorString()
 }
 
 //----------------------------------------------------------------------
-char* FTerm::disableCursorString()
+const char* FTerm::disableCursorString()
 {
   // Returns the cursor disable string
 

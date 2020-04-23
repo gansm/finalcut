@@ -36,7 +36,7 @@
 #endif
 
 // Typecast to c-string
-#define C_STR const_cast<char*>
+#define C_STR const_cast<const char*>
 
 #include <assert.h>
 
@@ -74,41 +74,41 @@ class FOptiAttr final
     // Typedef
     typedef struct
     {
-      char* t_enter_bold_mode;
-      char* t_exit_bold_mode;
-      char* t_enter_dim_mode;
-      char* t_exit_dim_mode;
-      char* t_enter_italics_mode;
-      char* t_exit_italics_mode;
-      char* t_enter_underline_mode;
-      char* t_exit_underline_mode;
-      char* t_enter_blink_mode;
-      char* t_exit_blink_mode;
-      char* t_enter_reverse_mode;
-      char* t_exit_reverse_mode;
-      char* t_enter_standout_mode;
-      char* t_exit_standout_mode;
-      char* t_enter_secure_mode;
-      char* t_exit_secure_mode;
-      char* t_enter_protected_mode;
-      char* t_exit_protected_mode;
-      char* t_enter_crossed_out_mode;
-      char* t_exit_crossed_out_mode;
-      char* t_enter_dbl_underline_mode;
-      char* t_exit_dbl_underline_mode;
-      char* t_set_attributes;
-      char* t_exit_attribute_mode;
-      char* t_enter_alt_charset_mode;
-      char* t_exit_alt_charset_mode;
-      char* t_enter_pc_charset_mode;
-      char* t_exit_pc_charset_mode;
-      char* t_set_a_foreground;
-      char* t_set_a_background;
-      char* t_set_foreground;
-      char* t_set_background;
-      char* t_set_color_pair;
-      char* t_orig_pair;
-      char* t_orig_colors;
+      const char* t_enter_bold_mode;
+      const char* t_exit_bold_mode;
+      const char* t_enter_dim_mode;
+      const char* t_exit_dim_mode;
+      const char* t_enter_italics_mode;
+      const char* t_exit_italics_mode;
+      const char* t_enter_underline_mode;
+      const char* t_exit_underline_mode;
+      const char* t_enter_blink_mode;
+      const char* t_exit_blink_mode;
+      const char* t_enter_reverse_mode;
+      const char* t_exit_reverse_mode;
+      const char* t_enter_standout_mode;
+      const char* t_exit_standout_mode;
+      const char* t_enter_secure_mode;
+      const char* t_exit_secure_mode;
+      const char* t_enter_protected_mode;
+      const char* t_exit_protected_mode;
+      const char* t_enter_crossed_out_mode;
+      const char* t_exit_crossed_out_mode;
+      const char* t_enter_dbl_underline_mode;
+      const char* t_exit_dbl_underline_mode;
+      const char* t_set_attributes;
+      const char* t_exit_attribute_mode;
+      const char* t_enter_alt_charset_mode;
+      const char* t_exit_alt_charset_mode;
+      const char* t_enter_pc_charset_mode;
+      const char* t_exit_pc_charset_mode;
+      const char* t_set_a_foreground;
+      const char* t_set_a_background;
+      const char* t_set_foreground;
+      const char* t_set_background;
+      const char* t_set_color_pair;
+      const char* t_orig_pair;
+      const char* t_orig_colors;
       int   max_color;
       int   attr_without_color;
       bool  ansi_default_color;
@@ -135,41 +135,41 @@ class FOptiAttr final
     void          setNoColorVideo (int);
     void          setDefaultColorSupport();
     void          unsetDefaultColorSupport();
-    void          set_enter_bold_mode (char[]);
-    void          set_exit_bold_mode (char[]);
-    void          set_enter_dim_mode (char[]);
-    void          set_exit_dim_mode (char[]);
-    void          set_enter_italics_mode (char[]);
-    void          set_exit_italics_mode (char[]);
-    void          set_enter_underline_mode (char[]);
-    void          set_exit_underline_mode (char[]);
-    void          set_enter_blink_mode (char[]);
-    void          set_exit_blink_mode (char[]);
-    void          set_enter_reverse_mode (char[]);
-    void          set_exit_reverse_mode (char[]);
-    void          set_enter_secure_mode (char[]);
-    void          set_exit_secure_mode (char[]);
-    void          set_enter_protected_mode (char[]);
-    void          set_exit_protected_mode (char[]);
-    void          set_enter_crossed_out_mode (char[]);
-    void          set_exit_crossed_out_mode (char[]);
-    void          set_enter_dbl_underline_mode (char[]);
-    void          set_exit_dbl_underline_mode (char[]);
-    void          set_enter_standout_mode (char[]);
-    void          set_exit_standout_mode (char[]);
-    void          set_set_attributes (char[]);
-    void          set_exit_attribute_mode (char[]);
-    void          set_enter_alt_charset_mode (char[]);
-    void          set_exit_alt_charset_mode (char[]);
-    void          set_enter_pc_charset_mode (char[]);
-    void          set_exit_pc_charset_mode (char[]);
-    void          set_a_foreground_color (char[]);
-    void          set_a_background_color (char[]);
-    void          set_foreground_color (char[]);
-    void          set_background_color (char[]);
-    void          set_term_color_pair (char[]);
-    void          set_orig_pair (char[]);
-    void          set_orig_orig_colors (char[]);
+    void          set_enter_bold_mode (const char[]);
+    void          set_exit_bold_mode (const char[]);
+    void          set_enter_dim_mode (const char[]);
+    void          set_exit_dim_mode (const char[]);
+    void          set_enter_italics_mode (const char[]);
+    void          set_exit_italics_mode (const char[]);
+    void          set_enter_underline_mode (const char[]);
+    void          set_exit_underline_mode (const char[]);
+    void          set_enter_blink_mode (const char[]);
+    void          set_exit_blink_mode (const char[]);
+    void          set_enter_reverse_mode (const char[]);
+    void          set_exit_reverse_mode (const char[]);
+    void          set_enter_secure_mode (const char[]);
+    void          set_exit_secure_mode (const char[]);
+    void          set_enter_protected_mode (const char[]);
+    void          set_exit_protected_mode (const char[]);
+    void          set_enter_crossed_out_mode (const char[]);
+    void          set_exit_crossed_out_mode (const char[]);
+    void          set_enter_dbl_underline_mode (const char[]);
+    void          set_exit_dbl_underline_mode (const char[]);
+    void          set_enter_standout_mode (const char[]);
+    void          set_exit_standout_mode (const char[]);
+    void          set_set_attributes (const char[]);
+    void          set_exit_attribute_mode (const char[]);
+    void          set_enter_alt_charset_mode (const char[]);
+    void          set_exit_alt_charset_mode (const char[]);
+    void          set_enter_pc_charset_mode (const char[]);
+    void          set_exit_pc_charset_mode (const char[]);
+    void          set_a_foreground_color (const char[]);
+    void          set_a_background_color (const char[]);
+    void          set_foreground_color (const char[]);
+    void          set_background_color (const char[]);
+    void          set_term_color_pair (const char[]);
+    void          set_orig_pair (const char[]);
+    void          set_orig_orig_colors (const char[]);
 
     // Inquiry
     static bool   isNormal (const FChar* const&);
@@ -177,7 +177,7 @@ class FOptiAttr final
     // Methods
     void          initialize();
     static FColor vga2ansi (FColor);
-    char*         changeAttribute (FChar*&, FChar*&);
+    const char*   changeAttribute (FChar*&, FChar*&);
 
   private:
     // Typedefs and Enumerations
@@ -185,7 +185,7 @@ class FOptiAttr final
 
     typedef struct
     {
-      char* cap;
+      const char* cap;
       bool  caused_reset;
     } capability;
 

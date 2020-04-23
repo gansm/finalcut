@@ -238,8 +238,7 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (fc::sides side)
       return double_flatline_mask.left;
   }
 
-  static std::vector<bool> empty;
-  return empty;
+  return double_flatline_mask.top;
 }
 
 //----------------------------------------------------------------------

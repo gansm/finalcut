@@ -99,7 +99,7 @@ inline bool isNegative (const T& x)
 template <typename T>
 struct getPrecision
 {
-  operator int ()
+  constexpr operator int () const
   {
     return std::numeric_limits<T>::digits10;
   }
@@ -158,7 +158,7 @@ namespace fc
 typedef struct
 {
   FKey  num;
-  char* string;
+  const char* string;
   char  tname[4];
 }
 FKeyMap;

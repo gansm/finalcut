@@ -94,7 +94,7 @@ void FTermios::storeTTYsettings()
   {
     term_init = getTTY();
   }
-  catch (...)
+  catch (const std::system_error&)
   {
     throw std::current_exception();
   }

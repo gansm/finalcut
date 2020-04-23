@@ -92,7 +92,7 @@ class FTermDetection final
 
     // Accessor
     const FString         getClassName() const;
-    static char*          getTermType();
+    static const char*    getTermType();
     static int            getGnomeTerminalID();
     FTerminalType&        getTermTypeStruct();
 
@@ -167,29 +167,29 @@ class FTermDetection final
 #endif
     static void           termtypeAnalysis();
     static void           detectTerminal();
-    static char*          init_256colorTerminal();
+    static const char*    init_256colorTerminal();
     static bool           get256colorEnvString();
-    static char*          termtype_256color_quirks();
-    static char*          determineMaxColor (char[]);
+    static const char*    termtype_256color_quirks();
+    static const char*    determineMaxColor (const char[]);
     static const FString  getXTermColorName (FColor);
-    static char*          parseAnswerbackMsg (char[]);
+    static const char*    parseAnswerbackMsg (const char[]);
     static const FString  getAnswerbackMsg();
-    static char*          parseSecDA (char[]);
+    static const char*    parseSecDA (const char[]);
     static int            str2int (const FString&);
     static const FString  getSecDA();
-    static char*          secDA_Analysis (char[]);
-    static char*          secDA_Analysis_0 (char[]);
-    static char*          secDA_Analysis_1 (char[]);
-    static char*          secDA_Analysis_24 (char[]);
-    static char*          secDA_Analysis_32 (const char[]);
-    static char*          secDA_Analysis_65 (char[]);
-    static char*          secDA_Analysis_67 (const char[]);
-    static char*          secDA_Analysis_77 (const char[]);
-    static char*          secDA_Analysis_82 ();
-    static char*          secDA_Analysis_83 (char[]);
-    static char*          secDA_Analysis_84 (char[]);
-    static char*          secDA_Analysis_85 ();
-    static char*          secDA_Analysis_vte (char[]);
+    static const char*    secDA_Analysis (const char[]);
+    static const char*    secDA_Analysis_0 (const char[]);
+    static const char*    secDA_Analysis_1 (const char[]);
+    static const char*    secDA_Analysis_24 (const char[]);
+    static const char*    secDA_Analysis_32 (const char[]);
+    static const char*    secDA_Analysis_65 (const char[]);
+    static const char*    secDA_Analysis_67 (const char[]);
+    static const char*    secDA_Analysis_77 (const char[]);
+    static const char*    secDA_Analysis_82 ();
+    static const char*    secDA_Analysis_83 (const char[]);
+    static const char*    secDA_Analysis_84 (const char[]);
+    static const char*    secDA_Analysis_85 ();
+    static const char*    secDA_Analysis_vte (const char[]);
 
     // Data members
 #if DEBUG
@@ -244,7 +244,7 @@ inline const FString FTermDetection::getClassName() const
 { return "FTermDetection"; }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::getTermType()
+inline const char* FTermDetection::getTermType()
 { return termtype; }
 
 //----------------------------------------------------------------------

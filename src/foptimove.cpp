@@ -110,7 +110,7 @@ void FOptiMove::setTermEnvironment (const termEnv& term_env)
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_cursor_home (char cap[])
+void FOptiMove::set_cursor_home (const char cap[])
 {
   if ( cap )
   {
@@ -127,7 +127,7 @@ void FOptiMove::set_cursor_home (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_cursor_to_ll (char cap[])
+void FOptiMove::set_cursor_to_ll (const char cap[])
 {
   if ( cap )
   {
@@ -144,7 +144,7 @@ void FOptiMove::set_cursor_to_ll (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_carriage_return (char cap[])
+void FOptiMove::set_carriage_return (const char cap[])
 {
   if ( cap )
   {
@@ -161,7 +161,7 @@ void FOptiMove::set_carriage_return (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_tabular (char cap[])
+void FOptiMove::set_tabular (const char cap[])
 {
   if ( cap )
   {
@@ -178,7 +178,7 @@ void FOptiMove::set_tabular (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_back_tab (char cap[])
+void FOptiMove::set_back_tab (const char cap[])
 {
   if ( cap )
   {
@@ -195,7 +195,7 @@ void FOptiMove::set_back_tab (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_cursor_up (char cap[])
+void FOptiMove::set_cursor_up (const char cap[])
 {
   if ( cap )
   {
@@ -212,7 +212,7 @@ void FOptiMove::set_cursor_up (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_cursor_down (char cap[])
+void FOptiMove::set_cursor_down (const char cap[])
 {
   if ( cap )
   {
@@ -229,7 +229,7 @@ void FOptiMove::set_cursor_down (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_cursor_left (char cap[])
+void FOptiMove::set_cursor_left (const char cap[])
 {
   if ( cap )
   {
@@ -246,7 +246,7 @@ void FOptiMove::set_cursor_left (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_cursor_right (char cap[])
+void FOptiMove::set_cursor_right (const char cap[])
 {
   if ( cap )
   {
@@ -263,7 +263,7 @@ void FOptiMove::set_cursor_right (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_cursor_address (char cap[])
+void FOptiMove::set_cursor_address (const char cap[])
 {
   if ( cap )
   {
@@ -281,7 +281,7 @@ void FOptiMove::set_cursor_address (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_column_address (char cap[])
+void FOptiMove::set_column_address (const char cap[])
 {
   if ( cap )
   {
@@ -299,7 +299,7 @@ void FOptiMove::set_column_address (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_row_address (char cap[])
+void FOptiMove::set_row_address (const char cap[])
 {
   if ( cap )
   {
@@ -317,7 +317,7 @@ void FOptiMove::set_row_address (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_parm_up_cursor (char cap[])
+void FOptiMove::set_parm_up_cursor (const char cap[])
 {
   if ( cap )
   {
@@ -335,7 +335,7 @@ void FOptiMove::set_parm_up_cursor (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_parm_down_cursor (char cap[])
+void FOptiMove::set_parm_down_cursor (const char cap[])
 {
   if ( cap )
   {
@@ -353,7 +353,7 @@ void FOptiMove::set_parm_down_cursor (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_parm_left_cursor (char cap[])
+void FOptiMove::set_parm_left_cursor (const char cap[])
 {
   if ( cap )
   {
@@ -371,7 +371,7 @@ void FOptiMove::set_parm_left_cursor (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_parm_right_cursor (char cap[])
+void FOptiMove::set_parm_right_cursor (const char cap[])
 {
   if ( cap )
   {
@@ -389,7 +389,7 @@ void FOptiMove::set_parm_right_cursor (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_erase_chars (char cap[])
+void FOptiMove::set_erase_chars (const char cap[])
 {
   if ( cap )
   {
@@ -407,7 +407,7 @@ void FOptiMove::set_erase_chars (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_repeat_char (char cap[])
+void FOptiMove::set_repeat_char (const char cap[])
 {
   if ( cap )
   {
@@ -425,7 +425,7 @@ void FOptiMove::set_repeat_char (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_clr_bol (char cap[])
+void FOptiMove::set_clr_bol (const char cap[])
 {
   if ( cap )
   {
@@ -442,7 +442,7 @@ void FOptiMove::set_clr_bol (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::set_clr_eol (char cap[])
+void FOptiMove::set_clr_eol (const char cap[])
 {
   if ( cap )
   {
@@ -482,7 +482,7 @@ void FOptiMove::check_boundaries ( int& xold, int& yold
 }
 
 //----------------------------------------------------------------------
-char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
+const char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
 {
   int method{0};
   int move_time{LONG_DURATION};

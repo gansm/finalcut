@@ -36,9 +36,9 @@ namespace test
 
 typedef struct
 {
-  int   num;
-  char* string;
-  char  tname[4];
+  int num;
+  const char* string;
+  char tname[4];
 }
 FKeyMap;
 

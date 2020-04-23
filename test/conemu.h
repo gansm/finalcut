@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019 Markus Gans                                           *
+* Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -114,12 +114,12 @@ class ConEmu
 
   private:
     // Accessors
-    char*       getAnswerback (console);
-    char*       getDSR (console);
-    char*       getDECID (console);
-    char*       getDA (console);
-    char*       getDA1 (console);
-    char*       getSEC_DA (console);
+    const char* getAnswerback (console);
+    const char* getDSR (console);
+    const char* getDECID (console);
+    const char* getDA (console);
+    const char* getDA1 (console);
+    const char* getSEC_DA (console);
 
     // Methods
     bool        openMasterPTY();
@@ -129,15 +129,15 @@ class ConEmu
     void        parseTerminalBuffer (std::size_t, console);
 
     // Data members
-    int          fd_stdin{fileno(stdin)};
-    int          fd_stdout{fileno(stdout)};
-    int          fd_stderr{fileno(stderr)};
-    int          fd_master{-1};
-    int          fd_slave{-1};
-    bool         debug{false};
-    char         buffer[2048]{};
-    static bool* shared_state;
-    static char* colorname[];
+    int                fd_stdin{fileno(stdin)};
+    int                fd_stdout{fileno(stdout)};
+    int                fd_stderr{fileno(stderr)};
+    int                fd_master{-1};
+    int                fd_slave{-1};
+    bool               debug{false};
+    char               buffer[2048]{};
+    static bool*       shared_state;
+    static const char* colorname[];
 };
 
 // static class attributes
@@ -146,7 +146,7 @@ bool* ConEmu::shared_state = nullptr;
 
 // private data member of ConEmu
 //----------------------------------------------------------------------
-char* ConEmu::colorname[] =
+const char* ConEmu::colorname[] =
 {
   C_STR("0000/0000/0000"),  // 0
   C_STR("bbbb/0000/0000"),  // 1
@@ -616,9 +616,9 @@ inline void ConEmu::startConEmuTerminal (console con)
 
 // private methods of ConEmu
 //----------------------------------------------------------------------
-inline char* ConEmu::getAnswerback (console con)
+inline const char* ConEmu::getAnswerback (console con)
 {
-  static char* Answerback[] =
+  static const char* Answerback[] =
   {
     0,               // Ansi,
     0,               // XTerm
@@ -646,9 +646,9 @@ inline char* ConEmu::getAnswerback (console con)
 }
 
 //----------------------------------------------------------------------
-inline char* ConEmu::getDSR (console con)
+inline const char* ConEmu::getDSR (console con)
 {
-  static char* DSR[] =
+  static const char* DSR[] =
   {
     0,                 // Ansi,
     C_STR("\033[0n"),  // XTerm
@@ -676,9 +676,9 @@ inline char* ConEmu::getDSR (console con)
 }
 
 //----------------------------------------------------------------------
-inline char* ConEmu::getDECID (console con)
+inline const char* ConEmu::getDECID (console con)
 {
-  static char* DECID[] =
+  static const char* DECID[] =
   {
     0,                                     // Ansi,
     C_STR("\033[?63;1;2;6;4;6;9;15;22c"),  // XTerm
@@ -706,9 +706,9 @@ inline char* ConEmu::getDECID (console con)
 }
 
 //----------------------------------------------------------------------
-inline char* ConEmu::getDA (console con)
+inline const char* ConEmu::getDA (console con)
 {
-  static char* DA[] =
+  static const char* DA[] =
   {
     0,                                     // Ansi,
     C_STR("\033[?63;1;2;6;4;6;9;15;22c"),  // XTerm
@@ -736,9 +736,9 @@ inline char* ConEmu::getDA (console con)
 }
 
 //----------------------------------------------------------------------
-inline char* ConEmu::getDA1 (console con)
+inline const char* ConEmu::getDA1 (console con)
 {
-  static char* DA1[] =
+  static const char* DA1[] =
   {
     0,                                // Ansi,
     0,                                // XTerm
@@ -766,9 +766,9 @@ inline char* ConEmu::getDA1 (console con)
 }
 
 //----------------------------------------------------------------------
-inline char* ConEmu::getSEC_DA (console con)
+inline const char* ConEmu::getSEC_DA (console con)
 {
-  static char* SEC_DA[] =
+  static const char* SEC_DA[] =
   {
     0,                            // Ansi,
     C_STR("\033[>19;312;0c"),     // XTerm
@@ -868,7 +868,7 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
   {
     if ( buffer[i] == ENQ[0] )  // Enquiry character
     {
-      char* answer = getAnswerback(con);
+      const char* answer = getAnswerback(con);
 
       if ( answer )
         write(fd_master, answer, std::strlen(answer));
@@ -877,7 +877,7 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
            && buffer[i] == '\033'
            && buffer[i + 1] == 'Z' )
     {
-      char* DECID = getDECID(con);
+      const char* DECID = getDECID(con);
 
       if ( DECID )
         write (fd_master, DECID, std::strlen(DECID));
@@ -890,7 +890,7 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
            && buffer[i + 2] == '5'
            && buffer[i + 3] == 'n' )
     {
-      char* DSR = getDSR(con);
+      const char* DSR = getDSR(con);
 
       if ( DSR )
         write (fd_master, DSR, std::strlen(DSR));
@@ -911,7 +911,7 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
            && buffer[i + 1] == '['
            && buffer[i + 2] == 'c' )
     {
-      char* DA = getDA(con);
+      const char* DA = getDA(con);
 
       if ( DA )
         write (fd_master, DA, std::strlen(DA));
@@ -924,7 +924,7 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
            && buffer[i + 2] == '1'
            && buffer[i + 3] == 'c' )
     {
-      char* DA1 = getDA1(con);
+      const char* DA1 = getDA1(con);
 
       if ( DA1 )
         write (fd_master, DA1, std::strlen(DA1));
@@ -936,7 +936,7 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
            && buffer[i + 2] == '>'
            && buffer[i + 3] == 'c' )
     {
-      char* SEC_DA = getSEC_DA(con);
+      const char* SEC_DA = getSEC_DA(con);
 
       if ( SEC_DA )
         write (fd_master, SEC_DA, std::strlen(SEC_DA));

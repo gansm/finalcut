@@ -101,7 +101,7 @@ void FOptiAttr::setTermEnvironment (const termEnv& term_env)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_bold_mode (char cap[])
+void FOptiAttr::set_enter_bold_mode (const char cap[])
 {
   if ( cap )
   {
@@ -111,7 +111,7 @@ void FOptiAttr::set_enter_bold_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_bold_mode (char cap[])
+void FOptiAttr::set_exit_bold_mode (const char cap[])
 {
   if ( cap )
   {
@@ -121,7 +121,7 @@ void FOptiAttr::set_exit_bold_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_dim_mode (char cap[])
+void FOptiAttr::set_enter_dim_mode (const char cap[])
 {
   if ( cap )
   {
@@ -131,7 +131,7 @@ void FOptiAttr::set_enter_dim_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_dim_mode (char cap[])
+void FOptiAttr::set_exit_dim_mode (const char cap[])
 {
   if ( cap )
   {
@@ -141,7 +141,7 @@ void FOptiAttr::set_exit_dim_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_italics_mode (char cap[])
+void FOptiAttr::set_enter_italics_mode (const char cap[])
 {
   if ( cap )
   {
@@ -151,7 +151,7 @@ void FOptiAttr::set_enter_italics_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_italics_mode (char cap[])
+void FOptiAttr::set_exit_italics_mode (const char cap[])
 {
   if ( cap )
   {
@@ -161,7 +161,7 @@ void FOptiAttr::set_exit_italics_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_underline_mode (char cap[])
+void FOptiAttr::set_enter_underline_mode (const char cap[])
 {
   if ( cap )
   {
@@ -171,7 +171,7 @@ void FOptiAttr::set_enter_underline_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_underline_mode (char cap[])
+void FOptiAttr::set_exit_underline_mode (const char cap[])
 {
   if ( cap )
   {
@@ -181,7 +181,7 @@ void FOptiAttr::set_exit_underline_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_blink_mode (char cap[])
+void FOptiAttr::set_enter_blink_mode (const char cap[])
 {
   if ( cap )
   {
@@ -191,7 +191,7 @@ void FOptiAttr::set_enter_blink_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_blink_mode (char cap[])
+void FOptiAttr::set_exit_blink_mode (const char cap[])
 {
   if ( cap )
   {
@@ -201,7 +201,7 @@ void FOptiAttr::set_exit_blink_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_reverse_mode (char cap[])
+void FOptiAttr::set_enter_reverse_mode (const char cap[])
 {
   if ( cap )
   {
@@ -211,7 +211,7 @@ void FOptiAttr::set_enter_reverse_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_reverse_mode (char cap[])
+void FOptiAttr::set_exit_reverse_mode (const char cap[])
 {
   if ( cap )
   {
@@ -221,7 +221,7 @@ void FOptiAttr::set_exit_reverse_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_secure_mode (char cap[])
+void FOptiAttr::set_enter_secure_mode (const char cap[])
 {
   if ( cap )
   {
@@ -231,7 +231,7 @@ void FOptiAttr::set_enter_secure_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_secure_mode (char cap[])
+void FOptiAttr::set_exit_secure_mode (const char cap[])
 {
   if ( cap )
   {
@@ -241,7 +241,7 @@ void FOptiAttr::set_exit_secure_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_protected_mode (char cap[])
+void FOptiAttr::set_enter_protected_mode (const char cap[])
 {
   if ( cap )
   {
@@ -251,7 +251,7 @@ void FOptiAttr::set_enter_protected_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_protected_mode (char cap[])
+void FOptiAttr::set_exit_protected_mode (const char cap[])
 {
   if ( cap )
   {
@@ -261,7 +261,7 @@ void FOptiAttr::set_exit_protected_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_crossed_out_mode (char cap[])
+void FOptiAttr::set_enter_crossed_out_mode (const char cap[])
 {
   if ( cap )
   {
@@ -271,7 +271,7 @@ void FOptiAttr::set_enter_crossed_out_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_crossed_out_mode (char cap[])
+void FOptiAttr::set_exit_crossed_out_mode (const char cap[])
 {
   if ( cap )
   {
@@ -281,7 +281,7 @@ void FOptiAttr::set_exit_crossed_out_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_dbl_underline_mode (char cap[])
+void FOptiAttr::set_enter_dbl_underline_mode (const char cap[])
 {
   if ( cap )
   {
@@ -291,7 +291,7 @@ void FOptiAttr::set_enter_dbl_underline_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_dbl_underline_mode (char cap[])
+void FOptiAttr::set_exit_dbl_underline_mode (const char cap[])
 {
   if ( cap )
   {
@@ -301,7 +301,7 @@ void FOptiAttr::set_exit_dbl_underline_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_standout_mode (char cap[])
+void FOptiAttr::set_enter_standout_mode (const char cap[])
 {
   if ( cap )
   {
@@ -311,7 +311,7 @@ void FOptiAttr::set_enter_standout_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_standout_mode (char cap[])
+void FOptiAttr::set_exit_standout_mode (const char cap[])
 {
   if ( cap )
   {
@@ -321,7 +321,7 @@ void FOptiAttr::set_exit_standout_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_set_attributes (char cap[])
+void FOptiAttr::set_set_attributes (const char cap[])
 {
   if ( cap )
   {
@@ -331,7 +331,7 @@ void FOptiAttr::set_set_attributes (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_attribute_mode (char cap[])
+void FOptiAttr::set_exit_attribute_mode (const char cap[])
 {
   if ( cap )
   {
@@ -341,7 +341,7 @@ void FOptiAttr::set_exit_attribute_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_alt_charset_mode (char cap[])
+void FOptiAttr::set_enter_alt_charset_mode (const char cap[])
 {
   if ( cap )
   {
@@ -351,7 +351,7 @@ void FOptiAttr::set_enter_alt_charset_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_alt_charset_mode (char cap[])
+void FOptiAttr::set_exit_alt_charset_mode (const char cap[])
 {
   if ( cap )
   {
@@ -361,7 +361,7 @@ void FOptiAttr::set_exit_alt_charset_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_pc_charset_mode (char cap[])
+void FOptiAttr::set_enter_pc_charset_mode (const char cap[])
 {
   if ( cap )
   {
@@ -371,7 +371,7 @@ void FOptiAttr::set_enter_pc_charset_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_pc_charset_mode (char cap[])
+void FOptiAttr::set_exit_pc_charset_mode (const char cap[])
 {
   if ( cap )
   {
@@ -381,7 +381,7 @@ void FOptiAttr::set_exit_pc_charset_mode (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_a_foreground_color (char cap[])
+void FOptiAttr::set_a_foreground_color (const char cap[])
 {
   if ( cap )
   {
@@ -391,7 +391,7 @@ void FOptiAttr::set_a_foreground_color (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_a_background_color (char cap[])
+void FOptiAttr::set_a_background_color (const char cap[])
 {
   if ( cap )
   {
@@ -401,7 +401,7 @@ void FOptiAttr::set_a_background_color (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_foreground_color (char cap[])
+void FOptiAttr::set_foreground_color (const char cap[])
 {
   if ( cap )
   {
@@ -411,7 +411,7 @@ void FOptiAttr::set_foreground_color (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_background_color (char cap[])
+void FOptiAttr::set_background_color (const char cap[])
 {
   if ( cap )
   {
@@ -421,7 +421,7 @@ void FOptiAttr::set_background_color (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_term_color_pair (char cap[])
+void FOptiAttr::set_term_color_pair (const char cap[])
 {
   if ( cap )
   {
@@ -431,7 +431,7 @@ void FOptiAttr::set_term_color_pair (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_orig_pair (char cap[])
+void FOptiAttr::set_orig_pair (const char cap[])
 {
   if ( cap )
   {
@@ -441,7 +441,7 @@ void FOptiAttr::set_orig_pair (char cap[])
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_orig_orig_colors (char cap[])
+void FOptiAttr::set_orig_orig_colors (const char cap[])
 {
   if ( cap )
   {
@@ -543,7 +543,7 @@ FColor FOptiAttr::vga2ansi (FColor color)
 }
 
 //----------------------------------------------------------------------
-char* FOptiAttr::changeAttribute (FChar*& term, FChar*& next)
+const char* FOptiAttr::changeAttribute (FChar*& term, FChar*& next)
 {
   const bool next_has_color = hasColor(next);
   fake_reverse = false;

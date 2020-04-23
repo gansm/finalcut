@@ -30,7 +30,7 @@
 #include <final/ftypes.h>
 
 // Typecast to c-string
-#define C_STR const_cast<char*>
+#define C_STR const_cast<const char*>
 
 // ASCII sequences
 #define ESC    "\033"     // Escape

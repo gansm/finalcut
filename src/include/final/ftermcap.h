@@ -78,7 +78,7 @@ class FTermcap final
     // Typedef
     typedef struct
     {
-      char* string;
+      const char* string;
       char  tname[alignof(char*)];
     }
     tcap_map;

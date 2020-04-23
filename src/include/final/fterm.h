@@ -178,8 +178,8 @@ class FTerm final
     static std::size_t     getColumnNumber();
     static const FString   getKeyName (FKey);
     static int             getTTYFileDescriptor();
-    static char*           getTermType();
-    static char*           getTermFileName();
+    static const char*     getTermType();
+    static const char*     getTermFileName();
     static int             getTabstop();
     static int             getMaxColor();
     charSubstitution&      getCharSubstitutionMap();
@@ -259,8 +259,8 @@ class FTerm final
     static bool            setOldFont();
     static int             openConsole();
     static int             closeConsole();
-    static char*           moveCursorString (int, int, int, int);
-    static char*           cursorsVisibilityString (bool);
+    static const char*     moveCursorString (int, int, int, int);
+    static const char*     cursorsVisibilityString (bool);
     static void            detectTermSize();
     static void            setTermSize (const FSize&);
     static void            setTermTitle (const FString&);
@@ -290,7 +290,7 @@ class FTerm final
     static int             putchar_UTF8  (int);
 
     static void            initScreenSettings();
-    static char*           changeAttribute (FChar*&, FChar*&);
+    static const char*     changeAttribute (FChar*&, FChar*&);
     static void            changeTermSizeFinished();
     static void            exitWithMessage (const FString&)
     #if defined(__clang__) || defined(__GNUC__)
@@ -329,8 +329,8 @@ class FTerm final
     static void            restoreColorPalette();
     static void            setInsertCursorStyle();
     static void            setOverwriteCursorStyle();
-    static char*           enableCursorString();
-    static char*           disableCursorString();
+    static const char*     enableCursorString();
+    static const char*     disableCursorString();
     static void            enableMouse();
     static void            disableMouse();
     static void            enableApplicationEscKey();

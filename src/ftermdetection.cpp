@@ -342,7 +342,7 @@ void FTermDetection::detectTerminal()
 {
   // Terminal detection
 
-  char* new_termtype{nullptr};
+  const char* new_termtype{nullptr};
 
   if ( terminal_detection )
   {
@@ -388,9 +388,9 @@ void FTermDetection::detectTerminal()
 }
 
 //----------------------------------------------------------------------
-char* FTermDetection::init_256colorTerminal()
+const char* FTermDetection::init_256colorTerminal()
 {
-  char* new_termtype{nullptr};
+  const char* new_termtype{nullptr};
 
   if ( get256colorEnvString() )
     color256 = true;
@@ -451,9 +451,9 @@ bool FTermDetection::get256colorEnvString()
 }
 
 //----------------------------------------------------------------------
-char* FTermDetection::termtype_256color_quirks()
+const char* FTermDetection::termtype_256color_quirks()
 {
-  char* new_termtype{nullptr};
+  const char* new_termtype{nullptr};
 
   if ( color_env.string2
     || (color_env.string1
@@ -504,11 +504,11 @@ char* FTermDetection::termtype_256color_quirks()
 }
 
 //----------------------------------------------------------------------
-char* FTermDetection::determineMaxColor (char current_termtype[])
+const char* FTermDetection::determineMaxColor (const char current_termtype[])
 {
   // Determine xterm maximum number of colors via OSC 4
 
-  char* new_termtype = current_termtype;
+  const char* new_termtype = current_termtype;
 
   if ( ! color256
     && ! isCygwinTerminal()
@@ -578,9 +578,9 @@ const FString FTermDetection::getXTermColorName (FColor color)
 }
 
 //----------------------------------------------------------------------
-char* FTermDetection::parseAnswerbackMsg (char current_termtype[])
+const char* FTermDetection::parseAnswerbackMsg (const char current_termtype[])
 {
-  char* new_termtype = current_termtype;
+  const char* new_termtype = current_termtype;
 
   // send ENQ and read the answerback message
   try
@@ -646,7 +646,7 @@ const FString FTermDetection::getAnswerbackMsg()
 }
 
 //----------------------------------------------------------------------
-char* FTermDetection::parseSecDA (char current_termtype[])
+const char* FTermDetection::parseSecDA (const char current_termtype[])
 {
   // The Linux console and older cygwin terminals knows no Sec_DA
   if ( isLinuxTerm() || isCygwinTerminal() )
@@ -694,7 +694,7 @@ char* FTermDetection::parseSecDA (char current_termtype[])
   // Read the terminal hardware option
   secondary_da.terminal_id_hardware = str2int(sec_da_components[2]);
 
-  char* new_termtype = secDA_Analysis(current_termtype);
+  const char* new_termtype = secDA_Analysis(current_termtype);
 
 #if DEBUG
   if ( new_termtype )
@@ -771,9 +771,9 @@ const FString FTermDetection::getSecDA()
 }
 
 //----------------------------------------------------------------------
-char* FTermDetection::secDA_Analysis (char current_termtype[])
+const char* FTermDetection::secDA_Analysis (const char current_termtype[])
 {
-  char* new_termtype = current_termtype;
+  const char* new_termtype = current_termtype;
 
   switch ( secondary_da.terminal_id_type )
   {
@@ -847,11 +847,11 @@ char* FTermDetection::secDA_Analysis (char current_termtype[])
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_0 (char current_termtype[])
+inline const char* FTermDetection::secDA_Analysis_0 (const char current_termtype[])
 {
   // Terminal ID 0 - DEC VT100
 
-  char* new_termtype = current_termtype;
+  const char* new_termtype = current_termtype;
 
   if ( secondary_da.terminal_id_version == 115 )
     terminal_type.kde_konsole = true;
@@ -867,21 +867,21 @@ inline char* FTermDetection::secDA_Analysis_0 (char current_termtype[])
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_1 (char current_termtype[])
+inline const char* FTermDetection::secDA_Analysis_1 (const char current_termtype[])
 {
   // Terminal ID 1 - DEC VT220
 
-  char* new_termtype = current_termtype;
+  const char* new_termtype = current_termtype;
   new_termtype = secDA_Analysis_vte(new_termtype);
   return new_termtype;
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_24 (char current_termtype[])
+inline const char* FTermDetection::secDA_Analysis_24 (const char current_termtype[])
 {
   // Terminal ID 24 - DEC VT320
 
-  char* new_termtype = current_termtype;
+  const char* new_termtype = current_termtype;
 
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 
@@ -904,17 +904,17 @@ inline char* FTermDetection::secDA_Analysis_24 (char current_termtype[])
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_32 (const char[])
+inline const char* FTermDetection::secDA_Analysis_32 (const char[])
 {
   // Terminal ID 32 - Tera Term
 
   terminal_type.tera_term = true;
-  char* new_termtype = C_STR("teraterm");
+  const char* new_termtype = C_STR("teraterm");
   return new_termtype;
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_65 (char current_termtype[])
+inline const char* FTermDetection::secDA_Analysis_65 (const char current_termtype[])
 {
   // Terminal ID 65 - DEC VT525
 
@@ -922,34 +922,34 @@ inline char* FTermDetection::secDA_Analysis_65 (char current_termtype[])
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_67 (const char[])
+inline const char* FTermDetection::secDA_Analysis_67 (const char[])
 {
   // Terminal ID 67 - cygwin
 
   terminal_type.cygwin = true;
-  char* new_termtype = C_STR("cygwin");
+  const char* new_termtype = C_STR("cygwin");
   std::fflush(stdout);
   return new_termtype;
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_77 (const char[])
+inline const char* FTermDetection::secDA_Analysis_77 (const char[])
 {
   // Terminal ID 77 - mintty
 
   terminal_type.mintty = true;
   decscusr_support = true;
-  char* new_termtype = C_STR("xterm-256color");
+  const char* new_termtype = C_STR("xterm-256color");
   std::fflush(stdout);
   return new_termtype;
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_82()
+inline const char* FTermDetection::secDA_Analysis_82()
 {
   // Terminal ID 82 - rxvt
 
-  char* new_termtype{};
+  const char* new_termtype{};
   terminal_type.rxvt = true;
 
   if ( std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
@@ -961,32 +961,32 @@ inline char* FTermDetection::secDA_Analysis_82()
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_83 (char current_termtype[])
+inline const char* FTermDetection::secDA_Analysis_83 (const char current_termtype[])
 {
   // Terminal ID 83 - screen
 
-  char* new_termtype = current_termtype;
+  const char* new_termtype = current_termtype;
   terminal_type.screen = true;
   return new_termtype;
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_84 (char current_termtype[])
+inline const char* FTermDetection::secDA_Analysis_84 (const char current_termtype[])
 {
   // Terminal ID 84 - tmux
 
-  char* new_termtype = current_termtype;
+  const char* new_termtype = current_termtype;
   terminal_type.screen = true;
   terminal_type.tmux = true;
   return new_termtype;
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_85()
+inline const char* FTermDetection::secDA_Analysis_85()
 {
   // Terminal ID 85 - rxvt-unicode
 
-  char* new_termtype{};
+  const char* new_termtype{};
   terminal_type.rxvt = true;
   terminal_type.urxvt = true;
 
@@ -1004,12 +1004,12 @@ inline char* FTermDetection::secDA_Analysis_85()
 }
 
 //----------------------------------------------------------------------
-inline char* FTermDetection::secDA_Analysis_vte (char current_termtype[])
+inline const char* FTermDetection::secDA_Analysis_vte (const char current_termtype[])
 {
   // VTE terminal library
   // (Since VTE ) the terminal ID has changed from 1 to 65)
 
-  char* new_termtype = current_termtype;
+  const char* new_termtype = current_termtype;
 
   if ( secondary_da.terminal_id_version > 1000 )
   {

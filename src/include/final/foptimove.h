@@ -77,26 +77,26 @@ class FOptiMove final
     // Typedef
     typedef struct
     {
-      char* t_cursor_home;
-      char* t_carriage_return;
-      char* t_cursor_to_ll;
-      char* t_tab;
-      char* t_back_tab;
-      char* t_cursor_up;
-      char* t_cursor_down;
-      char* t_cursor_left;
-      char* t_cursor_right;
-      char* t_cursor_address;
-      char* t_column_address;
-      char* t_row_address;
-      char* t_parm_up_cursor;
-      char* t_parm_down_cursor;
-      char* t_parm_left_cursor;
-      char* t_parm_right_cursor;
-      char* t_erase_chars;
-      char* t_repeat_char;
-      char* t_clr_bol;
-      char* t_clr_eol;
+      const char* t_cursor_home;
+      const char* t_carriage_return;
+      const char* t_cursor_to_ll;
+      const char* t_tab;
+      const char* t_back_tab;
+      const char* t_cursor_up;
+      const char* t_cursor_down;
+      const char* t_cursor_left;
+      const char* t_cursor_right;
+      const char* t_cursor_address;
+      const char* t_column_address;
+      const char* t_row_address;
+      const char* t_parm_up_cursor;
+      const char* t_parm_down_cursor;
+      const char* t_parm_left_cursor;
+      const char* t_parm_right_cursor;
+      const char* t_erase_chars;
+      const char* t_repeat_char;
+      const char* t_clr_bol;
+      const char* t_clr_eol;
       int   tabstop;
       bool  automatic_left_margin;
       bool  eat_nl_glitch;
@@ -136,32 +136,32 @@ class FOptiMove final
     void          setTabStop (int);
     void          setTermSize (std::size_t, std::size_t);
     void          setTermEnvironment (const termEnv&);
-    void          set_cursor_home (char[]);
-    void          set_cursor_to_ll (char[]);
-    void          set_carriage_return (char[]);
-    void          set_tabular (char[]);
-    void          set_back_tab (char[]);
-    void          set_cursor_up (char[]);
-    void          set_cursor_down (char[]);
-    void          set_cursor_left (char[]);
-    void          set_cursor_right (char[]);
-    void          set_cursor_address (char[]);
-    void          set_column_address (char[]);
-    void          set_row_address (char[]);
-    void          set_parm_up_cursor (char[]);
-    void          set_parm_down_cursor (char[]);
-    void          set_parm_left_cursor (char[]);
-    void          set_parm_right_cursor (char[]);
-    void          set_erase_chars (char[]);
-    void          set_repeat_char (char[]);
-    void          set_clr_bol (char[]);
-    void          set_clr_eol (char[]);
+    void          set_cursor_home (const char[]);
+    void          set_cursor_to_ll (const char[]);
+    void          set_carriage_return (const char[]);
+    void          set_tabular (const char[]);
+    void          set_back_tab (const char[]);
+    void          set_cursor_up (const char[]);
+    void          set_cursor_down (const char[]);
+    void          set_cursor_left (const char[]);
+    void          set_cursor_right (const char[]);
+    void          set_cursor_address (const char[]);
+    void          set_column_address (const char[]);
+    void          set_row_address (const char[]);
+    void          set_parm_up_cursor (const char[]);
+    void          set_parm_down_cursor (const char[]);
+    void          set_parm_left_cursor (const char[]);
+    void          set_parm_right_cursor (const char[]);
+    void          set_erase_chars (const char[]);
+    void          set_repeat_char (const char[]);
+    void          set_clr_bol (const char[]);
+    void          set_clr_eol (const char[]);
     void          set_auto_left_margin (bool);
     void          set_eat_newline_glitch (bool);
 
     // Methods
     void          check_boundaries (int&, int&, int&, int&);
-    char*         moveCursor (int, int, int, int);
+    const char*   moveCursor (int, int, int, int);
 
   private:
     // Constant
@@ -170,7 +170,7 @@ class FOptiMove final
     // Typedef
     typedef struct
     {
-      char* cap;
+      const char* cap;
       int duration;
       int length;
     } capability;
