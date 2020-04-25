@@ -370,7 +370,7 @@ class FMouseSGR final : public FMouse
     // Methods
     void          setKeyState (int);
     void          setMoveState (const FPoint&, int);
-    void          setPressedButtonState (const int, struct timeval*);
+    void          setPressedButtonState (const int, const struct timeval*);
     void          setReleasedButtonState (const int);
 
     // Data members

@@ -787,16 +787,12 @@ void FTextView::cb_vbarChange (const FWidget*, const FDataPtr)
       break;
 
     case FScrollbar::scrollWheelUp:
-    {
       scrollBy (0, -wheel_distance);
       break;
-    }
 
     case FScrollbar::scrollWheelDown:
-    {
       scrollBy (0, wheel_distance);
       break;
-    }
   }
 
   update_scrollbar = true;

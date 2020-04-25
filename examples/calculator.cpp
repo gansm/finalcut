@@ -172,6 +172,7 @@ class Calc final : public finalcut::FDialog
     // Methods
     void           drawDispay();
     void           draw() override;
+    void           sendOnButtonAccelerator();
     void           clear (const lDouble&);
     void           zero (const lDouble&);
     void           one (const lDouble&);
@@ -341,11 +342,7 @@ void Calc::onKeyPress (finalcut::FKeyEvent* ev)
 
     case fc::Fkey_escape:
     case fc::Fkey_escape_mintty:
-      {
-        finalcut::FAccelEvent a_ev( fc::Accelerator_Event
-                                  , getFocusWidget() );
-        calculator_buttons[On]->onAccel(&a_ev);
-      }
+      sendOnButtonAccelerator();
       ev->accept();
       break;
 
@@ -464,6 +461,13 @@ void Calc::drawDispay()
                                 + finalcut::FString(vertical_and_left) );
     print() << FPoint(1, 4) << separator;
   }
+}
+
+//----------------------------------------------------------------------
+void Calc::sendOnButtonAccelerator()
+{
+  finalcut::FAccelEvent a_ev(fc::Accelerator_Event, getFocusWidget());
+  calculator_buttons[On]->onAccel(&a_ev);
 }
 
 //----------------------------------------------------------------------

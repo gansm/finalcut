@@ -137,18 +137,19 @@ struct FCharAttribute
   uInt8                    : 8;  // padding byte
 };
 
+union attribute
+{
+  FCharAttribute bit;
+  uInt8 byte[4];
+};
+  
 typedef struct
 {
-  wchar_t ch;            // character code
-  wchar_t encoded_char;  // encoded output character
-  FColor  fg_color;      // foreground color
-  FColor  bg_color;      // background color
-
-  union attribute
-  {
-    FCharAttribute bit;
-    uInt8 byte[4];
-  } attr;
+  wchar_t ch;            // Character code
+  wchar_t encoded_char;  // Encoded output character
+  FColor  fg_color;      // Foreground color
+  FColor  bg_color;      // Background color
+  attribute attr;        // Attributes
 } FChar;
 
 

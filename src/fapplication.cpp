@@ -361,24 +361,24 @@ void FApplication::cmd_options (const int& argc, char* argv[])
   {
     static struct option long_options[] =
     {
-      {C_STR("encoding"),                 required_argument, nullptr,  0 },
-      {C_STR("no-mouse"),                 no_argument,       nullptr,  0 },
-      {C_STR("no-optimized-cursor"),      no_argument,       nullptr,  0 },
-      {C_STR("no-terminal-detection"),    no_argument,       nullptr,  0 },
-      {C_STR("no-terminal-data-request"), no_argument,       nullptr,  0 },
-      {C_STR("no-color-change"),          no_argument,       nullptr,  0 },
-      {C_STR("no-sgr-optimizer"),         no_argument,       nullptr,  0 },
-      {C_STR("vgafont"),                  no_argument,       nullptr,  0 },
-      {C_STR("newfont"),                  no_argument,       nullptr,  0 },
+      {"encoding",                 required_argument, nullptr,  0 },
+      {"no-mouse",                 no_argument,       nullptr,  0 },
+      {"no-optimized-cursor",      no_argument,       nullptr,  0 },
+      {"no-terminal-detection",    no_argument,       nullptr,  0 },
+      {"no-terminal-data-request", no_argument,       nullptr,  0 },
+      {"no-color-change",          no_argument,       nullptr,  0 },
+      {"no-sgr-optimizer",         no_argument,       nullptr,  0 },
+      {"vgafont",                  no_argument,       nullptr,  0 },
+      {"newfont",                  no_argument,       nullptr,  0 },
 
     #if defined(__FreeBSD__) || defined(__DragonFly__)
-      {C_STR("no-esc-for-alt-meta"),      no_argument,       nullptr,  0 },
-      {C_STR("no-cursorstyle-change"),    no_argument,       nullptr,  0 },
+      {"no-esc-for-alt-meta",      no_argument,       nullptr,  0 },
+      {"no-cursorstyle-change",    no_argument,       nullptr,  0 },
     #elif defined(__NetBSD__) || defined(__OpenBSD__)
-      {C_STR("no-esc-for-alt-meta"),      no_argument,       nullptr,  0 },
+      {"no-esc-for-alt-meta",      no_argument,       nullptr,  0 },
     #endif
 
-      {nullptr,                           0,                 nullptr,  0 }
+      {nullptr,                    0,                 nullptr,  0 }
     };
 
     opterr = 0;

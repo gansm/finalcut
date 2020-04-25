@@ -2960,11 +2960,8 @@ void FListView::cb_hbarChange (const FWidget*, const FDataPtr)
       break;
 
     case FScrollbar::scrollJump:
-    {
-      const int value = hbar->getValue();
-      scrollToX(value);
+      scrollToX (hbar->getValue());
       break;
-    }
 
     case FScrollbar::scrollWheelUp:
       scrollBy (-wheel_distance, 0);

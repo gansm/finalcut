@@ -496,7 +496,7 @@ FKey FTermLinux::modifierKeyCorrection (const FKey& key_id)
 int FTermLinux::getFramebuffer_bpp()
 {
   int fd{-1};
-  const char* fb = C_STR("/dev/fb/0");
+  const char* fb = "/dev/fb/0";
   struct fb_var_screeninfo fb_var{};
   struct fb_fix_screeninfo fb_fix{};
 
@@ -508,7 +508,7 @@ int FTermLinux::getFramebuffer_bpp()
     if ( errno != ENOENT && errno != ENOTDIR )
       return -1;
 
-    fb = C_STR("/dev/fb0");
+    fb = "/dev/fb0";
 
     if ( (fd = fsystem->open(fb, O_RDWR)) < 0 )
       return -1;

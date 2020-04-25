@@ -36,6 +36,10 @@ using finalcut::FSize;
 sInt64 StringToNumber (const finalcut::FString&);
 bool sortAscending (const finalcut::FObject*, const finalcut::FObject*);
 bool sortDescending (const finalcut::FObject*, const finalcut::FObject*);
+bool isLessThanInteger (const finalcut::FString&, const finalcut::FString&);
+bool isLessThanDouble (const finalcut::FString&, const finalcut::FString&);
+bool isGreaterThanInteger (const finalcut::FString&, const finalcut::FString&);
+bool isGreaterThanDouble (const finalcut::FString&, const finalcut::FString&);
 
 
 // non-member functions
@@ -51,32 +55,60 @@ sInt64 StringToNumber (const finalcut::FString& str)
 }
 
 //----------------------------------------------------------------------
+bool isLessThanInteger ( const finalcut::FString& lhs
+                       , const finalcut::FString& rhs )
+{
+  const sInt64 l_number = StringToNumber(lhs);
+  const sInt64 r_number = StringToNumber(rhs);
+  return bool( l_number < r_number );  // lhs < rhs
+}
+
+//----------------------------------------------------------------------
+bool isLessThanDouble ( const finalcut::FString& lhs
+                      , const finalcut::FString& rhs )
+{
+  std::setlocale(LC_NUMERIC, "C");
+  const double l_number = lhs.toDouble();
+  const double r_number = rhs.toDouble();
+  return bool( l_number < r_number );  // lhs < rhs
+}
+
+//----------------------------------------------------------------------
+bool isGreaterThanInteger ( const finalcut::FString& lhs
+                          , const finalcut::FString& rhs )
+{
+  const sInt64 l_number = StringToNumber(lhs);
+  const sInt64 r_number = StringToNumber(rhs);
+  return bool( l_number > r_number );  // lhs > rhs
+}
+
+//----------------------------------------------------------------------
+bool isGreaterThanDouble ( const finalcut::FString& lhs
+                         , const finalcut::FString& rhs )
+{
+  std::setlocale(LC_NUMERIC, "C");
+  const double l_number = lhs.toDouble();
+  const double r_number = rhs.toDouble();
+  return bool( l_number > r_number );  // lhs > rhs
+}
+
+//----------------------------------------------------------------------
 bool sortAscending ( const finalcut::FObject* lhs
                    , const finalcut::FObject* rhs )
 {
   const auto& l_item = static_cast<const finalcut::FListViewItem*>(lhs);
   const auto& r_item = static_cast<const finalcut::FListViewItem*>(rhs);
   const int column = l_item->getSortColumn();
+  const auto& l_str = l_item->getText(column);
+  const auto& r_str = r_item->getText(column);
 
-  switch ( column )
+  if ( column == 2 )
   {
-    case 2:
-    {
-      const sInt64 l_number = StringToNumber(l_item->getText(column));
-      const sInt64 r_number = StringToNumber(r_item->getText(column));
-      return bool( l_number < r_number );  // lhs < rhs
-    }
-
-    case 3:
-    {
-      std::setlocale(LC_NUMERIC, "C");
-      const double l_number = l_item->getText(column).toDouble();
-      const double r_number = r_item->getText(column).toDouble();
-      return bool( l_number < r_number );  // lhs < rhs
-    }
-
-    default:
-      break;  // Don't do anything
+    return isGreaterThanInteger(l_str, r_str);
+  }
+  else if ( column == 3 )
+  {
+    return isGreaterThanDouble(l_str, r_str);
   }
 
   return false;
@@ -89,26 +121,16 @@ bool sortDescending ( const finalcut::FObject* lhs
   const auto& l_item = static_cast<const finalcut::FListViewItem*>(lhs);
   const auto& r_item = static_cast<const finalcut::FListViewItem*>(rhs);
   const int column = l_item->getSortColumn();
+  const auto& l_str = l_item->getText(column);
+  const auto& r_str = r_item->getText(column);
 
-  switch ( column )
+  if ( column == 2 )
   {
-    case 2:
-    {
-      const sInt64 l_number = StringToNumber(l_item->getText(column));
-      const sInt64 r_number = StringToNumber(r_item->getText(column));
-      return bool( l_number > r_number );  // lhs > rhs
-    }
-
-    case 3:
-    {
-      std::setlocale(LC_NUMERIC, "C");
-      const double l_number = l_item->getText(column).toDouble();
-      const double r_number = r_item->getText(column).toDouble();
-      return bool( l_number > r_number );  // lhs > rhs
-    }
-
-    default:
-      break;  // Don't do anything
+    return isLessThanInteger(l_str, r_str);
+  }
+  else if ( column == 3 )
+  {
+    return isLessThanDouble(l_str, r_str);
   }
 
   return false;

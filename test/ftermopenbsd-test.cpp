@@ -523,7 +523,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
     CPPUNIT_ASSERT ( data->getTermGeometry().getHeight() == 25 );
     CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
     CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
-    CPPUNIT_ASSERT_CSTRING ( term_detection->getTermType(), C_STR("pccon") );
+    CPPUNIT_ASSERT_CSTRING ( term_detection->getTermType(), "pccon" );
 
     openbsd.finish();
 

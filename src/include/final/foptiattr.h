@@ -35,9 +35,6 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-// Typecast to c-string
-#define C_STR const_cast<const char*>
-
 #include <assert.h>
 
 #if defined(__sun) && defined(__SVR4)

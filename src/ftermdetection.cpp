@@ -86,7 +86,7 @@ FTermDetection::FTermDetection()
   gnome_terminal_id = 0;
 
   // Set default ttytype file
-  std::strncpy (ttytypename, C_STR("/etc/ttytype"), sizeof(ttytypename));
+  std::strncpy (ttytypename, "/etc/ttytype", sizeof(ttytypename));
   ttytypename[sizeof(ttytypename) - 1] = '\0';
 }
 
@@ -155,7 +155,7 @@ void FTermDetection::deallocation()
 void FTermDetection::getSystemTermType()
 {
   // Import the untrusted environment variable TERM
-  const char* const& term_env = std::getenv(C_STR("TERM"));
+  const char* const& term_env = std::getenv("TERM");
   const char* termfilename = fterm_data->getTermFileName();
 
   if ( term_env )
@@ -177,7 +177,7 @@ void FTermDetection::getSystemTermType()
   }
 
   // 2nd fallback: use vt100 if not found
-  std::strncpy (termtype, C_STR("vt100"), sizeof(termtype));
+  std::strncpy (termtype, "vt100", sizeof(termtype));
   termtype[sizeof(termtype) - 1] = '\0';
 }
 
@@ -328,12 +328,12 @@ void FTermDetection::termtypeAnalysis()
   }
 
   // Linux console
-  if ( std::strncmp(termtype, C_STR("linux"), 5) == 0
-    || std::strncmp(termtype, C_STR("con"), 3) == 0 )
+  if ( std::strncmp(termtype, "linux", 5) == 0
+    || std::strncmp(termtype, "con", 3) == 0 )
     terminal_type.linux_con = true;
 
   // NetBSD workstation console
-  if ( std::strncmp(termtype, C_STR("wsvt25"), 6) == 0 )
+  if ( std::strncmp(termtype, "wsvt25", 6) == 0 )
     terminal_type.netbsd_con = true;
 }
 
@@ -368,20 +368,20 @@ void FTermDetection::detectTerminal()
   //
 
   // Test if the terminal is a xterm
-  if ( std::strncmp(termtype, C_STR("xterm"), 5) == 0
-    || std::strncmp(termtype, C_STR("Eterm"), 5) == 0 )
+  if ( std::strncmp(termtype, "xterm", 5) == 0
+    || std::strncmp(termtype, "Eterm", 5) == 0 )
   {
     terminal_type.xterm = true;
 
     // Each xterm should be able to use at least 16 colors
     if ( ! new_termtype && std::strlen(termtype) == 5 )
-      new_termtype = C_STR("xterm-16color");
+      new_termtype = "xterm-16color";
   }
 
   // set the new environment variable TERM
   if ( new_termtype )
   {
-    setenv(C_STR("TERM"), new_termtype, 1);
+    setenv("TERM", new_termtype, 1);
     std::strncpy (termtype, new_termtype, sizeof(termtype));
     termtype[sizeof(termtype) - 1] = '\0';
   }
@@ -464,29 +464,29 @@ const char* FTermDetection::termtype_256color_quirks()
     color256 = true;
 
     if ( ! isScreenTerm() )
-      return (new_termtype = C_STR("gnome-256color"));
+      return (new_termtype = "gnome-256color");
   }
 
   if ( ! color256 )
     return new_termtype;
 
   if ( std::strncmp(termtype, "xterm", 5) == 0 )
-    new_termtype = C_STR("xterm-256color");
+    new_termtype = "xterm-256color";
 
   if ( std::strncmp(termtype, "screen", 6) == 0 )
-    new_termtype = C_STR("screen-256color");
+    new_termtype = "screen-256color";
 
   if ( std::strncmp(termtype, "Eterm", 5) == 0 )
-    new_termtype = C_STR("Eterm-256color");
+    new_termtype = "Eterm-256color";
 
   if ( std::strncmp(termtype, "mlterm", 6) == 0 )
-    new_termtype = C_STR("mlterm-256color");
+    new_termtype = "mlterm-256color";
 
   if ( std::strncmp(termtype, "rxvt", 4) != 0
     && color_env.string1
     && std::strncmp(color_env.string1, "rxvt-xpm", 8) == 0 )
   {
-    new_termtype = C_STR("rxvt-256color");
+    new_termtype = "rxvt-256color";
     terminal_type.rxvt = true;
   }
 
@@ -494,7 +494,7 @@ const char* FTermDetection::termtype_256color_quirks()
     || (color_env.string6 && std::strlen(color_env.string6) > 0) )
   {
     terminal_type.kde_konsole = true;
-    new_termtype = C_STR("konsole-256color");
+    new_termtype = "konsole-256color";
   }
 
   if ( color_env.string3 && std::strlen(color_env.string3) > 0 )
@@ -522,17 +522,17 @@ const char* FTermDetection::determineMaxColor (const char current_termtype[])
       color256 = true;
 
       if ( isPuttyTerminal() )
-        new_termtype = C_STR("putty-256color");
+        new_termtype = "putty-256color";
       else
-        new_termtype = C_STR("xterm-256color");
+        new_termtype = "xterm-256color";
     }
     else if ( ! getXTermColorName(87).isEmpty() )
     {
-      new_termtype = C_STR("xterm-88color");
+      new_termtype = "xterm-88color";
     }
     else if ( ! getXTermColorName(15).isEmpty() )
     {
-      new_termtype = C_STR("xterm-16color");
+      new_termtype = "xterm-16color";
     }
   }
 
@@ -598,9 +598,9 @@ const char* FTermDetection::parseAnswerbackMsg (const char current_termtype[])
     terminal_type.putty = true;
 
     if ( color256 )
-      new_termtype = C_STR("putty-256color");
+      new_termtype = "putty-256color";
     else
-      new_termtype = C_STR("putty");
+      new_termtype = "putty";
   }
 
   // cygwin needs a backspace to delete the '♣' char
@@ -889,12 +889,12 @@ inline const char* FTermDetection::secDA_Analysis_24 (const char current_termtyp
      && FTermOpenBSD::isBSDConsole() )
   {
     // NetBSD/OpenBSD workstation console
-    if ( std::strncmp(termtype, C_STR("wsvt25"), 6) == 0 )
+    if ( std::strncmp(termtype, "wsvt25", 6) == 0 )
       terminal_type.netbsd_con = true;
-    else if ( std::strncmp(termtype, C_STR("vt220"), 5) == 0 )
+    else if ( std::strncmp(termtype, "vt220", 5) == 0 )
     {
       terminal_type.openbsd_con = true;
-      new_termtype = C_STR("pccon");
+      new_termtype = "pccon";
     }
   }
 
@@ -909,7 +909,7 @@ inline const char* FTermDetection::secDA_Analysis_32 (const char[])
   // Terminal ID 32 - Tera Term
 
   terminal_type.tera_term = true;
-  const char* new_termtype = C_STR("teraterm");
+  const char* new_termtype = "teraterm";
   return new_termtype;
 }
 
@@ -927,7 +927,7 @@ inline const char* FTermDetection::secDA_Analysis_67 (const char[])
   // Terminal ID 67 - cygwin
 
   terminal_type.cygwin = true;
-  const char* new_termtype = C_STR("cygwin");
+  const char* new_termtype = "cygwin";
   std::fflush(stdout);
   return new_termtype;
 }
@@ -939,7 +939,7 @@ inline const char* FTermDetection::secDA_Analysis_77 (const char[])
 
   terminal_type.mintty = true;
   decscusr_support = true;
-  const char* new_termtype = C_STR("xterm-256color");
+  const char* new_termtype = "xterm-256color";
   std::fflush(stdout);
   return new_termtype;
 }
@@ -953,9 +953,9 @@ inline const char* FTermDetection::secDA_Analysis_82()
   terminal_type.rxvt = true;
 
   if ( std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
-    new_termtype = C_STR("rxvt-16color");
+    new_termtype = "rxvt-16color";
   else
-    new_termtype = C_STR("rxvt");
+    new_termtype = "rxvt";
 
   return new_termtype;
 }
@@ -993,9 +993,9 @@ inline const char* FTermDetection::secDA_Analysis_85()
   if ( std::strncmp(termtype, "rxvt-", 5) != 0 )
   {
     if ( color256 )
-      new_termtype = C_STR("rxvt-256color");
+      new_termtype = "rxvt-256color";
     else
-      new_termtype = C_STR("rxvt");
+      new_termtype = "rxvt";
   }
   else
     new_termtype = termtype;
@@ -1016,7 +1016,7 @@ inline const char* FTermDetection::secDA_Analysis_vte (const char current_termty
     terminal_type.gnome_terminal = true;
     // Each gnome-terminal should be able to use 256 colors
     color256 = true;
-    new_termtype = C_STR("gnome-256color");
+    new_termtype = "gnome-256color";
     gnome_terminal_id = secondary_da.terminal_id_version;
 
     // VTE 0.40.0 or higher and gnome-terminal 3.16 or higher

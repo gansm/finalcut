@@ -140,7 +140,7 @@ void FTermDetectionTest::ansiTest()
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   setenv ("TERM", "ansi", 1);
-  data.setTermType(C_STR("ansi"));
+  data.setTermType("ansi");
 
   pid_t pid = forkConEmu();
 
@@ -180,14 +180,14 @@ void FTermDetectionTest::ansiTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("ansi") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "ansi") ;
 
     // Test fallback to vt100 without TERM environment variable
     unsetenv("TERM");
     detect.setAnsiTerminal(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -208,7 +208,7 @@ void FTermDetectionTest::xtermTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("xterm"));
+  data.setTermType("xterm");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -269,7 +269,7 @@ void FTermDetectionTest::rxvtTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("rxvt-cygwin-native"));
+  data.setTermType("rxvt-cygwin-native");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -310,7 +310,7 @@ void FTermDetectionTest::rxvtTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("rxvt-cygwin-native") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "rxvt-cygwin-native") ;
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -331,7 +331,7 @@ void FTermDetectionTest::urxvtTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("rxvt-unicode-256color"));
+  data.setTermType("rxvt-unicode-256color");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -392,7 +392,7 @@ void FTermDetectionTest::mltermTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("mlterm"));
+  data.setTermType("mlterm");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -434,13 +434,13 @@ void FTermDetectionTest::mltermTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("mlterm-256color") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "mlterm-256color") ;
 
     setenv ("TERM", "mlterm", 1);
     unsetenv("COLORFGBG");
     detect.detect();
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("xterm-256color") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "xterm-256color") ;
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -461,7 +461,7 @@ void FTermDetectionTest::puttyTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("xterm"));
+  data.setTermType("xterm");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -523,7 +523,7 @@ void FTermDetectionTest::kdeKonsoleTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("xterm-256color"));
+  data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -584,7 +584,7 @@ void FTermDetectionTest::gnomeTerminalTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("xterm-256color"));
+  data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -646,7 +646,7 @@ void FTermDetectionTest::newerVteTerminalTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("xterm-256color"));
+  data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -708,7 +708,7 @@ void FTermDetectionTest::ktermTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("kterm"));
+  data.setTermType("kterm");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -756,7 +756,7 @@ void FTermDetectionTest::ktermTest()
     detect.setKtermTerminal(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -777,7 +777,7 @@ void FTermDetectionTest::teraTermTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("xterm"));
+  data.setTermType("xterm");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -839,7 +839,7 @@ void FTermDetectionTest::cygwinTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("cygwin"));
+  data.setTermType("cygwin");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -901,7 +901,7 @@ void FTermDetectionTest::minttyTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("xterm-256color"));
+  data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -963,7 +963,7 @@ void FTermDetectionTest::linuxTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("linux"));
+  data.setTermType("linux");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -1011,7 +1011,7 @@ void FTermDetectionTest::linuxTest()
     detect.setLinuxTerm(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isLinuxTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1032,7 +1032,7 @@ void FTermDetectionTest::freebsdTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("xterm"));
+  data.setTermType("xterm");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -1083,7 +1083,7 @@ void FTermDetectionTest::freebsdTest()
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isXTerminal() );
     CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1104,7 +1104,7 @@ void FTermDetectionTest::netbsdTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("wsvt25"));
+  data.setTermType("wsvt25");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -1153,7 +1153,7 @@ void FTermDetectionTest::netbsdTest()
     detect.setNetBSDTerm(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1174,7 +1174,7 @@ void FTermDetectionTest::openbsdTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("vt220"));
+  data.setTermType("vt220");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -1223,7 +1223,7 @@ void FTermDetectionTest::openbsdTest()
     detect.setOpenBSDTerm(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isOpenBSDTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1244,7 +1244,7 @@ void FTermDetectionTest::sunTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("sun-color"));
+  data.setTermType("sun-color");
 
   pid_t pid = forkConEmu();
 
@@ -1291,7 +1291,7 @@ void FTermDetectionTest::sunTest()
     detect.setSunTerminal(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1312,7 +1312,7 @@ void FTermDetectionTest::screenTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("screen"));
+  data.setTermType("screen");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -1354,12 +1354,12 @@ void FTermDetectionTest::screenTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("screen") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen") ;
 
     setenv ("XTERM_VERSION", "XTerm(312)", 1);
     detect.detect();
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("screen-256color") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen-256color") ;
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1380,7 +1380,7 @@ void FTermDetectionTest::tmuxTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType(C_STR("screen"));
+  data.setTermType("screen");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
@@ -1423,12 +1423,12 @@ void FTermDetectionTest::tmuxTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("screen") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen") ;
 
     setenv ("VTE_VERSION", "3801", 1);
     detect.detect();
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("screen-256color") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen-256color") ;
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1484,7 +1484,7 @@ void FTermDetectionTest::ttytypeTest()
 
   finalcut::FTermDetection detect;
   detect.setTerminalDetection(true);
-  detect.setTtyTypeFileName(C_STR("new-root-dir/etc/ttytype"));
+  detect.setTtyTypeFileName("new-root-dir/etc/ttytype");
 
   pid_t pid = forkConEmu();
 
@@ -1503,19 +1503,19 @@ void FTermDetectionTest::ttytypeTest()
     finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
 
     // Test /dev/tty3 with linux
-    data.setTermFileName(C_STR("/dev/tty3"));
+    data.setTermFileName("/dev/tty3");
     detect.detect();
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("linux") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "linux") ;
 
     // Test /dev/ttyp0 with vt100
-    data.setTermFileName(C_STR("/dev/ttyp0"));
+    data.setTermFileName("/dev/ttyp0");
     detect.detect();
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
 
     // Test non-existent /dev/tty8 with fallback to vt100
-    data.setTermFileName(C_STR("/dev/tty8"));
+    data.setTermFileName("/dev/tty8");
     detect.detect();
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
 
     printConEmuDebug();
     closeConEmuStdStreams();

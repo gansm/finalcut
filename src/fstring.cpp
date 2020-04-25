@@ -395,7 +395,7 @@ const char* FString::c_str() const
   if ( length > 0 )
     return wc_to_c_str (string);
   else if ( string )
-    return const_cast<char*>("");
+    return const_cast<const char*>("");
   else
     return nullptr;
 }
@@ -1244,7 +1244,7 @@ void FString::_assign (const wchar_t s[])
   if ( string && std::wcscmp(string, s) == 0 )
     return;  // string == s
 
-  uInt new_length = uInt(std::wcslen(s));
+  std::size_t new_length{std::wcslen(s)};
 
   if ( ! string || new_length > capacity() )
   {

@@ -49,9 +49,9 @@ AC_CHECK_FUNCS( \
 		vsnprintf )
 
 # Checks for 'tgetent'
-AC_SEARCH_LIBS([tgetent], [termcap tinfo curses ncurses])
+AC_SEARCH_LIBS([tgetent], [terminfo mytinfo termlib termcap tinfo ncurses curses])
 # Checks for 'tparm'
-AC_SEARCH_LIBS([tparm], [termcap tinfo curses ncurses])
+AC_SEARCH_LIBS([tparm], [terminfo mytinfo termlib termcap tinfo ncurses curses])
 
 # Checks for libtool
 AC_ENABLE_SHARED

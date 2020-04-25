@@ -353,7 +353,7 @@ class FVTerm
                                      , FTermArea* );
     static void           removeArea (FTermArea*&);
     static void           restoreVTerm (const FRect&);
-    bool                  updateVTermCursor (FTermArea*);
+    bool                  updateVTermCursor (const FTermArea*);
     static void           setAreaCursor ( const FPoint&
                                         , bool, FTermArea* );
     static void           getArea (const FPoint&, const FTermArea*);
@@ -411,7 +411,7 @@ class FVTerm
     static void           updateInheritBackground ( const FTermArea*
                                                   , const FPoint&
                                                   , const FPoint& );
-    static void           updateCharacter ( FTermArea*
+    static void           updateCharacter ( const FTermArea*
                                           , const FPoint&
                                           , const FPoint& );
     static bool           updateVTermCharacter ( FTermArea*
@@ -433,7 +433,7 @@ class FVTerm
     void                  finish();
     static void           putAreaLine (const FChar*, FChar*, int);
     static void           putAreaCharacter ( const FPoint&, FVTerm*
-                                           , FChar*, FChar* );
+                                           , const FChar*, FChar* );
     static void           getAreaCharacter ( const FPoint&, const FTermArea*
                                            , FChar*& );
     bool                  clearTerm (int = ' ');
@@ -456,7 +456,7 @@ class FVTerm
     bool                  isFullWidthPaddingChar (const FChar* const&);
     static void           cursorWrap();
     bool                  printWrap (FTermArea*);
-    void                  printPaddingCharacter (FTermArea*, FChar&);
+    void                  printPaddingCharacter (FTermArea*, const FChar&);
     void                  updateTerminalLine (uInt);
     bool                  updateTerminalCursor();
     bool                  isInsideTerminal (const FPoint&);

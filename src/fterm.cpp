@@ -836,7 +836,7 @@ const char* FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
   if ( data->hasCursorOptimisation() )
     return opti_move->moveCursor (xold, yold, xnew, ynew);
   else
-    return tgoto(TCAP(fc::t_cursor_address), xnew, ynew);
+    return tgoto(C_STR(TCAP(fc::t_cursor_address)), xnew, ynew);
 }
 
 //----------------------------------------------------------------------
@@ -987,9 +987,9 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
     const int bb = (b * 1001) / 256;
 
     if ( Ic )
-      color_str = tparm(Ic, index, rr, gg, bb, 0, 0, 0, 0, 0);
+      color_str = tparm(C_STR(Ic), index, rr, gg, bb, 0, 0, 0, 0, 0);
     else if ( Ip )
-      color_str = tparm(Ip, index, 0, 0, 0, rr, gg, bb, 0, 0);
+      color_str = tparm(C_STR(Ip), index, 0, 0, 0, rr, gg, bb, 0, 0);
 
     if ( color_str )
     {
@@ -1099,7 +1099,7 @@ void FTerm::setEncoding (fc::encoding enc)
   {
     if ( enc == fc::VT100 || enc == fc::PC )
     {
-      char* empty{nullptr};
+      const char* empty{nullptr};
       opti_move->set_tabular (empty);
     }
     else
@@ -1433,14 +1433,12 @@ void FTerm::init_pc_charset()
       if ( data->hasUTF8Console() )
       {
         // Select iso8859-1 + null mapping
-        TCAP(fc::t_enter_pc_charset_mode) = \
-            C_STR(ESC "%@" ESC "(U");
+        TCAP(fc::t_enter_pc_charset_mode) = ESC "%@" ESC "(U";
       }
       else
       {
         // Select null mapping
-        TCAP(fc::t_enter_pc_charset_mode) = \
-            C_STR(ESC "(U");
+        TCAP(fc::t_enter_pc_charset_mode) = ESC "(U";
       }
 
       opti_attr->set_enter_pc_charset_mode \
@@ -1454,14 +1452,12 @@ void FTerm::init_pc_charset()
       if ( data->hasUTF8Console() )
       {
         // Select ascii mapping + utf8
-        TCAP(fc::t_exit_pc_charset_mode) = \
-            C_STR(ESC "(B" ESC "%G");
+        TCAP(fc::t_exit_pc_charset_mode) = ESC "(B" ESC "%G";
       }
       else
       {
         // Select ascii mapping
-        TCAP(fc::t_enter_pc_charset_mode) = \
-            C_STR(ESC "(B");
+        TCAP(fc::t_enter_pc_charset_mode) = ESC "(B";
       }
 
       opti_attr->set_exit_pc_charset_mode \
@@ -1836,7 +1832,7 @@ void FTerm::init_tab_quirks()
 
   if ( enc == fc::VT100 || enc == fc::PC )
   {
-    char* empty{nullptr};
+    const char* empty{nullptr};
     opti_move->set_tabular (empty);
   }
 }

@@ -877,7 +877,7 @@ void FMouseSGR::setMoveState (const FPoint& mouse_position, int btn)
 }
 
 //----------------------------------------------------------------------
-void FMouseSGR::setPressedButtonState (const int btn, struct timeval* time)
+void FMouseSGR::setPressedButtonState (const int btn, const struct timeval* time)
 {
   // Gets the extended x11 mouse mode (SGR) status for pressed buttons
 

@@ -956,7 +956,7 @@ bool FOptiAttr::setTermAttributes ( FChar*& term
 {
   if ( term && F_set_attributes.cap )
   {
-    const char* sgr = tparm ( F_set_attributes.cap
+    const char* sgr = tparm ( C_STR(F_set_attributes.cap)
                             , p1 && ! fake_reverse
                             , p2
                             , p3 && ! fake_reverse
@@ -1462,9 +1462,9 @@ inline void FOptiAttr::change_to_default_color ( FChar*& term
       const auto& op = F_orig_pair.cap;
 
       if ( op && std::strncmp (op, CSI "39;49;25m", 11) == 0 )
-        sgr_49 = C_STR(CSI "49;25m");
+        sgr_49 = CSI "49;25m";
       else
-        sgr_49 = C_STR(CSI "49m");
+        sgr_49 = CSI "49m";
 
       append_sequence (sgr_49);
       term->bg_color = fc::Default;
@@ -1500,13 +1500,13 @@ inline void FOptiAttr::change_current_color ( const FChar* const& term
 
     if ( term->fg_color != fg || frev )
     {
-      color_str = tparm(AF, ansi_fg, 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = tparm(C_STR(AF), ansi_fg, 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
     }
 
     if ( term->bg_color != bg || frev )
     {
-      color_str = tparm(AB, ansi_bg, 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = tparm(C_STR(AB), ansi_bg, 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
     }
   }
@@ -1514,13 +1514,13 @@ inline void FOptiAttr::change_current_color ( const FChar* const& term
   {
     if ( term->fg_color != fg || frev )
     {
-      color_str = tparm(Sf, fg, 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = tparm(C_STR(Sf), fg, 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
     }
 
     if ( term->bg_color != bg || frev )
     {
-      color_str = tparm(Sb, bg, 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = tparm(C_STR(Sb), bg, 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
     }
   }
@@ -1528,7 +1528,7 @@ inline void FOptiAttr::change_current_color ( const FChar* const& term
   {
     fg = vga2ansi(fg);
     bg = vga2ansi(bg);
-    color_str = tparm(sp, fg, bg, 0, 0, 0, 0, 0, 0, 0);
+    color_str = tparm(C_STR(sp), fg, bg, 0, 0, 0, 0, 0, 0, 0);
     append_sequence (color_str);
   }
 }

@@ -93,8 +93,8 @@ void FTermDataTest::defaultDataTest()
   CPPUNIT_ASSERT ( data.getTermGeometry() == finalcut::FRect() );
   CPPUNIT_ASSERT ( data.getTTYFileDescriptor() ==  -1 );
   CPPUNIT_ASSERT ( data.getBaudrate() == 0 );
-  CPPUNIT_ASSERT_CSTRING ( data.getTermType(), C_STR("") );
-  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), C_STR("") );
+  CPPUNIT_ASSERT_CSTRING ( data.getTermType(), "") ;
+  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), "") ;
   CPPUNIT_ASSERT ( data.getXtermFont() == finalcut::FString() );
   CPPUNIT_ASSERT ( data.getXtermTitle() == finalcut::FString() );
   CPPUNIT_ASSERT ( data.getExitMessage() == finalcut::FString() );
@@ -177,13 +177,13 @@ void FTermDataTest::dataTest()
   CPPUNIT_ASSERT ( data.getBaudrate() != 9600 );
   CPPUNIT_ASSERT ( data.getBaudrate() == 38400 );
 
-  CPPUNIT_ASSERT_CSTRING ( data.getTermType(), C_STR("") );
+  CPPUNIT_ASSERT_CSTRING ( data.getTermType(), "") ;
   data.setTermType("linux");
-  CPPUNIT_ASSERT_CSTRING ( data.getTermType(), C_STR("linux") );
+  CPPUNIT_ASSERT_CSTRING ( data.getTermType(), "linux") ;
 
-  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), C_STR("") );
+  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), "") ;
   data.setTermFileName("/dev/pts/2");
-  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), C_STR("/dev/pts/2") );
+  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), "/dev/pts/2") ;
 
   CPPUNIT_ASSERT ( data.getXtermFont() == finalcut::FString() );
   data.setXtermFont("terminus-20");
