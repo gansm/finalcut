@@ -1071,7 +1071,7 @@ void FVTerm::putArea (const FPoint& pos, const FTermArea* area)
   // Copies the given area block to the virtual terminal position
 
   FChar* tc{};  // terminal character
-  FChar* ac{};  // area character
+  const FChar* ac{};  // area character
 
   if ( ! area || ! area->visible )
     return;
@@ -1610,7 +1610,7 @@ void FVTerm::updateCharacter ( const FTermArea* area
 }
 
 //----------------------------------------------------------------------
-bool FVTerm::updateVTermCharacter ( FTermArea* area
+bool FVTerm::updateVTermCharacter ( const FTermArea* area
                                   , const FPoint& area_pos
                                   , const FPoint& terminal_pos )
 {

@@ -414,7 +414,7 @@ class FVTerm
     static void           updateCharacter ( const FTermArea*
                                           , const FPoint&
                                           , const FPoint& );
-    static bool           updateVTermCharacter ( FTermArea*
+    static bool           updateVTermCharacter ( const FTermArea*
                                                , const FPoint&
                                                , const FPoint& );
     void                  updateVTerm();

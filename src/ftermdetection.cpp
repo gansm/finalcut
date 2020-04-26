@@ -916,7 +916,7 @@ inline const char* FTermDetection::secDA_Analysis_32 (const char[])
 //----------------------------------------------------------------------
 inline const char* FTermDetection::secDA_Analysis_65 (const char current_termtype[])
 {
-  // Terminal ID 65 - DEC VT525
+  // Terminal ID 65 - DEC VT525 and VTE >= 0.53.0
 
   return secDA_Analysis_1 (current_termtype);
 }

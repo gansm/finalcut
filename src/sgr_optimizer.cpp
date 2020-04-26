@@ -71,7 +71,7 @@ void SGRoptimizer::findParameter()
   // Find SGR parameter
   for (std::size_t i = 0; i < len; i++)
   {
-    if ( csi == true )
+    if ( csi )
     {
       if ( start == NOT_SET )
         start = i;

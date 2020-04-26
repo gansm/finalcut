@@ -55,8 +55,8 @@ sInt64 StringToNumber (const finalcut::FString& str)
 }
 
 //----------------------------------------------------------------------
-bool isLessThanInteger ( const finalcut::FString& lhs
-                       , const finalcut::FString& rhs )
+inline bool isLessThanInteger ( const finalcut::FString& lhs
+                              , const finalcut::FString& rhs )
 {
   const sInt64 l_number = StringToNumber(lhs);
   const sInt64 r_number = StringToNumber(rhs);
@@ -64,8 +64,8 @@ bool isLessThanInteger ( const finalcut::FString& lhs
 }
 
 //----------------------------------------------------------------------
-bool isLessThanDouble ( const finalcut::FString& lhs
-                      , const finalcut::FString& rhs )
+inline bool isLessThanDouble ( const finalcut::FString& lhs
+                             , const finalcut::FString& rhs )
 {
   std::setlocale(LC_NUMERIC, "C");
   const double l_number = lhs.toDouble();
@@ -74,8 +74,8 @@ bool isLessThanDouble ( const finalcut::FString& lhs
 }
 
 //----------------------------------------------------------------------
-bool isGreaterThanInteger ( const finalcut::FString& lhs
-                          , const finalcut::FString& rhs )
+inline bool isGreaterThanInteger ( const finalcut::FString& lhs
+                                 , const finalcut::FString& rhs )
 {
   const sInt64 l_number = StringToNumber(lhs);
   const sInt64 r_number = StringToNumber(rhs);
@@ -83,7 +83,7 @@ bool isGreaterThanInteger ( const finalcut::FString& lhs
 }
 
 //----------------------------------------------------------------------
-bool isGreaterThanDouble ( const finalcut::FString& lhs
+inline bool isGreaterThanDouble ( const finalcut::FString& lhs
                          , const finalcut::FString& rhs )
 {
   std::setlocale(LC_NUMERIC, "C");

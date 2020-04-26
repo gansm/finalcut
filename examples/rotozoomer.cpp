@@ -286,8 +286,7 @@ void RotoZoomer::adjustSize()
 //                               main part
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
-{
-  constexpr int iterations = 314;
+{  
   bool benchmark{false};
   finalcut::FString report{};
   int quit_code{0};
@@ -310,6 +309,7 @@ int main (int argc, char* argv[])
     app.setNonBlockingRead();
 
     // Create a simple dialog box
+    constexpr int iterations = 314;
     RotoZoomer roto(&app, benchmark, iterations);
 
     if ( benchmark )

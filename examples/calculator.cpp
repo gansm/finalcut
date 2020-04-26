@@ -464,7 +464,7 @@ void Calc::drawDispay()
 }
 
 //----------------------------------------------------------------------
-void Calc::sendOnButtonAccelerator()
+inline void Calc::sendOnButtonAccelerator()
 {
   finalcut::FAccelEvent a_ev(fc::Accelerator_Event, getFocusWidget());
   calculator_buttons[On]->onAccel(&a_ev);
