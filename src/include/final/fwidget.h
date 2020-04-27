@@ -220,6 +220,7 @@ class FWidget : public FVTerm, public FObject
     int                     getRightPadding() const;
     std::size_t             getClientWidth() const;
     std::size_t             getClientHeight() const;
+    const FSize             getClientSize() const;
     std::size_t             getMaxWidth() const;
     std::size_t             getMaxHeight() const;
     const FSize&            getShadow() const;
@@ -723,6 +724,10 @@ inline std::size_t FWidget::getClientWidth() const
 //----------------------------------------------------------------------
 inline std::size_t FWidget::getClientHeight() const
 { return wclient_offset.getHeight(); }
+
+//----------------------------------------------------------------------
+inline const FSize FWidget::getClientSize() const
+{ return wclient_offset.getSize(); }
 
 //----------------------------------------------------------------------
 inline std::size_t FWidget::getMaxWidth() const

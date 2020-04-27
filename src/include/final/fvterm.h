@@ -358,7 +358,7 @@ class FVTerm
                                         , bool, FTermArea* );
     static void           getArea (const FPoint&, const FTermArea*);
     static void           getArea (const FRect&, const FTermArea*);
-    void                  putArea (FTermArea*);
+    void                  putArea (const FTermArea*);
     static void           putArea (const FPoint&, const FTermArea*);
     void                  scrollAreaForward (FTermArea*);
     void                  scrollAreaReverse (FTermArea*);

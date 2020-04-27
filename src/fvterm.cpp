@@ -981,7 +981,7 @@ void FVTerm::getArea (const FRect& box, const FTermArea* area)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::putArea (FTermArea* area)
+void FVTerm::putArea (const FTermArea* area)
 {
   // Add area changes to the virtual terminal
 

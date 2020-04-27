@@ -940,6 +940,7 @@ absolute geometry values as a `FRect` object, you can call the method
 
 ```cpp
 const FSize    getSize() const;
+const FSize    getClientSize() const;
 const FRect&   getGeometry() const;
 const FRect&   getTermGeometry();
 const FSize&   getShadow() const;
