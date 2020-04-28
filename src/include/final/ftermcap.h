@@ -118,7 +118,6 @@ class FTermcap final
     static void      termcapNumerics();
     static void      termcapStrings (char*&);
     static void      termcapKeys (char*&);
-    static void      termcapKeysVt100();
 
     // Data member
     static FTermData*      fterm_data;

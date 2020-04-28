@@ -1,5 +1,6 @@
 2020-04-28  Markus Gans  <guru.mail@muenster.de>
 	* Adding the missing method getClientSize()
+	* Static code for the special built-in key sequences
 
 2020-04-15  Markus Gans  <guru.mail@muenster.de>
 	* Better support of general arrow keys

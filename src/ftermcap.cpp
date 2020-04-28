@@ -228,100 +228,11 @@ void FTermcap::termcapStrings (char*& buffer)
 //----------------------------------------------------------------------
 void FTermcap::termcapKeys (char*& buffer)
 {
-  // Read termcap key strings
+  // Get termcap keys
 
+  // Read termcap key sequences
   for (std::size_t i{0}; fc::fkey[i].tname[0] != 0; i++)
-  {
     fc::fkey[i].string = tgetstr(C_STR(fc::fkey[i].tname), &buffer);
-
-    // Fallback for rxvt with TERM=xterm
-    if ( std::strncmp(fc::fkey[i].tname, "khx", 3) == 0 )
-      fc::fkey[i].string = CSI "7~";  // Home key
-
-    if ( std::strncmp(fc::fkey[i].tname, "@7x", 3) == 0 )
-      fc::fkey[i].string = CSI "8~";  // End key
-
-    if ( std::strncmp(fc::fkey[i].tname, "k1x", 3) == 0 )
-      fc::fkey[i].string = CSI "11~";  // F1
-
-    if ( std::strncmp(fc::fkey[i].tname, "k2x", 3) == 0 )
-      fc::fkey[i].string = CSI "12~";  // F2
-
-    if ( std::strncmp(fc::fkey[i].tname, "k3x", 3) == 0 )
-      fc::fkey[i].string = CSI "13~";  // F3
-
-    if ( std::strncmp(fc::fkey[i].tname, "k4x", 3) == 0 )
-      fc::fkey[i].string = CSI "14~";  // F4
-
-    // Fallback for TERM=ansi
-    if ( std::strncmp(fc::fkey[i].tname, "@7X", 3) == 0 )
-      fc::fkey[i].string = CSI "K";  // End key
-
-    // Keypad keys
-    if ( std::strncmp(fc::fkey[i].tname, "@8x", 3) == 0 )
-      fc::fkey[i].string = ESC "OM";  // Enter key
-
-    if ( std::strncmp(fc::fkey[i].tname, "KP1", 3) == 0 )
-      fc::fkey[i].string = ESC "Oo";  // Keypad slash
-
-    if ( std::strncmp(fc::fkey[i].tname, "KP2", 3) == 0 )
-      fc::fkey[i].string = ESC "Oj";  // Keypad asterisk
-
-    if ( std::strncmp(fc::fkey[i].tname, "KP3", 3) == 0 )
-      fc::fkey[i].string = ESC "Om";  // Keypad minus sign
-
-    if ( std::strncmp(fc::fkey[i].tname, "KP4", 3) == 0 )
-      fc::fkey[i].string = ESC "Ok";  // Keypad plus sign
-  }
-
-  // VT100 key codes for the arrow and function keys
-  termcapKeysVt100();
-}
-
-//----------------------------------------------------------------------
-void FTermcap::termcapKeysVt100()
-{
-  // Some terminals (e.g. PuTTY) send vt100 key codes for
-  // the arrow and function keys.
-
-  for (std::size_t i{0}; fc::fkey[i].tname[0] != 0; i++)
-  {
-    if ( std::strncmp(fc::fkey[i].tname, "kux", 3) == 0 )
-      fc::fkey[i].string = CSI "A";  // Key up (standard mode)
-
-    if ( std::strncmp(fc::fkey[i].tname, "kuX", 3) == 0 )
-      fc::fkey[i].string = ESC "OA";  // Key up (application mode)
-
-    if ( std::strncmp(fc::fkey[i].tname, "kdx", 3) == 0 )
-      fc::fkey[i].string = CSI "B";  // Key down (standard mode)
-
-    if ( std::strncmp(fc::fkey[i].tname, "kdX", 3) == 0 )
-      fc::fkey[i].string = ESC "OB";  // Key down (application mode)
-
-    if ( std::strncmp(fc::fkey[i].tname, "krx", 3) == 0 )
-      fc::fkey[i].string = CSI "C";  // Key right (standard mode)
-
-    if ( std::strncmp(fc::fkey[i].tname, "krX", 3) == 0 )
-      fc::fkey[i].string = ESC "OC";  // Key right (application mode)
-
-    if ( std::strncmp(fc::fkey[i].tname, "klx", 3) == 0 )
-      fc::fkey[i].string = CSI "D";  // Key left (standard mode)
-
-    if ( std::strncmp(fc::fkey[i].tname, "klX", 3) == 0 )
-      fc::fkey[i].string = ESC "OD";  // Key left (application mode)
-
-    if ( std::strncmp(fc::fkey[i].tname, "k1X", 3) == 0 )
-      fc::fkey[i].string = ESC "OP";  // PF1 (application mode)
-
-    if ( std::strncmp(fc::fkey[i].tname, "k2X", 3) == 0 )
-      fc::fkey[i].string = ESC "OQ";  // PF2 (application mode)
-
-    if ( std::strncmp(fc::fkey[i].tname, "k3X", 3) == 0 )
-      fc::fkey[i].string = ESC "OR";  // PF3 (application mode)
-
-    if ( std::strncmp(fc::fkey[i].tname, "k4X", 3) == 0 )
-      fc::fkey[i].string = ESC "OS";  // PF4 (application mode)
-  }
 }
 
 
