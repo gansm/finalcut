@@ -231,7 +231,9 @@ void FTermcap::termcapKeys (char*& buffer)
   // Get termcap keys
 
   // Read termcap key sequences
-  for (std::size_t i{0}; fc::fkey[i].tname[0] != 0; i++)
+  for ( std::size_t i{0};
+        fc::fkey[i].string == nullptr && fc::fkey[i].tname[0] != 0;
+        i++ )
     fc::fkey[i].string = tgetstr(C_STR(fc::fkey[i].tname), &buffer);
 }
 

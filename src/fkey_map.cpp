@@ -206,11 +206,11 @@ FKeyMap fkey[] =
   // Fallback for TERM=ansi
   { fc::Fkey_end       , CSI "K",   "@7X"},  // end key
   // Keypad keys
-  { fc::Fkey_enter     , ESC "OM",   "@8x"},  // enter key
-  { fc::Fkey_slash     , ESC "Oo",   "KP1"},  // keypad slash
-  { fc::Fkey_asterisk  , ESC "Oj",   "KP2"},  // keypad asterisk
-  { fc::Fkey_minus_sign, ESC "Om",   "KP3"},  // keypad minus sign
-  { fc::Fkey_plus_sign , ESC "Ok",   "KP4"},  // keypad plus sign
+  { fc::Fkey_enter     , ESC "OM",  "@8x"},  // enter key
+  { fc::Fkey_slash     , ESC "Oo",  "KP1"},  // keypad slash
+  { fc::Fkey_asterisk  , ESC "Oj",  "KP2"},  // keypad asterisk
+  { fc::Fkey_minus_sign, ESC "Om",  "KP3"},  // keypad minus sign
+  { fc::Fkey_plus_sign , ESC "Ok",  "KP4"},  // keypad plus sign
   { 0                  , nullptr,   "\0" }
 };
 
