@@ -297,7 +297,7 @@ void string()
 int main (int argc, char* argv[])
 {
   const bool disable_alt_screen{true};
-  finalcut::FApplication TermApp (argc, argv, disable_alt_screen);
+  finalcut::FApplication TermApp {argc, argv, disable_alt_screen};
 
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";
   std::cout << "Terminal: " << TermApp.getTermType() << "\r\n";

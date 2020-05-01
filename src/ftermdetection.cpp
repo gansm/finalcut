@@ -667,7 +667,7 @@ const char* FTermDetection::parseSecDA (const char current_termtype[])
     return current_termtype;
 
   // remove the first 3 bytes ("\033[>")
-  FString temp(sec_da->right(sec_da->getLength() - 3));
+  FString temp{sec_da->right(sec_da->getLength() - 3)};
   // remove the last byte ("c")
   temp.remove(temp.getLength() - 1, 1);
   // split into components

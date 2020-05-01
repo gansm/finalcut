@@ -85,7 +85,7 @@ void FToggleButton::setSize (const FSize& s, bool adjust)
 {
   // Set the toggle button size
 
-  FSize size(s);
+  FSize size{s};
   correctSize(size);
   const FRect geometry(getPos(), size);
 
@@ -101,7 +101,7 @@ void FToggleButton::setGeometry ( const FPoint& pos, const FSize& s
 {
   // Set the toggle button geometry
 
-  FSize size(s);
+  FSize size{s};
   correctSize(size);
   const FRect geometry(pos, size);
 
@@ -402,7 +402,7 @@ void FToggleButton::draw()
 
   // set the cursor to the button
   if ( isRadioButton() || isCheckboxButton() )
-    setCursorPos (FPoint(2, 1));
+    setCursorPos ({2, 1});
 }
 
 //----------------------------------------------------------------------
@@ -414,7 +414,7 @@ void FToggleButton::drawLabel()
   const FString txt(text);
   FString label_text{};
   auto hotkeypos = finalcut::getHotkeyPos(txt, label_text);
-  print() << FPoint(1 + int(label_offset_pos), 1);
+  print() << FPoint{1 + int(label_offset_pos), 1};
   drawText (std::move(label_text), hotkeypos);
 }
 
@@ -496,7 +496,7 @@ void FToggleButton::setGroup (FButtonGroup* btngroup)
 //----------------------------------------------------------------------
 void FToggleButton::init()
 {
-  setGeometry (FPoint(1, 1), FSize(4, 1), false);  // initialize geometry values
+  setGeometry (FPoint{1, 1}, FSize{4, 1}, false);  // initialize geometry values
   const auto& wc = getFWidgetColors();
 
   if ( isEnabled() )

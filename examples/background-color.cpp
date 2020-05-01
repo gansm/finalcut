@@ -98,10 +98,10 @@ Background::Background (finalcut::FWidget* parent)
   //   Avoids calling a virtual function from the constructor
   //   (CERT, OOP50-CPP)
   FDialog::setText ("Background color palette");
-  FDialog::setGeometry (FPoint(25, 5), FSize(32, 12));
+  FDialog::setGeometry (FPoint{25, 5}, FSize{32, 12});
 
   // Combobox
-  color_choice.setGeometry (FPoint(2, 2), FSize(18, 1));
+  color_choice.setGeometry (FPoint{2, 2}, FSize{18, 1});
   color_choice.setLabelOrientation (finalcut::FLineEdit::label_above);
   color_choice.setLabelText ("Color choice");
   color_choice.unsetEditable();
@@ -114,19 +114,19 @@ Background::Background (finalcut::FWidget* parent)
   }
 
   // Spin boxes
-  red.setGeometry (FPoint(2, 5), FSize(7, 1));
+  red.setGeometry (FPoint{2, 5}, FSize{7, 1});
   red.setLabelOrientation (finalcut::FLineEdit::label_above);
   red.setLabelText ("Red");
   red.setRange (0, 255);
   red.setValue (0x80);
 
-  green.setGeometry (FPoint(12, 5), FSize(7, 1));
+  green.setGeometry (FPoint{12, 5}, FSize{7, 1});
   green.setLabelOrientation (finalcut::FLineEdit::label_above);
   green.setLabelText ("Green");
   green.setRange (0, 255);
   green.setValue (0xa4);
 
-  blue.setGeometry (FPoint(22, 5), FSize(7, 1));
+  blue.setGeometry (FPoint{22, 5}, FSize{7, 1});
   blue.setLabelOrientation (finalcut::FLineEdit::label_above);
   blue.setLabelText ("Blue");
   blue.setRange (0, 255);
@@ -142,7 +142,7 @@ Background::Background (finalcut::FWidget* parent)
   }
 
   // Quit button
-  quit.setGeometry(FPoint(19, 8), FSize(10, 1));
+  quit.setGeometry(FPoint{19, 8}, FSize{10, 1});
 
   // Add some function callbacks
   quit.addCallback

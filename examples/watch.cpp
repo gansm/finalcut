@@ -80,20 +80,20 @@ Watch::Watch (FWidget* parent)
   //   (CERT, OOP50-CPP)
   FDialog::setText ("Watch");
   const int pw = int(getParentWidget()->getWidth());
-  FDialog::setGeometry (FPoint(1 + (pw - 22) / 2, 3), FSize(22, 13));
+  FDialog::setGeometry (FPoint{1 + (pw - 22) / 2, 3}, FSize{22, 13});
 
   // Labels
-  time_label.setGeometry(FPoint(5, 2), FSize(5, 1));
+  time_label.setGeometry(FPoint{5, 2}, FSize{5, 1});
   time_label.setEmphasis();
-  time_str.setGeometry(FPoint(10, 2), FSize(8, 1));
+  time_str.setGeometry(FPoint{10, 2}, FSize{8, 1});
 
   // Checkbox buttons
-  clock_sw.setGeometry(FPoint(4, 4), FSize(9, 1));
-  seconds_sw.setGeometry(FPoint(2, 6), FSize(11, 1));
+  clock_sw.setGeometry(FPoint{4, 4}, FSize{9, 1});
+  seconds_sw.setGeometry(FPoint{2, 6}, FSize{11, 1});
   sec = seconds_sw.setChecked();
 
   // Quit button
-  quit_btn.setGeometry(FPoint(6, 9), FSize(9, 1));
+  quit_btn.setGeometry(FPoint{6, 9}, FSize{9, 1});
 
   // Connect switch signal "toggled" with a callback member function
   clock_sw.addCallback
@@ -202,10 +202,10 @@ void Watch::adjustSize()
 int main (int argc, char* argv[])
 {
   // Create the application object
-  finalcut::FApplication app(argc, argv);
+  finalcut::FApplication app{argc, argv};
 
   // Create a simple dialog box
-  Watch w(&app);
+  Watch w{&app};
 
   // Set dialog w as main widget
   finalcut::FWidget::setMainWidget(&w);

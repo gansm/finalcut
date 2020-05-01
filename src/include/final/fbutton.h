@@ -116,7 +116,7 @@ class FButton : public FWidget
     bool                isFlat() const;
     bool                isDown() const;
     bool                hasShadow() const;
-    bool                hasClickAnimation();
+    bool                hasClickAnimation() const;
 
     // Methods
     void                hide() override;
@@ -257,7 +257,7 @@ inline bool FButton::hasShadow() const
 { return getFlags().shadow; }
 
 //----------------------------------------------------------------------
-inline bool FButton::hasClickAnimation()
+inline bool FButton::hasClickAnimation() const
 { return click_animation; }
 
 }  // namespace finalcut

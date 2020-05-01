@@ -140,18 +140,18 @@ class FMouseEvent : public FEvent  // mouse event
     FMouseEvent (fc::events, const FPoint&, int);
     ~FMouseEvent();
 
-    const    FPoint& getPos() const;
-    const    FPoint& getTermPos() const;
-    int      getX() const;
-    int      getY() const;
-    int      getTermX() const;
-    int      getTermY() const;
-    int      getButton() const;
+    const FPoint& getPos() const;
+    const FPoint& getTermPos() const;
+    int           getX() const;
+    int           getY() const;
+    int           getTermX() const;
+    int           getTermY() const;
+    int           getButton() const;
 
   private:
-    FPoint   p{};
-    FPoint   tp{};
-    int      b{};
+    FPoint  p{};
+    FPoint  tp{};
+    int     b{};
 };
 
 
@@ -167,18 +167,18 @@ class FWheelEvent : public FEvent  // wheel event
     FWheelEvent (fc::events, const FPoint&, const FPoint&, int);
     ~FWheelEvent();
 
-    const    FPoint& getPos() const;
-    const    FPoint& getTermPos() const;
-    int      getX() const;
-    int      getY() const;
-    int      getTermX() const;
-    int      getTermY() const;
-    int      getWheel() const;
+    const FPoint& getPos() const;
+    const FPoint& getTermPos() const;
+    int           getX() const;
+    int           getY() const;
+    int           getTermX() const;
+    int           getTermY() const;
+    int           getWheel() const;
 
   private:
-    FPoint   p;
-    FPoint   tp;
-    int      w;
+    FPoint  p;
+    FPoint  tp;
+    int     w;
 };
 
 
@@ -193,16 +193,16 @@ class FFocusEvent : public FEvent  // focus event
     explicit FFocusEvent (fc::events);
     ~FFocusEvent();
 
-    bool     gotFocus()  const;
-    bool     lostFocus() const;
+    bool           gotFocus()  const;
+    bool           lostFocus() const;
     fc::FocusTypes getFocusType() const;
-    void     setFocusType(fc::FocusTypes);
-    bool     isAccepted() const;
-    void     accept();
-    void     ignore();
+    void           setFocusType(fc::FocusTypes);
+    bool           isAccepted() const;
+    void           accept();
+    void           ignore();
 
   private:
-    bool     accpt{true};
+    bool           accpt{true};
     fc::FocusTypes focus_type{fc::FocusDefiniteWidget};
 };
 

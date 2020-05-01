@@ -453,7 +453,7 @@ void FMenu::init(FWidget* parent)
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1);
-  setGeometry (FPoint(1, 1), FSize(10, 2), false);  // initialize geometry values
+  setGeometry (FPoint{1, 1}, FSize{10, 2}, false);  // initialize geometry values
   setTransparentShadow();
   setMenuWidget();
   hide();
@@ -531,8 +531,8 @@ void FMenu::calculateDimensions()
   const int adjust_X = adjustX(getX());
 
   // set widget geometry
-  setGeometry ( FPoint(adjust_X, getY())
-              , FSize(max_item_width + 2, getCount() + 2) );
+  setGeometry ( FPoint{adjust_X, getY()}
+              , FSize{max_item_width + 2, getCount() + 2} );
 
   // set geometry of all items
   const int item_X = 1;
@@ -540,14 +540,14 @@ void FMenu::calculateDimensions()
 
   for (auto&& item : getItemList())
   {
-    item->setGeometry (FPoint(item_X, item_Y), FSize(max_item_width, 1));
+    item->setGeometry (FPoint{item_X, item_Y}, FSize{max_item_width, 1});
 
     if ( item->hasMenu() )
     {
       const int menu_X = getTermX() + int(max_item_width) + 1;
       const int menu_Y = item->getTermY() - 2;
       // set sub-menu position
-      item->getMenu()->setPos (FPoint(menu_X, menu_Y), false);
+      item->getMenu()->setPos (FPoint{menu_X, menu_Y}, false);
     }
 
     item_Y++;
@@ -567,7 +567,7 @@ void FMenu::adjustItems()
       const int menu_Y = item->getTermY() - 2;
 
       // set sub-menu position
-      menu->setPos (FPoint(menu_X, menu_Y));
+      menu->setPos (FPoint{menu_X, menu_Y});
 
       // call sub-menu adjustItems()
       if ( menu->getCount() > 0 )
@@ -682,7 +682,7 @@ bool FMenu::mouseDownOverList (const FPoint& mouse_pos)
 {
   bool focus_changed{false};
   FPoint pos{mouse_pos};
-  pos -= FPoint(getRightPadding(), getTopPadding());
+  pos -= FPoint{getRightPadding(), getTopPadding()};
 
   for (auto&& item : getItemList())
   {
@@ -768,7 +768,7 @@ void FMenu::mouseDownSelection (FMenuItem* m_item, bool& focus_changed)
 bool FMenu::mouseUpOverList (const FPoint& mouse_pos)
 {
   FPoint pos{mouse_pos};
-  pos -= FPoint(getRightPadding(), getTopPadding());
+  pos -= FPoint{getRightPadding(), getTopPadding()};
 
   for (auto&& item : getItemList())
   {
@@ -824,7 +824,7 @@ bool FMenu::mouseUpOverList (const FPoint& mouse_pos)
 void FMenu::mouseMoveOverList (const FPoint& mouse_pos, mouseStates& ms)
 {
   FPoint pos{mouse_pos};
-  pos -= FPoint(getRightPadding(), getTopPadding());
+  pos -= FPoint{getRightPadding(), getTopPadding()};
 
   for (auto&& item : getItemList())
   {
@@ -1243,8 +1243,8 @@ void FMenu::drawItems()
 inline void FMenu::drawSeparator (int y)
 {
   const auto& wc = getFWidgetColors();
-  print() << FPoint(1, 2 + y)
-          << FColorPair(wc.menu_active_fg, wc.menu_active_bg);
+  print() << FPoint{1, 2 + y}
+          << FColorPair{wc.menu_active_fg, wc.menu_active_bg};
 
   if ( isMonochron() )
     setReverse(true);
@@ -1252,16 +1252,16 @@ inline void FMenu::drawSeparator (int y)
   if ( isNewFont() )
   {
     print (fc::NF_border_line_vertical_right);
-    FString line ( std::size_t(getWidth()) - 2
-                 , fc::BoxDrawingsHorizontal );
+    FString line { std::size_t(getWidth()) - 2
+                 , fc::BoxDrawingsHorizontal };
     print (line);
     print (fc::NF_rev_border_line_vertical_left);
   }
   else
   {
     print (fc::BoxDrawingsVerticalAndRight);
-    FString line ( std::size_t(getWidth()) - 2
-                 , fc::BoxDrawingsHorizontal);
+    FString line { std::size_t(getWidth()) - 2
+                 , fc::BoxDrawingsHorizontal};
     print (line);
     print (fc::BoxDrawingsVerticalAndLeft);
   }
@@ -1273,7 +1273,7 @@ inline void FMenu::drawSeparator (int y)
 //----------------------------------------------------------------------
 inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
 {
-  FString txt(m_item->getText());
+  FString txt{m_item->getText()};
   menuText txtdata{};
   std::size_t column_width = getColumnWidth(txt);
   const FKey accel_key   = m_item->accel_key;
@@ -1408,7 +1408,7 @@ inline void FMenu::drawSubMenuIndicator (std::size_t& startpos)
   if ( len > 0 )
   {
     // Print filling blank spaces
-    print (FString(len, L' '));
+    print (FString{len, L' '});
     // Print BlackRightPointingPointer ►
     print (fc::BlackRightPointingPointer);
     startpos = max_item_width - (c + 2);
@@ -1418,7 +1418,7 @@ inline void FMenu::drawSubMenuIndicator (std::size_t& startpos)
 //----------------------------------------------------------------------
 inline void FMenu::drawAcceleratorKey (std::size_t& startpos, FKey accel_key)
 {
-  const FString accel_name (getKeyName(accel_key));
+  const FString accel_name {getKeyName(accel_key)};
   const std::size_t c = ( has_checkable_items ) ? 1 : 0;
   const std::size_t accel_len = accel_name.getLength();
   const std::size_t len = max_item_width - (startpos + accel_len + c + 2);
@@ -1426,7 +1426,7 @@ inline void FMenu::drawAcceleratorKey (std::size_t& startpos, FKey accel_key)
   if ( len > 0 )
   {
     // Print filling blank spaces + accelerator key name
-    const FString spaces (len, L' ');
+    const FString spaces {len, L' '};
     print (spaces + accel_name);
     startpos = max_item_width - (c + 2);
   }
@@ -1477,7 +1477,7 @@ inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
       setReverse(true);
   }
 
-  print() << FPoint(2, 2 + y);
+  print() << FPoint{2, 2 + y};
   setColor();
 }
 
@@ -1493,9 +1493,9 @@ inline void FMenu::setCursorToHotkeyPosition (FMenuItem* m_item)
     if ( is_selected )
     {
       if ( is_checkable )
-        m_item->setCursorPos (FPoint(3, 1));
+        m_item->setCursorPos({3, 1});
       else
-        m_item->setCursorPos (FPoint(2, 1));
+        m_item->setCursorPos({2, 1});
     }
   }
   else
@@ -1506,9 +1506,9 @@ inline void FMenu::setCursorToHotkeyPosition (FMenuItem* m_item)
       const auto x = getColumnWidth (m_item->getText(), hotkeypos);
 
       if ( is_checkable )
-        m_item->setCursorPos (FPoint(3 + int(x), 1));
+        m_item->setCursorPos({3 + int(x), 1});
       else
-        m_item->setCursorPos (FPoint(2 + int(x), 1));
+        m_item->setCursorPos({2 + int(x), 1});
     }
   }
 }
@@ -1621,13 +1621,21 @@ std::tuple<bool, bool> closeOpenMenus ( FMenu* menu
 {
   // Close the open menu
 
+  bool click_in_menu_structure{false};
   bool is_dialog_menu{false};
 
   if ( ! menu )
-    return std::make_tuple(false, false);
+  {
+    auto tuple = std::make_tuple(click_in_menu_structure, is_dialog_menu);
+    return tuple;
+  }
 
   if ( menu->containsMenuStructure(mouse_position) )
-    return std::make_tuple(true, false);
+  {
+    click_in_menu_structure = true;
+    auto tuple = std::make_tuple(click_in_menu_structure, is_dialog_menu);
+    return tuple;
+  }
 
   if ( menu->isDialogMenu() )
     is_dialog_menu = true;
@@ -1636,7 +1644,7 @@ std::tuple<bool, bool> closeOpenMenus ( FMenu* menu
   menu->hide();
   menu->hideSubMenus();
   menu->hideSuperMenus();
-  return std::make_tuple (false, is_dialog_menu);
+  return std::make_tuple (click_in_menu_structure, is_dialog_menu);
 }
 
 }  // namespace finalcut

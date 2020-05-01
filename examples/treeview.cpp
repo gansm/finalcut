@@ -329,7 +329,7 @@ Treeview::Treeview (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
   // Set FListView geometry
-  listView.setGeometry(FPoint(2, 1), FSize(53, 14));
+  listView.setGeometry(FPoint{2, 1}, FSize{53, 14});
 
   // Add columns to the view
   listView.addColumn ("Name", 23);
@@ -379,7 +379,7 @@ Treeview::Treeview (finalcut::FWidget* parent)
   }
 
   // Quit button
-  Quit.setGeometry(FPoint(24, 16), FSize(10, 1));
+  Quit.setGeometry(FPoint{24, 16}, FSize{10, 1});
   Quit.setText (L"&Quit");
 
   // Callback function
@@ -431,13 +431,13 @@ void Treeview::onClose (finalcut::FCloseEvent* ev)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  finalcut::FApplication app(argc, argv);
+  finalcut::FApplication app{argc, argv};
 
   // Create main dialog object
-  Treeview d(&app);
+  Treeview d{&app};
   d.setText (L"Continents");
-  d.setGeometry ( FPoint(int(1 + (app.getWidth() - 57) / 2), 3)
-                , FSize(57, 20) );
+  d.setGeometry ( FPoint{int(1 + (app.getWidth() - 57) / 2), 3}
+                , FSize{57, 20} );
   d.setShadow();
 
   // Set dialog d as main widget

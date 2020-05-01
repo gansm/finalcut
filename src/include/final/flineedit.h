@@ -178,7 +178,7 @@ class FLineEdit : public FWidget
 
     // Methods
     void                init();
-    bool                hasHotkey();
+    bool                hasHotkey() const;
     void                draw() override;
     void                drawInputField();
     std::size_t         printTextField();

@@ -68,7 +68,7 @@ void FMenuBar::hide()
   FColor fg = wc.term_fg;
   FColor bg = wc.term_bg;
   setColor (fg, bg);
-  print() << FPoint(1, 1) << FString(getDesktopWidth(), L' ');
+  print() << FPoint{1, 1} << FString{getDesktopWidth(), L' '};
   updateTerminal();
   FWindow::hide();
 }
@@ -76,7 +76,7 @@ void FMenuBar::hide()
 //----------------------------------------------------------------------
 void FMenuBar::adjustSize()
 {
-  setGeometry (FPoint(1, 1), FSize(getDesktopWidth(), 1), false);
+  setGeometry (FPoint{1, 1}, FSize{getDesktopWidth(), 1}, false);
   adjustItems();
 }
 
@@ -238,7 +238,7 @@ void FMenuBar::init()
   auto r = getRootWidget();
   auto w = r->getWidth();
   // initialize geometry values
-  setGeometry (FPoint(1, 1), FSize(w, 1), false);
+  setGeometry (FPoint{1, 1}, FSize{w, 1}, false);
   setAlwaysOnTop();
   setMenuBar(this);
   ignorePadding();
@@ -257,7 +257,7 @@ void FMenuBar::init()
 //----------------------------------------------------------------------
 void FMenuBar::calculateDimensions()
 {
-  FPoint item_pos (1, 1);
+  FPoint item_pos{1, 1};
 
   // find the maximum item width
   for (auto&& item : getItemList())
@@ -266,7 +266,7 @@ void FMenuBar::calculateDimensions()
     int item_width = len + 2;
 
     // set item geometry
-    item->setGeometry (item_pos, FSize(std::size_t(item_width), 1), false);
+    item->setGeometry (item_pos, FSize{std::size_t(item_width), 1}, false);
 
     // set menu position
     if ( item->hasMenu() )
@@ -475,7 +475,7 @@ void FMenuBar::drawItems()
   if ( list.empty() )
     return;
 
-  print() << FPoint(1, 1);
+  print() << FPoint{1, 1};
 
   if ( isMonochron() )
     setReverse(true);
@@ -499,7 +499,7 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
   menuText txtdata{};
   txtdata.startpos = x + 1;
   txtdata.no_underline = menuitem->getFlags().no_underline;
-  FString txt(menuitem->getText());
+  FString txt{menuitem->getText()};
   std::size_t column_width = getColumnWidth(txt);
   bool is_enabled  = menuitem->isEnabled();
   bool is_selected = menuitem->isSelected();
@@ -577,13 +577,13 @@ inline void FMenuBar::setCursorToHotkeyPosition ( FMenuItem* menuitem
   if ( hotkeypos == NOT_SET )
   {
     // set cursor to the first character
-    menuitem->setCursorPos (FPoint(2, 1));
+    menuitem->setCursorPos({2, 1});
     return;
   }
 
   // set cursor to the hotkey position
   std::size_t x = getColumnWidth (menuitem->getText(), hotkeypos);
-  menuitem->setCursorPos (FPoint(2 + int(x), 1));
+  menuitem->setCursorPos({2 + int(x), 1});
 }
 
 //----------------------------------------------------------------------
@@ -632,12 +632,12 @@ inline void FMenuBar::drawEllipsis (const menuText& txtdata, std::size_t x)
     if ( txtdata.startpos < screenWidth )
     {
       // Print ellipsis
-      print() << FPoint(int(screenWidth) - 1, 1) << "..";
+      print() << FPoint{int(screenWidth) - 1, 1} << "..";
     }
     else if ( txtdata.startpos - 1 <= screenWidth )
     {
       // Hide first character from text
-      print() << FPoint(int(screenWidth), 1) << ' ';
+      print() << FPoint{int(screenWidth), 1} << ' ';
     }
   }
 }
@@ -682,7 +682,7 @@ void FMenuBar::adjustItems()
       auto menu = item->getMenu();
 
       // set menu position
-      menu->setPos (FPoint(menu->adjustX(item_X), item_Y));
+      menu->setPos (FPoint{menu->adjustX(item_X), item_Y});
 
       // call menu adjustItems()
       menu->adjustItems();

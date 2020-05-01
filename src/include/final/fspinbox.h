@@ -108,7 +108,7 @@ class FSpinBox : public FWidget
     void                setLabelOrientation (const FLineEdit::label_o);
 
     // Inquiries
-    bool                hasShadow();
+    bool                hasShadow() const;
 
     // Methods
     void                hide() override;
@@ -205,7 +205,7 @@ inline bool FSpinBox::unsetShadow()
 { return setShadow(false); }
 
 //----------------------------------------------------------------------
-inline bool FSpinBox::hasShadow()
+inline bool FSpinBox::hasShadow() const
 { return getFlags().shadow; }
 
 //----------------------------------------------------------------------

@@ -67,7 +67,7 @@ class SegmentView final : public finalcut::FDialog
 
     // Data members
     std::map<wchar_t, sevenSegment> code{};
-    finalcut::FString line[3];
+    finalcut::FString line[3]{};
     finalcut::FLineEdit Input{"0123", this};
     finalcut::FButton Exit{"E&xit", this};
 };
@@ -80,13 +80,13 @@ SegmentView::SegmentView (finalcut::FWidget* parent)
   //   Avoids calling a virtual function from the constructor
   //   (CERT, OOP50-CPP)
   FDialog::setText ("Seven-segment display");
-  FDialog::setGeometry (FPoint(25, 5), FSize(42, 15));
+  FDialog::setGeometry (FPoint{25, 5}, FSize{42, 15});
 
   // Set encoding
   hexEncoding();
 
   // Input field
-  Input.setGeometry (FPoint(2, 2), FSize(12, 1));
+  Input.setGeometry (FPoint(2, 2), FSize{12, 1});
   Input.setLabelText (L"&Hex value");
   Input.setLabelText (L"&Hex-digits or (.) (:) (H) (L) (P) (U)");
   Input.setLabelOrientation(finalcut::FLineEdit::label_above);
@@ -94,7 +94,7 @@ SegmentView::SegmentView (finalcut::FWidget* parent)
   Input.setInputFilter("[:.hHlLpPuU[:xdigit:]]");
 
   // Exit button
-  Exit.setGeometry(FPoint(28, 11), FSize(10, 1));
+  Exit.setGeometry(FPoint{28, 11}, FSize{10, 1});
 
   // Add some function callbacks
   Input.addCallback
@@ -203,11 +203,11 @@ void SegmentView::draw()
 
   FDialog::draw();
   setColor(fc::LightGray, fc::Black);
-  finalcut::drawBorder(this, FRect(FPoint(3, 6), FPoint(40, 11)));
+  finalcut::drawBorder(this, FRect(FPoint{3, 6}, FPoint{40, 11}));
 
   for (auto&& ch : Input.getText().toUpper())
   {
-    const FColorPair color(fc::LightRed, fc::Black);
+    const FColorPair color{fc::LightRed, fc::Black};
     get7Segment(ch);
 
     for (std::size_t i{0}; i < 3; i++)
@@ -219,10 +219,10 @@ void SegmentView::draw()
   if ( length < 36 )
     left_space << finalcut::FString(36 - length, ' ');
 
-  print() << FPoint (4, 7) << left_space << tbuffer[0]
-          << FPoint (4, 8) << left_space << tbuffer[1]
-          << FPoint (4, 9) << left_space << tbuffer[2]
-          << FPoint (4, 10) << finalcut::FString(36, ' ');
+  print() << FPoint {4, 7} << left_space << tbuffer[0]
+          << FPoint {4, 8} << left_space << tbuffer[1]
+          << FPoint {4, 9} << left_space << tbuffer[2]
+          << FPoint {4, 10} << finalcut::FString{36, ' '};
 }
 
 

@@ -207,7 +207,7 @@ void FDialog::setPos (const FPoint& pos, bool)
   const auto& shadow = getShadow();
   const std::size_t width = getWidth() + shadow.getWidth();  // width + right shadow
   const std::size_t height = getHeight() + shadow.getHeight();  // height + bottom shadow
-  const FRect old_geometry (getTermGeometryWithShadow());
+  const FRect old_geometry {getTermGeometryWithShadow()};
 
   // move to the new position
   FWindow::setPos(pos, false);
@@ -273,28 +273,28 @@ void FDialog::move (const FPoint& d_pos)
 //----------------------------------------------------------------------
 inline bool FDialog::moveUp (int n)
 {
-  move (FPoint(0, -n));
+  move ({0, -n});
   return ! setPos_error;
 }
 
 //----------------------------------------------------------------------
 inline bool FDialog::moveDown (int n)
 {
-  move (FPoint(0, n));
+  move ({0, n});
   return ! setPos_error;
 }
 
 //----------------------------------------------------------------------
 inline bool FDialog::moveLeft (int n)
 {
-  move (FPoint(-n, 0));
+  move ({-n, 0});
   return ! setPos_error;
 }
 
 //----------------------------------------------------------------------
 inline bool FDialog::moveRight (int n)
 {
-  move (FPoint(n, 0));
+  move ({n, 0});
   return ! setPos_error;
 }
 
@@ -332,10 +332,10 @@ void FDialog::setSize (const FSize& size, bool adjust)
 
   // restoring the non-covered terminal areas
   if ( dw > 0 )
-    restoreVTerm (FRect(x + int(w), y, d_width, h + d_height));  // restore right
+    restoreVTerm ({x + int(w), y, d_width, h + d_height});  // restore right
 
   if ( dh > 0 )
-    restoreVTerm (FRect(x, y + int(h), w + d_width, d_height));  // restore bottom
+    restoreVTerm ({x, y + int(h), w + d_width, d_height});  // restore bottom
 
   redraw();
 
@@ -352,7 +352,7 @@ bool FDialog::reduceHeight (int n)
   if ( ! isResizeable() )
     return false;
 
-  setSize (FSize(getWidth(), getHeight() - std::size_t(n)));
+  setSize (FSize{getWidth(), getHeight() - std::size_t(n)});
   return ! setSize_error;
 }
 
@@ -362,7 +362,7 @@ bool FDialog::expandHeight (int n)
   if ( ! isResizeable() || getHeight() + std::size_t(getY()) > getMaxHeight() )
     return false;
 
-  setSize (FSize(getWidth(), getHeight() + std::size_t(n)));
+  setSize (FSize{getWidth(), getHeight() + std::size_t(n)});
   return ! setSize_error;
 }
 
@@ -372,7 +372,7 @@ bool FDialog::reduceWidth (int n)
   if ( ! isResizeable() )
     return false;
 
-  setSize (FSize(getWidth() - std::size_t(n), getHeight()));
+  setSize (FSize{getWidth() - std::size_t(n), getHeight()});
   return ! setSize_error;
 }
 
@@ -382,7 +382,7 @@ bool FDialog::expandWidth (int n)
   if ( ! isResizeable() || getWidth() + std::size_t(getX()) > getMaxWidth() )
     return false;
 
-  setSize (FSize(getWidth() + std::size_t(n), getHeight()));
+  setSize (FSize{getWidth() + std::size_t(n), getHeight()});
   return ! setSize_error;
 }
 
@@ -541,7 +541,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
       && titlebar_x < getTermX() + int(getWidth())
       && titlebar_y == int(getTermY()) )
     {
-      const FPoint deltaPos(ms.termPos - titlebar_click_pos);
+      const FPoint deltaPos{ms.termPos - titlebar_click_pos};
       move (deltaPos);
       titlebar_click_pos = ms.termPos;
     }
@@ -585,7 +585,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 
   if ( ! titlebar_click_pos.isOrigin() )
   {
-    const FPoint deltaPos(ms.termPos - titlebar_click_pos);
+    const FPoint deltaPos{ms.termPos - titlebar_click_pos};
     move (deltaPos);
     titlebar_click_pos = ms.termPos;
   }
@@ -615,8 +615,8 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 
   const int x = getTermX();
   const int y = getTermY();
-  const FRect title_button(x, y, 3, 1);
-  const FPoint tPos(ms.termPos);
+  const FRect title_button{x, y, 3, 1};
+  const FPoint tPos{ms.termPos};
 
   if ( title_button.contains(tPos) )
   {
@@ -758,7 +758,7 @@ void FDialog::draw()
   clearArea();
   drawBorder();
   drawTitleBar();
-  setCursorPos(FPoint(2, int(getHeight()) - 1));
+  setCursorPos({2, int(getHeight()) - 1});
 
   if ( getFlags().shadow )
     drawDialogShadow();
@@ -795,8 +795,8 @@ void FDialog::init()
   ignorePadding();
   setDialogWidget();
   // Initialize geometry values
-  setGeometry (FPoint(1, 1), FSize(10, 10), false);
-  setMinimumSize (FSize(15, 4));
+  setGeometry (FPoint{1, 1}, FSize{10, 10}, false);
+  setMinimumSize (FSize{15, 4});
   addDialog(this);
   setActiveWindow(this);
   setTransparentShadow();
@@ -830,7 +830,7 @@ void FDialog::initDialogMenu()
     return;
   }
 
-  FPoint p(getPos());
+  FPoint p{getPos()};
   p.y_ref()++;
   dialog_menu->setPos(p);
   dgl_menuitem = dialog_menu->getItem();
@@ -932,24 +932,24 @@ void FDialog::drawBorder()
 
   if ( isNewFont() )  // Draw a newfont U-shaped frame
   {
-    const FRect r(FPoint(1, 1), getSize());
+    const FRect r{FPoint{1, 1}, getSize()};
 
     for (int y = r.getY1() + 1; y < r.getY2(); y++)
     {
-      print() << FPoint(r.getX1(), y)
+      print() << FPoint{r.getX1(), y}
               << fc::NF_border_line_left        // border left ⎸
-              << FPoint(r.getX2(), y)
+              << FPoint{r.getX2(), y}
               << fc::NF_rev_border_line_right;  // border right⎹
     }
 
     print() << r.getLowerLeftPos()
             << fc::NF_border_corner_lower_left        // ⎣
-            << FString(r.getWidth() - 2, fc::NF_border_line_bottom)  // _
+            << FString{r.getWidth() - 2, fc::NF_border_line_bottom}  // _
             << fc::NF_rev_border_corner_lower_right;  // ⎦
   }
   else
   {
-    FRect box(FPoint(1, 2), getSize());
+    FRect box{{1, 2}, getSize()};
     box.scaleBy(0, -1);
     finalcut::drawBorder(this, box);
   }
@@ -972,7 +972,7 @@ void FDialog::drawTitleBar()
   if ( PRINT_WIN_NUMBER )
   {
     // Print the number of window in stack
-    print() << FPoint(int(getWidth()) - 2, 1);
+    print() << FPoint{int(getWidth()) - 2, 1};
     printf ("(%d)", getWindowLayer(this));
   }
 #endif  // DEBUG
@@ -982,7 +982,7 @@ void FDialog::drawTitleBar()
 void FDialog::drawBarButton()
 {
   // Print the title button
-  print() << FPoint(1, 1);
+  print() << FPoint{1, 1};
   const auto& wc = getFWidgetColors();
 
   if ( dialog_menu && dialog_menu->isShown() )
@@ -1173,7 +1173,7 @@ void FDialog::setCursorToFocusWidget()
     && focus->isShown()
     && focus->hasVisibleCursor() )
   {
-    const FPoint cursor_pos(focus->getCursorPos());
+    const FPoint cursor_pos{focus->getCursorPos()};
     focus->setCursorPos(cursor_pos);
     updateVTermCursor(getVWin());
   }
@@ -1215,7 +1215,7 @@ void FDialog::openMenu()
   {
     finalcut::closeOpenComboBox();
     setOpenMenu(dialog_menu);
-    FPoint pos(getPos());
+    FPoint pos{getPos()};
     pos.y_ref()++;
     dialog_menu->setPos (pos);
     dialog_menu->setVisible();
@@ -1327,7 +1327,7 @@ void FDialog::pressZoomButton (const mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isMouseOverMenu (const FPoint& termpos)
+inline bool FDialog::isMouseOverMenu (const FPoint& termpos) const
 {
   auto menu_geometry = dialog_menu->getTermGeometry();
 
@@ -1446,7 +1446,7 @@ inline void FDialog::lowerActivateDialog()
 }
 
 //----------------------------------------------------------------------
-bool FDialog::isOutsideTerminal (const FPoint& pos)
+bool FDialog::isOutsideTerminal (const FPoint& pos) const
 {
   if ( pos.getX() + int(getWidth()) <= 1
     || pos.getX() > int(getMaxWidth())
@@ -1458,7 +1458,7 @@ bool FDialog::isOutsideTerminal (const FPoint& pos)
 }
 
 //----------------------------------------------------------------------
-bool FDialog::isLowerRightResizeCorner (const mouseStates& ms)
+bool FDialog::isLowerRightResizeCorner (const mouseStates& ms) const
 {
   // 3 characters in the lower right corner  |
   //                                         x
@@ -1484,11 +1484,11 @@ void FDialog::resizeMouseDown (const mouseStates& ms)
   if ( isResizeable() && isLowerRightResizeCorner(ms) )
   {
     resize_click_pos = ms.termPos;
-    const FPoint lower_right_pos(getTermGeometry().getLowerRightPos());
+    const FPoint lower_right_pos{getTermGeometry().getLowerRightPos()};
 
     if ( ms.termPos != lower_right_pos )
     {
-      const FPoint deltaPos(ms.termPos - lower_right_pos);
+      const FPoint deltaPos{ms.termPos - lower_right_pos};
       const int w = lower_right_pos.getX() + deltaPos.getX() - getTermX() + 1;
       const int h = lower_right_pos.getY() + deltaPos.getY() - getTermY() + 1;
       const FSize& size = FSize(std::size_t(w), std::size_t(h));
@@ -1524,7 +1524,7 @@ void FDialog::resizeMouseUpMove (const mouseStates& ms, bool mouse_up)
     {
       int w{};
       int h{};
-      const FPoint deltaPos(ms.termPos - resize_click_pos);
+      const FPoint deltaPos{ms.termPos - resize_click_pos};
 
       if ( x2 - x2_offset <= int(getMaxWidth()) )
         w = resize_click_pos.getX() + deltaPos.getX() - getTermX() + 1;

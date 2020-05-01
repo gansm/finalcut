@@ -92,9 +92,9 @@ class FPoint
     // Friend operator functions
     friend bool operator == (const FPoint&, const FPoint&);
     friend bool operator != (const FPoint&, const FPoint&);
-    friend FPoint operator +  (const FPoint&, const FPoint&);
-    friend FPoint operator -  (const FPoint&, const FPoint&);
-    friend FPoint operator -  (const FPoint&);
+    friend const FPoint operator +  (const FPoint&, const FPoint&);
+    friend const FPoint operator -  (const FPoint&, const FPoint&);
+    friend const FPoint operator -  (const FPoint&);
     friend std::ostream& operator << (std::ostream&, const FPoint&);
     friend std::istream& operator >> (std::istream&, FPoint&);
 };
@@ -154,16 +154,16 @@ inline bool operator != (const FPoint& p1, const FPoint& p2)
 { return p1.xpos != p2.xpos || p1.ypos != p2.ypos; }
 
 //----------------------------------------------------------------------
-inline FPoint operator + (const FPoint& p1, const FPoint& p2)
-{ return FPoint(p1.xpos + p2.xpos, p1.ypos + p2.ypos); }
+inline const FPoint operator + (const FPoint& p1, const FPoint& p2)
+{ return {p1.xpos + p2.xpos, p1.ypos + p2.ypos}; }
 
 //----------------------------------------------------------------------
-inline FPoint operator - (const FPoint& p1, const FPoint& p2)
-{ return FPoint(p1.xpos - p2.xpos, p1.ypos - p2.ypos); }
+inline const FPoint operator - (const FPoint& p1, const FPoint& p2)
+{ return {p1.xpos - p2.xpos, p1.ypos - p2.ypos}; }
 
 //----------------------------------------------------------------------
-inline FPoint operator - (const FPoint& p)
-{ return FPoint(-p.xpos, -p.ypos); }
+inline const FPoint operator - (const FPoint& p)
+{ return {-p.xpos, -p.ypos}; }
 
 }  // namespace finalcut
 

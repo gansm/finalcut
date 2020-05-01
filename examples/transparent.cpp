@@ -95,31 +95,31 @@ void Transparent::draw()
   if ( type == shadow )
   {
     const auto& wc = getFWidgetColors();
-    print() << FColorPair (wc.shadow_bg, wc.shadow_fg)
-            << FStyle (fc::ColorOverlay);
+    print() << FColorPair {wc.shadow_bg, wc.shadow_fg}
+            << FStyle {fc::ColorOverlay};
   }
   else if ( type == inherit_background )
   {
     if ( getMaxColor() > 8 )
-      print() << FColorPair (fc::Blue, fc::Black);
+      print() << FColorPair {fc::Blue, fc::Black};
     else
-      print() << FColorPair (fc::Green, fc::Black);
+      print() << FColorPair {fc::Green, fc::Black};
 
-    print() << FStyle (fc::InheritBackground);
+    print() << FStyle {fc::InheritBackground};
   }
   else
-    print() << FStyle (fc::Transparent);
+    print() << FStyle {fc::Transparent};
 
-  const finalcut::FString line(getClientWidth(), '.');
+  const finalcut::FString line{getClientWidth(), '.'};
 
   // Fill window area
   for (int n{1}; n <= int(getClientHeight()); n++)
   {
-    print() << FPoint(2, 2 + n)
+    print() << FPoint{2, 2 + n}
             << line;
   }
 
-  print() <<  FStyle (fc::Reset);
+  print() <<  FStyle{fc::Reset};
 }
 
 //----------------------------------------------------------------------
@@ -199,17 +199,17 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   // is not required in this class and would result in a double free.
   transpwin = new Transparent(this);
   transpwin->setText("transparent");
-  transpwin->setGeometry (FPoint(6, 3), FSize(29, 12));
+  transpwin->setGeometry (FPoint{6, 3}, FSize{29, 12});
   transpwin->unsetTransparentShadow();
 
   shadowwin = new Transparent(this, Transparent::shadow);
   shadowwin->setText("shadow");
-  shadowwin->setGeometry (FPoint(46, 11), FSize(29, 12));
+  shadowwin->setGeometry (FPoint{46, 11}, FSize{29, 12});
   shadowwin->unsetTransparentShadow();
 
   ibg = new Transparent(this, Transparent::inherit_background);
   ibg->setText("inherit background");
-  ibg->setGeometry (FPoint(42, 3), FSize(29, 7));
+  ibg->setGeometry (FPoint{42, 3}, FSize{29, 7});
   ibg->unsetTransparentShadow();
 
   // Set statusbar text for this window
@@ -232,8 +232,8 @@ void MainWindow::draw()
     setReverse(true);
 
   setColor();
-  print() << FPoint(2, 4) << line1;
-  print() << FPoint(2, 5) << line2;
+  print() << FPoint{2, 4} << line1;
+  print() << FPoint{2, 5} << line2;
 
   if ( isMonochron() )
     setReverse(false);
@@ -273,13 +273,13 @@ void MainWindow::onTimer (finalcut::FTimerEvent*)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  finalcut::FApplication app (argc, argv);
+  finalcut::FApplication app {argc, argv};
   app.setNonBlockingRead();
 
   // Create main dialog object
-  MainWindow main_dlg (&app);
+  MainWindow main_dlg {&app};
   main_dlg.setText ("non-transparent");
-  main_dlg.setGeometry (FPoint(8, 16), FSize(26, 7));
+  main_dlg.setGeometry (FPoint{8, 16}, FSize{26, 7});
 
   // Set dialog main_dlg as main widget
   finalcut::FWidget::setMainWidget (&main_dlg);

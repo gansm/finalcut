@@ -76,14 +76,14 @@ AttribDlg::AttribDlg (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
   FDialog::setText ( "A terminal attributes test ("
-                   + finalcut::FString(getTermType())
+                   + finalcut::FString{getTermType()}
                    + ")");
 
-  next_button.setGeometry ( FPoint(int(getWidth()) - 13, int(getHeight()) - 4)
-                          , FSize(10, 1) );
+  next_button.setGeometry ( FPoint{int(getWidth()) - 13, int(getHeight()) - 4}
+                          , FSize{10, 1} );
   next_button.addAccelerator (fc::Fkey_right);
-  back_button.setGeometry ( FPoint(int(getWidth()) - 25, int(getHeight()) - 4)
-                          , FSize(10, 1) );
+  back_button.setGeometry ( FPoint{int(getWidth()) - 25, int(getHeight()) - 4}
+                          , FSize{10, 1} );
   back_button.addAccelerator (fc::Fkey_left);
 
   // Add function callbacks
@@ -186,11 +186,11 @@ void AttribDlg::adjustSize()
   if ( y < 1 )
     y = 1;
 
-  setGeometry(FPoint(x, y), FSize(69, 21), false);
-  next_button.setGeometry ( FPoint(int(getWidth()) - 13, int(getHeight()) - 4)
-                          , FSize(10, 1), false );
-  back_button.setGeometry ( FPoint(int(getWidth()) - 25, int(getHeight()) - 4)
-                          , FSize(10, 1), false );
+  setGeometry(FPoint{x, y}, FSize{69, 21}, false);
+  next_button.setGeometry ( FPoint{int(getWidth()) - 13, int(getHeight()) - 4}
+                          , FSize{10, 1}, false );
+  back_button.setGeometry ( FPoint{int(getWidth()) - 25, int(getHeight()) - 4}
+                          , FSize{10, 1}, false );
   finalcut::FDialog::adjustSize();
 }
 
@@ -260,7 +260,7 @@ void AttribDemo::printColorLine()
 
   for (FColor color{0}; color < last_color; color++)
   {
-    print() << FColorPair(color, parent->getBGColor()) << " # ";
+    print() << FColorPair{color, parent->getBGColor()} << " # ";
   }
 }
 
@@ -273,7 +273,7 @@ void AttribDemo::printAltCharset()
   if ( ! isMonochron() )
     setColor (wc.label_fg, wc.label_bg);
 
-  print() << FPoint(1, 1) << "alternate charset: ";
+  print() << FPoint{1, 1} << "alternate charset: ";
 
   if ( parent->getBGColor() == fc::Default )
   {
@@ -439,7 +439,7 @@ void AttribDemo::draw()
 
   for (std::size_t y{0}; y < getParentWidget()->getHeight() - 7; y++)
   {
-    print() << FPoint(1, 2 + int(y));
+    print() << FPoint{1, 2 + int(y)};
 
     if ( ! isMonochron() )
       setColor (wc.label_fg, wc.label_bg);
@@ -451,7 +451,7 @@ void AttribDemo::draw()
   if ( ! isMonochron() )
     setColor(wc.label_fg, wc.label_bg);
 
-  print() << FPoint(1, 15);
+  print() << FPoint{1, 15};
   const FColor bg = static_cast<AttribDlg*>(getParent())->getBGColor();
   print (" Background color:");
 
@@ -460,7 +460,7 @@ void AttribDemo::draw()
   else
     printf ( " %d", bg);
 
-  print() << FPoint(16, 17) << "Change background color ->";
+  print() << FPoint{16, 17} << "Change background color ->";
 }
 
 
@@ -470,19 +470,19 @@ void AttribDemo::draw()
 int main (int argc, char* argv[])
 {
   // Create the application object
-  finalcut::FApplication app (argc, argv);
+  finalcut::FApplication app {argc, argv};
 
   // Create a dialog box object.
   // This object will be automatically deleted by
   // the parent object "app" (FObject destructor).
-  AttribDlg dialog(&app);
+  AttribDlg dialog{&app};
 
-  dialog.setGeometry (FPoint(6, 2), FSize(69, 21));
+  dialog.setGeometry (FPoint{6, 2}, FSize{69, 21});
   dialog.setShadow();
 
   // Create the attribute demo widget as a child object from the dialog
   AttribDemo demo(&dialog);
-  demo.setGeometry (FPoint(1, 1), FSize(67, 19));
+  demo.setGeometry (FPoint{1, 1}, FSize{67, 19});
 
   // Set the dialog object as main widget
   finalcut::FWidget::setMainWidget(&dialog);

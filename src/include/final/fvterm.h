@@ -146,8 +146,8 @@ class FVTerm
     static FColor         getTermBackgroundColor();
     FTermArea*&           getVWin();
     const FTermArea*      getVWin() const;
-    FPoint                getPrintCursor();
-    static FChar          getAttribute();
+    const FPoint          getPrintCursor();
+    static const FChar    getAttribute();
     static int            getMaxColor();
     static int            getTabstop();
     static fc::encoding   getEncoding();
@@ -419,15 +419,15 @@ class FVTerm
                                                , const FPoint& );
     void                  updateVTerm();
     static void           callPreprocessingHandler (const FTermArea*);
-    bool                  hasChildAreaChanges (FTermArea*);
+    bool                  hasChildAreaChanges (FTermArea*) const;
     void                  clearChildAreaChanges (const FTermArea*);
     static bool           isInsideArea (const FPoint&, const FTermArea*);
-    static FChar          generateCharacter (const FPoint&);
-    static FChar          getCharacter ( character_type
+    static const FChar    generateCharacter (const FPoint&);
+    static const FChar    getCharacter ( character_type
                                        , const FPoint&
                                        , FVTerm* );
-    static FChar          getCoveredCharacter (const FPoint&, FVTerm*);
-    static FChar          getOverlappedCharacter (const FPoint&, FVTerm*);
+    static const FChar    getCoveredCharacter (const FPoint&, FVTerm*);
+    static const FChar    getOverlappedCharacter (const FPoint&, FVTerm*);
     void                  init (bool);
     static void           init_characterLengths (const FOptiMove*);
     void                  finish();
@@ -452,8 +452,8 @@ class FVTerm
     void                  skipPaddingCharacter (uInt&, uInt, const FChar* const&);
     exit_state            eraseCharacters (uInt&, uInt, uInt, bool);
     exit_state            repeatCharacter (uInt&, uInt, uInt);
-    bool                  isFullWidthChar (const FChar* const&);
-    bool                  isFullWidthPaddingChar (const FChar* const&);
+    bool                  isFullWidthChar (const FChar* const&) const;
+    bool                  isFullWidthPaddingChar (const FChar* const&) const;
     static void           cursorWrap();
     bool                  printWrap (FTermArea*);
     void                  printPaddingCharacter (FTermArea*, const FChar&);
@@ -509,37 +509,36 @@ class FVTerm
 
 struct FVTerm::FTermArea  // define virtual terminal character properties
 {
-  public:
-    // Constructor
-    FTermArea() = default;
+  // Constructor
+  FTermArea() = default;
 
-    // Disable copy constructor
-    FTermArea (const FTermArea&) = delete;
+  // Disable copy constructor
+  FTermArea (const FTermArea&) = delete;
 
-    // Destructor
-    ~FTermArea() = default;
+  // Destructor
+  ~FTermArea() = default;
 
-    // Disable copy assignment operator (=)
-    FTermArea& operator = (const FTermArea&) = delete;
+  // Disable copy assignment operator (=)
+  FTermArea& operator = (const FTermArea&) = delete;
 
-    // Data members
-    int offset_left{0};        // Distance from left terminal side
-    int offset_top{0};         // Distance from top of the terminal
-    int width{-1};             // Window width
-    int height{-1};            // Window height
-    int right_shadow{0};       // Right window shadow
-    int bottom_shadow{0};      // Bottom window shadow
-    int cursor_x{0};           // X-position for the next write operation
-    int cursor_y{0};           // Y-position for the next write operation
-    int input_cursor_x{-1};    // X-position input cursor
-    int input_cursor_y{-1};    // Y-position input cursor
-    FWidget* widget{nullptr};  // Widget that owns this FTermArea
-    FPreprocessing preproc_list{};
-    FLineChanges* changes{nullptr};
-    FChar* data{nullptr};      // FChar data of the drawing area
-    bool input_cursor_visible{false};
-    bool has_changes{false};
-    bool visible{false};
+  // Data members
+  int offset_left{0};        // Distance from left terminal side
+  int offset_top{0};         // Distance from top of the terminal
+  int width{-1};             // Window width
+  int height{-1};            // Window height
+  int right_shadow{0};       // Right window shadow
+  int bottom_shadow{0};      // Bottom window shadow
+  int cursor_x{0};           // X-position for the next write operation
+  int cursor_y{0};           // Y-position for the next write operation
+  int input_cursor_x{-1};    // X-position input cursor
+  int input_cursor_y{-1};    // Y-position input cursor
+  FWidget* widget{nullptr};  // Widget that owns this FTermArea
+  FPreprocessing preproc_list{};
+  FLineChanges* changes{nullptr};
+  FChar* data{nullptr};      // FChar data of the drawing area
+  bool input_cursor_visible{false};
+  bool has_changes{false};
+  bool visible{false};
 };
 
 
@@ -675,7 +674,7 @@ inline const FVTerm::FTermArea* FVTerm::getVWin() const
 { return vwin; }
 
 //----------------------------------------------------------------------
-inline FChar FVTerm::getAttribute()
+inline const FChar FVTerm::getAttribute()
 { return next_attribute; }
 
 //----------------------------------------------------------------------
@@ -692,11 +691,17 @@ inline fc::encoding FVTerm::getEncoding()
 
 //----------------------------------------------------------------------
 inline std::string FVTerm::getEncodingString()
-{ return FTerm::getEncodingString(); }
+{
+  const std::string& enc_str = FTerm::getEncodingString(); // init enc_str
+  return enc_str;
+}
 
 //----------------------------------------------------------------------
 inline const FString FVTerm::getKeyName (FKey keynum)
-{ return FTerm::getKeyName(keynum); }
+{
+  const FString& name = FTerm::getKeyName(keynum);  // initialize name
+  return name;
+}
 
 //----------------------------------------------------------------------
 inline const char* FVTerm::getTermType()

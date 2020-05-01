@@ -59,7 +59,7 @@ const FString FMouse::getClassName() const
 }
 
 //----------------------------------------------------------------------
-inline FPoint& FMouse::getPos()
+inline const FPoint& FMouse::getPos()
 {
   return mouse;
 }
@@ -227,7 +227,7 @@ inline FMouse::FMouseButton& FMouse::getButtonState()
 }
 
 //----------------------------------------------------------------------
-inline FPoint& FMouse::getNewPos()
+inline const FPoint& FMouse::getNewPos()
 {
   return new_mouse_position;
 }
@@ -381,8 +381,8 @@ void FMouseGPM::processEvent (struct timeval*)
         break;
     }
 
-    setPos (FPoint( std::max(gpm_ev.x, sInt16(1))
-                  , std::max(gpm_ev.y, sInt16(1)) ));
+    setPos (FPoint{ std::max(gpm_ev.x, sInt16(1))
+                  , std::max(gpm_ev.y, sInt16(1)) });
 
     if ( gpmEvent(false) == mouse_event )
       setPending(true);
@@ -618,7 +618,7 @@ void FMouseX11::processEvent (struct timeval* time)
   }
 
   setEvent();
-  setPos (FPoint(x, y));
+  setPos (FPoint{x, y});
   // Get the button state from string
   x11_button_state = uChar(btn);
   // Delete already interpreted data
@@ -844,7 +844,7 @@ void FMouseSGR::processEvent (struct timeval* time)
   }
 
   setEvent();
-  setPos (FPoint(x, y));
+  setPos (FPoint{x, y});
   // Get the button state from string
   sgr_button_state = uChar(((*p & 0x20) << 2) + btn);
   // Delete already interpreted data
@@ -1099,7 +1099,7 @@ void FMouseUrxvt::processEvent (struct timeval* time)
   }
 
   setEvent();
-  setPos (FPoint(x, y));
+  setPos (FPoint{x, y});
   urxvt_button_state = uChar(btn);
   // Delete already interpreted data
   urxvt_mouse[0] = '\0';
@@ -1234,7 +1234,7 @@ FMouseControl::~FMouseControl()  // destructor
 
 // public methods of FMouseControl
 //----------------------------------------------------------------------
-FPoint& FMouseControl::getPos()
+const FPoint& FMouseControl::getPos()
 {
   const auto& mouse_object = getMouseWithEvent();
 

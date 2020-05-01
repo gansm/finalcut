@@ -82,7 +82,7 @@ class FProgressbar : public FWidget
     bool                unsetShadow();
 
     // Inquiries
-    bool                hasShadow();
+    bool                hasShadow() const;
 
     // Methods
     void                hide() override;
@@ -123,7 +123,7 @@ inline bool FProgressbar::unsetShadow()
 { return setShadow(false); }
 
 //----------------------------------------------------------------------
-inline bool FProgressbar::hasShadow()
+inline bool FProgressbar::hasShadow() const
 { return getFlags().shadow; }
 
 }  // namespace finalcut

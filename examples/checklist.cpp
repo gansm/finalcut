@@ -80,12 +80,12 @@ CheckList::CheckList (finalcut::FWidget* parent)
   //   (CERT, OOP50-CPP)
   FDialog::setText (L"Shopping list");
   const std::size_t nf_offset = ( isNewFont() ) ? 1 : 0;
-  FDialog::setGeometry ( FPoint(int(1 + (parent->getWidth() - 28) / 2), 5)
-                       , FSize(28 + nf_offset, 13) );
+  FDialog::setGeometry ( FPoint{int(1 + (parent->getWidth() - 28) / 2), 5}
+                       , FSize{28 + nf_offset, 13} );
   setShadow();
   listView.ignorePadding();
-  listView.setGeometry ( FPoint(1 + int(nf_offset), 2)
-                       , FSize(getWidth() - nf_offset, getHeight() - 1) );
+  listView.setGeometry ( FPoint{1 + int(nf_offset), 2}
+                       , FSize{getWidth() - nf_offset, getHeight() - 1} );
 
   // Add columns to the view
   listView.addColumn ("Item");
@@ -96,9 +96,9 @@ CheckList::CheckList (finalcut::FWidget* parent)
   listView.setColumnSortType (2, fc::by_name);
 
   // Statusbar at the bottom
-  finalcut::FString separator;
+  finalcut::FString separator{};
   separator << ' ' << fc::BoxDrawingsVertical << ' ';
-  listView.setStatusbarMessage ( finalcut::FString()
+  listView.setStatusbarMessage ( finalcut::FString{}
                                  << "<Q> exit" << separator
                                  << "<Space> select an item" << separator
                                  << "<Enter> see your pick list");
@@ -171,7 +171,7 @@ void CheckList::onClose (finalcut::FCloseEvent* ev)
 void CheckList::cb_showList (const finalcut::FWidget*, const FDataPtr)
 {
   auto iter = listView.beginOfList();
-  finalcut::FString shopping_list;
+  finalcut::FString shopping_list{};
 
   while ( iter != listView.endOfList() )
   {

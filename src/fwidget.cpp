@@ -242,11 +242,11 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (fc::sides side)
 }
 
 //----------------------------------------------------------------------
-FPoint FWidget::getPrintPos()
+const FPoint FWidget::getPrintPos()
 {
   const auto& cur = getPrintCursor();
-  return FPoint ( cur.getX() - woffset.getX1() - getX() + 1
-                , cur.getY() - woffset.getY1() - getY() + 1 );
+  return { cur.getX() - woffset.getX1() - getX() + 1
+         , cur.getY() - woffset.getY1() - getY() + 1 };
 }
 
 //----------------------------------------------------------------------
@@ -346,7 +346,7 @@ void FWidget::setY (int y, bool adjust)
 //----------------------------------------------------------------------
 void FWidget::setPos (const FPoint& p, bool adjust)
 {
-  FPoint pos(p);
+  FPoint pos{p};
 
   if ( getX() == pos.getX() && wsize.getX() == pos.getX()
     && getY() == pos.getY() && wsize.getY() == pos.getY() )
@@ -539,7 +539,7 @@ void FWidget::setTermSize (const FSize& size)
 
   if ( isXTerminal() )
   {
-    root_widget->wsize.setRect(FPoint(1, 1), size);
+    root_widget->wsize.setRect(FPoint{1, 1}, size);
     root_widget->adjust_wsize = root_widget->wsize;
     FTerm::setTermSize(size);  // width = columns / height = lines
     detectTermSize();
@@ -621,8 +621,8 @@ bool FWidget::setCursorPos (const FPoint& pos)
       woffsetY += (1 - area->widget->getTopPadding());
     }
 
-    setAreaCursor ( FPoint ( woffsetX + pos.getX()
-                           , woffsetY + pos.getY() )
+    setAreaCursor ( { woffsetX + pos.getX()
+                    , woffsetY + pos.getY() }
                   , flags.visible_cursor
                   , area );
     return true;
@@ -967,9 +967,9 @@ void FWidget::resize()
 {
   if ( isRootWidget() )
   {
-    const FRect old_term_geometry (getTermGeometry());
+    const FRect old_term_geometry {getTermGeometry()};
     detectTermSize();
-    FRect term_geometry (getTermGeometry());
+    FRect term_geometry {getTermGeometry()};
     term_geometry.move (-1, -1);
 
     if ( old_term_geometry.getSize() == term_geometry.getSize() )
@@ -1380,7 +1380,7 @@ void FWidget::hideArea (const FSize& size)
 
   for (int y{0}; y < int(size.getHeight()); y++)
   {
-    print() << FPoint(1, 1 + y) << FString(size.getWidth(), L' ');
+    print() << FPoint{1, 1 + y} << FString{size.getWidth(), L' '};
   }
 
   flush();
@@ -1887,7 +1887,12 @@ void FWidget::setWindowFocus (bool enable)
 //----------------------------------------------------------------------
 FWidget::FCallbackPtr FWidget::getCallbackPtr (const FCallback& cb_function)
 {
-  return *cb_function.template target<FCallbackPtr>();
+  auto ptr = cb_function.template target<FCallbackPtr>();
+
+  if ( ptr )
+    return *ptr;
+  else
+    return nullptr;
 }
 
 //----------------------------------------------------------------------

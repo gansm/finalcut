@@ -208,7 +208,7 @@ class FStatusBar : public FWindow
 
     // Inquiries
     bool                isActivated (int) const;
-    bool                hasActivatedKey();
+    bool                hasActivatedKey() const;
 
     // Methods
     void                hide() override;

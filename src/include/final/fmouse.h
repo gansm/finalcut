@@ -103,7 +103,7 @@ class FMouse
 
     // Accessors
     virtual const FString getClassName() const;
-    FPoint&               getPos();
+    const FPoint&         getPos();
     void                  clearEvent();
 
     // Mutators
@@ -161,7 +161,7 @@ class FMouse
 
     // Accessors
     FMouseButton&       getButtonState();
-    FPoint&             getNewPos();
+    const FPoint&       getNewPos();
     uInt16              getMaxWidth();
     uInt16              getMaxHeight();
     uInt64              getDblclickInterval();
@@ -459,7 +459,7 @@ class FMouseControl
 
     // Accessors
     virtual const FString getClassName() const;
-    FPoint&               getPos();
+    const FPoint&         getPos();
     void                  clearEvent();
 
     // Mutators

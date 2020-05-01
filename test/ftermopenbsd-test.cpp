@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019 Markus Gans                                           *
+* Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -72,7 +72,7 @@ class FSystemTest : public finalcut::FSystem
     // Methods
     uChar            inPortByte (uShort) override;
     void             outPortByte (uChar, uShort) override;
-    int              isTTY (int) override;
+    int              isTTY (int) const override;
     int              ioctl (int, uLong, ...) override;
     int              open (const char*, int, ...) override;
     int              close (int) override;
@@ -123,7 +123,7 @@ void FSystemTest::outPortByte (uChar, uShort)
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::isTTY (int fd)
+int FSystemTest::isTTY (int fd) const
 {
   std::cerr << "Call: isatty (fd=" << fd << ")\n";
   return 1;

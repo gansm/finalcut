@@ -104,7 +104,7 @@ class FSystemTest : public finalcut::FSystem
     // Methods
     uChar            inPortByte (uShort) override;
     void             outPortByte (uChar, uShort) override;
-    int              isTTY (int) override;
+    int              isTTY (int) const override;
     int              ioctl (int, uLong, ...) override;
     int              open (const char*, int, ...) override;
     int              close (int) override;
@@ -1053,7 +1053,7 @@ void FSystemTest::outPortByte (uChar value, uShort port)
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::isTTY (int fd)
+int FSystemTest::isTTY (int fd) const
 {
   std::cerr << "Call: isatty (fd=" << fd << ")\n";
   return 1;

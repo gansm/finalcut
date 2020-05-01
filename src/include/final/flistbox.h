@@ -189,10 +189,10 @@ class FListBox : public FWidget
     void                setText (const FString&);
 
     // Inquiries
-    bool                isSelected (std::size_t);
+    bool                isSelected (std::size_t) const;
     bool                isSelected (listBoxItems::iterator) const;
     bool                isMultiSelection() const;
-    bool                hasBrackets (std::size_t);
+    bool                hasBrackets (std::size_t) const;
     bool                hasBrackets (listBoxItems::iterator) const;
 
     // Methods
@@ -250,8 +250,8 @@ class FListBox : public FWidget
     static FString&     getString (listBoxItems::iterator);
 
     // Inquiry
-    bool                isHorizontallyScrollable();
-    bool                isVerticallyScrollable();
+    bool                isHorizontallyScrollable() const;
+    bool                isVerticallyScrollable() const;
 
     // Methods
     void                init();
@@ -451,7 +451,7 @@ inline bool FListBox::setDisable()
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FListBox::isSelected (std::size_t index)
+inline bool FListBox::isSelected (std::size_t index) const
 { return index2iterator(index - 1)->selected; }
 
 //----------------------------------------------------------------------
@@ -463,7 +463,7 @@ inline bool FListBox::isMultiSelection() const
 { return multi_select; }
 
 //----------------------------------------------------------------------
-inline bool FListBox::hasBrackets(std::size_t index)
+inline bool FListBox::hasBrackets(std::size_t index) const
 { return bool(index2iterator(index - 1)->brackets > 0); }
 
 //----------------------------------------------------------------------
@@ -534,11 +534,11 @@ void FListBox::insert ( const ItemT& item
 }
 
 //----------------------------------------------------------------------
-inline bool FListBox::isHorizontallyScrollable()
+inline bool FListBox::isHorizontallyScrollable() const
 { return bool( max_line_width + 1 >= getClientWidth() ); }
 
 //----------------------------------------------------------------------
-inline bool FListBox::isVerticallyScrollable()
+inline bool FListBox::isVerticallyScrollable() const
 { return bool( getCount() > getClientHeight() ); }
 
 //----------------------------------------------------------------------

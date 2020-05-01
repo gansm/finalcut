@@ -73,12 +73,12 @@ void FDropDownListBox::setGeometry ( const FPoint& pos, const FSize& size
 
   if ( isNewFont() )
   {
-    FSize new_size(size);
+    FSize new_size{size};
     new_size.scaleBy(-1, 0);
-    list.setGeometry (FPoint(2, 1), new_size, adjust);
+    list.setGeometry (FPoint{2, 1}, new_size, adjust);
   }
   else
-    list.setGeometry (FPoint(1, 1), size, adjust);
+    list.setGeometry (FPoint{1, 1}, size, adjust);
 }
 
 //----------------------------------------------------------------------
@@ -113,10 +113,10 @@ void FDropDownListBox::init()
   ignorePadding();
   setShadow();
   // initialize geometry values
-  setGeometry (FPoint(1, 1), FSize(3, 3), false);
-  setMinimumSize (FSize(3, 3));
+  setGeometry (FPoint{1, 1}, FSize{3, 3}, false);
+  setMinimumSize (FSize{3, 3});
   hide();
-  list.setGeometry (FPoint(1, 1), FSize(3, 3), false);
+  list.setGeometry (FPoint{1, 1}, FSize{3, 3}, false);
 }
 
 //----------------------------------------------------------------------
@@ -142,7 +142,7 @@ void FDropDownListBox::drawShadow()
   const auto& wc = getFWidgetColors();
   finalcut::drawShadow(this);
   setColor (wc.shadow_fg, wc.shadow_bg);
-  print() << FPoint(int(getWidth()) + 1, 1) << fc::FullBlock;  // █
+  print() << FPoint{int(getWidth()) + 1, 1} << fc::FullBlock;  // █
 }
 
 //----------------------------------------------------------------------
@@ -183,7 +183,7 @@ FComboBox::~FComboBox()  // destructor
 void FComboBox::setSize (const FSize& size, bool adjust)
 {
   FWidget::setSize (size, adjust);
-  FSize input_field_size(size);
+  FSize input_field_size{size};
   input_field_size.scaleBy(-(1 + nf), 0);
   input_field.setSize (input_field_size, adjust);
 }
@@ -193,9 +193,9 @@ void FComboBox::setGeometry ( const FPoint& pos, const FSize& size
                             , bool adjust )
 {
   FWidget::setGeometry (pos, size, adjust);
-  FSize input_field_size(size);
+  FSize input_field_size{size};
   input_field_size.scaleBy(-(1 + nf), 0);
-  input_field.setGeometry (FPoint(1, 1), input_field_size, adjust);
+  input_field.setGeometry (FPoint{1, 1}, input_field_size, adjust);
 }
 
 //----------------------------------------------------------------------
@@ -222,12 +222,12 @@ bool FComboBox::setShadow (bool enable)
     && getEncoding() != fc::ASCII )
   {
     setFlags().shadow = true;
-    setShadowSize(FSize(1, 1));
+    setShadowSize(FSize{1, 1});
   }
   else
   {
     setFlags().shadow = false;
-    setShadowSize(FSize(0, 0));
+    setShadowSize(FSize{0, 0});
   }
 
   return getFlags().shadow;
@@ -324,12 +324,12 @@ void FComboBox::showDropDown()
 
   static constexpr std::size_t border = 2;  // Size of the top and bottom border
   setOpenMenu(&list_window);
-  FPoint p(getTermPos());
+  FPoint p{getTermPos()};
   p.move(0 - int(nf), 1);
   setClickedWidget(&list_window.list);
   const std::size_t w = getWidth();
   const std::size_t h = ( getCount() <= max_items ) ? getCount() : max_items;
-  list_window.setGeometry(p, FSize(w + std::size_t(nf), h + border));
+  list_window.setGeometry(p, FSize{w + std::size_t(nf), h + border});
   list_window.show();
   list_window.list.setFocus();
   list_window.redraw();
@@ -537,14 +537,14 @@ void FComboBox::draw()
   const FColorPair button_color = [this, &wc] ()
   {
     if ( list_window.isEmpty() )
-      return FColorPair ( wc.scrollbar_button_inactive_fg
-                        , wc.scrollbar_button_inactive_bg );
+      return FColorPair { wc.scrollbar_button_inactive_fg
+                        , wc.scrollbar_button_inactive_bg };
     else
-      return FColorPair ( wc.scrollbar_button_fg
-                        , wc.scrollbar_button_bg );
+      return FColorPair { wc.scrollbar_button_fg
+                        , wc.scrollbar_button_bg };
   }();
 
-  print() << FPoint(int(getWidth()) - nf, 1)
+  print() << FPoint{int(getWidth()) - nf, 1}
           << button_color;
 
  if ( isNewFont() )

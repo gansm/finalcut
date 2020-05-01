@@ -57,14 +57,14 @@ FTextView::~FTextView()  // destructor
 const FString FTextView::getText() const
 {
   if ( data.empty() )
-    return FString("");
+    return FString{""};
 
   std::size_t len{0};
 
   for (auto&& line : data)
     len += line.getLength() + 1;  // String length + '\n'
 
-  FString s(len);  // Reserves storage
+  FString s{len};  // Reserves storage
   auto iter = s.begin();
 
   for (auto&& line : data)
@@ -202,7 +202,7 @@ void FTextView::insert (const FString& str, int pos)
   if ( str.isEmpty() )
     s = "\n";
   else
-    s = FString(str).rtrim().expandTabs(getTabstop());
+    s = FString{str}.rtrim().expandTabs(getTabstop());
 
 
   auto text_split = s.split("\r\n");
@@ -303,8 +303,8 @@ void FTextView::clear()
 
   for (int y{0}; y < int(getTextHeight()); y++)
   {
-    print() << FPoint(2, 2 - nf_offset + y)
-            << FString(size, L' ');
+    print() << FPoint{2, 2 - nf_offset + y}
+            << FString{size, L' '};
   }
 
   updateTerminal();
@@ -601,7 +601,7 @@ void FTextView::draw()
     }
   }
 
-  setCursorPos (FPoint(int(getWidth()), int(getHeight())));
+  setCursorPos ({int(getWidth()), int(getHeight())});
   updateTerminal();
   flush();
 }
@@ -614,7 +614,7 @@ void FTextView::drawBorder()
     if ( isMonochron() )
       setReverse(true);
 
-    const FRect box(FPoint(1, 1), getSize());
+    const FRect box{FPoint{1, 1}, getSize()};
     finalcut::drawListBorder (this, box);
 
     if ( isMonochron() )
@@ -660,7 +660,7 @@ void FTextView::drawText()
     const FString line(getColumnSubString(data[n], pos, text_width));
     const auto column_width = getColumnWidth(line);
     std::size_t trailing_whitespace{0};
-    print() << FPoint(2, 2 - nf_offset + int(y));
+    print() << FPoint{2, 2 - nf_offset + int(y)};
 
     for (auto&& ch : line)  // Column loop
     {
@@ -675,7 +675,7 @@ void FTextView::drawText()
     if ( column_width <= text_width )
       trailing_whitespace = text_width - column_width;
 
-    print() << FString(trailing_whitespace, L' ');
+    print() << FString{trailing_whitespace, L' '};
   }
 
   if ( isMonochron() )
@@ -691,10 +691,10 @@ inline bool FTextView::useFDialogBorder()
   if ( parent
     && parent->isDialogWidget()
     && isPaddingIgnored()
-    && getGeometry() == FRect ( 1
+    && getGeometry() == FRect { 1
                               , 2
                               , parent->getWidth()
-                              , parent->getHeight() - 1) )
+                              , parent->getHeight() - 1} )
   {
     use_fdialog_border = true;
   }
@@ -730,13 +730,13 @@ void FTextView::changeOnResize()
 
   if ( isNewFont() )
   {
-    vbar->setGeometry (FPoint(int(width), 1), FSize(2, height - 1));
-    hbar->setGeometry (FPoint(1, int(height)), FSize(width - 2, 1));
+    vbar->setGeometry (FPoint{int(width), 1}, FSize{2, height - 1});
+    hbar->setGeometry (FPoint{1, int(height)}, FSize{width - 2, 1});
   }
   else
   {
-    vbar->setGeometry (FPoint(int(width), 2), FSize(1, height - 2));
-    hbar->setGeometry (FPoint(2, int(height)), FSize(width - 2, 1));
+    vbar->setGeometry (FPoint{int(width), 2}, FSize{1, height - 2});
+    hbar->setGeometry (FPoint{2, int(height)}, FSize{width - 2, 1});
   }
 
   vbar->resize();

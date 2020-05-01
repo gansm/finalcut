@@ -47,7 +47,7 @@ FWindow::FWindow(FWidget* parent)
   : FWidget(parent)
 {
   setWindowWidget();
-  FRect geometry (getTermGeometry());
+  FRect geometry {getTermGeometry()};
   geometry.move(-1, -1);
   createArea (geometry, getShadow(), getVWin());
   addWindow (this);
@@ -174,9 +174,9 @@ bool FWindow::setTransparentShadow (bool enable)
   setFlags().shadow = setFlags().trans_shadow = enable;
 
   if ( enable )
-    setShadowSize (FSize(2, 1));
+    setShadowSize (FSize{2, 1});
   else
-    setShadowSize (FSize(0, 0));
+    setShadowSize (FSize{0, 0});
 
   return enable;
 }
@@ -191,13 +191,13 @@ bool FWindow::setShadow (bool enable)
   {
     setFlags().shadow = true;
     setFlags().trans_shadow = false;
-    setShadowSize (FSize(1, 1));
+    setShadowSize (FSize{1, 1});
   }
   else
   {
     setFlags().shadow = false;
     setFlags().trans_shadow = false;
-    setShadowSize (FSize(0, 0));
+    setShadowSize (FSize{0, 0});
   }
 
   return enable;
@@ -241,23 +241,23 @@ void FWindow::drawBorder()
 {
   if ( isNewFont() )  // Draw a newfont outer frame
   {
-    const FRect r(FPoint(1, 1), getSize());
+    const FRect r{FPoint{1, 1}, getSize()};
     print() << r.getUpperLeftPos()
             << fc::NF_border_corner_upper_left                      // ⎡
-            << FString(r.getWidth() - 2, fc::NF_border_line_upper)  // ¯
+            << FString{r.getWidth() - 2, fc::NF_border_line_upper}  // ¯
             << fc::NF_rev_border_corner_upper_right;                // ⎤
 
     for (int y = r.getY1() + 1; y < r.getY2(); y++)
     {
-      print() << FPoint(r.getX1(), y)
+      print() << FPoint{r.getX1(), y}
               << fc::NF_border_line_left        // border left ⎸
-              << FPoint(r.getX2(), y)
+              << FPoint{r.getX2(), y}
               << fc::NF_rev_border_line_right;  // border right⎹
     }
 
     print() << r.getLowerLeftPos()
             << fc::NF_border_corner_lower_left                       // ⎣
-            << FString(r.getWidth() - 2, fc::NF_border_line_bottom)  // _
+            << FString{r.getWidth() - 2, fc::NF_border_line_bottom}  // _
             << fc::NF_rev_border_corner_lower_right;                 // ⎦
   }
   else
@@ -308,7 +308,7 @@ void FWindow::setY (int y, bool adjust)
 //----------------------------------------------------------------------
 void FWindow::setPos (const FPoint& p, bool adjust)
 {
-  FPoint pos(p);
+  FPoint pos{p};
 
   if ( pos.getY() < 1 )
     pos.setY(1);
@@ -331,7 +331,7 @@ void FWindow::setWidth (std::size_t w, bool adjust)
 
   if ( isVirtualWindow() && getWidth() != old_width )
   {
-    FRect geometry (getTermGeometry());
+    FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
     resizeArea (geometry, getShadow(), getVWin());
   }
@@ -345,7 +345,7 @@ void FWindow::setHeight (std::size_t h, bool adjust)
 
   if ( isVirtualWindow() && getHeight() != old_height )
   {
-    FRect geometry (getTermGeometry());
+    FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
     resizeArea (geometry, getShadow(), getVWin());
   }
@@ -361,7 +361,7 @@ void FWindow::setSize (const FSize& size, bool adjust)
   if ( isVirtualWindow()
     && (getWidth() != old_width || getHeight() != old_height) )
   {
-    FRect geometry (getTermGeometry());
+    FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
     resizeArea (geometry, getShadow(), getVWin());
   }
@@ -374,8 +374,8 @@ void FWindow::setGeometry ( const FPoint& p, const FSize& size, bool adjust)
 
   const int old_x = getX();
   const int old_y = getY();
-  FPoint pos(p);
-  const FSize old_size(getSize());
+  FPoint pos{p};
+  const FSize old_size{getSize()};
 
   if ( pos.getY() < 1 )
     pos.setY(1);
@@ -387,7 +387,7 @@ void FWindow::setGeometry ( const FPoint& p, const FSize& size, bool adjust)
 
   if ( getSize() != old_size )
   {
-    FRect geometry (getTermGeometry());
+    FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
     resizeArea (geometry, getShadow(), getVWin());
   }
@@ -658,7 +658,7 @@ bool FWindow::zoomWindow()
     // save the current geometry
     normalGeometry = getGeometry();
     const FRect oldGeometry (getTermGeometryWithShadow());
-    setGeometry (FPoint(1, 1), FSize(getMaxWidth(), getMaxHeight()));
+    setGeometry (FPoint{1, 1}, FSize{getMaxWidth(), getMaxHeight()});
     restoreVTerm (oldGeometry);
     redraw();
   }
@@ -772,7 +772,7 @@ void FWindow::adjustSize()
   FWidget::adjustSize();
 
   if ( zoomed )
-    setGeometry (FPoint(1, 1), FSize(getMaxWidth(), getMaxHeight()), false);
+    setGeometry (FPoint{1, 1}, FSize{getMaxWidth(), getMaxHeight()}, false);
   else if ( isVirtualWindow() )
   {
     if ( getTermX() != old_x )

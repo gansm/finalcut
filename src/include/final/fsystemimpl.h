@@ -121,7 +121,7 @@ class FSystemImpl : public FSystem
     { }
 #endif
 
-    int isTTY (int fd) override
+    int isTTY (int fd) const override
     {
       return ::isatty(fd);
     }

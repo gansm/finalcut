@@ -45,32 +45,32 @@ void cb_quit (const finalcut::FWidget*, FDataPtr data)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  finalcut::FApplication app(argc, argv);
+  finalcut::FApplication app{argc, argv};
 
   // Create a simple dialog box
-  finalcut::FDialog dgl(&app);
+  finalcut::FDialog dgl{&app};
   dgl.setText ("FDialog");
-  dgl.setGeometry (FPoint(4, 3), FSize(41, 11));
+  dgl.setGeometry (FPoint{4, 3}, FSize{41, 11});
 
   // Create text labels
-  finalcut::FLabel label_1(&dgl);
-  finalcut::FLabel label_2(&dgl);
+  finalcut::FLabel label_1{&dgl};
+  finalcut::FLabel label_2{&dgl};
 
   label_1 << finalcut::fc::BlackUpPointingTriangle
-          << std::wstring(L"\n")
+          << std::wstring{L"\n"}
           << finalcut::fc::BoxDrawingsUpAndRight
-          << finalcut::FString(2, finalcut::fc::BoxDrawingsHorizontal)
+          << finalcut::FString{2, finalcut::fc::BoxDrawingsHorizontal}
           << " Double click the title bar button,";
   label_2 << "press Q on the keyboard,\n"
           << "or push the button below to exit\n"
           << "the program.";
 
-  label_1.setGeometry (FPoint(1, 1), FSize(38, 2));
-  label_2.setGeometry (FPoint(5, 3), FSize(34, 3));
+  label_1.setGeometry (FPoint{1, 1}, FSize{38, 2});
+  label_2.setGeometry (FPoint{5, 3}, FSize{34, 3});
 
   // Create the quit button
-  finalcut::FButton btn("&Quit", &dgl);
-  btn.setGeometry (FPoint(16, 7), FSize(9, 1));
+  finalcut::FButton btn{"&Quit", &dgl};
+  btn.setGeometry (FPoint{16, 7}, FSize{9, 1});
 
   // Connect the button signal "clicked" with the callback function
   btn.addCallback

@@ -120,12 +120,12 @@ class FKeyboard final
     void                  setEscPressedCommand (const FKeyboardCommand&);
 
     // Inquiry
-    bool                  isInputDataPending();
+    bool                  isInputDataPending() const;
 
     // Methods
     static void           init();
     bool&                 unprocessedInput();
-    bool                  isKeyPressed();
+    bool                  isKeyPressed() const;
     void                  clearKeyBuffer();
     void                  clearKeyBufferOnTimeout();
     void                  fetchKeyCode();
@@ -248,7 +248,7 @@ inline void FKeyboard::setEscPressedCommand (const FKeyboardCommand& cmd)
 { escape_key_cmd = cmd; }
 
 //----------------------------------------------------------------------
-inline bool FKeyboard::isInputDataPending()
+inline bool FKeyboard::isInputDataPending() const
 { return input_data_pending; }
 //----------------------------------------------------------------------
 inline bool FKeyboard::setNonBlockingInput()

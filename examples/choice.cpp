@@ -97,24 +97,24 @@ void preset (std::vector<FRadioButtonPtr>& os)
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
-  finalcut::FString label_text("no OS");
+  finalcut::FString label_text{"no OS"};
 
   // Create the application object
-  finalcut::FApplication app(argc, argv);
+  finalcut::FApplication app{argc, argv};
 
   {  // Create a simple modal dialog box in this scope
-    finalcut::FDialog dgl(&app);
+    finalcut::FDialog dgl{&app};
     dgl.setModal();
     dgl.setText ("UNIX select");
     const std::size_t w{20};
     const std::size_t h{13};
     const int x = int(app.getDesktopWidth() - w) / 2;
     const int y = int(app.getDesktopHeight() - h) / 2;
-    dgl.setGeometry (FPoint(x, y), FSize(w, h));
+    dgl.setGeometry (FPoint{x, y}, FSize{w, h});
 
     // Create a button group
     finalcut::FButtonGroup checkButtonGroup("choice", &dgl);
-    checkButtonGroup.setGeometry (FPoint(2, 1), FSize(16, 7));
+    checkButtonGroup.setGeometry (FPoint{2, 1}, FSize{16, 7});
 
     // Create radio buttons
     std::vector<FRadioButtonPtr> os(9);
@@ -124,7 +124,7 @@ int main (int argc, char* argv[])
     // => checkButtonGroup.setScrollSize(...) is not required
     //    because a FButtonGroup is self-adjusting
     for (uInt i{0}; i < os.size(); i++)
-      os[i]->setGeometry(FPoint(1, int(1 + i)), FSize(12, 1));
+      os[i]->setGeometry(FPoint{1, int(1 + i)}, FSize{12, 1});
 
     preset(os);
 
@@ -134,7 +134,7 @@ int main (int argc, char* argv[])
 
     // Create a OK button
     finalcut::FButton ok("&OK", &dgl);
-    ok.setGeometry (FPoint(10, 9), FSize(8, 1));
+    ok.setGeometry (FPoint{10, 9}, FSize{8, 1});
 
     // Connect the button signal "clicked" with the callback function
     ok.addCallback
@@ -160,7 +160,7 @@ int main (int argc, char* argv[])
 
 
   // Create and show tooltip for two seconds
-  finalcut::FToolTip tooltip(&app);
+  finalcut::FToolTip tooltip{&app};
   tooltip.setText ("You have chosen " + label_text);
   tooltip.show();
   sleep(2);

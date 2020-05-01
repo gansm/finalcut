@@ -194,7 +194,7 @@ class FOptiMove final
     void          rightMove (char[], int&, int, int);
     void          leftMove (char[], int&, int, int);
 
-    bool          isWideMove (int, int, int, int);
+    bool          isWideMove (int, int, int, int) const;
     bool          isMethod0Faster (int&, int, int);
     bool          isMethod1Faster (int&, int, int, int, int);
     bool          isMethod2Faster (int&, int, int, int);

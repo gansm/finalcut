@@ -155,12 +155,12 @@ bool FLineEdit::setShadow (bool enable)
     && getEncoding() != fc::ASCII )
   {
     setFlags().shadow = true;
-    setShadowSize(FSize(1, 1));
+    setShadowSize(FSize{1, 1});
   }
   else
   {
     setFlags().shadow = false;
-    setShadowSize(FSize(0, 0));
+    setShadowSize(FSize{0, 0});
   }
 
   return getFlags().shadow;
@@ -280,7 +280,7 @@ void FLineEdit::hide()
     label->hide();
 
   FWidget::hide();
-  const FSize shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
+  const FSize shadow = hasShadow() ? FSize{1, 1} : FSize{0, 0};
   hideArea (getSize() + shadow);
 }
 
@@ -629,13 +629,13 @@ void FLineEdit::adjustLabel()
 
   if ( label_orientation == label_above )
   {
-    label->setGeometry ( FPoint(w->getX(), w->getY() - 1)
-                       , FSize(label_width, 1) );
+    label->setGeometry ( FPoint{w->getX(), w->getY() - 1}
+                       , FSize{label_width, 1} );
   }
   else if ( label_orientation == label_left )
   {
-    label->setGeometry ( FPoint(w->getX() - int(label_width) - 1, w->getY())
-                       , FSize(label_width, 1) );
+    label->setGeometry ( FPoint{w->getX() - int(label_width) - 1, w->getY()}
+                       , FSize{label_width, 1} );
   }
 }
 
@@ -685,7 +685,7 @@ void FLineEdit::init()
 }
 
 //----------------------------------------------------------------------
-bool FLineEdit::hasHotkey()
+bool FLineEdit::hasHotkey() const
 {
   if ( label_text.isEmpty() )
     return 0;
@@ -721,7 +721,7 @@ void FLineEdit::draw()
 void FLineEdit::drawInputField()
 {
   const bool isActiveFocus = getFlags().active && getFlags().focus;
-  print() << FPoint(1, 1);
+  print() << FPoint{1, 1};
 
   if ( isMonochron() )
   {
@@ -782,7 +782,7 @@ void FLineEdit::drawInputField()
   const int xpos = int(2 + cursor_pos_column
                          - text_offset_column
                          + char_width_offset);
-  setCursorPos (FPoint(xpos, 1));
+  setCursorPos ({xpos, 1});
 }
 
 //----------------------------------------------------------------------
@@ -804,10 +804,10 @@ inline std::size_t FLineEdit::printTextField()
 inline std::size_t FLineEdit::printPassword()
 {
   const std::size_t text_offset_column = text_offset;
-  const FString show_text(print_text.mid(1 + text_offset, getWidth() - 2));
+  const FString show_text{print_text.mid(1 + text_offset, getWidth() - 2)};
 
   if ( ! show_text.isEmpty() )
-    print() << FString(show_text.getLength(), fc::Bullet);  // •
+    print() << FString{show_text.getLength(), fc::Bullet};  // •
 
   x_pos = show_text.getLength();
   return text_offset_column;
@@ -831,7 +831,7 @@ inline std::size_t FLineEdit::getCursorColumnPos()
 //----------------------------------------------------------------------
 inline const FString FLineEdit::getPasswordText() const
 {
-  return FString(text.getLength(), fc::Bullet);  // •
+  return FString{text.getLength(), fc::Bullet};  // •
 }
 
 //----------------------------------------------------------------------

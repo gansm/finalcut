@@ -105,8 +105,8 @@ void FToolTip::init()
   setAlwaysOnTop();
   ignorePadding();
   // initialize geometry values
-  setGeometry (FPoint(1, 1), FSize(3, 3), false);
-  setMinimumSize (FSize(3, 3));
+  setGeometry (FPoint{1, 1}, FSize{3, 3}, false);
+  setMinimumSize (FSize{3, 3});
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.tooltip_fg);
   setBackgroundColor (wc.tooltip_bg);
@@ -127,7 +127,7 @@ void FToolTip::draw()
 
   for (auto&& line : text_components)
   {
-    print() << FPoint(x, y) << line;
+    print() << FPoint{x, y} << line;
     y++;
   }
 }
@@ -164,7 +164,7 @@ void FToolTip::calculateDimensions()
   else
     x = y = 1;
 
-  setGeometry (FPoint(x, y), FSize(w, h));
+  setGeometry (FPoint{x, y}, FSize{w, h});
 }
 
 //----------------------------------------------------------------------

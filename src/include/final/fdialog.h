@@ -192,13 +192,13 @@ class FDialog : public FWindow
     void                  deactivateZoomButton();
     void                  leaveZoomButton (const mouseStates&);
     void                  pressZoomButton (const mouseStates&);
-    bool                  isMouseOverMenu (const FPoint&);
+    bool                  isMouseOverMenu (const FPoint&) const;
     void                  passEventToSubMenu (const mouseStates&, const FMouseEvent*);
     void                  moveSizeKey (FKeyEvent*);
     void                  raiseActivateDialog();
     void                  lowerActivateDialog();
-    bool                  isOutsideTerminal (const FPoint&);
-    bool                  isLowerRightResizeCorner (const mouseStates&);
+    bool                  isOutsideTerminal (const FPoint&) const;
+    bool                  isLowerRightResizeCorner (const mouseStates&) const;
     void                  resizeMouseDown (const mouseStates&);
     void                  resizeMouseUpMove (const mouseStates&, bool = false);
     void                  cancelMouseResize();

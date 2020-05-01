@@ -115,8 +115,8 @@ class FScrollView : public FWidget
     void                setVerticalScrollBarMode (fc::scrollBarMode);
 
     // Inquiries
-    bool                hasBorder();
-    bool                isViewportPrint();
+    bool                hasBorder() const;
+    bool                isViewportPrint() const;
 
     // Methods
     void                clearArea (int = ' ') override;
@@ -156,7 +156,7 @@ class FScrollView : public FWidget
     static constexpr int horizontal_border_spacing = 2;
 
     // Accessors
-    FPoint              getViewportCursorPos();
+    const FPoint        getViewportCursorPos();
 
     // Methods
     void                init (const FWidget*);
@@ -182,7 +182,6 @@ class FScrollView : public FWidget
     FScrollbarPtr      hbar{nullptr};
     keyMap             key_map{};
     uInt8              nf_offset{0};
-    bool               border{true};
     bool               use_own_print_area{false};
     bool               update_scrollbar{true};
     fc::scrollBarMode  v_mode{fc::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
@@ -247,11 +246,11 @@ inline bool FScrollView::unsetBorder()
 { return setBorder(false); }
 
 //----------------------------------------------------------------------
-inline bool FScrollView::hasBorder()
-{ return border; }
+inline bool FScrollView::hasBorder() const
+{ return ! getFlags().no_border; }
 
 //----------------------------------------------------------------------
-inline bool FScrollView::isViewportPrint()
+inline bool FScrollView::isViewportPrint() const
 { return ! use_own_print_area; }
 
 //----------------------------------------------------------------------

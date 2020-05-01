@@ -110,8 +110,8 @@ class FLabel : public FWidget
     void                setText (const FString&);
 
     // Inquiries
-    bool                hasEmphasis();
-    bool                hasReverseMode();
+    bool                hasEmphasis() const;
+    bool                hasReverseMode() const;
 
     // Methods
     void                hide() override;
@@ -224,11 +224,11 @@ inline void FLabel::setNumber (lDouble num, int precision)
 { setText(FString().setNumber(num, precision)); }
 
 //----------------------------------------------------------------------
-inline bool FLabel::hasEmphasis()
+inline bool FLabel::hasEmphasis() const
 { return emphasis; }
 
 //----------------------------------------------------------------------
-inline bool FLabel::hasReverseMode()
+inline bool FLabel::hasReverseMode() const
 { return reverse_mode; }
 
 //----------------------------------------------------------------------

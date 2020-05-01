@@ -140,19 +140,19 @@ Menu::Menu (finalcut::FWidget* parent)
   // Headline labels
   Headline1 << " Key ";
   Headline1.ignorePadding();
-  Headline1.setGeometry(FPoint(3, 2), FSize(5, 1));
+  Headline1.setGeometry(FPoint{3, 2}, FSize{5, 1});
   Headline1.setEmphasis();
 
   Headline2 << " Function ";
   Headline2.ignorePadding();
-  Headline2.setGeometry(FPoint(19, 2), FSize(10, 1));
+  Headline2.setGeometry(FPoint{19, 2}, FSize{10, 1});
   Headline2.setEmphasis();
 
   // Info label
   Info << "<F10>            Activate menu bar\n"
        << "<Ctrl>+<Space>   Activate menu bar\n"
        << "<Meta>+<X>       Exit";
-  Info.setGeometry(FPoint(2, 1), FSize(36, 3));
+  Info.setGeometry(FPoint{2, 1}, FSize{36, 3});
 }
 
 //----------------------------------------------------------------------
@@ -320,13 +320,13 @@ void Menu::cb_message (finalcut::FWidget* widget, const FDataPtr)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  finalcut::FApplication app (argc, argv);
+  finalcut::FApplication app {argc, argv};
 
   // Create main dialog object
-  Menu main_dlg (&app);
+  Menu main_dlg {&app};
   main_dlg.setText ("Menu example");
-  main_dlg.setGeometry ( FPoint(int(1 + (app.getWidth() - 40) / 2), 2)
-                       , FSize(40, 6) );
+  main_dlg.setGeometry ( FPoint{int(1 + (app.getWidth() - 40) / 2), 2}
+                       , FSize{40, 6} );
   main_dlg.setShadow();
 
   // Set dialog main_dlg as main widget

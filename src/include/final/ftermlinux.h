@@ -96,7 +96,7 @@ class FTermLinux final
     const FString        getClassName() const;
     fc::linuxConsoleCursorStyle getCursorStyle();
     char*                getCursorStyleString();
-    int                  getFramebufferBpp();
+    int                  getFramebufferBpp() const;
 
     // Mutators
     bool                 setCursorStyle (CursorStyle);
@@ -105,8 +105,8 @@ class FTermLinux final
 
     // Inquiries
     bool                 isLinuxConsole();
-    bool                 isVGAFontUsed();
-    bool                 isNewFontUsed();
+    bool                 isVGAFontUsed() const;
+    bool                 isNewFontUsed() const;
 
     // Methods
     void                 init();
@@ -209,15 +209,15 @@ inline const FString FTermLinux::getClassName() const
 
 //----------------------------------------------------------------------
 #if defined(__linux__)
-inline int FTermLinux::getFramebufferBpp()
+inline int FTermLinux::getFramebufferBpp() const
 { return framebuffer_bpp; }
 
 //----------------------------------------------------------------------
-inline bool FTermLinux::isVGAFontUsed()
+inline bool FTermLinux::isVGAFontUsed() const
 { return vga_font; }
 
 //----------------------------------------------------------------------
-inline bool FTermLinux::isNewFontUsed()
+inline bool FTermLinux::isNewFontUsed() const
 { return new_font; }
 #endif  // defined(__linux__)
 

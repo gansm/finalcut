@@ -112,18 +112,18 @@ Listbox::Listbox (FWidget* parent)
 
   // listbox 1
   //----------
-  list1.setGeometry(FPoint(2, 1), FSize(18, 10));
+  list1.setGeometry(FPoint{2, 1}, FSize{18, 10});
   list1.setText ("FListBoxItem");
 
   for (int i{1}; i < 30; i++)
-    list1.insert (L"----- " + (FString() << i) + L" -----");
+    list1.insert (L"----- " + (FString{} << i) + L" -----");
 
   // listbox 2
   //----------
   for (int i{1}; i <= 15; i++)
     double_list.push_back(2 * double(i) + (double(i) / 100));
 
-  list2.setGeometry(FPoint(21, 1), FSize(10, 10));
+  list2.setGeometry(FPoint{21, 1}, FSize{10, 10});
   list2.setText ("double");
 
   //
@@ -146,11 +146,11 @@ Listbox::Listbox (FWidget* parent)
   TLD["gov"] = "Government";
 
   list3.insert (TLD.begin(), TLD.end(), mapToString);
-  list3.setGeometry(FPoint(32, 1), FSize(21, 10));
+  list3.setGeometry(FPoint{32, 1}, FSize{21, 10});
   list3.setText ("key: value");
 
   // Quit button
-  Quit.setGeometry(FPoint(42, 12), FSize(10, 1));
+  Quit.setGeometry(FPoint{42, 12}, FSize{10, 1});
   Quit.setText (L"&Quit");
 
   // Add quit button function callback
@@ -184,8 +184,8 @@ int main (int argc, char* argv[])
   // Create main dialog object
   Listbox d(&app);
   d.setText (L"Listbox");
-  d.setGeometry ( FPoint(int(1 + (app.getWidth() - 56) / 2), 5)
-                , FSize(56, 16) );
+  d.setGeometry ( FPoint{int(1 + (app.getWidth() - 56) / 2), 5}
+                , FSize{56, 16} );
   d.setShadow();
 
   // Set dialog d as main widget

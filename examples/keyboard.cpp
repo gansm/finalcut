@@ -68,8 +68,7 @@ void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
   if ( is_last_line )
     scrollAreaForward (getVirtualDesktop());
 
-  setAreaCursor ( finalcut::FPoint(1, getPrintPos().getY())
-                , true, getVirtualDesktop() );
+  setAreaCursor ({1, getPrintPos().getY()}, true, getVirtualDesktop());
 }
 
 //----------------------------------------------------------------------
@@ -82,11 +81,11 @@ void Keyboard::onAccel (finalcut::FAccelEvent* ev)
 //----------------------------------------------------------------------
 void Keyboard::draw()
 {
-  print() << finalcut::FPoint(1, 1)
+  print() << finalcut::FPoint{1, 1}
           << "---------------\n"
           << "Press Q to quit\n"
           << "---------------\n";
-  setAreaCursor (finalcut::FPoint(1, 4), true, getVirtualDesktop());
+  setAreaCursor ({1, 4}, true, getVirtualDesktop());
 }
 
 //----------------------------------------------------------------------
@@ -95,12 +94,12 @@ void Keyboard::draw()
 int main (int argc, char* argv[])
 {
   // Create the application object
-  finalcut::FApplication app(argc, argv);
+  finalcut::FApplication app{argc, argv};
   app.setForegroundColor(finalcut::fc::Default);
   app.setBackgroundColor(finalcut::fc::Default);
 
   // Create a keyboard object
-  Keyboard key(&app);
+  Keyboard key{&app};
   key.addAccelerator('q');
 
   // Set the keyboard object as main widget

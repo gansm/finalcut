@@ -191,7 +191,7 @@ const wchar_t reverse_newfont_list[] =
 //----------------------------------------------------------------------
 uInt env2uint (const char* env)
 {
-  const FString str(getenv(env));
+  const FString str{getenv(env)};
 
   if ( str.isEmpty() )
     return 0;
@@ -300,11 +300,11 @@ uChar unicode_to_cp437 (wchar_t ucs)
 }
 
 //----------------------------------------------------------------------
-FString getFullWidth (const FString& str)
+const FString getFullWidth (const FString& str)
 {
   // Converts half-width to full-width characters
 
-  FString s(str);
+  FString s{str};
   constexpr std::size_t HALF = 0;
   constexpr std::size_t FULL = 1;
 
@@ -328,11 +328,11 @@ FString getFullWidth (const FString& str)
 }
 
 //----------------------------------------------------------------------
-FString getHalfWidth (const FString& str)
+const FString getHalfWidth (const FString& str)
 {
   // Converts full-width to half-width characters
 
-  FString s(str);
+  FString s{str};
   constexpr std::size_t HALF = 0;
   constexpr std::size_t FULL = 1;
 
@@ -356,17 +356,18 @@ FString getHalfWidth (const FString& str)
 }
 
 //----------------------------------------------------------------------
-FString getColumnSubString ( const FString& str
-                           , std::size_t col_pos, std::size_t col_len )
+const FString getColumnSubString ( const FString& str
+                                 , std::size_t col_pos
+                                 , std::size_t col_len )
 {
-  FString s(str);
+  FString s{str};
   std::size_t col_first{1};
   std::size_t col_num{0};
   std::size_t first{1};
   std::size_t num{0};
 
   if ( col_len == 0 || s.isEmpty() )
-    return FString(L"");
+    return FString{L""};
 
   if ( col_pos == 0 )
     col_pos = 1;
@@ -406,7 +407,7 @@ FString getColumnSubString ( const FString& str
   }
 
   if ( col_first < col_pos )  // String length < col_pos
-    return FString(L"");
+    return FString{L""};
 
   return s.mid(first, num);
 }

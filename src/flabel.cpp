@@ -349,7 +349,7 @@ void FLabel::drawMultiLine()
     else
       label_text = multiline_text[y];
 
-    print() << FPoint(1, 1 + int(y));
+    print() << FPoint{1, 1 + int(y)};
 
     if ( hotkeypos != NOT_SET )
     {
@@ -374,7 +374,7 @@ void FLabel::drawSingleLine()
   if ( hotkeypos != NOT_SET )
     column_width--;
 
-  print() << FPoint(1, 1);
+  print() << FPoint{1, 1};
   align_offset = getAlignOffset(column_width);
   printLine (label_text);
 }
@@ -387,7 +387,7 @@ void FLabel::printLine (FString& line)
   const std::size_t width(getWidth());
 
   if ( align_offset > 0 )
-    print (FString(align_offset, ' '));  // leading spaces
+    print (FString{align_offset, ' '});  // leading spaces
 
   if ( column_width <= width )
   {
@@ -438,15 +438,15 @@ void FLabel::printLine (FString& line)
   if ( column_width > width )
   {
     // Print ellipsis
-    print() << FColorPair(ellipsis_color, getBackgroundColor())
-            << FString("..").left(width);
+    print() << FColorPair{ellipsis_color, getBackgroundColor()}
+            << FString{".."}.left(width);
     setColor();
   }
   else if ( align_offset + to_column < width )
   {
     // Print trailing spaces
     const std::size_t len = width - align_offset - to_column;
-    print (FString(len, ' '));
+    print (FString{len, ' '});
   }
 
   if ( hasReverseMode() )

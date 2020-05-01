@@ -86,12 +86,12 @@ const FString FKeyboard::getKeyName (const FKey keynum)
 {
   for (std::size_t i{0}; fc::fkeyname[i].string[0] != 0; i++)
     if ( fc::fkeyname[i].num && fc::fkeyname[i].num == keynum )
-      return FString(fc::fkeyname[i].string);
+      return FString{fc::fkeyname[i].string};
 
   if ( keynum > 32 && keynum < 127 )
-    return FString(char(keynum));
+    return FString{char(keynum)};
 
-  return FString("");
+  return FString{""};
 }
 
 //----------------------------------------------------------------------
@@ -115,7 +115,7 @@ bool& FKeyboard::unprocessedInput()
 }
 
 //----------------------------------------------------------------------
-bool FKeyboard::isKeyPressed()
+bool FKeyboard::isKeyPressed() const
 {
   fd_set ifds{};
   struct timeval tv{};

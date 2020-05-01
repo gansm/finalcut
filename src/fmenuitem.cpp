@@ -517,7 +517,7 @@ void FMenuItem::init (FWidget* parent)
     text_width--;
   }
 
-  setGeometry (FPoint(1, 1), FSize(text_width + 2, 1), false);
+  setGeometry (FPoint{1, 1}, FSize{text_width + 2, 1}, false);
 
   if ( ! parent )
     return;

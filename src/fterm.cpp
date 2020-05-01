@@ -2324,7 +2324,7 @@ bool FTerm::init_terminal()
   }
   catch (const std::system_error& ex)
   {
-    FString msg = "FTerm: " + FString(ex.what());
+    FString msg = "FTerm: " + FString{ex.what()};
     data->setExitMessage(msg);
     FApplication::exit(EXIT_FAILURE);
     return false;

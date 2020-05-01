@@ -893,7 +893,7 @@ inline void FOptiMove::leftMove ( char hmove[], int& htime
 
 //----------------------------------------------------------------------
 inline bool FOptiMove::isWideMove ( int xold, int yold
-                                  , int xnew, int ynew )
+                                  , int xnew, int ynew ) const
 {
   return bool ( xnew > MOVE_LIMIT
              && xnew < int(screen_width) - 1 - MOVE_LIMIT

@@ -101,7 +101,7 @@ bool FStatusKey::setMouseFocus(bool enable)
 //----------------------------------------------------------------------
 void FStatusKey::init (FWidget* parent)
 {
-  setGeometry (FPoint(1, 1), FSize(1, 1));
+  setGeometry (FPoint{1, 1}, FSize{1, 1});
 
   if ( parent && parent->isInstanceOf("FStatusBar") )
   {
@@ -159,7 +159,7 @@ void FStatusBar::setMessage (const FString& mgs)
 }
 
 //----------------------------------------------------------------------
-bool FStatusBar::hasActivatedKey()
+bool FStatusBar::hasActivatedKey() const
 {
   if ( ! key_list.empty() )
   {
@@ -178,7 +178,7 @@ void FStatusBar::hide()
   const FColor fg = wc.term_fg;
   const FColor bg = wc.term_bg;
   setColor (fg, bg);
-  print() << FPoint(1, 1) << FString(getDesktopWidth(), L' ');
+  print() << FPoint{1, 1} << FString{getDesktopWidth(), L' '};
   updateTerminal();
   FWindow::hide();
 }
@@ -212,7 +212,7 @@ void FStatusBar::drawMessage()
 
   const auto& wc = getFWidgetColors();
   setColor (wc.statusbar_fg, wc.statusbar_bg);
-  setPrintPos (FPoint(x, 1));
+  setPrintPos ({x, 1});
 
   if ( isMonochron() )
     setReverse(true);
@@ -309,8 +309,8 @@ void FStatusBar::clear()
 //----------------------------------------------------------------------
 void FStatusBar::adjustSize()
 {
-  setGeometry ( FPoint(1, int(getDesktopHeight()))
-              , FSize(getDesktopWidth(), 1), false );
+  setGeometry ( FPoint{1, int(getDesktopHeight())}
+              , FSize{getDesktopWidth(), 1}, false );
 }
 
 //----------------------------------------------------------------------
@@ -504,7 +504,7 @@ void FStatusBar::init()
   const std::size_t w = r->getWidth();
   const int h = int(r->getHeight());
   // initialize geometry values
-  setGeometry (FPoint(1, h), FSize(w, 1), false);
+  setGeometry (FPoint{1, h}, FSize{w, 1}, false);
   setAlwaysOnTop();
   setStatusBar(this);
   ignorePadding();
@@ -552,7 +552,7 @@ void FStatusBar::drawKeys()
     return;
   }
 
-  print() << FPoint(1, 1);
+  print() << FPoint{1, 1};
 
   if ( isMonochron() )
     setReverse(true);

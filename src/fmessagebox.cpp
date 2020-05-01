@@ -182,7 +182,7 @@ void FMessageBox::adjustSize()
 
   const int x = 1 + int((max_width - getWidth()) / 2);
   const int y = 1 + int((max_height - getHeight()) / 3);
-  setPos(FPoint(x, y), false);
+  setPos(FPoint{x, y}, false);
   FDialog::adjustSize();
 }
 
@@ -233,7 +233,7 @@ inline void FMessageBox::allocation (int button0, int button1, int button2)
   {
     button[0] = new FButton (this);
     button[0]->setText(button_text[button0]);
-    button[0]->setPos(FPoint(3, int(getHeight()) - 4), false);
+    button[0]->setPos(FPoint{3, int(getHeight()) - 4}, false);
     button[0]->setWidth(1, false);
     button[0]->setHeight(1, false);
     button[0]->setFocus();
@@ -242,7 +242,7 @@ inline void FMessageBox::allocation (int button0, int button1, int button2)
     {
       button[1] = new FButton(this);
       button[1]->setText(button_text[button1]);
-      button[1]->setPos(FPoint(17, int(getHeight()) - 4), false);
+      button[1]->setPos(FPoint{17, int(getHeight()) - 4}, false);
       button[1]->setWidth(0, false);
       button[1]->setHeight(1, false);
     }
@@ -251,7 +251,7 @@ inline void FMessageBox::allocation (int button0, int button1, int button2)
     {
       button[2] = new FButton(this);
       button[2]->setText(button_text[button2]);
-      button[2]->setPos(FPoint(32, int(getHeight()) - 4), false);
+      button[2]->setPos(FPoint{32, int(getHeight()) - 4}, false);
       button[2]->setWidth(0, false);
       button[2]->setHeight(1, false);
     }
@@ -358,7 +358,7 @@ void FMessageBox::draw()
     if ( center_text )  // center one line
       center_x = int((max_line_width - headline_width) / 2);
 
-    print() << FPoint(1 + msg_x + center_x, 4) << headline_text;
+    print() << FPoint{1 + msg_x + center_x, 4} << headline_text;
     head_offset = 2;
   }
 
@@ -371,7 +371,7 @@ void FMessageBox::draw()
     if ( center_text )  // center one line
       center_x = int((max_line_width - line_width) / 2);
 
-    print() << FPoint(1 + msg_x + center_x, 4 + head_offset + y)
+    print() << FPoint{1 + msg_x + center_x, 4 + head_offset + y}
             << line;
     y++;
   }

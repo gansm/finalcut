@@ -130,7 +130,7 @@ void FSwitch::draw()
 //----------------------------------------------------------------------
 void FSwitch::drawCheckButton()
 {
-  print() << FPoint(1 + int(switch_offset_pos), 1);
+  print() << FPoint{1 + int(switch_offset_pos), 1};
 
   if ( isChecked() )
     drawChecked();
@@ -179,13 +179,13 @@ inline void FSwitch::drawChecked()
   if ( isMonochron() || getMaxColor() < 16 )
     setBold(false);
 
-  print() << FColorPair(wc.button_inactive_fg, wc.button_inactive_bg)
+  print() << FColorPair{wc.button_inactive_fg, wc.button_inactive_bg}
           << off;
 
   if ( isMonochron() )
     setReverse(false);
 
-  setCursorPos (FPoint(3 + int(switch_offset_pos), 1));
+  setCursorPos ({3 + int(switch_offset_pos), 1});
 }
 
 //----------------------------------------------------------------------
@@ -233,7 +233,7 @@ inline void FSwitch::drawUnchecked()
   if ( isMonochron() || getMaxColor() < 16 )
     setBold(false);
 
-  setCursorPos (FPoint(7 + int(switch_offset_pos), 1));
+  setCursorPos ({7 + int(switch_offset_pos), 1});
 }
 
 }  // namespace finalcut

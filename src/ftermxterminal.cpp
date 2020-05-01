@@ -716,7 +716,7 @@ const FString FTermXTerminal::captureXTermFont()
         if ( n >= 5 && temp[n - 1] == BEL[0] && temp[n] == '\0' )
           temp[n - 1] = '\0';
 
-        return FString(temp);
+        return FString{temp};
       }
     }
   }

@@ -142,7 +142,7 @@ union attribute
   FCharAttribute bit;
   uInt8 byte[4];
 };
-  
+
 typedef struct
 {
   wchar_t ch;            // Character code

@@ -211,7 +211,7 @@ void FButtonGroup::hide()
   unsetViewportPrint();
 
   for (int y{0}; y < int(getHeight()); y++)
-    print() << FPoint(1, 1 + y) << FString(size, L' ');
+    print() << FPoint{1, 1 + y} << FString{size, L' '};
 
   setViewportPrint();
 }
@@ -405,9 +405,9 @@ void FButtonGroup::drawLabel()
   const auto hotkeypos = finalcut::getHotkeyPos(txt, label_text);
 
   if ( hasBorder() )
-    FWidget::setPrintPos (FPoint(2, 1));
+    FWidget::setPrintPos (FPoint{2, 1});
   else
-    FWidget::setPrintPos (FPoint(0, 1));
+    FWidget::setPrintPos (FPoint{0, 1});
 
   drawText (label_text, hotkeypos);
   setViewportPrint();
@@ -430,7 +430,7 @@ void FButtonGroup::init()
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.label_fg);
   setBackgroundColor (wc.label_bg);
-  setMinimumSize (FSize(7, 3));
+  setMinimumSize (FSize{7, 3});
   buttonlist.clear();  // no buttons yet
 }
 
@@ -480,7 +480,7 @@ void FButtonGroup::drawText ( const FString& label_text
   }
 
   if ( ellipsis )  // Print ellipsis
-    print() << FColorPair (wc.label_ellipsis_fg, wc.label_bg) << "..";
+    print() << FColorPair {wc.label_ellipsis_fg, wc.label_bg} << "..";
 
   if ( isMonochron() )
     setReverse(true);
@@ -549,17 +549,15 @@ void FButtonGroup::cb_buttonToggled (FWidget* widget, const FDataPtr)
 {
   const auto& button = static_cast<FToggleButton*>(widget);
 
-  if ( ! button->isChecked() )
-    return;
-
-  if ( buttonlist.empty() )
+  if ( (button && ! button->isChecked()) || buttonlist.empty() )
     return;
 
   for (auto&& item : buttonlist)
   {
     auto toggle_button = static_cast<FToggleButton*>(item);
 
-    if ( toggle_button != button
+    if ( toggle_button
+      && toggle_button != button
       && toggle_button->isChecked()
       && isRadioButton(toggle_button) )
     {

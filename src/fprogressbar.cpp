@@ -96,12 +96,12 @@ bool FProgressbar::setShadow (bool enable)
     && getEncoding() != fc::ASCII )
   {
     setFlags().shadow = true;
-    setShadowSize(FSize(1, 1));
+    setShadowSize(FSize{1, 1});
   }
   else
   {
     setFlags().shadow = false;
-    setShadowSize(FSize(0, 0));
+    setShadowSize(FSize{0, 0});
   }
 
   return enable;
@@ -113,8 +113,8 @@ void FProgressbar::hide()
   FWidget::hide();
   const FSize shadow = hasShadow() ? FSize(1, 1) : FSize(0, 0);
   hideArea (getSize() + shadow);
-  print() << FPoint(int(getWidth()) - 4, 0)
-          << ("      ");  // hide percentage
+  print() << FPoint{int(getWidth()) - 4, 0}
+          << "      ";  // hide percentage
 }
 
 //----------------------------------------------------------------------
@@ -162,7 +162,7 @@ void FProgressbar::drawProgressLabel()
   if ( isMonochron() )
     setReverse(true);
 
-  print() << FPoint(int(getWidth()) - 3, 0);
+  print() << FPoint{int(getWidth()) - 3, 0};
 
   if ( percentage > 100 )
     print ("--- %");
@@ -177,7 +177,7 @@ void FProgressbar::drawProgressLabel()
 void FProgressbar::drawProgressBar()
 {
   std::size_t len{0};
-  print() << FPoint(1, 1);
+  print() << FPoint{1, 1};
 
   if ( percentage > 0 && percentage <= 100 )
     len = drawProgressIndicator();
@@ -202,8 +202,8 @@ std::size_t FProgressbar::drawProgressIndicator()
   const auto& wc = getFWidgetColors();
   const double length = double(bar_length * percentage) / 100;
   auto len = std::size_t(trunc(length));
-  print() << FColorPair (wc.progressbar_fg, wc.progressbar_fg)
-          << FString (len, fc::FullBlock);  // █
+  print() << FColorPair {wc.progressbar_fg, wc.progressbar_fg}
+          << FString {len, fc::FullBlock};  // █
 
   if ( len >= bar_length )
     return len;
@@ -220,7 +220,7 @@ std::size_t FProgressbar::drawProgressIndicator()
   }
   else
   {
-    print() << FColorPair(wc.progressbar_fg, wc.progressbar_bg)
+    print() << FColorPair{wc.progressbar_fg, wc.progressbar_bg}
             << fc::LeftHalfBlock;  // ▌
   }
 
@@ -238,9 +238,9 @@ void FProgressbar::drawProgressBackground (std::size_t len)
   setColor (wc.progressbar_fg, wc.progressbar_bg);
 
   if ( getMaxColor() < 16 )
-    print() << FString (bg_len, fc::MediumShade);  // ▒
+    print() << FString {bg_len, fc::MediumShade};  // ▒
   else
-    print() << FString (bg_len, L' ');
+    print() << FString {bg_len, L' '};
 }
 
 }  // namespace finalcut

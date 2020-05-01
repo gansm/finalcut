@@ -230,7 +230,7 @@ void FTermcap::termcapKeys (char*& buffer)
 {
   // Get termcap keys
 
-  // Read termcap key sequences
+  // Read termcap key sequences up to the self-defined values
   for ( std::size_t i{0};
         fc::fkey[i].string == nullptr && fc::fkey[i].tname[0] != 0;
         i++ )

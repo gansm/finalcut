@@ -102,7 +102,7 @@ class FToggleButton : public FWidget
     virtual void        setText (const FString&);
 
     // Inquiries
-    bool                isChecked();
+    bool                isChecked() const;
 
     // Method
     void                hide() override;
@@ -208,7 +208,7 @@ inline bool FToggleButton::unsetChecked()
 { return setChecked(false); }
 
 //----------------------------------------------------------------------
-inline bool FToggleButton::isChecked()
+inline bool FToggleButton::isChecked() const
 { return checked; }
 
 //----------------------------------------------------------------------

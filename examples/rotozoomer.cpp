@@ -153,18 +153,18 @@ void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
   {
     Cx = Ax;
     Cy = Ay;
-    print() << FPoint(2, 3 + y);
+    print() << FPoint{2, 3 + y};
 
     for (int x = 0; x < Cols; x++)
     {
       wchar_t ch = data[((Cy >> 14) & 0xf) + ((Cx >> 10) & 0xf0)];
 
       if ( ch == '+' )
-        print() << finalcut::FColorPair(fc::Black, fc::Red);
+        print() << finalcut::FColorPair{fc::Black, fc::Red};
       else if ( ch == 'x' )
-        print() << finalcut::FColorPair(fc::Black, fc::Cyan);
+        print() << finalcut::FColorPair{fc::Black, fc::Cyan};
       else
-        print() << finalcut::FColorPair(fc::Black, fc::White);
+        print() << finalcut::FColorPair{fc::Black, fc::White};
 
       print() << ch;
       Cx += dxdx;
@@ -190,9 +190,9 @@ void RotoZoomer::generateReport()
   time_str << double(elapsed_ms) / 1000 << "ms";
   fps_str << double(loops) * 1000.0 / double(elapsed_ms);
 
-  rep << finalcut::FString(55, '-') << "\n"
+  rep << finalcut::FString{55, '-'} << "\n"
       << "Terminal            Size    Time      Loops  Frame rate\n"
-      << finalcut::FString(55, '-') << "\n"
+      << finalcut::FString{55, '-'} << "\n"
       << std::left << std::setw(20) << term_type
       << std::setw(8) << dimension_str
       << std::setw(10) << time_str
@@ -276,7 +276,7 @@ void RotoZoomer::adjustSize()
     if ( w > 8 )
       w -= 8;
 
-    setGeometry(FPoint(5, 1), FSize(w, h), false);
+    setGeometry(FPoint{5, 1}, FSize{w, h}, false);
   }
 
   finalcut::FDialog::adjustSize();
@@ -286,13 +286,13 @@ void RotoZoomer::adjustSize()
 //                               main part
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
-{  
+{
   bool benchmark{false};
   finalcut::FString report{};
   int quit_code{0};
 
   if ( argv[1] && ( strcmp(argv[1], "--help") == 0
-                  || strcmp(argv[1], "-h") == 0 ) )
+                 || strcmp(argv[1], "-h") == 0 ) )
   {
     std::cout << "RotoZoomer options:\n"
               << "  -b, --benchmark               "
@@ -305,17 +305,17 @@ int main (int argc, char* argv[])
   }
 
   {  // Create the application object in this scope
-    finalcut::FApplication app(argc, argv);
+    finalcut::FApplication app{argc, argv};
     app.setNonBlockingRead();
 
     // Create a simple dialog box
     constexpr int iterations = 314;
-    RotoZoomer roto(&app, benchmark, iterations);
+    RotoZoomer roto{&app, benchmark, iterations};
 
     if ( benchmark )
-      roto.setGeometry (FPoint(1, 1), FSize(80, 24));
+      roto.setGeometry (FPoint{1, 1}, FSize{80, 24});
     else
-      roto.setGeometry (FPoint(5, 1), FSize(72, 23));
+      roto.setGeometry (FPoint{5, 1}, FSize{72, 23});
 
     roto.setShadow();
 

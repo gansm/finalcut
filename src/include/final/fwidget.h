@@ -231,8 +231,8 @@ class FWidget : public FVTerm, public FObject
     std::size_t             getDesktopWidth();
     std::size_t             getDesktopHeight();
     const FWidgetFlags&     getFlags() const;
-    FPoint                  getCursorPos();
-    FPoint                  getPrintPos();
+    const FPoint            getCursorPos();
+    const FPoint            getPrintPos();
 
     // Mutators
     static void             setMainWidget (FWidget*);
@@ -306,7 +306,7 @@ class FWidget : public FVTerm, public FObject
     bool                    hasVisibleCursor() const;
     bool                    hasFocus() const;
     bool                    acceptFocus() const;  // is focusable
-    bool                    isPaddingIgnored();
+    bool                    isPaddingIgnored() const;
 
     // Methods
     FWidget*                childWidgetAt (const FPoint&);
@@ -334,7 +334,7 @@ class FWidget : public FVTerm, public FObject
     virtual void            hide();
     virtual bool            focusFirstChild();  // widget focusing
     virtual bool            focusLastChild();
-    FPoint                  termToWidgetPos (const FPoint&);
+    const FPoint            termToWidgetPos (const FPoint&);
     void                    print (const FPoint&) override;
     virtual void            move (const FPoint&);
     virtual void            drawBorder();
@@ -675,7 +675,10 @@ inline int FWidget::getY() const  // y-position relative to the widget
 
 //----------------------------------------------------------------------
 inline const FPoint FWidget::getPos() const  // position relative to the widget
-{ return adjust_wsize.getPos(); }
+{
+  const FPoint& pos = adjust_wsize.getPos();  // initialize pos
+  return pos;
+}
 
 //----------------------------------------------------------------------
 inline int FWidget::getTermX() const  // x-position on terminal
@@ -687,7 +690,7 @@ inline int FWidget::getTermY() const  // y-position on terminal
 
 //----------------------------------------------------------------------
 inline const FPoint FWidget::getTermPos() const  // position on terminal
-{ return FPoint(getTermX(), getTermY()); }
+{ return {getTermX(), getTermY()}; }
 
 //----------------------------------------------------------------------
 inline std::size_t FWidget::getWidth() const
@@ -699,7 +702,10 @@ inline std::size_t FWidget::getHeight() const
 
 //----------------------------------------------------------------------
 inline const FSize FWidget::getSize() const
-{ return adjust_wsize.getSize(); }
+{
+  const FSize& size = adjust_wsize.getSize();  // initialize size
+  return size;
+}
 
 //----------------------------------------------------------------------
 inline int FWidget::getTopPadding() const
@@ -727,7 +733,10 @@ inline std::size_t FWidget::getClientHeight() const
 
 //----------------------------------------------------------------------
 inline const FSize FWidget::getClientSize() const
-{ return wclient_offset.getSize(); }
+{
+  const FSize& size = wclient_offset.getSize();  // initialize size
+  return size;
+}
 
 //----------------------------------------------------------------------
 inline std::size_t FWidget::getMaxWidth() const
@@ -800,7 +809,7 @@ inline const FWidget::FWidgetFlags& FWidget::getFlags() const
 { return flags; }
 
 //----------------------------------------------------------------------
-inline FPoint FWidget::getCursorPos()
+inline const FPoint FWidget::getCursorPos()
 { return widget_cursor_position; }
 
 //----------------------------------------------------------------------
@@ -971,7 +980,7 @@ inline void FWidget::setFixedSize (const FSize& size)
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetCursorPos()
-{ setCursorPos (FPoint(-1, -1)); }
+{ setCursorPos ({-1, -1}); }
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetDoubleFlatLine (fc::sides side)
@@ -1026,7 +1035,7 @@ inline bool FWidget::acceptFocus() const  // is focusable
 { return flags.focusable; }
 
 //----------------------------------------------------------------------
-inline bool FWidget::isPaddingIgnored()
+inline bool FWidget::isPaddingIgnored() const
 { return ignore_padding; }
 
 //----------------------------------------------------------------------
@@ -1042,10 +1051,10 @@ inline void FWidget::delAccelerator()
 { delAccelerator(this); }
 
 //----------------------------------------------------------------------
-inline FPoint FWidget::termToWidgetPos (const FPoint& tPos)
+inline const FPoint FWidget::termToWidgetPos (const FPoint& tPos)
 {
-  return FPoint ( tPos.getX() + 1 - woffset.getX1() - adjust_wsize.getX()
-                , tPos.getY() + 1 - woffset.getY1() - adjust_wsize.getY() );
+  return { tPos.getX() + 1 - woffset.getX1() - adjust_wsize.getX()
+         , tPos.getY() + 1 - woffset.getY1() - adjust_wsize.getY() };
 }
 
 //----------------------------------------------------------------------
@@ -1057,7 +1066,7 @@ inline void FWidget::print (const FPoint& pos)
 //----------------------------------------------------------------------
 inline void FWidget::drawBorder()
 {
-  finalcut::drawBorder (this, FRect(FPoint(1, 1), getSize()));
+  finalcut::drawBorder (this, FRect(FPoint{1, 1}, getSize()));
 }
 
 //----------------------------------------------------------------------

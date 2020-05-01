@@ -260,7 +260,7 @@ class FOptiAttr final
     static bool   hasNoAttribute (const FChar* const&);
 
     // Methods
-    bool          hasColorChanged (const FChar* const&, const FChar* const&);
+    bool          hasColorChanged (const FChar* const&, const FChar* const&) const;
     void          resetColor (FChar*&);
     void          prevent_no_color_video_attributes (FChar*&, bool = false);
     void          deactivateAttributes (FChar*&, FChar*&);
@@ -272,7 +272,7 @@ class FOptiAttr final
     void          resetAttribute (FChar*&);
     void          reset (FChar*&);
     bool          caused_reset_attributes (const char[], uChar = all_tests);
-    bool          hasCharsetEquivalence();
+    bool          hasCharsetEquivalence() const;
     void          detectSwitchOn (const FChar* const&, const FChar* const&);
     void          detectSwitchOff (const FChar* const&, const FChar* const&);
     bool          switchOn();

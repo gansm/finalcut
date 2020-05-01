@@ -142,9 +142,39 @@ class FFileDialog : public FDialog
 
   private:
     // Typedef
-    struct dir_entry
+    struct FDirEntry
     {
-      std::string name;
+      // Constructor
+      FDirEntry()
+        : fifo{false}
+        , character_device{false}
+        , directory{false}
+        , block_device{false}
+        , regular_file{false}
+        , symbolic_link{false}
+        , socket{false}
+      { }
+
+      // Copy constructor
+      FDirEntry (const FDirEntry& entry)
+        : name{entry.name}
+        , fifo{entry.fifo}
+        , character_device{entry.character_device}
+        , directory{entry.directory}
+        , block_device{entry.block_device}
+        , regular_file{entry.regular_file}
+        , symbolic_link{entry.symbolic_link}
+        , socket{entry.socket}
+      { }
+
+      // Destructor
+      ~FDirEntry() = default;
+
+      // Copy assignment operator (=)
+      FDirEntry& operator = (const FDirEntry&) = default;
+
+      // Data members
+      std::string  name{};
       // Type of file
       uChar fifo             : 1;
       uChar character_device : 1;
@@ -156,7 +186,7 @@ class FFileDialog : public FDialog
       uChar                  : 1;  // padding bits
     };
 
-    typedef std::vector<dir_entry> dirEntries;
+    typedef std::vector<FDirEntry> dirEntries;
 
     // Methods
     void                 init();
@@ -168,7 +198,7 @@ class FFileDialog : public FDialog
     void                 sortDir();
     int                  readDir();
     void                 getEntry (const char* const, const struct dirent*);
-    void                 followSymLink (const char* const, dir_entry&);
+    void                 followSymLink (const char* const, FDirEntry&);
     void                 dirEntriesToList();
     void                 selectDirectoryEntry (const char* const);
     int                  changeDir (const FString&);
@@ -198,10 +228,10 @@ class FFileDialog : public FDialog
     bool             show_hidden{false};
 
     // Friend functions
-    friend bool sortByName ( const FFileDialog::dir_entry&
-                           , const FFileDialog::dir_entry& );
-    friend bool sortDirFirst ( const FFileDialog::dir_entry&
-                             , const FFileDialog::dir_entry& );
+    friend bool sortByName ( const FFileDialog::FDirEntry&
+                           , const FFileDialog::FDirEntry& );
+    friend bool sortDirFirst ( const FFileDialog::FDirEntry&
+                             , const FFileDialog::FDirEntry& );
     friend const FString fileChooser ( FWidget*
                                      , const FString&
                                      , const FString&

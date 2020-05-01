@@ -1522,7 +1522,7 @@ void FListView::init()
   selflist.push_back(this);
   root = selflist.begin();
   getNullIterator() = selflist.end();
-  setGeometry (FPoint(1, 1), FSize(5, 4), false);  // initialize geometry values
+  setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
@@ -1650,7 +1650,7 @@ void FListView::draw()
 
     for (int y{2}; y < int(getHeight()); y++)
     {
-      print() << FPoint(int(getWidth()) - 1, y)
+      print() << FPoint{int(getWidth()) - 1, y}
               << ' ';  // clear right side of the scrollbar
     }
   }
@@ -1679,7 +1679,7 @@ void FListView::draw()
 //----------------------------------------------------------------------
 void FListView::drawBorder()
 {
-  const FRect box(FPoint(1, 1), getSize());
+  const FRect box(FPoint{1, 1}, getSize());
   finalcut::drawListBorder (this, box);
 }
 
@@ -1749,7 +1749,7 @@ void FListView::drawList()
     const int tree_offset = ( tree_view ) ? int(item->getDepth() << 1) + 1 : 0;
     const int checkbox_offset = ( item->isCheckable() ) ? 1 : 0;
     path_end = getListEnd(item);
-    print() << FPoint(2, 2 + int(y));
+    print() << FPoint{2, 2 + int(y)};
 
     // Draw one FListViewItem
     drawListLine (item, getFlags().focus, is_current_line);
@@ -1762,7 +1762,7 @@ void FListView::drawList()
         xpos = -9999;  // by moving it outside the visible area
 
       setVisibleCursor (item->isCheckable());
-      setCursorPos (FPoint(xpos, 2 + int(y)));  // first character
+      setCursorPos ({xpos, 2 + int(y)});  // first character
     }
 
     last_visible_line = iter;
@@ -1779,8 +1779,8 @@ void FListView::drawList()
   // Clean empty space after last element
   while ( y < uInt(getClientHeight()) )
   {
-    print() << FPoint(2, 2 + int(y))
-            << FString(std::size_t(getClientWidth()), ' ');
+    print() << FPoint{2, 2 + int(y)}
+            << FString{std::size_t(getClientWidth()), ' '};
     y++;
   }
 }
@@ -1795,7 +1795,7 @@ void FListView::drawListLine ( const FListViewItem* item
 
   // Print the entry
   const std::size_t indent = item->getDepth() << 1;  // indent = 2 * depth
-  FString line(getLinePrefix (item, indent));
+  FString line{getLinePrefix (item, indent)};
 
   // Print columns
   if ( ! item->column_list.empty() )
@@ -1822,21 +1822,21 @@ void FListView::drawListLine ( const FListViewItem* item
 
       // Insert alignment spaces
       if ( align_offset > 0 )
-        line += FString(align_offset, L' ');
+        line += FString{align_offset, L' '};
 
       if ( align_offset + column_width <= width )
       {
         // Insert text and trailing space
         static constexpr std::size_t leading_space = 1;
         line += getColumnSubString (text, 1, width);
-        line += FString ( leading_space + width
-                        - align_offset - column_width, L' ');
+        line += FString { leading_space + width
+                        - align_offset - column_width, L' '};
       }
       else if ( align == fc::alignRight )
       {
         // Ellipse right align text
         const std::size_t first = getColumnWidth(text) + 1 - width;
-        line += FString (L"..");
+        line += FString {L".."};
         line += getColumnSubString (text, first, width - ellipsis_length);
         line += L' ';
       }
@@ -1844,7 +1844,7 @@ void FListView::drawListLine ( const FListViewItem* item
       {
         // Ellipse left align text and center text
         line += getColumnSubString (text, 1, width - ellipsis_length);
-        line += FString (L".. ");
+        line += FString {L".. "};
       }
     }
   }
@@ -1887,7 +1887,7 @@ void FListView::clearList()
 
   for (int y{0}; y < int(getHeight()) - 2; y++)
   {
-    print() << FPoint(2, 2 + y) << FString(size, L' ');
+    print() << FPoint{2, 2 + y} << FString{size, L' '};
   }
 
   drawScrollbars();
@@ -1932,7 +1932,7 @@ inline void FListView::setLineAttributes ( bool is_current
 //----------------------------------------------------------------------
 inline FString FListView::getCheckBox (const FListViewItem* item)
 {
-  FString checkbox{};
+  FString checkbox{""};
 
   if ( isNewFont() )
   {
@@ -1963,12 +1963,12 @@ inline FString FListView::getCheckBox (const FListViewItem* item)
 inline FString FListView::getLinePrefix ( const FListViewItem* item
                                         , std::size_t indent )
 {
-  FString line{};
+  FString line{""};
 
   if ( tree_view )
   {
     if ( indent > 0 )
-      line = FString(indent, L' ');
+      line = FString{indent, L' '};
 
     if ( item->isExpandable()  )
     {
@@ -2021,7 +2021,7 @@ inline void FListView::drawSortIndicator ( std::size_t& length
 inline void FListView::drawHeaderBorder (std::size_t length)
 {
   setColor();
-  const FString line (length, fc::BoxDrawingsHorizontal);
+  const FString line {length, fc::BoxDrawingsHorizontal};
   headerline << line;  // horizontal line
 }
 
@@ -2032,7 +2032,7 @@ void FListView::drawHeadlineLabel (const headerItems::const_iterator& iter)
   // Print label text
   static constexpr std::size_t leading_space = 1;
   const auto& text = iter->name;
-  FString txt(" " + text);
+  FString txt{" " + text};
   const std::size_t width = std::size_t(iter->width);
   std::size_t column_width = getColumnWidth(txt);
   const std::size_t column_max = leading_space + width;
@@ -2144,7 +2144,7 @@ void FListView::drawBufferedHeadline()
     column_width = getColumnWidth(headerline);
 
   // Print the header line
-  print() << FPoint(2, 1);
+  print() << FPoint{2, 1};
 
   if ( left_truncated_fullwidth )
     print (fc::SingleLeftAngleQuotationMark);  // ‹
@@ -2173,7 +2173,7 @@ void FListView::drawColumnEllipsis ( const headerItems::const_iterator& iter
 
   headerline << ' '
              << getColumnSubString (text, 1, uInt(width - ellipsis_length))
-             << FColorPair (wc.label_ellipsis_fg, wc.label_bg)
+             << FColorPair {wc.label_ellipsis_fg, wc.label_bg}
              << "..";
 
   if ( iter == header.end() - 1 )  // Last element
@@ -2518,13 +2518,13 @@ void FListView::changeOnResize()
 {
   if ( isNewFont() )
   {
-    vbar->setGeometry (FPoint(int(getWidth()), 2), FSize(2, getHeight() - 2));
-    hbar->setGeometry (FPoint(1, int(getHeight())), FSize(getWidth() - 2, 1));
+    vbar->setGeometry (FPoint{int(getWidth()), 2}, FSize{2, getHeight() - 2});
+    hbar->setGeometry (FPoint{1, int(getHeight())}, FSize{getWidth() - 2, 1});
   }
   else
   {
-    vbar->setGeometry (FPoint(int(getWidth()), 2), FSize(1, getHeight() - 2));
-    hbar->setGeometry (FPoint(2, int(getHeight())), FSize(getWidth() - 2, 1));
+    vbar->setGeometry (FPoint{int(getWidth()), 2}, FSize{1, getHeight() - 2});
+    hbar->setGeometry (FPoint{2, int(getHeight())}, FSize{getWidth() - 2, 1});
   }
 }
 

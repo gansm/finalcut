@@ -89,7 +89,7 @@ void Mandelbrot::draw()
   while ( y0 < y_max && current_line < Lines )
   {
     current_line++;
-    print() << FPoint(xoffset, yoffset + current_line);
+    print() << FPoint{xoffset, yoffset + current_line};
     double x0 = x_min;
 
     while ( x0 < x_max )
@@ -152,7 +152,7 @@ void Mandelbrot::adjustSize()
   if ( w > 10 )
     w -= 10;
 
-  setGeometry(FPoint(6, 1), FSize(w, h), false);
+  setGeometry(FPoint{6, 1}, FSize{w, h}, false);
   finalcut::FDialog::adjustSize();
 }
 
@@ -162,11 +162,11 @@ void Mandelbrot::adjustSize()
 int main (int argc, char* argv[])
 {
   // Create the application object
-  finalcut::FApplication app(argc, argv);
+  finalcut::FApplication app{argc, argv};
 
   // Create a simple dialog box
-  Mandelbrot mb(&app);
-  mb.setGeometry (FPoint(6, 1), FSize(70, 23));
+  Mandelbrot mb{&app};
+  mb.setGeometry (FPoint{6, 1}, FSize{70, 23});
   mb.setShadow();
 
   // Set the mandelbrot object as main widget

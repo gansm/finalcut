@@ -86,10 +86,9 @@ FApplication::FApplication ( const int& _argc
 
   if ( ! (_argc && _argv) )
   {
-    app_argc = 0;
     static char empty_str[1] = "";
-    auto empty = const_cast<char*>(empty_str);
-    app_argv = static_cast<char**>(&empty);
+    app_argc = 0;
+    app_argv = reinterpret_cast<char**>(&empty_str);
   }
 
   init (key_timeout, dblclick_interval);
@@ -392,7 +391,7 @@ void FApplication::cmd_options (const int& argc, char* argv[])
     {
       if ( std::strcmp(long_options[idx].name, "encoding") == 0 )
       {
-        FString encoding(optarg);
+        FString encoding{optarg};
         encoding = encoding.toLower();
 
         if ( encoding.includes("utf8") )
@@ -482,7 +481,7 @@ inline void FApplication::findKeyboardWidget()
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::isKeyPressed()
+inline bool FApplication::isKeyPressed() const
 {
   if ( mouse && mouse->isGpmMouseEnabled() )
     return mouse->getGpmKeyPressed(keyboard->unprocessedInput());

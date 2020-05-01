@@ -102,8 +102,8 @@ class FSize
     friend bool operator != (const FSize&, const FSize&);
     friend bool operator >= (const FSize&, const FSize&);
     friend bool operator >  (const FSize&, const FSize&);
-    friend FSize operator + (const FSize&, const FSize&);
-    friend FSize operator - (const FSize&, const FSize&);
+    friend const FSize operator + (const FSize&, const FSize&);
+    friend const FSize operator - (const FSize&, const FSize&);
 
     friend std::ostream& operator << (std::ostream&, const FSize&);
     friend std::istream& operator >> (std::istream&, FSize&);
@@ -179,20 +179,20 @@ inline bool operator > (const FSize& s1, const FSize& s2)
 { return s1.width > s2.width && s1.height > s2.height; }
 
 //----------------------------------------------------------------------
-inline FSize operator + (const FSize& s1, const FSize& s2)
+inline const FSize operator + (const FSize& s1, const FSize& s2)
 {
   constexpr std::size_t max = std::numeric_limits<std::size_t>::max();
   const std::size_t w = ( s1.width < max - s2.width) ? s1.width + s2.width : max;
   const std::size_t h = ( s1.height < max - s2.height) ? s1.height + s2.height : max;
-  return FSize(w, h);
+  return {w, h};
 }
 
 //----------------------------------------------------------------------
-inline FSize operator - (const FSize& s1, const FSize& s2)
+inline const FSize operator - (const FSize& s1, const FSize& s2)
 {
   const std::size_t w = ( s1.width >= s2.width ) ? s1.width - s2.width : 0;
   const std::size_t h = ( s1.height >= s2.height ) ? s1.height - s2.height : 0;
-  return FSize(w, h);
+  return {w, h};
 }
 
 }  // namespace finalcut

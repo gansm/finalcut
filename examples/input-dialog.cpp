@@ -61,21 +61,21 @@ void cb_publish (finalcut::FWidget* widget, FDataPtr data)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  finalcut::FApplication app(argc, argv);
+  finalcut::FApplication app{argc, argv};
 
   // Create a simple dialog box
-  finalcut::FDialog dgl(&app);
+  finalcut::FDialog dgl{&app};
   dgl.setText ("Data input");
-  dgl.setGeometry (FPoint(4, 2), FSize(37, 22));
+  dgl.setGeometry (FPoint{4, 2}, FSize{37, 22});
   dgl.setShadow();
 
   // Create input fields
-  finalcut::FLineEdit name_field (&dgl);
-  finalcut::FLineEdit pw_field (&dgl);
-  finalcut::FLineEdit email_field (&dgl);
-  finalcut::FLineEdit city_field (&dgl);
-  finalcut::FLineEdit st_field (&dgl);
-  finalcut::FLineEdit c_field (&dgl);
+  finalcut::FLineEdit name_field {&dgl};
+  finalcut::FLineEdit pw_field {&dgl};
+  finalcut::FLineEdit email_field {&dgl};
+  finalcut::FLineEdit city_field {&dgl};
+  finalcut::FLineEdit st_field {&dgl};
+  finalcut::FLineEdit c_field {&dgl};
 
   // Set input type to password
   pw_field.setInputType (finalcut::FLineEdit::password);
@@ -87,37 +87,37 @@ int main (int argc, char* argv[])
   st_field.setLabelText (L"&State");
   c_field.setLabelText (L"&Country");
 
-  name_field.setGeometry (FPoint(11, 1), FSize(23, 1));
-  pw_field.setGeometry (FPoint(11, 3), FSize(23, 1));
-  email_field.setGeometry (FPoint(11, 5), FSize(23, 1));
-  city_field.setGeometry (FPoint(11, 7), FSize(23, 1));
-  st_field.setGeometry (FPoint(11, 9), FSize(23, 1));
-  c_field.setGeometry (FPoint(11, 11), FSize(4, 1));
+  name_field.setGeometry (FPoint{11, 1}, FSize{23, 1});
+  pw_field.setGeometry (FPoint{11, 3}, FSize{23, 1});
+  email_field.setGeometry (FPoint{11, 5}, FSize{23, 1});
+  city_field.setGeometry (FPoint{11, 7}, FSize{23, 1});
+  st_field.setGeometry (FPoint{11, 9}, FSize{23, 1});
+  c_field.setGeometry (FPoint{11, 11}, FSize{4, 1});
 
   // Create the button group
-  finalcut::FButtonGroup radioButtonGroup ("Sex", &dgl);
-  radioButtonGroup.setGeometry(FPoint(2, 13), FSize(13, 4));
+  finalcut::FButtonGroup radioButtonGroup {"Sex", &dgl};
+  radioButtonGroup.setGeometry(FPoint{2, 13}, FSize{13, 4});
 
   // Create radio buttons
-  finalcut::FRadioButton male ("&Male", &radioButtonGroup);
-  finalcut::FRadioButton female ("&Female", &radioButtonGroup);
-  male.setGeometry (FPoint(1, 1), FSize(8, 1));
-  female.setGeometry (FPoint(1, 2), FSize(10, 1));
+  finalcut::FRadioButton male {"&Male", &radioButtonGroup};
+  finalcut::FRadioButton female {"&Female", &radioButtonGroup};
+  male.setGeometry (FPoint{1, 1}, FSize{8, 1});
+  female.setGeometry (FPoint{1, 2}, FSize{10, 1});
 
   // Create another button group
-  finalcut::FButtonGroup checkButtonGroup ("&Data options", &dgl);
-  checkButtonGroup.setGeometry(FPoint(16, 13), FSize(19, 4));
+  finalcut::FButtonGroup checkButtonGroup {"&Data options", &dgl};
+  checkButtonGroup.setGeometry(FPoint{16, 13}, FSize{19, 4});
 
   // Create checkbox buttons
-  finalcut::FCheckBox check1 ("Save data", &checkButtonGroup);
-  finalcut::FCheckBox check2 ("Encrypt data", &checkButtonGroup);
-  check1.setGeometry (FPoint(1, 1), FSize(13, 1));
-  check2.setGeometry (FPoint(1, 2), FSize(16, 1));
+  finalcut::FCheckBox check1 {"Save data", &checkButtonGroup};
+  finalcut::FCheckBox check2 {"Encrypt data", &checkButtonGroup};
+  check1.setGeometry (FPoint{1, 1}, FSize{13, 1});
+  check2.setGeometry (FPoint{1, 2}, FSize{16, 1});
   check2.setDisable();
 
   // Create a OK button
-  finalcut::FButton btn("&OK", &dgl);
-  btn.setGeometry (FPoint(24, 18), FSize(10, 1));
+  finalcut::FButton btn {"&OK", &dgl};
+  btn.setGeometry (FPoint{24, 18}, FSize{10, 1});
 
   // Connect checkbox signal "clicked" with a callback function
   check1.addCallback

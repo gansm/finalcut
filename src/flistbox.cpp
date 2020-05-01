@@ -285,7 +285,7 @@ void FListBox::clear()
 
   for (int y{0}; y < int(getHeight()) - 2; y++)
   {
-    print() << FPoint(2, 2 + y) << FString(size, L' ');
+    print() << FPoint{2, 2 + y} << FString{size, L' '};
   }
 }
 
@@ -654,7 +654,7 @@ void FListBox::init()
 {
   initScrollbar (vbar, fc::vertical, this, &FListBox::cb_vbarChange);
   initScrollbar (hbar, fc::horizontal, this, &FListBox::cb_hbarChange);
-  setGeometry (FPoint(1, 1), FSize(5, 4), false);  // initialize geometry values
+  setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
@@ -735,7 +735,7 @@ void FListBox::draw()
 
     for (int y{2}; y < int(getHeight()); y++)
     {
-      print() << FPoint(int(getWidth()) - 1, y)
+      print() << FPoint{int(getWidth()) - 1, y}
               << ' ';  // clear right side of the scrollbar
     }
   }
@@ -764,7 +764,7 @@ void FListBox::draw()
 //----------------------------------------------------------------------
 void FListBox::drawBorder()
 {
-  FRect box(FPoint(1, 1), getSize());
+  FRect box(FPoint{1, 1}, getSize());
   finalcut::drawListBorder (this, box);
 }
 
@@ -789,9 +789,9 @@ void FListBox::drawHeadline()
   if ( text.isNull() || text.isEmpty() )
     return;
 
-  const FString txt(" " + text + " ");
+  const FString txt{" " + text + " "};
   const auto column_width = getColumnWidth(txt);
-  print() << FPoint(2, 1);
+  print() << FPoint{2, 1};
   const auto& wc = getFWidgetColors();
 
   if ( isEnabled() )
@@ -805,7 +805,7 @@ void FListBox::drawHeadline()
   {
     // Print ellipsis
     print() << getColumnSubString (text, 1, getClientWidth() - 2)
-            << FColorPair (wc.label_ellipsis_fg, wc.label_bg) << "..";
+            << FColorPair {wc.label_ellipsis_fg, wc.label_bg} << "..";
   }
 }
 
@@ -991,7 +991,7 @@ inline void FListBox::setLineAttributes ( int y
   const std::size_t inc_len = inc_search.getLength();
   const std::size_t inc_width = getColumnWidth(inc_search);
   const auto& wc = getFWidgetColors();
-  print() << FPoint(2, 2 + int(y));
+  print() << FPoint{2, 2 + int(y)};
 
   if ( isLineSelected )
   {
@@ -1024,7 +1024,7 @@ inline void FListBox::setLineAttributes ( int y
         setColor ( wc.selected_current_element_fg
                  , wc.selected_current_element_bg );
 
-      setCursorPos (FPoint(3, 2 + int(y)));  // first character
+      setCursorPos ({3, 2 + int(y)});  // first character
     }
     else
     {
@@ -1041,10 +1041,10 @@ inline void FListBox::setLineAttributes ( int y
         {
           serach_mark = true;
           // Place the cursor on the last found character
-          setCursorPos (FPoint(2 + b + int(inc_width), 2 + int(y)));
+          setCursorPos ({2 + b + int(inc_width), 2 + int(y)});
         }
         else  // only highlighted
-          setCursorPos (FPoint(3 + b, 2 + int(y)));  // first character
+          setCursorPos ({3 + b, 2 + int(y)});  // first character
       }
       else
         setColor ( wc.current_element_fg
@@ -1721,13 +1721,13 @@ void FListBox::changeOnResize()
 {
   if ( isNewFont() )
   {
-    vbar->setGeometry (FPoint(int(getWidth()), 2), FSize(2, getHeight() - 2));
-    hbar->setGeometry (FPoint(1, int(getHeight())), FSize(getWidth() - 2, 1));
+    vbar->setGeometry (FPoint{int(getWidth()), 2}, FSize{2, getHeight() - 2});
+    hbar->setGeometry (FPoint{1, int(getHeight())}, FSize{getWidth() - 2, 1});
   }
   else
   {
-    vbar->setGeometry (FPoint(int(getWidth()), 2), FSize(1, getHeight() - 2));
-    hbar->setGeometry (FPoint(2, int(getHeight())), FSize(getWidth() - 2, 1));
+    vbar->setGeometry (FPoint{int(getWidth()), 2}, FSize{1, getHeight() - 2});
+    hbar->setGeometry (FPoint{2, int(getHeight())}, FSize{getWidth() - 2, 1});
   }
 }
 

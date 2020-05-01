@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2018 Markus Gans                                      *
+* Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -88,7 +88,7 @@ FMouseEvent::FMouseEvent ( fc::events ev_type  // constructor
 FMouseEvent::FMouseEvent ( fc::events ev_type  // constructor
                          , const FPoint& pos
                          , int button )
-  : FMouseEvent(ev_type, pos, FPoint(), button)
+  : FMouseEvent(ev_type, pos, FPoint{}, button)
 { }
 
 //----------------------------------------------------------------------
@@ -142,7 +142,7 @@ FWheelEvent::FWheelEvent ( fc::events ev_type  // constructor
 FWheelEvent::FWheelEvent ( fc::events ev_type  // constructor
                          , const FPoint& pos
                          , int wheel )
-  : FWheelEvent(ev_type, pos, FPoint(), wheel)
+  : FWheelEvent(ev_type, pos, FPoint{}, wheel)
 { }
 
 //----------------------------------------------------------------------

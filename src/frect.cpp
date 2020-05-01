@@ -83,37 +83,39 @@ bool FRect::isEmpty() const
 }
 
 //----------------------------------------------------------------------
-FPoint FRect::getPos() const
+const FPoint FRect::getPos() const
 {
-  return FPoint(X1, Y1);
+  return { X1, Y1 };
 }
 
 //----------------------------------------------------------------------
-FPoint FRect::getUpperLeftPos() const
+const FPoint FRect::getUpperLeftPos() const
 {
-  return FPoint(X1, Y1);
+  return { X1, Y1 };
 }
 
 //----------------------------------------------------------------------
-FPoint FRect::getUpperRightPos() const
+const FPoint FRect::getUpperRightPos() const
 {
-  return FPoint(X2, Y1);
+  return { X2, Y1 };
 }
 
 //----------------------------------------------------------------------
-FPoint FRect::getLowerLeftPos() const
-{ return FPoint(X1, Y2); }
-
-//----------------------------------------------------------------------
-FPoint FRect::getLowerRightPos() const
+const FPoint FRect::getLowerLeftPos() const
 {
-  return FPoint(X2, Y2);
+  return { X1, Y2 };
 }
 
 //----------------------------------------------------------------------
-FSize FRect::getSize() const
+const FPoint FRect::getLowerRightPos() const
 {
-  return FSize(getWidth(), getHeight());
+  return { X2, Y2 };
+}
+
+//----------------------------------------------------------------------
+const FSize FRect::getSize() const
+{
+  return { getWidth(), getHeight() };
 }
 
 //----------------------------------------------------------------------
@@ -310,44 +312,46 @@ bool FRect::overlap (const FRect &r) const
 FRect FRect::intersect (const FRect& r) const
 {
   // intersection: this ∩ r
-  FRect new_rect{};
-  new_rect.X1 = std::max(X1, r.X1);
-  new_rect.Y1 = std::max(Y1, r.Y1);
-  new_rect.X2 = std::min(X2, r.X2);
-  new_rect.Y2 = std::min(Y2, r.Y2);
-  return new_rect;
+  int _X1 = std::max(X1, r.X1);
+  int _Y1 = std::max(Y1, r.Y1);
+  int _X2 = std::min(X2, r.X2);
+  int _Y2 = std::min(Y2, r.Y2);
+  const FPoint p1{ _X1, _Y1 };
+  const FPoint p2{ _X2, _Y2 };
+  return { p1, p2 };
 }
 
 //----------------------------------------------------------------------
 FRect FRect::combined (const FRect& r) const
 {
   // Union: this ∪ r
-  FRect new_rect{};
-  new_rect.X1 = std::min(X1, r.X1);
-  new_rect.Y1 = std::min(Y1, r.Y1);
-  new_rect.X2 = std::max(X2, r.X2);
-  new_rect.Y2 = std::max(Y2, r.Y2);
-  return new_rect;
+  int _X1 = std::min(X1, r.X1);
+  int _Y1 = std::min(Y1, r.Y1);
+  int _X2 = std::max(X2, r.X2);
+  int _Y2 = std::max(Y2, r.Y2);
+  const FPoint p1{ _X1, _Y1 };
+  const FPoint p2{ _X2, _Y2 };
+  return { p1, p2 };
 }
 
 
 // FRect non-member operators
 //----------------------------------------------------------------------
-FRect operator + (const FRect& r, const FSize& s)
+const FRect operator + (const FRect& r, const FSize& s)
 {
-  return FRect ( r.X1
-               , r.Y1
-               , std::size_t(r.X2 - r.X1) + 1 + s.getWidth()
-               , std::size_t(r.Y2 - r.Y1) + 1 + s.getHeight() );
+  return { r.X1
+         , r.Y1
+         , std::size_t(r.X2 - r.X1) + 1 + s.getWidth()
+         , std::size_t(r.Y2 - r.Y1) + 1 + s.getHeight() };
 }
 
 //----------------------------------------------------------------------
-FRect operator - (const FRect& r, const FSize& s)
+const FRect operator - (const FRect& r, const FSize& s)
 {
-  return FRect ( r.X1
-               , r.Y1
-               , std::size_t(r.X2 - r.X1) + 1 - s.getWidth()
-               , std::size_t(r.Y2 - r.Y1) + 1 - s.getHeight() );
+  return { r.X1
+         , r.Y1
+         , std::size_t(r.X2 - r.X1) + 1 - s.getWidth()
+         , std::size_t(r.Y2 - r.Y1) + 1 - s.getHeight() };
 }
 
 //----------------------------------------------------------------------

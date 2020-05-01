@@ -55,7 +55,7 @@ const FString FTermBuffer::toString() const
                      return fchar.ch;
                    }
                  );
-  return FString(wide_string);
+  return wide_string;
 }
 
 //----------------------------------------------------------------------

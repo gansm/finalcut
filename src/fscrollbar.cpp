@@ -40,7 +40,7 @@ FScrollbar::FScrollbar(FWidget* parent)
   : FWidget(parent)
 {
   // The default scrollbar orientation is vertical
-  setGeometry(FPoint(1, 1), FSize(1, length), false);
+  setGeometry(FPoint{1, 1}, FSize{1, length}, false);
   init();
 }
 
@@ -440,7 +440,7 @@ void FScrollbar::init()
 {
   unsetFocusable();
   ignorePadding();
-  setGeometry(FPoint(1, 1), FSize(getWidth(), getHeight()));
+  setGeometry(FPoint{1, 1}, FSize{getWidth(), getHeight()});
 }
 
 //----------------------------------------------------------------------
@@ -464,7 +464,7 @@ void FScrollbar::drawVerticalBar()
 
   for (int z{1}; z <= slider_pos; z++)
   {
-    print() << FPoint(1, 1 + z);
+    print() << FPoint{1, 1 + z};
     drawVerticalBackgroundLine();
   }
 
@@ -475,7 +475,7 @@ void FScrollbar::drawVerticalBar()
 
   for (int z{1}; z <= int(slider_length); z++)  // Draw slider
   {
-    print() << FPoint(1, 1 + slider_pos + z);
+    print() << FPoint{1, 1 + slider_pos + z};
 
     if ( isNewFont() )
       print (' ');
@@ -490,7 +490,7 @@ void FScrollbar::drawVerticalBar()
 
   for (int z = slider_pos + int(slider_length) + 1; z <= int(bar_length); z++)
   {
-    print() << FPoint(1, 1 + z);
+    print() << FPoint{1, 1 + z};
     drawVerticalBackgroundLine();
   }
 
@@ -524,9 +524,9 @@ void FScrollbar::drawHorizontalBar()
   setColor (wc.scrollbar_fg, wc.scrollbar_bg);
 
   if ( isNewFont() )
-    print() << FPoint(3, 1);
+    print() << FPoint{3, 1};
   else
-    print() << FPoint(2, 1);
+    print() << FPoint{2, 1};
 
   for (int z{0}; z < slider_pos; z++)
     drawHorizontalBackgroundColumn();
@@ -571,24 +571,24 @@ void FScrollbar::drawButtons()
 
   if ( isNewFont() )
   {
-    print() << FPoint(1, 1);
+    print() << FPoint{1, 1};
 
     if ( bar_orientation == fc::vertical )
     {
       print() << NF_button_arrow_up
-              << FPoint(1, int(length))
+              << FPoint{1, int(length)}
               << NF_button_arrow_down;
     }
     else  // horizontal
     {
       print() << NF_button_arrow_left
-              << FPoint(int(length) - 1, 1)
+              << FPoint{int(length) - 1, 1}
               << NF_button_arrow_right;
     }
   }
   else
   {
-    print() << FPoint(1, 1);
+    print() << FPoint{1, 1};
 
     if ( isMonochron() )
       setReverse(true);
@@ -596,13 +596,13 @@ void FScrollbar::drawButtons()
     if ( bar_orientation == fc::vertical )
     {
       print() << fc::BlackUpPointingTriangle     // ▲
-              << FPoint(1, int(length))
+              << FPoint{1, int(length)}
               << fc::BlackDownPointingTriangle;  // ▼
     }
     else  // horizontal
     {
       print() << fc::BlackLeftPointingPointer    // ◄
-              << FPoint(int(length), 1)
+              << FPoint{int(length), 1}
               << fc::BlackRightPointingPointer;  // ►
     }
 

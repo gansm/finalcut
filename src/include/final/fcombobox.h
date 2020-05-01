@@ -89,7 +89,7 @@ class FDropDownListBox : public FWindow
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     // Inquiries
-    bool                isEmpty();
+    bool                isEmpty() const;
 
     // Methods
     void                show() override;
@@ -118,7 +118,7 @@ inline const FString FDropDownListBox::getClassName() const
 { return "FDropDownListBox"; }
 
 //----------------------------------------------------------------------
-inline bool FDropDownListBox::isEmpty()
+inline bool FDropDownListBox::isEmpty() const
 { return bool( list.getCount() == 0 ); }
 
 
@@ -178,7 +178,7 @@ class FComboBox : public FWidget
     void                setLabelOrientation (const FLineEdit::label_o);
 
     // Inquiries
-    bool                hasShadow();
+    bool                hasShadow() const;
 
     // Methods
     void                insert (const FListBoxItem&);
@@ -294,7 +294,7 @@ inline bool FComboBox::unsetEditable()
 { return setEditable(false); }
 
 //----------------------------------------------------------------------
-inline bool FComboBox::hasShadow()
+inline bool FComboBox::hasShadow() const
 { return getFlags().shadow; }
 
 //----------------------------------------------------------------------

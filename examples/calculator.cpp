@@ -251,7 +251,7 @@ Calc::Calc (FWidget* parent)
   //   Avoids calling a virtual function from the constructor
   //   (CERT, OOP50-CPP)
   FDialog::setText ("Calculator");
-  FDialog::setGeometry (FPoint(19, 6), FSize(37, 18));
+  FDialog::setGeometry (FPoint{19, 6}, FSize{37, 18});
 
   mapKeyFunctions();
   clearInfixOperator();
@@ -263,13 +263,13 @@ Calc::Calc (FWidget* parent)
     button_no[key] = key;
 
     if ( key == Equals )
-      btn->setGeometry(FPoint(30, 15), FSize(5, 3));
+      btn->setGeometry(FPoint{30, 15}, FSize{5, 3});
     else
     {
       const std::size_t n = ( key <= Three ) ? 0 : 1;
       const int x = int(key + n) % 5 * 7 + 2;
       const int y = int(key + n) / 5 * 2 + 3;
-      btn->setGeometry(FPoint(x, y), FSize(5, 1));
+      btn->setGeometry(FPoint{x, y}, FSize{5, 1});
     }
 
     btn->setFlat();
@@ -398,7 +398,7 @@ void Calc::cb_buttonClicked (const finalcut::FWidget*, FDataPtr data)
 //----------------------------------------------------------------------
 void Calc::drawDispay()
 {
-  finalcut::FString display(input);
+  finalcut::FString display{input};
 
   if ( display.isNull() || display.isEmpty()  )
     display = L'0';
@@ -410,7 +410,7 @@ void Calc::drawDispay()
     display = display.left(display.getLength() - 1);
 
   if ( ! display.isEmpty() && display.getLength() < max_char )
-    display.insert(finalcut::FString(max_char - display.getLength(), L' '), 0);
+    display.insert(finalcut::FString{max_char - display.getLength(), L' '}, 0);
 
   if ( display.getLength() > max_char )
     display = display.left(max_char);
@@ -425,9 +425,9 @@ void Calc::drawDispay()
     setReverse(false);
 
   const auto& wc = getFWidgetColors();
-  print() << FColorPair(fc::Black, fc::LightGray)
-          << FPoint(3, 3) << display << ' '
-          << FColorPair(wc.dialog_fg, wc.dialog_bg);
+  print() << FColorPair{fc::Black, fc::LightGray}
+          << FPoint{3, 3} << display << ' '
+          << FColorPair{wc.dialog_fg, wc.dialog_bg};
 
   if ( isMonochron() )
     setReverse(true);
@@ -439,12 +439,12 @@ void Calc::drawDispay()
     const wchar_t top_line        {fc::NF_border_line_upper};
     const wchar_t right_line      {fc::NF_rev_border_line_right};
     const wchar_t left_line       {fc::NF_border_line_left};
-    print() << FPoint(3, 2) << finalcut::FString(33, bottom_line);
-    print() << FPoint(2, 3) << right_line;
-    print() << FPoint(36, 3) << left_line;
-    print() << FPoint(3, 4);
-    const finalcut::FString top_bottom_line_5 (5, top_bottom_line);
-    const finalcut::FString top_line_2 (2, top_line);
+    print() << FPoint{3, 2} << finalcut::FString{33, bottom_line};
+    print() << FPoint{2, 3} << right_line;
+    print() << FPoint{36, 3} << left_line;
+    print() << FPoint{3, 4};
+    const finalcut::FString top_bottom_line_5 {5, top_bottom_line};
+    const finalcut::FString top_line_2 {2, top_line};
     print ( top_bottom_line_5 + top_line_2
           + top_bottom_line_5 + top_line_2
           + top_bottom_line_5 + top_line_2
@@ -456,10 +456,10 @@ void Calc::drawDispay()
     const wchar_t vertical_and_right {fc::BoxDrawingsVerticalAndRight};
     const wchar_t horizontal         {fc::BoxDrawingsHorizontal};
     const wchar_t vertical_and_left  {fc::BoxDrawingsVerticalAndLeft};
-    finalcut::FString separator ( finalcut::FString(vertical_and_right)
-                                + finalcut::FString(35, horizontal)
-                                + finalcut::FString(vertical_and_left) );
-    print() << FPoint(1, 4) << separator;
+    finalcut::FString separator ( finalcut::FString{vertical_and_right}
+                                + finalcut::FString{35, horizontal}
+                                + finalcut::FString{vertical_and_left} );
+    print() << FPoint{1, 4} << separator;
   }
 }
 

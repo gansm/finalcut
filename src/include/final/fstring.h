@@ -190,8 +190,8 @@ class FString
     char* c_str();
     const std::string toString() const;
 
-    FString toLower()  const;
-    FString toUpper()  const;
+    const FString toLower()  const;
+    const FString toUpper()  const;
 
     sInt16  toShort()  const;
     uInt16  toUShort() const;
@@ -202,13 +202,13 @@ class FString
     float   toFloat()  const;
     double  toDouble() const;
 
-    FString ltrim() const;
-    FString rtrim() const;
-    FString trim()  const;
+    const FString ltrim() const;
+    const FString rtrim() const;
+    const FString trim()  const;
 
-    FString left (std::size_t) const;
-    FString right (std::size_t) const;
-    FString mid (std::size_t, std::size_t) const;
+    const FString left (std::size_t) const;
+    const FString right (std::size_t) const;
+    const FString mid (std::size_t, std::size_t) const;
 
     FStringList split (const FString&);
     FString& setString (const FString&);
@@ -227,10 +227,10 @@ class FString
     const FString& insert (const FString&, int);
     const FString& insert (const FString&, std::size_t);
 
-    FString replace (const FString&, const FString&);
+    const FString replace (const FString&, const FString&);
 
-    FString replaceControlCodes() const;
-    FString expandTabs (int = 8) const;
+    const FString replaceControlCodes() const;
+    const FString expandTabs (int = 8) const;
     FString removeDel() const;
     FString removeBackspaces() const;
 

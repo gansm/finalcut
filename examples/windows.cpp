@@ -76,33 +76,33 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   left_arrow.setForegroundColor (wc.label_inactive_fg);
   left_arrow.setEmphasis();
   left_arrow.ignorePadding();
-  left_arrow.setGeometry (FPoint(2, 2), FSize(1, 1));
+  left_arrow.setGeometry (FPoint{2, 2}, FSize{1, 1});
 
   right_arrow = arrow_up;
   right_arrow.setForegroundColor (wc.label_inactive_fg);
   right_arrow.setEmphasis();
   right_arrow.ignorePadding();
-  right_arrow.setGeometry (FPoint(int(getWidth()) - 1, 2), FSize(1, 1));
+  right_arrow.setGeometry (FPoint{int(getWidth()) - 1, 2}, FSize{1, 1});
 
   top_left_label = "menu";
   top_left_label.setForegroundColor (wc.label_inactive_fg);
   top_left_label.setEmphasis();
-  top_left_label.setGeometry (FPoint(1, 1), FSize(6, 1));
+  top_left_label.setGeometry (FPoint{1, 1}, FSize{6, 1});
 
   top_right_label = "zoom";
   top_right_label.setAlignment (fc::alignRight);
   top_right_label.setForegroundColor (wc.label_inactive_fg);
   top_right_label.setEmphasis();
-  top_right_label.setGeometry (FPoint(int(getClientWidth()) - 5, 1), FSize(6, 1));
+  top_right_label.setGeometry (FPoint{int(getClientWidth()) - 5, 1}, FSize{6, 1});
 
-  finalcut::FString bottom_label_text ( "resize\n"
-                                        "corner\n" );
+  finalcut::FString bottom_label_text { "resize\n"
+                                        "corner\n" };
   bottom_label_text += arrow_down;
   bottom_label = bottom_label_text;
   bottom_label.setAlignment (fc::alignRight);
   bottom_label.setForegroundColor (wc.label_inactive_fg);
   bottom_label.setEmphasis();
-  bottom_label.setGeometry (FPoint(13, 3), FSize(6, 3));
+  bottom_label.setGeometry (FPoint{13, 3}, FSize{6, 3});
 }
 
 //----------------------------------------------------------------------
@@ -124,12 +124,12 @@ void SmallWindow::adjustSize()
   }
 
   finalcut::FDialog::adjustSize();
-  right_arrow.setGeometry ( FPoint(int(getWidth()) - 1, 2)
-                          , FSize(1, 1) );
-  top_right_label.setGeometry ( FPoint(int(getClientWidth()) - 5, 1)
-                              , FSize(6, 1) );
-  bottom_label.setGeometry ( FPoint(1, int(getClientHeight()) - 2)
-                          , FSize(getClientWidth(), 3) );
+  right_arrow.setGeometry ( FPoint{int(getWidth()) - 1, 2}
+                          , FSize{1, 1} );
+  top_right_label.setGeometry ( FPoint{int(getClientWidth()) - 5, 1}
+                              , FSize{6, 1} );
+  bottom_label.setGeometry ( FPoint{1, int(getClientHeight()) - 2}
+                           , FSize{getClientWidth(), 3} );
 }
 
 //----------------------------------------------------------------------
@@ -311,11 +311,11 @@ void Window::configureFileMenuItems()
 void Window::configureDialogButtons()
 {
   // Dialog buttons
-  CreateButton.setGeometry (FPoint(2, 2), FSize(9, 1));
+  CreateButton.setGeometry (FPoint{2, 2}, FSize{9, 1});
   CreateButton.setText (L"&Create");
-  CloseButton.setGeometry (FPoint(15, 2), FSize(9, 1));
+  CloseButton.setGeometry (FPoint{15, 2}, FSize{9, 1});
   CloseButton.setText (L"C&lose");
-  QuitButton.setGeometry (FPoint(28, 2), FSize(9, 1));
+  QuitButton.setGeometry (FPoint{28, 2}, FSize{9, 1});
   QuitButton.setText (L"&Quit");
 
   // Add button callback
@@ -352,7 +352,7 @@ void Window::adjustSize()
   if ( Y < 2 )
     Y = 2;
 
-  setPos (FPoint(X, Y));
+  setPos (FPoint{X, Y});
   const auto& first = windows.begin();
   auto iter = first;
 
@@ -363,7 +363,7 @@ void Window::adjustSize()
       const int n = int(std::distance(first, iter));
       const int x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
       const int y = dy + 11 + int(n / 3) * 3;
-      (*iter)->dgl->setPos (FPoint(x, y));
+      (*iter)->dgl->setPos (FPoint{x, y});
     }
 
     ++iter;
@@ -460,8 +460,8 @@ void Window::cb_createWindows (const finalcut::FWidget*, const FDataPtr)
       const int n = int(std::distance(first, iter));
       const int x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
       const int y = dy + 11 + int(n / 3) * 3;
-      win->setGeometry (FPoint(x, y), FSize(20, 8));
-      win->setMinimumSize (FSize(20, 8));
+      win->setGeometry (FPoint{x, y}, FSize{20, 8});
+      win->setMinimumSize (FSize{20, 8});
       win->setResizeable();
       win->show();
 
@@ -561,13 +561,13 @@ void Window::cb_destroyWindow (const finalcut::FWidget*, FDataPtr data)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  finalcut::FApplication app (argc, argv);
+  finalcut::FApplication app {argc, argv};
 
   // Create main dialog object
-  Window main_dlg (&app);
+  Window main_dlg {&app};
   main_dlg.setText ("Main window");
-  main_dlg.setGeometry ( FPoint(int(1 + (app.getWidth() - 40) / 2), 2)
-                       , FSize(40, 6) );
+  main_dlg.setGeometry ( FPoint{int(1 + (app.getWidth() - 40) / 2), 2}
+                       , FSize{40, 6} );
 
   // Set dialog main_dlg as main widget
   finalcut::FWidget::setMainWidget (&main_dlg);

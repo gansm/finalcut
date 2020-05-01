@@ -139,7 +139,7 @@ void move (int xold, int yold, int xnew, int ynew)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  finalcut::FApplication TermApp(argc, argv);
+  finalcut::FApplication TermApp{argc, argv};
 
   // Pointer to the global virtual terminal object
   app = &TermApp;
@@ -147,7 +147,7 @@ int main (int argc, char* argv[])
   // Get screen dimension
   int xmax = int(TermApp.getDesktopWidth() - 1);
   int ymax = int(TermApp.getDesktopHeight() - 1);
-  finalcut::FString line(std::size_t(xmax) + 1, '-');
+  finalcut::FString line{std::size_t(xmax) + 1, '-'};
 
   // Place the cursor in the upper left corner
   TermApp.setTermXY(0, 0);

@@ -1221,7 +1221,7 @@ bool FOptiAttr::hasNoAttribute (const FChar* const& attr)
 
 //----------------------------------------------------------------------
 inline bool FOptiAttr::hasColorChanged ( const FChar* const& term
-                                       , const FChar* const& next )
+                                       , const FChar* const& next ) const
 {
   if ( term && next )
   {
@@ -1586,7 +1586,7 @@ bool FOptiAttr::caused_reset_attributes (const char cap[], uChar test)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::hasCharsetEquivalence()
+inline bool FOptiAttr::hasCharsetEquivalence() const
 {
   // Detect if alt charset and pc charset are the same sequences
 

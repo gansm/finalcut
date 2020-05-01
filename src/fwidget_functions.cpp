@@ -162,26 +162,26 @@ void drawTransparentShadow (FWidget* w)
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
   const auto& wcolors = FWidget::wcolors;
-  w->print() << FStyle (fc::Transparent)
-             << FPoint (int(width) + 1, 1)
+  w->print() << FStyle {fc::Transparent}
+             << FPoint {int(width) + 1, 1}
              << "  "
-             << FStyle (fc::Reset)
-             << FColorPair (wcolors.shadow_bg, wcolors.shadow_fg)
-             << FStyle (fc::ColorOverlay);
+             << FStyle {fc::Reset}
+             << FColorPair {wcolors.shadow_bg, wcolors.shadow_fg}
+             << FStyle {fc::ColorOverlay};
 
   for (std::size_t y{1}; y < height; y++)
   {
-    w->print() << FPoint(int(width) + 1, int(y) + 1) << "  ";
+    w->print() << FPoint{int(width) + 1, int(y) + 1} << "  ";
   }
 
-  w->print() << FStyle (fc::Reset) << FStyle (fc::Transparent)
-             << FPoint (1, int(height) + 1)
+  w->print() << FStyle {fc::Reset} << FStyle {fc::Transparent}
+             << FPoint {1, int(height) + 1}
              << "  "
-             << FStyle (fc::Reset)
-             << FColorPair (wcolors.shadow_bg, wcolors.shadow_fg)
-             << FStyle (fc::ColorOverlay)
-             << FString (width, L' ')
-             << FStyle (fc::Reset);
+             << FStyle {fc::Reset}
+             << FColorPair {wcolors.shadow_bg, wcolors.shadow_fg}
+             << FStyle {fc::ColorOverlay}
+             << FString {width, L' '}
+             << FStyle {fc::Reset};
 
   if ( w->isMonochron() )
     w->setReverse(false);
@@ -198,36 +198,36 @@ void drawBlockShadow (FWidget* w)
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
   const auto& wcolors = FWidget::wcolors;
-  w->print() << FPoint(int(width) + 1, 1);
+  w->print() << FPoint {int(width) + 1, 1};
 
   if ( w->isWindowWidget() )
   {
-    w->print() << FColorPair (wcolors.shadow_fg, wcolors.shadow_bg)
-               << FStyle (fc::InheritBackground);  // current background color will be ignored
+    w->print() << FColorPair {wcolors.shadow_fg, wcolors.shadow_bg}
+               << FStyle {fc::InheritBackground};  // current background color will be ignored
   }
   else if ( auto p = w->getParentWidget() )
-    w->print() << FColorPair (wcolors.shadow_fg, p->getBackgroundColor());
+    w->print() << FColorPair {wcolors.shadow_fg, p->getBackgroundColor()};
 
   w->print (fc::LowerHalfBlock);  // ▄
 
   if ( w->isWindowWidget() )
-    w->print() << FStyle (fc::InheritBackground);
+    w->print() << FStyle {fc::InheritBackground};
 
   for (std::size_t y{1}; y < height; y++)
   {
-    w->print() << FPoint(int(width) + 1, int(y) + 1)
+    w->print() << FPoint {int(width) + 1, int(y) + 1}
                << fc::FullBlock;  // █
   }
 
-  w->print() << FPoint(2, int(height) + 1);
+  w->print() << FPoint {2, int(height) + 1};
 
   if ( w->isWindowWidget() )
-    w->print() << FStyle (fc::InheritBackground);
+    w->print() << FStyle {fc::InheritBackground};
 
-  w->print() << FString(width, fc::UpperHalfBlock);  // ▀
+  w->print() << FString{width, fc::UpperHalfBlock};  // ▀
 
   if ( w->isWindowWidget() )
-    w->print() << FStyle (fc::Reset);
+    w->print() << FStyle {fc::Reset};
 }
 
 //----------------------------------------------------------------------
@@ -242,29 +242,29 @@ void clearShadow (FWidget* w)
 
   if ( w->isWindowWidget() )
   {
-    w->print() << FColorPair (wcolors.shadow_fg, wcolors.shadow_bg)
-               << FStyle (fc::InheritBackground);  // current background color will be ignored
+    w->print() << FColorPair {wcolors.shadow_fg, wcolors.shadow_bg}
+               << FStyle {fc::InheritBackground};  // current background color will be ignored
   }
   else if ( auto p = w->getParentWidget() )
-    w->print() << FColorPair (wcolors.shadow_fg, p->getBackgroundColor());
+    w->print() << FColorPair {wcolors.shadow_fg, p->getBackgroundColor()};
 
   if ( int(width) <= w->woffset.getX2() )
   {
     for (std::size_t y{1}; y <= height; y++)
     {
-      w->print() << FPoint(int(width) + 1, int(y))
+      w->print() << FPoint {int(width) + 1, int(y)}
                  << ' ';  // clear █
     }
   }
 
   if ( int(height) <= w->woffset.getY2() )
   {
-    w->print() << FPoint(2, int(height) + 1)
-               << FString(width, L' ');  // clear ▀
+    w->print() << FPoint{2, int(height) + 1}
+               << FString{width, L' '};  // clear ▀
   }
 
   if ( w->isWindowWidget() )
-    w->print() << FStyle (fc::Reset);
+    w->print() << FStyle {fc::Reset};
 }
 
 //----------------------------------------------------------------------
@@ -284,7 +284,7 @@ void drawFlatBorder (FWidget* w)
 
   for (std::size_t y{0}; y < height; y++)
   {
-    w->print() << FPoint(0, int(y) + 1);
+    w->print() << FPoint {0, int(y) + 1};
 
     if ( w->double_flatline_mask.left[uLong(y)] )
       // left+right line (on left side)
@@ -293,7 +293,7 @@ void drawFlatBorder (FWidget* w)
       // right line (on left side)
       w->print (fc::NF_rev_border_line_right);
 
-    w->print() << FPoint(int(width) + 1, int(y) + 1);
+    w->print() << FPoint {int(width) + 1, int(y) + 1};
 
     if ( w->double_flatline_mask.right[y] )
       // left+right line (on right side)
@@ -303,7 +303,7 @@ void drawFlatBorder (FWidget* w)
       w->print (fc::NF_border_line_left);
   }
 
-  w->print() << FPoint(1, 0);
+  w->print() << FPoint {1, 0};
 
   for (std::size_t x{0}; x < width; x++)
   {
@@ -315,7 +315,7 @@ void drawFlatBorder (FWidget* w)
       w->print (fc::NF_border_line_bottom);
   }
 
-  w->print() << FPoint(1, int(height) + 1);
+  w->print() << FPoint {1, int(height) + 1};
 
   for (std::size_t x{0}; x < width; x++)
   {
@@ -346,7 +346,7 @@ void clearFlatBorder (FWidget* w)
   for (std::size_t y{0}; y < height; y++)
   {
     // clear on left side
-    w->print() << FPoint(0, int(y) + 1);
+    w->print() << FPoint {0, int(y) + 1};
 
     if ( w->double_flatline_mask.left[y] )
       w->print (fc::NF_border_line_left);
@@ -354,7 +354,7 @@ void clearFlatBorder (FWidget* w)
       w->print (' ');
 
     // clear on right side
-    w->print() << FPoint(int(width) + 1, int(y) + 1);
+    w->print() << FPoint {int(width) + 1, int(y) + 1};
 
     if ( w->double_flatline_mask.right[y] )
       w->print (fc::NF_rev_border_line_right);
@@ -363,7 +363,7 @@ void clearFlatBorder (FWidget* w)
   }
 
   // clear at top
-  w->print() << FPoint(1, 0);
+  w->print() << FPoint {1, 0};
 
   for (std::size_t x{0}; x < width; x++)
   {
@@ -374,7 +374,7 @@ void clearFlatBorder (FWidget* w)
   }
 
   // clear at bottom
-  w->print() << FPoint(1, int(height) + 1);
+  w->print() << FPoint {1, int(height) + 1};
 
   for (std::size_t x{0}; x < width; x++)
   {
@@ -441,20 +441,20 @@ inline void drawBox (FWidget* w, const FRect& r)
 
   w->print() << r.getUpperLeftPos()
              << fc::BoxDrawingsDownAndRight   // ┌
-             << FString(r.getWidth() - 2, fc::BoxDrawingsHorizontal)  // ─
+             << FString{r.getWidth() - 2, fc::BoxDrawingsHorizontal}  // ─
              << fc::BoxDrawingsDownAndLeft;   // ┐
 
   for (int y = r.getY1() + 1; y < r.getY2(); y++)
   {
-    w->print() << FPoint(r.getX1(), y)
+    w->print() << FPoint{r.getX1(), y}
                << fc::BoxDrawingsVertical     // │
-               << FPoint(r.getX2(), y)
+               << FPoint{r.getX2(), y}
                << fc::BoxDrawingsVertical;    // │
   }
 
   w->print() << r.getLowerLeftPos()
              << fc::BoxDrawingsUpAndRight     // └
-             << FString(r.getWidth() - 2, fc::BoxDrawingsHorizontal)  // ─
+             << FString{r.getWidth() - 2, fc::BoxDrawingsHorizontal}  // ─
              << fc::BoxDrawingsUpAndLeft;     // ┘
 }
 
@@ -465,20 +465,20 @@ inline void drawNewFontBox (FWidget* w, const FRect& r)
 
   w->print() << r.getUpperLeftPos()
              << fc::NF_border_corner_middle_upper_left    // ┌
-             << FString(r.getWidth() - 2, fc::NF_border_line_horizontal)  // ─
+             << FString{r.getWidth() - 2, fc::NF_border_line_horizontal}  // ─
              << fc::NF_border_corner_middle_upper_right;  // ┐
 
   for (int y = r.getY1() + 1; y < r.getY2(); y++)
   {
-    w->print() << FPoint(r.getX1(), y)
+    w->print() << FPoint{r.getX1(), y}
                << fc::NF_border_line_vertical   // │
-               << FPoint(r.getX2(), y)
+               << FPoint{r.getX2(), y}
                << fc::NF_border_line_vertical;  // │
   }
 
   w->print() << r.getLowerLeftPos()
              << fc::NF_border_corner_middle_lower_left    // └
-             << FString(r.getWidth() - 2, fc::NF_border_line_horizontal)  // ─
+             << FString{r.getWidth() - 2, fc::NF_border_line_horizontal}  // ─
              << fc::NF_border_corner_middle_lower_right;  // ┘
 }
 
@@ -487,20 +487,20 @@ inline void drawNewFontListBox (FWidget* w, const FRect& r)
 {
   w->print() << r.getUpperLeftPos()
              << fc::NF_border_line_middle_left_down  // ┌
-             << FString(r.getWidth() - 2, fc::NF_border_line_horizontal)  // ─
+             << FString{r.getWidth() - 2, fc::NF_border_line_horizontal}  // ─
              << fc::NF_border_line_left_down;        // ╷
 
   for (int y = r.getY1() + 1; y < r.getY2(); y++)
   {
-    w->print() << FPoint(r.getX1(), y)
+    w->print() << FPoint{r.getX1(), y}
                << fc::NF_border_line_left   // border left ⎸
-               << FPoint(r.getX2(), y)
+               << FPoint{r.getX2(), y}
                << fc::NF_border_line_left;  // border left ⎸
   }
 
   w->print() << r.getLowerLeftPos()
              << fc::NF_border_line_middle_right_up  // └
-             << FString(r.getWidth() - 2, fc::NF_border_line_horizontal)  // ─
+             << FString{r.getWidth() - 2, fc::NF_border_line_horizontal}  // ─
              << fc::NF_border_line_left_up;         // ╵
 }
 
