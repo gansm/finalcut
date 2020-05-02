@@ -153,28 +153,28 @@ inline const FString FTermcap::getClassName() const
 template<typename CharT>
 bool FTermcap::getFlag (const CharT& cap)
 {
-  return tgetflag(cap);
+  return tgetflag(C_STR(cap));
 }
 
 //----------------------------------------------------------------------
 template<typename CharT>
 int FTermcap::getNumber (const CharT& cap)
 {
-  return tgetnum(cap);
+  return tgetnum(C_STR(cap));
 }
 
 //----------------------------------------------------------------------
 template<typename CharT>
 char* FTermcap::getString (const CharT& cap)
 {
-  return tgetstr(cap, reinterpret_cast<char**>(&string_buf));
+  return tgetstr(C_STR(cap), reinterpret_cast<char**>(&string_buf));
 }
 
 //----------------------------------------------------------------------
 template<typename CharT>
 char* FTermcap::encodeMotionParameter (const CharT& cap, int col, int row)
 {
-  return tgoto(cap, col, row);
+  return tgoto(C_STR(cap), col, row);
 }
 
 //----------------------------------------------------------------------
@@ -188,7 +188,7 @@ inline char* FTermcap::encodeParameter (Args&&... args)
 template<typename CharT>
 int FTermcap::paddingPrint (const CharT& str, int affcnt, fn_putc putc)
 {
-  return _tputs (str, affcnt, putc);
+  return _tputs (C_STR(str), affcnt, putc);
 }
 
 }  // namespace finalcut
