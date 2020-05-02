@@ -68,39 +68,6 @@ char             FTermcap::string_buf[2048]        {};
 
 // public methods of FTermcap
 //----------------------------------------------------------------------
-bool FTermcap::getFlag (const std::string& cap)
-{
-  return tgetflag(C_STR(cap.c_str()));
-}
-
-//----------------------------------------------------------------------
-int FTermcap::getNumber (const std::string& cap)
-{
-  return tgetnum(C_STR(cap.c_str()));
-}
-
-//----------------------------------------------------------------------
-char* FTermcap::getString (const std::string& cap)
-{
-  return tgetstr( C_STR(cap.c_str())
-                , reinterpret_cast<char**>(&string_buf) );
-}
-
-//----------------------------------------------------------------------
-int FTermcap::paddingPrint ( const std::string& str
-                           , int affcnt, fn_putc putc )
-{
-  return fsystem->tputs (str.c_str(), affcnt, putc);
-}
-
-//----------------------------------------------------------------------
-char* FTermcap::encodeMotionParameter ( const std::string& str
-                                      , int col, int row )
-{
-  return tgoto(str.c_str(), col, row);
-}
-
-//----------------------------------------------------------------------
 void FTermcap::init()
 {
   fsystem = FTerm::getFSystem();
@@ -269,6 +236,15 @@ void FTermcap::termcapKeys()
         fc::fkey[i].string == nullptr && fc::fkey[i].tname[0] != 0;
         i++ )
     fc::fkey[i].string = getString(fc::fkey[i].tname);
+}
+
+//----------------------------------------------------------------------
+int FTermcap::_tputs (const char* str, int affcnt, fn_putc putc)
+{
+  if ( ! fsystem )
+    fsystem = FTerm::getFSystem();
+
+  return fsystem->tputs (str, affcnt, putc);
 }
 
 

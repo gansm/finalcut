@@ -95,13 +95,18 @@ class FTermcap final
 
     // Accessors
     const FString        getClassName() const;
-    static bool          getFlag (const std::string&);
-    static int           getNumber (const std::string&);
-    static char*         getString (const std::string&);
-    static int           paddingPrint (const std::string&, int, fn_putc);
-    static char*         encodeMotionParameter (const std::string&, int, int);
+    template<typename CharT>
+    static bool          getFlag (const CharT&);
+    template<typename CharT>
+    static int           getNumber (const CharT&);
+    template<typename CharT>
+    static char*         getString (const CharT&);
+    template<typename CharT>
+    static char*         encodeMotionParameter (const CharT&, int, int);
     template<typename... Args>
-    static char*         encodeParameter (const std::string&, Args&&...);
+    static char*         encodeParameter (Args&&...);
+    template<typename CharT>
+    static int           paddingPrint (const CharT&, int, fn_putc);
 
     // Methods
     static void init();
@@ -129,6 +134,7 @@ class FTermcap final
     static void          termcapNumerics();
     static void          termcapStrings();
     static void          termcapKeys();
+    static int           _tputs (const char*, int, fn_putc);
 
     // Data member
     static FSystem*        fsystem;
@@ -144,10 +150,45 @@ inline const FString FTermcap::getClassName() const
 { return "FTermcap"; }
 
 //----------------------------------------------------------------------
-template<typename... Args>
-inline char* FTermcap::encodeParameter (const std::string& str, Args&&... args)
+template<typename CharT>
+bool FTermcap::getFlag (const CharT& cap)
 {
-  return tparm (str.c_str(), std::forward<Args>(args)...);
+  return tgetflag(cap);
+}
+
+//----------------------------------------------------------------------
+template<typename CharT>
+int FTermcap::getNumber (const CharT& cap)
+{
+  return tgetnum(cap);
+}
+
+//----------------------------------------------------------------------
+template<typename CharT>
+char* FTermcap::getString (const CharT& cap)
+{
+  return tgetstr(cap, reinterpret_cast<char**>(&string_buf));
+}
+
+//----------------------------------------------------------------------
+template<typename CharT>
+char* FTermcap::encodeMotionParameter (const CharT& cap, int col, int row)
+{
+  return tgoto(cap, col, row);
+}
+
+//----------------------------------------------------------------------
+template<typename... Args>
+inline char* FTermcap::encodeParameter (Args&&... args)
+{
+  return tparm (std::forward<Args>(args)...);
+}
+
+//----------------------------------------------------------------------
+template<typename CharT>
+int FTermcap::paddingPrint (const CharT& str, int affcnt, fn_putc putc)
+{
+  return _tputs (str, affcnt, putc);
 }
 
 }  // namespace finalcut
