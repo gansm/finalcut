@@ -65,6 +65,7 @@ namespace finalcut
 {
 
 // class forward declaration
+class FSystem;
 class FTermData;
 class FTermDetection;
 
@@ -75,6 +76,9 @@ class FTermDetection;
 class FTermcap final
 {
   public:
+    // Using-declaration
+    using fn_putc = int (*)(int);
+
     // Typedef
     typedef struct
     {
@@ -90,38 +94,47 @@ class FTermcap final
     ~FTermcap() = default;
 
     // Accessors
-    const FString    getClassName() const;
+    const FString        getClassName() const;
+    static bool          getFlag (const std::string&);
+    static int           getNumber (const std::string&);
+    static char*         getString (const std::string&);
+    static int           paddingPrint (const std::string&, int, fn_putc);
+    static char*         encodeMotionParameter (const std::string&, int, int);
+    template<typename... Args>
+    static char*         encodeParameter (const FString&, Args&&...);
 
     // Methods
     static void init();
 
     // Data members
-    static bool      background_color_erase;
-    static bool      can_change_color_palette;
-    static bool      automatic_left_margin;
-    static bool      automatic_right_margin;
-    static bool      eat_nl_glitch;
-    static bool      ansi_default_color;
-    static bool      osc_support;
-    static bool      no_utf8_acs_chars;
-    static int       max_color;
-    static int       tabstop;
-    static int       attr_without_color;
-    static tcap_map  strings[];
+    static bool          background_color_erase;
+    static bool          can_change_color_palette;
+    static bool          automatic_left_margin;
+    static bool          automatic_right_margin;
+    static bool          eat_nl_glitch;
+    static bool          ansi_default_color;
+    static bool          osc_support;
+    static bool          no_utf8_acs_chars;
+    static int           max_color;
+    static int           tabstop;
+    static int           attr_without_color;
+    static tcap_map      strings[];
 
   private:
     // Methods
-    static void      termcap();
-    static void      termcapError (int);
-    static void      termcapVariables (char*&);
-    static void      termcapBoleans();
-    static void      termcapNumerics();
-    static void      termcapStrings (char*&);
-    static void      termcapKeys (char*&);
+    static void          termcap();
+    static void          termcapError (int);
+    static void          termcapVariables();
+    static void          termcapBoleans();
+    static void          termcapNumerics();
+    static void          termcapStrings();
+    static void          termcapKeys();
 
     // Data member
+    static FSystem*        fsystem;
     static FTermData*      fterm_data;
     static FTermDetection* term_detection;
+    static char            string_buf[2048];
 };
 
 
@@ -129,6 +142,13 @@ class FTermcap final
 //----------------------------------------------------------------------
 inline const FString FTermcap::getClassName() const
 { return "FTermcap"; }
+
+//----------------------------------------------------------------------
+template<typename... Args>
+inline char* FTermcap::encodeParameter (const FString& str, Args&&... args)
+{
+  return tparm (str, std::forward<Args>(args)...);
+}
 
 }  // namespace finalcut
 

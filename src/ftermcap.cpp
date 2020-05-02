@@ -27,6 +27,7 @@
 #include "final/emptyfstring.h"
 #include "final/fc.h"
 #include "final/fkey_map.h"
+#include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermdata.h"
 #include "final/ftermcap.h"
@@ -47,9 +48,10 @@ bool             FTermcap::no_utf8_acs_chars       {false};
 int              FTermcap::max_color               {1};
 int              FTermcap::tabstop                 {8};
 int              FTermcap::attr_without_color      {0};
+FSystem*         FTermcap::fsystem                 {nullptr};
 FTermData*       FTermcap::fterm_data              {nullptr};
 FTermDetection*  FTermcap::term_detection          {nullptr};
-
+char             FTermcap::string_buf[2048]        {};
 
 //----------------------------------------------------------------------
 // class FTermcap
@@ -66,8 +68,42 @@ FTermDetection*  FTermcap::term_detection          {nullptr};
 
 // public methods of FTermcap
 //----------------------------------------------------------------------
+bool FTermcap::getFlag (const std::string& cap)
+{
+  return tgetflag(C_STR(cap.c_str()));
+}
+
+//----------------------------------------------------------------------
+int FTermcap::getNumber (const std::string& cap)
+{
+  return tgetnum(C_STR(cap.c_str()));
+}
+
+//----------------------------------------------------------------------
+char* FTermcap::getString (const std::string& cap)
+{
+  return tgetstr( C_STR(cap.c_str())
+                , reinterpret_cast<char**>(&string_buf) );
+}
+
+//----------------------------------------------------------------------
+int FTermcap::paddingPrint ( const std::string& str
+                           , int affcnt, fn_putc putc )
+{
+  return fsystem->tputs (str.c_str(), affcnt, putc);
+}
+
+//----------------------------------------------------------------------
+char* FTermcap::encodeMotionParameter ( const std::string& str
+                                      , int col, int row )
+{
+  return tgoto(str.c_str(), col, row);
+}
+
+//----------------------------------------------------------------------
 void FTermcap::init()
 {
+  fsystem = FTerm::getFSystem();
   fterm_data = FTerm::getFTermData();
   term_detection = FTerm::getFTermDetection();
   termcap();
@@ -81,8 +117,6 @@ void FTermcap::termcap()
   static constexpr int success = 1;
   static constexpr int uninitialized = -2;
   static char term_buffer[2048]{};
-  static char string_buf[2048]{};
-  char* buffer = string_buf;
   int status = uninitialized;
   const bool color256 = term_detection->canDisplay256Colors();
 
@@ -119,7 +153,7 @@ void FTermcap::termcap()
     term_detection->setAnsiTerminal (true);
 
   termcapError (status);
-  termcapVariables (buffer);
+  termcapVariables();
 }
 
 //----------------------------------------------------------------------
@@ -146,7 +180,7 @@ void FTermcap::termcapError (int status)
 }
 
 //----------------------------------------------------------------------
-void FTermcap::termcapVariables (char*& buffer)
+void FTermcap::termcapVariables()
 {
   // Get termcap booleans
   termcapBoleans();
@@ -155,10 +189,10 @@ void FTermcap::termcapVariables (char*& buffer)
   termcapNumerics();
 
   // Get termcap strings
-  termcapStrings (buffer);
+  termcapStrings();
 
   // Get termcap keys
-  termcapKeys (buffer);
+  termcapKeys();
 }
 
 //----------------------------------------------------------------------
@@ -167,29 +201,29 @@ void FTermcap::termcapBoleans()
   // Get termcap flags/booleans
 
   // Screen erased with the background color
-  background_color_erase = tgetflag(C_STR("ut"));
+  background_color_erase = getFlag("ut");
 
   // Terminal is able to redefine existing colors
-  can_change_color_palette = tgetflag(C_STR("cc"));
+  can_change_color_palette = getFlag("cc");
 
   // t_cursor_left wraps from column 0 to last column
-  automatic_left_margin = tgetflag(C_STR("bw"));
+  automatic_left_margin = getFlag("bw");
 
   // Terminal has auto-matic margins
-  automatic_right_margin = tgetflag(C_STR("am"));
+  automatic_right_margin = getFlag("am");
 
   // NewLine ignored after 80 cols
-  eat_nl_glitch = tgetflag(C_STR("xn"));
+  eat_nl_glitch = getFlag("xn");
 
   // Terminal supports ANSI set default fg and bg color
-  ansi_default_color = tgetflag(C_STR("AX"));
+  ansi_default_color = getFlag("AX");
 
   // Terminal supports operating system commands (OSC)
   // OSC = Esc + ']'
-  osc_support = tgetflag(C_STR("XT"));
+  osc_support = getFlag("XT");
 
   // U8 is nonzero for terminals with no VT100 line-drawing in UTF-8 mode
-  no_utf8_acs_chars = bool(tgetnum(C_STR("U8")) != 0);
+  no_utf8_acs_chars = bool(getNumber("U8") != 0);
 }
 
 //----------------------------------------------------------------------
@@ -198,7 +232,7 @@ void FTermcap::termcapNumerics()
   // Get termcap numerics
 
   // Maximum number of colors on screen
-  max_color = std::max(max_color, tgetnum(C_STR("Co")));
+  max_color = std::max(max_color, getNumber("Co"));
 
   if ( max_color < 0 )
     max_color = 1;
@@ -209,24 +243,24 @@ void FTermcap::termcapNumerics()
     fterm_data->setMonochron(false);
 
   // Get initial spacing for hardware tab stop
-  tabstop = tgetnum(C_STR("it"));
+  tabstop = getNumber("it");
 
   // Get video attributes that cannot be used with colors
-  attr_without_color = tgetnum(C_STR("NC"));
+  attr_without_color = getNumber("NC");
 }
 
 //----------------------------------------------------------------------
-void FTermcap::termcapStrings (char*& buffer)
+void FTermcap::termcapStrings()
 {
   // Get termcap strings
 
   // Read termcap output strings
   for (std::size_t i{0}; strings[i].tname[0] != 0; i++)
-    strings[i].string = tgetstr(C_STR(strings[i].tname), &buffer);
+    strings[i].string = getString(strings[i].tname);
 }
 
 //----------------------------------------------------------------------
-void FTermcap::termcapKeys (char*& buffer)
+void FTermcap::termcapKeys()
 {
   // Get termcap keys
 
@@ -234,7 +268,7 @@ void FTermcap::termcapKeys (char*& buffer)
   for ( std::size_t i{0};
         fc::fkey[i].string == nullptr && fc::fkey[i].tname[0] != 0;
         i++ )
-    fc::fkey[i].string = tgetstr(C_STR(fc::fkey[i].tname), &buffer);
+    fc::fkey[i].string = getString(fc::fkey[i].tname);
 }
 
 

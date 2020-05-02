@@ -25,6 +25,7 @@
 #include "final/fc.h"
 #include "final/foptiattr.h"
 #include "final/fstartoptions.h"
+#include "final/ftermcap.h"
 
 namespace finalcut
 {
@@ -956,16 +957,16 @@ bool FOptiAttr::setTermAttributes ( FChar*& term
 {
   if ( term && F_set_attributes.cap )
   {
-    const char* sgr = tparm ( C_STR(F_set_attributes.cap)
-                            , p1 && ! fake_reverse
-                            , p2
-                            , p3 && ! fake_reverse
-                            , p4
-                            , p5
-                            , p6
-                            , p7
-                            , p8
-                            , p9 );
+    const char* sgr = FTermcap::encodeParameter ( F_set_attributes.cap
+                                                , p1 && ! fake_reverse
+                                                , p2
+                                                , p3 && ! fake_reverse
+                                                , p4
+                                                , p5
+                                                , p6
+                                                , p7
+                                                , p8
+                                                , p9 );
     append_sequence (sgr);
     resetColor(term);
     term->attr.bit.standout      = p1;
@@ -1500,13 +1501,13 @@ inline void FOptiAttr::change_current_color ( const FChar* const& term
 
     if ( term->fg_color != fg || frev )
     {
-      color_str = tparm(C_STR(AF), ansi_fg, 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = FTermcap::encodeParameter(AF, ansi_fg);
       append_sequence (color_str);
     }
 
     if ( term->bg_color != bg || frev )
     {
-      color_str = tparm(C_STR(AB), ansi_bg, 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = FTermcap::encodeParameter(AB, ansi_bg);
       append_sequence (color_str);
     }
   }
@@ -1514,13 +1515,13 @@ inline void FOptiAttr::change_current_color ( const FChar* const& term
   {
     if ( term->fg_color != fg || frev )
     {
-      color_str = tparm(C_STR(Sf), fg, 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = FTermcap::encodeParameter(Sf, fg);
       append_sequence (color_str);
     }
 
     if ( term->bg_color != bg || frev )
     {
-      color_str = tparm(C_STR(Sb), bg, 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = FTermcap::encodeParameter(Sb, bg);
       append_sequence (color_str);
     }
   }
@@ -1528,7 +1529,7 @@ inline void FOptiAttr::change_current_color ( const FChar* const& term
   {
     fg = vga2ansi(fg);
     bg = vga2ansi(bg);
-    color_str = tparm(C_STR(sp), fg, bg, 0, 0, 0, 0, 0, 0, 0);
+    color_str = FTermcap::encodeParameter(sp, fg, bg);
     append_sequence (color_str);
   }
 }

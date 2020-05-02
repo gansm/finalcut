@@ -2478,7 +2478,7 @@ void FVTerm::printFullWidthPaddingCharacter ( uInt& x, uInt y
     if ( le )
       appendOutputBuffer (le);
     else if ( RI )
-      appendOutputBuffer (tparm(C_STR(RI), 1, 0, 0, 0, 0, 0, 0, 0, 0));
+      appendOutputBuffer (FTermcap::encodeParameter(RI, 1));
     else
     {
       skipPaddingCharacter (x, y, prev_char);
@@ -2518,7 +2518,7 @@ void FVTerm::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
     if ( le )
       appendOutputBuffer (le);
     else if ( RI )
-      appendOutputBuffer (tparm(C_STR(RI), 1, 0, 0, 0, 0, 0, 0, 0, 0));
+      appendOutputBuffer (FTermcap::encodeParameter(RI, 1));
 
     if ( le || RI )
     {
@@ -2590,7 +2590,7 @@ FVTerm::exit_state FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
       && (ut || normal) )
     {
       appendAttributes (print_char);
-      appendOutputBuffer (tparm(C_STR(ec), whitespace, 0, 0, 0, 0, 0, 0, 0, 0));
+      appendOutputBuffer (FTermcap::encodeParameter(ec, whitespace));
 
       if ( x + whitespace - 1 < xmax || draw_trailing_ws )
         setTermXY (int(x + whitespace), int(y));
@@ -2655,7 +2655,7 @@ FVTerm::exit_state FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y)
       newFontChanges (print_char);
       charsetChanges (print_char);
       appendAttributes (print_char);
-      appendOutputBuffer (tparm(C_STR(rp), print_char->ch, repetitions, 0, 0, 0, 0, 0, 0, 0));
+      appendOutputBuffer (FTermcap::encodeParameter(rp, print_char->ch, repetitions));
       term_pos->x_ref() += int(repetitions);
       x = x + repetitions - 1;
     }
@@ -3038,7 +3038,7 @@ int FVTerm::appendLowerRight (FChar*& screen_char)
 
     if ( IC )
     {
-      appendOutputBuffer (tparm(C_STR(IC), 1, 0, 0, 0, 0, 0, 0, 0, 0));
+      appendOutputBuffer (FTermcap::encodeParameter(IC, 1));
       appendChar (screen_char);
     }
     else if ( im && ei )
@@ -3077,13 +3077,13 @@ inline void FVTerm::characterFilter (FChar*& next_char)
 inline void FVTerm::appendOutputBuffer (const std::string& s)
 {
   const char* const& c_string = s.c_str();
-  fsystem->tputs (c_string, 1, appendOutputBuffer);
+  FTermcap::paddingPrint (c_string, 1, appendOutputBuffer);
 }
 
 //----------------------------------------------------------------------
 inline void FVTerm::appendOutputBuffer (const char s[])
 {
-  fsystem->tputs (s, 1, appendOutputBuffer);
+  FTermcap::paddingPrint (s, 1, appendOutputBuffer);
 }
 
 //----------------------------------------------------------------------

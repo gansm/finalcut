@@ -836,7 +836,7 @@ const char* FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
   if ( data->hasCursorOptimisation() )
     return opti_move->moveCursor (xold, yold, xnew, ynew);
   else
-    return tgoto(C_STR(TCAP(fc::t_cursor_address)), xnew, ynew);
+    return FTermcap::encodeMotionParameter(TCAP(fc::t_cursor_address), xnew, ynew);
 }
 
 //----------------------------------------------------------------------
@@ -987,9 +987,9 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
     const int bb = (b * 1001) / 256;
 
     if ( Ic )
-      color_str = tparm(C_STR(Ic), index, rr, gg, bb, 0, 0, 0, 0, 0);
+      color_str = FTermcap::encodeParameter(Ic, index, rr, gg, bb);
     else if ( Ip )
-      color_str = tparm(C_STR(Ip), index, 0, 0, 0, rr, gg, bb, 0, 0);
+      color_str = FTermcap::encodeParameter(Ip, index, 0, 0, 0, rr, gg, bb);
 
     if ( color_str )
     {
@@ -1199,7 +1199,7 @@ void FTerm::putstring (const char str[], int affcnt)
   if ( ! fsys )
     getFSystem();
 
-  fsys->tputs (str, affcnt, FTerm::putchar_ASCII);
+  FTermcap::paddingPrint (str, affcnt, FTerm::putchar_ASCII);
 }
 
 //----------------------------------------------------------------------

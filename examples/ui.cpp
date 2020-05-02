@@ -932,7 +932,7 @@ void MyDialog::cb_showProgressBar (const finalcut::FWidget*, const FDataPtr)
 //----------------------------------------------------------------------
 void MyDialog::cb_updateNumber (finalcut::FWidget* widget, FDataPtr data)
 {
-  auto& list = *(static_cast<finalcut::FListBox*>(widget));
+  const auto& list = *(static_cast<finalcut::FListBox*>(widget));
   auto& num = *(static_cast<finalcut::FLabel*>(data));
   const auto count = list.getCount();
   int select_num = 0;
@@ -949,7 +949,7 @@ void MyDialog::cb_updateNumber (finalcut::FWidget* widget, FDataPtr data)
 //----------------------------------------------------------------------
 void MyDialog::cb_activateButton (finalcut::FWidget* widget, FDataPtr data)
 {
-  auto& rb = *(static_cast<finalcut::FRadioButton*>(widget));
+  const auto& rb = *(static_cast<finalcut::FRadioButton*>(widget));
   auto& button = *(static_cast<finalcut::FButton*>(data));
 
   if ( rb.isChecked() )
