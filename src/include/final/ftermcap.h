@@ -101,7 +101,7 @@ class FTermcap final
     static int           paddingPrint (const std::string&, int, fn_putc);
     static char*         encodeMotionParameter (const std::string&, int, int);
     template<typename... Args>
-    static char*         encodeParameter (const FString&, Args&&...);
+    static char*         encodeParameter (const std::string&, Args&&...);
 
     // Methods
     static void init();
@@ -145,9 +145,9 @@ inline const FString FTermcap::getClassName() const
 
 //----------------------------------------------------------------------
 template<typename... Args>
-inline char* FTermcap::encodeParameter (const FString& str, Args&&... args)
+inline char* FTermcap::encodeParameter (const std::string& str, Args&&... args)
 {
-  return tparm (str, std::forward<Args>(args)...);
+  return tparm (str.c_str(), std::forward<Args>(args)...);
 }
 
 }  // namespace finalcut
