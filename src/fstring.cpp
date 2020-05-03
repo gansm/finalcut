@@ -1645,7 +1645,7 @@ std::ostream& operator << (std::ostream& outstr, const FString& s)
   }
   else if ( width > 0 )
   {
-    const FString fill_str{width, outstr.fill()};
+    const FString fill_str{width, wchar_t(outstr.fill())};
     outstr << s.wc_to_c_str(fill_str.string);
   }
 
