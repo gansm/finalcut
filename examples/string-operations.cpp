@@ -224,15 +224,15 @@ void streamToInterger()
     finalcut::FString("-321") >> stream_int;
     std::cout << "stream out: " << stream_int << std::endl;
   }
-  catch (const std::underflow_error& ex)
+  catch (const std::underflow_error&)
   {
     finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
     finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::invalid_argument&)
   {
     finalcut::FApplication::getLog()->error("Arithmetic error");
   }
@@ -248,15 +248,15 @@ void streamToUnsignedInterger()
     finalcut::FString("123") >> stream_uint;
     std::cout << "stream out: " << stream_uint << std::endl;
   }
-  catch (const std::underflow_error& ex)
+  catch (const std::underflow_error&)
   {
     finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
     finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::invalid_argument&)
   {
     finalcut::FApplication::getLog()->error("Arithmetic error");
   }
@@ -272,15 +272,15 @@ void streamToDouble()
     finalcut::FString("0.123456e+2") >> stream_double;
     std::cout << "stream out: " << stream_double << std::endl;
   }
-  catch (const std::underflow_error& ex)
+  catch (const std::underflow_error&)
   {
     finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
     finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::invalid_argument&)
   {
     finalcut::FApplication::getLog()->error("Arithmetic error");
   }
@@ -296,15 +296,15 @@ void streamToFloat()
     finalcut::FString("0.123e-3") >> stream_float;
     std::cout << "stream out: " << stream_float << std::endl;
   }
-  catch (const std::underflow_error& ex)
+  catch (const std::underflow_error&)
   {
     finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
     finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::invalid_argument&)
   {
     finalcut::FApplication::getLog()->error("Arithmetic error");
   }
@@ -496,15 +496,15 @@ void convertToNumberExample()
     const uLong ulong_num = finalcut::FString("123456789").toULong();
     std::cout << "   toULong:  " << ulong_num << std::endl;
   }
-  catch (const std::underflow_error& ex)
+  catch (const std::underflow_error&)
   {
     finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
     finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::invalid_argument&)
   {
     finalcut::FApplication::getLog()->error("Arithmetic error");
   }
@@ -515,15 +515,15 @@ void convertToNumberExample()
     const long long_num = finalcut::FString("-9876543210").toLong();
     std::cout << "    toLong:  " << long_num << std::endl;
   }
-  catch (const std::underflow_error& ex)
+  catch (const std::underflow_error&)
   {
     finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
     finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::invalid_argument&)
   {
     finalcut::FApplication::getLog()->error("Arithmetic error");
   }
@@ -540,15 +540,15 @@ void convertToNumberExample()
                                  << double_num << std::endl;
     std::cout.flags(save_flags);
   }
-  catch (const std::underflow_error& ex)
+  catch (const std::underflow_error&)
   {
     finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
     finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::invalid_argument&)
   {
     finalcut::FApplication::getLog()->error("Arithmetic error");
   }
@@ -660,7 +660,7 @@ void indexExample()
            , char(index[0])
            , char(index[4]) );
   }
-  catch (const std::out_of_range& ex)
+  catch (const std::out_of_range&)
   {
     finalcut::FApplication::getLog()->error("Out of Range");
   }

@@ -632,7 +632,6 @@ void FComboBox::cb_setInputField (const FWidget*, const FDataPtr)
   input_field = list.getItem(index).getText();
   input_field.redraw();
   processChanged();
-  std::cout << "\r\n";
 }
 
 //----------------------------------------------------------------------

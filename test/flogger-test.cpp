@@ -288,7 +288,15 @@ void FLoggerTest::fileTest()
   if ( file_stream.is_open() )
     file_stream.close();
 
-  remove("test.log");  // Delete file
+  int ret = remove("test.log");  // Delete file
+
+  if ( ret == -1 )
+  {
+    finalcut::FLogger log{};
+    log.setOutputStream(std::cerr);
+    log.setLineEnding (finalcut::FLog::LF);
+    log.error("Cannot delete the test.log file");
+  }
 }
 
 //----------------------------------------------------------------------

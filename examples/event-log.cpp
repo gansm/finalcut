@@ -59,7 +59,8 @@ class EventDialog final : public finalcut::FDialog
   private:
     // Methods
     finalcut::FString getMouseButtonName (int);
-    void logMouseEvent (finalcut::FString, finalcut::FMouseEvent&);
+    void logMouseEvent ( const finalcut::FString&
+                       , const finalcut::FMouseEvent& );
 
     // Event handlers
     void onClose (finalcut::FCloseEvent*) override;
@@ -75,7 +76,6 @@ class EventDialog final : public finalcut::FDialog
     void onWindowRaised (finalcut::FEvent*) override;
     void onWindowLowered (finalcut::FEvent*) override;
 
-  private:
     // Data members
     finalcut::FLog& log{*finalcut::FApplication::getLog()};
     finalcut::FLabel label{this};
@@ -124,8 +124,8 @@ finalcut::FString EventDialog::getMouseButtonName (int btn_state)
 }
 
 //----------------------------------------------------------------------
-void EventDialog::logMouseEvent ( finalcut::FString state
-                                , finalcut::FMouseEvent& ev )
+void EventDialog::logMouseEvent ( const finalcut::FString& state
+                                , const finalcut::FMouseEvent& ev )
 {
   const int mouse_x = ev.getX();
   const int mouse_y = ev.getY();
@@ -273,8 +273,8 @@ EventLog::EventLog (finalcut::FWidget* parent)
   //   (CERT, OOP50-CPP)
   FDialog::setText ("Event log");
   FDialog::setGeometry (FPoint{4, 16}, FSize{75, 8});
+  FDialog::setResizeable();
   setMinimumSize (FSize{75, 5});
-  setResizeable();
   setShadow();
   scrollText.ignorePadding();
   scrollText.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});

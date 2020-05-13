@@ -63,8 +63,9 @@ const std::string FLogger::getTimeString()
   const auto& t = std::chrono::system_clock::to_time_t(now);
   std::stringstream str_stream;
   // Print RFC 2822 date
-  const auto& tm = std::localtime(&t);
-  std::strftime(str, sizeof(str), "%a, %d %b %Y %T %z", tm);
+  struct tm time{};
+  localtime_r (&t, &time);
+  std::strftime (str, sizeof(str), "%a, %d %b %Y %T %z", &time);
   return std::string(str);
 }
 
