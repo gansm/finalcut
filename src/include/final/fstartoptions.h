@@ -64,7 +64,7 @@ class FStartOptions final
     FStartOptions& operator = (const FStartOptions&) = delete;
 
     // Accessors
-    const FString getClassName();
+    static const FString getClassName();
     static FStartOptions& getFStartOptions();
 
     // Mutator

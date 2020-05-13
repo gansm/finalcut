@@ -28,6 +28,7 @@
 #include "final/fcolorpair.h"
 #include "final/fdialog.h"
 #include "final/fevent.h"
+#include "final/flog.h"
 #include "final/fmenu.h"
 #include "final/fmenubar.h"
 #include "final/fmenuitem.h"
@@ -941,9 +942,9 @@ void FMenu::passEventToSubMenu (FMouseEvent* const& ev)
     setClickedWidget(opened_sub_menu);
     opened_sub_menu->onMouseMove(_ev.get());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMouseEvent");
   }
 }
 
@@ -965,9 +966,9 @@ void FMenu::passEventToSuperMenu (FMouseEvent* const& ev)
     setClickedWidget(smenu);
     smenu->onMouseMove(_ev.get());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMouseEvent");
   }
 }
 
@@ -990,9 +991,9 @@ void FMenu::passEventToMenuBar (FMouseEvent* const& ev)
     mbar.mouse_down = true;
     mbar.onMouseMove(_ev.get());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMouseEvent");
   }
 }
 

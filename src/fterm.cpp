@@ -31,6 +31,7 @@
 #include "final/fcolorpalette.h"
 #include "final/fkey_map.h"
 #include "final/fkeyboard.h"
+#include "final/flog.h"
 #include "final/fmouse.h"
 #include "final/foptiattr.h"
 #include "final/foptimove.h"
@@ -189,9 +190,9 @@ FTermData* FTerm::getFTermData()
     {
       data = new FTermData;
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FTermData");
       std::abort();
     }
   }
@@ -208,9 +209,9 @@ FSystem* FTerm::getFSystem()
     {
       fsys = new FSystemImpl;
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FTermData");
       std::abort();
     }
   }
@@ -227,9 +228,9 @@ FOptiMove* FTerm::getFOptiMove()
     {
       opti_move = new FOptiMove;
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FOptiMove");
       std::abort();
     }
   }
@@ -246,9 +247,9 @@ FOptiAttr* FTerm::getFOptiAttr()
     {
       opti_attr = new FOptiAttr;
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FOptiAttr");
       std::abort();
     }
   }
@@ -265,9 +266,9 @@ FTermDetection* FTerm::getFTermDetection()
     {
       term_detection = new FTermDetection;
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FTermDetection");
       std::abort();
     }
   }
@@ -284,9 +285,9 @@ FTermXTerminal* FTerm::getFTermXTerminal()
     {
       xterm = new FTermXTerminal;
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FTermXTerminal");
       std::abort();
     }
   }
@@ -303,9 +304,9 @@ FKeyboard* FTerm::getFKeyboard()
     {
       keyboard = new FKeyboard;
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FKeyboard");
       std::abort();
     }
   }
@@ -322,9 +323,9 @@ FMouseControl* FTerm::getFMouseControl()
     {
       mouse = new FMouseControl;
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FMouseControl");
       std::abort();
     }
   }
@@ -342,9 +343,9 @@ FTermLinux* FTerm::getFTermLinux()
     {
       linux = new FTermLinux;
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FTermLinux");
       std::abort();
     }
   }
@@ -362,9 +363,9 @@ FTermFreeBSD* FTerm::getFTermFreeBSD()
     {
       freebsd = new FTermFreeBSD;
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FTermFreeBSD");
       std::abort();
     }
   }
@@ -382,9 +383,9 @@ FTermOpenBSD* FTerm::getFTermOpenBSD()
     {
       openbsd = new FTermOpenBSD;
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FTermOpenBSD");
       std::abort();
     }
   }
@@ -403,9 +404,9 @@ FTermDebugData& FTerm::getFTermDebugData()
     {
       debug_data = new FTermDebugData;
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FTermDebugData");
       std::abort();
     }
   }
@@ -624,7 +625,7 @@ void FTerm::redefineDefaultColors (bool enable)
   if ( isNewFont() )  // NewFont need the reverse-video attribute
     return;
 
-  xterm->redefineDefaultColors (enable);
+  getFTermXTerminal()->redefineDefaultColors (enable);
 }
 
 //----------------------------------------------------------------------
@@ -665,7 +666,7 @@ bool FTerm::setVGAFont()
   {
     data->setVGAFont(true);
     // Set font in xterm to vga
-    xterm->setFont("vga");
+    getFTermXTerminal()->setFont("vga");
     data->setNewFont(false);
   }
 #if defined(__linux__)
@@ -700,7 +701,7 @@ bool FTerm::setNewFont()
   {
     data->setNewFont(true);
     // Set font in xterm to 8x16graph
-    xterm->setFont("8x16graph");
+    getFTermXTerminal()->setFont("8x16graph");
   }
 #if defined(__linux__)
   else if ( isLinuxTerm() )
@@ -739,12 +740,12 @@ bool FTerm::setOldFont()
     if ( font.getLength() > 2 )
     {
       // restore saved xterm font
-      xterm->setFont(font);
+      getFTermXTerminal()->setFont(font);
     }
     else
     {
       // Set font in xterm to vga
-      xterm->setFont("vga");
+      getFTermXTerminal()->setFont("vga");
     }
 
     retval = true;
@@ -914,7 +915,7 @@ void FTerm::setTermSize (const FSize& size)
 {
   // Set xterm size
 
-  xterm->setTermSize (size);
+  getFTermXTerminal()->setTermSize (size);
 }
 
 //----------------------------------------------------------------------
@@ -922,7 +923,7 @@ void FTerm::setTermTitle (const FString& title)
 {
   // Set the xterm window title
 
-  xterm->setTitle (title);
+  getFTermXTerminal()->setTitle (title);
 }
 
 //----------------------------------------------------------------------
@@ -1268,10 +1269,10 @@ void FTerm::initScreenSettings()
 #endif
 
   // set xterm underline cursor
-  xterm->setCursorStyle (fc::blinking_underline);
+  getFTermXTerminal()->setCursorStyle (fc::blinking_underline);
 
   // set xterm color settings to defaults
-  xterm->setDefaults();
+  getFTermXTerminal()->setDefaults();
 }
 
 //----------------------------------------------------------------------
@@ -1297,7 +1298,7 @@ void FTerm::exitWithMessage (const FString& message)
   std::fflush (stdout);
 
   if ( ! message.isEmpty() )
-    std::cerr << "Warning: " << message << std::endl;
+    FApplication::getLog()->warn(message.c_str());
 
   std::exit (EXIT_FAILURE);
 }
@@ -1322,7 +1323,7 @@ void FTerm::init_global_values (bool disable_alt_screen)
   data->useAlternateScreen(! disable_alt_screen);
 
   // Initialize xterm object
-  xterm->init();
+  getFTermXTerminal()->init();
 
   if ( ! getStartOptions().terminal_detection )
     term_detection->setTerminalDetection (false);
@@ -1845,9 +1846,9 @@ void FTerm::init_captureFontAndTitle()
   if ( ! FStartOptions::getFStartOptions().terminal_data_request )
     return;
 
-  xterm->captureFontAndTitle();
-  const auto& font = xterm->getFont();
-  const auto& title = xterm->getTitle();
+  getFTermXTerminal()->captureFontAndTitle();
+  const auto& font = getFTermXTerminal()->getFont();
+  const auto& title = getFTermXTerminal()->getTitle();
 
   if ( ! font.isEmpty() )
     data->setXtermFont(font);
@@ -1899,14 +1900,14 @@ void FTerm::restoreColorPalette()
   else  // 8 colors
     FColorPalette::reset8ColorPalette (FTerm::setPalette);
 
-  xterm->resetColorMap();
+  getFTermXTerminal()->resetColorMap();
   resetColorMap();
 }
 
 //----------------------------------------------------------------------
 void FTerm::setInsertCursorStyle()
 {
-  xterm->setCursorStyle (fc::blinking_underline);
+  getFTermXTerminal()->setCursorStyle (fc::blinking_underline);
   setKDECursor(fc::UnderlineCursor);
 
 #if defined(__linux__)
@@ -1916,13 +1917,13 @@ void FTerm::setInsertCursorStyle()
 #endif
 
   if ( isUrxvtTerminal() )
-    xterm->setCursorColor ("rgb:ffff/ffff/ffff");
+    getFTermXTerminal()->setCursorColor ("rgb:ffff/ffff/ffff");
 }
 
 //----------------------------------------------------------------------
 void FTerm::setOverwriteCursorStyle()
 {
-  xterm->setCursorStyle (fc::steady_block);
+  getFTermXTerminal()->setCursorStyle (fc::steady_block);
   setKDECursor(fc::BlockCursor);
 
 #if defined(__linux__)
@@ -1932,7 +1933,7 @@ void FTerm::setOverwriteCursorStyle()
 #endif
 
   if ( isUrxvtTerminal() )
-    xterm->setCursorColor ("rgb:eeee/0000/0000");
+    getFTermXTerminal()->setCursorColor ("rgb:eeee/0000/0000");
 }
 
 //----------------------------------------------------------------------
@@ -2250,7 +2251,7 @@ void FTerm::init (bool disable_alt_screen)
 
   // Activate meta key sends escape
   if ( isXTerminal() )
-    xterm->metaSendsESC(true);
+    getFTermXTerminal()->metaSendsESC(true);
 
   // switch to application escape key mode
   enableApplicationEscKey();
@@ -2429,10 +2430,10 @@ void FTerm::finish()
   }
 
   // Reset xterm color settings to default values
-  xterm->resetDefaults();
+  getFTermXTerminal()->resetDefaults();
 
   // Set xterm full block cursor
-  xterm->setCursorStyle (fc::steady_block);
+  getFTermXTerminal()->setCursorStyle (fc::steady_block);
 
   // Restore the color palette
   if ( getStartOptions().color_change )
@@ -2454,7 +2455,7 @@ void FTerm::finish()
 
   // Deactivate meta key sends escape
   if ( isXTerminal() )
-    xterm->metaSendsESC(false);
+    getFTermXTerminal()->metaSendsESC(false);
 
   // Switch to the normal screen
   useNormalScreenBuffer();
@@ -2471,7 +2472,7 @@ void FTerm::finish()
   const auto& exit_message = data->getExitMessage();
 
   if ( ! exit_message.isEmpty() )
-    std::cerr << exit_message << std::endl;
+    FApplication::getLog()->info(exit_message.c_str());
 
   deallocationValues();
 }
@@ -2546,9 +2547,11 @@ void FTerm::signal_handler (int signum)
       init_term_object->finish();
       std::fflush (stderr);
       std::fflush (stdout);
-      std::cerr << "\nProgram stopped: signal "
-                << signum
-                << " (" << strsignal(signum) << ")" << std::endl;
+      *FApplication::getLog() << FLog::Error
+                              << "\nProgram stopped: signal "
+                              << signum
+                              << " (" << strsignal(signum) << ")"
+                              << std::endl;
       std::terminate();
 
     default:

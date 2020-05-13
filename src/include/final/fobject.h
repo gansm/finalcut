@@ -48,6 +48,8 @@
 #include <memory>
 #include <vector>
 
+#include "final/fstring.h"
+
 namespace finalcut
 {
 

@@ -824,9 +824,9 @@ void FDialog::initDialogMenu()
   {
     dialog_menu = new FMenu ("-", this);
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMenu");
     return;
   }
 
@@ -854,9 +854,9 @@ void FDialog::initMoveSizeMenuItem (FMenu* menu)
   {
     move_size_item = new FMenuItem (menu);
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMenuItem");
     return;
   }
 
@@ -877,9 +877,9 @@ void FDialog::initZoomMenuItem (FMenu* menu)
   {
     zoom_item = new FMenuItem (menu);
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMenuItem");
     return;
   }
 
@@ -900,9 +900,9 @@ void FDialog::initCloseMenuItem (FMenu* menu)
   {
     close_item = new FMenuItem ("&Close", menu);
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMenuItem");
     return;
   }
 
@@ -1358,9 +1358,9 @@ inline void FDialog::passEventToSubMenu ( const mouseStates& ms
     setClickedWidget(dialog_menu);
     dialog_menu->onMouseMove(_ev.get());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMouseEvent");
     return;
   }
 }
@@ -1646,9 +1646,9 @@ void FDialog::cb_move (const FWidget*, const FDataPtr)
   {
     tooltip = new FToolTip(this);
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FToolTip");
     return;
   }
 

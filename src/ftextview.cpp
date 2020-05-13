@@ -179,6 +179,18 @@ void FTextView::scrollTo (int x, int y)
 }
 
 //----------------------------------------------------------------------
+void FTextView::scrollToBegin()
+{
+  scrollToY (0);
+}
+
+//----------------------------------------------------------------------
+void FTextView::scrollToEnd()
+{
+  scrollToY (int(getRows() - getTextHeight()));
+}
+
+//----------------------------------------------------------------------
 void FTextView::hide()
 {
   FWidget::hide();
@@ -363,9 +375,9 @@ void FTextView::onMouseDown (FMouseEvent* ev)
          std::make_shared<FMouseEvent>(fc::MouseDown_Event, p, tp, b);
       FApplication::sendEvent (parent, _ev.get());
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FMouseEvent");
     }
   }
 }
@@ -392,9 +404,9 @@ void FTextView::onMouseUp (FMouseEvent* ev)
             std::make_shared<FMouseEvent>(fc::MouseUp_Event, p, tp, b);
         FApplication::sendEvent (parent, _ev.get());
       }
-      catch (const std::bad_alloc& ex)
+      catch (const std::bad_alloc&)
       {
-        std::cerr << bad_alloc_str << ex.what() << std::endl;
+        badAllocOutput ("FMouseEvent");
       }
     }
   }
@@ -425,9 +437,9 @@ void FTextView::onMouseMove (FMouseEvent* ev)
             std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, tp, b);
         FApplication::sendEvent (parent, _ev.get());
       }
-      catch (const std::bad_alloc& ex)
+      catch (const std::bad_alloc&)
       {
-        std::cerr << bad_alloc_str << ex.what() << std::endl;
+        badAllocOutput ("FMouseEvent");
       }
     }
   }
@@ -577,8 +589,8 @@ inline void FTextView::mapKeyFunctions()
   key_map[fc::Fkey_right] = [this] { scrollBy (1, 0); };
   key_map[fc::Fkey_ppage] = [this] { scrollBy (0, -int(getTextHeight())); };
   key_map[fc::Fkey_npage] = [this] { scrollBy (0, int(getTextHeight())); };
-  key_map[fc::Fkey_home]  = [this] { scrollToY (0); };
-  key_map[fc::Fkey_end]   = [this] { scrollToY (int(getRows() - getTextHeight())); };
+  key_map[fc::Fkey_home]  = [this] { scrollToBegin(); };
+  key_map[fc::Fkey_end]   = [this] { scrollToEnd(); };
 }
 
 //----------------------------------------------------------------------

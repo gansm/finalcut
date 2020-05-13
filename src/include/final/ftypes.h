@@ -37,6 +37,23 @@
 
 #define null nullptr
 
+#define badAllocFunctionOutput(object_name)                  \
+    *FApplication::getLog() << FLog::Error                   \
+                            << "Not enough memory to alloc " \
+                            << (object_name)                 \
+                            << " in "                        \
+                            << __func__ << std::endl;
+
+#define badAllocOutput(object_name)                          \
+    *FApplication::getLog() << FLog::Error                   \
+                            << "Not enough memory to alloc " \
+                            << (object_name)                 \
+                            << " in "                        \
+                            << getClassName()                \
+                            << "::"                          \
+                            << __func__ << std::endl;
+
+//F_METHOD_CALLBACK
 namespace
 {
 
@@ -68,9 +85,6 @@ typedef void*          FDataPtr;
 
 namespace finalcut
 {
-
-const char* const bad_alloc_str = \
-    "not enough memory to alloc ";
 
 template <typename T, bool is_signed>
 struct is_negative

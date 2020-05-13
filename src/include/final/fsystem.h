@@ -78,5 +78,3 @@ class FSystem
 }  // namespace finalcut
 
 #endif  // FSYSTEM_H
-
-

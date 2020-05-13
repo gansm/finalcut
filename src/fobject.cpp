@@ -60,9 +60,9 @@ FObject::FObject (FObject* parent)
       {
         timer_list = new FTimerList;
       }
-      catch (const std::bad_alloc& ex)
+      catch (const std::bad_alloc&)
       {
-        std::cerr << bad_alloc_str << ex.what() << std::endl;
+        badAllocOutput ("FTimerList");
         return;
       }
     }

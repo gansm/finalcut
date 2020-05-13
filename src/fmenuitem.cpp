@@ -25,6 +25,7 @@
 #include "final/fapplication.h"
 #include "final/fdialog.h"
 #include "final/fevent.h"
+#include "final/flog.h"
 #include "final/fmenu.h"
 #include "final/fmenubar.h"
 #include "final/fmenulist.h"
@@ -614,9 +615,9 @@ void FMenuItem::createDialogList (FMenu* winmenu)
           // create a new dialog list item
           win_item = new FMenuItem (name, winmenu);
         }
-        catch (const std::bad_alloc& ex)
+        catch (const std::bad_alloc&)
         {
-          std::cerr << bad_alloc_str << ex.what() << std::endl;
+          badAllocOutput ("FMenuItem");
           return;
         }
 
@@ -663,9 +664,9 @@ void FMenuItem::passMouseEvent ( T widget, const FMouseEvent* ev
   {
     _ev = std::make_shared<FMouseEvent>(ev_type, p2, t, b);
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMouseEvent");
     return;
   }
 

@@ -24,6 +24,7 @@
 
 #include "final/fapplication.h"
 #include "final/fevent.h"
+#include "final/flog.h"
 #include "final/fmenubar.h"
 #include "final/fstatusbar.h"
 #include "final/fstring.h"
@@ -1689,9 +1690,9 @@ void FWidget::initRootWidget()
     always_on_top_list = new FWidgetList();
     close_widget       = new FWidgetList();
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FWidgetList");
     return;
   }
 

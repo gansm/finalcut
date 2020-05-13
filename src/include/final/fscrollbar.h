@@ -50,6 +50,8 @@
 #include <functional>
 #include <memory>
 
+#include "final/fapplication.h"
+#include "final/flog.h"
 #include "final/fwidget.h"
 
 namespace finalcut
@@ -180,9 +182,9 @@ void initScrollbar ( FScrollbarPtr& bar
   {
     bar = std::make_shared<FScrollbar>(o, cb_instance);
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocFunctionOutput ("FScrollbar");
     return;
   }
 

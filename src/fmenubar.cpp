@@ -25,6 +25,7 @@
 
 #include "final/fapplication.h"
 #include "final/fevent.h"
+#include "final/flog.h"
 #include "final/fmenu.h"
 #include "final/fmenubar.h"
 #include "final/fmenuitem.h"
@@ -944,9 +945,9 @@ void FMenuBar::passEventToMenu (const FMouseEvent* const& ev)
       setClickedWidget(menu);
       menu->onMouseMove(_ev.get());
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FMouseEvent");
     }
   }
 }

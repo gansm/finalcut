@@ -27,6 +27,7 @@
 #include "final/flabel.h"
 #include "final/flineedit.h"
 #include "final/flistbox.h"
+#include "final/flog.h"
 #include "final/fmouse.h"
 #include "final/fpoint.h"
 #include "final/fsize.h"
@@ -605,9 +606,9 @@ void FComboBox::passEventToListWindow (FMouseEvent* const& ev)
     list_window.list.setFocus();
     list_window.list.onMouseMove(_ev.get());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMouseEvent");
   }
 }
 
@@ -631,6 +632,7 @@ void FComboBox::cb_setInputField (const FWidget*, const FDataPtr)
   input_field = list.getItem(index).getText();
   input_field.redraw();
   processChanged();
+  std::cout << "\r\n";
 }
 
 //----------------------------------------------------------------------
@@ -692,9 +694,9 @@ void FComboBox::cb_inputFieldHandOver (const FWidget*, const FDataPtr)
     list_window.list.setFocus();
     list_window.list.onMouseMove(_ev.get());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMouseEvent");
   }
 }
 

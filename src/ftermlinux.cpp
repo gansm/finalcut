@@ -22,8 +22,10 @@
 
 #include <vector>
 
+#include "final/fapplication.h"
 #include "final/fc.h"
 #include "final/fcharmap.h"
+#include "final/flog.h"
 #include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermcap.h"
@@ -200,7 +202,7 @@ void FTermLinux::init()
   }
   else
   {
-    std::cerr << "can not open the console.\n";
+    FApplication::getLog()->error("Can not open the console.");
     std::abort();
   }
 }
@@ -553,9 +555,9 @@ bool FTermLinux::getScreenFont()
     static constexpr std::size_t data_size = 4 * 32 * 512;
     font.data = new uChar[data_size]();
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FString");
     return false;
   }
 
@@ -605,9 +607,9 @@ bool FTermLinux::getUnicodeMap()
     {
       screen_unicode_map.entries = new struct unipair[count]();
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("unipair[count]");
       return false;
     }
 
@@ -683,9 +685,9 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
     {
       font.data = new uChar[data_size]();  // Initialize with 0
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("uChar[data_size]");
       return -1;
     }
 

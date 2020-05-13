@@ -1,9 +1,9 @@
 /***********************************************************************
-* fstartoptions.cpp - Contains the start options for initialization    *
+* flogger.cpp - The FINAL CUT text logger                              *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2020 Markus Gans                                           *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,88 +20,105 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include "final/fapplication.h"
-#include "final/flog.h"
-#include "final/fstartoptions.h"
+#include "final/flogger.h"
 
 namespace finalcut
 {
 
-// static class attribute
-FStartOptions* FStartOptions::start_options{};
-
 //----------------------------------------------------------------------
-// class FStartOptions
+// class FLogger
 //----------------------------------------------------------------------
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FStartOptions::FStartOptions()
-  : cursor_optimisation{true}
-  , mouse_support{true}
-  , terminal_detection{true}
-  , terminal_data_request{true}
-  , color_change{true}
-  , sgr_optimizer{true}
-  , vgafont{false}
-  , newfont{false}
-#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  , meta_sends_escape{true}
-  , change_cursorstyle{true}
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
-  , meta_sends_escape{true}
-#endif
+FLogger::FLogger()
 { }
 
 //----------------------------------------------------------------------
-FStartOptions::~FStartOptions()  // destructor
+FLogger::~FLogger()  // destructor
 { }
 
-// public methods of FStartOptions
+
+// private methods of FLogger
 //----------------------------------------------------------------------
-FStartOptions& FStartOptions::getFStartOptions()
+void FLogger::newlineReplace ( std::string& str
+                             , const std::string& replace_str )
 {
-  if ( start_options == nullptr )
+  std::size_t pos{0};
+  std::size_t npos{std::string::npos};
+
+  while ( (pos = str.find("\n", pos)) != npos
+       && pos + 1 < str.length() )
   {
-    try
-    {
-      start_options = new FStartOptions;
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("FStartOptions");
-      std::abort();
-    }
+    str.replace(pos, 1, replace_str);
+    pos += replace_str.length();
   }
-
-  return *start_options;
 }
 
 //----------------------------------------------------------------------
-void FStartOptions::destroyObject()
+const std::string FLogger::getTimeString()
 {
-  if ( start_options )
-    delete start_options;
+  char str[100];
+  const auto& now = std::chrono::system_clock::now();
+  const auto& t = std::chrono::system_clock::to_time_t(now);
+  std::stringstream str_stream;
+  // Print RFC 2822 date
+  const auto& tm = std::localtime(&t);
+  std::strftime(str, sizeof(str), "%a, %d %b %Y %T %z", tm);
+  return std::string(str);
 }
 
 //----------------------------------------------------------------------
-void FStartOptions::setDefault()
+const std::string FLogger::getEOL()
 {
-  cursor_optimisation = true;
-  mouse_support = true;
-  terminal_detection = true;
-  color_change = true;
-  vgafont = false;
-  newfont = false;
-  encoding = fc::UNKNOWN;
+  if ( end_of_line == FLog::LF )
+    return "\n";
+  else if ( end_of_line == FLog::CR )
+    return "\r";
+  else if ( end_of_line == FLog::CRLF )
+    return "\r\n";
 
-#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  meta_sends_escape = true;
-  change_cursorstyle = true;
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
-  meta_sends_escape = true;
-#endif
+  return "";
+}
+
+//----------------------------------------------------------------------
+void FLogger::printLogLine (const std::string& msg)
+{
+  const std::string& log_level = [this] ()
+  {
+    switch ( level )
+    {
+      case Info:
+        return "INFO";
+
+      case Warn:
+        return "WARNING";
+
+      case Error:
+        return "ERROR";
+
+      case Debug:
+        return "DEBUG";
+    }
+
+    return "";
+  }();
+
+  const std::string prefix = [this, &log_level] ()
+  {
+    if ( timestamp )
+      return getTimeString() + " [" + log_level + "] ";
+    else
+      return "[" + log_level + "] ";
+  }();
+
+  std::string message{msg};
+  const std::string& eol = getEOL();
+  const std::string replace_str = eol + prefix;
+  newlineReplace (message, replace_str);
+  output << prefix << message << eol;
 }
 
 }  // namespace finalcut
+
 

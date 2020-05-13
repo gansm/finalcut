@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019 Markus Gans                                           *
+* Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -42,6 +42,7 @@ FSystemImpl::FSystemImpl()
 FSystemImpl::~FSystemImpl()  // destructor
 { }
 
+// public methods of FSystemImpl
 //----------------------------------------------------------------------
 int FSystemImpl::getpwuid_r ( uid_t uid, struct passwd* pwd
                             , char* buf, size_t buflen

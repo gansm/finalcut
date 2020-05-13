@@ -25,6 +25,8 @@
 
 #include "final/fapplication.h"
 #include "final/fevent.h"
+#include "final/flog.h"
+#include "final/flogger.h"
 #include "final/fmenu.h"
 #include "final/fmenubar.h"
 #include "final/fmessagebox.h"
@@ -106,6 +108,20 @@ FApplication::~FApplication()  // destructor
 FApplication* FApplication::getApplicationObject()
 {
   return app_object;
+}
+
+//----------------------------------------------------------------------
+std::shared_ptr<FLog>& FApplication::getLog()
+{
+  // Global logger object
+  static std::shared_ptr<FLog> logger = std::make_shared<FLogger>();
+  return logger;
+}
+
+//----------------------------------------------------------------------
+void FApplication::setLog (const std::shared_ptr<FLog>& logger)
+{
+  getLog() = logger;
 }
 
 //----------------------------------------------------------------------
@@ -349,6 +365,9 @@ void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
   // Set the default double click interval
   if ( mouse )
     mouse->setDblclickInterval (dblclick_time);
+
+  // Initialize logging
+  getLog()->setLineEnding(FLog::CRLF);
 }
 
 //----------------------------------------------------------------------
@@ -1095,6 +1114,17 @@ void FApplication::processCloseWidget()
 }
 
 //----------------------------------------------------------------------
+void FApplication::processLogger()
+{
+  // Synchronizing the stream buffer with the logging output
+
+  auto logger = getLog();
+
+  if ( ! logger->str().empty() )
+    logger->pubsync();
+}
+
+//----------------------------------------------------------------------
 bool FApplication::processNextEvent()
 {
   uInt num_events{0};
@@ -1104,6 +1134,7 @@ bool FApplication::processNextEvent()
   processResizeEvent();
   processTerminalUpdate();
   processCloseWidget();
+  processLogger();
 
   sendQueuedEvents();
   num_events += processTimerEvent();

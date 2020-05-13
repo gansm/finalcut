@@ -25,6 +25,8 @@ libfinal_la_SOURCES = \
 	flabel.cpp \
 	flistbox.cpp \
 	flistview.cpp \
+	flog.cpp \
+	flogger.cpp \
 	fmenu.cpp \
 	fmouse.cpp \
 	fsystem.cpp \
@@ -98,6 +100,8 @@ finalcutinclude_HEADERS = \
 	include/final/flineedit.h \
 	include/final/flistbox.h \
 	include/final/flistview.h \
+	include/final/flog.h \
+	include/final/flogger.h \
 	include/final/fmenu.h \
 	include/final/fmouse.h \
 	include/final/fkeyboard.h \

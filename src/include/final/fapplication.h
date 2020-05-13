@@ -68,11 +68,12 @@ namespace finalcut
 {
 
 // class forward declaration
-class FEvent;
 class FAccelEvent;
 class FCloseEvent;
+class FEvent;
 class FFocusEvent;
 class FKeyEvent;
+class FLog;
 class FMouseEvent;
 class FStartOptions;
 class FTimerEvent;
@@ -106,6 +107,10 @@ class FApplication : public FWidget
     int                   getArgc() const;
     char**                getArgv() const;
     static FApplication*  getApplicationObject();
+    static std::shared_ptr<FLog>& getLog();
+
+    // Mutator
+    static void           setLog (const std::shared_ptr<FLog>&);
 
     // Inquiry
     static bool           isQuit();
@@ -177,6 +182,7 @@ class FApplication : public FWidget
     void                  processMouseEvent();
     void                  processResizeEvent();
     void                  processCloseWidget();
+    void                  processLogger();
     bool                  processNextEvent();
     void                  performTimerAction (FObject*, FEvent*) override;
     static bool           isEventProcessable (const FObject*, const FEvent*);

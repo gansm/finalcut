@@ -27,7 +27,9 @@
 #include <algorithm>
 #include <numeric>
 
+#include "final/fapplication.h"
 #include "final/fcharmap.h"
+#include "final/flog.h"
 #include "final/fterm.h"
 #include "final/ftermbuffer.h"
 
@@ -451,7 +453,8 @@ std::size_t getColumnWidth (const FString& s, std::size_t pos)
     }
     catch (const std::out_of_range& ex)
     {
-      std::cerr << "Out of Range error: " << ex.what() << std::endl;
+      *FApplication::getLog() << FLog::Error
+          << "Out of Range error: " << ex.what() << std::endl;
     }
   }
 

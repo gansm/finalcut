@@ -24,6 +24,7 @@
 
 #include "final/fapplication.h"
 #include "final/fbutton.h"
+#include "final/flog.h"
 #include "final/fmessagebox.h"
 
 namespace finalcut
@@ -256,9 +257,9 @@ inline void FMessageBox::allocation (int button0, int button1, int button2)
       button[2]->setHeight(1, false);
     }
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FButton");
     return;
   }
 }

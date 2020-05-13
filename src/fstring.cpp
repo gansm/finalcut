@@ -25,6 +25,8 @@
 #include <utility>
 #include <vector>
 
+#include "final/fapplication.h"
+#include "final/flog.h"
 #include "final/fstring.h"
 
 namespace finalcut
@@ -1232,9 +1234,9 @@ inline void FString::initLength (std::size_t len)
     string = new wchar_t[bufsize]();
     std::wmemset (string, L'\0', bufsize);
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("wchar_t[bufsize]");
   }
 }
 
@@ -1263,9 +1265,9 @@ void FString::_assign (const wchar_t s[])
     {
       string = new wchar_t[bufsize]();
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("wchar_t[bufsize]");
       return;
     }
   }
@@ -1291,9 +1293,9 @@ void FString::_insert (std::size_t len, const wchar_t s[])
   {
     string = new wchar_t[bufsize]();
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
+    badAllocOutput ("wchar_t[bufsize]");
     return;
   }
 
@@ -1338,9 +1340,9 @@ void FString::_insert ( std::size_t pos
       {
         sptr = new wchar_t[bufsize]();  // generate new string
       }
-      catch (const std::bad_alloc& ex)
+      catch (const std::bad_alloc&)
       {
-        std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
+        badAllocOutput ("wchar_t[bufsize]");
         return;
       }
 
@@ -1382,9 +1384,9 @@ void FString::_remove (std::size_t pos, std::size_t len)
     {
       sptr = new wchar_t[bufsize]();    // generate new string
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
+      badAllocOutput ("wchar_t[bufsize]");
       return;
     }
 
@@ -1416,9 +1418,9 @@ inline char* FString::wc_to_c_str (const wchar_t s[]) const
       // Generate a empty string ("")
       c_string = new char[1]();
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
+      badAllocOutput ("char[1]");
       return nullptr;
     }
 
@@ -1441,9 +1443,9 @@ inline char* FString::wc_to_c_str (const wchar_t s[]) const
     // pre-initialiaze the whole string with '\0'
     std::memset (c_string, '\0', std::size_t(dest_size));
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
+    badAllocOutput ("char[std::size_t(dest_size)]");
     return nullptr;
   }
 
@@ -1473,9 +1475,9 @@ inline wchar_t* FString::c_to_wc_str (const char s[]) const
       // Generate a empty wide string (L"")
       return new wchar_t[1]();
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
+      badAllocOutput ("wchar_t[1]");
       return nullptr;
     }
   }
@@ -1493,9 +1495,9 @@ inline wchar_t* FString::c_to_wc_str (const char s[]) const
     // pre-initialiaze the whole string with '\0'
     std::wmemset (dest, L'\0', std::size_t(size));
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
+    badAllocOutput ("wchar_t[std::size_t(size)]");
     return nullptr;
   }
 

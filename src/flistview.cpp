@@ -910,9 +910,9 @@ FObject::iterator FListView::insert ( const FStringList& cols
   {
     item = new FListViewItem (cols, d, getNullIterator());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FListViewItem");
     return getNullIterator();
   }
 

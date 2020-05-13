@@ -104,6 +104,8 @@ class FTextView : public FWidget
     void                scrollToY (int);
     void                scrollTo (const FPoint&);
     void                scrollTo (int, int);
+    void                scrollToBegin();
+    void                scrollToEnd();
     void                scrollBy (int, int);
 
     // Methods

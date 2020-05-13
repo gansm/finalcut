@@ -173,7 +173,7 @@ class FTerm final
     FTerm& operator = (const FTerm&) = delete;
 
     // Accessors
-    const FString          getClassName() const;
+    static const FString   getClassName();
     static std::size_t     getLineNumber();
     static std::size_t     getColumnNumber();
     static const FString   getKeyName (FKey);
@@ -405,7 +405,7 @@ std::size_t getColumnWidth (const FTermBuffer&);
 
 // FTerm inline functions
 //----------------------------------------------------------------------
-inline const FString FTerm::getClassName() const
+inline const FString FTerm::getClassName()
 { return "FTerm"; }
 
 //----------------------------------------------------------------------

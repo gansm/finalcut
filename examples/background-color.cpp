@@ -211,7 +211,6 @@ void Background::cb_choice (const finalcut::FWidget*, const FDataPtr)
   updateTerminal();
 }
 
-
 //----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
@@ -226,6 +225,20 @@ int main (int argc, char* argv[])
   Background dialog(&app);
   finalcut::FWidget::setMainWidget(&dialog);
   dialog.show();
+//-------------------------------------------------
+  std::cout << "\r\n" << std::flush;
+  finalcut::FLog& log = *finalcut::FApplication::getLog();
+
+  //std::ofstream file_stream("test.log", std::ofstream::out | std::ofstream::app);
+  //log.setLineEnding (finalcut::FLog::LF);
+  //log.setOutputStream(file_stream);
+
+  log.info("test1");
+  log.warn("test2");
+  log << finalcut::FLog::Error << "streaming " << "test 1" << std::flush;
+  log.enableTimestamp();
+  log << finalcut::FLog::Debug << "streaming test 2";
+//-------------------------------------------------
   return app.exec();
 }
 

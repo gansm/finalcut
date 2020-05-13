@@ -83,7 +83,7 @@ void FTermcap::termcap()
   std::vector<std::string> terminals{};
   static constexpr int success = 1;
   static constexpr int uninitialized = -2;
-  static char term_buffer[2048]{};
+  static char term_buffer[BUF_SIZE]{};
   int status = uninitialized;
   const bool color256 = term_detection->canDisplay256Colors();
 
@@ -116,9 +116,6 @@ void FTermcap::termcap()
     ++iter;
   }
 
-  if ( std::strncmp(termtype, "ansi", 4) == 0 )
-    term_detection->setAnsiTerminal (true);
-
   termcapError (status);
   termcapVariables();
 }
@@ -129,19 +126,21 @@ void FTermcap::termcapError (int status)
   static constexpr int no_entry = 0;
   static constexpr int db_not_found = -1;
   static constexpr int uninitialized = -2;
+  finalcut::FLog& log = *FApplication::getLog();
 
   if ( status == no_entry || status == uninitialized )
   {
     const char* termtype = fterm_data->getTermType();
-    std::cerr << "Unknown terminal: "  << termtype << "\n"
-              << "Check the TERM environment variable\n"
-              << "Also make sure that the terminal\n"
-              << "is defined in the termcap/terminfo database.\n";
+    log << FLog::Error
+        << "Unknown terminal: "  << termtype << "\n"
+        << "Check the TERM environment variable\n"
+        << "Also make sure that the terminal\n"
+        << "is defined in the termcap/terminfo database.\n";
     std::abort();
   }
   else if ( status == db_not_found )
   {
-    std::cerr << "The termcap/terminfo database could not be found.\n";
+    log << "The termcap/terminfo database could not be found.\n";
     std::abort();
   }
 }

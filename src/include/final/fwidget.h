@@ -94,12 +94,12 @@
 #include <utility>
 #include <vector>
 
-#include "final/fvterm.h"
 #include "final/fobject.h"
 #include "final/fpoint.h"
 #include "final/frect.h"
 #include "final/fsize.h"
 #include "final/ftypes.h"
+#include "final/fvterm.h"
 
 // Callback macros
 #define F_FUNCTION_CALLBACK(h) \

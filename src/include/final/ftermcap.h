@@ -126,6 +126,9 @@ class FTermcap final
     static tcap_map      strings[];
 
   private:
+    // Constant
+    static constexpr std::size_t BUF_SIZE{2048};
+
     // Methods
     static void          termcap();
     static void          termcapError (int);
@@ -140,7 +143,7 @@ class FTermcap final
     static FSystem*        fsystem;
     static FTermData*      fterm_data;
     static FTermDetection* term_detection;
-    static char            string_buf[2048];
+    static char            string_buf[BUF_SIZE];
 };
 
 
@@ -153,35 +156,35 @@ inline const FString FTermcap::getClassName() const
 template<typename CharT>
 bool FTermcap::getFlag (const CharT& cap)
 {
-  return tgetflag(C_STR(cap));
+  return ::tgetflag(C_STR(cap));
 }
 
 //----------------------------------------------------------------------
 template<typename CharT>
 int FTermcap::getNumber (const CharT& cap)
 {
-  return tgetnum(C_STR(cap));
+  return ::tgetnum(C_STR(cap));
 }
 
 //----------------------------------------------------------------------
 template<typename CharT>
 char* FTermcap::getString (const CharT& cap)
 {
-  return tgetstr(C_STR(cap), reinterpret_cast<char**>(&string_buf));
+  return ::tgetstr(C_STR(cap), reinterpret_cast<char**>(&string_buf));
 }
 
 //----------------------------------------------------------------------
 template<typename CharT>
 char* FTermcap::encodeMotionParameter (const CharT& cap, int col, int row)
 {
-  return tgoto(C_STR(cap), col, row);
+  return ::tgoto(C_STR(cap), col, row);
 }
 
 //----------------------------------------------------------------------
 template<typename CharT, typename... Args>
 inline char* FTermcap::encodeParameter (const CharT& cap, Args&&... args)
 {
-  return tparm (C_STR(cap), std::forward<Args>(args)...);
+  return ::tparm (C_STR(cap), std::forward<Args>(args)...);
 }
 
 //----------------------------------------------------------------------

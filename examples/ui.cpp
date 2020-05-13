@@ -981,7 +981,7 @@ void MyDialog::cb_view (const finalcut::FWidget*, FDataPtr data)
                                int(getRootWidget()->getHeight() / 6) }
                     , FSize{60, getRootWidget()->getHeight() * 3 / 4} );
   view->setResizeable();
-  std::string line = "";
+  std::string line{""};
   std::ifstream infile;
   infile.open(file);
 
@@ -1028,7 +1028,7 @@ int main (int argc, char* argv[])
   //app.setEncoding(finalcut::fc::VT100);
 
   // Sets the terminal size to 94×30
-  //app.setTermSize(94,30);
+  //finalcut::FTerm::setTermSize(FSize{94, 30});
 
   // Enable the final cut graphical font
   //app.setNewFont();

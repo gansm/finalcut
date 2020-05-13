@@ -1,9 +1,9 @@
 /***********************************************************************
-* fstartoptions.cpp - Contains the start options for initialization    *
+* flog.cpp - Interface of the FINAL CUT logger                         *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2020 Markus Gans                                           *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,87 +20,67 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include "final/fapplication.h"
 #include "final/flog.h"
-#include "final/fstartoptions.h"
 
 namespace finalcut
 {
 
-// static class attribute
-FStartOptions* FStartOptions::start_options{};
-
 //----------------------------------------------------------------------
-// class FStartOptions
+// class FLog
 //----------------------------------------------------------------------
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FStartOptions::FStartOptions()
-  : cursor_optimisation{true}
-  , mouse_support{true}
-  , terminal_detection{true}
-  , terminal_data_request{true}
-  , color_change{true}
-  , sgr_optimizer{true}
-  , vgafont{false}
-  , newfont{false}
-#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  , meta_sends_escape{true}
-  , change_cursorstyle{true}
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
-  , meta_sends_escape{true}
-#endif
+FLog::FLog()
 { }
 
 //----------------------------------------------------------------------
-FStartOptions::~FStartOptions()  // destructor
-{ }
-
-// public methods of FStartOptions
-//----------------------------------------------------------------------
-FStartOptions& FStartOptions::getFStartOptions()
+FLog::~FLog()  // destructor
 {
-  if ( start_options == nullptr )
+  sync();
+}
+
+
+// public methods of FLog
+//----------------------------------------------------------------------
+FLog& FLog::operator << (LogLevel l)
+{
+  sync();
+
+  switch ( l )
   {
-    try
-    {
-      start_options = new FStartOptions;
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("FStartOptions");
-      std::abort();
-    }
+    case Info:
+      current_log = std::bind(&FLog::info, this, _1);
+      break;
+
+    case Warn:
+      current_log = std::bind(&FLog::warn, this, _1);
+      break;
+
+    case Error:
+      current_log = std::bind(&FLog::error, this, _1);
+      break;
+
+    case Debug:
+      current_log = std::bind(&FLog::debug, this, _1);
+      break;
   }
 
-  return *start_options;
+  return *this;
 }
 
-//----------------------------------------------------------------------
-void FStartOptions::destroyObject()
-{
-  if ( start_options )
-    delete start_options;
-}
 
+// protected methods of FLog
 //----------------------------------------------------------------------
-void FStartOptions::setDefault()
+int FLog::sync()
 {
-  cursor_optimisation = true;
-  mouse_support = true;
-  terminal_detection = true;
-  color_change = true;
-  vgafont = false;
-  newfont = false;
-  encoding = fc::UNKNOWN;
+  if ( ! str().empty() )
+  {
+    current_log (str());
+    str("");
+  }
 
-#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  meta_sends_escape = true;
-  change_cursorstyle = true;
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
-  meta_sends_escape = true;
-#endif
+  return 0;
 }
 
 }  // namespace finalcut

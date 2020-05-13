@@ -27,6 +27,7 @@
 #include "final/fcolorpair.h"
 #include "final/fevent.h"
 #include "final/flabel.h"
+#include "final/flog.h"
 #include "final/fstatusbar.h"
 
 namespace finalcut
@@ -173,9 +174,9 @@ void FLabel::onMouseDown (FMouseEvent* ev)
             std::make_shared<FMouseEvent>(fc::MouseDown_Event, p, tp, b);
         FApplication::sendEvent (parent, _ev.get());
       }
-      catch (const std::bad_alloc& ex)
+      catch (const std::bad_alloc&)
       {
-        std::cerr << bad_alloc_str << ex.what() << std::endl;
+        badAllocOutput ("FMouseEvent");
         return;
       }
     }

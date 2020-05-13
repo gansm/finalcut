@@ -169,8 +169,8 @@ inline const FString FMessageBox::getClassName() const
 //----------------------------------------------------------------------
 inline const FString FMessageBox::getTitlebarText() const
 {
-  const FString& tb_text = FDialog::getText();  // initialize text
-  return tb_text;
+  const FString& title = FDialog::getText();  // initialize text
+  return title;
 }
 
 //----------------------------------------------------------------------

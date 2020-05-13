@@ -29,6 +29,7 @@
 #include "final/fcharmap.h"
 #include "final/fcolorpair.h"
 #include "final/fkeyboard.h"
+#include "final/flog.h"
 #include "final/foptiattr.h"
 #include "final/foptimove.h"
 #include "final/fstyle.h"
@@ -690,9 +691,9 @@ void FVTerm::createArea ( const FRect& box
   {
     area = new FTermArea;
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FTermArea");
     return;
   }
 
@@ -1383,9 +1384,9 @@ inline bool FVTerm::reallocateTextArea ( FTermArea* area
     area->changes = new FLineChanges[height];
     area->data    = new FChar[size];
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocFunctionOutput ("FLineChanges[height] or FChar[size]");
     return false;
   }
 
@@ -1404,9 +1405,9 @@ inline bool FVTerm::reallocateTextArea (FTermArea* area, std::size_t size)
   {
     area->data = new FChar[size];
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocFunctionOutput ("FChar[size]");
     return false;
   }
 
@@ -1909,9 +1910,9 @@ void FVTerm::init (bool disable_alt_screen)
     term_pos      = new FPoint(-1, -1);
     output_buffer = new std::queue<int>;
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FTerm, FPoint, or std::queue<int>");
     std::abort();
   }
 

@@ -162,7 +162,7 @@ class FString
     operator const char* () const { return c_str(); }
 
     // Accessor
-    virtual const FString getClassName();
+    virtual const FString getClassName() const;
 
     // inquiries
     bool isNull() const;
@@ -370,7 +370,7 @@ inline bool FString::operator > (const CharT& s) const
 }
 
 //----------------------------------------------------------------------
-inline const FString FString::getClassName()
+inline const FString FString::getClassName() const
 { return "FString"; }
 
 //----------------------------------------------------------------------

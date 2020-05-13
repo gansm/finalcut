@@ -75,12 +75,12 @@ matrix:
       - whoami
       - echo -n | openssl s_client -CApath /etc/ssl/certs/ -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-certificates.crt
     script:
-      - cat /home/travis/build/gansm/finalcut/cov-int/scm_log.txt
+      - cat /home/travis/build/gansm/finalcut/cov-int/scm_log.txt || echo
       - autoreconf -v --install --force
       - ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -DUNIT_TEST" --with-unit-test
       - make V=1 -j10
       - make check
-      - cat test/*.log
+      - cat test/*.log || echo
 
   #
   # Coveralls + Codecov
