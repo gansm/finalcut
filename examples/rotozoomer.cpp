@@ -179,7 +179,7 @@ void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
 //----------------------------------------------------------------------
 void RotoZoomer::generateReport()
 {
-  finalcut::FString term_type = getTermType();
+  finalcut::FString term_type = finalcut::FTerm::getTermType();
   finalcut::FString dimension_str{};
   finalcut::FString time_str{};
   finalcut::FString fps_str{};

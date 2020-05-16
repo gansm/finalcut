@@ -148,13 +148,6 @@ class FVTerm
     const FTermArea*      getVWin() const;
     const FPoint          getPrintCursor();
     static const FChar    getAttribute();
-    static int            getMaxColor();
-    static int            getTabstop();
-    static fc::encoding   getEncoding();
-    static std::string    getEncodingString();
-    static const FString  getKeyName (FKey);
-    static const char*    getTermType();
-    static const char*    getTermFileName();
     FTerm&                getFTerm();
 
     // Mutators
@@ -237,12 +230,6 @@ class FVTerm
     static void           setNonBlockingRead();
     static void           unsetNonBlockingRead();
 
-    static void           setTermTitle (const FString&);
-    static void           setEncoding (fc::encoding);
-    static bool           setVGAFont();
-    static bool           setNewFont();
-    static bool           setOldFont();
-
     // Inquiries
     static bool           isBold();
     static bool           isDim();
@@ -260,30 +247,6 @@ class FVTerm
     static bool           isTransparent();
     static bool           isTransShadow();
     static bool           isInheritBackground();
-    static bool           isMonochron();
-    static bool           isXTerminal();
-    static bool           isAnsiTerminal();
-    static bool           isRxvtTerminal();
-    static bool           isUrxvtTerminal();
-    static bool           isMltermTerminal();
-    static bool           isPuttyTerminal();
-    static bool           isKdeTerminal();
-    static bool           isGnomeTerminal();
-    static bool           isKtermTerminal();
-    static bool           isTeraTerm();
-    static bool           isSunTerminal();
-    static bool           isCygwinTerminal();
-    static bool           isMinttyTerm();
-    static bool           isLinuxTerm();
-    static bool           isFreeBSDTerm();
-    static bool           isNetBSDTerm();
-    static bool           isOpenBSDTerm();
-    static bool           isScreenTerm();
-    static bool           isTmuxTerm();
-    static bool           isNewFont();
-    static bool           isCursorHideable();
-    static bool           hasChangedTermSize();
-    static bool           hasUTF8();
 
     // Methods
     virtual void          clearArea (int = ' ');
@@ -312,8 +275,6 @@ class FVTerm
     virtual void          print (const FColorPair&);
     virtual FVTerm&       print();
     static void           flush();
-    static void           beep();
-    static void           redefineDefaultColors (bool);
 
   protected:
     // Accessor
@@ -322,26 +283,16 @@ class FVTerm
     FTermArea*            getCurrentPrintArea() const;
     FTermArea*            getVirtualDesktop() const;
     FTermArea*            getVirtualTerminal() const;
-    std::size_t           getLineNumber();
-    std::size_t           getColumnNumber();
-    static bool           charEncodable (wchar_t);
-    static FKeyboard*     getFKeyboard();
-    static FMouseControl* getFMouseControl();
 
     // Mutators
     void                  setPrintArea (FTermArea*);
     void                  setChildPrintArea (FTermArea*);
     void                  setActiveArea (FTermArea*);
-    static void           setInsertCursor (bool);
-    static void           setInsertCursor();
-    static void           unsetInsertCursor();
 
     // Inquiries
     bool                  hasPrintArea() const;
     bool                  hasChildPrintArea() const;
     bool                  isVirtualWindow() const;
-    static bool           hasHalfBlockCharacter();
-    static bool           hasShadowCharacter();
 
     // Methods
 
@@ -366,13 +317,7 @@ class FVTerm
     void                  processTerminalUpdate();
     static void           startTerminalUpdate();
     static void           finishTerminalUpdate();
-    static void           initScreenSettings();
-    static void           changeTermSizeFinished();
-    static void           exitWithMessage (const FString&)
-    #if defined(__clang__) || defined(__GNUC__)
-      __attribute__((noreturn))
-    #endif
-                           ;
+
   private:
     // Enumerations
     enum character_type
@@ -678,40 +623,6 @@ inline const FChar FVTerm::getAttribute()
 { return next_attribute; }
 
 //----------------------------------------------------------------------
-inline int FVTerm::getMaxColor()
-{ return FTerm::getMaxColor(); }
-
-//----------------------------------------------------------------------
-inline int FVTerm::getTabstop()
-{ return FTerm::getTabstop(); }
-
-//----------------------------------------------------------------------
-inline fc::encoding FVTerm::getEncoding()
-{ return FTerm::getEncoding(); }
-
-//----------------------------------------------------------------------
-inline std::string FVTerm::getEncodingString()
-{
-  const std::string& enc_str = FTerm::getEncodingString(); // init enc_str
-  return enc_str;
-}
-
-//----------------------------------------------------------------------
-inline const FString FVTerm::getKeyName (FKey keynum)
-{
-  const FString& name = FTerm::getKeyName(keynum);  // initialize name
-  return name;
-}
-
-//----------------------------------------------------------------------
-inline const char* FVTerm::getTermType()
-{ return FTerm::getTermType(); }
-
-//----------------------------------------------------------------------
-inline const char* FVTerm::getTermFileName()
-{ return FTerm::getTermFileName(); }
-
-//----------------------------------------------------------------------
 inline FTerm& FVTerm::getFTerm()
 { return *fterm; }
 
@@ -943,26 +854,6 @@ inline void FVTerm::unsetNonBlockingRead()
 { setNonBlockingRead(false); }
 
 //----------------------------------------------------------------------
-inline void FVTerm::setTermTitle (const FString& title)
-{ FTerm::setTermTitle(title); }
-
-//----------------------------------------------------------------------
-inline void FVTerm::setEncoding (fc::encoding enc)
-{ FTerm::setEncoding(enc); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setVGAFont()
-{ return FTerm::setVGAFont(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setNewFont()
-{ return FTerm::setNewFont(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::setOldFont()
-{ return FTerm::setOldFont(); }
-
-//----------------------------------------------------------------------
 inline bool FVTerm::isBold()
 { return next_attribute.attr.bit.bold; }
 
@@ -1027,102 +918,6 @@ inline bool FVTerm::isInheritBackground()
 { return next_attribute.attr.bit.inherit_background; }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isMonochron()
-{ return FTerm::isMonochron(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isXTerminal()
-{ return FTerm::isXTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isAnsiTerminal()
-{ return FTerm::isAnsiTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isRxvtTerminal()
-{ return FTerm::isRxvtTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isUrxvtTerminal()
-{ return FTerm::isUrxvtTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isMltermTerminal()
-{ return FTerm::isMltermTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isPuttyTerminal()
-{ return FTerm::isPuttyTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isKdeTerminal()
-{ return FTerm::isKdeTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isGnomeTerminal()
-{ return FTerm::isGnomeTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isKtermTerminal()
-{ return FTerm::isKtermTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isTeraTerm()
-{ return FTerm::isTeraTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isSunTerminal()
-{ return FTerm::isSunTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isCygwinTerminal()
-{ return FTerm::isCygwinTerminal(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isMinttyTerm()
-{ return FTerm::isMinttyTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isLinuxTerm()
-{ return FTerm::isLinuxTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isFreeBSDTerm()
-{ return FTerm::isFreeBSDTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isNetBSDTerm()
-{ return FTerm::isNetBSDTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isOpenBSDTerm()
-{ return FTerm::isOpenBSDTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isScreenTerm()
-{ return FTerm::isScreenTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isTmuxTerm()
-{ return FTerm::isTmuxTerm(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isNewFont()
-{ return FTerm::isNewFont(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isCursorHideable()
-{ return FTerm::isCursorHideable(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::hasChangedTermSize()
-{ return FTerm::hasChangedTermSize(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::hasUTF8()
-{ return FTerm::hasUTF8(); }
-
-//----------------------------------------------------------------------
 template<typename... Args>
 inline int FVTerm::printf (const FString& format, Args&&... args)
 {
@@ -1134,14 +929,6 @@ inline int FVTerm::printf (const FString& format, Args&&... args)
 //----------------------------------------------------------------------
 inline FVTerm& FVTerm::print()
 { return *this; }
-
-//----------------------------------------------------------------------
-inline void FVTerm::beep()
-{ FTerm::beep(); }
-
-//----------------------------------------------------------------------
-inline void FVTerm::redefineDefaultColors (bool enable)
-{ FTerm::redefineDefaultColors(enable); }
 
 //----------------------------------------------------------------------
 inline FVTerm::FTermArea* FVTerm::getChildPrintArea() const
@@ -1160,26 +947,6 @@ inline FVTerm::FTermArea* FVTerm::getVirtualTerminal() const
 { return vterm; }
 
 //----------------------------------------------------------------------
-inline std::size_t FVTerm::getLineNumber()
-{ return FTerm::getLineNumber(); }
-
-//----------------------------------------------------------------------
-inline std::size_t FVTerm::getColumnNumber()
-{ return FTerm::getColumnNumber(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::charEncodable (wchar_t c)
-{ return FTerm::charEncodable(c); }
-
-//----------------------------------------------------------------------
-inline FKeyboard* FVTerm::getFKeyboard()
-{ return FTerm::getFKeyboard(); }
-
-//----------------------------------------------------------------------
-inline FMouseControl* FVTerm::getFMouseControl()
-{ return FTerm::getFMouseControl(); }
-
-//----------------------------------------------------------------------
 inline void FVTerm::setPrintArea (FTermArea* area)
 { print_area = area; }
 
@@ -1190,18 +957,6 @@ inline void FVTerm::setChildPrintArea (FTermArea* area)
 //----------------------------------------------------------------------
 inline void FVTerm::setActiveArea (FTermArea* area)
 { active_area = area; }
-
-//----------------------------------------------------------------------
-inline void FVTerm::setInsertCursor (bool enable)
-{ return FTerm::setInsertCursor(enable); }
-
-//----------------------------------------------------------------------
-inline void FVTerm::setInsertCursor()
-{ return FTerm::setInsertCursor(true); }
-
-//----------------------------------------------------------------------
-inline void FVTerm::unsetInsertCursor()
-{ return FTerm::setInsertCursor(false); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::hasPrintArea() const
@@ -1215,25 +970,6 @@ inline bool FVTerm::hasChildPrintArea() const
 inline bool FVTerm::isVirtualWindow() const
 { return vwin; }
 
-//----------------------------------------------------------------------
-inline bool FVTerm::hasHalfBlockCharacter()
-{ return FTerm::hasHalfBlockCharacter(); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::hasShadowCharacter()
-{ return FTerm::hasShadowCharacter(); }
-
-//----------------------------------------------------------------------
-inline void FVTerm::initScreenSettings()
-{ FTerm::initScreenSettings(); }
-
-//----------------------------------------------------------------------
-inline void FVTerm::changeTermSizeFinished()
-{ FTerm::changeTermSizeFinished(); }
-
-//----------------------------------------------------------------------
-inline void FVTerm::exitWithMessage (const FString& message)
-{ FTerm::exitWithMessage(message); }
 
 }  // namespace finalcut
 

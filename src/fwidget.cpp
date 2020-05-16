@@ -538,7 +538,7 @@ void FWidget::setTermSize (const FSize& size)
 {
   // Set xterm size to width x height
 
-  if ( isXTerminal() )
+  if ( FTerm::isXTerminal() )
   {
     root_widget->wsize.setRect(FPoint{1, 1}, size);
     root_widget->adjust_wsize = root_widget->wsize;
@@ -1001,7 +1001,7 @@ void FWidget::show()
   if ( ! init_desktop )
   {
     // Sets the initial screen settings
-    initScreenSettings();
+    FTerm::initScreenSettings();
     // Initializing vdesktop
     const auto& r = getRootWidget();
     setColor(r->getForegroundColor(), r->getBackgroundColor());
@@ -1591,12 +1591,8 @@ bool FWidget::event (FEvent* ev)
       onClose (static_cast<FCloseEvent*>(ev));
       break;
 
-    case fc::Timer_Event:
-      onTimer (static_cast<FTimerEvent*>(ev));
-      break;
-
     default:
-      return false;
+      return FObject::event(ev);
   }
 
   return true;
@@ -1696,7 +1692,7 @@ void FWidget::initRootWidget()
     return;
   }
 
-  hideable = isCursorHideable();
+  hideable = FTerm::isCursorHideable();
   flags.visible_cursor = ! hideable;
 
   // Determine width and height of the terminal
@@ -1992,7 +1988,7 @@ void FWidget::setColorTheme()
 {
   // Sets the default color theme
 
-  if ( getMaxColor() < 16 )  // for 8 color mode
+  if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
     wcolors.set8ColorTheme();
   else
     wcolors.set16ColorTheme();

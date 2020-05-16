@@ -478,7 +478,7 @@ void FMenuBar::drawItems()
 
   print() << FPoint{1, 1};
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   std::size_t x{1};
@@ -490,7 +490,7 @@ void FMenuBar::drawItems()
   for (; x <= getDesktopWidth(); x++)
     print (' ');
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 
@@ -532,7 +532,7 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
   const auto& wc = getFWidgetColors();
   setColor (wc.menu_active_fg, wc.menu_active_bg);
 
-  if ( isMonochron() && is_enabled && is_selected )
+  if ( FTerm::isMonochron() && is_enabled && is_selected )
     setReverse(true);
 }
 
@@ -547,7 +547,7 @@ inline void FMenuBar::setLineAttributes (const FMenuItem* menuitem)
   {
     if ( is_selected )
     {
-      if ( isMonochron() )
+      if ( FTerm::isMonochron() )
         setReverse(false);
 
       setForegroundColor (wc.menu_active_focus_fg);
@@ -598,7 +598,7 @@ inline void FMenuBar::drawMenuText (menuText& data)
       break;
 
     if ( ! std::iswprint(std::wint_t(data.text[z]))
-      && ! isNewFont()
+      && ! FTerm::isNewFont()
       && ( data.text[z] < fc::NF_rev_left_arrow2
         || data.text[z] > fc::NF_check_mark ) )
     {

@@ -24,7 +24,9 @@
   #include "final/fconfig.h"  // includes _GNU_SOURCE for fd_set
 #endif
 
+#include "final/fapplication.h"
 #include "final/fc.h"
+#include "final/flog.h"
 #include "final/fstring.h"
 #include "final/fterm.h"
 #include "final/ftermcap.h"
@@ -33,6 +35,13 @@
 #include "final/ftermios.h"
 #include "final/ftermxterminal.h"
 #include "final/fsize.h"
+
+#define initCheck(ret_value)   \
+    if ( ! isInitialized() )   \
+    {                          \
+      warnNotInitialized();    \
+      return ret_value;        \
+    }
 
 namespace finalcut
 {
@@ -256,6 +265,8 @@ void FTermXTerminal::resetHighlightBackground()
 //----------------------------------------------------------------------
 void FTermXTerminal::resetDefaults()
 {
+  initCheck();
+
   if ( term_detection->isPuttyTerminal() )
     return;
 
@@ -280,6 +291,8 @@ void FTermXTerminal::resetDefaults()
 //----------------------------------------------------------------------
 void FTermXTerminal::captureFontAndTitle()
 {
+  initCheck();
+
   if ( ( term_detection->isXTerminal()
     || term_detection->isUrxvtTerminal() )
     && ! term_detection->isRxvtTerminal() )
@@ -294,6 +307,16 @@ void FTermXTerminal::captureFontAndTitle()
 
 // private methods of FTermXTerminal
 //----------------------------------------------------------------------
+void FTermXTerminal::warnNotInitialized()
+{
+  *FApplication::getLog() << FLog::Warn
+                          << "The FTermXTerminal object has "
+                          << "not yet been initialized! "
+                          << "Please call the init() method first."
+                          << std::endl;
+}
+
+//----------------------------------------------------------------------
 void FTermXTerminal::setXTermCursorStyle()
 {
   // Set the xterm cursor style
@@ -302,6 +325,8 @@ void FTermXTerminal::setXTermCursorStyle()
   if ( FTermFreeBSD::isFreeBSDConsole() )
     return;
 #endif
+
+  initCheck();
 
   if ( term_detection->isGnomeTerminal()
     && ! term_detection->hasSetCursorStyleSupport() )
@@ -325,6 +350,7 @@ void FTermXTerminal::setXTermCursorStyle()
 void FTermXTerminal::setXTermTitle()
 {
   // Set the xterm title
+  initCheck();
 
   if ( term_detection->isXTerminal()
     || term_detection->isScreenTerm()
@@ -343,6 +369,8 @@ void FTermXTerminal::setXTermTitle()
 //----------------------------------------------------------------------
 void FTermXTerminal::setXTermSize()
 {
+  initCheck();
+
   if ( term_detection->isXTerminal() )
   {
     FTerm::putstringf ( CSI "8;%lu;%lut"
@@ -356,6 +384,8 @@ void FTermXTerminal::setXTermSize()
 void FTermXTerminal::setXTermFont()
 {
   // Change the XTerm font (needs the allowFontOps resource)
+
+  initCheck();
 
   if ( term_detection->isXTerminal()
     || term_detection->isScreenTerm()
@@ -372,6 +402,8 @@ void FTermXTerminal::setXTermFont()
 void FTermXTerminal::setXTermForeground()
 {
   // Set the XTerm text foreground color
+
+  initCheck();
 
   if ( term_detection->isXTerminal()
     || term_detection->isScreenTerm()
@@ -391,6 +423,8 @@ void FTermXTerminal::setXTermBackground()
 {
   // Set the XTerm text background color
 
+  initCheck();
+
   if ( term_detection->isXTerminal()
     || term_detection->isScreenTerm()
     || term_detection->isMinttyTerm()
@@ -408,6 +442,8 @@ void FTermXTerminal::setXTermBackground()
 void FTermXTerminal::setXTermCursorColor()
 {
   // Set the text cursor color
+
+  initCheck();
 
   if ( term_detection->isXTerminal()
     || term_detection->isScreenTerm()
@@ -427,6 +463,8 @@ void FTermXTerminal::setXTermMouseForeground()
 {
   // Set the mouse foreground color
 
+  initCheck();
+
   if ( term_detection->isXTerminal()
     || term_detection->isScreenTerm()
     || term_detection->isUrxvtTerminal()
@@ -444,6 +482,8 @@ void FTermXTerminal::setXTermMouseBackground()
 {
   // Set the mouse background color
 
+  initCheck();
+
   if ( term_detection->isXTerminal()
     || term_detection->isScreenTerm()
     || FTermcap::osc_support )
@@ -459,6 +499,8 @@ void FTermXTerminal::setXTermMouseBackground()
 void FTermXTerminal::setXTermHighlightBackground()
 {
   // Set the highlight background color
+
+  initCheck();
 
   if ( term_detection->isXTerminal()
     || term_detection->isScreenTerm()
@@ -477,6 +519,8 @@ void FTermXTerminal::setXTerm8ColorDefaults()
 {
   // Redefinition of the XTerm default colors
   // for the final cut 8 color theme
+
+  initCheck();
 
   if ( term_detection->isPuttyTerminal() )
     return;
@@ -498,6 +542,8 @@ void FTermXTerminal::setXTerm16ColorDefaults()
   // Redefinition of the XTerm default colors
   // for the final cut 16 color theme
 
+  initCheck();
+
   if ( term_detection->isPuttyTerminal() )
     return;
 
@@ -518,6 +564,8 @@ inline void FTermXTerminal::setXTermDefaultsMouseCursor()
   setMouseBackground("rgb:ffff/ffff/ffff");        // white
   setMouseForeground ("rgb:0000/0000/0000");       // black
 
+  initCheck();
+
   if ( ! term_detection->isGnomeTerminal() )
     setCursorColor("rgb:ffff/ffff/ffff");          // white
 }
@@ -525,6 +573,8 @@ inline void FTermXTerminal::setXTermDefaultsMouseCursor()
 //----------------------------------------------------------------------
 inline bool FTermXTerminal::canSetXTermBackground()
 {
+  initCheck(false);
+
   if ( xterm_default_colors
     && ! (term_detection->isMinttyTerm()
        || term_detection->isMltermTerminal()
@@ -539,6 +589,8 @@ inline bool FTermXTerminal::canSetXTermBackground()
 void FTermXTerminal::resetXTermColorMap()
 {
   // Reset the entire color table
+
+  initCheck();
 
   if ( term_detection->isMinttyTerm() )
   {
@@ -640,6 +692,8 @@ void FTermXTerminal::resetXTermHighlightBackground()
 //----------------------------------------------------------------------
 bool FTermXTerminal::canResetColor()
 {
+  initCheck(false);
+
   if ( term_detection->isGnomeTerminal()
     && term_detection->getGnomeTerminalID() < 3502 )
     return false;
@@ -659,6 +713,8 @@ bool FTermXTerminal::canResetColor()
 //----------------------------------------------------------------------
 void FTermXTerminal::oscPrefix()
 {
+  initCheck();
+
   if ( term_detection->isTmuxTerm() )
   {
     // tmux device control string
@@ -674,6 +730,8 @@ void FTermXTerminal::oscPrefix()
 //----------------------------------------------------------------------
 void FTermXTerminal::oscPostfix()
 {
+  initCheck();
+
   if ( term_detection->isScreenTerm()
     || term_detection->isTmuxTerm() )
   {
@@ -685,6 +743,8 @@ void FTermXTerminal::oscPostfix()
 //----------------------------------------------------------------------
 const FString FTermXTerminal::captureXTermFont()
 {
+  initCheck(FString{});
+
   if ( term_detection->isXTerminal()
     || term_detection->isScreenTerm()
     || FTermcap::osc_support )
@@ -727,6 +787,8 @@ const FString FTermXTerminal::captureXTermFont()
 //----------------------------------------------------------------------
 const FString FTermXTerminal::captureXTermTitle()
 {
+  initCheck(FString{});
+
   if ( term_detection->isKdeTerminal() )
     return FString{};
 

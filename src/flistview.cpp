@@ -1526,7 +1526,7 @@ void FListView::init()
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
-  nf_offset = isNewFont() ? 1 : 0;
+  nf_offset = FTerm::isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);
   setBottomPadding(1);
@@ -1639,12 +1639,12 @@ void FListView::draw()
 
   setColor();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   drawBorder();
 
-  if ( isNewFont() && ! vbar->isShown() )
+  if ( FTerm::isNewFont() && ! vbar->isShown() )
   {
     setColor();
 
@@ -1657,7 +1657,7 @@ void FListView::draw()
 
   drawHeadlines();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 
   drawScrollbars();
@@ -1773,7 +1773,7 @@ void FListView::drawList()
   // Reset color
   setColor();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   // Clean empty space after last element
@@ -1902,10 +1902,10 @@ inline void FListView::setLineAttributes ( bool is_current
 
   if ( is_current )
   {
-    if ( is_focus && getMaxColor() < 16 )
+    if ( is_focus && FTerm::getMaxColor() < 16 )
       setBold();
 
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       unsetBold();
 
     if ( is_focus )
@@ -1917,14 +1917,14 @@ inline void FListView::setLineAttributes ( bool is_current
       setColor ( wc.current_element_fg
                , wc.current_element_bg );
 
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(false);
   }
   else
   {
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(true);
-    else if ( is_focus && getMaxColor() < 16 )
+    else if ( is_focus && FTerm::getMaxColor() < 16 )
       unsetBold();
   }
 }
@@ -1934,7 +1934,7 @@ inline FString FListView::getCheckBox (const FListViewItem* item)
 {
   FString checkbox{""};
 
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
   {
     checkbox = ( item->isChecked() ) ? CHECKBOX_ON : CHECKBOX;
     checkbox += L' ';
@@ -2516,7 +2516,7 @@ void FListView::processChanged()
 //----------------------------------------------------------------------
 void FListView::changeOnResize()
 {
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
   {
     vbar->setGeometry (FPoint{int(getWidth()), 2}, FSize{2, getHeight() - 2});
     hbar->setGeometry (FPoint{1, int(getHeight())}, FSize{getWidth() - 2, 1});

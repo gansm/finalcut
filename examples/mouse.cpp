@@ -447,7 +447,7 @@ void MouseDraw::draw()
   finalcut::FDialog::draw();
   setColor();
 
-  if ( isNewFont() )
+  if ( finalcut::FTerm::isNewFont() )
   {
     for (int y{2}; y < y_max; y++)
     {

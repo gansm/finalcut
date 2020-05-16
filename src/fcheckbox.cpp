@@ -76,7 +76,7 @@ void FCheckBox::drawCheckButton()
   print() << FPoint{1, 1};
   setColor();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
   {
     if ( hasFocus() )
       setReverse(false);
@@ -89,14 +89,14 @@ void FCheckBox::drawCheckButton()
   else
     drawUnchecked();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 
 //----------------------------------------------------------------------
 inline void FCheckBox::drawChecked()
 {
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
     print (CHECKBOX_ON);
   else
   {
@@ -109,7 +109,7 @@ inline void FCheckBox::drawChecked()
 //----------------------------------------------------------------------
 inline void FCheckBox::drawUnchecked()
 {
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
     print (CHECKBOX);
   else
   {

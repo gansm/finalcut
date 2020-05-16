@@ -117,11 +117,13 @@ class FTermFreeBSD final
 
   private:
     // Methods
+    static void        warnNotInitialized();
     static bool        saveFreeBSDAltKey();
     static bool        setFreeBSDAltKey (uInt);
     static bool        setFreeBSDAlt2Meta();
     static bool        resetFreeBSDAlt2Meta();
     static bool        setFreeBSDCursorStyle (CursorStyle);
+    static bool        isInitialized();
 
     // Data members
     static uInt        bsd_alt_keymap;
@@ -154,6 +156,10 @@ inline void FTermFreeBSD::enableMetaSendsEscape()
 //----------------------------------------------------------------------
 inline void FTermFreeBSD::disableMetaSendsEscape()
 { meta_sends_escape = false; }
+
+//----------------------------------------------------------------------
+inline bool FTermFreeBSD::isInitialized()
+{ return bool(fsystem && fterm_data); }
 #endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 
 }  // namespace finalcut

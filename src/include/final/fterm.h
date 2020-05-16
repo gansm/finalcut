@@ -247,6 +247,8 @@ class FTerm final
     static void            setFSystem (FSystem*);
     static void            setTermType (const char[]);
     static void            setInsertCursor (bool);
+    static void            setInsertCursor();
+    static void            unsetInsertCursor();
     static void            redefineDefaultColors (bool);
     static void            setDblclickInterval (const uInt64);
     static bool            setUTF8 (bool);
@@ -411,6 +413,14 @@ inline const FString FTerm::getClassName()
 //----------------------------------------------------------------------
 inline void FTerm::setFSystem (FSystem* fsystem)
 { fsys = fsystem; }
+
+//----------------------------------------------------------------------
+inline void FTerm::setInsertCursor()
+{ return setInsertCursor(true); }
+
+//----------------------------------------------------------------------
+inline void FTerm::unsetInsertCursor()
+{ return setInsertCursor(false); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::setUTF8()

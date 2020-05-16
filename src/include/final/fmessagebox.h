@@ -228,7 +228,7 @@ int FMessageBox::error ( FWidget* parent
                    , FString() << message
                    , button0, button1, button2
                    , parent );
-  mbox.beep();
+  FTerm::beep();
   mbox.setHeadline("Warning:");
   mbox.setCenterText();
   const auto& wc = mbox.getFWidgetColors();

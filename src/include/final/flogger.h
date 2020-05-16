@@ -92,28 +92,28 @@ inline const FString FLogger::getClassName() const
 //----------------------------------------------------------------------
 inline void FLogger::info (const std::string& msg)
 {
-  level = Info;
+  setLevel() = Info;
   printLogLine (msg);
 }
 
 //----------------------------------------------------------------------
 inline void FLogger::warn (const std::string& msg)
 {
-  level = Warn;
+  setLevel() = Warn;
   printLogLine (msg);
 }
 
 //----------------------------------------------------------------------
 inline void FLogger::error (const std::string& msg)
 {
-  level = Error;
+  setLevel() = Error;
   printLogLine (msg);
 }
 
 //----------------------------------------------------------------------
 inline void FLogger::debug (const std::string& msg)
 {
-  level = Debug;
+  setLevel() = Debug;
   printLogLine (msg);
 }
 
@@ -123,7 +123,7 @@ inline void FLogger::setOutputStream (const std::ostream& os)
 
 //----------------------------------------------------------------------
 inline void FLogger::setLineEnding (LineEnding eol)
-{ end_of_line = eol; }
+{ setEnding() = eol; }
 
 //----------------------------------------------------------------------
 inline void FLogger::enableTimestamp()

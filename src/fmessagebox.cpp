@@ -348,7 +348,7 @@ void FMessageBox::draw()
   // center the whole block
   const int msg_x = int((getWidth() - max_line_width) / 2);
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   if ( ! headline_text.isEmpty() )
@@ -377,7 +377,7 @@ void FMessageBox::draw()
     y++;
   }
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 

@@ -416,7 +416,7 @@ void FScrollView::draw()
 {
   unsetViewportPrint();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   if ( const auto& p = getParentWidget() )
@@ -427,7 +427,7 @@ void FScrollView::draw()
   if ( hasBorder() )
     drawBorder();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 
   setViewportPrint();
@@ -719,7 +719,7 @@ void FScrollView::init (const FWidget* parent)
   setMinimumSize (FSize{4, 4});
   const int xoffset_end = int(getScrollWidth() - getViewportWidth());
   const int yoffset_end = int(getScrollHeight() - getViewportHeight());
-  nf_offset = isNewFont() ? 1 : 0;
+  nf_offset = FTerm::isNewFont() ? 1 : 0;
   setTopPadding (1 - getScrollY());
   setLeftPadding (1 - getScrollX());
   setBottomPadding (1 - (yoffset_end - getScrollY()));
@@ -769,7 +769,7 @@ void FScrollView::calculateScrollbarPos()
   const std::size_t width  = getWidth();
   const std::size_t height = getHeight();
 
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
   {
     vbar->setGeometry (FPoint{int(width), 2}, FSize{2, height - 2});
     hbar->setGeometry (FPoint{1, int(height)}, FSize{width - 2, 1});

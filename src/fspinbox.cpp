@@ -92,8 +92,8 @@ bool FSpinBox::setFocus (bool enable)
 bool FSpinBox::setShadow (bool enable)
 {
   if ( enable
-    && getEncoding() != fc::VT100
-    && getEncoding() != fc::ASCII )
+    && FTerm::getEncoding() != fc::VT100
+    && FTerm::getEncoding() != fc::ASCII )
   {
     setFlags().shadow = true;
     setShadowSize(FSize{1, 1});

@@ -157,7 +157,7 @@ int main (int argc, char* argv[])
   TermApp.clearArea();
 
   // Show the determined terminal name and text resolution
-  std::cout << "Terminal: " << TermApp.getTermType() << "\r\n";
+  std::cout << "Terminal: " << finalcut::FTerm::getTermType() << "\r\n";
   std::cout << " Columns: 0.." << xmax << "\r\n";
   std::cout << "   Lines: 0.." << ymax << "\r\n";
 

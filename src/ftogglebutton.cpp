@@ -522,7 +522,7 @@ void FToggleButton::init()
 //----------------------------------------------------------------------
 void FToggleButton::drawText (const FString& label_text, std::size_t hotkeypos)
 {
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   const auto& wc = getFWidgetColors();
@@ -552,7 +552,7 @@ void FToggleButton::drawText (const FString& label_text, std::size_t hotkeypos)
       print (label_text[z]);
   }
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 

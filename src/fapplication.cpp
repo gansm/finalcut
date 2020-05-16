@@ -338,7 +338,7 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
 {
   // Initialize keyboard
-  keyboard = FVTerm::getFKeyboard();
+  keyboard = FTerm::getFKeyboard();
 
   // Set the keyboard keypress timeout
   if ( keyboard )
@@ -356,7 +356,7 @@ void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
   }
 
   // Initialize mouse control
-  mouse = FVTerm::getFMouseControl();
+  mouse = FTerm::getFMouseControl();
 
   // Set stdin number for a gpm-mouse
   if ( mouse )
@@ -424,8 +424,8 @@ void FApplication::cmd_options (const int& argc, char* argv[])
         else if ( encoding.includes("help") )
           showParameterUsage();
         else
-          exitWithMessage ( "Unknown encoding "
-                          + std::string(encoding.c_str()) );
+          FTerm::exitWithMessage ( "Unknown encoding "
+                                 + std::string(encoding.c_str()) );
       }
 
       if ( std::strcmp(long_options[idx].name, "no-mouse")  == 0 )
@@ -1004,7 +1004,7 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
     sendEvent (clicked, &m_down_ev);
 
     // gnome-terminal sends no released on middle click
-    if ( isGnomeTerminal() )
+    if ( FTerm::isGnomeTerminal() )
       setClickedWidget(nullptr);
   }
   else if ( mouse->isMiddleButtonReleased() )
@@ -1076,7 +1076,7 @@ void FApplication::processMouseEvent()
 //----------------------------------------------------------------------
 void FApplication::processResizeEvent()
 {
-  if ( ! hasChangedTermSize() )
+  if ( ! FTerm::hasChangedTermSize() )
     return;
 
   if ( mouse )
@@ -1089,7 +1089,7 @@ void FApplication::processResizeEvent()
   sendEvent(app_object, &r_ev);
 
   if ( r_ev.isAccepted() )
-    changeTermSizeFinished();
+    FTerm::changeTermSizeFinished();
 }
 
 //----------------------------------------------------------------------

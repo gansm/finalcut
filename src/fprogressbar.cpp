@@ -92,8 +92,8 @@ void FProgressbar::setGeometry ( const FPoint& pos, const FSize& size
 bool FProgressbar::setShadow (bool enable)
 {
   if ( enable
-    && getEncoding() != fc::VT100
-    && getEncoding() != fc::ASCII )
+    && FTerm::getEncoding() != fc::VT100
+    && FTerm::getEncoding() != fc::ASCII )
   {
     setFlags().shadow = true;
     setShadowSize(FSize{1, 1});
@@ -159,7 +159,7 @@ void FProgressbar::drawProgressLabel()
     setColor (wc.dialog_fg, wc.dialog_bg);
   }
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   print() << FPoint{int(getWidth()) - 3, 0};
@@ -169,7 +169,7 @@ void FProgressbar::drawProgressLabel()
   else
     printf ("%3zu %%", percentage);
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 
@@ -184,7 +184,7 @@ void FProgressbar::drawProgressBar()
 
   drawProgressBackground(len);
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 
   updateTerminal();
@@ -196,7 +196,7 @@ std::size_t FProgressbar::drawProgressIndicator()
 {
   // Draw the progress indicator
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   const auto& wc = getFWidgetColors();
@@ -208,14 +208,14 @@ std::size_t FProgressbar::drawProgressIndicator()
   if ( len >= bar_length )
     return len;
 
-  if ( round(length) > len || getMaxColor() < 16 )
+  if ( round(length) > len || FTerm::getMaxColor() < 16 )
   {
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(false);
 
     print(' ');
 
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(true);
   }
   else
@@ -237,7 +237,7 @@ void FProgressbar::drawProgressBackground (std::size_t len)
   const auto& wc = getFWidgetColors();
   setColor (wc.progressbar_fg, wc.progressbar_bg);
 
-  if ( getMaxColor() < 16 )
+  if ( FTerm::getMaxColor() < 16 )
     print() << FString {bg_len, fc::MediumShade};  // ▒
   else
     print() << FString {bg_len, L' '};

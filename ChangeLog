@@ -1,3 +1,6 @@
+2020-05-16  Markus Gans  <guru.mail@muenster.de>
+	* More direct access to the static FTerm functions
+
 2020-05-13  Markus Gans  <guru.mail@muenster.de>
 	* The new class FLogger for logging, which can be redirected 
 	  to different I/O channels

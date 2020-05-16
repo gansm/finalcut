@@ -658,7 +658,7 @@ void FListBox::init()
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
-  nf_offset = isNewFont() ? 1 : 0;
+  nf_offset = FTerm::isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);
   setBottomPadding(1);
@@ -724,12 +724,12 @@ void FListBox::draw()
 
   setColor();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   drawBorder();
 
-  if ( isNewFont() && ! vbar->isShown() )
+  if ( FTerm::isNewFont() && ! vbar->isShown() )
   {
     setColor();
 
@@ -742,7 +742,7 @@ void FListBox::draw()
 
   drawHeadline();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 
   drawScrollbars();
@@ -877,7 +877,7 @@ inline void FListBox::drawListLine ( int y
   const FString element(getColumnSubString (getString(iter), first, max_width));
   std::size_t column_width = getColumnWidth(element);
 
-  if ( isMonochron() && isCurrentLine && getFlags().focus )
+  if ( FTerm::isMonochron() && isCurrentLine && getFlags().focus )
     print (fc::BlackRightPointingPointer);  // ►
   else
     print (' ');
@@ -895,7 +895,7 @@ inline void FListBox::drawListLine ( int y
     print (element[i]);
   }
 
-  if ( isMonochron() && isCurrentLine  && getFlags().focus )
+  if ( FTerm::isMonochron() && isCurrentLine  && getFlags().focus )
   {
     print (fc::BlackLeftPointingPointer);  // ◄
     column_width++;
@@ -928,7 +928,7 @@ inline void FListBox::drawListBracketsLine ( int y
   const std::size_t inc_len = inc_search.getLength();
   const bool isCurrentLine( y + yoffset + 1 == int(current) );
 
-  if ( isMonochron() && isCurrentLine && getFlags().focus )
+  if ( FTerm::isMonochron() && isCurrentLine && getFlags().focus )
     print (fc::BlackRightPointingPointer);  // ►
   else
     print (' ');
@@ -971,7 +971,7 @@ inline void FListBox::drawListBracketsLine ( int y
     column_width++;
   }
 
-  if ( isMonochron() && isCurrentLine && getFlags().focus )
+  if ( FTerm::isMonochron() && isCurrentLine && getFlags().focus )
   {
     print (fc::BlackLeftPointingPointer);   // ◄
     column_width++;
@@ -995,14 +995,14 @@ inline void FListBox::setLineAttributes ( int y
 
   if ( isLineSelected )
   {
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setBold();
     else
       setColor (wc.selected_list_fg, wc.selected_list_bg);
   }
   else
   {
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       unsetBold();
     else
       setColor (wc.list_fg, wc.list_bg);
@@ -1010,12 +1010,12 @@ inline void FListBox::setLineAttributes ( int y
 
   if ( isCurrentLine )
   {
-    if ( getFlags().focus && getMaxColor() < 16 )
+    if ( getFlags().focus && FTerm::getMaxColor() < 16 )
       setBold();
 
     if ( isLineSelected )
     {
-      if ( isMonochron() )
+      if ( FTerm::isMonochron() )
         setBold();
       else if ( getFlags().focus )
         setColor ( wc.selected_current_element_focus_fg
@@ -1028,7 +1028,7 @@ inline void FListBox::setLineAttributes ( int y
     }
     else
     {
-      if ( isMonochron() )
+      if ( FTerm::isMonochron() )
         unsetBold();
 
       if ( getFlags().focus )
@@ -1051,14 +1051,14 @@ inline void FListBox::setLineAttributes ( int y
                  , wc.current_element_bg );
     }
 
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(false);
   }
   else
   {
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(true);
-    else if ( getFlags().focus && getMaxColor() < 16 )
+    else if ( getFlags().focus && FTerm::getMaxColor() < 16 )
       unsetBold();
   }
 }
@@ -1066,7 +1066,7 @@ inline void FListBox::setLineAttributes ( int y
 //----------------------------------------------------------------------
 inline void FListBox::unsetAttributes()
 {
-  if ( isMonochron() )  // unset for the last element
+  if ( FTerm::isMonochron() )  // unset for the last element
     setReverse(false);
 
   unsetBold();
@@ -1719,7 +1719,7 @@ void FListBox::processChanged()
 //----------------------------------------------------------------------
 void FListBox::changeOnResize()
 {
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
   {
     vbar->setGeometry (FPoint{int(getWidth()), 2}, FSize{2, getHeight() - 2});
     hbar->setGeometry (FPoint{1, int(getHeight())}, FSize{getWidth() - 2, 1});

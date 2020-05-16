@@ -214,7 +214,7 @@ void FTextView::insert (const FString& str, int pos)
   if ( str.isEmpty() )
     s = "\n";
   else
-    s = FString{str}.rtrim().expandTabs(getTabstop());
+    s = FString{str}.rtrim().expandTabs(FTerm::getTabstop());
 
 
   auto text_split = s.split("\r\n");
@@ -572,7 +572,7 @@ void FTextView::init()
   const auto& wc = getFWidgetColors();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
-  nf_offset = isNewFont() ? 1 : 0;
+  nf_offset = FTerm::isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);
   setBottomPadding(1);
@@ -623,13 +623,13 @@ void FTextView::drawBorder()
 {
   if ( ! useFDialogBorder() )
   {
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(true);
 
     const FRect box{FPoint{1, 1}, getSize()};
     finalcut::drawListBorder (this, box);
 
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(false);
   }
 }
@@ -661,7 +661,7 @@ void FTextView::drawText()
 
   setColor();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   for (std::size_t y{0}; y < num; y++)  // Line loop
@@ -690,7 +690,7 @@ void FTextView::drawText()
     print() << FString{trailing_whitespace, L' '};
   }
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 
@@ -719,7 +719,7 @@ inline bool FTextView::isPrintable (wchar_t ch)
 {
   // Check for printable characters
 
-  const bool utf8 = ( getEncoding() == fc::UTF8 ) ? true : false;
+  const bool utf8 = ( FTerm::getEncoding() == fc::UTF8 ) ? true : false;
 
   if ( (utf8 && std::iswprint(std::wint_t(ch)))
     || (!utf8 && std::isprint(ch)) )
@@ -740,7 +740,7 @@ void FTextView::changeOnResize()
   const std::size_t width  = getWidth();
   const std::size_t height = getHeight();
 
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
   {
     vbar->setGeometry (FPoint{int(width), 1}, FSize{2, height - 1});
     hbar->setGeometry (FPoint{1, int(height)}, FSize{width - 2, 1});

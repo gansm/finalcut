@@ -138,11 +138,11 @@ void setHotkeyViaString (FWidget* w, const FString& text)
 //----------------------------------------------------------------------
 void drawShadow (FWidget* w)
 {
-  if ( w->isMonochron() && ! w->flags.trans_shadow )
+  if ( FTerm::isMonochron() && ! w->flags.trans_shadow )
     return;
 
-  if ( (w->getEncoding() == fc::VT100 && ! w->flags.trans_shadow)
-    || (w->getEncoding() == fc::ASCII && ! w->flags.trans_shadow) )
+  if ( (FTerm::getEncoding() == fc::VT100 && ! w->flags.trans_shadow)
+    || (FTerm::getEncoding() == fc::ASCII && ! w->flags.trans_shadow) )
   {
     clearShadow(w);
     return;
@@ -183,7 +183,7 @@ void drawTransparentShadow (FWidget* w)
              << FString {width, L' '}
              << FStyle {fc::Reset};
 
-  if ( w->isMonochron() )
+  if ( FTerm::isMonochron() )
     w->setReverse(false);
 }
 
@@ -192,7 +192,7 @@ void drawBlockShadow (FWidget* w)
 {
   // non-transparent shadow
 
-  if ( ! w->hasShadowCharacter() )
+  if ( ! FTerm::hasShadowCharacter() )
     return;
 
   const std::size_t width = w->getWidth();
@@ -233,7 +233,7 @@ void drawBlockShadow (FWidget* w)
 //----------------------------------------------------------------------
 void clearShadow (FWidget* w)
 {
-  if ( w->isMonochron() )
+  if ( FTerm::isMonochron() )
     return;
 
   const std::size_t width = w->getWidth();
@@ -270,7 +270,7 @@ void clearShadow (FWidget* w)
 //----------------------------------------------------------------------
 void drawFlatBorder (FWidget* w)
 {
-  if ( ! w->isNewFont() )
+  if ( ! FTerm::isNewFont() )
     return;
 
   const std::size_t width = w->getWidth();
@@ -331,7 +331,7 @@ void drawFlatBorder (FWidget* w)
 //----------------------------------------------------------------------
 void clearFlatBorder (FWidget* w)
 {
-  if ( ! w->isNewFont() )
+  if ( ! FTerm::isNewFont() )
     return;
 
   const std::size_t width = w->getWidth();
@@ -413,7 +413,7 @@ void drawBorder (FWidget* w, const FRect& r)
   FRect rect = r;
   checkBorder (w, rect);
 
-  if ( w->isNewFont() )
+  if ( FTerm::isNewFont() )
     drawNewFontBox (w, rect);
   else
     drawBox (w, rect);
@@ -425,7 +425,7 @@ void drawListBorder (FWidget* w, const FRect& r)
   FRect rect = r;
   checkBorder (w, rect);
 
-  if ( w->isNewFont() )
+  if ( FTerm::isNewFont() )
     drawNewFontListBox (w, rect);
   else
     drawBox (w, rect);

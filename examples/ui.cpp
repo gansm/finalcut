@@ -810,12 +810,12 @@ void MyDialog::cb_terminfo (const finalcut::FWidget*, const FDataPtr)
   (
     "Environment"
     , finalcut::FString{}
-      << "  Type: " << getTermType() << "\n"
-      << "  Name: " << getTermFileName() << "\n"
-      << "  Mode: " << getEncodingString() << "\n"
+      << "  Type: " << finalcut::FTerm::getTermType() << "\n"
+      << "  Name: " << finalcut::FTerm::getTermFileName() << "\n"
+      << "  Mode: " << finalcut::FTerm::getEncodingString() << "\n"
       << "  Size: " << x << fc::Times
                     << y << "\n"
-      << "Colors: " << getMaxColor()
+      << "Colors: " << finalcut::FTerm::getMaxColor()
     , finalcut::FMessageBox::Ok, 0, 0, this
   );
   info1.setHeadline("Terminal:");
@@ -834,7 +834,7 @@ void MyDialog::cb_drives (const finalcut::FWidget*, const FDataPtr)
     , finalcut::FMessageBox::Ok, 0, 0, this
   );
 
-  if ( isNewFont() )
+  if ( finalcut::FTerm::isNewFont() )
   {
     finalcut::FLabel drive {finalcut::NF_Drive, &info2};
     drive.setGeometry (FPoint{11, 2}, FSize{4, 1});
@@ -853,7 +853,7 @@ void MyDialog::cb_drives (const finalcut::FWidget*, const FDataPtr)
     finalcut::FLabel cd {" CD ", &info2};
     cd.setGeometry (FPoint{11, 6}, FSize{4, 1});
 
-    if ( isMonochron() )
+    if ( finalcut::FTerm::isMonochron() )
     {
       net.setReverseMode();
       drive.setReverseMode();
@@ -917,7 +917,7 @@ void MyDialog::cb_setTitlebar (finalcut::FWidget* widget, const FDataPtr)
   auto& lineedit = *(static_cast<finalcut::FLineEdit*>(widget));
   finalcut::FString title{};
   lineedit >> title;
-  setTermTitle (title);
+  finalcut::FTerm::setTermTitle (title);
   setText (title);
   redraw();
 }
@@ -1021,17 +1021,17 @@ int main (int argc, char* argv[])
   // Create the application object app
   finalcut::FApplication app{argc, argv};
   app.setNonBlockingRead();
-  app.redefineDefaultColors(true);
-  app.setTermTitle (title);
+  finalcut::FTerm::redefineDefaultColors(true);
+  finalcut::FTerm::setTermTitle (title);
 
   // Force vt100 encoding
-  //app.setEncoding(finalcut::fc::VT100);
+  //finalcut::FTerm::setEncoding(finalcut::fc::VT100);
 
   // Sets the terminal size to 94×30
   //finalcut::FTerm::setTermSize(FSize{94, 30});
 
   // Enable the final cut graphical font
-  //app.setNewFont();
+  //finalcut::FTerm::setNewFont();
 
   // Create main dialog object d
   MyDialog d{&app};

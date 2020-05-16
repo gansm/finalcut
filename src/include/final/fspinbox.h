@@ -151,7 +151,7 @@ class FSpinBox : public FWidget
     spiningState        spining_state{FSpinBox::noSpin};
     bool                threshold_reached{false};
     int                 threshold_time{500};
-    int                 repeat_time{10};
+    int                 repeat_time{80};
 };
 
 

@@ -105,10 +105,12 @@ class FTermOpenBSD final
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
   private:
     // Methods
+    static void        warnNotInitialized();
     static bool        saveBSDConsoleEncoding();
     static bool        setBSDConsoleEncoding (kbd_t);
     static bool        setBSDConsoleMetaEsc();
     static bool        resetBSDConsoleEncoding();
+    static bool        isInitialized();
 
     // Data members
     static kbd_t       bsd_keyboard_encoding;
@@ -131,6 +133,10 @@ inline void FTermOpenBSD::enableMetaSendsEscape()
 //----------------------------------------------------------------------
 inline void FTermOpenBSD::disableMetaSendsEscape()
 { meta_sends_escape = false; }
+
+//----------------------------------------------------------------------
+inline bool FTermOpenBSD::isInitialized()
+{ return bool(fsystem); }
 #endif  // defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 
 }  // namespace finalcut

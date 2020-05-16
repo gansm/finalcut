@@ -194,16 +194,15 @@ bool FObject::event (FEvent* ev)
   if ( ev->type() == fc::Timer_Event )
   {
     onTimer ( static_cast<FTimerEvent*>(ev) );
-    return true;
   }
-
-  if ( ev->type() == fc::User_Event )
+  else if ( ev->type() == fc::User_Event )
   {
     onUserEvent ( static_cast<FUserEvent*>(ev) );
-    return true;
   }
+  else
+    return false;
 
-  return false;
+  return true;
 }
 
 //----------------------------------------------------------------------

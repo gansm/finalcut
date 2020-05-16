@@ -76,7 +76,7 @@ void FRadioButton::drawRadioButton()
   print() << FPoint{1, 1};
   setColor();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
   {
     if ( hasFocus() )
       setReverse(false);
@@ -89,14 +89,14 @@ void FRadioButton::drawRadioButton()
   else
     drawUnchecked();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 
 //----------------------------------------------------------------------
 inline void FRadioButton::drawChecked()
 {
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
     print (CHECKED_RADIO_BUTTON);
   else
   {
@@ -109,7 +109,7 @@ inline void FRadioButton::drawChecked()
 //----------------------------------------------------------------------
 inline void FRadioButton::drawUnchecked()
 {
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
     print (RADIO_BUTTON);
   else
   {

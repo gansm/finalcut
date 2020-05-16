@@ -798,11 +798,11 @@ inline const FRect& FWidget::getTermGeometryWithShadow()
 
 //----------------------------------------------------------------------
 inline std::size_t FWidget::getDesktopWidth()
-{ return getColumnNumber(); }
+{ return FTerm::getColumnNumber(); }
 
 //----------------------------------------------------------------------
 inline std::size_t FWidget::getDesktopHeight()
-{ return getLineNumber(); }
+{ return FTerm::getLineNumber(); }
 
 //----------------------------------------------------------------------
 inline const FWidget::FWidgetFlags& FWidget::getFlags() const

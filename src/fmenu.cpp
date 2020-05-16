@@ -518,7 +518,7 @@ void FMenu::calculateDimensions()
     }
     else if ( accel_key )
     {
-      const std::size_t accel_len = getKeyName(accel_key).getLength();
+      const std::size_t accel_len = FTerm::getKeyName(accel_key).getLength();
       item_width += accel_len + 2;
     }
 
@@ -1212,7 +1212,7 @@ void FMenu::draw()
   const auto& wc = getFWidgetColors();
   setColor (wc.menu_active_fg, wc.menu_active_bg);
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   clearArea();
@@ -1220,7 +1220,7 @@ void FMenu::draw()
   drawItems();
   drawShadow(this);
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 
@@ -1247,10 +1247,10 @@ inline void FMenu::drawSeparator (int y)
   print() << FPoint{1, 2 + y}
           << FColorPair{wc.menu_active_fg, wc.menu_active_bg};
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
   {
     print (fc::NF_border_line_vertical_right);
     FString line { std::size_t(getWidth()) - 2
@@ -1267,7 +1267,7 @@ inline void FMenu::drawSeparator (int y)
     print (fc::BoxDrawingsVerticalAndLeft);
   }
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 
@@ -1314,7 +1314,7 @@ inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
   if ( is_selected )
     drawTrailingSpaces (column_width);
 
-  if ( isMonochron() && is_enabled && is_selected )
+  if ( FTerm::isMonochron() && is_enabled && is_selected )
     setReverse(true);
 }
 
@@ -1334,14 +1334,14 @@ inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
     {
       if ( is_radio_btn )
       {
-        if ( isNewFont() )
+        if ( FTerm::isNewFont() )
           print (fc::NF_Bullet);  // NF_Bullet ●
         else
           print (fc::BlackCircle);     // BlackCircle ●
       }
       else
       {
-        if ( isNewFont() )
+        if ( FTerm::isNewFont() )
           print (fc::NF_check_mark);  // NF_check_mark ✓
         else
           print (fc::SquareRoot);     // SquareRoot √
@@ -1352,7 +1352,7 @@ inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
       const auto& wc = getFWidgetColors();
       setColor (wc.menu_inactive_fg, getBackgroundColor());
 
-      if ( getEncoding() == fc::ASCII )
+      if ( FTerm::getEncoding() == fc::ASCII )
         print ('-');
       else
         print (fc::SmallBullet);  // ·
@@ -1372,10 +1372,10 @@ inline void FMenu::drawMenuText (menuText& data)
   for (std::size_t z{0}; z < data.text.getLength(); z++)
   {
     if ( ! std::iswprint(std::wint_t(data.text[z]))
-      && ! isNewFont()
+      && ! FTerm::isNewFont()
       && ( data.text[z] < fc::NF_rev_left_arrow2
         || data.text[z] > fc::NF_check_mark )
-      && ! charEncodable(wchar_t(data.text[z])) )
+      && ! FTerm::charEncodable(wchar_t(data.text[z])) )
     {
       data.text[z] = L' ';
     }
@@ -1419,7 +1419,7 @@ inline void FMenu::drawSubMenuIndicator (std::size_t& startpos)
 //----------------------------------------------------------------------
 inline void FMenu::drawAcceleratorKey (std::size_t& startpos, FKey accel_key)
 {
-  const FString accel_name {getKeyName(accel_key)};
+  const FString accel_name {FTerm::getKeyName(accel_key)};
   const std::size_t c = ( has_checkable_items ) ? 1 : 0;
   const std::size_t accel_len = accel_name.getLength();
   const std::size_t len = max_item_width - (startpos + accel_len + c + 2);
@@ -1457,7 +1457,7 @@ inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
       setForegroundColor (wc.menu_active_focus_fg);
       setBackgroundColor (wc.menu_active_focus_bg);
 
-      if ( isMonochron() )
+      if ( FTerm::isMonochron() )
         setReverse(false);
     }
     else
@@ -1465,7 +1465,7 @@ inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
       setForegroundColor (wc.menu_active_fg);
       setBackgroundColor (wc.menu_active_bg);
 
-      if ( isMonochron() )
+      if ( FTerm::isMonochron() )
         setReverse(true);
     }
   }
@@ -1474,7 +1474,7 @@ inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
     setForegroundColor (wc.menu_inactive_fg);
     setBackgroundColor (wc.menu_inactive_bg);
 
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(true);
   }
 

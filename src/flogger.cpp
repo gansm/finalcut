@@ -72,11 +72,11 @@ const std::string FLogger::getTimeString()
 //----------------------------------------------------------------------
 const std::string FLogger::getEOL()
 {
-  if ( end_of_line == FLog::LF )
+  if ( getEnding() == FLog::LF )
     return "\n";
-  else if ( end_of_line == FLog::CR )
+  else if ( getEnding() == FLog::CR )
     return "\r";
-  else if ( end_of_line == FLog::CRLF )
+  else if ( getEnding() == FLog::CRLF )
     return "\r\n";
 
   return "";
@@ -87,7 +87,7 @@ void FLogger::printLogLine (const std::string& msg)
 {
   const std::string& log_level = [this] ()
   {
-    switch ( level )
+    switch ( getLevel() )
     {
       case Info:
         return "INFO";

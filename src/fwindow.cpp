@@ -184,7 +184,7 @@ bool FWindow::setTransparentShadow (bool enable)
 //----------------------------------------------------------------------
 bool FWindow::setShadow (bool enable)
 {
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     return false;
 
   if ( enable )
@@ -239,7 +239,7 @@ bool FWindow::isWindowHidden() const
 //----------------------------------------------------------------------
 void FWindow::drawBorder()
 {
-  if ( isNewFont() )  // Draw a newfont outer frame
+  if ( FTerm::isNewFont() )  // Draw a newfont outer frame
   {
     const FRect r{FPoint{1, 1}, getSize()};
     print() << r.getUpperLeftPos()

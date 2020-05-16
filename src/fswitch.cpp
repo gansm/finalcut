@@ -147,12 +147,12 @@ inline void FSwitch::drawChecked()
 
   if ( hasFocus() && ! button_pressed )
   {
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
     {
       std::wcsncpy (on, L" <On>", 6);
       setBold(true);
     }
-    else if ( getMaxColor() < 16 )
+    else if ( FTerm::getMaxColor() < 16 )
     {
       setBold(true);
       setColor (wc.button_active_focus_fg, wc.button_active_focus_bg);
@@ -162,27 +162,27 @@ inline void FSwitch::drawChecked()
   }
   else
   {
-    if ( isMonochron() || getMaxColor() < 16 )
+    if ( FTerm::isMonochron() || FTerm::getMaxColor() < 16 )
       setColor (wc.button_active_focus_fg, wc.button_active_bg);
     else
       setColor (wc.button_hotkey_fg, wc.button_active_bg);
   }
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 
   print (on);
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
-  if ( isMonochron() || getMaxColor() < 16 )
+  if ( FTerm::isMonochron() || FTerm::getMaxColor() < 16 )
     setBold(false);
 
   print() << FColorPair{wc.button_inactive_fg, wc.button_inactive_bg}
           << off;
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 
   setCursorPos ({3 + int(switch_offset_pos), 1});
@@ -197,19 +197,19 @@ inline void FSwitch::drawUnchecked()
   const auto& wc = getFWidgetColors();
   setColor (wc.button_inactive_fg, wc.button_inactive_bg);
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   print (on);
 
   if ( hasFocus() && ! button_pressed )
   {
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
     {
       std::wcsncpy (off, L"<Off>", 6);
       setBold(true);
     }
-    else if ( getMaxColor() < 16 )
+    else if ( FTerm::getMaxColor() < 16 )
     {
       setBold(true);
       setColor (wc.button_active_focus_fg, wc.button_active_focus_bg);
@@ -219,18 +219,18 @@ inline void FSwitch::drawUnchecked()
   }
   else
   {
-    if ( isMonochron() || getMaxColor() < 16 )
+    if ( FTerm::isMonochron() || FTerm::getMaxColor() < 16 )
       setColor (wc.button_active_focus_fg, wc.button_active_bg);
     else
       setColor (wc.button_hotkey_fg, wc.button_active_bg);
   }
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 
   print (off);
 
-  if ( isMonochron() || getMaxColor() < 16 )
+  if ( FTerm::isMonochron() || FTerm::getMaxColor() < 16 )
     setBold(false);
 
   setCursorPos ({7 + int(switch_offset_pos), 1});

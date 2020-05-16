@@ -214,7 +214,7 @@ void FStatusBar::drawMessage()
   setColor (wc.statusbar_fg, wc.statusbar_bg);
   setPrintPos ({x, 1});
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   if ( x + space_offset + 3 < int(termWidth) && text )
@@ -249,7 +249,7 @@ void FStatusBar::drawMessage()
   for (int i = x; i <= int(termWidth); i++)
     print (' ');
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 
@@ -522,7 +522,7 @@ void FStatusBar::init()
 //----------------------------------------------------------------------
 int FStatusBar::getKeyNameWidth (const FStatusKey* key)
 {
-  const FString& key_name = getKeyName(key->getKey());
+  const FString& key_name = FTerm::getKeyName(key->getKey());
   return int(getColumnWidth(key_name));
 }
 
@@ -554,7 +554,7 @@ void FStatusBar::drawKeys()
 
   print() << FPoint{1, 1};
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   auto iter = key_list.begin();
@@ -583,7 +583,7 @@ void FStatusBar::drawKeys()
     ++iter;
   }
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 
   x_msg = x;
@@ -600,7 +600,7 @@ void FStatusBar::drawKey (keyList::const_iterator iter)
   x++;
   print (' ');
   x += keyname_len;
-  print (getKeyName(item->getKey()));
+  print (FTerm::getKeyName(item->getKey()));
   setColor (wc.statusbar_fg, wc.statusbar_bg);
   x++;
   print ('-');
@@ -622,10 +622,10 @@ void FStatusBar::drawKey (keyList::const_iterator iter)
     && x + getKeyNameWidth(*(iter + 1)) + 3 < int(screenWidth) )
   {
     // Next element is active
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(false);
 
-    if ( hasHalfBlockCharacter() )
+    if ( FTerm::hasHalfBlockCharacter() )
     {
       setColor (wc.statusbar_active_fg, wc.statusbar_active_bg);
       print (fc::LeftHalfBlock);  // ▐
@@ -635,7 +635,7 @@ void FStatusBar::drawKey (keyList::const_iterator iter)
 
     x++;
 
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(true);
   }
   else if ( iter + 1 != key_list.end() && x < int(screenWidth) )
@@ -654,7 +654,7 @@ void FStatusBar::drawActiveKey (keyList::const_iterator iter)
 
   const auto& item = *iter;
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 
   const auto& wc = getFWidgetColors();
@@ -663,7 +663,7 @@ void FStatusBar::drawActiveKey (keyList::const_iterator iter)
   x++;
   print (' ');
   x += keyname_len;
-  print (getKeyName(item->getKey()));
+  print (FTerm::getKeyName(item->getKey()));
   setColor (wc.statusbar_active_fg, wc.statusbar_active_bg);
   x++;
   print ('-');
@@ -684,7 +684,7 @@ void FStatusBar::drawActiveKey (keyList::const_iterator iter)
             << "..";
   }
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 }
 

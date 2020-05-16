@@ -62,7 +62,7 @@ FLineEdit::FLineEdit (const FString& txt, FWidget* parent)
 FLineEdit::~FLineEdit()  // destructor
 {
   if ( ! insert_mode )
-    setInsertCursor();
+    FTerm::setInsertCursor();
 }
 
 // FLineEdit operators
@@ -152,8 +152,8 @@ bool FLineEdit::setFocus (bool enable)
 bool FLineEdit::setShadow (bool enable)
 {
   if ( enable
-    && getEncoding() != fc::VT100
-    && getEncoding() != fc::ASCII )
+    && FTerm::getEncoding() != fc::VT100
+    && FTerm::getEncoding() != fc::ASCII )
   {
     setFlags().shadow = true;
     setShadowSize(FSize{1, 1});
@@ -576,7 +576,7 @@ void FLineEdit::onAccel (FAccelEvent* ev)
 void FLineEdit::onHide (FHideEvent*)
 {
   if ( ! insert_mode && ! isReadOnly() )
-    setInsertCursor();
+    FTerm::setInsertCursor();
 }
 
 //----------------------------------------------------------------------
@@ -585,9 +585,9 @@ void FLineEdit::onFocusIn (FFocusEvent*)
   if ( ! isReadOnly() )
   {
     if ( insert_mode )
-      setInsertCursor();
+      FTerm::setInsertCursor();
     else
-      unsetInsertCursor();
+      FTerm::unsetInsertCursor();
   }
 
   if ( getStatusBar() )
@@ -608,7 +608,7 @@ void FLineEdit::onFocusOut (FFocusEvent*)
   }
 
   if ( ! insert_mode && ! isReadOnly() )
-    setInsertCursor();
+    FTerm::setInsertCursor();
 }
 
 
@@ -724,7 +724,7 @@ void FLineEdit::drawInputField()
   const bool isActiveFocus = getFlags().active && getFlags().focus;
   print() << FPoint{1, 1};
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
   {
     setReverse(true);
     print (' ');
@@ -740,7 +740,7 @@ void FLineEdit::drawInputField()
     print (' ');
   }
 
-  if ( isActiveFocus && getMaxColor() < 16 )
+  if ( isActiveFocus && FTerm::getMaxColor() < 16 )
     setBold();
 
   const std::size_t text_offset_column = [this] ()
@@ -766,10 +766,10 @@ void FLineEdit::drawInputField()
     x_pos++;
   }
 
-  if ( isActiveFocus && getMaxColor() < 16 )
+  if ( isActiveFocus && FTerm::getMaxColor() < 16 )
     unsetBold();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
   {
     setReverse(false);
     setUnderline(false);
@@ -1082,9 +1082,9 @@ inline void FLineEdit::switchInsertMode()
   insert_mode = ! insert_mode;
 
   if ( insert_mode )
-    setInsertCursor();    // Insert mode
+    FTerm::setInsertCursor();    // Insert mode
   else
-    unsetInsertCursor();  // Overtype mode
+    FTerm::unsetInsertCursor();  // Overtype mode
 }
 
 //----------------------------------------------------------------------
@@ -1098,7 +1098,7 @@ inline bool FLineEdit::keyInput (FKey key)
 {
   if ( text.getLength() >= max_length )
   {
-    beep();
+    FTerm::beep();
     return true;
   }
 

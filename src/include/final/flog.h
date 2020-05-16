@@ -46,8 +46,6 @@
 namespace finalcut
 {
 
-using namespace std::placeholders;
-
 //----------------------------------------------------------------------
 // class FLog
 //----------------------------------------------------------------------
@@ -57,6 +55,7 @@ class FLog : public std::stringbuf
   public:
     // Using-declaration
     using FLogPrint = std::function<void(const std::string&)>;
+    using IOManip = std::ostream& (*)(std::ostream&);
 
     // Enumerations
     enum LogLevel
@@ -78,7 +77,7 @@ class FLog : public std::stringbuf
 
     template <typename T>
     FLog& operator << (const T& s);
-    FLog& operator << (std::ostream&(*)(std::ostream&));
+    FLog& operator << (IOManip);
     FLog& operator << (LogLevel);
 
     virtual const FString getClassName() const;
@@ -92,15 +91,17 @@ class FLog : public std::stringbuf
     virtual void disableTimestamp() = 0;
 
   protected:
-    int sync() override;
-
-    // Data member
-    LogLevel   level{Info};
-    LineEnding end_of_line{CRLF};
+    int               sync() override;
+    const LogLevel&   getLevel();
+    LogLevel&         setLevel();
+    const LineEnding& getEnding();
+    LineEnding&       setEnding();
 
   private:
     // Data member
-    FLogPrint    current_log{std::bind(&FLog::info, this, _1)};
+    LogLevel     level{Info};
+    LineEnding   end_of_line{CRLF};
+    FLogPrint    current_log{std::bind(&FLog::info, this, std::placeholders::_1)};
     std::ostream stream{this};
 };
 
@@ -114,7 +115,7 @@ inline FLog& FLog::operator << (const T& s)
 }
 
 //----------------------------------------------------------------------
-inline FLog& FLog::operator << (std::ostream&(*pf)(std::ostream&))
+inline FLog& FLog::operator << (IOManip pf)
 {
   pf(stream);
   return *this;
@@ -123,6 +124,23 @@ inline FLog& FLog::operator << (std::ostream&(*pf)(std::ostream&))
 //----------------------------------------------------------------------
 inline const FString FLog::getClassName() const
 { return "FLog"; }
+
+//----------------------------------------------------------------------
+inline const FLog::LogLevel& FLog::getLevel()
+{ return level; }
+
+//----------------------------------------------------------------------
+inline FLog::LogLevel& FLog::setLevel()
+{ return level; }
+
+//----------------------------------------------------------------------
+inline const FLog::LineEnding& FLog::getEnding()
+{ return end_of_line; }
+
+//----------------------------------------------------------------------
+inline FLog::LineEnding& FLog::setEnding()
+{ return end_of_line; }
+
 
 }  // namespace finalcut
 
