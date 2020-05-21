@@ -29,12 +29,14 @@
 #include "final/ftermfreebsd.h"
 #include "final/ftypes.h"
 
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 #define initCheck(ret_value)   \
     if ( ! isInitialized() )   \
     {                          \
       warnNotInitialized();    \
       return ret_value;        \
     }
+#endif
 
 namespace finalcut
 {

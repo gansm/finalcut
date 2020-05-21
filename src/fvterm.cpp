@@ -1386,7 +1386,7 @@ inline bool FVTerm::reallocateTextArea ( FTermArea* area
   }
   catch (const std::bad_alloc&)
   {
-    badAllocFunctionOutput ("FLineChanges[height] or FChar[size]");
+    badAllocOutput ("FLineChanges[height] or FChar[size]");
     return false;
   }
 
@@ -1407,7 +1407,7 @@ inline bool FVTerm::reallocateTextArea (FTermArea* area, std::size_t size)
   }
   catch (const std::bad_alloc&)
   {
-    badAllocFunctionOutput ("FChar[size]");
+    badAllocOutput ("FChar[size]");
     return false;
   }
 
@@ -1895,7 +1895,7 @@ const FChar FVTerm::getOverlappedCharacter (const FPoint& pos, FVTerm* obj)
   // Gets the overlapped character for a given position
   return getCharacter (overlapped_character, pos, obj);
 }
-
+#include <unistd.h>
 //----------------------------------------------------------------------
 void FVTerm::init (bool disable_alt_screen)
 {

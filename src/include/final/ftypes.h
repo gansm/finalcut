@@ -37,23 +37,14 @@
 
 #define null nullptr
 
-#define badAllocFunctionOutput(object_name)                  \
-    *FApplication::getLog() << FLog::Error                   \
-                            << "Not enough memory to alloc " \
-                            << (object_name)                 \
-                            << " in "                        \
+#define badAllocOutput(object_name)                            \
+    *FApplication::getLog() << FLog::Error                     \
+                            << __FILE__  << ":" << __LINE__    \
+                            << ": Not enough memory to alloc " \
+                            << (object_name)                   \
+                            << " in "                          \
                             << __func__ << std::endl;
 
-#define badAllocOutput(object_name)                          \
-    *FApplication::getLog() << FLog::Error                   \
-                            << "Not enough memory to alloc " \
-                            << (object_name)                 \
-                            << " in "                        \
-                            << getClassName()                \
-                            << "::"                          \
-                            << __func__ << std::endl;
-
-//F_METHOD_CALLBACK
 namespace
 {
 

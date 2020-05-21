@@ -184,7 +184,7 @@ void initScrollbar ( FScrollbarPtr& bar
   }
   catch (const std::bad_alloc&)
   {
-    badAllocFunctionOutput ("FScrollbar");
+    badAllocOutput ("FScrollbar");
     return;
   }
 

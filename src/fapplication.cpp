@@ -100,6 +100,9 @@ FApplication::FApplication ( const int& _argc
 FApplication::~FApplication()  // destructor
 {
   app_object = nullptr;
+
+  if ( eventInQueue() )
+    event_queue.clear();
 }
 
 
@@ -111,15 +114,15 @@ FApplication* FApplication::getApplicationObject()
 }
 
 //----------------------------------------------------------------------
-std::shared_ptr<FLog>& FApplication::getLog()
+FApplication::FLogPtr& FApplication::getLog()
 {
   // Global logger object
-  static std::shared_ptr<FLog> logger = std::make_shared<FLogger>();
+  static FLogPtr logger(std::make_shared<FLogger>());
   return logger;
 }
 
 //----------------------------------------------------------------------
-void FApplication::setLog (const std::shared_ptr<FLog>& logger)
+void FApplication::setLog (const FLogPtr& logger)
 {
   getLog() = logger;
 }
@@ -183,25 +186,27 @@ void FApplication::quit()
 //----------------------------------------------------------------------
 bool FApplication::sendEvent (FObject* receiver, FEvent* event )
 {
-  if ( quit_now || app_exit_loop || ! receiver )
+  if ( quit_now || app_exit_loop || ! (bool(receiver) && bool(event)) )
     return false;
 
   if ( ! isEventProcessable (receiver, event) )
     return false;
 
   // Sends the event event directly to receiver
-  return receiver->event(event);
+  bool ret = receiver->event(event);
+  event->send = true;
+  return ret;
 }
 
 //----------------------------------------------------------------------
 void FApplication::queueEvent (FObject* receiver, FEvent* event)
 {
-  if ( ! receiver )
+  if ( ! (bool(receiver) && bool(event)) )
     return;
 
   // queue this event
-  eventPair send_event (receiver, std::make_shared<FEvent>(*event));
-  event_queue.push_back(send_event);
+  event->queued = true;
+  event_queue.emplace_back (receiver, event);
 }
 
 //----------------------------------------------------------------------
@@ -209,8 +214,9 @@ void FApplication::sendQueuedEvents()
 {
   while ( eventInQueue() )
   {
-    sendEvent( event_queue.front().first,
-               event_queue.front().second.get() );
+    const EventPair& event_pair = event_queue.front();
+    event_pair.second->queued = false;
+    sendEvent(event_pair.first, event_pair.second);
     event_queue.pop_front();
   }
 }
@@ -1170,7 +1176,7 @@ bool FApplication::isEventProcessable (const FObject* receiver, const FEvent* ev
       && ! window->getFlags().modal
       && ! window->isMenuWidget() )
     {
-      switch ( uInt(event->type()) )
+      switch ( uInt(event->getType()) )
       {
         case fc::KeyPress_Event:
         case fc::KeyUp_Event:
@@ -1194,8 +1200,8 @@ bool FApplication::isEventProcessable (const FObject* receiver, const FEvent* ev
   }
 
   // Throw away mouse events for disabled widgets
-  if ( event->type() >= fc::MouseDown_Event
-    && event->type() <= fc::MouseMove_Event
+  if ( event->getType() >= fc::MouseDown_Event
+    && event->getType() <= fc::MouseMove_Event
     && ! widget->isEnabled() )
     return false;
 

@@ -99,10 +99,18 @@ class FEvent  // event base class
   public:
     FEvent() = default;
     explicit FEvent(fc::events);
-    fc::events type() const;
+    fc::events getType() const;
+    bool isQueued() const;
+    bool wasSent() const;
 
   private:
+    // Data members
     fc::events t{fc::None_Event};
+    bool queued{false};
+    bool send{false};
+
+    // Friend class
+    friend class FApplication;
 };
 
 

@@ -26,12 +26,14 @@
 #include "final/fterm.h"
 #include "final/ftermopenbsd.h"
 
+#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 #define initCheck(ret_value)   \
     if ( ! isInitialized() )   \
     {                          \
       warnNotInitialized();    \
       return ret_value;        \
     }
+#endif
 
 namespace finalcut
 {

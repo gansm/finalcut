@@ -90,6 +90,9 @@ class FObject;
 class FApplication : public FWidget
 {
   public:
+    // Typedef
+    typedef std::shared_ptr<FLog> FLogPtr;
+
     // Constructor
     FApplication (const int&, char*[], bool = false);
 
@@ -107,10 +110,10 @@ class FApplication : public FWidget
     int                   getArgc() const;
     char**                getArgv() const;
     static FApplication*  getApplicationObject();
-    static std::shared_ptr<FLog>& getLog();
+    static FLogPtr&       getLog();
 
     // Mutator
-    static void           setLog (const std::shared_ptr<FLog>&);
+    static void           setLog (const FLogPtr&);
 
     // Inquiry
     static bool           isQuit();
@@ -123,7 +126,7 @@ class FApplication : public FWidget
     void                  quit();
     static bool           sendEvent (FObject*, FEvent*);
     void                  queueEvent (FObject*, FEvent*);
-    void                  sendQueuedEvents ();
+    void                  sendQueuedEvents();
     bool                  eventInQueue();
     bool                  removeQueuedEvent (const FObject*);
     static FWidget*       processParameters (const int&, char*[]);
@@ -139,8 +142,8 @@ class FApplication : public FWidget
 
   private:
     // Typedefs
-    typedef std::pair<FObject*, std::shared_ptr<FEvent> > eventPair;
-    typedef std::deque<eventPair> FEventQueue;
+    typedef std::pair<FObject*, FEvent*> EventPair;
+    typedef std::deque<EventPair> FEventQueue;
 
     // Methods
     void                  init (uInt64, uInt64);

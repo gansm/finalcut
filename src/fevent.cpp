@@ -36,8 +36,16 @@ FEvent::FEvent (fc::events ev_type)  // constructor
 { }
 
 //----------------------------------------------------------------------
-fc::events FEvent::type() const
+fc::events FEvent::getType() const
 { return t; }
+
+//----------------------------------------------------------------------
+bool FEvent::isQueued() const
+{ return queued; }
+
+//----------------------------------------------------------------------
+bool FEvent::wasSent() const
+{ return send; }
 
 
 //----------------------------------------------------------------------
@@ -193,13 +201,13 @@ FFocusEvent::~FFocusEvent()  // destructor
 //----------------------------------------------------------------------
 bool FFocusEvent::gotFocus() const
 {
-  return ( type() == fc::FocusIn_Event );
+  return ( getType() == fc::FocusIn_Event );
 }
 
 //----------------------------------------------------------------------
 bool FFocusEvent::lostFocus() const
 {
-  return ( type() == fc::FocusOut_Event );
+  return ( getType() == fc::FocusOut_Event );
 }
 
 //----------------------------------------------------------------------

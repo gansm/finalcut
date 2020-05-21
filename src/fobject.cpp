@@ -191,11 +191,11 @@ bool FObject::event (FEvent* ev)
 {
   // Receives events on this object
 
-  if ( ev->type() == fc::Timer_Event )
+  if ( ev->getType() == fc::Timer_Event )
   {
     onTimer ( static_cast<FTimerEvent*>(ev) );
   }
-  else if ( ev->type() == fc::User_Event )
+  else if ( ev->getType() == fc::User_Event )
   {
     onUserEvent ( static_cast<FUserEvent*>(ev) );
   }

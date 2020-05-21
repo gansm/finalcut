@@ -115,9 +115,6 @@ finalcut::FString EventDialog::getMouseButtonName (int btn_state)
 
     case finalcut::fc::MiddleButton:
       return "middle";
-
-    default:
-      return "unknown";
   }
 
   return "unknown";
