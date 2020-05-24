@@ -58,6 +58,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void noArgumentTest();
     void initLengthTest();
     void copyConstructorTest();
+    void moveConstructorTest();
     void assignmentTest();
     void additionAssignmentTest();
     void additionTest();
@@ -97,6 +98,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (initLengthTest);
     CPPUNIT_TEST (copyConstructorTest);
+    CPPUNIT_TEST (moveConstructorTest);
     CPPUNIT_TEST (assignmentTest);
     CPPUNIT_TEST (additionAssignmentTest);
     CPPUNIT_TEST (additionTest);
@@ -292,6 +294,20 @@ void FStringTest::copyConstructorTest()
 }
 
 //----------------------------------------------------------------------
+void FStringTest::moveConstructorTest()
+{
+  finalcut::FString s1("abc");
+  const finalcut::FString s2{std::move(s1)};
+  CPPUNIT_ASSERT ( s2 == L"abc" );
+  CPPUNIT_ASSERT ( s2.getLength() == 3 );
+  CPPUNIT_ASSERT ( s2.capacity() == 18 );
+  CPPUNIT_ASSERT ( s1.isNull() );
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+  CPPUNIT_ASSERT ( s1.getLength() == 0 );
+  CPPUNIT_ASSERT ( s1.capacity() == 0 );
+}
+
+//----------------------------------------------------------------------
 void FStringTest::assignmentTest()
 {
   finalcut::FString s1;
@@ -370,14 +386,14 @@ void FStringTest::assignmentTest()
   CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"#" );
   CPPUNIT_ASSERT ( s1.getLength() == 1 );
-  CPPUNIT_ASSERT ( s1.capacity() == 18 );
+  CPPUNIT_ASSERT ( s1.capacity() == 16 );
 
   constexpr char s8 = '%';
   s1 = s8;
   CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"%" );
   CPPUNIT_ASSERT ( s1.getLength() == 1 );
-  CPPUNIT_ASSERT ( s1.capacity() == 18 );
+  CPPUNIT_ASSERT ( s1.capacity() == 16 );
 
   s1.setString("A character string");
   CPPUNIT_ASSERT ( s1 );
@@ -425,6 +441,22 @@ void FStringTest::assignmentTest()
   CPPUNIT_ASSERT ( s1.isEmpty() );
   CPPUNIT_ASSERT ( s1.isNull() );
   CPPUNIT_ASSERT ( ! s1 );
+
+  // Move assignment operator
+  const finalcut::FString s9 = std::move(finalcut::FString(0));
+  CPPUNIT_ASSERT ( ! s9 );
+  CPPUNIT_ASSERT ( s9.isNull() );
+  CPPUNIT_ASSERT ( s9.isEmpty() );
+  finalcut::FString s10("abc");
+  const finalcut::FString s11 = std::move(s10);
+  CPPUNIT_ASSERT ( s11 );
+  CPPUNIT_ASSERT ( s11 == L"abc" );
+  CPPUNIT_ASSERT ( s11.getLength() == 3 );
+  CPPUNIT_ASSERT ( s11.capacity() == 18 );
+  CPPUNIT_ASSERT ( s10.isNull() );
+  CPPUNIT_ASSERT ( s10.isEmpty() );
+  CPPUNIT_ASSERT ( s10.getLength() == 0 );
+  CPPUNIT_ASSERT ( s10.capacity() == 0 );
 }
 
 //----------------------------------------------------------------------

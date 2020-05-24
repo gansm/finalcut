@@ -183,7 +183,7 @@ void RotoZoomer::generateReport()
   finalcut::FString dimension_str{};
   finalcut::FString time_str{};
   finalcut::FString fps_str{};
-  std::wostringstream rep;
+  finalcut::FStringStream rep;
   dimension_str << getDesktopWidth()
                 << "x" << getDesktopHeight();
   int elapsed_ms = int(duration_cast<milliseconds>(end - start).count());

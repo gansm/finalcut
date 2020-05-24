@@ -61,7 +61,6 @@ const std::string FLogger::getTimeString()
   char str[100];
   const auto& now = std::chrono::system_clock::now();
   const auto& t = std::chrono::system_clock::to_time_t(now);
-  std::stringstream str_stream;
   // Print RFC 2822 date
   struct tm time{};
   localtime_r (&t, &time);

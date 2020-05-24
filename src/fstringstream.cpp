@@ -1,9 +1,9 @@
 /***********************************************************************
-* emptyfstring.h - Creates an empty FString object                     *
+* fstringstream.cpp - I/O operations on FString based streams          *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2020 Markus Gans                                           *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,95 +20,56 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-/*  Standalone class
- *  ════════════════
- *
- * ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- * ▕ emptyFString ▏
- * ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
- */
-
-#ifndef EMPTYFSTRING_H
-#define EMPTYFSTRING_H
-
-#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
-  #error "Only <final/final.h> can be included directly."
-#endif
-
-#include "final/fapplication.h"
-#include "final/flog.h"
 #include "final/fstring.h"
+#include "final/fstringstream.h"
 
 namespace finalcut
 {
 
-namespace fc
+//----------------------------------------------------------------------
+// class FStringStream
+//----------------------------------------------------------------------
+
+// constructors and destructor
+//----------------------------------------------------------------------
+FStringStream::FStringStream (openmode mode)
+  : std::wiostream{&buffer}
+  , buffer{mode}
+{ }
+
+//----------------------------------------------------------------------
+FStringStream::FStringStream (const FString& str, openmode mode)
+  : std::wiostream{&buffer}
+  , buffer{str.wc_str(), mode}
+{ }
+
+//----------------------------------------------------------------------
+FStringStream::FStringStream (FStringStream&& sstream)
+  : std::wiostream{std::move(sstream)}
+  , buffer{std::move(sstream.buffer)}
 {
-
-//----------------------------------------------------------------------
-// class emptyFString
-//----------------------------------------------------------------------
-
-class emptyFString final
-{
-public:
-  // Constructors
-  emptyFString() = delete;
-
-  // Disable copy constructor
-  emptyFString (const emptyFString&) = delete;
-
-  // Disable copy assignment operator (=)
-  emptyFString& operator = (const emptyFString&) = delete;
-
-  static const FString getClassName();
-  static bool isNull();
-  static const FString& get();
-  static void clear();
-
-private:
-  // Data member
-  static const FString* empty_string;
-};
-
-// emptyFString inline functions
-//----------------------------------------------------------------------
-inline const FString emptyFString::getClassName()
-{ return "emptyFString"; }
-
-//----------------------------------------------------------------------
-inline bool emptyFString::isNull()
-{
-  return ( empty_string ) ? false : true;
+  std::wiostream::set_rdbuf(&buffer);
 }
 
 //----------------------------------------------------------------------
-inline const FString& emptyFString::get()
-{
-  if ( ! empty_string )
-  {
-    try
-    {
-      empty_string = new FString("");
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("FString");
-    }
-  }
+FStringStream::~FStringStream()  // destructor
+{ }
 
-  return *empty_string;
+// public methods of FStringStream
+//----------------------------------------------------------------------
+FStringStream& FStringStream::operator = (FStringStream&& sstream)
+{
+  std::wiostream::operator = (std::move(sstream));
+  buffer = std::move(sstream.buffer);
+  return *this;
 }
 
 //----------------------------------------------------------------------
-inline void emptyFString::clear()
+void FStringStream::swap (FStringStream& sstream)
 {
-  delete empty_string;
-  empty_string = nullptr;
+  std::wiostream::swap(sstream);
+  buffer.swap(sstream.buffer);
 }
-
-}  // namespace fc
 
 }  // namespace finalcut
 
-#endif  // EMPTYFSTRING_H

@@ -20,12 +20,17 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-/*  Standalone class
- *  ════════════════
+/*  Inheritance diagram
+ *  ═══════════════════
  *
- * ▕▔▔▔▔▔▔▏
- * ▕ FLog ▏
- * ▕▁▁▁▁▁▁▏
+ * ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ * ▕ std::stringbuf ▏
+ * ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *         ▲
+ *         │
+ *      ▕▔▔▔▔▔▔▏
+ *      ▕ FLog ▏
+ *      ▕▁▁▁▁▁▁▏
  */
 
 #ifndef FLOG_H
@@ -67,7 +72,6 @@ class FLog : public std::stringbuf
     {
       LF, CR, CRLF
     };
-
 
     // Constructor
     FLog();

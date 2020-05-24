@@ -49,12 +49,12 @@
 #endif
 
 #include <queue>
-#include <sstream>  // std::stringstream
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "final/fc.h"
+#include "final/fstringstream.h"
 #include "final/fterm.h"
 
 #define F_PREPROC_HANDLER(i,h) \
@@ -546,10 +546,10 @@ struct FVTerm::FVTermPreprocessing
 template <typename typeT>
 inline FVTerm& FVTerm::operator << (const typeT& s)
 {
-  std::wostringstream outstream;
+  FStringStream outstream{std::ios_base::out};
   outstream << s;
 
-  if ( ! outstream.str().empty() )
+  if ( ! outstream.str().isEmpty() )
     print (outstream.str());
 
   return *this;

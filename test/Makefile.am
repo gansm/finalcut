@@ -21,6 +21,7 @@ noinst_PROGRAMS = \
 	fcolorpair_test \
 	fstyle_test \
 	fstring_test \
+	fstringstream_test \
 	flogger_test \
 	fsize_test \
 	fpoint_test \
@@ -40,6 +41,7 @@ foptiattr_test_SOURCES = foptiattr-test.cpp
 fcolorpair_test_SOURCES = fcolorpair-test.cpp
 fstyle_test_SOURCES = fstyle-test.cpp
 fstring_test_SOURCES = fstring-test.cpp
+fstringstream_test_SOURCES = fstringstream-test.cpp
 flogger_test_SOURCES = flogger-test.cpp
 fsize_test_SOURCES = fsize-test.cpp
 fpoint_test_SOURCES = fpoint-test.cpp
@@ -59,6 +61,7 @@ TESTS = fobject_test \
 	fcolorpair_test \
 	fstyle_test \
 	fstring_test \
+	fstringstream_test \
 	flogger_test \
 	fsize_test \
 	fpoint_test \

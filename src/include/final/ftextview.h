@@ -51,6 +51,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "final/fstringstream.h"
 #include "final/fwidget.h"
 
 namespace finalcut
@@ -186,10 +187,10 @@ inline FTextView& FTextView::operator = (const FString& s)
 template <typename typeT>
 inline FTextView& FTextView::operator << (const typeT& s)
 {
-  std::wostringstream outstream;
+  FStringStream outstream{std::ios_base::out};
   outstream << s;
 
-  if ( ! outstream.str().empty() )
+  if ( ! outstream.str().isEmpty() )
     append (outstream.str());
 
   return *this;

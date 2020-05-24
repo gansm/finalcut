@@ -103,20 +103,20 @@ class FPoint
 // FPoint inline functions
 //----------------------------------------------------------------------
 inline FPoint::FPoint (const FPoint& p)  // copy constructor
-  : xpos(p.xpos)
-  , ypos(p.ypos)
+  : xpos{p.xpos}
+  , ypos{p.ypos}
 { }
 
 //----------------------------------------------------------------------
 inline FPoint::FPoint (FPoint&& p) noexcept  // move constructor
-  : xpos(std::move(p.xpos))
-  , ypos(std::move(p.ypos))
+  : xpos{std::move(p.xpos)}
+  , ypos{std::move(p.ypos)}
 { }
 
 //----------------------------------------------------------------------
 inline FPoint::FPoint (int x, int y)
-  : xpos(x)
-  , ypos(y)
+  : xpos{x}
+  , ypos{y}
 { }
 
 //----------------------------------------------------------------------

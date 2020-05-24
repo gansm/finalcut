@@ -42,7 +42,7 @@ FToolTip::FToolTip (FWidget* parent)
 //----------------------------------------------------------------------
 FToolTip::FToolTip (const FString& txt, FWidget* parent)
   : FWindow(parent)
-  , text(txt)
+  , text{txt}
 {
   init();
 }

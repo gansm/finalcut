@@ -1895,7 +1895,7 @@ const FChar FVTerm::getOverlappedCharacter (const FPoint& pos, FVTerm* obj)
   // Gets the overlapped character for a given position
   return getCharacter (overlapped_character, pos, obj);
 }
-#include <unistd.h>
+
 //----------------------------------------------------------------------
 void FVTerm::init (bool disable_alt_screen)
 {

@@ -87,8 +87,8 @@ class FString
     explicit FString (int);
     explicit FString (std::size_t);
     FString (std::size_t, wchar_t);
-    FString (const FString&);        // implicit conversion copy constructor
-    FString (FString&&) noexcept;    // implicit conversion move constructor
+    FString (const FString&);        // copy constructor
+    FString (FString&&) noexcept;    // move constructor
     FString (const std::wstring&);   // implicit conversion constructor
     FString (const wchar_t[]);       // implicit conversion constructor
     FString (const std::string&);    // implicit conversion constructor
@@ -375,11 +375,11 @@ inline const FString FString::getClassName() const
 
 //----------------------------------------------------------------------
 inline bool FString::isNull() const
-{ return ! string; }
+{ return ( bufsize == 0 || (bufsize > 0 && ! string) ); }
 
 //----------------------------------------------------------------------
 inline bool FString::isEmpty() const
-{ return ( ! string ) || ( ! *string ); }
+{ return ( length == 0 || (length > 0 && string[0] == L'\0') ); }
 
 //----------------------------------------------------------------------
 inline std::size_t FString::getLength() const

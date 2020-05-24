@@ -50,7 +50,7 @@ FDialog::FDialog (FWidget* parent)
 //----------------------------------------------------------------------
 FDialog::FDialog (const FString& txt, FWidget* parent)
   : FWindow(parent)
-  , tb_text(txt)
+  , tb_text{txt}
 {
   init();
 }

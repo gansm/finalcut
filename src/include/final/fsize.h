@@ -112,20 +112,20 @@ class FSize
 // FSize inline functions
 //----------------------------------------------------------------------
 inline FSize::FSize (const FSize& s)  // copy constructor
-  : width(s.width)
-  , height(s.height)
+  : width{s.width}
+  , height{s.height}
 { }
 
 //----------------------------------------------------------------------
 inline FSize::FSize (FSize&& s) noexcept  // move constructor
-  : width(std::move(s.width))
-  , height(std::move(s.height))
+  : width{std::move(s.width)}
+  , height{std::move(s.height)}
 { }
 
 //----------------------------------------------------------------------
 inline FSize::FSize (std::size_t w, std::size_t h)
-  : width(w)
-  , height(h)
+  : width{w}
+  , height{h}
 { }
 
 //----------------------------------------------------------------------

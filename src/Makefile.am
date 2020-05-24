@@ -10,6 +10,7 @@ lib_LTLIBRARIES = libfinal.la
 
 libfinal_la_SOURCES = \
 	fstring.cpp \
+	fstringstream.cpp \
 	fpoint.cpp \
 	fsize.cpp \
 	frect.cpp \
@@ -130,6 +131,7 @@ finalcutinclude_HEADERS = \
 	include/final/fstartoptions.h \
 	include/final/fstatusbar.h \
 	include/final/fstring.h \
+	include/final/fstringstream.h \
 	include/final/fsystem.h \
 	include/final/fsystemimpl.h \
 	include/final/ftermcap.h \

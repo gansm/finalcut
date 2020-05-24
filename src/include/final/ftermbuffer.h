@@ -35,10 +35,11 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <sstream>  // std::stringstream
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "final/fstringstream.h"
 
 namespace finalcut
 {
@@ -122,10 +123,10 @@ inline FTermBuffer::FTermBuffer(Iterator first, Iterator last)
 template <typename typeT>
 inline FTermBuffer& FTermBuffer::operator << (const typeT& s)
 {
-  std::wostringstream outstream;
+  FStringStream outstream{std::ios_base::out};
   outstream << s;
 
-  if ( ! outstream.str().empty() )
+  if ( ! outstream.str().isEmpty() )
     write (outstream.str());
 
   return *this;

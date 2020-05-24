@@ -77,14 +77,15 @@ FString::FString (const FString& s)  // copy constructor
 //----------------------------------------------------------------------
 FString::FString (FString&& s) noexcept  // move constructor
 {
-  if ( ! s.isNull() )
-    _assign (std::move(s.string));
-  else
-    s.string = nullptr;
+  string = std::move(s.string);
+  c_string = std::move(c_string);
+  length = s.length;
+  bufsize = s.bufsize;
 
+  s.string = nullptr;
+  s.c_string = nullptr;
   s.length = 0;
   s.bufsize = 0;
-  s.c_string = nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -181,7 +182,15 @@ FString& FString::operator = (const FString& s)
 //----------------------------------------------------------------------
 FString& FString::operator = (FString&& s) noexcept
 {
-  _assign (std::move(s.string));
+  string = std::move(s.string);
+  c_string = std::move(c_string);
+  length = s.length;
+  bufsize = s.bufsize;
+
+  s.string = nullptr;
+  s.c_string = nullptr;
+  s.length = 0;
+  s.bufsize = 0;
   return *this;
 }
 

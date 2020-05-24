@@ -35,6 +35,7 @@
 //----------------------------------------------------------------------
 // class FLoggerTest
 //----------------------------------------------------------------------
+
 class myLogger : public finalcut::FLog
 {
   public:
@@ -288,7 +289,7 @@ void FLoggerTest::fileTest()
   if ( file_stream.is_open() )
     file_stream.close();
 
-  int ret = remove("test.log");  // Delete file
+  int ret = remove(filename.c_str());  // Delete file
 
   if ( ret == -1 )
   {
