@@ -73,7 +73,7 @@ class Watch final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 Watch::Watch (FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   // Dialog settings
   //   Avoids calling a virtual function from the constructor

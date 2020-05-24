@@ -33,14 +33,14 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FCheckBox::FCheckBox(FWidget* parent)
-  : FToggleButton(parent)
+  : FToggleButton{parent}
 {
   init();
 }
 
 //----------------------------------------------------------------------
 FCheckBox::FCheckBox (const FString& txt, FWidget* parent)
-  : FToggleButton(txt, parent)
+  : FToggleButton{txt, parent}
 {
   init();
 }

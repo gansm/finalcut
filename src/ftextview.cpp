@@ -42,7 +42,7 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FTextView::FTextView(FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init();
 }

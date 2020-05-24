@@ -62,7 +62,7 @@ class Button final : public finalcut::FButton
 
 //----------------------------------------------------------------------
 Button::Button (finalcut::FWidget* parent)
-  : finalcut::FButton(parent)
+  : finalcut::FButton{parent}
 { }
 
 //----------------------------------------------------------------------
@@ -245,7 +245,7 @@ class Calc final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 Calc::Calc (FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   // Dialog settings
   //   Avoids calling a virtual function from the constructor

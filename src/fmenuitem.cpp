@@ -42,24 +42,24 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FMenuItem::FMenuItem (FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init (parent);
 }
 
 //----------------------------------------------------------------------
 FMenuItem::FMenuItem (const FString& txt, FWidget* parent)
-  : FWidget(parent)
-  , text(txt)
+  : FWidget{parent}
+  , text{txt}
 {
   init (parent);
 }
 
 //----------------------------------------------------------------------
 FMenuItem::FMenuItem (FKey k, const FString& txt, FWidget* parent)
-  : FWidget(parent)
-  , text(txt)
-  , accel_key(k)
+  : FWidget{parent}
+  , text{txt}
+  , accel_key{k}
 {
   init (parent);
 }

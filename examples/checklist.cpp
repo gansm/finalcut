@@ -73,7 +73,7 @@ class CheckList final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 CheckList::CheckList (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   // Dialog settings
   //   Avoids calling a virtual function from the constructor

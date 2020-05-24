@@ -44,7 +44,7 @@ FWindow* FWindow::previous_window{nullptr};
 // constructor and destructor
 //----------------------------------------------------------------------
 FWindow::FWindow(FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   setWindowWidget();
   FRect geometry {getTermGeometry()};

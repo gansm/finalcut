@@ -38,7 +38,7 @@ namespace finalcut
 // constructors and destructor
 //----------------------------------------------------------------------
 FScrollView::FScrollView (FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init(parent);
 }

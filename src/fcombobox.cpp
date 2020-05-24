@@ -44,7 +44,7 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FDropDownListBox::FDropDownListBox (FWidget* parent)
-  : FWindow(parent)
+  : FWindow{parent}
 {
   init();
 }
@@ -169,7 +169,7 @@ bool FDropDownListBox::containsWidget (const FPoint& p)
 // constructors and destructor
 //----------------------------------------------------------------------
 FComboBox::FComboBox (FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init();
 }

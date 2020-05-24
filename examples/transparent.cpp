@@ -71,8 +71,8 @@ class Transparent final : public finalcut::FDialog
 //----------------------------------------------------------------------
 Transparent::Transparent ( finalcut::FWidget* parent
                          , Transparent::trans_type tt )
-  : finalcut::FDialog(parent)
-  , type(tt)
+  : finalcut::FDialog{parent}
+  , type{tt}
 {
   // Set statusbar text for this window
   // Avoids calling a virtual function from the constructor
@@ -191,7 +191,7 @@ class MainWindow final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 MainWindow::MainWindow (finalcut::FWidget* parent)
-  : FDialog(parent)
+  : FDialog{parent}
 {
   // The memory allocation for the following three sub windows occurs
   // with the operator new. The lifetime of the generated widget

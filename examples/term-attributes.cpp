@@ -73,7 +73,7 @@ class AttribDlg final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 AttribDlg::AttribDlg (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   FDialog::setText ( "A terminal attributes test ("
                    + finalcut::FString{finalcut::FTerm::getTermType()}
@@ -243,7 +243,7 @@ class AttribDemo final : public finalcut::FWidget
 
 //----------------------------------------------------------------------
 AttribDemo::AttribDemo (finalcut::FWidget* parent)
-  : finalcut::FWidget(parent)
+  : finalcut::FWidget{parent}
 {
   if ( finalcut::FTerm::isMonochron() )
     last_color = 1;

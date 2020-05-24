@@ -40,15 +40,15 @@ namespace finalcut
 // constructors and destructor
 //----------------------------------------------------------------------
 FLabel::FLabel(FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init();
 }
 
 //----------------------------------------------------------------------
 FLabel::FLabel (const FString& txt, FWidget* parent)
-  : FWidget(parent)
-  , text(txt)
+  : FWidget{parent}
+  , text{txt}
 {
   init();
   setText(txt);

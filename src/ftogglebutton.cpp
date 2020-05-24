@@ -40,7 +40,7 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FToggleButton::FToggleButton (FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init();
 
@@ -55,7 +55,7 @@ FToggleButton::FToggleButton (FWidget* parent)
 
 //----------------------------------------------------------------------
 FToggleButton::FToggleButton (const FString& txt, FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   FToggleButton::setText(txt);  // call own method
   init();

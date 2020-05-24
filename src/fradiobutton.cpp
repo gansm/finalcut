@@ -33,14 +33,14 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FRadioButton::FRadioButton(FWidget* parent)
-  : FToggleButton(parent)
+  : FToggleButton{parent}
 {
   init();
 }
 
 //----------------------------------------------------------------------
 FRadioButton::FRadioButton (const FString& txt, FWidget* parent)
-  : FToggleButton(txt, parent)
+  : FToggleButton{txt, parent}
 {
   init();
 }

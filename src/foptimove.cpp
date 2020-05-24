@@ -36,7 +36,7 @@ namespace finalcut
 // constructors and destructor
 //----------------------------------------------------------------------
 FOptiMove::FOptiMove (int baud)
-  : baudrate(baud)
+  : baudrate{baud}
 {
   assert ( baud >= 0 );
 

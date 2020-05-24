@@ -36,14 +36,14 @@ namespace finalcut
 // constructors and destructor
 //----------------------------------------------------------------------
 FButton::FButton(FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init();
 }
 
 //----------------------------------------------------------------------
 FButton::FButton (const FString& txt, FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
   , text{txt}
 {
   init();

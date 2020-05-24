@@ -66,7 +66,7 @@ class SmallWindow final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 SmallWindow::SmallWindow (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   const auto& wc = getFWidgetColors();
   const wchar_t arrow_up = fc::BlackUpPointingTriangle;
@@ -240,7 +240,7 @@ class Window final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 Window::Window (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   // Menu bar item
   File.setStatusbarMessage ("File management commands");

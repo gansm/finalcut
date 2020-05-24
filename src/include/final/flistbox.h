@@ -350,7 +350,7 @@ inline FListBox::FListBox ( Iterator first
                           , Iterator last
                           , InsertConverter convert
                           , FWidget* parent )
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init();
 
@@ -366,7 +366,7 @@ template <typename Container, typename LazyConverter>
 inline FListBox::FListBox ( Container container
                           , LazyConverter convert
                           , FWidget* parent )
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init();
   insert (container, convert);

@@ -308,7 +308,7 @@ bool FMouse::isDblclickTimeout (const timeval* time)
 // constructors and destructor
 //----------------------------------------------------------------------
 FMouseGPM::FMouseGPM()
-  : FMouse()
+  : FMouse{}
 {
   gpm_ev.x = -1;
 }

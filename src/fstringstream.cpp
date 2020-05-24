@@ -44,7 +44,7 @@ FStringStream::FStringStream (const FString& str, openmode mode)
 { }
 
 //----------------------------------------------------------------------
-FStringStream::FStringStream (FStringStream&& sstream)
+FStringStream::FStringStream (FStringStream&& sstream) noexcept
   : std::wiostream{std::move(sstream)}
   , buffer{std::move(sstream.buffer)}
 {
@@ -65,7 +65,7 @@ FStringStream& FStringStream::operator = (FStringStream&& sstream)
 }
 
 //----------------------------------------------------------------------
-void FStringStream::swap (FStringStream& sstream)
+void FStringStream::swap (FStringStream& sstream) noexcept
 {
   std::wiostream::swap(sstream);
   buffer.swap(sstream.buffer);

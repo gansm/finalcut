@@ -76,16 +76,15 @@ FString::FString (const FString& s)  // copy constructor
 
 //----------------------------------------------------------------------
 FString::FString (FString&& s) noexcept  // move constructor
+  : string{std::move(s.string)}
+  , length{s.length}
+  , bufsize{s.bufsize}
+  , c_string{std::move(s.c_string)}
 {
-  string = std::move(s.string);
-  c_string = std::move(s.c_string);
-  length = s.length;
-  bufsize = s.bufsize;
-
   s.string = nullptr;
-  s.c_string = nullptr;
   s.length = 0;
   s.bufsize = 0;
+  s.c_string = nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -175,22 +174,34 @@ FString::~FString()  // destructor
 //----------------------------------------------------------------------
 FString& FString::operator = (const FString& s)
 {
-  _assign (s.string);
+  if ( &s != this )
+    _assign (s.string);
+
   return *this;
 }
 
 //----------------------------------------------------------------------
 FString& FString::operator = (FString&& s) noexcept
 {
-  string = std::move(s.string);
-  c_string = std::move(s.c_string);
-  length = s.length;
-  bufsize = s.bufsize;
+  if ( &s != this )
+  {
+    if ( string )
+      delete[](string);
 
-  s.string = nullptr;
-  s.c_string = nullptr;
-  s.length = 0;
-  s.bufsize = 0;
+    if ( c_string )
+      delete[](c_string);
+
+    string = std::move(s.string);
+    length = s.length;
+    bufsize = s.bufsize;
+    c_string = std::move(s.c_string);
+
+    s.string = nullptr;
+    s.length = 0;
+    s.bufsize = 0;
+    s.c_string = nullptr;
+  }
+
   return *this;
 }
 

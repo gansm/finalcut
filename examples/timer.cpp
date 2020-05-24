@@ -46,7 +46,7 @@ class Timer final : public finalcut::FWidget
 
 //----------------------------------------------------------------------
 Timer::Timer (finalcut::FWidget* parent)
-  : finalcut::FWidget(parent)
+  : finalcut::FWidget{parent}
 {
   addTimer (60000);              // 1-minute timer
   const int id = addTimer (50);  // 50-millisecond timer

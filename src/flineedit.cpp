@@ -42,7 +42,7 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FLineEdit::FLineEdit (FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
   , label{new FLabel("", parent)}
 {
   init();
@@ -50,8 +50,8 @@ FLineEdit::FLineEdit (FWidget* parent)
 
 //----------------------------------------------------------------------
 FLineEdit::FLineEdit (const FString& txt, FWidget* parent)
-  : FWidget(parent)
-  , text(txt)
+  : FWidget{parent}
+  , text{txt}
   , label{new FLabel("", parent)}
 {
   init();

@@ -74,7 +74,7 @@ class SegmentView final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 SegmentView::SegmentView (finalcut::FWidget* parent)
-  : FDialog(parent)
+  : FDialog{parent}
 {
   // Dialog settings
   //   Avoids calling a virtual function from the constructor

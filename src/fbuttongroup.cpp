@@ -39,14 +39,14 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FButtonGroup::FButtonGroup(FWidget* parent)
-  : FScrollView(parent)
+  : FScrollView{parent}
 {
   init();
 }
 
 //----------------------------------------------------------------------
 FButtonGroup::FButtonGroup (const FString& txt, FWidget* parent)
-  : FScrollView(parent)
+  : FScrollView{parent}
   , text{txt}
 {
   init();

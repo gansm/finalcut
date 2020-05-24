@@ -43,7 +43,7 @@ const FString* fc::emptyFString::empty_string{nullptr};
 // constructors and destructor
 //----------------------------------------------------------------------
 FObject::FObject (FObject* parent)
-  : parent_obj(parent)
+  : parent_obj{parent}
 {
   if ( parent )                // add object to parent
   {

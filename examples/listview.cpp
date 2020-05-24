@@ -68,7 +68,7 @@ class Listview final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 Listview::Listview (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   // Set FListView geometry
   listView.setGeometry(FPoint{2, 1}, FSize{33, 14});

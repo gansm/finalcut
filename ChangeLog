@@ -1,6 +1,7 @@
 2020-05-24  Markus Gans  <guru.mail@muenster.de>
 	* New class FStringStream implements input and output operations 
 	  on FString based streams
+	* Fixed memory leak in FString move assignment operator
 
 2020-05-21  Markus Gans  <guru.mail@muenster.de>
 	* Fixed the event queue in FApplication

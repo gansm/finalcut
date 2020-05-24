@@ -117,7 +117,7 @@ class Menu final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 Menu::Menu (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   // Menu bar itms
   File.setStatusbarMessage ("File management commands");

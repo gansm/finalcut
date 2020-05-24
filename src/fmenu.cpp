@@ -45,15 +45,15 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FMenu::FMenu(FWidget* parent)
-  : FWindow(parent)
+  : FWindow{parent}
 {
   init(parent);
 }
 
 //----------------------------------------------------------------------
 FMenu::FMenu (const FString& txt, FWidget* parent)
-  : FWindow(parent)
-  , menuitem(txt, parent)
+  : FWindow{parent}
+  , menuitem{txt, parent}
 {
   init(parent);
 }

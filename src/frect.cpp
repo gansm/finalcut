@@ -36,18 +36,18 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FRect::FRect (const FPoint& p, const FSize& s)
-  : X1(p.getX())
-  , Y1(p.getY())
-  , X2(p.getX() + int(s.getWidth()) - 1)
-  , Y2(p.getY() + int(s.getHeight()) - 1)
+  : X1{p.getX()}
+  , Y1{p.getY()}
+  , X2{p.getX() + int(s.getWidth()) - 1}
+  , Y2{p.getY() + int(s.getHeight()) - 1}
 { }
 
 //----------------------------------------------------------------------
 FRect::FRect (const FPoint& p1, const FPoint& p2)
-  : X1(p1.getX())
-  , Y1(p1.getY())
-  , X2(p2.getX())
-  , Y2(p2.getY())
+  : X1{p1.getX()}
+  , Y1{p1.getY()}
+  , X2{p2.getX()}
+  , Y2{p2.getY()}
 { }
 
 //----------------------------------------------------------------------

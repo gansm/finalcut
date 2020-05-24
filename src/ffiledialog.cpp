@@ -99,14 +99,14 @@ FSystem*  FFileDialog::fsystem{nullptr};
 // constructors and destructor
 //----------------------------------------------------------------------
 FFileDialog::FFileDialog (FWidget* parent)
-  : FDialog(parent)
+  : FDialog{parent}
 {
   init();
 }
 
 //----------------------------------------------------------------------
 FFileDialog::FFileDialog (const FFileDialog& fdlg)
-  : FDialog(fdlg.getParentWidget())
+  : FDialog{fdlg.getParentWidget()}
 {
   if ( fdlg.directory )
     setPath(fdlg.directory);
@@ -119,9 +119,9 @@ FFileDialog::FFileDialog ( const FString& dirname
                          , const FString& filter
                          , DialogType type
                          , FWidget* parent )
-  : FDialog(parent)
-  , filter_pattern(filter)
-  , dlg_type(type)
+  : FDialog{parent}
+  , filter_pattern{filter}
+  , dlg_type{type}
 {
   if ( ! dirname.isNull() )
     setPath(dirname);

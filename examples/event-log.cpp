@@ -83,7 +83,7 @@ class EventDialog final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 EventDialog::EventDialog (finalcut::FWidget* parent)
-  : FDialog(parent)
+  : FDialog{parent}
 {
   // Dialog settings
   //   Avoids calling a virtual function from the constructor
@@ -263,7 +263,7 @@ class EventLog final : public finalcut::FDialog, public std::ostringstream
 
 //----------------------------------------------------------------------
 EventLog::EventLog (finalcut::FWidget* parent)
-  : FDialog(parent)
+  : FDialog{parent}
 {
   // Dialog settings
   //   Avoids calling a virtual function from the constructor

@@ -80,9 +80,9 @@ class RotoZoomer final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool b, int l)
-  : finalcut::FDialog(parent)
-  , benchmark(b)
-  , loops(l)
+  : finalcut::FDialog{parent}
+  , benchmark{b}
+  , loops{l}
 {
   FDialog::setText ("Rotozoomer effect");
 

@@ -72,7 +72,7 @@ class ColorChooser final : public finalcut::FWidget
 
 //----------------------------------------------------------------------
 ColorChooser::ColorChooser (finalcut::FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   FWidget::setSize (FSize{8, 12});
   setFixedSize (FSize{8, 12});
@@ -226,7 +226,7 @@ class Brushes final : public finalcut::FWidget
 
 //----------------------------------------------------------------------
 Brushes::Brushes (finalcut::FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   FWidget::setSize (FSize{8, 4});
   setFixedSize (FSize{8, 4});
@@ -379,7 +379,7 @@ class MouseDraw final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 MouseDraw::MouseDraw (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   FDialog::setText ("Drawing with the mouse");
   c_chooser.setPos (FPoint{1, 1});

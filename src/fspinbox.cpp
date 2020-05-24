@@ -42,7 +42,7 @@ namespace finalcut
 // constructors and destructor
 //----------------------------------------------------------------------
 FSpinBox::FSpinBox (FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init();
 }

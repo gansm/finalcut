@@ -42,7 +42,7 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FMenuBar::FMenuBar(FWidget* parent)
-  : FWindow(parent)
+  : FWindow{parent}
 {
   init();
 }

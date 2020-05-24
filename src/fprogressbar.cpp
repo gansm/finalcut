@@ -36,7 +36,7 @@ namespace finalcut
 // constructors and destructor
 //----------------------------------------------------------------------
 FProgressbar::FProgressbar(FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   unsetFocusable();
   setShadow();

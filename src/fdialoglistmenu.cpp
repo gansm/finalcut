@@ -33,14 +33,14 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FDialogListMenu::FDialogListMenu(FWidget* parent)
-  : FMenu(parent)
+  : FMenu{parent}
 {
   init();
 }
 
 //----------------------------------------------------------------------
 FDialogListMenu::FDialogListMenu (const FString& txt, FWidget* parent)
-  : FMenu(txt, parent)
+  : FMenu{txt, parent}
 {
   init();
 }

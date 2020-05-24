@@ -105,7 +105,7 @@ class Listbox final : public FDialog
 
 //----------------------------------------------------------------------
 Listbox::Listbox (FWidget* parent)
-  : FDialog(parent)
+  : FDialog{parent}
 {
   auto temp = std::make_shared<FString>();
   temp_str = temp;

@@ -170,9 +170,9 @@ bool sortDescendingByNumber (const FObject* lhs, const FObject* rhs)
 // constructor and destructor
 //----------------------------------------------------------------------
 FListViewItem::FListViewItem (const FListViewItem& item)
-  : FObject(item.getParent())
-  , column_list(item.column_list)
-  , data_pointer(item.data_pointer)
+  : FObject{item.getParent()}
+  , column_list{item.column_list}
+  , data_pointer{item.data_pointer}
 {
   auto parent = getParent();
 
@@ -191,7 +191,7 @@ FListViewItem::FListViewItem (const FListViewItem& item)
 
 //----------------------------------------------------------------------
 FListViewItem::FListViewItem (iterator parent_iter)
-  : FObject((*parent_iter)->getParent())
+  : FObject{(*parent_iter)->getParent()}
 {
   insert (this, parent_iter);
 }
@@ -200,9 +200,9 @@ FListViewItem::FListViewItem (iterator parent_iter)
 FListViewItem::FListViewItem ( const FStringList& cols
                              , FDataPtr data
                              , iterator parent_iter )
-  : FObject(nullptr)
-  , column_list(cols)
-  , data_pointer(data)
+  : FObject{nullptr}
+  , column_list{cols}
+  , data_pointer{data}
 {
   if ( cols.empty() )
     return;
@@ -496,7 +496,7 @@ FListViewIterator::FListViewIterator()
 
 //----------------------------------------------------------------------
 FListViewIterator::FListViewIterator (iterator iter)
-  : node(iter)
+  : node{iter}
 { }
 
 //----------------------------------------------------------------------
@@ -505,16 +505,16 @@ FListViewIterator::~FListViewIterator()  // destructor
 
 //----------------------------------------------------------------------
 FListViewIterator::FListViewIterator (const FListViewIterator& i)
-  : iter_path(i.iter_path)  // copy constructor
-  , node(i.node)
-  , position(i.position)
+  : iter_path{i.iter_path}  // copy constructor
+  , node{i.node}
+  , position{i.position}
 { }
 
 //----------------------------------------------------------------------
 FListViewIterator::FListViewIterator (FListViewIterator&& i) noexcept
-  : iter_path(std::move(i.iter_path))  // move constructor
-  , node(std::move(i.node))
-  , position(std::move(i.position))
+  : iter_path{std::move(i.iter_path)}  // move constructor
+  , node{std::move(i.node)}
+  , position{std::move(i.position)}
 { }
 
 // FListViewIterator operators
@@ -683,7 +683,7 @@ void FListViewIterator::parentElement()
 // constructor and destructor
 //----------------------------------------------------------------------
 FListView::FListView (FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init();
 }

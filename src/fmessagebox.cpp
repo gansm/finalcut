@@ -50,7 +50,7 @@ static const char* const button_text[] =
 // constructors and destructor
 //----------------------------------------------------------------------
 FMessageBox::FMessageBox (FWidget* parent)
-  : FDialog(parent)
+  : FDialog{parent}
 {
   setTitlebarText("Message for you");
   init(FMessageBox::Ok, 0, 0);
@@ -58,15 +58,15 @@ FMessageBox::FMessageBox (FWidget* parent)
 
 //----------------------------------------------------------------------
 FMessageBox::FMessageBox (const FMessageBox& mbox)
-  : FDialog(mbox.getParentWidget())
-  , headline_text(mbox.headline_text)
-  , text(mbox.text)
-  , text_components(mbox.text_components)
-  , max_line_width(mbox.max_line_width)
-  , emphasis_color(mbox.emphasis_color)
-  , num_buttons(mbox.num_buttons)
-  , text_num_lines(mbox.text_num_lines)
-  , center_text(mbox.center_text)
+  : FDialog{mbox.getParentWidget()}
+  , headline_text{mbox.headline_text}
+  , text{mbox.text}
+  , text_components{mbox.text_components}
+  , max_line_width{mbox.max_line_width}
+  , emphasis_color{mbox.emphasis_color}
+  , num_buttons{mbox.num_buttons}
+  , text_num_lines{mbox.text_num_lines}
+  , center_text{mbox.center_text}
 {
   setTitlebarText (mbox.getTitlebarText());
   init ( mbox.button_digit[0]
@@ -81,8 +81,8 @@ FMessageBox::FMessageBox ( const FString& caption
                          , int button1
                          , int button2
                          , FWidget* parent )
-  : FDialog(parent)
-  , text(message)
+  : FDialog{parent}
+  , text{message}
 {
   setTitlebarText(caption);
   init(button0, button1, button2);

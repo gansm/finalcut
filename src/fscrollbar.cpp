@@ -37,7 +37,7 @@ namespace finalcut
 // constructors and destructor
 //----------------------------------------------------------------------
 FScrollbar::FScrollbar(FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   // The default scrollbar orientation is vertical
   setGeometry(FPoint{1, 1}, FSize{1, length}, false);
@@ -46,7 +46,7 @@ FScrollbar::FScrollbar(FWidget* parent)
 
 //----------------------------------------------------------------------
 FScrollbar::FScrollbar(fc::orientation o, FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   setOrientation (o);
   init();

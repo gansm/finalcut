@@ -36,16 +36,16 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FStatusKey::FStatusKey(FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init (parent);
 }
 
 //----------------------------------------------------------------------
 FStatusKey::FStatusKey (FKey k, const FString& txt, FWidget* parent)
-  : FWidget(parent)
-  , text(txt)
-  , key(k)
+  : FWidget{parent}
+  , text{txt}
+  , key{k}
 {
   init (parent);
 }
@@ -126,7 +126,7 @@ void FStatusKey::processActivate()
 // constructor and destructor
 //----------------------------------------------------------------------
 FStatusBar::FStatusBar(FWidget* parent)
-  : FWindow(parent)
+  : FWindow{parent}
 {
   init();
 }

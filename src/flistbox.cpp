@@ -45,16 +45,16 @@ FListBoxItem::FListBoxItem()
 
 //----------------------------------------------------------------------
 FListBoxItem::FListBoxItem (const FListBoxItem& item)
-  : text(item.text)
-  , data_pointer(item.data_pointer)
-  , brackets(item.brackets)
-  , selected(item.selected)
+  : text{item.text}
+  , data_pointer{item.data_pointer}
+  , brackets{item.brackets}
+  , selected{item.selected}
 { }
 
 //----------------------------------------------------------------------
 FListBoxItem::FListBoxItem (const FString& txt, FDataPtr data)
-  : text(txt)
-  , data_pointer(data)
+  : text{txt}
+  , data_pointer{data}
 { }
 
 //----------------------------------------------------------------------
@@ -87,7 +87,7 @@ FListBoxItem& FListBoxItem::operator = (const FListBoxItem& item)
 // constructor and destructor
 //----------------------------------------------------------------------
 FListBox::FListBox (FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init();
 }

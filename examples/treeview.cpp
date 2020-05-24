@@ -326,7 +326,7 @@ Treeview::TreeItem Treeview::oceania[] =
 // constructors and destructor
 //----------------------------------------------------------------------
 Treeview::Treeview (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   // Set FListView geometry
   listView.setGeometry(FPoint{2, 1}, FSize{53, 14});

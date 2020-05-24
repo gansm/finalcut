@@ -71,7 +71,7 @@ bool           FApplication::quit_now        {false};
 FApplication::FApplication ( const int& _argc
                            , char* _argv[]
                            , bool disable_alt_screen )
-  : FWidget(processParameters(_argc, _argv), disable_alt_screen)
+  : FWidget{processParameters(_argc, _argv), disable_alt_screen}
   , app_argc{_argc}
   , app_argv{_argv}
 {
@@ -103,6 +103,8 @@ FApplication::~FApplication()  // destructor
 
   if ( eventInQueue() )
     event_queue.clear();
+
+  destroyLog();
 }
 
 
@@ -117,8 +119,8 @@ FApplication* FApplication::getApplicationObject()
 FApplication::FLogPtr& FApplication::getLog()
 {
   // Global logger object
-  static FLogPtr logger(std::make_shared<FLogger>());
-  return logger;
+  static FLogPtr* logger = new FLogPtr();
+  return *logger;
 }
 
 //----------------------------------------------------------------------
@@ -373,6 +375,7 @@ void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
     mouse->setDblclickInterval (dblclick_time);
 
   // Initialize logging
+  setLog (std::make_shared<FLogger>());
   getLog()->setLineEnding(FLog::CRLF);
 }
 
@@ -476,6 +479,13 @@ void FApplication::cmd_options (const int& argc, char* argv[])
 inline FStartOptions& FApplication::getStartOptions()
 {
   return FStartOptions::getFStartOptions();
+}
+
+//----------------------------------------------------------------------
+inline void FApplication::destroyLog()
+{
+  FLogPtr* logger = &(getLog());
+  delete logger;
 }
 
 //----------------------------------------------------------------------

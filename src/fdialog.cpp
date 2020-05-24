@@ -42,14 +42,14 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FDialog::FDialog (FWidget* parent)
-  : FWindow(parent)
+  : FWindow{parent}
 {
   init();
 }
 
 //----------------------------------------------------------------------
 FDialog::FDialog (const FString& txt, FWidget* parent)
-  : FWindow(parent)
+  : FWindow{parent}
   , tb_text{txt}
 {
   init();

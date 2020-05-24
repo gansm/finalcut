@@ -69,7 +69,7 @@ class FStringStream : public std::wiostream
     FStringStream (const FStringStream&) = delete;
 
     // Move constructor
-    FStringStream (FStringStream&&);
+    FStringStream (FStringStream&&) noexcept;
 
     // Destructor
     ~FStringStream();
@@ -81,7 +81,7 @@ class FStringStream : public std::wiostream
     FStringStream& operator = (FStringStream&& sstream);
 
     virtual const FString getClassName() const;
-    void swap (FStringStream&);
+    void swap (FStringStream&) noexcept;
     void clear();
     std::wstringbuf* rdbuf() const;
     FString str() const;
@@ -111,7 +111,7 @@ inline FString FStringStream::str() const
 
 // FStringStream non-member function
 //----------------------------------------------------------------------
-inline void swap (FStringStream& a, FStringStream& b)
+inline void swap (FStringStream& a, FStringStream& b) noexcept
 { a.swap(b); }
 
 

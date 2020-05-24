@@ -34,14 +34,14 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FToolTip::FToolTip (FWidget* parent)
-  : FWindow(parent)
+  : FWindow{parent}
 {
   init();
 }
 
 //----------------------------------------------------------------------
 FToolTip::FToolTip (const FString& txt, FWidget* parent)
-  : FWindow(parent)
+  : FWindow{parent}
   , text{txt}
 {
   init();

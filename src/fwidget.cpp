@@ -60,8 +60,8 @@ uInt                  FWidget::modal_dialog_counter{};
 // constructors and destructor
 //----------------------------------------------------------------------
 FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
-  : FVTerm( ! (bool(parent) || root_widget), disable_alt_screen)
-  , FObject(parent)
+  : FVTerm{ ! (bool(parent) || root_widget), disable_alt_screen}
+  , FObject{parent}
 {
   // init bit field with 0
   memset (&flags, 0, sizeof(flags));

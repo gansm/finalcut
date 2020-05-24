@@ -447,6 +447,7 @@ void FStringTest::assignmentTest()
   CPPUNIT_ASSERT ( ! s9 );
   CPPUNIT_ASSERT ( s9.isNull() );
   CPPUNIT_ASSERT ( s9.isEmpty() );
+
   finalcut::FString s10("abc");
   const finalcut::FString s11 = std::move(s10);
   CPPUNIT_ASSERT ( s11 );

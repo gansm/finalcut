@@ -76,7 +76,7 @@ class ProgressDialog final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 ProgressDialog::ProgressDialog (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   // Dialog settings
   //   Avoids calling a virtual function from the constructor
@@ -218,7 +218,7 @@ class TextWindow final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 TextWindow::TextWindow (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   scrollText.ignorePadding();
   scrollText.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});
@@ -369,7 +369,7 @@ class MyDialog final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 MyDialog::MyDialog (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   init();
 }
