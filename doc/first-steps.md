@@ -13,10 +13,10 @@ Table of Contents
   - [Event handler reimplementation](#event-handler-reimplementation)
 - [Signals and Callbacks](#signals-and-callbacks)
   - [Default signals](#the-final-cut-widgets-emit-the-following-default-signals)
-- [Callback function](#example-of-a-callback-function)
-- [Callback lambda expression](#example-of-an-lambda-expression-callback)
-- [Callback method](#example-of-a-callback-function)
-- [Custom signals](#send-custom-signals)
+  - [Callback function](#example-of-a-callback-function)
+  - [Callback lambda expression](#example-of-an-lambda-expression-callback)
+  - [Callback method](#example-of-a-callback-function)
+  - [Custom signals](#send-custom-signals)
 - [Widget layout](#widget-layout)
   - [Coordinates](#coordinates)
   - [Lengths](#lengths)
@@ -616,7 +616,7 @@ class dialogWidget : public FDialog
 {
   public:
     explicit dialogWidget (FWidget* parent = nullptr)
-      : FDialog(parent)
+      : FDialog{parent}
     {
       setText ("Callback method");
       setGeometry (FPoint{25, 5}, FSize{25, 7});

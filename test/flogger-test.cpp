@@ -303,7 +303,11 @@ void FLoggerTest::fileTest()
 //----------------------------------------------------------------------
 void FLoggerTest::applicationObjectTest()
 {
+  // Generation of a logger in a shared_ptr via a pointer
+  finalcut::FApplication::setLog (std::make_shared<finalcut::FLogger>());
+  // Get the shared_ptr with the base class
   std::shared_ptr<finalcut::FLog> log = finalcut::FApplication::getLog();
+
   std::ostringstream buf{};
   log->setOutputStream(buf);
 
@@ -351,6 +355,9 @@ void FLoggerTest::applicationObjectTest()
   log->debug("myLogger 4");
   CPPUNIT_ASSERT ( buf.str() == "Debug: myLogger 4\n" );
   buf.str("");  // Clear buffer
+
+  std::shared_ptr<finalcut::FLog>* logger = &(finalcut::FApplication::getLog());
+  delete logger;
 }
 
 
