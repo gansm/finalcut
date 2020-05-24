@@ -78,7 +78,7 @@ FString::FString (const FString& s)  // copy constructor
 FString::FString (FString&& s) noexcept  // move constructor
 {
   string = std::move(s.string);
-  c_string = std::move(c_string);
+  c_string = std::move(s.c_string);
   length = s.length;
   bufsize = s.bufsize;
 
@@ -183,7 +183,7 @@ FString& FString::operator = (const FString& s)
 FString& FString::operator = (FString&& s) noexcept
 {
   string = std::move(s.string);
-  c_string = std::move(c_string);
+  c_string = std::move(s.c_string);
   length = s.length;
   bufsize = s.bufsize;
 
