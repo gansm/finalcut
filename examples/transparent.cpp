@@ -94,8 +94,8 @@ void Transparent::draw()
 
   if ( type == shadow )
   {
-    const auto& wc = getFWidgetColors();
-    print() << FColorPair {wc.shadow_bg, wc.shadow_fg}
+    const auto& wc = getColorTheme();
+    print() << FColorPair {wc->shadow_bg, wc->shadow_fg}
             << FStyle {fc::ColorOverlay};
   }
   else if ( type == inherit_background )

@@ -107,9 +107,9 @@ void FToolTip::init()
   // initialize geometry values
   setGeometry (FPoint{1, 1}, FSize{3, 3}, false);
   setMinimumSize (FSize{3, 3});
-  const auto& wc = getFWidgetColors();
-  setForegroundColor (wc.tooltip_fg);
-  setBackgroundColor (wc.tooltip_bg);
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->tooltip_fg);
+  setBackgroundColor (wc->tooltip_bg);
   calculateDimensions();
 }
 

@@ -68,30 +68,30 @@ class SmallWindow final : public finalcut::FDialog
 SmallWindow::SmallWindow (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
   const wchar_t arrow_up = fc::BlackUpPointingTriangle;
   const wchar_t arrow_down = fc::BlackDownPointingTriangle;
 
   left_arrow = arrow_up;
-  left_arrow.setForegroundColor (wc.label_inactive_fg);
+  left_arrow.setForegroundColor (wc->label_inactive_fg);
   left_arrow.setEmphasis();
   left_arrow.ignorePadding();
   left_arrow.setGeometry (FPoint{2, 2}, FSize{1, 1});
 
   right_arrow = arrow_up;
-  right_arrow.setForegroundColor (wc.label_inactive_fg);
+  right_arrow.setForegroundColor (wc->label_inactive_fg);
   right_arrow.setEmphasis();
   right_arrow.ignorePadding();
   right_arrow.setGeometry (FPoint{int(getWidth()) - 1, 2}, FSize{1, 1});
 
   top_left_label = "menu";
-  top_left_label.setForegroundColor (wc.label_inactive_fg);
+  top_left_label.setForegroundColor (wc->label_inactive_fg);
   top_left_label.setEmphasis();
   top_left_label.setGeometry (FPoint{1, 1}, FSize{6, 1});
 
   top_right_label = "zoom";
   top_right_label.setAlignment (fc::alignRight);
-  top_right_label.setForegroundColor (wc.label_inactive_fg);
+  top_right_label.setForegroundColor (wc->label_inactive_fg);
   top_right_label.setEmphasis();
   top_right_label.setGeometry (FPoint{int(getClientWidth()) - 5, 1}, FSize{6, 1});
 
@@ -100,7 +100,7 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   bottom_label_text += arrow_down;
   bottom_label = bottom_label_text;
   bottom_label.setAlignment (fc::alignRight);
-  bottom_label.setForegroundColor (wc.label_inactive_fg);
+  bottom_label.setForegroundColor (wc->label_inactive_fg);
   bottom_label.setEmphasis();
   bottom_label.setGeometry (FPoint{13, 3}, FSize{6, 3});
 }

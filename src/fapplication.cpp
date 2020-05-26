@@ -120,6 +120,10 @@ FApplication::FLogPtr& FApplication::getLog()
 {
   // Global logger object
   static FLogPtr* logger = new FLogPtr();
+
+  if ( logger && logger->get() == nullptr )
+    *logger = std::make_shared<FLogger>();
+
   return *logger;
 }
 
@@ -375,7 +379,6 @@ void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
     mouse->setDblclickInterval (dblclick_time);
 
   // Initialize logging
-  setLog (std::make_shared<FLogger>());
   getLog()->setLineEnding(FLog::CRLF);
 }
 
@@ -484,7 +487,7 @@ inline FStartOptions& FApplication::getStartOptions()
 //----------------------------------------------------------------------
 inline void FApplication::destroyLog()
 {
-  FLogPtr* logger = &(getLog());
+  const FLogPtr* logger = &(getLog());
   delete logger;
 }
 
@@ -1165,7 +1168,8 @@ void FApplication::performTimerAction (FObject* receiver, FEvent* event)
 }
 
 //----------------------------------------------------------------------
-bool FApplication::isEventProcessable (const FObject* receiver, const FEvent* event )
+bool FApplication::isEventProcessable ( const FObject* receiver
+                                      , const FEvent* event )
 {
   if ( ! receiver->isWidget() )  // No restrictions for non-widgets
     return true;

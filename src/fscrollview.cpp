@@ -712,9 +712,9 @@ void FScrollView::init (const FWidget* parent)
   initScrollbar (vbar, fc::vertical, &FScrollView::cb_vbarChange);
   initScrollbar (hbar, fc::horizontal, &FScrollView::cb_hbarChange);
   mapKeyFunctions();
-  const auto& wc = getFWidgetColors();
-  setForegroundColor (wc.dialog_fg);
-  setBackgroundColor (wc.dialog_bg);
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->dialog_fg);
+  setBackgroundColor (wc->dialog_bg);
   setGeometry (FPoint{1, 1}, FSize{4, 4});
   setMinimumSize (FSize{4, 4});
   const int xoffset_end = int(getScrollWidth() - getViewportWidth());

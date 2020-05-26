@@ -153,7 +153,7 @@ class FMessageBox : public FDialog
     FStringList   text_components{};
     FButton*      button[3]{nullptr};
     std::size_t   max_line_width{0};
-    FColor        emphasis_color{getFWidgetColors().dialog_emphasis_fg};
+    FColor        emphasis_color{getColorTheme()->dialog_emphasis_fg};
     int           button_digit[3]{0};
     uInt          num_buttons{0};
     std::size_t   text_num_lines{0};
@@ -231,10 +231,10 @@ int FMessageBox::error ( FWidget* parent
   FTerm::beep();
   mbox.setHeadline("Warning:");
   mbox.setCenterText();
-  const auto& wc = mbox.getFWidgetColors();
-  mbox.setForegroundColor(wc.error_box_fg);
-  mbox.setBackgroundColor(wc.error_box_bg);
-  mbox.emphasis_color = wc.error_box_emphasis_fg;
+  const auto& wc = getColorTheme();
+  mbox.setForegroundColor(wc->error_box_fg);
+  mbox.setBackgroundColor(wc->error_box_bg);
+  mbox.emphasis_color = wc->error_box_emphasis_fg;
   const int reply = mbox.exec();
   return reply;
 }

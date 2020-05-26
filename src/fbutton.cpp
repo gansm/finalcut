@@ -218,9 +218,9 @@ void FButton::hide()
   }
   else
   {
-    auto wc = getFWidgetColors();
-    fg = wc.dialog_fg;
-    bg = wc.dialog_bg;
+    const auto& wc = getColorTheme();
+    fg = wc->dialog_fg;
+    bg = wc->dialog_bg;
   }
 
   setColor (fg, bg);
@@ -387,9 +387,9 @@ void FButton::onFocusOut (FFocusEvent*)
 //----------------------------------------------------------------------
 void FButton::init()
 {
-  const auto& wc = getFWidgetColors();
-  setForegroundColor (wc.button_active_fg);
-  setBackgroundColor (wc.button_active_bg);
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->button_active_fg);
+  setBackgroundColor (wc->button_active_bg);
   setShadow();
 
   if ( ! text.isEmpty() )

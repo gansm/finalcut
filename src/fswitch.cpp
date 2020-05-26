@@ -143,7 +143,7 @@ inline void FSwitch::drawChecked()
 {
   wchar_t on[6]{L"  On "};
   const wchar_t off[6]{L" Off "};
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   if ( hasFocus() && ! button_pressed )
   {
@@ -155,17 +155,17 @@ inline void FSwitch::drawChecked()
     else if ( FTerm::getMaxColor() < 16 )
     {
       setBold(true);
-      setColor (wc.button_active_focus_fg, wc.button_active_focus_bg);
+      setColor (wc->button_active_focus_fg, wc->button_active_focus_bg);
     }
     else
-      setColor (wc.button_hotkey_fg, wc.button_active_focus_bg);
+      setColor (wc->button_hotkey_fg, wc->button_active_focus_bg);
   }
   else
   {
     if ( FTerm::isMonochron() || FTerm::getMaxColor() < 16 )
-      setColor (wc.button_active_focus_fg, wc.button_active_bg);
+      setColor (wc->button_active_focus_fg, wc->button_active_bg);
     else
-      setColor (wc.button_hotkey_fg, wc.button_active_bg);
+      setColor (wc->button_hotkey_fg, wc->button_active_bg);
   }
 
   if ( FTerm::isMonochron() )
@@ -179,7 +179,7 @@ inline void FSwitch::drawChecked()
   if ( FTerm::isMonochron() || FTerm::getMaxColor() < 16 )
     setBold(false);
 
-  print() << FColorPair{wc.button_inactive_fg, wc.button_inactive_bg}
+  print() << FColorPair{wc->button_inactive_fg, wc->button_inactive_bg}
           << off;
 
   if ( FTerm::isMonochron() )
@@ -194,8 +194,8 @@ inline void FSwitch::drawUnchecked()
   const wchar_t on[6]{L"  On "};
   wchar_t off[6]{L" Off "};
 
-  const auto& wc = getFWidgetColors();
-  setColor (wc.button_inactive_fg, wc.button_inactive_bg);
+  const auto& wc = getColorTheme();
+  setColor (wc->button_inactive_fg, wc->button_inactive_bg);
 
   if ( FTerm::isMonochron() )
     setReverse(true);
@@ -212,17 +212,17 @@ inline void FSwitch::drawUnchecked()
     else if ( FTerm::getMaxColor() < 16 )
     {
       setBold(true);
-      setColor (wc.button_active_focus_fg, wc.button_active_focus_bg);
+      setColor (wc->button_active_focus_fg, wc->button_active_focus_bg);
     }
     else
-      setColor (wc.button_hotkey_fg, wc.button_active_focus_bg);
+      setColor (wc->button_hotkey_fg, wc->button_active_focus_bg);
   }
   else
   {
     if ( FTerm::isMonochron() || FTerm::getMaxColor() < 16 )
-      setColor (wc.button_active_focus_fg, wc.button_active_bg);
+      setColor (wc->button_active_focus_fg, wc->button_active_bg);
     else
-      setColor (wc.button_hotkey_fg, wc.button_active_bg);
+      setColor (wc->button_hotkey_fg, wc->button_active_bg);
   }
 
   if ( FTerm::isMonochron() )

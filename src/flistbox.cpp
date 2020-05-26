@@ -274,8 +274,8 @@ void FListBox::clear()
   hbar->hide();
 
   // clear list from screen
-  const auto& wc = getFWidgetColors();
-  setColor (wc.list_fg, wc.list_bg);
+  const auto& wc = getColorTheme();
+  setColor (wc->list_fg, wc->list_bg);
   const std::size_t size = getWidth() - 2;
   drawBorder();
   drawHeadline();
@@ -655,9 +655,9 @@ void FListBox::init()
   initScrollbar (vbar, fc::vertical, this, &FListBox::cb_vbarChange);
   initScrollbar (hbar, fc::horizontal, this, &FListBox::cb_hbarChange);
   setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
-  const auto& wc = getFWidgetColors();
-  setForegroundColor (wc.dialog_fg);
-  setBackgroundColor (wc.dialog_bg);
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->dialog_fg);
+  setBackgroundColor (wc->dialog_bg);
   nf_offset = FTerm::isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);
@@ -792,12 +792,12 @@ void FListBox::drawHeadline()
   const FString txt{" " + text + " "};
   const auto column_width = getColumnWidth(txt);
   print() << FPoint{2, 1};
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   if ( isEnabled() )
-    setColor(wc.label_emphasis_fg, wc.label_bg);
+    setColor(wc->label_emphasis_fg, wc->label_bg);
   else
-    setColor(wc.label_inactive_fg, wc.label_inactive_bg);
+    setColor(wc->label_inactive_fg, wc->label_inactive_bg);
 
   if ( column_width <= getClientWidth() )
     print (txt);
@@ -805,7 +805,7 @@ void FListBox::drawHeadline()
   {
     // Print ellipsis
     print() << getColumnSubString (text, 1, getClientWidth() - 2)
-            << FColorPair {wc.label_ellipsis_fg, wc.label_bg} << "..";
+            << FColorPair {wc->label_ellipsis_fg, wc->label_bg} << "..";
   }
 }
 
@@ -870,7 +870,7 @@ inline void FListBox::drawListLine ( int y
                                    , bool serach_mark )
 {
   const std::size_t inc_len = inc_search.getLength();
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
   const bool isCurrentLine( y + yoffset + 1 == int(current) );
   const std::size_t first = std::size_t(xoffset) + 1;
   const std::size_t max_width = getWidth() - nf_offset - 4;
@@ -883,14 +883,14 @@ inline void FListBox::drawListLine ( int y
     print (' ');
 
   if ( serach_mark )
-    setColor ( wc.current_inc_search_element_fg
-             , wc.current_element_focus_bg );
+    setColor ( wc->current_inc_search_element_fg
+             , wc->current_element_focus_bg );
 
   for (std::size_t i{0}; i < element.getLength(); i++)
   {
     if ( serach_mark && i == inc_len && getFlags().focus  )
-      setColor ( wc.current_element_focus_fg
-               , wc.current_element_focus_bg );
+      setColor ( wc->current_element_focus_fg
+               , wc->current_element_focus_bg );
 
     print (element[i]);
   }
@@ -945,17 +945,17 @@ inline void FListBox::drawListBracketsLine ( int y
   std::size_t column_width = getColumnWidth(element);
   const std::size_t text_width = getColumnWidth(getString(iter));
   std::size_t i{0};
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   for (; i < element.getLength(); i++)
   {
     if ( serach_mark && i == 0 )
-      setColor ( wc.current_inc_search_element_fg
-               , wc.current_element_focus_bg );
+      setColor ( wc->current_inc_search_element_fg
+               , wc->current_element_focus_bg );
 
     if ( serach_mark && i == inc_len )
-      setColor ( wc.current_element_focus_fg
-               , wc.current_element_focus_bg );
+      setColor ( wc->current_element_focus_fg
+               , wc->current_element_focus_bg );
 
     print (element[i]);
   }
@@ -964,8 +964,8 @@ inline void FListBox::drawListBracketsLine ( int y
     && std::size_t(xoffset) <= text_width )
   {
     if ( serach_mark && i == inc_len )
-      setColor ( wc.current_element_focus_fg
-               , wc.current_element_focus_bg );
+      setColor ( wc->current_element_focus_fg
+               , wc->current_element_focus_bg );
 
     printRightBracket (iter->brackets);
     column_width++;
@@ -990,7 +990,7 @@ inline void FListBox::setLineAttributes ( int y
   const bool isCurrentLine( y + yoffset + 1 == int(current) );
   const std::size_t inc_len = inc_search.getLength();
   const std::size_t inc_width = getColumnWidth(inc_search);
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
   print() << FPoint{2, 2 + int(y)};
 
   if ( isLineSelected )
@@ -998,14 +998,14 @@ inline void FListBox::setLineAttributes ( int y
     if ( FTerm::isMonochron() )
       setBold();
     else
-      setColor (wc.selected_list_fg, wc.selected_list_bg);
+      setColor (wc->selected_list_fg, wc->selected_list_bg);
   }
   else
   {
     if ( FTerm::isMonochron() )
       unsetBold();
     else
-      setColor (wc.list_fg, wc.list_bg);
+      setColor (wc->list_fg, wc->list_bg);
   }
 
   if ( isCurrentLine )
@@ -1018,11 +1018,11 @@ inline void FListBox::setLineAttributes ( int y
       if ( FTerm::isMonochron() )
         setBold();
       else if ( getFlags().focus )
-        setColor ( wc.selected_current_element_focus_fg
-                 , wc.selected_current_element_focus_bg );
+        setColor ( wc->selected_current_element_focus_fg
+                 , wc->selected_current_element_focus_bg );
       else
-        setColor ( wc.selected_current_element_fg
-                 , wc.selected_current_element_bg );
+        setColor ( wc->selected_current_element_fg
+                 , wc->selected_current_element_bg );
 
       setCursorPos ({3, 2 + int(y)});  // first character
     }
@@ -1033,8 +1033,8 @@ inline void FListBox::setLineAttributes ( int y
 
       if ( getFlags().focus )
       {
-        setColor ( wc.current_element_focus_fg
-                 , wc.current_element_focus_bg );
+        setColor ( wc->current_element_focus_fg
+                 , wc->current_element_focus_bg );
         const int b = ( lineHasBrackets ) ? 1: 0;
 
         if ( inc_len > 0 )  // incremental search
@@ -1047,8 +1047,8 @@ inline void FListBox::setLineAttributes ( int y
           setCursorPos ({3 + b, 2 + int(y)});  // first character
       }
       else
-        setColor ( wc.current_element_fg
-                 , wc.current_element_bg );
+        setColor ( wc->current_element_fg
+                 , wc->current_element_bg );
     }
 
     if ( FTerm::isMonochron() )

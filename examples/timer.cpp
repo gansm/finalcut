@@ -54,8 +54,8 @@ Timer::Timer (finalcut::FWidget* parent)
   delTimer (id);
   addTimer (250);                // 250-millisecond timer
 
-  setFWidgetColors().term_fg = fc::Default;
-  setFWidgetColors().term_bg = fc::Default;
+  getColorTheme()->term_fg = fc::Default;
+  getColorTheme()->term_bg = fc::Default;
 }
 
 //----------------------------------------------------------------------

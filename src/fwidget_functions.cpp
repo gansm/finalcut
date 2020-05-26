@@ -161,12 +161,12 @@ void drawTransparentShadow (FWidget* w)
 
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
-  const auto& wcolors = FWidget::wcolors;
+  const auto& wc = FWidget::getColorTheme();
   w->print() << FStyle {fc::Transparent}
              << FPoint {int(width) + 1, 1}
              << "  "
              << FStyle {fc::Reset}
-             << FColorPair {wcolors.shadow_bg, wcolors.shadow_fg}
+             << FColorPair {wc->shadow_bg, wc->shadow_fg}
              << FStyle {fc::ColorOverlay};
 
   for (std::size_t y{1}; y < height; y++)
@@ -178,7 +178,7 @@ void drawTransparentShadow (FWidget* w)
              << FPoint {1, int(height) + 1}
              << "  "
              << FStyle {fc::Reset}
-             << FColorPair {wcolors.shadow_bg, wcolors.shadow_fg}
+             << FColorPair {wc->shadow_bg, wc->shadow_fg}
              << FStyle {fc::ColorOverlay}
              << FString {width, L' '}
              << FStyle {fc::Reset};
@@ -197,16 +197,16 @@ void drawBlockShadow (FWidget* w)
 
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
-  const auto& wcolors = FWidget::wcolors;
+  const auto& wc = FWidget::getColorTheme();
   w->print() << FPoint {int(width) + 1, 1};
 
   if ( w->isWindowWidget() )
   {
-    w->print() << FColorPair {wcolors.shadow_fg, wcolors.shadow_bg}
+    w->print() << FColorPair {wc->shadow_fg, wc->shadow_bg}
                << FStyle {fc::InheritBackground};  // current background color will be ignored
   }
   else if ( auto p = w->getParentWidget() )
-    w->print() << FColorPair {wcolors.shadow_fg, p->getBackgroundColor()};
+    w->print() << FColorPair {wc->shadow_fg, p->getBackgroundColor()};
 
   w->print (fc::LowerHalfBlock);  // ▄
 
@@ -238,15 +238,15 @@ void clearShadow (FWidget* w)
 
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
-  const auto& wcolors = FWidget::wcolors;
+  const auto& wc = FWidget::getColorTheme();
 
   if ( w->isWindowWidget() )
   {
-    w->print() << FColorPair {wcolors.shadow_fg, wcolors.shadow_bg}
+    w->print() << FColorPair {wc->shadow_fg, wc->shadow_bg}
                << FStyle {fc::InheritBackground};  // current background color will be ignored
   }
   else if ( auto p = w->getParentWidget() )
-    w->print() << FColorPair {wcolors.shadow_fg, p->getBackgroundColor()};
+    w->print() << FColorPair {wc->shadow_fg, p->getBackgroundColor()};
 
   if ( int(width) <= w->woffset.getX2() )
   {
@@ -275,12 +275,12 @@ void drawFlatBorder (FWidget* w)
 
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
-  const auto& wcolors = FWidget::wcolors;
+  const auto& wc = FWidget::getColorTheme();
 
   if ( auto p = w->getParentWidget() )
-    w->setColor (wcolors.dialog_fg, p->getBackgroundColor());
+    w->setColor (wc->dialog_fg, p->getBackgroundColor());
   else
-    w->setColor (wcolors.dialog_fg, wcolors.dialog_bg);
+    w->setColor (wc->dialog_fg, wc->dialog_bg);
 
   for (std::size_t y{0}; y < height; y++)
   {
@@ -336,12 +336,12 @@ void clearFlatBorder (FWidget* w)
 
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
-  const auto& wcolors = FWidget::wcolors;
+  const auto& wc = FWidget::getColorTheme();
 
   if ( auto p = w->getParentWidget() )
-    w->setColor (wcolors.dialog_fg, p->getBackgroundColor());
+    w->setColor (wc->dialog_fg, p->getBackgroundColor());
   else
-    w->setColor (wcolors.dialog_fg, wcolors.dialog_bg);
+    w->setColor (wc->dialog_fg, wc->dialog_bg);
 
   for (std::size_t y{0}; y < height; y++)
   {

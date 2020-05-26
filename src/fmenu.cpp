@@ -459,9 +459,9 @@ void FMenu::init(FWidget* parent)
   setMenuWidget();
   hide();
 
-  const auto& wc = getFWidgetColors();
-  setForegroundColor (wc.menu_active_fg);
-  setBackgroundColor (wc.menu_active_bg);
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->menu_active_fg);
+  setBackgroundColor (wc->menu_active_bg);
   menuitem.setMenu(this);
 
   if ( parent )
@@ -1209,8 +1209,8 @@ bool FMenu::hotkeyMenu (FKeyEvent* ev)
 void FMenu::draw()
 {
   // Fill the background
-  const auto& wc = getFWidgetColors();
-  setColor (wc.menu_active_fg, wc.menu_active_bg);
+  const auto& wc = getColorTheme();
+  setColor (wc->menu_active_fg, wc->menu_active_bg);
 
   if ( FTerm::isMonochron() )
     setReverse(true);
@@ -1243,9 +1243,9 @@ void FMenu::drawItems()
 //----------------------------------------------------------------------
 inline void FMenu::drawSeparator (int y)
 {
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
   print() << FPoint{1, 2 + y}
-          << FColorPair{wc.menu_active_fg, wc.menu_active_bg};
+          << FColorPair{wc->menu_active_fg, wc->menu_active_bg};
 
   if ( FTerm::isMonochron() )
     setReverse(true);
@@ -1349,8 +1349,8 @@ inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
     }
     else
     {
-      const auto& wc = getFWidgetColors();
-      setColor (wc.menu_inactive_fg, getBackgroundColor());
+      const auto& wc = getColorTheme();
+      setColor (wc->menu_inactive_fg, getBackgroundColor());
 
       if ( FTerm::getEncoding() == fc::ASCII )
         print ('-');
@@ -1382,8 +1382,8 @@ inline void FMenu::drawMenuText (menuText& data)
 
     if ( z == data.hotkeypos )
     {
-      const auto& wc = getFWidgetColors();
-      setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
+      const auto& wc = getColorTheme();
+      setColor (wc->menu_hotkey_fg, wc->menu_hotkey_bg);
 
       if ( ! data.no_underline )
         setUnderline();
@@ -1448,22 +1448,22 @@ inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
 {
   const bool is_enabled  = m_item->isEnabled();
   const bool is_selected = m_item->isSelected();
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   if ( is_enabled )
   {
     if ( is_selected )
     {
-      setForegroundColor (wc.menu_active_focus_fg);
-      setBackgroundColor (wc.menu_active_focus_bg);
+      setForegroundColor (wc->menu_active_focus_fg);
+      setBackgroundColor (wc->menu_active_focus_bg);
 
       if ( FTerm::isMonochron() )
         setReverse(false);
     }
     else
     {
-      setForegroundColor (wc.menu_active_fg);
-      setBackgroundColor (wc.menu_active_bg);
+      setForegroundColor (wc->menu_active_fg);
+      setBackgroundColor (wc->menu_active_bg);
 
       if ( FTerm::isMonochron() )
         setReverse(true);
@@ -1471,8 +1471,8 @@ inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
   }
   else
   {
-    setForegroundColor (wc.menu_inactive_fg);
-    setBackgroundColor (wc.menu_inactive_bg);
+    setForegroundColor (wc->menu_inactive_fg);
+    setBackgroundColor (wc->menu_inactive_bg);
 
     if ( FTerm::isMonochron() )
       setReverse(true);

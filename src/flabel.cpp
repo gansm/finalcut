@@ -256,9 +256,9 @@ void FLabel::init()
   }
   else
   {
-    const auto& wc = getFWidgetColors();
-    setForegroundColor (wc.dialog_fg);
-    setBackgroundColor (wc.dialog_bg);
+    const auto& wc = getColorTheme();
+    setForegroundColor (wc->dialog_fg);
+    setBackgroundColor (wc->dialog_bg);
   }
 }
 
@@ -416,8 +416,8 @@ void FLabel::printLine (FString& line)
 
     if ( z == hotkeypos && getFlags().active )
     {
-      const auto& wc = getFWidgetColors();
-      setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
+      const auto& wc = getColorTheme();
+      setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
 
       if ( ! getFlags().no_underline )
         setUnderline();

@@ -247,14 +247,14 @@ class FString
     static constexpr uInt CHAR_SIZE = sizeof(wchar_t);  // bytes per character
 
     // Methods
-    void     initLength (std::size_t);
-    void     _assign (const wchar_t[]);
-    void     _insert (std::size_t, const wchar_t[]);
-    void     _insert (std::size_t, std::size_t, const wchar_t[]);
-    void     _remove (std::size_t, std::size_t);
-    char*    wc_to_c_str (const wchar_t[]) const;
-    wchar_t* c_to_wc_str (const char[]) const;
-    wchar_t* extractToken (wchar_t*[], const wchar_t[], const wchar_t[]);
+    void           _initLength (std::size_t);
+    void           _assign (const wchar_t[]);
+    void           _insert (std::size_t, const wchar_t[]);
+    void           _insert (std::size_t, std::size_t, const wchar_t[]);
+    void           _remove (std::size_t, std::size_t);
+    const char*    _to_cstring (const wchar_t[]) const;
+    const wchar_t* _to_wcstring (const char[]) const;
+    const wchar_t* _extractToken (wchar_t*[], const wchar_t[], const wchar_t[]);
 
     // Data members
     wchar_t*      string{nullptr};

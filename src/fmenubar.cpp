@@ -65,9 +65,9 @@ void FMenuBar::resetMenu()
 //----------------------------------------------------------------------
 void FMenuBar::hide()
 {
-  const auto& wc = getFWidgetColors();
-  FColor fg = wc.term_fg;
-  FColor bg = wc.term_bg;
+  const auto& wc = getColorTheme();
+  FColor fg = wc->term_fg;
+  FColor bg = wc->term_bg;
   setColor (fg, bg);
   print() << FPoint{1, 1} << FString{getDesktopWidth(), L' '};
   updateTerminal();
@@ -249,9 +249,9 @@ void FMenuBar::init()
 
   addAccelerator (fc::Fkey_f10);
   addAccelerator (fc::Fckey_space);
-  const auto& wc = getFWidgetColors();
-  setForegroundColor (wc.menu_active_fg);
-  setBackgroundColor (wc.menu_active_bg);
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->menu_active_fg);
+  setBackgroundColor (wc->menu_active_bg);
   unsetFocusable();
 }
 
@@ -529,8 +529,8 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
   drawEllipsis (txtdata, x);
   drawTrailingSpace (x);
 
-  const auto& wc = getFWidgetColors();
-  setColor (wc.menu_active_fg, wc.menu_active_bg);
+  const auto& wc = getColorTheme();
+  setColor (wc->menu_active_fg, wc->menu_active_bg);
 
   if ( FTerm::isMonochron() && is_enabled && is_selected )
     setReverse(true);
@@ -541,7 +541,7 @@ inline void FMenuBar::setLineAttributes (const FMenuItem* menuitem)
 {
   bool is_enabled  = menuitem->isEnabled();
   bool is_selected = menuitem->isSelected();
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   if ( is_enabled )
   {
@@ -550,19 +550,19 @@ inline void FMenuBar::setLineAttributes (const FMenuItem* menuitem)
       if ( FTerm::isMonochron() )
         setReverse(false);
 
-      setForegroundColor (wc.menu_active_focus_fg);
-      setBackgroundColor (wc.menu_active_focus_bg);
+      setForegroundColor (wc->menu_active_focus_fg);
+      setBackgroundColor (wc->menu_active_focus_bg);
     }
     else
     {
-      setForegroundColor (wc.menu_active_fg);
-      setBackgroundColor (wc.menu_active_bg);
+      setForegroundColor (wc->menu_active_fg);
+      setBackgroundColor (wc->menu_active_bg);
     }
   }
   else
   {
-    setForegroundColor (wc.menu_inactive_fg);
-    setBackgroundColor (wc.menu_inactive_bg);
+    setForegroundColor (wc->menu_inactive_fg);
+    setBackgroundColor (wc->menu_inactive_bg);
   }
 
   setColor();
@@ -607,8 +607,8 @@ inline void FMenuBar::drawMenuText (menuText& data)
 
     if ( z == data.hotkeypos )
     {
-      const auto& wc = getFWidgetColors();
-      setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
+      const auto& wc = getColorTheme();
+      setColor (wc->menu_hotkey_fg, wc->menu_hotkey_bg);
 
       if ( ! data.no_underline )
         setUnderline();

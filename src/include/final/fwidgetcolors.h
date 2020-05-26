@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -44,12 +44,17 @@ namespace finalcut
 // class FWidgetColors
 //----------------------------------------------------------------------
 
-class FWidgetColors final
+class FWidgetColors
 {
   public:
-    // Methods
-    void set8ColorTheme();
-    void set16ColorTheme();
+    // Constructor
+    FWidgetColors();
+
+    // Destructor
+    virtual ~FWidgetColors();
+
+    // Method
+    virtual void setColorTheme() = 0;
 
     // Data members
     FColor term_fg{fc::Default};
@@ -138,6 +143,42 @@ class FWidgetColors final
     FColor scrollbar_button_inactive_bg{fc::Default};
     FColor progressbar_fg{fc::Default};
     FColor progressbar_bg{fc::Default};
+};
+
+
+//----------------------------------------------------------------------
+// class default8ColorTheme
+//----------------------------------------------------------------------
+
+class default8ColorTheme final : public FWidgetColors
+{
+  public:
+    // Constructor
+    default8ColorTheme();
+
+    // Destructor
+    virtual ~default8ColorTheme() override;
+
+    // Method
+    void setColorTheme() override;
+};
+
+
+//----------------------------------------------------------------------
+// class default16ColorTheme
+//----------------------------------------------------------------------
+
+class default16ColorTheme final : public FWidgetColors
+{
+  public:
+    // Constructor
+    default16ColorTheme();
+
+    // Destructor
+    virtual ~default16ColorTheme() override;
+
+    // Method
+    void setColorTheme() override;
 };
 
 }  // namespace finalcut

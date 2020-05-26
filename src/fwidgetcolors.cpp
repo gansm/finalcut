@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -31,9 +31,34 @@ namespace finalcut
 // class FWidgetColors
 //----------------------------------------------------------------------
 
-// public methods of FWidgetColors
+// constructors and destructor
 //----------------------------------------------------------------------
-void FWidgetColors::set8ColorTheme()
+FWidgetColors::FWidgetColors()
+{ }
+
+//----------------------------------------------------------------------
+FWidgetColors::~FWidgetColors()
+{ }
+
+
+//----------------------------------------------------------------------
+// class default8ColorTheme
+//----------------------------------------------------------------------
+
+// constructors and destructor
+//----------------------------------------------------------------------
+default8ColorTheme::default8ColorTheme()
+{
+  default8ColorTheme::setColorTheme();
+}
+
+//----------------------------------------------------------------------
+default8ColorTheme::~default8ColorTheme()
+{ }
+
+// public methods of default8ColorTheme
+//----------------------------------------------------------------------
+void default8ColorTheme::setColorTheme()
 {
   term_fg                           = fc::Black;
   term_bg                           = fc::Blue;
@@ -123,8 +148,25 @@ void FWidgetColors::set8ColorTheme()
   progressbar_bg                    = fc::LightGray;
 }
 
+
 //----------------------------------------------------------------------
-void FWidgetColors::set16ColorTheme()
+// class default16ColorTheme
+//----------------------------------------------------------------------
+
+// constructors and destructor
+//----------------------------------------------------------------------
+default16ColorTheme::default16ColorTheme()
+{
+  default16ColorTheme::setColorTheme();
+}
+
+//----------------------------------------------------------------------
+default16ColorTheme::~default16ColorTheme()
+{ }
+
+// public methods of default16ColorTheme
+//----------------------------------------------------------------------
+void default16ColorTheme::setColorTheme()
 {
   term_fg                           = fc::Black;
   term_bg                           = fc::LightBlue;

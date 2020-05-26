@@ -569,9 +569,9 @@ void FTextView::init()
 {
   initScrollbar (vbar, fc::vertical, this, &FTextView::cb_vbarChange);
   initScrollbar (hbar, fc::horizontal, this, &FTextView::cb_hbarChange);
-  const auto& wc = getFWidgetColors();
-  setForegroundColor (wc.dialog_fg);
-  setBackgroundColor (wc.dialog_bg);
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->dialog_fg);
+  setBackgroundColor (wc->dialog_bg);
   nf_offset = FTerm::isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);

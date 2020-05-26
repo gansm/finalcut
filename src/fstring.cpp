@@ -45,21 +45,21 @@ const wchar_t FString::const_null_char{L'\0'};
 FString::FString (int len)
 {
   if ( len > 0 )
-    initLength(std::size_t(len));
+    _initLength(std::size_t(len));
   else
-    initLength(0);
+    _initLength(0);
 }
 
 //----------------------------------------------------------------------
 FString::FString (std::size_t len)
 {
-  initLength(len);
+  _initLength(len);
 }
 
 //----------------------------------------------------------------------
 FString::FString (std::size_t len, wchar_t c)
 {
-  initLength(len);
+  _initLength(len);
   const wchar_t* ps = string;
   wchar_t* pe = string + len;
 
@@ -106,7 +106,7 @@ FString::FString (const std::string& s)
 {
   if ( ! s.empty() )
   {
-    const wchar_t* wc_string = c_to_wc_str(s.c_str());
+    const wchar_t* wc_string = _to_wcstring(s.c_str());
     _assign(wc_string);
     delete[] wc_string;
   }
@@ -117,7 +117,7 @@ FString::FString (const char s[])
 {
   if ( s )
   {
-    const wchar_t* wc_string = c_to_wc_str(s);
+    const wchar_t* wc_string = _to_wcstring(s);
     _assign( wc_string );
     delete[] wc_string;
   }
@@ -421,9 +421,9 @@ const char* FString::c_str() const
   // Returns a constant c-string
 
   if ( length > 0 )
-    return wc_to_c_str (string);
+    return _to_cstring(string);
   else if ( string )
-    return const_cast<const char*>("");
+    return "";
   else
     return nullptr;
 }
@@ -434,7 +434,7 @@ char* FString::c_str()
   // Returns a c-string
 
   if ( length > 0 )
-    return wc_to_c_str (string);
+    return const_cast<char*>(_to_cstring(string));
   else if ( string )
     return const_cast<char*>("");
   else
@@ -781,12 +781,12 @@ FStringList FString::split (const FString& delimiter)
     return string_list;
 
   wchar_t* rest{nullptr};
-  const wchar_t* token = extractToken(&rest, s.string, delimiter.wc_str());
+  const wchar_t* token = _extractToken(&rest, s.string, delimiter.wc_str());
 
   while ( token )
   {
     string_list.push_back (FString{token});
-    token = extractToken (&rest, nullptr, delimiter.wc_str());
+    token = _extractToken (&rest, nullptr, delimiter.wc_str());
   }
 
   return string_list;
@@ -1241,7 +1241,7 @@ bool FString::includes (const FString& s) const
 
 // private methods of FString
 //----------------------------------------------------------------------
-inline void FString::initLength (std::size_t len)
+inline void FString::_initLength (std::size_t len)
 {
   if ( len == 0 )
     return;
@@ -1426,7 +1426,7 @@ void FString::_remove (std::size_t pos, std::size_t len)
 }
 
 //----------------------------------------------------------------------
-inline char* FString::wc_to_c_str (const wchar_t s[]) const
+inline const char* FString::_to_cstring (const wchar_t s[]) const
 {
   if ( ! s )  // handle NULL string
     return nullptr;
@@ -1476,14 +1476,14 @@ inline char* FString::wc_to_c_str (const wchar_t s[]) const
   {
     delete[](c_string);
     c_string = nullptr;
-    return const_cast<char*>("");
+    return "";
   }
 
   return c_string;
 }
 
 //----------------------------------------------------------------------
-inline wchar_t* FString::c_to_wc_str (const char s[]) const
+inline const wchar_t* FString::_to_wcstring (const char s[]) const
 {
   if ( ! s )   // handle NULL string
     return nullptr;
@@ -1548,9 +1548,9 @@ inline wchar_t* FString::c_to_wc_str (const char s[]) const
 }
 
 //----------------------------------------------------------------------
-inline wchar_t* FString::extractToken ( wchar_t* rest[]
-                                      , const wchar_t s[]
-                                      , const wchar_t delim[] )
+inline const wchar_t* FString::_extractToken ( wchar_t* rest[]
+                                             , const wchar_t s[]
+                                             , const wchar_t delim[] )
 {
   wchar_t* token = ( s ) ? const_cast<wchar_t*>(s) : *rest;
 
@@ -1663,12 +1663,12 @@ std::ostream& operator << (std::ostream& outstr, const FString& s)
 
   if ( s.length > 0 )
   {
-    outstr << s.wc_to_c_str(s.string);
+    outstr << s._to_cstring(s.string);
   }
   else if ( width > 0 )
   {
     const FString fill_str{width, wchar_t(outstr.fill())};
-    outstr << s.wc_to_c_str(fill_str.string);
+    outstr << s._to_cstring(fill_str.string);
   }
 
   return outstr;
@@ -1679,7 +1679,7 @@ std::istream& operator >> (std::istream& instr, FString& s)
 {
   char buf[FString::INPBUFFER + 1]{};
   instr.getline (buf, FString::INPBUFFER);
-  const wchar_t* wc_str = s.c_to_wc_str(buf);
+  const wchar_t* wc_str = s._to_wcstring(buf);
 
   if ( wc_str )
   {

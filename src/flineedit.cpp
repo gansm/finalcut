@@ -99,26 +99,26 @@ const FLineEdit& FLineEdit::operator >> (FString& s)
 //----------------------------------------------------------------------
 bool FLineEdit::setEnable (bool enable)
 {
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
   FWidget::setEnable(enable);
 
   if ( enable )
   {
     if ( hasFocus() )
     {
-      setForegroundColor (wc.inputfield_active_focus_fg);
-      setBackgroundColor (wc.inputfield_active_focus_bg);
+      setForegroundColor (wc->inputfield_active_focus_fg);
+      setBackgroundColor (wc->inputfield_active_focus_bg);
     }
     else
     {
-      setForegroundColor (wc.inputfield_active_fg);
-      setBackgroundColor (wc.inputfield_active_bg);
+      setForegroundColor (wc->inputfield_active_fg);
+      setBackgroundColor (wc->inputfield_active_bg);
     }
   }
   else
   {
-    setForegroundColor (wc.inputfield_inactive_fg);
-    setBackgroundColor (wc.inputfield_inactive_bg);
+    setForegroundColor (wc->inputfield_inactive_fg);
+    setBackgroundColor (wc->inputfield_inactive_bg);
   }
 
   return enable;
@@ -131,17 +131,17 @@ bool FLineEdit::setFocus (bool enable)
 
   if ( isEnabled() )
   {
-    const auto& wc = getFWidgetColors();
+    const auto& wc = getColorTheme();
 
     if ( enable )
     {
-      setForegroundColor (wc.inputfield_active_focus_fg);
-      setBackgroundColor (wc.inputfield_active_focus_bg);
+      setForegroundColor (wc->inputfield_active_focus_fg);
+      setBackgroundColor (wc->inputfield_active_focus_bg);
     }
     else
     {
-      setForegroundColor (wc.inputfield_active_fg);
-      setBackgroundColor (wc.inputfield_active_bg);
+      setForegroundColor (wc->inputfield_active_fg);
+      setBackgroundColor (wc->inputfield_active_bg);
     }
   }
 
@@ -655,7 +655,7 @@ void FLineEdit::adjustSize()
 //----------------------------------------------------------------------
 void FLineEdit::init()
 {
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
   label->setAccelWidget(this);
 
   if ( isReadOnly() )
@@ -669,19 +669,19 @@ void FLineEdit::init()
   {
     if ( hasFocus() )
     {
-      setForegroundColor (wc.inputfield_active_focus_fg);
-      setBackgroundColor (wc.inputfield_active_focus_bg);
+      setForegroundColor (wc->inputfield_active_focus_fg);
+      setBackgroundColor (wc->inputfield_active_focus_bg);
     }
     else
     {
-      setForegroundColor (wc.inputfield_active_fg);
-      setBackgroundColor (wc.inputfield_active_bg);
+      setForegroundColor (wc->inputfield_active_fg);
+      setBackgroundColor (wc->inputfield_active_bg);
     }
   }
   else  // inactive
   {
-    setForegroundColor (wc.inputfield_inactive_fg);
-    setBackgroundColor (wc.inputfield_inactive_bg);
+    setForegroundColor (wc->inputfield_inactive_fg);
+    setBackgroundColor (wc->inputfield_inactive_bg);
   }
 }
 

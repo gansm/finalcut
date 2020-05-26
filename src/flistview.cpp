@@ -1523,9 +1523,9 @@ void FListView::init()
   root = selflist.begin();
   getNullIterator() = selflist.end();
   setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
-  const auto& wc = getFWidgetColors();
-  setForegroundColor (wc.dialog_fg);
-  setBackgroundColor (wc.dialog_bg);
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->dialog_fg);
+  setBackgroundColor (wc->dialog_bg);
   nf_offset = FTerm::isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);
@@ -1876,8 +1876,8 @@ void FListView::clearList()
 {
   // Clear list from terminal screen
 
-  const auto& wc = getFWidgetColors();
-  setColor (wc.list_fg, wc.list_bg);
+  const auto& wc = getColorTheme();
+  setColor (wc->list_fg, wc->list_bg);
   const std::size_t size = getWidth() - 2;
   drawBorder();
   drawHeadlines();
@@ -1897,8 +1897,8 @@ void FListView::clearList()
 inline void FListView::setLineAttributes ( bool is_current
                                          , bool is_focus )
 {
-  const auto& wc = getFWidgetColors();
-  setColor (wc.list_fg, wc.list_bg);
+  const auto& wc = getColorTheme();
+  setColor (wc->list_fg, wc->list_bg);
 
   if ( is_current )
   {
@@ -1910,12 +1910,12 @@ inline void FListView::setLineAttributes ( bool is_current
 
     if ( is_focus )
     {
-      setColor ( wc.current_element_focus_fg
-               , wc.current_element_focus_bg );
+      setColor ( wc->current_element_focus_fg
+               , wc->current_element_focus_bg );
     }
     else
-      setColor ( wc.current_element_fg
-               , wc.current_element_bg );
+      setColor ( wc->current_element_fg
+               , wc->current_element_bg );
 
     if ( FTerm::isMonochron() )
       setReverse(false);
@@ -2039,12 +2039,12 @@ void FListView::drawHeadlineLabel (const headerItems::const_iterator& iter)
   const headerItems::const_iterator first = header.begin();
   const int column = int(std::distance(first, iter)) + 1;
   const bool has_sort_indicator( sort_column == column && ! hide_sort_indicator );
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   if ( isEnabled() )
-    setColor (wc.label_emphasis_fg, wc.label_bg);
+    setColor (wc->label_emphasis_fg, wc->label_bg);
   else
-    setColor (wc.label_inactive_fg, wc.label_inactive_bg);
+    setColor (wc->label_inactive_fg, wc->label_inactive_bg);
 
   if ( has_sort_indicator && column_width >= column_max - 1 && column_width > 1 )
   {
@@ -2169,11 +2169,11 @@ void FListView::drawColumnEllipsis ( const headerItems::const_iterator& iter
   // Print label ellipsis
   static constexpr int ellipsis_length = 2;
   const int width = iter->width;
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   headerline << ' '
              << getColumnSubString (text, 1, uInt(width - ellipsis_length))
-             << FColorPair {wc.label_ellipsis_fg, wc.label_bg}
+             << FColorPair {wc->label_ellipsis_fg, wc->label_bg}
              << "..";
 
   if ( iter == header.end() - 1 )  // Last element

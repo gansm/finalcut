@@ -326,26 +326,26 @@ void FSpinBox::init()
 //----------------------------------------------------------------------
 void FSpinBox::draw()
 {
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   const FColorPair inc_button_color = [this, &wc] ()
   {
     if ( value == max )
-      return FColorPair { wc.scrollbar_button_inactive_fg
-                        , wc.scrollbar_button_inactive_bg };
+      return FColorPair { wc->scrollbar_button_inactive_fg
+                        , wc->scrollbar_button_inactive_bg };
     else
-      return FColorPair { wc.scrollbar_button_fg
-                        , wc.scrollbar_button_bg };
+      return FColorPair { wc->scrollbar_button_fg
+                        , wc->scrollbar_button_bg };
   }();
 
   const FColorPair dec_button_color = [this, &wc] ()
   {
     if ( value == min )
-      return FColorPair { wc.scrollbar_button_inactive_fg
-                        , wc.scrollbar_button_inactive_bg };
+      return FColorPair { wc->scrollbar_button_inactive_fg
+                        , wc->scrollbar_button_inactive_bg };
     else
-      return FColorPair { wc.scrollbar_button_fg
-                        , wc.scrollbar_button_bg };
+      return FColorPair { wc->scrollbar_button_fg
+                        , wc->scrollbar_button_bg };
   }();
 
   print() << FPoint{int(getWidth()) - 1, 1}

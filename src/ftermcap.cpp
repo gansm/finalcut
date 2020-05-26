@@ -132,15 +132,17 @@ void FTermcap::termcapError (int status)
   {
     const char* termtype = fterm_data->getTermType();
     log << FLog::Error
-        << "Unknown terminal: "  << termtype << "\n"
-        << "Check the TERM environment variable\n"
-        << "Also make sure that the terminal\n"
-        << "is defined in the termcap/terminfo database.\n";
+        << "Unknown terminal: \""  << termtype << "\". "
+        << "Check the TERM environment variable. "
+        << "Also make sure that the terminal "
+        << "is defined in the termcap/terminfo database."
+        << std::endl;
     std::abort();
   }
   else if ( status == db_not_found )
   {
-    log << "The termcap/terminfo database could not be found.\n";
+    log << "The termcap/terminfo database could not be found."
+        << std::endl;
     std::abort();
   }
 }

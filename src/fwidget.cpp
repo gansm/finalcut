@@ -48,7 +48,6 @@ FWidget::FWidgetList* FWidget::window_list{nullptr};
 FWidget::FWidgetList* FWidget::dialog_list{nullptr};
 FWidget::FWidgetList* FWidget::always_on_top_list{nullptr};
 FWidget::FWidgetList* FWidget::close_widget{nullptr};
-FWidgetColors         FWidget::wcolors{};
 bool                  FWidget::init_desktop{false};
 bool                  FWidget::hideable{false};
 uInt                  FWidget::modal_dialog_counter{};
@@ -939,7 +938,8 @@ void FWidget::redraw()
   {
     startTerminalUpdate();
     // clean desktop
-    setColor (wcolors.term_fg, wcolors.term_bg);
+    auto color_theme = getColorTheme();
+    setColor (color_theme->term_fg, color_theme->term_bg);
     clearArea (getVirtualDesktop());
   }
   else if ( ! isShown() )
@@ -1370,8 +1370,9 @@ void FWidget::hideArea (const FSize& size)
   }
   else
   {
-    fg = wcolors.dialog_fg;
-    bg = wcolors.dialog_bg;
+    auto color_theme = getColorTheme();
+    fg = color_theme->dialog_fg;
+    bg = color_theme->dialog_bg;
   }
 
   setColor (fg, bg);
@@ -1708,11 +1709,12 @@ void FWidget::initRootWidget()
   double_flatline_mask.left.resize (getHeight(), false);
 
   // Initialize default widget colors
-  setColorTheme();
+  initColorTheme();
 
   // Default foreground and background color of the desktop/terminal
-  foreground_color = wcolors.term_fg;
-  background_color = wcolors.term_bg;
+  auto color_theme = getColorTheme();
+  foreground_color = color_theme->term_fg;
+  background_color = color_theme->term_bg;
   init_desktop = false;
 }
 
@@ -1742,6 +1744,8 @@ void FWidget::finish()
     delete window_list;
     window_list = nullptr;
   }
+
+  destroyColorTheme();
 }
 
 //----------------------------------------------------------------------
@@ -1984,14 +1988,21 @@ void FWidget::drawChildren()
 }
 
 //----------------------------------------------------------------------
-void FWidget::setColorTheme()
+void FWidget::initColorTheme()
 {
   // Sets the default color theme
 
   if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
-    wcolors.set8ColorTheme();
+    setColorTheme<default8ColorTheme>();
   else
-    wcolors.set16ColorTheme();
+    setColorTheme<default16ColorTheme>();
+}
+
+//----------------------------------------------------------------------
+void FWidget::destroyColorTheme()
+{
+  FWidgetColorsPtr* theme = &(getColorTheme());
+  delete theme;
 }
 
 //----------------------------------------------------------------------
