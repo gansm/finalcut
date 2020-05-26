@@ -1,6 +1,8 @@
 2020-05-26  Markus Gans  <guru.mail@muenster.de>
 	* FWidgetColors now uses polymorphism, so you can now easily 
 	  create your own widget color theme
+	* FApplication has got the new virtual method processExternalUserEvent() 
+	  for user code
 
 2020-05-24  Markus Gans  <guru.mail@muenster.de>
 	* New class FStringStream implements input and output operations 

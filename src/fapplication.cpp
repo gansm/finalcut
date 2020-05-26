@@ -263,6 +263,12 @@ bool FApplication::removeQueuedEvent (const FObject* receiver)
 }
 
 //----------------------------------------------------------------------
+void FApplication::processExternalUserEvent()
+{
+  // This method can be overloaded and replaced by own code
+}
+
+//----------------------------------------------------------------------
 FWidget* FApplication::processParameters (const int& argc, char* argv[])
 {
   if ( argc > 0 && argv[1] && ( std::strcmp(argv[1], "--help") == 0
@@ -1154,6 +1160,7 @@ bool FApplication::processNextEvent()
   processTerminalUpdate();
   processCloseWidget();
   processLogger();
+  processExternalUserEvent();
 
   sendQueuedEvents();
   num_events += processTimerEvent();

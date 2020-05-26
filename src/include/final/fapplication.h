@@ -129,6 +129,7 @@ class FApplication : public FWidget
     void                  sendQueuedEvents();
     bool                  eventInQueue();
     bool                  removeQueuedEvent (const FObject*);
+    virtual void          processExternalUserEvent();
     static FWidget*       processParameters (const int&, char*[]);
     static void           showParameterUsage ()
     #if defined(__clang__) || defined(__GNUC__)
