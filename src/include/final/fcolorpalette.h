@@ -46,27 +46,30 @@ namespace finalcut
 // class FColorPalette
 //----------------------------------------------------------------------
 
-class FColorPalette final
+class FColorPalette
 {
   public:
+    // Typedef
+    typedef std::function<void(FColor, int, int, int)> FSetPalette;
+
     // Constructor
-    FColorPalette() = default;
+    FColorPalette(FSetPalette);
 
     // Destructor
-    ~FColorPalette();
+    virtual ~FColorPalette();
 
     // Accessor
-    const FString getClassName() const;
+    virtual const FString getClassName() const;
 
     // Methods
-    template<typename funcT>
-    static void set8ColorPalette (funcT);
-    template<typename funcT>
-    static void set16ColorPalette (funcT);
-    template<typename funcT>
-    static void reset8ColorPalette (funcT);
-    template<typename funcT>
-    static void reset16ColorPalette (funcT);
+    virtual void setColorPalette() = 0;
+    virtual void resetColorPalette() = 0;
+
+  protected:
+    void setPalette (FColor, int, int, int);
+
+    // Data members
+    FSetPalette set_palette;
 };
 
 // FColorPalette inline functions
@@ -74,85 +77,85 @@ class FColorPalette final
 inline const FString FColorPalette::getClassName() const
 { return "FColorPalette"; }
 
-// constructors and destructor
-//----------------------------------------------------------------------
-inline FColorPalette::~FColorPalette()  // destructor
-{ }
 
-// public methods of FColorPalette
-//----------------------------------------------------------------------
-template<typename funcT>
-void FColorPalette::set8ColorPalette (funcT set_palette)
-{
-  set_palette (fc::Black, 0x00, 0x00, 0x00);
-  set_palette (fc::Blue, 0x10, 0x3b, 0x9e);
-  set_palette (fc::Green, 0x18, 0x78, 0x18);
-  set_palette (fc::Cyan, 0xa0, 0xb2, 0xb2);
-  set_palette (fc::Red, 0xb2, 0x18, 0x18);
-  set_palette (fc::Magenta, 0xb2, 0x18, 0xb2);
-  set_palette (fc::Brown, 0xe8, 0x87, 0x1f);
-  set_palette (fc::LightGray, 0xe0, 0xe0, 0xe0);
-  // The same colors again...
-  set_palette (fc::DarkGray, 0x00, 0x00, 0x00);
-  set_palette (fc::LightBlue, 0x10, 0x3b, 0x9e);
-  set_palette (fc::LightGreen, 0x18, 0x78, 0x18);
-  set_palette (fc::Cyan, 0xa0, 0xb2, 0xb2);
-  set_palette (fc::LightRed, 0xb2, 0x18, 0x18);
-  set_palette (fc::LightMagenta, 0xb2, 0x18, 0xb2);
-  set_palette (fc::Yellow, 0xe8, 0x87, 0x1f);
-  set_palette (fc::White, 0xe0, 0xe0, 0xe0);
-}
+/*  Inheritance diagram
+ *  ═══════════════════
+ *
+ *      ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *      ▕ FColorPalette ▏
+ *      ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *              ▲
+ *              │
+ *  ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *  ▕ default8ColorPalette ▏
+ *  ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ */
 
 //----------------------------------------------------------------------
-template<typename funcT>
-void FColorPalette::set16ColorPalette (funcT set_palette)
+// class default8ColorPalette
+//----------------------------------------------------------------------
+
+class default8ColorPalette final : public FColorPalette
 {
-  set_palette (fc::Black, 0x00, 0x00, 0x00);
-  set_palette (fc::Blue, 0x10, 0x3b, 0x9e);
-  set_palette (fc::Green, 0x18, 0x78, 0x18);
-  set_palette (fc::Cyan, 0x55, 0x6a, 0xcf);
-  set_palette (fc::Red, 0xba, 0x1a, 0x1a);
-  set_palette (fc::Magenta, 0xb2, 0x18, 0xb2);
-  set_palette (fc::Brown, 0xe8, 0x87, 0x1f);
-  set_palette (fc::LightGray, 0xbc, 0xbc, 0xbc);
-  set_palette (fc::DarkGray, 0x50, 0x50, 0x50);
-  set_palette (fc::LightBlue, 0x80, 0xa4, 0xec);
-  set_palette (fc::LightGreen, 0x5e, 0xeb, 0x5c);
-  set_palette (fc::LightCyan, 0x62, 0xbf, 0xf8);
-  set_palette (fc::LightRed, 0xee, 0x44, 0x44);
-  set_palette (fc::LightMagenta, 0xe9, 0xad, 0xff);
-  set_palette (fc::Yellow, 0xfb, 0xe8, 0x67);
-  set_palette (fc::White, 0xff, 0xff, 0xff);
-}
+  public:
+    // Constructor
+    default8ColorPalette (FSetPalette);
+
+    // Destructor
+    ~default8ColorPalette();
+
+    // Accessor
+    virtual const FString getClassName() const;
+
+    // Methods
+    void setColorPalette();
+    void resetColorPalette();
+};
+
+// default8ColorPalette inline functions
+//----------------------------------------------------------------------
+inline const FString default8ColorPalette::getClassName() const
+{ return "default8ColorPalette"; }
+
+
+/*  Inheritance diagram
+ *  ═══════════════════
+ *
+ *      ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *      ▕ FColorPalette ▏
+ *      ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *              ▲
+ *              │
+ *  ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *  ▕ default16ColorPalette ▏
+ *  ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ */
 
 //----------------------------------------------------------------------
-template<typename funcT>
-void FColorPalette::reset8ColorPalette (funcT set_palette)
-{
-  reset16ColorPalette(set_palette);
-}
-
+// class default16ColorPalette
 //----------------------------------------------------------------------
-template<typename funcT>
-void FColorPalette::reset16ColorPalette (funcT set_palette)
+
+class default16ColorPalette final : public FColorPalette
 {
-  set_palette (fc::Black, 0x00, 0x00, 0x00);
-  set_palette (fc::Blue, 0x00, 0x00, 0xaa);
-  set_palette (fc::Green, 0x00, 0xaa, 0x00);
-  set_palette (fc::Cyan, 0x00, 0x55, 0xaa);
-  set_palette (fc::Red, 0xaa, 0x00, 0x00);
-  set_palette (fc::Magenta, 0xaa, 0x00, 0xaa);
-  set_palette (fc::Brown, 0xaa, 0xaa, 0x00);
-  set_palette (fc::LightGray, 0xaa, 0xaa, 0xaa);
-  set_palette (fc::DarkGray, 0x55, 0x55, 0x55);
-  set_palette (fc::LightBlue, 0x55, 0x55, 0xff);
-  set_palette (fc::LightGreen, 0x55, 0xff, 0x55);
-  set_palette (fc::LightCyan, 0x55, 0xff, 0xff);
-  set_palette (fc::LightRed, 0xff, 0x55, 0x55);
-  set_palette (fc::LightMagenta, 0xff, 0x55, 0xff);
-  set_palette (fc::Yellow, 0xff, 0xff, 0x55);
-  set_palette (fc::White, 0xff, 0xff, 0xff);
-}
+  public:
+    // Constructor
+    default16ColorPalette (FSetPalette);
+
+    // Destructor
+    ~default16ColorPalette();
+
+    // Accessor
+    virtual const FString getClassName() const;
+
+    // Methods
+    void setColorPalette();
+    void resetColorPalette();
+};
+
+// default16ColorPalette inline functions
+//----------------------------------------------------------------------
+inline const FString default16ColorPalette::getClassName() const
+{ return "default16ColorPalette"; }
 
 }  // namespace finalcut
 

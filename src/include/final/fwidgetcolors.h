@@ -146,6 +146,19 @@ class FWidgetColors
 };
 
 
+/*  Inheritance diagram
+ *  ═══════════════════
+ *
+ *    ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *    ▕ FWidgetColors ▏
+ *    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *            ▲
+ *            │
+ *  ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *  ▕ default8ColorTheme ▏
+ *  ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ */
+
 //----------------------------------------------------------------------
 // class default8ColorTheme
 //----------------------------------------------------------------------
@@ -157,12 +170,25 @@ class default8ColorTheme final : public FWidgetColors
     default8ColorTheme();
 
     // Destructor
-    virtual ~default8ColorTheme() override;
+    ~default8ColorTheme() override;
 
     // Method
     void setColorTheme() override;
 };
 
+
+/*  Inheritance diagram
+ *  ═══════════════════
+ *
+ *     ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *     ▕ FWidgetColors ▏
+ *     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *             ▲
+ *             │
+ *  ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *  ▕ default16ColorTheme ▏
+ *  ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ */
 
 //----------------------------------------------------------------------
 // class default16ColorTheme
@@ -175,7 +201,7 @@ class default16ColorTheme final : public FWidgetColors
     default16ColorTheme();
 
     // Destructor
-    virtual ~default16ColorTheme() override;
+    ~default16ColorTheme() override;
 
     // Method
     void setColorTheme() override;

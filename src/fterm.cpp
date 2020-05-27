@@ -28,7 +28,6 @@
 #include "final/fapplication.h"
 #include "final/fc.h"
 #include "final/fcharmap.h"
-#include "final/fcolorpalette.h"
 #include "final/fkey_map.h"
 #include "final/fkeyboard.h"
 #include "final/flog.h"
@@ -179,6 +178,13 @@ int FTerm::getTabstop()
 int FTerm::getMaxColor()
 {
   return FTermcap::max_color;
+}
+
+//----------------------------------------------------------------------
+FTerm::FColorPalettePtr& FTerm::getColorPaletteTheme()
+{
+  static FColorPalettePtr* color_theme = new FColorPalettePtr();
+  return *color_theme;
 }
 
 //----------------------------------------------------------------------
@@ -1883,9 +1889,11 @@ void FTerm::redefineColorPalette()
   saveColorMap();
 
   if ( getMaxColor() >= 16 )
-    FColorPalette::set16ColorPalette (FTerm::setPalette);
+    setColorPaletteTheme<default16ColorPalette>(&FTerm::setPalette);
   else  // 8 colors
-    FColorPalette::set8ColorPalette (FTerm::setPalette);
+    setColorPaletteTheme<default8ColorPalette>(&FTerm::setPalette);
+
+  getColorPaletteTheme()->setColorPalette();
 }
 
 //----------------------------------------------------------------------
@@ -1895,11 +1903,7 @@ void FTerm::restoreColorPalette()
     return;
 
   // Reset screen settings
-  if ( getMaxColor() >= 16 )
-    FColorPalette::reset16ColorPalette (FTerm::setPalette);
-  else  // 8 colors
-    FColorPalette::reset8ColorPalette (FTerm::setPalette);
-
+  getColorPaletteTheme()->resetColorPalette();
   getFTermXTerminal()->resetColorMap();
   resetColorMap();
 }
@@ -2496,6 +2500,13 @@ void FTerm::finish_encoding()
   if ( isLinuxTerm() && data->hasUTF8Console() )
     setUTF8(true);
 #endif
+}
+
+//----------------------------------------------------------------------
+void FTerm::destroyColorPaletteTheme()
+{
+  const FColorPalettePtr* theme = &(getColorPaletteTheme());
+  delete theme;
 }
 
 //----------------------------------------------------------------------

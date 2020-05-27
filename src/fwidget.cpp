@@ -2001,7 +2001,7 @@ void FWidget::initColorTheme()
 //----------------------------------------------------------------------
 void FWidget::destroyColorTheme()
 {
-  FWidgetColorsPtr* theme = &(getColorTheme());
+  const FWidgetColorsPtr* theme = &(getColorTheme());
   delete theme;
 }
 
