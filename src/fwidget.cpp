@@ -26,6 +26,7 @@
 #include "final/fevent.h"
 #include "final/flog.h"
 #include "final/fmenubar.h"
+#include "final/fstartoptions.h"
 #include "final/fstatusbar.h"
 #include "final/fstring.h"
 #include "final/ftermdata.h"
@@ -1992,10 +1993,20 @@ void FWidget::initColorTheme()
 {
   // Sets the default color theme
 
-  if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
-    setColorTheme<default8ColorTheme>();
+  if ( FStartOptions::getFStartOptions().dark_theme )
+  {
+    if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
+      setColorTheme<default8ColorDarkTheme>();
+    else
+      setColorTheme<default16ColorDarkTheme>();
+  }
   else
-    setColorTheme<default16ColorTheme>();
+  {
+    if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
+      setColorTheme<default8ColorTheme>();
+    else
+      setColorTheme<default16ColorTheme>();
+  }
 }
 
 //----------------------------------------------------------------------

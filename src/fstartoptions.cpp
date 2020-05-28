@@ -51,6 +51,7 @@ FStartOptions::FStartOptions()
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
   , meta_sends_escape{true}
 #endif
+  , dark_theme{false}
 { }
 
 //----------------------------------------------------------------------

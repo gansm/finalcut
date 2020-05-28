@@ -163,6 +163,7 @@ class FTerm final
     // Typedef
     typedef std::function<int(int)> defaultPutChar;
     typedef std::shared_ptr<FColorPalette> FColorPalettePtr;
+    typedef FColorPalette::FSetPalette FSetPalette;
 
     // Constructor
     explicit FTerm (bool = false);
@@ -276,7 +277,7 @@ class FTerm final
     static void              resetColorMap();
     static void              setPalette (FColor, int, int, int);
     template<typename ClassT>
-    static void              setColorPaletteTheme (FColorPalette::FSetPalette);
+    static void              setColorPaletteTheme (const FSetPalette&);
     static void              setBeep (int, int);
     static void              resetBeep();
     static void              beep();
@@ -440,7 +441,7 @@ inline bool FTerm::unsetUTF8()
 
 //----------------------------------------------------------------------
 template<typename ClassT>
-inline void FTerm::setColorPaletteTheme (FColorPalette::FSetPalette f)
+inline void FTerm::setColorPaletteTheme (const FSetPalette& f)
 {
   getColorPaletteTheme() = std::make_shared<ClassT>(f);
 }

@@ -627,7 +627,7 @@ void FStatusBar::drawKey (keyList::const_iterator iter)
 
     if ( FTerm::hasHalfBlockCharacter() )
     {
-      setColor (wc->statusbar_active_fg, wc->statusbar_active_bg);
+      setColor (wc->statusbar_bg, wc->statusbar_active_hotkey_bg);
       print (fc::LeftHalfBlock);  // ▐
     }
     else
@@ -674,6 +674,7 @@ void FStatusBar::drawActiveKey (keyList::const_iterator iter)
   {
     print (item->getText());
     x++;
+    setColor (wc->statusbar_bg, wc->statusbar_active_hotkey_bg);
     print (fc::RightHalfBlock);  // ▌
   }
   else

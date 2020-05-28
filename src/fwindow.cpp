@@ -882,7 +882,8 @@ void closeDropDown (FWidget* widget, const FPoint& mouse_position)
   if ( ! openmenu )
    return;
 
-  if ( openmenu->isInstanceOf("FMenu") )
+  if ( openmenu->isInstanceOf("FMenu")
+    || openmenu->isInstanceOf("FDialogListMenu") )
   {
     bool contains_menu_structure;
     auto menu = static_cast<FMenu*>(openmenu);

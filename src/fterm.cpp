@@ -1888,10 +1888,17 @@ void FTerm::redefineColorPalette()
   resetColorMap();
   saveColorMap();
 
-  if ( getMaxColor() >= 16 )
-    setColorPaletteTheme<default16ColorPalette>(&FTerm::setPalette);
-  else  // 8 colors
-    setColorPaletteTheme<default8ColorPalette>(&FTerm::setPalette);
+  if ( FStartOptions::getFStartOptions().dark_theme )
+  {
+    setColorPaletteTheme<default16DarkColorPalette>(&FTerm::setPalette);
+  }
+  else
+  {
+    if ( getMaxColor() >= 16 )
+      setColorPaletteTheme<default16ColorPalette>(&FTerm::setPalette);
+    else  // 8 colors
+      setColorPaletteTheme<default8ColorPalette>(&FTerm::setPalette);
+  }
 
   getColorPaletteTheme()->setColorPalette();
 }

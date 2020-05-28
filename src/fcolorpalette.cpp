@@ -31,7 +31,7 @@ namespace finalcut
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FColorPalette::FColorPalette (FSetPalette f)
+FColorPalette::FColorPalette (const FSetPalette& f)
   : set_palette{f}
 { }
 
@@ -47,6 +47,26 @@ void FColorPalette::setPalette (FColor index, int r, int g, int b)
   set_palette (index, r, g, b);
 }
 
+//----------------------------------------------------------------------
+void FColorPalette::setVGAdefaultPalette()
+{
+  setPalette (fc::Black, 0x00, 0x00, 0x00);
+  setPalette (fc::Blue, 0x00, 0x00, 0xaa);
+  setPalette (fc::Green, 0x00, 0xaa, 0x00);
+  setPalette (fc::Cyan, 0x00, 0x55, 0xaa);
+  setPalette (fc::Red, 0xaa, 0x00, 0x00);
+  setPalette (fc::Magenta, 0xaa, 0x00, 0xaa);
+  setPalette (fc::Brown, 0xaa, 0xaa, 0x00);
+  setPalette (fc::LightGray, 0xaa, 0xaa, 0xaa);
+  setPalette (fc::DarkGray, 0x55, 0x55, 0x55);
+  setPalette (fc::LightBlue, 0x55, 0x55, 0xff);
+  setPalette (fc::LightGreen, 0x55, 0xff, 0x55);
+  setPalette (fc::LightCyan, 0x55, 0xff, 0xff);
+  setPalette (fc::LightRed, 0xff, 0x55, 0x55);
+  setPalette (fc::LightMagenta, 0xff, 0x55, 0xff);
+  setPalette (fc::Yellow, 0xff, 0xff, 0x55);
+  setPalette (fc::White, 0xff, 0xff, 0xff);
+}
 
 //----------------------------------------------------------------------
 // class default8ColorPalette
@@ -54,7 +74,7 @@ void FColorPalette::setPalette (FColor index, int r, int g, int b)
 
 // constructors and destructor
 //----------------------------------------------------------------------
-default8ColorPalette::default8ColorPalette (FSetPalette f)
+default8ColorPalette::default8ColorPalette (const FSetPalette& f)
   : FColorPalette(f)
 { }
 
@@ -88,22 +108,7 @@ void default8ColorPalette::setColorPalette()
 //----------------------------------------------------------------------
 void default8ColorPalette::resetColorPalette()
 {
-  set_palette (fc::Black, 0x00, 0x00, 0x00);
-  set_palette (fc::Blue, 0x00, 0x00, 0xaa);
-  set_palette (fc::Green, 0x00, 0xaa, 0x00);
-  set_palette (fc::Cyan, 0x00, 0x55, 0xaa);
-  set_palette (fc::Red, 0xaa, 0x00, 0x00);
-  set_palette (fc::Magenta, 0xaa, 0x00, 0xaa);
-  set_palette (fc::Brown, 0xaa, 0xaa, 0x00);
-  set_palette (fc::LightGray, 0xaa, 0xaa, 0xaa);
-  set_palette (fc::DarkGray, 0x55, 0x55, 0x55);
-  set_palette (fc::LightBlue, 0x55, 0x55, 0xff);
-  set_palette (fc::LightGreen, 0x55, 0xff, 0x55);
-  set_palette (fc::LightCyan, 0x55, 0xff, 0xff);
-  set_palette (fc::LightRed, 0xff, 0x55, 0x55);
-  set_palette (fc::LightMagenta, 0xff, 0x55, 0xff);
-  set_palette (fc::Yellow, 0xff, 0xff, 0x55);
-  set_palette (fc::White, 0xff, 0xff, 0xff);
+  setVGAdefaultPalette();
 }
 
 
@@ -113,7 +118,7 @@ void default8ColorPalette::resetColorPalette()
 
 // constructors and destructor
 //----------------------------------------------------------------------
-default16ColorPalette::default16ColorPalette (FSetPalette f)
+default16ColorPalette::default16ColorPalette (const FSetPalette& f)
   : FColorPalette(f)
 { }
 
@@ -146,24 +151,51 @@ void default16ColorPalette::setColorPalette()
 //----------------------------------------------------------------------
 void default16ColorPalette::resetColorPalette()
 {
-  set_palette (fc::Black, 0x00, 0x00, 0x00);
-  set_palette (fc::Blue, 0x00, 0x00, 0xaa);
-  set_palette (fc::Green, 0x00, 0xaa, 0x00);
-  set_palette (fc::Cyan, 0x00, 0x55, 0xaa);
-  set_palette (fc::Red, 0xaa, 0x00, 0x00);
-  set_palette (fc::Magenta, 0xaa, 0x00, 0xaa);
-  set_palette (fc::Brown, 0xaa, 0xaa, 0x00);
-  set_palette (fc::LightGray, 0xaa, 0xaa, 0xaa);
-  set_palette (fc::DarkGray, 0x55, 0x55, 0x55);
-  set_palette (fc::LightBlue, 0x55, 0x55, 0xff);
-  set_palette (fc::LightGreen, 0x55, 0xff, 0x55);
-  set_palette (fc::LightCyan, 0x55, 0xff, 0xff);
-  set_palette (fc::LightRed, 0xff, 0x55, 0x55);
-  set_palette (fc::LightMagenta, 0xff, 0x55, 0xff);
-  set_palette (fc::Yellow, 0xff, 0xff, 0x55);
-  set_palette (fc::White, 0xff, 0xff, 0xff);
+  setVGAdefaultPalette();
 }
 
+
+//----------------------------------------------------------------------
+// class default16DarkColorPalette
+//----------------------------------------------------------------------
+
+// constructors and destructor
+//----------------------------------------------------------------------
+default16DarkColorPalette::default16DarkColorPalette (const FSetPalette& f)
+  : FColorPalette(f)
+{ }
+
+//----------------------------------------------------------------------
+default16DarkColorPalette::~default16DarkColorPalette()
+{ }
+
+// public methods of default8ColorPalette
+//----------------------------------------------------------------------
+void default16DarkColorPalette::setColorPalette()
+{
+  setPalette (fc::Black, 0x00, 0x00, 0x00);
+  setPalette (fc::Blue, 0x41, 0x58, 0xb3);
+  setPalette (fc::Green, 0x18, 0x78, 0x18);
+  setPalette (fc::Cyan, 0x4e, 0x66, 0x72);
+  setPalette (fc::Red, 0xba, 0x49, 0x49);
+  setPalette (fc::Magenta, 0xb2, 0x18, 0xb2);
+  setPalette (fc::Brown, 0xe8, 0x87, 0x1f);
+  setPalette (fc::LightGray, 0xd2, 0xd2, 0xd2);
+  setPalette (fc::DarkGray, 0x27, 0x33, 0x39);
+  setPalette (fc::LightBlue, 0xb0, 0xb0, 0xb8);
+  setPalette (fc::LightGreen, 0x5e, 0xeb, 0x5c);
+  setPalette (fc::LightCyan, 0x62, 0xbf, 0xf8);
+  setPalette (fc::LightRed, 0xdd, 0x51, 0x45);
+  setPalette (fc::LightMagenta, 0xe9, 0xad, 0xff);
+  setPalette (fc::Yellow, 0xfb, 0xe8, 0x67);
+  setPalette (fc::White, 0xff, 0xff, 0xff);
+}
+
+//----------------------------------------------------------------------
+void default16DarkColorPalette::resetColorPalette()
+{
+  setVGAdefaultPalette();
+}
 
 }  // namespace finalcut
 

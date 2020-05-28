@@ -207,6 +207,68 @@ class default16ColorTheme final : public FWidgetColors
     void setColorTheme() override;
 };
 
+
+/*  Inheritance diagram
+ *  ═══════════════════
+ *
+ *      ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *      ▕ FWidgetColors ▏
+ *      ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *              ▲
+ *              │
+ *  ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *  ▕ default8ColorDarkTheme ▏
+ *  ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ */
+
+//----------------------------------------------------------------------
+// class default8ColorDarkTheme
+//----------------------------------------------------------------------
+
+class default8ColorDarkTheme final : public FWidgetColors
+{
+  public:
+    // Constructor
+    default8ColorDarkTheme();
+
+    // Destructor
+    ~default8ColorDarkTheme() override;
+
+    // Method
+    void setColorTheme() override;
+};
+
+
+/*  Inheritance diagram
+ *  ═══════════════════
+ *
+ *       ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *       ▕ FWidgetColors ▏
+ *       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *               ▲
+ *               │
+ *  ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *  ▕ default16ColorDarkTheme ▏
+ *  ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ */
+
+//----------------------------------------------------------------------
+// class default16ColorDarkTheme
+//----------------------------------------------------------------------
+
+class default16ColorDarkTheme final : public FWidgetColors
+{
+  public:
+    // Constructor
+    default16ColorDarkTheme();
+
+    // Destructor
+    ~default16ColorDarkTheme() override;
+
+    // Method
+    void setColorTheme() override;
+};
+
 }  // namespace finalcut
 
 #endif  // FWIDGETCOLORS_H

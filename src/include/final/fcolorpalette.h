@@ -53,7 +53,7 @@ class FColorPalette
     typedef std::function<void(FColor, int, int, int)> FSetPalette;
 
     // Constructor
-    FColorPalette(FSetPalette);
+    explicit FColorPalette (const FSetPalette&);
 
     // Destructor
     virtual ~FColorPalette();
@@ -67,7 +67,9 @@ class FColorPalette
 
   protected:
     void setPalette (FColor, int, int, int);
+    void setVGAdefaultPalette();
 
+  private:
     // Data members
     FSetPalette set_palette;
 };
@@ -99,13 +101,13 @@ class default8ColorPalette final : public FColorPalette
 {
   public:
     // Constructor
-    default8ColorPalette (FSetPalette);
+    explicit default8ColorPalette (const FSetPalette&);
 
     // Destructor
     ~default8ColorPalette();
 
     // Accessor
-    virtual const FString getClassName() const;
+    const FString getClassName() const override;
 
     // Methods
     void setColorPalette();
@@ -139,13 +141,13 @@ class default16ColorPalette final : public FColorPalette
 {
   public:
     // Constructor
-    default16ColorPalette (FSetPalette);
+    explicit default16ColorPalette (const FSetPalette&);
 
     // Destructor
     ~default16ColorPalette();
 
     // Accessor
-    virtual const FString getClassName() const;
+    const FString getClassName() const override;
 
     // Methods
     void setColorPalette();
@@ -156,6 +158,33 @@ class default16ColorPalette final : public FColorPalette
 //----------------------------------------------------------------------
 inline const FString default16ColorPalette::getClassName() const
 { return "default16ColorPalette"; }
+
+
+//----------------------------------------------------------------------
+// class default16DarkColorPalette
+//----------------------------------------------------------------------
+
+class default16DarkColorPalette final : public FColorPalette
+{
+  public:
+    // Constructor
+    explicit default16DarkColorPalette (const FSetPalette&);
+
+    // Destructor
+    ~default16DarkColorPalette();
+
+    // Accessor
+    const FString getClassName() const override;
+
+    // Methods
+    void setColorPalette();
+    void resetColorPalette();
+};
+
+// default16ColorPalette inline functions
+//----------------------------------------------------------------------
+inline const FString default16DarkColorPalette::getClassName() const
+{ return "default16DarkColorPalette"; }
 
 }  // namespace finalcut
 

@@ -311,6 +311,8 @@ void FApplication::showParameterUsage()
     << "    Set the standard vga 8x16 font\n"
     << "  --newfont                 "
     << "    Enables the graphical font\n"
+    << "  --dark-theme              "
+    << "    Enables the dark theme\n"
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
     << "\n"
@@ -406,6 +408,7 @@ void FApplication::cmd_options (const int& argc, char* argv[])
       {"no-sgr-optimizer",         no_argument,       nullptr,  0 },
       {"vgafont",                  no_argument,       nullptr,  0 },
       {"newfont",                  no_argument,       nullptr,  0 },
+      {"dark-theme",               no_argument,       nullptr,  0 },
 
     #if defined(__FreeBSD__) || defined(__DragonFly__)
       {"no-esc-for-alt-meta",      no_argument,       nullptr,  0 },
@@ -469,6 +472,9 @@ void FApplication::cmd_options (const int& argc, char* argv[])
 
       if ( std::strcmp(long_options[idx].name, "newfont")  == 0 )
         getStartOptions().newfont = true;
+
+      if ( std::strcmp(long_options[idx].name, "dark-theme")  == 0 )
+        getStartOptions().dark_theme = true;
 
     #if defined(__FreeBSD__) || defined(__DragonFly__)
       if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta")  == 0 )

@@ -1,3 +1,6 @@
+2020-05-29  Markus Gans  <guru.mail@muenster.de>
+	* Adding a dark theme. Can be activated with the --dark-theme parameter.
+
 2020-05-28  Markus Gans  <guru.mail@muenster.de>
 	* FColorPalette now also uses polymorphism, so you can now 
 	  easily create your own color palette theme
