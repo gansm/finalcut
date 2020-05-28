@@ -110,8 +110,8 @@ class default8ColorPalette final : public FColorPalette
     const FString getClassName() const override;
 
     // Methods
-    void setColorPalette();
-    void resetColorPalette();
+    void setColorPalette() override;
+    void resetColorPalette() override;
 };
 
 // default8ColorPalette inline functions
@@ -150,8 +150,8 @@ class default16ColorPalette final : public FColorPalette
     const FString getClassName() const override;
 
     // Methods
-    void setColorPalette();
-    void resetColorPalette();
+    void setColorPalette() override;
+    void resetColorPalette() override;
 };
 
 // default16ColorPalette inline functions
@@ -177,8 +177,8 @@ class default16DarkColorPalette final : public FColorPalette
     const FString getClassName() const override;
 
     // Methods
-    void setColorPalette();
-    void resetColorPalette();
+    void setColorPalette() override;
+    void resetColorPalette() override;
 };
 
 // default16ColorPalette inline functions
