@@ -120,7 +120,7 @@ class FLineEdit : public FWidget
     void                setInputType (const inputType);
     void                setLabelOrientation (const label_o);
     void                setLabelAssociatedWidget (FWidget*);
-    void                resetColors();
+    void                resetColors() override;
     void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;

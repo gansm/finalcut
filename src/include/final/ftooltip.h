@@ -85,7 +85,7 @@ class FToolTip : public FWindow
 
     // Mutators
     void                setText (const FString&);
-    void                resetColors();
+    void                resetColors() override;
     bool                setBorder (bool);
     bool                setBorder();
     bool                unsetBorder();

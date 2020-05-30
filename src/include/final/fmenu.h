@@ -106,7 +106,7 @@ class FMenu : public FWindow, public FMenuList
     void                setStatusbarMessage (const FString&) override;
     void                setMenu (FMenu*);
     void                setText (const FString&);
-    void                resetColors();
+    void                resetColors() override;
 
     // Inquiries
     bool                isSelected() const;

@@ -88,7 +88,7 @@ class FButton : public FWidget
     void                setFocusBackgroundColor (FColor);
     void                setInactiveForegroundColor (FColor);
     void                setInactiveBackgroundColor (FColor);
-    void                resetColors();
+    void                resetColors() override;
     bool                setNoUnderline(bool);
     bool                setNoUnderline();
     bool                unsetNoUnderline();

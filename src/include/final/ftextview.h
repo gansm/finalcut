@@ -100,7 +100,7 @@ class FTextView : public FWidget
     void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
-    void                resetColors();
+    void                resetColors() override;
     void                setText (const FString&);
     void                scrollToX (int);
     void                scrollToY (int);

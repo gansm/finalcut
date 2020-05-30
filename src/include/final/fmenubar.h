@@ -86,7 +86,7 @@ class FMenuBar : public FWindow, public FMenuList
     const FString getClassName() const override;
 
     // Methods
-    void          resetColors();
+    void          resetColors() override;
     void          resetMenu();
     void          hide() override;
     void          adjustSize() override;

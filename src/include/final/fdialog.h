@@ -108,7 +108,7 @@ class FDialog : public FWindow
     bool                  setBorder (bool);
     bool                  setBorder();
     bool                  unsetBorder();
-    void                  resetColors();
+    void                  resetColors() override;
     virtual void          setText (const FString&);
 
     // Inquiries
