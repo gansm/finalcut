@@ -655,9 +655,6 @@ void FListBox::init()
   initScrollbar (vbar, fc::vertical, this, &FListBox::cb_vbarChange);
   initScrollbar (hbar, fc::horizontal, this, &FListBox::cb_hbarChange);
   setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
-  const auto& wc = getColorTheme();
-  setForegroundColor (wc->dialog_fg);
-  setBackgroundColor (wc->dialog_bg);
   nf_offset = FTerm::isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);
@@ -722,7 +719,8 @@ void FListBox::draw()
   if ( current < 1 )
     current = 1;
 
-  setColor();
+  useParentWidgetColor();
+
 
   if ( FTerm::isMonochron() )
     setReverse(true);

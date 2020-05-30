@@ -137,6 +137,15 @@ bool FDialog::setBorder (bool enable)
 }
 
 //----------------------------------------------------------------------
+void FDialog::resetColors()
+{
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->dialog_fg);
+  setBackgroundColor (wc->dialog_bg);
+  FWidget::resetColors();
+}
+
+//----------------------------------------------------------------------
 bool FDialog::setResizeable (bool enable)
 {
   FWindow::setResizeable (enable);
@@ -800,9 +809,7 @@ void FDialog::init()
   addDialog(this);
   setActiveWindow(this);
   setTransparentShadow();
-  const auto& wc = getColorTheme();
-  setForegroundColor (wc->dialog_fg);
-  setBackgroundColor (wc->dialog_bg);
+  resetColors();
   auto old_focus = FWidget::getFocusWidget();
 
   if ( old_focus )

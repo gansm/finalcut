@@ -444,6 +444,7 @@ template<typename ClassT>
 inline void FTerm::setColorPaletteTheme (const FSetPalette& f)
 {
   getColorPaletteTheme() = std::make_shared<ClassT>(f);
+  getColorPaletteTheme()->setColorPalette();
 }
 
 //----------------------------------------------------------------------

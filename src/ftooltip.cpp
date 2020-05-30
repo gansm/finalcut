@@ -74,6 +74,15 @@ void FToolTip::setText (const FString& txt)
 }
 
 //----------------------------------------------------------------------
+void FToolTip::resetColors()
+{
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->tooltip_fg);
+  setBackgroundColor (wc->tooltip_bg);
+  FWidget::resetColors();
+}
+
+//----------------------------------------------------------------------
 bool FToolTip::setBorder (bool enable)
 {
   setFlags().no_border = ! enable;
@@ -107,9 +116,7 @@ void FToolTip::init()
   // initialize geometry values
   setGeometry (FPoint{1, 1}, FSize{3, 3}, false);
   setMinimumSize (FSize{3, 3});
-  const auto& wc = getColorTheme();
-  setForegroundColor (wc->tooltip_fg);
-  setBackgroundColor (wc->tooltip_bg);
+  resetColors();
   calculateDimensions();
 }
 

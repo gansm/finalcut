@@ -56,6 +56,15 @@ FMenuBar::~FMenuBar()  // destructor
 
 // public methods of FMenuBar
 //----------------------------------------------------------------------
+void FMenuBar::resetColors()
+{
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->menu_active_fg);
+  setBackgroundColor (wc->menu_active_bg);
+  FWidget::resetColors();
+}
+
+//----------------------------------------------------------------------
 void FMenuBar::resetMenu()
 {
   unselectItem();
@@ -249,9 +258,7 @@ void FMenuBar::init()
 
   addAccelerator (fc::Fkey_f10);
   addAccelerator (fc::Fckey_space);
-  const auto& wc = getColorTheme();
-  setForegroundColor (wc->menu_active_fg);
-  setBackgroundColor (wc->menu_active_bg);
+  resetColors();
   unsetFocusable();
 }
 

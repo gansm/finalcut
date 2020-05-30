@@ -1882,13 +1882,13 @@ void FTerm::redefineColorPalette()
 {
   // Redefine the color palette
 
-  if ( ! canChangeColorPalette() )
+  if ( ! (canChangeColorPalette() && getStartOptions().color_change) )
     return;
 
   resetColorMap();
   saveColorMap();
 
-  if ( FStartOptions::getFStartOptions().dark_theme )
+  if ( getStartOptions().dark_theme )
   {
     setColorPaletteTheme<default16DarkColorPalette>(&FTerm::setPalette);
   }
@@ -1899,14 +1899,12 @@ void FTerm::redefineColorPalette()
     else  // 8 colors
       setColorPaletteTheme<default8ColorPalette>(&FTerm::setPalette);
   }
-
-  getColorPaletteTheme()->setColorPalette();
 }
 
 //----------------------------------------------------------------------
 void FTerm::restoreColorPalette()
 {
-  if ( ! canChangeColorPalette() )
+  if ( ! (canChangeColorPalette() && getStartOptions().color_change) )
     return;
 
   // Reset screen settings
@@ -2283,8 +2281,7 @@ void FTerm::init (bool disable_alt_screen)
   initTermspecifics();
 
   // Redefine the color palette
-  if ( getStartOptions().color_change )
-    redefineColorPalette();
+  redefineColorPalette();
 
   // Set 220 Hz beep (100 ms)
   setBeep(220, 100);
@@ -2447,8 +2444,7 @@ void FTerm::finish()
   getFTermXTerminal()->setCursorStyle (fc::steady_block);
 
   // Restore the color palette
-  if ( getStartOptions().color_change )
-    restoreColorPalette();
+  restoreColorPalette();
 
   // Switch to normal escape key mode
   disableApplicationEscKey();

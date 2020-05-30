@@ -512,7 +512,7 @@ inline void FScrollbar::drawVerticalBackgroundLine()
   if ( FTerm::isMonochron() || max_color < 16 )
     print (fc::MediumShade);  // ▒
   else if ( FTerm::isNewFont() )
-    print (fc::NF_rev_border_line_right);  // ⎹
+    print (fc::NF_rev_border_line_right);  //⎹
       else
     print (' ');
 }

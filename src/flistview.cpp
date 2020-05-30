@@ -1523,9 +1523,6 @@ void FListView::init()
   root = selflist.begin();
   getNullIterator() = selflist.end();
   setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
-  const auto& wc = getColorTheme();
-  setForegroundColor (wc->dialog_fg);
-  setBackgroundColor (wc->dialog_bg);
   nf_offset = FTerm::isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);
@@ -1637,7 +1634,7 @@ void FListView::draw()
   if ( current_iter.getPosition() < 1 )
     current_iter = itemlist.begin();
 
-  setColor();
+  useParentWidgetColor();
 
   if ( FTerm::isMonochron() )
     setReverse(true);

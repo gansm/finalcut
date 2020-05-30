@@ -246,20 +246,7 @@ void FLabel::cb_accelWidgetDestroyed (const FWidget*, const FDataPtr)
 //----------------------------------------------------------------------
 void FLabel::init()
 {
-  const auto& parent_widget = getParentWidget();
   unsetFocusable();
-
-  if ( parent_widget )
-  {
-    setForegroundColor (parent_widget->getForegroundColor());
-    setBackgroundColor (parent_widget->getBackgroundColor());
-  }
-  else
-  {
-    const auto& wc = getColorTheme();
-    setForegroundColor (wc->dialog_fg);
-    setBackgroundColor (wc->dialog_bg);
-  }
 }
 
 //----------------------------------------------------------------------
@@ -302,6 +289,8 @@ void FLabel::draw()
 {
   if ( text.isEmpty() )
     return;
+
+  useParentWidgetColor();
 
   if ( FTerm::isMonochron() )
   {

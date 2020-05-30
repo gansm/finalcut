@@ -148,20 +148,10 @@ void FProgressbar::draw()
 //----------------------------------------------------------------------
 void FProgressbar::drawProgressLabel()
 {
-  const auto& parent_widget = getParentWidget();
-
-  if ( parent_widget )
-    setColor ( parent_widget->getForegroundColor()
-             , parent_widget->getBackgroundColor() );
-  else
-  {
-    const auto& wc = getColorTheme();
-    setColor (wc->dialog_fg, wc->dialog_bg);
-  }
-
   if ( FTerm::isMonochron() )
     setReverse(true);
 
+  useParentWidgetColor();
   print() << FPoint{int(getWidth()) - 3, 0};
 
   if ( percentage > 100 )

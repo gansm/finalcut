@@ -112,6 +112,33 @@ void FToggleButton::setGeometry ( const FPoint& pos, const FSize& s
 }
 
 //----------------------------------------------------------------------
+void FToggleButton::resetColors()
+{
+  const auto& wc = getColorTheme();
+
+  if ( isEnabled() )  // active
+  {
+    if ( hasFocus() )
+    {
+      setForegroundColor (wc->toggle_button_active_focus_fg);
+      setBackgroundColor (wc->toggle_button_active_focus_bg);
+    }
+    else
+    {
+      setForegroundColor (wc->toggle_button_active_fg);
+      setBackgroundColor (wc->toggle_button_active_bg);
+    }
+  }
+  else  // inactive
+  {
+    setForegroundColor (wc->label_inactive_fg);
+    setBackgroundColor (wc->label_inactive_bg);
+  }
+
+  FWidget::resetColors();
+}
+
+//----------------------------------------------------------------------
 bool FToggleButton::setNoUnderline (bool enable)
 {
   return (flags.no_underline = enable);
@@ -497,26 +524,7 @@ void FToggleButton::setGroup (FButtonGroup* btngroup)
 void FToggleButton::init()
 {
   setGeometry (FPoint{1, 1}, FSize{4, 1}, false);  // initialize geometry values
-  const auto& wc = getColorTheme();
-
-  if ( isEnabled() )
-  {
-    if ( hasFocus() )
-    {
-      setForegroundColor (wc->toggle_button_active_focus_fg);
-      setBackgroundColor (wc->toggle_button_active_focus_bg);
-    }
-    else
-    {
-      setForegroundColor (wc->toggle_button_active_fg);
-      setBackgroundColor (wc->toggle_button_active_bg);
-    }
-  }
-  else  // inactive
-  {
-    setForegroundColor (wc->label_inactive_fg);
-    setBackgroundColor (wc->label_inactive_bg);
-  }
+  resetColors();
 }
 
 //----------------------------------------------------------------------

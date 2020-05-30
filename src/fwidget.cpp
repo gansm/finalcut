@@ -306,6 +306,42 @@ bool FWidget::setFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
+void FWidget::resetColors()
+{
+  if ( ! hasChildren() )
+    return;
+
+  for (auto&& child : getChildren())
+  {
+    if ( child->isWidget() )
+    {
+      auto widget = static_cast<FWidget*>(child);
+      widget->resetColors();
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+void FWidget::useParentWidgetColor()
+{
+  const auto& parent_widget = getParentWidget();
+
+  if ( parent_widget )
+  {
+    setForegroundColor (parent_widget->getForegroundColor());
+    setBackgroundColor (parent_widget->getBackgroundColor());
+  }
+  else  // Fallback
+  {
+    const auto& wc = getColorTheme();
+    setForegroundColor (wc->dialog_fg);
+    setBackgroundColor (wc->dialog_bg);
+  }
+
+  setColor();
+}
+
+//----------------------------------------------------------------------
 void FWidget::setColor()
 {
   // Changes colors to the widget default colors

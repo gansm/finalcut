@@ -283,6 +283,37 @@ FWidget* FApplication::processParameters (const int& argc, char* argv[])
 }
 
 //----------------------------------------------------------------------
+void FApplication::setDefaultTheme()
+{
+  if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
+  {
+    if ( getStartOptions().color_change )
+      FTerm::setColorPaletteTheme<default8ColorPalette>(&FTerm::setPalette);
+
+    setColorTheme<default8ColorTheme>();
+  }
+  else
+  {
+    if ( getStartOptions().color_change )
+      FTerm::setColorPaletteTheme<default16ColorPalette>(&FTerm::setPalette);
+
+    setColorTheme<default16ColorTheme>();
+  }
+}
+
+//----------------------------------------------------------------------
+void FApplication::setDarkTheme()
+{
+  if ( getStartOptions().color_change )
+    FTerm::setColorPaletteTheme<default16DarkColorPalette>(&FTerm::setPalette);
+
+  if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
+    setColorTheme<default8ColorDarkTheme>();
+  else
+    setColorTheme<default16ColorDarkTheme>();
+}
+
+//----------------------------------------------------------------------
 void FApplication::showParameterUsage()
 {
   std::cout \

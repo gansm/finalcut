@@ -86,6 +86,7 @@ class FToggleButton : public FWidget
     void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
+    void                resetColors();
     bool                setNoUnderline (bool);
     bool                setNoUnderline();
     bool                unsetNoUnderline();

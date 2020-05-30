@@ -1,3 +1,9 @@
+2020-05-30  Markus Gans  <guru.mail@muenster.de>
+	* With the two new methods FApplication::setDarkTheme() and 
+	  FApplication::setDefaultTheme() you can now change the theme 
+	  within an application. An example can be found in examples/ui 
+	  via the menu items "View" -> "Dark mode".
+
 2020-05-29  Markus Gans  <guru.mail@muenster.de>
 	* Adding a dark theme. Can be activated with the --dark-theme parameter.
 

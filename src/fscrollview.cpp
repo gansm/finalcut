@@ -294,6 +294,15 @@ bool FScrollView::setViewportPrint (bool enable)
 }
 
 //----------------------------------------------------------------------
+void FScrollView::resetColors()
+{
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->dialog_fg);
+  setBackgroundColor (wc->dialog_bg);
+  FWidget::resetColors();
+}
+
+//----------------------------------------------------------------------
 bool FScrollView::setBorder (bool enable)
 {
   return (setFlags().no_border = ! enable);
@@ -712,9 +721,7 @@ void FScrollView::init (const FWidget* parent)
   initScrollbar (vbar, fc::vertical, &FScrollView::cb_vbarChange);
   initScrollbar (hbar, fc::horizontal, &FScrollView::cb_hbarChange);
   mapKeyFunctions();
-  const auto& wc = getColorTheme();
-  setForegroundColor (wc->dialog_fg);
-  setBackgroundColor (wc->dialog_bg);
+  resetColors();
   setGeometry (FPoint{1, 1}, FSize{4, 4});
   setMinimumSize (FSize{4, 4});
   const int xoffset_end = int(getScrollWidth() - getViewportWidth());

@@ -205,6 +205,7 @@ class FStatusBar : public FWindow
     void                activateKey (int);
     void                deactivateKey (int);
     void                setMessage (const FString&);
+    void                resetColors();
 
     // Inquiries
     bool                isActivated (int) const;

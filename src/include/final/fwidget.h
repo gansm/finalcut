@@ -266,6 +266,8 @@ class FWidget : public FVTerm, public FObject
     bool                     acceptPadding();
     virtual void             setForegroundColor (FColor);
     virtual void             setBackgroundColor (FColor);
+    virtual void             resetColors();
+    void                     useParentWidgetColor();
     void                     setColor();
     FWidgetFlags&            setFlags();
     // Positioning and sizes mutators...

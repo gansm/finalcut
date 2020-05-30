@@ -442,9 +442,9 @@ void default16ColorDarkTheme::setColorTheme()
   titlebar_active_fg                = fc::White;
   titlebar_active_bg                = fc::DarkGray;
   titlebar_inactive_fg              = fc::DarkGray;
-  titlebar_inactive_bg              = fc::LightGray;
+  titlebar_inactive_bg              = fc::LightBlue;
   titlebar_button_fg                = fc::DarkGray;
-  titlebar_button_bg                = fc::LightGray;
+  titlebar_button_bg                = fc::LightBlue;
   titlebar_button_focus_fg          = fc::LightGray;
   titlebar_button_focus_bg          = fc::Black;
   menu_active_focus_fg              = fc::White;

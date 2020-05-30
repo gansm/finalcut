@@ -57,7 +57,7 @@ FStringStream::~FStringStream()  // destructor
 
 // public methods of FStringStream
 //----------------------------------------------------------------------
-FStringStream& FStringStream::operator = (FStringStream&& sstream)
+FStringStream& FStringStream::operator = (FStringStream&& sstream) noexcept
 {
   std::wiostream::operator = (std::move(sstream));
   buffer = std::move(sstream.buffer);

@@ -128,6 +128,20 @@ void FButton::setInactiveBackgroundColor (FColor color)
 }
 
 //----------------------------------------------------------------------
+void FButton::resetColors()
+{
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->button_active_fg);
+  setBackgroundColor (wc->button_active_bg);
+  setHotkeyForegroundColor (wc->button_hotkey_fg);
+  setFocusForegroundColor (wc->button_active_focus_fg);
+  setFocusBackgroundColor (wc->button_active_focus_bg);
+  setInactiveForegroundColor (wc->button_inactive_fg);
+  setInactiveBackgroundColor (wc->button_inactive_bg);
+  FWidget::resetColors();
+}
+
+//----------------------------------------------------------------------
 bool FButton::setNoUnderline (bool enable)
 {
   return (setFlags().no_underline = enable);

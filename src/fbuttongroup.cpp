@@ -383,7 +383,7 @@ void FButtonGroup::draw()
   if ( FTerm::isMonochron() )
     setReverse(true);
 
-  setColor();
+  useParentWidgetColor();
   clearArea();
 
   if ( FTerm::isMonochron() )
@@ -427,9 +427,6 @@ bool FButtonGroup::isRadioButton (const FToggleButton* button) const
 //----------------------------------------------------------------------
 void FButtonGroup::init()
 {
-  const auto& wc = getColorTheme();
-  setForegroundColor (wc->label_fg);
-  setBackgroundColor (wc->label_bg);
   setMinimumSize (FSize{7, 3});
   buttonlist.clear();  // no buttons yet
 }

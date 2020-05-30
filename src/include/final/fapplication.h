@@ -131,6 +131,8 @@ class FApplication : public FWidget
     bool                  removeQueuedEvent (const FObject*);
     virtual void          processExternalUserEvent();
     static FWidget*       processParameters (const int&, char*[]);
+    static void           setDefaultTheme();
+    static void           setDarkTheme();
     static void           showParameterUsage ()
     #if defined(__clang__) || defined(__GNUC__)
       __attribute__((noreturn))

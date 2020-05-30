@@ -74,7 +74,7 @@ void FCheckBox::draw()
 void FCheckBox::drawCheckButton()
 {
   print() << FPoint{1, 1};
-  setColor();
+  useParentWidgetColor();
 
   if ( FTerm::isMonochron() )
   {

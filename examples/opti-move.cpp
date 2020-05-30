@@ -132,6 +132,40 @@ void move (int xold, int yold, int xnew, int ynew)
             << std::right << std::setw(10) << byte << "\r\n";
 }
 
+//----------------------------------------------------------------------
+class DirectLogger : public finalcut::FLog
+{
+  public:
+    void info (const std::string& entry) override
+    {
+      output << entry << "\r" << std::endl;
+    }
+
+    void warn (const std::string&) override
+    { }
+
+    void error (const std::string&) override
+    { }
+
+    void debug (const std::string&) override
+    { }
+
+    void setOutputStream (const std::ostream& os) override
+    { output.rdbuf(os.rdbuf()); }
+
+    void setLineEnding (LineEnding) override
+    { }
+
+    void enableTimestamp() override
+    { }
+
+    void disableTimestamp() override
+    { }
+
+  private:
+    // Data member
+    std::ostream output{std::cerr.rdbuf()};
+};
 
 //----------------------------------------------------------------------
 //                               main part
@@ -189,7 +223,11 @@ int main (int argc, char* argv[])
   keyPressed();
 
   // Show terminal speed and milliseconds for all cursor movement sequence
-  std::cout << "\r" << line;
+  std::cout << "\r" << line << std::flush;
+  // Generation of a logger in a shared_ptr via a pointer
+  finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
+  // Get the shared_ptr with the base class
+  std::shared_ptr<finalcut::FLog> log = finalcut::FApplication::getLog();
   const finalcut::FOptiMove& opti_move = *finalcut::FTerm::getFOptiMove();
   finalcut::printDurations(opti_move);
 

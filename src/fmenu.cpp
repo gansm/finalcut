@@ -84,6 +84,15 @@ void FMenu::setStatusbarMessage (const FString& msg)
 }
 
 //----------------------------------------------------------------------
+void FMenu::resetColors()
+{
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->menu_active_fg);
+  setBackgroundColor (wc->menu_active_bg);
+  FWidget::resetColors();
+}
+
+//----------------------------------------------------------------------
 void FMenu::show()
 {
   if ( ! isVisible() )
@@ -458,10 +467,7 @@ void FMenu::init(FWidget* parent)
   setTransparentShadow();
   setMenuWidget();
   hide();
-
-  const auto& wc = getColorTheme();
-  setForegroundColor (wc->menu_active_fg);
-  setBackgroundColor (wc->menu_active_bg);
+  resetColors();
   menuitem.setMenu(this);
 
   if ( parent )

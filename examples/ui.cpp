@@ -301,6 +301,7 @@ class MyDialog final : public finalcut::FDialog
     void cb_copyClipboard (const finalcut::FWidget*, const FDataPtr);
     void cb_pasteClipboard (const finalcut::FWidget*, const FDataPtr);
     void cb_clearInput (const finalcut::FWidget*, const FDataPtr);
+    void cb_switchTheme (const finalcut::FWidget*, const FDataPtr);
     void cb_input2buttonText (finalcut::FWidget*, FDataPtr);
     void cb_setTitlebar (finalcut::FWidget*, const FDataPtr);
     void cb_showProgressBar (const finalcut::FWidget*, const FDataPtr);
@@ -339,6 +340,8 @@ class MyDialog final : public finalcut::FDialog
     // "View" menu items
     finalcut::FMenuItem       Env{"&Terminal...", &View};
     finalcut::FMenuItem       Drive{"&Drive symbols...", &View};
+    finalcut::FMenuItem       Line3{&View};
+    finalcut::FCheckMenuItem  Theme{"Dark &mode", &View};
     // Statusbar
     finalcut::FStatusBar      Statusbar{this};
     finalcut::FStatusKey      key_F1{fc::Fkey_f1, "About", &Statusbar};
@@ -422,6 +425,10 @@ void MyDialog::initMenu()
   // "View" menu items
   Env.setStatusbarMessage ("Informations about this terminal");
   Drive.setStatusbarMessage ("Show drive symbols");
+  Line3.setSeparator();
+
+  if ( finalcut::FStartOptions::getFStartOptions().dark_theme )
+    Theme.setChecked();
 }
 
 //----------------------------------------------------------------------
@@ -516,6 +523,12 @@ void MyDialog::initViewMenuCallbacks()
   (
     "clicked",
     F_METHOD_CALLBACK (this, &MyDialog::cb_drives)
+  );
+
+  Theme.addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, &MyDialog::cb_switchTheme)
   );
 }
 
@@ -900,6 +913,21 @@ void MyDialog::cb_clearInput (const finalcut::FWidget*, const FDataPtr)
   clipboard.clear();
   myLineEdit.clear();
   myLineEdit.redraw();
+}
+
+//----------------------------------------------------------------------
+void MyDialog::cb_switchTheme (const finalcut::FWidget* widget, const FDataPtr)
+{
+  const auto& check_menu = *(static_cast<const finalcut::FCheckMenuItem*>(widget));
+
+  if ( check_menu.isChecked() )
+    finalcut::FApplication::setDarkTheme();
+  else
+    finalcut::FApplication::setDefaultTheme();
+
+  auto root_widget = getRootWidget();
+  root_widget->resetColors();
+  root_widget->redraw();
 }
 
 //----------------------------------------------------------------------

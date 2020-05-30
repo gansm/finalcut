@@ -99,28 +99,8 @@ const FLineEdit& FLineEdit::operator >> (FString& s)
 //----------------------------------------------------------------------
 bool FLineEdit::setEnable (bool enable)
 {
-  const auto& wc = getColorTheme();
   FWidget::setEnable(enable);
-
-  if ( enable )
-  {
-    if ( hasFocus() )
-    {
-      setForegroundColor (wc->inputfield_active_focus_fg);
-      setBackgroundColor (wc->inputfield_active_focus_bg);
-    }
-    else
-    {
-      setForegroundColor (wc->inputfield_active_fg);
-      setBackgroundColor (wc->inputfield_active_bg);
-    }
-  }
-  else
-  {
-    setForegroundColor (wc->inputfield_inactive_fg);
-    setBackgroundColor (wc->inputfield_inactive_bg);
-  }
-
+  resetColors();
   return enable;
 }
 
@@ -128,23 +108,7 @@ bool FLineEdit::setEnable (bool enable)
 bool FLineEdit::setFocus (bool enable)
 {
   FWidget::setFocus(enable);
-
-  if ( isEnabled() )
-  {
-    const auto& wc = getColorTheme();
-
-    if ( enable )
-    {
-      setForegroundColor (wc->inputfield_active_focus_fg);
-      setBackgroundColor (wc->inputfield_active_focus_bg);
-    }
-    else
-    {
-      setForegroundColor (wc->inputfield_active_fg);
-      setBackgroundColor (wc->inputfield_active_bg);
-    }
-  }
-
+  resetColors();
   return enable;
 }
 
@@ -254,6 +218,34 @@ void FLineEdit::setLabelOrientation (const label_o o)
   label_orientation = o;
   adjustLabel();
 }
+
+//----------------------------------------------------------------------
+void FLineEdit::resetColors()
+{
+  const auto& wc = getColorTheme();
+
+  if ( isEnabled() )  // active
+  {
+    if ( hasFocus() )
+    {
+      setForegroundColor (wc->inputfield_active_focus_fg);
+      setBackgroundColor (wc->inputfield_active_focus_bg);
+    }
+    else
+    {
+      setForegroundColor (wc->inputfield_active_fg);
+      setBackgroundColor (wc->inputfield_active_bg);
+    }
+  }
+  else  // inactive
+  {
+    setForegroundColor (wc->inputfield_inactive_fg);
+    setBackgroundColor (wc->inputfield_inactive_bg);
+  }
+
+  FWidget::resetColors();
+}
+
 
 //----------------------------------------------------------------------
 void FLineEdit::setSize (const FSize& size, bool adjust)
@@ -655,34 +647,14 @@ void FLineEdit::adjustSize()
 //----------------------------------------------------------------------
 void FLineEdit::init()
 {
-  const auto& wc = getColorTheme();
   label->setAccelWidget(this);
+  setShadow();
+  resetColors();
 
   if ( isReadOnly() )
     unsetVisibleCursor();
   else
     setVisibleCursor();
-
-  setShadow();
-
-  if ( isEnabled() )
-  {
-    if ( hasFocus() )
-    {
-      setForegroundColor (wc->inputfield_active_focus_fg);
-      setBackgroundColor (wc->inputfield_active_focus_bg);
-    }
-    else
-    {
-      setForegroundColor (wc->inputfield_active_fg);
-      setBackgroundColor (wc->inputfield_active_bg);
-    }
-  }
-  else  // inactive
-  {
-    setForegroundColor (wc->inputfield_inactive_fg);
-    setBackgroundColor (wc->inputfield_inactive_bg);
-  }
 }
 
 //----------------------------------------------------------------------

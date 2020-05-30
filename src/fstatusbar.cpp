@@ -159,6 +159,15 @@ void FStatusBar::setMessage (const FString& mgs)
 }
 
 //----------------------------------------------------------------------
+void FStatusBar::resetColors()
+{
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->statusbar_fg);
+  setBackgroundColor (wc->statusbar_bg);
+  FWidget::resetColors();
+}
+
+//----------------------------------------------------------------------
 bool FStatusBar::hasActivatedKey() const
 {
   if ( ! key_list.empty() )
@@ -513,9 +522,7 @@ void FStatusBar::init()
   if ( getRootWidget() )
     getRootWidget()->setBottomPadding(1, true);
 
-  const auto& wc = getColorTheme();
-  setForegroundColor (wc->statusbar_fg);
-  setBackgroundColor (wc->statusbar_bg);
+  resetColors();
   unsetFocusable();
 }
 
