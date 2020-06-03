@@ -170,9 +170,9 @@ bool sortDescendingByNumber (const FObject* lhs, const FObject* rhs)
 // constructor and destructor
 //----------------------------------------------------------------------
 FListViewItem::FListViewItem (const FListViewItem& item)
-  : FObject(item.getParent())
-  , column_list(item.column_list)
-  , data_pointer(item.data_pointer)
+  : FObject{item.getParent()}
+  , column_list{item.column_list}
+  , data_pointer{item.data_pointer}
 {
   auto parent = getParent();
 
@@ -191,7 +191,7 @@ FListViewItem::FListViewItem (const FListViewItem& item)
 
 //----------------------------------------------------------------------
 FListViewItem::FListViewItem (iterator parent_iter)
-  : FObject((*parent_iter)->getParent())
+  : FObject{(*parent_iter)->getParent()}
 {
   insert (this, parent_iter);
 }
@@ -200,9 +200,9 @@ FListViewItem::FListViewItem (iterator parent_iter)
 FListViewItem::FListViewItem ( const FStringList& cols
                              , FDataPtr data
                              , iterator parent_iter )
-  : FObject(nullptr)
-  , column_list(cols)
-  , data_pointer(data)
+  : FObject{nullptr}
+  , column_list{cols}
+  , data_pointer{data}
 {
   if ( cols.empty() )
     return;
@@ -496,7 +496,7 @@ FListViewIterator::FListViewIterator()
 
 //----------------------------------------------------------------------
 FListViewIterator::FListViewIterator (iterator iter)
-  : node(iter)
+  : node{iter}
 { }
 
 //----------------------------------------------------------------------
@@ -505,16 +505,16 @@ FListViewIterator::~FListViewIterator()  // destructor
 
 //----------------------------------------------------------------------
 FListViewIterator::FListViewIterator (const FListViewIterator& i)
-  : iter_path(i.iter_path)  // copy constructor
-  , node(i.node)
-  , position(i.position)
+  : iter_path{i.iter_path}  // copy constructor
+  , node{i.node}
+  , position{i.position}
 { }
 
 //----------------------------------------------------------------------
 FListViewIterator::FListViewIterator (FListViewIterator&& i) noexcept
-  : iter_path(std::move(i.iter_path))  // move constructor
-  , node(std::move(i.node))
-  , position(std::move(i.position))
+  : iter_path{std::move(i.iter_path)}  // move constructor
+  , node{std::move(i.node)}
+  , position{std::move(i.position)}
 { }
 
 // FListViewIterator operators
@@ -683,7 +683,7 @@ void FListViewIterator::parentElement()
 // constructor and destructor
 //----------------------------------------------------------------------
 FListView::FListView (FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init();
 }
@@ -910,9 +910,9 @@ FObject::iterator FListView::insert ( const FStringList& cols
   {
     item = new FListViewItem (cols, d, getNullIterator());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FListViewItem");
     return getNullIterator();
   }
 
@@ -1523,10 +1523,7 @@ void FListView::init()
   root = selflist.begin();
   getNullIterator() = selflist.end();
   setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
-  const auto& wc = getFWidgetColors();
-  setForegroundColor (wc.dialog_fg);
-  setBackgroundColor (wc.dialog_bg);
-  nf_offset = isNewFont() ? 1 : 0;
+  nf_offset = FTerm::isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);
   setBottomPadding(1);
@@ -1637,14 +1634,14 @@ void FListView::draw()
   if ( current_iter.getPosition() < 1 )
     current_iter = itemlist.begin();
 
-  setColor();
+  useParentWidgetColor();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   drawBorder();
 
-  if ( isNewFont() && ! vbar->isShown() )
+  if ( FTerm::isNewFont() && ! vbar->isShown() )
   {
     setColor();
 
@@ -1657,7 +1654,7 @@ void FListView::draw()
 
   drawHeadlines();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 
   drawScrollbars();
@@ -1773,7 +1770,7 @@ void FListView::drawList()
   // Reset color
   setColor();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   // Clean empty space after last element
@@ -1876,8 +1873,8 @@ void FListView::clearList()
 {
   // Clear list from terminal screen
 
-  const auto& wc = getFWidgetColors();
-  setColor (wc.list_fg, wc.list_bg);
+  const auto& wc = getColorTheme();
+  setColor (wc->list_fg, wc->list_bg);
   const std::size_t size = getWidth() - 2;
   drawBorder();
   drawHeadlines();
@@ -1897,34 +1894,34 @@ void FListView::clearList()
 inline void FListView::setLineAttributes ( bool is_current
                                          , bool is_focus )
 {
-  const auto& wc = getFWidgetColors();
-  setColor (wc.list_fg, wc.list_bg);
+  const auto& wc = getColorTheme();
+  setColor (wc->list_fg, wc->list_bg);
 
   if ( is_current )
   {
-    if ( is_focus && getMaxColor() < 16 )
+    if ( is_focus && FTerm::getMaxColor() < 16 )
       setBold();
 
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       unsetBold();
 
     if ( is_focus )
     {
-      setColor ( wc.current_element_focus_fg
-               , wc.current_element_focus_bg );
+      setColor ( wc->current_element_focus_fg
+               , wc->current_element_focus_bg );
     }
     else
-      setColor ( wc.current_element_fg
-               , wc.current_element_bg );
+      setColor ( wc->current_element_fg
+               , wc->current_element_bg );
 
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(false);
   }
   else
   {
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(true);
-    else if ( is_focus && getMaxColor() < 16 )
+    else if ( is_focus && FTerm::getMaxColor() < 16 )
       unsetBold();
   }
 }
@@ -1934,7 +1931,7 @@ inline FString FListView::getCheckBox (const FListViewItem* item)
 {
   FString checkbox{""};
 
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
   {
     checkbox = ( item->isChecked() ) ? CHECKBOX_ON : CHECKBOX;
     checkbox += L' ';
@@ -2039,12 +2036,12 @@ void FListView::drawHeadlineLabel (const headerItems::const_iterator& iter)
   const headerItems::const_iterator first = header.begin();
   const int column = int(std::distance(first, iter)) + 1;
   const bool has_sort_indicator( sort_column == column && ! hide_sort_indicator );
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   if ( isEnabled() )
-    setColor (wc.label_emphasis_fg, wc.label_bg);
+    setColor (wc->label_emphasis_fg, wc->label_bg);
   else
-    setColor (wc.label_inactive_fg, wc.label_inactive_bg);
+    setColor (wc->label_inactive_fg, wc->label_inactive_bg);
 
   if ( has_sort_indicator && column_width >= column_max - 1 && column_width > 1 )
   {
@@ -2169,11 +2166,11 @@ void FListView::drawColumnEllipsis ( const headerItems::const_iterator& iter
   // Print label ellipsis
   static constexpr int ellipsis_length = 2;
   const int width = iter->width;
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   headerline << ' '
              << getColumnSubString (text, 1, uInt(width - ellipsis_length))
-             << FColorPair {wc.label_ellipsis_fg, wc.label_bg}
+             << FColorPair {wc->label_ellipsis_fg, wc->label_bg}
              << "..";
 
   if ( iter == header.end() - 1 )  // Last element
@@ -2516,7 +2513,7 @@ void FListView::processChanged()
 //----------------------------------------------------------------------
 void FListView::changeOnResize()
 {
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
   {
     vbar->setGeometry (FPoint{int(getWidth()), 2}, FSize{2, getHeight() - 2});
     hbar->setGeometry (FPoint{1, int(getHeight())}, FSize{getWidth() - 2, 1});

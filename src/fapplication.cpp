@@ -25,6 +25,8 @@
 
 #include "final/fapplication.h"
 #include "final/fevent.h"
+#include "final/flog.h"
+#include "final/flogger.h"
 #include "final/fmenu.h"
 #include "final/fmenubar.h"
 #include "final/fmessagebox.h"
@@ -69,7 +71,7 @@ bool           FApplication::quit_now        {false};
 FApplication::FApplication ( const int& _argc
                            , char* _argv[]
                            , bool disable_alt_screen )
-  : FWidget(processParameters(_argc, _argv), disable_alt_screen)
+  : FWidget{processParameters(_argc, _argv), disable_alt_screen}
   , app_argc{_argc}
   , app_argv{_argv}
 {
@@ -98,6 +100,11 @@ FApplication::FApplication ( const int& _argc
 FApplication::~FApplication()  // destructor
 {
   app_object = nullptr;
+
+  if ( eventInQueue() )
+    event_queue.clear();
+
+  destroyLog();
 }
 
 
@@ -106,6 +113,24 @@ FApplication::~FApplication()  // destructor
 FApplication* FApplication::getApplicationObject()
 {
   return app_object;
+}
+
+//----------------------------------------------------------------------
+FApplication::FLogPtr& FApplication::getLog()
+{
+  // Global logger object
+  static FLogPtr* logger = new FLogPtr();
+
+  if ( logger && logger->get() == nullptr )
+    *logger = std::make_shared<FLogger>();
+
+  return *logger;
+}
+
+//----------------------------------------------------------------------
+void FApplication::setLog (const FLogPtr& logger)
+{
+  getLog() = logger;
 }
 
 //----------------------------------------------------------------------
@@ -167,25 +192,27 @@ void FApplication::quit()
 //----------------------------------------------------------------------
 bool FApplication::sendEvent (FObject* receiver, FEvent* event )
 {
-  if ( quit_now || app_exit_loop || ! receiver )
+  if ( quit_now || app_exit_loop || ! (bool(receiver) && bool(event)) )
     return false;
 
   if ( ! isEventProcessable (receiver, event) )
     return false;
 
   // Sends the event event directly to receiver
-  return receiver->event(event);
+  bool ret = receiver->event(event);
+  event->send = true;
+  return ret;
 }
 
 //----------------------------------------------------------------------
 void FApplication::queueEvent (FObject* receiver, FEvent* event)
 {
-  if ( ! receiver )
+  if ( ! (bool(receiver) && bool(event)) )
     return;
 
   // queue this event
-  eventPair send_event (receiver, std::make_shared<FEvent>(*event));
-  event_queue.push_back(send_event);
+  event->queued = true;
+  event_queue.emplace_back (receiver, event);
 }
 
 //----------------------------------------------------------------------
@@ -193,8 +220,9 @@ void FApplication::sendQueuedEvents()
 {
   while ( eventInQueue() )
   {
-    sendEvent( event_queue.front().first,
-               event_queue.front().second.get() );
+    const EventPair& event_pair = event_queue.front();
+    event_pair.second->queued = false;
+    sendEvent(event_pair.first, event_pair.second);
     event_queue.pop_front();
   }
 }
@@ -235,6 +263,12 @@ bool FApplication::removeQueuedEvent (const FObject* receiver)
 }
 
 //----------------------------------------------------------------------
+void FApplication::processExternalUserEvent()
+{
+  // This method can be overloaded and replaced by own code
+}
+
+//----------------------------------------------------------------------
 FWidget* FApplication::processParameters (const int& argc, char* argv[])
 {
   if ( argc > 0 && argv[1] && ( std::strcmp(argv[1], "--help") == 0
@@ -246,6 +280,37 @@ FWidget* FApplication::processParameters (const int& argc, char* argv[])
   getStartOptions().setDefault();
   cmd_options (argc, argv);
   return nullptr;
+}
+
+//----------------------------------------------------------------------
+void FApplication::setDefaultTheme()
+{
+  if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
+  {
+    if ( getStartOptions().color_change )
+      FTerm::setColorPaletteTheme<default8ColorPalette>(&FTerm::setPalette);
+
+    setColorTheme<default8ColorTheme>();
+  }
+  else
+  {
+    if ( getStartOptions().color_change )
+      FTerm::setColorPaletteTheme<default16ColorPalette>(&FTerm::setPalette);
+
+    setColorTheme<default16ColorTheme>();
+  }
+}
+
+//----------------------------------------------------------------------
+void FApplication::setDarkTheme()
+{
+  if ( getStartOptions().color_change )
+    FTerm::setColorPaletteTheme<default16DarkColorPalette>(&FTerm::setPalette);
+
+  if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
+    setColorTheme<default8ColorDarkTheme>();
+  else
+    setColorTheme<default16ColorDarkTheme>();
 }
 
 //----------------------------------------------------------------------
@@ -277,6 +342,8 @@ void FApplication::showParameterUsage()
     << "    Set the standard vga 8x16 font\n"
     << "  --newfont                 "
     << "    Enables the graphical font\n"
+    << "  --dark-theme              "
+    << "    Enables the dark theme\n"
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
     << "\n"
@@ -322,7 +389,7 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
 {
   // Initialize keyboard
-  keyboard = FVTerm::getFKeyboard();
+  keyboard = FTerm::getFKeyboard();
 
   // Set the keyboard keypress timeout
   if ( keyboard )
@@ -340,7 +407,7 @@ void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
   }
 
   // Initialize mouse control
-  mouse = FVTerm::getFMouseControl();
+  mouse = FTerm::getFMouseControl();
 
   // Set stdin number for a gpm-mouse
   if ( mouse )
@@ -349,6 +416,9 @@ void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
   // Set the default double click interval
   if ( mouse )
     mouse->setDblclickInterval (dblclick_time);
+
+  // Initialize logging
+  getLog()->setLineEnding(FLog::CRLF);
 }
 
 //----------------------------------------------------------------------
@@ -369,6 +439,7 @@ void FApplication::cmd_options (const int& argc, char* argv[])
       {"no-sgr-optimizer",         no_argument,       nullptr,  0 },
       {"vgafont",                  no_argument,       nullptr,  0 },
       {"newfont",                  no_argument,       nullptr,  0 },
+      {"dark-theme",               no_argument,       nullptr,  0 },
 
     #if defined(__FreeBSD__) || defined(__DragonFly__)
       {"no-esc-for-alt-meta",      no_argument,       nullptr,  0 },
@@ -405,8 +476,8 @@ void FApplication::cmd_options (const int& argc, char* argv[])
         else if ( encoding.includes("help") )
           showParameterUsage();
         else
-          exitWithMessage ( "Unknown encoding "
-                          + std::string(encoding.c_str()) );
+          FTerm::exitWithMessage ( "Unknown encoding "
+                                 + std::string(encoding.c_str()) );
       }
 
       if ( std::strcmp(long_options[idx].name, "no-mouse")  == 0 )
@@ -433,6 +504,9 @@ void FApplication::cmd_options (const int& argc, char* argv[])
       if ( std::strcmp(long_options[idx].name, "newfont")  == 0 )
         getStartOptions().newfont = true;
 
+      if ( std::strcmp(long_options[idx].name, "dark-theme")  == 0 )
+        getStartOptions().dark_theme = true;
+
     #if defined(__FreeBSD__) || defined(__DragonFly__)
       if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta")  == 0 )
         getStartOptions().meta_sends_escape = false;
@@ -451,6 +525,13 @@ void FApplication::cmd_options (const int& argc, char* argv[])
 inline FStartOptions& FApplication::getStartOptions()
 {
   return FStartOptions::getFStartOptions();
+}
+
+//----------------------------------------------------------------------
+inline void FApplication::destroyLog()
+{
+  const FLogPtr* logger = &(getLog());
+  delete logger;
 }
 
 //----------------------------------------------------------------------
@@ -985,7 +1066,7 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
     sendEvent (clicked, &m_down_ev);
 
     // gnome-terminal sends no released on middle click
-    if ( isGnomeTerminal() )
+    if ( FTerm::isGnomeTerminal() )
       setClickedWidget(nullptr);
   }
   else if ( mouse->isMiddleButtonReleased() )
@@ -1057,7 +1138,7 @@ void FApplication::processMouseEvent()
 //----------------------------------------------------------------------
 void FApplication::processResizeEvent()
 {
-  if ( ! hasChangedTermSize() )
+  if ( ! FTerm::hasChangedTermSize() )
     return;
 
   if ( mouse )
@@ -1070,7 +1151,7 @@ void FApplication::processResizeEvent()
   sendEvent(app_object, &r_ev);
 
   if ( r_ev.isAccepted() )
-    changeTermSizeFinished();
+    FTerm::changeTermSizeFinished();
 }
 
 //----------------------------------------------------------------------
@@ -1095,6 +1176,17 @@ void FApplication::processCloseWidget()
 }
 
 //----------------------------------------------------------------------
+void FApplication::processLogger()
+{
+  // Synchronizing the stream buffer with the logging output
+
+  auto logger = getLog();
+
+  if ( ! logger->str().empty() )
+    logger->pubsync();
+}
+
+//----------------------------------------------------------------------
 bool FApplication::processNextEvent()
 {
   uInt num_events{0};
@@ -1104,6 +1196,8 @@ bool FApplication::processNextEvent()
   processResizeEvent();
   processTerminalUpdate();
   processCloseWidget();
+  processLogger();
+  processExternalUserEvent();
 
   sendQueuedEvents();
   num_events += processTimerEvent();
@@ -1118,7 +1212,8 @@ void FApplication::performTimerAction (FObject* receiver, FEvent* event)
 }
 
 //----------------------------------------------------------------------
-bool FApplication::isEventProcessable (const FObject* receiver, const FEvent* event )
+bool FApplication::isEventProcessable ( const FObject* receiver
+                                      , const FEvent* event )
 {
   if ( ! receiver->isWidget() )  // No restrictions for non-widgets
     return true;
@@ -1139,7 +1234,7 @@ bool FApplication::isEventProcessable (const FObject* receiver, const FEvent* ev
       && ! window->getFlags().modal
       && ! window->isMenuWidget() )
     {
-      switch ( uInt(event->type()) )
+      switch ( uInt(event->getType()) )
       {
         case fc::KeyPress_Event:
         case fc::KeyUp_Event:
@@ -1163,8 +1258,8 @@ bool FApplication::isEventProcessable (const FObject* receiver, const FEvent* ev
   }
 
   // Throw away mouse events for disabled widgets
-  if ( event->type() >= fc::MouseDown_Event
-    && event->type() <= fc::MouseMove_Event
+  if ( event->getType() >= fc::MouseDown_Event
+    && event->getType() <= fc::MouseMove_Event
     && ! widget->isEnabled() )
     return false;
 

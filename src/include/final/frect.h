@@ -148,26 +148,26 @@ class FRect
 // FRect inline functions
 //----------------------------------------------------------------------
 inline FRect::FRect (const FRect& r)  // copy constructor
-  : X1(r.X1)
-  , Y1(r.Y1)
-  , X2(r.X2)
-  , Y2(r.Y2)
+  : X1{r.X1}
+  , Y1{r.Y1}
+  , X2{r.X2}
+  , Y2{r.Y2}
 { }
 
 //----------------------------------------------------------------------
 inline FRect::FRect (FRect&& r) noexcept  // move constructor
-  : X1(std::move(r.X1))
-  , Y1(std::move(r.Y1))
-  , X2(std::move(r.X2))
-  , Y2(std::move(r.Y2))
+  : X1{std::move(r.X1)}
+  , Y1{std::move(r.Y1)}
+  , X2{std::move(r.X2)}
+  , Y2{std::move(r.Y2)}
 { }
 
 //----------------------------------------------------------------------
 inline FRect::FRect (int x, int y, std::size_t width, std::size_t height)
-  : X1(x)
-  , Y1(y)
-  , X2(x + int(width) - 1)
-  , Y2(y + int(height) - 1)
+  : X1{x}
+  , Y1{y}
+  , X2{x + int(width) - 1}
+  , Y2{y + int(height) - 1}
 { }
 
 //----------------------------------------------------------------------

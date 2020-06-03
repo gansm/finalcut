@@ -224,17 +224,17 @@ void streamToInterger()
     finalcut::FString("-321") >> stream_int;
     std::cout << "stream out: " << stream_int << std::endl;
   }
-  catch (const std::underflow_error& ex)
+  catch (const std::underflow_error&)
   {
-    std::cerr << "underflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
-    std::cerr << "overflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::invalid_argument&)
   {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Arithmetic error");
   }
 }
 
@@ -248,17 +248,17 @@ void streamToUnsignedInterger()
     finalcut::FString("123") >> stream_uint;
     std::cout << "stream out: " << stream_uint << std::endl;
   }
-  catch (const std::underflow_error& ex)
+  catch (const std::underflow_error&)
   {
-    std::cerr << "underflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
-    std::cerr << "overflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::invalid_argument&)
   {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Arithmetic error");
   }
 }
 
@@ -272,17 +272,17 @@ void streamToDouble()
     finalcut::FString("0.123456e+2") >> stream_double;
     std::cout << "stream out: " << stream_double << std::endl;
   }
-  catch (const std::underflow_error& ex)
+  catch (const std::underflow_error&)
   {
-    std::cerr << "underflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
-    std::cerr << "overflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::invalid_argument&)
   {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Arithmetic error");
   }
 }
 
@@ -296,17 +296,17 @@ void streamToFloat()
     finalcut::FString("0.123e-3") >> stream_float;
     std::cout << "stream out: " << stream_float << std::endl;
   }
-  catch (const std::underflow_error& ex)
+  catch (const std::underflow_error&)
   {
-    std::cerr << "underflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
-    std::cerr << "overflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::invalid_argument&)
   {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Arithmetic error");
   }
 }
 
@@ -496,17 +496,17 @@ void convertToNumberExample()
     const uLong ulong_num = finalcut::FString("123456789").toULong();
     std::cout << "   toULong:  " << ulong_num << std::endl;
   }
-  catch (const std::underflow_error& ex)
+  catch (const std::underflow_error&)
   {
-    std::cerr << "underflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
-    std::cerr << "overflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::invalid_argument&)
   {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Arithmetic error");
   }
 
   // Test: convert a string to a signed long interger
@@ -515,17 +515,17 @@ void convertToNumberExample()
     const long long_num = finalcut::FString("-9876543210").toLong();
     std::cout << "    toLong:  " << long_num << std::endl;
   }
-  catch (const std::underflow_error& ex)
+  catch (const std::underflow_error&)
   {
-    std::cerr << "underflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
-    std::cerr << "overflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::invalid_argument&)
   {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Arithmetic error");
   }
 
   // Test: convert a string to a double value
@@ -540,17 +540,17 @@ void convertToNumberExample()
                                  << double_num << std::endl;
     std::cout.flags(save_flags);
   }
-  catch (const std::underflow_error& ex)
+  catch (const std::underflow_error&)
   {
-    std::cerr << "underflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Underflow");
   }
-  catch (const std::overflow_error& ex)
+  catch (const std::overflow_error&)
   {
-    std::cerr << "overflow: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Overflow");
   }
-  catch (const std::invalid_argument& ex)
+  catch (const std::invalid_argument&)
   {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Arithmetic error");
   }
 }
 
@@ -640,9 +640,9 @@ void insertExample()
     std::cout << "   insert: "
               << insert_str.insert("changed ", 7) << std::endl;
   }
-  catch (const std::out_of_range& ex)
+  catch (const std::out_of_range&)
   {
-    std::cerr << "Out of Range error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Out of Range");
   }
 }
 
@@ -655,14 +655,14 @@ void indexExample()
 
   try
   {
-    index[0] = L'I';  // write a wide character at position 0
+    index[0] = L'I';  // Write a wide character at position 0
     printf ( "    index: [0] = %c ; [4] = %c\n"
            , char(index[0])
            , char(index[4]) );
   }
-  catch (const std::out_of_range& ex)
+  catch (const std::out_of_range&)
   {
-    std::cerr << "Out of Range error: " << ex.what() << std::endl;
+    finalcut::FApplication::getLog()->error("Out of Range");
   }
 }
 

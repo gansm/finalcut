@@ -25,6 +25,7 @@
 #include "final/fapplication.h"
 #include "final/fevent.h"
 #include "final/flabel.h"
+#include "final/flog.h"
 #include "final/flineedit.h"
 #include "final/fpoint.h"
 #include "final/fsize.h"
@@ -41,7 +42,7 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FLineEdit::FLineEdit (FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
   , label{new FLabel("", parent)}
 {
   init();
@@ -49,8 +50,8 @@ FLineEdit::FLineEdit (FWidget* parent)
 
 //----------------------------------------------------------------------
 FLineEdit::FLineEdit (const FString& txt, FWidget* parent)
-  : FWidget(parent)
-  , text(txt)
+  : FWidget{parent}
+  , text{txt}
   , label{new FLabel("", parent)}
 {
   init();
@@ -61,7 +62,7 @@ FLineEdit::FLineEdit (const FString& txt, FWidget* parent)
 FLineEdit::~FLineEdit()  // destructor
 {
   if ( ! insert_mode )
-    setInsertCursor();
+    FTerm::setInsertCursor();
 }
 
 // FLineEdit operators
@@ -98,28 +99,8 @@ const FLineEdit& FLineEdit::operator >> (FString& s)
 //----------------------------------------------------------------------
 bool FLineEdit::setEnable (bool enable)
 {
-  const auto& wc = getFWidgetColors();
   FWidget::setEnable(enable);
-
-  if ( enable )
-  {
-    if ( hasFocus() )
-    {
-      setForegroundColor (wc.inputfield_active_focus_fg);
-      setBackgroundColor (wc.inputfield_active_focus_bg);
-    }
-    else
-    {
-      setForegroundColor (wc.inputfield_active_fg);
-      setBackgroundColor (wc.inputfield_active_bg);
-    }
-  }
-  else
-  {
-    setForegroundColor (wc.inputfield_inactive_fg);
-    setBackgroundColor (wc.inputfield_inactive_bg);
-  }
-
+  resetColors();
   return enable;
 }
 
@@ -127,23 +108,7 @@ bool FLineEdit::setEnable (bool enable)
 bool FLineEdit::setFocus (bool enable)
 {
   FWidget::setFocus(enable);
-
-  if ( isEnabled() )
-  {
-    const auto& wc = getFWidgetColors();
-
-    if ( enable )
-    {
-      setForegroundColor (wc.inputfield_active_focus_fg);
-      setBackgroundColor (wc.inputfield_active_focus_bg);
-    }
-    else
-    {
-      setForegroundColor (wc.inputfield_active_fg);
-      setBackgroundColor (wc.inputfield_active_bg);
-    }
-  }
-
+  resetColors();
   return enable;
 }
 
@@ -151,8 +116,8 @@ bool FLineEdit::setFocus (bool enable)
 bool FLineEdit::setShadow (bool enable)
 {
   if ( enable
-    && getEncoding() != fc::VT100
-    && getEncoding() != fc::ASCII )
+    && FTerm::getEncoding() != fc::VT100
+    && FTerm::getEncoding() != fc::ASCII )
   {
     setFlags().shadow = true;
     setShadowSize(FSize{1, 1});
@@ -253,6 +218,34 @@ void FLineEdit::setLabelOrientation (const label_o o)
   label_orientation = o;
   adjustLabel();
 }
+
+//----------------------------------------------------------------------
+void FLineEdit::resetColors()
+{
+  const auto& wc = getColorTheme();
+
+  if ( isEnabled() )  // active
+  {
+    if ( hasFocus() )
+    {
+      setForegroundColor (wc->inputfield_active_focus_fg);
+      setBackgroundColor (wc->inputfield_active_focus_bg);
+    }
+    else
+    {
+      setForegroundColor (wc->inputfield_active_fg);
+      setBackgroundColor (wc->inputfield_active_bg);
+    }
+  }
+  else  // inactive
+  {
+    setForegroundColor (wc->inputfield_inactive_fg);
+    setBackgroundColor (wc->inputfield_inactive_bg);
+  }
+
+  FWidget::resetColors();
+}
+
 
 //----------------------------------------------------------------------
 void FLineEdit::setSize (const FSize& size, bool adjust)
@@ -575,7 +568,7 @@ void FLineEdit::onAccel (FAccelEvent* ev)
 void FLineEdit::onHide (FHideEvent*)
 {
   if ( ! insert_mode && ! isReadOnly() )
-    setInsertCursor();
+    FTerm::setInsertCursor();
 }
 
 //----------------------------------------------------------------------
@@ -584,9 +577,9 @@ void FLineEdit::onFocusIn (FFocusEvent*)
   if ( ! isReadOnly() )
   {
     if ( insert_mode )
-      setInsertCursor();
+      FTerm::setInsertCursor();
     else
-      unsetInsertCursor();
+      FTerm::unsetInsertCursor();
   }
 
   if ( getStatusBar() )
@@ -607,7 +600,7 @@ void FLineEdit::onFocusOut (FFocusEvent*)
   }
 
   if ( ! insert_mode && ! isReadOnly() )
-    setInsertCursor();
+    FTerm::setInsertCursor();
 }
 
 
@@ -654,34 +647,14 @@ void FLineEdit::adjustSize()
 //----------------------------------------------------------------------
 void FLineEdit::init()
 {
-  const auto& wc = getFWidgetColors();
   label->setAccelWidget(this);
+  setShadow();
+  resetColors();
 
   if ( isReadOnly() )
     unsetVisibleCursor();
   else
     setVisibleCursor();
-
-  setShadow();
-
-  if ( isEnabled() )
-  {
-    if ( hasFocus() )
-    {
-      setForegroundColor (wc.inputfield_active_focus_fg);
-      setBackgroundColor (wc.inputfield_active_focus_bg);
-    }
-    else
-    {
-      setForegroundColor (wc.inputfield_active_fg);
-      setBackgroundColor (wc.inputfield_active_bg);
-    }
-  }
-  else  // inactive
-  {
-    setForegroundColor (wc.inputfield_inactive_fg);
-    setBackgroundColor (wc.inputfield_inactive_bg);
-  }
 }
 
 //----------------------------------------------------------------------
@@ -723,7 +696,7 @@ void FLineEdit::drawInputField()
   const bool isActiveFocus = getFlags().active && getFlags().focus;
   print() << FPoint{1, 1};
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
   {
     setReverse(true);
     print (' ');
@@ -739,7 +712,7 @@ void FLineEdit::drawInputField()
     print (' ');
   }
 
-  if ( isActiveFocus && getMaxColor() < 16 )
+  if ( isActiveFocus && FTerm::getMaxColor() < 16 )
     setBold();
 
   const std::size_t text_offset_column = [this] ()
@@ -765,10 +738,10 @@ void FLineEdit::drawInputField()
     x_pos++;
   }
 
-  if ( isActiveFocus && getMaxColor() < 16 )
+  if ( isActiveFocus && FTerm::getMaxColor() < 16 )
     unsetBold();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
   {
     setReverse(false);
     setUnderline(false);
@@ -860,7 +833,8 @@ inline FLineEdit::offsetPair FLineEdit::endPosToOffset (std::size_t pos)
     }
     catch (const std::out_of_range& ex)
     {
-      std::cerr << "Out of Range error: " << ex.what() << std::endl;
+      *FApplication::getLog() << FLog::Error
+          << "Out of Range error: " << ex.what() << std::endl;
     }
 
     if ( input_width >= char_width )
@@ -883,7 +857,8 @@ inline FLineEdit::offsetPair FLineEdit::endPosToOffset (std::size_t pos)
         }
         catch (const std::out_of_range& ex)
         {
-          std::cerr << "Out of Range error: " << ex.what() << std::endl;
+          *FApplication::getLog() << FLog::Error
+              << "Out of Range error: " << ex.what() << std::endl;
         }
       }
 
@@ -918,7 +893,8 @@ std::size_t FLineEdit::clickPosToCursorPos (std::size_t pos)
     }
     catch (const std::out_of_range& ex)
     {
-      std::cerr << "Out of Range error: " << ex.what() << std::endl;
+      *FApplication::getLog() << FLog::Error
+          << "Out of Range error: " << ex.what() << std::endl;
     }
 
     idx++;
@@ -951,7 +927,8 @@ void FLineEdit::adjustTextOffset()
     }
     catch (const std::out_of_range& ex)
     {
-      std::cerr << "Out of Range error: " << ex.what() << std::endl;
+      *FApplication::getLog() << FLog::Error
+          << "Out of Range error: " << ex.what() << std::endl;
     }
   }
 
@@ -963,7 +940,8 @@ void FLineEdit::adjustTextOffset()
     }
     catch (const std::out_of_range& ex)
     {
-      std::cerr << "Out of Range error: " << ex.what() << std::endl;
+      *FApplication::getLog() << FLog::Error
+          << "Out of Range error: " << ex.what() << std::endl;
     }
   }
 
@@ -1076,9 +1054,9 @@ inline void FLineEdit::switchInsertMode()
   insert_mode = ! insert_mode;
 
   if ( insert_mode )
-    setInsertCursor();    // Insert mode
+    FTerm::setInsertCursor();    // Insert mode
   else
-    unsetInsertCursor();  // Overtype mode
+    FTerm::unsetInsertCursor();  // Overtype mode
 }
 
 //----------------------------------------------------------------------
@@ -1092,7 +1070,7 @@ inline bool FLineEdit::keyInput (FKey key)
 {
   if ( text.getLength() >= max_length )
   {
-    beep();
+    FTerm::beep();
     return true;
   }
 

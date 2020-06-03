@@ -373,5 +373,3 @@ inline void FTermData::setFramebufferBpp (int bpp)
 }  // namespace finalcut
 
 #endif  // FTERMDATA_H
-
-

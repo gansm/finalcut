@@ -10,6 +10,7 @@ lib_LTLIBRARIES = libfinal.la
 
 libfinal_la_SOURCES = \
 	fstring.cpp \
+	fstringstream.cpp \
 	fpoint.cpp \
 	fsize.cpp \
 	frect.cpp \
@@ -25,6 +26,8 @@ libfinal_la_SOURCES = \
 	flabel.cpp \
 	flistbox.cpp \
 	flistview.cpp \
+	flog.cpp \
+	flogger.cpp \
 	fmenu.cpp \
 	fmouse.cpp \
 	fsystem.cpp \
@@ -67,6 +70,7 @@ libfinal_la_SOURCES = \
 	foptimove.cpp \
 	ftermbuffer.cpp \
 	fapplication.cpp \
+	fcolorpalette.cpp \
 	fwidgetcolors.cpp \
 	fwidget.cpp \
 	fwidget_functions.cpp \
@@ -98,6 +102,8 @@ finalcutinclude_HEADERS = \
 	include/final/flineedit.h \
 	include/final/flistbox.h \
 	include/final/flistview.h \
+	include/final/flog.h \
+	include/final/flogger.h \
 	include/final/fmenu.h \
 	include/final/fmouse.h \
 	include/final/fkeyboard.h \
@@ -126,6 +132,7 @@ finalcutinclude_HEADERS = \
 	include/final/fstartoptions.h \
 	include/final/fstatusbar.h \
 	include/final/fstring.h \
+	include/final/fstringstream.h \
 	include/final/fsystem.h \
 	include/final/fsystemimpl.h \
 	include/final/ftermcap.h \

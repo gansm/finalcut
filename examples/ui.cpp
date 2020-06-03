@@ -76,7 +76,7 @@ class ProgressDialog final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 ProgressDialog::ProgressDialog (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   // Dialog settings
   //   Avoids calling a virtual function from the constructor
@@ -218,7 +218,7 @@ class TextWindow final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 TextWindow::TextWindow (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   scrollText.ignorePadding();
   scrollText.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});
@@ -301,6 +301,7 @@ class MyDialog final : public finalcut::FDialog
     void cb_copyClipboard (const finalcut::FWidget*, const FDataPtr);
     void cb_pasteClipboard (const finalcut::FWidget*, const FDataPtr);
     void cb_clearInput (const finalcut::FWidget*, const FDataPtr);
+    void cb_switchTheme (const finalcut::FWidget*, const FDataPtr);
     void cb_input2buttonText (finalcut::FWidget*, FDataPtr);
     void cb_setTitlebar (finalcut::FWidget*, const FDataPtr);
     void cb_showProgressBar (const finalcut::FWidget*, const FDataPtr);
@@ -339,6 +340,8 @@ class MyDialog final : public finalcut::FDialog
     // "View" menu items
     finalcut::FMenuItem       Env{"&Terminal...", &View};
     finalcut::FMenuItem       Drive{"&Drive symbols...", &View};
+    finalcut::FMenuItem       Line3{&View};
+    finalcut::FCheckMenuItem  Theme{"Dark &mode", &View};
     // Statusbar
     finalcut::FStatusBar      Statusbar{this};
     finalcut::FStatusKey      key_F1{fc::Fkey_f1, "About", &Statusbar};
@@ -369,7 +372,7 @@ class MyDialog final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 MyDialog::MyDialog (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   init();
 }
@@ -422,6 +425,10 @@ void MyDialog::initMenu()
   // "View" menu items
   Env.setStatusbarMessage ("Informations about this terminal");
   Drive.setStatusbarMessage ("Show drive symbols");
+  Line3.setSeparator();
+
+  if ( finalcut::FStartOptions::getFStartOptions().dark_theme )
+    Theme.setChecked();
 }
 
 //----------------------------------------------------------------------
@@ -516,6 +523,12 @@ void MyDialog::initViewMenuCallbacks()
   (
     "clicked",
     F_METHOD_CALLBACK (this, &MyDialog::cb_drives)
+  );
+
+  Theme.addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, &MyDialog::cb_switchTheme)
   );
 }
 
@@ -810,12 +823,12 @@ void MyDialog::cb_terminfo (const finalcut::FWidget*, const FDataPtr)
   (
     "Environment"
     , finalcut::FString{}
-      << "  Type: " << getTermType() << "\n"
-      << "  Name: " << getTermFileName() << "\n"
-      << "  Mode: " << getEncodingString() << "\n"
+      << "  Type: " << finalcut::FTerm::getTermType() << "\n"
+      << "  Name: " << finalcut::FTerm::getTermFileName() << "\n"
+      << "  Mode: " << finalcut::FTerm::getEncodingString() << "\n"
       << "  Size: " << x << fc::Times
                     << y << "\n"
-      << "Colors: " << getMaxColor()
+      << "Colors: " << finalcut::FTerm::getMaxColor()
     , finalcut::FMessageBox::Ok, 0, 0, this
   );
   info1.setHeadline("Terminal:");
@@ -834,7 +847,7 @@ void MyDialog::cb_drives (const finalcut::FWidget*, const FDataPtr)
     , finalcut::FMessageBox::Ok, 0, 0, this
   );
 
-  if ( isNewFont() )
+  if ( finalcut::FTerm::isNewFont() )
   {
     finalcut::FLabel drive {finalcut::NF_Drive, &info2};
     drive.setGeometry (FPoint{11, 2}, FSize{4, 1});
@@ -853,7 +866,7 @@ void MyDialog::cb_drives (const finalcut::FWidget*, const FDataPtr)
     finalcut::FLabel cd {" CD ", &info2};
     cd.setGeometry (FPoint{11, 6}, FSize{4, 1});
 
-    if ( isMonochron() )
+    if ( finalcut::FTerm::isMonochron() )
     {
       net.setReverseMode();
       drive.setReverseMode();
@@ -903,6 +916,21 @@ void MyDialog::cb_clearInput (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
+void MyDialog::cb_switchTheme (const finalcut::FWidget* widget, const FDataPtr)
+{
+  const auto& check_menu = *(static_cast<const finalcut::FCheckMenuItem*>(widget));
+
+  if ( check_menu.isChecked() )
+    finalcut::FApplication::setDarkTheme();
+  else
+    finalcut::FApplication::setDefaultTheme();
+
+  auto root_widget = getRootWidget();
+  root_widget->resetColors();
+  root_widget->redraw();
+}
+
+//----------------------------------------------------------------------
 void MyDialog::cb_input2buttonText (finalcut::FWidget* widget, FDataPtr data)
 {
   auto& button = *(static_cast<finalcut::FButton*>(widget));
@@ -917,7 +945,7 @@ void MyDialog::cb_setTitlebar (finalcut::FWidget* widget, const FDataPtr)
   auto& lineedit = *(static_cast<finalcut::FLineEdit*>(widget));
   finalcut::FString title{};
   lineedit >> title;
-  setTermTitle (title);
+  finalcut::FTerm::setTermTitle (title);
   setText (title);
   redraw();
 }
@@ -981,7 +1009,7 @@ void MyDialog::cb_view (const finalcut::FWidget*, FDataPtr data)
                                int(getRootWidget()->getHeight() / 6) }
                     , FSize{60, getRootWidget()->getHeight() * 3 / 4} );
   view->setResizeable();
-  std::string line = "";
+  std::string line{""};
   std::ifstream infile;
   infile.open(file);
 
@@ -1021,17 +1049,17 @@ int main (int argc, char* argv[])
   // Create the application object app
   finalcut::FApplication app{argc, argv};
   app.setNonBlockingRead();
-  app.redefineDefaultColors(true);
-  app.setTermTitle (title);
+  finalcut::FTerm::redefineDefaultColors(true);
+  finalcut::FTerm::setTermTitle (title);
 
   // Force vt100 encoding
-  //app.setEncoding(finalcut::fc::VT100);
+  //finalcut::FTerm::setEncoding(finalcut::fc::VT100);
 
   // Sets the terminal size to 94×30
-  //app.setTermSize(94,30);
+  //finalcut::FTerm::setTermSize(FSize{94, 30});
 
   // Enable the final cut graphical font
-  //app.setNewFont();
+  //finalcut::FTerm::setNewFont();
 
   // Create main dialog object d
   MyDialog d{&app};

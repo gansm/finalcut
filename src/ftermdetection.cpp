@@ -25,7 +25,9 @@
 #endif
 
 #include "final/emptyfstring.h"
+#include "final/fapplication.h"
 #include "final/fc.h"
+#include "final/flog.h"
 #include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermdata.h"
@@ -377,6 +379,8 @@ void FTermDetection::detectTerminal()
     if ( ! new_termtype && std::strlen(termtype) == 5 )
       new_termtype = "xterm-16color";
   }
+  else if ( std::strncmp(termtype, "ansi", 4) == 0 )  // ANSI detection
+    terminal_type.ansi = true;
 
   // set the new environment variable TERM
   if ( new_termtype )
@@ -587,9 +591,9 @@ const char* FTermDetection::parseAnswerbackMsg (const char current_termtype[])
   {
     answer_back = new FString(getAnswerbackMsg());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FString");
     return nullptr;
   }
 
@@ -657,9 +661,9 @@ const char* FTermDetection::parseSecDA (const char current_termtype[])
     // Secondary device attributes (SEC_DA) <- decTerminalID string
     sec_da = new FString(getSecDA());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FString");
     return current_termtype;
   }
 

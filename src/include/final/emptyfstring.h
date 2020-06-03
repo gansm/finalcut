@@ -20,6 +20,14 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+/*  Standalone class
+ *  ════════════════
+ *
+ * ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ * ▕ emptyFString ▏
+ * ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ */
+
 #ifndef EMPTYFSTRING_H
 #define EMPTYFSTRING_H
 
@@ -27,6 +35,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include "final/fapplication.h"
+#include "final/flog.h"
 #include "final/fstring.h"
 
 namespace finalcut
@@ -51,6 +61,7 @@ public:
   // Disable copy assignment operator (=)
   emptyFString& operator = (const emptyFString&) = delete;
 
+  static const FString getClassName();
   static bool isNull();
   static const FString& get();
   static void clear();
@@ -61,6 +72,10 @@ private:
 };
 
 // emptyFString inline functions
+//----------------------------------------------------------------------
+inline const FString emptyFString::getClassName()
+{ return "emptyFString"; }
+
 //----------------------------------------------------------------------
 inline bool emptyFString::isNull()
 {
@@ -76,9 +91,9 @@ inline const FString& emptyFString::get()
     {
       empty_string = new FString("");
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FString");
     }
   }
 

@@ -73,13 +73,13 @@ class CheckList final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 CheckList::CheckList (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   // Dialog settings
   //   Avoids calling a virtual function from the constructor
   //   (CERT, OOP50-CPP)
   FDialog::setText (L"Shopping list");
-  const std::size_t nf_offset = ( isNewFont() ) ? 1 : 0;
+  const std::size_t nf_offset = ( finalcut::FTerm::isNewFont() ) ? 1 : 0;
   FDialog::setGeometry ( FPoint{int(1 + (parent->getWidth() - 28) / 2), 5}
                        , FSize{28 + nf_offset, 13} );
   setShadow();

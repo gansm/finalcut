@@ -24,6 +24,7 @@
 
 #include "final/fapplication.h"
 #include "final/fbutton.h"
+#include "final/flog.h"
 #include "final/fmessagebox.h"
 
 namespace finalcut
@@ -49,7 +50,7 @@ static const char* const button_text[] =
 // constructors and destructor
 //----------------------------------------------------------------------
 FMessageBox::FMessageBox (FWidget* parent)
-  : FDialog(parent)
+  : FDialog{parent}
 {
   setTitlebarText("Message for you");
   init(FMessageBox::Ok, 0, 0);
@@ -57,15 +58,15 @@ FMessageBox::FMessageBox (FWidget* parent)
 
 //----------------------------------------------------------------------
 FMessageBox::FMessageBox (const FMessageBox& mbox)
-  : FDialog(mbox.getParentWidget())
-  , headline_text(mbox.headline_text)
-  , text(mbox.text)
-  , text_components(mbox.text_components)
-  , max_line_width(mbox.max_line_width)
-  , emphasis_color(mbox.emphasis_color)
-  , num_buttons(mbox.num_buttons)
-  , text_num_lines(mbox.text_num_lines)
-  , center_text(mbox.center_text)
+  : FDialog{mbox.getParentWidget()}
+  , headline_text{mbox.headline_text}
+  , text{mbox.text}
+  , text_components{mbox.text_components}
+  , max_line_width{mbox.max_line_width}
+  , emphasis_color{mbox.emphasis_color}
+  , num_buttons{mbox.num_buttons}
+  , text_num_lines{mbox.text_num_lines}
+  , center_text{mbox.center_text}
 {
   setTitlebarText (mbox.getTitlebarText());
   init ( mbox.button_digit[0]
@@ -80,8 +81,8 @@ FMessageBox::FMessageBox ( const FString& caption
                          , int button1
                          , int button2
                          , FWidget* parent )
-  : FDialog(parent)
-  , text(message)
+  : FDialog{parent}
+  , text{message}
 {
   setTitlebarText(caption);
   init(button0, button1, button2);
@@ -256,9 +257,9 @@ inline void FMessageBox::allocation (int button0, int button1, int button2)
       button[2]->setHeight(1, false);
     }
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FButton");
     return;
   }
 }
@@ -347,7 +348,7 @@ void FMessageBox::draw()
   // center the whole block
   const int msg_x = int((getWidth() - max_line_width) / 2);
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   if ( ! headline_text.isEmpty() )
@@ -376,7 +377,7 @@ void FMessageBox::draw()
     y++;
   }
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 

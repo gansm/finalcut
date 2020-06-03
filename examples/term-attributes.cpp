@@ -66,17 +66,17 @@ class AttribDlg final : public finalcut::FDialog
     void adjustSize() override;
 
     // Data members
-    FColor bgcolor{getFWidgetColors().label_bg};
+    FColor bgcolor{getColorTheme()->label_bg};
     finalcut::FButton next_button{"&Next >", this};
     finalcut::FButton back_button{"< &Back", this};
 };
 
 //----------------------------------------------------------------------
 AttribDlg::AttribDlg (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   FDialog::setText ( "A terminal attributes test ("
-                   + finalcut::FString{getTermType()}
+                   + finalcut::FString{finalcut::FTerm::getTermType()}
                    + ")");
 
   next_button.setGeometry ( FPoint{int(getWidth()) - 13, int(getHeight()) - 4}
@@ -145,10 +145,10 @@ void AttribDlg::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void AttribDlg::cb_next (const finalcut::FWidget*, const FDataPtr)
 {
-  if ( isMonochron() )
+  if ( finalcut::FTerm::isMonochron() )
     return;
 
-  if ( bgcolor == FColor(getMaxColor() - 1) )
+  if ( bgcolor == FColor(finalcut::FTerm::getMaxColor() - 1) )
     bgcolor = fc::Default;
   else if ( bgcolor == fc::Default )
     bgcolor = 0;
@@ -161,13 +161,13 @@ void AttribDlg::cb_next (const finalcut::FWidget*, const FDataPtr)
 //----------------------------------------------------------------------
 void AttribDlg::cb_back (const finalcut::FWidget*, const FDataPtr)
 {
-  if ( isMonochron() )
+  if ( finalcut::FTerm::isMonochron() )
     return;
 
   if ( bgcolor == 0 )
     bgcolor = fc::Default;
   else if ( bgcolor == fc::Default )
-    bgcolor = FColor(getMaxColor() - 1);
+    bgcolor = FColor(finalcut::FTerm::getMaxColor() - 1);
   else
     bgcolor--;
 
@@ -238,14 +238,14 @@ class AttribDemo final : public finalcut::FWidget
     void draw() override;
 
     // Data member
-    FColor last_color{FColor(getMaxColor())};
+    FColor last_color{FColor(finalcut::FTerm::getMaxColor())};
 };
 
 //----------------------------------------------------------------------
 AttribDemo::AttribDemo (finalcut::FWidget* parent)
-  : finalcut::FWidget(parent)
+  : finalcut::FWidget{parent}
 {
-  if ( isMonochron() )
+  if ( finalcut::FTerm::isMonochron() )
     last_color = 1;
   else if ( last_color > 16 )
     last_color = 16;
@@ -267,11 +267,11 @@ void AttribDemo::printColorLine()
 //----------------------------------------------------------------------
 void AttribDemo::printAltCharset()
 {
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
   const auto& parent = static_cast<AttribDlg*>(getParent());
 
-  if ( ! isMonochron() )
-    setColor (wc.label_fg, wc.label_bg);
+  if ( ! finalcut::FTerm::isMonochron() )
+    setColor (wc->label_fg, wc->label_bg);
 
   print() << FPoint{1, 1} << "alternate charset: ";
 
@@ -418,7 +418,7 @@ void AttribDemo::printProtected()
 void AttribDemo::draw()
 {
   // test alternate character set
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
   printAltCharset();
 
   const std::vector<std::function<void()> > effect
@@ -441,15 +441,15 @@ void AttribDemo::draw()
   {
     print() << FPoint{1, 2 + int(y)};
 
-    if ( ! isMonochron() )
-      setColor (wc.label_fg, wc.label_bg);
+    if ( ! finalcut::FTerm::isMonochron() )
+      setColor (wc->label_fg, wc->label_bg);
 
     if ( y < effect.size() )
       effect[y]();
   }
 
-  if ( ! isMonochron() )
-    setColor(wc.label_fg, wc.label_bg);
+  if ( ! finalcut::FTerm::isMonochron() )
+    setColor(wc->label_fg, wc->label_bg);
 
   print() << FPoint{1, 15};
   const FColor bg = static_cast<AttribDlg*>(getParent())->getBGColor();

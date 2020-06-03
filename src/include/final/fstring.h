@@ -87,8 +87,8 @@ class FString
     explicit FString (int);
     explicit FString (std::size_t);
     FString (std::size_t, wchar_t);
-    FString (const FString&);        // implicit conversion copy constructor
-    FString (FString&&) noexcept;    // implicit conversion move constructor
+    FString (const FString&);        // copy constructor
+    FString (FString&&) noexcept;    // move constructor
     FString (const std::wstring&);   // implicit conversion constructor
     FString (const wchar_t[]);       // implicit conversion constructor
     FString (const std::string&);    // implicit conversion constructor
@@ -162,7 +162,7 @@ class FString
     operator const char* () const { return c_str(); }
 
     // Accessor
-    virtual const FString getClassName();
+    virtual const FString getClassName() const;
 
     // inquiries
     bool isNull() const;
@@ -247,14 +247,14 @@ class FString
     static constexpr uInt CHAR_SIZE = sizeof(wchar_t);  // bytes per character
 
     // Methods
-    void     initLength (std::size_t);
-    void     _assign (const wchar_t[]);
-    void     _insert (std::size_t, const wchar_t[]);
-    void     _insert (std::size_t, std::size_t, const wchar_t[]);
-    void     _remove (std::size_t, std::size_t);
-    char*    wc_to_c_str (const wchar_t[]) const;
-    wchar_t* c_to_wc_str (const char[]) const;
-    wchar_t* extractToken (wchar_t*[], const wchar_t[], const wchar_t[]);
+    void           _initLength (std::size_t);
+    void           _assign (const wchar_t[]);
+    void           _insert (std::size_t, const wchar_t[]);
+    void           _insert (std::size_t, std::size_t, const wchar_t[]);
+    void           _remove (std::size_t, std::size_t);
+    const char*    _to_cstring (const wchar_t[]) const;
+    const wchar_t* _to_wcstring (const char[]) const;
+    const wchar_t* _extractToken (wchar_t*[], const wchar_t[], const wchar_t[]);
 
     // Data members
     wchar_t*      string{nullptr};
@@ -370,16 +370,16 @@ inline bool FString::operator > (const CharT& s) const
 }
 
 //----------------------------------------------------------------------
-inline const FString FString::getClassName()
+inline const FString FString::getClassName() const
 { return "FString"; }
 
 //----------------------------------------------------------------------
 inline bool FString::isNull() const
-{ return ! string; }
+{ return ( bufsize == 0 || (bufsize > 0 && ! string) ); }
 
 //----------------------------------------------------------------------
 inline bool FString::isEmpty() const
-{ return ( ! string ) || ( ! *string ); }
+{ return ( length == 0 || (length > 0 && string[0] == L'\0') ); }
 
 //----------------------------------------------------------------------
 inline std::size_t FString::getLength() const

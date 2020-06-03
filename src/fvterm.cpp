@@ -29,6 +29,7 @@
 #include "final/fcharmap.h"
 #include "final/fcolorpair.h"
 #include "final/fkeyboard.h"
+#include "final/flog.h"
 #include "final/foptiattr.h"
 #include "final/foptimove.h"
 #include "final/fstyle.h"
@@ -122,8 +123,8 @@ void FVTerm::setTermXY (int x, int y)
   if ( term_pos->getX() == x && term_pos->getY() == y )
     return;
 
-  const int term_width = int(getColumnNumber());
-  const int term_height = int(getLineNumber());
+  const int term_width = int(FTerm::getColumnNumber());
+  const int term_height = int(FTerm::getLineNumber());
 
   if ( x >= term_width && term_width > 0 )
   {
@@ -412,7 +413,7 @@ int FVTerm::print (const std::vector<FChar>& term_string)
 int FVTerm::print (FTermArea* area, const std::vector<FChar>& term_string)
 {
   int len{0};
-  const uInt tabstop = uInt(getTabstop());
+  const uInt tabstop = uInt(FTerm::getTabstop());
 
   if ( ! area )
     return -1;
@@ -446,7 +447,7 @@ int FVTerm::print (FTermArea* area, const std::vector<FChar>& term_string)
         break;
 
       case '\a':
-        beep();
+        FTerm::beep();
         break;
 
       default:
@@ -690,9 +691,9 @@ void FVTerm::createArea ( const FRect& box
   {
     area = new FTermArea;
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FTermArea");
     return;
   }
 
@@ -1383,9 +1384,9 @@ inline bool FVTerm::reallocateTextArea ( FTermArea* area
     area->changes = new FLineChanges[height];
     area->data    = new FChar[size];
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FLineChanges[height] or FChar[size]");
     return false;
   }
 
@@ -1404,9 +1405,9 @@ inline bool FVTerm::reallocateTextArea (FTermArea* area, std::size_t size)
   {
     area->data = new FChar[size];
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FChar[size]");
     return false;
   }
 
@@ -1909,9 +1910,9 @@ void FVTerm::init (bool disable_alt_screen)
     term_pos      = new FPoint(-1, -1);
     output_buffer = new std::queue<int>;
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FTerm, FPoint, or std::queue<int>");
     std::abort();
   }
 
@@ -1928,7 +1929,7 @@ void FVTerm::init (bool disable_alt_screen)
   std::memcpy (&next_attribute, &term_attribute, sizeof(next_attribute));
 
   // Create virtual terminal
-  FRect term_geometry {0, 0, getColumnNumber(), getLineNumber()};
+  FRect term_geometry {0, 0, FTerm::getColumnNumber(), FTerm::getLineNumber()};
   createVTerm (term_geometry.getSize());
 
   // Create virtual desktop area
@@ -2120,7 +2121,7 @@ bool FVTerm::clearTerm (int fillchar)
   {
     term_pos->setPoint(-1, -1);
 
-    for (int i{0}; i < int(getLineNumber()); i++)
+    for (int i{0}; i < int(FTerm::getLineNumber()); i++)
     {
       setTermXY (0, i);
       appendOutputBuffer (cb);
@@ -2753,7 +2754,7 @@ void FVTerm::printPaddingCharacter (FTermArea* area, const FChar& term_char)
   // Copy character to padding character
   std::memcpy (&pc, &term_char, sizeof(pc));
 
-  if ( getEncoding() == fc::UTF8 )
+  if ( FTerm::getEncoding() == fc::UTF8 )
   {
     pc.ch = 0;
     pc.attr.bit.fullwidth_padding = true;
@@ -2862,7 +2863,7 @@ bool FVTerm::isInsideTerminal (const FPoint& pos)
 {
   // Check whether the coordinates are within the virtual terminal
 
-  const FRect term_geometry {0, 0, getColumnNumber(), getLineNumber()};
+  const FRect term_geometry {0, 0, FTerm::getColumnNumber(), FTerm::getLineNumber()};
 
   if ( term_geometry.contains(pos) )
     return true;
@@ -2910,7 +2911,7 @@ inline void FVTerm::markAsPrinted (uInt from, uInt to, uInt line)
 inline void FVTerm::newFontChanges (FChar*& next_char)
 {
   // NewFont special cases
-  if ( ! isNewFont() )
+  if ( ! FTerm::isNewFont() )
     return;
 
   if ( next_char->ch == fc::LowerHalfBlock )
@@ -2928,7 +2929,7 @@ inline void FVTerm::charsetChanges (FChar*& next_char)
   const wchar_t& ch = next_char->ch;
   next_char->encoded_char = ch;
 
-  if ( getEncoding() == fc::UTF8 )
+  if ( FTerm::getEncoding() == fc::UTF8 )
     return;
 
   const wchar_t ch_enc = FTerm::charEncode(ch);
@@ -2944,18 +2945,18 @@ inline void FVTerm::charsetChanges (FChar*& next_char)
 
   next_char->encoded_char = ch_enc;
 
-  if ( getEncoding() == fc::VT100 )
+  if ( FTerm::getEncoding() == fc::VT100 )
     next_char->attr.bit.alt_charset = true;
-  else if ( getEncoding() == fc::PC )
+  else if ( FTerm::getEncoding() == fc::PC )
   {
     next_char->attr.bit.pc_charset = true;
 
-    if ( isPuttyTerminal() )
+    if ( FTerm::isPuttyTerminal() )
       return;
 
-    if ( isXTerminal() && ch_enc < 0x20 )  // Character 0x00..0x1f
+    if ( FTerm::isXTerminal() && ch_enc < 0x20 )  // Character 0x00..0x1f
     {
-      if ( hasUTF8() )
+      if ( FTerm::hasUTF8() )
         next_char->encoded_char = int(FTerm::charEncode(ch, fc::ASCII));
       else
       {
@@ -3027,8 +3028,8 @@ int FVTerm::appendLowerRight (FChar*& screen_char)
     const auto& ip = TCAP(fc::t_insert_padding);
     const auto& ic = TCAP(fc::t_insert_character);
 
-    const int x = int(getColumnNumber()) - 2;
-    const int y = int(getLineNumber()) - 1;
+    const int x = int(FTerm::getColumnNumber()) - 2;
+    const int y = int(FTerm::getLineNumber()) - 1;
     setTermXY (x, y);
     appendChar (screen_char);
     term_pos->x_ref()++;

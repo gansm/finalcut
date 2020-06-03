@@ -44,7 +44,7 @@ FWindow* FWindow::previous_window{nullptr};
 // constructor and destructor
 //----------------------------------------------------------------------
 FWindow::FWindow(FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   setWindowWidget();
   FRect geometry {getTermGeometry()};
@@ -184,7 +184,7 @@ bool FWindow::setTransparentShadow (bool enable)
 //----------------------------------------------------------------------
 bool FWindow::setShadow (bool enable)
 {
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     return false;
 
   if ( enable )
@@ -239,7 +239,7 @@ bool FWindow::isWindowHidden() const
 //----------------------------------------------------------------------
 void FWindow::drawBorder()
 {
-  if ( isNewFont() )  // Draw a newfont outer frame
+  if ( FTerm::isNewFont() )  // Draw a newfont outer frame
   {
     const FRect r{FPoint{1, 1}, getSize()};
     print() << r.getUpperLeftPos()
@@ -786,7 +786,7 @@ void FWindow::adjustSize()
 //----------------------------------------------------------------------
 bool FWindow::event (FEvent* ev)
 {
-  switch ( uInt(ev->type()) )
+  switch ( uInt(ev->getType()) )
   {
     case fc::WindowActive_Event:
       onWindowActive (ev);
@@ -882,7 +882,8 @@ void closeDropDown (FWidget* widget, const FPoint& mouse_position)
   if ( ! openmenu )
    return;
 
-  if ( openmenu->isInstanceOf("FMenu") )
+  if ( openmenu->isInstanceOf("FMenu")
+    || openmenu->isInstanceOf("FDialogListMenu") )
   {
     bool contains_menu_structure;
     auto menu = static_cast<FMenu*>(openmenu);

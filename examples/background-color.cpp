@@ -92,7 +92,7 @@ class Background final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 Background::Background (finalcut::FWidget* parent)
-  : FDialog(parent)
+  : FDialog{parent}
 {
   // Dialog settings
   //   Avoids calling a virtual function from the constructor
@@ -210,7 +210,6 @@ void Background::cb_choice (const finalcut::FWidget*, const FDataPtr)
   redraw();
   updateTerminal();
 }
-
 
 //----------------------------------------------------------------------
 //                               main part

@@ -27,6 +27,7 @@
 #include "final/flabel.h"
 #include "final/flineedit.h"
 #include "final/flistbox.h"
+#include "final/flog.h"
 #include "final/fmouse.h"
 #include "final/fpoint.h"
 #include "final/fsize.h"
@@ -43,7 +44,7 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FDropDownListBox::FDropDownListBox (FWidget* parent)
-  : FWindow(parent)
+  : FWindow{parent}
 {
   init();
 }
@@ -71,7 +72,7 @@ void FDropDownListBox::setGeometry ( const FPoint& pos, const FSize& size
 {
   FWindow::setGeometry (pos, size, adjust);
 
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
   {
     FSize new_size{size};
     new_size.scaleBy(-1, 0);
@@ -123,25 +124,25 @@ void FDropDownListBox::init()
 void FDropDownListBox::draw()
 {
   // Fill the background
-  const auto& wc = getFWidgetColors();
-  setColor (wc.menu_active_fg, wc.menu_active_bg);
+  const auto& wc = getColorTheme();
+  setColor (wc->menu_active_fg, wc->menu_active_bg);
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   clearArea();
   drawShadow();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 
 //----------------------------------------------------------------------
 void FDropDownListBox::drawShadow()
 {
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
   finalcut::drawShadow(this);
-  setColor (wc.shadow_fg, wc.shadow_bg);
+  setColor (wc->shadow_fg, wc->shadow_bg);
   print() << FPoint{int(getWidth()) + 1, 1} << fc::FullBlock;  // █
 }
 
@@ -168,7 +169,7 @@ bool FDropDownListBox::containsWidget (const FPoint& p)
 // constructors and destructor
 //----------------------------------------------------------------------
 FComboBox::FComboBox (FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init();
 }
@@ -218,8 +219,8 @@ bool FComboBox::setFocus (bool enable)
 bool FComboBox::setShadow (bool enable)
 {
   if ( enable
-    && getEncoding() != fc::VT100
-    && getEncoding() != fc::ASCII )
+    && FTerm::getEncoding() != fc::VT100
+    && FTerm::getEncoding() != fc::ASCII )
   {
     setFlags().shadow = true;
     setShadowSize(FSize{1, 1});
@@ -494,7 +495,7 @@ void FComboBox::init()
   adjustSize();
   initCallbacks();
 
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
     nf = 1;
 }
 
@@ -532,22 +533,22 @@ void FComboBox::initCallbacks()
 //----------------------------------------------------------------------
 void FComboBox::draw()
 {
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   const FColorPair button_color = [this, &wc] ()
   {
     if ( list_window.isEmpty() )
-      return FColorPair { wc.scrollbar_button_inactive_fg
-                        , wc.scrollbar_button_inactive_bg };
+      return FColorPair { wc->scrollbar_button_inactive_fg
+                        , wc->scrollbar_button_inactive_bg };
     else
-      return FColorPair { wc.scrollbar_button_fg
-                        , wc.scrollbar_button_bg };
+      return FColorPair { wc->scrollbar_button_fg
+                        , wc->scrollbar_button_bg };
   }();
 
   print() << FPoint{int(getWidth()) - nf, 1}
           << button_color;
 
- if ( isNewFont() )
+ if ( FTerm::isNewFont() )
    print() << NF_button_arrow_down;
  else
    print() << fc::BlackDownPointingTriangle;  // ▼
@@ -605,9 +606,9 @@ void FComboBox::passEventToListWindow (FMouseEvent* const& ev)
     list_window.list.setFocus();
     list_window.list.onMouseMove(_ev.get());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMouseEvent");
   }
 }
 
@@ -643,7 +644,7 @@ void FComboBox::cb_closeComboBox (const FWidget*, const FDataPtr)
 //----------------------------------------------------------------------
 void FComboBox::cb_inputFieldSwitch (const FWidget*, const FDataPtr)
 {
-  const auto& mouse = getFMouseControl();
+  const auto& mouse = FTerm::getFMouseControl();
 
   if ( mouse && ! mouse->isLeftButtonPressed() )
     return;
@@ -675,7 +676,7 @@ void FComboBox::cb_inputFieldSwitch (const FWidget*, const FDataPtr)
 //----------------------------------------------------------------------
 void FComboBox::cb_inputFieldHandOver (const FWidget*, const FDataPtr)
 {
-  const auto& mouse = getFMouseControl();
+  const auto& mouse = FTerm::getFMouseControl();
 
   if ( ! mouse || list_window.isHidden() )
     return;
@@ -692,9 +693,9 @@ void FComboBox::cb_inputFieldHandOver (const FWidget*, const FDataPtr)
     list_window.list.setFocus();
     list_window.list.onMouseMove(_ev.get());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMouseEvent");
   }
 }
 

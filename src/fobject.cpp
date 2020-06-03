@@ -43,7 +43,7 @@ const FString* fc::emptyFString::empty_string{nullptr};
 // constructors and destructor
 //----------------------------------------------------------------------
 FObject::FObject (FObject* parent)
-  : parent_obj(parent)
+  : parent_obj{parent}
 {
   if ( parent )                // add object to parent
   {
@@ -60,9 +60,9 @@ FObject::FObject (FObject* parent)
       {
         timer_list = new FTimerList;
       }
-      catch (const std::bad_alloc& ex)
+      catch (const std::bad_alloc&)
       {
-        std::cerr << bad_alloc_str << ex.what() << std::endl;
+        badAllocOutput ("FTimerList");
         return;
       }
     }
@@ -191,19 +191,18 @@ bool FObject::event (FEvent* ev)
 {
   // Receives events on this object
 
-  if ( ev->type() == fc::Timer_Event )
+  if ( ev->getType() == fc::Timer_Event )
   {
     onTimer ( static_cast<FTimerEvent*>(ev) );
-    return true;
   }
-
-  if ( ev->type() == fc::User_Event )
+  else if ( ev->getType() == fc::User_Event )
   {
     onUserEvent ( static_cast<FUserEvent*>(ev) );
-    return true;
   }
+  else
+    return false;
 
-  return false;
+  return true;
 }
 
 //----------------------------------------------------------------------

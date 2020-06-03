@@ -44,17 +44,17 @@ class Keyboard final : public finalcut::FWidget
 
 //----------------------------------------------------------------------
 Keyboard::Keyboard (finalcut::FWidget* parent)
-  : finalcut::FWidget(parent)
+  : finalcut::FWidget{parent}
 {
-  setFWidgetColors().term_fg = finalcut::fc::Default;
-  setFWidgetColors().term_bg = finalcut::fc::Default;
+  getColorTheme()->term_fg = finalcut::fc::Default;
+  getColorTheme()->term_bg = finalcut::fc::Default;
 }
 
 //----------------------------------------------------------------------
 void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
 {
   const FKey key_id = ev->key();
-  finalcut::FString key_name = getKeyName(key_id);
+  finalcut::FString key_name = finalcut::FTerm::getKeyName(key_id);
   bool is_last_line{false};
 
   if ( key_name.isEmpty() )

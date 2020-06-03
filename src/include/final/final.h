@@ -49,6 +49,8 @@
 #include <final/flineedit.h>
 #include <final/flistbox.h>
 #include <final/flistview.h>
+#include <final/flog.h>
+#include <final/flogger.h>
 #include <final/fmenubar.h>
 #include <final/fmenu.h>
 #include <final/fmenuitem.h>

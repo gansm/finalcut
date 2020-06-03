@@ -35,7 +35,7 @@ namespace finalcut
 // constructors and destructor
 //----------------------------------------------------------------------
 SGRoptimizer::SGRoptimizer (attributebuffer& sequence)
-  : seq(sequence)
+  : seq{sequence}
 { }
 
 //----------------------------------------------------------------------

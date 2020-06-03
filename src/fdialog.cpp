@@ -42,15 +42,15 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FDialog::FDialog (FWidget* parent)
-  : FWindow(parent)
+  : FWindow{parent}
 {
   init();
 }
 
 //----------------------------------------------------------------------
 FDialog::FDialog (const FString& txt, FWidget* parent)
-  : FWindow(parent)
-  , tb_text(txt)
+  : FWindow{parent}
+  , tb_text{txt}
 {
   init();
 }
@@ -99,7 +99,7 @@ bool FDialog::setModal (bool enable)
   if ( enable )
   {
     setModalDialogCounter()++;
-    getFKeyboard()->clearKeyBuffer();
+    FTerm::getFKeyboard()->clearKeyBuffer();
   }
   else
     setModalDialogCounter()--;
@@ -134,6 +134,15 @@ bool FDialog::setBorder (bool enable)
   }
 
   return (setFlags().no_border = ! enable);
+}
+
+//----------------------------------------------------------------------
+void FDialog::resetColors()
+{
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->dialog_fg);
+  setBackgroundColor (wc->dialog_bg);
+  FWidget::resetColors();
 }
 
 //----------------------------------------------------------------------
@@ -752,7 +761,7 @@ void FDialog::draw()
   // Fill the background
   setColor();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   clearArea();
@@ -763,14 +772,14 @@ void FDialog::draw()
   if ( getFlags().shadow )
     drawDialogShadow();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 
 //----------------------------------------------------------------------
 void FDialog::drawDialogShadow()
 {
-  if ( isMonochron() && ! getFlags().trans_shadow )
+  if ( FTerm::isMonochron() && ! getFlags().trans_shadow )
     return;
 
   drawShadow(this);
@@ -800,9 +809,7 @@ void FDialog::init()
   addDialog(this);
   setActiveWindow(this);
   setTransparentShadow();
-  const auto& wc = getFWidgetColors();
-  setForegroundColor (wc.dialog_fg);
-  setBackgroundColor (wc.dialog_bg);
+  resetColors();
   auto old_focus = FWidget::getFocusWidget();
 
   if ( old_focus )
@@ -824,9 +831,9 @@ void FDialog::initDialogMenu()
   {
     dialog_menu = new FMenu ("-", this);
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMenu");
     return;
   }
 
@@ -854,9 +861,9 @@ void FDialog::initMoveSizeMenuItem (FMenu* menu)
   {
     move_size_item = new FMenuItem (menu);
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMenuItem");
     return;
   }
 
@@ -877,9 +884,9 @@ void FDialog::initZoomMenuItem (FMenu* menu)
   {
     zoom_item = new FMenuItem (menu);
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMenuItem");
     return;
   }
 
@@ -900,9 +907,9 @@ void FDialog::initCloseMenuItem (FMenu* menu)
   {
     close_item = new FMenuItem ("&Close", menu);
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMenuItem");
     return;
   }
 
@@ -924,13 +931,13 @@ void FDialog::drawBorder()
   if ( (getMoveSizeWidget() == this || ! resize_click_pos.isOrigin() )
     && ! isZoomed() )
   {
-    const auto& wc = getFWidgetColors();
-    setColor (wc.dialog_resize_fg, getBackgroundColor());
+    const auto& wc = getColorTheme();
+    setColor (wc->dialog_resize_fg, getBackgroundColor());
   }
   else
     setColor();
 
-  if ( isNewFont() )  // Draw a newfont U-shaped frame
+  if ( FTerm::isNewFont() )  // Draw a newfont U-shaped frame
   {
     const FRect r{FPoint{1, 1}, getSize()};
 
@@ -965,7 +972,7 @@ void FDialog::drawTitleBar()
   // Draw the zoom/unzoom button
   drawZoomButton();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 
 #if DEBUG
@@ -983,14 +990,14 @@ void FDialog::drawBarButton()
 {
   // Print the title button
   print() << FPoint{1, 1};
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   if ( dialog_menu && dialog_menu->isShown() )
-    setColor (wc.titlebar_button_focus_fg, wc.titlebar_button_focus_bg);
+    setColor (wc->titlebar_button_focus_fg, wc->titlebar_button_focus_bg);
   else
-    setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
+    setColor (wc->titlebar_button_fg, wc->titlebar_button_bg);
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
   {
     if ( isWindowActive() )
       setReverse(false);
@@ -998,11 +1005,11 @@ void FDialog::drawBarButton()
       setReverse(true);
   }
 
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
   {
     print (finalcut::NF_menu_button);
   }
-  else if ( isMonochron() )
+  else if ( FTerm::isMonochron() )
   {
     print ('[');
 
@@ -1034,12 +1041,12 @@ void FDialog::drawZoomButton()
   if ( ! isResizeable() )
     return;
 
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   if ( zoom_button_pressed )
-    setColor (wc.titlebar_button_focus_fg, wc.titlebar_button_focus_bg);
+    setColor (wc->titlebar_button_focus_fg, wc->titlebar_button_focus_bg);
   else
-    setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
+    setColor (wc->titlebar_button_fg, wc->titlebar_button_bg);
 
   if ( isZoomed() )
     drawRestoreSizeButton();
@@ -1050,13 +1057,13 @@ void FDialog::drawZoomButton()
 //----------------------------------------------------------------------
 inline void FDialog::drawRestoreSizeButton()
 {
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
   {
     print (finalcut::NF_button_down);
   }
   else
   {
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
     {
       print ('[');
       print (fc::BlackDownPointingTriangle);  // ▼
@@ -1074,13 +1081,13 @@ inline void FDialog::drawRestoreSizeButton()
 //----------------------------------------------------------------------
 inline void FDialog::drawZoomedButton()
 {
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
   {
     print (finalcut::NF_button_up);
   }
   else
   {
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
     {
       print ('[');
       print (fc::BlackUpPointingTriangle);  // ▲
@@ -1101,15 +1108,15 @@ void FDialog::drawTextBar()
   // Fill with spaces (left of the title)
   std::size_t center_offset{0};
   std::size_t x{1};
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
-  if ( getMaxColor() < 16 )
+  if ( FTerm::getMaxColor() < 16 )
     setBold();
 
   if ( isWindowActive() || (dialog_menu && dialog_menu->isShown()) )
-    setColor (wc.titlebar_active_fg, wc.titlebar_active_bg);
+    setColor (wc->titlebar_active_fg, wc->titlebar_active_bg);
   else
-    setColor (wc.titlebar_inactive_fg, wc.titlebar_inactive_bg);
+    setColor (wc->titlebar_inactive_fg, wc->titlebar_inactive_bg);
 
   const auto width = getWidth();
   const auto zoom_btn = getZoomButtonWidth();
@@ -1138,7 +1145,7 @@ void FDialog::drawTextBar()
   for ( ; x + 1 + length < width - zoom_btn - 1; x++)
     print (' ');
 
-  if ( getMaxColor() < 16 )
+  if ( FTerm::getMaxColor() < 16 )
     unsetBold();
 }
 
@@ -1267,7 +1274,7 @@ inline std::size_t FDialog::getZoomButtonWidth()
 {
   if ( ! isResizeable() )
     return 0;
-  else if ( isNewFont() )
+  else if ( FTerm::isNewFont() )
     return 2;
   else
     return 3;
@@ -1358,9 +1365,9 @@ inline void FDialog::passEventToSubMenu ( const mouseStates& ms
     setClickedWidget(dialog_menu);
     dialog_menu->onMouseMove(_ev.get());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMouseEvent");
     return;
   }
 }
@@ -1632,12 +1639,12 @@ void FDialog::cb_move (const FWidget*, const FDataPtr)
 
   setMoveSizeWidget(this);
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   drawBorder();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 
   save_geometry = getGeometry();
@@ -1646,15 +1653,15 @@ void FDialog::cb_move (const FWidget*, const FDataPtr)
   {
     tooltip = new FToolTip(this);
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FToolTip");
     return;
   }
 
   if ( isResizeable() )
   {
-    if ( isLinuxTerm() )
+    if ( FTerm::isLinuxTerm() )
       tooltip->setText ( "        Arrow keys: Move\n"
                          "Shift + Arrow keys: Resize\n"
                          "             Enter: Done\n"

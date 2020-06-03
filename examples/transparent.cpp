@@ -71,8 +71,8 @@ class Transparent final : public finalcut::FDialog
 //----------------------------------------------------------------------
 Transparent::Transparent ( finalcut::FWidget* parent
                          , Transparent::trans_type tt )
-  : finalcut::FDialog(parent)
-  , type(tt)
+  : finalcut::FDialog{parent}
+  , type{tt}
 {
   // Set statusbar text for this window
   // Avoids calling a virtual function from the constructor
@@ -89,18 +89,18 @@ void Transparent::draw()
 {
   finalcut::FDialog::draw();
 
-  if ( isMonochron() )
+  if ( finalcut::FTerm::isMonochron() )
     setReverse(true);
 
   if ( type == shadow )
   {
-    const auto& wc = getFWidgetColors();
-    print() << FColorPair {wc.shadow_bg, wc.shadow_fg}
+    const auto& wc = getColorTheme();
+    print() << FColorPair {wc->shadow_bg, wc->shadow_fg}
             << FStyle {fc::ColorOverlay};
   }
   else if ( type == inherit_background )
   {
-    if ( getMaxColor() > 8 )
+    if ( finalcut::FTerm::getMaxColor() > 8 )
       print() << FColorPair {fc::Blue, fc::Black};
     else
       print() << FColorPair {fc::Green, fc::Black};
@@ -191,7 +191,7 @@ class MainWindow final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 MainWindow::MainWindow (finalcut::FWidget* parent)
-  : FDialog(parent)
+  : FDialog{parent}
 {
   // The memory allocation for the following three sub windows occurs
   // with the operator new. The lifetime of the generated widget
@@ -228,14 +228,14 @@ void MainWindow::draw()
 {
   finalcut::FDialog::draw();
 
-  if ( isMonochron() )
+  if ( finalcut::FTerm::isMonochron() )
     setReverse(true);
 
   setColor();
   print() << FPoint{2, 4} << line1;
   print() << FPoint{2, 5} << line2;
 
-  if ( isMonochron() )
+  if ( finalcut::FTerm::isMonochron() )
     setReverse(false);
 
   updateTerminal();

@@ -72,7 +72,7 @@ class Scrollview final : public finalcut::FScrollView
 
 //----------------------------------------------------------------------
 Scrollview::Scrollview (finalcut::FWidget* parent)
-  : finalcut::FScrollView(parent)
+  : finalcut::FScrollView{parent}
 {
   // Sets the navigation button geometry
   go_east.setGeometry (FPoint{1, 1}, FSize{5, 1});
@@ -128,11 +128,11 @@ void Scrollview::setScrollSize (const FSize& size)
 //----------------------------------------------------------------------
 void Scrollview::draw()
 {
-  if ( isMonochron() )
+  if ( finalcut::FTerm::isMonochron() )
     setReverse(true);
 
-  const auto& wc = getFWidgetColors();
-  setColor (wc.label_inactive_fg, wc.dialog_bg);
+  const auto& wc = getColorTheme();
+  setColor (wc->label_inactive_fg, wc->dialog_bg);
   clearArea();
 
   for (int y{0}; y < int(getScrollHeight()); y++)
@@ -143,7 +143,7 @@ void Scrollview::draw()
       print (32 + ((x + y) % 0x5f));
   }
 
-  if ( isMonochron() )
+  if ( finalcut::FTerm::isMonochron() )
     setReverse(false);
 
   FScrollView::draw();
@@ -214,7 +214,7 @@ class Scrollviewdemo final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 Scrollviewdemo::Scrollviewdemo (finalcut::FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   FDialog::setGeometry (FPoint{16, 3}, FSize{50, 19});
   FDialog::setText ("Scrolling viewport example");

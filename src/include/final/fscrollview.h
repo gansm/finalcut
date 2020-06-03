@@ -108,6 +108,7 @@ class FScrollView : public FWidget
     bool                setViewportPrint (bool);
     bool                setViewportPrint();
     bool                unsetViewportPrint();
+    void                resetColors() override;
     bool                setBorder (bool);
     bool                setBorder();
     bool                unsetBorder();

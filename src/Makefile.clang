@@ -25,6 +25,8 @@ INCLUDE_HEADERS = \
 	flineedit.h \
 	flistbox.h \
 	flistview.h \
+	flog.h \
+	flogger.h \
 	fmenu.h \
 	fdialoglistmenu.h \
 	fmenubar.h \
@@ -49,6 +51,7 @@ INCLUDE_HEADERS = \
 	fcombobox.h \
 	fstatusbar.h \
 	fstring.h \
+	fstringstream.h \
 	fmouse.h \
 	fkeyboard.h \
 	fstartoptions.h \
@@ -83,6 +86,7 @@ RM = rm -f
 LIB = libfinal.so
 OBJS = \
 	fstring.o \
+	fstringstream.o \
 	fpoint.o \
 	fsize.o \
 	frect.o \
@@ -98,6 +102,8 @@ OBJS = \
 	flabel.o \
 	flistbox.o \
 	flistview.o \
+	flog.o \
+	flogger.o \
 	fmenu.o \
 	fdialoglistmenu.o \
 	fmenubar.o \
@@ -139,6 +145,7 @@ OBJS = \
 	foptimove.o \
 	ftermbuffer.o \
 	fapplication.o \
+	fcolorpalette.o \
 	fwidgetcolors.o \
 	fwidget.o \
 	fwidget_functions.o \

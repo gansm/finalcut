@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,9 +20,20 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fapplication.h"
+#include "final/flog.h"
 #include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermopenbsd.h"
+
+#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
+#define initCheck(ret_value)   \
+    if ( ! isInitialized() )   \
+    {                          \
+      warnNotInitialized();    \
+      return ret_value;        \
+    }
+#endif
 
 namespace finalcut
 {
@@ -86,6 +97,8 @@ void FTermOpenBSD::init()
 //----------------------------------------------------------------------
 void FTermOpenBSD::finish()
 {
+  initCheck();
+
   if ( ! isBSDConsole() )
     return;
 
@@ -96,6 +109,8 @@ void FTermOpenBSD::finish()
 //----------------------------------------------------------------------
 bool FTermOpenBSD::setBeep (int Hz, int ms)
 {
+  initCheck(false);
+
   if ( ! isBSDConsole() )
     return false;
 
@@ -122,6 +137,7 @@ bool FTermOpenBSD::setBeep (int Hz, int ms)
 //----------------------------------------------------------------------
 bool FTermOpenBSD::resetBeep()
 {
+  initCheck(false);
   wskbd_bell_data default_bell;
 
   // Gets the default setting for the bell
@@ -141,6 +157,16 @@ bool FTermOpenBSD::resetBeep()
 
 
 // private methods of FTermOpenBSD
+//----------------------------------------------------------------------
+void FTermOpenBSD::warnNotInitialized()
+{
+  *FApplication::getLog() << FLog::Warn
+                          << "The FTermOpenBSD object has "
+                          << "not yet been initialized! "
+                          << "Please call the init() method first."
+                          << std::endl;
+}
+
 //----------------------------------------------------------------------
 bool FTermOpenBSD::saveBSDConsoleEncoding()
 {

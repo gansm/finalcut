@@ -51,6 +51,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "final/fstringstream.h"
 #include "final/fwidget.h"
 
 namespace finalcut
@@ -99,11 +100,14 @@ class FTextView : public FWidget
     void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
+    void                resetColors() override;
     void                setText (const FString&);
     void                scrollToX (int);
     void                scrollToY (int);
     void                scrollTo (const FPoint&);
     void                scrollTo (int, int);
+    void                scrollToBegin();
+    void                scrollToEnd();
     void                scrollBy (int, int);
 
     // Methods
@@ -184,10 +188,10 @@ inline FTextView& FTextView::operator = (const FString& s)
 template <typename typeT>
 inline FTextView& FTextView::operator << (const typeT& s)
 {
-  std::wostringstream outstream;
+  FStringStream outstream{std::ios_base::out};
   outstream << s;
 
-  if ( ! outstream.str().empty() )
+  if ( ! outstream.str().isEmpty() )
     append (outstream.str());
 
   return *this;

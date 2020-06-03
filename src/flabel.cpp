@@ -27,6 +27,7 @@
 #include "final/fcolorpair.h"
 #include "final/fevent.h"
 #include "final/flabel.h"
+#include "final/flog.h"
 #include "final/fstatusbar.h"
 
 namespace finalcut
@@ -39,15 +40,15 @@ namespace finalcut
 // constructors and destructor
 //----------------------------------------------------------------------
 FLabel::FLabel(FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init();
 }
 
 //----------------------------------------------------------------------
 FLabel::FLabel (const FString& txt, FWidget* parent)
-  : FWidget(parent)
-  , text(txt)
+  : FWidget{parent}
+  , text{txt}
 {
   init();
   setText(txt);
@@ -173,9 +174,9 @@ void FLabel::onMouseDown (FMouseEvent* ev)
             std::make_shared<FMouseEvent>(fc::MouseDown_Event, p, tp, b);
         FApplication::sendEvent (parent, _ev.get());
       }
-      catch (const std::bad_alloc& ex)
+      catch (const std::bad_alloc&)
       {
-        std::cerr << bad_alloc_str << ex.what() << std::endl;
+        badAllocOutput ("FMouseEvent");
         return;
       }
     }
@@ -245,20 +246,7 @@ void FLabel::cb_accelWidgetDestroyed (const FWidget*, const FDataPtr)
 //----------------------------------------------------------------------
 void FLabel::init()
 {
-  const auto& parent_widget = getParentWidget();
   unsetFocusable();
-
-  if ( parent_widget )
-  {
-    setForegroundColor (parent_widget->getForegroundColor());
-    setBackgroundColor (parent_widget->getBackgroundColor());
-  }
-  else
-  {
-    const auto& wc = getFWidgetColors();
-    setForegroundColor (wc.dialog_fg);
-    setBackgroundColor (wc.dialog_bg);
-  }
 }
 
 //----------------------------------------------------------------------
@@ -302,7 +290,9 @@ void FLabel::draw()
   if ( text.isEmpty() )
     return;
 
-  if ( isMonochron() )
+  useParentWidgetColor();
+
+  if ( FTerm::isMonochron() )
   {
     setReverse(true);
 
@@ -321,7 +311,7 @@ void FLabel::draw()
   else
     drawSingleLine();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
   {
     setReverse(false);
 
@@ -406,7 +396,7 @@ void FLabel::printLine (FString& line)
   for (std::size_t z{0}; z < to_char; z++)
   {
     if ( ! std::iswprint(std::wint_t(line[z]))
-      && ! isNewFont()
+      && ! FTerm::isNewFont()
       && ( line[z] < fc::NF_rev_left_arrow2
         || line[z] > fc::NF_check_mark ) )
     {
@@ -415,8 +405,8 @@ void FLabel::printLine (FString& line)
 
     if ( z == hotkeypos && getFlags().active )
     {
-      const auto& wc = getFWidgetColors();
-      setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
+      const auto& wc = getColorTheme();
+      setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
 
       if ( ! getFlags().no_underline )
         setUnderline();

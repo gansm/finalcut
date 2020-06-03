@@ -39,14 +39,14 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FButtonGroup::FButtonGroup(FWidget* parent)
-  : FScrollView(parent)
+  : FScrollView{parent}
 {
   init();
 }
 
 //----------------------------------------------------------------------
 FButtonGroup::FButtonGroup (const FString& txt, FWidget* parent)
-  : FScrollView(parent)
+  : FScrollView{parent}
   , text{txt}
 {
   init();
@@ -196,9 +196,9 @@ void FButtonGroup::hide()
   }
   else
   {
-    const auto& wc = getFWidgetColors();
-    fg = wc.dialog_fg;
-    bg = wc.dialog_bg;
+    const auto& wc = getColorTheme();
+    fg = wc->dialog_fg;
+    bg = wc->dialog_bg;
   }
 
   setColor (fg, bg);
@@ -380,13 +380,13 @@ void FButtonGroup::setHotkeyAccelerator()
 //----------------------------------------------------------------------
 void FButtonGroup::draw()
 {
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
-  setColor();
+  useParentWidgetColor();
   clearArea();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 
   FScrollView::draw();
@@ -427,9 +427,6 @@ bool FButtonGroup::isRadioButton (const FToggleButton* button) const
 //----------------------------------------------------------------------
 void FButtonGroup::init()
 {
-  const auto& wc = getFWidgetColors();
-  setForegroundColor (wc.label_fg);
-  setBackgroundColor (wc.label_bg);
   setMinimumSize (FSize{7, 3});
   buttonlist.clear();  // no buttons yet
 }
@@ -438,7 +435,7 @@ void FButtonGroup::init()
 void FButtonGroup::drawText ( const FString& label_text
                             , std::size_t hotkeypos )
 {
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
   const std::size_t column_width = getColumnWidth(label_text);
   std::size_t length = label_text.getLength();
   bool ellipsis{false};
@@ -451,19 +448,19 @@ void FButtonGroup::drawText ( const FString& label_text
     ellipsis = true;
   }
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   if ( isEnabled() )
-    setColor(wc.label_emphasis_fg, wc.label_bg);
+    setColor(wc->label_emphasis_fg, wc->label_bg);
   else
-    setColor(wc.label_inactive_fg, wc.label_inactive_bg);
+    setColor(wc->label_inactive_fg, wc->label_inactive_bg);
 
   for (std::size_t z{0}; z < length; z++)
   {
     if ( (z == hotkeypos) && getFlags().active )
     {
-      setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
+      setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
 
       if ( ! getFlags().no_underline )
         setUnderline();
@@ -473,16 +470,16 @@ void FButtonGroup::drawText ( const FString& label_text
       if ( ! getFlags().no_underline )
         unsetUnderline();
 
-      setColor (wc.label_emphasis_fg, wc.label_bg);
+      setColor (wc->label_emphasis_fg, wc->label_bg);
     }
     else
       print (label_text[z]);
   }
 
   if ( ellipsis )  // Print ellipsis
-    print() << FColorPair {wc.label_ellipsis_fg, wc.label_bg} << "..";
+    print() << FColorPair {wc->label_ellipsis_fg, wc->label_bg} << "..";
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 }
 

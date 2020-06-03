@@ -28,6 +28,7 @@
 #include "final/fcolorpair.h"
 #include "final/fdialog.h"
 #include "final/fevent.h"
+#include "final/flog.h"
 #include "final/fmenu.h"
 #include "final/fmenubar.h"
 #include "final/fmenuitem.h"
@@ -44,15 +45,15 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FMenu::FMenu(FWidget* parent)
-  : FWindow(parent)
+  : FWindow{parent}
 {
   init(parent);
 }
 
 //----------------------------------------------------------------------
 FMenu::FMenu (const FString& txt, FWidget* parent)
-  : FWindow(parent)
-  , menuitem(txt, parent)
+  : FWindow{parent}
+  , menuitem{txt, parent}
 {
   init(parent);
 }
@@ -80,6 +81,15 @@ void FMenu::setStatusbarMessage (const FString& msg)
 {
   FWidget::setStatusbarMessage(msg);
   menuitem.setStatusbarMessage(msg);
+}
+
+//----------------------------------------------------------------------
+void FMenu::resetColors()
+{
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->menu_active_fg);
+  setBackgroundColor (wc->menu_active_bg);
+  FWidget::resetColors();
 }
 
 //----------------------------------------------------------------------
@@ -457,10 +467,7 @@ void FMenu::init(FWidget* parent)
   setTransparentShadow();
   setMenuWidget();
   hide();
-
-  const auto& wc = getFWidgetColors();
-  setForegroundColor (wc.menu_active_fg);
-  setBackgroundColor (wc.menu_active_bg);
+  resetColors();
   menuitem.setMenu(this);
 
   if ( parent )
@@ -517,7 +524,7 @@ void FMenu::calculateDimensions()
     }
     else if ( accel_key )
     {
-      const std::size_t accel_len = getKeyName(accel_key).getLength();
+      const std::size_t accel_len = FTerm::getKeyName(accel_key).getLength();
       item_width += accel_len + 2;
     }
 
@@ -941,9 +948,9 @@ void FMenu::passEventToSubMenu (FMouseEvent* const& ev)
     setClickedWidget(opened_sub_menu);
     opened_sub_menu->onMouseMove(_ev.get());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMouseEvent");
   }
 }
 
@@ -965,9 +972,9 @@ void FMenu::passEventToSuperMenu (FMouseEvent* const& ev)
     setClickedWidget(smenu);
     smenu->onMouseMove(_ev.get());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMouseEvent");
   }
 }
 
@@ -990,9 +997,9 @@ void FMenu::passEventToMenuBar (FMouseEvent* const& ev)
     mbar.mouse_down = true;
     mbar.onMouseMove(_ev.get());
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FMouseEvent");
   }
 }
 
@@ -1208,10 +1215,10 @@ bool FMenu::hotkeyMenu (FKeyEvent* ev)
 void FMenu::draw()
 {
   // Fill the background
-  const auto& wc = getFWidgetColors();
-  setColor (wc.menu_active_fg, wc.menu_active_bg);
+  const auto& wc = getColorTheme();
+  setColor (wc->menu_active_fg, wc->menu_active_bg);
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   clearArea();
@@ -1219,7 +1226,7 @@ void FMenu::draw()
   drawItems();
   drawShadow(this);
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 
@@ -1242,14 +1249,14 @@ void FMenu::drawItems()
 //----------------------------------------------------------------------
 inline void FMenu::drawSeparator (int y)
 {
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
   print() << FPoint{1, 2 + y}
-          << FColorPair{wc.menu_active_fg, wc.menu_active_bg};
+          << FColorPair{wc->menu_active_fg, wc->menu_active_bg};
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
   {
     print (fc::NF_border_line_vertical_right);
     FString line { std::size_t(getWidth()) - 2
@@ -1266,7 +1273,7 @@ inline void FMenu::drawSeparator (int y)
     print (fc::BoxDrawingsVerticalAndLeft);
   }
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 
@@ -1313,7 +1320,7 @@ inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
   if ( is_selected )
     drawTrailingSpaces (column_width);
 
-  if ( isMonochron() && is_enabled && is_selected )
+  if ( FTerm::isMonochron() && is_enabled && is_selected )
     setReverse(true);
 }
 
@@ -1333,14 +1340,14 @@ inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
     {
       if ( is_radio_btn )
       {
-        if ( isNewFont() )
+        if ( FTerm::isNewFont() )
           print (fc::NF_Bullet);  // NF_Bullet ●
         else
           print (fc::BlackCircle);     // BlackCircle ●
       }
       else
       {
-        if ( isNewFont() )
+        if ( FTerm::isNewFont() )
           print (fc::NF_check_mark);  // NF_check_mark ✓
         else
           print (fc::SquareRoot);     // SquareRoot √
@@ -1348,10 +1355,10 @@ inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
     }
     else
     {
-      const auto& wc = getFWidgetColors();
-      setColor (wc.menu_inactive_fg, getBackgroundColor());
+      const auto& wc = getColorTheme();
+      setColor (wc->menu_inactive_fg, getBackgroundColor());
 
-      if ( getEncoding() == fc::ASCII )
+      if ( FTerm::getEncoding() == fc::ASCII )
         print ('-');
       else
         print (fc::SmallBullet);  // ·
@@ -1371,18 +1378,18 @@ inline void FMenu::drawMenuText (menuText& data)
   for (std::size_t z{0}; z < data.text.getLength(); z++)
   {
     if ( ! std::iswprint(std::wint_t(data.text[z]))
-      && ! isNewFont()
+      && ! FTerm::isNewFont()
       && ( data.text[z] < fc::NF_rev_left_arrow2
         || data.text[z] > fc::NF_check_mark )
-      && ! charEncodable(wchar_t(data.text[z])) )
+      && ! FTerm::charEncodable(wchar_t(data.text[z])) )
     {
       data.text[z] = L' ';
     }
 
     if ( z == data.hotkeypos )
     {
-      const auto& wc = getFWidgetColors();
-      setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
+      const auto& wc = getColorTheme();
+      setColor (wc->menu_hotkey_fg, wc->menu_hotkey_bg);
 
       if ( ! data.no_underline )
         setUnderline();
@@ -1418,7 +1425,7 @@ inline void FMenu::drawSubMenuIndicator (std::size_t& startpos)
 //----------------------------------------------------------------------
 inline void FMenu::drawAcceleratorKey (std::size_t& startpos, FKey accel_key)
 {
-  const FString accel_name {getKeyName(accel_key)};
+  const FString accel_name {FTerm::getKeyName(accel_key)};
   const std::size_t c = ( has_checkable_items ) ? 1 : 0;
   const std::size_t accel_len = accel_name.getLength();
   const std::size_t len = max_item_width - (startpos + accel_len + c + 2);
@@ -1447,33 +1454,33 @@ inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
 {
   const bool is_enabled  = m_item->isEnabled();
   const bool is_selected = m_item->isSelected();
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   if ( is_enabled )
   {
     if ( is_selected )
     {
-      setForegroundColor (wc.menu_active_focus_fg);
-      setBackgroundColor (wc.menu_active_focus_bg);
+      setForegroundColor (wc->menu_active_focus_fg);
+      setBackgroundColor (wc->menu_active_focus_bg);
 
-      if ( isMonochron() )
+      if ( FTerm::isMonochron() )
         setReverse(false);
     }
     else
     {
-      setForegroundColor (wc.menu_active_fg);
-      setBackgroundColor (wc.menu_active_bg);
+      setForegroundColor (wc->menu_active_fg);
+      setBackgroundColor (wc->menu_active_bg);
 
-      if ( isMonochron() )
+      if ( FTerm::isMonochron() )
         setReverse(true);
     }
   }
   else
   {
-    setForegroundColor (wc.menu_inactive_fg);
-    setBackgroundColor (wc.menu_inactive_bg);
+    setForegroundColor (wc->menu_inactive_fg);
+    setBackgroundColor (wc->menu_inactive_bg);
 
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(true);
   }
 

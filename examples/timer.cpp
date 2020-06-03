@@ -46,7 +46,7 @@ class Timer final : public finalcut::FWidget
 
 //----------------------------------------------------------------------
 Timer::Timer (finalcut::FWidget* parent)
-  : finalcut::FWidget(parent)
+  : finalcut::FWidget{parent}
 {
   addTimer (60000);              // 1-minute timer
   const int id = addTimer (50);  // 50-millisecond timer
@@ -54,8 +54,8 @@ Timer::Timer (finalcut::FWidget* parent)
   delTimer (id);
   addTimer (250);                // 250-millisecond timer
 
-  setFWidgetColors().term_fg = fc::Default;
-  setFWidgetColors().term_bg = fc::Default;
+  getColorTheme()->term_fg = fc::Default;
+  getColorTheme()->term_bg = fc::Default;
 }
 
 //----------------------------------------------------------------------

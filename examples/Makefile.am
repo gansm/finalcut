@@ -11,6 +11,7 @@ noinst_PROGRAMS = \
 	hello \
 	dialog \
 	input-dialog \
+	event-log \
 	fullwidth-character \
 	7segment \
 	choice \
@@ -39,6 +40,7 @@ noinst_PROGRAMS = \
 hello_SOURCES = hello.cpp
 dialog_SOURCES = dialog.cpp
 input_dialog_SOURCES = input-dialog.cpp
+event_log_SOURCES = event-log.cpp
 fullwidth_character_SOURCES = fullwidth-character.cpp
 7segment_SOURCES = 7segment.cpp
 choice_SOURCES = choice.cpp

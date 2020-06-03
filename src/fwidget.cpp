@@ -24,7 +24,9 @@
 
 #include "final/fapplication.h"
 #include "final/fevent.h"
+#include "final/flog.h"
 #include "final/fmenubar.h"
+#include "final/fstartoptions.h"
 #include "final/fstatusbar.h"
 #include "final/fstring.h"
 #include "final/ftermdata.h"
@@ -47,7 +49,6 @@ FWidget::FWidgetList* FWidget::window_list{nullptr};
 FWidget::FWidgetList* FWidget::dialog_list{nullptr};
 FWidget::FWidgetList* FWidget::always_on_top_list{nullptr};
 FWidget::FWidgetList* FWidget::close_widget{nullptr};
-FWidgetColors         FWidget::wcolors{};
 bool                  FWidget::init_desktop{false};
 bool                  FWidget::hideable{false};
 uInt                  FWidget::modal_dialog_counter{};
@@ -59,8 +60,8 @@ uInt                  FWidget::modal_dialog_counter{};
 // constructors and destructor
 //----------------------------------------------------------------------
 FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
-  : FVTerm( ! (bool(parent) || root_widget), disable_alt_screen)
-  , FObject(parent)
+  : FVTerm{ ! (bool(parent) || root_widget), disable_alt_screen}
+  , FObject{parent}
 {
   // init bit field with 0
   memset (&flags, 0, sizeof(flags));
@@ -305,6 +306,42 @@ bool FWidget::setFocus (bool enable)
 }
 
 //----------------------------------------------------------------------
+void FWidget::resetColors()
+{
+  if ( ! hasChildren() )
+    return;
+
+  for (auto&& child : getChildren())
+  {
+    if ( child->isWidget() )
+    {
+      auto widget = static_cast<FWidget*>(child);
+      widget->resetColors();
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+void FWidget::useParentWidgetColor()
+{
+  const auto& parent_widget = getParentWidget();
+
+  if ( parent_widget )
+  {
+    setForegroundColor (parent_widget->getForegroundColor());
+    setBackgroundColor (parent_widget->getBackgroundColor());
+  }
+  else  // Fallback
+  {
+    const auto& wc = getColorTheme();
+    setForegroundColor (wc->dialog_fg);
+    setBackgroundColor (wc->dialog_bg);
+  }
+
+  setColor();
+}
+
+//----------------------------------------------------------------------
 void FWidget::setColor()
 {
   // Changes colors to the widget default colors
@@ -537,7 +574,7 @@ void FWidget::setTermSize (const FSize& size)
 {
   // Set xterm size to width x height
 
-  if ( isXTerminal() )
+  if ( FTerm::isXTerminal() )
   {
     root_widget->wsize.setRect(FPoint{1, 1}, size);
     root_widget->adjust_wsize = root_widget->wsize;
@@ -938,7 +975,8 @@ void FWidget::redraw()
   {
     startTerminalUpdate();
     // clean desktop
-    setColor (wcolors.term_fg, wcolors.term_bg);
+    auto color_theme = getColorTheme();
+    setColor (color_theme->term_fg, color_theme->term_bg);
     clearArea (getVirtualDesktop());
   }
   else if ( ! isShown() )
@@ -1000,7 +1038,7 @@ void FWidget::show()
   if ( ! init_desktop )
   {
     // Sets the initial screen settings
-    initScreenSettings();
+    FTerm::initScreenSettings();
     // Initializing vdesktop
     const auto& r = getRootWidget();
     setColor(r->getForegroundColor(), r->getBackgroundColor());
@@ -1369,8 +1407,9 @@ void FWidget::hideArea (const FSize& size)
   }
   else
   {
-    fg = wcolors.dialog_fg;
-    bg = wcolors.dialog_bg;
+    auto color_theme = getColorTheme();
+    fg = color_theme->dialog_fg;
+    bg = color_theme->dialog_bg;
   }
 
   setColor (fg, bg);
@@ -1514,7 +1553,7 @@ bool FWidget::focusPrevChild()
 //----------------------------------------------------------------------
 bool FWidget::event (FEvent* ev)
 {
-  switch ( uInt(ev->type()) )
+  switch ( uInt(ev->getType()) )
   {
     case fc::KeyPress_Event:
       KeyPressEvent (static_cast<FKeyEvent*>(ev));
@@ -1590,12 +1629,8 @@ bool FWidget::event (FEvent* ev)
       onClose (static_cast<FCloseEvent*>(ev));
       break;
 
-    case fc::Timer_Event:
-      onTimer (static_cast<FTimerEvent*>(ev));
-      break;
-
     default:
-      return false;
+      return FObject::event(ev);
   }
 
   return true;
@@ -1689,13 +1724,13 @@ void FWidget::initRootWidget()
     always_on_top_list = new FWidgetList();
     close_widget       = new FWidgetList();
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FWidgetList");
     return;
   }
 
-  hideable = isCursorHideable();
+  hideable = FTerm::isCursorHideable();
   flags.visible_cursor = ! hideable;
 
   // Determine width and height of the terminal
@@ -1711,11 +1746,12 @@ void FWidget::initRootWidget()
   double_flatline_mask.left.resize (getHeight(), false);
 
   // Initialize default widget colors
-  setColorTheme();
+  initColorTheme();
 
   // Default foreground and background color of the desktop/terminal
-  foreground_color = wcolors.term_fg;
-  background_color = wcolors.term_bg;
+  auto color_theme = getColorTheme();
+  foreground_color = color_theme->term_fg;
+  background_color = color_theme->term_bg;
   init_desktop = false;
 }
 
@@ -1745,6 +1781,8 @@ void FWidget::finish()
     delete window_list;
     window_list = nullptr;
   }
+
+  destroyColorTheme();
 }
 
 //----------------------------------------------------------------------
@@ -1987,14 +2025,31 @@ void FWidget::drawChildren()
 }
 
 //----------------------------------------------------------------------
-void FWidget::setColorTheme()
+void FWidget::initColorTheme()
 {
   // Sets the default color theme
 
-  if ( getMaxColor() < 16 )  // for 8 color mode
-    wcolors.set8ColorTheme();
+  if ( FStartOptions::getFStartOptions().dark_theme )
+  {
+    if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
+      setColorTheme<default8ColorDarkTheme>();
+    else
+      setColorTheme<default16ColorDarkTheme>();
+  }
   else
-    wcolors.set16ColorTheme();
+  {
+    if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
+      setColorTheme<default8ColorTheme>();
+    else
+      setColorTheme<default16ColorTheme>();
+  }
+}
+
+//----------------------------------------------------------------------
+void FWidget::destroyColorTheme()
+{
+  const FWidgetColorsPtr* theme = &(getColorTheme());
+  delete theme;
 }
 
 //----------------------------------------------------------------------

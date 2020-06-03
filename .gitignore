@@ -38,6 +38,7 @@ examples/.deps/
 examples/.libs/
 examples/calculator
 examples/dialog
+examples/event-log
 examples/string-operations
 examples/background-color
 examples/opti-move

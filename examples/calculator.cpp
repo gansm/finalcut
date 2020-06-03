@@ -62,7 +62,7 @@ class Button final : public finalcut::FButton
 
 //----------------------------------------------------------------------
 Button::Button (finalcut::FWidget* parent)
-  : finalcut::FButton(parent)
+  : finalcut::FButton{parent}
 { }
 
 //----------------------------------------------------------------------
@@ -81,10 +81,10 @@ void Button::setChecked (bool enable)
   }
   else
   {
-    const auto& wc = getFWidgetColors();
-    setBackgroundColor(wc.button_active_bg);
-    setFocusForegroundColor(wc.button_active_focus_fg);
-    setFocusBackgroundColor(wc.button_active_focus_bg);
+    const auto& wc = getColorTheme();
+    setBackgroundColor(wc->button_active_bg);
+    setFocusForegroundColor(wc->button_active_focus_fg);
+    setFocusBackgroundColor(wc->button_active_focus_bg);
   }
 
   redraw();
@@ -245,7 +245,7 @@ class Calc final : public finalcut::FDialog
 
 //----------------------------------------------------------------------
 Calc::Calc (FWidget* parent)
-  : finalcut::FDialog(parent)
+  : finalcut::FDialog{parent}
 {
   // Dialog settings
   //   Avoids calling a virtual function from the constructor
@@ -278,7 +278,7 @@ Calc::Calc (FWidget* parent)
     btn->setDoubleFlatLine(fc::top);
     btn->setDoubleFlatLine(fc::bottom);
 
-    if ( isNewFont() )
+    if ( finalcut::FTerm::isNewFont() )
       btn->unsetClickAnimation();
 
     btn->addCallback
@@ -421,18 +421,18 @@ void Calc::drawDispay()
   if ( error )
     display = " Error                          ";
 
-  if ( isMonochron() )
+  if ( finalcut::FTerm::isMonochron() )
     setReverse(false);
 
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
   print() << FColorPair{fc::Black, fc::LightGray}
           << FPoint{3, 3} << display << ' '
-          << FColorPair{wc.dialog_fg, wc.dialog_bg};
+          << FColorPair{wc->dialog_fg, wc->dialog_bg};
 
-  if ( isMonochron() )
+  if ( finalcut::FTerm::isMonochron() )
     setReverse(true);
 
-  if ( isNewFont() )
+  if ( finalcut::FTerm::isNewFont() )
   {
     const wchar_t bottom_line     {fc::NF_border_line_bottom};
     const wchar_t top_bottom_line {fc::NF_border_line_up_and_down};

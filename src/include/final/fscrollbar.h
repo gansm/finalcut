@@ -50,6 +50,8 @@
 #include <functional>
 #include <memory>
 
+#include "final/fapplication.h"
+#include "final/flog.h"
 #include "final/fwidget.h"
 
 namespace finalcut
@@ -150,7 +152,7 @@ class FScrollbar : public FWidget
     sType               scroll_type{FScrollbar::noScroll};
     bool                threshold_reached{false};
     int                 threshold_time{500};
-    int                 repeat_time{10};
+    int                 repeat_time{80};
     int                 slider_click_pos{-1};
     int                 slider_click_stop_pos{-1};
     int                 current_slider_pos{-1};
@@ -164,7 +166,7 @@ class FScrollbar : public FWidget
     double              steps{1};
     std::size_t         length{20};
     fc::orientation     bar_orientation{fc::vertical};
-    int                 max_color{getMaxColor()};
+    int                 max_color{FTerm::getMaxColor()};
 };
 
 
@@ -180,9 +182,9 @@ void initScrollbar ( FScrollbarPtr& bar
   {
     bar = std::make_shared<FScrollbar>(o, cb_instance);
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FScrollbar");
     return;
   }
 

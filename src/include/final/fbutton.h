@@ -88,6 +88,7 @@ class FButton : public FWidget
     void                setFocusBackgroundColor (FColor);
     void                setInactiveForegroundColor (FColor);
     void                setInactiveBackgroundColor (FColor);
+    void                resetColors() override;
     bool                setNoUnderline(bool);
     bool                setNoUnderline();
     bool                unsetNoUnderline();
@@ -157,13 +158,13 @@ class FButton : public FWidget
     bool         click_animation{true};
     int          click_time{150};
     int          space_char{int(' ')};
-    FColor       button_fg{getFWidgetColors().button_active_fg};
-    FColor       button_bg{getFWidgetColors().button_active_bg};
-    FColor       button_hotkey_fg{getFWidgetColors().button_hotkey_fg};
-    FColor       button_focus_fg{getFWidgetColors().button_active_focus_fg};
-    FColor       button_focus_bg{getFWidgetColors().button_active_focus_bg};
-    FColor       button_inactive_fg{getFWidgetColors().button_inactive_fg};
-    FColor       button_inactive_bg{getFWidgetColors().button_inactive_bg};
+    FColor       button_fg{getColorTheme()->button_active_fg};
+    FColor       button_bg{getColorTheme()->button_active_bg};
+    FColor       button_hotkey_fg{getColorTheme()->button_hotkey_fg};
+    FColor       button_focus_fg{getColorTheme()->button_active_focus_fg};
+    FColor       button_focus_bg{getColorTheme()->button_active_focus_bg};
+    FColor       button_inactive_fg{getColorTheme()->button_inactive_fg};
+    FColor       button_inactive_bg{getColorTheme()->button_inactive_bg};
     std::size_t  hotkeypos{NOT_SET};
     std::size_t  indent{0};
     std::size_t  center_offset{0};

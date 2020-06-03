@@ -13,10 +13,10 @@ Table of Contents
   - [Event handler reimplementation](#event-handler-reimplementation)
 - [Signals and Callbacks](#signals-and-callbacks)
   - [Default signals](#the-final-cut-widgets-emit-the-following-default-signals)
-- [Callback function](#example-of-a-callback-function)
-- [Callback lambda expression](#example-of-an-lambda-expression-callback)
-- [Callback method](#example-of-a-callback-function)
-- [Custom signals](#send-custom-signals)
+  - [Callback function](#example-of-a-callback-function)
+  - [Callback lambda expression](#example-of-an-lambda-expression-callback)
+  - [Callback method](#example-of-a-callback-function)
+  - [Custom signals](#send-custom-signals)
 - [Widget layout](#widget-layout)
   - [Coordinates](#coordinates)
   - [Lengths](#lengths)
@@ -69,8 +69,8 @@ int main (int argc, char* argv[])
   finalcut::FApplication app(argc, argv);
   finalcut::FDialog dialog(&app);
   dialog.setText ("A dialog");
-  const finalcut::FPoint position(25, 5);
-  const finalcut::FSize size(30, 10);
+  const finalcut::FPoint position{25, 5};
+  const finalcut::FSize size{30, 10};
   dialog.setGeometry (position, size);
   finalcut::FWidget::setMainWidget(&dialog);
   dialog.show();
@@ -126,8 +126,8 @@ dialog.setText ("A dialog");
 The title bar of the dialog box gets the text "A dialog".
 
 ```cpp
-finalcut::FPoint position(25, 5);
-finalcut::FSize size(30, 10);
+finalcut::FPoint position{25, 5};
+finalcut::FSize size{30, 10};
 dialog.setGeometry (position, size);
 ```
 The dialog window gets a width of 30 and a height of 10 characters.
@@ -206,11 +206,11 @@ int main (int argc, char* argv[])
   // The object dialog is managed by app
   FDialog* dialog = new FDialog(&app);
   dialog->setText ("Window Title");
-  dialog->setGeometry (FPoint(25, 5), FSize(40, 8));
+  dialog->setGeometry (FPoint{25, 5}, FSize{40, 8});
 
   // The object input is managed by dialog
   FLineEdit* input = new FLineEdit("predefined text", dialog);
-  input->setGeometry(FPoint(8, 2), FSize(29, 1));
+  input->setGeometry(FPoint{8, 2}, FSize{29, 1});
   input->setLabelText (L"&Input");
 
   // The object label is managed by dialog
@@ -218,7 +218,7 @@ int main (int argc, char* argv[])
                                "adipiscing elit, sed do eiusmod tempor "
                                "incididunt ut labore et dolore magna aliqua."
                              , dialog );
-  label->setGeometry (FPoint(2, 4), FSize(36, 1));
+  label->setGeometry (FPoint{2, 4}, FSize{36, 1});
   FWidget::setMainWidget(dialog);
   dialog->show();
   return app.exec();
@@ -322,13 +322,13 @@ class dialogWidget : public FDialog
 {
   public:
     explicit dialogWidget (FWidget* parent = nullptr)
-      : FDialog(parent)
+      : FDialog{parent}
     {
       setText ("Dialog");
-      setGeometry (FPoint(25, 5), FSize(23, 4));
-      label.setGeometry (FPoint(1, 1), FSize(10, 1));
+      setGeometry (FPoint{25, 5}, FSize{23, 4});
+      label.setGeometry (FPoint{1, 1}, FSize{10, 1});
       label.setAlignment (fc::alignRight);
-      value.setGeometry (FPoint(11, 1), FSize(10, 1));
+      value.setGeometry (FPoint{11, 1}, FSize{10, 1});
       id = addTimer(100);
     }
 
@@ -500,14 +500,14 @@ int main (int argc, char* argv[])
   FApplication app(argc, argv);
   FDialog dialog(&app);
   dialog.setText ("A dialog with callback function");
-  dialog.setGeometry (FRect(25, 5, 45, 9));
+  dialog.setGeometry (FRect{25, 5, 45, 9});
   FLabel label (&dialog);
   label = "The button has never been pressed before";
-  label.setGeometry (FPoint(2, 2), FSize(41, 1));
+  label.setGeometry (FPoint{2, 2}, FSize{41, 1});
   FButton button (&dialog);
   // Character follows '&' will be used as the accelerator key
   button = "&Click me";
-  button.setGeometry (FPoint(15, 5), FSize(14, 1));
+  button.setGeometry (FPoint{15, 5}, FSize{14, 1});
 
   // Connect the button signal "clicked" with the callback function
   button.addCallback
@@ -553,9 +553,9 @@ int main (int argc, char* argv[])
   FApplication app(argc, argv);
   FDialog dialog(&app);
   dialog.setText ("Lambda expression as callback");
-  dialog.setGeometry (FRect(25, 5, 45, 9));
+  dialog.setGeometry (FRect{25, 5, 45, 9});
   FButton button ("&bottom", &dialog);
-  button.setGeometry (FPoint(15, 5), FSize(14, 1));
+  button.setGeometry (FPoint{15, 5}, FSize{14, 1});
 
   // Connect the button signal "clicked" with the lambda expression
   button.addCallback
@@ -567,12 +567,12 @@ int main (int argc, char* argv[])
 
       if ( button.getY() != 2 )
       {
-        button.setPos (FPoint(15, 2));
+        button.setPos (FPoint{15, 2});
         button.setText("&top");
       }
       else
       {
-        button.setPos (FPoint(15, 5));
+        button.setPos (FPoint{15, 5});
         button.setText("&bottom");
       }
 
@@ -616,11 +616,11 @@ class dialogWidget : public FDialog
 {
   public:
     explicit dialogWidget (FWidget* parent = nullptr)
-      : FDialog(parent)
+      : FDialog{parent}
     {
       setText ("Callback method");
-      setGeometry (FPoint(25, 5), FSize(25, 7));
-      button.setGeometry (FPoint(7, 3), FSize(10, 1));
+      setGeometry (FPoint{25, 5}, FSize{25, 7});
+      button.setGeometry (FPoint{7, 3}, FSize{10, 1});
 
       // Connect the button signal "clicked" with the callback method
       button.addCallback
@@ -678,16 +678,16 @@ class dialogWidget : public FDialog
 {
   public:
     explicit dialogWidget (FWidget* parent = nullptr)
-      : FDialog(parent)
+      : FDialog{parent}
     {
-      setGeometry (FPoint(25, 5), FSize(22, 7));
+      setGeometry (FPoint{25, 5}, FSize{22, 7});
       setText ("Emit signal");
-      const FSize size(5, 1);
-      label.setGeometry (FPoint(8, 1), size);
+      const FSize size{5, 1};
+      label.setGeometry (FPoint{8, 1}, size);
       label.setAlignment (fc::alignRight);
       label.setForegroundColor (fc::Black);
-      plus.setGeometry (FPoint(3, 3), size);
-      minus.setGeometry (FPoint(13, 3), size);
+      plus.setGeometry (FPoint{3, 3}, size);
+      minus.setGeometry (FPoint{13, 3}, size);
       plus.setNoUnderline();
       minus.setNoUnderline();
 
@@ -987,15 +987,15 @@ class dialogWidget : public FDialog
 {
   public:
     explicit dialogWidget (FWidget* parent = nullptr)
-      : FDialog(parent)
+      : FDialog{parent}
     {
       setText ("Dialog");
       setResizeable();
-      button.setGeometry (FPoint(1, 1), FSize(12, 1), false);
-      input.setGeometry (FPoint(2, 3), FSize(12, 1), false);
+      button.setGeometry (FPoint{1, 1}, FSize{12, 1}, false);
+      input.setGeometry (FPoint{2, 3}, FSize{12, 1}, false);
       // Set dialog geometry and calling adjustSize()
-      setGeometry (FPoint(25, 5), FSize(40, 12));
-      setMinimumSize (FSize(25, 9));
+      setGeometry (FPoint{25, 5}), FSize{40, 12});
+      setMinimumSize (FSize{25, 9});
     }
 
   private:
@@ -1011,14 +1011,14 @@ class dialogWidget : public FDialog
       auto y = int((getDesktopHeight() - getHeight()) / 2);
       checkMinValue(x);
       checkMinValue(y);
-      setPos (FPoint(x, y), false);
+      setPos (FPoint{x, y}, false);
     }
 
     void adjustWidgets()
     {
       const auto bx = int(getWidth() - button.getWidth() - 3);
       const auto by = int(getHeight() - 4);
-      button.setPos (FPoint(bx, by), false);
+      button.setPos (FPoint{bx, by}, false);
       input.setWidth (getWidth() - 4);
       const auto ly = int(getHeight() / 2) - 1;
       input.setY (ly, false);
@@ -1046,10 +1046,10 @@ class dialogWidget : public FDialog
       // Calling super class method draw()
       FDialog::draw();
 
-      print() << FPoint (3, 3)
-              << FColorPair (fc::Black, fc::White)
+      print() << FPoint{3, 3}
+              << FColorPair{fc::Black, fc::White}
               << "Text on "
-              << FColorPair (fc::Blue, fc::Yellow)
+              << FColorPair{fc::Blue, fc::Yellow}
               << "top";
     }
 
@@ -1129,12 +1129,12 @@ class dialogWidget : public FDialog
 {
   public:
     explicit dialogWidget (FWidget* parent = nullptr)
-      : FDialog(parent)
+      : FDialog{parent}
     {
       setText ("Dialog");
-      setGeometry (FPoint(28, 2), FSize(24, 21));
-      scrollview.setGeometry(FPoint(1, 1), FSize(22, 11));
-      scrollview.setScrollSize(FSize(60, 27));
+      setGeometry (FPoint{28, 2}, FSize{24, 21});
+      scrollview.setGeometry(FPoint{1, 1}, FSize{22, 11});
+      scrollview.setScrollSize(FSize{60, 27});
       const auto& wc = getFWidgetColors();
       setColor (wc.label_inactive_fg, wc.dialog_bg);
       scrollview.clearArea();
@@ -1144,25 +1144,25 @@ class dialogWidget : public FDialog
 
       static std::vector<direction> d
       {
-        {"NW", FPoint(3,  13), FPoint(1,  1),  black},
-        {"N",  FPoint(10, 13), FPoint(21, 1),  red},
-        {"NE", FPoint(17, 13), FPoint(41, 1),  black},
-        {"W",  FPoint(3,  15), FPoint(1,  10), black},
-        {"*",  FPoint(10, 15), FPoint(21, 10), black},
-        {"E",  FPoint(17, 15), FPoint(41, 10), black},
-        {"SW", FPoint(3,  17), FPoint(1,  19), black},
-        {"S",  FPoint(10, 17), FPoint(21, 19), cyan},
-        {"SE", FPoint(17, 17), FPoint(41, 19), black}
+        {"NW", FPoint{3,  13}, FPoint{1,  1},  black},
+        {"N",  FPoint{10, 13}, FPoint{21, 1},  red},
+        {"NE", FPoint{17, 13}, FPoint{41, 1},  black},
+        {"W",  FPoint{3,  15}, FPoint{1,  10}, black},
+        {"*",  FPoint{10, 15}, FPoint{21, 10}, black},
+        {"E",  FPoint{17, 15}, FPoint{41, 10}, black},
+        {"SW", FPoint{3,  17}, FPoint{1,  19}, black},
+        {"S",  FPoint{10, 17}, FPoint{21, 19}, cyan},
+        {"SE", FPoint{17, 17}, FPoint{41, 19}, black}
       };
 
       for (auto&& b : d)
       {
-        scrollview.print() << std::get<2>(b) + FPoint(10, 5)
+        scrollview.print() << std::get<2>(b) + FPoint{10, 5}
                            << std::get<3>(b) << std::get<0>(b);
         auto edit = new FLineEdit("direction " + std::get<0>(b), &scrollview);
-        edit->setGeometry(std::get<2>(b) + FPoint(1, 1), FSize(17, 1));
+        edit->setGeometry(std::get<2>(b) + FPoint{1, 1}, FSize{17, 1});
         auto btn = new FButton(std::get<0>(b), this);
-        btn->setGeometry(std::get<1>(b), FSize(4, 1));
+        btn->setGeometry(std::get<1>(b), FSize{4, 1});
         btn->unsetShadow();
         btn->addCallback
         (

@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fapplication.h"
+#include "final/flog.h"
 #include "final/fstartoptions.h"
 
 namespace finalcut
@@ -49,6 +51,7 @@ FStartOptions::FStartOptions()
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
   , meta_sends_escape{true}
 #endif
+  , dark_theme{false}
 { }
 
 //----------------------------------------------------------------------
@@ -65,9 +68,9 @@ FStartOptions& FStartOptions::getFStartOptions()
     {
       start_options = new FStartOptions;
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FStartOptions");
       std::abort();
     }
   }

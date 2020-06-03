@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,12 +20,23 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fapplication.h"
 #include "final/fcharmap.h"
+#include "final/flog.h"
 #include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermdata.h"
 #include "final/ftermfreebsd.h"
 #include "final/ftypes.h"
+
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
+#define initCheck(ret_value)   \
+    if ( ! isInitialized() )   \
+    {                          \
+      warnNotInitialized();    \
+      return ret_value;        \
+    }
+#endif
 
 namespace finalcut
 {
@@ -58,11 +69,13 @@ bool FTermFreeBSD::setCursorStyle (CursorStyle style)
 {
   // Set cursor style in a BSD console
 
-  if ( ! fsystem || ! isFreeBSDConsole() || ! change_cursorstyle )
-    return false;
-
   if ( ! fterm_data )
     fterm_data = FTerm::getFTermData();
+
+  initCheck(false);
+
+  if ( ! fsystem || ! isFreeBSDConsole() || ! change_cursorstyle )
+    return false;
 
   cursor_style = style;
 
@@ -178,6 +191,16 @@ void FTermFreeBSD::finish()
 
 // private methods of FTermFreeBSD
 //----------------------------------------------------------------------
+void FTermFreeBSD::warnNotInitialized()
+{
+  *FApplication::getLog() << FLog::Warn
+                          << "The FTermFreeBSD object has "
+                          << "not yet been initialized! "
+                          << "Please call the init() method first."
+                          << std::endl;
+}
+
+//----------------------------------------------------------------------
 bool FTermFreeBSD::saveFreeBSDAltKey()
 {
   // Saving the current mapping for the alt key
@@ -185,9 +208,8 @@ bool FTermFreeBSD::saveFreeBSDAltKey()
   static constexpr int left_alt = 0x38;
   int ret{-1};
   keymap_t keymap{};
-
-  if ( fsystem )
-    ret = fsystem->ioctl (0, GIO_KEYMAP, &keymap);
+  initCheck(false);
+  ret = fsystem->ioctl (0, GIO_KEYMAP, &keymap);
 
   if ( ret < 0 )
     return false;
@@ -205,9 +227,8 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
   static constexpr int left_alt = 0x38;
   int ret{-1};
   keymap_t keymap{};
-
-  if ( fsystem )
-    ret = fsystem->ioctl (0, GIO_KEYMAP, &keymap);
+  initCheck(false);
+  ret = fsystem->ioctl (0, GIO_KEYMAP, &keymap);
 
   if ( ret < 0 )
     return false;
@@ -241,6 +262,8 @@ bool FTermFreeBSD::resetFreeBSDAlt2Meta()
 //----------------------------------------------------------------------
 bool FTermFreeBSD::setFreeBSDCursorStyle (CursorStyle style)
 {
+  initCheck(false);
+
   if ( fsystem->ioctl(0, CONS_CURSORTYPE, &style) == 0 )
     return true;
   else

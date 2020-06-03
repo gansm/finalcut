@@ -22,8 +22,10 @@
 
 #include <vector>
 
+#include "final/fapplication.h"
 #include "final/fc.h"
 #include "final/fcharmap.h"
+#include "final/flog.h"
 #include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermcap.h"
@@ -200,7 +202,7 @@ void FTermLinux::init()
   }
   else
   {
-    std::cerr << "can not open the console.\n";
+    FApplication::getLog()->error("Can not open the console.");
     std::abort();
   }
 }
@@ -290,6 +292,9 @@ bool FTermLinux::loadVGAFont()
 
   if ( vga_font )
   {
+    if ( ! fterm_data )
+      fterm_data = FTerm::getFTermData();
+
     fterm_data->supportShadowCharacter (true);
     fterm_data->supportHalfBlockCharacter (true);
   }
@@ -336,6 +341,9 @@ bool FTermLinux::loadNewFont()
 
   if ( new_font )
   {
+    if ( ! fterm_data )
+      fterm_data = FTerm::getFTermData();
+
     fterm_data->supportShadowCharacter (true);
     fterm_data->supportHalfBlockCharacter (true);
   }
@@ -553,9 +561,9 @@ bool FTermLinux::getScreenFont()
     static constexpr std::size_t data_size = 4 * 32 * 512;
     font.data = new uChar[data_size]();
   }
-  catch (const std::bad_alloc& ex)
+  catch (const std::bad_alloc&)
   {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+    badAllocOutput ("FString");
     return false;
   }
 
@@ -605,9 +613,9 @@ bool FTermLinux::getUnicodeMap()
     {
       screen_unicode_map.entries = new struct unipair[count]();
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("unipair[count]");
       return false;
     }
 
@@ -683,9 +691,9 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
     {
       font.data = new uChar[data_size]();  // Initialize with 0
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("uChar[data_size]");
       return -1;
     }
 
@@ -1286,6 +1294,9 @@ inline void FTermLinux::initSpecialCharacter()
   const wchar_t c2 = fc::LowerHalfBlock;
   const wchar_t c3 = fc::FullBlock;
 
+  if ( ! fterm_data )
+    fterm_data = FTerm::getFTermData();
+
   if ( FTerm::charEncode(c1, fc::PC) == FTerm::charEncode(c1, fc::ASCII)
     || FTerm::charEncode(c2, fc::PC) == FTerm::charEncode(c2, fc::ASCII)
     || FTerm::charEncode(c3, fc::PC) == FTerm::charEncode(c3, fc::ASCII) )
@@ -1322,6 +1333,10 @@ void FTermLinux::characterFallback ( wchar_t ucs
                                    , std::vector<wchar_t> fallback )
 {
   constexpr sInt16 NOT_FOUND = -1;
+
+  if ( ! fterm_data )
+    fterm_data = FTerm::getFTermData();
+
   charSubstitution& sub_map = fterm_data->getCharSubstitutionMap();
 
   if ( fallback.size() < 2 || ucs != fallback[0] )

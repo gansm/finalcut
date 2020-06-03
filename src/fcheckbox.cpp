@@ -33,14 +33,14 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FCheckBox::FCheckBox(FWidget* parent)
-  : FToggleButton(parent)
+  : FToggleButton{parent}
 {
   init();
 }
 
 //----------------------------------------------------------------------
 FCheckBox::FCheckBox (const FString& txt, FWidget* parent)
-  : FToggleButton(txt, parent)
+  : FToggleButton{txt, parent}
 {
   init();
 }
@@ -74,9 +74,9 @@ void FCheckBox::draw()
 void FCheckBox::drawCheckButton()
 {
   print() << FPoint{1, 1};
-  setColor();
+  useParentWidgetColor();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
   {
     if ( hasFocus() )
       setReverse(false);
@@ -89,14 +89,14 @@ void FCheckBox::drawCheckButton()
   else
     drawUnchecked();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 
 //----------------------------------------------------------------------
 inline void FCheckBox::drawChecked()
 {
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
     print (CHECKBOX_ON);
   else
   {
@@ -109,7 +109,7 @@ inline void FCheckBox::drawChecked()
 //----------------------------------------------------------------------
 inline void FCheckBox::drawUnchecked()
 {
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
     print (CHECKBOX);
   else
   {

@@ -40,7 +40,7 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FToggleButton::FToggleButton (FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init();
 
@@ -55,7 +55,7 @@ FToggleButton::FToggleButton (FWidget* parent)
 
 //----------------------------------------------------------------------
 FToggleButton::FToggleButton (const FString& txt, FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   FToggleButton::setText(txt);  // call own method
   init();
@@ -112,6 +112,33 @@ void FToggleButton::setGeometry ( const FPoint& pos, const FSize& s
 }
 
 //----------------------------------------------------------------------
+void FToggleButton::resetColors()
+{
+  const auto& wc = getColorTheme();
+
+  if ( isEnabled() )  // active
+  {
+    if ( hasFocus() )
+    {
+      setForegroundColor (wc->toggle_button_active_focus_fg);
+      setBackgroundColor (wc->toggle_button_active_focus_bg);
+    }
+    else
+    {
+      setForegroundColor (wc->toggle_button_active_fg);
+      setBackgroundColor (wc->toggle_button_active_bg);
+    }
+  }
+  else  // inactive
+  {
+    setForegroundColor (wc->label_inactive_fg);
+    setBackgroundColor (wc->label_inactive_bg);
+  }
+
+  FWidget::resetColors();
+}
+
+//----------------------------------------------------------------------
 bool FToggleButton::setNoUnderline (bool enable)
 {
   return (flags.no_underline = enable);
@@ -121,7 +148,7 @@ bool FToggleButton::setNoUnderline (bool enable)
 bool FToggleButton::setEnable (bool enable)
 {
   FWidget::setEnable(enable);
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   if ( enable )
   {
@@ -129,20 +156,20 @@ bool FToggleButton::setEnable (bool enable)
 
     if ( hasFocus() )
     {
-      setForegroundColor (wc.toggle_button_active_focus_fg);
-      setBackgroundColor (wc.toggle_button_active_focus_bg);
+      setForegroundColor (wc->toggle_button_active_focus_fg);
+      setBackgroundColor (wc->toggle_button_active_focus_bg);
     }
     else
     {
-      setForegroundColor (wc.toggle_button_active_fg);
-      setBackgroundColor (wc.toggle_button_active_bg);
+      setForegroundColor (wc->toggle_button_active_fg);
+      setBackgroundColor (wc->toggle_button_active_bg);
     }
   }
   else
   {
     delAccelerator();
-    setForegroundColor (wc.toggle_button_inactive_fg);
-    setBackgroundColor (wc.toggle_button_inactive_bg);
+    setForegroundColor (wc->toggle_button_inactive_fg);
+    setBackgroundColor (wc->toggle_button_inactive_bg);
   }
 
   return enable;
@@ -155,20 +182,20 @@ bool FToggleButton::setFocus (bool enable)
 
   if ( isEnabled() )
   {
-    const auto& wc = getFWidgetColors();
+    const auto& wc = getColorTheme();
 
     if ( enable )
     {
       if ( isRadioButton()  )
         focus_inside_group = false;
 
-      setForegroundColor (wc.toggle_button_active_focus_fg);
-      setBackgroundColor (wc.toggle_button_active_focus_bg);
+      setForegroundColor (wc->toggle_button_active_focus_fg);
+      setBackgroundColor (wc->toggle_button_active_focus_bg);
     }
     else
     {
-      setForegroundColor (wc.toggle_button_active_fg);
-      setBackgroundColor (wc.toggle_button_active_bg);
+      setForegroundColor (wc->toggle_button_active_fg);
+      setBackgroundColor (wc->toggle_button_active_bg);
     }
   }
 
@@ -497,46 +524,27 @@ void FToggleButton::setGroup (FButtonGroup* btngroup)
 void FToggleButton::init()
 {
   setGeometry (FPoint{1, 1}, FSize{4, 1}, false);  // initialize geometry values
-  const auto& wc = getFWidgetColors();
-
-  if ( isEnabled() )
-  {
-    if ( hasFocus() )
-    {
-      setForegroundColor (wc.toggle_button_active_focus_fg);
-      setBackgroundColor (wc.toggle_button_active_focus_bg);
-    }
-    else
-    {
-      setForegroundColor (wc.toggle_button_active_fg);
-      setBackgroundColor (wc.toggle_button_active_bg);
-    }
-  }
-  else  // inactive
-  {
-    setForegroundColor (wc.label_inactive_fg);
-    setBackgroundColor (wc.label_inactive_bg);
-  }
+  resetColors();
 }
 
 //----------------------------------------------------------------------
 void FToggleButton::drawText (const FString& label_text, std::size_t hotkeypos)
 {
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
-  const auto& wc = getFWidgetColors();
+  const auto& wc = getColorTheme();
 
   if ( isEnabled() )
-    setColor (wc.label_fg, wc.label_bg);
+    setColor (wc->label_fg, wc->label_bg);
   else
-    setColor (wc.label_inactive_fg, wc.label_inactive_bg);
+    setColor (wc->label_inactive_fg, wc->label_inactive_bg);
 
   for (std::size_t z{0}; z < label_text.getLength(); z++)
   {
     if ( (z == hotkeypos) && flags.active )
     {
-      setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
+      setColor (wc->label_hotkey_fg, wc->label_hotkey_bg);
 
       if ( ! flags.no_underline )
         setUnderline();
@@ -546,13 +554,13 @@ void FToggleButton::drawText (const FString& label_text, std::size_t hotkeypos)
       if ( ! flags.no_underline )
         unsetUnderline();
 
-      setColor (wc.label_fg, wc.label_bg);
+      setColor (wc->label_fg, wc->label_bg);
     }
     else
       print (label_text[z]);
   }
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 

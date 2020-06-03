@@ -68,11 +68,12 @@ namespace finalcut
 {
 
 // class forward declaration
-class FEvent;
 class FAccelEvent;
 class FCloseEvent;
+class FEvent;
 class FFocusEvent;
 class FKeyEvent;
+class FLog;
 class FMouseEvent;
 class FStartOptions;
 class FTimerEvent;
@@ -89,6 +90,9 @@ class FObject;
 class FApplication : public FWidget
 {
   public:
+    // Typedef
+    typedef std::shared_ptr<FLog> FLogPtr;
+
     // Constructor
     FApplication (const int&, char*[], bool = false);
 
@@ -106,6 +110,10 @@ class FApplication : public FWidget
     int                   getArgc() const;
     char**                getArgv() const;
     static FApplication*  getApplicationObject();
+    static FLogPtr&       getLog();
+
+    // Mutator
+    static void           setLog (const FLogPtr&);
 
     // Inquiry
     static bool           isQuit();
@@ -118,10 +126,13 @@ class FApplication : public FWidget
     void                  quit();
     static bool           sendEvent (FObject*, FEvent*);
     void                  queueEvent (FObject*, FEvent*);
-    void                  sendQueuedEvents ();
+    void                  sendQueuedEvents();
     bool                  eventInQueue();
     bool                  removeQueuedEvent (const FObject*);
+    virtual void          processExternalUserEvent();
     static FWidget*       processParameters (const int&, char*[]);
+    static void           setDefaultTheme();
+    static void           setDarkTheme();
     static void           showParameterUsage ()
     #if defined(__clang__) || defined(__GNUC__)
       __attribute__((noreturn))
@@ -134,13 +145,14 @@ class FApplication : public FWidget
 
   private:
     // Typedefs
-    typedef std::pair<FObject*, std::shared_ptr<FEvent> > eventPair;
-    typedef std::deque<eventPair> FEventQueue;
+    typedef std::pair<FObject*, FEvent*> EventPair;
+    typedef std::deque<EventPair> FEventQueue;
 
     // Methods
     void                  init (uInt64, uInt64);
     static void           cmd_options (const int&, char*[]);
     static FStartOptions& getStartOptions();
+    void                  destroyLog();
     void                  findKeyboardWidget();
     bool                  isKeyPressed() const;
     void                  keyPressed();
@@ -177,6 +189,7 @@ class FApplication : public FWidget
     void                  processMouseEvent();
     void                  processResizeEvent();
     void                  processCloseWidget();
+    void                  processLogger();
     bool                  processNextEvent();
     void                  performTimerAction (FObject*, FEvent*) override;
     static bool           isEventProcessable (const FObject*, const FEvent*);

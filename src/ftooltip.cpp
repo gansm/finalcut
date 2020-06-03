@@ -34,15 +34,15 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FToolTip::FToolTip (FWidget* parent)
-  : FWindow(parent)
+  : FWindow{parent}
 {
   init();
 }
 
 //----------------------------------------------------------------------
 FToolTip::FToolTip (const FString& txt, FWidget* parent)
-  : FWindow(parent)
-  , text(txt)
+  : FWindow{parent}
+  , text{txt}
 {
   init();
 }
@@ -71,6 +71,15 @@ void FToolTip::setText (const FString& txt)
 {
   text.setString(txt);
   calculateDimensions();
+}
+
+//----------------------------------------------------------------------
+void FToolTip::resetColors()
+{
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->tooltip_fg);
+  setBackgroundColor (wc->tooltip_bg);
+  FWidget::resetColors();
 }
 
 //----------------------------------------------------------------------
@@ -107,9 +116,7 @@ void FToolTip::init()
   // initialize geometry values
   setGeometry (FPoint{1, 1}, FSize{3, 3}, false);
   setMinimumSize (FSize{3, 3});
-  const auto& wc = getFWidgetColors();
-  setForegroundColor (wc.tooltip_fg);
-  setBackgroundColor (wc.tooltip_bg);
+  resetColors();
   calculateDimensions();
 }
 

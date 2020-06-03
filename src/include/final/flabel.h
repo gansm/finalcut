@@ -145,8 +145,8 @@ class FLabel : public FWidget
     std::size_t         align_offset{0};
     std::size_t         hotkeypos{NOT_SET};
     std::size_t         column_width{0};
-    FColor              emphasis_color{getFWidgetColors().label_emphasis_fg};
-    FColor              ellipsis_color{getFWidgetColors().label_ellipsis_fg};
+    FColor              emphasis_color{getColorTheme()->label_emphasis_fg};
+    FColor              ellipsis_color{getColorTheme()->label_ellipsis_fg};
     bool                multiline{false};
     bool                emphasis{false};
     bool                reverse_mode{false};

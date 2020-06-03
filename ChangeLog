@@ -1,3 +1,38 @@
+2020-05-30  Markus Gans  <guru.mail@muenster.de>
+	* With the two new methods FApplication::setDarkTheme() and 
+	  FApplication::setDefaultTheme() you can now change the theme 
+	  within an application. An example can be found in examples/ui 
+	  via the menu items "View" -> "Dark mode".
+
+2020-05-29  Markus Gans  <guru.mail@muenster.de>
+	* Adding a dark theme. Can be activated with the --dark-theme parameter.
+
+2020-05-28  Markus Gans  <guru.mail@muenster.de>
+	* FColorPalette now also uses polymorphism, so you can now 
+	  easily create your own color palette theme
+
+2020-05-26  Markus Gans  <guru.mail@muenster.de>
+	* FWidgetColors now uses polymorphism, so you can now easily 
+	  create your own widget color theme
+	* FApplication has got the new virtual method processExternalUserEvent() 
+	  for user code
+
+2020-05-24  Markus Gans  <guru.mail@muenster.de>
+	* New class FStringStream implements input and output operations 
+	  on FString based streams
+	* Fixed memory leak in FString move assignment operator
+
+2020-05-21  Markus Gans  <guru.mail@muenster.de>
+	* Fixed the event queue in FApplication
+
+2020-05-16  Markus Gans  <guru.mail@muenster.de>
+	* More direct access to the static FTerm functions
+
+2020-05-13  Markus Gans  <guru.mail@muenster.de>
+	* The new class FLogger for logging, which can be redirected 
+	  to different I/O channels
+	* Adding the event-log example to show the logging functionality 
+
 2020-05-02  Markus Gans  <guru.mail@muenster.de>
 	* Transfer of all termcap functions into the FTermcap class
 

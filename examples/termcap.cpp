@@ -300,7 +300,7 @@ int main (int argc, char* argv[])
   finalcut::FApplication TermApp {argc, argv, disable_alt_screen};
 
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";
-  std::cout << "Terminal: " << TermApp.getTermType() << "\r\n";
+  std::cout << "Terminal: " << finalcut::FTerm::getTermType() << "\r\n";
 
   debug (TermApp);
 

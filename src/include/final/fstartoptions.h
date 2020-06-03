@@ -64,7 +64,7 @@ class FStartOptions final
     FStartOptions& operator = (const FStartOptions&) = delete;
 
     // Accessors
-    const FString getClassName();
+    static const FString getClassName();
     static FStartOptions& getFStartOptions();
 
     // Mutator
@@ -93,6 +93,8 @@ class FStartOptions final
     uInt8                       : 7;  // padding bits
 #endif
 
+    uInt16 dark_theme           : 1;
+    uInt16                      : 15;  // padding bits
     static FStartOptions*       start_options;
 };
 

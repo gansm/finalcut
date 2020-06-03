@@ -37,6 +37,14 @@
 
 #define null nullptr
 
+#define badAllocOutput(object_name)                            \
+    *FApplication::getLog() << FLog::Error                     \
+                            << __FILE__  << ":" << __LINE__    \
+                            << ": Not enough memory to alloc " \
+                            << (object_name)                   \
+                            << " in "                          \
+                            << __func__ << std::endl;
+
 namespace
 {
 
@@ -68,9 +76,6 @@ typedef void*          FDataPtr;
 
 namespace finalcut
 {
-
-const char* const bad_alloc_str = \
-    "not enough memory to alloc ";
 
 template <typename T, bool is_signed>
 struct is_negative

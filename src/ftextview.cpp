@@ -42,7 +42,7 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FTextView::FTextView(FWidget* parent)
-  : FWidget(parent)
+  : FWidget{parent}
 {
   init();
 }
@@ -102,6 +102,15 @@ void FTextView::setGeometry ( const FPoint& pos, const FSize& size
 
   FWidget::setGeometry(pos, size, adjust);
   changeOnResize();
+}
+
+//----------------------------------------------------------------------
+void FTextView::resetColors()
+{
+  const auto& wc = getColorTheme();
+  setForegroundColor (wc->dialog_fg);
+  setBackgroundColor (wc->dialog_bg);
+  FWidget::resetColors();
 }
 
 //----------------------------------------------------------------------
@@ -179,6 +188,18 @@ void FTextView::scrollTo (int x, int y)
 }
 
 //----------------------------------------------------------------------
+void FTextView::scrollToBegin()
+{
+  scrollToY (0);
+}
+
+//----------------------------------------------------------------------
+void FTextView::scrollToEnd()
+{
+  scrollToY (int(getRows() - getTextHeight()));
+}
+
+//----------------------------------------------------------------------
 void FTextView::hide()
 {
   FWidget::hide();
@@ -202,7 +223,7 @@ void FTextView::insert (const FString& str, int pos)
   if ( str.isEmpty() )
     s = "\n";
   else
-    s = FString{str}.rtrim().expandTabs(getTabstop());
+    s = FString{str}.rtrim().expandTabs(FTerm::getTabstop());
 
 
   auto text_split = s.split("\r\n");
@@ -363,9 +384,9 @@ void FTextView::onMouseDown (FMouseEvent* ev)
          std::make_shared<FMouseEvent>(fc::MouseDown_Event, p, tp, b);
       FApplication::sendEvent (parent, _ev.get());
     }
-    catch (const std::bad_alloc& ex)
+    catch (const std::bad_alloc&)
     {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      badAllocOutput ("FMouseEvent");
     }
   }
 }
@@ -392,9 +413,9 @@ void FTextView::onMouseUp (FMouseEvent* ev)
             std::make_shared<FMouseEvent>(fc::MouseUp_Event, p, tp, b);
         FApplication::sendEvent (parent, _ev.get());
       }
-      catch (const std::bad_alloc& ex)
+      catch (const std::bad_alloc&)
       {
-        std::cerr << bad_alloc_str << ex.what() << std::endl;
+        badAllocOutput ("FMouseEvent");
       }
     }
   }
@@ -425,9 +446,9 @@ void FTextView::onMouseMove (FMouseEvent* ev)
             std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, tp, b);
         FApplication::sendEvent (parent, _ev.get());
       }
-      catch (const std::bad_alloc& ex)
+      catch (const std::bad_alloc&)
       {
-        std::cerr << bad_alloc_str << ex.what() << std::endl;
+        badAllocOutput ("FMouseEvent");
       }
     }
   }
@@ -557,10 +578,8 @@ void FTextView::init()
 {
   initScrollbar (vbar, fc::vertical, this, &FTextView::cb_vbarChange);
   initScrollbar (hbar, fc::horizontal, this, &FTextView::cb_hbarChange);
-  const auto& wc = getFWidgetColors();
-  setForegroundColor (wc.dialog_fg);
-  setBackgroundColor (wc.dialog_bg);
-  nf_offset = isNewFont() ? 1 : 0;
+  resetColors();
+  nf_offset = FTerm::isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);
   setBottomPadding(1);
@@ -577,8 +596,8 @@ inline void FTextView::mapKeyFunctions()
   key_map[fc::Fkey_right] = [this] { scrollBy (1, 0); };
   key_map[fc::Fkey_ppage] = [this] { scrollBy (0, -int(getTextHeight())); };
   key_map[fc::Fkey_npage] = [this] { scrollBy (0, int(getTextHeight())); };
-  key_map[fc::Fkey_home]  = [this] { scrollToY (0); };
-  key_map[fc::Fkey_end]   = [this] { scrollToY (int(getRows() - getTextHeight())); };
+  key_map[fc::Fkey_home]  = [this] { scrollToBegin(); };
+  key_map[fc::Fkey_end]   = [this] { scrollToEnd(); };
 }
 
 //----------------------------------------------------------------------
@@ -611,13 +630,13 @@ void FTextView::drawBorder()
 {
   if ( ! useFDialogBorder() )
   {
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(true);
 
     const FRect box{FPoint{1, 1}, getSize()};
     finalcut::drawListBorder (this, box);
 
-    if ( isMonochron() )
+    if ( FTerm::isMonochron() )
       setReverse(false);
   }
 }
@@ -649,7 +668,7 @@ void FTextView::drawText()
 
   setColor();
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(true);
 
   for (std::size_t y{0}; y < num; y++)  // Line loop
@@ -678,7 +697,7 @@ void FTextView::drawText()
     print() << FString{trailing_whitespace, L' '};
   }
 
-  if ( isMonochron() )
+  if ( FTerm::isMonochron() )
     setReverse(false);
 }
 
@@ -707,7 +726,7 @@ inline bool FTextView::isPrintable (wchar_t ch)
 {
   // Check for printable characters
 
-  const bool utf8 = ( getEncoding() == fc::UTF8 ) ? true : false;
+  const bool utf8 = ( FTerm::getEncoding() == fc::UTF8 ) ? true : false;
 
   if ( (utf8 && std::iswprint(std::wint_t(ch)))
     || (!utf8 && std::isprint(ch)) )
@@ -728,7 +747,7 @@ void FTextView::changeOnResize()
   const std::size_t width  = getWidth();
   const std::size_t height = getHeight();
 
-  if ( isNewFont() )
+  if ( FTerm::isNewFont() )
   {
     vbar->setGeometry (FPoint{int(width), 1}, FSize{2, height - 1});
     hbar->setGeometry (FPoint{1, int(height)}, FSize{width - 2, 1});
