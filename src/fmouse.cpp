@@ -178,40 +178,6 @@ inline bool FMouse::isInputDataPending()
 }
 
 //----------------------------------------------------------------------
-inline FMouse* FMouse::createMouseObject (const mouse_type mt)
-{
-  assert ( mt == FMouse::none
-        || mt == FMouse::gpm
-        || mt == FMouse::x11
-        || mt == FMouse::sgr
-        || mt == FMouse::urxvt );
-
-  switch ( mt )
-  {
-    case none:
-      return nullptr;
-
-    case gpm:
-#ifdef F_HAVE_LIBGPM
-      return new FMouseGPM;
-#else
-      return nullptr;
-#endif
-
-    case x11:
-      return new FMouseX11;
-
-    case sgr:
-      return new FMouseSGR;
-
-    case urxvt:
-      return new FMouseUrxvt;
-  }
-
-  return nullptr;
-}
-
-//----------------------------------------------------------------------
 void FMouse::clearButtonState()
 {
   // Fill bit field with 0
@@ -1216,12 +1182,12 @@ void FMouseUrxvt::setButtonState (const int btn, const struct timeval* time)
 FMouseControl::FMouseControl()
 {
 #ifdef F_HAVE_LIBGPM
-  mouse_protocol[FMouse::gpm] = FMouse::createMouseObject(FMouse::gpm);
+  mouse_protocol[FMouse::gpm] = FMouse::createMouseObject<FMouseGPM>();
 #endif
 
-  mouse_protocol[FMouse::x11] = FMouse::createMouseObject(FMouse::x11);
-  mouse_protocol[FMouse::sgr] = FMouse::createMouseObject(FMouse::sgr);
-  mouse_protocol[FMouse::urxvt] = FMouse::createMouseObject(FMouse::urxvt);
+  mouse_protocol[FMouse::x11] = FMouse::createMouseObject<FMouseX11>();
+  mouse_protocol[FMouse::sgr] = FMouse::createMouseObject<FMouseSGR>();
+  mouse_protocol[FMouse::urxvt] = FMouse::createMouseObject<FMouseUrxvt>();
 }
 
 //----------------------------------------------------------------------

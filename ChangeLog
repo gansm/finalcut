@@ -1,6 +1,7 @@
 2020-06-06  Markus Gans  <guru.mail@muenster.de>
 	* Now, the terminal is not initialized before the method show() 
 	  is called. Or you force it explicitly via the FApplication object.
+	* Simplification of FMouse::createMouseObject()
 
 2020-05-30  Markus Gans  <guru.mail@muenster.de>
 	* With the two new methods FApplication::setDarkTheme() and 

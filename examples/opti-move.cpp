@@ -216,7 +216,7 @@ int main (int argc, char* argv[])
   // Pointer to the global virtual terminal object
   app = &term_app;
 
-  if ( app->isQuit() )
+  if ( finalcut::FApplication::isQuit() )
     return 0;
 
   // Get screen dimension
@@ -267,14 +267,12 @@ int main (int argc, char* argv[])
   std::cout << "\r" << line << std::flush;
   // Generation of a logger in a shared_ptr via a pointer
   finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
-  // Get the shared_ptr with the base class
-  std::shared_ptr<finalcut::FLog> log = finalcut::FApplication::getLog();
   const finalcut::FOptiMove& opti_move = *finalcut::FTerm::getFOptiMove();
   finalcut::printDurations(opti_move);
-  delete &log;
 
   // Waiting for keypress
   keyPressed();
   app = nullptr;  // End of term_app object scope
+
   return 0;
 }

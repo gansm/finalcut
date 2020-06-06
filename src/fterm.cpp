@@ -2549,7 +2549,9 @@ void FTerm::terminalSizeChange()
 //----------------------------------------------------------------------
 void FTerm::processTermination (int signum)
 {
-  init_term_object->finish();
+  if ( init_term_object )
+    init_term_object->finish();
+
   std::fflush (stderr);
   std::fflush (stdout);
 
@@ -2561,6 +2563,9 @@ void FTerm::processTermination (int signum)
     data->setExitMessage(msg.str());
     printExitMessage();
   }
+
+  if ( init_term_object )
+    init_term_object->deallocationValues();
 
   std::terminate();
 }

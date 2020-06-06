@@ -129,7 +129,7 @@ class FApplication : public FWidget
     void                  sendQueuedEvents();
     bool                  eventInQueue();
     bool                  removeQueuedEvent (const FObject*);
-    void                  initTerminal();
+    void                  initTerminal() override;
     static void           setDefaultTheme();
     static void           setDarkTheme();
     static void           closeConfirmationDialog (FWidget*, FCloseEvent*);

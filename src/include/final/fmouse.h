@@ -130,7 +130,8 @@ class FMouse
     bool                  isInputDataPending();
 
     // Methods
-    static FMouse*        createMouseObject (const mouse_type);
+    template<typename ClassT>
+    static FMouse*        createMouseObject ();
     void                  clearButtonState();
     virtual void          setRawData (FKeyboard::keybuffer&) = 0;
     virtual void          processEvent (struct timeval*) = 0;
@@ -190,6 +191,13 @@ class FMouse
     FPoint              mouse{0, 0};       // mouse click position
     FPoint              new_mouse_position{};
 };
+
+//----------------------------------------------------------------------
+template<typename ClassT>
+inline FMouse* FMouse::createMouseObject()
+{
+  return new ClassT;
+}
 
 
 #ifdef F_HAVE_LIBGPM

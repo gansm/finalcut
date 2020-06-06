@@ -374,7 +374,7 @@ class FWidget : public FVTerm, public FObject
     void                     setTermOffsetWithPadding();
 
     // Methods
-    void                     initTerminal();
+    void                     initTerminal() override;
     void                     initDesktop();
     virtual void             adjustSize();
     void                     adjustSizeGlobal();

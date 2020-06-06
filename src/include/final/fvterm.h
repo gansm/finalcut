@@ -317,7 +317,7 @@ class FVTerm
     void                  processTerminalUpdate();
     static void           startTerminalUpdate();
     static void           finishTerminalUpdate();
-    void                  initTerminal();
+    virtual void          initTerminal();
 
   private:
     // Enumerations
