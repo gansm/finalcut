@@ -62,13 +62,16 @@
 namespace finalcut
 {
 
-// global FTerm object
+// Global FTerm object
 static FTerm* init_term_object{nullptr};
 
-// global init state
+// Global init state
 static bool term_initialized{false};
 
-// static class attributes
+// Counts the number of object instances
+static uInt object_counter{0};
+
+// Static class attributes
 FTermData*      FTerm::data          {nullptr};
 FSystem*        FTerm::fsys          {nullptr};
 FOptiMove*      FTerm::opti_move     {nullptr};
@@ -101,10 +104,12 @@ FMouseControl*  FTerm::mouse         {nullptr};
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FTerm::FTerm (bool disable_alt_screen)
+FTerm::FTerm()
 {
-  if ( ! term_initialized )
-    init (disable_alt_screen);
+  if ( object_counter == 0 )
+    allocationValues();  // Allocation of global objects
+
+  object_counter++;
 }
 
 //----------------------------------------------------------------------
@@ -112,6 +117,14 @@ FTerm::~FTerm()  // destructor
 {
   if ( init_term_object == this )
     finish();  // Resetting console settings
+
+  object_counter--;
+
+  if ( object_counter == 0 )
+  {
+    printExitMessage();
+    deallocationValues();  // Deallocation of global objects
+  }
 }
 
 
@@ -119,6 +132,9 @@ FTerm::~FTerm()  // destructor
 //----------------------------------------------------------------------
 std::size_t FTerm::getLineNumber()
 {
+  if ( ! data )
+    data = FTerm::getFTermData();
+
   const auto& term_geometry = data->getTermGeometry();
 
   if ( term_geometry.getHeight() == 0 )
@@ -130,6 +146,9 @@ std::size_t FTerm::getLineNumber()
 //----------------------------------------------------------------------
 std::size_t FTerm::getColumnNumber()
 {
+  if ( ! data )
+    data = FTerm::getFTermData();
+
   const auto& term_geometry = data->getTermGeometry();
 
   if ( term_geometry.getWidth() == 0 )
@@ -217,7 +236,7 @@ FSystem* FTerm::getFSystem()
     }
     catch (const std::bad_alloc&)
     {
-      badAllocOutput ("FTermData");
+      badAllocOutput ("FSystemImpl");
       std::abort();
     }
   }
@@ -638,6 +657,14 @@ void FTerm::redefineDefaultColors (bool enable)
 void FTerm::setDblclickInterval (const uInt64 timeout)
 {
   mouse->setDblclickInterval(timeout);
+}
+
+//----------------------------------------------------------------------
+void FTerm::useAlternateScreen (bool enable)
+{
+  // Sets alternate screen usage
+
+  getFTermData()->useAlternateScreen(enable);
 }
 
 //----------------------------------------------------------------------
@@ -1293,22 +1320,6 @@ void FTerm::changeTermSizeFinished()
   data->setTermResized(false);
 }
 
-//----------------------------------------------------------------------
-void FTerm::exitWithMessage (const FString& message)
-{
-  // Exit the programm
-  if ( init_term_object )
-    init_term_object->finish();
-
-  std::fflush (stderr);
-  std::fflush (stdout);
-
-  if ( ! message.isEmpty() )
-    FApplication::getLog()->warn(message.c_str());
-
-  std::exit (EXIT_FAILURE);
-}
-
 
 // private methods of FTerm
 //----------------------------------------------------------------------
@@ -1318,15 +1329,12 @@ inline FStartOptions& FTerm::getStartOptions()
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_global_values (bool disable_alt_screen)
+void FTerm::init_global_values()
 {
   // Initialize global values
 
   // Preset to false
   data->setNewFont(false);
-
-  // Sets alternate screen usage
-  data->useAlternateScreen(! disable_alt_screen);
 
   // Initialize xterm object
   getFTermXTerminal()->init();
@@ -1653,13 +1661,21 @@ void FTerm::init_optiAttr()
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_font()
+bool FTerm::init_font()
 {
   if ( getStartOptions().vgafont && ! setVGAFont() )
-    exitWithMessage ("VGAfont is not supported by this terminal");
+  {
+    data->setExitMessage("VGAfont is not supported by this terminal");
+    FApplication::exit(EXIT_FAILURE);
+  }
 
   if ( getStartOptions().newfont && ! setNewFont() )
-    exitWithMessage ("Newfont is not supported by this terminal");
+  {
+    data->setExitMessage("Newfont is not supported by this terminal");
+    FApplication::exit(EXIT_FAILURE);
+  }
+
+  return ( ! FApplication::isQuit() );
 }
 
 //----------------------------------------------------------------------
@@ -2112,6 +2128,7 @@ void FTerm::useAlternateScreenBuffer()
   {
     putstring (TCAP(fc::t_enter_ca_mode));
     std::fflush(stdout);
+    getFTermData()->setAlternateScreenInUse(true);
   }
 }
 
@@ -2128,6 +2145,7 @@ void FTerm::useNormalScreenBuffer()
   {
     putstring (TCAP(fc::t_exit_ca_mode));
     std::fflush(stdout);
+    getFTermData()->setAlternateScreenInUse(false);
   }
 
   // restore cursor to position of last save_cursor
@@ -2209,17 +2227,17 @@ inline void FTerm::deallocationValues()
 
   const defaultPutChar* putchar_ptr = &(putchar());
   delete putchar_ptr;
+  destroyColorPaletteTheme();
   FStartOptions::destroyObject();
 }
 
 //----------------------------------------------------------------------
-void FTerm::init (bool disable_alt_screen)
+void FTerm::init()
 {
   init_term_object = this;
 
   // Initialize global values for all objects
-  allocationValues();
-  init_global_values(disable_alt_screen);
+  init_global_values();
 
   // Initialize the terminal
   if ( ! init_terminal() )
@@ -2294,7 +2312,8 @@ void FTerm::init (bool disable_alt_screen)
 
   // Activate the VGA or the new graphic font
   // (depending on the initialization values)
-  init_font();
+  if ( ! init_font() )
+    return;
 
   // Turn off hardware echo
   FTermios::unsetHardwareEcho();
@@ -2474,14 +2493,6 @@ void FTerm::finish()
 
   if ( data->isNewFont() || data->isVGAFont() )
     setOldFont();
-
-  // Print exit message
-  const auto& exit_message = data->getExitMessage();
-
-  if ( ! exit_message.isEmpty() )
-    FApplication::getLog()->info(exit_message.c_str());
-
-  deallocationValues();
 }
 
 //----------------------------------------------------------------------
@@ -2510,6 +2521,48 @@ void FTerm::destroyColorPaletteTheme()
 {
   const FColorPalettePtr* theme = &(getColorPaletteTheme());
   delete theme;
+}
+
+//----------------------------------------------------------------------
+void FTerm::printExitMessage()
+{
+  // Print exit message
+  const auto& exit_message = data->getExitMessage();
+
+  if ( ! exit_message.isEmpty() )
+    std::cerr << "Exit: " << exit_message << std::endl;
+}
+
+//----------------------------------------------------------------------
+void FTerm::terminalSizeChange()
+{
+  if ( ! data )
+    return;
+
+  if ( data->hasTermResized() )
+    return;
+
+  // Initialize a resize event to the root element
+  data->setTermResized(true);
+}
+
+//----------------------------------------------------------------------
+void FTerm::processTermination (int signum)
+{
+  init_term_object->finish();
+  std::fflush (stderr);
+  std::fflush (stdout);
+
+  if ( data )
+  {
+    FStringStream msg{};
+    msg << "Program stopped: signal " << signum
+        << " (" << strsignal(signum) << ")";
+    data->setExitMessage(msg.str());
+    printExitMessage();
+  }
+
+  std::terminate();
 }
 
 //----------------------------------------------------------------------
@@ -2542,14 +2595,7 @@ void FTerm::signal_handler (int signum)
   switch (signum)
   {
     case SIGWINCH:
-      if ( ! data )
-        break;
-
-      if ( data->hasTermResized() )
-        break;
-
-      // initialize a resize event to the root element
-      data->setTermResized(true);
+      terminalSizeChange();
       break;
 
     case SIGTERM:
@@ -2558,15 +2604,7 @@ void FTerm::signal_handler (int signum)
     case SIGABRT:
     case SIGILL:
     case SIGSEGV:
-      init_term_object->finish();
-      std::fflush (stderr);
-      std::fflush (stdout);
-      *FApplication::getLog() << FLog::Error
-                              << "\nProgram stopped: signal "
-                              << signum
-                              << " (" << strsignal(signum) << ")"
-                              << std::endl;
-      std::terminate();
+      processTermination(signum);
 
     default:
       break;

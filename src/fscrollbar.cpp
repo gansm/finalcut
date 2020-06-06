@@ -453,6 +453,7 @@ void FScrollbar::draw()
     drawButtons();
 
   current_slider_pos = -1;
+  max_color = FTerm::getMaxColor();
   drawBar();
 }
 

@@ -296,15 +296,30 @@ void string()
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
-  const bool disable_alt_screen{true};
-  finalcut::FApplication TermApp {argc, argv, disable_alt_screen};
+  // Disabling the switch to the alternative screen
+  finalcut::FTerm::useAlternateScreen(false);
+
+  // Disable color palette changes and terminal data requests
+  auto& start_options = finalcut::FStartOptions::getFStartOptions();
+  start_options.color_change = false;
+  start_options.terminal_data_request = false;
+
+  // Create the application object as root widget
+  finalcut::FApplication term_app {argc, argv};
+
+  // Force terminal initialization without calling show()
+  term_app.initTerminal();
+
+  if ( term_app.isQuit() )
+    return 0;
 
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";
   std::cout << "Terminal: " << finalcut::FTerm::getTermType() << "\r\n";
 
-  debug (TermApp);
+  debug (term_app);
 
   booleans();
   numeric();
   string();
+  return 0;
 }

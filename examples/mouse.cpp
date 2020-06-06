@@ -78,16 +78,6 @@ ColorChooser::ColorChooser (finalcut::FWidget* parent)
   setFixedSize (FSize{8, 12});
   unsetFocusable();
 
-  if ( parent )
-  {
-    const FColor fg = parent->getForegroundColor();
-    const FColor bg = parent->getBackgroundColor();
-    FWidget::setForegroundColor(fg);
-    FWidget::setBackgroundColor(bg);
-    headline.setForegroundColor(fg);
-    headline.setBackgroundColor(bg);
-  }
-
   // Text label
   headline.setGeometry (FPoint{1, 1}, FSize{8, 1});
   headline.setEmphasis();
@@ -122,6 +112,8 @@ void ColorChooser::setSize (const FSize& size, bool adjust)
 //----------------------------------------------------------------------
 void ColorChooser::draw()
 {
+  useParentWidgetColor();
+  headline.setBackgroundColor(getBackgroundColor());
   setColor();
   drawBorder();
 
@@ -232,16 +224,6 @@ Brushes::Brushes (finalcut::FWidget* parent)
   setFixedSize (FSize{8, 4});
   unsetFocusable();
 
-  if ( parent )
-  {
-    const FColor fg = parent->getForegroundColor();
-    const FColor bg = parent->getBackgroundColor();
-    FWidget::setForegroundColor(fg);
-    FWidget::setBackgroundColor(bg);
-    headline.setForegroundColor(fg);
-    headline.setBackgroundColor(bg);
-  }
-
   // Text label
   headline.setGeometry(FPoint{1, 1}, FSize{8, 1});
   headline.setEmphasis();
@@ -265,6 +247,8 @@ void Brushes::setSize (const FSize& size, bool adjust)
 void Brushes::draw()
 {
   int pos{0};
+  useParentWidgetColor();
+  headline.setBackgroundColor(getBackgroundColor());
   setColor();
   drawBorder();
   print() << FPoint{2, 3}
@@ -361,6 +345,7 @@ class MouseDraw final : public finalcut::FDialog
     void draw() override;
     void drawBrush (int, int, bool = false);
     void drawCanvas();
+    void createCanvas();
     void adjustSize() override;
 
     // Event handler
@@ -390,10 +375,6 @@ MouseDraw::MouseDraw (finalcut::FWidget* parent)
   );
 
   brush.setPos (FPoint{1, 12});
-
-  FSize no_shadow{0, 0};
-  finalcut::FRect scroll_geometry{0, 0, 1, 1};
-  createArea (scroll_geometry, no_shadow, canvas);
 }
 
 //----------------------------------------------------------------------
@@ -407,6 +388,10 @@ void MouseDraw::setGeometry ( const FPoint& p, const FSize& s, bool adjust)
   const std::size_t w = s.getWidth();
   const std::size_t h = s.getHeight();
   const finalcut::FRect scroll_geometry (FPoint{0, 0}, FSize{w - 11, h - 3});
+
+  if ( ! canvas )
+    return;
+
   const FSize no_shadow{0, 0};
   const int old_w = canvas->width;
   const int old_h = canvas->height;
@@ -504,6 +489,10 @@ void MouseDraw::drawCanvas()
   if ( ! hasPrintArea() )
     finalcut::FVTerm::getPrintArea();
 
+  // Create canvas after initializing the desktop and color theme
+  if ( ! canvas )
+    createCanvas();
+
   if ( ! (hasPrintArea() && canvas) )
     return;
 
@@ -532,6 +521,15 @@ void MouseDraw::drawCanvas()
   }
 
   printarea->has_changes = true;
+}
+
+//----------------------------------------------------------------------
+void MouseDraw::createCanvas()
+{
+  FSize no_shadow{0, 0};
+  finalcut::FRect scroll_geometry{0, 0, 1, 1};
+  createArea (scroll_geometry, no_shadow, canvas);
+  adjustSize();
 }
 
 //----------------------------------------------------------------------

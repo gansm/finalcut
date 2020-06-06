@@ -1049,17 +1049,6 @@ int main (int argc, char* argv[])
   // Create the application object app
   finalcut::FApplication app{argc, argv};
   app.setNonBlockingRead();
-  finalcut::FTerm::redefineDefaultColors(true);
-  finalcut::FTerm::setTermTitle (title);
-
-  // Force vt100 encoding
-  //finalcut::FTerm::setEncoding(finalcut::fc::VT100);
-
-  // Sets the terminal size to 94×30
-  //finalcut::FTerm::setTermSize(FSize{94, 30});
-
-  // Enable the final cut graphical font
-  //finalcut::FTerm::setNewFont();
 
   // Create main dialog object d
   MyDialog d{&app};
@@ -1074,6 +1063,18 @@ int main (int argc, char* argv[])
 
   // Show the dialog d
   d.show();
+
+  finalcut::FTerm::redefineDefaultColors(true);
+  finalcut::FTerm::setTermTitle (title);
+
+  // Force vt100 encoding
+  //finalcut::FTerm::setEncoding(finalcut::fc::VT100);
+
+  // Sets the terminal size to 94×30
+  //finalcut::FTerm::setTermSize(FSize{94, 30});
+
+  // Enable the final cut graphical font
+  //finalcut::FTerm::setNewFont();
 
   // Start the application
   // and return the result to the operating system

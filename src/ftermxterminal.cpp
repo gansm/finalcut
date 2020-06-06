@@ -36,11 +36,12 @@
 #include "final/ftermxterminal.h"
 #include "final/fsize.h"
 
-#define initCheck(ret_value)   \
-    if ( ! isInitialized() )   \
-    {                          \
-      warnNotInitialized();    \
-      return ret_value;        \
+#define initCheck(ret_value)           \
+    if ( ! isInitialized() )           \
+    {                                  \
+      if ( ! FApplication::isQuit() )  \
+        warnNotInitialized();          \
+      return ret_value;                \
     }
 
 namespace finalcut

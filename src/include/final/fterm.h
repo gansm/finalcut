@@ -166,7 +166,7 @@ class FTerm final
     typedef FColorPalette::FSetPalette FSetPalette;
 
     // Constructor
-    explicit FTerm (bool = false);
+    explicit FTerm();
 
     // Disable copy constructor
     FTerm (const FTerm&) = delete;
@@ -189,7 +189,6 @@ class FTerm final
     static int               getMaxColor();
     static FColorPalettePtr& getColorPaletteTheme();
     charSubstitution&        getCharSubstitutionMap();
-
     static FTermData*        getFTermData();
     static FSystem*          getFSystem();
     static FOptiMove*        getFOptiMove();
@@ -257,6 +256,7 @@ class FTerm final
     static void              unsetInsertCursor();
     static void              redefineDefaultColors (bool);
     static void              setDblclickInterval (const uInt64);
+    static void              useAlternateScreen (bool);
     static bool              setUTF8 (bool);
     static bool              setUTF8();
     static bool              unsetUTF8();
@@ -299,18 +299,15 @@ class FTerm final
     static int               putchar_ASCII (int);
     static int               putchar_UTF8  (int);
 
+    void                     initTerminal();
     static void              initScreenSettings();
     static const char*       changeAttribute (FChar*&, FChar*&);
     static void              changeTermSizeFinished();
-    static void              exitWithMessage (const FString&)
-    #if defined(__clang__) || defined(__GNUC__)
-      __attribute__((noreturn))
-    #endif
-                             ;
+
   private:
     // Methods
     static FStartOptions&    getStartOptions();
-    static void              init_global_values (bool);
+    static void              init_global_values();
     static void              init_terminal_device_path();
     static void              oscPrefix();
     static void              oscPostfix();
@@ -324,7 +321,7 @@ class FTerm final
     static void              init_quirks();
     static void              init_optiMove();
     static void              init_optiAttr();
-    static void              init_font();
+    static bool              init_font();
     static void              init_locale();
     static void              init_encoding();
     static void              init_encoding_set();
@@ -352,7 +349,7 @@ class FTerm final
     static void              useNormalScreenBuffer();
     void                     allocationValues();
     void                     deallocationValues();
-    void                     init (bool);
+    void                     init();
     bool                     init_terminal();
     void                     initOSspecifics();
     void                     initTermspecifics();
@@ -361,6 +358,9 @@ class FTerm final
     void                     finishOSspecifics1();
     void                     finish_encoding();
     void                     destroyColorPaletteTheme();
+    static void              printExitMessage();
+    static void              terminalSizeChange();
+    [[noreturn]] static void processTermination (int);
     static void              setSignalHandler();
     static void              resetSignalHandler();
     static void              signal_handler (int);
@@ -466,6 +466,10 @@ inline void FTerm::putstringf (const char format[], Args&&... args)
   if ( fsys )
     fsys->tputs (&buf[0], 1, FTerm::putchar_ASCII);
 }
+
+//----------------------------------------------------------------------
+inline void FTerm::initTerminal()
+{ init(); }
 
 }  // namespace finalcut
 

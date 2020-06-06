@@ -148,29 +148,12 @@ bool FToggleButton::setNoUnderline (bool enable)
 bool FToggleButton::setEnable (bool enable)
 {
   FWidget::setEnable(enable);
-  const auto& wc = getColorTheme();
+  resetColors();
 
   if ( enable )
-  {
     setHotkeyAccelerator();
-
-    if ( hasFocus() )
-    {
-      setForegroundColor (wc->toggle_button_active_focus_fg);
-      setBackgroundColor (wc->toggle_button_active_focus_bg);
-    }
-    else
-    {
-      setForegroundColor (wc->toggle_button_active_fg);
-      setBackgroundColor (wc->toggle_button_active_bg);
-    }
-  }
   else
-  {
     delAccelerator();
-    setForegroundColor (wc->toggle_button_inactive_fg);
-    setBackgroundColor (wc->toggle_button_inactive_bg);
-  }
 
   return enable;
 }
@@ -179,25 +162,10 @@ bool FToggleButton::setEnable (bool enable)
 bool FToggleButton::setFocus (bool enable)
 {
   FWidget::setFocus(enable);
+  resetColors();
 
-  if ( isEnabled() )
-  {
-    const auto& wc = getColorTheme();
-
-    if ( enable )
-    {
-      if ( isRadioButton()  )
-        focus_inside_group = false;
-
-      setForegroundColor (wc->toggle_button_active_focus_fg);
-      setBackgroundColor (wc->toggle_button_active_focus_bg);
-    }
-    else
-    {
-      setForegroundColor (wc->toggle_button_active_fg);
-      setBackgroundColor (wc->toggle_button_active_bg);
-    }
-  }
+  if ( isEnabled() && hasFocus() && isRadioButton() )
+    focus_inside_group = false;
 
   return enable;
 }

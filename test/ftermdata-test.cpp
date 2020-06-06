@@ -108,6 +108,7 @@ void FTermDataTest::defaultDataTest()
   CPPUNIT_ASSERT ( data.hasCursorOptimisation() == true );
   CPPUNIT_ASSERT ( data.isCursorHidden() == false );
   CPPUNIT_ASSERT ( data.hasAlternateScreen() == true );
+  CPPUNIT_ASSERT ( data.isInAlternateScreen() == false );
   CPPUNIT_ASSERT ( data.hasASCIIConsole() == false );
   CPPUNIT_ASSERT ( data.hasVT100Console() == false );
   CPPUNIT_ASSERT ( data.hasUTF8Console() == false );
@@ -222,6 +223,11 @@ void FTermDataTest::dataTest()
   CPPUNIT_ASSERT ( data.hasAlternateScreen() == true );
   data.useAlternateScreen (false);
   CPPUNIT_ASSERT ( data.hasAlternateScreen() == false );
+
+  CPPUNIT_ASSERT ( data.isInAlternateScreen() == false );
+  data.setAlternateScreenInUse (true);
+  CPPUNIT_ASSERT ( data.isInAlternateScreen() == true );
+
 
   CPPUNIT_ASSERT ( data.hasASCIIConsole() == false );
   data.setASCIIConsole (true);

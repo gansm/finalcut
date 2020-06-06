@@ -93,6 +93,7 @@ class FTermData final
     bool              hasCursorOptimisation() const;
     bool              isCursorHidden() const;
     bool              hasAlternateScreen() const;
+    bool              isInAlternateScreen() const;
     bool              hasASCIIConsole() const;
     bool              hasVT100Console() const;
     bool              hasUTF8Console() const;
@@ -111,6 +112,7 @@ class FTermData final
     void              supportCursorOptimisation (bool);
     void              setCursorHidden (bool);
     void              useAlternateScreen (bool);
+    void              setAlternateScreenInUse (bool);
     void              setASCIIConsole (bool);
     void              setVT100Console (bool);
     void              setUTF8Console (bool);
@@ -151,6 +153,7 @@ class FTermData final
     bool              cursor_optimisation{true};
     bool              hidden_cursor{false};  // Global cursor hidden state
     bool              use_alternate_screen{true};
+    bool              alternate_screen{false};
     bool              ascii_console{false};
     bool              vt100_console{false};
     bool              utf8_console{false};
@@ -237,6 +240,10 @@ inline bool FTermData::hasAlternateScreen() const
 { return use_alternate_screen; }
 
 //----------------------------------------------------------------------
+inline bool FTermData::isInAlternateScreen() const
+{ return alternate_screen; }
+
+//----------------------------------------------------------------------
 inline bool FTermData::hasASCIIConsole() const
 { return ascii_console; }
 
@@ -299,6 +306,10 @@ inline void FTermData::setCursorHidden (bool hidden_state)
 //----------------------------------------------------------------------
 inline void FTermData::useAlternateScreen (bool use)
 { use_alternate_screen = use; }
+
+//----------------------------------------------------------------------
+inline void FTermData::setAlternateScreenInUse (bool in_use)
+{ alternate_screen = in_use; }
 
 //----------------------------------------------------------------------
 inline void FTermData::setASCIIConsole (bool ascii)

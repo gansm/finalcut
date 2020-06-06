@@ -74,7 +74,7 @@ void FRadioButton::draw()
 void FRadioButton::drawRadioButton()
 {
   print() << FPoint{1, 1};
-  useParentWidgetColor();
+  setColor();
 
   if ( FTerm::isMonochron() )
   {

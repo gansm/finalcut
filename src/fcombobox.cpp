@@ -124,8 +124,11 @@ void FDropDownListBox::init()
 void FDropDownListBox::draw()
 {
   // Fill the background
+
   const auto& wc = getColorTheme();
-  setColor (wc->menu_active_fg, wc->menu_active_bg);
+  setForegroundColor (wc->list_fg);
+  setBackgroundColor (wc->list_bg);
+  setColor();
 
   if ( FTerm::isMonochron() )
     setReverse(true);

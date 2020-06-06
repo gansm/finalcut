@@ -80,6 +80,16 @@ class ConEmu
                        , PROT_READ | PROT_WRITE
                        , MAP_SHARED | MAP_ANONYMOUS, -1
                        , 0 );
+
+      if ( ptr == MAP_FAILED )
+      {
+        std::cerr << "mmap error: "
+                  << strerror(errno)
+                  << " (" << errno << ")"
+                  << std::endl;
+        return;
+      }
+
       shared_state = static_cast<bool*>(ptr);
       *shared_state = false;
     }

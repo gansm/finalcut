@@ -30,11 +30,12 @@
 #include "final/ftypes.h"
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-#define initCheck(ret_value)   \
-    if ( ! isInitialized() )   \
-    {                          \
-      warnNotInitialized();    \
-      return ret_value;        \
+#define initCheck(ret_value)           \
+    if ( ! isInitialized() )           \
+    {                                  \
+      if ( ! FApplication::isQuit() )  \
+        warnNotInitialized();          \
+      return ret_value;                \
     }
 #endif
 

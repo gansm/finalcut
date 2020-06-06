@@ -61,8 +61,7 @@ void check_c_string ( const char* s1
 class FOptiMoveTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FOptiMoveTest()
-    { }
+    FOptiMoveTest();
 
   protected:
     void classNameTest();
@@ -104,6 +103,11 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST_SUITE_END();
 };
 
+//----------------------------------------------------------------------
+FOptiMoveTest::FOptiMoveTest()
+{
+  finalcut::FTermcap::init();
+}
 
 //----------------------------------------------------------------------
 void FOptiMoveTest::classNameTest()

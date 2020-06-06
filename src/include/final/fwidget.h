@@ -173,7 +173,7 @@ class FWidget : public FVTerm, public FObject
     };
 
     // Constructor
-    explicit FWidget (FWidget* = nullptr, bool = false);
+    explicit FWidget (FWidget* = nullptr);
 
     // Disable copy constructor
     FWidget (const FWidget&) = delete;
@@ -374,6 +374,8 @@ class FWidget : public FVTerm, public FObject
     void                     setTermOffsetWithPadding();
 
     // Methods
+    void                     initTerminal();
+    void                     initDesktop();
     virtual void             adjustSize();
     void                     adjustSizeGlobal();
     void                     hideArea (const FSize&);
@@ -447,6 +449,7 @@ class FWidget : public FVTerm, public FObject
     };
 
     // Methods
+    void                     determineDesktopSize();
     void                     initRootWidget();
     void                     finish();
     void                     insufficientSpaceAdjust();
@@ -507,8 +510,8 @@ class FWidget : public FVTerm, public FObject
     static FWidgetList*      always_on_top_list;
     static FWidgetList*      close_widget;
     static uInt              modal_dialog_counter;
+    static bool              init_terminal;
     static bool              init_desktop;
-    static bool              hideable;
 
     // Friend classes
     friend class FToggleButton;
@@ -876,14 +879,7 @@ inline bool FWidget::setDisable()
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisibleCursor (bool enable)
-{
-  if ( enable )
-    flags.visible_cursor = true;
-  else
-    flags.visible_cursor = ( hideable ) ? false : true;
-
-  return flags.visible_cursor;
-}
+{ return (flags.visible_cursor = enable); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisibleCursor()

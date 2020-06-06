@@ -54,6 +54,7 @@ bool                 FVTerm::terminal_update_complete{false};
 bool                 FVTerm::terminal_update_pending{false};
 bool                 FVTerm::force_terminal_update{false};
 bool                 FVTerm::no_terminal_updates{false};
+bool                 FVTerm::cursor_hideable{false};
 int                  FVTerm::skipped_terminal_update{};
 uInt                 FVTerm::erase_char_length{};
 uInt                 FVTerm::repeat_char_length{};
@@ -80,10 +81,10 @@ FChar                FVTerm::i_ch{};
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FVTerm::FVTerm (bool initialize, bool disable_alt_screen)
+FVTerm::FVTerm()
 {
-  if ( initialize )
-    init (disable_alt_screen);
+  if ( ! init_object )
+    init();
 }
 
 //----------------------------------------------------------------------
@@ -170,6 +171,9 @@ void FVTerm::setTerminalUpdates (terminal_update refresh_state)
 void FVTerm::hideCursor (bool enable)
 {
   // Hides or shows the input cursor on the terminal
+
+  if ( ! cursor_hideable )
+    return;
 
   const char* visibility_str = FTerm::cursorsVisibilityString (enable);
 
@@ -644,6 +648,9 @@ void FVTerm::flush()
 {
   // Flush the output buffer
 
+  if ( ! output_buffer )
+    return;
+
   while ( ! output_buffer->empty() )
   {
     const static FTerm::defaultPutChar& FTermPutchar = FTerm::putchar();
@@ -798,6 +805,9 @@ void FVTerm::removeArea (FTermArea*& area)
 //----------------------------------------------------------------------
 void FVTerm::restoreVTerm (const FRect& box)
 {
+  if ( ! vterm )
+    return;
+
   int x = box.getX() - 1;
   int y = box.getY() - 1;
   int w = int(box.getWidth());
@@ -1337,6 +1347,23 @@ void FVTerm::finishTerminalUpdate()
 {
   // After the printing phase is completed, the terminal will be updated
   terminal_update_complete = true;
+}
+
+//----------------------------------------------------------------------
+void FVTerm::initTerminal()
+{
+  if ( fterm )
+    fterm->initTerminal();
+
+  // Get FKeyboard object
+  keyboard = FTerm::getFKeyboard();
+
+  // Hide the input cursor
+  cursor_hideable = FTerm::isCursorHideable();
+  hideCursor();
+
+  // Initialize character lengths
+  init_characterLengths(FTerm::getFOptiMove());
 }
 
 
@@ -1897,7 +1924,7 @@ const FChar FVTerm::getOverlappedCharacter (const FPoint& pos, FVTerm* obj)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::init (bool disable_alt_screen)
+void FVTerm::init()
 {
   init_object = this;
   vterm       = nullptr;
@@ -1906,15 +1933,19 @@ void FVTerm::init (bool disable_alt_screen)
 
   try
   {
-    fterm         = new FTerm (disable_alt_screen);
+    fterm         = new FTerm();
     term_pos      = new FPoint(-1, -1);
     output_buffer = new std::queue<int>;
   }
   catch (const std::bad_alloc&)
   {
     badAllocOutput ("FTerm, FPoint, or std::queue<int>");
-    std::abort();
+    return;
   }
+
+  // Presetting of the current locale for full-width character support.
+  // The final setting is made later in FTerm::init_locale().
+  std::setlocale (LC_ALL, "");
 
   // term_attribute stores the current state of the terminal
   term_attribute.ch           = '\0';
@@ -1937,15 +1968,6 @@ void FVTerm::init (bool disable_alt_screen)
   createArea (term_geometry, shadow_size, vdesktop);
   vdesktop->visible = true;
   active_area = vdesktop;
-
-  // Get FKeyboard object
-  keyboard = FTerm::getFKeyboard();
-
-  // Hide the input cursor
-  hideCursor();
-
-  // Initialize character lengths
-  init_characterLengths (FTerm::getFOptiMove());
 }
 
 //----------------------------------------------------------------------
@@ -1978,7 +2000,8 @@ void FVTerm::finish()
   // Clear the terminal
   setNormal();
 
-  if ( FTerm::hasAlternateScreen() )
+  if ( FTerm::hasAlternateScreen()
+    && FTerm::getFTermData()->isInAlternateScreen() )
     clearTerm();
 
   flush();

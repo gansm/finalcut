@@ -217,8 +217,13 @@ void Background::cb_choice (const finalcut::FWidget*, const FDataPtr)
 
 int main (int argc, char* argv[])
 {
+  // Create the application object
   finalcut::FApplication app(argc, argv);
 
+  // Force terminal initialization without calling show()
+  app.initTerminal();
+
+  // The following lines require an initialized terminal
   if ( finalcut::FTerm::canChangeColorPalette() )
     app.setBackgroundColor(finalcut::fc::LightMagenta);
 

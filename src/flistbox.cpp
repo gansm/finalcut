@@ -721,7 +721,6 @@ void FListBox::draw()
 
   useParentWidgetColor();
 
-
   if ( FTerm::isMonochron() )
     setReverse(true);
 

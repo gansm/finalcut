@@ -108,6 +108,9 @@ class FTermcap final
     template<typename CharT>
     static int           paddingPrint (const CharT&, int, fn_putc);
 
+    // Inquiry
+    static bool          isInitialized();
+
     // Methods
     static void init();
 
@@ -128,6 +131,7 @@ class FTermcap final
   private:
     // Constant
     static constexpr std::size_t BUF_SIZE{2048};
+
 
     // Methods
     static void          termcap();
@@ -192,6 +196,12 @@ template<typename CharT>
 int FTermcap::paddingPrint (const CharT& str, int affcnt, fn_putc putc)
 {
   return _tputs (C_STR(str), affcnt, putc);
+}
+
+//----------------------------------------------------------------------
+inline bool FTermcap::isInitialized()
+{
+  return bool(fsystem && fterm_data && term_detection);
 }
 
 }  // namespace finalcut

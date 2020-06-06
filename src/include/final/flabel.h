@@ -98,6 +98,7 @@ class FLabel : public FWidget
     bool                setEmphasis (bool);
     bool                setEmphasis();
     bool                unsetEmphasis();
+    void                resetColors() override;
     bool                setReverseMode (bool);
     bool                setReverseMode();
     bool                unsetReverseMode();
@@ -145,8 +146,8 @@ class FLabel : public FWidget
     std::size_t         align_offset{0};
     std::size_t         hotkeypos{NOT_SET};
     std::size_t         column_width{0};
-    FColor              emphasis_color{getColorTheme()->label_emphasis_fg};
-    FColor              ellipsis_color{getColorTheme()->label_ellipsis_fg};
+    FColor              emphasis_color{fc::Default};
+    FColor              ellipsis_color{fc::Default};
     bool                multiline{false};
     bool                emphasis{false};
     bool                reverse_mode{false};

@@ -116,6 +116,15 @@ void FLabel::setAlignment (fc::text_alignment align)
 }
 
 //----------------------------------------------------------------------
+void FLabel::resetColors()
+{
+  useParentWidgetColor();
+  const auto& wc = getColorTheme();
+  emphasis_color = wc->label_emphasis_fg;
+  ellipsis_color = wc->label_ellipsis_fg;
+}
+
+//----------------------------------------------------------------------
 bool FLabel::setEnable (bool enable)
 {
   FWidget::setEnable(enable);
@@ -247,6 +256,7 @@ void FLabel::cb_accelWidgetDestroyed (const FWidget*, const FDataPtr)
 void FLabel::init()
 {
   unsetFocusable();
+  useParentWidgetColor();
 }
 
 //----------------------------------------------------------------------
@@ -290,7 +300,7 @@ void FLabel::draw()
   if ( text.isEmpty() )
     return;
 
-  useParentWidgetColor();
+
 
   if ( FTerm::isMonochron() )
   {

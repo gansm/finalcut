@@ -94,7 +94,7 @@ class FApplication : public FWidget
     typedef std::shared_ptr<FLog> FLogPtr;
 
     // Constructor
-    FApplication (const int&, char*[], bool = false);
+    FApplication (const int&, char*[]);
 
     // Disable copy constructor
     FApplication (const FApplication&) = delete;
@@ -122,26 +122,23 @@ class FApplication : public FWidget
     int                   exec();  // run
     int                   enterLoop();
     void                  exitLoop();
-    static void           exit (int = 0);
+    static void           exit (int = EXIT_SUCCESS);
     void                  quit();
     static bool           sendEvent (FObject*, FEvent*);
     void                  queueEvent (FObject*, FEvent*);
     void                  sendQueuedEvents();
     bool                  eventInQueue();
     bool                  removeQueuedEvent (const FObject*);
-    virtual void          processExternalUserEvent();
-    static FWidget*       processParameters (const int&, char*[]);
+    void                  initTerminal();
     static void           setDefaultTheme();
     static void           setDarkTheme();
-    static void           showParameterUsage ()
-    #if defined(__clang__) || defined(__GNUC__)
-      __attribute__((noreturn))
-    #endif
-                          ;
     static void           closeConfirmationDialog (FWidget*, FCloseEvent*);
 
     // Callback method
     void cb_exitApp (const FWidget*, const FDataPtr);
+
+  protected:
+    virtual void          processExternalUserEvent();
 
   private:
     // Typedefs
@@ -152,6 +149,7 @@ class FApplication : public FWidget
     void                  init (uInt64, uInt64);
     static void           cmd_options (const int&, char*[]);
     static FStartOptions& getStartOptions();
+    static void           showParameterUsage();
     void                  destroyLog();
     void                  findKeyboardWidget();
     bool                  isKeyPressed() const;
@@ -186,6 +184,7 @@ class FApplication : public FWidget
                                                     , const FPoint&
                                                     , int );
     void                  sendWheelEvent (const FPoint&, const FPoint&);
+    static FWidget*       processParameters (const int&, char*[]);
     void                  processMouseEvent();
     void                  processResizeEvent();
     void                  processCloseWidget();

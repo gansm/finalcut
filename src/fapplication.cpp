@@ -58,7 +58,7 @@ FWidget*       FApplication::keyboard_widget {nullptr};  // has the keyboard foc
 FKeyboard*     FApplication::keyboard        {nullptr};  // keyboard access
 FMouseControl* FApplication::mouse           {nullptr};  // mouse control
 int            FApplication::loop_level      {0};        // event loop level
-int            FApplication::quit_code       {0};
+int            FApplication::quit_code       {EXIT_SUCCESS};
 bool           FApplication::quit_now        {false};
 
 
@@ -68,13 +68,14 @@ bool           FApplication::quit_now        {false};
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FApplication::FApplication ( const int& _argc
-                           , char* _argv[]
-                           , bool disable_alt_screen )
-  : FWidget{processParameters(_argc, _argv), disable_alt_screen}
+FApplication::FApplication (const int& _argc, char* _argv[])
+  : FWidget{processParameters(_argc, _argv)}
   , app_argc{_argc}
   , app_argv{_argv}
 {
+  if ( quit_now )
+    return;
+
   if ( app_object )
   {
     auto ftermdata = FTerm::getFTermData();
@@ -84,6 +85,7 @@ FApplication::FApplication ( const int& _argc
     return;
   }
 
+  // First define the application object
   app_object = this;
 
   if ( ! (_argc && _argv) )
@@ -145,10 +147,10 @@ int FApplication::exec()  // run
   if ( quit_now )
   {
     quit_now = false;
-    return EXIT_FAILURE;
+    return quit_code;
   }
 
-  quit_code = 0;
+  quit_code = EXIT_SUCCESS;
   enterLoop();
   return quit_code;
 }
@@ -263,23 +265,10 @@ bool FApplication::removeQueuedEvent (const FObject* receiver)
 }
 
 //----------------------------------------------------------------------
-void FApplication::processExternalUserEvent()
+void FApplication::initTerminal()
 {
-  // This method can be overloaded and replaced by own code
-}
-
-//----------------------------------------------------------------------
-FWidget* FApplication::processParameters (const int& argc, char* argv[])
-{
-  if ( argc > 0 && argv[1] && ( std::strcmp(argv[1], "--help") == 0
-                             || std::strcmp(argv[1], "-h") == 0 ) )
-  {
-    showParameterUsage();
-  }
-
-  getStartOptions().setDefault();
-  cmd_options (argc, argv);
-  return nullptr;
+  if ( ! isQuit() )
+    FWidget::initTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -314,56 +303,6 @@ void FApplication::setDarkTheme()
 }
 
 //----------------------------------------------------------------------
-void FApplication::showParameterUsage()
-{
-  std::cout \
-    << "Generic options:\n"
-    << "  -h, --help                "
-    << "    Display this help and exit\n"
-    << "\n"
-    << "The Final Cut options:\n"
-    << "  --encoding <name>         "
-    << "    Sets the character encoding mode\n"
-    << "                            "
-    << "    {utf8, vt100, pc, ascii}\n"
-    << "  --no-mouse                "
-    << "    Disable mouse support\n"
-    << "  --no-optimized-cursor     "
-    << "    Disable cursor optimization\n"
-    << "  --no-terminal-detection   "
-    << "    Disable terminal detection\n"
-    << "  --no-terminal-data-request"
-    << "    Do not determine terminal font and title\n"
-    << "  --no-color-change         "
-    << "    Do not redefine the color palette\n"
-    << "  --no-sgr-optimizer        "
-    << "    Do not optimize SGR sequences\n"
-    << "  --vgafont                 "
-    << "    Set the standard vga 8x16 font\n"
-    << "  --newfont                 "
-    << "    Enables the graphical font\n"
-    << "  --dark-theme              "
-    << "    Enables the dark theme\n"
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-    << "\n"
-    << "FreeBSD console options:\n"
-    << "  --no-esc-for-alt-meta     "
-    << "    Do not send a ESC prefix for the alt/meta key\n"
-    << "  --no-cursorstyle-change   "
-    << "    Do not change the current cursor style\n"
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
-    << "\n"
-    << "NetBSD/OpenBSD console options:\n"
-    << "  --no-esc-for-alt-meta     "
-    << "    Do not send a ESC prefix for the alt/meta key\n"
-#endif
-
-    << std::endl;  // newline character + flushes the output stream
-  std::exit(EXIT_SUCCESS);
-}
-
-//----------------------------------------------------------------------
 void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 {
   app_object->unsetMoveSizeMode();
@@ -383,6 +322,15 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
       getStatusBar()->drawMessage();
   }
 }
+
+
+// protected methods of FApplication
+//----------------------------------------------------------------------
+void FApplication::processExternalUserEvent()
+{
+  // This method can be overloaded and replaced by own code
+}
+
 
 // private methods of FApplication
 //----------------------------------------------------------------------
@@ -476,45 +424,49 @@ void FApplication::cmd_options (const int& argc, char* argv[])
         else if ( encoding.includes("help") )
           showParameterUsage();
         else
-          FTerm::exitWithMessage ( "Unknown encoding "
-                                 + std::string(encoding.c_str()) );
+        {
+          auto ftermdata = FTerm::getFTermData();
+          ftermdata->setExitMessage ( "Unknown encoding "
+                                    + std::string(encoding.c_str()) );
+          exit(EXIT_FAILURE);
+        }
       }
 
-      if ( std::strcmp(long_options[idx].name, "no-mouse")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "no-mouse") == 0 )
         getStartOptions().mouse_support = false;
 
-      if ( std::strcmp(long_options[idx].name, "no-optimized-cursor")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "no-optimized-cursor") == 0 )
         getStartOptions().cursor_optimisation = false;
 
-      if ( std::strcmp(long_options[idx].name, "no-terminal-detection")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "no-terminal-detection") == 0 )
         getStartOptions().terminal_detection = false;
 
-      if ( std::strcmp(long_options[idx].name, "no-terminal-data-request")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "no-terminal-data-request") == 0 )
         getStartOptions().terminal_data_request = false;
 
-      if ( std::strcmp(long_options[idx].name, "no-color-change")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "no-color-change") == 0 )
         getStartOptions().color_change = false;
 
-      if ( std::strcmp(long_options[idx].name, "no-sgr-optimizer")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "no-sgr-optimizer") == 0 )
         getStartOptions().sgr_optimizer = false;
 
-      if ( std::strcmp(long_options[idx].name, "vgafont")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "vgafont") == 0 )
         getStartOptions().vgafont = true;
 
-      if ( std::strcmp(long_options[idx].name, "newfont")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "newfont") == 0 )
         getStartOptions().newfont = true;
 
-      if ( std::strcmp(long_options[idx].name, "dark-theme")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "dark-theme") == 0 )
         getStartOptions().dark_theme = true;
 
     #if defined(__FreeBSD__) || defined(__DragonFly__)
-      if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta") == 0 )
         getStartOptions().meta_sends_escape = false;
 
-      if ( std::strcmp(long_options[idx].name, "no-cursorstyle-change")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "no-cursorstyle-change") == 0 )
         getStartOptions().change_cursorstyle = false;
     #elif defined(__NetBSD__) || defined(__OpenBSD__)
-      if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta") == 0 )
         getStartOptions().meta_sends_escape = false;
     #endif
     }
@@ -525,6 +477,55 @@ void FApplication::cmd_options (const int& argc, char* argv[])
 inline FStartOptions& FApplication::getStartOptions()
 {
   return FStartOptions::getFStartOptions();
+}
+
+//----------------------------------------------------------------------
+void FApplication::showParameterUsage()
+{
+  std::cout \
+    << "Generic options:\n"
+    << "  -h, --help                "
+    << "    Display this help and exit\n"
+    << "\n"
+    << "The Final Cut options:\n"
+    << "  --encoding <name>         "
+    << "    Sets the character encoding mode\n"
+    << "                            "
+    << "    {utf8, vt100, pc, ascii}\n"
+    << "  --no-mouse                "
+    << "    Disable mouse support\n"
+    << "  --no-optimized-cursor     "
+    << "    Disable cursor optimization\n"
+    << "  --no-terminal-detection   "
+    << "    Disable terminal detection\n"
+    << "  --no-terminal-data-request"
+    << "    Do not determine terminal font and title\n"
+    << "  --no-color-change         "
+    << "    Do not redefine the color palette\n"
+    << "  --no-sgr-optimizer        "
+    << "    Do not optimize SGR sequences\n"
+    << "  --vgafont                 "
+    << "    Set the standard vga 8x16 font\n"
+    << "  --newfont                 "
+    << "    Enables the graphical font\n"
+    << "  --dark-theme              "
+    << "    Enables the dark theme\n"
+
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+    << "\n"
+    << "FreeBSD console options:\n"
+    << "  --no-esc-for-alt-meta     "
+    << "    Do not send a ESC prefix for the alt/meta key\n"
+    << "  --no-cursorstyle-change   "
+    << "    Do not change the current cursor style\n"
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
+    << "\n"
+    << "NetBSD/OpenBSD console options:\n"
+    << "  --no-esc-for-alt-meta     "
+    << "    Do not send a ESC prefix for the alt/meta key\n"
+#endif
+
+    << std::endl;  // newline character + flushes the output stream
 }
 
 //----------------------------------------------------------------------
@@ -1117,6 +1118,20 @@ void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
     setClickedWidget(nullptr);
     sendEvent (scroll_over_widget, &wheel_ev);
   }
+}
+
+//----------------------------------------------------------------------
+FWidget* FApplication::processParameters (const int& argc, char* argv[])
+{
+  if ( argc > 0 && argv[1] && ( std::strcmp(argv[1], "--help") == 0
+                             || std::strcmp(argv[1], "-h") == 0 ) )
+  {
+    showParameterUsage();
+    FApplication::exit(EXIT_SUCCESS);
+  }
+
+  cmd_options (argc, argv);
+  return nullptr;
 }
 
 //----------------------------------------------------------------------

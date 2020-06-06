@@ -118,7 +118,7 @@ class FVTerm
     };
 
     // Constructor
-    explicit FVTerm (bool, bool = false);
+    explicit FVTerm();
 
     // Disable copy constructor
     FVTerm (const FVTerm&) = delete;
@@ -293,9 +293,9 @@ class FVTerm
     bool                  hasPrintArea() const;
     bool                  hasChildPrintArea() const;
     bool                  isVirtualWindow() const;
+    bool                  isCursorHideable() const;
 
     // Methods
-
     void                  createArea ( const FRect&
                                      , const FSize&
                                      , FTermArea*& );
@@ -317,6 +317,7 @@ class FVTerm
     void                  processTerminalUpdate();
     static void           startTerminalUpdate();
     static void           finishTerminalUpdate();
+    void                  initTerminal();
 
   private:
     // Enumerations
@@ -373,7 +374,7 @@ class FVTerm
                                        , FVTerm* );
     static const FChar    getCoveredCharacter (const FPoint&, FVTerm*);
     static const FChar    getOverlappedCharacter (const FPoint&, FVTerm*);
-    void                  init (bool);
+    void                  init();
     static void           init_characterLengths (const FOptiMove*);
     void                  finish();
     static void           putAreaLine (const FChar*, FChar*, int);
@@ -445,6 +446,7 @@ class FVTerm
     static uInt             clr_bol_length;
     static uInt             clr_eol_length;
     static uInt             cursor_address_length;
+    static bool             cursor_hideable;
 };
 
 
@@ -969,6 +971,10 @@ inline bool FVTerm::hasChildPrintArea() const
 //----------------------------------------------------------------------
 inline bool FVTerm::isVirtualWindow() const
 { return vwin; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isCursorHideable() const
+{ return cursor_hideable; }
 
 
 }  // namespace finalcut

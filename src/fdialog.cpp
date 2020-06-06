@@ -166,7 +166,7 @@ void FDialog::show()
 
   FWindow::show();
 
-  if ( isModal() )
+  if ( isModal() && ! FApplication::isQuit() )
   {
     auto fapp = FApplication::getApplicationObject();
     fapp->enterLoop();

@@ -49,8 +49,8 @@ FWidget::FWidgetList* FWidget::window_list{nullptr};
 FWidget::FWidgetList* FWidget::dialog_list{nullptr};
 FWidget::FWidgetList* FWidget::always_on_top_list{nullptr};
 FWidget::FWidgetList* FWidget::close_widget{nullptr};
+bool                  FWidget::init_terminal{false};
 bool                  FWidget::init_desktop{false};
-bool                  FWidget::hideable{false};
 uInt                  FWidget::modal_dialog_counter{};
 
 //----------------------------------------------------------------------
@@ -59,8 +59,8 @@ uInt                  FWidget::modal_dialog_counter{};
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
-  : FVTerm{ ! (bool(parent) || root_widget), disable_alt_screen}
+FWidget::FWidget (FWidget* parent)
+  : FVTerm{}
   , FObject{parent}
 {
   // init bit field with 0
@@ -83,22 +83,18 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
       return;
     }
 
-    root_widget = this;
-    show_root_widget = nullptr;
-    redraw_root_widget = nullptr;
-    modal_dialog_counter = 0;
-    statusbar = nullptr;
     initRootWidget();
   }
   else
   {
-    flags.visible_cursor = ! hideable;
     woffset = parent->wclient_offset;
-    double_flatline_mask.top.resize (getWidth(), false);
-    double_flatline_mask.right.resize (getHeight(), false);
-    double_flatline_mask.bottom.resize (getWidth(), false);
-    double_flatline_mask.left.resize (getHeight(), false);
   }
+
+  flags.visible_cursor = false;
+  double_flatline_mask.top.resize (getWidth(), false);
+  double_flatline_mask.right.resize (getHeight(), false);
+  double_flatline_mask.bottom.resize (getWidth(), false);
+  double_flatline_mask.left.resize (getHeight(), false);
 }
 
 //----------------------------------------------------------------------
@@ -658,9 +654,10 @@ bool FWidget::setCursorPos (const FPoint& pos)
       woffsetY += (1 - area->widget->getTopPadding());
     }
 
+    bool visible = ! isCursorHideable() || flags.visible_cursor;
     setAreaCursor ( { woffsetX + pos.getX()
                     , woffsetY + pos.getY() }
-                  , flags.visible_cursor
+                  , visible
                   , area );
     return true;
   }
@@ -1032,20 +1029,12 @@ void FWidget::show()
 {
   // Make the widget visible and draw it
 
-  if ( ! isVisible() )
+  if ( ! isVisible() || FApplication::isQuit() )
     return;
 
-  if ( ! init_desktop )
-  {
-    // Sets the initial screen settings
-    FTerm::initScreenSettings();
-    // Initializing vdesktop
-    const auto& r = getRootWidget();
-    setColor(r->getForegroundColor(), r->getBackgroundColor());
-    clearArea (getVirtualDesktop());
-    // Destop is now initialized
-    init_desktop = true;
-  }
+  // Initialize desktop on first call
+  if ( ! init_desktop && root_widget )
+    root_widget->initDesktop();
 
   if ( ! show_root_widget )
   {
@@ -1318,6 +1307,49 @@ void FWidget::setTermOffsetWithPadding()
                          , r->getTopPadding()
                          , int(r->getWidth()) - 1 - r->getRightPadding()
                          , int(r->getHeight()) - 1 - r->getBottomPadding() );
+}
+
+//----------------------------------------------------------------------
+void FWidget::initTerminal()
+{
+  if ( hasParent() || init_terminal )
+    return;
+
+  // Initialize the physical and virtual terminal
+  FVTerm::initTerminal();
+
+  // Initialize default widget colors (after terminal detection)
+  initColorTheme();
+
+  // Set default foreground and background color of the desktop/terminal
+  auto color_theme = getColorTheme();
+  root_widget->foreground_color = color_theme->term_fg;
+  root_widget->background_color = color_theme->term_bg;
+  resetColors();
+
+  // The terminal is now initialized
+  init_terminal = true;
+}
+
+//----------------------------------------------------------------------
+void FWidget::initDesktop()
+{
+  if ( hasParent() || init_desktop )
+    return;
+
+  if ( ! init_terminal )
+    initTerminal();
+
+  // Sets the initial screen settings
+  FTerm::initScreenSettings();
+
+  // Initializing vdesktop
+  const auto& r = getRootWidget();
+  setColor(r->getForegroundColor(), r->getBackgroundColor());
+  clearArea (getVirtualDesktop());
+
+  // Destop is now initialized
+  init_desktop = true;
 }
 
 //----------------------------------------------------------------------
@@ -1714,6 +1746,18 @@ void FWidget::onClose (FCloseEvent* ev)
 
 // private methods of FWidget
 //----------------------------------------------------------------------
+void FWidget::determineDesktopSize()
+{
+  // Determine width and height of the terminal
+
+  detectTermSize();
+  wsize.setRect(1, 1, getDesktopWidth(), getDesktopHeight());
+  adjust_wsize = wsize;
+  woffset.setRect(0, 0, getDesktopWidth(), getDesktopHeight());
+  wclient_offset = woffset;
+}
+
+//----------------------------------------------------------------------
 void FWidget::initRootWidget()
 {
   try
@@ -1730,29 +1774,18 @@ void FWidget::initRootWidget()
     return;
   }
 
-  hideable = FTerm::isCursorHideable();
-  flags.visible_cursor = ! hideable;
+  // Root widget basic initialization
+  root_widget = this;
+  show_root_widget = nullptr;
+  redraw_root_widget = nullptr;
+  modal_dialog_counter = 0;
+  statusbar = nullptr;
 
   // Determine width and height of the terminal
-  detectTermSize();
-  wsize.setRect(1, 1, getDesktopWidth(), getDesktopHeight());
-  adjust_wsize = wsize;
-  woffset.setRect(0, 0, getDesktopWidth(), getDesktopHeight());
-  wclient_offset = woffset;
+  determineDesktopSize();
 
-  double_flatline_mask.top.resize (getWidth(), false);
-  double_flatline_mask.right.resize (getHeight(), false);
-  double_flatline_mask.bottom.resize (getWidth(), false);
-  double_flatline_mask.left.resize (getHeight(), false);
-
-  // Initialize default widget colors
+  // Initialize default widget colors (before terminal detection)
   initColorTheme();
-
-  // Default foreground and background color of the desktop/terminal
-  auto color_theme = getColorTheme();
-  foreground_color = color_theme->term_fg;
-  background_color = color_theme->term_bg;
-  init_desktop = false;
 }
 
 //----------------------------------------------------------------------

@@ -268,7 +268,7 @@ void FOptiMove::set_cursor_right (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_cursor_address (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
     const char* temp = FTermcap::encodeMotionParameter(cap, 23, 23);
     F_cursor_address.cap = cap;
@@ -286,7 +286,7 @@ void FOptiMove::set_cursor_address (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_column_address (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
     const char* temp = FTermcap::encodeParameter(cap, 23);
     F_column_address.cap = cap;
@@ -304,7 +304,7 @@ void FOptiMove::set_column_address (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_row_address (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
     const char* temp = FTermcap::encodeParameter(cap, 23);
     F_row_address.cap = cap;
@@ -322,7 +322,7 @@ void FOptiMove::set_row_address (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_parm_up_cursor (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
     const char* temp = FTermcap::encodeParameter(cap, 23);
     F_parm_up_cursor.cap = cap;
@@ -340,7 +340,7 @@ void FOptiMove::set_parm_up_cursor (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_parm_down_cursor (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
     const char* temp = FTermcap::encodeParameter(cap, 23);
     F_parm_down_cursor.cap = cap;
@@ -358,7 +358,7 @@ void FOptiMove::set_parm_down_cursor (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_parm_left_cursor (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
     const char* temp = FTermcap::encodeParameter(cap, 23);
     F_parm_left_cursor.cap = cap;
@@ -376,7 +376,7 @@ void FOptiMove::set_parm_left_cursor (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_parm_right_cursor (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
     const char* temp = FTermcap::encodeParameter(cap, 23);
     F_parm_right_cursor.cap = cap;
@@ -394,7 +394,7 @@ void FOptiMove::set_parm_right_cursor (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_erase_chars (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
     const char* temp = FTermcap::encodeParameter(cap, 23);
     F_erase_chars.cap = cap;
@@ -412,7 +412,7 @@ void FOptiMove::set_erase_chars (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_repeat_char (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
     const char* temp = FTermcap::encodeParameter(cap, ' ', 23);
     F_repeat_char.cap = cap;

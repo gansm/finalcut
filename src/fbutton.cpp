@@ -402,8 +402,9 @@ void FButton::onFocusOut (FFocusEvent*)
 void FButton::init()
 {
   const auto& wc = getColorTheme();
-  setForegroundColor (wc->button_active_fg);
-  setBackgroundColor (wc->button_active_bg);
+  button_fg = wc->button_active_fg;
+  button_bg = wc->button_active_bg;
+  resetColors();
   setShadow();
 
   if ( ! text.isEmpty() )
