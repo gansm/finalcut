@@ -84,12 +84,12 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   right_arrow.ignorePadding();
   right_arrow.setGeometry (FPoint{int(getWidth()) - 1, 2}, FSize{1, 1});
 
-  top_left_label = "menu";
+  top_left_label.setText("menu");
   top_left_label.setForegroundColor (wc->label_inactive_fg);
   top_left_label.setEmphasis();
   top_left_label.setGeometry (FPoint{1, 1}, FSize{6, 1});
 
-  top_right_label = "zoom";
+  top_right_label.setText("zoom");
   top_right_label.setAlignment (fc::alignRight);
   top_right_label.setForegroundColor (wc->label_inactive_fg);
   top_right_label.setEmphasis();

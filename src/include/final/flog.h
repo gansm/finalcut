@@ -89,6 +89,7 @@ class FLog : public std::stringbuf
     virtual void warn (const std::string&) = 0;
     virtual void error (const std::string&) = 0;
     virtual void debug (const std::string&) = 0;
+    virtual void flush() = 0;
     virtual void setOutputStream (const std::ostream&) = 0;
     virtual void setLineEnding (LineEnding) = 0;
     virtual void enableTimestamp() = 0;

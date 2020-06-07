@@ -310,7 +310,7 @@ int main (int argc, char* argv[])
   // Force terminal initialization without calling show()
   term_app.initTerminal();
 
-  if ( term_app.isQuit() )
+  if ( finalcut::FApplication::isQuit() )
     return 0;
 
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";

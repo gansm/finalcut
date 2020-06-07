@@ -59,17 +59,28 @@ class myLogger : public finalcut::FLog
       output << "Debug: " << entry << std::endl;
     }
 
+    void flush() override
+    {
+      // An implementation is not required in this context
+    }
+
     void setOutputStream (const std::ostream& os) override
     { output.rdbuf(os.rdbuf()); }
 
     void setLineEnding (LineEnding) override
-    { }
+    {
+      // An implementation is not required in this context
+    }
 
     void enableTimestamp() override
-    { }
+    {
+      // An implementation is not required in this context
+    }
 
     void disableTimestamp() override
-    { }
+    {
+      // An implementation is not required in this context
+    }
 
   private:
     // Data member

@@ -1,3 +1,7 @@
+2020-06-07  Markus Gans  <guru.mail@muenster.de>
+	* The --log-file parameter stores log output to any file. The file 
+	  can be viewed directly on another terminal with "tail -f".
+
 2020-06-06  Markus Gans  <guru.mail@muenster.de>
 	* Now, the terminal is not initialized before the method show() 
 	  is called. Or you force it explicitly via the FApplication object.

@@ -147,6 +147,8 @@ class FApplication : public FWidget
 
     // Methods
     void                  init (uInt64, uInt64);
+    static void           setTerminalEncoding (const FString&);
+    static void           setLogFile (const FString&);
     static void           cmd_options (const int&, char*[]);
     static FStartOptions& getStartOptions();
     static void           showParameterUsage();

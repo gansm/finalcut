@@ -77,6 +77,7 @@ class FLogger : public FLog
     void warn (const std::string&) override;
     void error (const std::string&) override;
     void debug (const std::string&) override;
+    void flush() override;
     void setOutputStream (const std::ostream&) override;
     void setLineEnding (LineEnding) override;
     void enableTimestamp() override;
@@ -126,6 +127,10 @@ inline void FLogger::debug (const std::string& msg)
   setLevel() = Debug;
   printLogLine (msg);
 }
+
+//----------------------------------------------------------------------
+inline void FLogger::flush()
+{ output.flush(); }
 
 //----------------------------------------------------------------------
 inline void FLogger::setOutputStream (const std::ostream& os)

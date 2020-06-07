@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <fstream>
 #include <memory>
 #include <string>
 
@@ -366,7 +367,56 @@ void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
     mouse->setDblclickInterval (dblclick_time);
 
   // Initialize logging
-  getLog()->setLineEnding(FLog::CRLF);
+  if ( ! getStartOptions().logfile_stream.is_open() )
+    getLog()->setLineEnding(FLog::CRLF);
+}
+
+//----------------------------------------------------------------------
+void FApplication::setTerminalEncoding (const FString& enc_str)
+{
+  const FString& enc = enc_str.toLower();
+
+  if ( enc.includes("utf8") )
+    getStartOptions().encoding = fc::UTF8;
+  else if ( enc.includes("vt100") )
+    getStartOptions().encoding = fc::VT100;
+  else if ( enc.includes("pc") )
+    getStartOptions().encoding = fc::PC;
+  else if ( enc.includes("ascii") )
+    getStartOptions().encoding = fc::ASCII;
+  else if ( enc.includes("help") )
+    showParameterUsage();
+  else
+  {
+    auto ftermdata = FTerm::getFTermData();
+    ftermdata->setExitMessage ( "Unknown encoding \"" + enc_str
+                              + "\"\n(Valid encodings are utf8, "
+                              + "vt100, pc and ascii)" );
+    exit(EXIT_FAILURE);
+  }
+}
+
+//----------------------------------------------------------------------
+void FApplication::setLogFile (const FString& filename)
+{
+  // Get the global logger object
+  FLog& log = *FApplication::getLog();
+  auto& log_stream = getStartOptions().logfile_stream;
+  log_stream.open(filename, std::ofstream::out);
+
+  if ( log_stream.is_open() )
+  {
+    log.setOutputStream(log_stream);
+    log.enableTimestamp();
+    log.setLineEnding (finalcut::FLog::LF);
+  }
+  else
+  {
+    auto ftermdata = FTerm::getFTermData();
+    ftermdata->setExitMessage ( "Could not open log file \""
+                              + FString(optarg) + "\"" );
+    exit(EXIT_FAILURE);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -379,6 +429,7 @@ void FApplication::cmd_options (const int& argc, char* argv[])
     static struct option long_options[] =
     {
       {"encoding",                 required_argument, nullptr,  0 },
+      {"log-file",                 required_argument, nullptr,  0 },
       {"no-mouse",                 no_argument,       nullptr,  0 },
       {"no-optimized-cursor",      no_argument,       nullptr,  0 },
       {"no-terminal-detection",    no_argument,       nullptr,  0 },
@@ -409,28 +460,10 @@ void FApplication::cmd_options (const int& argc, char* argv[])
     if ( c == 0 )
     {
       if ( std::strcmp(long_options[idx].name, "encoding") == 0 )
-      {
-        FString encoding{optarg};
-        encoding = encoding.toLower();
+        setTerminalEncoding(FString(optarg));
 
-        if ( encoding.includes("utf8") )
-          getStartOptions().encoding = fc::UTF8;
-        else if ( encoding.includes("vt100") )
-          getStartOptions().encoding = fc::VT100;
-        else if ( encoding.includes("pc") )
-          getStartOptions().encoding = fc::PC;
-        else if ( encoding.includes("ascii") )
-          getStartOptions().encoding = fc::ASCII;
-        else if ( encoding.includes("help") )
-          showParameterUsage();
-        else
-        {
-          auto ftermdata = FTerm::getFTermData();
-          ftermdata->setExitMessage ( "Unknown encoding "
-                                    + std::string(encoding.c_str()) );
-          exit(EXIT_FAILURE);
-        }
-      }
+      if ( std::strcmp(long_options[idx].name, "log-file") == 0 )
+        setLogFile(FString(optarg));
 
       if ( std::strcmp(long_options[idx].name, "no-mouse") == 0 )
         getStartOptions().mouse_support = false;
@@ -488,10 +521,12 @@ void FApplication::showParameterUsage()
     << "    Display this help and exit\n"
     << "\n"
     << "The Final Cut options:\n"
-    << "  --encoding <name>         "
+    << "  --encoding=<MODE>         "
     << "    Sets the character encoding mode\n"
     << "                            "
     << "    {utf8, vt100, pc, ascii}\n"
+    << "  --log-file=<FILE>         "
+    << "    Writes log output to FILE\n"
     << "  --no-mouse                "
     << "    Disable mouse support\n"
     << "  --no-optimized-cursor     "
@@ -1199,6 +1234,8 @@ void FApplication::processLogger()
 
   if ( ! logger->str().empty() )
     logger->pubsync();
+
+  logger->flush();
 }
 
 //----------------------------------------------------------------------

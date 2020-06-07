@@ -35,7 +35,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include  <iostream>
+#include <fstream>
+#include <iostream>
 
 #include "final/fc.h"
 #include "final/fstring.h"
@@ -82,7 +83,6 @@ class FStartOptions final
     uInt8 sgr_optimizer         : 1;
     uInt8 vgafont               : 1;
     uInt8 newfont               : 1;
-    fc::encoding                encoding{fc::UNKNOWN};
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
     uInt8 meta_sends_escape     : 1;
@@ -95,6 +95,9 @@ class FStartOptions final
 
     uInt16 dark_theme           : 1;
     uInt16                      : 15;  // padding bits
+
+    fc::encoding                encoding{fc::UNKNOWN};
+    std::ofstream               logfile_stream;
     static FStartOptions*       start_options;
 };
 

@@ -163,6 +163,10 @@ class DirectLogger final : public finalcut::FLog
       // An implementation is not required in this context
     }
 
+    void flush() override
+    {
+      output.flush();
+    }
 
     void setOutputStream (const std::ostream& os) override
     { output.rdbuf(os.rdbuf()); }

@@ -1067,9 +1067,6 @@ int main (int argc, char* argv[])
   finalcut::FTerm::redefineDefaultColors(true);
   finalcut::FTerm::setTermTitle (title);
 
-  // Force vt100 encoding
-  //finalcut::FTerm::setEncoding(finalcut::fc::VT100);
-
   // Sets the terminal size to 94×30
   //finalcut::FTerm::setTermSize(FSize{94, 30});
 
