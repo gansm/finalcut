@@ -198,7 +198,7 @@ std::size_t FProgressbar::drawProgressIndicator()
   if ( len >= bar_length )
     return len;
 
-  if ( round(length) > len || FTerm::getMaxColor() < 16 )
+  if ( std::size_t(round(length)) > len || FTerm::getMaxColor() < 16 )
   {
     if ( FTerm::isMonochron() )
       setReverse(false);

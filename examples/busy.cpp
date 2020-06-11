@@ -54,7 +54,7 @@ class Dialog final : public finalcut::FDialog
 Dialog::Dialog (FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  setText ("Dialog");
+  FDialog::setText ("Dialog");
   finalcut::FDialog::setGeometry (FPoint{26, 5}, FSize{28, 10});
   seconds.setGeometry (FPoint{10, 2}, FSize{10, 1});
   seconds.setLabelText ("Seconds");
@@ -87,14 +87,14 @@ Dialog::Dialog (FWidget* parent)
 //----------------------------------------------------------------------
 void Dialog::adjustSize()
 {
+  finalcut::FDialog::adjustSize();
   int X = int((getDesktopWidth() - getWidth()) / 2);
   const int Y = 5;
 
   if ( X < 1 )
     X = 1;
 
-  setPos ({X, Y}, false);
-  finalcut::FDialog::adjustSize();
+  setPos (FPoint{X, Y}, false);
 }
 
 //----------------------------------------------------------------------
@@ -111,7 +111,7 @@ void Dialog::cb_start (const finalcut::FWidget*, const FDataPtr)
     return;
 
   busy_indicator.start();
-  addTimer(seconds.getValue() * 1000);
+  addTimer(int(seconds.getValue() * 1000));
 }
 
 //----------------------------------------------------------------------

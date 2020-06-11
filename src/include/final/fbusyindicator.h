@@ -85,7 +85,7 @@ class FBusyIndicator : public FToolTip
     const FString       getClassName() const override;
 
     // Inquiries
-    bool                isRunning();
+    bool                isRunning() const;
 
     // Methods
     void                start();
@@ -116,7 +116,7 @@ inline const FString FBusyIndicator::getClassName() const
 { return "FBusyIndicator"; }
 
 //----------------------------------------------------------------------
-inline bool FBusyIndicator::isRunning()
+inline bool FBusyIndicator::isRunning() const
 {
   return running;
 }

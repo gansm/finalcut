@@ -732,9 +732,9 @@ void FScrollbar::jumpToClickPos (int x, int y)
 
   if ( bar_orientation == fc::vertical )
   {
-    if ( y >1 && y < int(getHeight()) )
+    if ( y > 1 && y < int(getHeight()) )
     {
-      new_val = int( round ( double(max - min) * (y - 2.0 - (slider_length/2))
+      new_val = int( round ( double(max - min) * (y - 2.0 - double(slider_length/2))
                            / double(bar_length - slider_length) ) );
     }
     else
@@ -746,7 +746,7 @@ void FScrollbar::jumpToClickPos (int x, int y)
 
     if ( x > 1 + nf && x < int(getWidth()) - nf )
     {
-      new_val = int( round ( double(max - min) * (x - 2.0 - nf - (slider_length/2))
+      new_val = int( round ( double(max - min) * (x - 2.0 - nf - double(slider_length/2))
                            / double(bar_length - slider_length) ) );
     }
     else

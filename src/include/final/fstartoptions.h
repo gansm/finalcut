@@ -97,7 +97,7 @@ class FStartOptions final
     uInt16                      : 15;  // padding bits
 
     fc::encoding                encoding{fc::UNKNOWN};
-    std::ofstream               logfile_stream;
+    std::ofstream               logfile_stream{};
     static FStartOptions*       start_options;
 };
 

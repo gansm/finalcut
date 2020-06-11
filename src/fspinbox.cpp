@@ -428,7 +428,7 @@ void FSpinBox::forceFocus()
 }
 
 //----------------------------------------------------------------------
-void FSpinBox::cb_inputFieldActivate (finalcut::FWidget*, const FDataPtr)
+void FSpinBox::cb_inputFieldActivate (const finalcut::FWidget*, const FDataPtr)
 {
   processActivate();
 }
