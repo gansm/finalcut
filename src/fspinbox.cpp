@@ -318,6 +318,11 @@ void FSpinBox::init()
   input_field << value;
   input_field.addCallback
   (
+    "activate",
+    F_METHOD_CALLBACK (this, &FSpinBox::cb_inputFieldActivate)
+  );
+  input_field.addCallback
+  (
     "changed",
     F_METHOD_CALLBACK (this, &FSpinBox::cb_inputFieldChange)
   );
@@ -393,6 +398,12 @@ inline void FSpinBox::decreaseValue()
 }
 
 //----------------------------------------------------------------------
+void FSpinBox::processActivate()
+{
+  emitCallback("activate");
+}
+
+//----------------------------------------------------------------------
 void FSpinBox::processChanged()
 {
   emitCallback("changed");
@@ -414,6 +425,12 @@ void FSpinBox::forceFocus()
 
   if ( getStatusBar() )
     getStatusBar()->drawMessage();
+}
+
+//----------------------------------------------------------------------
+void FSpinBox::cb_inputFieldActivate (finalcut::FWidget*, const FDataPtr)
+{
+  processActivate();
 }
 
 //----------------------------------------------------------------------

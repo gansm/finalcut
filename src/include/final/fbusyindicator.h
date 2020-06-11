@@ -1,9 +1,9 @@
 /***********************************************************************
-* ftooltip.h - Widget FToolTip                                         *
+* fbusyindicator.h - Shows background activity                         *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2020 Markus Gans                                      *
+* Copyright 2020 Markus Gans                                           *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -43,94 +43,86 @@
  *       ▕▔▔▔▔▔▔▔▔▔▔▏
  *       ▕ FToolTip ▏
  *       ▕▁▁▁▁▁▁▁▁▁▁▏
+ *            ▲
+ *            │
+ *    ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *    ▕ FBusyIndicator ▏
+ *    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
  */
 
-#ifndef FTOOLTIP_H
-#define FTOOLTIP_H
+#ifndef FBUSYINDICATOR_H
+#define FBUSYINDICATOR_H
 
 #if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <vector>
-
-#include "final/fwindow.h"
+#include "final/ftooltip.h"
 
 namespace finalcut
 {
 
 //----------------------------------------------------------------------
-// class FToolTip
+// class FBusyIndicator
 //----------------------------------------------------------------------
 
-class FToolTip : public FWindow
+class FBusyIndicator : public FToolTip
 {
   public:
-    // Constructors
-    explicit FToolTip (FWidget* = nullptr);
-    explicit FToolTip (const FString&, FWidget* = nullptr);
+    // Constructor
+    explicit FBusyIndicator (FWidget* = nullptr);
 
     // Disable copy constructor
-    FToolTip (const FToolTip&) = delete;
+    FBusyIndicator (const FBusyIndicator&) = delete;
 
     // Destructor
-    ~FToolTip () override;
+    ~FBusyIndicator();
 
     // Disable copy assignment operator (=)
-    FToolTip& operator = (const FToolTip&) = delete;
+    FBusyIndicator& operator = (const FBusyIndicator&) = delete;
 
     // Accessors
     const FString       getClassName() const override;
-    const FString       getText() const;
-
-    // Mutators
-    void                setText (const FString&);
-    void                resetColors() override;
-    bool                setBorder (bool);
-    bool                setBorder();
-    bool                unsetBorder();
 
     // Inquiries
-    bool                hasBorder() const;
+    bool                isRunning();
 
     // Methods
-    void                show() override;
-
-    // Event handler
-    void                onMouseDown (FMouseEvent*) override;
+    void                start();
+    void                stop();
 
   private:
+    // Constants
+    static constexpr std::size_t TIMER = 200;
+
     // Methods
-    void                init();
-    void                draw() override;
-    void                calculateDimensions();
-    void                adjustSize() override;
+    void createIndicatorText();
+
+    // Event handler
+    void onTimer (finalcut::FTimerEvent*) override;
+
+    // Callback methods
 
     // Data members
-    FString       text{};
-    FStringList   text_components{};
-    std::size_t   max_line_width{0};
-    std::size_t   text_num_lines{0};
+    wchar_t uni_pattern[8]{L' ', L' ', L'·', L'·', L'•', L'•', L'●', L'●'};
+    char    pattern[8]{L' ', L' ', L'.', L'.', L'+', L'+', L'#', L'#'};
+    bool    running{false};
 };
 
 
-// FToolTip inline functions
+// FBusyIndicator inline functions
 //----------------------------------------------------------------------
-inline const FString FToolTip::getClassName() const
-{ return "FToolTip"; }
+inline const FString FBusyIndicator::getClassName() const
+{ return "FBusyIndicator"; }
 
 //----------------------------------------------------------------------
-inline bool FToolTip::setBorder()
-{ return setBorder(true); }
-
-//----------------------------------------------------------------------
-inline bool FToolTip::unsetBorder()
-{ return setBorder(false); }
-
-//----------------------------------------------------------------------
-inline bool FToolTip::hasBorder() const
-{ return ! getFlags().no_border; }
+inline bool FBusyIndicator::isRunning()
+{
+  return running;
+}
 
 }  // namespace finalcut
 
-#endif  // FTOOLTIP_H
+#endif  // FBUSYINDICATOR_H
+
+

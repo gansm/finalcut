@@ -15,6 +15,7 @@ noinst_PROGRAMS = \
 	fullwidth-character \
 	7segment \
 	choice \
+	busy \
 	listbox \
 	listview \
 	checklist \
@@ -44,6 +45,7 @@ event_log_SOURCES = event-log.cpp
 fullwidth_character_SOURCES = fullwidth-character.cpp
 7segment_SOURCES = 7segment.cpp
 choice_SOURCES = choice.cpp
+busy_SOURCES = busy.cpp
 listbox_SOURCES = listbox.cpp
 listview_SOURCES = listview.cpp
 checklist_SOURCES = checklist.cpp

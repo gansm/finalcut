@@ -399,13 +399,13 @@ void FApplication::setTerminalEncoding (const FString& enc_str)
 //----------------------------------------------------------------------
 void FApplication::setLogFile (const FString& filename)
 {
-  // Get the global logger object
-  FLog& log = *FApplication::getLog();
   auto& log_stream = getStartOptions().logfile_stream;
   log_stream.open(filename, std::ofstream::out);
 
   if ( log_stream.is_open() )
   {
+    // Get the global logger object
+    FLog& log = *FApplication::getLog();
     log.setOutputStream(log_stream);
     log.enableTimestamp();
     log.setLineEnding (finalcut::FLog::LF);
@@ -414,7 +414,7 @@ void FApplication::setLogFile (const FString& filename)
   {
     auto ftermdata = FTerm::getFTermData();
     ftermdata->setExitMessage ( "Could not open log file \""
-                              + FString(optarg) + "\"" );
+                              + filename + "\"" );
     exit(EXIT_FAILURE);
   }
 }

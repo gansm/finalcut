@@ -135,10 +135,12 @@ class FSpinBox : public FWidget
     void                updateInputField();
     void                increaseValue();
     void                decreaseValue();
+    void                processActivate();
     void                processChanged();
     void                forceFocus();
 
     // Callback methods
+    void                cb_inputFieldActivate (finalcut::FWidget*, const FDataPtr);
     void                cb_inputFieldChange (finalcut::FWidget*, const FDataPtr);
 
     // Data members

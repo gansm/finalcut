@@ -282,6 +282,8 @@ void FWindow::hide()
     getVWin()->visible = false;
 
   FWidget::hide();
+  const auto& t_geometry = getTermGeometryWithShadow();
+  restoreVTerm (t_geometry);
 }
 
 //----------------------------------------------------------------------

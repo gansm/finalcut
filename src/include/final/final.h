@@ -32,6 +32,7 @@
 #include <final/fapplication.h>
 #include <final/fbuttongroup.h>
 #include <final/fbutton.h>
+#include <final/fbusyindicator.h>
 #include <final/fc.h>
 #include <final/fobject.h>
 #include <final/fcolorpalette.h>

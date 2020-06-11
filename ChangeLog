@@ -1,3 +1,7 @@
+2020-06-11  Markus Gans  <guru.mail@muenster.de>
+	* New widget FBusyIndicator to indicate background activity
+	* Added example/busy to demonstrate the functionality of this widget
+
 2020-06-07  Markus Gans  <guru.mail@muenster.de>
 	* The --log-file parameter stores log output to any file. The file 
 	  can be viewed directly on another terminal with "tail -f".

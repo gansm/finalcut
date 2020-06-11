@@ -159,6 +159,18 @@ class default16ColorPalette final : public FColorPalette
 inline const FString default16ColorPalette::getClassName() const
 { return "default16ColorPalette"; }
 
+/*  Inheritance diagram
+ *  ═══════════════════
+ *
+ *        ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *        ▕ FColorPalette ▏
+ *        ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *                ▲
+ *                │
+ *  ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *  ▕ default16DarkColorPalette ▏
+ *  ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ */
 
 //----------------------------------------------------------------------
 // class default16DarkColorPalette

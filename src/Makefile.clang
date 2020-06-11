@@ -34,6 +34,7 @@ INCLUDE_HEADERS = \
 	fcheckmenuitem.h \
 	fmessagebox.h \
 	ftooltip.h \
+	fbusyindicator.h \
 	sgr_optimizer.h \
 	foptiattr.h \
 	foptimove.h \
@@ -118,6 +119,7 @@ OBJS = \
 	fcombobox.o \
 	fmessagebox.o \
 	ftooltip.o \
+	fbusyindicator.o \
 	ffiledialog.o \
 	fkey_map.o \
 	fcharmap.o \

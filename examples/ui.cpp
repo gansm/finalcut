@@ -1042,8 +1042,7 @@ void MyDialog::cb_setInput (finalcut::FWidget* widget, FDataPtr data)
 int main (int argc, char* argv[])
 {
   const finalcut::FString ver{F_VERSION};  // Library version
-  const finalcut::FString title { "The FINAL CUT "
-                                + ver
+  const finalcut::FString title { "The FINAL CUT " + ver
                                 + " (C) 2020 by Markus Gans" };
 
   // Create the application object app

@@ -44,6 +44,7 @@ libfinal_la_SOURCES = \
 	fwindow.cpp \
 	fmessagebox.cpp \
 	ftooltip.cpp \
+	fbusyindicator.cpp \
 	ffiledialog.cpp \
 	fkey_map.cpp \
 	fcharmap.cpp \
@@ -115,6 +116,7 @@ finalcutinclude_HEADERS = \
 	include/final/fmenulist.h \
 	include/final/fmessagebox.h \
 	include/final/ftooltip.h \
+	include/final/fbusyindicator.h \
 	include/final/fobject.h \
 	include/final/fpoint.h \
 	include/final/fsize.h \
