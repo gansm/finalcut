@@ -245,16 +245,16 @@ Event Processing
 ----------------
 
 Calling `FApplication::exec()` starts the FINAL CUT main event loop. 
-While the event loop is running, the system constantly checks whether 
+While the event loop is running, the system checks all the time whether 
 an event has occurred and sends it to the application's currently focused 
-object. The events of the terminal such as keystrokes, mouse actions or 
-resizing the terminal are translated into `FEvent` objects and sent it to 
+object. The events of the terminal, such as keystrokes, mouse actions, or 
+terminal size changing, are translated into `FEvent` objects, and sent them to 
 the active `FObject`. It is also possible to use `FApplication::sendEvent()` 
-or `FApplication::queueEvent()` to send your own events to an object.
+or `FApplication::queueEvent()` to send a specific event to an object.
 
 `FObject`-derived objects process incoming events by reimplementing the 
-virtual method `event()`. The `FObject` itself calls only 
-`onTimer()` or `onUserEvent()` and ignores all other events. The 
+virtual method `event()`. The `FObject` itself can only call its own events 
+`onTimer()` and `onUserEvent()` and ignores all other events. The 
 `FObject`-derived class `FWidget` also reimplements the `event()` method 
 to handle further events. `FWidget` calls the `FWidget::onKeyPress` method
 when you press a key, or the `FWidget::onMouseDown` method when you click 
@@ -269,15 +269,15 @@ For example, the method `FEvent::type()` returns the type
 `fc::MouseDown_Event` when you press down a mouse button. 
 
 Some event types have data that cannot store in an `FEvent` object. 
-For example, a click event of the mouse must store which button it 
-triggered where the mouse pointer was at that time. In classes derived 
+For example, a click event of the mouse must store which button is 
+triggered and where the mouse pointer was at that time. In classes derived 
 from `FEvent`, such as `FMouseEvent()`, we store this data.
 
 Widgets get their events from the `event()` method inherited from FObject. 
 The implementation of `event()` in `FWidget` forwards the most common event 
 types to specific event handlers such as `FMouseEvent()`, `FKeyEvent()` or 
-`FResizeEvent()`. There are many other event types. It is also possible to 
-create own event types and send them to other objects.
+`FResizeEvent()`. There are many other event types. You can create own event 
+types and send them to other objects and widgets.
 
 
 **The FINAL CUT event types:**
@@ -311,6 +311,12 @@ enum events
 };
 ```
 
+
+**Using a timer event**
+
+The following example starts a periodic timer that triggers an `FTimerEvent()` 
+every 100 ms. The virtual method `onTimer()` is then called each time in the 
+same dialog object.
 
 **File:** *timer.cpp*
 ```cpp
@@ -372,6 +378,119 @@ After entering the source code in *timer.cpp* you can compile
 the above program with gcc:
 ```cpp
 g++ -O2 -lfinal -std=c++11 timer.cpp -o timer
+```
+
+
+**Using a user event**
+
+You can use the FUserEvent() to create a individual event and send it to a 
+specific object. If you want to create more than one user event, you can 
+specify an identification number (0 in the example below) to identify the 
+different events. This number can get later with getUserId().
+
+User events should be generated in the main event loop. For this purpose, the 
+class FApplication provides the virtual method processExternalUserEvent(). 
+This method can be overwritten in a derived class and filled with user code.
+
+The following example reads the average system load and creates a user event 
+when a value changes. This event sends the current values to an FLabel widget 
+and displays them in the terminal.
+
+
+**File:** *user-event.cpp*
+```cpp
+#include <stdlib.h>
+#include <final/final.h>
+#define _BSD_SOURCE 1
+#define _DEFAULT_SOURCE 1
+
+using LoadAvg = double[3];
+using namespace finalcut;
+
+class extendedApplication : public FApplication
+{
+  public:
+    extendedApplication (const int& argc, char* argv[])
+      : FApplication(argc, argv)
+    { }
+
+  private:
+    void processExternalUserEvent() override
+    {
+      if ( getMainWidget() )
+      {
+        if ( getloadavg(load_avg, 3) < 0 )
+          FApplication::getLog()->error("Can't get load average values");
+
+        if ( last_avg[0] != load_avg[0]
+          || last_avg[1] != load_avg[1]
+          || last_avg[2] != load_avg[2] )
+        {
+          FUserEvent user_event(fc::User_Event, 0);
+          user_event.setData (FDataPtr(&load_avg));
+          FApplication::sendEvent (getMainWidget(), &user_event);
+        }
+
+        for (std::size_t i = 0; i < 3; i++)
+          last_avg[i] = load_avg[i];
+      }
+    }
+
+    // Data member
+    LoadAvg load_avg{}, last_avg{};
+};
+
+
+class dialogWidget final : public FDialog
+{
+  public:
+    explicit dialogWidget (FWidget* parent = nullptr)
+      : FDialog{"User event", parent}
+    {
+      FDialog::setGeometry (FPoint{25, 5}, FSize{40, 6});
+      loadavg_label.setGeometry (FPoint{2, 2}, FSize{36, 1});
+    }
+
+  private:
+    void onUserEvent (FUserEvent* ev) override
+    {
+      FDataPtr dataPtr = ev->getData();
+      auto& lavg = *(reinterpret_cast<LoadAvg*>(dataPtr));
+      std::setlocale(LC_NUMERIC, "C");
+      loadavg_label.clear();
+      loadavg_label << "Load average: " << lavg[0] << ", "
+                                        << lavg[1] << ", "
+                                        << lavg[2] << " ";
+      loadavg_label.redraw();
+    }
+
+    FLabel loadavg_label{this};
+};
+
+
+int main (int argc, char* argv[])
+{
+  extendedApplication app(argc, argv);
+  dialogWidget dialog(&app);
+  FWidget::setMainWidget(&dialog);
+  dialog.show();
+  return app.exec();
+}
+```
+<figure class="image">
+  <img src="first-steps_user-event.cpp.png" alt="user-event.cpp">
+  <figcaption>Figure 5.  User event generation</figcaption>
+</figure>
+<br /><br />
+
+*(Note: You can close the window with the mouse, 
+<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+
+
+After entering the source code in *user-event.cpp* you can compile
+the above program with gcc:
+```cpp
+g++ -O2 -lfinal -std=c++11 user-event.cpp -o user-event
 ```
 
 
@@ -524,7 +643,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_callback-function.cpp.png" alt="callback-function.cpp">
-  <figcaption>Figure 5.  Button with a callback function</figcaption>
+  <figcaption>Figure 6.  Button with a callback function</figcaption>
 </figure>
 <br /><br />
 
@@ -588,7 +707,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_callback-lambda.cpp.png" alt="callback-lambda.cpp">
-  <figcaption>Figure 6.  Button with lambda expression callback.</figcaption>
+  <figcaption>Figure 7.  Button with lambda expression callback.</figcaption>
 </figure>
 <br /><br />
 
@@ -646,7 +765,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_callback-method.cpp.png" alt="callback-method.cpp">
-  <figcaption>Figure 7.  Button with a callback method</figcaption>
+  <figcaption>Figure 8.  Button with a callback method</figcaption>
 </figure>
 <br /><br />
 
@@ -790,7 +909,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_emit-signal.cpp.png" alt="emit-signal.cpp">
-  <figcaption>Figure 8.  Callbacks with custom signals</figcaption>
+  <figcaption>Figure 9.  Callbacks with custom signals</figcaption>
 </figure>
 <br /><br />
 
@@ -831,7 +950,7 @@ If you want to ignore padding spaces, you must force this with the
 
 <figure class="image">
   <img src="widget-coordinates.svg" alt="widget coordinates">
-  <figcaption>Figure 9.  Widget coordinates</figcaption>
+  <figcaption>Figure 10.  Widget coordinates</figcaption>
 </figure>
 <br /><br />
 
@@ -881,7 +1000,7 @@ methods.
 
 <figure class="image">
   <img src="widget-lengths.svg" alt="widget lengths">
-  <figcaption>Figure 10.  Width and height of a widget</figcaption>
+  <figcaption>Figure 11.  Width and height of a widget</figcaption>
 </figure>
 <br /><br />
 
@@ -934,7 +1053,7 @@ absolute geometry values as a `FRect` object, you can call the method
 
 <figure class="image">
   <img src="widget-geometry.svg" alt="widget geometry">
-  <figcaption>Figure 11.  Geometry of widgets</figcaption>
+  <figcaption>Figure 12.  Geometry of widgets</figcaption>
 </figure>
 <br /><br />
 
@@ -994,7 +1113,7 @@ class dialogWidget : public FDialog
       button.setGeometry (FPoint{1, 1}, FSize{12, 1}, false);
       input.setGeometry (FPoint{2, 3}, FSize{12, 1}, false);
       // Set dialog geometry and calling adjustSize()
-      setGeometry (FPoint{25, 5}), FSize{40, 12});
+      setGeometry (FPoint{25, 5}, FSize{40, 12});
       setMinimumSize (FSize{25, 9});
     }
 
@@ -1068,7 +1187,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_size-adjustment.cpp.png" alt="size-adjustment.cpp">
-  <figcaption>Figure 12.  Dynamic layout</figcaption>
+  <figcaption>Figure 13.  Dynamic layout</figcaption>
 </figure>
 <br /><br />
 
@@ -1198,7 +1317,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_scrollview.cpp.png" alt="scrollview.cpp">
-  <figcaption>Figure 13.  Dialog with a scrolling viewport</figcaption>
+  <figcaption>Figure 14.  Dialog with a scrolling viewport</figcaption>
 </figure>
 <br /><br />
 
