@@ -11,6 +11,9 @@ Table of Contents
 - [Memory Management](#memory-management)
 - [Event Processing](#event-processing)
   - [Event handler reimplementation](#event-handler-reimplementation)
+  - [Event types](#available-event-types)
+  - [Timer event](#using-a-timer-event)
+  - [User event](#using-a-user-event)
 - [Signals and Callbacks](#signals-and-callbacks)
   - [Default signals](#the-final-cut-widgets-emit-the-following-default-signals)
   - [Callback function](#example-of-a-callback-function)
@@ -280,7 +283,7 @@ types to specific event handlers such as `FMouseEvent()`, `FKeyEvent()` or
 types and send them to other objects and widgets.
 
 
-**The FINAL CUT event types:**
+### Available event types ###
 ```cpp
 enum events
 {
@@ -312,7 +315,7 @@ enum events
 ```
 
 
-**Using a timer event**
+### Using a timer event ###
 
 The following example starts a periodic timer that triggers an `FTimerEvent()` 
 every 100 ms. The virtual method `onTimer()` is then called each time in the 
@@ -381,20 +384,21 @@ g++ -O2 -lfinal -std=c++11 timer.cpp -o timer
 ```
 
 
-**Using a user event**
+### Using a user event ###
 
-You can use the FUserEvent() to create a individual event and send it to a 
+You can use the `FUserEvent()` to create a individual event and send it to a 
 specific object. If you want to create more than one user event, you can 
 specify an identification number (0 in the example below) to identify the 
-different events. This number can get later with getUserId().
+different events. This number can get later with `getUserId()`.
 
-User events should be generated in the main event loop. For this purpose, the 
-class FApplication provides the virtual method processExternalUserEvent(). 
-This method can be overwritten in a derived class and filled with user code.
+User events should be generated in the main event loop. For this purpose, 
+the class `FApplication` provides the virtual method 
+`processExternalUserEvent()`. This method can be overwritten in a derived 
+class and filled with user code.
 
 The following example reads the average system load and creates a user event 
-when a value changes. This event sends the current values to an FLabel widget 
-and displays them in the terminal.
+when a value changes. This event sends the current values to an `FLabel` 
+widget and displays them in the terminal.
 
 
 **File:** *user-event.cpp*
