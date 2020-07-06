@@ -51,9 +51,10 @@ static const char* const button_text[] =
 //----------------------------------------------------------------------
 FMessageBox::FMessageBox (FWidget* parent)
   : FDialog{parent}
+  , button_digit{FMessageBox::Ok, 0, 0}
 {
   setTitlebarText("Message for you");
-  init(FMessageBox::Ok, 0, 0);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -64,14 +65,15 @@ FMessageBox::FMessageBox (const FMessageBox& mbox)
   , text_components{mbox.text_components}
   , max_line_width{mbox.max_line_width}
   , emphasis_color{mbox.emphasis_color}
+  , button_digit{mbox.button_digit[0],
+                 mbox.button_digit[1],
+                 mbox.button_digit[2]}
   , num_buttons{mbox.num_buttons}
   , text_num_lines{mbox.text_num_lines}
   , center_text{mbox.center_text}
 {
   setTitlebarText (mbox.getTitlebarText());
-  init ( mbox.button_digit[0]
-       , mbox.button_digit[1]
-       , mbox.button_digit[2] );
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -83,9 +85,10 @@ FMessageBox::FMessageBox ( const FString& caption
                          , FWidget* parent )
   : FDialog{parent}
   , text{message}
+  , button_digit{button0, button1, button2}
 {
   setTitlebarText(caption);
-  init(button0, button1, button2);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -111,6 +114,7 @@ FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
     if ( mbox.getParentWidget() )
       mbox.getParentWidget()->addChild (this);
 
+    setTitlebarText (mbox.getTitlebarText());
     headline_text   = mbox.headline_text;
     text            = mbox.text;
     text_components = mbox.text_components;
@@ -119,11 +123,10 @@ FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
     emphasis_color  = mbox.emphasis_color;
     num_buttons     = mbox.num_buttons;
     text_num_lines  = mbox.text_num_lines;
-
-    setTitlebarText (mbox.getTitlebarText());
-    init ( mbox.button_digit[0]
-         , mbox.button_digit[1]
-         , mbox.button_digit[2] );
+    button_digit[0] = mbox.button_digit[0];
+    button_digit[1] = mbox.button_digit[1];
+    button_digit[2] = mbox.button_digit[2];
+    init();
 
     return *this;
   }
@@ -149,12 +152,14 @@ void FMessageBox::setText (const FString& txt)
 {
   text.setString(txt);
   calculateDimensions();
-  button[0]->setY (int(getHeight()) - 4, false);
 
-  if ( button_digit[1] != 0 )
+  if ( button[0] )
+    button[0]->setY (int(getHeight()) - 4, false);
+
+  if ( button[1] && button_digit[1] != 0 )
     button[1]->setY (int(getHeight()) - 4, false);
 
-  if ( button_digit[2] != 0 )
+  if ( button[2] && button_digit[2] != 0 )
     button[2]->setY (int(getHeight()) - 4, false);
 
   adjustButtons();
@@ -197,30 +202,27 @@ void FMessageBox::cb_processClick (const FWidget*, FDataPtr data)
 
 // private methods of FMessageBox
 //----------------------------------------------------------------------
-void FMessageBox::init (int button0, int button1, int button2)
+void FMessageBox::init()
 {
   calculateDimensions();
 
-  if ( (button2 && ! button1) || (button1 && ! button0) )
+  if ( (button_digit[2] && ! button_digit[1])
+    || (button_digit[1] && ! button_digit[0]) )
   {
-    button0 = button1 = button2 = 0;
+    button_digit[0] = button_digit[1] = button_digit[2] = 0;
   }
 
-  if ( button0 == 0 )
-    button0 = FMessageBox::Ok;
+  if ( button_digit[0] == 0 )
+    button_digit[0] = FMessageBox::Ok;
 
-  if ( button1 == 0 && button2 == 0 )
+  if ( button_digit[1] == 0 && button_digit[2] == 0 )
     num_buttons = 1;
-  else if ( button2 == 0 )
+  else if ( button_digit[2] == 0 )
     num_buttons = 2;
   else
     num_buttons = 3;
 
-  button_digit[0] = button0;
-  button_digit[1] = button1;
-  button_digit[2] = button2;
-
-  allocation (button0, button1, button2);
+  allocation();
   resizeButtons();
   adjustButtons();
   initCallbacks();
@@ -228,30 +230,30 @@ void FMessageBox::init (int button0, int button1, int button2)
 }
 
 //----------------------------------------------------------------------
-inline void FMessageBox::allocation (int button0, int button1, int button2)
+inline void FMessageBox::allocation()
 {
   try
   {
     button[0] = new FButton (this);
-    button[0]->setText(button_text[button0]);
+    button[0]->setText(button_text[button_digit[0]]);
     button[0]->setPos(FPoint{3, int(getHeight()) - 4}, false);
     button[0]->setWidth(1, false);
     button[0]->setHeight(1, false);
     button[0]->setFocus();
 
-    if ( button1 > 0 )
+    if ( button_digit[1] > 0 )
     {
       button[1] = new FButton(this);
-      button[1]->setText(button_text[button1]);
+      button[1]->setText(button_text[button_digit[1]]);
       button[1]->setPos(FPoint{17, int(getHeight()) - 4}, false);
       button[1]->setWidth(0, false);
       button[1]->setHeight(1, false);
     }
 
-    if ( button2 > 0 )
+    if ( button_digit[2] > 0 )
     {
       button[2] = new FButton(this);
-      button[2]->setText(button_text[button2]);
+      button[2]->setText(button_text[button_digit[2]]);
       button[2]->setPos(FPoint{32, int(getHeight()) - 4}, false);
       button[2]->setWidth(0, false);
       button[2]->setHeight(1, false);

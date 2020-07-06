@@ -96,6 +96,7 @@ class FBusyIndicator : public FToolTip
     static constexpr std::size_t TIMER = 200;
 
     // Methods
+    void init();
     void createIndicatorText();
 
     // Event handler

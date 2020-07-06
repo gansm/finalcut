@@ -160,7 +160,7 @@ class FScrollView : public FWidget
     const FPoint        getViewportCursorPos();
 
     // Methods
-    void                init (const FWidget*);
+    void                init();
     void                mapKeyFunctions();
     void                calculateScrollbarPos();
     template<typename Callback>

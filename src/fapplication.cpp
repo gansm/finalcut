@@ -96,7 +96,7 @@ FApplication::FApplication (const int& _argc, char* _argv[])
     app_argv = reinterpret_cast<char**>(&empty_str);
   }
 
-  init (key_timeout, dblclick_interval);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -278,14 +278,14 @@ void FApplication::setDefaultTheme()
   if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
   {
     if ( getStartOptions().color_change )
-      FTerm::setColorPaletteTheme<default8ColorPalette>(&FTerm::setPalette);
+      FTerm::setColorPaletteTheme<default8ColorPalette>();
 
     setColorTheme<default8ColorTheme>();
   }
   else
   {
     if ( getStartOptions().color_change )
-      FTerm::setColorPaletteTheme<default16ColorPalette>(&FTerm::setPalette);
+      FTerm::setColorPaletteTheme<default16ColorPalette>();
 
     setColorTheme<default16ColorTheme>();
   }
@@ -295,7 +295,7 @@ void FApplication::setDefaultTheme()
 void FApplication::setDarkTheme()
 {
   if ( getStartOptions().color_change )
-    FTerm::setColorPaletteTheme<default16DarkColorPalette>(&FTerm::setPalette);
+    FTerm::setColorPaletteTheme<default16DarkColorPalette>();
 
   if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
     setColorTheme<default8ColorDarkTheme>();
@@ -335,7 +335,7 @@ void FApplication::processExternalUserEvent()
 
 // private methods of FApplication
 //----------------------------------------------------------------------
-void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
+void FApplication::init()
 {
   // Initialize keyboard
   keyboard = FTerm::getFKeyboard();
@@ -352,7 +352,7 @@ void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
     keyboard->setPressCommand (key_cmd1);
     keyboard->setReleaseCommand (key_cmd2);
     keyboard->setEscPressedCommand (key_cmd3);
-    keyboard->setKeypressTimeout (key_time);
+    keyboard->setKeypressTimeout (key_timeout);
   }
 
   // Initialize mouse control
@@ -364,7 +364,7 @@ void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
 
   // Set the default double click interval
   if ( mouse )
-    mouse->setDblclickInterval (dblclick_time);
+    mouse->setDblclickInterval (dblclick_interval);
 
   // Initialize logging
   if ( ! getStartOptions().logfile_stream.is_open() )

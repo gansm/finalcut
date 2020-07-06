@@ -34,8 +34,7 @@ namespace finalcut
 FBusyIndicator::FBusyIndicator (FWidget* parent)
   : FToolTip{parent}
 {
-  FToolTip::hide();
-  createIndicatorText();
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -66,6 +65,13 @@ void FBusyIndicator::stop()
 
 
 // private methods of FBusyIndicator
+//----------------------------------------------------------------------
+void FBusyIndicator::init()
+{
+  FToolTip::hide();
+  createIndicatorText();
+}
+
 //----------------------------------------------------------------------
 void FBusyIndicator::createIndicatorText()
 {

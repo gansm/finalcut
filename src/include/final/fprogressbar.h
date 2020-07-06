@@ -93,6 +93,7 @@ class FProgressbar : public FWidget
     static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
     // Methods
+    void                init();
     void                draw() override;
     void                drawProgressLabel();
     void                drawProgressBar();

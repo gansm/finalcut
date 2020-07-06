@@ -47,7 +47,7 @@ namespace finalcut
 FMenu::FMenu(FWidget* parent)
   : FWindow{parent}
 {
-  init(parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -55,7 +55,7 @@ FMenu::FMenu (const FString& txt, FWidget* parent)
   : FWindow{parent}
   , menuitem{txt, parent}
 {
-  init(parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -457,7 +457,7 @@ bool FMenu::isMouseOverMenuBar (const FPoint& termpos)
 }
 
 //----------------------------------------------------------------------
-void FMenu::init(FWidget* parent)
+void FMenu::init()
 {
   setTopPadding(1);
   setLeftPadding(1);
@@ -469,6 +469,7 @@ void FMenu::init(FWidget* parent)
   hide();
   resetColors();
   menuitem.setMenu(this);
+  FWidget* parent = getParentWidget();
 
   if ( parent )
   {
@@ -1428,15 +1429,16 @@ inline void FMenu::drawAcceleratorKey (std::size_t& startpos, FKey accel_key)
   const FString accel_name {FTerm::getKeyName(accel_key)};
   const std::size_t c = ( has_checkable_items ) ? 1 : 0;
   const std::size_t accel_len = accel_name.getLength();
-  const std::size_t len = max_item_width - (startpos + accel_len + c + 2);
+  const std::size_t plain_text_length = startpos + accel_len + c + 2;
 
-  if ( len > 0 )
-  {
-    // Print filling blank spaces + accelerator key name
-    const FString spaces {len, L' '};
-    print (spaces + accel_name);
-    startpos = max_item_width - (c + 2);
-  }
+  if ( plain_text_length >= max_item_width )
+    return;
+
+  // Print filling blank spaces + accelerator key name
+  const std::size_t len = max_item_width - plain_text_length;
+  const FString spaces {len, L' '};
+  print (spaces + accel_name);
+  startpos = max_item_width - (c + 2);
 }
 
 //----------------------------------------------------------------------

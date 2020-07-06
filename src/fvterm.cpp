@@ -2502,7 +2502,7 @@ void FVTerm::printFullWidthPaddingCharacter ( uInt& x, uInt y
     if ( le )
       appendOutputBuffer (le);
     else if ( RI )
-      appendOutputBuffer (FTermcap::encodeParameter(RI, 1));
+      appendOutputBuffer (FTermcap::encodeParameter(RI, 1, 0, 0, 0, 0, 0, 0, 0, 0));
     else
     {
       skipPaddingCharacter (x, y, prev_char);
@@ -2542,7 +2542,7 @@ void FVTerm::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
     if ( le )
       appendOutputBuffer (le);
     else if ( RI )
-      appendOutputBuffer (FTermcap::encodeParameter(RI, 1));
+      appendOutputBuffer (FTermcap::encodeParameter(RI, 1, 0, 0, 0, 0, 0, 0, 0, 0));
 
     if ( le || RI )
     {
@@ -2614,7 +2614,7 @@ FVTerm::exit_state FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
       && (ut || normal) )
     {
       appendAttributes (print_char);
-      appendOutputBuffer (FTermcap::encodeParameter(ec, whitespace));
+      appendOutputBuffer (FTermcap::encodeParameter(ec, whitespace, 0, 0, 0, 0, 0, 0, 0, 0));
 
       if ( x + whitespace - 1 < xmax || draw_trailing_ws )
         setTermXY (int(x + whitespace), int(y));
@@ -2679,7 +2679,7 @@ FVTerm::exit_state FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y)
       newFontChanges (print_char);
       charsetChanges (print_char);
       appendAttributes (print_char);
-      appendOutputBuffer (FTermcap::encodeParameter(rp, print_char->ch, repetitions));
+      appendOutputBuffer (FTermcap::encodeParameter(rp, print_char->ch, repetitions, 0, 0, 0, 0, 0, 0, 0));
       term_pos->x_ref() += int(repetitions);
       x = x + repetitions - 1;
     }
@@ -3062,7 +3062,7 @@ int FVTerm::appendLowerRight (FChar*& screen_char)
 
     if ( IC )
     {
-      appendOutputBuffer (FTermcap::encodeParameter(IC, 1));
+      appendOutputBuffer (FTermcap::encodeParameter(IC, 1, 0, 0, 0, 0, 0, 0, 0, 0));
       appendChar (screen_char);
     }
     else if ( im && ei )

@@ -150,7 +150,7 @@ void drawShadow (FWidget* w)
 
   if ( w->flags.trans_shadow )
     drawTransparentShadow (w);  // transparent shadow
-  else
+  else if ( w->flags.shadow )
     drawBlockShadow (w);        // non-transparent shadow
 }
 

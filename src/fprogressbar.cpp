@@ -38,8 +38,7 @@ namespace finalcut
 FProgressbar::FProgressbar(FWidget* parent)
   : FWidget{parent}
 {
-  unsetFocusable();
-  setShadow();
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -133,6 +132,13 @@ void FProgressbar::reset()
 
 
 // private methods of FProgressbar
+//----------------------------------------------------------------------
+void FProgressbar::init()
+{
+  unsetFocusable();
+  setShadow();
+}
+
 //----------------------------------------------------------------------
 void FProgressbar::draw()
 {

@@ -36,14 +36,14 @@ namespace finalcut
 FRadioMenuItem::FRadioMenuItem (FWidget* parent)
   : FMenuItem{parent}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
 FRadioMenuItem::FRadioMenuItem (const FString& txt, FWidget* parent)
   : FMenuItem{txt, parent}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -53,10 +53,11 @@ FRadioMenuItem::~FRadioMenuItem()  // destructor
 
 // private methods of FRadioMenuItem
 //----------------------------------------------------------------------
-void FRadioMenuItem::init (FWidget* parent)
+void FRadioMenuItem::init()
 {
   setCheckable();
   setRadioButton();
+  FWidget* parent = getParentWidget();
 
   if ( ! parent )
     return;

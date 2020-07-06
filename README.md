@@ -1,11 +1,13 @@
 ![FINAL CUT](logo/svg/finalcut-logo.svg)
 
 # Library for creating terminal applications with text-based widgets
-The FINAL CUT is a C++ class library and widget toolkit with full mouse support for creating a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple text windows on the screen.
+
+The FINAL CUT is a C++ class library and widget toolkit with full [mouse](doc/mouse-control.md#title-bar-actions-on-mouse-clicks) support for creating a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple text windows on the screen.
 
 The structure of the Qt framework was originally the inspiration for the C++ class design of FINAL CUT. It provides common controls like dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, status bars and so on.
 
 ## Building and code analysis
+
 |                    | Badge |
 |-------------------:|:------|
 | *Latest release*   | [![Latest Release](https://img.shields.io/github/release/gansm/finalcut.svg)](https://github.com/gansm/finalcut/releases) |
@@ -18,6 +20,7 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 | *CodeFactor*       | [![CodeFactor](https://www.codefactor.io/repository/github/gansm/finalcut/badge)](https://www.codefactor.io/repository/github/gansm/finalcut) |
 
 ## Installation
+
 ```bash
 > git clone git://github.com/gansm/finalcut.git
 > cd finalcut
@@ -28,6 +31,7 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 ```
 
 ## Supported platforms
+
 * Linux
 * FreeBSD
 * NetBSD
@@ -37,6 +41,7 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 * Solaris
 
 ## First steps
+
 See the [first steps](doc/first-steps.md#first-steps-with-the-final-cut-widget-toolkit) documentation for information on how to use the library.
 
 ## Some screenshots
@@ -45,46 +50,38 @@ The FFileDialog widget with incremental file name search:
 
 ![FFileDialog](doc/fileopen-dialog.png)
 
-
 The FINAL CUT FProgressbar widget:
 
 ![FProgressbar](doc/progress-bar.png)
-
 
 Scrollable text in the FTextView widget:
 
 ![FTextView](doc/textview.png)
 
-
 The Mandelbrot set example:
 
 ![Mandelbrot set](doc/Mandelbrot.png)
 
+## newfont
 
-newfont
--------
 A [graphical text font](fonts/) for X11 and the Linux console.
 
 ![ui example in newfont mode](doc/newfont1.png)
-
 
 Newfont drive symbols:
 
 ![drive symbols](doc/newfont2.png)
 
-
 The calculator example in newfont mode:
 
 ![calculator](doc/calculator.png)
 
+## Benchmark
 
-Benchmark
----------
 Here you can find a test for [measuring the character speed](doc/benchmark.md#benchmark) in the terminal.
 
+## Virtual terminal
 
-Virtual terminal
-----------------
 FINAL CUT uses a virtual terminal to print character via an update method on the screen. It provides (as an overlying layer) virtual windows for the realization of window movements. The update methods only transfer differences to the virtual terminal or physical screen.
 
 <pre style="line-height: 1 !important;">
@@ -136,9 +133,7 @@ printf(...)
                                                ▀▀▀▀▀▀▀▀▀
 </pre>
 
-
-Class digramm
--------------
+## Class digramm
 
 <pre style="line-height: 1 !important;">
               1┌──────────────┐
@@ -254,15 +249,14 @@ Class digramm
                                                      └────────────────┘
 </pre>
 
-Frequently Asked Questions
---------------------------
+## Frequently Asked Questions
+
 For general questions about FINAL CUT, likely the answer is already included in the [FAQ](doc/faq.md#frequently-asked-questions).
 
-Please send bug reports to
---------------------------
+## Please send bug reports to
+
 https://github.com/gansm/finalcut/issues
 
-License
--------
-GNU Lesser General Public License Version 3 <a href="https://www.gnu.org/licenses/lgpl-3.0-standalone.html"><img width="200" align="right" src="https://camo.githubusercontent.com/726b87cc2ebaf8c40716842ff509c5f874381c8e/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f332f33622f4c47504c76335f4c6f676f2e737667" alt="LGPLv3" data-canonical-src="https://upload.wikimedia.org/wikipedia/commons/3/3b/LGPLv3_Logo.svg"></a>
+## License
 
+GNU Lesser General Public License Version 3 <a href="https://www.gnu.org/licenses/lgpl-3.0-standalone.html"><img width="200" align="right" src="https://camo.githubusercontent.com/726b87cc2ebaf8c40716842ff509c5f874381c8e/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f332f33622f4c47504c76335f4c6f676f2e737667" alt="LGPLv3" data-canonical-src="https://upload.wikimedia.org/wikipedia/commons/3/3b/LGPLv3_Logo.svg"></a>

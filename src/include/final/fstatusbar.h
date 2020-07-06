@@ -109,7 +109,7 @@ class FStatusKey : public FWidget
 
   private:
     // Methods
-    void                init (FWidget*);
+    void                init();
     void                processActivate();
     FStatusBar*         getConnectedStatusbar() const;
     void                setConnectedStatusbar (FStatusBar*);

@@ -138,8 +138,8 @@ class FMessageBox : public FDialog
 
   private:
     // Methods
-    void                init (int, int, int);
-    void                allocation (int, int, int);
+    void                init();
+    void                allocation();
     void                deallocation();
     void                initCallbacks();
     void                calculateDimensions();

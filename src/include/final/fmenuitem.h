@@ -154,7 +154,7 @@ class FMenuItem : public FWidget
     FMenuList*          getFMenuList (FWidget&);
 
     // Methods
-    void                init (FWidget*);
+    void                init();
     void                updateSuperMenuDimensions();
     void                processEnable();
     void                processDisable();

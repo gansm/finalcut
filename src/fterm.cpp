@@ -579,6 +579,12 @@ bool FTerm::isNewFont()
 }
 
 //----------------------------------------------------------------------
+bool FTerm::isInitialized()
+{
+  return term_initialized;
+}
+
+//----------------------------------------------------------------------
 bool FTerm::isCursorHideable()
 {
   const char* cursor_off_str = disableCursorString();
@@ -1021,9 +1027,9 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
     const int bb = (b * 1001) / 256;
 
     if ( Ic )
-      color_str = FTermcap::encodeParameter(Ic, index, rr, gg, bb);
+      color_str = FTermcap::encodeParameter(Ic, index, rr, gg, bb, 0, 0, 0, 0, 0);
     else if ( Ip )
-      color_str = FTermcap::encodeParameter(Ip, index, 0, 0, 0, rr, gg, bb);
+      color_str = FTermcap::encodeParameter(Ip, index, 0, 0, 0, rr, gg, bb, 0, 0);
 
     if ( color_str )
     {
@@ -1894,6 +1900,26 @@ inline bool FTerm::hasNoFontSettingOption()
 }
 
 //----------------------------------------------------------------------
+inline bool FTerm::isDefaultPaletteTheme()
+{
+  FStringList default_themes
+  {
+    "default8ColorPalette",
+    "default16ColorPalette",
+    "default16DarkColorPalette"
+  };
+
+  auto iter = std::find ( default_themes.begin()
+                        , default_themes.end()
+                        , getColorPaletteTheme()->getClassName() );
+
+  if ( iter == default_themes.end() )  // No default theme
+    return false;
+
+  return true;
+}
+
+//----------------------------------------------------------------------
 void FTerm::redefineColorPalette()
 {
   // Redefine the color palette
@@ -1904,16 +1930,23 @@ void FTerm::redefineColorPalette()
   resetColorMap();
   saveColorMap();
 
+  if ( getColorPaletteTheme().use_count() > 0 && ! isDefaultPaletteTheme() )
+  {
+    // A user color palette theme is in use
+    getColorPaletteTheme()->setColorPalette();
+    return;
+  }
+
   if ( getStartOptions().dark_theme )
   {
-    setColorPaletteTheme<default16DarkColorPalette>(&FTerm::setPalette);
+    setColorPaletteTheme<default16DarkColorPalette>();
   }
   else
   {
     if ( getMaxColor() >= 16 )
-      setColorPaletteTheme<default16ColorPalette>(&FTerm::setPalette);
+      setColorPaletteTheme<default16ColorPalette>();
     else  // 8 colors
-      setColorPaletteTheme<default8ColorPalette>(&FTerm::setPalette);
+      setColorPaletteTheme<default8ColorPalette>();
   }
 }
 
@@ -2468,7 +2501,7 @@ void FTerm::finish()
   // Switch to normal escape key mode
   disableApplicationEscKey();
 
-  finishOSspecifics1();
+  finishOSspecifics();
 
   if ( isKdeTerminal() )
     setKDECursor(fc::BlockCursor);
@@ -2496,7 +2529,7 @@ void FTerm::finish()
 }
 
 //----------------------------------------------------------------------
-void FTerm::finishOSspecifics1()
+void FTerm::finishOSspecifics()
 {
 #if defined(__linux__)
   linux->finish();

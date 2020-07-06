@@ -841,10 +841,10 @@ void FTermXTerminal::enableXTermMouse()
     fsystem = FTerm::getFSystem();
 
   FTerm::putstring (CSI "?1001s"    // save old highlight mouse tracking
-                    CSI "?1000h"    // enable x11 mouse tracking
-                    CSI "?1002h"    // enable cell motion mouse tracking
-                    CSI "?1015h"    // enable urxvt mouse mode
-                    CSI "?1006h");  // enable SGR mouse mode
+                    CSI "?1000;"    // enable x11 mouse tracking
+                         "1002;"    // enable cell motion mouse tracking
+                         "1015;"    // enable urxvt mouse mode
+                         "1006h");  // enable SGR mouse mode
   std::fflush(stdout);
   mouse_support = true;
 }
@@ -857,10 +857,10 @@ void FTermXTerminal::disableXTermMouse()
   if ( ! mouse_support )
     return;  // The mouse was already deactivated
 
-  FTerm::putstring (CSI "?1006l"    // disable SGR mouse mode
-                    CSI "?1015l"    // disable urxvt mouse mode
-                    CSI "?1002l"    // disable cell motion mouse tracking
-                    CSI "?1000l"    // disable x11 mouse tracking
+  FTerm::putstring (CSI "?1006;"    // disable SGR mouse mode
+                         "1015;"    // disable urxvt mouse mode
+                         "1002;"    // disable cell motion mouse tracking
+                         "1000l"    // disable x11 mouse tracking
                     CSI "?1001r");  // restore old highlight mouse tracking
   std::fflush(stdout);
   mouse_support = false;

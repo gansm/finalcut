@@ -38,7 +38,7 @@ namespace finalcut
 FStatusKey::FStatusKey(FWidget* parent)
   : FWidget{parent}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -47,7 +47,7 @@ FStatusKey::FStatusKey (FKey k, const FString& txt, FWidget* parent)
   , text{txt}
   , key{k}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -99,9 +99,10 @@ bool FStatusKey::setMouseFocus(bool enable)
 
 // private methods of FStatusKey
 //----------------------------------------------------------------------
-void FStatusKey::init (FWidget* parent)
+void FStatusKey::init()
 {
   setGeometry (FPoint{1, 1}, FSize{1, 1});
+  FWidget* parent = getParentWidget();
 
   if ( parent && parent->isInstanceOf("FStatusBar") )
   {

@@ -1258,6 +1258,12 @@ bool FWidget::isChildPrintArea() const
 }
 
 //----------------------------------------------------------------------
+bool FWidget::isDesktopInitialized() const
+{
+  return ( root_widget ) ? root_widget->init_desktop : false;
+}
+
+//----------------------------------------------------------------------
 void FWidget::setStatusBar (FStatusBar* sbar)
 {
   if ( ! sbar || statusbar == sbar )
@@ -1774,6 +1780,10 @@ void FWidget::initRootWidget()
     return;
   }
 
+  // Initialize default widget colors
+  // (before terminal detection and root_widget is set)
+  initColorTheme();
+
   // Root widget basic initialization
   root_widget = this;
   show_root_widget = nullptr;
@@ -1783,9 +1793,6 @@ void FWidget::initRootWidget()
 
   // Determine width and height of the terminal
   determineDesktopSize();
-
-  // Initialize default widget colors (before terminal detection)
-  initColorTheme();
 }
 
 //----------------------------------------------------------------------
@@ -2058,9 +2065,33 @@ void FWidget::drawChildren()
 }
 
 //----------------------------------------------------------------------
+inline bool FWidget::isDefaultTheme()
+{
+  FStringList default_themes
+  {
+    "default8ColorTheme",
+    "default16ColorTheme",
+    "default8ColorDarkTheme",
+    "default16ColorDarkTheme"
+  };
+
+  auto iter = std::find ( default_themes.begin()
+                        , default_themes.end()
+                        , getColorTheme()->getClassName() );
+
+  if ( iter == default_themes.end() )  // No default theme
+    return false;
+
+  return true;
+}
+
+//----------------------------------------------------------------------
 void FWidget::initColorTheme()
 {
   // Sets the default color theme
+
+  if ( getColorTheme().use_count() > 0 && ! isDefaultTheme() )
+    return;  // A user theme is in use
 
   if ( FStartOptions::getFStartOptions().dark_theme )
   {
@@ -2069,7 +2100,7 @@ void FWidget::initColorTheme()
     else
       setColorTheme<default16ColorDarkTheme>();
   }
-  else
+  else  // Default theme
   {
     if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
       setColorTheme<default8ColorTheme>();

@@ -35,7 +35,7 @@ class Timer final : public finalcut::FWidget
     // Constructor
     explicit Timer (finalcut::FWidget* = nullptr);
 
-  protected:
+  private:
     // Method
     void draw() override;
 

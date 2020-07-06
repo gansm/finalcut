@@ -82,7 +82,7 @@ class FRadioMenuItem : public FMenuItem
 
   private:
     // Methods
-    void          init (FWidget*);
+    void          init();
     void          processToggle();
     void          processClicked() override;
 };

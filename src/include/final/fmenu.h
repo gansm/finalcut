@@ -172,7 +172,7 @@ class FMenu : public FWindow, public FMenuList
     bool         isMouseOverMenuBar (const FPoint&);
 
     // Methods
-    void         init(FWidget*);
+    void         init();
     void         initCallbacks();
     void         calculateDimensions();
     void         adjustItems();

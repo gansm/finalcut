@@ -241,6 +241,7 @@ class FTerm final
     static bool              isScreenTerm();
     static bool              isTmuxTerm();
     static bool              isNewFont();
+    static bool              isInitialized();
     static bool              isCursorHideable();
     static bool              hasChangedTermSize();
     static bool              hasShadowCharacter();
@@ -277,7 +278,7 @@ class FTerm final
     static void              resetColorMap();
     static void              setPalette (FColor, int, int, int);
     template<typename ClassT>
-    static void              setColorPaletteTheme (const FSetPalette&);
+    static void              setColorPaletteTheme (const FSetPalette& = &FTerm::setPalette);
     static void              setBeep (int, int);
     static void              resetBeep();
     static void              beep();
@@ -332,6 +333,7 @@ class FTerm final
     static void              init_tab_quirks();
     static void              init_captureFontAndTitle();
     static bool              hasNoFontSettingOption();
+    static bool              isDefaultPaletteTheme();
     static void              redefineColorPalette();
     static void              restoreColorPalette();
     static void              setInsertCursorStyle();
@@ -355,7 +357,7 @@ class FTerm final
     void                     initTermspecifics();
     void                     initBaudRate();
     void                     finish();
-    void                     finishOSspecifics1();
+    void                     finishOSspecifics();
     void                     finish_encoding();
     void                     destroyColorPaletteTheme();
     static void              printExitMessage();

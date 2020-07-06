@@ -368,6 +368,7 @@ class FWidget : public FVTerm, public FObject
 
     // Inquiry
     bool                     isChildPrintArea() const;
+    bool                     isDesktopInitialized() const;
 
     // Mutators
     virtual void             setStatusBar (FStatusBar*);
@@ -467,6 +468,7 @@ class FWidget : public FVTerm, public FObject
     virtual void             draw();
     void                     drawWindows();
     void                     drawChildren();
+    static bool              isDefaultTheme();
     static void              initColorTheme();
     void                     destroyColorTheme();
     void                     setStatusbarText (bool);
@@ -595,6 +597,7 @@ struct FWidget::FCallbackData
 // non-member function forward declarations
 // implemented in fwidget_functions.cpp
 //----------------------------------------------------------------------
+void        initWidget (FWidget*);
 void        detectTermSize();
 bool        isFocusNextKey (const FKey);
 bool        isFocusPrevKey (const FKey);

@@ -53,10 +53,10 @@ void FColorPalette::setVGAdefaultPalette()
   setPalette (fc::Black, 0x00, 0x00, 0x00);
   setPalette (fc::Blue, 0x00, 0x00, 0xaa);
   setPalette (fc::Green, 0x00, 0xaa, 0x00);
-  setPalette (fc::Cyan, 0x00, 0x55, 0xaa);
+  setPalette (fc::Cyan, 0x00, 0xaa, 0xaa);
   setPalette (fc::Red, 0xaa, 0x00, 0x00);
   setPalette (fc::Magenta, 0xaa, 0x00, 0xaa);
-  setPalette (fc::Brown, 0xaa, 0xaa, 0x00);
+  setPalette (fc::Brown, 0xaa, 0x55, 0x00);
   setPalette (fc::LightGray, 0xaa, 0xaa, 0xaa);
   setPalette (fc::DarkGray, 0x55, 0x55, 0x55);
   setPalette (fc::LightBlue, 0x55, 0x55, 0xff);
@@ -126,7 +126,7 @@ default16ColorPalette::default16ColorPalette (const FSetPalette& f)
 default16ColorPalette::~default16ColorPalette()
 { }
 
-// public methods of default8ColorPalette
+// public methods of default16ColorPalette
 //----------------------------------------------------------------------
 void default16ColorPalette::setColorPalette()
 {
@@ -169,7 +169,7 @@ default16DarkColorPalette::default16DarkColorPalette (const FSetPalette& f)
 default16DarkColorPalette::~default16DarkColorPalette()
 { }
 
-// public methods of default8ColorPalette
+// public methods of default16DarkColorPalette
 //----------------------------------------------------------------------
 void default16DarkColorPalette::setColorPalette()
 {

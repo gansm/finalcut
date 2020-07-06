@@ -124,7 +124,7 @@ bool FKeyboard::isKeyPressed() const
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = suseconds_t(FKeyboard::read_blocking_time);  // preset to 100 ms
+  tv.tv_usec = suseconds_t(read_blocking_time);  // preset to 100 ms
   const int result = select (stdin_no + 1, &ifds, nullptr, nullptr, &tv);
 
   if ( result > 0 && FD_ISSET(stdin_no, &ifds) )

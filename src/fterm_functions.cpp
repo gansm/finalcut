@@ -247,9 +247,11 @@ bool hasFullWidthSupports()
 
   if ( has_fullwidth_support == unknown_fullwidth_support )
   {
+    if ( ! FTerm::isInitialized() )
+      return true;  // Assume that it is a modern terminal with full-width support
+
     if ( FTerm::isCygwinTerminal()
       || FTerm::isTeraTerm()
-      || FTerm::isRxvtTerminal()
       || FTerm::isFreeBSDTerm()
       || FTerm::isNetBSDTerm()
       || FTerm::isOpenBSDTerm()

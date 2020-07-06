@@ -310,7 +310,7 @@ void FTermDetectionTest::rxvtTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "rxvt-cygwin-native") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "rxvt-16color") ;
 
     printConEmuDebug();
     closeConEmuStdStreams();

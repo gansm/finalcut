@@ -40,7 +40,7 @@ namespace finalcut
 FScrollView::FScrollView (FWidget* parent)
   : FWidget{parent}
 {
-  init(parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -713,8 +713,10 @@ inline const FPoint FScrollView::getViewportCursorPos()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::init (const FWidget* parent)
+void FScrollView::init()
 {
+  const FWidget* parent = getParentWidget();
+
   assert ( parent != nullptr );
   assert ( ! parent->isInstanceOf("FScrollView") );
 

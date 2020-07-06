@@ -36,14 +36,14 @@ namespace finalcut
 FCheckMenuItem::FCheckMenuItem (FWidget* parent)
   : FMenuItem{parent}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
 FCheckMenuItem::FCheckMenuItem (const FString& txt, FWidget* parent)
   : FMenuItem{txt, parent}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -53,9 +53,10 @@ FCheckMenuItem::~FCheckMenuItem()  // destructor
 
 // private methods of FCheckMenuItem
 //----------------------------------------------------------------------
-void FCheckMenuItem::init (FWidget* parent)
+void FCheckMenuItem::init()
 {
   setCheckable();
+  FWidget* parent = getParentWidget();
 
   if ( ! parent )
     return;

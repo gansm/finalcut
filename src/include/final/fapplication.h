@@ -150,7 +150,7 @@ class FApplication : public FWidget
     typedef std::deque<EventPair> FEventQueue;
 
     // Methods
-    void                  init (uInt64, uInt64);
+    void                  init();
     static void           setTerminalEncoding (const FString&);
     static void           setLogFile (const FString&);
     static void           cmd_options (const int&, char*[]);

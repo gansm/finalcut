@@ -44,7 +44,7 @@ namespace finalcut
 FMenuItem::FMenuItem (FWidget* parent)
   : FWidget{parent}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -52,7 +52,7 @@ FMenuItem::FMenuItem (const FString& txt, FWidget* parent)
   : FWidget{parent}
   , text{txt}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -61,7 +61,7 @@ FMenuItem::FMenuItem (FKey k, const FString& txt, FWidget* parent)
   , text{txt}
   , accel_key{k}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -503,7 +503,7 @@ FMenuList* FMenuItem::getFMenuList (FWidget& widget)
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::init (FWidget* parent)
+void FMenuItem::init()
 {
   text_length = text.getLength();
   text_width = getColumnWidth(text);
@@ -519,6 +519,7 @@ void FMenuItem::init (FWidget* parent)
   }
 
   setGeometry (FPoint{1, 1}, FSize{text_width + 2, 1}, false);
+  FWidget* parent = getParentWidget();
 
   if ( ! parent )
     return;
