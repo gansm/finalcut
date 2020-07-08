@@ -1,9 +1,9 @@
 /***********************************************************************
-* fcharmap.h - Character mapping and encoding                          *
+* fdata.h - A general-purpose data wrapper                             *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2020 Markus Gans                                           *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -20,36 +20,43 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#ifndef FCHARMAP_H
-#define FCHARMAP_H
+#ifndef FDATA_H
+#define FDATA_H
 
 #if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/fc.h"
-#include "final/ftypes.h"
-
-namespace finalcut
+namespace
 {
 
-namespace fc
+template<typename T>
+struct FData
 {
+  FData (T v)
+    : value(v)
+  { }
 
-extern uInt character[][fc::NUM_OF_ENCODINGS];
-extern const std::size_t lastCharItem;
+  T operator () () const
+  {
+    return value;
+  }
 
-extern int vt100_key_to_utf8[][2];
-extern const std::size_t lastKeyItem;
+  template<typename... Args>
+  T operator () (Args... args) const
+  {
+    return value(args...);
+  }
 
-extern wchar_t cp437_ucs[][2];
-extern const std::size_t lastCP437Item;
+  operator T () const
+  {
+    return value; 
+  }
 
-extern const wchar_t halfWidth_fullWidth[][2];
-extern const std::size_t lastHalfWidthItem;
+  T value;
+};
 
-}  // namespace fc
+}  // namespace
 
-}  // namespace finalcut
+#endif  // FDATA_H
 
-#endif  // FCHARMAP_H

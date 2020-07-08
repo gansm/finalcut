@@ -1,3 +1,6 @@
+2020-07-08  Markus Gans  <guru.mail@muenster.de>
+	* New data wrapper class FData
+
 2020-07-06  Markus Gans  <guru.mail@muenster.de>
 	* Add a document that describes how to create user themes
 

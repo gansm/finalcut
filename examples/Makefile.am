@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------
-# Makefile.am  -  The Final Cut example programs
+# Makefile.am  -  FINAL CUT example programs
 #----------------------------------------------------------------------
 
 if ! CPPUNIT_TEST

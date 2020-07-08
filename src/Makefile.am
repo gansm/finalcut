@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------
-# Makefile.am  -  The Final Cut library
+# Makefile.am  -  FINAL CUT library
 #----------------------------------------------------------------------
 
 AM_CPPFLAGS = -Iinclude -Wall -Werror -DCOMPILE_FINAL_CUT -std=c++11
@@ -87,6 +87,7 @@ finalcutinclude_HEADERS = \
 	include/final/fbuttongroup.h \
 	include/final/fcheckbox.h \
 	include/final/fcolorpair.h \
+	include/final/fdata.h \
 	include/final/fstyle.h \
 	include/final/fconfig.h \
 	include/final/fswitch.h \
@@ -159,5 +160,6 @@ finalcutinclude_HEADERS = \
 clean-local:
 	-find . \( -name "*.gcda" -o -name "*.gcno" -o -name "*.gcov" \) -delete
 
-#uninstall:
-#	rm -R -f $(includedir)/final
+uninstall-hook:
+	if test -d ${finalcutincludedir}; then rmdir ${finalcutincludedir}; fi
+

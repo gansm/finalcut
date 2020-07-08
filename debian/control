@@ -27,7 +27,7 @@ Suggests:
   , ncurses-term
   , vim-common
 Description: Shared library for the final cut widget toolkit
- The Final Cut is a class library and widget toolkit with full mouse
+ FINAL CUT is a class library and widget toolkit with full mouse
  support for creating a text-based user interface. The library supports
  the programmer to develop an application for the text console. It allows
  the simultaneous handling of multiple windows on the screen.
@@ -50,7 +50,7 @@ Depends:
   , libtinfo-dev
   , libncurses5-dev
 Description: Developer's library for the final cut widget toolkit
- The Final Cut is a class library and widget toolkit with full mouse
+ FINAL CUT is a class library and widget toolkit with full mouse
  support for creating a text-based user interface. The library supports
  the programmer to develop an application for the text console. It allows
  the simultaneous handling of multiple windows on the screen.
@@ -74,7 +74,7 @@ Depends:
   , libtinfo-dev
   , libncurses5-dev
 Description: Test and example programs for the final cut widget toolkit
- The Final Cut is a class library and widget toolkit with full mouse
+ FINAL CUT is a class library and widget toolkit with full mouse
  support for creating a text-based user interface. The library supports
  the programmer to develop an application for the text console. It allows
  the simultaneous handling of multiple windows on the screen.

@@ -1,17 +1,17 @@
 /***********************************************************************
 * ui.cpp - Example of a user interface                                 *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2012-2019 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -806,7 +806,7 @@ void MyDialog::cb_about (const finalcut::FWidget*, const FDataPtr)
   const finalcut::FString line(2, fc::BoxDrawingsHorizontal);
 
   finalcut::FMessageBox info ( "About"
-                             , line + L" The Final Cut " + line + L"\n\n"
+                             , line + L" FINAL CUT " + line + L"\n\n"
                                L"Version " + libver + L"\n\n"
                                L"(c) 2020 by Markus Gans"
                              , finalcut::FMessageBox::Ok, 0, 0, this );
@@ -1042,7 +1042,7 @@ void MyDialog::cb_setInput (finalcut::FWidget* widget, FDataPtr data)
 int main (int argc, char* argv[])
 {
   const finalcut::FString ver{F_VERSION};  // Library version
-  const finalcut::FString title { "The FINAL CUT " + ver
+  const finalcut::FString title { "FINAL CUT " + ver
                                 + " (C) 2020 by Markus Gans" };
 
   // Create the application object app

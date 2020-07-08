@@ -247,6 +247,7 @@ sequences.
   <img src="user-theme-vga-palette.svg" alt="VGA palette">
   <figcaption>Figure 1.  VGA palette</figcaption>
 </figure>
+<br /><br />
 
 The FINAL CUT eight-color palette `default8ColorPalette` is optimized for 
 the eight-color widget theme `default8ColorTheme`. It is for terminals 
@@ -255,6 +256,7 @@ that cannot display more than eight colors.
   <img src="user-theme-fc8-palette.svg" alt="FINAL CUT 8-color palette">
   <figcaption>Figure 2.  FINAL CUT 8-color palette</figcaption>
 </figure>
+<br /><br />
 
 The FINAL CUT palette `default16ColorPalette` is the default 16-color 
 palette. It is optimized for the widget color theme `default16ColorTheme`.
@@ -262,6 +264,7 @@ palette. It is optimized for the widget color theme `default16ColorTheme`.
   <img src="user-theme-fc16-palette.svg" alt="FINAL CUT 16-color palette">
   <figcaption>Figure 3.  FINAL CUT 16-color palette</figcaption>
 </figure>
+<br /><br />
 
 The second 16-color palette in FINAL CUT is for the dark theme. It was 
 adjusted for the widget color themes `default8ColorDarkTheme` and 
@@ -270,6 +273,7 @@ adjusted for the widget color themes `default8ColorDarkTheme` and
   <img src="user-theme-fc16-dark-palette.svg" alt="FINAL CUT 16-color dark palette">
   <figcaption>Figure 4.  FINAL CUT 16-color dark palette</figcaption>
 </figure>
+<br /><br />
 
 In the following example, we want to create the palette them 
 `BeeColorPalette`. For this purpose, we generate an include file again, 
@@ -278,6 +282,7 @@ in which we implement the new palette class.
   <img src="user-theme-bee-palette.svg" alt="Bee palette">
   <figcaption>Figure 6.  Bee palette</figcaption>
 </figure>
+<br /><br />
 
 **File:** *color-palette-theme.h*
 ```cpp
@@ -339,7 +344,7 @@ your application, the object instances of both classes are created and set.
   <img src="user-theme.png" alt="User theme example">
   <figcaption>Figure 7.  User theme example</figcaption>
 </figure>
-
+<br /><br />
 
 **File:** *theme.cpp*
 ```cpp
@@ -432,5 +437,5 @@ After entering the source code in *theme.cpp* you can compile
 the above program with gcc:
 ```cpp
 g++ -O2 -lfinal -std=c++11 theme.cpp -o theme
-
 ```
+
