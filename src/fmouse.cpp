@@ -59,7 +59,7 @@ const FString FMouse::getClassName() const
 }
 
 //----------------------------------------------------------------------
-inline const FPoint& FMouse::getPos()
+inline const FPoint& FMouse::getPos() const
 {
   return mouse;
 }
@@ -89,7 +89,7 @@ inline void FMouse::setDblclickInterval (const uInt64 timeout)
 }
 
 //----------------------------------------------------------------------
-inline bool FMouse::hasEvent()
+inline bool FMouse::hasEvent() const
 {
   return mouse_event_occurred;
 }
@@ -172,7 +172,7 @@ inline bool FMouse::isMoved()
 }
 
 //----------------------------------------------------------------------
-inline bool FMouse::isInputDataPending()
+inline bool FMouse::isInputDataPending() const
 {
   return input_data_pending;
 }
@@ -193,25 +193,25 @@ inline FMouse::FMouseButton& FMouse::getButtonState()
 }
 
 //----------------------------------------------------------------------
-inline const FPoint& FMouse::getNewPos()
+inline const FPoint& FMouse::getNewPos() const
 {
   return new_mouse_position;
 }
 
 //----------------------------------------------------------------------
-uInt16 FMouse::getMaxWidth()
+uInt16 FMouse::getMaxWidth() const
 {
   return max_width;
 }
 
 //----------------------------------------------------------------------
-uInt16 FMouse::getMaxHeight()
+uInt16 FMouse::getMaxHeight() const
 {
   return max_height;
 }
 
 //----------------------------------------------------------------------
-uInt64 FMouse::getDblclickInterval()
+uInt64 FMouse::getDblclickInterval() const
 {
   return dblclick_interval;
 }
@@ -260,7 +260,7 @@ void FMouse::setEvent()
 }
 
 //----------------------------------------------------------------------
-bool FMouse::isDblclickTimeout (const timeval* time)
+bool FMouse::isDblclickTimeout (const timeval* time) const
 {
   return FObject::isTimeout (time, dblclick_interval);
 }
@@ -397,7 +397,7 @@ bool FMouseGPM::gpmMouse (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FMouseGPM::hasSignificantEvents()
+bool FMouseGPM::hasSignificantEvents() const
 {
   return ! (gpm_ev.type & GPM_MOVE)
       || gpm_ev.wdy != 0
@@ -483,7 +483,7 @@ void FMouseGPM::drawGpmPointer()
 }
 
 //----------------------------------------------------------------------
-int FMouseGPM::gpmEvent (bool clear)
+int FMouseGPM::gpmEvent (bool clear) const
 {
   const int max = ( gpm_fd > stdin_no ) ? gpm_fd : stdin_no;
   fd_set ifds{};
@@ -1598,7 +1598,7 @@ FMouse* FMouseControl::getMouseWithEvent()
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::xtermMouse (bool enable)
+void FMouseControl::xtermMouse (bool enable) const
 {
   // activate/deactivate the xterm mouse support
 

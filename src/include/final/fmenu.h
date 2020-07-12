@@ -127,7 +127,7 @@ class FMenu : public FWindow, public FMenuList
     // Callback method
     void                cb_menuitemEnabled (const FWidget*, const FDataPtr);
     void                cb_menuitemDisabled (const FWidget*, const FDataPtr);
-    void                cb_menuitemToggled (FWidget*, const FDataPtr);
+    void                cb_menuitemToggled (FWidget*, const FDataPtr) const;
 
   private:
     // Constants
@@ -169,13 +169,13 @@ class FMenu : public FWindow, public FMenuList
     bool         isMouseOverMenu (const FPoint&);
     bool         isMouseOverSubMenu (const FPoint&);
     bool         isMouseOverSuperMenu (const FPoint&);
-    bool         isMouseOverMenuBar (const FPoint&);
+    bool         isMouseOverMenuBar (const FPoint&) const;
 
     // Methods
     void         init();
     void         initCallbacks();
     void         calculateDimensions();
-    void         adjustItems();
+    void         adjustItems() const;
     int          adjustX(int);
     void         openSubMenu (FMenu*, bool = false);
     void         closeOpenedSubMenu();
@@ -192,14 +192,14 @@ class FMenu : public FWindow, public FMenuList
     void         mouseMoveOverBorder (mouseStates&);
     void         passEventToSubMenu (FMouseEvent* const&);
     void         passEventToSuperMenu (FMouseEvent* const&);
-    void         passEventToMenuBar (FMouseEvent* const&);
+    void         passEventToMenuBar (FMouseEvent* const&) const;
     bool         containsMenuStructure (const FPoint&);
     bool         containsMenuStructure (int, int);
     FMenu*       superMenuAt (const FPoint&);
     FMenu*       superMenuAt (int, int);
     bool         selectNextItem();
     bool         selectPrevItem();
-    void         keypressMenuBar (FKeyEvent*);
+    void         keypressMenuBar (FKeyEvent*) const;
     bool         hotkeyMenu (FKeyEvent*);
     void         draw() override;
     void         drawItems();
@@ -211,7 +211,7 @@ class FMenu : public FWindow, public FMenuList
     void         drawAcceleratorKey (std::size_t&, FKey);
     void         drawTrailingSpaces (std::size_t);
     void         setLineAttributes (const FMenuItem*, int);
-    void         setCursorToHotkeyPosition (FMenuItem*);
+    void         setCursorToHotkeyPosition (FMenuItem*) const;
     void         selectPrevMenu (FKeyEvent*);
     void         selectNextMenu (FKeyEvent*);
     void         acceptSelection();

@@ -528,14 +528,14 @@ void FStatusBar::init()
 }
 
 //----------------------------------------------------------------------
-int FStatusBar::getKeyNameWidth (const FStatusKey* key)
+int FStatusBar::getKeyNameWidth (const FStatusKey* key) const
 {
   const FString& key_name = FTerm::getKeyName(key->getKey());
   return int(getColumnWidth(key_name));
 }
 
 //----------------------------------------------------------------------
-int FStatusBar::getKeyTextWidth (const FStatusKey* key)
+int FStatusBar::getKeyTextWidth (const FStatusKey* key) const
 {
   const FString& key_text = key->getText();
   return int(getColumnWidth(key_text));

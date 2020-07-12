@@ -384,7 +384,7 @@ void FMessageBox::draw()
 }
 
 //----------------------------------------------------------------------
-void FMessageBox::resizeButtons()
+void FMessageBox::resizeButtons() const
 {
   std::size_t len[3]{};
   std::size_t max_size{};

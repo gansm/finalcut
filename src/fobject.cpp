@@ -307,7 +307,7 @@ int FObject::addTimer (int interval)
 }
 
 //----------------------------------------------------------------------
-bool FObject::delTimer (int id)
+bool FObject::delTimer (int id) const
 {
   // Deletes a timer by using the timer identifier number
 
@@ -333,7 +333,7 @@ bool FObject::delTimer (int id)
 }
 
 //----------------------------------------------------------------------
-bool FObject::delOwnTimer()
+bool FObject::delOwnTimer() const
 {
   // Deletes all timers of this object
 
@@ -359,7 +359,7 @@ bool FObject::delOwnTimer()
 }
 
 //----------------------------------------------------------------------
-bool FObject::delAllTimer()
+bool FObject::delAllTimer() const
 {
   // Deletes all timers of all objects
 

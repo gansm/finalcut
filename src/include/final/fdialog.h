@@ -188,7 +188,7 @@ class FDialog : public FWindow
     void                  openMenu();
     void                  selectFirstMenuItem();
     void                  setZoomItem();
-    std::size_t           getZoomButtonWidth();
+    std::size_t           getZoomButtonWidth() const;
     void                  activateZoomButton (const mouseStates&);
     void                  deactivateZoomButton();
     void                  leaveZoomButton (const mouseStates&);

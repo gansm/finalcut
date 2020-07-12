@@ -626,7 +626,7 @@ FScrollbar::sType FScrollbar::getClickedScrollType (int x, int y)
 }
 
 //----------------------------------------------------------------------
-FScrollbar::sType FScrollbar::getVerticalClickedScrollType (int y)
+FScrollbar::sType FScrollbar::getVerticalClickedScrollType (int y) const
 {
   if ( y == 1 )
   {
@@ -649,7 +649,7 @@ FScrollbar::sType FScrollbar::getVerticalClickedScrollType (int y)
 }
 
 //----------------------------------------------------------------------
-FScrollbar::sType FScrollbar::getHorizontalClickedScrollType (int x)
+FScrollbar::sType FScrollbar::getHorizontalClickedScrollType (int x) const
 {
   if ( FTerm::isNewFont() )
   {
@@ -696,7 +696,7 @@ FScrollbar::sType FScrollbar::getHorizontalClickedScrollType (int x)
 }
 
 //----------------------------------------------------------------------
-int FScrollbar::getSliderClickPos (int mouse_x, int mouse_y)
+int FScrollbar::getSliderClickPos (int mouse_x, int mouse_y) const
 {
   // Get the clicked position on the slider
 

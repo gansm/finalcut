@@ -78,8 +78,8 @@ class FTermData final
     FRect&            getTermGeometry();
     int               getTTYFileDescriptor() const;
     uInt              getBaudrate() const;
-    const char*       getTermType();
-    const char*       getTermFileName();
+    const char*       getTermType() const;
+    const char*       getTermFileName() const;
     const FString&    getXtermFont() const;
     const FString&    getXtermTitle() const;
     const FString&    getExitMessage() const;
@@ -194,11 +194,11 @@ inline uInt FTermData::getBaudrate() const
 { return baudrate; }
 
 //----------------------------------------------------------------------
-inline const char* FTermData::getTermType()
+inline const char* FTermData::getTermType() const
 { return termtype; }
 
 //----------------------------------------------------------------------
-inline const char* FTermData::getTermFileName()
+inline const char* FTermData::getTermFileName() const
 { return termfilename; }
 
 //----------------------------------------------------------------------

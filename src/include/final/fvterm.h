@@ -151,14 +151,14 @@ class FVTerm
     FTerm&                getFTerm();
 
     // Mutators
-    void                  setTermXY (int, int);
+    void                  setTermXY (int, int) const;
     void                  setTerminalUpdates (terminal_update);
-    void                  hideCursor (bool);
-    void                  hideCursor();
-    void                  showCursor();
+    void                  hideCursor (bool) const;
+    void                  hideCursor() const;
+    void                  showCursor() const;
     void                  setPrintCursor (const FPoint&);
 
-    FColor                rgb2ColorIndex (uInt8, uInt8, uInt8);
+    FColor                rgb2ColorIndex (uInt8, uInt8, uInt8) const;
     static void           setColor (FColor, FColor);
     static void           setNormal();
 
@@ -287,7 +287,7 @@ class FVTerm
     // Mutators
     void                  setPrintArea (FTermArea*);
     void                  setChildPrintArea (FTermArea*);
-    void                  setActiveArea (FTermArea*);
+    void                  setActiveArea (FTermArea*) const;
 
     // Inquiries
     bool                  hasPrintArea() const;
@@ -339,7 +339,8 @@ class FVTerm
     static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
 
     // Methods
-    void                  setTextToDefault (const FTermArea*, const FSize&);
+    void                  resetTextAreaToDefault ( const FTermArea*
+                                                 , const FSize&) const;
     static bool           reallocateTextArea ( FTermArea*
                                              , std::size_t
                                              , std::size_t );
@@ -366,7 +367,7 @@ class FVTerm
     void                  updateVTerm();
     static void           callPreprocessingHandler (const FTermArea*);
     bool                  hasChildAreaChanges (FTermArea*) const;
-    void                  clearChildAreaChanges (const FTermArea*);
+    void                  clearChildAreaChanges (const FTermArea*) const;
     static bool           isInsideArea (const FPoint&, const FTermArea*);
     static const FChar    generateCharacter (const FPoint&);
     static const FChar    getCharacter ( character_type
@@ -390,30 +391,30 @@ class FVTerm
     static bool           canClearTrailingWS (uInt&, uInt);
     bool                  skipUnchangedCharacters (uInt&, uInt, uInt);
     void                  printRange (uInt, uInt, uInt, bool);
-    void                  replaceNonPrintableFullwidth (uInt, FChar*&);
+    void                  replaceNonPrintableFullwidth (uInt, FChar*&) const;
     void                  printCharacter (uInt&, uInt, bool, FChar*&);
     void                  printFullWidthCharacter (uInt&, uInt, FChar*&);
     void                  printFullWidthPaddingCharacter (uInt&, uInt, FChar*&);
     void                  printHalfCovertFullWidthCharacter (uInt&, uInt, FChar*&);
-    void                  skipPaddingCharacter (uInt&, uInt, const FChar* const&);
+    void                  skipPaddingCharacter (uInt&, uInt, const FChar* const&) const;
     exit_state            eraseCharacters (uInt&, uInt, uInt, bool);
     exit_state            repeatCharacter (uInt&, uInt, uInt);
     bool                  isFullWidthChar (const FChar* const&) const;
     bool                  isFullWidthPaddingChar (const FChar* const&) const;
     static void           cursorWrap();
-    bool                  printWrap (FTermArea*);
+    bool                  printWrap (FTermArea*) const;
     void                  printPaddingCharacter (FTermArea*, const FChar&);
     void                  updateTerminalLine (uInt);
     bool                  updateTerminalCursor();
-    bool                  isInsideTerminal (const FPoint&);
-    bool                  isTermSizeChanged();
+    bool                  isInsideTerminal (const FPoint&) const;
+    bool                  isTermSizeChanged() const;
     static void           markAsPrinted (uInt, uInt);
     static void           markAsPrinted (uInt, uInt, uInt);
     static void           newFontChanges (FChar*&);
     static void           charsetChanges (FChar*&);
     void                  appendCharacter (FChar*&);
     void                  appendChar (FChar*&);
-    void                  appendAttributes (FChar*&);
+    void                  appendAttributes (FChar*&) const;
     int                   appendLowerRight (FChar*&);
     static void           characterFilter (FChar*&);
     static void           appendOutputBuffer (const std::string&);
@@ -629,11 +630,11 @@ inline FTerm& FVTerm::getFTerm()
 { return *fterm; }
 
 //----------------------------------------------------------------------
-inline void FVTerm::hideCursor()
+inline void FVTerm::hideCursor() const
 { return hideCursor(true); }
 
 //----------------------------------------------------------------------
-inline void FVTerm::showCursor()
+inline void FVTerm::showCursor() const
 { return hideCursor(false); }
 
 //----------------------------------------------------------------------
@@ -957,7 +958,7 @@ inline void FVTerm::setChildPrintArea (FTermArea* area)
 { child_print_area = area; }
 
 //----------------------------------------------------------------------
-inline void FVTerm::setActiveArea (FTermArea* area)
+inline void FVTerm::setActiveArea (FTermArea* area) const
 { active_area = area; }
 
 //----------------------------------------------------------------------

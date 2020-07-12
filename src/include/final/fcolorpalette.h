@@ -66,7 +66,7 @@ class FColorPalette
     virtual void resetColorPalette() = 0;
 
   protected:
-    void setPalette (FColor, int, int, int);
+    void setPalette (FColor, int, int, int) const;
     void setVGAdefaultPalette();
 
   private:

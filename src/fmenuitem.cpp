@@ -591,7 +591,7 @@ void FMenuItem::processDeactivate()
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::createDialogList (FMenu* winmenu)
+void FMenuItem::createDialogList (FMenu* winmenu) const
 {
   winmenu->clear();
 
@@ -651,7 +651,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 //----------------------------------------------------------------------
 template <typename T>
 void FMenuItem::passMouseEvent ( T widget, const FMouseEvent* ev
-                               , fc::events ev_type )
+                               , fc::events ev_type ) const
 {
   if ( ! widget )
     return;
@@ -695,7 +695,7 @@ void FMenuItem::passMouseEvent ( T widget, const FMouseEvent* ev
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::cb_switchToDialog (const FWidget*, FDataPtr data)
+void FMenuItem::cb_switchToDialog (const FWidget*, FDataPtr data) const
 {
   auto win = static_cast<FDialog*>(data);
 

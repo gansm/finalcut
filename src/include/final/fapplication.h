@@ -125,13 +125,13 @@ class FApplication : public FWidget
     // Methods
     int                   exec();  // run
     int                   enterLoop();
-    void                  exitLoop();
+    void                  exitLoop() const;
     static void           exit (int = EXIT_SUCCESS);
-    void                  quit();
+    void                  quit() const;
     static bool           sendEvent (FObject*, FEvent*);
     void                  queueEvent (FObject*, FEvent*);
     void                  sendQueuedEvents();
-    bool                  eventInQueue();
+    bool                  eventInQueue() const;
     bool                  removeQueuedEvent (const FObject*);
     void                  initTerminal() override;
     static void           setDefaultTheme();
@@ -157,44 +157,44 @@ class FApplication : public FWidget
     static FStartOptions& getStartOptions();
     static void           showParameterUsage();
     void                  destroyLog();
-    void                  findKeyboardWidget();
+    void                  findKeyboardWidget() const;
     bool                  isKeyPressed() const;
     void                  keyPressed();
     void                  keyReleased();
     void                  escapeKeyPressed();
     void                  performKeyboardAction();
-    void                  sendEscapeKeyPressEvent();
-    bool                  sendKeyDownEvent (FWidget*);
-    bool                  sendKeyPressEvent (FWidget*);
-    bool                  sendKeyUpEvent (FWidget*);
+    void                  sendEscapeKeyPressEvent() const;
+    bool                  sendKeyDownEvent (FWidget*) const;
+    bool                  sendKeyPressEvent (FWidget*) const;
+    bool                  sendKeyUpEvent (FWidget*) const;
     void                  sendKeyboardAccelerator();
     void                  processKeyboardEvent();
-    bool                  processDialogSwitchAccelerator();
-    bool                  processAccelerator (const FWidget* const&);
-    bool                  getMouseEvent();
+    bool                  processDialogSwitchAccelerator() const;
+    bool                  processAccelerator (const FWidget* const&) const;
+    bool                  getMouseEvent() const;
     FWidget*&             determineClickedWidget();
-    void                  unsetMoveSizeMode();
+    void                  unsetMoveSizeMode() const;
     void                  closeDropDown();
     void                  unselectMenubarItems();
     void                  sendMouseEvent();
     void                  sendMouseMoveEvent ( const FPoint&
                                              , const FPoint&
-                                             , int );
+                                             , int ) const;
     void                  sendMouseLeftClickEvent ( const FPoint&
                                                   , const FPoint&
-                                                  , int );
+                                                  , int ) const;
     void                  sendMouseRightClickEvent ( const FPoint&
                                                    , const FPoint&
-                                                   , int );
+                                                   , int ) const;
     void                  sendMouseMiddleClickEvent ( const FPoint&
                                                     , const FPoint&
-                                                    , int );
-    void                  sendWheelEvent (const FPoint&, const FPoint&);
+                                                    , int ) const;
+    void                  sendWheelEvent (const FPoint&, const FPoint&) const;
     static FWidget*       processParameters (const int&, char*[]);
     void                  processMouseEvent();
     void                  processResizeEvent();
     void                  processCloseWidget();
-    void                  processLogger();
+    void                  processLogger() const;
     bool                  processNextEvent();
     void                  performTimerAction (FObject*, FEvent*) override;
     static bool           isEventProcessable (const FObject*, const FEvent*);

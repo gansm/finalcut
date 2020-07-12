@@ -99,7 +99,7 @@ class FMenuBar : public FWindow, public FMenuList
     void          onAccel (FAccelEvent*) override;
 
     // Callback methods
-    void          cb_itemDeactivated (FWidget*, const FDataPtr);
+    void          cb_itemDeactivated (FWidget*, const FDataPtr) const;
 
   private:
     // Constants
@@ -119,7 +119,7 @@ class FMenuBar : public FWindow, public FMenuList
 
     // Methods
     void          init();
-    void          calculateDimensions();
+    void          calculateDimensions() const;
     bool          selectNextItem();
     bool          selectPrevItem();
     bool          hotkeyMenu (FKeyEvent*&);
@@ -127,12 +127,12 @@ class FMenuBar : public FWindow, public FMenuList
     void          drawItems();
     void          drawItem (FMenuItem*, std::size_t&);
     void          setLineAttributes (const FMenuItem*);
-    void          setCursorToHotkeyPosition (FMenuItem*, std::size_t);
+    void          setCursorToHotkeyPosition (FMenuItem*, std::size_t) const;
     void          drawMenuText (menuText&);
     void          drawEllipsis (const menuText&, std::size_t);
     void          drawLeadingSpace (std::size_t&);
     void          drawTrailingSpace (std::size_t&);
-    void          adjustItems();
+    void          adjustItems() const;
     bool          activateMenu (const FMenuItem*);
     bool          clickItem (FMenuItem*);
     void          unselectMenuItem (FMenuItem*);
@@ -140,7 +140,7 @@ class FMenuBar : public FWindow, public FMenuList
     void          mouseDownOverList (const FMouseEvent*);
     void          mouseUpOverList (const FMouseEvent*);
     void          mouseMoveOverList (const FMouseEvent*);
-    void          passEventToMenu (const FMouseEvent* const&);
+    void          passEventToMenu (const FMouseEvent* const&) const;
     void          leaveMenuBar();
 
     // Data members

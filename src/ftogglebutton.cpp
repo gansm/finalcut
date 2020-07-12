@@ -533,7 +533,7 @@ void FToggleButton::drawText (const FString& label_text, std::size_t hotkeypos)
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::correctSize (FSize& size)
+void FToggleButton::correctSize (FSize& size) const
 {
   const std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
   const std::size_t column_width = getColumnWidth(text);

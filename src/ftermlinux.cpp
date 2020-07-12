@@ -63,7 +63,7 @@ FTermLinux::~FTermLinux()  // destructor
 // public methods of FTermLinux
 //----------------------------------------------------------------------
 #if defined(__linux__)
-fc::linuxConsoleCursorStyle FTermLinux::getCursorStyle()
+fc::linuxConsoleCursorStyle FTermLinux::getCursorStyle() const
 {
   // Get the current set cursor style
 
@@ -102,7 +102,7 @@ bool FTermLinux::setCursorStyle (fc::linuxConsoleCursorStyle style)
 }
 
 //----------------------------------------------------------------------
-void FTermLinux::setUTF8 (bool enable)
+void FTermLinux::setUTF8 (bool enable) const
 {
   if ( ! FTerm::isLinuxTerm() )
     return;
@@ -420,7 +420,7 @@ bool FTermLinux::resetColorMap()
 }
 
 //----------------------------------------------------------------------
-void FTermLinux::setBeep (int Hz, int ms)
+void FTermLinux::setBeep (int Hz, int ms) const
 {
   if ( ! FTerm::isLinuxTerm() )
     return;
@@ -440,7 +440,7 @@ void FTermLinux::setBeep (int Hz, int ms)
 }
 
 //----------------------------------------------------------------------
-void FTermLinux::resetBeep()
+void FTermLinux::resetBeep() const
 {
   if ( ! FTerm::isLinuxTerm() )
     return;
@@ -763,7 +763,7 @@ int FTermLinux::setUnicodeMap (struct unimapdesc* unimap)
 }
 
 //----------------------------------------------------------------------
-void FTermLinux::setLinuxCursorStyle (CursorStyle style)
+void FTermLinux::setLinuxCursorStyle (CursorStyle style) const
 {
   FTerm::putstringf (CSI "?%dc", style);
 }
@@ -1008,7 +1008,7 @@ bool FTermLinux::resetVGAPalette()
 #endif  // defined(ISA_SYSCTL_SUPPORT)
 
 //----------------------------------------------------------------------
-FKey FTermLinux::shiftKeyCorrection (const FKey& key_id)
+FKey FTermLinux::shiftKeyCorrection (const FKey& key_id) const
 {
   switch ( key_id )
   {
@@ -1048,7 +1048,7 @@ FKey FTermLinux::shiftKeyCorrection (const FKey& key_id)
 }
 
 //----------------------------------------------------------------------
-FKey FTermLinux::ctrlKeyCorrection (const FKey& key_id)
+FKey FTermLinux::ctrlKeyCorrection (const FKey& key_id) const
 {
   switch ( key_id )
   {
@@ -1088,7 +1088,7 @@ FKey FTermLinux::ctrlKeyCorrection (const FKey& key_id)
 }
 
 //----------------------------------------------------------------------
-FKey FTermLinux::altKeyCorrection (const FKey& key_id)
+FKey FTermLinux::altKeyCorrection (const FKey& key_id) const
 {
   switch ( key_id )
   {
@@ -1128,7 +1128,7 @@ FKey FTermLinux::altKeyCorrection (const FKey& key_id)
 }
 
 //----------------------------------------------------------------------
-FKey FTermLinux::shiftCtrlKeyCorrection (const FKey& key_id)
+FKey FTermLinux::shiftCtrlKeyCorrection (const FKey& key_id) const
 {
   switch ( key_id )
   {
@@ -1168,7 +1168,7 @@ FKey FTermLinux::shiftCtrlKeyCorrection (const FKey& key_id)
 }
 
 //----------------------------------------------------------------------
-FKey FTermLinux::shiftAltKeyCorrection (const FKey& key_id)
+FKey FTermLinux::shiftAltKeyCorrection (const FKey& key_id) const
 {
   switch ( key_id )
   {
@@ -1208,7 +1208,7 @@ FKey FTermLinux::shiftAltKeyCorrection (const FKey& key_id)
 }
 
 //----------------------------------------------------------------------
-FKey FTermLinux::ctrlAltKeyCorrection (const FKey& key_id)
+FKey FTermLinux::ctrlAltKeyCorrection (const FKey& key_id) const
 {
   switch ( key_id )
   {
@@ -1248,7 +1248,7 @@ FKey FTermLinux::ctrlAltKeyCorrection (const FKey& key_id)
 }
 
 //----------------------------------------------------------------------
-FKey FTermLinux::shiftCtrlAltKeyCorrection (const FKey& key_id)
+FKey FTermLinux::shiftCtrlAltKeyCorrection (const FKey& key_id) const
 {
   switch ( key_id )
   {
@@ -1315,7 +1315,7 @@ inline void FTermLinux::initSpecialCharacter()
 }
 
 //----------------------------------------------------------------------
-sInt16 FTermLinux::getFontPos (wchar_t ucs)
+sInt16 FTermLinux::getFontPos (wchar_t ucs) const
 {
   constexpr sInt16 NOT_FOUND = -1;
 

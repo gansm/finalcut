@@ -542,7 +542,7 @@ void FButtonGroup::directFocus()
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::cb_buttonToggled (FWidget* widget, const FDataPtr)
+void FButtonGroup::cb_buttonToggled (FWidget* widget, const FDataPtr) const
 {
   const auto& button = static_cast<FToggleButton*>(widget);
 

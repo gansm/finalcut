@@ -349,16 +349,16 @@ class FTerm final
     static void              enableAlternateCharset();
     static void              useAlternateScreenBuffer();
     static void              useNormalScreenBuffer();
-    void                     allocationValues();
+    void                     allocationValues() const;
     void                     deallocationValues();
     void                     init();
     bool                     init_terminal();
-    void                     initOSspecifics();
-    void                     initTermspecifics();
-    void                     initBaudRate();
+    void                     initOSspecifics() const;
+    void                     initTermspecifics() const;
+    void                     initBaudRate() const;
     void                     finish();
-    void                     finishOSspecifics();
-    void                     finish_encoding();
+    void                     finishOSspecifics() const;
+    void                     finish_encoding() const;
     void                     destroyColorPaletteTheme();
     static void              printExitMessage();
     static void              terminalSizeChange();
@@ -475,10 +475,6 @@ inline void FTerm::initTerminal()
 
 }  // namespace finalcut
 
-
-namespace
-{
-
 //----------------------------------------------------------------------
 inline std::ostream& operator << ( std::ostream& os
                                  , finalcut::fc::SpecialCharacter c )
@@ -492,7 +488,5 @@ inline std::wostream& operator << ( std::wostream& os
 {
   return os << static_cast<wchar_t>(c);
 }
-
-}  // namespace
 
 #endif  // FTERM_H

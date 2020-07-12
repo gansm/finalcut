@@ -173,12 +173,12 @@ class FListBox : public FWidget
     void                setCurrentItem (std::size_t);
     void                setCurrentItem (listBoxItems::iterator);
     void                selectItem (std::size_t);
-    void                selectItem (listBoxItems::iterator);
+    void                selectItem (listBoxItems::iterator) const;
     void                unselectItem (std::size_t);
-    void                unselectItem (listBoxItems::iterator);
+    void                unselectItem (listBoxItems::iterator) const;
     void                showInsideBrackets (const std::size_t, fc::brackets_type);
     void                showNoBrackets (std::size_t);
-    void                showNoBrackets (listBoxItems::iterator);
+    void                showNoBrackets (listBoxItems::iterator) const;
     void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
@@ -259,7 +259,7 @@ class FListBox : public FWidget
     void                processKeyAction (FKeyEvent*);
     void                draw() override;
     void                drawBorder() override;
-    void                drawScrollbars();
+    void                drawScrollbars() const;
     void                drawHeadline();
     void                drawList();
     void                drawListLine (int, listBoxItems::iterator, bool);
@@ -267,10 +267,10 @@ class FListBox : public FWidget
     void                printRightBracket (fc::brackets_type);
     void                drawListBracketsLine (int, listBoxItems::iterator, bool);
     void                setLineAttributes (int, bool, bool, bool&);
-    void                unsetAttributes();
+    void                unsetAttributes() const;
     void                updateDrawing (bool, bool);
     void                recalculateHorizontalBar (std::size_t, bool);
-    void                recalculateVerticalBar (std::size_t);
+    void                recalculateVerticalBar (std::size_t) const;
     void                getWidgetFocus();
     void                multiSelection (std::size_t);
     void                multiSelectionUpTo (std::size_t);
@@ -304,7 +304,7 @@ class FListBox : public FWidget
     void                processClick();
     void                processSelect();
     void                processChanged();
-    void                changeOnResize();
+    void                changeOnResize() const;
     void                lazyConvert (listBoxItems::iterator, int);
     listBoxItems::iterator index2iterator (std::size_t);
     listBoxItems::const_iterator index2iterator (std::size_t index) const;
@@ -415,7 +415,7 @@ inline void FListBox::selectItem (std::size_t index)
 { index2iterator(index - 1)->selected = true; }
 
 //----------------------------------------------------------------------
-inline void FListBox::selectItem (listBoxItems::iterator iter)
+inline void FListBox::selectItem (listBoxItems::iterator iter) const
 { iter->selected = true; }
 
 //----------------------------------------------------------------------
@@ -423,7 +423,7 @@ inline void FListBox::unselectItem (std::size_t index)
 { index2iterator(index - 1)->selected = false; }
 
 //----------------------------------------------------------------------
-inline void FListBox::unselectItem (listBoxItems::iterator iter)
+inline void FListBox::unselectItem (listBoxItems::iterator iter) const
 { iter->selected = false; }
 
 //----------------------------------------------------------------------
@@ -431,7 +431,7 @@ inline void FListBox::showNoBrackets (std::size_t index)
 { index2iterator(index - 1)->brackets = fc::NoBrackets; }
 
 //----------------------------------------------------------------------
-inline void FListBox::showNoBrackets (listBoxItems::iterator iter)
+inline void FListBox::showNoBrackets (listBoxItems::iterator iter) const
 { iter->brackets = fc::NoBrackets; }
 
 //----------------------------------------------------------------------

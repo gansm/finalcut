@@ -92,9 +92,9 @@ int FTermBuffer::write (wchar_t ch)
 }
 
 //----------------------------------------------------------------------
-void FTermBuffer::write (const FStyle& style)
+void FTermBuffer::write (const FStyle& style) const
 {
-    FAttribute attr = style.getStyle();
+  FAttribute attr = style.getStyle();
 
   if ( attr == 0 )
     FVTerm::setNormal();
@@ -129,7 +129,7 @@ void FTermBuffer::write (const FStyle& style)
 }
 
 //----------------------------------------------------------------------
-void FTermBuffer::write (const FColorPair& pair)
+void FTermBuffer::write (const FColorPair& pair) const
 {
   FVTerm::setColor(pair.getForegroundColor(), pair.getBackgroundColor());
 }

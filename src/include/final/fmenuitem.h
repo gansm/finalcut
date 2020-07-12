@@ -160,12 +160,12 @@ class FMenuItem : public FWidget
     void                processDisable();
     void                processActivate();
     void                processDeactivate();
-    void                createDialogList (FMenu*);
+    void                createDialogList (FMenu*) const;
     template <typename T>
-    void                passMouseEvent (T, const FMouseEvent*, fc::events);
+    void                passMouseEvent (T, const FMouseEvent*, fc::events) const;
 
     // Callback methods
-    void                cb_switchToDialog (const FWidget*, FDataPtr);
+    void                cb_switchToDialog (const FWidget*, FDataPtr) const;
     void                cb_destroyDialog (FWidget*, const FDataPtr);
 
     virtual void        processClicked();

@@ -301,14 +301,14 @@ class MyDialog final : public finalcut::FDialog
     void cb_copyClipboard (const finalcut::FWidget*, const FDataPtr);
     void cb_pasteClipboard (const finalcut::FWidget*, const FDataPtr);
     void cb_clearInput (const finalcut::FWidget*, const FDataPtr);
-    void cb_switchTheme (const finalcut::FWidget*, const FDataPtr);
-    void cb_input2buttonText (finalcut::FWidget*, FDataPtr);
+    void cb_switchTheme (const finalcut::FWidget*, const FDataPtr) const;
+    void cb_input2buttonText (finalcut::FWidget*, FDataPtr) const;
     void cb_setTitlebar (finalcut::FWidget*, const FDataPtr);
     void cb_showProgressBar (const finalcut::FWidget*, const FDataPtr);
-    void cb_updateNumber (finalcut::FWidget*, FDataPtr);
-    void cb_activateButton (finalcut::FWidget*, FDataPtr);
+    void cb_updateNumber (finalcut::FWidget*, FDataPtr) const;
+    void cb_activateButton (finalcut::FWidget*, FDataPtr) const;
     void cb_view (const finalcut::FWidget*, FDataPtr);
-    void cb_setInput (finalcut::FWidget*, FDataPtr);
+    void cb_setInput (finalcut::FWidget*, FDataPtr) const;
 
     // Data members
     bool                      initialized{false};
@@ -916,7 +916,7 @@ void MyDialog::cb_clearInput (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_switchTheme (const finalcut::FWidget* widget, const FDataPtr)
+void MyDialog::cb_switchTheme (const finalcut::FWidget* widget, const FDataPtr) const
 {
   const auto& check_menu = *(static_cast<const finalcut::FCheckMenuItem*>(widget));
 
@@ -931,7 +931,7 @@ void MyDialog::cb_switchTheme (const finalcut::FWidget* widget, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_input2buttonText (finalcut::FWidget* widget, FDataPtr data)
+void MyDialog::cb_input2buttonText (finalcut::FWidget* widget, FDataPtr data) const
 {
   auto& button = *(static_cast<finalcut::FButton*>(widget));
   const auto& lineedit = *(static_cast<finalcut::FLineEdit*>(data));
@@ -958,7 +958,7 @@ void MyDialog::cb_showProgressBar (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_updateNumber (finalcut::FWidget* widget, FDataPtr data)
+void MyDialog::cb_updateNumber (finalcut::FWidget* widget, FDataPtr data) const
 {
   const auto& list = *(static_cast<finalcut::FListBox*>(widget));
   auto& num = *(static_cast<finalcut::FLabel*>(data));
@@ -975,7 +975,7 @@ void MyDialog::cb_updateNumber (finalcut::FWidget* widget, FDataPtr data)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_activateButton (finalcut::FWidget* widget, FDataPtr data)
+void MyDialog::cb_activateButton (finalcut::FWidget* widget, FDataPtr data) const
 {
   const auto& rb = *(static_cast<finalcut::FRadioButton*>(widget));
   auto& button = *(static_cast<finalcut::FButton*>(data));
@@ -1026,7 +1026,7 @@ void MyDialog::cb_view (const finalcut::FWidget*, FDataPtr data)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_setInput (finalcut::FWidget* widget, FDataPtr data)
+void MyDialog::cb_setInput (finalcut::FWidget* widget, FDataPtr data) const
 {
   auto& ListBox = *(static_cast<finalcut::FListBox*>(widget));
   auto& lineedit = *(static_cast<finalcut::FLineEdit*>(data));

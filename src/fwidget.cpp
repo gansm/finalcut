@@ -338,7 +338,7 @@ void FWidget::useParentWidgetColor()
 }
 
 //----------------------------------------------------------------------
-void FWidget::setColor()
+void FWidget::setColor() const
 {
   // Changes colors to the widget default colors
   setColor (foreground_color, background_color);
@@ -566,7 +566,7 @@ void FWidget::setRightPadding (int right, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setTermSize (const FSize& size)
+void FWidget::setTermSize (const FSize& size) const
 {
   // Set xterm size to width x height
 
@@ -1407,7 +1407,7 @@ void FWidget::adjustSize()
 }
 
 //----------------------------------------------------------------------
-void FWidget::adjustSizeGlobal()
+void FWidget::adjustSizeGlobal() const
 {
   if ( ! isRootWidget() )
   {
@@ -2013,7 +2013,7 @@ void FWidget::draw()
 { }
 
 //----------------------------------------------------------------------
-void FWidget::drawWindows()
+void FWidget::drawWindows() const
 {
   // redraw windows
   FChar default_char{};
@@ -2111,7 +2111,7 @@ void FWidget::destroyColorTheme()
 }
 
 //----------------------------------------------------------------------
-void FWidget::setStatusbarText (bool enable)
+void FWidget::setStatusbarText (bool enable) const
 {
   if ( ! isEnabled() || ! getStatusBar() )
     return;

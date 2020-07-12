@@ -42,7 +42,7 @@ FColorPalette::~FColorPalette()  // destructor
 
 // protected methods of FColorPalette
 //----------------------------------------------------------------------
-void FColorPalette::setPalette (FColor index, int r, int g, int b)
+void FColorPalette::setPalette (FColor index, int r, int g, int b) const
 {
   set_palette (index, r, g, b);
 }

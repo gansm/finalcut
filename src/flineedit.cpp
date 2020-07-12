@@ -88,7 +88,7 @@ FLineEdit& FLineEdit::operator << (const wchar_t c)
 }
 
 //----------------------------------------------------------------------
-const FLineEdit& FLineEdit::operator >> (FString& s)
+const FLineEdit& FLineEdit::operator >> (FString& s) const
 {
   s += text;
   return *this;
@@ -661,7 +661,7 @@ void FLineEdit::init()
 bool FLineEdit::hasHotkey() const
 {
   if ( label_text.isEmpty() )
-    return 0;
+    return false;
 
   return label_text.includes('&');
 }
@@ -787,7 +787,7 @@ inline std::size_t FLineEdit::printPassword()
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FLineEdit::getCursorColumnPos()
+inline std::size_t FLineEdit::getCursorColumnPos() const
 {
   if ( input_type == FLineEdit::textfield )
   {
@@ -1104,7 +1104,7 @@ inline bool FLineEdit::keyInput (FKey key)
 }
 
 //----------------------------------------------------------------------
-inline wchar_t FLineEdit::characterFilter (const wchar_t c)
+inline wchar_t FLineEdit::characterFilter (const wchar_t c) const
 {
   if ( input_filter.empty() )
     return c;

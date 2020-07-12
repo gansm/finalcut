@@ -766,7 +766,7 @@ void FListBox::drawBorder()
 }
 
 //----------------------------------------------------------------------
-void FListBox::drawScrollbars()
+void FListBox::drawScrollbars() const
 {
   if ( ! hbar->isShown() && isHorizontallyScrollable() )
     hbar->show();
@@ -1061,7 +1061,7 @@ inline void FListBox::setLineAttributes ( int y
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::unsetAttributes()
+inline void FListBox::unsetAttributes() const
 {
   if ( FTerm::isMonochron() )  // unset for the last element
     setReverse(false);
@@ -1120,7 +1120,7 @@ void FListBox::recalculateHorizontalBar (std::size_t len, bool has_brackets)
 }
 
 //----------------------------------------------------------------------
-void FListBox::recalculateVerticalBar (std::size_t element_count)
+void FListBox::recalculateVerticalBar (std::size_t element_count) const
 {
   const int vmax = ( element_count + 2 > getHeight() )
                    ? int(element_count - getHeight() + 2)
@@ -1714,7 +1714,7 @@ void FListBox::processChanged()
 }
 
 //----------------------------------------------------------------------
-void FListBox::changeOnResize()
+void FListBox::changeOnResize() const
 {
   if ( FTerm::isNewFont() )
   {

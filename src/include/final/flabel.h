@@ -84,12 +84,12 @@ class FLabel : public FWidget
     FLabel& operator << (const typeT&);
     FLabel& operator << (fc::SpecialCharacter);
     FLabel& operator << (const wchar_t);
-    const FLabel& operator >> (FString&);
+    const FLabel& operator >> (FString&) const;
 
     // Accessors
     const FString       getClassName() const override;
     FWidget*            getAccelWidget();
-    fc::text_alignment  getAlignment();
+    fc::text_alignment  getAlignment() const;
     FString&            getText();
 
     // Mutators
@@ -132,7 +132,7 @@ class FLabel : public FWidget
     // Methods
     void                init();
     void                setHotkeyAccelerator();
-    std::size_t         getAlignOffset (const std::size_t);
+    std::size_t         getAlignOffset (const std::size_t) const;
     void                draw() override;
     void                drawMultiLine();
     void                drawSingleLine();
@@ -173,7 +173,7 @@ inline FWidget* FLabel::getAccelWidget ()
 { return accel_widget; }
 
 //----------------------------------------------------------------------
-inline fc::text_alignment FLabel::getAlignment()
+inline fc::text_alignment FLabel::getAlignment() const
 { return alignment; }
 
 //----------------------------------------------------------------------

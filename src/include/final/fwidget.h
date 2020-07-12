@@ -233,10 +233,10 @@ class FWidget : public FVTerm, public FObject
     const FRect&             getGeometryWithShadow();
     const FRect&             getTermGeometry();
     const FRect&             getTermGeometryWithShadow();
-    std::size_t              getDesktopWidth();
-    std::size_t              getDesktopHeight();
+    std::size_t              getDesktopWidth() const;
+    std::size_t              getDesktopHeight() const;
     const FWidgetFlags&      getFlags() const;
-    const FPoint             getCursorPos();
+    const FPoint             getCursorPos() const;
     const FPoint             getPrintPos();
 
     // Mutators
@@ -272,7 +272,7 @@ class FWidget : public FVTerm, public FObject
     virtual void             setBackgroundColor (FColor);
     virtual void             resetColors();
     void                     useParentWidgetColor();
-    void                     setColor();
+    void                     setColor() const;
     FWidgetFlags&            setFlags();
     // Positioning and sizes mutators...
     virtual void             setX (int, bool = true);
@@ -285,7 +285,7 @@ class FWidget : public FVTerm, public FObject
     void                     setLeftPadding (int, bool = true);
     void                     setBottomPadding (int, bool = true);
     void                     setRightPadding (int, bool = true);
-    void                     setTermSize (const FSize&);
+    void                     setTermSize (const FSize&) const;
     virtual void             setGeometry (const FRect&, bool = true);
     virtual void             setGeometry (const FPoint&, const FSize&, bool = true);
     virtual void             setShadowSize (const FSize&);
@@ -344,7 +344,7 @@ class FWidget : public FVTerm, public FObject
     virtual void             hide();
     virtual bool             focusFirstChild();  // widget focusing
     virtual bool             focusLastChild();
-    const FPoint             termToWidgetPos (const FPoint&);
+    const FPoint             termToWidgetPos (const FPoint&) const;
     void                     print (const FPoint&) override;
     virtual void             move (const FPoint&);
     virtual void             drawBorder();
@@ -368,7 +368,7 @@ class FWidget : public FVTerm, public FObject
 
     // Inquiry
     bool                     isChildPrintArea() const;
- 
+
     // Mutators
     virtual void             setStatusBar (FStatusBar*);
     virtual void             setMenuBar (FMenuBar*);
@@ -381,7 +381,7 @@ class FWidget : public FVTerm, public FObject
     void                     initTerminal() override;
     void                     initDesktop();
     virtual void             adjustSize();
-    void                     adjustSizeGlobal();
+    void                     adjustSizeGlobal() const;
     void                     hideArea (const FSize&);
     virtual bool             focusNextChild();  // Change child...
     virtual bool             focusPrevChild();  // ...focus
@@ -465,12 +465,12 @@ class FWidget : public FVTerm, public FObject
     bool                     changeFocus (FWidget*, FWidget*, fc::FocusTypes);
     void                     processDestroy();
     virtual void             draw();
-    void                     drawWindows();
+    void                     drawWindows() const;
     void                     drawChildren();
     static bool              isDefaultTheme();
     static void              initColorTheme();
     void                     destroyColorTheme();
-    void                     setStatusbarText (bool);
+    void                     setStatusbarText (bool) const;
 
     // Data members
     struct FWidgetFlags      flags{};
@@ -817,11 +817,11 @@ inline const FRect& FWidget::getTermGeometryWithShadow()
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FWidget::getDesktopWidth()
+inline std::size_t FWidget::getDesktopWidth() const
 { return FTerm::getColumnNumber(); }
 
 //----------------------------------------------------------------------
-inline std::size_t FWidget::getDesktopHeight()
+inline std::size_t FWidget::getDesktopHeight() const
 { return FTerm::getLineNumber(); }
 
 //----------------------------------------------------------------------
@@ -829,7 +829,7 @@ inline const FWidget::FWidgetFlags& FWidget::getFlags() const
 { return flags; }
 
 //----------------------------------------------------------------------
-inline const FPoint FWidget::getCursorPos()
+inline const FPoint FWidget::getCursorPos() const
 { return widget_cursor_position; }
 
 //----------------------------------------------------------------------
@@ -1071,7 +1071,7 @@ inline void FWidget::delAccelerator()
 { delAccelerator(this); }
 
 //----------------------------------------------------------------------
-inline const FPoint FWidget::termToWidgetPos (const FPoint& tPos)
+inline const FPoint FWidget::termToWidgetPos (const FPoint& tPos) const
 {
   return { tPos.getX() + 1 - woffset.getX1() - adjust_wsize.getX()
          , tPos.getY() + 1 - woffset.getY1() - adjust_wsize.getY() };

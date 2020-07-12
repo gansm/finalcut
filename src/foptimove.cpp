@@ -463,7 +463,7 @@ void FOptiMove::set_clr_eol (const char cap[])
 
 //----------------------------------------------------------------------
 void FOptiMove::check_boundaries ( int& xold, int& yold
-                                 , int& xnew, int& ynew )
+                                 , int& xnew, int& ynew ) const
 {
   if ( xold < 0 || xold >= int(screen_width) )
     xold = -1;
@@ -549,7 +549,7 @@ void FOptiMove::calculateCharDuration()
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::capDuration (const char cap[], int affcnt)
+int FOptiMove::capDuration (const char cap[], int affcnt) const
 {
   // calculate the duration in milliseconds of a given operation
   // cap    - the term capability
@@ -598,7 +598,7 @@ int FOptiMove::capDuration (const char cap[], int affcnt)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::capDurationToLength (int duration)
+int FOptiMove::capDurationToLength (int duration) const
 {
   if ( duration != LONG_DURATION )
     return (duration + char_duration - 1) / char_duration;
@@ -609,7 +609,7 @@ int FOptiMove::capDurationToLength (int duration)
 //----------------------------------------------------------------------
 int FOptiMove::repeatedAppend ( const capability& o
                               , volatile int count
-                              , char* dst )
+                              , char* dst ) const
 {
   const std::size_t src_len = std::strlen(o.cap);
   const std::size_t dst_len = ( dst != nullptr ) ? std::strlen(dst) : 0;

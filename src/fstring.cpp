@@ -273,99 +273,104 @@ FString& FString::operator << (const char c)
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (FString& s)
+const FString& FString::operator >> (FString& s) const
 {
   s._insert (s.length, length, string);
-  _assign(s.string);
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (std::wstring& s)
+const FString& FString::operator >> (std::wstring& s) const
 {
   s += std::wstring(string);
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (std::string& s)
+const FString& FString::operator >> (std::string& s) const
 {
   s += toString();
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (wchar_t& c)
+const FString& FString::operator >> (wchar_t& c) const
 {
   c = ( length > 0 ) ? string[0] : L'\0';
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (char& c)
+const FString& FString::operator >> (char& c) const
 {
   c = ( length > 0 ) ? char(string[0] & 0xff) : '\0';
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (sInt16& num)
+const FString& FString::operator >> (sInt16& num) const
 {
   num = toShort();
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (uInt16& num)
+const FString& FString::operator >> (uInt16& num) const
 {
   num = toUShort();
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (sInt32& num)
+const FString& FString::operator >> (sInt32& num) const
 {
   num = toInt();
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (uInt32& num)
+const FString& FString::operator >> (uInt32& num) const
 {
   num = toUInt();
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (sInt64& num)
+const FString& FString::operator >> (sInt64& num) const
 {
   num = toLong();
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (uInt64& num)
+const FString& FString::operator >> (uInt64& num) const
 {
   num = toULong();
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (double& num)
+const FString& FString::operator >> (double& num) const
 {
   num = toDouble();
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator >> (float& num)
+const FString& FString::operator >> (float& num) const
 {
   num = toFloat();
   return *this;
 }
 
 //----------------------------------------------------------------------
-const FString& FString::operator () ()
+FString::operator bool () const
+{
+  return bool(string);
+}
+
+//----------------------------------------------------------------------
+const FString& FString::operator () () const
 {
   return *this;
 }
@@ -1034,7 +1039,7 @@ const FString& FString::insert (const FString& s, std::size_t pos)
 }
 
 //----------------------------------------------------------------------
-FString const FString::replace (const FString& from, const FString& to)
+FString const FString::replace (const FString& from, const FString& to) const
 {
   FString s{*this};
 
@@ -1544,7 +1549,7 @@ inline const wchar_t* FString::_to_wcstring (const char s[]) const
 //----------------------------------------------------------------------
 inline const wchar_t* FString::_extractToken ( wchar_t* rest[]
                                              , const wchar_t s[]
-                                             , const wchar_t delim[] )
+                                             , const wchar_t delim[] ) const
 {
   wchar_t* token = ( s ) ? const_cast<wchar_t*>(s) : *rest;
 

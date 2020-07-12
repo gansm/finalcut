@@ -83,7 +83,7 @@ class FScrollView : public FWidget
     const FString       getClassName() const override;
     std::size_t         getViewportWidth() const;
     std::size_t         getViewportHeight() const;
-    const FSize         getViewportSize();
+    const FSize         getViewportSize() const;
     std::size_t         getScrollWidth() const;
     std::size_t         getScrollHeight() const;
     const FSize         getScrollSize() const;
@@ -157,18 +157,18 @@ class FScrollView : public FWidget
     static constexpr int horizontal_border_spacing = 2;
 
     // Accessors
-    const FPoint        getViewportCursorPos();
+    const FPoint        getViewportCursorPos() const;
 
     // Methods
     void                init();
     void                mapKeyFunctions();
-    void                calculateScrollbarPos();
+    void                calculateScrollbarPos() const;
     template<typename Callback>
     void                initScrollbar ( FScrollbarPtr&
                                       , fc::orientation
                                       , Callback );
-    void                setHorizontalScrollBarVisibility();
-    void                setVerticalScrollBarVisibility();
+    void                setHorizontalScrollBarVisibility() const;
+    void                setVerticalScrollBarVisibility() const;
     void                setViewportCursor();
 
     // Callback methods
@@ -203,7 +203,7 @@ inline std::size_t FScrollView::getViewportHeight() const
 { return getHeight() - horizontal_border_spacing; }
 
 //----------------------------------------------------------------------
-inline const FSize FScrollView::getViewportSize()
+inline const FSize FScrollView::getViewportSize() const
 { return FSize(getViewportWidth(), getViewportHeight()); }
 
 //----------------------------------------------------------------------

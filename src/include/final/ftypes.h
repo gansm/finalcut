@@ -47,9 +47,6 @@
                             << " in "                          \
                             << __func__ << std::endl;
 
-namespace
-{
-
 typedef unsigned char  uChar;
 typedef unsigned short uShort;
 typedef unsigned int   uInt;
@@ -73,8 +70,6 @@ typedef uInt16         FAttribute;
 typedef uInt32         FKey;
 typedef void*          FDataPtr;
 
-}  // namespace
-
 
 namespace finalcut
 {
@@ -82,7 +77,7 @@ namespace finalcut
 template <typename T, bool is_signed>
 struct is_negative
 {
-  inline bool operator () (const T& x)
+  inline bool operator () (const T& x) const
   {
     return x < 0;
   }
@@ -91,7 +86,7 @@ struct is_negative
 template <typename T>
 struct is_negative<T, false>
 {
-  inline bool operator () (const T&)
+  inline bool operator () (const T&) const
   {
     return false;
   }

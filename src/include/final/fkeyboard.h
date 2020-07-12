@@ -62,7 +62,7 @@ class FKeyboardCommand final
     { }
 
     // Method
-    void execute()
+    void execute() const
     {
       handler();
     }
@@ -100,8 +100,8 @@ class FKeyboard final
 
     // Accessors
     const FString         getClassName() const;
-    FKey                  getKey();
-    const FString         getKeyName (const FKey);
+    FKey                  getKey() const;
+    const FString         getKeyName (const FKey) const;
     keybuffer&            getKeyBuffer();
     timeval*              getKeyPressedTime();
     static uInt64         getKeypressTimeout();
@@ -136,7 +136,7 @@ class FKeyboard final
     static constexpr FKey NOT_SET = static_cast<FKey>(-1);
 
     // Accessors
-    FKey                  getMouseProtocolKey();
+    FKey                  getMouseProtocolKey() const;
     FKey                  getTermcapKey();
     FKey                  getMetaKey();
     FKey                  getSingleKey();
@@ -150,11 +150,11 @@ class FKeyboard final
     static bool           isKeypressTimeout();
 
     // Methods
-    FKey                  UTF8decode (const char[]);
+    FKey                  UTF8decode (const char[]) const;
     ssize_t               readKey();
     void                  parseKeyBuffer();
     FKey                  parseKeyString();
-    FKey                  keyCorrection (const FKey&);
+    FKey                  keyCorrection (const FKey&) const;
     void                  substringKeyHandling();
     void                  keyPressed();
     void                  keyReleased();
@@ -192,7 +192,7 @@ inline const FString FKeyboard::getClassName() const
 { return "FKeyboard"; }
 
 //----------------------------------------------------------------------
-inline FKey FKeyboard::getKey()
+inline FKey FKeyboard::getKey() const
 { return key; }
 
 //----------------------------------------------------------------------

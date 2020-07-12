@@ -82,7 +82,7 @@ void FKeyboard::fetchKeyCode()
 }
 
 //----------------------------------------------------------------------
-const FString FKeyboard::getKeyName (const FKey keynum)
+const FString FKeyboard::getKeyName (const FKey keynum) const
 {
   for (std::size_t i{0}; fc::fkeyname[i].string[0] != 0; i++)
     if ( fc::fkeyname[i].num && fc::fkeyname[i].num == keynum )
@@ -179,7 +179,7 @@ void FKeyboard::escapeKeyHandling()
 
 // private methods of FKeyboard
 //----------------------------------------------------------------------
-inline FKey FKeyboard::getMouseProtocolKey()
+inline FKey FKeyboard::getMouseProtocolKey() const
 {
   // Looking for mouse string in the key buffer
 
@@ -357,7 +357,7 @@ bool FKeyboard::isKeypressTimeout()
 }
 
 //----------------------------------------------------------------------
-FKey FKeyboard::UTF8decode (const char utf8[])
+FKey FKeyboard::UTF8decode (const char utf8[]) const
 {
   FKey ucs{0};  // Universal coded character
   constexpr std::size_t max = 4;
@@ -488,7 +488,7 @@ FKey FKeyboard::parseKeyString()
 }
 
 //----------------------------------------------------------------------
-FKey FKeyboard::keyCorrection (const FKey& keycode)
+FKey FKeyboard::keyCorrection (const FKey& keycode) const
 {
   FKey key_correction;
 

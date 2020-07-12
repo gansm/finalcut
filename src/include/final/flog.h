@@ -97,9 +97,9 @@ class FLog : public std::stringbuf
 
   protected:
     int               sync() override;
-    const LogLevel&   getLevel();
+    const LogLevel&   getLevel() const;
     LogLevel&         setLevel();
-    const LineEnding& getEnding();
+    const LineEnding& getEnding() const;
     LineEnding&       setEnding();
 
   private:
@@ -131,7 +131,7 @@ inline const FString FLog::getClassName() const
 { return "FLog"; }
 
 //----------------------------------------------------------------------
-inline const FLog::LogLevel& FLog::getLevel()
+inline const FLog::LogLevel& FLog::getLevel() const
 { return level; }
 
 //----------------------------------------------------------------------
@@ -139,7 +139,7 @@ inline FLog::LogLevel& FLog::setLevel()
 { return level; }
 
 //----------------------------------------------------------------------
-inline const FLog::LineEnding& FLog::getEnding()
+inline const FLog::LineEnding& FLog::getEnding() const
 { return end_of_line; }
 
 //----------------------------------------------------------------------

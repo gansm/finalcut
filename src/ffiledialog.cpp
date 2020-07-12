@@ -415,8 +415,8 @@ void FFileDialog::initCallbacks()
 }
 
 //----------------------------------------------------------------------
-inline bool FFileDialog::pattern_match ( const char* const pattern
-                                       , const char fname[] )
+inline bool FFileDialog::patternMatch ( const char* const pattern
+                                      , const char fname[] ) const
 {
   char search[128]{};
 
@@ -583,14 +583,14 @@ void FFileDialog::getEntry (const char* const dir, const struct dirent* d_entry)
 
   if ( entry.directory )
     dir_entries.push_back (entry);
-  else if ( pattern_match(filter, entry.name.c_str()) )
+  else if ( patternMatch(filter, entry.name.c_str()) )
     dir_entries.push_back (entry);
   else
     entry.name.clear();
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::followSymLink (const char* const dir, FDirEntry& entry)
+void FFileDialog::followSymLink (const char* const dir, FDirEntry& entry) const
 {
   if ( ! entry.symbolic_link )
     return;  // No symbolic link

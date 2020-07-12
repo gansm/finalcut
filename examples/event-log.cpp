@@ -58,7 +58,7 @@ class EventDialog final : public finalcut::FDialog
 
   private:
     // Methods
-    finalcut::FString getMouseButtonName (int);
+    finalcut::FString getMouseButtonName (int) const;
     void logMouseEvent ( const finalcut::FString&
                        , const finalcut::FMouseEvent& );
 
@@ -103,7 +103,7 @@ EventDialog::~EventDialog()  // destructor
 { }
 
 //----------------------------------------------------------------------
-finalcut::FString EventDialog::getMouseButtonName (int btn_state)
+finalcut::FString EventDialog::getMouseButtonName (int btn_state) const
 {
   switch ( btn_state )
   {

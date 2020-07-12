@@ -339,7 +339,7 @@ void FMenu::cb_menuitemDisabled (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FMenu::cb_menuitemToggled (FWidget* widget, const FDataPtr)
+void FMenu::cb_menuitemToggled (FWidget* widget, const FDataPtr) const
 {
   const auto& m_item = static_cast<FMenuItem*>(widget);
 
@@ -444,7 +444,7 @@ bool FMenu::isMouseOverSuperMenu (const FPoint& termpos)
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isMouseOverMenuBar (const FPoint& termpos)
+bool FMenu::isMouseOverMenuBar (const FPoint& termpos) const
 {
   if ( getMenuBar()
     && isMenuBar(getMenuBar())
@@ -563,7 +563,7 @@ void FMenu::calculateDimensions()
 }
 
 //----------------------------------------------------------------------
-void FMenu::adjustItems()
+void FMenu::adjustItems() const
 {
   for (auto&& item : getItemList())
   {
@@ -980,7 +980,7 @@ void FMenu::passEventToSuperMenu (FMouseEvent* const& ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToMenuBar (FMouseEvent* const& ev)
+void FMenu::passEventToMenuBar (FMouseEvent* const& ev) const
 {
   // Mouse event handover to the menu bar
 
@@ -1145,7 +1145,7 @@ bool FMenu::selectPrevItem()
 }
 
 //----------------------------------------------------------------------
-void FMenu::keypressMenuBar (FKeyEvent* ev)
+void FMenu::keypressMenuBar (FKeyEvent* ev) const
 {
   auto mbar = getMenuBar();
 
@@ -1491,7 +1491,7 @@ inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
 }
 
 //----------------------------------------------------------------------
-inline void FMenu::setCursorToHotkeyPosition (FMenuItem* m_item)
+inline void FMenu::setCursorToHotkeyPosition (FMenuItem* m_item) const
 {
   const bool is_checkable = m_item->checkable;
   const bool is_selected  = m_item->isSelected();

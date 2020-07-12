@@ -1239,7 +1239,7 @@ inline bool FOptiAttr::hasColorChanged ( const FChar* const& term
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::resetColor (FChar*& attr)
+inline void FOptiAttr::resetColor (FChar*& attr) const
 {
   if ( attr )
   {
@@ -1535,7 +1535,7 @@ inline void FOptiAttr::change_current_color ( const FChar* const& term
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::resetAttribute (FChar*& attr)
+inline void FOptiAttr::resetAttribute (FChar*& attr) const
 {
   if ( attr )
   {
@@ -1555,7 +1555,7 @@ inline void FOptiAttr::reset (FChar*& attr)
 }
 
 //----------------------------------------------------------------------
-bool FOptiAttr::caused_reset_attributes (const char cap[], uChar test)
+bool FOptiAttr::caused_reset_attributes (const char cap[], uChar test) const
 {
   // test if "cap" reset all attributes
 
@@ -1648,14 +1648,14 @@ inline void FOptiAttr::detectSwitchOff (const FChar* const& term, const FChar* c
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::switchOn()
+inline bool FOptiAttr::switchOn() const
 {
   auto on_ptr = &on;
   return hasAttribute(on_ptr);
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::switchOff()
+inline bool FOptiAttr::switchOff() const
 {
   auto off_ptr = &off;
   return hasAttribute(off_ptr);

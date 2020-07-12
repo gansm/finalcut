@@ -110,7 +110,7 @@ class FTermXTerminal final
 
   private:
     // Methods
-    void                  warnNotInitialized();
+    void                  warnNotInitialized() const;
     void                  setXTermCursorStyle();
     void                  setXTermFont();
     void                  setXTermTitle();
@@ -132,7 +132,7 @@ class FTermXTerminal final
     void                  resetXTermMouseForeground();
     void                  resetXTermMouseBackground();
     void                  resetXTermHighlightBackground();
-    bool                  isInitialized();
+    bool                  isInitialized() const;
     bool                  canResetColor();
     void                  oscPrefix();
     void                  oscPostfix();
@@ -225,7 +225,7 @@ inline void FTermXTerminal::unsetMouseSupport()
 { setMouseSupport (false); }
 
 //----------------------------------------------------------------------
-inline bool FTermXTerminal::isInitialized()
+inline bool FTermXTerminal::isInitialized() const
 { return bool(fsystem && term_detection); }
 
 }  // namespace finalcut

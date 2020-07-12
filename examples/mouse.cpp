@@ -49,8 +49,8 @@ class ColorChooser final : public finalcut::FWidget
     ColorChooser& operator = (const ColorChooser&) = delete;
 
     // Accessors
-    FColor getForeground();
-    FColor getBackground();
+    FColor getForeground() const;
+    FColor getBackground() const;
 
   private:
     // Mutator
@@ -90,13 +90,13 @@ ColorChooser::~ColorChooser()
 { }
 
 //----------------------------------------------------------------------
-inline FColor ColorChooser::getForeground()
+inline FColor ColorChooser::getForeground() const
 {
   return fg_color;
 }
 
 //----------------------------------------------------------------------
-inline FColor ColorChooser::getBackground()
+inline FColor ColorChooser::getBackground() const
 {
   return bg_color;
 }
@@ -192,7 +192,7 @@ class Brushes final : public finalcut::FWidget
     Brushes& operator = (const Brushes&) = delete;
 
     // Accessor
-    wchar_t getBrush();
+    wchar_t getBrush() const;
 
     // Mutators
     void setForeground (FColor);
@@ -293,7 +293,7 @@ void Brushes::onMouseDown (finalcut::FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-inline wchar_t Brushes::getBrush()
+inline wchar_t Brushes::getBrush() const
 {
   return brush;
 }

@@ -1270,7 +1270,7 @@ void FDialog::setZoomItem()
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FDialog::getZoomButtonWidth()
+inline std::size_t FDialog::getZoomButtonWidth() const
 {
   if ( ! isResizeable() )
     return 0;

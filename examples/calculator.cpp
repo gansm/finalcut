@@ -207,15 +207,15 @@ class Calc final : public finalcut::FDialog
     void           sine (lDouble&);
     void           cosine (lDouble&);
     void           tangent (lDouble&);
-    bool           isDataEntryKey (int);
-    bool           isOperatorKey (int);
+    bool           isDataEntryKey (int) const;
+    bool           isOperatorKey (int) const;
     lDouble&       getValue();
     void           setDisplay (lDouble);
     void           setInfixOperator (char);
     void           clearInfixOperator();
     void           calcInfixOperator();
     void           adjustSize() override;
-    const wchar_t* getButtonText (const std::size_t);
+    const wchar_t* getButtonText (const std::size_t) const;
     void           mapKeyFunctions();
 
     // Data members
@@ -941,7 +941,7 @@ void Calc::draw()
 }
 
 //----------------------------------------------------------------------
-bool Calc::isDataEntryKey (int key)
+bool Calc::isDataEntryKey (int key) const
 {
   // Test if key is in {'.', '0'..'9'}
   const int data_entry_keys[] =
@@ -968,7 +968,7 @@ bool Calc::isDataEntryKey (int key)
 }
 
 //----------------------------------------------------------------------
-bool Calc::isOperatorKey(int key)
+bool Calc::isOperatorKey(int key) const
 {
   // Test if key is in {'*', '/', '+', '-', '^', '='}
   const int operators[] =
@@ -1091,7 +1091,7 @@ void Calc::adjustSize()
 }
 
 //----------------------------------------------------------------------
-const wchar_t* Calc::getButtonText (const std::size_t key)
+const wchar_t* Calc::getButtonText (const std::size_t key) const
 {
   static const wchar_t* const button_text[Calc::NUM_OF_BUTTONS] =
   {

@@ -70,7 +70,7 @@ class FProgressbar : public FWidget
 
     // Accessors
     const FString       getClassName() const override;
-    std::size_t         getPercentage();
+    std::size_t         getPercentage() const;
 
     // Mutators
     void                setPercentage (std::size_t);
@@ -112,7 +112,7 @@ inline const FString FProgressbar::getClassName() const
 { return "FProgressbar"; }
 
 //----------------------------------------------------------------------
-inline std::size_t FProgressbar::getPercentage()
+inline std::size_t FProgressbar::getPercentage() const
 { return percentage; }
 
 //----------------------------------------------------------------------

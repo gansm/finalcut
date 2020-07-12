@@ -117,7 +117,7 @@ const FPoint FVTerm::getPrintCursor()
 }
 
 //----------------------------------------------------------------------
-void FVTerm::setTermXY (int x, int y)
+void FVTerm::setTermXY (int x, int y) const
 {
   // Sets the hardware cursor to the given (x,y) position
 
@@ -168,7 +168,7 @@ void FVTerm::setTerminalUpdates (terminal_update refresh_state)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::hideCursor (bool enable)
+void FVTerm::hideCursor (bool enable) const
 {
   // Hides or shows the input cursor on the terminal
 
@@ -194,7 +194,7 @@ void FVTerm::setPrintCursor (const FPoint& pos)
 }
 
 //----------------------------------------------------------------------
-FColor FVTerm::rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b)
+FColor FVTerm::rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b) const
 {
   // Converts a 24-bit RGB color to a 256-color compatible approximation
 
@@ -775,7 +775,7 @@ void FVTerm::resizeArea ( const FRect& box
   area->has_changes   = false;
 
   const FSize size{full_width, full_height};
-  setTextToDefault (area, size);
+  resetTextAreaToDefault (area, size);
 }
 
 //----------------------------------------------------------------------
@@ -1369,8 +1369,8 @@ void FVTerm::initTerminal()
 
 // private methods of FVTerm
 //----------------------------------------------------------------------
-inline void FVTerm::setTextToDefault ( const FTermArea* area
-                                     , const FSize& size )
+inline void FVTerm::resetTextAreaToDefault ( const FTermArea* area
+                                           , const FSize& size ) const
 {
   FChar default_char;
   FLineChanges unchanged;
@@ -1751,7 +1751,7 @@ bool FVTerm::hasChildAreaChanges (FTermArea* area) const
 }
 
 //----------------------------------------------------------------------
-void FVTerm::clearChildAreaChanges (const FTermArea* area)
+void FVTerm::clearChildAreaChanges (const FTermArea* area) const
 {
   if ( ! area )
     return;
@@ -2397,7 +2397,7 @@ void FVTerm::printRange ( uInt xmin, uInt xmax, uInt y
 
 //----------------------------------------------------------------------
 inline void FVTerm::replaceNonPrintableFullwidth ( uInt x
-                                                 , FChar*& print_char )
+                                                 , FChar*& print_char ) const
 {
   // Replace non-printable full-width characters that are truncated
   // from the right or left terminal side
@@ -2564,7 +2564,7 @@ void FVTerm::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
 
 //----------------------------------------------------------------------
 inline void FVTerm::skipPaddingCharacter ( uInt& x, uInt y
-                                         , const FChar* const& print_char )
+                                         , const FChar* const& print_char ) const
 {
   if ( isFullWidthChar(print_char) )  // full-width character
   {
@@ -2740,7 +2740,7 @@ void FVTerm::cursorWrap()
 }
 
 //----------------------------------------------------------------------
-bool FVTerm::printWrap (FTermArea* area)
+bool FVTerm::printWrap (FTermArea* area) const
 {
   bool end_of_area{false};
   const int width  = area->width;
@@ -2882,7 +2882,7 @@ bool FVTerm::updateTerminalCursor()
 }
 
 //----------------------------------------------------------------------
-bool FVTerm::isInsideTerminal (const FPoint& pos)
+bool FVTerm::isInsideTerminal (const FPoint& pos) const
 {
   // Check whether the coordinates are within the virtual terminal
 
@@ -2895,7 +2895,7 @@ bool FVTerm::isInsideTerminal (const FPoint& pos)
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isTermSizeChanged()
+inline bool FVTerm::isTermSizeChanged() const
 {
   const auto& data = FTerm::getFTermData();
 
@@ -3016,7 +3016,7 @@ inline void FVTerm::appendChar (FChar*& next_char)
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::appendAttributes (FChar*& next_attr)
+inline void FVTerm::appendAttributes (FChar*& next_attr) const
 {
   auto term_attr = &term_attribute;
 

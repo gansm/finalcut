@@ -103,8 +103,8 @@ class FListViewItem : public FObject
 
     // Methods
     iterator            insert (FListViewItem*);
-    iterator            insert (FListViewItem*, iterator);
-    void                remove (FListViewItem*);
+    iterator            insert (FListViewItem*, iterator) const;
+    void                remove (FListViewItem*) const;
     void                expand();
     void                collapse();
 
@@ -279,7 +279,7 @@ class FListView : public FWidget
 
     // Accessors
     const FString        getClassName() const override;
-    std::size_t          getCount();
+    std::size_t          getCount() const;
     fc::text_alignment   getColumnAlignment (int) const;
     FString              getColumnText (int) const;
     fc::sorting_type     getColumnSortType (int) const;
@@ -384,8 +384,8 @@ class FListView : public FWidget
     static void          setNullIterator (const iterator&);
 
     // Inquiry
-    bool                 isHorizontallyScrollable();
-    bool                 isVerticallyScrollable();
+    bool                 isHorizontallyScrollable() const;
+    bool                 isVerticallyScrollable() const;
 
     // Methods
     void                 init();
@@ -395,7 +395,7 @@ class FListView : public FWidget
     void                 sort (Compare);
     std::size_t          getAlignOffset ( const fc::text_alignment
                                         , const std::size_t
-                                        , const std::size_t );
+                                        , const std::size_t ) const;
     iterator             getListEnd (const FListViewItem*);
     void                 draw() override;
     void                 drawBorder() override;
@@ -404,8 +404,8 @@ class FListView : public FWidget
     void                 drawList();
     void                 drawListLine (const FListViewItem*, bool, bool);
     void                 clearList();
-    void                 setLineAttributes (bool, bool);
-    FString              getCheckBox (const FListViewItem* item);
+    void                 setLineAttributes (bool, bool) const;
+    FString              getCheckBox (const FListViewItem* item) const;
     FString              getLinePrefix (const FListViewItem*, std::size_t);
     void                 drawSortIndicator (std::size_t&, std::size_t);
     void                 drawHeadlineLabel (const headerItems::const_iterator&);
@@ -430,7 +430,7 @@ class FListView : public FWidget
     iterator             appendItem (FListViewItem*);
     void                 processClick();
     void                 processChanged();
-    void                 changeOnResize();
+    void                 changeOnResize() const;
     void                 toggleCheckbox();
     void                 collapseAndScrollLeft();
     void                 expandAndScrollRight();
@@ -650,11 +650,11 @@ inline FObject::iterator FListView::endOfList()
 { return itemlist.end(); }
 
 //----------------------------------------------------------------------
-inline bool FListView::isHorizontallyScrollable()
+inline bool FListView::isHorizontallyScrollable() const
 { return bool( max_line_width > getClientWidth() ); }
 
 //----------------------------------------------------------------------
-inline bool FListView::isVerticallyScrollable()
+inline bool FListView::isVerticallyScrollable() const
 { return bool( getCount() > getClientHeight() ); }
 
 //----------------------------------------------------------------------

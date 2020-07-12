@@ -143,7 +143,7 @@ class FOptiMove final
     void          set_eat_newline_glitch (bool);
 
     // Methods
-    void          check_boundaries (int&, int&, int&, int&);
+    void          check_boundaries (int&, int&, int&, int&) const;
     const char*   moveCursor (int, int, int, int);
 
   private:
@@ -166,9 +166,9 @@ class FOptiMove final
 
     // Methods
     void          calculateCharDuration();
-    int           capDuration (const char[], int);
-    int           capDurationToLength (int);
-    int           repeatedAppend (const capability&, volatile int, char*);
+    int           capDuration (const char[], int) const;
+    int           capDurationToLength (int) const;
+    int           repeatedAppend (const capability&, volatile int, char*) const;
     int           relativeMove (char[], int, int, int, int);
     int           verticalMove (char[], int, int);
     void          downMove (char[], int&, int, int);

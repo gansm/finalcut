@@ -2190,7 +2190,7 @@ void FTerm::useNormalScreenBuffer()
 }
 
 //----------------------------------------------------------------------
-inline void FTerm::allocationValues()
+inline void FTerm::allocationValues() const
 {
   FStartOptions::getFStartOptions();
   getFTermData();
@@ -2401,7 +2401,7 @@ bool FTerm::init_terminal()
 }
 
 //----------------------------------------------------------------------
-void FTerm::initOSspecifics()
+void FTerm::initOSspecifics() const
 {
 #if defined(__linux__)
   linux->init();    // Initialize Linux console
@@ -2435,7 +2435,7 @@ void FTerm::initOSspecifics()
 }
 
 //----------------------------------------------------------------------
-void FTerm::initTermspecifics()
+void FTerm::initTermspecifics() const
 {
   if ( isKdeTerminal() )
     setKDECursor(fc::UnderlineCursor);
@@ -2448,7 +2448,7 @@ void FTerm::initTermspecifics()
 }
 
 //----------------------------------------------------------------------
-void FTerm::initBaudRate()
+void FTerm::initBaudRate() const
 {
   const int stdout_no = FTermios::getStdOut();
   const uInt baud = FTermios::getBaudRate();
@@ -2529,7 +2529,7 @@ void FTerm::finish()
 }
 
 //----------------------------------------------------------------------
-void FTerm::finishOSspecifics()
+void FTerm::finishOSspecifics() const
 {
 #if defined(__linux__)
   linux->finish();
@@ -2541,7 +2541,7 @@ void FTerm::finishOSspecifics()
 }
 
 //----------------------------------------------------------------------
-void FTerm::finish_encoding()
+void FTerm::finish_encoding() const
 {
 #if defined(__linux__)
   if ( isLinuxTerm() && data->hasUTF8Console() )

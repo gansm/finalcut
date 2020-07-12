@@ -27,13 +27,10 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-namespace
-{
-
 template<typename T>
 struct FData
 {
-  FData (T v)
+  explicit FData (T v)
     : value(v)
   { }
 
@@ -48,15 +45,35 @@ struct FData
     return value(args...);
   }
 
-  operator T () const
+  explicit operator T () const
   {
-    return value; 
+    return value;
+  }
+
+  T& get()
+  {
+    return value;
+  }
+
+  void set (const T& v)
+  {
+    value = v;
+  }
+
+  FData& operator << (const T& v)
+  {
+    value = v;
+    return *this;
+  }
+
+  friend std::ostream& operator << (std::ostream &os, const FData& data)
+  {
+    os << data.value;
+    return os;
   }
 
   T value;
 };
-
-}  // namespace
 
 #endif  // FDATA_H
 

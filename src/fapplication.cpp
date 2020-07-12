@@ -174,7 +174,7 @@ int FApplication::enterLoop()  // event loop
 }
 
 //----------------------------------------------------------------------
-void FApplication::exitLoop()
+void FApplication::exitLoop() const
 {
   app_exit_loop = true;
 }
@@ -187,7 +187,7 @@ void FApplication::exit (int retcode)
 }
 
 //----------------------------------------------------------------------
-void FApplication::quit()
+void FApplication::quit() const
 {
   FApplication::exit(0);
 }
@@ -231,7 +231,7 @@ void FApplication::sendQueuedEvents()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::eventInQueue()
+bool FApplication::eventInQueue() const
 {
   if ( app_object )
     return ( ! event_queue.empty() );
@@ -571,7 +571,7 @@ inline void FApplication::destroyLog()
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::findKeyboardWidget()
+inline void FApplication::findKeyboardWidget() const
 {
   // Find the widget that has the keyboard focus
 
@@ -675,7 +675,7 @@ inline void FApplication::performKeyboardAction()
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::sendEscapeKeyPressEvent()
+inline void FApplication::sendEscapeKeyPressEvent() const
 {
   // Send an escape key press event
   FKeyEvent k_press_ev (fc::KeyPress_Event, fc::Fkey_escape);
@@ -683,7 +683,7 @@ inline void FApplication::sendEscapeKeyPressEvent()
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyDownEvent (FWidget* widget)
+inline bool FApplication::sendKeyDownEvent (FWidget* widget) const
 {
   // Send key down event
   FKeyEvent k_down_ev (fc::KeyDown_Event, keyboard->getKey());
@@ -692,7 +692,7 @@ inline bool FApplication::sendKeyDownEvent (FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyPressEvent (FWidget* widget)
+inline bool FApplication::sendKeyPressEvent (FWidget* widget) const
 {
   // Send key press event
   FKeyEvent k_press_ev (fc::KeyPress_Event, keyboard->getKey());
@@ -701,7 +701,7 @@ inline bool FApplication::sendKeyPressEvent (FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyUpEvent (FWidget* widget)
+inline bool FApplication::sendKeyUpEvent (FWidget* widget) const
 {
   // Send key up event
   FKeyEvent k_up_ev (fc::KeyUp_Event, keyboard->getKey());
@@ -753,7 +753,7 @@ void FApplication::processKeyboardEvent()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processDialogSwitchAccelerator()
+bool FApplication::processDialogSwitchAccelerator() const
 {
   if ( keyboard->getKey() >= fc::Fmkey_1
     && keyboard->getKey() <= fc::Fmkey_9 )
@@ -784,7 +784,7 @@ bool FApplication::processDialogSwitchAccelerator()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processAccelerator (const FWidget* const& widget)
+bool FApplication::processAccelerator (const FWidget* const& widget) const
 {
   bool accpt{false};
 
@@ -822,7 +822,7 @@ bool FApplication::processAccelerator (const FWidget* const& widget)
 }
 
 //----------------------------------------------------------------------
-bool FApplication::getMouseEvent()
+bool FApplication::getMouseEvent() const
 {
   bool mouse_event_occurred{false};
 
@@ -870,7 +870,7 @@ FWidget*& FApplication::determineClickedWidget()
 }
 
 //----------------------------------------------------------------------
-void FApplication::unsetMoveSizeMode()
+void FApplication::unsetMoveSizeMode() const
 {
   // Unset the move/size mode
 
@@ -972,7 +972,7 @@ void FApplication::sendMouseEvent()
 //----------------------------------------------------------------------
 void FApplication::sendMouseMoveEvent ( const FPoint& widgetMousePos
                                       , const FPoint& mouse_position
-                                      , int key_state )
+                                      , int key_state ) const
 {
   if ( ! mouse )
     return;
@@ -1010,7 +1010,7 @@ void FApplication::sendMouseMoveEvent ( const FPoint& widgetMousePos
 //----------------------------------------------------------------------
 void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
                                            , const FPoint& mouse_position
-                                           , int key_state )
+                                           , int key_state ) const
 {
   if ( ! mouse )
     return;
@@ -1052,7 +1052,7 @@ void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
 //----------------------------------------------------------------------
 void FApplication::sendMouseRightClickEvent ( const FPoint& widgetMousePos
                                             , const FPoint& mouse_position
-                                            , int key_state )
+                                            , int key_state ) const
 {
   if ( ! mouse )
     return;
@@ -1086,7 +1086,7 @@ void FApplication::sendMouseRightClickEvent ( const FPoint& widgetMousePos
 //----------------------------------------------------------------------
 void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
                                              , const FPoint& mouse_position
-                                             , int key_state )
+                                             , int key_state ) const
 {
   if ( ! mouse )
     return;
@@ -1125,7 +1125,7 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
 
 //----------------------------------------------------------------------
 void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
-                                  , const FPoint& mouse_position )
+                                  , const FPoint& mouse_position ) const
 {
   if ( ! mouse )
     return;
@@ -1226,7 +1226,7 @@ void FApplication::processCloseWidget()
 }
 
 //----------------------------------------------------------------------
-void FApplication::processLogger()
+void FApplication::processLogger() const
 {
   // Synchronizing the stream buffer with the logging output
 

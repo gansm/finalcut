@@ -228,7 +228,7 @@ void FMenuBar::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::cb_itemDeactivated (FWidget* widget, const FDataPtr)
+void FMenuBar::cb_itemDeactivated (FWidget* widget, const FDataPtr) const
 {
   auto menuitem = static_cast<FMenuItem*>(widget);
 
@@ -263,7 +263,7 @@ void FMenuBar::init()
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::calculateDimensions()
+void FMenuBar::calculateDimensions() const
 {
   FPoint item_pos{1, 1};
 
@@ -577,7 +577,7 @@ inline void FMenuBar::setLineAttributes (const FMenuItem* menuitem)
 
 //----------------------------------------------------------------------
 inline void FMenuBar::setCursorToHotkeyPosition ( FMenuItem* menuitem
-                                                , std::size_t hotkeypos )
+                                                , std::size_t hotkeypos ) const
 {
   if ( ! menuitem->isSelected() )
     return;
@@ -675,7 +675,7 @@ inline void FMenuBar::drawTrailingSpace (std::size_t& x)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::adjustItems()
+void FMenuBar::adjustItems() const
 {
   int item_X = 1;
   int item_Y = 1;
@@ -928,7 +928,7 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::passEventToMenu (const FMouseEvent* const& ev)
+void FMenuBar::passEventToMenu (const FMouseEvent* const& ev) const
 {
   if ( ! hasSelectedItem() || ! getSelectedItem()->hasMenu() )
     return;

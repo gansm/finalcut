@@ -149,7 +149,7 @@ class FToggleButton : public FWidget
     // Methods
     void                init();
     void                drawText (const FString&, std::size_t);
-    void                correctSize (FSize&);
+    void                correctSize (FSize&) const;
 
     // Data members
     FButtonGroup* button_group{nullptr};

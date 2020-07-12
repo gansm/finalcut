@@ -42,7 +42,7 @@ FLogger::~FLogger()  // destructor
 // private methods of FLogger
 //----------------------------------------------------------------------
 void FLogger::newlineReplace ( std::string& str
-                             , const std::string& replace_str )
+                             , const std::string& replace_str ) const
 {
   std::size_t pos{0};
   std::size_t npos{std::string::npos};
@@ -56,7 +56,7 @@ void FLogger::newlineReplace ( std::string& str
 }
 
 //----------------------------------------------------------------------
-const std::string FLogger::getTimeString()
+const std::string FLogger::getTimeString() const
 {
   char str[100];
   const auto& now = std::chrono::system_clock::now();

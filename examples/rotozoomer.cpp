@@ -52,7 +52,7 @@ class RotoZoomer final : public finalcut::FDialog
     ~RotoZoomer() override;
 
     // Accessors
-    finalcut::FString getReport();
+    finalcut::FString getReport() const;
 
     // Event handlers
     void onShow (finalcut::FShowEvent*) override;
@@ -202,7 +202,7 @@ void RotoZoomer::generateReport()
 }
 
 //----------------------------------------------------------------------
-inline finalcut::FString RotoZoomer::getReport()
+inline finalcut::FString RotoZoomer::getReport() const
 {
   return report;
 }

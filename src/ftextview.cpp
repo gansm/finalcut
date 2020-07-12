@@ -562,13 +562,13 @@ void FTextView::adjustSize()
 
 // private methods of FTextView
 //----------------------------------------------------------------------
-std::size_t FTextView::getTextHeight()
+std::size_t FTextView::getTextHeight() const
 {
   return getHeight() - 2 + std::size_t(nf_offset);
 }
 
 //----------------------------------------------------------------------
-std::size_t FTextView::getTextWidth()
+std::size_t FTextView::getTextWidth() const
 {
   return getWidth() - 2 - std::size_t(nf_offset);
 }
@@ -702,7 +702,7 @@ void FTextView::drawText()
 }
 
 //----------------------------------------------------------------------
-inline bool FTextView::useFDialogBorder()
+inline bool FTextView::useFDialogBorder() const
 {
   const auto& parent = getParentWidget();
   bool use_fdialog_border{false};
@@ -722,7 +722,7 @@ inline bool FTextView::useFDialogBorder()
 }
 
 //----------------------------------------------------------------------
-inline bool FTextView::isPrintable (wchar_t ch)
+inline bool FTextView::isPrintable (wchar_t ch) const
 {
   // Check for printable characters
 
@@ -742,7 +742,7 @@ void FTextView::processChanged()
 }
 
 //----------------------------------------------------------------------
-void FTextView::changeOnResize()
+void FTextView::changeOnResize() const
 {
   const std::size_t width  = getWidth();
   const std::size_t height = getHeight();

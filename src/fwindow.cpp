@@ -156,7 +156,7 @@ bool FWindow::activateWindow (bool enable)
 }
 
 //----------------------------------------------------------------------
-void FWindow::unsetActiveWindow()
+void FWindow::unsetActiveWindow() const
 {
   // unset the active FWindow object
   FWidget::setActiveWindow (nullptr);

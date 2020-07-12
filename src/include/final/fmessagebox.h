@@ -144,7 +144,7 @@ class FMessageBox : public FDialog
     void                initCallbacks();
     void                calculateDimensions();
     void                draw() override;
-    void                resizeButtons();
+    void                resizeButtons() const;
     void                adjustButtons();
 
     // Data members

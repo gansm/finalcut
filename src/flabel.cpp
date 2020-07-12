@@ -83,7 +83,7 @@ FLabel& FLabel::operator << (const wchar_t c)
 }
 
 //----------------------------------------------------------------------
-const FLabel& FLabel::operator >> (FString& s)
+const FLabel& FLabel::operator >> (FString& s) const
 {
   s += text;
   return *this;
@@ -266,7 +266,7 @@ void FLabel::setHotkeyAccelerator()
 }
 
 //----------------------------------------------------------------------
-std::size_t FLabel::getAlignOffset (const std::size_t length)
+std::size_t FLabel::getAlignOffset (const std::size_t length) const
 {
   const std::size_t width(getWidth());
   assert ( alignment == fc::alignLeft

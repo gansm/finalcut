@@ -670,7 +670,7 @@ void FButton::draw()
 }
 
 //----------------------------------------------------------------------
-void FButton::updateStatusBar()
+void FButton::updateStatusBar() const
 {
   if ( ! getFlags().focus || ! getStatusBar() )
     return;

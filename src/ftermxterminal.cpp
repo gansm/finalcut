@@ -308,7 +308,7 @@ void FTermXTerminal::captureFontAndTitle()
 
 // private methods of FTermXTerminal
 //----------------------------------------------------------------------
-void FTermXTerminal::warnNotInitialized()
+void FTermXTerminal::warnNotInitialized() const
 {
   *FApplication::getLog() << FLog::Warn
                           << "The FTermXTerminal object has "

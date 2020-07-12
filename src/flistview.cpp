@@ -310,7 +310,7 @@ FObject::iterator FListViewItem::insert (FListViewItem* child)
 
 //----------------------------------------------------------------------
 FObject::iterator FListViewItem::insert ( FListViewItem* child
-                                        , iterator parent_iter )
+                                        , iterator parent_iter ) const
 {
   if ( parent_iter == FListView::getNullIterator() )
     return FListView::getNullIterator();
@@ -335,7 +335,7 @@ FObject::iterator FListViewItem::insert ( FListViewItem* child
 }
 
 //----------------------------------------------------------------------
-void FListViewItem::remove (FListViewItem* item)
+void FListViewItem::remove (FListViewItem* item) const
 {
   if ( item == nullptr || item == *FListView::getNullIterator() )
     return;
@@ -696,7 +696,7 @@ FListView::~FListView()  // destructor
 
 // public methods of FListView
 //----------------------------------------------------------------------
-std::size_t FListView::getCount()
+std::size_t FListView::getCount() const
 {
   int n{0};
 
@@ -1585,7 +1585,7 @@ void FListView::sort (Compare cmp)
 //----------------------------------------------------------------------
 std::size_t FListView::getAlignOffset ( const fc::text_alignment align
                                       , const std::size_t column_width
-                                      , const std::size_t width )
+                                      , const std::size_t width ) const
 {
   assert ( align == fc::alignLeft
         || align == fc::alignCenter
@@ -1892,7 +1892,7 @@ void FListView::clearList()
 
 //----------------------------------------------------------------------
 inline void FListView::setLineAttributes ( bool is_current
-                                         , bool is_focus )
+                                         , bool is_focus ) const
 {
   const auto& wc = getColorTheme();
   setColor (wc->list_fg, wc->list_bg);
@@ -1927,7 +1927,7 @@ inline void FListView::setLineAttributes ( bool is_current
 }
 
 //----------------------------------------------------------------------
-inline FString FListView::getCheckBox (const FListViewItem* item)
+inline FString FListView::getCheckBox (const FListViewItem* item) const
 {
   FString checkbox{""};
 
@@ -2511,7 +2511,7 @@ void FListView::processChanged()
 }
 
 //----------------------------------------------------------------------
-void FListView::changeOnResize()
+void FListView::changeOnResize() const
 {
   if ( FTerm::isNewFont() )
   {

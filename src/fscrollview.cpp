@@ -694,7 +694,7 @@ void FScrollView::copy2area()
 
 // private methods of FScrollView
 //----------------------------------------------------------------------
-inline const FPoint FScrollView::getViewportCursorPos()
+inline const FPoint FScrollView::getViewportCursorPos() const
 {
   const auto& window = FWindow::getWindowWidget(this);
 
@@ -773,7 +773,7 @@ inline void FScrollView::mapKeyFunctions()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::calculateScrollbarPos()
+void FScrollView::calculateScrollbarPos() const
 {
   const std::size_t width  = getWidth();
   const std::size_t height = getHeight();
@@ -794,7 +794,7 @@ void FScrollView::calculateScrollbarPos()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setHorizontalScrollBarVisibility()
+void FScrollView::setHorizontalScrollBarVisibility() const
 {
   assert ( v_mode == fc::Auto
         || v_mode == fc::Hidden
@@ -820,7 +820,7 @@ void FScrollView::setHorizontalScrollBarVisibility()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setVerticalScrollBarVisibility()
+void FScrollView::setVerticalScrollBarVisibility() const
 {
   assert ( v_mode == fc::Auto
         || v_mode == fc::Hidden

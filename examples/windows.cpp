@@ -216,7 +216,7 @@ class Window final : public finalcut::FDialog
     void cb_closeWindows (const finalcut::FWidget*, const FDataPtr);
     void cb_next (const finalcut::FWidget*, const FDataPtr);
     void cb_previous (const finalcut::FWidget*, const FDataPtr);
-    void cb_destroyWindow (const finalcut::FWidget*, FDataPtr);
+    void cb_destroyWindow (const finalcut::FWidget*, FDataPtr) const;
 
     // Data members
     std::vector<win_data*>    windows{};
@@ -542,7 +542,7 @@ void Window::cb_previous (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_destroyWindow (const finalcut::FWidget*, FDataPtr data)
+void Window::cb_destroyWindow (const finalcut::FWidget*, FDataPtr data) const
 {
   auto win_dat = static_cast<win_data*>(data);
 

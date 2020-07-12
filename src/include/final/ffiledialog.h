@@ -116,7 +116,7 @@ class FFileDialog : public FDialog
     const FString        getPath() const;
     const FString        getFilter() const;
     const FString        getSelectedFile() const;
-    bool                 getShowHiddenFiles();
+    bool                 getShowHiddenFiles() const;
 
     // Mutators
     void                 setPath (const FString&);
@@ -192,13 +192,13 @@ class FFileDialog : public FDialog
     void                 init();
     void                 widgetSettings (const FPoint&);
     void                 initCallbacks();
-    bool                 pattern_match (const char* const, const char[]);
+    bool                 patternMatch (const char* const, const char[]) const;
     void                 clear();
     sInt64               numOfDirs();
     void                 sortDir();
     int                  readDir();
     void                 getEntry (const char* const, const struct dirent*);
-    void                 followSymLink (const char* const, FDirEntry&);
+    void                 followSymLink (const char* const, FDirEntry&) const;
     void                 dirEntriesToList();
     void                 selectDirectoryEntry (const char* const);
     int                  changeDir (const FString&);
@@ -260,7 +260,7 @@ inline bool FFileDialog::unsetShowHiddenFiles()
 { return setShowHiddenFiles(false); }
 
 //----------------------------------------------------------------------
-inline bool FFileDialog::getShowHiddenFiles()
+inline bool FFileDialog::getShowHiddenFiles() const
 { return show_hidden; }
 
 }  // namespace finalcut

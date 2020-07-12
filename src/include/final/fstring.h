@@ -120,25 +120,26 @@ class FString
                                      , int>::type = 0 >
     FString& operator << (const NumT);
 
-    const FString& operator >> (FString&);
-    const FString& operator >> (std::wstring&);
-    const FString& operator >> (std::string&);
-    const FString& operator >> (wchar_t&);
-    const FString& operator >> (char&);
-    const FString& operator >> (sInt16&);
-    const FString& operator >> (uInt16&);
-    const FString& operator >> (sInt32&);
-    const FString& operator >> (uInt32&);
-    const FString& operator >> (sInt64&);
-    const FString& operator >> (uInt64&);
-    const FString& operator >> (double&);
-    const FString& operator >> (float&);
+    const FString& operator >> (FString&) const;
+    const FString& operator >> (std::wstring&) const;
+    const FString& operator >> (std::string&) const;
+    const FString& operator >> (wchar_t&) const;
+    const FString& operator >> (char&) const;
+    const FString& operator >> (sInt16&) const;
+    const FString& operator >> (uInt16&) const;
+    const FString& operator >> (sInt32&) const;
+    const FString& operator >> (uInt32&) const;
+    const FString& operator >> (sInt64&) const;
+    const FString& operator >> (uInt64&) const;
+    const FString& operator >> (double&) const;
+    const FString& operator >> (float&) const;
 
     template <typename IndexT>
     wchar_t&       operator [] (const IndexT);
     template <typename IndexT>
     const wchar_t& operator [] (const IndexT) const;
-    const FString& operator () ();
+    explicit       operator bool () const;
+    const FString& operator () () const;
 
     bool operator <  (const FString&) const;
     template <typename CharT>
@@ -227,7 +228,7 @@ class FString
     const FString& insert (const FString&, int);
     const FString& insert (const FString&, std::size_t);
 
-    const FString replace (const FString&, const FString&);
+    const FString replace (const FString&, const FString&) const;
 
     const FString replaceControlCodes() const;
     const FString expandTabs (int = 8) const;
@@ -254,7 +255,7 @@ class FString
     void           _remove (std::size_t, std::size_t);
     const char*    _to_cstring (const wchar_t[]) const;
     const wchar_t* _to_wcstring (const char[]) const;
-    const wchar_t* _extractToken (wchar_t*[], const wchar_t[], const wchar_t[]);
+    const wchar_t* _extractToken (wchar_t*[], const wchar_t[], const wchar_t[]) const;
 
     // Data members
     wchar_t*      string{nullptr};

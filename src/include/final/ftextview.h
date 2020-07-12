@@ -141,8 +141,8 @@ class FTextView : public FWidget
     typedef std::unordered_map<int, std::function<void()>> keyMap;
 
     // Accessors
-    std::size_t         getTextHeight();
-    std::size_t         getTextWidth();
+    std::size_t         getTextHeight() const;
+    std::size_t         getTextWidth() const;
 
     // Inquiry
     bool                isHorizontallyScrollable();
@@ -155,10 +155,10 @@ class FTextView : public FWidget
     void                drawBorder() override;
     void                drawScrollbars();
     void                drawText();
-    bool                useFDialogBorder();
-    bool                isPrintable (wchar_t);
+    bool                useFDialogBorder() const;
+    bool                isPrintable (wchar_t) const;
     void                processChanged();
-    void                changeOnResize();
+    void                changeOnResize() const;
 
     // Callback methods
     void                cb_vbarChange (const FWidget*, const FDataPtr);

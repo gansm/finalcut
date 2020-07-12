@@ -103,7 +103,7 @@ class FMouse
 
     // Accessors
     virtual const FString getClassName() const;
-    const FPoint&         getPos();
+    const FPoint&         getPos() const;
     void                  clearEvent();
 
     // Mutators
@@ -113,7 +113,7 @@ class FMouse
 
     // Inquiries
     virtual bool          hasData() = 0;
-    bool                  hasEvent();
+    bool                  hasEvent() const;
     bool                  isLeftButtonPressed();
     bool                  isLeftButtonReleased();
     bool                  isLeftButtonDoubleClick();
@@ -127,7 +127,7 @@ class FMouse
     bool                  isWheelUp();
     bool                  isWheelDown();
     bool                  isMoved();
-    bool                  isInputDataPending();
+    bool                  isInputDataPending() const;
 
     // Methods
     template<typename ClassT>
@@ -162,10 +162,10 @@ class FMouse
 
     // Accessors
     FMouseButton&       getButtonState();
-    const FPoint&       getNewPos();
-    uInt16              getMaxWidth();
-    uInt16              getMaxHeight();
-    uInt64              getDblclickInterval();
+    const FPoint&       getNewPos() const;
+    uInt16              getMaxWidth() const;
+    uInt16              getMaxHeight() const;
+    uInt64              getDblclickInterval() const;
     timeval*            getMousePressedTime();
 
     // Mutator
@@ -177,7 +177,7 @@ class FMouse
     void                resetMousePressedTime();
 
     // Inquiry
-    bool                isDblclickTimeout (const timeval*);
+    bool                isDblclickTimeout (const timeval*) const;
 
   private:
     // Data members
@@ -222,7 +222,7 @@ class FMouseGPM final : public FMouse
 
     // Inquiry
     bool                 hasData() override;
-    bool                 isGpmMouseEnabled();
+    bool                 isGpmMouseEnabled() const;
 
     // Methods
     void                 setRawData (FKeyboard::keybuffer&) override;
@@ -230,7 +230,7 @@ class FMouseGPM final : public FMouse
     bool                 gpmMouse (bool);
     bool                 enableGpmMouse();
     bool                 disableGpmMouse();
-    bool                 hasSignificantEvents();
+    bool                 hasSignificantEvents() const;
     void                 interpretKeyDown();
     void                 interpretKeyUp();
     bool                 getGpmKeyPressed(bool);
@@ -246,7 +246,7 @@ class FMouseGPM final : public FMouse
     };
 
     // Method
-    int                gpmEvent (bool = true);
+    int                gpmEvent (bool = true) const;
 
     // Data member
     Gpm_Event          gpm_ev{};
@@ -264,7 +264,7 @@ inline bool FMouseGPM::disableGpmMouse()
 { return gpmMouse(false); }
 
 //----------------------------------------------------------------------
-inline bool FMouseGPM::isGpmMouseEnabled()
+inline bool FMouseGPM::isGpmMouseEnabled() const
 { return gpm_mouse_enabled; }
 #endif  // F_HAVE_LIBGPM
 
@@ -513,7 +513,7 @@ class FMouseControl
     // Accessor
     FMouse*               getMouseWithData();
     FMouse*               getMouseWithEvent();
-    void                  xtermMouse (bool);
+    void                  xtermMouse (bool) const;
     void                  enableXTermMouse();
     void                  disableXTermMouse();
 

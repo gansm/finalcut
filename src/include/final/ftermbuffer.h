@@ -98,8 +98,8 @@ class FTermBuffer
     int                    writef (const FString&, Args&&...);
     int                    write (const FString&);
     int                    write (wchar_t);
-    void                   write (const FStyle&);
-    void                   write (const FColorPair&);
+    void                   write (const FStyle&) const;
+    void                   write (const FColorPair&) const;
     FTermBuffer&           write ();
 
   private:

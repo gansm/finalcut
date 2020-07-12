@@ -50,7 +50,7 @@ class AttribDlg final : public finalcut::FDialog
     AttribDlg& operator = (const AttribDlg&) = delete;
 
     // Methods
-    FColor getBGColor();
+    FColor getBGColor() const;
 
     // Event handlers
     void onKeyPress (finalcut::FKeyEvent*) override;
@@ -105,7 +105,7 @@ AttribDlg::~AttribDlg()
 { }
 
 //----------------------------------------------------------------------
-FColor AttribDlg::getBGColor()
+FColor AttribDlg::getBGColor() const
 {
   return bgcolor;
 }

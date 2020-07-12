@@ -100,7 +100,7 @@ class FLineEdit : public FWidget
     FLineEdit& operator << (const typeT&);
     FLineEdit& operator << (fc::SpecialCharacter);
     FLineEdit& operator << (const wchar_t);
-    const FLineEdit& operator >> (FString&);
+    const FLineEdit& operator >> (FString&) const;
 
     // Accessors
     const FString       getClassName() const override;
@@ -108,7 +108,7 @@ class FLineEdit : public FWidget
     std::size_t         getMaxLength() const;
     std::size_t         getCursorPosition() const;
     FLabel*             getLabelObject() const;
-    label_o             getLabelOrientation();
+    label_o             getLabelOrientation() const;
 
     // Mutators
     void                setText (const FString&);
@@ -184,7 +184,7 @@ class FLineEdit : public FWidget
     void                drawInputField();
     std::size_t         printTextField();
     std::size_t         printPassword();
-    std::size_t         getCursorColumnPos();
+    std::size_t         getCursorColumnPos() const;
     const FString       getPasswordText() const;
     bool                isPasswordField() const;
     offsetPair          endPosToOffset (std::size_t);
@@ -199,7 +199,7 @@ class FLineEdit : public FWidget
     void                switchInsertMode();
     void                acceptInput();
     bool                keyInput (FKey);
-    wchar_t             characterFilter (const wchar_t);
+    wchar_t             characterFilter (const wchar_t) const;
     void                processActivate();
     void                processChanged();
 
@@ -257,7 +257,7 @@ inline FLabel* FLineEdit::getLabelObject() const
 { return label; }
 
 //----------------------------------------------------------------------
-inline FLineEdit::label_o FLineEdit::getLabelOrientation()
+inline FLineEdit::label_o FLineEdit::getLabelOrientation() const
 { return label_orientation; }
 
 //----------------------------------------------------------------------
