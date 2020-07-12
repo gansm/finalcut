@@ -153,7 +153,7 @@ class FTextView : public FWidget
     void                mapKeyFunctions();
     void                draw() override;
     void                drawBorder() override;
-    void                drawScrollbars();
+    void                drawScrollbars() const;
     void                drawText();
     bool                useFDialogBorder() const;
     bool                isPrintable (wchar_t) const;

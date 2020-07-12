@@ -228,7 +228,7 @@ void FVTerm::createVTerm (const FSize& size)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::resizeVTerm (const FSize& size)
+void FVTerm::resizeVTerm (const FSize& size) const
 {
   // resize virtual terminal
 
@@ -992,7 +992,7 @@ void FVTerm::getArea (const FRect& box, const FTermArea* area)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::putArea (const FTermArea* area)
+void FVTerm::putArea (const FTermArea* area) const
 {
   // Add area changes to the virtual terminal
 
@@ -2158,7 +2158,7 @@ bool FVTerm::clearTerm (int fillchar) const
 }
 
 //----------------------------------------------------------------------
-bool FVTerm::clearFullArea (const FTermArea* area, FChar& nc)
+bool FVTerm::clearFullArea (const FTermArea* area, FChar& nc) const
 {
   // Clear area
   const int area_size = area->width * area->height;
@@ -3028,7 +3028,7 @@ inline void FVTerm::appendAttributes (FChar*& next_attr) const
 }
 
 //----------------------------------------------------------------------
-int FVTerm::appendLowerRight (FChar*& screen_char)
+int FVTerm::appendLowerRight (FChar*& screen_char) const
 {
   const auto& SA = TCAP(fc::t_enter_am_mode);
   const auto& RA = TCAP(fc::t_exit_am_mode);

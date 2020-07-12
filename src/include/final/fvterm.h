@@ -251,7 +251,7 @@ class FVTerm
     // Methods
     virtual void          clearArea (int = ' ');
     void                  createVTerm (const FSize&);
-    void                  resizeVTerm (const FSize&);
+    void                  resizeVTerm (const FSize&) const;
     void                  putVTerm();
     void                  updateTerminal();
     virtual void          addPreprocessingHandler ( const FVTerm*
@@ -309,7 +309,7 @@ class FVTerm
                                         , bool, FTermArea* );
     static void           getArea (const FPoint&, const FTermArea*);
     static void           getArea (const FRect&, const FTermArea*);
-    void                  putArea (const FTermArea*);
+    void                  putArea (const FTermArea*) const;
     static void           putArea (const FPoint&, const FTermArea*);
     void                  scrollAreaForward (FTermArea*) const;
     void                  scrollAreaReverse (FTermArea*) const;
@@ -384,7 +384,7 @@ class FVTerm
     static void           getAreaCharacter ( const FPoint&, const FTermArea*
                                            , FChar*& );
     bool                  clearTerm (int = ' ') const;
-    bool                  clearFullArea (const FTermArea*, FChar&);
+    bool                  clearFullArea (const FTermArea*, FChar&) const;
     static void           clearAreaWithShadow (const FTermArea*, const FChar&);
     static bool           canClearToEOL (uInt, uInt);
     static bool           canClearLeadingWS (uInt&, uInt);
@@ -415,7 +415,7 @@ class FVTerm
     void                  appendCharacter (FChar*&);
     void                  appendChar (FChar*&) const;
     void                  appendAttributes (FChar*&) const;
-    int                   appendLowerRight (FChar*&);
+    int                   appendLowerRight (FChar*&) const;
     static void           characterFilter (FChar*&);
     static void           appendOutputBuffer (const std::string&);
     static void           appendOutputBuffer (const char[]);

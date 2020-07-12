@@ -170,10 +170,10 @@ class FOptiMove final
     int           capDurationToLength (int) const;
     int           repeatedAppend (const capability&, volatile int, char*) const;
     int           relativeMove (char[], int, int, int, int);
-    int           verticalMove (char[], int, int);
+    int           verticalMove (char[], int, int) const;
     void          downMove (char[], int&, int, int) const;
     void          upMove (char[], int&, int, int) const;
-    int           horizontalMove (char[], int, int);
+    int           horizontalMove (char[], int, int) const;
     void          rightMove (char[], int&, int, int) const;
     void          leftMove (char[], int&, int, int) const;
 

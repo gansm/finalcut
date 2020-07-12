@@ -680,7 +680,7 @@ int FOptiMove::relativeMove ( char move[]
 }
 
 //----------------------------------------------------------------------
-inline int FOptiMove::verticalMove (char move[], int from_y, int to_y)
+inline int FOptiMove::verticalMove (char move[], int from_y, int to_y) const
 {
   int vtime{LONG_DURATION};
 
@@ -762,7 +762,7 @@ inline void FOptiMove::upMove ( char move[], int& vtime
 }
 
 //----------------------------------------------------------------------
-inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x)
+inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x) const
 {
   int htime{LONG_DURATION};
 

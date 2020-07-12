@@ -587,7 +587,7 @@ inline bool FTermXTerminal::canSetXTermBackground() const
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetXTermColorMap()
+void FTermXTerminal::resetXTermColorMap() const
 {
   // Reset the entire color table
 
@@ -607,7 +607,7 @@ void FTermXTerminal::resetXTermColorMap()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetXTermForeground()
+void FTermXTerminal::resetXTermForeground() const
 {
   // Reset the XTerm text foreground color
 
@@ -621,7 +621,7 @@ void FTermXTerminal::resetXTermForeground()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetXTermBackground()
+void FTermXTerminal::resetXTermBackground() const
 {
   // Reset the XTerm text background color
 
@@ -635,7 +635,7 @@ void FTermXTerminal::resetXTermBackground()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetXTermCursorColor()
+void FTermXTerminal::resetXTermCursorColor() const
 {
   // Reset the text cursor color
 
@@ -649,7 +649,7 @@ void FTermXTerminal::resetXTermCursorColor()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetXTermMouseForeground()
+void FTermXTerminal::resetXTermMouseForeground() const
 {
   // Reset the mouse foreground color
 
@@ -663,7 +663,7 @@ void FTermXTerminal::resetXTermMouseForeground()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetXTermMouseBackground()
+void FTermXTerminal::resetXTermMouseBackground() const
 {
   // Reset the mouse background color
 
@@ -677,7 +677,7 @@ void FTermXTerminal::resetXTermMouseBackground()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetXTermHighlightBackground()
+void FTermXTerminal::resetXTermHighlightBackground() const
 {
   // Reset the highlight background color
 
@@ -742,7 +742,7 @@ void FTermXTerminal::oscPostfix() const
 }
 
 //----------------------------------------------------------------------
-const FString FTermXTerminal::captureXTermFont()
+const FString FTermXTerminal::captureXTermFont() const
 {
   initCheck(FString{});
 

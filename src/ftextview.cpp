@@ -642,7 +642,7 @@ void FTextView::drawBorder()
 }
 
 //----------------------------------------------------------------------
-void FTextView::drawScrollbars()
+void FTextView::drawScrollbars() const
 {
   if ( ! hbar->isShown() && isHorizontallyScrollable() )
     hbar->show();
