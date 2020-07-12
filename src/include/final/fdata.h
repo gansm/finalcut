@@ -30,8 +30,11 @@
 template<typename T>
 struct FData
 {
-  explicit FData (T v)
+  explicit FData (T v)  // constructor
     : value{v}
+  { }
+
+  ~FData()  // destructor
   { }
 
   FData (const FData& d)  // Copy constructor

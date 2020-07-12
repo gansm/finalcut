@@ -2444,7 +2444,7 @@ void FVTerm::printCharacter ( uInt& x, uInt y, bool min_and_not_max
 
 //----------------------------------------------------------------------
 void FVTerm::printFullWidthCharacter ( uInt& x, uInt y
-                                     , FChar*& print_char )
+                                     , FChar*& print_char ) const
 {
   const auto vt = vterm;
   auto next_char = &vt->data[y * uInt(vt->width) + x + 1];
@@ -2483,7 +2483,7 @@ void FVTerm::printFullWidthCharacter ( uInt& x, uInt y
 
 //----------------------------------------------------------------------
 void FVTerm::printFullWidthPaddingCharacter ( uInt& x, uInt y
-                                            , FChar*& print_char)
+                                            , FChar*& print_char) const
 {
   const auto vt = vterm;
   auto prev_char = &vt->data[y * uInt(vt->width) + x - 1];
@@ -2528,7 +2528,7 @@ void FVTerm::printFullWidthPaddingCharacter ( uInt& x, uInt y
 
 //----------------------------------------------------------------------
 void FVTerm::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
-                                               , FChar*& print_char )
+                                               , FChar*& print_char ) const
 {
   const auto vt = vterm;
   auto prev_char = &vt->data[y * uInt(vt->width) + x - 1];
@@ -2576,7 +2576,7 @@ inline void FVTerm::skipPaddingCharacter ( uInt& x, uInt y
 
 //----------------------------------------------------------------------
 FVTerm::exit_state FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
-                                           , bool draw_trailing_ws )
+                                           , bool draw_trailing_ws ) const
 {
   // Erase a number of characters to draw simple whitespaces
 
@@ -2641,7 +2641,7 @@ FVTerm::exit_state FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
 }
 
 //----------------------------------------------------------------------
-FVTerm::exit_state FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y)
+FVTerm::exit_state FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y) const
 {
   // Repeat one character n-fold
 

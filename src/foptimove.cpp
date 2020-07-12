@@ -927,7 +927,7 @@ inline bool FOptiMove::isMethod0Faster ( int& move_time
 //----------------------------------------------------------------------
 inline bool FOptiMove::isMethod1Faster ( int& move_time
                                        , int xold, int yold
-                                       , int xnew, int ynew )
+                                       , int xnew, int ynew ) const
 {
   // Test method 1: local movement
 
@@ -949,7 +949,7 @@ inline bool FOptiMove::isMethod1Faster ( int& move_time
 //----------------------------------------------------------------------
 inline bool FOptiMove::isMethod2Faster ( int& move_time
                                        , int yold
-                                       , int xnew, int ynew )
+                                       , int xnew, int ynew ) const
 {
   // Test method 2: carriage-return + local movement
 
@@ -971,7 +971,7 @@ inline bool FOptiMove::isMethod2Faster ( int& move_time
 
 //----------------------------------------------------------------------
 inline bool FOptiMove::isMethod3Faster ( int& move_time
-                                       , int xnew, int ynew )
+                                       , int xnew, int ynew ) const
 {
   // Test method 3: home-cursor + local movement
 
@@ -993,7 +993,7 @@ inline bool FOptiMove::isMethod3Faster ( int& move_time
 
 //----------------------------------------------------------------------
 inline bool FOptiMove::isMethod4Faster ( int& move_time
-                                       , int xnew, int ynew )
+                                       , int xnew, int ynew ) const
 {
   // Test method 4: home-down + local movement
   if ( F_cursor_to_ll.cap )
@@ -1017,7 +1017,7 @@ inline bool FOptiMove::isMethod4Faster ( int& move_time
 //----------------------------------------------------------------------
 inline bool FOptiMove::isMethod5Faster ( int& move_time
                                        , int yold
-                                       , int xnew, int ynew )
+                                       , int xnew, int ynew ) const
 {
   // Test method 5: left margin for wrap to right-hand side
   if ( automatic_left_margin

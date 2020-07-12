@@ -179,11 +179,11 @@ class FOptiMove final
 
     bool          isWideMove (int, int, int, int) const;
     bool          isMethod0Faster (int&, int, int);
-    bool          isMethod1Faster (int&, int, int, int, int);
-    bool          isMethod2Faster (int&, int, int, int);
-    bool          isMethod3Faster (int&, int, int);
-    bool          isMethod4Faster (int&, int, int);
-    bool          isMethod5Faster (int&, int, int, int);
+    bool          isMethod1Faster (int&, int, int, int, int) const;
+    bool          isMethod2Faster (int&, int, int, int) const;
+    bool          isMethod3Faster (int&, int, int) const;
+    bool          isMethod4Faster (int&, int, int) const;
+    bool          isMethod5Faster (int&, int, int, int) const;
     void          moveByMethod (int, int, int, int, int);
 
     // Data members

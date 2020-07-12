@@ -393,12 +393,12 @@ class FVTerm
     void                  printRange (uInt, uInt, uInt, bool);
     void                  replaceNonPrintableFullwidth (uInt, FChar*&) const;
     void                  printCharacter (uInt&, uInt, bool, FChar*&);
-    void                  printFullWidthCharacter (uInt&, uInt, FChar*&);
-    void                  printFullWidthPaddingCharacter (uInt&, uInt, FChar*&);
-    void                  printHalfCovertFullWidthCharacter (uInt&, uInt, FChar*&);
+    void                  printFullWidthCharacter (uInt&, uInt, FChar*&) const;
+    void                  printFullWidthPaddingCharacter (uInt&, uInt, FChar*&) const;
+    void                  printHalfCovertFullWidthCharacter (uInt&, uInt, FChar*&) const;
     void                  skipPaddingCharacter (uInt&, uInt, const FChar* const&) const;
-    exit_state            eraseCharacters (uInt&, uInt, uInt, bool);
-    exit_state            repeatCharacter (uInt&, uInt, uInt);
+    exit_state            eraseCharacters (uInt&, uInt, uInt, bool) const;
+    exit_state            repeatCharacter (uInt&, uInt, uInt) const;
     bool                  isFullWidthChar (const FChar* const&) const;
     bool                  isFullWidthPaddingChar (const FChar* const&) const;
     static void           cursorWrap();
