@@ -1256,7 +1256,7 @@ void FVTerm::scrollAreaReverse (FTermArea* area) const
 }
 
 //----------------------------------------------------------------------
-void FVTerm::clearArea (FTermArea* area, int fillchar)
+void FVTerm::clearArea (FTermArea* area, int fillchar) const
 {
   // Clear the area with the current attributes
 
@@ -1682,7 +1682,7 @@ bool FVTerm::updateVTermCharacter ( const FTermArea* area
 }
 
 //----------------------------------------------------------------------
-void FVTerm::updateVTerm()
+void FVTerm::updateVTerm() const
 {
   // Updates the character data from all areas to VTerm
 
@@ -2991,7 +2991,7 @@ inline void FVTerm::charsetChanges (FChar*& next_char)
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::appendCharacter (FChar*& next_char)
+inline void FVTerm::appendCharacter (FChar*& next_char) const
 {
   const int term_width = vterm->width - 1;
   const int term_height = vterm->height - 1;

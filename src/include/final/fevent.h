@@ -327,7 +327,7 @@ class FTimerEvent : public FEvent  // timer event
 // class FUserEvent
 //----------------------------------------------------------------------
 
-class FUserEvent : public FEvent  // timer event
+class FUserEvent : public FEvent  // user event
 {
   public:
     FUserEvent() = default;

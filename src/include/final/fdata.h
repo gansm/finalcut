@@ -31,8 +31,28 @@ template<typename T>
 struct FData
 {
   explicit FData (T v)
-    : value(v)
+    : value{v}
   { }
+
+  FData (const FData& d)  // Copy constructor
+    : value{d.value}
+  { }
+
+  FData& operator = (const FData& d)  // Copy assignment operator (=)
+  {
+    value = d.value;
+    return *this;
+  }
+
+  FData (FData&& d) noexcept  // Move constructor
+    : value{std::move(d.value)}
+  { }
+
+  FData& operator = (FData&& d) noexcept  // Move assignment operator (=)
+  {
+    value = std::move(d.value);
+    return *this;
+  }
 
   T operator () () const
   {

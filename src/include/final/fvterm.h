@@ -313,7 +313,7 @@ class FVTerm
     static void           putArea (const FPoint&, const FTermArea*);
     void                  scrollAreaForward (FTermArea*) const;
     void                  scrollAreaReverse (FTermArea*) const;
-    void                  clearArea (FTermArea*, int = ' ');
+    void                  clearArea (FTermArea*, int = ' ') const;
     void                  processTerminalUpdate();
     static void           startTerminalUpdate();
     static void           finishTerminalUpdate();
@@ -364,7 +364,7 @@ class FVTerm
     static bool           updateVTermCharacter ( const FTermArea*
                                                , const FPoint&
                                                , const FPoint& );
-    void                  updateVTerm();
+    void                  updateVTerm() const;
     static void           callPreprocessingHandler (const FTermArea*);
     bool                  hasChildAreaChanges (FTermArea*) const;
     void                  clearChildAreaChanges (const FTermArea*) const;
@@ -412,7 +412,7 @@ class FVTerm
     static void           markAsPrinted (uInt, uInt, uInt);
     static void           newFontChanges (FChar*&);
     static void           charsetChanges (FChar*&);
-    void                  appendCharacter (FChar*&);
+    void                  appendCharacter (FChar*&) const;
     void                  appendChar (FChar*&) const;
     void                  appendAttributes (FChar*&) const;
     int                   appendLowerRight (FChar*&) const;

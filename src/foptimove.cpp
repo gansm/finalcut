@@ -641,7 +641,7 @@ int FOptiMove::repeatedAppend ( const capability& o
 //----------------------------------------------------------------------
 int FOptiMove::relativeMove ( char move[]
                             , int from_x, int from_y
-                            , int to_x, int to_y )
+                            , int to_x, int to_y ) const
 {
   int vtime{0};
   int htime{0};

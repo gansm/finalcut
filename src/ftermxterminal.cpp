@@ -202,7 +202,7 @@ void FTermXTerminal::setDefaults()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetColorMap()
+void FTermXTerminal::resetColorMap() const
 {
   // Reset the entire color table
 

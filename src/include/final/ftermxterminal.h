@@ -98,7 +98,7 @@ class FTermXTerminal final
     // Methods
     void                  init();
     void                  setDefaults();
-    void                  resetColorMap();
+    void                  resetColorMap() const;
     void                  resetForeground();
     void                  resetBackground();
     void                  resetCursorColor();
