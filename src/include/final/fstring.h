@@ -211,7 +211,7 @@ class FString
     const FString right (std::size_t) const;
     const FString mid (std::size_t, std::size_t) const;
 
-    FStringList split (const FString&);
+    FStringList split (const FString&) const;
     FString& setString (const FString&);
 
     template <typename NumT>

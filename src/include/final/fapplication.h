@@ -160,15 +160,15 @@ class FApplication : public FWidget
     void                  findKeyboardWidget() const;
     bool                  isKeyPressed() const;
     void                  keyPressed();
-    void                  keyReleased();
-    void                  escapeKeyPressed();
+    void                  keyReleased() const;
+    void                  escapeKeyPressed() const;
     void                  performKeyboardAction();
     void                  sendEscapeKeyPressEvent() const;
     bool                  sendKeyDownEvent (FWidget*) const;
     bool                  sendKeyPressEvent (FWidget*) const;
     bool                  sendKeyUpEvent (FWidget*) const;
-    void                  sendKeyboardAccelerator();
-    void                  processKeyboardEvent();
+    void                  sendKeyboardAccelerator() const;
+    void                  processKeyboardEvent() const;
     bool                  processDialogSwitchAccelerator() const;
     bool                  processAccelerator (const FWidget* const&) const;
     bool                  getMouseEvent() const;
@@ -176,7 +176,7 @@ class FApplication : public FWidget
     void                  unsetMoveSizeMode() const;
     void                  closeDropDown();
     void                  unselectMenubarItems();
-    void                  sendMouseEvent();
+    void                  sendMouseEvent() const;
     void                  sendMouseMoveEvent ( const FPoint&
                                              , const FPoint&
                                              , int ) const;
@@ -192,7 +192,7 @@ class FApplication : public FWidget
     void                  sendWheelEvent (const FPoint&, const FPoint&) const;
     static FWidget*       processParameters (const int&, char*[]);
     void                  processMouseEvent();
-    void                  processResizeEvent();
+    void                  processResizeEvent() const;
     void                  processCloseWidget();
     void                  processLogger() const;
     bool                  processNextEvent();

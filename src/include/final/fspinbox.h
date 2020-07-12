@@ -82,7 +82,7 @@ class FSpinBox : public FWidget
     sInt64              getValue() const;
     FString             getPrefix() const;
     FString             getSuffix() const;
-    FLineEdit::label_o  getLabelOrientation();
+    FLineEdit::label_o  getLabelOrientation() const;
 
     // Mutators
     void                setSize (const FSize&, bool = true) override;
@@ -175,7 +175,7 @@ inline FString FSpinBox::getSuffix() const
 { return sfix; }
 
 //----------------------------------------------------------------------
-inline FLineEdit::label_o FSpinBox::getLabelOrientation()
+inline FLineEdit::label_o FSpinBox::getLabelOrientation() const
 { return input_field.getLabelOrientation(); }
 
 //----------------------------------------------------------------------

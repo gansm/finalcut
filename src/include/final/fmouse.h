@@ -234,7 +234,7 @@ class FMouseGPM final : public FMouse
     void                 interpretKeyDown();
     void                 interpretKeyUp();
     bool                 getGpmKeyPressed(bool);
-    void                 drawGpmPointer();
+    void                 drawGpmPointer() const;
 
   private:
     // Enumeration
@@ -514,8 +514,8 @@ class FMouseControl
     FMouse*               getMouseWithData();
     FMouse*               getMouseWithEvent();
     void                  xtermMouse (bool) const;
-    void                  enableXTermMouse();
-    void                  disableXTermMouse();
+    void                  enableXTermMouse() const;
+    void                  disableXTermMouse() const;
 
     // Data member
     FMouseProtocol        mouse_protocol{};
@@ -530,11 +530,11 @@ inline const FString FMouseControl::getClassName() const
 { return "FMouseControl"; }
 
 //----------------------------------------------------------------------
-inline void FMouseControl::enableXTermMouse()
+inline void FMouseControl::enableXTermMouse() const
 { xtermMouse(true); }
 
 //----------------------------------------------------------------------
-inline void FMouseControl::disableXTermMouse()
+inline void FMouseControl::disableXTermMouse() const
 { xtermMouse(false); }
 
 }  // namespace finalcut

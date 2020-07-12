@@ -48,7 +48,7 @@ void FColorPalette::setPalette (FColor index, int r, int g, int b) const
 }
 
 //----------------------------------------------------------------------
-void FColorPalette::setVGAdefaultPalette()
+void FColorPalette::setVGAdefaultPalette() const
 {
   setPalette (fc::Black, 0x00, 0x00, 0x00);
   setPalette (fc::Blue, 0x00, 0x00, 0xaa);

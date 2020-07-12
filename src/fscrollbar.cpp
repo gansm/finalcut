@@ -613,7 +613,7 @@ void FScrollbar::drawButtons()
 }
 
 //----------------------------------------------------------------------
-FScrollbar::sType FScrollbar::getClickedScrollType (int x, int y)
+FScrollbar::sType FScrollbar::getClickedScrollType (int x, int y) const
 {
   if ( bar_orientation == fc::vertical )
   {

@@ -352,11 +352,11 @@ class FTerm final
     void                     allocationValues() const;
     void                     deallocationValues();
     void                     init();
-    bool                     init_terminal();
+    bool                     init_terminal() const;
     void                     initOSspecifics() const;
     void                     initTermspecifics() const;
     void                     initBaudRate() const;
-    void                     finish();
+    void                     finish() const;
     void                     finishOSspecifics() const;
     void                     finish_encoding() const;
     void                     destroyColorPaletteTheme();

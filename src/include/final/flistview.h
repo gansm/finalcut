@@ -358,7 +358,7 @@ class FListView : public FWidget
   protected:
     // Methods
     void                 adjustViewport (const int);
-    void                 adjustScrollbars (const std::size_t);
+    void                 adjustScrollbars (const std::size_t) const;
     void                 adjustSize() override;
 
   private:
@@ -399,14 +399,14 @@ class FListView : public FWidget
     iterator             getListEnd (const FListViewItem*);
     void                 draw() override;
     void                 drawBorder() override;
-    void                 drawScrollbars();
+    void                 drawScrollbars() const;
     void                 drawHeadlines();
     void                 drawList();
     void                 drawListLine (const FListViewItem*, bool, bool);
     void                 clearList();
     void                 setLineAttributes (bool, bool) const;
     FString              getCheckBox (const FListViewItem* item) const;
-    FString              getLinePrefix (const FListViewItem*, std::size_t);
+    FString              getLinePrefix (const FListViewItem*, std::size_t) const;
     void                 drawSortIndicator (std::size_t&, std::size_t);
     void                 drawHeadlineLabel (const headerItems::const_iterator&);
     void                 drawHeaderBorder (std::size_t);
@@ -418,7 +418,7 @@ class FListView : public FWidget
     void                 beforeInsertion (FListViewItem*);
     void                 afterInsertion();
     void                 recalculateHorizontalBar (std::size_t);
-    void                 recalculateVerticalBar (std::size_t);
+    void                 recalculateVerticalBar (std::size_t) const;
     void                 mouseHeaderClicked();
     void                 wheelUp (int);
     void                 wheelDown (int);

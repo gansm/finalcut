@@ -114,7 +114,7 @@ class FTermXTerminal final
     void                  setXTermCursorStyle();
     void                  setXTermFont();
     void                  setXTermTitle();
-    void                  setXTermSize();
+    void                  setXTermSize() const;
     void                  setXTermForeground();
     void                  setXTermBackground();
     void                  setXTermCursorColor();
@@ -124,7 +124,7 @@ class FTermXTerminal final
     void                  setXTerm8ColorDefaults();
     void                  setXTerm16ColorDefaults();
     void                  setXTermDefaultsMouseCursor();
-    bool                  canSetXTermBackground();
+    bool                  canSetXTermBackground() const;
     void                  resetXTermColorMap();
     void                  resetXTermForeground();
     void                  resetXTermBackground();
@@ -133,11 +133,11 @@ class FTermXTerminal final
     void                  resetXTermMouseBackground();
     void                  resetXTermHighlightBackground();
     bool                  isInitialized() const;
-    bool                  canResetColor();
-    void                  oscPrefix();
-    void                  oscPostfix();
+    bool                  canResetColor() const;
+    void                  oscPrefix() const;
+    void                  oscPostfix() const;
     const FString         captureXTermFont();
-    const FString         captureXTermTitle();
+    const FString         captureXTermTitle() const;
     static void           enableXTermMouse();
     static void           disableXTermMouse();
     void                  enableXTermMetaSendsESC();

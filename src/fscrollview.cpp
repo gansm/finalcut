@@ -846,7 +846,7 @@ void FScrollView::setVerticalScrollBarVisibility() const
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setViewportCursor()
+void FScrollView::setViewportCursor() const
 {
   if ( ! isChild(getFocusWidget()) )
     return;

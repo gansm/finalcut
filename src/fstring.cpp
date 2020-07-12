@@ -776,7 +776,7 @@ const FString FString::mid (std::size_t pos, std::size_t len) const
 }
 
 //----------------------------------------------------------------------
-FStringList FString::split (const FString& delimiter)
+FStringList FString::split (const FString& delimiter) const
 {
   const FString s{*this};
   FStringList string_list{};

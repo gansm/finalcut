@@ -138,7 +138,7 @@ class FScrollbar : public FWidget
     void                drawHorizontalBar();
     void                drawHorizontalBackgroundColumn();
     void                drawButtons();
-    sType               getClickedScrollType (int, int);
+    sType               getClickedScrollType (int, int) const;
     sType               getVerticalClickedScrollType (int) const;
     sType               getHorizontalClickedScrollType (int) const;
     int                 getSliderClickPos (int, int) const;

@@ -1545,7 +1545,7 @@ inline void FOptiAttr::resetAttribute (FChar*& attr) const
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::reset (FChar*& attr)
+inline void FOptiAttr::reset (FChar*& attr) const
 {
   if ( attr )
   {

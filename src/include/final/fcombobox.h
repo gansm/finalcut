@@ -151,7 +151,7 @@ class FComboBox : public FWidget
     std::size_t         getCount() const;
     FString             getText() const;
     FDataPtr            getItemData();
-    FLineEdit::label_o  getLabelOrientation();
+    FLineEdit::label_o  getLabelOrientation() const;
 
     // Mutators
     void                setSize (const FSize&, bool = true) override;
@@ -254,7 +254,7 @@ inline FDataPtr FComboBox::getItemData()
 }
 
 //----------------------------------------------------------------------
-inline FLineEdit::label_o FComboBox::getLabelOrientation()
+inline FLineEdit::label_o FComboBox::getLabelOrientation() const
 { return input_field.getLabelOrientation(); }
 
 //----------------------------------------------------------------------

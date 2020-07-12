@@ -707,7 +707,7 @@ inline int FOptiMove::verticalMove (char move[], int from_y, int to_y)
 
 //----------------------------------------------------------------------
 inline void FOptiMove::downMove ( char move[], int& vtime
-                                , int from_y, int to_y )
+                                , int from_y, int to_y ) const
 {
   const int num = to_y - from_y;
 
@@ -735,7 +735,7 @@ inline void FOptiMove::downMove ( char move[], int& vtime
 
 //----------------------------------------------------------------------
 inline void FOptiMove::upMove ( char move[], int& vtime
-                              , int from_y, int to_y )
+                              , int from_y, int to_y ) const
 {
   const int num = from_y - to_y;
 
@@ -786,7 +786,7 @@ inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x)
 
 //----------------------------------------------------------------------
 inline void FOptiMove::rightMove ( char hmove[], int& htime
-                                 , int from_x, int to_x )
+                                 , int from_x, int to_x ) const
 {
   int num = to_x - from_x;
 
@@ -841,7 +841,7 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
 
 //----------------------------------------------------------------------
 inline void FOptiMove::leftMove ( char hmove[], int& htime
-                                , int from_x, int to_x )
+                                , int from_x, int to_x ) const
 {
   int num = from_x - to_x;
 

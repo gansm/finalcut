@@ -87,7 +87,7 @@ class FLogger : public FLog
     // Methods
     void              newlineReplace (std::string&, const std::string&) const;
     const std::string getTimeString() const;
-    const std::string getEOL();
+    const std::string getEOL() const;
     void              printLogLine (const std::string&);
 
     // Data member

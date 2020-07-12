@@ -711,7 +711,7 @@ void FVTerm::createArea ( const FRect& box
 //----------------------------------------------------------------------
 void FVTerm::resizeArea ( const FRect& box
                         , const FSize& shadow
-                        , FTermArea* area )
+                        , FTermArea* area ) const
 {
   // Resize the virtual window to a new size.
 
@@ -854,7 +854,7 @@ void FVTerm::restoreVTerm (const FRect& box)
 }
 
 //----------------------------------------------------------------------
-bool FVTerm::updateVTermCursor (const FTermArea* area)
+bool FVTerm::updateVTermCursor (const FTermArea* area) const
 {
   if ( ! area )
     return false;
@@ -1147,7 +1147,7 @@ void FVTerm::putArea (const FPoint& pos, const FTermArea* area)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::scrollAreaForward (FTermArea* area)
+void FVTerm::scrollAreaForward (FTermArea* area) const
 {
   // Scrolls the entire area up line down
   FChar  nc{};        // next character
@@ -1201,7 +1201,7 @@ void FVTerm::scrollAreaForward (FTermArea* area)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::scrollAreaReverse (FTermArea* area)
+void FVTerm::scrollAreaReverse (FTermArea* area) const
 {
   // Scrolls the entire area one line down
 
@@ -2111,7 +2111,7 @@ void FVTerm::getAreaCharacter ( const FPoint& pos, const FTermArea* area
 }
 
 //----------------------------------------------------------------------
-bool FVTerm::clearTerm (int fillchar)
+bool FVTerm::clearTerm (int fillchar) const
 {
   // Clear the real terminal and put cursor at home
 
@@ -2324,7 +2324,7 @@ bool FVTerm::canClearTrailingWS (uInt& xmax, uInt y)
 }
 
 //----------------------------------------------------------------------
-bool FVTerm::skipUnchangedCharacters(uInt& x, uInt xmax, uInt y)
+bool FVTerm::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y) const
 {
   // Skip characters without changes if it is faster than redrawing
 
@@ -2860,7 +2860,7 @@ void FVTerm::updateTerminalLine (uInt y)
 }
 
 //----------------------------------------------------------------------
-bool FVTerm::updateTerminalCursor()
+bool FVTerm::updateTerminalCursor() const
 {
   // Updates the input cursor visibility and the position
   if ( vterm && vterm->input_cursor_visible )
@@ -3006,7 +3006,7 @@ inline void FVTerm::appendCharacter (FChar*& next_char)
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::appendChar (FChar*& next_char)
+inline void FVTerm::appendChar (FChar*& next_char) const
 {
   newFontChanges (next_char);
   charsetChanges (next_char);

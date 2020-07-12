@@ -1454,7 +1454,7 @@ void FListView::adjustViewport (const int element_count)
 }
 
 //----------------------------------------------------------------------
-void FListView::adjustScrollbars (const std::size_t element_count)
+void FListView::adjustScrollbars (const std::size_t element_count) const
 {
   const std::size_t width = getClientWidth();
   const std::size_t height = getClientHeight();
@@ -1681,7 +1681,7 @@ void FListView::drawBorder()
 }
 
 //----------------------------------------------------------------------
-void FListView::drawScrollbars()
+void FListView::drawScrollbars() const
 {
   if ( ! hbar->isShown() && isHorizontallyScrollable() )
     hbar->show();
@@ -1958,7 +1958,7 @@ inline FString FListView::getCheckBox (const FListViewItem* item) const
 
 //----------------------------------------------------------------------
 inline FString FListView::getLinePrefix ( const FListViewItem* item
-                                        , std::size_t indent )
+                                        , std::size_t indent ) const
 {
   FString line{""};
 
@@ -2286,7 +2286,7 @@ void FListView::recalculateHorizontalBar (std::size_t len)
 }
 
 //----------------------------------------------------------------------
-void FListView::recalculateVerticalBar (std::size_t element_count)
+void FListView::recalculateVerticalBar (std::size_t element_count) const
 {
   const std::size_t height = getClientHeight();
   const int vmax = ( element_count > height )

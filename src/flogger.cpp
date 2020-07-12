@@ -69,7 +69,7 @@ const std::string FLogger::getTimeString() const
 }
 
 //----------------------------------------------------------------------
-const std::string FLogger::getEOL()
+const std::string FLogger::getEOL() const
 {
   if ( getEnding() == FLog::LF )
     return "\n";

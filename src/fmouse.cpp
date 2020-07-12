@@ -476,7 +476,7 @@ bool FMouseGPM::getGpmKeyPressed (bool is_pending)
 }
 
 //----------------------------------------------------------------------
-void FMouseGPM::drawGpmPointer()
+void FMouseGPM::drawGpmPointer() const
 {
   if ( isGpmMouseEnabled() && gpm_ev.x != -1 )
     GPM_DRAWPOINTER(&gpm_ev);

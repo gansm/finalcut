@@ -613,13 +613,13 @@ void FApplication::keyPressed()
 }
 
 //----------------------------------------------------------------------
-void FApplication::keyReleased()
+void FApplication::keyReleased() const
 {
   sendKeyUpEvent (keyboard_widget);
 }
 
 //----------------------------------------------------------------------
-void FApplication::escapeKeyPressed()
+void FApplication::escapeKeyPressed() const
 {
   sendEscapeKeyPressEvent();
 }
@@ -710,7 +710,7 @@ inline bool FApplication::sendKeyUpEvent (FWidget* widget) const
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::sendKeyboardAccelerator()
+inline void FApplication::sendKeyboardAccelerator() const
 {
   if ( FWidget::getOpenMenu() )
     return;
@@ -738,7 +738,7 @@ inline void FApplication::sendKeyboardAccelerator()
 }
 
 //----------------------------------------------------------------------
-void FApplication::processKeyboardEvent()
+void FApplication::processKeyboardEvent() const
 {
   if ( quit_now || app_exit_loop )
     return;
@@ -933,7 +933,7 @@ void FApplication::unselectMenubarItems()
 }
 
 //----------------------------------------------------------------------
-void FApplication::sendMouseEvent()
+void FApplication::sendMouseEvent() const
 {
   auto clicked = FWidget::getClickedWidget();
 
@@ -1186,7 +1186,7 @@ void FApplication::processMouseEvent()
 }
 
 //----------------------------------------------------------------------
-void FApplication::processResizeEvent()
+void FApplication::processResizeEvent() const
 {
   if ( ! FTerm::hasChangedTermSize() )
     return;

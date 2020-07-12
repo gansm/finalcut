@@ -2359,7 +2359,7 @@ void FTerm::init()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::init_terminal()
+bool FTerm::init_terminal() const
 {
   // Initialize termios
   FTermios::init();
@@ -2462,7 +2462,7 @@ void FTerm::initBaudRate() const
 }
 
 //----------------------------------------------------------------------
-void FTerm::finish()
+void FTerm::finish() const
 {
   // Set default signal handler
 

@@ -169,7 +169,7 @@ class FScrollView : public FWidget
                                       , Callback );
     void                setHorizontalScrollBarVisibility() const;
     void                setVerticalScrollBarVisibility() const;
-    void                setViewportCursor();
+    void                setViewportCursor() const;
 
     // Callback methods
     void                cb_vbarChange (const FWidget*, const FDataPtr);

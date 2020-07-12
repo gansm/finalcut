@@ -535,19 +535,19 @@ void FKeyboard::substringKeyHandling()
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::keyPressed()
+void FKeyboard::keyPressed() const
 {
   keypressed_cmd.execute();
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::keyReleased()
+void FKeyboard::keyReleased() const
 {
   keyreleased_cmd.execute();
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::escapeKeyPressed()
+void FKeyboard::escapeKeyPressed() const
 {
   escape_key_cmd.execute();
 }

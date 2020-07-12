@@ -145,8 +145,8 @@ class FTextView : public FWidget
     std::size_t         getTextWidth() const;
 
     // Inquiry
-    bool                isHorizontallyScrollable();
-    bool                isVerticallyScrollable();
+    bool                isHorizontallyScrollable() const;
+    bool                isVerticallyScrollable() const;
 
     // Methods
     void                init();
@@ -259,11 +259,11 @@ inline void FTextView::deleteLine (int pos)
 { deleteRange (pos, pos); }
 
 //----------------------------------------------------------------------
-inline bool FTextView::isHorizontallyScrollable()
+inline bool FTextView::isHorizontallyScrollable() const
 { return bool( max_line_width > getTextWidth() ); }
 
 //----------------------------------------------------------------------
-inline bool FTextView::isVerticallyScrollable()
+inline bool FTextView::isVerticallyScrollable() const
 { return bool( getRows() > getTextHeight() ); }
 
 }  // namespace finalcut

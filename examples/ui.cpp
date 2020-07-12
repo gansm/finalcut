@@ -942,7 +942,7 @@ void MyDialog::cb_input2buttonText (finalcut::FWidget* widget, FDataPtr data) co
 //----------------------------------------------------------------------
 void MyDialog::cb_setTitlebar (finalcut::FWidget* widget, const FDataPtr)
 {
-  auto& lineedit = *(static_cast<finalcut::FLineEdit*>(widget));
+  const auto& lineedit = *(static_cast<finalcut::FLineEdit*>(widget));
   finalcut::FString title{};
   lineedit >> title;
   finalcut::FTerm::setTermTitle (title);

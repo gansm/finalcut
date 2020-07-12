@@ -253,7 +253,7 @@ class FOptiAttr final
     void          change_to_default_color (FChar*&, FChar*&, FColor&, FColor&);
     void          change_current_color (const FChar* const&, FColor, FColor);
     void          resetAttribute (FChar*&) const;
-    void          reset (FChar*&);
+    void          reset (FChar*&) const;
     bool          caused_reset_attributes (const char[], uChar = all_tests) const;
     bool          hasCharsetEquivalence() const;
     void          detectSwitchOn (const FChar* const&, const FChar* const&);

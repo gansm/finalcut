@@ -156,9 +156,9 @@ class FKeyboard final
     FKey                  parseKeyString();
     FKey                  keyCorrection (const FKey&) const;
     void                  substringKeyHandling();
-    void                  keyPressed();
-    void                  keyReleased();
-    void                  escapeKeyPressed();
+    void                  keyPressed() const;
+    void                  keyReleased() const;
+    void                  escapeKeyPressed() const;
 
     // Data members
     FKeyboardCommand      keypressed_cmd{};

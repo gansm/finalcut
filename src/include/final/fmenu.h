@@ -176,7 +176,7 @@ class FMenu : public FWindow, public FMenuList
     void         initCallbacks();
     void         calculateDimensions();
     void         adjustItems() const;
-    int          adjustX(int);
+    int          adjustX(int) const;
     void         openSubMenu (FMenu*, bool = false);
     void         closeOpenedSubMenu();
     void         hideSubMenus();

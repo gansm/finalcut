@@ -301,18 +301,18 @@ class FVTerm
                                      , FTermArea*& );
     void                  resizeArea ( const FRect&
                                      , const FSize&
-                                     , FTermArea* );
+                                     , FTermArea* ) const;
     static void           removeArea (FTermArea*&);
     static void           restoreVTerm (const FRect&);
-    bool                  updateVTermCursor (const FTermArea*);
+    bool                  updateVTermCursor (const FTermArea*) const;
     static void           setAreaCursor ( const FPoint&
                                         , bool, FTermArea* );
     static void           getArea (const FPoint&, const FTermArea*);
     static void           getArea (const FRect&, const FTermArea*);
     void                  putArea (const FTermArea*);
     static void           putArea (const FPoint&, const FTermArea*);
-    void                  scrollAreaForward (FTermArea*);
-    void                  scrollAreaReverse (FTermArea*);
+    void                  scrollAreaForward (FTermArea*) const;
+    void                  scrollAreaReverse (FTermArea*) const;
     void                  clearArea (FTermArea*, int = ' ');
     void                  processTerminalUpdate();
     static void           startTerminalUpdate();
@@ -383,13 +383,13 @@ class FVTerm
                                            , const FChar*, FChar* );
     static void           getAreaCharacter ( const FPoint&, const FTermArea*
                                            , FChar*& );
-    bool                  clearTerm (int = ' ');
+    bool                  clearTerm (int = ' ') const;
     bool                  clearFullArea (const FTermArea*, FChar&);
     static void           clearAreaWithShadow (const FTermArea*, const FChar&);
     static bool           canClearToEOL (uInt, uInt);
     static bool           canClearLeadingWS (uInt&, uInt);
     static bool           canClearTrailingWS (uInt&, uInt);
-    bool                  skipUnchangedCharacters (uInt&, uInt, uInt);
+    bool                  skipUnchangedCharacters (uInt&, uInt, uInt) const;
     void                  printRange (uInt, uInt, uInt, bool);
     void                  replaceNonPrintableFullwidth (uInt, FChar*&) const;
     void                  printCharacter (uInt&, uInt, bool, FChar*&);
@@ -405,7 +405,7 @@ class FVTerm
     bool                  printWrap (FTermArea*) const;
     void                  printPaddingCharacter (FTermArea*, const FChar&);
     void                  updateTerminalLine (uInt);
-    bool                  updateTerminalCursor();
+    bool                  updateTerminalCursor() const;
     bool                  isInsideTerminal (const FPoint&) const;
     bool                  isTermSizeChanged() const;
     static void           markAsPrinted (uInt, uInt);
@@ -413,7 +413,7 @@ class FVTerm
     static void           newFontChanges (FChar*&);
     static void           charsetChanges (FChar*&);
     void                  appendCharacter (FChar*&);
-    void                  appendChar (FChar*&);
+    void                  appendChar (FChar*&) const;
     void                  appendAttributes (FChar*&) const;
     int                   appendLowerRight (FChar*&);
     static void           characterFilter (FChar*&);

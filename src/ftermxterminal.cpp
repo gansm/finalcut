@@ -368,7 +368,7 @@ void FTermXTerminal::setXTermTitle()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::setXTermSize()
+void FTermXTerminal::setXTermSize() const
 {
   initCheck();
 
@@ -572,7 +572,7 @@ inline void FTermXTerminal::setXTermDefaultsMouseCursor()
 }
 
 //----------------------------------------------------------------------
-inline bool FTermXTerminal::canSetXTermBackground()
+inline bool FTermXTerminal::canSetXTermBackground() const
 {
   initCheck(false);
 
@@ -691,7 +691,7 @@ void FTermXTerminal::resetXTermHighlightBackground()
 }
 
 //----------------------------------------------------------------------
-bool FTermXTerminal::canResetColor()
+bool FTermXTerminal::canResetColor() const
 {
   initCheck(false);
 
@@ -712,7 +712,7 @@ bool FTermXTerminal::canResetColor()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::oscPrefix()
+void FTermXTerminal::oscPrefix() const
 {
   initCheck();
 
@@ -729,7 +729,7 @@ void FTermXTerminal::oscPrefix()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::oscPostfix()
+void FTermXTerminal::oscPostfix() const
 {
   initCheck();
 
@@ -786,7 +786,7 @@ const FString FTermXTerminal::captureXTermFont()
 }
 
 //----------------------------------------------------------------------
-const FString FTermXTerminal::captureXTermTitle()
+const FString FTermXTerminal::captureXTermTitle() const
 {
   initCheck(FString{});
 

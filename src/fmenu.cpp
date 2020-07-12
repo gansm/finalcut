@@ -585,7 +585,7 @@ void FMenu::adjustItems() const
 }
 
 //----------------------------------------------------------------------
-int FMenu::adjustX (int x_pos)
+int FMenu::adjustX (int x_pos) const
 {
   // Is menu outside on the right of the screen?
   if ( x_pos + int(max_item_width) >= int(getDesktopWidth() - 1) )
