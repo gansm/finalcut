@@ -101,7 +101,7 @@ FWidget::FWidget (FWidget* parent)
 FWidget::~FWidget()  // destructor
 {
   processDestroy();
-  delCallbacks();
+  delAllCallbacks();
   auto app_object = FApplication::getApplicationObject();
   app_object->removeQueuedEvent(this);
 
@@ -858,7 +858,7 @@ void FWidget::addCallback ( const FString& cb_signal
 //----------------------------------------------------------------------
 void FWidget::delCallback (const FCallback& cb_function)
 {
-  // Delete cb_function form callback list
+  // Deletes entries with cb_function form the callback list
 
   if ( callback_objects.empty() )
     return;
@@ -877,7 +877,7 @@ void FWidget::delCallback (const FCallback& cb_function)
 //----------------------------------------------------------------------
 void FWidget::delCallback (const FWidget* cb_instance)
 {
-  // Delete all member function pointer from cb_instance
+  // Deletes entries with cb_instance from the callback list
 
   if ( callback_objects.empty() )
     return;
@@ -894,7 +894,7 @@ void FWidget::delCallback (const FWidget* cb_instance)
 }
 
 //----------------------------------------------------------------------
-void FWidget::delCallbacks()
+void FWidget::delAllCallbacks()
 {
   // Delete all callbacks from this widget
 

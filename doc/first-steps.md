@@ -549,7 +549,7 @@ void FWidget::addCallback ( const FString& cb_signal
 There are two macros `F_FUNCTION_CALLBACK` and `F_METHOD_CALLBACK` to avoid 
 having to deal with necessary type conversions. With `delCallback()` you can 
 remove a connection to a signal handler or a widget. Alternatively, you can 
-use `delCallbacks()` to remove all existing callbacks from an object.
+use `delAllCallbacks()` to remove all existing callbacks from an object.
 
 
 ### The FINAL CUT widgets emit the following default signals ###

@@ -161,7 +161,7 @@ void Watch::cb_clock (const finalcut::FWidget*, const FDataPtr)
   }
   else
   {
-    delAllTimer();  // Delete all timers and stop updating the time
+    delAllTimers();  // Delete all timers and stop updating the time
     time_str = "--:--:--";
     time_str.redraw();
   }

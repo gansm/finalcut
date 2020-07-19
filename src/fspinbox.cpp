@@ -235,13 +235,13 @@ void FSpinBox::onMouseDown (FMouseEvent* ev)
     addTimer(threshold_time);
   }
   else
-    delOwnTimer();
+    delOwnTimers();
 }
 
 //----------------------------------------------------------------------
 void FSpinBox::onMouseUp (FMouseEvent*)
 {
-  delOwnTimer();
+  delOwnTimers();
   spining_state = FSpinBox::noSpin;
 }
 
@@ -250,7 +250,7 @@ void FSpinBox::onWheel (FWheelEvent* ev)
 {
   const int wheel = ev->getWheel();
 
-  delOwnTimer();
+  delOwnTimers();
   forceFocus();
   spining_state = FSpinBox::noSpin;
 
@@ -277,7 +277,7 @@ void FSpinBox::onTimer (FTimerEvent*)
   if ( ! threshold_reached )
   {
     threshold_reached = true;
-    delOwnTimer();
+    delOwnTimers();
     addTimer(repeat_time);
   }
 
@@ -382,7 +382,7 @@ inline void FSpinBox::increaseValue()
     processChanged();
   }
   else
-    delOwnTimer();
+    delOwnTimers();
 }
 
 //----------------------------------------------------------------------
@@ -394,7 +394,7 @@ inline void FSpinBox::decreaseValue()
     processChanged();
   }
   else
-    delOwnTimer();
+    delOwnTimers();
 }
 
 //----------------------------------------------------------------------

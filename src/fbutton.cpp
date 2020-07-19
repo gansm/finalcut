@@ -53,7 +53,7 @@ FButton::FButton (const FString& txt, FWidget* parent)
 FButton::~FButton()  // destructor
 {
   delAccelerator();
-  delOwnTimer();
+  delOwnTimers();
 }
 
 // FButton operator

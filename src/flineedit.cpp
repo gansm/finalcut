@@ -405,7 +405,7 @@ void FLineEdit::onMouseUp (FMouseEvent*)
 {
   if ( drag_scroll != FLineEdit::noScroll )
   {
-    delOwnTimer();
+    delOwnTimers();
     drag_scroll = FLineEdit::noScroll;
     scroll_timer = false;
   }
@@ -446,7 +446,7 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
 
     if ( text_offset == 0 )
     {
-      delOwnTimer();
+      delOwnTimers();
       drag_scroll = FLineEdit::noScroll;
     }
   }
@@ -462,14 +462,14 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
 
     if ( cursor_pos == len )
     {
-      delOwnTimer();
+      delOwnTimers();
       drag_scroll = FLineEdit::noScroll;
     }
   }
   else
   {
     // no dragging
-    delOwnTimer();
+    delOwnTimers();
     scroll_timer = false;
     drag_scroll = FLineEdit::noScroll;
   }

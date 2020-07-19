@@ -152,7 +152,7 @@ void SmallWindow::onTimer (finalcut::FTimerEvent*)
   bottom_label.unsetEmphasis();
   bottom_label.redraw();
   updateTerminal();
-  delOwnTimer();
+  delOwnTimers();
 }
 
 
@@ -277,7 +277,7 @@ Window::~Window()
 
     // Remove all callbacks before Window::cb_destroyWindow() will be called
     if ( win_dat->is_open && win_dat->dgl )
-      win_dat->dgl->delCallbacks();
+      win_dat->dgl->delAllCallbacks();
 
     delete win_dat;
     iter = windows.erase(iter);

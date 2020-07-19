@@ -95,7 +95,7 @@ FListBox::FListBox (FWidget* parent)
 //----------------------------------------------------------------------
 FListBox::~FListBox()  // destructor
 {
-  delOwnTimer();
+  delOwnTimers();
 }
 
 
@@ -572,7 +572,7 @@ void FListBox::onFocusOut (FFocusEvent*)
     getStatusBar()->drawMessage();
   }
 
-  delOwnTimer();
+  delOwnTimers();
   inc_search.clear();
 }
 
@@ -1306,7 +1306,7 @@ void FListBox::dragUp (int mouse_button)
 
   if ( current == 1 )
   {
-    delOwnTimer();
+    delOwnTimers();
     drag_scroll = fc::noScroll;
   }
 }
@@ -1331,7 +1331,7 @@ void FListBox::dragDown (int mouse_button)
 
   if ( current == getCount() )
   {
-    delOwnTimer();
+    delOwnTimers();
     drag_scroll = fc::noScroll;
   }
 }
@@ -1339,7 +1339,7 @@ void FListBox::dragDown (int mouse_button)
 //----------------------------------------------------------------------
 void FListBox::stopDragScroll()
 {
-  delOwnTimer();
+  delOwnTimers();
   drag_scroll = fc::noScroll;
   scroll_distance = 1;
   scroll_timer = false;

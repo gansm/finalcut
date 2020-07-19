@@ -72,7 +72,7 @@ FObject::FObject (FObject* parent)
 //----------------------------------------------------------------------
 FObject::~FObject()  // destructor
 {
-  delOwnTimer();  // Delete all timers of this object
+  delOwnTimers();  // Delete all timers of this object
 
   if ( ! has_parent && timer_list )
   {
@@ -333,7 +333,7 @@ bool FObject::delTimer (int id) const
 }
 
 //----------------------------------------------------------------------
-bool FObject::delOwnTimer() const
+bool FObject::delOwnTimers() const
 {
   // Deletes all timers of this object
 
@@ -359,7 +359,7 @@ bool FObject::delOwnTimer() const
 }
 
 //----------------------------------------------------------------------
-bool FObject::delAllTimer() const
+bool FObject::delAllTimers() const
 {
   // Deletes all timers of all objects
 

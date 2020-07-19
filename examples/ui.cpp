@@ -126,7 +126,7 @@ ProgressDialog::ProgressDialog (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 ProgressDialog::~ProgressDialog()  // destructor
 {
-  delOwnTimer();
+  delOwnTimers();
   delCallback(&quit);
   delCallback(&more);
   delCallback(&reset);
@@ -149,7 +149,7 @@ void ProgressDialog::onTimer (finalcut::FTimerEvent*)
   if ( p != 100 )
     return;
 
-  delOwnTimer();
+  delOwnTimers();
   activateWindow();
   raiseWindow();
   reset.setEnable();

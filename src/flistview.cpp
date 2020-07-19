@@ -691,7 +691,7 @@ FListView::FListView (FWidget* parent)
 //----------------------------------------------------------------------
 FListView::~FListView()  // destructor
 {
-  delOwnTimer();
+  delOwnTimers();
 }
 
 // public methods of FListView
@@ -1408,7 +1408,7 @@ void FListView::onFocusOut (FFocusEvent*)
     getStatusBar()->drawMessage();
   }
 
-  delOwnTimer();
+  delOwnTimers();
 }
 
 
@@ -2447,7 +2447,7 @@ void FListView::dragUp (int mouse_button)
 
   if ( current_iter.getPosition() == 0 )
   {
-    delOwnTimer();
+    delOwnTimers();
     drag_scroll = fc::noScroll;
   }
 }
@@ -2472,7 +2472,7 @@ void FListView::dragDown (int mouse_button)
 
   if ( current_iter.getPosition() - 1 == int(getCount()) )
   {
-    delOwnTimer();
+    delOwnTimers();
     drag_scroll = fc::noScroll;
   }
 }
@@ -2480,7 +2480,7 @@ void FListView::dragDown (int mouse_button)
 //----------------------------------------------------------------------
 void FListView::stopDragScroll()
 {
-  delOwnTimer();
+  delOwnTimers();
   scroll_timer = false;
   scroll_distance = 1;
   drag_scroll = fc::noScroll;

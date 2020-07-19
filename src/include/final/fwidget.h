@@ -332,7 +332,7 @@ class FWidget : public FVTerm, public FObject
                                          , FDataPtr = nullptr );
     void                     delCallback (const FCallback&);
     void                     delCallback (const FWidget*);
-    void                     delCallbacks();
+    void                     delAllCallbacks();
     void                     emitCallback (const FString&);
     void                     addAccelerator (FKey);
     virtual void             addAccelerator (FKey, FWidget*);

@@ -100,7 +100,7 @@ void Dialog::adjustSize()
 //----------------------------------------------------------------------
 void Dialog::onTimer (finalcut::FTimerEvent*)
 {
-  delOwnTimer();
+  delOwnTimers();
   busy_indicator.stop();
 }
 

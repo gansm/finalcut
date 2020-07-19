@@ -514,7 +514,7 @@ void FObjectTest::timerTest()
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 0 );
 
   CPPUNIT_ASSERT ( ! t1.delTimer (id1) );  // id double delete
-  CPPUNIT_ASSERT ( ! t1.delAllTimer() );
+  CPPUNIT_ASSERT ( ! t1.delAllTimers() );
 
   t1.addTimer(250);
   t1.addTimer(500);
@@ -524,7 +524,7 @@ void FObjectTest::timerTest()
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 4 );
   CPPUNIT_ASSERT ( t2.getTimerList()->size() == 4 );
 
-  t1.delOwnTimer();
+  t1.delOwnTimers();
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 2 );
   CPPUNIT_ASSERT ( t2.getTimerList()->size() == 2 );
 
@@ -532,7 +532,7 @@ void FObjectTest::timerTest()
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 3 );
   CPPUNIT_ASSERT ( t2.getTimerList()->size() == 3 );
 
-  t2.delAllTimer();
+  t2.delAllTimers();
   CPPUNIT_ASSERT ( t1.getTimerList()->empty() );
   CPPUNIT_ASSERT ( t2.getTimerList()->empty() );
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 0 );

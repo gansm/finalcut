@@ -56,7 +56,7 @@ void FBusyIndicator::start()
 //----------------------------------------------------------------------
 void FBusyIndicator::stop()
 {
-  delOwnTimer();
+  delOwnTimers();
   running = false;
   hide();
   updateTerminal();

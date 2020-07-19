@@ -125,8 +125,8 @@ class FObject
     static bool           isTimeout (const timeval*, uInt64);
     int                   addTimer (int);
     bool                  delTimer (int) const;
-    bool                  delOwnTimer() const;
-    bool                  delAllTimer() const;
+    bool                  delOwnTimers() const;
+    bool                  delAllTimers() const;
 
   protected:
     struct FTimerData

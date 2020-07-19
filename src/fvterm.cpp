@@ -2417,7 +2417,7 @@ inline void FVTerm::replaceNonPrintableFullwidth ( uInt x
 
 //----------------------------------------------------------------------
 void FVTerm::printCharacter ( uInt& x, uInt y, bool min_and_not_max
-                            , FChar*& print_char)
+                            , FChar*& print_char) const
 {
   // General character output on terminal
 

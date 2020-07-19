@@ -55,7 +55,7 @@ FScrollbar::FScrollbar(fc::orientation o, FWidget* parent)
 //----------------------------------------------------------------------
 FScrollbar::~FScrollbar()  // destructor
 {
-  delOwnTimer();
+  delOwnTimers();
 }
 
 
@@ -305,7 +305,7 @@ void FScrollbar::onMouseUp (FMouseEvent* ev)
 
   if ( scroll_type != FScrollbar::noScroll )
   {
-    delOwnTimer();
+    delOwnTimers();
     scroll_type = FScrollbar::noScroll;
   }
 }
@@ -360,7 +360,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
   if ( mouse_x < 1 || mouse_x > int(getWidth())
     || mouse_y < 1 || mouse_y > int(getHeight()) )
   {
-    delOwnTimer();
+    delOwnTimers();
   }
   else if ( scroll_type != FScrollbar::scrollJump )
   {
@@ -369,7 +369,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
 
   if ( scroll_type != new_scroll_type )
   {
-    delOwnTimer();
+    delOwnTimers();
   }
 }
 
@@ -380,7 +380,7 @@ void FScrollbar::onWheel (FWheelEvent* ev)
 
   if ( scroll_type != FScrollbar::noScroll )
   {
-    delOwnTimer();
+    delOwnTimers();
     scroll_type = FScrollbar::noScroll;
   }
 
@@ -401,7 +401,7 @@ void FScrollbar::onTimer (FTimerEvent*)
   if ( ! threshold_reached )
   {
     threshold_reached = true;
-    delOwnTimer();
+    delOwnTimers();
     addTimer(repeat_time);
   }
 
@@ -426,7 +426,7 @@ void FScrollbar::onTimer (FTimerEvent*)
       processScroll();
     }
 
-    delOwnTimer();
+    delOwnTimers();
     return;
   }
 
@@ -787,7 +787,7 @@ void FScrollbar::avoidScrollOvershoot()
       && slider_pos > slider_click_stop_pos ) )
   {
     jumpToClickPos (slider_click_stop_pos);
-    delOwnTimer();
+    delOwnTimers();
   }
 }
 

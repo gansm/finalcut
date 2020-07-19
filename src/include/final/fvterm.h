@@ -392,7 +392,7 @@ class FVTerm
     bool                  skipUnchangedCharacters (uInt&, uInt, uInt) const;
     void                  printRange (uInt, uInt, uInt, bool);
     void                  replaceNonPrintableFullwidth (uInt, FChar*&) const;
-    void                  printCharacter (uInt&, uInt, bool, FChar*&);
+    void                  printCharacter (uInt&, uInt, bool, FChar*&) const;
     void                  printFullWidthCharacter (uInt&, uInt, FChar*&) const;
     void                  printFullWidthPaddingCharacter (uInt&, uInt, FChar*&) const;
     void                  printHalfCovertFullWidthCharacter (uInt&, uInt, FChar*&) const;
