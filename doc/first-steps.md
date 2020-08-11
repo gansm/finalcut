@@ -510,17 +510,17 @@ clicked by a keyboard or mouse, it sends the string "clicked". A signal
 handler explicitly provided by Widget, in the form of a callback function 
 or a callback method, can react to such a signal.
 
-A callback function is always structured as follows:
+A callback function has no return value can have various arguments:
 
 ```cpp
-void cb_function (FWidget* w, FDataPtr data)
+void cb_function (FWidget* w, int* i, double* d, ...)
 {...}
 ```
 
 The structure of a callback method is the same:
 
 ```cpp
-void classname::cb_methode (FWidget* w, FDataPtr data)
+void classname::cb_methode (FWidget* w, int* i, double* d, ...)
 {...}
 ```
 

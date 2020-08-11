@@ -50,6 +50,7 @@ fpoint_test_SOURCES = fpoint-test.cpp
 frect_test_SOURCES = frect-test.cpp
 
 TESTS = fobject_test \
+	fcallback_test \
 	fmouse_test \
 	fkeyboard_test \
 	ftermdata_test \
