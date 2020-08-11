@@ -139,7 +139,7 @@ class FApplication : public FWidget
     static void           closeConfirmationDialog (FWidget*, FCloseEvent*);
 
     // Callback method
-    void cb_exitApp (const FWidget*, const FDataPtr);
+    void                  cb_exitApp (FWidget*);
 
   protected:
     virtual void          processExternalUserEvent();
@@ -214,6 +214,13 @@ class FApplication : public FWidget
     static FWidget*       keyboard_widget;
 };
 
+
+// non-member function forward declarations
+// implemented in fwidget_functions.cpp
+//----------------------------------------------------------------------
+FApplication* getFApplication();
+
+
 // FApplication inline functions
 //----------------------------------------------------------------------
 inline const FString FApplication::getClassName() const
@@ -228,8 +235,8 @@ inline char** FApplication::getArgv() const
 { return app_argv; }
 
 //----------------------------------------------------------------------
-inline void FApplication::cb_exitApp (const FWidget*, const FDataPtr)
-{ close(); }
+inline void FApplication::cb_exitApp (FWidget* w)
+{ w->close(); }
 
 }  // namespace finalcut
 

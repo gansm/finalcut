@@ -105,16 +105,14 @@ int main (int argc, char* argv[])
 
   // Callback lambda expressions
   auto cb_exit = \
-      [] (const finalcut::FWidget*, FDataPtr data)
+      [] (finalcut::FApplication& a)
       {
-        auto a = static_cast<finalcut::FApplication*>(data);
-        a->quit();
+        a.quit();
       };
 
   auto cb_tooltip = \
-      [] (const finalcut::FWidget*, FDataPtr data)
+      [] (finalcut::FApplication* a)
       {
-        auto a = static_cast<finalcut::FApplication*>(data);
         finalcut::FToolTip tooltip(a);
         tooltip.setText (full("A tooltip with\ncharacters\n"
                               "in full-width\nfor 3 seconds"));
@@ -123,9 +121,9 @@ int main (int argc, char* argv[])
       };
 
   // Connect the signals with the callback lambda expressions
-  btn.addCallback ("clicked", cb_exit, &app);
-  Exit.addCallback ("clicked", cb_exit, &app);
-  Quit.addCallback ("clicked", cb_exit, &app);
+  btn.addCallback ("clicked", cb_exit, std::ref(app));
+  Exit.addCallback ("clicked", cb_exit, std::ref(app));
+  Quit.addCallback ("clicked", cb_exit, std::ref(app));
   key_F1.addCallback ("activate", cb_tooltip, &app);
 
   // Set dialog object as main widget

@@ -98,6 +98,7 @@
 #include <utility>
 #include <vector>
 
+#include "final/fcallback.h"
 #include "final/fobject.h"
 #include "final/fpoint.h"
 #include "final/frect.h"
@@ -105,16 +106,11 @@
 #include "final/ftypes.h"
 #include "final/fvterm.h"
 
-// Callback macros
-#define F_FUNCTION_CALLBACK(h) \
-    reinterpret_cast<finalcut::FWidget::FCallbackPtr>((h))
-
-#define F_METHOD_CALLBACK(i,h) \
-    reinterpret_cast<finalcut::FWidget*>((i)), \
-    std::bind ( reinterpret_cast<finalcut::FWidget::FMemberCallback>((h)) \
-              , reinterpret_cast<finalcut::FWidget*>((i)) \
-              , std::placeholders::_1 \
-              , std::placeholders::_2 )
+// Old callback macros (deprecated)
+#define F_FUNCTION_CALLBACK(h)  (h), this, nullptr
+#define F_FUNCTION_CALLBACK_DATA(h)  (h), this
+#define F_METHOD_CALLBACK(i,h)  (i), (h), this, nullptr
+#define F_METHOD_CALLBACK_DATA(i,h)  (i), (h), this
 
 namespace finalcut
 {
@@ -147,9 +143,6 @@ class FWidget : public FVTerm, public FObject
     // Typedefs
     typedef std::vector<FWidget*> FWidgetList;
     typedef std::vector<FAccelerator> FAcceleratorList;
-    typedef void (*FCallbackPtr)(FWidget*, FDataPtr);
-    typedef void (FWidget::*FMemberCallback)(FWidget*, FDataPtr);
-    typedef std::function<void(FWidget*, FDataPtr)> FCallback;
     typedef std::shared_ptr<FWidgetColors> FWidgetColorsPtr;
 
     struct FWidgetFlags  // Properties of a widget ⚑
@@ -323,17 +316,11 @@ class FWidget : public FVTerm, public FObject
     int                      numOfFocusableChildren();
     virtual bool             close();
     void                     clearStatusbarMessage();
-    void                     addCallback ( const FString&
-                                         , const FCallback&
-                                         , FDataPtr = nullptr );
-    void                     addCallback ( const FString&
-                                         , FWidget*
-                                         , const FCallback&
-                                         , FDataPtr = nullptr );
-    void                     delCallback (const FCallback&);
-    void                     delCallback (const FWidget*);
-    void                     delAllCallbacks();
-    void                     emitCallback (const FString&);
+    template<typename... Args>
+    void                     addCallback (FString&&, Args&&...);
+    template<typename... Args>
+    void                     delCallback (Args&&...);
+    void                     emitCallback (FString&&);
     void                     addAccelerator (FKey);
     virtual void             addAccelerator (FKey, FWidget*);
     void                     delAccelerator ();
@@ -351,11 +338,6 @@ class FWidget : public FVTerm, public FObject
     static void              quit();
 
   protected:
-    struct FCallbackData;  // forward declaration
-
-    // Typedefs
-    typedef std::vector<FCallbackData> FCallbackObjects;
-
     // Accessor
     FTermArea*               getPrintArea() override;
     static uInt              getModalDialogCounter();
@@ -461,7 +443,6 @@ class FWidget : public FVTerm, public FObject
     void                     KeyDownEvent (FKeyEvent*);
     void                     emitWheelCallback (const FWheelEvent*);
     void                     setWindowFocus (bool);
-    FCallbackPtr             getCallbackPtr (const FCallback&);
     bool                     changeFocus (FWidget*, FWidget*, fc::FocusTypes);
     void                     processDestroy();
     virtual void             draw();
@@ -498,7 +479,7 @@ class FWidget : public FVTerm, public FObject
     FColor                   background_color{fc::Default};
     FString                  statusbar_message{};
     FAcceleratorList         accelerator_list{};
-    FCallbackObjects         callback_objects{};
+    FCallback                callback_impl{};
 
     static FStatusBar*       statusbar;
     static FMenuBar*         menubar;
@@ -532,89 +513,28 @@ class FWidget : public FVTerm, public FObject
     friend void clearFlatBorder (FWidget*);
 };
 
-//----------------------------------------------------------------------
-// struct FWidget::FCallbackData
-//----------------------------------------------------------------------
-struct FWidget::FCallbackData
-{
-  // Constructor
-  FCallbackData()
-  { }
-
-  FCallbackData (const FString& s, FWidget* i, const FCallback& c, FDataPtr d)
-    : cb_signal(s)
-    , cb_instance(i)
-    , cb_function(c)
-    , data(d)
-  { }
-
-  FCallbackData (const FCallbackData& c)  // copy constructor
-    : cb_signal(c.cb_signal)
-    , cb_instance(c.cb_instance)
-    , cb_function(c.cb_function)
-    , data(c.data)
-  { }
-
-  FCallbackData (FCallbackData&& c) noexcept  // move constructor
-    : cb_signal(std::move(c.cb_signal))
-    , cb_instance(std::move(c.cb_instance))
-    , cb_function(std::move(c.cb_function))
-    , data(std::move(c.data))
-  { }
-
-  // Destructor
-  ~FCallbackData()
-  { }
-
-  // Overloaded operators
-  FCallbackData& operator = (const FCallbackData& c)
-  {
-    cb_signal = c.cb_signal;
-    cb_instance = c.cb_instance;
-    cb_function = c.cb_function;
-    data = c.data;
-    return *this;
-  }
-
-  FCallbackData& operator = (FCallbackData&& c) noexcept
-  {
-    cb_signal = std::move(c.cb_signal);
-    cb_instance = std::move(c.cb_instance);
-    cb_function = std::move(c.cb_function);
-    data = std::move(c.data);
-    return *this;
-  }
-
-  // Data members
-  FString   cb_signal{};
-  FWidget*  cb_instance{};
-  FCallback cb_function{};
-  FDataPtr  data{};
-};
-
 
 // non-member function forward declarations
 // implemented in fwidget_functions.cpp
 //----------------------------------------------------------------------
-void        initWidget (FWidget*);
-void        detectTermSize();
-bool        isFocusNextKey (const FKey);
-bool        isFocusPrevKey (const FKey);
-FKey        getHotkey (const FString&);
-std::size_t getHotkeyPos (const FString& src, FString& dest);
-void        setHotkeyViaString (FWidget*, const FString&);
-void        drawShadow (FWidget*);
-void        drawTransparentShadow (FWidget*);
-void        drawBlockShadow (FWidget*);
-void        clearShadow (FWidget*);
-void        drawFlatBorder (FWidget*);
-void        clearFlatBorder (FWidget*);
-void        checkBorder (const FWidget*, FRect&);
-void        drawBorder (FWidget*, const FRect&);
-void        drawListBorder (FWidget*, const FRect&);
-void        drawBox (FWidget*, const FRect&);
-void        drawNewFontBox (FWidget*, const FRect&);
-void        drawNewFontListBox (FWidget*, const FRect&);
+void          detectTermSize();
+bool          isFocusNextKey (const FKey);
+bool          isFocusPrevKey (const FKey);
+FKey          getHotkey (const FString&);
+std::size_t   getHotkeyPos (const FString& src, FString& dest);
+void          setHotkeyViaString (FWidget*, const FString&);
+void          drawShadow (FWidget*);
+void          drawTransparentShadow (FWidget*);
+void          drawBlockShadow (FWidget*);
+void          clearShadow (FWidget*);
+void          drawFlatBorder (FWidget*);
+void          clearFlatBorder (FWidget*);
+void          checkBorder (const FWidget*, FRect&);
+void          drawBorder (FWidget*, const FRect&);
+void          drawListBorder (FWidget*, const FRect&);
+void          drawBox (FWidget*, const FRect&);
+void          drawNewFontBox (FWidget*, const FRect&);
+void          drawNewFontListBox (FWidget*, const FRect&);
 
 
 // FWidget inline functions
@@ -1061,6 +981,27 @@ inline bool FWidget::isPaddingIgnored() const
 //----------------------------------------------------------------------
 inline void FWidget::clearStatusbarMessage()
 { statusbar_message.clear(); }
+
+//----------------------------------------------------------------------
+template<typename... Args>
+inline void FWidget::addCallback (FString&& cb_signal, Args&&... args)
+{
+  callback_impl.addCallback ( std::forward<FString>(cb_signal)
+                            , std::forward<Args>(args)... );
+}
+
+//----------------------------------------------------------------------
+template<typename... Args>
+inline void FWidget::delCallback (Args&&... args)
+{
+  callback_impl.delCallback(std::forward<Args>(args)...);
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::emitCallback (FString&& emit_signal)
+{
+  callback_impl.emitCallback(std::forward<FString>(emit_signal));
+}
 
 //----------------------------------------------------------------------
 inline void FWidget::addAccelerator (FKey key)

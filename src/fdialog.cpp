@@ -873,7 +873,8 @@ void FDialog::initMoveSizeMenuItem (FMenu* menu)
   move_size_item->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FDialog::cb_move)
+    this,
+    &FDialog::cb_move
   );
 }
 
@@ -896,7 +897,8 @@ void FDialog::initZoomMenuItem (FMenu* menu)
   zoom_item->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FDialog::cb_zoom)
+    this,
+    &FDialog::cb_zoom
   );
 }
 
@@ -918,7 +920,8 @@ void FDialog::initCloseMenuItem (FMenu* menu)
   close_item->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FDialog::cb_close)
+    this,
+    &FDialog::cb_close
   );
 }
 
@@ -1632,7 +1635,7 @@ void FDialog::delDialog (const FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-void FDialog::cb_move (const FWidget*, const FDataPtr)
+void FDialog::cb_move()
 {
   if ( isZoomed() )
     return;
@@ -1683,7 +1686,7 @@ void FDialog::cb_move (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FDialog::cb_zoom (const FWidget*, const FDataPtr)
+void FDialog::cb_zoom()
 {
   dialog_menu->unselectItem();
   dialog_menu->hide();
@@ -1694,7 +1697,7 @@ void FDialog::cb_zoom (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FDialog::cb_close (const FWidget*, const FDataPtr)
+void FDialog::cb_close()
 {
   dialog_menu->unselectItem();
   dialog_menu->hide();

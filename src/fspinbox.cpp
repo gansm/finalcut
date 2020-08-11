@@ -319,12 +319,13 @@ void FSpinBox::init()
   input_field.addCallback
   (
     "activate",
-    F_METHOD_CALLBACK (this, &FSpinBox::cb_inputFieldActivate)
+    this, &FSpinBox::cb_inputFieldActivate
   );
   input_field.addCallback
   (
     "changed",
-    F_METHOD_CALLBACK (this, &FSpinBox::cb_inputFieldChange)
+    this, &FSpinBox::cb_inputFieldChange,
+    std::cref(input_field)
   );
 }
 
@@ -428,23 +429,21 @@ void FSpinBox::forceFocus()
 }
 
 //----------------------------------------------------------------------
-void FSpinBox::cb_inputFieldActivate (const finalcut::FWidget*, const FDataPtr)
+void FSpinBox::cb_inputFieldActivate()
 {
   processActivate();
 }
 
 //----------------------------------------------------------------------
-void FSpinBox::cb_inputFieldChange (finalcut::FWidget* w, const FDataPtr)
+void FSpinBox::cb_inputFieldChange (const FLineEdit& lineedit)
 {
-  const auto& lineedit = static_cast<FLineEdit*>(w);
-
-  if ( lineedit->getText().isEmpty() )
+  if ( lineedit.getText().isEmpty() )
     value = 0;
   else
   {
     std::wregex regex(L"[-]?[[:xdigit:]]+");
     std::wsmatch match;
-    std::wstring text = lineedit->getText().wc_str();
+    std::wstring text = lineedit.getText().wc_str();
 
     if ( std::regex_search(text, match, regex) )
     {

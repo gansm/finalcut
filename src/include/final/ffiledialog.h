@@ -206,12 +206,12 @@ class FFileDialog : public FDialog
     static const FString getHomeDir();
 
     // Callback methods
-    void                 cb_processActivate (const FWidget*, const FDataPtr);
-    void                 cb_processRowChanged (const FWidget*, const FDataPtr);
-    void                 cb_processClicked (const FWidget*, const FDataPtr);
-    void                 cb_processCancel (const FWidget*, const FDataPtr);
-    void                 cb_processOpen (const FWidget*, const FDataPtr);
-    void                 cb_processShowHidden (const FWidget*, const FDataPtr);
+    void                 cb_processActivate();
+    void                 cb_processRowChanged();
+    void                 cb_processClicked();
+    void                 cb_processCancel();
+    void                 cb_processOpen();
+    void                 cb_processShowHidden();
 
     // Data members
     static FSystem*  fsystem;

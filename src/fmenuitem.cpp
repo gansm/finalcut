@@ -546,7 +546,8 @@ void FMenuItem::init()
     addCallback  // for this element
     (
       "deactivate",
-      F_METHOD_CALLBACK (menubar_ptr, &FMenuBar::cb_itemDeactivated)
+      std::move(menubar_ptr), &FMenuBar::cb_itemDeactivated,
+      this
     );
   }
   else if ( isMenu(parent) )  // Parent is menu
@@ -628,14 +629,15 @@ void FMenuItem::createDialogList (FMenu* winmenu) const
         win_item->addCallback
         (
           "clicked",
-          F_METHOD_CALLBACK (win_item, &FMenuItem::cb_switchToDialog),
-          static_cast<FDataPtr>(win)
+          std::move(win_item), &FMenuItem::cb_switchToDialog,
+          win
         );
 
         win->addCallback
         (
           "destroy",
-          F_METHOD_CALLBACK (win_item, &FMenuItem::cb_destroyDialog)
+          std::move(win_item), &FMenuItem::cb_destroyDialog,
+          win
         );
 
         win_item->associated_window = win;
@@ -695,28 +697,25 @@ void FMenuItem::passMouseEvent ( T widget, const FMouseEvent* ev
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::cb_switchToDialog (const FWidget*, FDataPtr data) const
+void FMenuItem::cb_switchToDialog (FDialog* win) const
 {
-  auto win = static_cast<FDialog*>(data);
+  if ( ! win )
+    return;
 
-  if ( win )
-  {
-    auto focus = getFocusWidget();
-    FAccelEvent a_ev (fc::Accelerator_Event, focus);
-    FApplication::sendEvent (win, &a_ev);
-  }
+  auto focus = getFocusWidget();
+  FAccelEvent a_ev (fc::Accelerator_Event, focus);
+  FApplication::sendEvent (win, &a_ev);
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::cb_destroyDialog (FWidget* widget, const FDataPtr)
+void FMenuItem::cb_destroyDialog (FDialog* win)
 {
-  auto win = static_cast<FDialog*>(widget);
   const auto& fapp = FApplication::getApplicationObject();
 
   if ( win && fapp )
   {
     delAccelerator(win);
-    delCallback(win);
+    delCallback(std::move(win));
     associated_window = nullptr;
   }
 }

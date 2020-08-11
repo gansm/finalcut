@@ -273,7 +273,9 @@ void FStatusBar::insert (FStatusKey* skey)
   skey->addCallback
   (
     "activate",
-    F_METHOD_CALLBACK (this, &FStatusBar::cb_statuskey_activated)
+    this,
+    &FStatusBar::cb_statuskey_activated,
+    skey
   );
 }
 
@@ -486,11 +488,13 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FStatusBar::cb_statuskey_activated (FWidget* widget, const FDataPtr)
+void FStatusBar::cb_statuskey_activated (FStatusKey* statuskey)
 {
+  if ( ! statuskey )
+    return;
+
   if ( ! key_list.empty() )
   {
-    const auto& statuskey = static_cast<FStatusKey*>(widget);
     auto iter = key_list.begin();
     const auto& last = key_list.end();
 

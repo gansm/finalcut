@@ -2018,6 +2018,8 @@ void FVTerm::finish()
 
   if ( fterm )
     delete fterm;
+
+  init_object = nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -2359,7 +2361,7 @@ bool FVTerm::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y) const
 
 //----------------------------------------------------------------------
 void FVTerm::printRange ( uInt xmin, uInt xmax, uInt y
-                        , bool draw_trailing_ws )
+                        , bool draw_trailing_ws ) const
 {
   for (uInt x = xmin; x <= xmax; x++)
   {

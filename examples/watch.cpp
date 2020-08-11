@@ -54,8 +54,8 @@ class Watch final : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback methods
-    void cb_clock (const finalcut::FWidget*, const FDataPtr);
-    void cb_seconds (const finalcut::FWidget*, const FDataPtr);
+    void cb_clock();
+    void cb_seconds();
 
   protected:
     // Method
@@ -99,21 +99,23 @@ Watch::Watch (FWidget* parent)
   clock_sw.addCallback
   (
     "toggled",
-    F_METHOD_CALLBACK (this, &Watch::cb_clock)
+    this, &Watch::cb_clock
   );
 
   // Connect switch signal "toggled" with a callback member function
   seconds_sw.addCallback
   (
     "toggled",
-    F_METHOD_CALLBACK (this, &Watch::cb_seconds)
+    this, &Watch::cb_seconds
   );
 
   // Connect button signal "clicked" with a callback member function
   quit_btn.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
+    finalcut::getFApplication(),
+    &finalcut::FApplication::cb_exitApp,
+    this
   );
 }
 
@@ -152,7 +154,7 @@ void Watch::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Watch::cb_clock (const finalcut::FWidget*, const FDataPtr)
+void Watch::cb_clock()
 {
   if ( clock_sw.isChecked() )
   {
@@ -168,7 +170,7 @@ void Watch::cb_clock (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Watch::cb_seconds (const finalcut::FWidget*, const FDataPtr)
+void Watch::cb_seconds()
 {
   if ( seconds_sw.isChecked() )
     sec = true;

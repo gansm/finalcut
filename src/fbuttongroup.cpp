@@ -240,11 +240,11 @@ void FButtonGroup::insert (FToggleButton* button)
   button->addCallback
   (
     "toggled",
-    F_METHOD_CALLBACK (this, &FButtonGroup::cb_buttonToggled)
+    this, &FButtonGroup::cb_buttonToggled,
+    button
   );
 }
 
-//----------------------------------------------------------------------
 void FButtonGroup::remove (FToggleButton* button)
 {
   if ( ! button || buttonlist.empty() )
@@ -542,10 +542,8 @@ void FButtonGroup::directFocus()
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::cb_buttonToggled (FWidget* widget, const FDataPtr) const
+void FButtonGroup::cb_buttonToggled (FToggleButton* button) const
 {
-  const auto& button = static_cast<FToggleButton*>(widget);
-
   if ( (button && ! button->isChecked()) || buttonlist.empty() )
     return;
 

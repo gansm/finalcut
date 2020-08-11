@@ -193,10 +193,9 @@ void FMessageBox::adjustSize()
 }
 
 //----------------------------------------------------------------------
-void FMessageBox::cb_processClick (const FWidget*, FDataPtr data)
+void FMessageBox::cb_processClick (int reply)
 {
-  const int reply = *(static_cast<int*>(data));
-  done (reply);
+  done(reply);
 }
 
 
@@ -281,8 +280,8 @@ inline void FMessageBox::initCallbacks()
     button[0]->addCallback
     (
       "clicked",
-      F_METHOD_CALLBACK (this, &FMessageBox::cb_processClick),
-      static_cast<FDataPtr>(&button_digit[0])
+      this, &FMessageBox::cb_processClick,
+      button_digit[0]
     );
   }
 
@@ -291,8 +290,8 @@ inline void FMessageBox::initCallbacks()
     button[1]->addCallback
     (
       "clicked",
-      F_METHOD_CALLBACK (this, &FMessageBox::cb_processClick),
-      static_cast<FDataPtr>(&button_digit[1])
+      this, &FMessageBox::cb_processClick,
+      button_digit[1]
     );
   }
 
@@ -301,8 +300,8 @@ inline void FMessageBox::initCallbacks()
     button[2]->addCallback
     (
       "clicked",
-      F_METHOD_CALLBACK (this, &FMessageBox::cb_processClick),
-      static_cast<FDataPtr>(&button_digit[2])
+      this, &FMessageBox::cb_processClick,
+      button_digit[2]
     );
   }
 }

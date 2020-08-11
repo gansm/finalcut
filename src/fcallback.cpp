@@ -1,9 +1,9 @@
 /***********************************************************************
-* fradiomenuitem.cpp - Widget FRadioMenuItem                           *
+* fcallback.cpp - Implements the callback functionality                *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2020 Markus Gans                                           *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -20,78 +20,23 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include "final/fc.h"
-#include "final/fradiomenuitem.h"
-#include "final/fmenu.h"
+#include "final/fcallback.h"
 
 namespace finalcut
 {
 
 //----------------------------------------------------------------------
-// class FRadioMenuItem
+// class FCallback
 //----------------------------------------------------------------------
 
-// constructor and destructor
+// constructors and destructor
 //----------------------------------------------------------------------
-FRadioMenuItem::FRadioMenuItem (FWidget* parent)
-  : FMenuItem{parent}
-{
-  init();
-}
-
-//----------------------------------------------------------------------
-FRadioMenuItem::FRadioMenuItem (const FString& txt, FWidget* parent)
-  : FMenuItem{txt, parent}
-{
-  init();
-}
-
-//----------------------------------------------------------------------
-FRadioMenuItem::~FRadioMenuItem()  // destructor
+FCallback::FCallback()
 { }
 
-
-// private methods of FRadioMenuItem
 //----------------------------------------------------------------------
-void FRadioMenuItem::init()
-{
-  setCheckable();
-  setRadioButton();
-  FWidget* parent = getParentWidget();
-
-  if ( ! parent )
-    return;
-
-  if ( isMenu(parent) )  // Parent is menu
-  {
-    auto menu_ptr = static_cast<FMenu*>(parent);
-    menu_ptr->has_checkable_items = true;
-
-    addCallback  // for this element
-    (
-      "toggled",
-      std::move(menu_ptr), &FMenu::cb_menuitemToggled,
-      this
-    );
-  }
-}
-
-//----------------------------------------------------------------------
-void FRadioMenuItem::processToggle()
-{
-  emitCallback("toggled");
-}
-
-//----------------------------------------------------------------------
-void FRadioMenuItem::processClicked()
-{
-  if ( ! isChecked() )
-  {
-    setChecked();
-    processToggle();
-  }
-
-  emitCallback("clicked");
-}
+FCallback::~FCallback()  // destructor
+{ }
 
 }  // namespace finalcut
+

@@ -100,18 +100,19 @@ SegmentView::SegmentView (finalcut::FWidget* parent)
   Input.addCallback
   (
     "changed",
-    [] (const finalcut::FWidget*, FDataPtr data)
+    [] (SegmentView& dialog)
     {
-      auto dialog = static_cast<SegmentView*>(data);
-      dialog->redraw();
+      dialog.redraw();
     },
-    this
+    std::ref(*this)
   );
 
   Exit.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
+    finalcut::getFApplication(),
+    &finalcut::FApplication::cb_exitApp,
+    this
   );
 }
 

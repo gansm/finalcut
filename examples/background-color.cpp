@@ -58,8 +58,8 @@ class Background final : public finalcut::FDialog
 
   private:
     // Callback method
-    void cb_changed (const finalcut::FWidget*, const FDataPtr);
-    void cb_choice (const finalcut::FWidget*, const FDataPtr);
+    void cb_changed();
+    void cb_choice();
 
     // Data members
     finalcut::FComboBox color_choice{this};
@@ -148,7 +148,9 @@ Background::Background (finalcut::FWidget* parent)
   quit.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
+    finalcut::getFApplication(),
+    &finalcut::FApplication::cb_exitApp,
+    this
   );
 
   for (const auto spinbox : {&red, &green, &blue})
@@ -156,7 +158,7 @@ Background::Background (finalcut::FWidget* parent)
     spinbox->addCallback
     (
       "changed",
-      F_METHOD_CALLBACK (this, &Background::cb_changed)
+      this, &Background::cb_changed
     );
   }
 
@@ -165,7 +167,7 @@ Background::Background (finalcut::FWidget* parent)
     color_choice.addCallback
     (
       signal,
-      F_METHOD_CALLBACK (this, &Background::cb_choice)
+      this, &Background::cb_choice
     );
   }
 }
@@ -175,7 +177,7 @@ Background::~Background()  // destructor
 { }
 
 //----------------------------------------------------------------------
-void Background::cb_changed (const finalcut::FWidget*, const FDataPtr)
+void Background::cb_changed()
 {
   if ( ! finalcut::FTerm::canChangeColorPalette() )
     return;
@@ -189,7 +191,7 @@ void Background::cb_changed (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Background::cb_choice (const finalcut::FWidget*, const FDataPtr)
+void Background::cb_choice()
 {
   if ( ! finalcut::FTerm::canChangeColorPalette() )
     return;

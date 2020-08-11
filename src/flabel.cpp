@@ -100,7 +100,7 @@ void FLabel::setAccelWidget (FWidget* widget)
   accel_widget->addCallback
   (
     "destroy",
-    F_METHOD_CALLBACK (this, &FLabel::cb_accelWidgetDestroyed)
+    this, &FLabel::cb_accelWidgetDestroyed
   );
 }
 
@@ -244,7 +244,7 @@ void FLabel::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FLabel::cb_accelWidgetDestroyed (const FWidget*, const FDataPtr)
+void FLabel::cb_accelWidgetDestroyed()
 {
   accel_widget = nullptr;
   delAccelerator();
@@ -256,7 +256,7 @@ void FLabel::cb_accelWidgetDestroyed (const FWidget*, const FDataPtr)
 void FLabel::init()
 {
   unsetFocusable();
-  useParentWidgetColor();
+  resetColors();
 }
 
 //----------------------------------------------------------------------
@@ -299,8 +299,6 @@ void FLabel::draw()
 {
   if ( text.isEmpty() )
     return;
-
-
 
   if ( FTerm::isMonochron() )
   {

@@ -19,6 +19,7 @@ libfinal_la_SOURCES = \
 	flineedit.cpp \
 	fbutton.cpp \
 	fbuttongroup.cpp \
+	fcallback.cpp \
 	ftogglebutton.cpp \
 	fradiobutton.cpp \
 	fcheckbox.cpp \
@@ -85,6 +86,7 @@ finalcutinclude_HEADERS = \
 	include/final/fapplication.h \
 	include/final/fbutton.h \
 	include/final/fbuttongroup.h \
+	include/final/fcallback.h \
 	include/final/fcheckbox.h \
 	include/final/fcolorpair.h \
 	include/final/fdata.h \

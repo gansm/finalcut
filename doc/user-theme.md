@@ -370,7 +370,7 @@ class dialogWidget final : public FDialog
       Browse.addCallback
       (
         "clicked",
-        F_METHOD_CALLBACK (this, &dialogWidget::cb_FileBrowse)
+        this, &dialogWidget::cb_FileBrowse
       );
       Apply.setGeometry (FPoint{24, 5}, FSize{10, 1});
       Apply.setStatusbarMessage("Apply settings");
@@ -379,17 +379,19 @@ class dialogWidget final : public FDialog
       Quit.addCallback
       (
         "clicked",
-        F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
+        finalcut::getFApplication(),
+        &finalcut::FApplication::cb_exitApp,
+        this  
       );
       Open.addCallback
       (
         "clicked",
-        F_METHOD_CALLBACK (this, &dialogWidget::cb_FileBrowse)
+        this, &dialogWidget::cb_FileBrowse
       );
     }
 
   private:
-    void cb_FileBrowse (finalcut::FWidget*, FDataPtr)
+    void cb_FileBrowse()
     {
       auto filename = FFileDialog::fileOpenChooser(this);
 

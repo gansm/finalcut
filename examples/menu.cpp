@@ -61,7 +61,7 @@ class Menu final : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
-    void cb_message (finalcut::FWidget*, const FDataPtr);
+    void cb_message (finalcut::FMenuItem*);
 
     // Data members
     finalcut::FString        line{13, fc::BoxDrawingsHorizontal};
@@ -183,7 +183,9 @@ void Menu::configureFileMenuItems()
   Quit.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
+    finalcut::getFApplication(),
+    &finalcut::FApplication::cb_exitApp,
+    this
   );
 }
 
@@ -275,7 +277,8 @@ void Menu::defaultCallback (const finalcut::FMenuList* mb)
       item->addCallback
       (
         "clicked",
-        F_METHOD_CALLBACK (this, &Menu::cb_message)
+        this, &Menu::cb_message,
+        item
       );
 
       // Call sub-menu
@@ -302,9 +305,8 @@ void Menu::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Menu::cb_message (finalcut::FWidget* widget, const FDataPtr)
+void Menu::cb_message (finalcut::FMenuItem* menuitem)
 {
-  const auto& menuitem = static_cast<finalcut::FMenuItem*>(widget);
   auto text = menuitem->getText();
   text = text.replace('&', "");
   finalcut::FMessageBox::info ( this

@@ -380,37 +380,37 @@ void FFileDialog::initCallbacks()
   filename.addCallback
   (
     "activate",
-    F_METHOD_CALLBACK (this, &FFileDialog::cb_processActivate)
+    this, &FFileDialog::cb_processActivate
   );
 
   filebrowser.addCallback
   (
     "row-changed",
-    F_METHOD_CALLBACK (this, &FFileDialog::cb_processRowChanged)
+    this, &FFileDialog::cb_processRowChanged
   );
 
   filebrowser.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FFileDialog::cb_processClicked)
+    this, &FFileDialog::cb_processClicked
   );
 
   hidden_check.addCallback
   (
     "toggled",
-    F_METHOD_CALLBACK (this, &FFileDialog::cb_processShowHidden)
+    this, &FFileDialog::cb_processShowHidden
   );
 
   cancel_btn.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FFileDialog::cb_processCancel)
+    this, &FFileDialog::cb_processCancel
   );
 
   open_btn.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FFileDialog::cb_processOpen)
+    this, &FFileDialog::cb_processOpen
   );
 }
 
@@ -754,7 +754,7 @@ const FString FFileDialog::getHomeDir()
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processActivate (const FWidget*, const FDataPtr)
+void FFileDialog::cb_processActivate()
 {
   if ( filename.getText().includes('*')
     || filename.getText().includes('?') )
@@ -803,7 +803,7 @@ void FFileDialog::cb_processActivate (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processRowChanged (const FWidget*, const FDataPtr)
+void FFileDialog::cb_processRowChanged()
 {
   const std::size_t n = filebrowser.currentItem();
 
@@ -821,7 +821,7 @@ void FFileDialog::cb_processRowChanged (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processClicked (const FWidget*, const FDataPtr)
+void FFileDialog::cb_processClicked()
 {
   const uLong n = uLong(filebrowser.currentItem() - 1);
 
@@ -832,19 +832,19 @@ void FFileDialog::cb_processClicked (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processCancel (const FWidget*, const FDataPtr)
+void FFileDialog::cb_processCancel()
 {
   done (FDialog::Reject);
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processOpen (const FWidget*, const FDataPtr)
+void FFileDialog::cb_processOpen()
 {
   done (FDialog::Accept);
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processShowHidden (const FWidget*, const FDataPtr)
+void FFileDialog::cb_processShowHidden()
 {
   setShowHiddenFiles(! show_hidden);
 }

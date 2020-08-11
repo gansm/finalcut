@@ -327,26 +327,21 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::cb_menuitemEnabled (const FWidget*, const FDataPtr)
+void FMenu::cb_menuitemEnabled()
 {
   setEnable();
 }
 
 //----------------------------------------------------------------------
-void FMenu::cb_menuitemDisabled (const FWidget*, const FDataPtr)
+void FMenu::cb_menuitemDisabled()
 {
   setDisable();
 }
 
 //----------------------------------------------------------------------
-void FMenu::cb_menuitemToggled (FWidget* widget, const FDataPtr) const
+void FMenu::cb_menuitemToggled (FMenuItem* m_item) const
 {
-  const auto& m_item = static_cast<FMenuItem*>(widget);
-
-  if ( ! has_checkable_items )
-    return;
-
-  if ( ! m_item->isChecked() )
+  if ( ! (has_checkable_items && m_item && m_item->isChecked()) )
     return;
 
   auto list = getItemList();
@@ -497,13 +492,13 @@ void FMenu::initCallbacks()
   menuitem.addCallback
   (
     "enable",
-    F_METHOD_CALLBACK (this, &FMenu::cb_menuitemEnabled)
+    this, &FMenu::cb_menuitemEnabled
   );
 
   menuitem.addCallback
   (
     "disable",
-    F_METHOD_CALLBACK (this, &FMenu::cb_menuitemEnabled)
+    this, &FMenu::cb_menuitemDisabled
   );
 }
 

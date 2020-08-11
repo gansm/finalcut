@@ -41,7 +41,7 @@ class Dialog final : public finalcut::FDialog
     void onTimer (finalcut::FTimerEvent*) override;
 
     // Callback method
-    void cb_start (const finalcut::FWidget*, const FDataPtr);
+    void cb_start();
 
     // Data members
     finalcut::FSpinBox seconds{this};
@@ -67,21 +67,22 @@ Dialog::Dialog (FWidget* parent)
   seconds.addCallback
   (
     "activate",
-    F_METHOD_CALLBACK (this, &Dialog::cb_start)
+    this, &Dialog::cb_start
   );
 
   start.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Dialog::cb_start)
+    this, &Dialog::cb_start
   );
 
   quit.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
+    finalcut::getFApplication(),
+    &finalcut::FApplication::cb_exitApp,
+    this
   );
-
 }
 
 //----------------------------------------------------------------------
@@ -105,7 +106,7 @@ void Dialog::onTimer (finalcut::FTimerEvent*)
 }
 
 //----------------------------------------------------------------------
-void Dialog::cb_start (const finalcut::FWidget*, const FDataPtr)
+void Dialog::cb_start()
 {
   if ( seconds.getValue() < 1 )
     return;

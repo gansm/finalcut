@@ -126,4 +126,3 @@ class FClassName
 
 #endif  // FCLASSNAME_H
 
-

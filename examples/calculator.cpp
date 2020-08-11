@@ -119,13 +119,6 @@ class Calc final : public finalcut::FDialog
     // Destructor
     ~Calc() override;
 
-    // Event handlers
-    void           onKeyPress (finalcut::FKeyEvent*) override;
-    void           onClose (finalcut::FCloseEvent*) override;
-
-    // Callback method
-    void           cb_buttonClicked (const finalcut::FWidget*, FDataPtr);
-
   private:
     // Typedef and Enumeration
     typedef std::function<void(lDouble&)> keyFunction;  // Member function
@@ -218,6 +211,13 @@ class Calc final : public finalcut::FDialog
     const wchar_t* getButtonText (const std::size_t) const;
     void           mapKeyFunctions();
 
+    // Event handlers
+    void           onKeyPress (finalcut::FKeyEvent*) override;
+    void           onClose (finalcut::FCloseEvent*) override;
+
+    // Callback method
+    void           cb_buttonClicked (Calc::button);
+
     // Data members
     bool              error{false};
     bool              arcus_mode{false};
@@ -230,7 +230,7 @@ class Calc final : public finalcut::FDialog
     char              infix_operator{'\0'};
     char              last_infix_operator{'\0'};
     finalcut::FString input{""};
-    std::size_t       button_no[Calc::NUM_OF_BUTTONS]{};
+    button            button_no[Calc::NUM_OF_BUTTONS]{};
 
     struct stack_data
     {
@@ -257,7 +257,7 @@ Calc::Calc (FWidget* parent)
   clearInfixOperator();
   std::setlocale(LC_NUMERIC, "C");
 
-  for (std::size_t key{0}; key < Calc::NUM_OF_BUTTONS; key++)
+  for (button key{Sine}; key < Calc::NUM_OF_BUTTONS; key = button(key + 1))
   {
     auto btn = std::make_shared<Button>(this);
     button_no[key] = key;
@@ -284,8 +284,8 @@ Calc::Calc (FWidget* parent)
     btn->addCallback
     (
       "clicked",
-      F_METHOD_CALLBACK (this, &Calc::cb_buttonClicked),
-      &button_no[key]
+      this, &Calc::cb_buttonClicked,
+      button_no[key]
     );
 
     calculator_buttons[button(key)] = btn;
@@ -364,10 +364,9 @@ void Calc::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Calc::cb_buttonClicked (const finalcut::FWidget*, FDataPtr data)
+void Calc::cb_buttonClicked (Calc::button key)
 {
   lDouble& x = getValue();
-  const Calc::button& key = *(static_cast<Calc::button*>(data));
 
   // Call the key function
   key_map[key](x);

@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include "final/fapplication.h"
 #include "final/fcolorpair.h"
 #include "final/fstyle.h"
 #include "final/fwidget.h"
@@ -49,6 +50,12 @@ bool isFocusPrevKey (const FKey key)
     return true;
 
   return false;
+}
+
+//----------------------------------------------------------------------
+FApplication* getFApplication()
+{
+  return FApplication::getApplicationObject();
 }
 
 //----------------------------------------------------------------------

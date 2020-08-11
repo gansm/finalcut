@@ -353,7 +353,7 @@ class MouseDraw final : public finalcut::FDialog
     void onMouseMove (finalcut::FMouseEvent*) override;
 
     // Callback methods
-    void cb_colorChanged (const finalcut::FWidget*, const FDataPtr);
+    void cb_colorChanged();
 
     // Data members
     FTermArea*   canvas{nullptr};
@@ -371,7 +371,7 @@ MouseDraw::MouseDraw (finalcut::FWidget* parent)
   c_chooser.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &MouseDraw::cb_colorChanged)
+    this, &MouseDraw::cb_colorChanged
   );
 
   brush.setPos (FPoint{1, 12});
@@ -572,7 +572,7 @@ void MouseDraw::onMouseMove (finalcut::FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void MouseDraw::cb_colorChanged (const finalcut::FWidget*, const FDataPtr)
+void MouseDraw::cb_colorChanged()
 {
   brush.setForeground (c_chooser.getForeground());
   brush.setBackground (c_chooser.getBackground());

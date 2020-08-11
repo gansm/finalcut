@@ -209,9 +209,9 @@ class FDialog : public FWindow
     static void           delDialog (const FWidget*);
 
     // Callback methods
-    void                  cb_move (const FWidget*, const FDataPtr);
-    void                  cb_zoom (const FWidget*, const FDataPtr);
-    void                  cb_close (const FWidget*, const FDataPtr);
+    void                  cb_move();
+    void                  cb_zoom();
+    void                  cb_close();
 
     // Data members
     FString               tb_text{};  // title bar text

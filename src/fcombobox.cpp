@@ -508,19 +508,19 @@ void FComboBox::initCallbacks()
   input_field.addCallback
   (
     "mouse-press",
-    F_METHOD_CALLBACK (this, &FComboBox::cb_inputFieldSwitch)
+    this, &FComboBox::cb_inputFieldSwitch
   );
 
   input_field.addCallback
   (
     "mouse-move",
-    F_METHOD_CALLBACK (this, &FComboBox::cb_inputFieldHandOver)
+    this, &FComboBox::cb_inputFieldHandOver
   );
 
   list_window.list.addCallback
   (
     "row-changed",
-    F_METHOD_CALLBACK (this, &FComboBox::cb_setInputField)
+    this, &FComboBox::cb_setInputField
   );
 
   for (const auto& signal : {"row-selected", "clicked"})
@@ -528,7 +528,7 @@ void FComboBox::initCallbacks()
     list_window.list.addCallback
     (
       signal,
-      F_METHOD_CALLBACK (this, &FComboBox::cb_closeComboBox)
+      this, &FComboBox::cb_closeComboBox
     );
   }
 }
@@ -628,7 +628,7 @@ void FComboBox::processChanged()
 }
 
 //----------------------------------------------------------------------
-void FComboBox::cb_setInputField (const FWidget*, const FDataPtr)
+void FComboBox::cb_setInputField()
 {
   auto& list = list_window.list;
   const std::size_t index = list.currentItem();
@@ -638,14 +638,14 @@ void FComboBox::cb_setInputField (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FComboBox::cb_closeComboBox (const FWidget*, const FDataPtr)
+void FComboBox::cb_closeComboBox()
 {
   hideDropDown();
   processClick();
 }
 
 //----------------------------------------------------------------------
-void FComboBox::cb_inputFieldSwitch (const FWidget*, const FDataPtr)
+void FComboBox::cb_inputFieldSwitch()
 {
   const auto& mouse = FTerm::getFMouseControl();
 
@@ -677,7 +677,7 @@ void FComboBox::cb_inputFieldSwitch (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FComboBox::cb_inputFieldHandOver (const FWidget*, const FDataPtr)
+void FComboBox::cb_inputFieldHandOver()
 {
   const auto& mouse = FTerm::getFMouseControl();
 

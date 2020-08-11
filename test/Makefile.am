@@ -8,6 +8,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/include -Wall -Werror -std=c++11
 
 noinst_PROGRAMS = \
 	fobject_test \
+	fcallback_test \
 	fmouse_test \
 	fkeyboard_test \
 	ftermdata_test \
@@ -28,6 +29,7 @@ noinst_PROGRAMS = \
 	frect_test
 
 fobject_test_SOURCES = fobject-test.cpp
+fcallback_test_SOURCES = fcallback-test.cpp
 fmouse_test_SOURCES = fmouse-test.cpp
 fkeyboard_test_SOURCES = fkeyboard-test.cpp
 ftermdata_test_SOURCES = ftermdata-test.cpp

@@ -609,10 +609,8 @@ use `delAllCallbacks()` to remove all existing callbacks from an object.
 
 using namespace finalcut;
 
-void cb_changeText (FWidget* w, FDataPtr data)
+void cb_changeText (const FButton& button, FLabel& label)
 {
-  FButton& button = *(static_cast<FButton*>(w));
-  FLabel& label = *(static_cast<FLabel*>(data));
   label.clear();
   label << "The " << button.getClassName() << " was pressed";
   label.redraw();
@@ -635,9 +633,10 @@ int main (int argc, char* argv[])
   // Connect the button signal "clicked" with the callback function
   button.addCallback
   (
-    "clicked",
-    F_FUNCTION_CALLBACK (&cb_changeText),
-    &label
+    "clicked",          // Callback signal
+    &cb_changeText,     // Function pointer
+    std::cref(button),  // First function argument
+    std::ref(label)     // Second function argument
   );
 
   FWidget::setMainWidget(&dialog);
@@ -683,11 +682,9 @@ int main (int argc, char* argv[])
   // Connect the button signal "clicked" with the lambda expression
   button.addCallback
   (
-    "clicked",
-    [] (FWidget* w, FDataPtr d)
+    "clicked",                          // Callback signal
+    [] (FButton& button, FDialog& dgl)  // Lambda function
     {
-      FButton& button = *(static_cast<FButton*>(w));
-
       if ( button.getY() != 2 )
       {
         button.setPos (FPoint{15, 2});
@@ -699,9 +696,10 @@ int main (int argc, char* argv[])
         button.setText("&bottom");
       }
 
-      static_cast<FDialog*>(d)->redraw();
+      dgl.redraw();
     },
-    &dialog
+    std::ref(button),                   // First function argument
+    std::ref(dialog)                    // Second function argument
   );
 
   FWidget::setMainWidget(&dialog);
@@ -748,9 +746,10 @@ class dialogWidget : public FDialog
       // Connect the button signal "clicked" with the callback method
       button.addCallback
       (
-        "clicked",
-        F_METHOD_CALLBACK (this, &FApplication::cb_exitApp),
-        nullptr
+        "clicked",                            // Callback signal
+        finalcut::getFApplication(),          // Class instance
+        &finalcut::FApplication::cb_exitApp,  // Method pointer
+        this                                  // Function argument
       );
     }
 
@@ -810,45 +809,22 @@ class dialogWidget : public FDialog
       label.setAlignment (fc::alignRight);
       label.setForegroundColor (fc::Black);
       plus.setGeometry (FPoint{3, 3}, size);
-      minus.setGeometry (FPoint{13, 3}, size);
+      minus.setGeometry (FPoint{3, 3} + FPoint{10, 0}, size);
       plus.setNoUnderline();
       minus.setNoUnderline();
 
       // Connect the button signal "clicked" with the callback method
-      plus.addCallback
-      (
-        "clicked",
-        F_METHOD_CALLBACK (this, &dialogWidget::cb_plus)
-      );
-
-      minus.addCallback
-      (
-        "clicked",
-        F_METHOD_CALLBACK (this, &dialogWidget::cb_minus)
-      );
+      plus.addCallback ("clicked", this, &dialogWidget::cb_plus);
+      minus.addCallback ("clicked", this, &dialogWidget::cb_minus);
 
       // Connect own signals
-      addCallback
-      (
-        "hot",
-        F_METHOD_CALLBACK (this, &dialogWidget::cb_set_red)
-      );
-
-      addCallback
-      (
-        "regular",
-        F_METHOD_CALLBACK (this, &dialogWidget::cb_set_black)
-      );
-
-      addCallback
-      (
-        "cold",
-        F_METHOD_CALLBACK (this, &dialogWidget::cb_set_blue)
-      );
+      addCallback ("hot", this, &dialogWidget::cb_set_red);
+      addCallback ("regular", this, &dialogWidget::cb_set_black);
+      addCallback ("cold", this, &dialogWidget::cb_set_blue);
     }
 
   private:
-    void cb_plus (FWidget*, FDataPtr)
+    void cb_plus()
     {
       if ( t < 100 )
         t++;
@@ -861,7 +837,7 @@ class dialogWidget : public FDialog
       setTemperature();
     }
 
-    void cb_minus (FWidget*, FDataPtr)
+    void cb_minus()
     {
       if ( t > -99 )
         t--;
@@ -874,17 +850,17 @@ class dialogWidget : public FDialog
       setTemperature();
     }
 
-    void cb_set_blue (FWidget*, FDataPtr)
+    void cb_set_blue()
     {
       label.setForegroundColor (fc::Blue);
     }
 
-    void cb_set_black (FWidget*, FDataPtr)
+    void cb_set_black()
     {
       label.setForegroundColor (fc::Black);
     }
 
-    void cb_set_red (FWidget*, FDataPtr)
+    void cb_set_red()
     {
       label.setForegroundColor (fc::Red);
     }
@@ -1291,8 +1267,7 @@ class dialogWidget : public FDialog
         btn->addCallback
         (
           "clicked",
-          F_METHOD_CALLBACK (this, &dialogWidget::cb_button),
-          static_cast<FDataPtr>(&std::get<2>(b))
+          this, &dialogWidget::cb_button, std::get<2>(b)
         );
       };
     }
@@ -1300,10 +1275,9 @@ class dialogWidget : public FDialog
   private:
     typedef std::tuple<FString, FPoint, FPoint, FColorPair> direction;
 
-    void cb_button (FWidget*, FDataPtr data)
+    void cb_button (const FPoint& p)
     {
-      FPoint* p = static_cast<FPoint*>(data);
-      scrollview.scrollTo(*p);
+      scrollview.scrollTo(p);
     }
 
     FScrollView scrollview{this};

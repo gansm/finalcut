@@ -157,7 +157,9 @@ Listbox::Listbox (FWidget* parent)
   Quit.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
+    finalcut::getFApplication(),
+    &finalcut::FApplication::cb_exitApp,
+    this
   );
 }
 

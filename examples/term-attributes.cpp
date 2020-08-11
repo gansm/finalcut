@@ -58,8 +58,8 @@ class AttribDlg final : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback methods
-    void cb_next (const finalcut::FWidget* = nullptr, const FDataPtr = nullptr);
-    void cb_back (const finalcut::FWidget* = nullptr, const FDataPtr = nullptr);
+    void cb_next();
+    void cb_back();
 
   private:
     // Constants
@@ -90,13 +90,13 @@ AttribDlg::AttribDlg (finalcut::FWidget* parent)
   next_button.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &AttribDlg::cb_next)
+    this, &AttribDlg::cb_next
   );
 
   back_button.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &AttribDlg::cb_back)
+    this, &AttribDlg::cb_back
   );
 }
 
@@ -143,7 +143,7 @@ void AttribDlg::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::cb_next (const finalcut::FWidget*, const FDataPtr)
+void AttribDlg::cb_next()
 {
   if ( finalcut::FTerm::isMonochron() )
     return;
@@ -159,7 +159,7 @@ void AttribDlg::cb_next (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::cb_back (const finalcut::FWidget*, const FDataPtr)
+void AttribDlg::cb_back()
 {
   if ( finalcut::FTerm::isMonochron() )
     return;

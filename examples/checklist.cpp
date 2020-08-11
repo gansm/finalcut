@@ -64,7 +64,7 @@ class CheckList final : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
-    void cb_showList (const finalcut::FWidget*, const FDataPtr);
+    void cb_showList();
 
     // Data members
     finalcut::FListView  listView{this};
@@ -110,7 +110,7 @@ CheckList::CheckList (finalcut::FWidget* parent)
   listView.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &CheckList::cb_showList)
+    this, &CheckList::cb_showList
   );
 }
 
@@ -168,7 +168,7 @@ void CheckList::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void CheckList::cb_showList (const finalcut::FWidget*, const FDataPtr)
+void CheckList::cb_showList()
 {
   auto iter = listView.beginOfList();
   finalcut::FString shopping_list{};

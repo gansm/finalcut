@@ -140,8 +140,8 @@ class FSpinBox : public FWidget
     void                forceFocus();
 
     // Callback methods
-    void                cb_inputFieldActivate (const finalcut::FWidget*, const FDataPtr);
-    void                cb_inputFieldChange (finalcut::FWidget*, const FDataPtr);
+    void                cb_inputFieldActivate();
+    void                cb_inputFieldChange (const FLineEdit&);
 
     // Data members
     FLineEdit           input_field{this};

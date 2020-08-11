@@ -26,33 +26,30 @@ using finalcut::FPoint;
 using finalcut::FSize;
 
 // function prototypes
-void cb_quit (const finalcut::FWidget*, FDataPtr);
-void cb_publish (finalcut::FWidget*, FDataPtr);
+void cb_quit (finalcut::FApplication&);
+void cb_publish (finalcut::FCheckBox&, finalcut::FCheckBox&);
 
 
 //----------------------------------------------------------------------
 // callback functions
 //----------------------------------------------------------------------
-void cb_quit (const finalcut::FWidget*, FDataPtr data)
+void cb_quit (finalcut::FApplication& app)
 {
-  auto app = static_cast<finalcut::FApplication*>(data);
-  app->quit();
+  app.quit();
 }
 
-void cb_publish (finalcut::FWidget* widget, FDataPtr data)
+//----------------------------------------------------------------------
+void cb_publish (finalcut::FCheckBox& cbox1, finalcut::FCheckBox& cbox2)
 {
-  auto cbox1 = static_cast<finalcut::FCheckBox*>(widget);
-  auto cbox2 = static_cast<finalcut::FCheckBox*>(data);
-
-  if ( cbox1->isChecked() )
-    cbox2->setEnable();
+  if ( cbox1.isChecked() )
+    cbox2.setEnable();
   else
   {
-    cbox2->unsetChecked();
-    cbox2->setDisable();
+    cbox2.unsetChecked();
+    cbox2.setDisable();
   }
 
-  cbox2->redraw();
+  cbox2.redraw();
 }
 
 //----------------------------------------------------------------------
@@ -124,7 +121,8 @@ int main (int argc, char* argv[])
   (
     "clicked",
     &cb_publish,
-    &check2
+    std::ref(check1),
+    std::ref(check2)
   );
 
   // Connect the button signal "clicked" with the callback function
@@ -132,7 +130,7 @@ int main (int argc, char* argv[])
   (
     "clicked",
     &cb_quit,
-    &app
+    std::ref(app)
   );
 
   // Set dialog object as main widget

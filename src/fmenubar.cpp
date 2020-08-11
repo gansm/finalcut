@@ -228,16 +228,14 @@ void FMenuBar::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::cb_itemDeactivated (FWidget* widget, const FDataPtr) const
+void FMenuBar::cb_itemDeactivated (FMenuItem* menuitem) const
 {
-  auto menuitem = static_cast<FMenuItem*>(widget);
+  if ( ! menuitem->hasMenu() )
+    return;
 
-  if ( menuitem->hasMenu() )
-  {
-    auto menu = menuitem->getMenu();
-    menu->hide();
-    menu->hideSubMenus();
-  }
+  auto menu = menuitem->getMenu();
+  menu->hide();
+  menu->hideSubMenus();
 }
 
 

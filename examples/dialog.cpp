@@ -26,15 +26,14 @@ using finalcut::FPoint;
 using finalcut::FSize;
 
 // function prototype
-void cb_quit (const finalcut::FWidget*, FDataPtr);
+void cb_quit (finalcut::FApplication&);
 
 
 //----------------------------------------------------------------------
 // callback function
 //----------------------------------------------------------------------
-void cb_quit (const finalcut::FWidget*, FDataPtr data)
+void cb_quit (finalcut::FApplication& app)
 {
-  const auto& app = *(static_cast<finalcut::FApplication*>(data));
   app.quit();
 }
 
@@ -77,7 +76,7 @@ int main (int argc, char* argv[])
   (
     "clicked",
     &cb_quit,
-    &app
+    std::ref(app)
   );
 
   // Set dialog object as main widget

@@ -386,7 +386,9 @@ Treeview::Treeview (finalcut::FWidget* parent)
   Quit.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
+    finalcut::getFApplication(),
+    &finalcut::FApplication::cb_exitApp,
+    this
   );
 
   initialized = true;

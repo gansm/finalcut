@@ -101,7 +101,7 @@ FWidget::FWidget (FWidget* parent)
 FWidget::~FWidget()  // destructor
 {
   processDestroy();
-  delAllCallbacks();
+  delCallback();
   auto app_object = FApplication::getApplicationObject();
   app_object->removeQueuedEvent(this);
 
@@ -830,94 +830,6 @@ bool FWidget::close()
   }
   else
     return false;
-}
-
-//----------------------------------------------------------------------
-void FWidget::addCallback ( const FString& cb_signal
-                          , const FCallback& cb_function
-                          , FDataPtr data )
-{
-  // Add a (normal) function pointer as callback
-
-  FCallbackData obj{ cb_signal, nullptr, cb_function, data };
-  callback_objects.push_back(obj);
-}
-
-//----------------------------------------------------------------------
-void FWidget::addCallback ( const FString& cb_signal
-                          , FWidget*  cb_instance
-                          , const FCallback& cb_function
-                          , FDataPtr data )
-{
-  // Add a member function pointer as callback
-
-  FCallbackData obj{ cb_signal, cb_instance, cb_function, data };
-  callback_objects.push_back(obj);
-}
-
-//----------------------------------------------------------------------
-void FWidget::delCallback (const FCallback& cb_function)
-{
-  // Deletes entries with cb_function form the callback list
-
-  if ( callback_objects.empty() )
-    return;
-
-  auto iter = callback_objects.begin();
-
-  while ( iter != callback_objects.end() )
-  {
-    if ( getCallbackPtr(iter->cb_function) == getCallbackPtr(cb_function) )
-      iter = callback_objects.erase(iter);
-    else
-      ++iter;
-  }
-}
-
-//----------------------------------------------------------------------
-void FWidget::delCallback (const FWidget* cb_instance)
-{
-  // Deletes entries with cb_instance from the callback list
-
-  if ( callback_objects.empty() )
-    return;
-
-  auto iter = callback_objects.begin();
-
-  while ( iter != callback_objects.end() )
-  {
-    if ( iter->cb_instance == cb_instance )
-      iter = callback_objects.erase(iter);
-    else
-      ++iter;
-  }
-}
-
-//----------------------------------------------------------------------
-void FWidget::delAllCallbacks()
-{
-  // Delete all callbacks from this widget
-
-  callback_objects.clear();  // function pointer
-}
-
-//----------------------------------------------------------------------
-void FWidget::emitCallback (const FString& emit_signal)
-{
-  // Initiate callback for the given signal
-
-  if ( callback_objects.empty() )
-    return;
-
-  for (auto&& cback : callback_objects)
-  {
-    if ( cback.cb_signal == emit_signal )
-    {
-      // Calling the stored function pointer
-      auto callback = cback.cb_function;
-      callback (this, cback.data);
-    }
-  }
 }
 
 //----------------------------------------------------------------------
@@ -1954,17 +1866,6 @@ void FWidget::setWindowFocus (bool enable)
   }
 
   window->setWindowFocusWidget(this);
-}
-
-//----------------------------------------------------------------------
-FWidget::FCallbackPtr FWidget::getCallbackPtr (const FCallback& cb_function)
-{
-  auto ptr = cb_function.template target<FCallbackPtr>();
-
-  if ( ptr )
-    return *ptr;
-  else
-    return nullptr;
 }
 
 //----------------------------------------------------------------------

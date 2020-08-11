@@ -130,7 +130,7 @@ class FButtonGroup : public FScrollView
     void                directFocus();
 
     // Callback method
-    void                cb_buttonToggled (FWidget*, const FDataPtr) const;
+    void                cb_buttonToggled (FToggleButton*) const;
 
     // Data members
     FString        text{};

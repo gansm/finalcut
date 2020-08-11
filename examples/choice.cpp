@@ -31,17 +31,16 @@ using finalcut::FSize;
 typedef std::shared_ptr<finalcut::FRadioButton> FRadioButtonPtr;
 
 // Function prototypes
-void cb_quit (const finalcut::FWidget*, FDataPtr);
+void cb_quit (finalcut::FDialog&);
 void populateChoice (std::vector<FRadioButtonPtr>&, finalcut::FButtonGroup&);
 void preset (std::vector<FRadioButtonPtr>&);
 
 //----------------------------------------------------------------------
 // Callback functions
 //----------------------------------------------------------------------
-void cb_quit (const finalcut::FWidget*, FDataPtr data)
+void cb_quit (finalcut::FDialog& dlg)
 {
-  auto dlg = static_cast<finalcut::FDialog*>(data);
-  dlg->close();
+  dlg.close();
 }
 
 //----------------------------------------------------------------------
@@ -141,7 +140,7 @@ int main (int argc, char* argv[])
     (
       "clicked",
       &cb_quit,
-      &dgl
+      std::ref(dgl)
     );
 
     // Show the dialog

@@ -54,10 +54,10 @@ class Scrollview final : public finalcut::FScrollView
     void draw() override;
 
     // Callback methods
-    void cb_goEast (const finalcut::FWidget*, const FDataPtr);
-    void cb_goSouth (const finalcut::FWidget*, const FDataPtr);
-    void cb_goWest (const finalcut::FWidget*, const FDataPtr);
-    void cb_goNorth (const finalcut::FWidget*, const FDataPtr);
+    void cb_goEast();
+    void cb_goSouth();
+    void cb_goWest();
+    void cb_goNorth();
 
     // Data members
     wchar_t pointer_right{fc::BlackRightPointingPointer};
@@ -88,25 +88,25 @@ Scrollview::Scrollview (finalcut::FWidget* parent)
   go_east.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Scrollview::cb_goEast)
+    this, &Scrollview::cb_goEast
   );
 
   go_south.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Scrollview::cb_goSouth)
+    this, &Scrollview::cb_goSouth
   );
 
   go_west.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Scrollview::cb_goWest)
+    this, &Scrollview::cb_goWest
   );
 
   go_north.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Scrollview::cb_goNorth)
+    this, &Scrollview::cb_goNorth
   );
 }
 
@@ -150,7 +150,7 @@ void Scrollview::draw()
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_goEast (const finalcut::FWidget*, const FDataPtr)
+void Scrollview::cb_goEast()
 {
   scrollToX (int(getScrollWidth() - getViewportWidth()) + 1);
   go_south.setFocus();
@@ -159,7 +159,7 @@ void Scrollview::cb_goEast (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_goSouth (const finalcut::FWidget*, const FDataPtr)
+void Scrollview::cb_goSouth()
 {
   scrollToY (int(getScrollHeight() - getViewportHeight()) + 1);
   go_west.setFocus();
@@ -168,7 +168,7 @@ void Scrollview::cb_goSouth (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_goWest (const finalcut::FWidget*, const FDataPtr)
+void Scrollview::cb_goWest()
 {
   scrollToX (1);
   go_north.setFocus();
@@ -177,7 +177,7 @@ void Scrollview::cb_goWest (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_goNorth (const finalcut::FWidget*, const FDataPtr)
+void Scrollview::cb_goNorth()
 {
   scrollToY (1);
   go_east.setFocus();
@@ -230,7 +230,9 @@ Scrollviewdemo::Scrollviewdemo (finalcut::FWidget* parent)
   quit_btn.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Scrollviewdemo::cb_quit)
+    finalcut::getFApplication(),
+    &finalcut::FApplication::cb_exitApp,
+    this
   );
 
   // Text label
