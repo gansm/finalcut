@@ -201,7 +201,7 @@ void FFileDialog::setPath (const FString& dir)
     return;
   }
 
-  if ( fsystem->realpath(dir.c_str(), resolved_path) != nullptr )
+  if ( fsystem && fsystem->realpath(dir.c_str(), resolved_path) != nullptr )
     r_dir.setString(resolved_path);
   else
     r_dir.setString(dir);

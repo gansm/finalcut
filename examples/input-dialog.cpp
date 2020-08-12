@@ -26,20 +26,21 @@ using finalcut::FPoint;
 using finalcut::FSize;
 
 // function prototypes
-void cb_quit (finalcut::FApplication&);
-void cb_publish (finalcut::FCheckBox&, finalcut::FCheckBox&);
+void cb_quit (const finalcut::FApplication&);
+void cb_publish (const finalcut::FCheckBox&, finalcut::FCheckBox&);
 
 
 //----------------------------------------------------------------------
 // callback functions
 //----------------------------------------------------------------------
-void cb_quit (finalcut::FApplication& app)
+void cb_quit (const finalcut::FApplication& app)
 {
   app.quit();
 }
 
 //----------------------------------------------------------------------
-void cb_publish (finalcut::FCheckBox& cbox1, finalcut::FCheckBox& cbox2)
+void cb_publish ( const finalcut::FCheckBox& cbox1
+                , finalcut::FCheckBox& cbox2 )
 {
   if ( cbox1.isChecked() )
     cbox2.setEnable();

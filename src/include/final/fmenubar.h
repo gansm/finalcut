@@ -99,7 +99,7 @@ class FMenuBar : public FWindow, public FMenuList
     void          onAccel (FAccelEvent*) override;
 
     // Callback methods
-    void          cb_itemDeactivated (FMenuItem*) const;
+    void          cb_itemDeactivated (const FMenuItem*) const;
 
   private:
     // Constants

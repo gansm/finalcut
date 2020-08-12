@@ -62,43 +62,6 @@ struct FCallbackData
     , cb_function(c)
   { }
 
-  FCallbackData (const FCallbackData& c)  // copy constructor
-    : cb_signal(c.cb_signal)
-    , cb_instance(c.cb_instance)
-    , cb_function_ptr(c.cb_function_ptr)
-    , cb_function(c.cb_function)
-  { }
-
-  FCallbackData (FCallbackData&& c) noexcept  // move constructor
-    : cb_signal(std::move(c.cb_signal))
-    , cb_instance(std::move(c.cb_instance))
-    , cb_function_ptr(std::move(c.cb_function_ptr))
-    , cb_function(std::move(c.cb_function))
-  { }
-
-  // Destructor
-  ~FCallbackData()
-  { }
-
-  // Overloaded operators
-  FCallbackData& operator = (const FCallbackData& c)
-  {
-    cb_signal = c.cb_signal;
-    cb_instance = c.cb_instance;
-    cb_function_ptr = c.cb_function_ptr;
-    cb_function = c.cb_function;
-    return *this;
-  }
-
-  FCallbackData& operator = (FCallbackData&& c) noexcept
-  {
-    cb_signal = std::move(c.cb_signal);
-    cb_instance = std::move(c.cb_instance);
-    cb_function_ptr = std::move(c.cb_function_ptr);
-    cb_function = std::move(c.cb_function);
-    return *this;
-  }
-
   // Data members
   FString   cb_signal{};
   FWidget*  cb_instance{};
@@ -132,7 +95,7 @@ class FCallback
       return "FCallback";
     }
 
-    std::size_t getCallbackCount()
+    std::size_t getCallbackCount() const
     {
       return callback_objects.size();
     }
@@ -235,10 +198,9 @@ class FCallback
       // Add a function as callback
 
       auto ptr = reinterpret_cast<void*>(&cb_function);
-      auto fn = std::bind ( std::forward<Function>(cb_function)
-                          , std::forward<Args>(args)... );
+      auto fn = std::bind (cb_function, std::forward<Args>(args)...);
       FCallbackData obj{ cb_signal, nullptr, ptr, fn };
-      callback_objects.push_back(obj);;
+      callback_objects.push_back(obj);
     }
 
     template<typename Function
@@ -278,8 +240,7 @@ class FCallback
     {
       // Add a non-union class type as callback
 
-      auto fn = std::bind ( std::forward<Function>(cb_function)
-                          , std::forward<Args>(args)... );
+      auto fn = std::bind (cb_function, std::forward<Args>(args)...);
       FCallbackData obj{ cb_signal, nullptr, nullptr, fn };
       callback_objects.push_back(obj);
     }
@@ -419,7 +380,7 @@ class FCallback
     }
 
 
-    void emitCallback (const FString& emit_signal)
+    void emitCallback (const FString& emit_signal) const
     {
       // Initiate callback for the given signal
 

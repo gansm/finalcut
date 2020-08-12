@@ -317,10 +317,10 @@ class FWidget : public FVTerm, public FObject
     virtual bool             close();
     void                     clearStatusbarMessage();
     template<typename... Args>
-    void                     addCallback (FString&&, Args&&...);
+    void                     addCallback (const FString&, Args&&...);
     template<typename... Args>
     void                     delCallback (Args&&...);
-    void                     emitCallback (FString&&);
+    void                     emitCallback (const FString&);
     void                     addAccelerator (FKey);
     virtual void             addAccelerator (FKey, FWidget*);
     void                     delAccelerator ();
@@ -984,10 +984,9 @@ inline void FWidget::clearStatusbarMessage()
 
 //----------------------------------------------------------------------
 template<typename... Args>
-inline void FWidget::addCallback (FString&& cb_signal, Args&&... args)
+inline void FWidget::addCallback (const FString& cb_signal, Args&&... args)
 {
-  callback_impl.addCallback ( std::forward<FString>(cb_signal)
-                            , std::forward<Args>(args)... );
+  callback_impl.addCallback (cb_signal, std::forward<Args>(args)...);
 }
 
 //----------------------------------------------------------------------
@@ -998,9 +997,9 @@ inline void FWidget::delCallback (Args&&... args)
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::emitCallback (FString&& emit_signal)
+inline void FWidget::emitCallback (const FString& emit_signal)
 {
-  callback_impl.emitCallback(std::forward<FString>(emit_signal));
+  callback_impl.emitCallback(emit_signal);
 }
 
 //----------------------------------------------------------------------

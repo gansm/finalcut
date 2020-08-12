@@ -339,7 +339,7 @@ void FMenu::cb_menuitemDisabled()
 }
 
 //----------------------------------------------------------------------
-void FMenu::cb_menuitemToggled (FMenuItem* m_item) const
+void FMenu::cb_menuitemToggled (const FMenuItem* m_item) const
 {
   if ( ! (has_checkable_items && m_item && m_item->isChecked()) )
     return;

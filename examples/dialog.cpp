@@ -26,13 +26,13 @@ using finalcut::FPoint;
 using finalcut::FSize;
 
 // function prototype
-void cb_quit (finalcut::FApplication&);
+void cb_quit (const finalcut::FApplication&);
 
 
 //----------------------------------------------------------------------
 // callback function
 //----------------------------------------------------------------------
-void cb_quit (finalcut::FApplication& app)
+void cb_quit (const finalcut::FApplication& app)
 {
   app.quit();
 }

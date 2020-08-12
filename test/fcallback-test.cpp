@@ -38,20 +38,20 @@ class Widget
 {
   public:
     template<typename... Args>
-    void addCallback (finalcut::FString&& cb_signal, Args&&... args)
+    void addCallback (const finalcut::FString& cb_signal, Args&&... args)
     {
-      cb.addCallback(std::forward<finalcut::FString>(cb_signal), std::forward<Args>(args)...);
+      cb.addCallback (cb_signal, std::forward<Args>(args)...);
     }
 
     template<typename... Args>
     void delCallback (Args&&... args)
     {
-      cb.delCallback(std::forward<Args>(args)...);
+      cb.delCallback (std::forward<Args>(args)...);
     }
 
-    void emitCallback (finalcut::FString&& emit_signal)
+    void emitCallback (const finalcut::FString& emit_signal)
     {
-      cb.emitCallback(std::forward<finalcut::FString>(emit_signal));
+      cb.emitCallback (emit_signal);
     }
 
   private:

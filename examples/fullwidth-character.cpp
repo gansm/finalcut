@@ -105,7 +105,7 @@ int main (int argc, char* argv[])
 
   // Callback lambda expressions
   auto cb_exit = \
-      [] (finalcut::FApplication& a)
+      [] (const finalcut::FApplication& a)
       {
         a.quit();
       };

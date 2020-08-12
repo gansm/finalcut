@@ -304,12 +304,13 @@ class MyDialog final : public finalcut::FDialog
     void cb_switchTheme (const finalcut::FCheckMenuItem*) const;
     void cb_input2buttonText ( finalcut::FButton&
                              , const finalcut::FLineEdit& ) const;
-    void cb_setTitlebar (finalcut::FLineEdit&);
+    void cb_setTitlebar (const finalcut::FLineEdit&);
     void cb_showProgressBar();
-    void cb_updateNumber (finalcut::FListBox&, finalcut::FLabel&) const;
-    void cb_activateButton ( finalcut::FRadioButton&
+    void cb_updateNumber ( const finalcut::FListBox&
+                         , finalcut::FLabel& ) const;
+    void cb_activateButton ( const finalcut::FRadioButton&
                            , finalcut::FButton& ) const;
-    void cb_view (finalcut::FMenuItem*);
+    void cb_view (const finalcut::FMenuItem*);
     void cb_setInput (finalcut::FListBox&, finalcut::FLineEdit&) const;
 
     // Data members
@@ -951,7 +952,7 @@ void MyDialog::cb_input2buttonText ( finalcut::FButton& button
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_setTitlebar (finalcut::FLineEdit& lineedit)
+void MyDialog::cb_setTitlebar (const finalcut::FLineEdit& lineedit)
 {
   finalcut::FString title{};
   lineedit >> title;
@@ -968,7 +969,7 @@ void MyDialog::cb_showProgressBar()
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_updateNumber ( finalcut::FListBox& list
+void MyDialog::cb_updateNumber ( const finalcut::FListBox& list
                                , finalcut::FLabel& num) const
 {
   const auto count = list.getCount();
@@ -984,7 +985,7 @@ void MyDialog::cb_updateNumber ( finalcut::FListBox& list
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_activateButton ( finalcut::FRadioButton& rb
+void MyDialog::cb_activateButton ( const finalcut::FRadioButton& rb
                                  , finalcut::FButton& button) const
 {
   if ( rb.isChecked() )
@@ -996,7 +997,7 @@ void MyDialog::cb_activateButton ( finalcut::FRadioButton& rb
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_view (finalcut::FMenuItem* item)
+void MyDialog::cb_view (const finalcut::FMenuItem* item)
 {
   finalcut::FString file{};
 

@@ -217,11 +217,11 @@ int main (int argc, char* argv[])
   // Force terminal initialization without calling show()
   term_app.initTerminal();
 
-  // Pointer to the global virtual terminal object
-  app = &term_app;
-
   if ( finalcut::FApplication::isQuit() )
     return 0;
+
+  // Pointer to the global virtual terminal object
+  app = &term_app;
 
   // Get screen dimension
   int xmax = int(term_app.getDesktopWidth() - 1);

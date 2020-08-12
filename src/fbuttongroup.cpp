@@ -542,7 +542,7 @@ void FButtonGroup::directFocus()
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::cb_buttonToggled (FToggleButton* button) const
+void FButtonGroup::cb_buttonToggled (const FToggleButton* button) const
 {
   if ( (button && ! button->isChecked()) || buttonlist.empty() )
     return;

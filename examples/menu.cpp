@@ -61,7 +61,7 @@ class Menu final : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
-    void cb_message (finalcut::FMenuItem*);
+    void cb_message (const finalcut::FMenuItem*);
 
     // Data members
     finalcut::FString        line{13, fc::BoxDrawingsHorizontal};
@@ -305,7 +305,7 @@ void Menu::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Menu::cb_message (finalcut::FMenuItem* menuitem)
+void Menu::cb_message (const finalcut::FMenuItem* menuitem)
 {
   auto text = menuitem->getText();
   text = text.replace('&', "");

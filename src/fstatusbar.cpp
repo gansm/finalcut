@@ -488,7 +488,7 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FStatusBar::cb_statuskey_activated (FStatusKey* statuskey)
+void FStatusBar::cb_statuskey_activated (const FStatusKey* statuskey)
 {
   if ( ! statuskey )
     return;

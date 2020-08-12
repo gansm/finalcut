@@ -127,7 +127,7 @@ class FMenu : public FWindow, public FMenuList
     // Callback method
     void                cb_menuitemEnabled();
     void                cb_menuitemDisabled();
-    void                cb_menuitemToggled (FMenuItem*) const;
+    void                cb_menuitemToggled (const FMenuItem*) const;
 
   private:
     // Constants

@@ -387,7 +387,10 @@ std::size_t FString::getUTF8length() const
   const char* s = c_str();
 
   while ( *s )
-    len += std::size_t((*s++ & 0xc0) != 0x80);
+  {
+    len += std::size_t((*s & 0xc0) != 0x80);
+    s++;
+  }
 
   return len;
 }
@@ -1449,29 +1452,26 @@ inline const char* FString::_to_cstring (const wchar_t s[]) const
   if ( c_string )
     delete[](c_string);
 
-  const int size = int(std::wcslen(s)) + 1;
-  const int dest_size = size * int(CHAR_SIZE);
   const wchar_t* src = s;
-  std::mbstate_t state{};
-  std::memset (&state, '\0', sizeof(mbstate_t));
+  auto state = std::mbstate_t();
+  auto size = std::wcsrtombs(nullptr, &src, 0, &state) + 1;
 
   try
   {
-    c_string = new char[std::size_t(dest_size)]();
+    c_string = new char[size]();
 
     // pre-initialiaze the whole string with '\0'
-    std::memset (c_string, '\0', std::size_t(dest_size));
+    std::memset (c_string, '\0', size);
   }
   catch (const std::bad_alloc&)
   {
-    badAllocOutput ("char[std::size_t(dest_size)]");
+    badAllocOutput ("char[size]");
     return nullptr;
   }
 
-  const int mblength = \
-      int(std::wcsrtombs (c_string, &src, std::size_t(dest_size), &state));
+  const auto mblength = std::wcsrtombs (c_string, &src, size, &state);
 
-  if ( mblength == -1 && errno != EILSEQ )
+  if ( mblength == static_cast<std::size_t>(-1) && errno != EILSEQ )
   {
     delete[](c_string);
     c_string = nullptr;
@@ -1501,29 +1501,26 @@ inline const wchar_t* FString::_to_wcstring (const char s[]) const
     }
   }
 
-  const int size = int(std::strlen(s)) + 1;
-  const int dest_size = size * int(CHAR_SIZE);
   const char* src = s;
   wchar_t* dest{};
-  std::mbstate_t state{};
-  std::memset (&state, '\0', sizeof(mbstate_t));
+  auto state = std::mbstate_t();
+  auto size = std::mbsrtowcs(nullptr, &src, 0, &state) + 1;
 
   try
   {
-    dest = new wchar_t[std::size_t(size)]();
+    dest = new wchar_t[size]();
     // pre-initialiaze the whole string with '\0'
-    std::wmemset (dest, L'\0', std::size_t(size));
+    std::wmemset (dest, L'\0', size);
   }
   catch (const std::bad_alloc&)
   {
-    badAllocOutput ("wchar_t[std::size_t(size)]");
+    badAllocOutput ("wchar_t[size]");
     return nullptr;
   }
 
-  const int wclength = \
-      int(std::mbsrtowcs (dest, &src, std::size_t(dest_size), &state));
+  const auto wclength = std::mbsrtowcs (dest, &src, size, &state);
 
-  if ( wclength == -1 )
+  if ( wclength == static_cast<std::size_t>(-1) )
   {
     if ( src != s )
       return dest;

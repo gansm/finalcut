@@ -139,7 +139,7 @@ class FApplication : public FWidget
     static void           closeConfirmationDialog (FWidget*, FCloseEvent*);
 
     // Callback method
-    void                  cb_exitApp (FWidget*);
+    void                  cb_exitApp (FWidget*) const;
 
   protected:
     virtual void          processExternalUserEvent();
@@ -235,7 +235,7 @@ inline char** FApplication::getArgv() const
 { return app_argv; }
 
 //----------------------------------------------------------------------
-inline void FApplication::cb_exitApp (FWidget* w)
+inline void FApplication::cb_exitApp (FWidget* w) const
 { w->close(); }
 
 }  // namespace finalcut

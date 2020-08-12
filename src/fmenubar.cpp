@@ -228,7 +228,7 @@ void FMenuBar::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::cb_itemDeactivated (FMenuItem* menuitem) const
+void FMenuBar::cb_itemDeactivated (const FMenuItem* menuitem) const
 {
   if ( ! menuitem->hasMenu() )
     return;
