@@ -108,7 +108,7 @@ FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
   }
   else
   {
-    for (uInt n{0}; n < num_buttons && button[n]; n++)
+    for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
       delete button[n];
 
     if ( mbox.getParentWidget() )
@@ -138,7 +138,7 @@ void FMessageBox::setHeadline (const FString& headline)
   headline_text.setString(headline);
   setHeight(getHeight() + 2, true);
 
-  for (uInt n{0}; n < num_buttons && button[n]; n++)
+  for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
     button[n]->setY (int(getHeight()) - 4, false);
 
   const std::size_t column_width = getColumnWidth(headline_text);
@@ -268,7 +268,7 @@ inline void FMessageBox::allocation()
 //----------------------------------------------------------------------
 inline void FMessageBox::deallocation()
 {
-  for (uInt n{0}; n < num_buttons && button[n]; n++)
+  for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
     delete button[n];
 }
 
@@ -388,7 +388,7 @@ void FMessageBox::resizeButtons() const
   std::size_t len[3]{};
   std::size_t max_size{};
 
-  for (std::size_t n{0}; n < num_buttons && button[n]; n++)
+  for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
   {
     len[n] = button[n]->getText().getLength();
 
@@ -410,7 +410,7 @@ void FMessageBox::resizeButtons() const
   if ( max_size < 7 )
     max_size = 7;
 
-  for (std::size_t n{0}; n < num_buttons && button[n]; n++)
+  for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
     button[n]->setWidth(max_size + 3, false);
 }
 
@@ -420,7 +420,7 @@ void FMessageBox::adjustButtons()
   static constexpr std::size_t gap = 4;
   std::size_t btn_width{0};
 
-  for (std::size_t n{0}; n < num_buttons && button[n]; n++)
+  for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
   {
     if ( n == num_buttons - 1 )
       btn_width += button[n]->getWidth();
@@ -439,7 +439,7 @@ void FMessageBox::adjustButtons()
 
   const int btn_x = int((getWidth() - btn_width) / 2);
 
-  for (std::size_t n{0}; n < num_buttons && button[n]; n++)
+  for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
   {
     if ( n == 0 )
       button[n]->setX(btn_x);

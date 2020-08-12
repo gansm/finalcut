@@ -137,6 +137,9 @@ class FMessageBox : public FDialog
     void                cb_processClick (int);
 
   private:
+    // Constants
+    static constexpr std::size_t MAX_BUTTONS = 3;
+
     // Methods
     void                init();
     void                allocation();
@@ -151,11 +154,11 @@ class FMessageBox : public FDialog
     FString       headline_text{};
     FString       text{};
     FStringList   text_components{};
-    FButton*      button[3]{nullptr};
+    FButton*      button[MAX_BUTTONS]{nullptr};
     std::size_t   max_line_width{0};
     FColor        emphasis_color{getColorTheme()->dialog_emphasis_fg};
-    int           button_digit[3]{0};
-    uInt          num_buttons{0};
+    int           button_digit[MAX_BUTTONS]{0};
+    std::size_t   num_buttons{0};
     std::size_t   text_num_lines{0};
     bool          center_text{false};
 };

@@ -320,7 +320,7 @@ class FWidget : public FVTerm, public FObject
     void                     addCallback (const FString&, Args&&...);
     template<typename... Args>
     void                     delCallback (Args&&...);
-    void                     emitCallback (const FString&);
+    void                     emitCallback (const FString&) const;
     void                     addAccelerator (FKey);
     virtual void             addAccelerator (FKey, FWidget*);
     void                     delAccelerator ();
@@ -997,7 +997,7 @@ inline void FWidget::delCallback (Args&&... args)
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::emitCallback (const FString& emit_signal)
+inline void FWidget::emitCallback (const FString& emit_signal) const
 {
   callback_impl.emitCallback(emit_signal);
 }
