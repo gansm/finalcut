@@ -616,13 +616,13 @@ void FComboBox::passEventToListWindow (FMouseEvent* const& ev)
 }
 
 //----------------------------------------------------------------------
-void FComboBox::processClick()
+void FComboBox::processClick() const
 {
   emitCallback("clicked");
 }
 
 //----------------------------------------------------------------------
-void FComboBox::processChanged()
+void FComboBox::processChanged() const
 {
   emitCallback("row-changed");
 }

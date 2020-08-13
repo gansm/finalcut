@@ -216,7 +216,7 @@ class FMenu : public FWindow, public FMenuList
     void         selectNextMenu (FKeyEvent*);
     void         acceptSelection();
     void         closeMenu();
-    void         processActivate();
+    void         processActivate() const;
 
     // Data members
     FMenuItem    menuitem{};

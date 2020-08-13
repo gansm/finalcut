@@ -83,7 +83,7 @@ class FCheckMenuItem : public FMenuItem
   private:
     // Methods
     void                init();
-    void                processToggle();
+    void                processToggle() const;
     void                processClicked() override;
 };
 

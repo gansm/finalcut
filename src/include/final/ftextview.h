@@ -157,12 +157,12 @@ class FTextView : public FWidget
     void                drawText();
     bool                useFDialogBorder() const;
     bool                isPrintable (wchar_t) const;
-    void                processChanged();
+    void                processChanged() const;
     void                changeOnResize() const;
 
     // Callback methods
-    void                cb_vbarChange (const FWidget*, const FDataPtr);
-    void                cb_hbarChange (const FWidget*, const FDataPtr);
+    void                cb_vbarChange (const FWidget*);
+    void                cb_hbarChange (const FWidget*);
 
     // Data members
     FStringList        data{};

@@ -414,13 +414,13 @@ void FToggleButton::drawLabel()
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::processClick()
+void FToggleButton::processClick() const
 {
   emitCallback("clicked");
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::processToggle()
+void FToggleButton::processToggle() const
 {
   emitCallback("toggled");
 }

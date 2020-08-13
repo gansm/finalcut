@@ -399,13 +399,13 @@ inline void FSpinBox::decreaseValue()
 }
 
 //----------------------------------------------------------------------
-void FSpinBox::processActivate()
+void FSpinBox::processActivate() const
 {
   emitCallback("activate");
 }
 
 //----------------------------------------------------------------------
-void FSpinBox::processChanged()
+void FSpinBox::processChanged() const
 {
   emitCallback("changed");
 }

@@ -301,16 +301,16 @@ class FListBox : public FWidget
     bool                changeSelectionAndPosition();
     bool                deletePreviousCharacter();
     bool                keyIncSearchInput (FKey);
-    void                processClick();
-    void                processSelect();
-    void                processChanged();
+    void                processClick() const;
+    void                processSelect() const;
+    void                processChanged() const;
     void                changeOnResize() const;
     void                lazyConvert (listBoxItems::iterator, int);
     listBoxItems::iterator index2iterator (std::size_t);
     listBoxItems::const_iterator index2iterator (std::size_t index) const;
     // Callback methods
-    void                cb_vbarChange (const FWidget*, const FDataPtr);
-    void                cb_hbarChange (const FWidget*, const FDataPtr);
+    void                cb_vbarChange (const FWidget*);
+    void                cb_hbarChange (const FWidget*);
 
     // Function Pointer
     lazyInsert      lazy_inserter{};

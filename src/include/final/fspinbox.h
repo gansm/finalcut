@@ -135,8 +135,8 @@ class FSpinBox : public FWidget
     void                updateInputField();
     void                increaseValue();
     void                decreaseValue();
-    void                processActivate();
-    void                processChanged();
+    void                processActivate() const;
+    void                processChanged() const;
     void                forceFocus();
 
     // Callback methods

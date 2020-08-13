@@ -441,10 +441,10 @@ class FWidget : public FVTerm, public FObject
     void                     insufficientSpaceAdjust();
     void                     KeyPressEvent (FKeyEvent*);
     void                     KeyDownEvent (FKeyEvent*);
-    void                     emitWheelCallback (const FWheelEvent*);
+    void                     emitWheelCallback (const FWheelEvent*) const;
     void                     setWindowFocus (bool);
     bool                     changeFocus (FWidget*, FWidget*, fc::FocusTypes);
-    void                     processDestroy();
+    void                     processDestroy() const;
     virtual void             draw();
     void                     drawWindows() const;
     void                     drawChildren();
@@ -1050,7 +1050,7 @@ inline uInt& FWidget::setModalDialogCounter()
 { return modal_dialog_counter; }
 
 //----------------------------------------------------------------------
-inline void FWidget::processDestroy()
+inline void FWidget::processDestroy() const
 { emitCallback("destroy"); }
 
 

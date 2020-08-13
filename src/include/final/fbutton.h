@@ -149,7 +149,7 @@ class FButton : public FWidget
     void                draw() override;
     void                updateStatusBar() const;
     void                updateButtonColor();
-    void                processClick();
+    void                processClick() const;
 
     // Data members
     FString      text{};

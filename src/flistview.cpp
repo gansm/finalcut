@@ -2496,7 +2496,7 @@ FObject::iterator FListView::appendItem (FListViewItem* item)
 }
 
 //----------------------------------------------------------------------
-void FListView::processClick()
+void FListView::processClick() const
 {
   if ( itemlist.empty() )
     return;
@@ -2505,7 +2505,7 @@ void FListView::processClick()
 }
 
 //----------------------------------------------------------------------
-void FListView::processChanged()
+void FListView::processChanged() const
 {
   emitCallback("row-changed");
 }
@@ -2855,7 +2855,7 @@ void FListView::scrollBy (int dx, int dy)
 }
 
 //----------------------------------------------------------------------
-void FListView::cb_vbarChange (const FWidget*, const FDataPtr)
+void FListView::cb_vbarChange (const FWidget*)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
@@ -2922,7 +2922,7 @@ void FListView::cb_vbarChange (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FListView::cb_hbarChange (const FWidget*, const FDataPtr)
+void FListView::cb_hbarChange (const FWidget*)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;

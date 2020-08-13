@@ -709,7 +709,7 @@ void FButton::updateButtonColor()
 }
 
 //----------------------------------------------------------------------
-void FButton::processClick()
+void FButton::processClick() const
 {
   emitCallback("clicked");
 }

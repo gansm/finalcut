@@ -1696,19 +1696,19 @@ inline bool FListBox::keyIncSearchInput (FKey key)
 }
 
 //----------------------------------------------------------------------
-void FListBox::processClick()
+void FListBox::processClick() const
 {
   emitCallback("clicked");
 }
 
 //----------------------------------------------------------------------
-void FListBox::processSelect()
+void FListBox::processSelect() const
 {
   emitCallback("row-selected");
 }
 
 //----------------------------------------------------------------------
-void FListBox::processChanged()
+void FListBox::processChanged() const
 {
   emitCallback("row-changed");
 }
@@ -1743,7 +1743,7 @@ void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_vbarChange (const FWidget*, const FDataPtr)
+void FListBox::cb_vbarChange (const FWidget*)
 {
   FScrollbar::sType scrollType;
   const std::size_t current_before = current;
@@ -1814,7 +1814,7 @@ void FListBox::cb_vbarChange (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_hbarChange (const FWidget*, const FDataPtr)
+void FListBox::cb_hbarChange (const FWidget*)
 {
   static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
   static constexpr int wheel_distance = 4;

@@ -133,8 +133,8 @@ class FToggleButton : public FWidget
     // Methods
     void                draw() override;
     void                drawLabel();
-    void                processClick();
-    void                processToggle();
+    void                processClick() const;
+    void                processToggle() const;
 
     // Event handler
     void                onKeyPress (FKeyEvent*) override;

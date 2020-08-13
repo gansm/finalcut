@@ -428,8 +428,8 @@ class FListView : public FWidget
     void                 dragDown (int);
     void                 stopDragScroll();
     iterator             appendItem (FListViewItem*);
-    void                 processClick();
-    void                 processChanged();
+    void                 processClick() const;
+    void                 processChanged() const;
     void                 changeOnResize() const;
     void                 toggleCheckbox();
     void                 collapseAndScrollLeft();
@@ -451,8 +451,8 @@ class FListView : public FWidget
     bool                 hasCheckableItems() const;
 
     // Callback methods
-    void                 cb_vbarChange (const FWidget*, const FDataPtr);
-    void                 cb_hbarChange (const FWidget*, const FDataPtr);
+    void                 cb_vbarChange (const FWidget*);
+    void                 cb_hbarChange (const FWidget*);
 
     // Data members
     iterator             root{};

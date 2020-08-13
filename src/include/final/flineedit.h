@@ -201,7 +201,7 @@ class FLineEdit : public FWidget
     bool                keyInput (FKey);
     wchar_t             characterFilter (const wchar_t) const;
     void                processActivate();
-    void                processChanged();
+    void                processChanged() const;
 
     // Data members
     FString       text{""};

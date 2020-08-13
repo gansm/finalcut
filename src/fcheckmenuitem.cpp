@@ -69,7 +69,7 @@ void FCheckMenuItem::init()
 }
 
 //----------------------------------------------------------------------
-void FCheckMenuItem::processToggle()
+void FCheckMenuItem::processToggle() const
 {
   emitCallback("toggled");
 }

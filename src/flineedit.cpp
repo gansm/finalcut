@@ -1130,7 +1130,7 @@ void FLineEdit::processActivate()
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::processChanged()
+void FLineEdit::processChanged() const
 {
   emitCallback("changed");
 }

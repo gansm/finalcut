@@ -736,7 +736,7 @@ inline bool FTextView::isPrintable (wchar_t ch) const
 }
 
 //----------------------------------------------------------------------
-void FTextView::processChanged()
+void FTextView::processChanged() const
 {
   emitCallback("changed");
 }
@@ -763,7 +763,7 @@ void FTextView::changeOnResize() const
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_vbarChange (const FWidget*, const FDataPtr)
+void FTextView::cb_vbarChange (const FWidget*)
 {
   const FScrollbar::sType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
@@ -818,7 +818,7 @@ void FTextView::cb_vbarChange (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_hbarChange (const FWidget*, const FDataPtr)
+void FTextView::cb_hbarChange (const FWidget*)
 {
   const FScrollbar::sType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;

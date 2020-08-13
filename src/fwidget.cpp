@@ -1833,7 +1833,7 @@ void FWidget::KeyDownEvent (FKeyEvent* kev)
 }
 
 //----------------------------------------------------------------------
-void FWidget::emitWheelCallback (const FWheelEvent* ev)
+void FWidget::emitWheelCallback (const FWheelEvent* ev) const
 {
   const int wheel = ev->getWheel();
 

@@ -156,10 +156,10 @@ class FMenuItem : public FWidget
     // Methods
     void                init();
     void                updateSuperMenuDimensions();
-    void                processEnable();
-    void                processDisable();
-    void                processActivate();
-    void                processDeactivate();
+    void                processEnable() const;
+    void                processDisable() const;
+    void                processActivate() const;
+    void                processDeactivate() const;
     void                createDialogList (FMenu*) const;
     template <typename T>
     void                passMouseEvent (T, const FMouseEvent*, fc::events) const;

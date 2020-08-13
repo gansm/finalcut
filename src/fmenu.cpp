@@ -1612,7 +1612,7 @@ inline void FMenu::closeMenu()
 }
 
 //----------------------------------------------------------------------
-void FMenu::processActivate()
+void FMenu::processActivate() const
 {
   emitCallback("activate");
 }

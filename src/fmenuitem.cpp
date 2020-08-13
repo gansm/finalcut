@@ -568,25 +568,25 @@ void FMenuItem::updateSuperMenuDimensions()
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::processEnable()
+void FMenuItem::processEnable() const
 {
   emitCallback("enable");
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::processDisable()
+void FMenuItem::processDisable() const
 {
   emitCallback("disable");
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::processActivate()
+void FMenuItem::processActivate() const
 {
   emitCallback("activate");
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::processDeactivate()
+void FMenuItem::processDeactivate() const
 {
   emitCallback("deactivate");
 }

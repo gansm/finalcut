@@ -109,7 +109,8 @@ FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
   else
   {
     for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
-      delete button[n];
+      if ( button[n] )
+        delete button[n];
 
     if ( mbox.getParentWidget() )
       mbox.getParentWidget()->addChild (this);
@@ -139,7 +140,8 @@ void FMessageBox::setHeadline (const FString& headline)
   setHeight(getHeight() + 2, true);
 
   for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
-    button[n]->setY (int(getHeight()) - 4, false);
+    if ( button[n] )
+      button[n]->setY (int(getHeight()) - 4, false);
 
   const std::size_t column_width = getColumnWidth(headline_text);
 
@@ -269,7 +271,8 @@ inline void FMessageBox::allocation()
 inline void FMessageBox::deallocation()
 {
   for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
-    delete button[n];
+    if ( button[n] )
+      delete button[n];
 }
 
 //----------------------------------------------------------------------
@@ -390,6 +393,9 @@ void FMessageBox::resizeButtons() const
 
   for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
   {
+    if ( ! button[n] )
+      continue;
+
     len[n] = button[n]->getText().getLength();
 
     if ( button[n]->getText().includes('&') )
@@ -411,7 +417,8 @@ void FMessageBox::resizeButtons() const
     max_size = 7;
 
   for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
-    button[n]->setWidth(max_size + 3, false);
+    if ( button[n] )
+      button[n]->setWidth(max_size + 3, false);
 }
 
 //----------------------------------------------------------------------
@@ -422,6 +429,9 @@ void FMessageBox::adjustButtons()
 
   for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
   {
+    if ( ! button[n] )
+      continue;
+
     if ( n == num_buttons - 1 )
       btn_width += button[n]->getWidth();
     else
@@ -441,6 +451,9 @@ void FMessageBox::adjustButtons()
 
   for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
   {
+    if ( ! button[n] )
+      continue;
+
     if ( n == 0 )
       button[n]->setX(btn_x);
     else

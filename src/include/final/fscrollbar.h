@@ -196,7 +196,7 @@ void initScrollbar ( FScrollbarPtr& bar
   bar->addCallback
   (
     "change-value",
-    std::bind(cb_handler, cb_instance, bar.get(), nullptr)
+    std::bind(cb_handler, cb_instance, bar.get())
   );
 }
 

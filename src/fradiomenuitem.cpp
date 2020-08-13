@@ -77,7 +77,7 @@ void FRadioMenuItem::init()
 }
 
 //----------------------------------------------------------------------
-void FRadioMenuItem::processToggle()
+void FRadioMenuItem::processToggle() const
 {
   emitCallback("toggled");
 }

@@ -114,7 +114,7 @@ void FStatusKey::init()
 }
 
 //----------------------------------------------------------------------
-void FStatusKey::processActivate()
+void FStatusKey::processActivate() const
 {
   emitCallback("activate");
 }
