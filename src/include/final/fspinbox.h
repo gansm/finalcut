@@ -140,7 +140,7 @@ class FSpinBox : public FWidget
     void                forceFocus();
 
     // Callback methods
-    void                cb_inputFieldActivate();
+    void                cb_inputFieldActivate() const;
     void                cb_inputFieldChange (const FLineEdit&);
 
     // Data members

@@ -429,7 +429,7 @@ void FSpinBox::forceFocus()
 }
 
 //----------------------------------------------------------------------
-void FSpinBox::cb_inputFieldActivate()
+void FSpinBox::cb_inputFieldActivate() const
 {
   processActivate();
 }

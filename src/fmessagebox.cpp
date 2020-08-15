@@ -278,7 +278,7 @@ inline void FMessageBox::deallocation()
 //----------------------------------------------------------------------
 inline void FMessageBox::initCallbacks()
 {
-  if ( button_digit[0] != 0 )
+  if ( button[0] && button_digit[0] != 0 )
   {
     button[0]->addCallback
     (
@@ -288,7 +288,7 @@ inline void FMessageBox::initCallbacks()
     );
   }
 
-  if ( button_digit[1] != 0 )
+  if ( button[1] && button_digit[1] != 0 )
   {
     button[1]->addCallback
     (
@@ -298,7 +298,7 @@ inline void FMessageBox::initCallbacks()
     );
   }
 
-  if ( button_digit[2] != 0 )
+  if ( button[2] && button_digit[2] != 0 )
   {
     button[2]->addCallback
     (

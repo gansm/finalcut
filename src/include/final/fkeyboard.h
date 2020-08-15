@@ -148,6 +148,7 @@ class FKeyboard final
 
     // Inquiry
     static bool           isKeypressTimeout();
+    static bool           isIntervalTimeout();
 
     // Methods
     FKey                  UTF8decode (const char[]) const;
@@ -171,8 +172,10 @@ class FKeyboard final
 #endif
 
     static timeval        time_keypressed;
+    static timeval        time_last_request;
     static uInt64         read_blocking_time;
     static uInt64         key_timeout;
+    static uInt64         interval_timeout;
     fc::FKeyMap*          key_map{nullptr};
     FKey                  key{0};
     uChar                 read_character{};

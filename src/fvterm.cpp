@@ -56,11 +56,13 @@ bool                 FVTerm::force_terminal_update{false};
 bool                 FVTerm::no_terminal_updates{false};
 bool                 FVTerm::cursor_hideable{false};
 int                  FVTerm::skipped_terminal_update{};
+uInt64               FVTerm::term_size_check_timeout{500000};  // 500 ms
 uInt                 FVTerm::erase_char_length{};
 uInt                 FVTerm::repeat_char_length{};
 uInt                 FVTerm::clr_bol_length{};
 uInt                 FVTerm::clr_eol_length{};
 uInt                 FVTerm::cursor_address_length{};
+struct timeval       FVTerm::last_term_size_check{};
 std::queue<int>*     FVTerm::output_buffer{nullptr};
 FPoint*              FVTerm::term_pos{nullptr};
 FSystem*             FVTerm::fsystem{nullptr};
@@ -1968,6 +1970,10 @@ void FVTerm::init()
   createArea (term_geometry, shadow_size, vdesktop);
   vdesktop->visible = true;
   active_area = vdesktop;
+
+  // Initialize the last terminal size check time
+  last_term_size_check.tv_sec = 0;
+  last_term_size_check.tv_usec = 0;
 }
 
 //----------------------------------------------------------------------
@@ -2899,6 +2905,11 @@ bool FVTerm::isInsideTerminal (const FPoint& pos) const
 //----------------------------------------------------------------------
 inline bool FVTerm::isTermSizeChanged() const
 {
+  if ( ! isTermSizeCheckTimeout() )
+    return false;
+
+  FObject::getCurrentTime (&last_term_size_check);
+
   const auto& data = FTerm::getFTermData();
 
   if ( ! data )
@@ -2913,6 +2924,12 @@ inline bool FVTerm::isTermSizeChanged() const
     return true;
 
   return false;
+}
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isTermSizeCheckTimeout()
+{
+  return FObject::isTimeout (&last_term_size_check, term_size_check_timeout);
 }
 
 //----------------------------------------------------------------------

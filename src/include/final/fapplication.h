@@ -198,6 +198,7 @@ class FApplication : public FWidget
     bool                  processNextEvent();
     void                  performTimerAction (FObject*, FEvent*) override;
     static bool           isEventProcessable (const FObject*, const FEvent*);
+    static bool           isNextEventTimeout();
 
     // Data members
     int                   app_argc{};
@@ -205,6 +206,8 @@ class FApplication : public FWidget
     uInt64                key_timeout{100000};        // 100 ms
     uInt64                dblclick_interval{500000};  // 500 ms
     FEventQueue           event_queue{};
+    static uInt64         next_event_wait;
+    static timeval        time_last_event;
     static int            quit_code;
     static bool           quit_now;
     static int            loop_level;

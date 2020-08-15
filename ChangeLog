@@ -1,3 +1,8 @@
+2020-08-15  Markus Gans  <guru.mail@muenster.de>
+	* The call of the function setNonBlockingRead() resulted in 
+	  a high CPU load in idle mode. 
+	  Thanks to Pavel Stehule for reporting this problem.
+
 2020-08-11  Markus Gans  <guru.mail@muenster.de>
 	* New callback backend was implemented. Callback functions with any 
 	  number of arguments are now possible.

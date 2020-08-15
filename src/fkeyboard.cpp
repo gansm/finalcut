@@ -44,7 +44,9 @@ namespace finalcut
 // static class attributes
 uInt64 FKeyboard::read_blocking_time{100000};  // preset to 100 ms
 uInt64 FKeyboard::key_timeout{100000};         // preset to 100 ms
+uInt64 FKeyboard::interval_timeout{75000};     // preset to 75 ms
 struct timeval FKeyboard::time_keypressed{};
+struct timeval FKeyboard::time_last_request{};
 
 #if defined(__linux__)
   FTermLinux* FKeyboard::linux{nullptr};
@@ -62,6 +64,8 @@ FKeyboard::FKeyboard()
   // Initialize keyboard values
   time_keypressed.tv_sec = 0;
   time_keypressed.tv_usec = 0;
+  time_last_request.tv_sec = 0;
+  time_last_request.tv_usec = 0;
 
   // Get the stdin file status flags
   stdin_status_flags = fcntl(FTermios::getStdIn(), F_GETFL);
@@ -117,6 +121,9 @@ bool& FKeyboard::unprocessedInput()
 //----------------------------------------------------------------------
 bool FKeyboard::isKeyPressed() const
 {
+  if ( ! isIntervalTimeout() )
+    return false;
+
   fd_set ifds{};
   struct timeval tv{};
   const int stdin_no = FTermios::getStdIn();
@@ -125,6 +132,7 @@ bool FKeyboard::isKeyPressed() const
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
   tv.tv_usec = suseconds_t(read_blocking_time);  // preset to 100 ms
+  FObject::getCurrentTime (&time_last_request);
   const int result = select (stdin_no + 1, &ifds, nullptr, nullptr, &tv);
 
   if ( result > 0 && FD_ISSET(stdin_no, &ifds) )
@@ -351,9 +359,15 @@ bool FKeyboard::setNonBlockingInput (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FKeyboard::isKeypressTimeout()
+inline bool FKeyboard::isKeypressTimeout()
 {
   return FObject::isTimeout (&time_keypressed, key_timeout);
+}
+
+//----------------------------------------------------------------------
+inline bool FKeyboard::isIntervalTimeout()
+{
+  return FObject::isTimeout (&time_last_request, interval_timeout);
 }
 
 //----------------------------------------------------------------------

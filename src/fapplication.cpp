@@ -20,9 +20,11 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <chrono>
 #include <fstream>
 #include <memory>
 #include <string>
+#include <thread>
 
 #include "final/fapplication.h"
 #include "final/fevent.h"
@@ -61,7 +63,8 @@ FMouseControl* FApplication::mouse           {nullptr};  // mouse control
 int            FApplication::loop_level      {0};        // event loop level
 int            FApplication::quit_code       {EXIT_SUCCESS};
 bool           FApplication::quit_now        {false};
-
+uInt64         FApplication::next_event_wait{50000};     // preset to 50 ms
+struct timeval FApplication::time_last_event{};
 
 //----------------------------------------------------------------------
 // class FApplication
@@ -330,6 +333,7 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 void FApplication::processExternalUserEvent()
 {
   // This method can be overloaded and replaced by own code
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
 
@@ -337,6 +341,10 @@ void FApplication::processExternalUserEvent()
 //----------------------------------------------------------------------
 void FApplication::init()
 {
+  // Initialize the last event time
+  time_last_event.tv_sec = 0;
+  time_last_event.tv_usec = 0;
+
   // Initialize keyboard
   keyboard = FTerm::getFKeyboard();
 
@@ -1207,21 +1215,19 @@ void FApplication::processResizeEvent() const
 //----------------------------------------------------------------------
 void FApplication::processCloseWidget()
 {
+  if ( ! getWidgetCloseList() || getWidgetCloseList()->empty() )
+    return;
+
   setTerminalUpdates (FVTerm::stop_terminal_updates);
+  auto iter = getWidgetCloseList()->begin();
 
-  if ( getWidgetCloseList() && ! getWidgetCloseList()->empty() )
+  while ( iter != getWidgetCloseList()->end() && *iter )
   {
-    auto iter = getWidgetCloseList()->begin();
-
-    while ( iter != getWidgetCloseList()->end() && *iter )
-    {
-      delete *iter;
-      ++iter;
-    }
-
-    getWidgetCloseList()->clear();
+    delete *iter;
+    ++iter;
   }
 
+  getWidgetCloseList()->clear();
   setTerminalUpdates (FVTerm::start_terminal_updates);
 }
 
@@ -1243,12 +1249,18 @@ bool FApplication::processNextEvent()
 {
   uInt num_events{0};
 
-  processKeyboardEvent();
-  processMouseEvent();
-  processResizeEvent();
-  processTerminalUpdate();
-  processCloseWidget();
-  processLogger();
+  if ( isNextEventTimeout() )
+  {
+    FObject::getCurrentTime (&time_last_event);
+    processKeyboardEvent();
+    processMouseEvent();
+    processResizeEvent();
+    processTerminalUpdate();
+    processCloseWidget();
+    processLogger();
+    updateTerminal();
+  }
+
   processExternalUserEvent();
 
   sendQueuedEvents();
@@ -1316,6 +1328,12 @@ bool FApplication::isEventProcessable ( const FObject* receiver
     return false;
 
   return true;
+}
+
+//----------------------------------------------------------------------
+bool FApplication::isNextEventTimeout()
+{
+  return FObject::isTimeout (&time_last_event, next_event_wait);
 }
 
 }  // namespace finalcut

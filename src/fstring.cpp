@@ -380,19 +380,7 @@ const FString& FString::operator () () const
 //----------------------------------------------------------------------
 std::size_t FString::getUTF8length() const
 {
-  if ( ! string )
-    return 0;
-
-  std::size_t len{0};
-  const char* s = c_str();
-
-  while ( *s )
-  {
-    len += std::size_t((*s & 0xc0) != 0x80);
-    s++;
-  }
-
-  return len;
+  return length;
 }
 
 //----------------------------------------------------------------------

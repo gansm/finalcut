@@ -408,6 +408,7 @@ class FVTerm
     bool                  updateTerminalCursor() const;
     bool                  isInsideTerminal (const FPoint&) const;
     bool                  isTermSizeChanged() const;
+    static bool           isTermSizeCheckTimeout();
     static void           markAsPrinted (uInt, uInt);
     static void           markAsPrinted (uInt, uInt, uInt);
     static void           newFontChanges (FChar*&);
@@ -437,10 +438,12 @@ class FVTerm
     static FChar            i_ch;      // inherit background character
     static FPoint*          term_pos;  // terminal cursor position
     static FKeyboard*       keyboard;
+    static timeval          last_term_size_check;
     static bool             terminal_update_complete;
     static bool             terminal_update_pending;
     static bool             force_terminal_update;
     static bool             no_terminal_updates;
+    static uInt64           term_size_check_timeout;
     static int              skipped_terminal_update;
     static uInt             erase_char_length;
     static uInt             repeat_char_length;
