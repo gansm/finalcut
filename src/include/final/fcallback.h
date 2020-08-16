@@ -64,10 +64,10 @@ struct FCallbackData
   { }
 
   FCallbackData (const FCallbackData&) = default;
-  FCallbackData (FCallbackData&&) = default;
+  FCallbackData (FCallbackData&&) noexcept = default;
 
   FCallbackData& operator = (const FCallbackData&) = default;
-  FCallbackData& operator = (FCallbackData&&) = default;
+  FCallbackData& operator = (FCallbackData&&) noexcept = default;
 
   // Data members
   FString   cb_signal{};

@@ -2802,7 +2802,7 @@ void FVTerm::printPaddingCharacter (FTermArea* area, const FChar& term_char)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::updateTerminalLine (uInt y)
+void FVTerm::updateTerminalLine (uInt y) const
 {
   // Updates pending changes from line y to the terminal
 

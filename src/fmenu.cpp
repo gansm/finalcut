@@ -652,7 +652,7 @@ void FMenu::hideSubMenus()
 }
 
 //----------------------------------------------------------------------
-void FMenu::hideSuperMenus()
+void FMenu::hideSuperMenus() const
 {
   // hide all menus to the top
   auto super = getSuperMenu();
@@ -907,7 +907,7 @@ void FMenu::mouseUpOverBorder()
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseMoveOverBorder (mouseStates& ms)
+void FMenu::mouseMoveOverBorder (mouseStates& ms) const
 {
   // Mouse is moved over border or separator line
 

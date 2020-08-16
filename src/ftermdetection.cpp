@@ -468,7 +468,10 @@ const char* FTermDetection::termtype_256color_quirks()
     color256 = true;
 
     if ( ! isScreenTerm() )
-      return (new_termtype = "gnome-256color");
+    {
+      new_termtype = "gnome-256color";
+      return new_termtype;
+    }
   }
 
   if ( ! color256 )

@@ -203,7 +203,7 @@ class Scrollviewdemo final : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
-    void cb_quit (const finalcut::FWidget* = nullptr, const FDataPtr = nullptr);
+    void cb_quit();
 
     // Data members
     Scrollview sview{this};
@@ -230,9 +230,8 @@ Scrollviewdemo::Scrollviewdemo (finalcut::FWidget* parent)
   quit_btn.addCallback
   (
     "clicked",
-    finalcut::getFApplication(),
-    &finalcut::FApplication::cb_exitApp,
-    this
+    this,
+    &Scrollviewdemo::cb_quit
   );
 
   // Text label
@@ -246,7 +245,7 @@ Scrollviewdemo::~Scrollviewdemo()
 { }
 
 //----------------------------------------------------------------------
-void Scrollviewdemo::cb_quit (const finalcut::FWidget*, const FDataPtr)
+void Scrollviewdemo::cb_quit()
 {
   close();
 }

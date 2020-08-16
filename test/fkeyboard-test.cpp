@@ -2860,6 +2860,10 @@ void FKeyboardTest::processInput()
 
   if ( keyboard->isKeyPressed() )
     keyboard->fetchKeyCode();
+
+  // Keyboard interval timeout 75 ms (= 75,000,000 ns)
+  const struct timespec ms[]{{0, 75000000L}};
+  nanosleep (ms, NULL);
 }
 
 //----------------------------------------------------------------------

@@ -63,7 +63,7 @@ FMouseControl* FApplication::mouse           {nullptr};  // mouse control
 int            FApplication::loop_level      {0};        // event loop level
 int            FApplication::quit_code       {EXIT_SUCCESS};
 bool           FApplication::quit_now        {false};
-uInt64         FApplication::next_event_wait{50000};     // preset to 50 ms
+uInt64         FApplication::next_event_wait {20000};    // preset to 20 ms
 struct timeval FApplication::time_last_event{};
 
 //----------------------------------------------------------------------

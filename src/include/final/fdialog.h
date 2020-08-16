@@ -231,7 +231,7 @@ class FDialog : public FWindow
     FToolTip*             tooltip{nullptr};
 
     // Friend function from FMenu
-    friend void FMenu::hideSuperMenus();
+    friend void FMenu::hideSuperMenus() const;
 };
 
 // FDialog inline functions

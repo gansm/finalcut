@@ -404,7 +404,7 @@ class FVTerm
     static void           cursorWrap();
     bool                  printWrap (FTermArea*) const;
     void                  printPaddingCharacter (FTermArea*, const FChar&);
-    void                  updateTerminalLine (uInt);
+    void                  updateTerminalLine (uInt) const;
     bool                  updateTerminalCursor() const;
     bool                  isInsideTerminal (const FPoint&) const;
     bool                  isTermSizeChanged() const;
