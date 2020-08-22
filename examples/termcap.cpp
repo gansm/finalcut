@@ -32,7 +32,7 @@ namespace fc = finalcut::fc;
 void tcapBoolean (const std::string&, bool);
 void tcapNumeric (const std::string&, int);
 void tcapString (const std::string&, const char[]);
-void debug (finalcut::FApplication&);
+void debug (const finalcut::FApplication&);
 void booleans();
 void numeric();
 void string();
@@ -207,7 +207,7 @@ void tcapString (const std::string& name, const char cap_str[])
 
 //----------------------------------------------------------------------
 #if DEBUG
-void debug (finalcut::FApplication& TermApp)
+void debug (const finalcut::FApplication& TermApp)
 {
   const auto& fterm = TermApp.getFTerm();
   auto& debug_data = fterm.getFTermDebugData();

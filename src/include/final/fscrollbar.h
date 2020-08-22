@@ -188,7 +188,6 @@ void initScrollbar ( FScrollbarPtr& bar
     return;
   }
 
-  using namespace std::placeholders;
   bar->setMinimum(0);
   bar->setValue(0);
   bar->hide();

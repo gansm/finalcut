@@ -45,7 +45,7 @@ FLog::~FLog()  // destructor
 //----------------------------------------------------------------------
 FLog& FLog::operator << (LogLevel l)
 {
-  using namespace std::placeholders;
+  using std::placeholders::_1;
   sync();
 
   switch ( l )

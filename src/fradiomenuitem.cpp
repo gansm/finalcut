@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <utility>
+
 #include "final/fc.h"
 #include "final/fradiomenuitem.h"
 #include "final/fmenu.h"

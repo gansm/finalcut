@@ -882,7 +882,7 @@ void closeDropDown (FWidget* widget, const FPoint& mouse_position)
   auto openmenu = FWidget::getOpenMenu();
 
   if ( ! openmenu )
-   return;
+    return;
 
   if ( openmenu->isInstanceOf("FMenu")
     || openmenu->isInstanceOf("FDialogListMenu") )

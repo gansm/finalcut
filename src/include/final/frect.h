@@ -40,6 +40,7 @@
 #endif
 
 #include <algorithm>
+#include <utility>
 
 #include "final/fstring.h"
 

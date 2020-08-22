@@ -54,6 +54,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <tuple>
+
 #include "final/fwindow.h"
 #include "final/fmenulist.h"
 

@@ -35,6 +35,9 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <utility>
+#include <vector>
+
 #include "final/fstring.h"
 #include "final/ftypes.h"
 
@@ -64,7 +67,7 @@ struct FCallbackData
   { }
 
   FCallbackData (const FCallbackData&) = default;
-  FCallbackData (FCallbackData&&) noexcept = default;
+  FCallbackData (FCallbackData&&) = default;
 
   FCallbackData& operator = (const FCallbackData&) = default;
   FCallbackData& operator = (FCallbackData&&) noexcept = default;
@@ -144,15 +147,8 @@ class FCallback
     FCallback& operator = (const FCallback&) = delete;
 
     // Accessors
-    const FString getClassName() const
-    {
-      return "FCallback";
-    }
-
-    std::size_t getCallbackCount() const
-    {
-      return callback_objects.size();
-    }
+    const FString getClassName() const;
+    std::size_t getCallbackCount() const;
 
     // Methods
     template<typename Object
@@ -163,18 +159,7 @@ class FCallback
     void addCallback ( const FString& cb_signal
                      , Object&&       cb_instance
                      , Function&&     cb_member
-                     , Args&&...      args)
-    {
-      // Add a member function pointer as callback
-
-      Object instance = cb_instance;
-      auto fn = std::bind ( std::forward<Function>(cb_member)
-                          , std::forward<Object>(cb_instance)
-                          , std::forward<Args>(args)... );
-      FCallbackData obj{ cb_signal, instance, nullptr, fn };
-      callback_objects.push_back(obj);
-    }
-
+                     , Args&&...      args);
     template<typename Object
            , typename Function
            , typename ObjectPointer<Object>::type = nullptr
@@ -183,202 +168,46 @@ class FCallback
     void addCallback ( const FString& cb_signal
                      , Object&&       cb_instance
                      , Function&&     cb_function
-                     , Args&&...      args)
-    {
-      // Add a function object to an instance as callback
-
-      auto fn = std::bind (std::forward<Function>(cb_function), std::forward<Args>(args)...);
-      FCallbackData obj{ cb_signal, cb_instance, nullptr, fn };
-      callback_objects.push_back(obj);
-    }
-
+                     , Args&&...      args);
     template<typename Function
            , typename ClassObject<Function>::type = nullptr
            , typename... Args>
     void addCallback ( const FString& cb_signal
                      , Function&&     cb_function
-                     , Args&&...      args)
-    {
-      // Add a function object as callback
-
-      auto fn = std::bind ( std::forward<Function>(cb_function)
-                          , std::forward<Args>(args)... );
-      FCallbackData obj{ cb_signal, nullptr, nullptr, fn };
-      callback_objects.push_back(obj);
-    }
-
+                     , Args&&...      args);
+    template<typename Function
+           , typename ClassObject<Function>::type = nullptr
+           , typename... Args>
+    void addCallback ( const FString& cb_signal
+                     , Function&      cb_function
+                     , Args&&...      args);
     template<typename Function
            , typename FunctionReference<Function>::type = nullptr
            , typename... Args>
     void addCallback ( const FString& cb_signal
                      , Function&      cb_function
-                     , Args&&...      args)
-    {
-      // Add a function as callback
-
-      auto ptr = reinterpret_cast<void*>(&cb_function);
-      auto fn = std::bind (cb_function, std::forward<Args>(args)...);
-      FCallbackData obj{ cb_signal, nullptr, ptr, fn };
-      callback_objects.push_back(obj);
-    }
-
+                     , Args&&...      args);
     template<typename Function
            , typename FunctionPointer<Function>::type = nullptr
            , typename... Args>
     void addCallback ( const FString& cb_signal
                      , Function&&     cb_function
-                     , Args&&...      args)
-    {
-      // Add a function pointer as callback
-
-      auto ptr = reinterpret_cast<void*>(cb_function);
-      auto fn = std::bind ( std::forward<Function>(cb_function)
-                          , std::forward<Args>(args)... );
-      FCallbackData obj{ cb_signal, nullptr, ptr, fn };
-      callback_objects.push_back(obj);
-    }
-
-    template<typename Function
-           , typename ClassObject<Function>::type = nullptr
-           , typename... Args>
-    void addCallback ( const FString& cb_signal
-                     , Function&      cb_function
-                     , Args&&...      args)
-    {
-      // Add a non-union class type as callback
-
-      auto fn = std::bind (cb_function, std::forward<Args>(args)...);
-      FCallbackData obj{ cb_signal, nullptr, nullptr, fn };
-      callback_objects.push_back(obj);
-    }
-
+                     , Args&&...      args);
     template<typename Object
            , typename ObjectPointer<Object>::type = nullptr>
-    void delCallback (Object&& cb_instance)
-    {
-      // Deletes entries with the given instance from the callback list
-
-      if ( callback_objects.empty() )
-        return;
-
-      auto iter = callback_objects.begin();
-
-      while ( iter != callback_objects.end() )
-      {
-        if ( iter->cb_instance == cb_instance )
-          iter = callback_objects.erase(iter);
-        else
-          ++iter;
-      }
-    }
-
-    void delCallback (const FString& cb_signal)
-    {
-      // Deletes entries with the given signal from the callback list
-
-      if ( callback_objects.empty() )
-        return;
-
-      auto iter = callback_objects.begin();
-
-      while ( iter != callback_objects.end() )
-      {
-        if ( iter->cb_signal == cb_signal )
-          iter = callback_objects.erase(iter);
-        else
-          ++iter;
-      }
-    }
-
+    void delCallback (Object&& cb_instance);
+    void delCallback (const FString& cb_signal);
     template<typename Object
            , typename ObjectPointer<Object>::type = nullptr>
-    void delCallback (const FString& cb_signal, Object&& cb_instance)
-    {
-      // Deletes entries with the given signal and instance
-      // from the callback list
-
-      if ( callback_objects.empty() )
-        return;
-
-      auto iter = callback_objects.begin();
-
-      while ( iter != callback_objects.end() )
-      {
-        if ( iter->cb_signal == cb_signal
-          && iter->cb_instance == cb_instance )
-          iter = callback_objects.erase(iter);
-        else
-          ++iter;
-      }
-    }
-
+    void delCallback (const FString& cb_signal, Object&& cb_instance);
     template<typename FunctionPtr
            , typename FunctionPointer<FunctionPtr>::type = nullptr>
-    void delCallback (FunctionPtr&& cb_func_ptr)
-    {
-      // Deletes entries with the given function pointer
-      // from the callback list
-
-      if ( callback_objects.empty() )
-        return;
-
-      auto ptr = reinterpret_cast<void*>(cb_func_ptr);
-      auto iter = callback_objects.begin();
-
-      while ( iter != callback_objects.end() )
-      {
-        if ( iter->cb_function_ptr == ptr )
-          iter = callback_objects.erase(iter);
-        else
-          ++iter;
-      }
-    }
-
+    void delCallback (FunctionPtr&& cb_func_ptr);
     template<typename Function
            , typename FunctionReference<Function>::type = nullptr>
-    void delCallback (Function& cb_function)
-    {
-      // Deletes entries with the given function from the callback list
-
-      if ( callback_objects.empty() )
-        return;
-
-      auto ptr = reinterpret_cast<void*>(&cb_function);
-      auto iter = callback_objects.begin();
-
-      while ( iter != callback_objects.end() )
-      {
-        if ( iter->cb_function_ptr == ptr )
-          iter = callback_objects.erase(iter);
-        else
-          ++iter;
-      }
-    }
-
-    void delCallback()
-    {
-      // Delete all callbacks from this widget
-
-      callback_objects.clear();  // function pointer
-    }
-
-
-    void emitCallback (const FString& emit_signal) const
-    {
-      // Initiate callback for the given signal
-
-      if ( callback_objects.empty() )
-        return;
-
-      for (auto&& cback : callback_objects)
-      {
-        if ( cback.cb_signal == emit_signal )
-        {
-          // Calling the stored function pointer
-          cback.cb_function();
-        }
-      }
-    }
+    void delCallback (const Function& cb_function);
+    void delCallback();
+    void emitCallback (const FString& emit_signal) const;
 
   private:
     // Typedefs
@@ -387,6 +216,208 @@ class FCallback
     // Data members
     FCallbackObjects  callback_objects{};
 };
+
+// FCallback inline functions
+//----------------------------------------------------------------------
+inline const FString FCallback::getClassName() const
+{ return "FCallback"; }
+
+//----------------------------------------------------------------------
+inline std::size_t FCallback::getCallbackCount() const
+{ return callback_objects.size(); }
+
+//----------------------------------------------------------------------
+template<typename Object
+       , typename Function
+       , typename FCallback::ObjectPointer<Object>::type
+       , typename FCallback::MemberFunctionPointer<Function>::type
+       , typename... Args>
+inline void FCallback::addCallback ( const FString& cb_signal
+                                   , Object&&       cb_instance
+                                   , Function&&     cb_member
+                                   , Args&&...      args)
+{
+  // Add a member function pointer as callback
+
+  Object instance = cb_instance;
+  auto fn = std::bind ( std::forward<Function>(cb_member)
+                      , std::forward<Object>(cb_instance)
+                      , std::forward<Args>(args)... );
+  FCallbackData obj{ cb_signal, instance, nullptr, fn };
+  callback_objects.push_back(obj);
+}
+
+//----------------------------------------------------------------------
+template<typename Object
+       , typename Function
+       , typename FCallback::ObjectPointer<Object>::type
+       , typename FCallback::ClassObject<Function>::type
+       , typename... Args>
+inline void FCallback::addCallback ( const FString& cb_signal
+                                   , Object&&       cb_instance
+                                   , Function&&     cb_function
+                                   , Args&&...      args)
+{
+  // Add a function object to an instance as callback
+
+  auto fn = std::bind (std::forward<Function>(cb_function), std::forward<Args>(args)...);
+  FCallbackData obj{ cb_signal, cb_instance, nullptr, fn };
+  callback_objects.push_back(obj);
+}
+
+//----------------------------------------------------------------------
+template<typename Function
+       , typename FCallback::ClassObject<Function>::type
+       , typename... Args>
+inline void FCallback::addCallback ( const FString& cb_signal
+                                   , Function&&     cb_function
+                                   , Args&&...      args)
+{
+  // Add a function object as callback
+
+  auto fn = std::bind ( std::forward<Function>(cb_function)
+                      , std::forward<Args>(args)... );
+  FCallbackData obj{ cb_signal, nullptr, nullptr, fn };
+  callback_objects.push_back(obj);
+}
+
+//----------------------------------------------------------------------
+template<typename Function
+       , typename FCallback::ClassObject<Function>::type
+       , typename... Args>
+inline void FCallback::addCallback ( const FString& cb_signal
+                                   , Function&      cb_function
+                                   , Args&&...      args)
+{
+  // Add a function object reference as callback
+
+  auto fn = std::bind (cb_function, std::forward<Args>(args)...);
+  FCallbackData obj{ cb_signal, nullptr, nullptr, fn };
+  callback_objects.push_back(obj);
+}
+
+//----------------------------------------------------------------------
+template<typename Function
+       , typename FCallback::FunctionReference<Function>::type
+       , typename... Args>
+inline void FCallback::addCallback ( const FString& cb_signal
+                                   , Function&      cb_function
+                                   , Args&&...      args)
+{
+  // Add a function reference as callback
+
+  auto ptr = reinterpret_cast<void*>(&cb_function);
+  auto fn = std::bind (cb_function, std::forward<Args>(args)...);
+  FCallbackData obj{ cb_signal, nullptr, ptr, fn };
+  callback_objects.push_back(obj);
+}
+
+//----------------------------------------------------------------------
+template<typename Function
+       , typename FCallback::FunctionPointer<Function>::type
+       , typename... Args>
+inline void FCallback::addCallback ( const FString& cb_signal
+                                   , Function&&     cb_function
+                                   , Args&&...      args)
+{
+  // Add a function pointer as callback
+
+  auto ptr = reinterpret_cast<void*>(cb_function);
+  auto fn = std::bind ( std::forward<Function>(cb_function)
+                      , std::forward<Args>(args)... );
+  FCallbackData obj{ cb_signal, nullptr, ptr, fn };
+  callback_objects.push_back(obj);
+}
+
+//----------------------------------------------------------------------
+template<typename Object
+       , typename FCallback::ObjectPointer<Object>::type>
+inline void FCallback::delCallback (Object&& cb_instance)
+{
+  // Deletes entries with the given instance from the callback list
+
+  if ( callback_objects.empty() )
+    return;
+
+  auto iter = callback_objects.begin();
+
+  while ( iter != callback_objects.end() )
+  {
+    if ( iter->cb_instance == cb_instance )
+      iter = callback_objects.erase(iter);
+    else
+      ++iter;
+  }
+}
+
+//----------------------------------------------------------------------
+template<typename Object
+       , typename FCallback::ObjectPointer<Object>::type>
+inline void FCallback::delCallback (const FString& cb_signal, Object&& cb_instance)
+{
+  // Deletes entries with the given signal and instance
+  // from the callback list
+
+  if ( callback_objects.empty() )
+    return;
+
+  auto iter = callback_objects.begin();
+
+  while ( iter != callback_objects.end() )
+  {
+    if ( iter->cb_signal == cb_signal
+      && iter->cb_instance == cb_instance )
+      iter = callback_objects.erase(iter);
+    else
+      ++iter;
+  }
+}
+
+//----------------------------------------------------------------------
+template<typename FunctionPtr
+       , typename FCallback::FunctionPointer<FunctionPtr>::type>
+inline void FCallback::delCallback (FunctionPtr&& cb_func_ptr)
+{
+  // Deletes entries with the given function pointer
+  // from the callback list
+
+  if ( callback_objects.empty() )
+    return;
+
+  auto ptr = reinterpret_cast<void*>(cb_func_ptr);
+  auto iter = callback_objects.begin();
+
+  while ( iter != callback_objects.end() )
+  {
+    if ( iter->cb_function_ptr == ptr )
+      iter = callback_objects.erase(iter);
+    else
+      ++iter;
+  }
+}
+
+//----------------------------------------------------------------------
+template<typename Function
+       , typename FCallback::FunctionReference<Function>::type>
+inline void FCallback::delCallback (const Function& cb_function)
+{
+  // Deletes entries with the given function reference
+  // from the callback list
+
+  if ( callback_objects.empty() )
+    return;
+
+  auto ptr = reinterpret_cast<void*>(&cb_function);
+  auto iter = callback_objects.begin();
+
+  while ( iter != callback_objects.end() )
+  {
+    if ( iter->cb_function_ptr == ptr )
+      iter = callback_objects.erase(iter);
+    else
+      ++iter;
+  }
+}
 
 }  // namespace finalcut
 

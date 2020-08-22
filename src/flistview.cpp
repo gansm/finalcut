@@ -24,8 +24,10 @@
   #include <strings.h>  // need for strcasecmp
 #endif
 
+#include <limits>
 #include <memory>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "final/emptyfstring.h"

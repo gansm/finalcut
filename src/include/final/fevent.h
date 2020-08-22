@@ -218,24 +218,25 @@ class FFocusEvent : public FEvent  // focus event
 //----------------------------------------------------------------------
 // class FAccelEvent
 //----------------------------------------------------------------------
+class FWidget;  // class forward declaration
 
 class FAccelEvent : public FEvent  // focus event
 {
   public:
     FAccelEvent() = default;
-    FAccelEvent (fc::events, void*);
+    FAccelEvent (fc::events, FWidget*);
     FAccelEvent (const FAccelEvent&) = delete;
     ~FAccelEvent();
     FAccelEvent& operator = (const FAccelEvent&) = delete;
 
-    void*    focusedWidget() const;
+    FWidget* focusedWidget() const;
     bool     isAccepted() const;
     void     accept();
     void     ignore();
 
   private:
     bool     accpt{false};
-    void*    focus_widget{};
+    FWidget* focus_widget{};
 };
 
 

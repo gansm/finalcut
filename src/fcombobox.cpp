@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
+
 #include "final/fapplication.h"
 #include "final/fcolorpair.h"
 #include "final/fcombobox.h"
@@ -551,10 +553,10 @@ void FComboBox::draw()
   print() << FPoint{int(getWidth()) - nf, 1}
           << button_color;
 
- if ( FTerm::isNewFont() )
-   print() << NF_button_arrow_down;
- else
-   print() << fc::BlackDownPointingTriangle;  // ▼
+  if ( FTerm::isNewFont() )
+    print() << NF_button_arrow_down;
+  else
+    print() << fc::BlackDownPointingTriangle;  // ▼
 
   if ( getFlags().shadow )
     drawShadow(this);

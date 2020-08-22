@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <memory>
+#include <utility>
 
 #include "final/fapplication.h"
 #include "final/fdialog.h"

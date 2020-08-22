@@ -159,8 +159,9 @@ void FToolTip::calculateDimensions()
 
   int x{};
   int y{};
-  const std::size_t h = ( hasBorder() ) ? text_num_lines + 2 : text_num_lines;
-  const std::size_t w = ( hasBorder() ) ? max_line_width + 4 : max_line_width + 2;
+  bool border = hasBorder();
+  const std::size_t h = ( border ) ? text_num_lines + 2 : text_num_lines;
+  const std::size_t w = ( border ) ? max_line_width + 4 : max_line_width + 2;
   const auto& r = getRootWidget();
 
   if ( r )

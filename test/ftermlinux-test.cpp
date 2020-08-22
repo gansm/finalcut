@@ -1598,15 +1598,15 @@ void FTermLinuxTest::linuxConsoleTest()
     characters.clear();
 
 
-    linux.setBeep (20, 100);    // Hz < 21
+    linux.setBeep (20, 100);     // Hz < 21
     CPPUNIT_ASSERT ( characters.empty() );
-    linux.setBeep (32767, 100); // Hz > 32766
+    linux.setBeep (32767, 100);  // Hz > 32766
     CPPUNIT_ASSERT ( characters.empty() );
-    linux.setBeep (200, -1);    // ms < 0
+    linux.setBeep (200, -1);     // ms < 0
     CPPUNIT_ASSERT ( characters.empty() );
-    linux.setBeep (200, 2000);  // ms > 1999
+    linux.setBeep (200, 2000);   // ms > 1999
     CPPUNIT_ASSERT ( characters.empty() );
-    linux.setBeep (200, 100);   // 200 Hz - 100 ms
+    linux.setBeep (200, 100);    // 200 Hz - 100 ms
     CPPUNIT_ASSERT ( characters == CSI "10;200]" CSI "11;100]" );
     characters.clear();
     linux.resetBeep();

@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <utility>
+
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -121,12 +123,12 @@ class FCallbackTest : public CPPUNIT_NS::TestFixture
 
   protected:
     void classNameTest();
-    void memberFunctionCallbackTest();
-    void instanceWithFunctionCallbackTest();
-    void functionObjectTest();
-    void functionCallbackTest();
+    void memberFunctionPointerCallbackTest();
+    void instanceWithFunctionObjectCallbackTest();
+    void functionObjectCallbackTest();
+    void functionObjectReferenceCallbackTest();
+    void functionReferenceCallbackTest();
     void functionPointerCallbackTest();
-    void nonUnionClassCallbackTest();
     void ownWidgetTest();
 
   private:
@@ -135,12 +137,12 @@ class FCallbackTest : public CPPUNIT_NS::TestFixture
 
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
-    CPPUNIT_TEST (memberFunctionCallbackTest);
-    CPPUNIT_TEST (instanceWithFunctionCallbackTest);
-    CPPUNIT_TEST (functionObjectTest);
-    CPPUNIT_TEST (functionCallbackTest);
+    CPPUNIT_TEST (memberFunctionPointerCallbackTest);
+    CPPUNIT_TEST (instanceWithFunctionObjectCallbackTest);
+    CPPUNIT_TEST (functionObjectCallbackTest);
+    CPPUNIT_TEST (functionObjectReferenceCallbackTest);
+    CPPUNIT_TEST (functionReferenceCallbackTest);
     CPPUNIT_TEST (functionPointerCallbackTest);
-    CPPUNIT_TEST (nonUnionClassCallbackTest);
     CPPUNIT_TEST (ownWidgetTest);
 
     // End of test suite definition
@@ -162,7 +164,7 @@ void FCallbackTest::classNameTest()
 }
 
 //----------------------------------------------------------------------
-void FCallbackTest::memberFunctionCallbackTest()
+void FCallbackTest::memberFunctionPointerCallbackTest()
 {
   finalcut::FCallback cb{};
   cb_class c{5, &root_widget};
@@ -228,7 +230,7 @@ void FCallbackTest::memberFunctionCallbackTest()
 }
 
 //----------------------------------------------------------------------
-void FCallbackTest::instanceWithFunctionCallbackTest()
+void FCallbackTest::instanceWithFunctionObjectCallbackTest()
 {
   finalcut::FCallback cb{};
   cb_class c{15, &root_widget};
@@ -317,7 +319,7 @@ void FCallbackTest::instanceWithFunctionCallbackTest()
 }
 
 //----------------------------------------------------------------------
-void FCallbackTest::functionObjectTest()
+void FCallbackTest::functionObjectCallbackTest()
 {
   finalcut::FCallback cb{};
   int i1{2};
@@ -377,7 +379,47 @@ void FCallbackTest::functionObjectTest()
 }
 
 //----------------------------------------------------------------------
-void FCallbackTest::functionCallbackTest()
+void FCallbackTest::functionObjectReferenceCallbackTest()
+{
+  finalcut::FCallback cb{};
+  int i{4};
+  auto lambda1 = [] (int* value)
+                 {
+                   *value = *value << 8;
+                 };
+  auto lambda2 = [] (int& value)
+                 {
+                   value = value >> 4;
+                 };
+  using NonUnionClass = decltype(lambda1);
+
+  CPPUNIT_ASSERT ( 0 == std::is_member_function_pointer<NonUnionClass>::value );
+  CPPUNIT_ASSERT ( 0 == std::is_function<typename std::remove_pointer<NonUnionClass>::type>::value );
+  CPPUNIT_ASSERT ( 0 == std::is_function<NonUnionClass>::value );
+  CPPUNIT_ASSERT ( 0 == std::is_pointer<NonUnionClass>::value );
+  CPPUNIT_ASSERT ( 1 == std::is_object<NonUnionClass>::value );
+  CPPUNIT_ASSERT ( 1 == std::is_class<NonUnionClass>::value );
+
+  cb.addCallback ("toggled", lambda1, &i);
+  CPPUNIT_ASSERT ( cb.getCallbackCount() == 1 );
+  CPPUNIT_ASSERT ( i == 4 );
+
+  cb.emitCallback ("toggled");
+  CPPUNIT_ASSERT ( i == 1024 );
+
+  cb.addCallback ("row-selected", lambda2, std::ref(i));
+  CPPUNIT_ASSERT ( cb.getCallbackCount() == 2 );
+  CPPUNIT_ASSERT ( i == 1024 );
+
+  cb.emitCallback ("row-selected");
+  CPPUNIT_ASSERT ( i == 64 );
+
+  cb.delCallback();
+  CPPUNIT_ASSERT ( cb.getCallbackCount() == 0 );
+}
+
+//----------------------------------------------------------------------
+void FCallbackTest::functionReferenceCallbackTest()
 {
   finalcut::FCallback cb{};
   int i1{22};
@@ -464,45 +506,6 @@ void FCallbackTest::functionPointerCallbackTest()
 }
 
 //----------------------------------------------------------------------
-void FCallbackTest::nonUnionClassCallbackTest()
-{
-  finalcut::FCallback cb{};
-  int i{4};
-  auto lambda1 = [] (int* value)
-                 {
-                   *value = *value << 8;
-                 };
-  auto lambda2 = [] (int& value)
-                 {
-                   value = value >> 4;
-                 };
-  using NonUnionClass = decltype(lambda1);
-
-  CPPUNIT_ASSERT ( 0 == std::is_member_function_pointer<NonUnionClass>::value );
-  CPPUNIT_ASSERT ( 0 == std::is_function<typename std::remove_pointer<NonUnionClass>::type>::value );
-  CPPUNIT_ASSERT ( 0 == std::is_function<NonUnionClass>::value );
-  CPPUNIT_ASSERT ( 0 == std::is_pointer<NonUnionClass>::value );
-  CPPUNIT_ASSERT ( 1 == std::is_object<NonUnionClass>::value );
-  CPPUNIT_ASSERT ( 1 == std::is_class<NonUnionClass>::value );
-
-  cb.addCallback ("toggled", lambda1, &i);
-  CPPUNIT_ASSERT ( cb.getCallbackCount() == 1 );
-  CPPUNIT_ASSERT ( i == 4 );
-
-  cb.emitCallback ("toggled");
-  CPPUNIT_ASSERT ( i == 1024 );
-
-  cb.addCallback ("row-selected", lambda2, std::ref(i));
-  CPPUNIT_ASSERT ( cb.getCallbackCount() == 2 );
-  CPPUNIT_ASSERT ( i == 1024 );
-
-  cb.emitCallback ("row-selected");
-  CPPUNIT_ASSERT ( i == 64 );
-
-  cb.delCallback();
-  CPPUNIT_ASSERT ( cb.getCallbackCount() == 0 );
-}
-
 void FCallbackTest::ownWidgetTest()
 {
   Widget w;

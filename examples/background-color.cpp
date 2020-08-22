@@ -42,7 +42,7 @@ class Background final : public finalcut::FDialog
     using FDialog::setGeometry;
 
     // Typedef
-    typedef std::tuple<uChar,uChar,uChar>  RGB;
+    typedef std::tuple<uChar, uChar, uChar>  RGB;
 
     // Constructor
     explicit Background (finalcut::FWidget* = nullptr);

@@ -252,7 +252,7 @@ void FVTerm::putVTerm()
 }
 
 //----------------------------------------------------------------------
-void FVTerm::updateTerminal()
+void FVTerm::updateTerminal() const
 {
   // Updates pending changes to the terminal
 
@@ -655,7 +655,7 @@ void FVTerm::flush()
 
   while ( ! output_buffer->empty() )
   {
-    const static FTerm::defaultPutChar& FTermPutchar = FTerm::putchar();
+    static const FTerm::defaultPutChar& FTermPutchar = FTerm::putchar();
     FTermPutchar (output_buffer->front());
     output_buffer->pop();
   }

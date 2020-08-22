@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <string>
+
 #include "final/flogger.h"
 
 namespace finalcut

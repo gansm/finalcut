@@ -103,7 +103,6 @@ ProgressDialog::ProgressDialog (finalcut::FWidget* parent)
   progressBar.setGeometry(FPoint{2, 3}, FSize{34, 1}, false);
   //progressBar.setPercentage(78);
 
-  using namespace std::placeholders;
   reset.addCallback
   (
     "clicked",
@@ -293,7 +292,7 @@ class MyDialog final : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback methods
-    void cb_noFunctionMsg (finalcut::FButton&);
+    void cb_noFunctionMsg (const finalcut::FButton&);
     void cb_about();
     void cb_terminfo();
     void cb_drives();
@@ -311,7 +310,7 @@ class MyDialog final : public finalcut::FDialog
     void cb_activateButton ( const finalcut::FRadioButton&
                            , finalcut::FButton& ) const;
     void cb_view (const finalcut::FMenuItem*);
-    void cb_setInput (finalcut::FListBox&, finalcut::FLineEdit&) const;
+    void cb_setInput (const finalcut::FListBox&, finalcut::FLineEdit&) const;
 
     // Data members
     bool                      initialized{false};
@@ -805,7 +804,7 @@ void MyDialog::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_noFunctionMsg (finalcut::FButton& button)
+void MyDialog::cb_noFunctionMsg (const finalcut::FButton& button)
 {
   auto text = button.getText();
   text = text.replace('&', "");
@@ -1033,7 +1032,7 @@ void MyDialog::cb_view (const finalcut::FMenuItem* item)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_setInput ( finalcut::FListBox& listbox
+void MyDialog::cb_setInput ( const finalcut::FListBox& listbox
                            , finalcut::FLineEdit& lineedit) const
 {
   lineedit = listbox.getItem(listbox.currentItem()).getText();

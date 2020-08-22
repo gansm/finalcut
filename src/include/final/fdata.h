@@ -27,6 +27,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <utility>
+
 template<typename T>
 struct FData
 {

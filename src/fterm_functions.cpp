@@ -25,7 +25,9 @@
 #endif
 
 #include <algorithm>
+#include <limits>
 #include <numeric>
+#include <utility>
 
 #include "final/fapplication.h"
 #include "final/fcharmap.h"

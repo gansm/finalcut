@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <algorithm>
+#include <utility>
 
 #include "final/fpoint.h"
 #include "final/frect.h"

@@ -82,7 +82,7 @@ class FListBoxItem
 
     // Accessors
     virtual const FString getClassName() const;
-    virtual FString&      getText();
+    virtual FString       getText() const;
     virtual FDataPtr      getData() const;
 
     // Mutators
@@ -110,7 +110,7 @@ inline const FString FListBoxItem::getClassName() const
 { return "FListBoxItem"; }
 
 //----------------------------------------------------------------------
-inline FString& FListBoxItem::getText()
+inline FString FListBoxItem::getText() const
 { return text; }
 
 //----------------------------------------------------------------------
@@ -247,7 +247,7 @@ class FListBox : public FWidget
     };
 
     // Accessors
-    static FString&     getString (listBoxItems::iterator);
+    static FString      getString (listBoxItems::iterator);
 
     // Inquiry
     bool                isHorizontallyScrollable() const;

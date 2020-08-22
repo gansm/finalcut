@@ -47,6 +47,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <limits>
+
 #include "final/fwidget.h"
 
 namespace finalcut

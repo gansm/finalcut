@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <utility>
+
 #include "final/fstring.h"
 #include "final/fstringstream.h"
 

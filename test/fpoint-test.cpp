@@ -328,7 +328,6 @@ void FPointTest::moveTest()
   p1.move (-2, -7);
   CPPUNIT_ASSERT ( p1.getX() == 4 );
   CPPUNIT_ASSERT ( p1.getY() == -1 );
-
 }
 
 //----------------------------------------------------------------------

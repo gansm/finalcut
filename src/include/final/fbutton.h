@@ -78,7 +78,7 @@ class FButton : public FWidget
 
     // Accessors
     const FString       getClassName() const override;
-    FString&            getText();
+    FString             getText() const;
 
     // Mutators
     void                setForegroundColor (FColor) override;
@@ -178,7 +178,7 @@ inline const FString FButton::getClassName() const
 { return "FButton"; }
 
 //----------------------------------------------------------------------
-inline FString& FButton::getText()
+inline FString FButton::getText() const
 { return text; }
 
 //----------------------------------------------------------------------

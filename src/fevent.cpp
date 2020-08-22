@@ -235,7 +235,7 @@ void FFocusEvent::ignore()
 // class FAccelEvent
 //----------------------------------------------------------------------
 
-FAccelEvent::FAccelEvent (fc::events ev_type, void* focused)  // constructor
+FAccelEvent::FAccelEvent (fc::events ev_type, FWidget* focused)  // constructor
   : FEvent{ev_type}
   , focus_widget{focused}
 { }
@@ -245,7 +245,7 @@ FAccelEvent::~FAccelEvent()  // destructor
 { }
 
 //----------------------------------------------------------------------
-void* FAccelEvent::focusedWidget() const
+FWidget* FAccelEvent::focusedWidget() const
 { return focus_widget; }
 
 //----------------------------------------------------------------------

@@ -49,6 +49,7 @@
 
 #include <list>
 #include <stack>
+#include <unordered_map>
 #include <vector>
 
 #include "final/fscrollbar.h"

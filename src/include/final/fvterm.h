@@ -98,8 +98,8 @@ class FVTerm
     typedef void (FVTerm::*FPreprocessingHandler)();
     typedef std::function<void()> FPreprocessingFunction;
 
-    struct FTermArea;  // forward declaration
-    struct FVTermPreprocessing; // forward declaration
+    struct FTermArea;             // forward declaration
+    struct FVTermPreprocessing;   // forward declaration
 
     typedef std::vector<FVTermPreprocessing> FPreprocessing;
 
@@ -118,7 +118,7 @@ class FVTerm
     };
 
     // Constructor
-    explicit FVTerm();
+    FVTerm();
 
     // Disable copy constructor
     FVTerm (const FVTerm&) = delete;
@@ -148,7 +148,7 @@ class FVTerm
     const FTermArea*      getVWin() const;
     const FPoint          getPrintCursor();
     static const FChar    getAttribute();
-    FTerm&                getFTerm();
+    FTerm&                getFTerm() const;
 
     // Mutators
     void                  setTermXY (int, int) const;
@@ -253,7 +253,7 @@ class FVTerm
     void                  createVTerm (const FSize&);
     void                  resizeVTerm (const FSize&) const;
     void                  putVTerm();
-    void                  updateTerminal();
+    void                  updateTerminal() const;
     virtual void          addPreprocessingHandler ( const FVTerm*
                                                   , const FPreprocessingFunction& );
     virtual void          delPreprocessingHandler (const FVTerm*);
@@ -629,7 +629,7 @@ inline const FChar FVTerm::getAttribute()
 { return next_attribute; }
 
 //----------------------------------------------------------------------
-inline FTerm& FVTerm::getFTerm()
+inline FTerm& FVTerm::getFTerm() const
 { return *fterm; }
 
 //----------------------------------------------------------------------

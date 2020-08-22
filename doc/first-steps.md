@@ -510,7 +510,7 @@ clicked by a keyboard or mouse, it sends the string "clicked". A signal
 handler explicitly provided by Widget, in the form of a callback function 
 or a callback method, can react to such a signal.
 
-A callback function has no return value can have various arguments:
+A callback function has no return value and can have various arguments:
 
 ```cpp
 void cb_function (FWidget* w, int* i, double* d, ...)
@@ -527,29 +527,137 @@ void classname::cb_methode (FWidget* w, int* i, double* d, ...)
 We use the `addCallback()` method of the `FWidget` class to connect 
 to other widget objects.
 
-For calling functions and static methods:
+(1) For calling functions or static methods via a pointer:
 
 ```cpp
+template<typename Function
+       , typename FunctionPointer<Function>::type = nullptr
+       , typename... Args>
 void FWidget::addCallback ( const FString& cb_signal
-                          , FCallback cb_handler
-                          , FDataPtr data )
+                          , Function&&     cb_function
+                          , Args&&...      args)
 {...}
 ```
 
-For calling a member method of a specific instance:
+(2) For calling functions or static methods via a reference:
 
 ```cpp
+template<typename Function
+       , typename FunctionReference<Function>::type = nullptr
+       , typename... Args>
 void FWidget::addCallback ( const FString& cb_signal
-                          , FWidget* cb_instance
-                          , FMemberCallback cb_handler
-                          , FDataPtr data )
+                          , Function&      cb_function
+                          , Args&&...      args)
 {...}
 ```
 
-There are two macros `F_FUNCTION_CALLBACK` and `F_METHOD_CALLBACK` to avoid 
-having to deal with necessary type conversions. With `delCallback()` you can 
-remove a connection to a signal handler or a widget. Alternatively, you can 
-use `delAllCallbacks()` to remove all existing callbacks from an object.
+(3) For calling a member method of a specific instance:
+
+```cpp
+template<typename Object
+       , typename Function
+       , typename ObjectPointer<Object>::type = nullptr
+       , typename MemberFunctionPointer<Function>::type = nullptr
+       , typename... Args>
+void FWidget::addCallback ( const FString& cb_signal
+                          , Object&&       cb_instance
+                          , Function&&     cb_member
+                          , Args&&...      args)
+{...}
+```
+
+(4) For calling a std::bind call wrapper or a lambda expression:
+```cpp
+template<typename Function
+       , typename ClassObject<Function>::type = nullptr
+       , typename... Args>
+void FWidget::addCallback ( const FString& cb_signal
+                          , Function&&     cb_function
+                          , Args&&...      args)
+{...}
+```
+
+(5) For calling a std::bind call wrapper to a specific instance:
+
+```cpp
+template<typename Object
+       , typename Function
+       , typename ObjectPointer<Object>::type = nullptr
+       , typename ClassObject<Function>::type = nullptr
+       , typename... Args>
+void FWidget::addCallback ( const FString& cb_signal
+                          , Object&&       cb_instance
+                          , Function&&     cb_function
+                          , Args&&...      args)
+{...}
+```
+
+(6) For calling a lambda function that has been stored in a variable
+with the keyword auto:
+
+```cpp
+template<typename Function
+       , typename ClassObject<Function>::type = nullptr
+       , typename... Args>
+void FWidget::addCallback ( const FString& cb_signal
+                          , Function&      cb_function
+                          , Args&&...      args)
+{...}
+```
+
+With `delCallback(...)` you can remove a connection to a signal handler
+or a widget instance. Alternatively, you can use `delCallbacks()` to
+remove all existing callbacks from an object.
+
+To delete functions or static methods callbacks via a pointer:(4)
+
+```cpp
+template<typename FunctionPtr
+       , typename FunctionPointer<FunctionPtr>::type = nullptr>
+void FWidget::delCallback (FunctionPtr&& cb_func_ptr)
+{...}
+```
+
+To delete functions or static methods callbacks via a reference:(5)
+
+```cpp
+template<typename Function
+       , typename FunctionReference<Function>::type = nullptr>
+void FWidget::delCallback (Function& cb_function)
+{...}
+```
+
+To delete all callbacks from a specific instance:(1)
+
+```cpp
+template<typename Object
+       , typename ObjectPointer<Object>::type = nullptr>
+void FWidget::delCallback (Object&& cb_instance)
+{...}
+```
+
+To delete all callbacks of a signal:(2)
+
+```cpp
+void delCallback (const FString& cb_signal)
+{...}
+```
+
+To delete all callbacks of a signal and specific instance:(3)
+
+```cpp
+template<typename Object
+       , typename ObjectPointer<Object>::type = nullptr>
+void delCallback (const FString& cb_signal, Object&& cb_instance)
+{...}
+```
+
+To delete all callbacks from a widget:(6)
+
+```cpp
+void delCallback()
+{...}
+```
 
 
 ### The FINAL CUT widgets emit the following default signals ###

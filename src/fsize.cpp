@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <limits>
+#include <utility>
 
 #include "final/fpoint.h"
 #include "final/fsize.h"

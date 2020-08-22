@@ -166,7 +166,7 @@ class FTerm final
     typedef FColorPalette::FSetPalette FSetPalette;
 
     // Constructor
-    explicit FTerm();
+    FTerm();
 
     // Disable copy constructor
     FTerm (const FTerm&) = delete;

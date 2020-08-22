@@ -35,6 +35,7 @@
     {                                  \
       if ( ! FApplication::isQuit() )  \
         warnNotInitialized();          \
+                                       \
       return ret_value;                \
     }
 #endif

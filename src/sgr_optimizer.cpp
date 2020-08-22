@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <cstring>
+#include <vector>
 
 #include "final/fc.h"
 #include "final/sgr_optimizer.h"

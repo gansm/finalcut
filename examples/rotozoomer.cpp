@@ -28,7 +28,10 @@
 #include <final/final.h>
 
 namespace fc = finalcut::fc;
-using namespace std::chrono;
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+using std::chrono::system_clock;
+using std::chrono::time_point;
 using finalcut::FPoint;
 using finalcut::FSize;
 

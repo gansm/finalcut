@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -20,6 +20,9 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <iomanip>
+#include <string>
+
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -27,12 +30,9 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
-
 #include <cppunit/SourceLine.h>
 #include <cppunit/TestAssert.h>
 
-#include <iomanip>
-#include <string>
 #include <final/final.h>
 
 
@@ -509,7 +509,7 @@ void FOptiMoveTest::cygwinTest()
   om.set_parm_left_cursor (CSI "%p1%dD");
 
   CPPUNIT_ASSERT_CSTRING ( printSequence(om.moveCursor (1, 2, 3, 4)).c_str()
-                         , "Esc [ 5 ; 4 H ") ;
+                         , "Esc [ 5 ; 4 H " );
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), CSI "H");
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), "\r");

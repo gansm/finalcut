@@ -56,6 +56,7 @@
 #endif
 
 #include <string>
+#include <utility>
 #include <vector>
 
 // FTermcap string macro

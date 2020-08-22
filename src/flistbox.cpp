@@ -644,7 +644,7 @@ void FListBox::adjustSize()
 
 // private methods of FListBox
 //----------------------------------------------------------------------
-inline FString& FListBox::getString (listBoxItems::iterator iter)
+inline FString FListBox::getString (listBoxItems::iterator iter)
 {
   return iter->getText();
 }

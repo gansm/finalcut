@@ -28,6 +28,7 @@
 #include <clocale>
 #include <iomanip>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <cppunit/BriefTestProgressListener.h>

@@ -180,14 +180,14 @@ void FTermDetectionTest::ansiTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "ansi") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "ansi" );
 
     // Test fallback to vt100 without TERM environment variable
     unsetenv("TERM");
     detect.setAnsiTerminal(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -310,7 +310,7 @@ void FTermDetectionTest::rxvtTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "rxvt-16color") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "rxvt-16color" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -434,13 +434,13 @@ void FTermDetectionTest::mltermTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "mlterm-256color") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "mlterm-256color" );
 
     setenv ("TERM", "mlterm", 1);
     unsetenv("COLORFGBG");
     detect.detect();
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "xterm-256color") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "xterm-256color" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -756,7 +756,7 @@ void FTermDetectionTest::ktermTest()
     detect.setKtermTerminal(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1011,7 +1011,7 @@ void FTermDetectionTest::linuxTest()
     detect.setLinuxTerm(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isLinuxTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1083,7 +1083,7 @@ void FTermDetectionTest::freebsdTest()
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isXTerminal() );
     CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1153,7 +1153,7 @@ void FTermDetectionTest::netbsdTest()
     detect.setNetBSDTerm(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1223,7 +1223,7 @@ void FTermDetectionTest::openbsdTest()
     detect.setOpenBSDTerm(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isOpenBSDTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1291,7 +1291,7 @@ void FTermDetectionTest::sunTest()
     detect.setSunTerminal(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1354,12 +1354,12 @@ void FTermDetectionTest::screenTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen" );
 
     setenv ("XTERM_VERSION", "XTerm(312)", 1);
     detect.detect();
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen-256color") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen-256color" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1423,12 +1423,12 @@ void FTermDetectionTest::tmuxTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen" );
 
     setenv ("VTE_VERSION", "3801", 1);
     detect.detect();
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen-256color") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen-256color" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1505,17 +1505,17 @@ void FTermDetectionTest::ttytypeTest()
     // Test /dev/tty3 with linux
     data.setTermFileName("/dev/tty3");
     detect.detect();
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "linux") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "linux" );
 
     // Test /dev/ttyp0 with vt100
     data.setTermFileName("/dev/ttyp0");
     detect.detect();
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     // Test non-existent /dev/tty8 with fallback to vt100
     data.setTermFileName("/dev/tty8");
     detect.detect();
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();

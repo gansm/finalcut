@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <iomanip>
+#include <memory>
 #include <string>
 
 #include <final/final.h>

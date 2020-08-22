@@ -20,12 +20,13 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <stdio.h>
+#include <unistd.h>
+
 #include <cstring>
 #include <algorithm>
 #include <iostream>
 #include <new>
-#include <stdio.h>
-#include <unistd.h>
 
 #include "final/fconfig.h"
 #include "final/fkeyboard.h"
@@ -843,7 +844,8 @@ void FMouseSGR::setMoveState (const FPoint& mouse_position, int btn)
 }
 
 //----------------------------------------------------------------------
-void FMouseSGR::setPressedButtonState (const int btn, const struct timeval* time)
+void FMouseSGR::setPressedButtonState ( const int btn
+                                      , const struct timeval* time )
 {
   // Gets the extended x11 mouse mode (SGR) status for pressed buttons
 

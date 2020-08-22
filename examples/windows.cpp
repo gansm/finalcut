@@ -20,7 +20,9 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <utility>
 #include <vector>
+
 #include <final/final.h>
 
 namespace fc = finalcut::fc;

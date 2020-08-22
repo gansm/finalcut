@@ -35,6 +35,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
