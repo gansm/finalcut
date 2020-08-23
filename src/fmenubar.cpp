@@ -398,7 +398,7 @@ bool FMenuBar::selectPrevItem()
 
       setSelectedItem(prev);
       redraw();
-      setTerminalUpdates (FVTerm::stop_terminal_updates);
+      setTerminalUpdates (FVTerm::start_terminal_updates);
       break;
     }
   }
