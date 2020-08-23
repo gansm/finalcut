@@ -152,7 +152,7 @@ class FVTerm
 
     // Mutators
     void                  setTermXY (int, int) const;
-    void                  setTerminalUpdates (terminal_update);
+    void                  setTerminalUpdates (terminal_update) const;
     void                  hideCursor (bool) const;
     void                  hideCursor() const;
     void                  showCursor() const;
@@ -252,7 +252,7 @@ class FVTerm
     virtual void          clearArea (int = ' ');
     void                  createVTerm (const FSize&);
     void                  resizeVTerm (const FSize&) const;
-    void                  putVTerm();
+    void                  putVTerm() const;
     void                  updateTerminal() const;
     virtual void          addPreprocessingHandler ( const FVTerm*
                                                   , const FPreprocessingFunction& );
@@ -314,7 +314,7 @@ class FVTerm
     void                  scrollAreaForward (FTermArea*) const;
     void                  scrollAreaReverse (FTermArea*) const;
     void                  clearArea (FTermArea*, int = ' ') const;
-    void                  processTerminalUpdate();
+    void                  processTerminalUpdate() const;
     static void           startTerminalUpdate();
     static void           finishTerminalUpdate();
     virtual void          initTerminal();

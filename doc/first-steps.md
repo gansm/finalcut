@@ -609,7 +609,7 @@ With `delCallback(...)` you can remove a connection to a signal handler
 or a widget instance. Alternatively, you can use `delCallbacks()` to
 remove all existing callbacks from an object.
 
-To delete functions or static methods callbacks via a pointer:(4)
+(1) To delete functions or static methods callbacks via a pointer:
 
 ```cpp
 template<typename FunctionPtr
@@ -618,7 +618,7 @@ void FWidget::delCallback (FunctionPtr&& cb_func_ptr)
 {...}
 ```
 
-To delete functions or static methods callbacks via a reference:(5)
+(2) To delete functions or static methods callbacks via a reference:
 
 ```cpp
 template<typename Function
@@ -627,7 +627,7 @@ void FWidget::delCallback (Function& cb_function)
 {...}
 ```
 
-To delete all callbacks from a specific instance:(1)
+(3) To delete all callbacks from a specific instance:
 
 ```cpp
 template<typename Object
@@ -636,14 +636,14 @@ void FWidget::delCallback (Object&& cb_instance)
 {...}
 ```
 
-To delete all callbacks of a signal:(2)
+(4) To delete all callbacks of a signal:
 
 ```cpp
 void delCallback (const FString& cb_signal)
 {...}
 ```
 
-To delete all callbacks of a signal and specific instance:(3)
+(5) To delete all callbacks of a signal and specific instance:
 
 ```cpp
 template<typename Object
@@ -652,7 +652,7 @@ void delCallback (const FString& cb_signal, Object&& cb_instance)
 {...}
 ```
 
-To delete all callbacks from a widget:(6)
+(6) To delete all callbacks from a widget:
 
 ```cpp
 void delCallback()

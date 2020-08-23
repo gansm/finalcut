@@ -225,7 +225,7 @@ void FMenuItem::delAccelerator (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::openMenu()
+void FMenuItem::openMenu() const
 {
   if ( ! hasMenu() )
     return;
@@ -402,7 +402,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
     setSelected();
     mbar->setSelectedItem(this);
     openMenu();
-    auto focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    auto focused_widget = ev->focusedWidget();
     menu->unselectItem();
     menu->selectFirstItem();
 

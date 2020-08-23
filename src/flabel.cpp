@@ -221,7 +221,7 @@ void FLabel::onAccel (FAccelEvent* ev)
 
   if ( ! accel_widget->hasFocus() )
   {
-    auto focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    auto focused_widget = ev->focusedWidget();
 
     if ( focused_widget && focused_widget->isWidget() )
     {

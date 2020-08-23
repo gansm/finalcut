@@ -153,7 +153,7 @@ void FVTerm::setTermXY (int x, int y) const
 }
 
 //----------------------------------------------------------------------
-void FVTerm::setTerminalUpdates (terminal_update refresh_state)
+void FVTerm::setTerminalUpdates (terminal_update refresh_state) const
 {
   if ( refresh_state == stop_terminal_updates )
   {
@@ -240,7 +240,7 @@ void FVTerm::resizeVTerm (const FSize& size) const
 }
 
 //----------------------------------------------------------------------
-void FVTerm::putVTerm()
+void FVTerm::putVTerm() const
 {
   for (int i{0}; i < vterm->height; i++)
   {
@@ -1311,7 +1311,7 @@ void FVTerm::clearArea (FTermArea* area, int fillchar) const
 }
 
 //----------------------------------------------------------------------
-void FVTerm::processTerminalUpdate()
+void FVTerm::processTerminalUpdate() const
 {
   // Retains terminal updates if there are unprocessed inputs
   static constexpr int max_skip = 8;

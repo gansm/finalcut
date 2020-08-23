@@ -197,7 +197,7 @@ class Window final : public finalcut::FDialog
     // Method
     void configureFileMenuItems();
     void configureDialogButtons();
-    void activateWindow (finalcut::FDialog*);
+    void activateWindow (finalcut::FDialog*) const;
     void adjustSize() override;
     template<typename InstanceT, typename CallbackT, typename... Args>
     void addClickedCallback ( finalcut::FWidget*
@@ -330,7 +330,7 @@ void Window::configureDialogButtons()
 }
 
 //----------------------------------------------------------------------
-void Window::activateWindow (finalcut::FDialog* win)
+void Window::activateWindow (finalcut::FDialog* win) const
 {
   if ( ! win || win->isWindowHidden() || win->isWindowActive() )
     return;

@@ -353,7 +353,7 @@ void FButton::onAccel (FAccelEvent* ev)
 
   if ( ! hasFocus() )
   {
-    auto focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    auto focused_widget = ev->focusedWidget();
 
     if ( focused_widget && focused_widget->isWidget() )
     {
