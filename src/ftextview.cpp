@@ -729,7 +729,7 @@ inline bool FTextView::isPrintable (wchar_t ch) const
   const bool utf8 = ( FTerm::getEncoding() == fc::UTF8 ) ? true : false;
 
   if ( (utf8 && std::iswprint(std::wint_t(ch)))
-    || (!utf8 && std::isprint(ch)) )
+    || (!utf8 && std::isprint(char(ch))) )
     return true;
 
   return false;

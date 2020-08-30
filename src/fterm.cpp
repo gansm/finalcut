@@ -459,15 +459,15 @@ bool FTerm::isMonochron()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isXTerminal()
-{
-  return term_detection->isXTerminal();
-}
-
-//----------------------------------------------------------------------
 bool FTerm::isAnsiTerminal()
 {
   return term_detection->isAnsiTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isXTerminal()
+{
+  return term_detection->isXTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -483,18 +483,6 @@ bool FTerm::isUrxvtTerminal()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isMltermTerminal()
-{
-  return term_detection->isMltermTerminal();
-}
-
-//----------------------------------------------------------------------
-bool FTerm::isPuttyTerminal()
-{
-  return term_detection->isPuttyTerminal();
-}
-
-//----------------------------------------------------------------------
 bool FTerm::isKdeTerminal()
 {
   return term_detection->isKdeTerminal();
@@ -507,21 +495,21 @@ bool FTerm::isGnomeTerminal()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isKtermTerminal()
+bool FTerm::isPuttyTerminal()
 {
-  return term_detection->isKtermTerminal();
+  return term_detection->isPuttyTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isWindowsTerminal()
+{
+  return term_detection->isWindowsTerminal();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isTeraTerm()
 {
   return term_detection->isTeraTerm();
-}
-
-//----------------------------------------------------------------------
-bool FTerm::isSunTerminal()
-{
-  return term_detection->isSunTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -561,6 +549,12 @@ bool FTerm::isOpenBSDTerm()
 }
 
 //----------------------------------------------------------------------
+bool FTerm::isSunTerminal()
+{
+  return term_detection->isSunTerminal();
+}
+
+//----------------------------------------------------------------------
 bool FTerm::isScreenTerm()
 {
   return term_detection->isScreenTerm();
@@ -570,6 +564,18 @@ bool FTerm::isScreenTerm()
 bool FTerm::isTmuxTerm()
 {
   return term_detection->isTmuxTerm();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isKtermTerminal()
+{
+  return term_detection->isKtermTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isMltermTerminal()
+{
+  return term_detection->isMltermTerminal();
 }
 
 //----------------------------------------------------------------------

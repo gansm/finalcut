@@ -630,14 +630,16 @@ void FMenuItem::createDialogList (FMenu* winmenu) const
         win_item->addCallback
         (
           "clicked",
-          std::move(win_item), &FMenuItem::cb_switchToDialog,
+          static_cast<std::remove_reference<decltype(win_item)>::type>(win_item),
+          &FMenuItem::cb_switchToDialog,
           win
         );
 
         win->addCallback
         (
           "destroy",
-          std::move(win_item), &FMenuItem::cb_destroyDialog,
+          static_cast<std::remove_reference<decltype(win_item)>::type>(win_item),
+          &FMenuItem::cb_destroyDialog,
           win
         );
 

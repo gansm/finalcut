@@ -202,6 +202,12 @@ void FStringStreamTest::fileTest()
 
   {
     std::ofstream file_stream(filename, std::ofstream::out);
+
+    if ( ! file_stream.is_open() )
+    {
+      throw std::iostream::failure("Failed to open \"" + filename + "\"");
+    }
+
     ss << "FStringStream file test\n";
     file_stream << ss.str();
 

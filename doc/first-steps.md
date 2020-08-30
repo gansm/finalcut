@@ -527,7 +527,7 @@ void classname::cb_methode (FWidget* w, int* i, double* d, ...)
 We use the `addCallback()` method of the `FWidget` class to connect 
 to other widget objects.
 
-(1) For calling functions or static methods via a pointer:
+1. For calling functions or static methods via a pointer:
 
 ```cpp
 template<typename Function
@@ -539,7 +539,7 @@ void FWidget::addCallback ( const FString& cb_signal
 {...}
 ```
 
-(2) For calling functions or static methods via a reference:
+2. For calling functions or static methods via a reference:
 
 ```cpp
 template<typename Function
@@ -551,7 +551,7 @@ void FWidget::addCallback ( const FString& cb_signal
 {...}
 ```
 
-(3) For calling a member method of a specific instance:
+3. For calling a member method of a specific instance:
 
 ```cpp
 template<typename Object
@@ -566,7 +566,7 @@ void FWidget::addCallback ( const FString& cb_signal
 {...}
 ```
 
-(4) For calling a std::bind call wrapper or a lambda expression:
+4. For calling a std::bind call wrapper or a lambda expression:
 ```cpp
 template<typename Function
        , typename ClassObject<Function>::type = nullptr
@@ -577,7 +577,7 @@ void FWidget::addCallback ( const FString& cb_signal
 {...}
 ```
 
-(5) For calling a std::bind call wrapper to a specific instance:
+5. For calling a std::bind call wrapper to a specific instance:
 
 ```cpp
 template<typename Object
@@ -592,7 +592,7 @@ void FWidget::addCallback ( const FString& cb_signal
 {...}
 ```
 
-(6) For calling a lambda function that has been stored in a variable
+6. For calling a lambda function that has been stored in a variable
 with the keyword auto:
 
 ```cpp
@@ -609,7 +609,7 @@ With `delCallback(...)` you can remove a connection to a signal handler
 or a widget instance. Alternatively, you can use `delCallbacks()` to
 remove all existing callbacks from an object.
 
-(1) To delete functions or static methods callbacks via a pointer:
+1. To delete functions or static methods callbacks via a pointer:
 
 ```cpp
 template<typename FunctionPtr
@@ -618,7 +618,7 @@ void FWidget::delCallback (FunctionPtr&& cb_func_ptr)
 {...}
 ```
 
-(2) To delete functions or static methods callbacks via a reference:
+2. To delete functions or static methods callbacks via a reference:
 
 ```cpp
 template<typename Function
@@ -627,7 +627,7 @@ void FWidget::delCallback (Function& cb_function)
 {...}
 ```
 
-(3) To delete all callbacks from a specific instance:
+3. To delete all callbacks from a specific instance:
 
 ```cpp
 template<typename Object
@@ -636,14 +636,14 @@ void FWidget::delCallback (Object&& cb_instance)
 {...}
 ```
 
-(4) To delete all callbacks of a signal:
+4. To delete all callbacks of a signal:
 
 ```cpp
 void delCallback (const FString& cb_signal)
 {...}
 ```
 
-(5) To delete all callbacks of a signal and specific instance:
+5. To delete all callbacks of a signal and specific instance:
 
 ```cpp
 template<typename Object
@@ -652,7 +652,7 @@ void delCallback (const FString& cb_signal, Object&& cb_instance)
 {...}
 ```
 
-(6) To delete all callbacks from a widget:
+6. To delete all callbacks from a widget:
 
 ```cpp
 void delCallback()

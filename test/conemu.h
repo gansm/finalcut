@@ -53,12 +53,11 @@ class ConEmu
       xterm,
       rxvt,
       urxvt,
-      mlterm,
-      putty,
       kde_konsole,
       gnome_terminal,
       newer_vte_terminal,
-      kterm,
+      putty,
+      win_terminal,
       tera_term,
       cygwin,
       mintty,
@@ -68,7 +67,9 @@ class ConEmu
       openbsd_con,
       sun_con,
       screen,
-      tmux
+      tmux,
+      kterm,
+      mlterm
     };
 
     // Constructors
@@ -634,12 +635,11 @@ inline const char* ConEmu::getAnswerback (console con)
     0,               // XTerm
     0,               // Rxvt
     0,               // Urxvt
-    0,               // mlterm - Multi Lingual TERMinal
-    C_STR("PuTTY"),  // PuTTY
     0,               // KDE Konsole
     0,               // GNOME Terminal
     0,               // VTE Terminal >= 0.53.0
-    0,               // kterm,
+    C_STR("PuTTY"),  // PuTTY
+    C_STR("\005"),   // Windows Terminal
     0,               // Tera Term
     0,               // Cygwin
     0,               // Mintty
@@ -649,7 +649,9 @@ inline const char* ConEmu::getAnswerback (console con)
     0,               // OpenBSD console
     0,               // Sun console
     0,               // screen
-    0                // tmux
+    0,               // tmux
+    0,               // kterm,
+    0                // mlterm - Multi Lingual TERMinal
   };
 
   return Answerback[con];
@@ -664,12 +666,11 @@ inline const char* ConEmu::getDSR (console con)
     C_STR("\033[0n"),  // XTerm
     C_STR("\033[0n"),  // Rxvt
     C_STR("\033[0n"),  // Urxvt
-    C_STR("\033[0n"),  // mlterm - Multi Lingual TERMinal
-    C_STR("\033[0n"),  // PuTTY
     C_STR("\033[0n"),  // KDE Konsole
     C_STR("\033[0n"),  // GNOME Terminal
     C_STR("\033[0n"),  // VTE Terminal >= 0.53.0
-    C_STR("\033[0n"),  // kterm,
+    C_STR("\033[0n"),  // PuTTY
+    C_STR("\033[0n"),  // Windows Terminal >= 1.2
     C_STR("\033[0n"),  // Tera Term
     0,                 // Cygwin
     C_STR("\033[0n"),  // Mintty
@@ -677,9 +678,11 @@ inline const char* ConEmu::getDSR (console con)
     C_STR("\033[0n"),  // FreeBSD console
     C_STR("\033[0n"),  // NetBSD console
     C_STR("\033[0n"),  // OpenBSD console
-    0,  // Sun console
+    0,                 // Sun console
     C_STR("\033[0n"),  // screen
-    C_STR("\033[0n")   // tmux
+    C_STR("\033[0n"),  // tmux
+    C_STR("\033[0n"),  // kterm
+    C_STR("\033[0n")   // mlterm - Multi Lingual TERMinal
   };
 
   return DSR[con];
@@ -694,12 +697,11 @@ inline const char* ConEmu::getDECID (console con)
     C_STR("\033[?63;1;2;6;4;6;9;15;22c"),  // XTerm
     C_STR("\033[?1;2c"),                   // Rxvt
     C_STR("\033[?1;2c"),                   // Urxvt
-    C_STR("\033[?63;1;2;3;4;7;29c"),       // mlterm - Multi Lingual TERMinal
-    C_STR("\033[?6c"),                     // PuTTY
     C_STR("\033[?1;2c"),                   // KDE Konsole
     C_STR("\033[?62;c"),                   // GNOME Terminal
     C_STR("\033[?65;1;9c"),                // VTE Terminal >= 0.53.0
-    C_STR("\033[?1;2c"),                   // kterm,
+    C_STR("\033[?6c"),                     // PuTTY
+    0,                                     // Windows Terminal
     C_STR("\033[?1;2c"),                   // Tera Term
     0,                                     // Cygwin
     C_STR("\033[?1;2;6;22c"),              // Mintty
@@ -709,7 +711,9 @@ inline const char* ConEmu::getDECID (console con)
     0,                                     // OpenBSD console
     0,                                     // Sun console
     C_STR("\033[?1;2c"),                   // screen
-    0                                      // tmux
+    0,                                     // tmux
+    C_STR("\033[?1;2c"),                   // kterm
+    C_STR("\033[?63;1;2;3;4;7;29c")        // mlterm - Multi Lingual TERMinal
   };
 
   return DECID[con];
@@ -724,12 +728,11 @@ inline const char* ConEmu::getDA (console con)
     C_STR("\033[?63;1;2;6;4;6;9;15;22c"),  // XTerm
     C_STR("\033[?1;2c"),                   // Rxvt
     C_STR("\033[?1;2c"),                   // Urxvt
-    C_STR("\033[?63;1;2;3;4;7;29c"),       // mlterm - Multi Lingual TERMinal
-    C_STR("\033[?6c"),                     // PuTTY
     C_STR("\033[?1;2c"),                   // KDE Konsole
     C_STR("\033[?62;c"),                   // GNOME Terminal
     C_STR("\033[?65;1;9c"),                // VTE Terminal >= 0.53.0
-    C_STR("\033[?1;2c"),                   // kterm,
+    C_STR("\033[?6c"),                     // PuTTY
+    C_STR("\033[?1;0c"),                   // Windows Terminal >= 1.2
     C_STR("\033[?1;2c"),                   // Tera Term
     C_STR("\033[?6c"),                     // Cygwin
     C_STR("\033[?1;2;6;22c"),              // Mintty
@@ -739,7 +742,9 @@ inline const char* ConEmu::getDA (console con)
     C_STR("\033[?62;6c"),                  // OpenBSD console
     0,                                     // Sun console
     C_STR("\033[?1;2c"),                   // screen
-    C_STR("\033[?1;2c")                    // tmux
+    C_STR("\033[?1;2c"),                   // tmux
+    C_STR("\033[?1;2c"),                   // kterm
+    C_STR("\033[?63;1;2;3;4;7;29c")        // mlterm - Multi Lingual TERMinal
   };
 
   return DA[con];
@@ -754,12 +759,11 @@ inline const char* ConEmu::getDA1 (console con)
     0,                                // XTerm
     C_STR("\033[?1;2c"),              // Rxvt
     C_STR("\033[?1;2c"),              // Urxvt
-    C_STR("\033[?63;1;2;3;4;7;29c"),  // mlterm - Multi Lingual TERMinal
-    C_STR("\033[?6c"),                // PuTTY
     C_STR("\033[?1;2c"),              // KDE Konsole
     C_STR("\033[?62;c"),              // GNOME Terminal
     C_STR("\033[?65;1;9c"),           // VTE Terminal >= 0.53.0
-    0,                                // kterm,
+    C_STR("\033[?6c"),                // PuTTY
+    0,                                // Windows Terminal
     C_STR("\033[?1;2c"),              // Tera Term
     C_STR("\033[?6c"),                // Cygwin
     C_STR("\033[?1;2;6;22c"),         // Mintty
@@ -769,7 +773,9 @@ inline const char* ConEmu::getDA1 (console con)
     0,                                // OpenBSD console
     0,                                // Sun console
     0,                                // screen
-    0                                 // tmux
+    0,                                // tmux
+    0,                                // kterm
+    C_STR("\033[?63;1;2;3;4;7;29c")   // mlterm - Multi Lingual TERMinal
   };
 
   return DA1[con];
@@ -784,12 +790,11 @@ inline const char* ConEmu::getSEC_DA (console con)
     C_STR("\033[>19;312;0c"),     // XTerm
     C_STR("\033[>82;20710;0c"),   // Rxvt
     C_STR("\033[>85;95;0c"),      // Urxvt
-    C_STR("\033[>24;279;0c"),     // mlterm - Multi Lingual TERMinal
-    C_STR("\033[>0;136;0c"),      // PuTTY
     C_STR("\033[>0;115;0c"),      // KDE Konsole
     C_STR("\033[>1;5202;0c"),     // GNOME Terminal
     C_STR("\033[>65;5300;1c"),    // VTE Terminal >= 0.53.0
-    C_STR("\033[?1;2c"),          // kterm,
+    C_STR("\033[>0;136;0c"),      // PuTTY
+    C_STR("\033[>0;10;1c"),       // Windows Terminal >= 1.2
     C_STR("\033[>32;278;0c"),     // Tera Term
     C_STR("\033[>67;200502;0c"),  // Cygwin
     C_STR("\033[>77;20402;0c"),   // Mintty
@@ -799,7 +804,9 @@ inline const char* ConEmu::getSEC_DA (console con)
     C_STR("\033[>24;20;0c"),      // OpenBSD console
     0,                            // Sun console
     C_STR("\033[>83;40201;0c"),   // screen
-    C_STR("\033[>84;0;0c")        // tmux
+    C_STR("\033[>84;0;0c"),       // tmux
+    C_STR("\033[?1;2c"),          // kterm
+    C_STR("\033[>24;279;0c")      // mlterm - Multi Lingual TERMinal
   };
 
   return SEC_DA[con];
@@ -968,17 +975,18 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
         write (fd_master, "\033]lbash\033\\", 9);
       else if ( con != ansi
              && con != rxvt
-             && con != mlterm
              && con != kde_konsole
-             && con != kterm
              && con != cygwin
+             && con != win_terminal
              && con != mintty
              && con != linux_con
              && con != freebsd_con
              && con != netbsd_con
              && con != openbsd_con
              && con != sun_con
-             && con != tmux )
+             && con != tmux
+             && con != kterm
+             && con != mlterm )
         write (fd_master, "\033]lTITLE\033\\", 10);
 
       i += 5;
@@ -996,8 +1004,8 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
       if ( con != ansi
         && con != rxvt
         && con != kde_konsole
-        && con != kterm
         && con != cygwin
+        && con != win_terminal
         && con != mintty
         && con != linux_con
         && con != freebsd_con
@@ -1005,7 +1013,8 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
         && con != openbsd_con
         && con != sun_con
         && con != screen
-        && con != tmux )
+        && con != tmux
+        && con != kterm )
       {
         int n = buffer[i + 4] - '0';
         write (fd_master, "\033]4;", 4);
@@ -1031,8 +1040,8 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
       if ( con != ansi
         && con != rxvt
         && con != kde_konsole
-        && con != kterm
         && con != cygwin
+        && con != win_terminal
         && con != mintty
         && con != linux_con
         && con != freebsd_con
@@ -1040,7 +1049,8 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
         && con != openbsd_con
         && con != sun_con
         && con != screen
-        && con != tmux )
+        && con != tmux
+        && con != kterm )
       {
         int n = (buffer[i + 4] - '0') * 10
               + (buffer[i + 5] - '0');
@@ -1069,8 +1079,8 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
       if ( con != ansi
         && con != rxvt
         && con != kde_konsole
-        && con != kterm
         && con != cygwin
+        && con != win_terminal
         && con != mintty
         && con != linux_con
         && con != freebsd_con
@@ -1078,7 +1088,8 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
         && con != openbsd_con
         && con != sun_con
         && con != screen
-        && con != tmux )
+        && con != tmux
+        && con != kterm )
       {
         int n = (buffer[i + 4] - '0') * 100
               + (buffer[i + 5] - '0') * 10

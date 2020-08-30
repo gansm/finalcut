@@ -641,7 +641,7 @@ double FString::toDouble() const
   wchar_t* p{};
   const double ret = std::wcstod(string, &p);
 
-  if ( p != nullptr && *p != '\0' )
+  if ( p != nullptr && *p != L'\0' )
     throw std::invalid_argument ("no valid floating point value");
 
   if ( errno == ERANGE )

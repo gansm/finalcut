@@ -669,7 +669,7 @@ bool FWindow::zoomWindow()
 }
 
 //----------------------------------------------------------------------
-void FWindow::switchToPrevWindow (FWidget* widget)
+void FWindow::switchToPrevWindow (const FWidget* widget)
 {
   // switch to previous window
 

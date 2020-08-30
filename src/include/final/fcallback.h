@@ -159,7 +159,7 @@ class FCallback
     void addCallback ( const FString& cb_signal
                      , Object&&       cb_instance
                      , Function&&     cb_member
-                     , Args&&...      args);
+                     , Args&&...      args) noexcept;
     template<typename Object
            , typename Function
            , typename ObjectPointer<Object>::type = nullptr
@@ -168,41 +168,42 @@ class FCallback
     void addCallback ( const FString& cb_signal
                      , Object&&       cb_instance
                      , Function&&     cb_function
-                     , Args&&...      args);
+                     , Args&&...      args) noexcept;
     template<typename Function
            , typename ClassObject<Function>::type = nullptr
            , typename... Args>
     void addCallback ( const FString& cb_signal
                      , Function&&     cb_function
-                     , Args&&...      args);
+                     , Args&&...      args) noexcept;
     template<typename Function
            , typename ClassObject<Function>::type = nullptr
            , typename... Args>
     void addCallback ( const FString& cb_signal
                      , Function&      cb_function
-                     , Args&&...      args);
+                     , Args&&...      args) noexcept;
     template<typename Function
            , typename FunctionReference<Function>::type = nullptr
            , typename... Args>
     void addCallback ( const FString& cb_signal
                      , Function&      cb_function
-                     , Args&&...      args);
+                     , Args&&...      args) noexcept;
     template<typename Function
            , typename FunctionPointer<Function>::type = nullptr
            , typename... Args>
     void addCallback ( const FString& cb_signal
                      , Function&&     cb_function
-                     , Args&&...      args);
+                     , Args&&...      args) noexcept;
     template<typename Object
            , typename ObjectPointer<Object>::type = nullptr>
-    void delCallback (Object&& cb_instance);
+    void delCallback (Object&& cb_instance) noexcept;
     void delCallback (const FString& cb_signal);
     template<typename Object
            , typename ObjectPointer<Object>::type = nullptr>
-    void delCallback (const FString& cb_signal, Object&& cb_instance);
+    void delCallback ( const FString& cb_signal
+                     , Object&& cb_instance ) noexcept;
     template<typename FunctionPtr
            , typename FunctionPointer<FunctionPtr>::type = nullptr>
-    void delCallback (FunctionPtr&& cb_func_ptr);
+    void delCallback (FunctionPtr&& cb_func_ptr) noexcept;
     template<typename Function
            , typename FunctionReference<Function>::type = nullptr>
     void delCallback (const Function& cb_function);
@@ -235,7 +236,7 @@ template<typename Object
 inline void FCallback::addCallback ( const FString& cb_signal
                                    , Object&&       cb_instance
                                    , Function&&     cb_member
-                                   , Args&&...      args)
+                                   , Args&&...      args) noexcept
 {
   // Add a member function pointer as callback
 
@@ -256,7 +257,7 @@ template<typename Object
 inline void FCallback::addCallback ( const FString& cb_signal
                                    , Object&&       cb_instance
                                    , Function&&     cb_function
-                                   , Args&&...      args)
+                                   , Args&&...      args) noexcept
 {
   // Add a function object to an instance as callback
 
@@ -271,7 +272,7 @@ template<typename Function
        , typename... Args>
 inline void FCallback::addCallback ( const FString& cb_signal
                                    , Function&&     cb_function
-                                   , Args&&...      args)
+                                   , Args&&...      args) noexcept
 {
   // Add a function object as callback
 
@@ -287,7 +288,7 @@ template<typename Function
        , typename... Args>
 inline void FCallback::addCallback ( const FString& cb_signal
                                    , Function&      cb_function
-                                   , Args&&...      args)
+                                   , Args&&...      args) noexcept
 {
   // Add a function object reference as callback
 
@@ -302,7 +303,7 @@ template<typename Function
        , typename... Args>
 inline void FCallback::addCallback ( const FString& cb_signal
                                    , Function&      cb_function
-                                   , Args&&...      args)
+                                   , Args&&...      args) noexcept
 {
   // Add a function reference as callback
 
@@ -318,7 +319,7 @@ template<typename Function
        , typename... Args>
 inline void FCallback::addCallback ( const FString& cb_signal
                                    , Function&&     cb_function
-                                   , Args&&...      args)
+                                   , Args&&...      args) noexcept
 {
   // Add a function pointer as callback
 
@@ -332,7 +333,7 @@ inline void FCallback::addCallback ( const FString& cb_signal
 //----------------------------------------------------------------------
 template<typename Object
        , typename FCallback::ObjectPointer<Object>::type>
-inline void FCallback::delCallback (Object&& cb_instance)
+inline void FCallback::delCallback (Object&& cb_instance) noexcept
 {
   // Deletes entries with the given instance from the callback list
 
@@ -353,7 +354,8 @@ inline void FCallback::delCallback (Object&& cb_instance)
 //----------------------------------------------------------------------
 template<typename Object
        , typename FCallback::ObjectPointer<Object>::type>
-inline void FCallback::delCallback (const FString& cb_signal, Object&& cb_instance)
+inline void FCallback::delCallback ( const FString& cb_signal
+                                   , Object&& cb_instance ) noexcept
 {
   // Deletes entries with the given signal and instance
   // from the callback list
@@ -376,7 +378,7 @@ inline void FCallback::delCallback (const FString& cb_signal, Object&& cb_instan
 //----------------------------------------------------------------------
 template<typename FunctionPtr
        , typename FCallback::FunctionPointer<FunctionPtr>::type>
-inline void FCallback::delCallback (FunctionPtr&& cb_func_ptr)
+inline void FCallback::delCallback (FunctionPtr&& cb_func_ptr) noexcept
 {
   // Deletes entries with the given function pointer
   // from the callback list

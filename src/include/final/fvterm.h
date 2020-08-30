@@ -48,6 +48,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <sys/time.h>  // need for timeval (cygwin)
+
 #include <queue>
 #include <string>
 #include <utility>

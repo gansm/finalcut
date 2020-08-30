@@ -318,9 +318,9 @@ class FWidget : public FVTerm, public FObject
     virtual bool             close();
     void                     clearStatusbarMessage();
     template<typename... Args>
-    void                     addCallback (const FString&, Args&&...);
+    void                     addCallback (const FString&, Args&&...) noexcept;
     template<typename... Args>
-    void                     delCallback (Args&&...);
+    void                     delCallback (Args&&...) noexcept;
     void                     emitCallback (const FString&) const;
     void                     addAccelerator (FKey);
     virtual void             addAccelerator (FKey, FWidget*);
@@ -985,14 +985,14 @@ inline void FWidget::clearStatusbarMessage()
 
 //----------------------------------------------------------------------
 template<typename... Args>
-inline void FWidget::addCallback (const FString& cb_signal, Args&&... args)
+inline void FWidget::addCallback (const FString& cb_signal, Args&&... args) noexcept
 {
   callback_impl.addCallback (cb_signal, std::forward<Args>(args)...);
 }
 
 //----------------------------------------------------------------------
 template<typename... Args>
-inline void FWidget::delCallback (Args&&... args)
+inline void FWidget::delCallback (Args&&... args) noexcept
 {
   callback_impl.delCallback(std::forward<Args>(args)...);
 }

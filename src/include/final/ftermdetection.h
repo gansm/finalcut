@@ -58,12 +58,11 @@ class FTermDetection final
       uInt8 xterm          : 1;
       uInt8 rxvt           : 1;
       uInt8 urxvt          : 1;
-      uInt8 mlterm         : 1;
-      uInt8 putty          : 1;
       uInt8 kde_konsole    : 1;
       uInt8 gnome_terminal : 1;
+      uInt8 putty          : 1;
+      uInt8 win_terminal   : 1;
       // byte #1
-      uInt8 kterm          : 1;
       uInt8 tera_term      : 1;
       uInt8 cygwin         : 1;
       uInt8 mintty         : 1;
@@ -71,11 +70,13 @@ class FTermDetection final
       uInt8 freebsd_con    : 1;
       uInt8 netbsd_con     : 1;
       uInt8 openbsd_con    : 1;
-      // byte #2
       uInt8 sun_con        : 1;
+      // byte #2
       uInt8 screen         : 1;
       uInt8 tmux           : 1;
-      uInt8                : 5;  // padding bits
+      uInt8 kterm          : 1;
+      uInt8 mlterm         : 1;
+      uInt8                : 4;  // padding bits
     } FTerminalType;
 
     // Constructors
@@ -109,11 +110,10 @@ class FTermDetection final
     static bool           isXTerminal();
     static bool           isRxvtTerminal();
     static bool           isUrxvtTerminal();
-    static bool           isMltermTerminal();
-    static bool           isPuttyTerminal();
     static bool           isKdeTerminal();
     static bool           isGnomeTerminal();
-    static bool           isKtermTerminal();
+    static bool           isPuttyTerminal();
+    static bool           isWindowsTerminal();
     static bool           isTeraTerm();
     static bool           isCygwinTerminal();
     static bool           isMinttyTerm();
@@ -124,6 +124,8 @@ class FTermDetection final
     static bool           isSunTerminal();
     static bool           isScreenTerm();
     static bool           isTmuxTerm();
+    static bool           isKtermTerminal();
+    static bool           isMltermTerminal();
     static bool           canDisplay256Colors();
     static bool           hasTerminalDetection();
     static bool           hasSetCursorStyleSupport();
@@ -133,11 +135,10 @@ class FTermDetection final
     static void           setXTerminal (bool);
     static void           setRxvtTerminal (bool);
     static void           setUrxvtTerminal (bool);
-    static void           setMltermTerminal (bool);
-    static void           setPuttyTerminal (bool);
     static void           setKdeTerminal (bool);
     static void           setGnomeTerminal (bool);
-    static void           setKtermTerminal (bool);
+    static void           setPuttyTerminal (bool);
+    static void           setWindowsTerminal (bool);
     static void           setTeraTerm (bool);
     static void           setCygwinTerminal (bool);
     static void           setMinttyTerm (bool);
@@ -148,6 +149,8 @@ class FTermDetection final
     static void           setSunTerminal (bool);
     static void           setScreenTerm (bool);
     static void           setTmuxTerm (bool);
+    static void           setKtermTerminal (bool);
+    static void           setMltermTerminal (bool);
     static void           setTerminalDetection (bool);
     static void           setTtyTypeFileName (const char[]);
 
@@ -302,6 +305,10 @@ inline bool FTermDetection::isPuttyTerminal()
 { return terminal_type.putty; }
 
 //----------------------------------------------------------------------
+inline bool FTermDetection::isWindowsTerminal()
+{ return terminal_type.win_terminal; }
+
+//----------------------------------------------------------------------
 inline bool FTermDetection::isKdeTerminal()
 { return terminal_type.kde_konsole; }
 
@@ -380,6 +387,10 @@ inline void FTermDetection::setMltermTerminal (bool enable)
 //----------------------------------------------------------------------
 inline void FTermDetection::setPuttyTerminal (bool enable)
 { terminal_type.putty = enable; }
+
+//----------------------------------------------------------------------
+inline void FTermDetection::setWindowsTerminal (bool enable)
+{ terminal_type.win_terminal = enable; }
 
 //----------------------------------------------------------------------
 inline void FTermDetection::setKdeTerminal (bool enable)

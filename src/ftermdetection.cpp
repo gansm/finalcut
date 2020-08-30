@@ -860,7 +860,10 @@ inline const char* FTermDetection::secDA_Analysis_0 (const char current_termtype
 
   const char* new_termtype = current_termtype;
 
-  if ( secondary_da.terminal_id_version == 115 )
+  if ( secondary_da.terminal_id_version == 10
+    && secondary_da.terminal_id_hardware == 1 )
+    terminal_type.win_terminal = true;  // Windows Terminal >= 1.2
+  else if ( secondary_da.terminal_id_version == 115 )
     terminal_type.kde_konsole = true;
   else if ( secondary_da.terminal_id_version == 136 )
     terminal_type.putty = true;  // PuTTY
