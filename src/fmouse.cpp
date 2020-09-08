@@ -316,10 +316,10 @@ void FMouseGPM::processEvent (struct timeval*)
   if ( Gpm_GetEvent(&gpm_ev) == 1 )
   {
     Gpm_FitEvent (&gpm_ev);
+    GPM_DRAWPOINTER(&gpm_ev);
 
     if ( ! hasSignificantEvents() )
     {
-      GPM_DRAWPOINTER(&gpm_ev);
       has_gpm_mouse_data = false;
       clearEvent();
       return;
@@ -343,7 +343,6 @@ void FMouseGPM::processEvent (struct timeval*)
       case GPM_UP:
         interpretKeyUp();
 
-
       default:
         break;
     }
@@ -356,7 +355,6 @@ void FMouseGPM::processEvent (struct timeval*)
     else
       setPending(false);
 
-    GPM_DRAWPOINTER(&gpm_ev);
     has_gpm_mouse_data = false;
     setEvent();
     return;
@@ -379,9 +377,9 @@ bool FMouseGPM::gpmMouse (bool enable)
   if ( enable )
   {
     Gpm_Connect conn;
-    conn.eventMask   = uInt16(~0);  // Get all including wheel event
-    conn.defaultMask = GPM_MOVE;
-    conn.maxMod      = uInt16(~0);
+    conn.eventMask   = GPM_MOVE | GPM_DRAG | GPM_DOWN | GPM_UP;
+    conn.defaultMask = 0;
+    conn.maxMod      = 0;
     conn.minMod      = 0;
     Gpm_Open(&conn, 0);
 

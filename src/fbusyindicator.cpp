@@ -47,6 +47,7 @@ FBusyIndicator::~FBusyIndicator()  // destructor
 void FBusyIndicator::start()
 {
   running = true;
+  createIndicatorText();
   show();
   updateTerminal();
   flush();
@@ -69,7 +70,6 @@ void FBusyIndicator::stop()
 void FBusyIndicator::init()
 {
   FToolTip::hide();
-  createIndicatorText();
 }
 
 //----------------------------------------------------------------------

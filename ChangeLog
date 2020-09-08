@@ -1,3 +1,8 @@
+2020-09-08  Markus Gans  <guru.mail@muenster.de>
+	* Speed up the reaction time of the gpm mouse
+	* FListView now correctly adjusts the size of the scrollbar, 
+	  when expanding and collapsing by double-clicking
+
 2020-08-30  Markus Gans  <guru.mail@muenster.de>
 	* Adding Windows Terminal detection
 

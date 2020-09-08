@@ -639,7 +639,7 @@ inline const char* ConEmu::getAnswerback (console con)
     0,               // GNOME Terminal
     0,               // VTE Terminal >= 0.53.0
     C_STR("PuTTY"),  // PuTTY
-    C_STR("\005"),   // Windows Terminal
+    0,               // Windows Terminal
     0,               // Tera Term
     0,               // Cygwin
     0,               // Mintty

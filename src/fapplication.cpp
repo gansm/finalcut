@@ -63,7 +63,7 @@ FMouseControl* FApplication::mouse           {nullptr};  // mouse control
 int            FApplication::loop_level      {0};        // event loop level
 int            FApplication::quit_code       {EXIT_SUCCESS};
 bool           FApplication::quit_now        {false};
-uInt64         FApplication::next_event_wait {20000};    // preset to 20 ms
+uInt64         FApplication::next_event_wait {5000};     // preset to 5 ms /200 Hz
 struct timeval FApplication::time_last_event{};
 
 //----------------------------------------------------------------------
@@ -333,7 +333,7 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 void FApplication::processExternalUserEvent()
 {
   // This method can be overloaded and replaced by own code
-  std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  std::this_thread::sleep_for(std::chrono::milliseconds(5));
 }
 
 
@@ -905,7 +905,7 @@ void FApplication::closeDropDown()
 }
 
 //----------------------------------------------------------------------
-void FApplication::unselectMenubarItems()
+void FApplication::unselectMenubarItems() const
 {
   // Unselect the menu bar items
 
@@ -1248,8 +1248,9 @@ void FApplication::processLogger() const
 bool FApplication::processNextEvent()
 {
   uInt num_events{0};
+  bool is_timeout = isNextEventTimeout();
 
-  if ( isNextEventTimeout() )
+  if ( is_timeout )
   {
     FObject::getCurrentTime (&time_last_event);
     processKeyboardEvent();
@@ -1263,8 +1264,13 @@ bool FApplication::processNextEvent()
 
   processExternalUserEvent();
 
-  sendQueuedEvents();
-  num_events += processTimerEvent();
+  if ( is_timeout )
+  {
+    sendQueuedEvents();
+    num_events += processTimerEvent();
+    uInt64 wait{next_event_wait / 2};
+    std::this_thread::sleep_for(std::chrono::microseconds(wait));
+  }
 
   return ( num_events > 0 );
 }

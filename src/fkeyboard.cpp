@@ -42,9 +42,9 @@ namespace finalcut
 {
 
 // static class attributes
-uInt64 FKeyboard::read_blocking_time{100000};  // preset to 100 ms
-uInt64 FKeyboard::key_timeout{100000};         // preset to 100 ms
-uInt64 FKeyboard::interval_timeout{75000};     // preset to 75 ms
+uInt64 FKeyboard::read_blocking_time{100000};  // preset to 100 ms / 10 Hz
+uInt64 FKeyboard::key_timeout{100000};         // preset to 100 ms / 10 Hz
+uInt64 FKeyboard::interval_timeout{75000};     // preset to 75 ms / 13.3 Hz
 struct timeval FKeyboard::time_keypressed{};
 struct timeval FKeyboard::time_last_request{};
 

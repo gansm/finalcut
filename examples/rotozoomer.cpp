@@ -190,7 +190,7 @@ void RotoZoomer::generateReport()
   dimension_str << getDesktopWidth()
                 << "x" << getDesktopHeight();
   int elapsed_ms = int(duration_cast<milliseconds>(end - start).count());
-  time_str << double(elapsed_ms) / 1000 << "ms";
+  time_str << double(elapsed_ms) / 1000 << "s";
   fps_str << double(loops) * 1000.0 / double(elapsed_ms);
 
   rep << finalcut::FString{55, '-'} << "\n"

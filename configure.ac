@@ -91,7 +91,7 @@ AC_ARG_WITH([gpm],
 if test "x$with_gpm" != "xno"
 then
   AC_CHECK_LIB([gpm],
-               [main],
+               [Gpm_Open],
                [AC_DEFINE([HAVE_LIBGPM], 1, [Define to 1 if GPM mouse is enabled])
                 LIBS="$LIBS -lgpm"])
 fi

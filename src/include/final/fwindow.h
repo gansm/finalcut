@@ -176,7 +176,7 @@ class FWindow : public FWidget
 
 // non-member function forward declarations
 //----------------------------------------------------------------------
-void closeDropDown (FWidget*, const FPoint&);
+void closeDropDown (const FWidget*, const FPoint&);
 
 
 // FWindow inline functions

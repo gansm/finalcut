@@ -1284,12 +1284,11 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
 
   const int mouse_x = ev->getX();
   const int mouse_y = ev->getY();
-  const std::size_t element_count = getCount();
 
   if ( mouse_x > 1 && mouse_x < int(getWidth())
     && mouse_y > 1 && mouse_y < int(getHeight()) )
   {
-    if ( first_visible_line.getPosition() + mouse_y - 1 > int(element_count) )
+    if ( first_visible_line.getPosition() + mouse_y - 1 > int(getCount()) )
       return;
 
     if ( itemlist.empty() )
@@ -1304,7 +1303,7 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
       else
         item->expand();
 
-      adjustScrollbars (element_count);
+      adjustScrollbars (getCount());  // after expand or collapse
 
       if ( isShown() )
         draw();

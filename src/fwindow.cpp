@@ -874,7 +874,7 @@ void FWindow::processAlwaysOnTop()
 
 // non-member functions
 //----------------------------------------------------------------------
-void closeDropDown (FWidget* widget, const FPoint& mouse_position)
+void closeDropDown (const FWidget* widget, const FPoint& mouse_position)
 {
   // Close the pop down windows
 
