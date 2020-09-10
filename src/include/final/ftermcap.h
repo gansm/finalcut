@@ -121,6 +121,7 @@ class FTermcap final
     static bool          automatic_left_margin;
     static bool          automatic_right_margin;
     static bool          eat_nl_glitch;
+    static bool          has_ansi_escape_sequences;
     static bool          ansi_default_color;
     static bool          osc_support;
     static bool          no_utf8_acs_chars;

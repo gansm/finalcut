@@ -106,10 +106,6 @@ class FString
 
     const FString& operator += (const FString&);
 
-    const FString operator + (const FString&);
-    const FString operator + (const wchar_t);
-    const FString operator + (const char);
-
     FString& operator << (const FString&);
     FString& operator << (fc::SpecialCharacter);
     FString& operator << (const wchar_t);

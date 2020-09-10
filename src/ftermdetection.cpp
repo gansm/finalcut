@@ -30,6 +30,7 @@
 #include "final/flog.h"
 #include "final/fsystem.h"
 #include "final/fterm.h"
+#include "final/ftermcap.h"
 #include "final/ftermdata.h"
 #include "final/ftermdetection.h"
 #include "final/ftermios.h"
@@ -50,16 +51,16 @@ namespace finalcut
 FTermDetection::FTerminalType FTermDetection::terminal_type{};
 FTermDetection::colorEnv      FTermDetection::color_env{};
 FTermDetection::secondaryDA   FTermDetection::secondary_da{};
-FTermData*     FTermDetection::fterm_data{nullptr};
-FSystem*       FTermDetection::fsystem{nullptr};
-char           FTermDetection::termtype[256]{};
-char           FTermDetection::ttytypename[256]{};
-bool           FTermDetection::decscusr_support{};
-bool           FTermDetection::terminal_detection{};
-bool           FTermDetection::color256{};
-const FString* FTermDetection::answer_back{nullptr};
-const FString* FTermDetection::sec_da{nullptr};
-int            FTermDetection::gnome_terminal_id{};
+FTermData*                    FTermDetection::fterm_data{nullptr};
+FSystem*                      FTermDetection::fsystem{nullptr};
+char                          FTermDetection::termtype[256]{};
+char                          FTermDetection::ttytypename[256]{};
+bool                          FTermDetection::decscusr_support{};
+bool                          FTermDetection::terminal_detection{};
+bool                          FTermDetection::color256{};
+const FString*                FTermDetection::answer_back{nullptr};
+const FString*                FTermDetection::sec_da{nullptr};
+int                           FTermDetection::gnome_terminal_id{};
 
 #if DEBUG
   char FTermDetection::termtype_256color[256]{};
@@ -611,7 +612,7 @@ const char* FTermDetection::parseAnswerbackMsg (const char current_termtype[])
   }
 
   // cygwin needs a backspace to delete the '♣' char
-  if ( isCygwinTerminal() )
+  if ( isCygwinTerminal() || isWindowsTerminal() )
     FTerm::putstring (BS " " BS);
 
 #if DEBUG

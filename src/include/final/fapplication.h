@@ -174,7 +174,7 @@ class FApplication : public FWidget
     bool                  getMouseEvent() const;
     FWidget*&             determineClickedWidget();
     void                  unsetMoveSizeMode() const;
-    void                  closeDropDown();
+    void                  closeDropDown() const;
     void                  unselectMenubarItems() const;
     void                  sendMouseEvent() const;
     void                  sendMouseMoveEvent ( const FPoint&

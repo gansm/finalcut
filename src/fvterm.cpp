@@ -20,6 +20,10 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__CYGWIN__)
+  #include <unistd.h>  // need for ttyname_r
+#endif
+
 #include <queue>
 #include <string>
 #include <vector>
@@ -209,6 +213,17 @@ FColor FVTerm::rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b) const
 //----------------------------------------------------------------------
 void FVTerm::setNonBlockingRead (bool enable)
 {
+#if defined(__CYGWIN__)
+  // Fixes problem with mouse input
+  char termfilename[256]{};
+
+  if ( ttyname_r(1, termfilename, sizeof(termfilename)) )
+    termfilename[0] = '\0';
+
+  if ( std::strncmp(termfilename, "/dev/cons", 9) == 0 )
+    return;
+#endif
+
   uInt64 blocking_time = (enable) ? 5000 : 100000;  // 5 or 100 ms
   FKeyboard::setReadBlockingTime (blocking_time);
 }

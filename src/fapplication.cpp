@@ -893,7 +893,7 @@ void FApplication::unsetMoveSizeMode() const
 }
 
 //----------------------------------------------------------------------
-void FApplication::closeDropDown()
+void FApplication::closeDropDown() const
 {
   // Close the open menu
 

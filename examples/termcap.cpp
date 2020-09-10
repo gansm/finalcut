@@ -256,6 +256,8 @@ void booleans()
               , finalcut::FTermcap::automatic_right_margin );
   tcapBoolean ( "eat_nl_glitch"
               , finalcut::FTermcap::eat_nl_glitch );
+  tcapBoolean ( "has_ansi_escape_sequences"
+              , finalcut::FTermcap::has_ansi_escape_sequences );
   tcapBoolean ( "ansi_default_color"
               , finalcut::FTermcap::ansi_default_color );
   tcapBoolean ( "osc_support"
