@@ -1,17 +1,17 @@
 /***********************************************************************
 * fapplication.h - Manages the application events                      *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2013-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -35,9 +35,13 @@
  *       ▕▁▁▁▁▁▁▁▁▁▏
  *            ▲
  *            │
- *     ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏1       *▕▔▔▔▔▔▔▔▔▏
- *     ▕ FApplication ▏-┬- - - -▕ FEvent ▏
- *     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏ :       ▕▁▁▁▁▁▁▁▁▏
+ *     ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏1       1▕▔▔▔▔▔▔▏
+ *     ▕ FApplication ▏-┬- - - -▕ FLog ▏
+ *     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏ :       ▕▁▁▁▁▁▁▏
+ *                      :
+ *                      :      *▕▔▔▔▔▔▔▔▔▏
+ *                      :- - - -▕ FEvent ▏
+ *                      :       ▕▁▁▁▁▁▁▁▁▏
  *                      :
  *                      :      *▕▔▔▔▔▔▔▔▔▏
  *                      :- - - -▕ FPoint ▏
@@ -94,7 +98,7 @@ class FApplication : public FWidget
     typedef std::shared_ptr<FLog> FLogPtr;
 
     // Constructor
-    FApplication (const int&, char*[], bool = false);
+    FApplication (const int&, char*[]);
 
     // Disable copy constructor
     FApplication (const FApplication&) = delete;
@@ -121,27 +125,24 @@ class FApplication : public FWidget
     // Methods
     int                   exec();  // run
     int                   enterLoop();
-    void                  exitLoop();
-    static void           exit (int = 0);
-    void                  quit();
+    void                  exitLoop() const;
+    static void           exit (int = EXIT_SUCCESS);
+    void                  quit() const;
     static bool           sendEvent (FObject*, FEvent*);
     void                  queueEvent (FObject*, FEvent*);
     void                  sendQueuedEvents();
-    bool                  eventInQueue();
+    bool                  eventInQueue() const;
     bool                  removeQueuedEvent (const FObject*);
-    virtual void          processExternalUserEvent();
-    static FWidget*       processParameters (const int&, char*[]);
+    void                  initTerminal() override;
     static void           setDefaultTheme();
     static void           setDarkTheme();
-    static void           showParameterUsage ()
-    #if defined(__clang__) || defined(__GNUC__)
-      __attribute__((noreturn))
-    #endif
-                          ;
     static void           closeConfirmationDialog (FWidget*, FCloseEvent*);
 
     // Callback method
-    void cb_exitApp (const FWidget*, const FDataPtr);
+    void                  cb_exitApp (FWidget*) const;
+
+  protected:
+    virtual void          processExternalUserEvent();
 
   private:
     // Typedefs
@@ -149,50 +150,55 @@ class FApplication : public FWidget
     typedef std::deque<EventPair> FEventQueue;
 
     // Methods
-    void                  init (uInt64, uInt64);
+    void                  init();
+    static void           setTerminalEncoding (const FString&);
+    static void           setLogFile (const FString&);
     static void           cmd_options (const int&, char*[]);
     static FStartOptions& getStartOptions();
+    static void           showParameterUsage();
     void                  destroyLog();
-    void                  findKeyboardWidget();
+    void                  findKeyboardWidget() const;
     bool                  isKeyPressed() const;
     void                  keyPressed();
-    void                  keyReleased();
-    void                  escapeKeyPressed();
+    void                  keyReleased() const;
+    void                  escapeKeyPressed() const;
     void                  performKeyboardAction();
-    void                  sendEscapeKeyPressEvent();
-    bool                  sendKeyDownEvent (FWidget*);
-    bool                  sendKeyPressEvent (FWidget*);
-    bool                  sendKeyUpEvent (FWidget*);
-    void                  sendKeyboardAccelerator();
-    void                  processKeyboardEvent();
-    bool                  processDialogSwitchAccelerator();
-    bool                  processAccelerator (const FWidget* const&);
-    bool                  getMouseEvent();
+    void                  sendEscapeKeyPressEvent() const;
+    bool                  sendKeyDownEvent (FWidget*) const;
+    bool                  sendKeyPressEvent (FWidget*) const;
+    bool                  sendKeyUpEvent (FWidget*) const;
+    void                  sendKeyboardAccelerator() const;
+    void                  processKeyboardEvent() const;
+    bool                  processDialogSwitchAccelerator() const;
+    bool                  processAccelerator (const FWidget* const&) const;
+    bool                  getMouseEvent() const;
     FWidget*&             determineClickedWidget();
-    void                  unsetMoveSizeMode();
-    void                  closeDropDown();
-    void                  unselectMenubarItems();
-    void                  sendMouseEvent();
+    void                  unsetMoveSizeMode() const;
+    void                  closeDropDown() const;
+    void                  unselectMenubarItems() const;
+    void                  sendMouseEvent() const;
     void                  sendMouseMoveEvent ( const FPoint&
                                              , const FPoint&
-                                             , int );
+                                             , int ) const;
     void                  sendMouseLeftClickEvent ( const FPoint&
                                                   , const FPoint&
-                                                  , int );
+                                                  , int ) const;
     void                  sendMouseRightClickEvent ( const FPoint&
                                                    , const FPoint&
-                                                   , int );
+                                                   , int ) const;
     void                  sendMouseMiddleClickEvent ( const FPoint&
                                                     , const FPoint&
-                                                    , int );
-    void                  sendWheelEvent (const FPoint&, const FPoint&);
+                                                    , int ) const;
+    void                  sendWheelEvent (const FPoint&, const FPoint&) const;
+    static FWidget*       processParameters (const int&, char*[]);
     void                  processMouseEvent();
-    void                  processResizeEvent();
+    void                  processResizeEvent() const;
     void                  processCloseWidget();
-    void                  processLogger();
+    void                  processLogger() const;
     bool                  processNextEvent();
     void                  performTimerAction (FObject*, FEvent*) override;
     static bool           isEventProcessable (const FObject*, const FEvent*);
+    static bool           isNextEventTimeout();
 
     // Data members
     int                   app_argc{};
@@ -200,6 +206,8 @@ class FApplication : public FWidget
     uInt64                key_timeout{100000};        // 100 ms
     uInt64                dblclick_interval{500000};  // 500 ms
     FEventQueue           event_queue{};
+    static uInt64         next_event_wait;
+    static timeval        time_last_event;
     static int            quit_code;
     static bool           quit_now;
     static int            loop_level;
@@ -208,6 +216,13 @@ class FApplication : public FWidget
     static FKeyboard*     keyboard;
     static FWidget*       keyboard_widget;
 };
+
+
+// non-member function forward declarations
+// implemented in fwidget_functions.cpp
+//----------------------------------------------------------------------
+FApplication* getFApplication();
+
 
 // FApplication inline functions
 //----------------------------------------------------------------------
@@ -223,8 +238,8 @@ inline char** FApplication::getArgv() const
 { return app_argv; }
 
 //----------------------------------------------------------------------
-inline void FApplication::cb_exitApp (const FWidget*, const FDataPtr)
-{ close(); }
+inline void FApplication::cb_exitApp (FWidget* w) const
+{ w->close(); }
 
 }  // namespace finalcut
 

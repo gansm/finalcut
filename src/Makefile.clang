@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------
-# Makefile for Final Cut
+# Makefile for FINAL CUT
 #-----------------------------------------------------------------------------
 
 # This is where make install will install the library
@@ -12,6 +12,7 @@ INCLUDE_HEADERS = \
 	fapplication.h \
 	fbuttongroup.h \
 	fbutton.h \
+	fcallback.h \
 	fcolorpair.h \
 	fstyle.h \
 	ftogglebutton.h \
@@ -34,6 +35,7 @@ INCLUDE_HEADERS = \
 	fcheckmenuitem.h \
 	fmessagebox.h \
 	ftooltip.h \
+	fbusyindicator.h \
 	sgr_optimizer.h \
 	foptiattr.h \
 	foptimove.h \
@@ -90,6 +92,7 @@ OBJS = \
 	fpoint.o \
 	fsize.o \
 	frect.o \
+	fcallback.o \
 	fscrollbar.o \
 	fprogressbar.o \
 	flineedit.o \
@@ -118,6 +121,7 @@ OBJS = \
 	fcombobox.o \
 	fmessagebox.o \
 	ftooltip.o \
+	fbusyindicator.o \
 	ffiledialog.o \
 	fkey_map.o \
 	fcharmap.o \

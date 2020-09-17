@@ -1,17 +1,17 @@
 /***********************************************************************
 * foptimove.cpp - Cursor movement optimization                         *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -143,7 +143,7 @@ class FOptiMove final
     void          set_eat_newline_glitch (bool);
 
     // Methods
-    void          check_boundaries (int&, int&, int&, int&);
+    void          check_boundaries (int&, int&, int&, int&) const;
     const char*   moveCursor (int, int, int, int);
 
   private:
@@ -166,24 +166,24 @@ class FOptiMove final
 
     // Methods
     void          calculateCharDuration();
-    int           capDuration (const char[], int);
-    int           capDurationToLength (int);
-    int           repeatedAppend (const capability&, volatile int, char*);
-    int           relativeMove (char[], int, int, int, int);
-    int           verticalMove (char[], int, int);
-    void          downMove (char[], int&, int, int);
-    void          upMove (char[], int&, int, int);
-    int           horizontalMove (char[], int, int);
-    void          rightMove (char[], int&, int, int);
-    void          leftMove (char[], int&, int, int);
+    int           capDuration (const char[], int) const;
+    int           capDurationToLength (int) const;
+    int           repeatedAppend (const capability&, volatile int, char*) const;
+    int           relativeMove (char[], int, int, int, int) const;
+    int           verticalMove (char[], int, int) const;
+    void          downMove (char[], int&, int, int) const;
+    void          upMove (char[], int&, int, int) const;
+    int           horizontalMove (char[], int, int) const;
+    void          rightMove (char[], int&, int, int) const;
+    void          leftMove (char[], int&, int, int) const;
 
     bool          isWideMove (int, int, int, int) const;
     bool          isMethod0Faster (int&, int, int);
-    bool          isMethod1Faster (int&, int, int, int, int);
-    bool          isMethod2Faster (int&, int, int, int);
-    bool          isMethod3Faster (int&, int, int);
-    bool          isMethod4Faster (int&, int, int);
-    bool          isMethod5Faster (int&, int, int, int);
+    bool          isMethod1Faster (int&, int, int, int, int) const;
+    bool          isMethod2Faster (int&, int, int, int) const;
+    bool          isMethod3Faster (int&, int, int) const;
+    bool          isMethod4Faster (int&, int, int) const;
+    bool          isMethod5Faster (int&, int, int, int) const;
     void          moveByMethod (int, int, int, int, int);
 
     // Data members

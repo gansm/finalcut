@@ -2,17 +2,17 @@
 * fscrollview.cpp - Widget FScrollView (a scrolling area with          *
 *                   on-demand scroll bars)                             *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -40,7 +40,7 @@ namespace finalcut
 FScrollView::FScrollView (FWidget* parent)
   : FWidget{parent}
 {
-  init(parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -694,7 +694,7 @@ void FScrollView::copy2area()
 
 // private methods of FScrollView
 //----------------------------------------------------------------------
-inline const FPoint FScrollView::getViewportCursorPos()
+inline const FPoint FScrollView::getViewportCursorPos() const
 {
   const auto& window = FWindow::getWindowWidget(this);
 
@@ -713,8 +713,10 @@ inline const FPoint FScrollView::getViewportCursorPos()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::init (const FWidget* parent)
+void FScrollView::init()
 {
+  const FWidget* parent = getParentWidget();
+
   assert ( parent != nullptr );
   assert ( ! parent->isInstanceOf("FScrollView") );
 
@@ -771,7 +773,7 @@ inline void FScrollView::mapKeyFunctions()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::calculateScrollbarPos()
+void FScrollView::calculateScrollbarPos() const
 {
   const std::size_t width  = getWidth();
   const std::size_t height = getHeight();
@@ -792,7 +794,7 @@ void FScrollView::calculateScrollbarPos()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setHorizontalScrollBarVisibility()
+void FScrollView::setHorizontalScrollBarVisibility() const
 {
   assert ( v_mode == fc::Auto
         || v_mode == fc::Hidden
@@ -818,7 +820,7 @@ void FScrollView::setHorizontalScrollBarVisibility()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setVerticalScrollBarVisibility()
+void FScrollView::setVerticalScrollBarVisibility() const
 {
   assert ( v_mode == fc::Auto
         || v_mode == fc::Hidden
@@ -844,7 +846,7 @@ void FScrollView::setVerticalScrollBarVisibility()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setViewportCursor()
+void FScrollView::setViewportCursor() const
 {
   if ( ! isChild(getFocusWidget()) )
     return;
@@ -864,7 +866,7 @@ void FScrollView::setViewportCursor()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::cb_vbarChange (const FWidget*, const FDataPtr)
+void FScrollView::cb_vbarChange (const FWidget*)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
@@ -923,7 +925,7 @@ void FScrollView::cb_vbarChange (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::cb_hbarChange (const FWidget*, const FDataPtr)
+void FScrollView::cb_hbarChange (const FWidget*)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;

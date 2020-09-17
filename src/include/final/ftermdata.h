@@ -1,17 +1,17 @@
 /***********************************************************************
 * ftermdata.h - Data class for FTerm                                   *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -78,8 +78,8 @@ class FTermData final
     FRect&            getTermGeometry();
     int               getTTYFileDescriptor() const;
     uInt              getBaudrate() const;
-    const char*       getTermType();
-    const char*       getTermFileName();
+    const char*       getTermType() const;
+    const char*       getTermFileName() const;
     const FString&    getXtermFont() const;
     const FString&    getXtermTitle() const;
     const FString&    getExitMessage() const;
@@ -93,6 +93,7 @@ class FTermData final
     bool              hasCursorOptimisation() const;
     bool              isCursorHidden() const;
     bool              hasAlternateScreen() const;
+    bool              isInAlternateScreen() const;
     bool              hasASCIIConsole() const;
     bool              hasVT100Console() const;
     bool              hasUTF8Console() const;
@@ -111,6 +112,7 @@ class FTermData final
     void              supportCursorOptimisation (bool);
     void              setCursorHidden (bool);
     void              useAlternateScreen (bool);
+    void              setAlternateScreenInUse (bool);
     void              setASCIIConsole (bool);
     void              setVT100Console (bool);
     void              setUTF8Console (bool);
@@ -151,6 +153,7 @@ class FTermData final
     bool              cursor_optimisation{true};
     bool              hidden_cursor{false};  // Global cursor hidden state
     bool              use_alternate_screen{true};
+    bool              alternate_screen{false};
     bool              ascii_console{false};
     bool              vt100_console{false};
     bool              utf8_console{false};
@@ -191,11 +194,11 @@ inline uInt FTermData::getBaudrate() const
 { return baudrate; }
 
 //----------------------------------------------------------------------
-inline const char* FTermData::getTermType()
+inline const char* FTermData::getTermType() const
 { return termtype; }
 
 //----------------------------------------------------------------------
-inline const char* FTermData::getTermFileName()
+inline const char* FTermData::getTermFileName() const
 { return termfilename; }
 
 //----------------------------------------------------------------------
@@ -235,6 +238,10 @@ inline bool FTermData::isCursorHidden() const
 //----------------------------------------------------------------------
 inline bool FTermData::hasAlternateScreen() const
 { return use_alternate_screen; }
+
+//----------------------------------------------------------------------
+inline bool FTermData::isInAlternateScreen() const
+{ return alternate_screen; }
 
 //----------------------------------------------------------------------
 inline bool FTermData::hasASCIIConsole() const
@@ -299,6 +306,10 @@ inline void FTermData::setCursorHidden (bool hidden_state)
 //----------------------------------------------------------------------
 inline void FTermData::useAlternateScreen (bool use)
 { use_alternate_screen = use; }
+
+//----------------------------------------------------------------------
+inline void FTermData::setAlternateScreenInUse (bool in_use)
+{ alternate_screen = in_use; }
 
 //----------------------------------------------------------------------
 inline void FTermData::setASCIIConsole (bool ascii)

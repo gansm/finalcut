@@ -1,17 +1,17 @@
 /***********************************************************************
 * fmenu.cpp - Widget FMenu                                             *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -47,7 +47,7 @@ namespace finalcut
 FMenu::FMenu(FWidget* parent)
   : FWindow{parent}
 {
-  init(parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -55,7 +55,7 @@ FMenu::FMenu (const FString& txt, FWidget* parent)
   : FWindow{parent}
   , menuitem{txt, parent}
 {
-  init(parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -327,26 +327,21 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::cb_menuitemEnabled (const FWidget*, const FDataPtr)
+void FMenu::cb_menuitemEnabled()
 {
   setEnable();
 }
 
 //----------------------------------------------------------------------
-void FMenu::cb_menuitemDisabled (const FWidget*, const FDataPtr)
+void FMenu::cb_menuitemDisabled()
 {
   setDisable();
 }
 
 //----------------------------------------------------------------------
-void FMenu::cb_menuitemToggled (FWidget* widget, const FDataPtr)
+void FMenu::cb_menuitemToggled (const FMenuItem* m_item) const
 {
-  const auto& m_item = static_cast<FMenuItem*>(widget);
-
-  if ( ! has_checkable_items )
-    return;
-
-  if ( ! m_item->isChecked() )
+  if ( ! (has_checkable_items && m_item && m_item->isChecked()) )
     return;
 
   auto list = getItemList();
@@ -444,7 +439,7 @@ bool FMenu::isMouseOverSuperMenu (const FPoint& termpos)
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isMouseOverMenuBar (const FPoint& termpos)
+bool FMenu::isMouseOverMenuBar (const FPoint& termpos) const
 {
   if ( getMenuBar()
     && isMenuBar(getMenuBar())
@@ -457,7 +452,7 @@ bool FMenu::isMouseOverMenuBar (const FPoint& termpos)
 }
 
 //----------------------------------------------------------------------
-void FMenu::init(FWidget* parent)
+void FMenu::init()
 {
   setTopPadding(1);
   setLeftPadding(1);
@@ -469,6 +464,7 @@ void FMenu::init(FWidget* parent)
   hide();
   resetColors();
   menuitem.setMenu(this);
+  FWidget* parent = getParentWidget();
 
   if ( parent )
   {
@@ -496,13 +492,13 @@ void FMenu::initCallbacks()
   menuitem.addCallback
   (
     "enable",
-    F_METHOD_CALLBACK (this, &FMenu::cb_menuitemEnabled)
+    this, &FMenu::cb_menuitemEnabled
   );
 
   menuitem.addCallback
   (
     "disable",
-    F_METHOD_CALLBACK (this, &FMenu::cb_menuitemEnabled)
+    this, &FMenu::cb_menuitemDisabled
   );
 }
 
@@ -562,7 +558,7 @@ void FMenu::calculateDimensions()
 }
 
 //----------------------------------------------------------------------
-void FMenu::adjustItems()
+void FMenu::adjustItems() const
 {
   for (auto&& item : getItemList())
   {
@@ -584,7 +580,7 @@ void FMenu::adjustItems()
 }
 
 //----------------------------------------------------------------------
-int FMenu::adjustX (int x_pos)
+int FMenu::adjustX (int x_pos) const
 {
   // Is menu outside on the right of the screen?
   if ( x_pos + int(max_item_width) >= int(getDesktopWidth() - 1) )
@@ -656,7 +652,7 @@ void FMenu::hideSubMenus()
 }
 
 //----------------------------------------------------------------------
-void FMenu::hideSuperMenus()
+void FMenu::hideSuperMenus() const
 {
   // hide all menus to the top
   auto super = getSuperMenu();
@@ -911,7 +907,7 @@ void FMenu::mouseUpOverBorder()
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseMoveOverBorder (mouseStates& ms)
+void FMenu::mouseMoveOverBorder (mouseStates& ms) const
 {
   // Mouse is moved over border or separator line
 
@@ -979,7 +975,7 @@ void FMenu::passEventToSuperMenu (FMouseEvent* const& ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToMenuBar (FMouseEvent* const& ev)
+void FMenu::passEventToMenuBar (FMouseEvent* const& ev) const
 {
   // Mouse event handover to the menu bar
 
@@ -1144,7 +1140,7 @@ bool FMenu::selectPrevItem()
 }
 
 //----------------------------------------------------------------------
-void FMenu::keypressMenuBar (FKeyEvent* ev)
+void FMenu::keypressMenuBar (FKeyEvent* ev) const
 {
   auto mbar = getMenuBar();
 
@@ -1428,15 +1424,16 @@ inline void FMenu::drawAcceleratorKey (std::size_t& startpos, FKey accel_key)
   const FString accel_name {FTerm::getKeyName(accel_key)};
   const std::size_t c = ( has_checkable_items ) ? 1 : 0;
   const std::size_t accel_len = accel_name.getLength();
-  const std::size_t len = max_item_width - (startpos + accel_len + c + 2);
+  const std::size_t plain_text_length = startpos + accel_len + c + 2;
 
-  if ( len > 0 )
-  {
-    // Print filling blank spaces + accelerator key name
-    const FString spaces {len, L' '};
-    print (spaces + accel_name);
-    startpos = max_item_width - (c + 2);
-  }
+  if ( plain_text_length >= max_item_width )
+    return;
+
+  // Print filling blank spaces + accelerator key name
+  const std::size_t len = max_item_width - plain_text_length;
+  const FString spaces {len, L' '};
+  print (spaces + accel_name);
+  startpos = max_item_width - (c + 2);
 }
 
 //----------------------------------------------------------------------
@@ -1489,7 +1486,7 @@ inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
 }
 
 //----------------------------------------------------------------------
-inline void FMenu::setCursorToHotkeyPosition (FMenuItem* m_item)
+inline void FMenu::setCursorToHotkeyPosition (FMenuItem* m_item) const
 {
   const bool is_checkable = m_item->checkable;
   const bool is_selected  = m_item->isSelected();
@@ -1615,7 +1612,7 @@ inline void FMenu::closeMenu()
 }
 
 //----------------------------------------------------------------------
-void FMenu::processActivate()
+void FMenu::processActivate() const
 {
   emitCallback("activate");
 }

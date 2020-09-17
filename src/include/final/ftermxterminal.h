@@ -1,17 +1,17 @@
 /***********************************************************************
 * ftermxterminal.h - Contains all xterm-specific terminal functions    *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -98,7 +98,7 @@ class FTermXTerminal final
     // Methods
     void                  init();
     void                  setDefaults();
-    void                  resetColorMap();
+    void                  resetColorMap() const;
     void                  resetForeground();
     void                  resetBackground();
     void                  resetCursorColor();
@@ -110,11 +110,11 @@ class FTermXTerminal final
 
   private:
     // Methods
-    void                  warnNotInitialized();
+    void                  warnNotInitialized() const;
     void                  setXTermCursorStyle();
     void                  setXTermFont();
     void                  setXTermTitle();
-    void                  setXTermSize();
+    void                  setXTermSize() const;
     void                  setXTermForeground();
     void                  setXTermBackground();
     void                  setXTermCursorColor();
@@ -124,20 +124,20 @@ class FTermXTerminal final
     void                  setXTerm8ColorDefaults();
     void                  setXTerm16ColorDefaults();
     void                  setXTermDefaultsMouseCursor();
-    bool                  canSetXTermBackground();
-    void                  resetXTermColorMap();
-    void                  resetXTermForeground();
-    void                  resetXTermBackground();
-    void                  resetXTermCursorColor();
-    void                  resetXTermMouseForeground();
-    void                  resetXTermMouseBackground();
-    void                  resetXTermHighlightBackground();
-    bool                  isInitialized();
-    bool                  canResetColor();
-    void                  oscPrefix();
-    void                  oscPostfix();
-    const FString         captureXTermFont();
-    const FString         captureXTermTitle();
+    bool                  canSetXTermBackground() const;
+    void                  resetXTermColorMap() const;
+    void                  resetXTermForeground() const;
+    void                  resetXTermBackground() const;
+    void                  resetXTermCursorColor() const;
+    void                  resetXTermMouseForeground() const;
+    void                  resetXTermMouseBackground() const;
+    void                  resetXTermHighlightBackground() const;
+    bool                  isInitialized() const;
+    bool                  canResetColor() const;
+    void                  oscPrefix() const;
+    void                  oscPostfix() const;
+    const FString         captureXTermFont() const;
+    const FString         captureXTermTitle() const;
     static void           enableXTermMouse();
     static void           disableXTermMouse();
     void                  enableXTermMetaSendsESC();
@@ -225,7 +225,7 @@ inline void FTermXTerminal::unsetMouseSupport()
 { setMouseSupport (false); }
 
 //----------------------------------------------------------------------
-inline bool FTermXTerminal::isInitialized()
+inline bool FTermXTerminal::isInitialized() const
 { return bool(fsystem && term_detection); }
 
 }  // namespace finalcut

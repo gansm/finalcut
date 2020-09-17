@@ -86,12 +86,12 @@ AX_CHECK_COMPILE_FLAG([[-std=c++11]],,
 # use GPM (General Purpose Mouse)
 AC_ARG_WITH([gpm],
             [AS_HELP_STRING([--without-gpm], [Disable GPM mouse support])],
-            [with_gpm=no],
+            [],
             [with_gpm=yes])
-if test "x$with_gpm" = "xyes"
+if test "x$with_gpm" != "xno"
 then
   AC_CHECK_LIB([gpm],
-               [main],
+               [Gpm_Open],
                [AC_DEFINE([HAVE_LIBGPM], 1, [Define to 1 if GPM mouse is enabled])
                 LIBS="$LIBS -lgpm"])
 fi
@@ -99,9 +99,9 @@ fi
 # profiling
 AC_ARG_WITH([profiler],
             [AS_HELP_STRING([--with-profiler], [build extra google profiler binaries])],
- 	    [with_profiler=yes],
+            [],
             [with_profiler=no])
-if test "x$with_profiler" = "xyes"
+if test "x$with_profiler" != "xno"
 then
   AC_CHECK_LIB([profiler],
                [ProfilerFlush],
@@ -111,14 +111,13 @@ fi
 # unit test
 AC_ARG_WITH([unit-test],
             [AS_HELP_STRING([--with-unit-test], [build unit tests])],
- 	    [with_unit_test=yes],
+            [],
             [with_unit_test=no])
-if test "x$with_unit_test" = "xyes"
+if test "x$with_unit_test" != "xno"
 then
   AC_MSG_NOTICE(enabled cppunit test)
-  AM_PATH_CPPUNIT([1.12.0],
-                  [],
-                  [AC_MSG_ERROR([*** CppUnit not found! ***])])
+  PKG_CHECK_MODULES(CPPUNIT,
+                    [cppunit > 1.12.0])
   AM_CONDITIONAL(CPPUNIT_TEST, [test "1" = "1"])
 else
   AM_CONDITIONAL(CPPUNIT_TEST, [test "1" = "0"])
@@ -128,9 +127,9 @@ fi
 # code coverage
 AC_ARG_WITH([gcov],
             [AS_HELP_STRING([--with-gcov], [build for code coverage testing])],
- 	    [with_gcov=yes],
+            [],
             [with_gcov=no])
-if test "x$with_gcov" = "xyes"
+if test "x$with_gcov" != "xno"
 then
   AC_CHECK_LIB([gcov],
                [main],

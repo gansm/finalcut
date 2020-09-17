@@ -1,17 +1,17 @@
 /***********************************************************************
 * fbutton.cpp - Widget FButton                                         *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -53,7 +53,7 @@ FButton::FButton (const FString& txt, FWidget* parent)
 FButton::~FButton()  // destructor
 {
   delAccelerator();
-  delOwnTimer();
+  delOwnTimers();
 }
 
 // FButton operator
@@ -353,7 +353,7 @@ void FButton::onAccel (FAccelEvent* ev)
 
   if ( ! hasFocus() )
   {
-    auto focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    auto focused_widget = ev->focusedWidget();
 
     if ( focused_widget && focused_widget->isWidget() )
     {
@@ -402,8 +402,9 @@ void FButton::onFocusOut (FFocusEvent*)
 void FButton::init()
 {
   const auto& wc = getColorTheme();
-  setForegroundColor (wc->button_active_fg);
-  setBackgroundColor (wc->button_active_bg);
+  button_fg = wc->button_active_fg;
+  button_bg = wc->button_active_bg;
+  resetColors();
   setShadow();
 
   if ( ! text.isEmpty() )
@@ -669,7 +670,7 @@ void FButton::draw()
 }
 
 //----------------------------------------------------------------------
-void FButton::updateStatusBar()
+void FButton::updateStatusBar() const
 {
   if ( ! getFlags().focus || ! getStatusBar() )
     return;
@@ -708,7 +709,7 @@ void FButton::updateButtonColor()
 }
 
 //----------------------------------------------------------------------
-void FButton::processClick()
+void FButton::processClick() const
 {
   emitCallback("clicked");
 }

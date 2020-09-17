@@ -11,6 +11,9 @@ Table of Contents
 - [Memory Management](#memory-management)
 - [Event Processing](#event-processing)
   - [Event handler reimplementation](#event-handler-reimplementation)
+  - [Event types](#available-event-types)
+  - [Timer event](#using-a-timer-event)
+  - [User event](#using-a-user-event)
 - [Signals and Callbacks](#signals-and-callbacks)
   - [Default signals](#the-final-cut-widgets-emit-the-following-default-signals)
   - [Callback function](#example-of-a-callback-function)
@@ -245,16 +248,16 @@ Event Processing
 ----------------
 
 Calling `FApplication::exec()` starts the FINAL CUT main event loop. 
-While the event loop is running, the system constantly checks whether 
+While the event loop is running, the system checks all the time whether 
 an event has occurred and sends it to the application's currently focused 
-object. The events of the terminal such as keystrokes, mouse actions or 
-resizing the terminal are translated into `FEvent` objects and sent it to 
+object. The events of the terminal, such as keystrokes, mouse actions, or 
+terminal size changing, are translated into `FEvent` objects, and sent them to 
 the active `FObject`. It is also possible to use `FApplication::sendEvent()` 
-or `FApplication::queueEvent()` to send your own events to an object.
+or `FApplication::queueEvent()` to send a specific event to an object.
 
 `FObject`-derived objects process incoming events by reimplementing the 
-virtual method `event()`. The `FObject` itself calls only 
-`onTimer()` or `onUserEvent()` and ignores all other events. The 
+virtual method `event()`. The `FObject` itself can only call its own events 
+`onTimer()` and `onUserEvent()` and ignores all other events. The 
 `FObject`-derived class `FWidget` also reimplements the `event()` method 
 to handle further events. `FWidget` calls the `FWidget::onKeyPress` method
 when you press a key, or the `FWidget::onMouseDown` method when you click 
@@ -269,18 +272,18 @@ For example, the method `FEvent::type()` returns the type
 `fc::MouseDown_Event` when you press down a mouse button. 
 
 Some event types have data that cannot store in an `FEvent` object. 
-For example, a click event of the mouse must store which button it 
-triggered where the mouse pointer was at that time. In classes derived 
+For example, a click event of the mouse must store which button is 
+triggered and where the mouse pointer was at that time. In classes derived 
 from `FEvent`, such as `FMouseEvent()`, we store this data.
 
 Widgets get their events from the `event()` method inherited from FObject. 
 The implementation of `event()` in `FWidget` forwards the most common event 
 types to specific event handlers such as `FMouseEvent()`, `FKeyEvent()` or 
-`FResizeEvent()`. There are many other event types. It is also possible to 
-create own event types and send them to other objects.
+`FResizeEvent()`. There are many other event types. You can create own event 
+types and send them to other objects and widgets.
 
 
-**The FINAL CUT event types:**
+### Available event types ###
 ```cpp
 enum events
 {
@@ -311,6 +314,12 @@ enum events
 };
 ```
 
+
+### Using a timer event ###
+
+The following example starts a periodic timer that triggers an `FTimerEvent()` 
+every 100 ms. The virtual method `onTimer()` is then called each time in the 
+same dialog object.
 
 **File:** *timer.cpp*
 ```cpp
@@ -375,6 +384,120 @@ g++ -O2 -lfinal -std=c++11 timer.cpp -o timer
 ```
 
 
+### Using a user event ###
+
+You can use the `FUserEvent()` to create a individual event and send it to a 
+specific object. If you want to create more than one user event, you can 
+specify an identification number (0 in the example below) to identify the 
+different events. This number can get later with `getUserId()`.
+
+User events should be generated in the main event loop. For this purpose, 
+the class `FApplication` provides the virtual method 
+`processExternalUserEvent()`. This method can be overwritten in a derived 
+class and filled with user code.
+
+The following example reads the average system load and creates a user event 
+when a value changes. This event sends the current values to an `FLabel` 
+widget and displays them in the terminal.
+
+
+**File:** *user-event.cpp*
+```cpp
+#include <stdlib.h>
+#include <final/final.h>
+#define _BSD_SOURCE 1
+#define _DEFAULT_SOURCE 1
+
+using LoadAvg = double[3];
+using namespace finalcut;
+
+class extendedApplication : public FApplication
+{
+  public:
+    extendedApplication (const int& argc, char* argv[])
+      : FApplication(argc, argv)
+    { }
+
+  private:
+    void processExternalUserEvent() override
+    {
+      if ( getMainWidget() )
+      {
+        if ( getloadavg(load_avg, 3) < 0 )
+          FApplication::getLog()->error("Can't get load average values");
+
+        if ( last_avg[0] != load_avg[0]
+          || last_avg[1] != load_avg[1]
+          || last_avg[2] != load_avg[2] )
+        {
+          FUserEvent user_event(fc::User_Event, 0);
+          user_event.setData (FDataPtr(&load_avg));
+          FApplication::sendEvent (getMainWidget(), &user_event);
+        }
+
+        for (std::size_t i = 0; i < 3; i++)
+          last_avg[i] = load_avg[i];
+      }
+    }
+
+    // Data member
+    LoadAvg load_avg{}, last_avg{};
+};
+
+
+class dialogWidget final : public FDialog
+{
+  public:
+    explicit dialogWidget (FWidget* parent = nullptr)
+      : FDialog{"User event", parent}
+    {
+      FDialog::setGeometry (FPoint{25, 5}, FSize{40, 6});
+      loadavg_label.setGeometry (FPoint{2, 2}, FSize{36, 1});
+    }
+
+  private:
+    void onUserEvent (FUserEvent* ev) override
+    {
+      FDataPtr dataPtr = ev->getData();
+      auto& lavg = *(reinterpret_cast<LoadAvg*>(dataPtr));
+      std::setlocale(LC_NUMERIC, "C");
+      loadavg_label.clear();
+      loadavg_label << "Load average: " << lavg[0] << ", "
+                                        << lavg[1] << ", "
+                                        << lavg[2] << " ";
+      loadavg_label.redraw();
+    }
+
+    FLabel loadavg_label{this};
+};
+
+
+int main (int argc, char* argv[])
+{
+  extendedApplication app(argc, argv);
+  dialogWidget dialog(&app);
+  FWidget::setMainWidget(&dialog);
+  dialog.show();
+  return app.exec();
+}
+```
+<figure class="image">
+  <img src="first-steps_user-event.cpp.png" alt="user-event.cpp">
+  <figcaption>Figure 5.  User event generation</figcaption>
+</figure>
+<br /><br />
+
+*(Note: You can close the window with the mouse, 
+<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+
+
+After entering the source code in *user-event.cpp* you can compile
+the above program with gcc:
+```cpp
+g++ -O2 -lfinal -std=c++11 user-event.cpp -o user-event
+```
+
+
 Signals and Callbacks
 ---------------------
 
@@ -387,46 +510,154 @@ clicked by a keyboard or mouse, it sends the string "clicked". A signal
 handler explicitly provided by Widget, in the form of a callback function 
 or a callback method, can react to such a signal.
 
-A callback function is always structured as follows:
+A callback function has no return value and can have various arguments:
 
 ```cpp
-void cb_function (FWidget* w, FDataPtr data)
+void cb_function (FWidget* w, int* i, double* d, ...)
 {...}
 ```
 
 The structure of a callback method is the same:
 
 ```cpp
-void classname::cb_methode (FWidget* w, FDataPtr data)
+void classname::cb_methode (FWidget* w, int* i, double* d, ...)
 {...}
 ```
 
 We use the `addCallback()` method of the `FWidget` class to connect 
 to other widget objects.
 
-For calling functions and static methods:
+1. For calling functions or static methods via a pointer:
 
 ```cpp
+template<typename Function
+       , typename FunctionPointer<Function>::type = nullptr
+       , typename... Args>
 void FWidget::addCallback ( const FString& cb_signal
-                          , FCallback cb_handler
-                          , FDataPtr data )
+                          , Function&&     cb_function
+                          , Args&&...      args)
 {...}
 ```
 
-For calling a member method of a specific instance:
+2. For calling functions or static methods via a reference:
 
 ```cpp
+template<typename Function
+       , typename FunctionReference<Function>::type = nullptr
+       , typename... Args>
 void FWidget::addCallback ( const FString& cb_signal
-                          , FWidget* cb_instance
-                          , FMemberCallback cb_handler
-                          , FDataPtr data )
+                          , Function&      cb_function
+                          , Args&&...      args)
 {...}
 ```
 
-There are two macros `F_FUNCTION_CALLBACK` and `F_METHOD_CALLBACK` to avoid 
-having to deal with necessary type conversions. With `delCallback()` you can 
-remove a connection to a signal handler or a widget. Alternatively, you can 
-use `delCallbacks()` to remove all existing callbacks from an object.
+3. For calling a member method of a specific instance:
+
+```cpp
+template<typename Object
+       , typename Function
+       , typename ObjectPointer<Object>::type = nullptr
+       , typename MemberFunctionPointer<Function>::type = nullptr
+       , typename... Args>
+void FWidget::addCallback ( const FString& cb_signal
+                          , Object&&       cb_instance
+                          , Function&&     cb_member
+                          , Args&&...      args)
+{...}
+```
+
+4. For calling a std::bind call wrapper or a lambda expression:
+```cpp
+template<typename Function
+       , typename ClassObject<Function>::type = nullptr
+       , typename... Args>
+void FWidget::addCallback ( const FString& cb_signal
+                          , Function&&     cb_function
+                          , Args&&...      args)
+{...}
+```
+
+5. For calling a std::bind call wrapper to a specific instance:
+
+```cpp
+template<typename Object
+       , typename Function
+       , typename ObjectPointer<Object>::type = nullptr
+       , typename ClassObject<Function>::type = nullptr
+       , typename... Args>
+void FWidget::addCallback ( const FString& cb_signal
+                          , Object&&       cb_instance
+                          , Function&&     cb_function
+                          , Args&&...      args)
+{...}
+```
+
+6. For calling a lambda function that has been stored in a variable
+with the keyword auto:
+
+```cpp
+template<typename Function
+       , typename ClassObject<Function>::type = nullptr
+       , typename... Args>
+void FWidget::addCallback ( const FString& cb_signal
+                          , Function&      cb_function
+                          , Args&&...      args)
+{...}
+```
+
+With `delCallback(...)` you can remove a connection to a signal handler
+or a widget instance. Alternatively, you can use `delCallbacks()` to
+remove all existing callbacks from an object.
+
+1. To delete functions or static methods callbacks via a pointer:
+
+```cpp
+template<typename FunctionPtr
+       , typename FunctionPointer<FunctionPtr>::type = nullptr>
+void FWidget::delCallback (FunctionPtr&& cb_func_ptr)
+{...}
+```
+
+2. To delete functions or static methods callbacks via a reference:
+
+```cpp
+template<typename Function
+       , typename FunctionReference<Function>::type = nullptr>
+void FWidget::delCallback (Function& cb_function)
+{...}
+```
+
+3. To delete all callbacks from a specific instance:
+
+```cpp
+template<typename Object
+       , typename ObjectPointer<Object>::type = nullptr>
+void FWidget::delCallback (Object&& cb_instance)
+{...}
+```
+
+4. To delete all callbacks of a signal:
+
+```cpp
+void delCallback (const FString& cb_signal)
+{...}
+```
+
+5. To delete all callbacks of a signal and specific instance:
+
+```cpp
+template<typename Object
+       , typename ObjectPointer<Object>::type = nullptr>
+void delCallback (const FString& cb_signal, Object&& cb_instance)
+{...}
+```
+
+6. To delete all callbacks from a widget:
+
+```cpp
+void delCallback()
+{...}
+```
 
 
 ### The FINAL CUT widgets emit the following default signals ###
@@ -486,10 +717,8 @@ use `delCallbacks()` to remove all existing callbacks from an object.
 
 using namespace finalcut;
 
-void cb_changeText (FWidget* w, FDataPtr data)
+void cb_changeText (const FButton& button, FLabel& label)
 {
-  FButton& button = *(static_cast<FButton*>(w));
-  FLabel& label = *(static_cast<FLabel*>(data));
   label.clear();
   label << "The " << button.getClassName() << " was pressed";
   label.redraw();
@@ -512,9 +741,10 @@ int main (int argc, char* argv[])
   // Connect the button signal "clicked" with the callback function
   button.addCallback
   (
-    "clicked",
-    F_FUNCTION_CALLBACK (&cb_changeText),
-    &label
+    "clicked",          // Callback signal
+    &cb_changeText,     // Function pointer
+    std::cref(button),  // First function argument
+    std::ref(label)     // Second function argument
   );
 
   FWidget::setMainWidget(&dialog);
@@ -524,7 +754,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_callback-function.cpp.png" alt="callback-function.cpp">
-  <figcaption>Figure 5.  Button with a callback function</figcaption>
+  <figcaption>Figure 6.  Button with a callback function</figcaption>
 </figure>
 <br /><br />
 
@@ -560,11 +790,9 @@ int main (int argc, char* argv[])
   // Connect the button signal "clicked" with the lambda expression
   button.addCallback
   (
-    "clicked",
-    [] (FWidget* w, FDataPtr d)
+    "clicked",                          // Callback signal
+    [] (FButton& button, FDialog& dgl)  // Lambda function
     {
-      FButton& button = *(static_cast<FButton*>(w));
-
       if ( button.getY() != 2 )
       {
         button.setPos (FPoint{15, 2});
@@ -576,9 +804,10 @@ int main (int argc, char* argv[])
         button.setText("&bottom");
       }
 
-      static_cast<FDialog*>(d)->redraw();
+      dgl.redraw();
     },
-    &dialog
+    std::ref(button),                   // First function argument
+    std::ref(dialog)                    // Second function argument
   );
 
   FWidget::setMainWidget(&dialog);
@@ -588,7 +817,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_callback-lambda.cpp.png" alt="callback-lambda.cpp">
-  <figcaption>Figure 6.  Button with lambda expression callback.</figcaption>
+  <figcaption>Figure 7.  Button with lambda expression callback.</figcaption>
 </figure>
 <br /><br />
 
@@ -625,9 +854,10 @@ class dialogWidget : public FDialog
       // Connect the button signal "clicked" with the callback method
       button.addCallback
       (
-        "clicked",
-        F_METHOD_CALLBACK (this, &FApplication::cb_exitApp),
-        nullptr
+        "clicked",                            // Callback signal
+        finalcut::getFApplication(),          // Class instance
+        &finalcut::FApplication::cb_exitApp,  // Method pointer
+        this                                  // Function argument
       );
     }
 
@@ -646,7 +876,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_callback-method.cpp.png" alt="callback-method.cpp">
-  <figcaption>Figure 7.  Button with a callback method</figcaption>
+  <figcaption>Figure 8.  Button with a callback method</figcaption>
 </figure>
 <br /><br />
 
@@ -687,45 +917,22 @@ class dialogWidget : public FDialog
       label.setAlignment (fc::alignRight);
       label.setForegroundColor (fc::Black);
       plus.setGeometry (FPoint{3, 3}, size);
-      minus.setGeometry (FPoint{13, 3}, size);
+      minus.setGeometry (FPoint{3, 3} + FPoint{10, 0}, size);
       plus.setNoUnderline();
       minus.setNoUnderline();
 
       // Connect the button signal "clicked" with the callback method
-      plus.addCallback
-      (
-        "clicked",
-        F_METHOD_CALLBACK (this, &dialogWidget::cb_plus)
-      );
-
-      minus.addCallback
-      (
-        "clicked",
-        F_METHOD_CALLBACK (this, &dialogWidget::cb_minus)
-      );
+      plus.addCallback ("clicked", this, &dialogWidget::cb_plus);
+      minus.addCallback ("clicked", this, &dialogWidget::cb_minus);
 
       // Connect own signals
-      addCallback
-      (
-        "hot",
-        F_METHOD_CALLBACK (this, &dialogWidget::cb_set_red)
-      );
-
-      addCallback
-      (
-        "regular",
-        F_METHOD_CALLBACK (this, &dialogWidget::cb_set_black)
-      );
-
-      addCallback
-      (
-        "cold",
-        F_METHOD_CALLBACK (this, &dialogWidget::cb_set_blue)
-      );
+      addCallback ("hot", this, &dialogWidget::cb_set_red);
+      addCallback ("regular", this, &dialogWidget::cb_set_black);
+      addCallback ("cold", this, &dialogWidget::cb_set_blue);
     }
 
   private:
-    void cb_plus (FWidget*, FDataPtr)
+    void cb_plus()
     {
       if ( t < 100 )
         t++;
@@ -738,7 +945,7 @@ class dialogWidget : public FDialog
       setTemperature();
     }
 
-    void cb_minus (FWidget*, FDataPtr)
+    void cb_minus()
     {
       if ( t > -99 )
         t--;
@@ -751,17 +958,17 @@ class dialogWidget : public FDialog
       setTemperature();
     }
 
-    void cb_set_blue (FWidget*, FDataPtr)
+    void cb_set_blue()
     {
       label.setForegroundColor (fc::Blue);
     }
 
-    void cb_set_black (FWidget*, FDataPtr)
+    void cb_set_black()
     {
       label.setForegroundColor (fc::Black);
     }
 
-    void cb_set_red (FWidget*, FDataPtr)
+    void cb_set_red()
     {
       label.setForegroundColor (fc::Red);
     }
@@ -790,7 +997,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_emit-signal.cpp.png" alt="emit-signal.cpp">
-  <figcaption>Figure 8.  Callbacks with custom signals</figcaption>
+  <figcaption>Figure 9.  Callbacks with custom signals</figcaption>
 </figure>
 <br /><br />
 
@@ -831,7 +1038,7 @@ If you want to ignore padding spaces, you must force this with the
 
 <figure class="image">
   <img src="widget-coordinates.svg" alt="widget coordinates">
-  <figcaption>Figure 9.  Widget coordinates</figcaption>
+  <figcaption>Figure 10.  Widget coordinates</figcaption>
 </figure>
 <br /><br />
 
@@ -881,7 +1088,7 @@ methods.
 
 <figure class="image">
   <img src="widget-lengths.svg" alt="widget lengths">
-  <figcaption>Figure 10.  Width and height of a widget</figcaption>
+  <figcaption>Figure 11.  Width and height of a widget</figcaption>
 </figure>
 <br /><br />
 
@@ -934,7 +1141,7 @@ absolute geometry values as a `FRect` object, you can call the method
 
 <figure class="image">
   <img src="widget-geometry.svg" alt="widget geometry">
-  <figcaption>Figure 11.  Geometry of widgets</figcaption>
+  <figcaption>Figure 12.  Geometry of widgets</figcaption>
 </figure>
 <br /><br />
 
@@ -994,7 +1201,7 @@ class dialogWidget : public FDialog
       button.setGeometry (FPoint{1, 1}, FSize{12, 1}, false);
       input.setGeometry (FPoint{2, 3}, FSize{12, 1}, false);
       // Set dialog geometry and calling adjustSize()
-      setGeometry (FPoint{25, 5}), FSize{40, 12});
+      setGeometry (FPoint{25, 5}, FSize{40, 12});
       setMinimumSize (FSize{25, 9});
     }
 
@@ -1068,7 +1275,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_size-adjustment.cpp.png" alt="size-adjustment.cpp">
-  <figcaption>Figure 12.  Dynamic layout</figcaption>
+  <figcaption>Figure 13.  Dynamic layout</figcaption>
 </figure>
 <br /><br />
 
@@ -1135,12 +1342,13 @@ class dialogWidget : public FDialog
       setGeometry (FPoint{28, 2}, FSize{24, 21});
       scrollview.setGeometry(FPoint{1, 1}, FSize{22, 11});
       scrollview.setScrollSize(FSize{60, 27});
-      const auto& wc = getFWidgetColors();
-      setColor (wc.label_inactive_fg, wc.dialog_bg);
+      // Attention: getColorTheme() requires an initialized terminal
+      const auto& wc = getColorTheme();
+      setColor (wc->label_inactive_fg, wc->dialog_bg);
       scrollview.clearArea();
-      FColorPair red (fc::LightRed, wc.dialog_bg);
-      FColorPair black (fc::Black, wc.dialog_bg);
-      FColorPair cyan (fc::Cyan, wc.dialog_bg);
+      FColorPair red (fc::LightRed, wc->dialog_bg);
+      FColorPair black (fc::Black, wc->dialog_bg);
+      FColorPair cyan (fc::Cyan, wc->dialog_bg);
 
       static std::vector<direction> d
       {
@@ -1167,8 +1375,7 @@ class dialogWidget : public FDialog
         btn->addCallback
         (
           "clicked",
-          F_METHOD_CALLBACK (this, &dialogWidget::cb_button),
-          static_cast<FDataPtr>(&std::get<2>(b))
+          this, &dialogWidget::cb_button, std::get<2>(b)
         );
       };
     }
@@ -1176,10 +1383,9 @@ class dialogWidget : public FDialog
   private:
     typedef std::tuple<FString, FPoint, FPoint, FColorPair> direction;
 
-    void cb_button (FWidget*, FDataPtr data)
+    void cb_button (const FPoint& p)
     {
-      FPoint* p = static_cast<FPoint*>(data);
-      scrollview.scrollTo(*p);
+      scrollview.scrollTo(p);
     }
 
     FScrollView scrollview{this};
@@ -1188,6 +1394,7 @@ class dialogWidget : public FDialog
 int main (int argc, char* argv[])
 {
   FApplication app(argc, argv);
+  app.initTerminal();  // Terminal initialization
   dialogWidget dialog(&app);
   FWidget::setMainWidget(&dialog);
   dialog.show();
@@ -1196,7 +1403,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_scrollview.cpp.png" alt="scrollview.cpp">
-  <figcaption>Figure 13.  Dialog with a scrolling viewport</figcaption>
+  <figcaption>Figure 14.  Dialog with a scrolling viewport</figcaption>
 </figure>
 <br /><br />
 

@@ -1,17 +1,17 @@
 /***********************************************************************
 * fmenubar.cpp - Widget FMenuBar                                       *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -228,16 +228,14 @@ void FMenuBar::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::cb_itemDeactivated (FWidget* widget, const FDataPtr)
+void FMenuBar::cb_itemDeactivated (const FMenuItem* menuitem) const
 {
-  auto menuitem = static_cast<FMenuItem*>(widget);
+  if ( ! menuitem->hasMenu() )
+    return;
 
-  if ( menuitem->hasMenu() )
-  {
-    auto menu = menuitem->getMenu();
-    menu->hide();
-    menu->hideSubMenus();
-  }
+  auto menu = menuitem->getMenu();
+  menu->hide();
+  menu->hideSubMenus();
 }
 
 
@@ -263,7 +261,7 @@ void FMenuBar::init()
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::calculateDimensions()
+void FMenuBar::calculateDimensions() const
 {
   FPoint item_pos{1, 1};
 
@@ -400,7 +398,7 @@ bool FMenuBar::selectPrevItem()
 
       setSelectedItem(prev);
       redraw();
-      setTerminalUpdates (FVTerm::stop_terminal_updates);
+      setTerminalUpdates (FVTerm::start_terminal_updates);
       break;
     }
   }
@@ -577,7 +575,7 @@ inline void FMenuBar::setLineAttributes (const FMenuItem* menuitem)
 
 //----------------------------------------------------------------------
 inline void FMenuBar::setCursorToHotkeyPosition ( FMenuItem* menuitem
-                                                , std::size_t hotkeypos )
+                                                , std::size_t hotkeypos ) const
 {
   if ( ! menuitem->isSelected() )
     return;
@@ -675,7 +673,7 @@ inline void FMenuBar::drawTrailingSpace (std::size_t& x)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::adjustItems()
+void FMenuBar::adjustItems() const
 {
   int item_X = 1;
   int item_Y = 1;
@@ -928,7 +926,7 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::passEventToMenu (const FMouseEvent* const& ev)
+void FMenuBar::passEventToMenu (const FMouseEvent* const& ev) const
 {
   if ( ! hasSelectedItem() || ! getSelectedItem()->hasMenu() )
     return;

@@ -1,17 +1,17 @@
 /***********************************************************************
 * foptimove-test.cpp - FOptiMove unit tests                            *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2019 Markus Gans                                      *
+* Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -20,6 +20,9 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <iomanip>
+#include <string>
+
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -27,12 +30,9 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
-
 #include <cppunit/SourceLine.h>
 #include <cppunit/TestAssert.h>
 
-#include <iomanip>
-#include <string>
 #include <final/final.h>
 
 
@@ -61,8 +61,7 @@ void check_c_string ( const char* s1
 class FOptiMoveTest : public CPPUNIT_NS::TestFixture
 {
   public:
-    FOptiMoveTest()
-    { }
+    FOptiMoveTest();
 
   protected:
     void classNameTest();
@@ -104,6 +103,11 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST_SUITE_END();
 };
 
+//----------------------------------------------------------------------
+FOptiMoveTest::FOptiMoveTest()
+{
+  finalcut::FTermcap::init();
+}
 
 //----------------------------------------------------------------------
 void FOptiMoveTest::classNameTest()
@@ -505,7 +509,7 @@ void FOptiMoveTest::cygwinTest()
   om.set_parm_left_cursor (CSI "%p1%dD");
 
   CPPUNIT_ASSERT_CSTRING ( printSequence(om.moveCursor (1, 2, 3, 4)).c_str()
-                         , "Esc [ 5 ; 4 H ") ;
+                         , "Esc [ 5 ; 4 H " );
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), CSI "H");
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), "\r");

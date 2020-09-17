@@ -1,17 +1,17 @@
 /***********************************************************************
 * ftermlinux.h - Contains the Linux terminal functions                 *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -94,14 +94,14 @@ class FTermLinux final
 
     // Accessors
     const FString        getClassName() const;
-    fc::linuxConsoleCursorStyle getCursorStyle();
+    fc::linuxConsoleCursorStyle getCursorStyle() const;
     char*                getCursorStyleString();
     int                  getFramebufferBpp() const;
 
     // Mutators
     bool                 setCursorStyle (CursorStyle);
     bool                 setPalette (FColor, int, int, int);
-    void                 setUTF8 (bool);
+    void                 setUTF8 (bool) const;
 
     // Inquiries
     bool                 isLinuxConsole();
@@ -117,8 +117,8 @@ class FTermLinux final
     bool                 loadOldFont();
     bool                 saveColorMap();
     bool                 resetColorMap();
-    void                 setBeep (int, int);
-    void                 resetBeep();
+    void                 setBeep (int, int) const;
+    void                 resetBeep() const;
 
     FKey                 modifierKeyCorrection (const FKey&);
 
@@ -155,7 +155,7 @@ class FTermLinux final
     int                  setScreenFont ( uChar[], uInt, uInt, uInt
                                        , bool = false );
     int                  setUnicodeMap (struct unimapdesc*);
-    void                 setLinuxCursorStyle (fc::linuxConsoleCursorStyle);
+    void                 setLinuxCursorStyle (fc::linuxConsoleCursorStyle) const;
 
     // Methods
 #if defined(ISA_SYSCTL_SUPPORT)
@@ -172,14 +172,14 @@ class FTermLinux final
     bool                 saveVGAPalette();
     bool                 resetVGAPalette();
 #endif  // defined(ISA_SYSCTL_SUPPORT)
-    FKey                 shiftKeyCorrection (const FKey&);
-    FKey                 ctrlKeyCorrection (const FKey&);
-    FKey                 altKeyCorrection (const FKey&);
-    FKey                 shiftCtrlKeyCorrection (const FKey&);
-    FKey                 shiftAltKeyCorrection (const FKey&);
-    FKey                 ctrlAltKeyCorrection (const FKey&);
-    FKey                 shiftCtrlAltKeyCorrection (const FKey&);
-    sInt16               getFontPos (wchar_t ucs);
+    FKey                 shiftKeyCorrection (const FKey&) const;
+    FKey                 ctrlKeyCorrection (const FKey&) const;
+    FKey                 altKeyCorrection (const FKey&) const;
+    FKey                 shiftCtrlKeyCorrection (const FKey&) const;
+    FKey                 shiftAltKeyCorrection (const FKey&) const;
+    FKey                 ctrlAltKeyCorrection (const FKey&) const;
+    FKey                 shiftCtrlAltKeyCorrection (const FKey&) const;
+    sInt16               getFontPos (wchar_t ucs) const;
     void                 initSpecialCharacter();
     void                 characterFallback (wchar_t, std::vector<wchar_t>);
 

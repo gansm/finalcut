@@ -1,17 +1,17 @@
 /***********************************************************************
 * flog.h - Interface of the FINAL CUT logger                           *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2020 Markus Gans                                           *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -89,6 +89,7 @@ class FLog : public std::stringbuf
     virtual void warn (const std::string&) = 0;
     virtual void error (const std::string&) = 0;
     virtual void debug (const std::string&) = 0;
+    virtual void flush() = 0;
     virtual void setOutputStream (const std::ostream&) = 0;
     virtual void setLineEnding (LineEnding) = 0;
     virtual void enableTimestamp() = 0;
@@ -96,9 +97,9 @@ class FLog : public std::stringbuf
 
   protected:
     int               sync() override;
-    const LogLevel&   getLevel();
+    const LogLevel&   getLevel() const;
     LogLevel&         setLevel();
-    const LineEnding& getEnding();
+    const LineEnding& getEnding() const;
     LineEnding&       setEnding();
 
   private:
@@ -130,7 +131,7 @@ inline const FString FLog::getClassName() const
 { return "FLog"; }
 
 //----------------------------------------------------------------------
-inline const FLog::LogLevel& FLog::getLevel()
+inline const FLog::LogLevel& FLog::getLevel() const
 { return level; }
 
 //----------------------------------------------------------------------
@@ -138,7 +139,7 @@ inline FLog::LogLevel& FLog::setLevel()
 { return level; }
 
 //----------------------------------------------------------------------
-inline const FLog::LineEnding& FLog::getEnding()
+inline const FLog::LineEnding& FLog::getEnding() const
 { return end_of_line; }
 
 //----------------------------------------------------------------------

@@ -1,17 +1,17 @@
 /***********************************************************************
 * fspinbox.cpp - Widget FSpinBox                                       *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -235,13 +235,13 @@ void FSpinBox::onMouseDown (FMouseEvent* ev)
     addTimer(threshold_time);
   }
   else
-    delOwnTimer();
+    delOwnTimers();
 }
 
 //----------------------------------------------------------------------
 void FSpinBox::onMouseUp (FMouseEvent*)
 {
-  delOwnTimer();
+  delOwnTimers();
   spining_state = FSpinBox::noSpin;
 }
 
@@ -250,7 +250,7 @@ void FSpinBox::onWheel (FWheelEvent* ev)
 {
   const int wheel = ev->getWheel();
 
-  delOwnTimer();
+  delOwnTimers();
   forceFocus();
   spining_state = FSpinBox::noSpin;
 
@@ -277,7 +277,7 @@ void FSpinBox::onTimer (FTimerEvent*)
   if ( ! threshold_reached )
   {
     threshold_reached = true;
-    delOwnTimer();
+    delOwnTimers();
     addTimer(repeat_time);
   }
 
@@ -318,8 +318,14 @@ void FSpinBox::init()
   input_field << value;
   input_field.addCallback
   (
+    "activate",
+    this, &FSpinBox::cb_inputFieldActivate
+  );
+  input_field.addCallback
+  (
     "changed",
-    F_METHOD_CALLBACK (this, &FSpinBox::cb_inputFieldChange)
+    this, &FSpinBox::cb_inputFieldChange,
+    std::cref(input_field)
   );
 }
 
@@ -377,7 +383,7 @@ inline void FSpinBox::increaseValue()
     processChanged();
   }
   else
-    delOwnTimer();
+    delOwnTimers();
 }
 
 //----------------------------------------------------------------------
@@ -389,11 +395,17 @@ inline void FSpinBox::decreaseValue()
     processChanged();
   }
   else
-    delOwnTimer();
+    delOwnTimers();
 }
 
 //----------------------------------------------------------------------
-void FSpinBox::processChanged()
+void FSpinBox::processActivate() const
+{
+  emitCallback("activate");
+}
+
+//----------------------------------------------------------------------
+void FSpinBox::processChanged() const
 {
   emitCallback("changed");
 }
@@ -417,17 +429,21 @@ void FSpinBox::forceFocus()
 }
 
 //----------------------------------------------------------------------
-void FSpinBox::cb_inputFieldChange (finalcut::FWidget* w, const FDataPtr)
+void FSpinBox::cb_inputFieldActivate() const
 {
-  const auto& lineedit = static_cast<FLineEdit*>(w);
+  processActivate();
+}
 
-  if ( lineedit->getText().isEmpty() )
+//----------------------------------------------------------------------
+void FSpinBox::cb_inputFieldChange (const FLineEdit& lineedit)
+{
+  if ( lineedit.getText().isEmpty() )
     value = 0;
   else
   {
     std::wregex regex(L"[-]?[[:xdigit:]]+");
     std::wsmatch match;
-    std::wstring text = lineedit->getText().wc_str();
+    std::wstring text = lineedit.getText().wc_str();
 
     if ( std::regex_search(text, match, regex) )
     {

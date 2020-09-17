@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------
-# Makefile.am  -  The Final Cut library
+# Makefile.am  -  FINAL CUT library
 #----------------------------------------------------------------------
 
 AM_CPPFLAGS = -Iinclude -Wall -Werror -DCOMPILE_FINAL_CUT -std=c++11
@@ -19,6 +19,7 @@ libfinal_la_SOURCES = \
 	flineedit.cpp \
 	fbutton.cpp \
 	fbuttongroup.cpp \
+	fcallback.cpp \
 	ftogglebutton.cpp \
 	fradiobutton.cpp \
 	fcheckbox.cpp \
@@ -44,6 +45,7 @@ libfinal_la_SOURCES = \
 	fwindow.cpp \
 	fmessagebox.cpp \
 	ftooltip.cpp \
+	fbusyindicator.cpp \
 	ffiledialog.cpp \
 	fkey_map.cpp \
 	fcharmap.cpp \
@@ -84,8 +86,10 @@ finalcutinclude_HEADERS = \
 	include/final/fapplication.h \
 	include/final/fbutton.h \
 	include/final/fbuttongroup.h \
+	include/final/fcallback.h \
 	include/final/fcheckbox.h \
 	include/final/fcolorpair.h \
+	include/final/fdata.h \
 	include/final/fstyle.h \
 	include/final/fconfig.h \
 	include/final/fswitch.h \
@@ -115,6 +119,7 @@ finalcutinclude_HEADERS = \
 	include/final/fmenulist.h \
 	include/final/fmessagebox.h \
 	include/final/ftooltip.h \
+	include/final/fbusyindicator.h \
 	include/final/fobject.h \
 	include/final/fpoint.h \
 	include/final/fsize.h \
@@ -157,5 +162,6 @@ finalcutinclude_HEADERS = \
 clean-local:
 	-find . \( -name "*.gcda" -o -name "*.gcno" -o -name "*.gcov" \) -delete
 
-#uninstall:
-#	rm -R -f $(includedir)/final
+uninstall-hook:
+	if test -d ${finalcutincludedir}; then rmdir ${finalcutincludedir}; fi
+

@@ -1,17 +1,17 @@
 /***********************************************************************
 * fmessagebox.h - Widget FMessageBox (a text message window)           *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -134,28 +134,31 @@ class FMessageBox : public FDialog
     void                adjustSize() override;
 
     // Callback method
-    void                cb_processClick (const FWidget*, FDataPtr);
+    void                cb_processClick (int);
 
   private:
+    // Constants
+    static constexpr std::size_t MAX_BUTTONS = 3;
+
     // Methods
-    void                init (int, int, int);
-    void                allocation (int, int, int);
+    void                init();
+    void                allocation();
     void                deallocation();
     void                initCallbacks();
     void                calculateDimensions();
     void                draw() override;
-    void                resizeButtons();
+    void                resizeButtons() const;
     void                adjustButtons();
 
     // Data members
     FString       headline_text{};
     FString       text{};
     FStringList   text_components{};
-    FButton*      button[3]{nullptr};
+    FButton*      button[MAX_BUTTONS]{nullptr};
     std::size_t   max_line_width{0};
     FColor        emphasis_color{getColorTheme()->dialog_emphasis_fg};
-    int           button_digit[3]{0};
-    uInt          num_buttons{0};
+    int           button_digit[MAX_BUTTONS]{0};
+    std::size_t   num_buttons{0};
     std::size_t   text_num_lines{0};
     bool          center_text{false};
 };

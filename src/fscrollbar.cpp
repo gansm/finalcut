@@ -1,17 +1,17 @@
 /***********************************************************************
 * fscrollbar.cpp - Widget FScrollbar                                   *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -55,7 +55,7 @@ FScrollbar::FScrollbar(fc::orientation o, FWidget* parent)
 //----------------------------------------------------------------------
 FScrollbar::~FScrollbar()  // destructor
 {
-  delOwnTimer();
+  delOwnTimers();
 }
 
 
@@ -305,7 +305,7 @@ void FScrollbar::onMouseUp (FMouseEvent* ev)
 
   if ( scroll_type != FScrollbar::noScroll )
   {
-    delOwnTimer();
+    delOwnTimers();
     scroll_type = FScrollbar::noScroll;
   }
 }
@@ -360,7 +360,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
   if ( mouse_x < 1 || mouse_x > int(getWidth())
     || mouse_y < 1 || mouse_y > int(getHeight()) )
   {
-    delOwnTimer();
+    delOwnTimers();
   }
   else if ( scroll_type != FScrollbar::scrollJump )
   {
@@ -369,7 +369,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
 
   if ( scroll_type != new_scroll_type )
   {
-    delOwnTimer();
+    delOwnTimers();
   }
 }
 
@@ -380,7 +380,7 @@ void FScrollbar::onWheel (FWheelEvent* ev)
 
   if ( scroll_type != FScrollbar::noScroll )
   {
-    delOwnTimer();
+    delOwnTimers();
     scroll_type = FScrollbar::noScroll;
   }
 
@@ -401,7 +401,7 @@ void FScrollbar::onTimer (FTimerEvent*)
   if ( ! threshold_reached )
   {
     threshold_reached = true;
-    delOwnTimer();
+    delOwnTimers();
     addTimer(repeat_time);
   }
 
@@ -426,7 +426,7 @@ void FScrollbar::onTimer (FTimerEvent*)
       processScroll();
     }
 
-    delOwnTimer();
+    delOwnTimers();
     return;
   }
 
@@ -453,6 +453,7 @@ void FScrollbar::draw()
     drawButtons();
 
   current_slider_pos = -1;
+  max_color = FTerm::getMaxColor();
   drawBar();
 }
 
@@ -513,7 +514,7 @@ inline void FScrollbar::drawVerticalBackgroundLine()
     print (fc::MediumShade);  // ▒
   else if ( FTerm::isNewFont() )
     print (fc::NF_rev_border_line_right);  //⎹
-      else
+  else
     print (' ');
 }
 
@@ -612,7 +613,7 @@ void FScrollbar::drawButtons()
 }
 
 //----------------------------------------------------------------------
-FScrollbar::sType FScrollbar::getClickedScrollType (int x, int y)
+FScrollbar::sType FScrollbar::getClickedScrollType (int x, int y) const
 {
   if ( bar_orientation == fc::vertical )
   {
@@ -625,7 +626,7 @@ FScrollbar::sType FScrollbar::getClickedScrollType (int x, int y)
 }
 
 //----------------------------------------------------------------------
-FScrollbar::sType FScrollbar::getVerticalClickedScrollType (int y)
+FScrollbar::sType FScrollbar::getVerticalClickedScrollType (int y) const
 {
   if ( y == 1 )
   {
@@ -648,7 +649,7 @@ FScrollbar::sType FScrollbar::getVerticalClickedScrollType (int y)
 }
 
 //----------------------------------------------------------------------
-FScrollbar::sType FScrollbar::getHorizontalClickedScrollType (int x)
+FScrollbar::sType FScrollbar::getHorizontalClickedScrollType (int x) const
 {
   if ( FTerm::isNewFont() )
   {
@@ -695,7 +696,7 @@ FScrollbar::sType FScrollbar::getHorizontalClickedScrollType (int x)
 }
 
 //----------------------------------------------------------------------
-int FScrollbar::getSliderClickPos (int mouse_x, int mouse_y)
+int FScrollbar::getSliderClickPos (int mouse_x, int mouse_y) const
 {
   // Get the clicked position on the slider
 
@@ -731,9 +732,9 @@ void FScrollbar::jumpToClickPos (int x, int y)
 
   if ( bar_orientation == fc::vertical )
   {
-    if ( y >1 && y < int(getHeight()) )
+    if ( y > 1 && y < int(getHeight()) )
     {
-      new_val = int( round ( double(max - min) * (y - 2.0 - (slider_length/2))
+      new_val = int( round ( double(max - min) * (y - 2.0 - double(slider_length/2))
                            / double(bar_length - slider_length) ) );
     }
     else
@@ -745,7 +746,7 @@ void FScrollbar::jumpToClickPos (int x, int y)
 
     if ( x > 1 + nf && x < int(getWidth()) - nf )
     {
-      new_val = int( round ( double(max - min) * (x - 2.0 - nf - (slider_length/2))
+      new_val = int( round ( double(max - min) * (x - 2.0 - nf - double(slider_length/2))
                            / double(bar_length - slider_length) ) );
     }
     else
@@ -786,7 +787,7 @@ void FScrollbar::avoidScrollOvershoot()
       && slider_pos > slider_click_stop_pos ) )
   {
     jumpToClickPos (slider_click_stop_pos);
-    delOwnTimer();
+    delOwnTimers();
   }
 }
 

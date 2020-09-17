@@ -1,17 +1,17 @@
 /***********************************************************************
 * fterm.h - Base class for terminal control                            *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -166,7 +166,7 @@ class FTerm final
     typedef FColorPalette::FSetPalette FSetPalette;
 
     // Constructor
-    explicit FTerm (bool = false);
+    FTerm();
 
     // Disable copy constructor
     FTerm (const FTerm&) = delete;
@@ -189,7 +189,6 @@ class FTerm final
     static int               getMaxColor();
     static FColorPalettePtr& getColorPaletteTheme();
     charSubstitution&        getCharSubstitutionMap();
-
     static FTermData*        getFTermData();
     static FSystem*          getFSystem();
     static FOptiMove*        getFOptiMove();
@@ -222,26 +221,28 @@ class FTerm final
     static bool              hasVT100();
     static bool              hasASCII();
     static bool              isMonochron();
-    static bool              isXTerminal();
     static bool              isAnsiTerminal();
+    static bool              isXTerminal();
     static bool              isRxvtTerminal();
     static bool              isUrxvtTerminal();
-    static bool              isMltermTerminal();
-    static bool              isPuttyTerminal();
     static bool              isKdeTerminal();
     static bool              isGnomeTerminal();
-    static bool              isKtermTerminal();
+    static bool              isPuttyTerminal();
+    static bool              isWindowsTerminal();
     static bool              isTeraTerm();
-    static bool              isSunTerminal();
     static bool              isCygwinTerminal();
     static bool              isMinttyTerm();
     static bool              isLinuxTerm();
     static bool              isFreeBSDTerm();
     static bool              isNetBSDTerm();
     static bool              isOpenBSDTerm();
+    static bool              isSunTerminal();
     static bool              isScreenTerm();
     static bool              isTmuxTerm();
+    static bool              isKtermTerminal();
+    static bool              isMltermTerminal();
     static bool              isNewFont();
+    static bool              isInitialized();
     static bool              isCursorHideable();
     static bool              hasChangedTermSize();
     static bool              hasShadowCharacter();
@@ -257,6 +258,7 @@ class FTerm final
     static void              unsetInsertCursor();
     static void              redefineDefaultColors (bool);
     static void              setDblclickInterval (const uInt64);
+    static void              useAlternateScreen (bool);
     static bool              setUTF8 (bool);
     static bool              setUTF8();
     static bool              unsetUTF8();
@@ -277,7 +279,7 @@ class FTerm final
     static void              resetColorMap();
     static void              setPalette (FColor, int, int, int);
     template<typename ClassT>
-    static void              setColorPaletteTheme (const FSetPalette&);
+    static void              setColorPaletteTheme (const FSetPalette& = &FTerm::setPalette);
     static void              setBeep (int, int);
     static void              resetBeep();
     static void              beep();
@@ -299,18 +301,15 @@ class FTerm final
     static int               putchar_ASCII (int);
     static int               putchar_UTF8  (int);
 
+    void                     initTerminal();
     static void              initScreenSettings();
     static const char*       changeAttribute (FChar*&, FChar*&);
     static void              changeTermSizeFinished();
-    static void              exitWithMessage (const FString&)
-    #if defined(__clang__) || defined(__GNUC__)
-      __attribute__((noreturn))
-    #endif
-                             ;
+
   private:
     // Methods
     static FStartOptions&    getStartOptions();
-    static void              init_global_values (bool);
+    static void              init_global_values();
     static void              init_terminal_device_path();
     static void              oscPrefix();
     static void              oscPostfix();
@@ -324,7 +323,7 @@ class FTerm final
     static void              init_quirks();
     static void              init_optiMove();
     static void              init_optiAttr();
-    static void              init_font();
+    static bool              init_font();
     static void              init_locale();
     static void              init_encoding();
     static void              init_encoding_set();
@@ -335,6 +334,7 @@ class FTerm final
     static void              init_tab_quirks();
     static void              init_captureFontAndTitle();
     static bool              hasNoFontSettingOption();
+    static bool              isDefaultPaletteTheme();
     static void              redefineColorPalette();
     static void              restoreColorPalette();
     static void              setInsertCursorStyle();
@@ -350,17 +350,20 @@ class FTerm final
     static void              enableAlternateCharset();
     static void              useAlternateScreenBuffer();
     static void              useNormalScreenBuffer();
-    void                     allocationValues();
+    void                     allocationValues() const;
     void                     deallocationValues();
-    void                     init (bool);
-    bool                     init_terminal();
-    void                     initOSspecifics();
-    void                     initTermspecifics();
-    void                     initBaudRate();
-    void                     finish();
-    void                     finishOSspecifics1();
-    void                     finish_encoding();
+    void                     init();
+    bool                     init_terminal() const;
+    void                     initOSspecifics() const;
+    void                     initTermspecifics() const;
+    void                     initBaudRate() const;
+    void                     finish() const;
+    void                     finishOSspecifics() const;
+    void                     finish_encoding() const;
     void                     destroyColorPaletteTheme();
+    static void              printExitMessage();
+    static void              terminalSizeChange();
+    [[noreturn]] static void processTermination (int);
     static void              setSignalHandler();
     static void              resetSignalHandler();
     static void              signal_handler (int);
@@ -467,11 +470,11 @@ inline void FTerm::putstringf (const char format[], Args&&... args)
     fsys->tputs (&buf[0], 1, FTerm::putchar_ASCII);
 }
 
+//----------------------------------------------------------------------
+inline void FTerm::initTerminal()
+{ init(); }
+
 }  // namespace finalcut
-
-
-namespace
-{
 
 //----------------------------------------------------------------------
 inline std::ostream& operator << ( std::ostream& os
@@ -486,7 +489,5 @@ inline std::wostream& operator << ( std::wostream& os
 {
   return os << static_cast<wchar_t>(c);
 }
-
-}  // namespace
 
 #endif  // FTERM_H

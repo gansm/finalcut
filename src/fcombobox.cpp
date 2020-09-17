@@ -1,17 +1,17 @@
 /***********************************************************************
 * fcombobox.cpp - Widget FComboBox                                     *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -19,6 +19,8 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
+
+#include <memory>
 
 #include "final/fapplication.h"
 #include "final/fcolorpair.h"
@@ -124,8 +126,11 @@ void FDropDownListBox::init()
 void FDropDownListBox::draw()
 {
   // Fill the background
+
   const auto& wc = getColorTheme();
-  setColor (wc->menu_active_fg, wc->menu_active_bg);
+  setForegroundColor (wc->list_fg);
+  setBackgroundColor (wc->list_bg);
+  setColor();
 
   if ( FTerm::isMonochron() )
     setReverse(true);
@@ -505,19 +510,19 @@ void FComboBox::initCallbacks()
   input_field.addCallback
   (
     "mouse-press",
-    F_METHOD_CALLBACK (this, &FComboBox::cb_inputFieldSwitch)
+    this, &FComboBox::cb_inputFieldSwitch
   );
 
   input_field.addCallback
   (
     "mouse-move",
-    F_METHOD_CALLBACK (this, &FComboBox::cb_inputFieldHandOver)
+    this, &FComboBox::cb_inputFieldHandOver
   );
 
   list_window.list.addCallback
   (
     "row-changed",
-    F_METHOD_CALLBACK (this, &FComboBox::cb_setInputField)
+    this, &FComboBox::cb_setInputField
   );
 
   for (const auto& signal : {"row-selected", "clicked"})
@@ -525,7 +530,7 @@ void FComboBox::initCallbacks()
     list_window.list.addCallback
     (
       signal,
-      F_METHOD_CALLBACK (this, &FComboBox::cb_closeComboBox)
+      this, &FComboBox::cb_closeComboBox
     );
   }
 }
@@ -548,10 +553,10 @@ void FComboBox::draw()
   print() << FPoint{int(getWidth()) - nf, 1}
           << button_color;
 
- if ( FTerm::isNewFont() )
-   print() << NF_button_arrow_down;
- else
-   print() << fc::BlackDownPointingTriangle;  // ▼
+  if ( FTerm::isNewFont() )
+    print() << NF_button_arrow_down;
+  else
+    print() << fc::BlackDownPointingTriangle;  // ▼
 
   if ( getFlags().shadow )
     drawShadow(this);
@@ -613,19 +618,19 @@ void FComboBox::passEventToListWindow (FMouseEvent* const& ev)
 }
 
 //----------------------------------------------------------------------
-void FComboBox::processClick()
+void FComboBox::processClick() const
 {
   emitCallback("clicked");
 }
 
 //----------------------------------------------------------------------
-void FComboBox::processChanged()
+void FComboBox::processChanged() const
 {
   emitCallback("row-changed");
 }
 
 //----------------------------------------------------------------------
-void FComboBox::cb_setInputField (const FWidget*, const FDataPtr)
+void FComboBox::cb_setInputField()
 {
   auto& list = list_window.list;
   const std::size_t index = list.currentItem();
@@ -635,14 +640,14 @@ void FComboBox::cb_setInputField (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FComboBox::cb_closeComboBox (const FWidget*, const FDataPtr)
+void FComboBox::cb_closeComboBox()
 {
   hideDropDown();
   processClick();
 }
 
 //----------------------------------------------------------------------
-void FComboBox::cb_inputFieldSwitch (const FWidget*, const FDataPtr)
+void FComboBox::cb_inputFieldSwitch()
 {
   const auto& mouse = FTerm::getFMouseControl();
 
@@ -674,7 +679,7 @@ void FComboBox::cb_inputFieldSwitch (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FComboBox::cb_inputFieldHandOver (const FWidget*, const FDataPtr)
+void FComboBox::cb_inputFieldHandOver()
 {
   const auto& mouse = FTerm::getFMouseControl();
 

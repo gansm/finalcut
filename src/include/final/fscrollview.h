@@ -2,17 +2,17 @@
 * fscrollview.h - Widget FScrollView (a scrolling area with on-demand  *
 *                 scroll bars)                                         *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -83,7 +83,7 @@ class FScrollView : public FWidget
     const FString       getClassName() const override;
     std::size_t         getViewportWidth() const;
     std::size_t         getViewportHeight() const;
-    const FSize         getViewportSize();
+    const FSize         getViewportSize() const;
     std::size_t         getScrollWidth() const;
     std::size_t         getScrollHeight() const;
     const FSize         getScrollSize() const;
@@ -157,23 +157,23 @@ class FScrollView : public FWidget
     static constexpr int horizontal_border_spacing = 2;
 
     // Accessors
-    const FPoint        getViewportCursorPos();
+    const FPoint        getViewportCursorPos() const;
 
     // Methods
-    void                init (const FWidget*);
+    void                init();
     void                mapKeyFunctions();
-    void                calculateScrollbarPos();
+    void                calculateScrollbarPos() const;
     template<typename Callback>
     void                initScrollbar ( FScrollbarPtr&
                                       , fc::orientation
                                       , Callback );
-    void                setHorizontalScrollBarVisibility();
-    void                setVerticalScrollBarVisibility();
-    void                setViewportCursor();
+    void                setHorizontalScrollBarVisibility() const;
+    void                setVerticalScrollBarVisibility() const;
+    void                setViewportCursor() const;
 
     // Callback methods
-    void                cb_vbarChange (const FWidget*, const FDataPtr);
-    void                cb_hbarChange (const FWidget*, const FDataPtr);
+    void                cb_vbarChange (const FWidget*);
+    void                cb_hbarChange (const FWidget*);
 
     // Data members
     FRect              scroll_geometry{1, 1, 1, 1};
@@ -203,7 +203,7 @@ inline std::size_t FScrollView::getViewportHeight() const
 { return getHeight() - horizontal_border_spacing; }
 
 //----------------------------------------------------------------------
-inline const FSize FScrollView::getViewportSize()
+inline const FSize FScrollView::getViewportSize() const
 { return FSize(getViewportWidth(), getViewportHeight()); }
 
 //----------------------------------------------------------------------

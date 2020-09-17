@@ -1,17 +1,17 @@
 /***********************************************************************
 * windows.cpp - Shows window handling                                  *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2016-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -20,7 +20,9 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <utility>
 #include <vector>
+
 #include <final/final.h>
 
 namespace fc = finalcut::fc;
@@ -84,12 +86,12 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   right_arrow.ignorePadding();
   right_arrow.setGeometry (FPoint{int(getWidth()) - 1, 2}, FSize{1, 1});
 
-  top_left_label = "menu";
+  top_left_label.setText("menu");
   top_left_label.setForegroundColor (wc->label_inactive_fg);
   top_left_label.setEmphasis();
   top_left_label.setGeometry (FPoint{1, 1}, FSize{6, 1});
 
-  top_right_label = "zoom";
+  top_right_label.setText("zoom");
   top_right_label.setAlignment (fc::alignRight);
   top_right_label.setForegroundColor (wc->label_inactive_fg);
   top_right_label.setEmphasis();
@@ -152,7 +154,7 @@ void SmallWindow::onTimer (finalcut::FTimerEvent*)
   bottom_label.unsetEmphasis();
   bottom_label.redraw();
   updateTerminal();
-  delOwnTimer();
+  delOwnTimers();
 }
 
 
@@ -176,10 +178,6 @@ class Window final : public finalcut::FDialog
     Window& operator = (const Window&) = delete;
 
   private:
-    // Typedefs
-    typedef void (Window::*WindowCallback)(const finalcut::FWidget*, const FDataPtr);
-    typedef void (finalcut::FApplication::*FAppCallback)(const finalcut::FWidget*, const FDataPtr);
-
     struct win_data
     {
         // Constructor
@@ -199,10 +197,11 @@ class Window final : public finalcut::FDialog
     // Method
     void configureFileMenuItems();
     void configureDialogButtons();
-    void activateWindow (finalcut::FDialog*);
+    void activateWindow (finalcut::FDialog*) const;
     void adjustSize() override;
-    template<typename CallbackT>
-    void addClickedCallback (finalcut::FWidget*, CallbackT);
+    template<typename InstanceT, typename CallbackT, typename... Args>
+    void addClickedCallback ( finalcut::FWidget*
+                            , InstanceT&&, CallbackT&&, Args&&... );
     template <typename IteratorT>
     finalcut::FDialog* getNext (IteratorT);
     template <typename IteratorT>
@@ -212,11 +211,11 @@ class Window final : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback methods
-    void cb_createWindows (const finalcut::FWidget*, const FDataPtr);
-    void cb_closeWindows (const finalcut::FWidget*, const FDataPtr);
-    void cb_next (const finalcut::FWidget*, const FDataPtr);
-    void cb_previous (const finalcut::FWidget*, const FDataPtr);
-    void cb_destroyWindow (const finalcut::FWidget*, FDataPtr);
+    void cb_createWindows();
+    void cb_closeWindows();
+    void cb_next();
+    void cb_previous();
+    void cb_destroyWindow (win_data*) const;
 
     // Data members
     std::vector<win_data*>    windows{};
@@ -277,7 +276,7 @@ Window::~Window()
 
     // Remove all callbacks before Window::cb_destroyWindow() will be called
     if ( win_dat->is_open && win_dat->dgl )
-      win_dat->dgl->delCallbacks();
+      win_dat->dgl->delCallback();
 
     delete win_dat;
     iter = windows.erase(iter);
@@ -300,11 +299,14 @@ void Window::configureFileMenuItems()
   Quit.setStatusbarMessage ("Exit the program");
 
   // Add menu item callback
-  addClickedCallback (&New, &Window::cb_createWindows);
-  addClickedCallback (&Close, &Window::cb_closeWindows);
-  addClickedCallback (&Next, &Window::cb_next);
-  addClickedCallback (&Previous, &Window::cb_previous);
-  addClickedCallback (&Quit, &finalcut::FApplication::cb_exitApp);
+  addClickedCallback (&New, this, &Window::cb_createWindows);
+  addClickedCallback (&Close, this, &Window::cb_closeWindows);
+  addClickedCallback (&Next, this, &Window::cb_next);
+  addClickedCallback (&Previous, this, &Window::cb_previous);
+  addClickedCallback ( &Quit
+                     , finalcut::getFApplication()
+                     , &finalcut::FApplication::cb_exitApp
+                     , this );
 }
 
 //----------------------------------------------------------------------
@@ -319,13 +321,16 @@ void Window::configureDialogButtons()
   QuitButton.setText (L"&Quit");
 
   // Add button callback
-  addClickedCallback (&CreateButton, &Window::cb_createWindows);
-  addClickedCallback (&CloseButton, &Window::cb_closeWindows);
-  addClickedCallback (&QuitButton, &finalcut::FApplication::cb_exitApp);
+  addClickedCallback (&CreateButton, this, &Window::cb_createWindows);
+  addClickedCallback (&CloseButton, this, &Window::cb_closeWindows);
+  addClickedCallback ( &QuitButton
+                     , finalcut::getFApplication()
+                     , &finalcut::FApplication::cb_exitApp
+                     , this );
 }
 
 //----------------------------------------------------------------------
-void Window::activateWindow (finalcut::FDialog* win)
+void Window::activateWindow (finalcut::FDialog* win) const
 {
   if ( ! win || win->isWindowHidden() || win->isWindowActive() )
     return;
@@ -373,17 +378,18 @@ void Window::adjustSize()
 }
 
 //----------------------------------------------------------------------
-template<typename CallbackT>
+template<typename InstanceT, typename CallbackT, typename... Args>
 void Window::addClickedCallback ( finalcut::FWidget* widget
-                                , CallbackT call )
+                                , InstanceT&& instance
+                                , CallbackT&& callback
+                                , Args&&... args )
 {
-  FMemberCallback callback
-      = reinterpret_cast<FMemberCallback>(call);
-
   widget->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, callback)
+    std::bind ( std::forward<CallbackT>(callback)
+              , std::forward<InstanceT>(instance)
+              , std::forward<Args>(args)... )
   );
 }
 
@@ -439,7 +445,7 @@ void Window::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_createWindows (const finalcut::FWidget*, const FDataPtr)
+void Window::cb_createWindows()
 {
   const auto& first = windows.begin();
   auto iter = first;
@@ -468,8 +474,8 @@ void Window::cb_createWindows (const finalcut::FWidget*, const FDataPtr)
       win->addCallback
       (
         "destroy",
-        F_METHOD_CALLBACK (this, &Window::cb_destroyWindow),
-        static_cast<FDataPtr>(win_dat)
+        this, &Window::cb_destroyWindow,
+        win_dat
       );
     }
 
@@ -480,7 +486,7 @@ void Window::cb_createWindows (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_closeWindows (const finalcut::FWidget*, const FDataPtr)
+void Window::cb_closeWindows()
 {
   if ( ! getDialogList() || getDialogList()->empty() )
     return;
@@ -500,7 +506,7 @@ void Window::cb_closeWindows (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_next (const finalcut::FWidget*, const FDataPtr)
+void Window::cb_next()
 {
   if ( ! getDialogList() || getDialogList()->empty() )
     return;
@@ -520,7 +526,7 @@ void Window::cb_next (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_previous (const finalcut::FWidget*, const FDataPtr)
+void Window::cb_previous()
 {
   if ( ! getDialogList() || getDialogList()->empty() )
     return;
@@ -542,10 +548,8 @@ void Window::cb_previous (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_destroyWindow (const finalcut::FWidget*, FDataPtr data)
+void Window::cb_destroyWindow (win_data* win_dat) const
 {
-  auto win_dat = static_cast<win_data*>(data);
-
   if ( win_dat )
   {
     win_dat->is_open = false;

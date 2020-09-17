@@ -1,17 +1,17 @@
 /***********************************************************************
 * fcolorpalette.h - Define RGB color value for a palette entry         *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -66,8 +66,8 @@ class FColorPalette
     virtual void resetColorPalette() = 0;
 
   protected:
-    void setPalette (FColor, int, int, int);
-    void setVGAdefaultPalette();
+    void setPalette (FColor, int, int, int) const;
+    void setVGAdefaultPalette() const;
 
   private:
     // Data members
@@ -159,6 +159,18 @@ class default16ColorPalette final : public FColorPalette
 inline const FString default16ColorPalette::getClassName() const
 { return "default16ColorPalette"; }
 
+/*  Inheritance diagram
+ *  ═══════════════════
+ *
+ *        ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *        ▕ FColorPalette ▏
+ *        ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *                ▲
+ *                │
+ *  ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *  ▕ default16DarkColorPalette ▏
+ *  ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ */
 
 //----------------------------------------------------------------------
 // class default16DarkColorPalette

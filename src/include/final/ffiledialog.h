@@ -1,17 +1,17 @@
 /***********************************************************************
 * ffiledialog.h - Widget FFileDialog (a file chooser dialog)           *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -116,7 +116,7 @@ class FFileDialog : public FDialog
     const FString        getPath() const;
     const FString        getFilter() const;
     const FString        getSelectedFile() const;
-    bool                 getShowHiddenFiles();
+    bool                 getShowHiddenFiles() const;
 
     // Mutators
     void                 setPath (const FString&);
@@ -192,13 +192,13 @@ class FFileDialog : public FDialog
     void                 init();
     void                 widgetSettings (const FPoint&);
     void                 initCallbacks();
-    bool                 pattern_match (const char* const, const char[]);
+    bool                 patternMatch (const char* const, const char[]) const;
     void                 clear();
     sInt64               numOfDirs();
     void                 sortDir();
     int                  readDir();
     void                 getEntry (const char* const, const struct dirent*);
-    void                 followSymLink (const char* const, FDirEntry&);
+    void                 followSymLink (const char* const, FDirEntry&) const;
     void                 dirEntriesToList();
     void                 selectDirectoryEntry (const char* const);
     int                  changeDir (const FString&);
@@ -206,12 +206,12 @@ class FFileDialog : public FDialog
     static const FString getHomeDir();
 
     // Callback methods
-    void                 cb_processActivate (const FWidget*, const FDataPtr);
-    void                 cb_processRowChanged (const FWidget*, const FDataPtr);
-    void                 cb_processClicked (const FWidget*, const FDataPtr);
-    void                 cb_processCancel (const FWidget*, const FDataPtr);
-    void                 cb_processOpen (const FWidget*, const FDataPtr);
-    void                 cb_processShowHidden (const FWidget*, const FDataPtr);
+    void                 cb_processActivate();
+    void                 cb_processRowChanged();
+    void                 cb_processClicked();
+    void                 cb_processCancel();
+    void                 cb_processOpen();
+    void                 cb_processShowHidden();
 
     // Data members
     static FSystem*  fsystem;
@@ -260,7 +260,7 @@ inline bool FFileDialog::unsetShowHiddenFiles()
 { return setShowHiddenFiles(false); }
 
 //----------------------------------------------------------------------
-inline bool FFileDialog::getShowHiddenFiles()
+inline bool FFileDialog::getShowHiddenFiles() const
 { return show_hidden; }
 
 }  // namespace finalcut

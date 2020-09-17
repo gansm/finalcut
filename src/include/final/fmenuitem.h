@@ -1,17 +1,17 @@
 /***********************************************************************
 * fmenuitem.h - Widget FMenuItem                                       *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -125,7 +125,7 @@ class FMenuItem : public FWidget
     // Methods
     void                addAccelerator (FKey, FWidget*) override;
     void                delAccelerator (FWidget*) override;
-    void                openMenu();
+    void                openMenu() const;
 
     // Event handlers
     void                onKeyPress (FKeyEvent*) override;
@@ -154,19 +154,19 @@ class FMenuItem : public FWidget
     FMenuList*          getFMenuList (FWidget&);
 
     // Methods
-    void                init (FWidget*);
+    void                init();
     void                updateSuperMenuDimensions();
-    void                processEnable();
-    void                processDisable();
-    void                processActivate();
-    void                processDeactivate();
-    void                createDialogList (FMenu*);
+    void                processEnable() const;
+    void                processDisable() const;
+    void                processActivate() const;
+    void                processDeactivate() const;
+    void                createDialogList (FMenu*) const;
     template <typename T>
-    void                passMouseEvent (T, const FMouseEvent*, fc::events);
+    void                passMouseEvent (T, const FMouseEvent*, fc::events) const;
 
     // Callback methods
-    void                cb_switchToDialog (const FWidget*, FDataPtr);
-    void                cb_destroyDialog (FWidget*, const FDataPtr);
+    void                cb_switchToDialog (FDialog*) const;
+    void                cb_destroyDialog (FDialog*);
 
     virtual void        processClicked();
 

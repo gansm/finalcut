@@ -1,17 +1,17 @@
 /***********************************************************************
 * foptimove.cpp - Cursor movement optimization                         *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -268,7 +268,7 @@ void FOptiMove::set_cursor_right (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_cursor_address (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
     const char* temp = FTermcap::encodeMotionParameter(cap, 23, 23);
     F_cursor_address.cap = cap;
@@ -286,9 +286,9 @@ void FOptiMove::set_cursor_address (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_column_address (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, 23);
+    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0);
     F_column_address.cap = cap;
     F_column_address.duration = capDuration (temp, 1);
     F_column_address.length = capDurationToLength (F_column_address.duration);
@@ -304,9 +304,9 @@ void FOptiMove::set_column_address (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_row_address (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, 23);
+    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0);
     F_row_address.cap = cap;
     F_row_address.duration = capDuration (temp, 1);
     F_row_address.length = capDurationToLength (F_row_address.duration);
@@ -322,9 +322,9 @@ void FOptiMove::set_row_address (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_parm_up_cursor (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, 23);
+    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0);
     F_parm_up_cursor.cap = cap;
     F_parm_up_cursor.duration = capDuration (temp, 1);
     F_parm_up_cursor.length = capDurationToLength (F_parm_up_cursor.duration);
@@ -340,9 +340,9 @@ void FOptiMove::set_parm_up_cursor (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_parm_down_cursor (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, 23);
+    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0);
     F_parm_down_cursor.cap = cap;
     F_parm_down_cursor.duration = capDuration (temp, 1);
     F_parm_down_cursor.length = capDurationToLength (F_parm_down_cursor.duration);
@@ -358,9 +358,9 @@ void FOptiMove::set_parm_down_cursor (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_parm_left_cursor (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, 23);
+    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0);
     F_parm_left_cursor.cap = cap;
     F_parm_left_cursor.duration = capDuration (temp, 1);
     F_parm_left_cursor.length = capDurationToLength (F_parm_left_cursor.duration);
@@ -376,9 +376,9 @@ void FOptiMove::set_parm_left_cursor (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_parm_right_cursor (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, 23);
+    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0);
     F_parm_right_cursor.cap = cap;
     F_parm_right_cursor.duration = capDuration (temp, 1);
     F_parm_right_cursor.length = capDurationToLength (F_parm_right_cursor.duration);
@@ -394,9 +394,9 @@ void FOptiMove::set_parm_right_cursor (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_erase_chars (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, 23);
+    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0);
     F_erase_chars.cap = cap;
     F_erase_chars.duration = capDuration (temp, 1);
     F_erase_chars.length = capDurationToLength (F_erase_chars.duration);
@@ -412,9 +412,9 @@ void FOptiMove::set_erase_chars (const char cap[])
 //----------------------------------------------------------------------
 void FOptiMove::set_repeat_char (const char cap[])
 {
-  if ( cap )
+  if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, ' ', 23);
+    const char* temp = FTermcap::encodeParameter(cap, ' ', 23, 0, 0, 0, 0, 0, 0, 0);
     F_repeat_char.cap = cap;
     F_repeat_char.duration = capDuration (temp, 1);
     F_repeat_char.length = capDurationToLength (F_repeat_char.duration);
@@ -463,7 +463,7 @@ void FOptiMove::set_clr_eol (const char cap[])
 
 //----------------------------------------------------------------------
 void FOptiMove::check_boundaries ( int& xold, int& yold
-                                 , int& xnew, int& ynew )
+                                 , int& xnew, int& ynew ) const
 {
   if ( xold < 0 || xold >= int(screen_width) )
     xold = -1;
@@ -549,7 +549,7 @@ void FOptiMove::calculateCharDuration()
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::capDuration (const char cap[], int affcnt)
+int FOptiMove::capDuration (const char cap[], int affcnt) const
 {
   // calculate the duration in milliseconds of a given operation
   // cap    - the term capability
@@ -598,7 +598,7 @@ int FOptiMove::capDuration (const char cap[], int affcnt)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::capDurationToLength (int duration)
+int FOptiMove::capDurationToLength (int duration) const
 {
   if ( duration != LONG_DURATION )
     return (duration + char_duration - 1) / char_duration;
@@ -609,7 +609,7 @@ int FOptiMove::capDurationToLength (int duration)
 //----------------------------------------------------------------------
 int FOptiMove::repeatedAppend ( const capability& o
                               , volatile int count
-                              , char* dst )
+                              , char* dst ) const
 {
   const std::size_t src_len = std::strlen(o.cap);
   const std::size_t dst_len = ( dst != nullptr ) ? std::strlen(dst) : 0;
@@ -641,7 +641,7 @@ int FOptiMove::repeatedAppend ( const capability& o
 //----------------------------------------------------------------------
 int FOptiMove::relativeMove ( char move[]
                             , int from_x, int from_y
-                            , int to_x, int to_y )
+                            , int to_x, int to_y ) const
 {
   int vtime{0};
   int htime{0};
@@ -680,7 +680,7 @@ int FOptiMove::relativeMove ( char move[]
 }
 
 //----------------------------------------------------------------------
-inline int FOptiMove::verticalMove (char move[], int from_y, int to_y)
+inline int FOptiMove::verticalMove (char move[], int from_y, int to_y) const
 {
   int vtime{LONG_DURATION};
 
@@ -689,7 +689,7 @@ inline int FOptiMove::verticalMove (char move[], int from_y, int to_y)
     if ( move )
     {
       std::strncpy ( move
-                   , FTermcap::encodeParameter(F_row_address.cap, to_y)
+                   , FTermcap::encodeParameter(F_row_address.cap, to_y, 0, 0, 0, 0, 0, 0, 0, 0)
                    , BUF_SIZE );
       move[BUF_SIZE - 1] = '\0';
     }
@@ -707,7 +707,7 @@ inline int FOptiMove::verticalMove (char move[], int from_y, int to_y)
 
 //----------------------------------------------------------------------
 inline void FOptiMove::downMove ( char move[], int& vtime
-                                , int from_y, int to_y )
+                                , int from_y, int to_y ) const
 {
   const int num = to_y - from_y;
 
@@ -716,7 +716,7 @@ inline void FOptiMove::downMove ( char move[], int& vtime
     if ( move )
     {
       std::strncpy ( move
-                   , FTermcap::encodeParameter(F_parm_down_cursor.cap, num)
+                   , FTermcap::encodeParameter(F_parm_down_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
                    , BUF_SIZE );
       move[BUF_SIZE - 1] = '\0';
     }
@@ -735,7 +735,7 @@ inline void FOptiMove::downMove ( char move[], int& vtime
 
 //----------------------------------------------------------------------
 inline void FOptiMove::upMove ( char move[], int& vtime
-                              , int from_y, int to_y )
+                              , int from_y, int to_y ) const
 {
   const int num = from_y - to_y;
 
@@ -744,7 +744,7 @@ inline void FOptiMove::upMove ( char move[], int& vtime
     if ( move )
     {
       std::strncpy ( move
-                   , FTermcap::encodeParameter(F_parm_up_cursor.cap, num)
+                   , FTermcap::encodeParameter(F_parm_up_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
                    , BUF_SIZE );
       move[BUF_SIZE - 1] = '\0';
     }
@@ -762,7 +762,7 @@ inline void FOptiMove::upMove ( char move[], int& vtime
 }
 
 //----------------------------------------------------------------------
-inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x)
+inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x) const
 {
   int htime{LONG_DURATION};
 
@@ -770,7 +770,7 @@ inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x)
   {
     // Move to fixed column position1
     std::strncat ( hmove
-                 , FTermcap::encodeParameter(F_column_address.cap, to_x)
+                 , FTermcap::encodeParameter(F_column_address.cap, to_x, 0, 0, 0, 0, 0, 0, 0, 0)
                  , BUF_SIZE - std::strlen(hmove) - 1 );
     hmove[BUF_SIZE - 1] = '\0';
     htime = F_column_address.duration;
@@ -786,14 +786,14 @@ inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x)
 
 //----------------------------------------------------------------------
 inline void FOptiMove::rightMove ( char hmove[], int& htime
-                                 , int from_x, int to_x )
+                                 , int from_x, int to_x ) const
 {
   int num = to_x - from_x;
 
   if ( F_parm_right_cursor.cap && F_parm_right_cursor.duration < htime )
   {
     std::strncpy ( hmove
-                 , FTermcap::encodeParameter(F_parm_right_cursor.cap, num)
+                 , FTermcap::encodeParameter(F_parm_right_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
                  , BUF_SIZE - 1);
     hmove[BUF_SIZE - 1] = '\0';
     htime = F_parm_right_cursor.duration;
@@ -841,14 +841,14 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
 
 //----------------------------------------------------------------------
 inline void FOptiMove::leftMove ( char hmove[], int& htime
-                                , int from_x, int to_x )
+                                , int from_x, int to_x ) const
 {
   int num = from_x - to_x;
 
   if ( F_parm_left_cursor.cap && F_parm_left_cursor.duration < htime )
   {
     std::strncpy ( hmove
-                 , FTermcap::encodeParameter(F_parm_left_cursor.cap, num)
+                 , FTermcap::encodeParameter(F_parm_left_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
                  , BUF_SIZE - 1);
     hmove[BUF_SIZE - 1] = '\0';
     htime = F_parm_left_cursor.duration;
@@ -927,7 +927,7 @@ inline bool FOptiMove::isMethod0Faster ( int& move_time
 //----------------------------------------------------------------------
 inline bool FOptiMove::isMethod1Faster ( int& move_time
                                        , int xold, int yold
-                                       , int xnew, int ynew )
+                                       , int xnew, int ynew ) const
 {
   // Test method 1: local movement
 
@@ -949,7 +949,7 @@ inline bool FOptiMove::isMethod1Faster ( int& move_time
 //----------------------------------------------------------------------
 inline bool FOptiMove::isMethod2Faster ( int& move_time
                                        , int yold
-                                       , int xnew, int ynew )
+                                       , int xnew, int ynew ) const
 {
   // Test method 2: carriage-return + local movement
 
@@ -971,7 +971,7 @@ inline bool FOptiMove::isMethod2Faster ( int& move_time
 
 //----------------------------------------------------------------------
 inline bool FOptiMove::isMethod3Faster ( int& move_time
-                                       , int xnew, int ynew )
+                                       , int xnew, int ynew ) const
 {
   // Test method 3: home-cursor + local movement
 
@@ -993,7 +993,7 @@ inline bool FOptiMove::isMethod3Faster ( int& move_time
 
 //----------------------------------------------------------------------
 inline bool FOptiMove::isMethod4Faster ( int& move_time
-                                       , int xnew, int ynew )
+                                       , int xnew, int ynew ) const
 {
   // Test method 4: home-down + local movement
   if ( F_cursor_to_ll.cap )
@@ -1017,7 +1017,7 @@ inline bool FOptiMove::isMethod4Faster ( int& move_time
 //----------------------------------------------------------------------
 inline bool FOptiMove::isMethod5Faster ( int& move_time
                                        , int yold
-                                       , int xnew, int ynew )
+                                       , int xnew, int ynew ) const
 {
   // Test method 5: left margin for wrap to right-hand side
   if ( automatic_left_margin

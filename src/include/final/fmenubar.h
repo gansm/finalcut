@@ -1,17 +1,17 @@
 /***********************************************************************
 * fmenubar.h - Widget FMenuBar                                         *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -99,7 +99,7 @@ class FMenuBar : public FWindow, public FMenuList
     void          onAccel (FAccelEvent*) override;
 
     // Callback methods
-    void          cb_itemDeactivated (FWidget*, const FDataPtr);
+    void          cb_itemDeactivated (const FMenuItem*) const;
 
   private:
     // Constants
@@ -119,7 +119,7 @@ class FMenuBar : public FWindow, public FMenuList
 
     // Methods
     void          init();
-    void          calculateDimensions();
+    void          calculateDimensions() const;
     bool          selectNextItem();
     bool          selectPrevItem();
     bool          hotkeyMenu (FKeyEvent*&);
@@ -127,12 +127,12 @@ class FMenuBar : public FWindow, public FMenuList
     void          drawItems();
     void          drawItem (FMenuItem*, std::size_t&);
     void          setLineAttributes (const FMenuItem*);
-    void          setCursorToHotkeyPosition (FMenuItem*, std::size_t);
+    void          setCursorToHotkeyPosition (FMenuItem*, std::size_t) const;
     void          drawMenuText (menuText&);
     void          drawEllipsis (const menuText&, std::size_t);
     void          drawLeadingSpace (std::size_t&);
     void          drawTrailingSpace (std::size_t&);
-    void          adjustItems();
+    void          adjustItems() const;
     bool          activateMenu (const FMenuItem*);
     bool          clickItem (FMenuItem*);
     void          unselectMenuItem (FMenuItem*);
@@ -140,7 +140,7 @@ class FMenuBar : public FWindow, public FMenuList
     void          mouseDownOverList (const FMouseEvent*);
     void          mouseUpOverList (const FMouseEvent*);
     void          mouseMoveOverList (const FMouseEvent*);
-    void          passEventToMenu (const FMouseEvent* const&);
+    void          passEventToMenu (const FMouseEvent* const&) const;
     void          leaveMenuBar();
 
     // Data members

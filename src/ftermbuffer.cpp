@@ -1,17 +1,17 @@
 /***********************************************************************
 * ftermbuffer.cpp - Buffer for virtual terminal strings                *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -92,9 +92,9 @@ int FTermBuffer::write (wchar_t ch)
 }
 
 //----------------------------------------------------------------------
-void FTermBuffer::write (const FStyle& style)
+void FTermBuffer::write (const FStyle& style) const
 {
-    FAttribute attr = style.getStyle();
+  FAttribute attr = style.getStyle();
 
   if ( attr == 0 )
     FVTerm::setNormal();
@@ -129,7 +129,7 @@ void FTermBuffer::write (const FStyle& style)
 }
 
 //----------------------------------------------------------------------
-void FTermBuffer::write (const FColorPair& pair)
+void FTermBuffer::write (const FColorPair& pair) const
 {
   FVTerm::setColor(pair.getForegroundColor(), pair.getBackgroundColor());
 }

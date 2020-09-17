@@ -1,17 +1,17 @@
 /***********************************************************************
 * foptiattr.cpp - Sets video attributes in optimized order             *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2016-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -1239,7 +1239,7 @@ inline bool FOptiAttr::hasColorChanged ( const FChar* const& term
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::resetColor (FChar*& attr)
+inline void FOptiAttr::resetColor (FChar*& attr) const
 {
   if ( attr )
   {
@@ -1501,13 +1501,13 @@ inline void FOptiAttr::change_current_color ( const FChar* const& term
 
     if ( term->fg_color != fg || frev )
     {
-      color_str = FTermcap::encodeParameter(AF, ansi_fg);
+      color_str = FTermcap::encodeParameter(AF, ansi_fg, 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
     }
 
     if ( term->bg_color != bg || frev )
     {
-      color_str = FTermcap::encodeParameter(AB, ansi_bg);
+      color_str = FTermcap::encodeParameter(AB, ansi_bg, 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
     }
   }
@@ -1515,13 +1515,13 @@ inline void FOptiAttr::change_current_color ( const FChar* const& term
   {
     if ( term->fg_color != fg || frev )
     {
-      color_str = FTermcap::encodeParameter(Sf, fg);
+      color_str = FTermcap::encodeParameter(Sf, fg, 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
     }
 
     if ( term->bg_color != bg || frev )
     {
-      color_str = FTermcap::encodeParameter(Sb, bg);
+      color_str = FTermcap::encodeParameter(Sb, bg, 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
     }
   }
@@ -1529,13 +1529,13 @@ inline void FOptiAttr::change_current_color ( const FChar* const& term
   {
     fg = vga2ansi(fg);
     bg = vga2ansi(bg);
-    color_str = FTermcap::encodeParameter(sp, fg, bg);
+    color_str = FTermcap::encodeParameter(sp, fg, bg, 0, 0, 0, 0, 0, 0, 0);
     append_sequence (color_str);
   }
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::resetAttribute (FChar*& attr)
+inline void FOptiAttr::resetAttribute (FChar*& attr) const
 {
   if ( attr )
   {
@@ -1545,7 +1545,7 @@ inline void FOptiAttr::resetAttribute (FChar*& attr)
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::reset (FChar*& attr)
+inline void FOptiAttr::reset (FChar*& attr) const
 {
   if ( attr )
   {
@@ -1555,7 +1555,7 @@ inline void FOptiAttr::reset (FChar*& attr)
 }
 
 //----------------------------------------------------------------------
-bool FOptiAttr::caused_reset_attributes (const char cap[], uChar test)
+bool FOptiAttr::caused_reset_attributes (const char cap[], uChar test) const
 {
   // test if "cap" reset all attributes
 
@@ -1648,14 +1648,14 @@ inline void FOptiAttr::detectSwitchOff (const FChar* const& term, const FChar* c
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::switchOn()
+inline bool FOptiAttr::switchOn() const
 {
   auto on_ptr = &on;
   return hasAttribute(on_ptr);
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::switchOff()
+inline bool FOptiAttr::switchOff() const
 {
   auto off_ptr = &off;
   return hasAttribute(off_ptr);

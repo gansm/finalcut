@@ -1,17 +1,17 @@
 /***********************************************************************
 * ftextview.h - Widget FTextView (a multiline text viewer)             *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -141,28 +141,28 @@ class FTextView : public FWidget
     typedef std::unordered_map<int, std::function<void()>> keyMap;
 
     // Accessors
-    std::size_t         getTextHeight();
-    std::size_t         getTextWidth();
+    std::size_t         getTextHeight() const;
+    std::size_t         getTextWidth() const;
 
     // Inquiry
-    bool                isHorizontallyScrollable();
-    bool                isVerticallyScrollable();
+    bool                isHorizontallyScrollable() const;
+    bool                isVerticallyScrollable() const;
 
     // Methods
     void                init();
     void                mapKeyFunctions();
     void                draw() override;
     void                drawBorder() override;
-    void                drawScrollbars();
+    void                drawScrollbars() const;
     void                drawText();
-    bool                useFDialogBorder();
-    bool                isPrintable (wchar_t);
-    void                processChanged();
-    void                changeOnResize();
+    bool                useFDialogBorder() const;
+    bool                isPrintable (wchar_t) const;
+    void                processChanged() const;
+    void                changeOnResize() const;
 
     // Callback methods
-    void                cb_vbarChange (const FWidget*, const FDataPtr);
-    void                cb_hbarChange (const FWidget*, const FDataPtr);
+    void                cb_vbarChange (const FWidget*);
+    void                cb_hbarChange (const FWidget*);
 
     // Data members
     FStringList        data{};
@@ -259,11 +259,11 @@ inline void FTextView::deleteLine (int pos)
 { deleteRange (pos, pos); }
 
 //----------------------------------------------------------------------
-inline bool FTextView::isHorizontallyScrollable()
+inline bool FTextView::isHorizontallyScrollable() const
 { return bool( max_line_width > getTextWidth() ); }
 
 //----------------------------------------------------------------------
-inline bool FTextView::isVerticallyScrollable()
+inline bool FTextView::isVerticallyScrollable() const
 { return bool( getRows() > getTextHeight() ); }
 
 }  // namespace finalcut

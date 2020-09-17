@@ -29,3 +29,7 @@ font_DATA = \
 	8x16graph.pcf.gz \
 	fonts.alias \
 	fonts.dir
+
+uninstall-hook:
+	if test -d ${fontdir}; then rmdir ${fontdir}; fi
+

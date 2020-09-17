@@ -1,17 +1,17 @@
 /***********************************************************************
 * term-attributes.cpp - Test the video attributes of the terminal      *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -50,7 +50,7 @@ class AttribDlg final : public finalcut::FDialog
     AttribDlg& operator = (const AttribDlg&) = delete;
 
     // Methods
-    FColor getBGColor();
+    FColor getBGColor() const;
 
     // Event handlers
     void onKeyPress (finalcut::FKeyEvent*) override;
@@ -58,15 +58,19 @@ class AttribDlg final : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback methods
-    void cb_next (const finalcut::FWidget* = nullptr, const FDataPtr = nullptr);
-    void cb_back (const finalcut::FWidget* = nullptr, const FDataPtr = nullptr);
+    void cb_next();
+    void cb_back();
 
   private:
+    // Constants
+    static constexpr FColor UNDEFINED = static_cast<FColor>(-2);
+
     // Method
     void adjustSize() override;
+    void draw() override;
 
     // Data members
-    FColor bgcolor{getColorTheme()->label_bg};
+    FColor bgcolor{UNDEFINED};
     finalcut::FButton next_button{"&Next >", this};
     finalcut::FButton back_button{"< &Back", this};
 };
@@ -75,10 +79,6 @@ class AttribDlg final : public finalcut::FDialog
 AttribDlg::AttribDlg (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  FDialog::setText ( "A terminal attributes test ("
-                   + finalcut::FString{finalcut::FTerm::getTermType()}
-                   + ")");
-
   next_button.setGeometry ( FPoint{int(getWidth()) - 13, int(getHeight()) - 4}
                           , FSize{10, 1} );
   next_button.addAccelerator (fc::Fkey_right);
@@ -90,13 +90,13 @@ AttribDlg::AttribDlg (finalcut::FWidget* parent)
   next_button.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &AttribDlg::cb_next)
+    this, &AttribDlg::cb_next
   );
 
   back_button.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &AttribDlg::cb_back)
+    this, &AttribDlg::cb_back
   );
 }
 
@@ -105,7 +105,7 @@ AttribDlg::~AttribDlg()
 { }
 
 //----------------------------------------------------------------------
-FColor AttribDlg::getBGColor()
+FColor AttribDlg::getBGColor() const
 {
   return bgcolor;
 }
@@ -143,7 +143,7 @@ void AttribDlg::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::cb_next (const finalcut::FWidget*, const FDataPtr)
+void AttribDlg::cb_next()
 {
   if ( finalcut::FTerm::isMonochron() )
     return;
@@ -159,7 +159,7 @@ void AttribDlg::cb_next (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::cb_back (const finalcut::FWidget*, const FDataPtr)
+void AttribDlg::cb_back()
 {
   if ( finalcut::FTerm::isMonochron() )
     return;
@@ -192,6 +192,26 @@ void AttribDlg::adjustSize()
   back_button.setGeometry ( FPoint{int(getWidth()) - 25, int(getHeight()) - 4}
                           , FSize{10, 1}, false );
   finalcut::FDialog::adjustSize();
+}
+
+//----------------------------------------------------------------------
+void AttribDlg::draw()
+{
+  if ( bgcolor == UNDEFINED )
+  {
+    // Get the color after initializing the color theme in show()
+    if ( finalcut::FTerm::isMonochron() )
+      bgcolor = fc::Default;
+    else
+      bgcolor = getColorTheme()->label_bg;
+
+    // Get the terminal type after the terminal detection in show()
+    FDialog::setText ( "A terminal attributes test ("
+                     + finalcut::FString{finalcut::FTerm::getTermType()}
+                     + ")");
+  }
+
+  FDialog::draw();
 }
 
 
@@ -238,18 +258,13 @@ class AttribDemo final : public finalcut::FWidget
     void draw() override;
 
     // Data member
-    FColor last_color{FColor(finalcut::FTerm::getMaxColor())};
+    FColor last_color{1};
 };
 
 //----------------------------------------------------------------------
 AttribDemo::AttribDemo (finalcut::FWidget* parent)
   : finalcut::FWidget{parent}
 {
-  if ( finalcut::FTerm::isMonochron() )
-    last_color = 1;
-  else if ( last_color > 16 )
-    last_color = 16;
-
   unsetFocusable();
 }
 
@@ -417,8 +432,15 @@ void AttribDemo::printProtected()
 //----------------------------------------------------------------------
 void AttribDemo::draw()
 {
-  // test alternate character set
   const auto& wc = getColorTheme();
+  last_color = FColor(finalcut::FTerm::getMaxColor());
+
+  if ( finalcut::FTerm::isMonochron() )
+    last_color = 1;
+  else if ( last_color > 16 )
+    last_color = 16;
+
+  // test alternate character set
   printAltCharset();
 
   const std::vector<std::function<void()> > effect

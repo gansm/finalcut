@@ -1,17 +1,17 @@
 /***********************************************************************
 * fmenuitem.cpp - Widget FMenuItem                                     *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <memory>
+#include <utility>
 
 #include "final/fapplication.h"
 #include "final/fdialog.h"
@@ -44,7 +45,7 @@ namespace finalcut
 FMenuItem::FMenuItem (FWidget* parent)
   : FWidget{parent}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -52,7 +53,7 @@ FMenuItem::FMenuItem (const FString& txt, FWidget* parent)
   : FWidget{parent}
   , text{txt}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -61,7 +62,7 @@ FMenuItem::FMenuItem (FKey k, const FString& txt, FWidget* parent)
   , text{txt}
   , accel_key{k}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -224,7 +225,7 @@ void FMenuItem::delAccelerator (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::openMenu()
+void FMenuItem::openMenu() const
 {
   if ( ! hasMenu() )
     return;
@@ -401,7 +402,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
     setSelected();
     mbar->setSelectedItem(this);
     openMenu();
-    auto focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    auto focused_widget = ev->focusedWidget();
     menu->unselectItem();
     menu->selectFirstItem();
 
@@ -503,7 +504,7 @@ FMenuList* FMenuItem::getFMenuList (FWidget& widget)
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::init (FWidget* parent)
+void FMenuItem::init()
 {
   text_length = text.getLength();
   text_width = getColumnWidth(text);
@@ -519,6 +520,7 @@ void FMenuItem::init (FWidget* parent)
   }
 
   setGeometry (FPoint{1, 1}, FSize{text_width + 2, 1}, false);
+  FWidget* parent = getParentWidget();
 
   if ( ! parent )
     return;
@@ -545,7 +547,8 @@ void FMenuItem::init (FWidget* parent)
     addCallback  // for this element
     (
       "deactivate",
-      F_METHOD_CALLBACK (menubar_ptr, &FMenuBar::cb_itemDeactivated)
+      std::move(menubar_ptr), &FMenuBar::cb_itemDeactivated,
+      this
     );
   }
   else if ( isMenu(parent) )  // Parent is menu
@@ -566,31 +569,31 @@ void FMenuItem::updateSuperMenuDimensions()
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::processEnable()
+void FMenuItem::processEnable() const
 {
   emitCallback("enable");
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::processDisable()
+void FMenuItem::processDisable() const
 {
   emitCallback("disable");
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::processActivate()
+void FMenuItem::processActivate() const
 {
   emitCallback("activate");
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::processDeactivate()
+void FMenuItem::processDeactivate() const
 {
   emitCallback("deactivate");
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::createDialogList (FMenu* winmenu)
+void FMenuItem::createDialogList (FMenu* winmenu) const
 {
   winmenu->clear();
 
@@ -627,14 +630,17 @@ void FMenuItem::createDialogList (FMenu* winmenu)
         win_item->addCallback
         (
           "clicked",
-          F_METHOD_CALLBACK (win_item, &FMenuItem::cb_switchToDialog),
-          static_cast<FDataPtr>(win)
+          static_cast<std::remove_reference<decltype(win_item)>::type>(win_item),
+          &FMenuItem::cb_switchToDialog,
+          win
         );
 
         win->addCallback
         (
           "destroy",
-          F_METHOD_CALLBACK (win_item, &FMenuItem::cb_destroyDialog)
+          static_cast<std::remove_reference<decltype(win_item)>::type>(win_item),
+          &FMenuItem::cb_destroyDialog,
+          win
         );
 
         win_item->associated_window = win;
@@ -650,7 +656,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 //----------------------------------------------------------------------
 template <typename T>
 void FMenuItem::passMouseEvent ( T widget, const FMouseEvent* ev
-                               , fc::events ev_type )
+                               , fc::events ev_type ) const
 {
   if ( ! widget )
     return;
@@ -694,28 +700,25 @@ void FMenuItem::passMouseEvent ( T widget, const FMouseEvent* ev
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::cb_switchToDialog (const FWidget*, FDataPtr data)
+void FMenuItem::cb_switchToDialog (FDialog* win) const
 {
-  auto win = static_cast<FDialog*>(data);
+  if ( ! win )
+    return;
 
-  if ( win )
-  {
-    auto focus = getFocusWidget();
-    FAccelEvent a_ev (fc::Accelerator_Event, focus);
-    FApplication::sendEvent (win, &a_ev);
-  }
+  auto focus = getFocusWidget();
+  FAccelEvent a_ev (fc::Accelerator_Event, focus);
+  FApplication::sendEvent (win, &a_ev);
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::cb_destroyDialog (FWidget* widget, const FDataPtr)
+void FMenuItem::cb_destroyDialog (FDialog* win)
 {
-  auto win = static_cast<FDialog*>(widget);
   const auto& fapp = FApplication::getApplicationObject();
 
   if ( win && fapp )
   {
     delAccelerator(win);
-    delCallback(win);
+    delCallback(std::move(win));
     associated_window = nullptr;
   }
 }

@@ -1,17 +1,17 @@
 /***********************************************************************
 * foptiattr.h - Sets video attributes in optimized order               *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2016-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -244,7 +244,7 @@ class FOptiAttr final
 
     // Methods
     bool          hasColorChanged (const FChar* const&, const FChar* const&) const;
-    void          resetColor (FChar*&);
+    void          resetColor (FChar*&) const;
     void          prevent_no_color_video_attributes (FChar*&, bool = false);
     void          deactivateAttributes (FChar*&, FChar*&);
     void          changeAttributeSGR (FChar*&, FChar*&);
@@ -252,14 +252,14 @@ class FOptiAttr final
     void          change_color (FChar*&, FChar*&);
     void          change_to_default_color (FChar*&, FChar*&, FColor&, FColor&);
     void          change_current_color (const FChar* const&, FColor, FColor);
-    void          resetAttribute (FChar*&);
-    void          reset (FChar*&);
-    bool          caused_reset_attributes (const char[], uChar = all_tests);
+    void          resetAttribute (FChar*&) const;
+    void          reset (FChar*&) const;
+    bool          caused_reset_attributes (const char[], uChar = all_tests) const;
     bool          hasCharsetEquivalence() const;
     void          detectSwitchOn (const FChar* const&, const FChar* const&);
     void          detectSwitchOff (const FChar* const&, const FChar* const&);
-    bool          switchOn();
-    bool          switchOff();
+    bool          switchOn() const;
+    bool          switchOff() const;
     bool          append_sequence (const char[]);
 
     // Data members

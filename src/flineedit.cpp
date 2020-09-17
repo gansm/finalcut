@@ -1,17 +1,17 @@
 /***********************************************************************
 * flineedit.cpp - Widget FLineEdit                                     *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -88,7 +88,7 @@ FLineEdit& FLineEdit::operator << (const wchar_t c)
 }
 
 //----------------------------------------------------------------------
-const FLineEdit& FLineEdit::operator >> (FString& s)
+const FLineEdit& FLineEdit::operator >> (FString& s) const
 {
   s += text;
   return *this;
@@ -405,7 +405,7 @@ void FLineEdit::onMouseUp (FMouseEvent*)
 {
   if ( drag_scroll != FLineEdit::noScroll )
   {
-    delOwnTimer();
+    delOwnTimers();
     drag_scroll = FLineEdit::noScroll;
     scroll_timer = false;
   }
@@ -446,7 +446,7 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
 
     if ( text_offset == 0 )
     {
-      delOwnTimer();
+      delOwnTimers();
       drag_scroll = FLineEdit::noScroll;
     }
   }
@@ -462,14 +462,14 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
 
     if ( cursor_pos == len )
     {
-      delOwnTimer();
+      delOwnTimers();
       drag_scroll = FLineEdit::noScroll;
     }
   }
   else
   {
     // no dragging
-    delOwnTimer();
+    delOwnTimers();
     scroll_timer = false;
     drag_scroll = FLineEdit::noScroll;
   }
@@ -544,7 +544,7 @@ void FLineEdit::onAccel (FAccelEvent* ev)
 
   if ( ! hasFocus() )
   {
-    auto focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    auto focused_widget = ev->focusedWidget();
 
     if ( focused_widget && focused_widget->isWidget() )
     {
@@ -661,7 +661,7 @@ void FLineEdit::init()
 bool FLineEdit::hasHotkey() const
 {
   if ( label_text.isEmpty() )
-    return 0;
+    return false;
 
   return label_text.includes('&');
 }
@@ -787,7 +787,7 @@ inline std::size_t FLineEdit::printPassword()
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FLineEdit::getCursorColumnPos()
+inline std::size_t FLineEdit::getCursorColumnPos() const
 {
   if ( input_type == FLineEdit::textfield )
   {
@@ -1104,7 +1104,7 @@ inline bool FLineEdit::keyInput (FKey key)
 }
 
 //----------------------------------------------------------------------
-inline wchar_t FLineEdit::characterFilter (const wchar_t c)
+inline wchar_t FLineEdit::characterFilter (const wchar_t c) const
 {
   if ( input_filter.empty() )
     return c;
@@ -1130,7 +1130,7 @@ void FLineEdit::processActivate()
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::processChanged()
+void FLineEdit::processChanged() const
 {
   emitCallback("changed");
 }

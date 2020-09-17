@@ -1,17 +1,17 @@
 /***********************************************************************
 * mouse.cpp - A small mouse-controlled drawing program                 *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -49,8 +49,8 @@ class ColorChooser final : public finalcut::FWidget
     ColorChooser& operator = (const ColorChooser&) = delete;
 
     // Accessors
-    FColor getForeground();
-    FColor getBackground();
+    FColor getForeground() const;
+    FColor getBackground() const;
 
   private:
     // Mutator
@@ -78,16 +78,6 @@ ColorChooser::ColorChooser (finalcut::FWidget* parent)
   setFixedSize (FSize{8, 12});
   unsetFocusable();
 
-  if ( parent )
-  {
-    const FColor fg = parent->getForegroundColor();
-    const FColor bg = parent->getBackgroundColor();
-    FWidget::setForegroundColor(fg);
-    FWidget::setBackgroundColor(bg);
-    headline.setForegroundColor(fg);
-    headline.setBackgroundColor(bg);
-  }
-
   // Text label
   headline.setGeometry (FPoint{1, 1}, FSize{8, 1});
   headline.setEmphasis();
@@ -100,13 +90,13 @@ ColorChooser::~ColorChooser()
 { }
 
 //----------------------------------------------------------------------
-inline FColor ColorChooser::getForeground()
+inline FColor ColorChooser::getForeground() const
 {
   return fg_color;
 }
 
 //----------------------------------------------------------------------
-inline FColor ColorChooser::getBackground()
+inline FColor ColorChooser::getBackground() const
 {
   return bg_color;
 }
@@ -122,6 +112,8 @@ void ColorChooser::setSize (const FSize& size, bool adjust)
 //----------------------------------------------------------------------
 void ColorChooser::draw()
 {
+  useParentWidgetColor();
+  headline.setBackgroundColor(getBackgroundColor());
   setColor();
   drawBorder();
 
@@ -200,7 +192,7 @@ class Brushes final : public finalcut::FWidget
     Brushes& operator = (const Brushes&) = delete;
 
     // Accessor
-    wchar_t getBrush();
+    wchar_t getBrush() const;
 
     // Mutators
     void setForeground (FColor);
@@ -232,16 +224,6 @@ Brushes::Brushes (finalcut::FWidget* parent)
   setFixedSize (FSize{8, 4});
   unsetFocusable();
 
-  if ( parent )
-  {
-    const FColor fg = parent->getForegroundColor();
-    const FColor bg = parent->getBackgroundColor();
-    FWidget::setForegroundColor(fg);
-    FWidget::setBackgroundColor(bg);
-    headline.setForegroundColor(fg);
-    headline.setBackgroundColor(bg);
-  }
-
   // Text label
   headline.setGeometry(FPoint{1, 1}, FSize{8, 1});
   headline.setEmphasis();
@@ -265,6 +247,8 @@ void Brushes::setSize (const FSize& size, bool adjust)
 void Brushes::draw()
 {
   int pos{0};
+  useParentWidgetColor();
+  headline.setBackgroundColor(getBackgroundColor());
   setColor();
   drawBorder();
   print() << FPoint{2, 3}
@@ -309,7 +293,7 @@ void Brushes::onMouseDown (finalcut::FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-inline wchar_t Brushes::getBrush()
+inline wchar_t Brushes::getBrush() const
 {
   return brush;
 }
@@ -361,6 +345,7 @@ class MouseDraw final : public finalcut::FDialog
     void draw() override;
     void drawBrush (int, int, bool = false);
     void drawCanvas();
+    void createCanvas();
     void adjustSize() override;
 
     // Event handler
@@ -368,7 +353,7 @@ class MouseDraw final : public finalcut::FDialog
     void onMouseMove (finalcut::FMouseEvent*) override;
 
     // Callback methods
-    void cb_colorChanged (const finalcut::FWidget*, const FDataPtr);
+    void cb_colorChanged();
 
     // Data members
     FTermArea*   canvas{nullptr};
@@ -386,14 +371,10 @@ MouseDraw::MouseDraw (finalcut::FWidget* parent)
   c_chooser.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &MouseDraw::cb_colorChanged)
+    this, &MouseDraw::cb_colorChanged
   );
 
   brush.setPos (FPoint{1, 12});
-
-  FSize no_shadow{0, 0};
-  finalcut::FRect scroll_geometry{0, 0, 1, 1};
-  createArea (scroll_geometry, no_shadow, canvas);
 }
 
 //----------------------------------------------------------------------
@@ -407,6 +388,10 @@ void MouseDraw::setGeometry ( const FPoint& p, const FSize& s, bool adjust)
   const std::size_t w = s.getWidth();
   const std::size_t h = s.getHeight();
   const finalcut::FRect scroll_geometry (FPoint{0, 0}, FSize{w - 11, h - 3});
+
+  if ( ! canvas )
+    return;
+
   const FSize no_shadow{0, 0};
   const int old_w = canvas->width;
   const int old_h = canvas->height;
@@ -504,6 +489,10 @@ void MouseDraw::drawCanvas()
   if ( ! hasPrintArea() )
     finalcut::FVTerm::getPrintArea();
 
+  // Create canvas after initializing the desktop and color theme
+  if ( ! canvas )
+    createCanvas();
+
   if ( ! (hasPrintArea() && canvas) )
     return;
 
@@ -532,6 +521,15 @@ void MouseDraw::drawCanvas()
   }
 
   printarea->has_changes = true;
+}
+
+//----------------------------------------------------------------------
+void MouseDraw::createCanvas()
+{
+  FSize no_shadow{0, 0};
+  finalcut::FRect scroll_geometry{0, 0, 1, 1};
+  createArea (scroll_geometry, no_shadow, canvas);
+  adjustSize();
 }
 
 //----------------------------------------------------------------------
@@ -574,7 +572,7 @@ void MouseDraw::onMouseMove (finalcut::FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void MouseDraw::cb_colorChanged (const finalcut::FWidget*, const FDataPtr)
+void MouseDraw::cb_colorChanged()
 {
   brush.setForeground (c_chooser.getForeground());
   brush.setBackground (c_chooser.getBackground());

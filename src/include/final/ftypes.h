@@ -1,17 +1,17 @@
 /***********************************************************************
 * ftypes.h - Implements global data types                              *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -31,9 +31,12 @@
 #include <sys/types.h>
 
 #include <cstddef>
+#include <functional>
 #include <limits>
 #include <unordered_map>
 #include <string>
+
+#include <final/fdata.h>
 
 #define null nullptr
 
@@ -45,34 +48,29 @@
                             << " in "                          \
                             << __func__ << std::endl;
 
-namespace
-{
+typedef unsigned char         uChar;
+typedef unsigned short        uShort;
+typedef unsigned int          uInt;
+typedef unsigned long         uLong;
+typedef std::uint8_t          uInt8;
+typedef std::uint16_t         uInt16;
+typedef std::uint32_t         uInt32;
+typedef std::uint64_t         uInt64;
 
-typedef unsigned char  uChar;
-typedef unsigned short uShort;
-typedef unsigned int   uInt;
-typedef unsigned long  uLong;
-typedef std::uint8_t   uInt8;
-typedef std::uint16_t  uInt16;
-typedef std::uint32_t  uInt32;
-typedef std::uint64_t  uInt64;
+typedef signed int            sInt;
+typedef signed long           sLong;
+typedef std::int8_t           sInt8;
+typedef std::int16_t          sInt16;
+typedef std::int32_t          sInt32;
+typedef std::int64_t          sInt64;
 
-typedef signed int     sInt;
-typedef signed long    sLong;
-typedef std::int8_t    sInt8;
-typedef std::int16_t   sInt16;
-typedef std::int32_t   sInt32;
-typedef std::int64_t   sInt64;
+typedef long double           lDouble;
 
-typedef long double    lDouble;
-
-typedef uInt16         FColor;
-typedef uInt16         FAttribute;
-typedef uInt32         FKey;
-typedef void*          FDataPtr;
-
-}  // namespace
-
+typedef uInt16                FColor;
+typedef uInt16                FAttribute;
+typedef uInt32                FKey;
+typedef void*                 FDataPtr;
+typedef std::function<void()> FCall;
 
 namespace finalcut
 {
@@ -80,7 +78,7 @@ namespace finalcut
 template <typename T, bool is_signed>
 struct is_negative
 {
-  inline bool operator () (const T& x)
+  inline bool operator () (const T& x) const
   {
     return x < 0;
   }
@@ -89,7 +87,7 @@ struct is_negative
 template <typename T>
 struct is_negative<T, false>
 {
-  inline bool operator () (const T&)
+  inline bool operator () (const T&) const
   {
     return false;
   }
@@ -188,4 +186,3 @@ FKeyName;
 }  // namespace finalcut
 
 #endif  // FTYPES_H
-

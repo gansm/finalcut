@@ -1,17 +1,17 @@
 /***********************************************************************
 * ftermcap.cpp - Provides access to terminal capabilities              *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -37,21 +37,22 @@ namespace finalcut
 {
 
 // static class attributes
-bool             FTermcap::background_color_erase  {false};
-bool             FTermcap::can_change_color_palette{false};
-bool             FTermcap::automatic_left_margin   {false};
-bool             FTermcap::automatic_right_margin  {false};
-bool             FTermcap::eat_nl_glitch           {false};
-bool             FTermcap::ansi_default_color      {false};
-bool             FTermcap::osc_support             {false};
-bool             FTermcap::no_utf8_acs_chars       {false};
-int              FTermcap::max_color               {1};
-int              FTermcap::tabstop                 {8};
-int              FTermcap::attr_without_color      {0};
-FSystem*         FTermcap::fsystem                 {nullptr};
-FTermData*       FTermcap::fterm_data              {nullptr};
-FTermDetection*  FTermcap::term_detection          {nullptr};
-char             FTermcap::string_buf[2048]        {};
+bool             FTermcap::background_color_erase   {false};
+bool             FTermcap::can_change_color_palette {false};
+bool             FTermcap::automatic_left_margin    {false};
+bool             FTermcap::automatic_right_margin   {false};
+bool             FTermcap::eat_nl_glitch            {false};
+bool             FTermcap::has_ansi_escape_sequences{false};
+bool             FTermcap::ansi_default_color       {false};
+bool             FTermcap::osc_support              {false};
+bool             FTermcap::no_utf8_acs_chars        {false};
+int              FTermcap::max_color                {1};
+int              FTermcap::tabstop                  {8};
+int              FTermcap::attr_without_color       {0};
+FSystem*         FTermcap::fsystem                  {nullptr};
+FTermData*       FTermcap::fterm_data               {nullptr};
+FTermDetection*  FTermcap::term_detection           {nullptr};
+char             FTermcap::string_buf[2048]         {};
 
 //----------------------------------------------------------------------
 // class FTermcap
@@ -225,6 +226,11 @@ void FTermcap::termcapStrings()
   // Read termcap output strings
   for (std::size_t i{0}; strings[i].tname[0] != 0; i++)
     strings[i].string = getString(strings[i].tname);
+
+  const auto& ho = TCAP(fc::t_cursor_home);
+
+  if ( std::strncmp(ho, "\033[H", 3) == 0 )
+    has_ansi_escape_sequences = true;
 }
 
 //----------------------------------------------------------------------
@@ -255,7 +261,7 @@ FTermcap::tcap_map FTermcap::strings[] =
 {
 //  .------------- term string
 //  |    .-------- Tcap-code
-//  |    |      // variable name          -> description
+//  |    |      // variable name                -> description
 //------------------------------------------------------------------------------
   { nullptr, "bl" },  // bell                   -> audible signal (bell) (P)
   { nullptr, "ec" },  // erase_chars            -> erase #1 characters (P)

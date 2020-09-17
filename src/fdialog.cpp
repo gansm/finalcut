@@ -1,17 +1,17 @@
 /***********************************************************************
 * fdialog.cpp - Widget FDialog                                         *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -166,7 +166,7 @@ void FDialog::show()
 
   FWindow::show();
 
-  if ( isModal() )
+  if ( isModal() && ! FApplication::isQuit() )
   {
     auto fapp = FApplication::getApplicationObject();
     fapp->enterLoop();
@@ -873,7 +873,8 @@ void FDialog::initMoveSizeMenuItem (FMenu* menu)
   move_size_item->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FDialog::cb_move)
+    this,
+    &FDialog::cb_move
   );
 }
 
@@ -896,7 +897,8 @@ void FDialog::initZoomMenuItem (FMenu* menu)
   zoom_item->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FDialog::cb_zoom)
+    this,
+    &FDialog::cb_zoom
   );
 }
 
@@ -918,7 +920,8 @@ void FDialog::initCloseMenuItem (FMenu* menu)
   close_item->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FDialog::cb_close)
+    this,
+    &FDialog::cb_close
   );
 }
 
@@ -1270,7 +1273,7 @@ void FDialog::setZoomItem()
 }
 
 //----------------------------------------------------------------------
-inline std::size_t FDialog::getZoomButtonWidth()
+inline std::size_t FDialog::getZoomButtonWidth() const
 {
   if ( ! isResizeable() )
     return 0;
@@ -1632,7 +1635,7 @@ void FDialog::delDialog (const FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-void FDialog::cb_move (const FWidget*, const FDataPtr)
+void FDialog::cb_move()
 {
   if ( isZoomed() )
     return;
@@ -1683,7 +1686,7 @@ void FDialog::cb_move (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FDialog::cb_zoom (const FWidget*, const FDataPtr)
+void FDialog::cb_zoom()
 {
   dialog_menu->unselectItem();
   dialog_menu->hide();
@@ -1694,7 +1697,7 @@ void FDialog::cb_zoom (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FDialog::cb_close (const FWidget*, const FDataPtr)
+void FDialog::cb_close()
 {
   dialog_menu->unselectItem();
   dialog_menu->hide();

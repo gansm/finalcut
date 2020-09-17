@@ -1,17 +1,17 @@
 /***********************************************************************
 * fapplication.cpp - Manages the application events                    *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2013-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -20,8 +20,11 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <chrono>
+#include <fstream>
 #include <memory>
 #include <string>
+#include <thread>
 
 #include "final/fapplication.h"
 #include "final/fevent.h"
@@ -58,9 +61,10 @@ FWidget*       FApplication::keyboard_widget {nullptr};  // has the keyboard foc
 FKeyboard*     FApplication::keyboard        {nullptr};  // keyboard access
 FMouseControl* FApplication::mouse           {nullptr};  // mouse control
 int            FApplication::loop_level      {0};        // event loop level
-int            FApplication::quit_code       {0};
+int            FApplication::quit_code       {EXIT_SUCCESS};
 bool           FApplication::quit_now        {false};
-
+uInt64         FApplication::next_event_wait {5000};     // preset to 5 ms /200 Hz
+struct timeval FApplication::time_last_event{};
 
 //----------------------------------------------------------------------
 // class FApplication
@@ -68,13 +72,14 @@ bool           FApplication::quit_now        {false};
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FApplication::FApplication ( const int& _argc
-                           , char* _argv[]
-                           , bool disable_alt_screen )
-  : FWidget{processParameters(_argc, _argv), disable_alt_screen}
+FApplication::FApplication (const int& _argc, char* _argv[])
+  : FWidget{processParameters(_argc, _argv)}
   , app_argc{_argc}
   , app_argv{_argv}
 {
+  if ( quit_now )
+    return;
+
   if ( app_object )
   {
     auto ftermdata = FTerm::getFTermData();
@@ -84,6 +89,7 @@ FApplication::FApplication ( const int& _argc
     return;
   }
 
+  // First define the application object
   app_object = this;
 
   if ( ! (_argc && _argv) )
@@ -93,7 +99,7 @@ FApplication::FApplication ( const int& _argc
     app_argv = reinterpret_cast<char**>(&empty_str);
   }
 
-  init (key_timeout, dblclick_interval);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -145,10 +151,10 @@ int FApplication::exec()  // run
   if ( quit_now )
   {
     quit_now = false;
-    return EXIT_FAILURE;
+    return quit_code;
   }
 
-  quit_code = 0;
+  quit_code = EXIT_SUCCESS;
   enterLoop();
   return quit_code;
 }
@@ -171,7 +177,7 @@ int FApplication::enterLoop()  // event loop
 }
 
 //----------------------------------------------------------------------
-void FApplication::exitLoop()
+void FApplication::exitLoop() const
 {
   app_exit_loop = true;
 }
@@ -184,7 +190,7 @@ void FApplication::exit (int retcode)
 }
 
 //----------------------------------------------------------------------
-void FApplication::quit()
+void FApplication::quit() const
 {
   FApplication::exit(0);
 }
@@ -228,7 +234,7 @@ void FApplication::sendQueuedEvents()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::eventInQueue()
+bool FApplication::eventInQueue() const
 {
   if ( app_object )
     return ( ! event_queue.empty() );
@@ -263,23 +269,10 @@ bool FApplication::removeQueuedEvent (const FObject* receiver)
 }
 
 //----------------------------------------------------------------------
-void FApplication::processExternalUserEvent()
+void FApplication::initTerminal()
 {
-  // This method can be overloaded and replaced by own code
-}
-
-//----------------------------------------------------------------------
-FWidget* FApplication::processParameters (const int& argc, char* argv[])
-{
-  if ( argc > 0 && argv[1] && ( std::strcmp(argv[1], "--help") == 0
-                             || std::strcmp(argv[1], "-h") == 0 ) )
-  {
-    showParameterUsage();
-  }
-
-  getStartOptions().setDefault();
-  cmd_options (argc, argv);
-  return nullptr;
+  if ( ! isQuit() )
+    FWidget::initTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -288,14 +281,14 @@ void FApplication::setDefaultTheme()
   if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
   {
     if ( getStartOptions().color_change )
-      FTerm::setColorPaletteTheme<default8ColorPalette>(&FTerm::setPalette);
+      FTerm::setColorPaletteTheme<default8ColorPalette>();
 
     setColorTheme<default8ColorTheme>();
   }
   else
   {
     if ( getStartOptions().color_change )
-      FTerm::setColorPaletteTheme<default16ColorPalette>(&FTerm::setPalette);
+      FTerm::setColorPaletteTheme<default16ColorPalette>();
 
     setColorTheme<default16ColorTheme>();
   }
@@ -305,12 +298,226 @@ void FApplication::setDefaultTheme()
 void FApplication::setDarkTheme()
 {
   if ( getStartOptions().color_change )
-    FTerm::setColorPaletteTheme<default16DarkColorPalette>(&FTerm::setPalette);
+    FTerm::setColorPaletteTheme<default16DarkColorPalette>();
 
   if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
     setColorTheme<default8ColorDarkTheme>();
   else
     setColorTheme<default16ColorDarkTheme>();
+}
+
+//----------------------------------------------------------------------
+void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
+{
+  app_object->unsetMoveSizeMode();
+  const int ret = FMessageBox::info ( w, "Quit"
+                                    , "Do you really want\n"
+                                      "to quit the program ?"
+                                    , FMessageBox::Yes
+                                    , FMessageBox::No );
+  if ( ret == FMessageBox::Yes )
+    ev->accept();
+  else
+  {
+    ev->ignore();
+
+    // Status bar restore after closing the FMessageBox
+    if ( getStatusBar() )
+      getStatusBar()->drawMessage();
+  }
+}
+
+
+// protected methods of FApplication
+//----------------------------------------------------------------------
+void FApplication::processExternalUserEvent()
+{
+  // This method can be overloaded and replaced by own code
+  std::this_thread::sleep_for(std::chrono::milliseconds(5));
+}
+
+
+// private methods of FApplication
+//----------------------------------------------------------------------
+void FApplication::init()
+{
+  // Initialize the last event time
+  time_last_event.tv_sec = 0;
+  time_last_event.tv_usec = 0;
+
+  // Initialize keyboard
+  keyboard = FTerm::getFKeyboard();
+
+  // Set the keyboard keypress timeout
+  if ( keyboard )
+  {
+    auto cmd1 = std::bind(&FApplication::keyPressed, this);
+    auto cmd2 = std::bind(&FApplication::keyReleased, this);
+    auto cmd3 = std::bind(&FApplication::escapeKeyPressed, this);
+    FKeyboardCommand key_cmd1 (cmd1);
+    FKeyboardCommand key_cmd2 (cmd2);
+    FKeyboardCommand key_cmd3 (cmd3);
+    keyboard->setPressCommand (key_cmd1);
+    keyboard->setReleaseCommand (key_cmd2);
+    keyboard->setEscPressedCommand (key_cmd3);
+    keyboard->setKeypressTimeout (key_timeout);
+  }
+
+  // Initialize mouse control
+  mouse = FTerm::getFMouseControl();
+
+  // Set stdin number for a gpm-mouse
+  if ( mouse )
+    mouse->setStdinNo (FTermios::getStdIn());
+
+  // Set the default double click interval
+  if ( mouse )
+    mouse->setDblclickInterval (dblclick_interval);
+
+  // Initialize logging
+  if ( ! getStartOptions().logfile_stream.is_open() )
+    getLog()->setLineEnding(FLog::CRLF);
+}
+
+//----------------------------------------------------------------------
+void FApplication::setTerminalEncoding (const FString& enc_str)
+{
+  const FString& enc = enc_str.toLower();
+
+  if ( enc.includes("utf8") )
+    getStartOptions().encoding = fc::UTF8;
+  else if ( enc.includes("vt100") )
+    getStartOptions().encoding = fc::VT100;
+  else if ( enc.includes("pc") )
+    getStartOptions().encoding = fc::PC;
+  else if ( enc.includes("ascii") )
+    getStartOptions().encoding = fc::ASCII;
+  else if ( enc.includes("help") )
+    showParameterUsage();
+  else
+  {
+    auto ftermdata = FTerm::getFTermData();
+    ftermdata->setExitMessage ( "Unknown encoding \"" + enc_str
+                              + "\"\n(Valid encodings are utf8, "
+                              + "vt100, pc and ascii)" );
+    exit(EXIT_FAILURE);
+  }
+}
+
+//----------------------------------------------------------------------
+void FApplication::setLogFile (const FString& filename)
+{
+  auto& log_stream = getStartOptions().logfile_stream;
+  log_stream.open(filename, std::ofstream::out);
+
+  if ( log_stream.is_open() )
+  {
+    // Get the global logger object
+    FLog& log = *FApplication::getLog();
+    log.setOutputStream(log_stream);
+    log.enableTimestamp();
+    log.setLineEnding (finalcut::FLog::LF);
+  }
+  else
+  {
+    auto ftermdata = FTerm::getFTermData();
+    ftermdata->setExitMessage ( "Could not open log file \""
+                              + filename + "\"" );
+    exit(EXIT_FAILURE);
+  }
+}
+
+//----------------------------------------------------------------------
+void FApplication::cmd_options (const int& argc, char* argv[])
+{
+  // Interpret the command line options
+
+  while ( true )
+  {
+    static struct option long_options[] =
+    {
+      {"encoding",                 required_argument, nullptr,  0 },
+      {"log-file",                 required_argument, nullptr,  0 },
+      {"no-mouse",                 no_argument,       nullptr,  0 },
+      {"no-optimized-cursor",      no_argument,       nullptr,  0 },
+      {"no-terminal-detection",    no_argument,       nullptr,  0 },
+      {"no-terminal-data-request", no_argument,       nullptr,  0 },
+      {"no-color-change",          no_argument,       nullptr,  0 },
+      {"no-sgr-optimizer",         no_argument,       nullptr,  0 },
+      {"vgafont",                  no_argument,       nullptr,  0 },
+      {"newfont",                  no_argument,       nullptr,  0 },
+      {"dark-theme",               no_argument,       nullptr,  0 },
+
+    #if defined(__FreeBSD__) || defined(__DragonFly__)
+      {"no-esc-for-alt-meta",      no_argument,       nullptr,  0 },
+      {"no-cursorstyle-change",    no_argument,       nullptr,  0 },
+    #elif defined(__NetBSD__) || defined(__OpenBSD__)
+      {"no-esc-for-alt-meta",      no_argument,       nullptr,  0 },
+    #endif
+
+      {nullptr,                    0,                 nullptr,  0 }
+    };
+
+    opterr = 0;
+    int idx{0};
+    const int c = getopt_long (argc, argv, "", long_options, &idx);
+
+    if ( c == -1 )
+      break;
+
+    if ( c == 0 )
+    {
+      if ( std::strcmp(long_options[idx].name, "encoding") == 0 )
+        setTerminalEncoding(FString(optarg));
+
+      if ( std::strcmp(long_options[idx].name, "log-file") == 0 )
+        setLogFile(FString(optarg));
+
+      if ( std::strcmp(long_options[idx].name, "no-mouse") == 0 )
+        getStartOptions().mouse_support = false;
+
+      if ( std::strcmp(long_options[idx].name, "no-optimized-cursor") == 0 )
+        getStartOptions().cursor_optimisation = false;
+
+      if ( std::strcmp(long_options[idx].name, "no-terminal-detection") == 0 )
+        getStartOptions().terminal_detection = false;
+
+      if ( std::strcmp(long_options[idx].name, "no-terminal-data-request") == 0 )
+        getStartOptions().terminal_data_request = false;
+
+      if ( std::strcmp(long_options[idx].name, "no-color-change") == 0 )
+        getStartOptions().color_change = false;
+
+      if ( std::strcmp(long_options[idx].name, "no-sgr-optimizer") == 0 )
+        getStartOptions().sgr_optimizer = false;
+
+      if ( std::strcmp(long_options[idx].name, "vgafont") == 0 )
+        getStartOptions().vgafont = true;
+
+      if ( std::strcmp(long_options[idx].name, "newfont") == 0 )
+        getStartOptions().newfont = true;
+
+      if ( std::strcmp(long_options[idx].name, "dark-theme") == 0 )
+        getStartOptions().dark_theme = true;
+
+    #if defined(__FreeBSD__) || defined(__DragonFly__)
+      if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta") == 0 )
+        getStartOptions().meta_sends_escape = false;
+
+      if ( std::strcmp(long_options[idx].name, "no-cursorstyle-change") == 0 )
+        getStartOptions().change_cursorstyle = false;
+    #elif defined(__NetBSD__) || defined(__OpenBSD__)
+      if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta") == 0 )
+        getStartOptions().meta_sends_escape = false;
+    #endif
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+inline FStartOptions& FApplication::getStartOptions()
+{
+  return FStartOptions::getFStartOptions();
 }
 
 //----------------------------------------------------------------------
@@ -321,11 +528,13 @@ void FApplication::showParameterUsage()
     << "  -h, --help                "
     << "    Display this help and exit\n"
     << "\n"
-    << "The Final Cut options:\n"
-    << "  --encoding <name>         "
+    << "FINAL CUT options:\n"
+    << "  --encoding=<MODE>         "
     << "    Sets the character encoding mode\n"
     << "                            "
     << "    {utf8, vt100, pc, ascii}\n"
+    << "  --log-file=<FILE>         "
+    << "    Writes log output to FILE\n"
     << "  --no-mouse                "
     << "    Disable mouse support\n"
     << "  --no-optimized-cursor     "
@@ -360,171 +569,6 @@ void FApplication::showParameterUsage()
 #endif
 
     << std::endl;  // newline character + flushes the output stream
-  std::exit(EXIT_SUCCESS);
-}
-
-//----------------------------------------------------------------------
-void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
-{
-  app_object->unsetMoveSizeMode();
-  const int ret = FMessageBox::info ( w, "Quit"
-                                    , "Do you really want\n"
-                                      "to quit the program ?"
-                                    , FMessageBox::Yes
-                                    , FMessageBox::No );
-  if ( ret == FMessageBox::Yes )
-    ev->accept();
-  else
-  {
-    ev->ignore();
-
-    // Status bar restore after closing the FMessageBox
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
-  }
-}
-
-// private methods of FApplication
-//----------------------------------------------------------------------
-void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
-{
-  // Initialize keyboard
-  keyboard = FTerm::getFKeyboard();
-
-  // Set the keyboard keypress timeout
-  if ( keyboard )
-  {
-    auto cmd1 = std::bind(&FApplication::keyPressed, this);
-    auto cmd2 = std::bind(&FApplication::keyReleased, this);
-    auto cmd3 = std::bind(&FApplication::escapeKeyPressed, this);
-    FKeyboardCommand key_cmd1 (cmd1);
-    FKeyboardCommand key_cmd2 (cmd2);
-    FKeyboardCommand key_cmd3 (cmd3);
-    keyboard->setPressCommand (key_cmd1);
-    keyboard->setReleaseCommand (key_cmd2);
-    keyboard->setEscPressedCommand (key_cmd3);
-    keyboard->setKeypressTimeout (key_time);
-  }
-
-  // Initialize mouse control
-  mouse = FTerm::getFMouseControl();
-
-  // Set stdin number for a gpm-mouse
-  if ( mouse )
-    mouse->setStdinNo (FTermios::getStdIn());
-
-  // Set the default double click interval
-  if ( mouse )
-    mouse->setDblclickInterval (dblclick_time);
-
-  // Initialize logging
-  getLog()->setLineEnding(FLog::CRLF);
-}
-
-//----------------------------------------------------------------------
-void FApplication::cmd_options (const int& argc, char* argv[])
-{
-  // Interpret the command line options
-
-  while ( true )
-  {
-    static struct option long_options[] =
-    {
-      {"encoding",                 required_argument, nullptr,  0 },
-      {"no-mouse",                 no_argument,       nullptr,  0 },
-      {"no-optimized-cursor",      no_argument,       nullptr,  0 },
-      {"no-terminal-detection",    no_argument,       nullptr,  0 },
-      {"no-terminal-data-request", no_argument,       nullptr,  0 },
-      {"no-color-change",          no_argument,       nullptr,  0 },
-      {"no-sgr-optimizer",         no_argument,       nullptr,  0 },
-      {"vgafont",                  no_argument,       nullptr,  0 },
-      {"newfont",                  no_argument,       nullptr,  0 },
-      {"dark-theme",               no_argument,       nullptr,  0 },
-
-    #if defined(__FreeBSD__) || defined(__DragonFly__)
-      {"no-esc-for-alt-meta",      no_argument,       nullptr,  0 },
-      {"no-cursorstyle-change",    no_argument,       nullptr,  0 },
-    #elif defined(__NetBSD__) || defined(__OpenBSD__)
-      {"no-esc-for-alt-meta",      no_argument,       nullptr,  0 },
-    #endif
-
-      {nullptr,                    0,                 nullptr,  0 }
-    };
-
-    opterr = 0;
-    int idx{0};
-    const int c = getopt_long (argc, argv, "", long_options, &idx);
-
-    if ( c == -1 )
-      break;
-
-    if ( c == 0 )
-    {
-      if ( std::strcmp(long_options[idx].name, "encoding") == 0 )
-      {
-        FString encoding{optarg};
-        encoding = encoding.toLower();
-
-        if ( encoding.includes("utf8") )
-          getStartOptions().encoding = fc::UTF8;
-        else if ( encoding.includes("vt100") )
-          getStartOptions().encoding = fc::VT100;
-        else if ( encoding.includes("pc") )
-          getStartOptions().encoding = fc::PC;
-        else if ( encoding.includes("ascii") )
-          getStartOptions().encoding = fc::ASCII;
-        else if ( encoding.includes("help") )
-          showParameterUsage();
-        else
-          FTerm::exitWithMessage ( "Unknown encoding "
-                                 + std::string(encoding.c_str()) );
-      }
-
-      if ( std::strcmp(long_options[idx].name, "no-mouse")  == 0 )
-        getStartOptions().mouse_support = false;
-
-      if ( std::strcmp(long_options[idx].name, "no-optimized-cursor")  == 0 )
-        getStartOptions().cursor_optimisation = false;
-
-      if ( std::strcmp(long_options[idx].name, "no-terminal-detection")  == 0 )
-        getStartOptions().terminal_detection = false;
-
-      if ( std::strcmp(long_options[idx].name, "no-terminal-data-request")  == 0 )
-        getStartOptions().terminal_data_request = false;
-
-      if ( std::strcmp(long_options[idx].name, "no-color-change")  == 0 )
-        getStartOptions().color_change = false;
-
-      if ( std::strcmp(long_options[idx].name, "no-sgr-optimizer")  == 0 )
-        getStartOptions().sgr_optimizer = false;
-
-      if ( std::strcmp(long_options[idx].name, "vgafont")  == 0 )
-        getStartOptions().vgafont = true;
-
-      if ( std::strcmp(long_options[idx].name, "newfont")  == 0 )
-        getStartOptions().newfont = true;
-
-      if ( std::strcmp(long_options[idx].name, "dark-theme")  == 0 )
-        getStartOptions().dark_theme = true;
-
-    #if defined(__FreeBSD__) || defined(__DragonFly__)
-      if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta")  == 0 )
-        getStartOptions().meta_sends_escape = false;
-
-      if ( std::strcmp(long_options[idx].name, "no-cursorstyle-change")  == 0 )
-        getStartOptions().change_cursorstyle = false;
-    #elif defined(__NetBSD__) || defined(__OpenBSD__)
-      if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta")  == 0 )
-        getStartOptions().meta_sends_escape = false;
-    #endif
-    }
-  }
-}
-
-//----------------------------------------------------------------------
-inline FStartOptions& FApplication::getStartOptions()
-{
-  return FStartOptions::getFStartOptions();
 }
 
 //----------------------------------------------------------------------
@@ -535,7 +579,7 @@ inline void FApplication::destroyLog()
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::findKeyboardWidget()
+inline void FApplication::findKeyboardWidget() const
 {
   // Find the widget that has the keyboard focus
 
@@ -577,13 +621,13 @@ void FApplication::keyPressed()
 }
 
 //----------------------------------------------------------------------
-void FApplication::keyReleased()
+void FApplication::keyReleased() const
 {
   sendKeyUpEvent (keyboard_widget);
 }
 
 //----------------------------------------------------------------------
-void FApplication::escapeKeyPressed()
+void FApplication::escapeKeyPressed() const
 {
   sendEscapeKeyPressEvent();
 }
@@ -639,7 +683,7 @@ inline void FApplication::performKeyboardAction()
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::sendEscapeKeyPressEvent()
+inline void FApplication::sendEscapeKeyPressEvent() const
 {
   // Send an escape key press event
   FKeyEvent k_press_ev (fc::KeyPress_Event, fc::Fkey_escape);
@@ -647,7 +691,7 @@ inline void FApplication::sendEscapeKeyPressEvent()
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyDownEvent (FWidget* widget)
+inline bool FApplication::sendKeyDownEvent (FWidget* widget) const
 {
   // Send key down event
   FKeyEvent k_down_ev (fc::KeyDown_Event, keyboard->getKey());
@@ -656,7 +700,7 @@ inline bool FApplication::sendKeyDownEvent (FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyPressEvent (FWidget* widget)
+inline bool FApplication::sendKeyPressEvent (FWidget* widget) const
 {
   // Send key press event
   FKeyEvent k_press_ev (fc::KeyPress_Event, keyboard->getKey());
@@ -665,7 +709,7 @@ inline bool FApplication::sendKeyPressEvent (FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::sendKeyUpEvent (FWidget* widget)
+inline bool FApplication::sendKeyUpEvent (FWidget* widget) const
 {
   // Send key up event
   FKeyEvent k_up_ev (fc::KeyUp_Event, keyboard->getKey());
@@ -674,7 +718,7 @@ inline bool FApplication::sendKeyUpEvent (FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::sendKeyboardAccelerator()
+inline void FApplication::sendKeyboardAccelerator() const
 {
   if ( FWidget::getOpenMenu() )
     return;
@@ -702,7 +746,7 @@ inline void FApplication::sendKeyboardAccelerator()
 }
 
 //----------------------------------------------------------------------
-void FApplication::processKeyboardEvent()
+void FApplication::processKeyboardEvent() const
 {
   if ( quit_now || app_exit_loop )
     return;
@@ -717,7 +761,7 @@ void FApplication::processKeyboardEvent()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processDialogSwitchAccelerator()
+bool FApplication::processDialogSwitchAccelerator() const
 {
   if ( keyboard->getKey() >= fc::Fmkey_1
     && keyboard->getKey() <= fc::Fmkey_9 )
@@ -748,7 +792,7 @@ bool FApplication::processDialogSwitchAccelerator()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processAccelerator (const FWidget* const& widget)
+bool FApplication::processAccelerator (const FWidget* const& widget) const
 {
   bool accpt{false};
 
@@ -786,7 +830,7 @@ bool FApplication::processAccelerator (const FWidget* const& widget)
 }
 
 //----------------------------------------------------------------------
-bool FApplication::getMouseEvent()
+bool FApplication::getMouseEvent() const
 {
   bool mouse_event_occurred{false};
 
@@ -834,7 +878,7 @@ FWidget*& FApplication::determineClickedWidget()
 }
 
 //----------------------------------------------------------------------
-void FApplication::unsetMoveSizeMode()
+void FApplication::unsetMoveSizeMode() const
 {
   // Unset the move/size mode
 
@@ -849,7 +893,7 @@ void FApplication::unsetMoveSizeMode()
 }
 
 //----------------------------------------------------------------------
-void FApplication::closeDropDown()
+void FApplication::closeDropDown() const
 {
   // Close the open menu
 
@@ -861,7 +905,7 @@ void FApplication::closeDropDown()
 }
 
 //----------------------------------------------------------------------
-void FApplication::unselectMenubarItems()
+void FApplication::unselectMenubarItems() const
 {
   // Unselect the menu bar items
 
@@ -897,7 +941,7 @@ void FApplication::unselectMenubarItems()
 }
 
 //----------------------------------------------------------------------
-void FApplication::sendMouseEvent()
+void FApplication::sendMouseEvent() const
 {
   auto clicked = FWidget::getClickedWidget();
 
@@ -936,7 +980,7 @@ void FApplication::sendMouseEvent()
 //----------------------------------------------------------------------
 void FApplication::sendMouseMoveEvent ( const FPoint& widgetMousePos
                                       , const FPoint& mouse_position
-                                      , int key_state )
+                                      , int key_state ) const
 {
   if ( ! mouse )
     return;
@@ -974,7 +1018,7 @@ void FApplication::sendMouseMoveEvent ( const FPoint& widgetMousePos
 //----------------------------------------------------------------------
 void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
                                            , const FPoint& mouse_position
-                                           , int key_state )
+                                           , int key_state ) const
 {
   if ( ! mouse )
     return;
@@ -1016,7 +1060,7 @@ void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
 //----------------------------------------------------------------------
 void FApplication::sendMouseRightClickEvent ( const FPoint& widgetMousePos
                                             , const FPoint& mouse_position
-                                            , int key_state )
+                                            , int key_state ) const
 {
   if ( ! mouse )
     return;
@@ -1050,7 +1094,7 @@ void FApplication::sendMouseRightClickEvent ( const FPoint& widgetMousePos
 //----------------------------------------------------------------------
 void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
                                              , const FPoint& mouse_position
-                                             , int key_state )
+                                             , int key_state ) const
 {
   if ( ! mouse )
     return;
@@ -1089,7 +1133,7 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
 
 //----------------------------------------------------------------------
 void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
-                                  , const FPoint& mouse_position )
+                                  , const FPoint& mouse_position ) const
 {
   if ( ! mouse )
     return;
@@ -1120,6 +1164,20 @@ void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
 }
 
 //----------------------------------------------------------------------
+FWidget* FApplication::processParameters (const int& argc, char* argv[])
+{
+  if ( argc > 0 && argv[1] && ( std::strcmp(argv[1], "--help") == 0
+                             || std::strcmp(argv[1], "-h") == 0 ) )
+  {
+    showParameterUsage();
+    FApplication::exit(EXIT_SUCCESS);
+  }
+
+  cmd_options (argc, argv);
+  return nullptr;
+}
+
+//----------------------------------------------------------------------
 void FApplication::processMouseEvent()
 {
   if ( ! getMouseEvent() )
@@ -1136,7 +1194,7 @@ void FApplication::processMouseEvent()
 }
 
 //----------------------------------------------------------------------
-void FApplication::processResizeEvent()
+void FApplication::processResizeEvent() const
 {
   if ( ! FTerm::hasChangedTermSize() )
     return;
@@ -1157,26 +1215,24 @@ void FApplication::processResizeEvent()
 //----------------------------------------------------------------------
 void FApplication::processCloseWidget()
 {
+  if ( ! getWidgetCloseList() || getWidgetCloseList()->empty() )
+    return;
+
   setTerminalUpdates (FVTerm::stop_terminal_updates);
+  auto iter = getWidgetCloseList()->begin();
 
-  if ( getWidgetCloseList() && ! getWidgetCloseList()->empty() )
+  while ( iter != getWidgetCloseList()->end() && *iter )
   {
-    auto iter = getWidgetCloseList()->begin();
-
-    while ( iter != getWidgetCloseList()->end() && *iter )
-    {
-      delete *iter;
-      ++iter;
-    }
-
-    getWidgetCloseList()->clear();
+    delete *iter;
+    ++iter;
   }
 
+  getWidgetCloseList()->clear();
   setTerminalUpdates (FVTerm::start_terminal_updates);
 }
 
 //----------------------------------------------------------------------
-void FApplication::processLogger()
+void FApplication::processLogger() const
 {
   // Synchronizing the stream buffer with the logging output
 
@@ -1184,23 +1240,37 @@ void FApplication::processLogger()
 
   if ( ! logger->str().empty() )
     logger->pubsync();
+
+  logger->flush();
 }
 
 //----------------------------------------------------------------------
 bool FApplication::processNextEvent()
 {
   uInt num_events{0};
+  bool is_timeout = isNextEventTimeout();
 
-  processKeyboardEvent();
-  processMouseEvent();
-  processResizeEvent();
-  processTerminalUpdate();
-  processCloseWidget();
-  processLogger();
+  if ( is_timeout )
+  {
+    FObject::getCurrentTime (&time_last_event);
+    processKeyboardEvent();
+    processMouseEvent();
+    processResizeEvent();
+    processTerminalUpdate();
+    processCloseWidget();
+    processLogger();
+    updateTerminal();
+  }
+
   processExternalUserEvent();
 
-  sendQueuedEvents();
-  num_events += processTimerEvent();
+  if ( is_timeout )
+  {
+    sendQueuedEvents();
+    num_events += processTimerEvent();
+    uInt64 wait{next_event_wait / 2};
+    std::this_thread::sleep_for(std::chrono::microseconds(wait));
+  }
 
   return ( num_events > 0 );
 }
@@ -1264,6 +1334,12 @@ bool FApplication::isEventProcessable ( const FObject* receiver
     return false;
 
   return true;
+}
+
+//----------------------------------------------------------------------
+bool FApplication::isNextEventTimeout()
+{
+  return FObject::isTimeout (&time_last_event, next_event_wait);
 }
 
 }  // namespace finalcut

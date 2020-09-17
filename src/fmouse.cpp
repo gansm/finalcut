@@ -1,17 +1,17 @@
 /***********************************************************************
 * fmouse.cpp - Read mouse events                                       *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -20,12 +20,13 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <stdio.h>
+#include <unistd.h>
+
 #include <cstring>
 #include <algorithm>
 #include <iostream>
 #include <new>
-#include <stdio.h>
-#include <unistd.h>
 
 #include "final/fconfig.h"
 #include "final/fkeyboard.h"
@@ -59,7 +60,7 @@ const FString FMouse::getClassName() const
 }
 
 //----------------------------------------------------------------------
-inline const FPoint& FMouse::getPos()
+inline const FPoint& FMouse::getPos() const
 {
   return mouse;
 }
@@ -89,7 +90,7 @@ inline void FMouse::setDblclickInterval (const uInt64 timeout)
 }
 
 //----------------------------------------------------------------------
-inline bool FMouse::hasEvent()
+inline bool FMouse::hasEvent() const
 {
   return mouse_event_occurred;
 }
@@ -172,43 +173,9 @@ inline bool FMouse::isMoved()
 }
 
 //----------------------------------------------------------------------
-inline bool FMouse::isInputDataPending()
+inline bool FMouse::isInputDataPending() const
 {
   return input_data_pending;
-}
-
-//----------------------------------------------------------------------
-inline FMouse* FMouse::createMouseObject (const mouse_type mt)
-{
-  assert ( mt == FMouse::none
-        || mt == FMouse::gpm
-        || mt == FMouse::x11
-        || mt == FMouse::sgr
-        || mt == FMouse::urxvt );
-
-  switch ( mt )
-  {
-    case none:
-      return nullptr;
-
-    case gpm:
-#ifdef F_HAVE_LIBGPM
-      return new FMouseGPM;
-#else
-      return nullptr;
-#endif
-
-    case x11:
-      return new FMouseX11;
-
-    case sgr:
-      return new FMouseSGR;
-
-    case urxvt:
-      return new FMouseUrxvt;
-  }
-
-  return nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -227,25 +194,25 @@ inline FMouse::FMouseButton& FMouse::getButtonState()
 }
 
 //----------------------------------------------------------------------
-inline const FPoint& FMouse::getNewPos()
+inline const FPoint& FMouse::getNewPos() const
 {
   return new_mouse_position;
 }
 
 //----------------------------------------------------------------------
-uInt16 FMouse::getMaxWidth()
+uInt16 FMouse::getMaxWidth() const
 {
   return max_width;
 }
 
 //----------------------------------------------------------------------
-uInt16 FMouse::getMaxHeight()
+uInt16 FMouse::getMaxHeight() const
 {
   return max_height;
 }
 
 //----------------------------------------------------------------------
-uInt64 FMouse::getDblclickInterval()
+uInt64 FMouse::getDblclickInterval() const
 {
   return dblclick_interval;
 }
@@ -294,7 +261,7 @@ void FMouse::setEvent()
 }
 
 //----------------------------------------------------------------------
-bool FMouse::isDblclickTimeout (const timeval* time)
+bool FMouse::isDblclickTimeout (const timeval* time) const
 {
   return FObject::isTimeout (time, dblclick_interval);
 }
@@ -349,10 +316,10 @@ void FMouseGPM::processEvent (struct timeval*)
   if ( Gpm_GetEvent(&gpm_ev) == 1 )
   {
     Gpm_FitEvent (&gpm_ev);
+    GPM_DRAWPOINTER(&gpm_ev);
 
     if ( ! hasSignificantEvents() )
     {
-      GPM_DRAWPOINTER(&gpm_ev);
       has_gpm_mouse_data = false;
       clearEvent();
       return;
@@ -376,7 +343,6 @@ void FMouseGPM::processEvent (struct timeval*)
       case GPM_UP:
         interpretKeyUp();
 
-
       default:
         break;
     }
@@ -389,7 +355,6 @@ void FMouseGPM::processEvent (struct timeval*)
     else
       setPending(false);
 
-    GPM_DRAWPOINTER(&gpm_ev);
     has_gpm_mouse_data = false;
     setEvent();
     return;
@@ -412,9 +377,9 @@ bool FMouseGPM::gpmMouse (bool enable)
   if ( enable )
   {
     Gpm_Connect conn;
-    conn.eventMask   = uInt16(~0);  // Get all including wheel event
-    conn.defaultMask = GPM_MOVE;
-    conn.maxMod      = uInt16(~0);
+    conn.eventMask   = GPM_MOVE | GPM_DRAG | GPM_DOWN | GPM_UP;
+    conn.defaultMask = 0;
+    conn.maxMod      = 0;
     conn.minMod      = 0;
     Gpm_Open(&conn, 0);
 
@@ -431,7 +396,7 @@ bool FMouseGPM::gpmMouse (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FMouseGPM::hasSignificantEvents()
+bool FMouseGPM::hasSignificantEvents() const
 {
   return ! (gpm_ev.type & GPM_MOVE)
       || gpm_ev.wdy != 0
@@ -510,14 +475,14 @@ bool FMouseGPM::getGpmKeyPressed (bool is_pending)
 }
 
 //----------------------------------------------------------------------
-void FMouseGPM::drawGpmPointer()
+void FMouseGPM::drawGpmPointer() const
 {
   if ( isGpmMouseEnabled() && gpm_ev.x != -1 )
     GPM_DRAWPOINTER(&gpm_ev);
 }
 
 //----------------------------------------------------------------------
-int FMouseGPM::gpmEvent (bool clear)
+int FMouseGPM::gpmEvent (bool clear) const
 {
   const int max = ( gpm_fd > stdin_no ) ? gpm_fd : stdin_no;
   fd_set ifds{};
@@ -877,7 +842,8 @@ void FMouseSGR::setMoveState (const FPoint& mouse_position, int btn)
 }
 
 //----------------------------------------------------------------------
-void FMouseSGR::setPressedButtonState (const int btn, const struct timeval* time)
+void FMouseSGR::setPressedButtonState ( const int btn
+                                      , const struct timeval* time )
 {
   // Gets the extended x11 mouse mode (SGR) status for pressed buttons
 
@@ -1216,12 +1182,12 @@ void FMouseUrxvt::setButtonState (const int btn, const struct timeval* time)
 FMouseControl::FMouseControl()
 {
 #ifdef F_HAVE_LIBGPM
-  mouse_protocol[FMouse::gpm] = FMouse::createMouseObject(FMouse::gpm);
+  mouse_protocol[FMouse::gpm] = FMouse::createMouseObject<FMouseGPM>();
 #endif
 
-  mouse_protocol[FMouse::x11] = FMouse::createMouseObject(FMouse::x11);
-  mouse_protocol[FMouse::sgr] = FMouse::createMouseObject(FMouse::sgr);
-  mouse_protocol[FMouse::urxvt] = FMouse::createMouseObject(FMouse::urxvt);
+  mouse_protocol[FMouse::x11] = FMouse::createMouseObject<FMouseX11>();
+  mouse_protocol[FMouse::sgr] = FMouse::createMouseObject<FMouseSGR>();
+  mouse_protocol[FMouse::urxvt] = FMouse::createMouseObject<FMouseUrxvt>();
 }
 
 //----------------------------------------------------------------------
@@ -1632,7 +1598,7 @@ FMouse* FMouseControl::getMouseWithEvent()
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::xtermMouse (bool enable)
+void FMouseControl::xtermMouse (bool enable) const
 {
   // activate/deactivate the xterm mouse support
 

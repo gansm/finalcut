@@ -1,17 +1,17 @@
 /***********************************************************************
 * fcombobox.h - Widget FComboBox                                       *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -151,7 +151,7 @@ class FComboBox : public FWidget
     std::size_t         getCount() const;
     FString             getText() const;
     FDataPtr            getItemData();
-    FLineEdit::label_o  getLabelOrientation();
+    FLineEdit::label_o  getLabelOrientation() const;
 
     // Mutators
     void                setSize (const FSize&, bool = true) override;
@@ -211,14 +211,14 @@ class FComboBox : public FWidget
     void                onePosUp();
     void                onePosDown();
     void                passEventToListWindow (FMouseEvent* const&);
-    void                processClick();
-    void                processChanged();
+    void                processClick() const;
+    void                processChanged() const;
 
     // Callback methods
-    void                cb_setInputField (const FWidget*, const FDataPtr);
-    void                cb_closeComboBox (const FWidget*, const FDataPtr);
-    void                cb_inputFieldSwitch (const FWidget*, const FDataPtr);
-    void                cb_inputFieldHandOver (const FWidget*, const FDataPtr);
+    void                cb_setInputField();
+    void                cb_closeComboBox();
+    void                cb_inputFieldSwitch();
+    void                cb_inputFieldHandOver();
 
     // Data members
     FLineEdit           input_field{this};
@@ -254,7 +254,7 @@ inline FDataPtr FComboBox::getItemData()
 }
 
 //----------------------------------------------------------------------
-inline FLineEdit::label_o FComboBox::getLabelOrientation()
+inline FLineEdit::label_o FComboBox::getLabelOrientation() const
 { return input_field.getLabelOrientation(); }
 
 //----------------------------------------------------------------------

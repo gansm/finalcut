@@ -1,17 +1,17 @@
 /***********************************************************************
 * opti-move.cpp - Tests the cursor movement optimization               *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2016-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <iomanip>
+#include <memory>
 #include <string>
 
 #include <final/final.h>
@@ -133,34 +134,61 @@ void move (int xold, int yold, int xnew, int ynew)
 }
 
 //----------------------------------------------------------------------
-class DirectLogger : public finalcut::FLog
+class DirectLogger final : public finalcut::FLog
 {
   public:
+    // Constructor
+    DirectLogger();
+
+    // Destructor
+    ~DirectLogger() override;
+
     void info (const std::string& entry) override
     {
       output << entry << "\r" << std::endl;
     }
 
     void warn (const std::string&) override
-    { }
+    {
+      // An implementation is not required in this context
+    }
 
     void error (const std::string&) override
-    { }
+    {
+      // An implementation is not required in this context
+    }
+
 
     void debug (const std::string&) override
-    { }
+    {
+      // An implementation is not required in this context
+    }
+
+    void flush() override
+    {
+      output.flush();
+    }
 
     void setOutputStream (const std::ostream& os) override
     { output.rdbuf(os.rdbuf()); }
 
     void setLineEnding (LineEnding) override
-    { }
+    {
+      // An implementation is not required in this context
+    }
+
 
     void enableTimestamp() override
-    { }
+    {
+      // An implementation is not required in this context
+    }
+
 
     void disableTimestamp() override
-    { }
+    {
+      // An implementation is not required in this context
+    }
+
 
   private:
     // Data member
@@ -168,27 +196,45 @@ class DirectLogger : public finalcut::FLog
 };
 
 //----------------------------------------------------------------------
+DirectLogger::DirectLogger()  // constructor
+{ }
+
+//----------------------------------------------------------------------
+DirectLogger::~DirectLogger()  // destructor
+{ }
+
+
+//----------------------------------------------------------------------
 //                               main part
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
+  // Disable mouse
+  finalcut::FStartOptions::getFStartOptions().mouse_support = false;
+
   // Create the application object
-  finalcut::FApplication TermApp{argc, argv};
+  finalcut::FApplication term_app{argc, argv};
+
+  // Force terminal initialization without calling show()
+  term_app.initTerminal();
+
+  if ( finalcut::FApplication::isQuit() )
+    return 0;
 
   // Pointer to the global virtual terminal object
-  app = &TermApp;
+  app = &term_app;
 
   // Get screen dimension
-  int xmax = int(TermApp.getDesktopWidth() - 1);
-  int ymax = int(TermApp.getDesktopHeight() - 1);
+  int xmax = int(term_app.getDesktopWidth() - 1);
+  int ymax = int(term_app.getDesktopHeight() - 1);
   finalcut::FString line{std::size_t(xmax) + 1, '-'};
 
   // Place the cursor in the upper left corner
-  TermApp.setTermXY(0, 0);
+  term_app.setTermXY(0, 0);
   // Reset all terminal attributes
-  TermApp.setNormal();
+  term_app.setNormal();
   // Clear the screen
-  TermApp.clearArea();
+  term_app.clearArea();
 
   // Show the determined terminal name and text resolution
   std::cout << "Terminal: " << finalcut::FTerm::getTermType() << "\r\n";
@@ -226,12 +272,12 @@ int main (int argc, char* argv[])
   std::cout << "\r" << line << std::flush;
   // Generation of a logger in a shared_ptr via a pointer
   finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
-  // Get the shared_ptr with the base class
-  std::shared_ptr<finalcut::FLog> log = finalcut::FApplication::getLog();
   const finalcut::FOptiMove& opti_move = *finalcut::FTerm::getFOptiMove();
   finalcut::printDurations(opti_move);
 
   // Waiting for keypress
   keyPressed();
-  app = nullptr;  // End of TermApp object scope
+  app = nullptr;  // End of term_app object scope
+
+  return 0;
 }

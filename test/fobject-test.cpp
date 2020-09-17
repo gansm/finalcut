@@ -1,17 +1,17 @@
 /***********************************************************************
 * fobject-test.cpp - FPoint unit tests                                 *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -514,7 +514,7 @@ void FObjectTest::timerTest()
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 0 );
 
   CPPUNIT_ASSERT ( ! t1.delTimer (id1) );  // id double delete
-  CPPUNIT_ASSERT ( ! t1.delAllTimer() );
+  CPPUNIT_ASSERT ( ! t1.delAllTimers() );
 
   t1.addTimer(250);
   t1.addTimer(500);
@@ -524,7 +524,7 @@ void FObjectTest::timerTest()
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 4 );
   CPPUNIT_ASSERT ( t2.getTimerList()->size() == 4 );
 
-  t1.delOwnTimer();
+  t1.delOwnTimers();
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 2 );
   CPPUNIT_ASSERT ( t2.getTimerList()->size() == 2 );
 
@@ -532,7 +532,7 @@ void FObjectTest::timerTest()
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 3 );
   CPPUNIT_ASSERT ( t2.getTimerList()->size() == 3 );
 
-  t2.delAllTimer();
+  t2.delAllTimers();
   CPPUNIT_ASSERT ( t1.getTimerList()->empty() );
   CPPUNIT_ASSERT ( t2.getTimerList()->empty() );
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 0 );

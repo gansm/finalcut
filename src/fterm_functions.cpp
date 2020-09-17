@@ -1,17 +1,17 @@
 /***********************************************************************
 * fterm_functions.cpp - FTerm helper functions                         *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -25,7 +25,9 @@
 #endif
 
 #include <algorithm>
+#include <limits>
 #include <numeric>
+#include <utility>
 
 #include "final/fapplication.h"
 #include "final/fcharmap.h"
@@ -247,9 +249,11 @@ bool hasFullWidthSupports()
 
   if ( has_fullwidth_support == unknown_fullwidth_support )
   {
+    if ( ! FTerm::isInitialized() )
+      return true;  // Assume that it is a modern terminal with full-width support
+
     if ( FTerm::isCygwinTerminal()
       || FTerm::isTeraTerm()
-      || FTerm::isRxvtTerminal()
       || FTerm::isFreeBSDTerm()
       || FTerm::isNetBSDTerm()
       || FTerm::isOpenBSDTerm()

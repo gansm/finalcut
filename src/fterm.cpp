@@ -1,17 +1,17 @@
 /***********************************************************************
 * fterm.cpp - Base class for terminal control                          *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -62,13 +62,16 @@
 namespace finalcut
 {
 
-// global FTerm object
+// Global FTerm object
 static FTerm* init_term_object{nullptr};
 
-// global init state
+// Global init state
 static bool term_initialized{false};
 
-// static class attributes
+// Counts the number of object instances
+static uInt object_counter{0};
+
+// Static class attributes
 FTermData*      FTerm::data          {nullptr};
 FSystem*        FTerm::fsys          {nullptr};
 FOptiMove*      FTerm::opti_move     {nullptr};
@@ -101,10 +104,12 @@ FMouseControl*  FTerm::mouse         {nullptr};
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FTerm::FTerm (bool disable_alt_screen)
+FTerm::FTerm()
 {
-  if ( ! term_initialized )
-    init (disable_alt_screen);
+  if ( object_counter == 0 )
+    allocationValues();  // Allocation of global objects
+
+  object_counter++;
 }
 
 //----------------------------------------------------------------------
@@ -112,6 +117,14 @@ FTerm::~FTerm()  // destructor
 {
   if ( init_term_object == this )
     finish();  // Resetting console settings
+
+  object_counter--;
+
+  if ( object_counter == 0 )
+  {
+    printExitMessage();
+    deallocationValues();  // Deallocation of global objects
+  }
 }
 
 
@@ -119,6 +132,9 @@ FTerm::~FTerm()  // destructor
 //----------------------------------------------------------------------
 std::size_t FTerm::getLineNumber()
 {
+  if ( ! data )
+    data = FTerm::getFTermData();
+
   const auto& term_geometry = data->getTermGeometry();
 
   if ( term_geometry.getHeight() == 0 )
@@ -130,6 +146,9 @@ std::size_t FTerm::getLineNumber()
 //----------------------------------------------------------------------
 std::size_t FTerm::getColumnNumber()
 {
+  if ( ! data )
+    data = FTerm::getFTermData();
+
   const auto& term_geometry = data->getTermGeometry();
 
   if ( term_geometry.getWidth() == 0 )
@@ -217,7 +236,7 @@ FSystem* FTerm::getFSystem()
     }
     catch (const std::bad_alloc&)
     {
-      badAllocOutput ("FTermData");
+      badAllocOutput ("FSystemImpl");
       std::abort();
     }
   }
@@ -440,15 +459,15 @@ bool FTerm::isMonochron()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isXTerminal()
-{
-  return term_detection->isXTerminal();
-}
-
-//----------------------------------------------------------------------
 bool FTerm::isAnsiTerminal()
 {
   return term_detection->isAnsiTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isXTerminal()
+{
+  return term_detection->isXTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -464,18 +483,6 @@ bool FTerm::isUrxvtTerminal()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isMltermTerminal()
-{
-  return term_detection->isMltermTerminal();
-}
-
-//----------------------------------------------------------------------
-bool FTerm::isPuttyTerminal()
-{
-  return term_detection->isPuttyTerminal();
-}
-
-//----------------------------------------------------------------------
 bool FTerm::isKdeTerminal()
 {
   return term_detection->isKdeTerminal();
@@ -488,21 +495,21 @@ bool FTerm::isGnomeTerminal()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isKtermTerminal()
+bool FTerm::isPuttyTerminal()
 {
-  return term_detection->isKtermTerminal();
+  return term_detection->isPuttyTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isWindowsTerminal()
+{
+  return term_detection->isWindowsTerminal();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isTeraTerm()
 {
   return term_detection->isTeraTerm();
-}
-
-//----------------------------------------------------------------------
-bool FTerm::isSunTerminal()
-{
-  return term_detection->isSunTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -542,6 +549,12 @@ bool FTerm::isOpenBSDTerm()
 }
 
 //----------------------------------------------------------------------
+bool FTerm::isSunTerminal()
+{
+  return term_detection->isSunTerminal();
+}
+
+//----------------------------------------------------------------------
 bool FTerm::isScreenTerm()
 {
   return term_detection->isScreenTerm();
@@ -554,9 +567,27 @@ bool FTerm::isTmuxTerm()
 }
 
 //----------------------------------------------------------------------
+bool FTerm::isKtermTerminal()
+{
+  return term_detection->isKtermTerminal();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isMltermTerminal()
+{
+  return term_detection->isMltermTerminal();
+}
+
+//----------------------------------------------------------------------
 bool FTerm::isNewFont()
 {
   return data->isNewFont();
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isInitialized()
+{
+  return term_initialized;
 }
 
 //----------------------------------------------------------------------
@@ -638,6 +669,14 @@ void FTerm::redefineDefaultColors (bool enable)
 void FTerm::setDblclickInterval (const uInt64 timeout)
 {
   mouse->setDblclickInterval(timeout);
+}
+
+//----------------------------------------------------------------------
+void FTerm::useAlternateScreen (bool enable)
+{
+  // Sets alternate screen usage
+
+  getFTermData()->useAlternateScreen(enable);
 }
 
 //----------------------------------------------------------------------
@@ -994,9 +1033,9 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
     const int bb = (b * 1001) / 256;
 
     if ( Ic )
-      color_str = FTermcap::encodeParameter(Ic, index, rr, gg, bb);
+      color_str = FTermcap::encodeParameter(Ic, index, rr, gg, bb, 0, 0, 0, 0, 0);
     else if ( Ip )
-      color_str = FTermcap::encodeParameter(Ip, index, 0, 0, 0, rr, gg, bb);
+      color_str = FTermcap::encodeParameter(Ip, index, 0, 0, 0, rr, gg, bb, 0, 0);
 
     if ( color_str )
     {
@@ -1293,22 +1332,6 @@ void FTerm::changeTermSizeFinished()
   data->setTermResized(false);
 }
 
-//----------------------------------------------------------------------
-void FTerm::exitWithMessage (const FString& message)
-{
-  // Exit the programm
-  if ( init_term_object )
-    init_term_object->finish();
-
-  std::fflush (stderr);
-  std::fflush (stdout);
-
-  if ( ! message.isEmpty() )
-    FApplication::getLog()->warn(message.c_str());
-
-  std::exit (EXIT_FAILURE);
-}
-
 
 // private methods of FTerm
 //----------------------------------------------------------------------
@@ -1318,15 +1341,12 @@ inline FStartOptions& FTerm::getStartOptions()
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_global_values (bool disable_alt_screen)
+void FTerm::init_global_values()
 {
   // Initialize global values
 
   // Preset to false
   data->setNewFont(false);
-
-  // Sets alternate screen usage
-  data->useAlternateScreen(! disable_alt_screen);
 
   // Initialize xterm object
   getFTermXTerminal()->init();
@@ -1653,13 +1673,21 @@ void FTerm::init_optiAttr()
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_font()
+bool FTerm::init_font()
 {
   if ( getStartOptions().vgafont && ! setVGAFont() )
-    exitWithMessage ("VGAfont is not supported by this terminal");
+  {
+    data->setExitMessage("VGAfont is not supported by this terminal");
+    FApplication::exit(EXIT_FAILURE);
+  }
 
   if ( getStartOptions().newfont && ! setNewFont() )
-    exitWithMessage ("Newfont is not supported by this terminal");
+  {
+    data->setExitMessage("Newfont is not supported by this terminal");
+    FApplication::exit(EXIT_FAILURE);
+  }
+
+  return ( ! FApplication::isQuit() );
 }
 
 //----------------------------------------------------------------------
@@ -1878,6 +1906,26 @@ inline bool FTerm::hasNoFontSettingOption()
 }
 
 //----------------------------------------------------------------------
+inline bool FTerm::isDefaultPaletteTheme()
+{
+  FStringList default_themes
+  {
+    "default8ColorPalette",
+    "default16ColorPalette",
+    "default16DarkColorPalette"
+  };
+
+  auto iter = std::find ( default_themes.begin()
+                        , default_themes.end()
+                        , getColorPaletteTheme()->getClassName() );
+
+  if ( iter == default_themes.end() )  // No default theme
+    return false;
+
+  return true;
+}
+
+//----------------------------------------------------------------------
 void FTerm::redefineColorPalette()
 {
   // Redefine the color palette
@@ -1888,16 +1936,23 @@ void FTerm::redefineColorPalette()
   resetColorMap();
   saveColorMap();
 
+  if ( getColorPaletteTheme().use_count() > 0 && ! isDefaultPaletteTheme() )
+  {
+    // A user color palette theme is in use
+    getColorPaletteTheme()->setColorPalette();
+    return;
+  }
+
   if ( getStartOptions().dark_theme )
   {
-    setColorPaletteTheme<default16DarkColorPalette>(&FTerm::setPalette);
+    setColorPaletteTheme<default16DarkColorPalette>();
   }
   else
   {
     if ( getMaxColor() >= 16 )
-      setColorPaletteTheme<default16ColorPalette>(&FTerm::setPalette);
+      setColorPaletteTheme<default16ColorPalette>();
     else  // 8 colors
-      setColorPaletteTheme<default8ColorPalette>(&FTerm::setPalette);
+      setColorPaletteTheme<default8ColorPalette>();
   }
 }
 
@@ -2112,6 +2167,7 @@ void FTerm::useAlternateScreenBuffer()
   {
     putstring (TCAP(fc::t_enter_ca_mode));
     std::fflush(stdout);
+    getFTermData()->setAlternateScreenInUse(true);
   }
 }
 
@@ -2128,6 +2184,7 @@ void FTerm::useNormalScreenBuffer()
   {
     putstring (TCAP(fc::t_exit_ca_mode));
     std::fflush(stdout);
+    getFTermData()->setAlternateScreenInUse(false);
   }
 
   // restore cursor to position of last save_cursor
@@ -2139,7 +2196,7 @@ void FTerm::useNormalScreenBuffer()
 }
 
 //----------------------------------------------------------------------
-inline void FTerm::allocationValues()
+inline void FTerm::allocationValues() const
 {
   FStartOptions::getFStartOptions();
   getFTermData();
@@ -2209,17 +2266,17 @@ inline void FTerm::deallocationValues()
 
   const defaultPutChar* putchar_ptr = &(putchar());
   delete putchar_ptr;
+  destroyColorPaletteTheme();
   FStartOptions::destroyObject();
 }
 
 //----------------------------------------------------------------------
-void FTerm::init (bool disable_alt_screen)
+void FTerm::init()
 {
   init_term_object = this;
 
   // Initialize global values for all objects
-  allocationValues();
-  init_global_values(disable_alt_screen);
+  init_global_values();
 
   // Initialize the terminal
   if ( ! init_terminal() )
@@ -2294,7 +2351,8 @@ void FTerm::init (bool disable_alt_screen)
 
   // Activate the VGA or the new graphic font
   // (depending on the initialization values)
-  init_font();
+  if ( ! init_font() )
+    return;
 
   // Turn off hardware echo
   FTermios::unsetHardwareEcho();
@@ -2307,7 +2365,7 @@ void FTerm::init (bool disable_alt_screen)
 }
 
 //----------------------------------------------------------------------
-bool FTerm::init_terminal()
+bool FTerm::init_terminal() const
 {
   // Initialize termios
   FTermios::init();
@@ -2349,7 +2407,7 @@ bool FTerm::init_terminal()
 }
 
 //----------------------------------------------------------------------
-void FTerm::initOSspecifics()
+void FTerm::initOSspecifics() const
 {
 #if defined(__linux__)
   linux->init();    // Initialize Linux console
@@ -2383,7 +2441,7 @@ void FTerm::initOSspecifics()
 }
 
 //----------------------------------------------------------------------
-void FTerm::initTermspecifics()
+void FTerm::initTermspecifics() const
 {
   if ( isKdeTerminal() )
     setKDECursor(fc::UnderlineCursor);
@@ -2396,7 +2454,7 @@ void FTerm::initTermspecifics()
 }
 
 //----------------------------------------------------------------------
-void FTerm::initBaudRate()
+void FTerm::initBaudRate() const
 {
   const int stdout_no = FTermios::getStdOut();
   const uInt baud = FTermios::getBaudRate();
@@ -2410,7 +2468,7 @@ void FTerm::initBaudRate()
 }
 
 //----------------------------------------------------------------------
-void FTerm::finish()
+void FTerm::finish() const
 {
   // Set default signal handler
 
@@ -2449,7 +2507,7 @@ void FTerm::finish()
   // Switch to normal escape key mode
   disableApplicationEscKey();
 
-  finishOSspecifics1();
+  finishOSspecifics();
 
   if ( isKdeTerminal() )
     setKDECursor(fc::BlockCursor);
@@ -2474,18 +2532,10 @@ void FTerm::finish()
 
   if ( data->isNewFont() || data->isVGAFont() )
     setOldFont();
-
-  // Print exit message
-  const auto& exit_message = data->getExitMessage();
-
-  if ( ! exit_message.isEmpty() )
-    FApplication::getLog()->info(exit_message.c_str());
-
-  deallocationValues();
 }
 
 //----------------------------------------------------------------------
-void FTerm::finishOSspecifics1()
+void FTerm::finishOSspecifics() const
 {
 #if defined(__linux__)
   linux->finish();
@@ -2497,7 +2547,7 @@ void FTerm::finishOSspecifics1()
 }
 
 //----------------------------------------------------------------------
-void FTerm::finish_encoding()
+void FTerm::finish_encoding() const
 {
 #if defined(__linux__)
   if ( isLinuxTerm() && data->hasUTF8Console() )
@@ -2510,6 +2560,53 @@ void FTerm::destroyColorPaletteTheme()
 {
   const FColorPalettePtr* theme = &(getColorPaletteTheme());
   delete theme;
+}
+
+//----------------------------------------------------------------------
+void FTerm::printExitMessage()
+{
+  // Print exit message
+  const auto& exit_message = data->getExitMessage();
+
+  if ( ! exit_message.isEmpty() )
+    std::cerr << "Exit: " << exit_message << std::endl;
+}
+
+//----------------------------------------------------------------------
+void FTerm::terminalSizeChange()
+{
+  if ( ! data )
+    return;
+
+  if ( data->hasTermResized() )
+    return;
+
+  // Initialize a resize event to the root element
+  data->setTermResized(true);
+}
+
+//----------------------------------------------------------------------
+void FTerm::processTermination (int signum)
+{
+  if ( init_term_object )
+    init_term_object->finish();
+
+  std::fflush (stderr);
+  std::fflush (stdout);
+
+  if ( data )
+  {
+    FStringStream msg{};
+    msg << "Program stopped: signal " << signum
+        << " (" << strsignal(signum) << ")";
+    data->setExitMessage(msg.str());
+    printExitMessage();
+  }
+
+  if ( init_term_object )
+    init_term_object->deallocationValues();
+
+  std::terminate();
 }
 
 //----------------------------------------------------------------------
@@ -2542,14 +2639,7 @@ void FTerm::signal_handler (int signum)
   switch (signum)
   {
     case SIGWINCH:
-      if ( ! data )
-        break;
-
-      if ( data->hasTermResized() )
-        break;
-
-      // initialize a resize event to the root element
-      data->setTermResized(true);
+      terminalSizeChange();
       break;
 
     case SIGTERM:
@@ -2558,15 +2648,7 @@ void FTerm::signal_handler (int signum)
     case SIGABRT:
     case SIGILL:
     case SIGSEGV:
-      init_term_object->finish();
-      std::fflush (stderr);
-      std::fflush (stdout);
-      *FApplication::getLog() << FLog::Error
-                              << "\nProgram stopped: signal "
-                              << signum
-                              << " (" << strsignal(signum) << ")"
-                              << std::endl;
-      std::terminate();
+      processTermination(signum);
 
     default:
       break;

@@ -1,17 +1,17 @@
 /***********************************************************************
 * fcolorpalette.cpp - Define RGB color value for a palette entry       *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2020 Markus Gans                                           *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -42,21 +42,21 @@ FColorPalette::~FColorPalette()  // destructor
 
 // protected methods of FColorPalette
 //----------------------------------------------------------------------
-void FColorPalette::setPalette (FColor index, int r, int g, int b)
+void FColorPalette::setPalette (FColor index, int r, int g, int b) const
 {
   set_palette (index, r, g, b);
 }
 
 //----------------------------------------------------------------------
-void FColorPalette::setVGAdefaultPalette()
+void FColorPalette::setVGAdefaultPalette() const
 {
   setPalette (fc::Black, 0x00, 0x00, 0x00);
   setPalette (fc::Blue, 0x00, 0x00, 0xaa);
   setPalette (fc::Green, 0x00, 0xaa, 0x00);
-  setPalette (fc::Cyan, 0x00, 0x55, 0xaa);
+  setPalette (fc::Cyan, 0x00, 0xaa, 0xaa);
   setPalette (fc::Red, 0xaa, 0x00, 0x00);
   setPalette (fc::Magenta, 0xaa, 0x00, 0xaa);
-  setPalette (fc::Brown, 0xaa, 0xaa, 0x00);
+  setPalette (fc::Brown, 0xaa, 0x55, 0x00);
   setPalette (fc::LightGray, 0xaa, 0xaa, 0xaa);
   setPalette (fc::DarkGray, 0x55, 0x55, 0x55);
   setPalette (fc::LightBlue, 0x55, 0x55, 0xff);
@@ -126,7 +126,7 @@ default16ColorPalette::default16ColorPalette (const FSetPalette& f)
 default16ColorPalette::~default16ColorPalette()
 { }
 
-// public methods of default8ColorPalette
+// public methods of default16ColorPalette
 //----------------------------------------------------------------------
 void default16ColorPalette::setColorPalette()
 {
@@ -169,7 +169,7 @@ default16DarkColorPalette::default16DarkColorPalette (const FSetPalette& f)
 default16DarkColorPalette::~default16DarkColorPalette()
 { }
 
-// public methods of default8ColorPalette
+// public methods of default16DarkColorPalette
 //----------------------------------------------------------------------
 void default16DarkColorPalette::setColorPalette()
 {
@@ -180,7 +180,7 @@ void default16DarkColorPalette::setColorPalette()
   setPalette (fc::Red, 0xa5, 0x40, 0x40);
   setPalette (fc::Magenta, 0xb2, 0x18, 0xb2);
   setPalette (fc::Brown, 0xe8, 0x87, 0x1f);
-  setPalette (fc::LightGray, 0xd2, 0xd2, 0xd2);
+  setPalette (fc::LightGray, 0xdc, 0xdc, 0xdc);
   setPalette (fc::DarkGray, 0x27, 0x33, 0x39);
   setPalette (fc::LightBlue, 0xb0, 0xb0, 0xb8);
   setPalette (fc::LightGreen, 0x5e, 0xeb, 0x5c);

@@ -1,17 +1,17 @@
 /***********************************************************************
 * flogger-test.cpp - FLogger unit tests                                *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2020 Markus Gans                                           *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -20,6 +20,10 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
+#include <sstream>
+#include <string>
+
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -27,8 +31,6 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
-
-#include <sstream>
 
 #include <final/final.h>
 
@@ -59,17 +61,28 @@ class myLogger : public finalcut::FLog
       output << "Debug: " << entry << std::endl;
     }
 
+    void flush() override
+    {
+      // An implementation is not required in this context
+    }
+
     void setOutputStream (const std::ostream& os) override
     { output.rdbuf(os.rdbuf()); }
 
     void setLineEnding (LineEnding) override
-    { }
+    {
+      // An implementation is not required in this context
+    }
 
     void enableTimestamp() override
-    { }
+    {
+      // An implementation is not required in this context
+    }
 
     void disableTimestamp() override
-    { }
+    {
+      // An implementation is not required in this context
+    }
 
   private:
     // Data member

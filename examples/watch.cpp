@@ -1,17 +1,17 @@
 /***********************************************************************
 * watch.cpp - A watch with FSwitch widgets                             *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -54,8 +54,8 @@ class Watch final : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback methods
-    void cb_clock (const finalcut::FWidget*, const FDataPtr);
-    void cb_seconds (const finalcut::FWidget*, const FDataPtr);
+    void cb_clock();
+    void cb_seconds();
 
   protected:
     // Method
@@ -99,21 +99,23 @@ Watch::Watch (FWidget* parent)
   clock_sw.addCallback
   (
     "toggled",
-    F_METHOD_CALLBACK (this, &Watch::cb_clock)
+    this, &Watch::cb_clock
   );
 
   // Connect switch signal "toggled" with a callback member function
   seconds_sw.addCallback
   (
     "toggled",
-    F_METHOD_CALLBACK (this, &Watch::cb_seconds)
+    this, &Watch::cb_seconds
   );
 
   // Connect button signal "clicked" with a callback member function
   quit_btn.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
+    finalcut::getFApplication(),
+    &finalcut::FApplication::cb_exitApp,
+    this
   );
 }
 
@@ -152,7 +154,7 @@ void Watch::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Watch::cb_clock (const finalcut::FWidget*, const FDataPtr)
+void Watch::cb_clock()
 {
   if ( clock_sw.isChecked() )
   {
@@ -161,14 +163,14 @@ void Watch::cb_clock (const finalcut::FWidget*, const FDataPtr)
   }
   else
   {
-    delAllTimer();  // Delete all timers and stop updating the time
+    delAllTimers();  // Delete all timers and stop updating the time
     time_str = "--:--:--";
     time_str.redraw();
   }
 }
 
 //----------------------------------------------------------------------
-void Watch::cb_seconds (const finalcut::FWidget*, const FDataPtr)
+void Watch::cb_seconds()
 {
   if ( seconds_sw.isChecked() )
     sec = true;

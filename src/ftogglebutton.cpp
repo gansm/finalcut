@@ -1,17 +1,17 @@
 /***********************************************************************
 * ftogglebutton.cpp - Intermediate base class for a toggle button      *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -148,29 +148,12 @@ bool FToggleButton::setNoUnderline (bool enable)
 bool FToggleButton::setEnable (bool enable)
 {
   FWidget::setEnable(enable);
-  const auto& wc = getColorTheme();
+  resetColors();
 
   if ( enable )
-  {
     setHotkeyAccelerator();
-
-    if ( hasFocus() )
-    {
-      setForegroundColor (wc->toggle_button_active_focus_fg);
-      setBackgroundColor (wc->toggle_button_active_focus_bg);
-    }
-    else
-    {
-      setForegroundColor (wc->toggle_button_active_fg);
-      setBackgroundColor (wc->toggle_button_active_bg);
-    }
-  }
   else
-  {
     delAccelerator();
-    setForegroundColor (wc->toggle_button_inactive_fg);
-    setBackgroundColor (wc->toggle_button_inactive_bg);
-  }
 
   return enable;
 }
@@ -179,25 +162,10 @@ bool FToggleButton::setEnable (bool enable)
 bool FToggleButton::setFocus (bool enable)
 {
   FWidget::setFocus(enable);
+  resetColors();
 
-  if ( isEnabled() )
-  {
-    const auto& wc = getColorTheme();
-
-    if ( enable )
-    {
-      if ( isRadioButton()  )
-        focus_inside_group = false;
-
-      setForegroundColor (wc->toggle_button_active_focus_fg);
-      setBackgroundColor (wc->toggle_button_active_focus_bg);
-    }
-    else
-    {
-      setForegroundColor (wc->toggle_button_active_fg);
-      setBackgroundColor (wc->toggle_button_active_bg);
-    }
-  }
+  if ( isEnabled() && hasFocus() && isRadioButton() )
+    focus_inside_group = false;
 
   return enable;
 }
@@ -305,7 +273,7 @@ void FToggleButton::onAccel (FAccelEvent* ev)
 
   if ( ! hasFocus() )
   {
-    auto focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    auto focused_widget = ev->focusedWidget();
 
     if ( focused_widget && focused_widget->isWidget() )
     {
@@ -446,13 +414,13 @@ void FToggleButton::drawLabel()
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::processClick()
+void FToggleButton::processClick() const
 {
   emitCallback("clicked");
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::processToggle()
+void FToggleButton::processToggle() const
 {
   emitCallback("toggled");
 }
@@ -565,7 +533,7 @@ void FToggleButton::drawText (const FString& label_text, std::size_t hotkeypos)
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::correctSize (FSize& size)
+void FToggleButton::correctSize (FSize& size) const
 {
   const std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
   const std::size_t column_width = getColumnWidth(text);

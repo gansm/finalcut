@@ -1,17 +1,17 @@
 /***********************************************************************
 * ftermdetection-test.cpp - FTermDetection unit tests                  *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -68,12 +68,11 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     void xtermTest();
     void rxvtTest();
     void urxvtTest();
-    void mltermTest();
-    void puttyTest();
     void kdeKonsoleTest();
     void gnomeTerminalTest();
     void newerVteTerminalTest();
-    void ktermTest();
+    void puttyTest();
+    void windowsTerminalTest();
     void teraTermTest();
     void cygwinTest();
     void minttyTest();
@@ -84,6 +83,8 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     void sunTest();
     void screenTest();
     void tmuxTest();
+    void ktermTest();
+    void mltermTest();
     void ttytypeTest();
 
   private:
@@ -96,12 +97,11 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     CPPUNIT_TEST (xtermTest);
     CPPUNIT_TEST (rxvtTest);
     CPPUNIT_TEST (urxvtTest);
-    CPPUNIT_TEST (mltermTest);
-    CPPUNIT_TEST (puttyTest);
     CPPUNIT_TEST (kdeKonsoleTest);
     CPPUNIT_TEST (gnomeTerminalTest);
     CPPUNIT_TEST (newerVteTerminalTest);
-    CPPUNIT_TEST (ktermTest);
+    CPPUNIT_TEST (puttyTest);
+    CPPUNIT_TEST (windowsTerminalTest);
     CPPUNIT_TEST (teraTermTest);
     CPPUNIT_TEST (cygwinTest);
     CPPUNIT_TEST (minttyTest);
@@ -112,6 +112,8 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     CPPUNIT_TEST (sunTest);
     CPPUNIT_TEST (screenTest);
     CPPUNIT_TEST (tmuxTest);
+    CPPUNIT_TEST (ktermTest);
+    CPPUNIT_TEST (mltermTest);
     CPPUNIT_TEST (ttytypeTest);
 
     // End of test suite definition
@@ -162,11 +164,10 @@ void FTermDetectionTest::ansiTest()
     CPPUNIT_ASSERT ( detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -177,17 +178,19 @@ void FTermDetectionTest::ansiTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "ansi") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "ansi" );
 
     // Test fallback to vt100 without TERM environment variable
     unsetenv("TERM");
     detect.setAnsiTerminal(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -231,11 +234,10 @@ void FTermDetectionTest::xtermTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -246,6 +248,8 @@ void FTermDetectionTest::xtermTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
@@ -292,11 +296,10 @@ void FTermDetectionTest::rxvtTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -307,10 +310,12 @@ void FTermDetectionTest::rxvtTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "rxvt-cygwin-native") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "rxvt-16color" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -354,11 +359,10 @@ void FTermDetectionTest::urxvtTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -369,6 +373,8 @@ void FTermDetectionTest::urxvtTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -381,137 +387,6 @@ void FTermDetectionTest::urxvtTest()
   {
     // Start the terminal emulation
     startConEmuTerminal (ConEmu::urxvt);
-
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
-      std::cerr << "waitpid error" << std::endl;
-  }
-}
-
-//----------------------------------------------------------------------
-void FTermDetectionTest::mltermTest()
-{
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
-  finalcut::FTermDetection detect;
-  data.setTermType("mlterm");
-  detect.setTerminalDetection(true);
-
-  pid_t pid = forkConEmu();
-
-  if ( isConEmuChildProcess(pid) )
-  {
-    setenv ("TERM", "mlterm", 1);
-    setenv ("MLTERM", "3.8.4", 1);
-    setenv ("COLORFGBG", "default;default", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    detect.detect();
-
-    CPPUNIT_ASSERT ( ! detect.isXTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
-    CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
-    CPPUNIT_ASSERT ( ! detect.isLinuxTerm() );
-    CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
-    CPPUNIT_ASSERT ( ! detect.isNetBSDTerm() );
-    CPPUNIT_ASSERT ( ! detect.isOpenBSDTerm() );
-    CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
-    CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
-    CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
-    CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "mlterm-256color") ;
-
-    setenv ("TERM", "mlterm", 1);
-    unsetenv("COLORFGBG");
-    detect.detect();
-    CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "xterm-256color") ;
-
-    printConEmuDebug();
-    closeConEmuStdStreams();
-    exit(EXIT_SUCCESS);
-  }
-  else  // Parent
-  {
-    // Start the terminal emulation
-    startConEmuTerminal (ConEmu::mlterm);
-
-    if ( waitpid(pid, 0, WUNTRACED) != pid )
-      std::cerr << "waitpid error" << std::endl;
-  }
-}
-
-//----------------------------------------------------------------------
-void FTermDetectionTest::puttyTest()
-{
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
-  finalcut::FTermDetection detect;
-  data.setTermType("xterm");
-  detect.setTerminalDetection(true);
-
-  pid_t pid = forkConEmu();
-
-  if ( isConEmuChildProcess(pid) )
-  {
-    setenv ("TERM", "xterm", 1);
-    unsetenv("TERMCAP");
-    unsetenv("COLORTERM");
-    unsetenv("COLORFGBG");
-    unsetenv("VTE_VERSION");
-    unsetenv("XTERM_VERSION");
-    unsetenv("ROXTERM_ID");
-    unsetenv("KONSOLE_DBUS_SESSION");
-    unsetenv("KONSOLE_DCOP");
-    unsetenv("TMUX");
-    detect.detect();
-
-    CPPUNIT_ASSERT ( detect.isXTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( detect.isPuttyTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
-    CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
-    CPPUNIT_ASSERT ( ! detect.isLinuxTerm() );
-    CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
-    CPPUNIT_ASSERT ( ! detect.isNetBSDTerm() );
-    CPPUNIT_ASSERT ( ! detect.isOpenBSDTerm() );
-    CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
-    CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
-    CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
-    CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-
-    enableConEmuDebug(true);
-    printConEmuDebug();
-    closeConEmuStdStreams();
-    exit(EXIT_SUCCESS);
-  }
-  else  // Parent
-  {
-    // Start the terminal emulation
-    startConEmuTerminal (ConEmu::putty);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -546,11 +421,10 @@ void FTermDetectionTest::kdeKonsoleTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -561,6 +435,8 @@ void FTermDetectionTest::kdeKonsoleTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -608,11 +484,10 @@ void FTermDetectionTest::gnomeTerminalTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -623,6 +498,8 @@ void FTermDetectionTest::gnomeTerminalTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
@@ -670,11 +547,10 @@ void FTermDetectionTest::newerVteTerminalTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -685,6 +561,8 @@ void FTermDetectionTest::newerVteTerminalTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
@@ -704,18 +582,18 @@ void FTermDetectionTest::newerVteTerminalTest()
 }
 
 //----------------------------------------------------------------------
-void FTermDetectionTest::ktermTest()
+void FTermDetectionTest::puttyTest()
 {
   finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType("kterm");
+  data.setTermType("xterm");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();
 
   if ( isConEmuChildProcess(pid) )
   {
-    setenv ("TERM", "kterm", 1);
+    setenv ("TERM", "xterm", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("COLORFGBG");
@@ -725,18 +603,16 @@ void FTermDetectionTest::ktermTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
-
     detect.detect();
 
-    CPPUNIT_ASSERT ( ! detect.isXTerminal() );
+    CPPUNIT_ASSERT ( detect.isXTerminal() );
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -747,16 +623,76 @@ void FTermDetectionTest::ktermTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
-    CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
+    CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
-    // Test fallback to vt100 without TERM environment variable
-    unsetenv("TERM");
-    detect.setKtermTerminal(false);
+    enableConEmuDebug(true);
+    printConEmuDebug();
+    closeConEmuStdStreams();
+    exit(EXIT_SUCCESS);
+  }
+  else  // Parent
+  {
+    // Start the terminal emulation
+    startConEmuTerminal (ConEmu::putty);
+
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
+      std::cerr << "waitpid error" << std::endl;
+  }
+}
+
+//----------------------------------------------------------------------
+void FTermDetectionTest::windowsTerminalTest()
+{
+  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  finalcut::FTermDetection detect;
+  data.setTermType("xterm");
+  detect.setTerminalDetection(true);
+
+  pid_t pid = forkConEmu();
+
+  if ( isConEmuChildProcess(pid) )
+  {
+    setenv ("TERM", "xterm-256color", 1);
+    unsetenv("TERMCAP");
+    unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
+    unsetenv("VTE_VERSION");
+    unsetenv("XTERM_VERSION");
+    unsetenv("ROXTERM_ID");
+    unsetenv("KONSOLE_DBUS_SESSION");
+    unsetenv("KONSOLE_DCOP");
+    unsetenv("TMUX");
+    setenv ("WT_PROFILE_ID", "{61c54cbd-c2a6-5271-96e7-009a87ff44bf}", 1);
+    setenv ("WT_SESSION", "4dc413a1-5ed9-46d4-b4e0-5a2fec7acb44", 1);
     detect.detect();
+
+    CPPUNIT_ASSERT ( detect.isXTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( detect.isWindowsTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
+    CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
+    CPPUNIT_ASSERT ( ! detect.isLinuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
+    CPPUNIT_ASSERT ( ! detect.isNetBSDTerm() );
+    CPPUNIT_ASSERT ( ! detect.isOpenBSDTerm() );
+    CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
+    CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
+    CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
+    CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -765,7 +701,7 @@ void FTermDetectionTest::ktermTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::kterm);
+    startConEmuTerminal (ConEmu::win_terminal);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -801,11 +737,10 @@ void FTermDetectionTest::teraTermTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -816,6 +751,8 @@ void FTermDetectionTest::teraTermTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -863,11 +800,10 @@ void FTermDetectionTest::cygwinTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -878,6 +814,8 @@ void FTermDetectionTest::cygwinTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -925,11 +863,10 @@ void FTermDetectionTest::minttyTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( detect.isMinttyTerm() );
@@ -940,6 +877,8 @@ void FTermDetectionTest::minttyTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
@@ -987,11 +926,10 @@ void FTermDetectionTest::linuxTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -1002,6 +940,8 @@ void FTermDetectionTest::linuxTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -1011,7 +951,7 @@ void FTermDetectionTest::linuxTest()
     detect.setLinuxTerm(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isLinuxTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1057,11 +997,10 @@ void FTermDetectionTest::freebsdTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -1072,6 +1011,8 @@ void FTermDetectionTest::freebsdTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -1083,7 +1024,7 @@ void FTermDetectionTest::freebsdTest()
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isXTerminal() );
     CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1129,11 +1070,10 @@ void FTermDetectionTest::netbsdTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -1144,6 +1084,8 @@ void FTermDetectionTest::netbsdTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -1153,7 +1095,7 @@ void FTermDetectionTest::netbsdTest()
     detect.setNetBSDTerm(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1199,11 +1141,10 @@ void FTermDetectionTest::openbsdTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -1214,6 +1155,8 @@ void FTermDetectionTest::openbsdTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -1223,7 +1166,7 @@ void FTermDetectionTest::openbsdTest()
     detect.setOpenBSDTerm(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isOpenBSDTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1267,11 +1210,10 @@ void FTermDetectionTest::sunTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -1282,6 +1224,8 @@ void FTermDetectionTest::sunTest()
     CPPUNIT_ASSERT ( detect.isSunTerminal() );
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -1291,7 +1235,7 @@ void FTermDetectionTest::sunTest()
     detect.setSunTerminal(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1336,11 +1280,10 @@ void FTermDetectionTest::screenTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -1351,15 +1294,17 @@ void FTermDetectionTest::screenTest()
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen" );
 
     setenv ("XTERM_VERSION", "XTerm(312)", 1);
     detect.detect();
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen-256color") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen-256color" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1405,11 +1350,10 @@ void FTermDetectionTest::tmuxTest()
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
     CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
     CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
-    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
     CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
     CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
@@ -1419,16 +1363,18 @@ void FTermDetectionTest::tmuxTest()
     CPPUNIT_ASSERT ( ! detect.isOpenBSDTerm() );
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
     CPPUNIT_ASSERT ( detect.isScreenTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen" );
 
     setenv ("VTE_VERSION", "3801", 1);
     detect.detect();
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen-256color") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen-256color" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1438,6 +1384,146 @@ void FTermDetectionTest::tmuxTest()
   {
     // Start the terminal simulation
     startConEmuTerminal (ConEmu::tmux);
+
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
+      std::cerr << "waitpid error" << std::endl;
+  }
+}
+
+//----------------------------------------------------------------------
+void FTermDetectionTest::ktermTest()
+{
+  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  finalcut::FTermDetection detect;
+  data.setTermType("kterm");
+  detect.setTerminalDetection(true);
+
+  pid_t pid = forkConEmu();
+
+  if ( isConEmuChildProcess(pid) )
+  {
+    setenv ("TERM", "kterm", 1);
+    unsetenv("TERMCAP");
+    unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
+    unsetenv("VTE_VERSION");
+    unsetenv("XTERM_VERSION");
+    unsetenv("ROXTERM_ID");
+    unsetenv("KONSOLE_DBUS_SESSION");
+    unsetenv("KONSOLE_DCOP");
+    unsetenv("TMUX");
+
+    detect.detect();
+
+    CPPUNIT_ASSERT ( ! detect.isXTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
+    CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
+    CPPUNIT_ASSERT ( ! detect.isLinuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
+    CPPUNIT_ASSERT ( ! detect.isNetBSDTerm() );
+    CPPUNIT_ASSERT ( ! detect.isOpenBSDTerm() );
+    CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
+    CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
+    CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
+    CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+
+    // Test fallback to vt100 without TERM environment variable
+    unsetenv("TERM");
+    detect.setKtermTerminal(false);
+    detect.detect();
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
+
+    printConEmuDebug();
+    closeConEmuStdStreams();
+    exit(EXIT_SUCCESS);
+  }
+  else  // Parent
+  {
+    // Start the terminal emulation
+    startConEmuTerminal (ConEmu::kterm);
+
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
+      std::cerr << "waitpid error" << std::endl;
+  }
+}
+
+//----------------------------------------------------------------------
+void FTermDetectionTest::mltermTest()
+{
+  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  finalcut::FTermDetection detect;
+  data.setTermType("mlterm");
+  detect.setTerminalDetection(true);
+
+  pid_t pid = forkConEmu();
+
+  if ( isConEmuChildProcess(pid) )
+  {
+    setenv ("TERM", "mlterm", 1);
+    setenv ("MLTERM", "3.8.4", 1);
+    setenv ("COLORFGBG", "default;default", 1);
+    unsetenv("TERMCAP");
+    unsetenv("COLORTERM");
+    unsetenv("VTE_VERSION");
+    unsetenv("XTERM_VERSION");
+    unsetenv("ROXTERM_ID");
+    unsetenv("KONSOLE_DBUS_SESSION");
+    unsetenv("KONSOLE_DCOP");
+    unsetenv("TMUX");
+    detect.detect();
+
+    CPPUNIT_ASSERT ( ! detect.isXTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
+    CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
+    CPPUNIT_ASSERT ( ! detect.isLinuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
+    CPPUNIT_ASSERT ( ! detect.isNetBSDTerm() );
+    CPPUNIT_ASSERT ( ! detect.isOpenBSDTerm() );
+    CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
+    CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
+    CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
+    CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "mlterm-256color" );
+
+    setenv ("TERM", "mlterm", 1);
+    unsetenv("COLORFGBG");
+    detect.detect();
+    CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "xterm-256color" );
+
+    printConEmuDebug();
+    closeConEmuStdStreams();
+    exit(EXIT_SUCCESS);
+  }
+  else  // Parent
+  {
+    // Start the terminal emulation
+    startConEmuTerminal (ConEmu::mlterm);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -1505,17 +1591,17 @@ void FTermDetectionTest::ttytypeTest()
     // Test /dev/tty3 with linux
     data.setTermFileName("/dev/tty3");
     detect.detect();
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "linux") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "linux" );
 
     // Test /dev/ttyp0 with vt100
     data.setTermFileName("/dev/ttyp0");
     detect.detect();
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     // Test non-existent /dev/tty8 with fallback to vt100
     data.setTermFileName("/dev/tty8");
     detect.detect();
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100") ;
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();

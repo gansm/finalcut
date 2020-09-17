@@ -1,17 +1,17 @@
 /***********************************************************************
 * ftooltip.cpp - Widget FToolTip                                       *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2016-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -159,8 +159,9 @@ void FToolTip::calculateDimensions()
 
   int x{};
   int y{};
-  const std::size_t h = ( hasBorder() ) ? text_num_lines + 2 : text_num_lines;
-  const std::size_t w = ( hasBorder() ) ? max_line_width + 4 : max_line_width + 2;
+  bool border = hasBorder();
+  const std::size_t h = ( border ) ? text_num_lines + 2 : text_num_lines;
+  const std::size_t w = ( border ) ? max_line_width + 4 : max_line_width + 2;
   const auto& r = getRootWidget();
 
   if ( r )

@@ -1,17 +1,17 @@
 /***********************************************************************
 * flistbox.h - Widget FListBox and FListBoxItem                        *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -82,7 +82,7 @@ class FListBoxItem
 
     // Accessors
     virtual const FString getClassName() const;
-    virtual FString&      getText();
+    virtual FString       getText() const;
     virtual FDataPtr      getData() const;
 
     // Mutators
@@ -110,7 +110,7 @@ inline const FString FListBoxItem::getClassName() const
 { return "FListBoxItem"; }
 
 //----------------------------------------------------------------------
-inline FString& FListBoxItem::getText()
+inline FString FListBoxItem::getText() const
 { return text; }
 
 //----------------------------------------------------------------------
@@ -173,12 +173,12 @@ class FListBox : public FWidget
     void                setCurrentItem (std::size_t);
     void                setCurrentItem (listBoxItems::iterator);
     void                selectItem (std::size_t);
-    void                selectItem (listBoxItems::iterator);
+    void                selectItem (listBoxItems::iterator) const;
     void                unselectItem (std::size_t);
-    void                unselectItem (listBoxItems::iterator);
+    void                unselectItem (listBoxItems::iterator) const;
     void                showInsideBrackets (const std::size_t, fc::brackets_type);
     void                showNoBrackets (std::size_t);
-    void                showNoBrackets (listBoxItems::iterator);
+    void                showNoBrackets (listBoxItems::iterator) const;
     void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
@@ -247,7 +247,7 @@ class FListBox : public FWidget
     };
 
     // Accessors
-    static FString&     getString (listBoxItems::iterator);
+    static FString      getString (listBoxItems::iterator);
 
     // Inquiry
     bool                isHorizontallyScrollable() const;
@@ -259,7 +259,7 @@ class FListBox : public FWidget
     void                processKeyAction (FKeyEvent*);
     void                draw() override;
     void                drawBorder() override;
-    void                drawScrollbars();
+    void                drawScrollbars() const;
     void                drawHeadline();
     void                drawList();
     void                drawListLine (int, listBoxItems::iterator, bool);
@@ -267,10 +267,10 @@ class FListBox : public FWidget
     void                printRightBracket (fc::brackets_type);
     void                drawListBracketsLine (int, listBoxItems::iterator, bool);
     void                setLineAttributes (int, bool, bool, bool&);
-    void                unsetAttributes();
+    void                unsetAttributes() const;
     void                updateDrawing (bool, bool);
     void                recalculateHorizontalBar (std::size_t, bool);
-    void                recalculateVerticalBar (std::size_t);
+    void                recalculateVerticalBar (std::size_t) const;
     void                getWidgetFocus();
     void                multiSelection (std::size_t);
     void                multiSelectionUpTo (std::size_t);
@@ -301,16 +301,16 @@ class FListBox : public FWidget
     bool                changeSelectionAndPosition();
     bool                deletePreviousCharacter();
     bool                keyIncSearchInput (FKey);
-    void                processClick();
-    void                processSelect();
-    void                processChanged();
-    void                changeOnResize();
+    void                processClick() const;
+    void                processSelect() const;
+    void                processChanged() const;
+    void                changeOnResize() const;
     void                lazyConvert (listBoxItems::iterator, int);
     listBoxItems::iterator index2iterator (std::size_t);
     listBoxItems::const_iterator index2iterator (std::size_t index) const;
     // Callback methods
-    void                cb_vbarChange (const FWidget*, const FDataPtr);
-    void                cb_hbarChange (const FWidget*, const FDataPtr);
+    void                cb_vbarChange (const FWidget*);
+    void                cb_hbarChange (const FWidget*);
 
     // Function Pointer
     lazyInsert      lazy_inserter{};
@@ -415,7 +415,7 @@ inline void FListBox::selectItem (std::size_t index)
 { index2iterator(index - 1)->selected = true; }
 
 //----------------------------------------------------------------------
-inline void FListBox::selectItem (listBoxItems::iterator iter)
+inline void FListBox::selectItem (listBoxItems::iterator iter) const
 { iter->selected = true; }
 
 //----------------------------------------------------------------------
@@ -423,7 +423,7 @@ inline void FListBox::unselectItem (std::size_t index)
 { index2iterator(index - 1)->selected = false; }
 
 //----------------------------------------------------------------------
-inline void FListBox::unselectItem (listBoxItems::iterator iter)
+inline void FListBox::unselectItem (listBoxItems::iterator iter) const
 { iter->selected = false; }
 
 //----------------------------------------------------------------------
@@ -431,7 +431,7 @@ inline void FListBox::showNoBrackets (std::size_t index)
 { index2iterator(index - 1)->brackets = fc::NoBrackets; }
 
 //----------------------------------------------------------------------
-inline void FListBox::showNoBrackets (listBoxItems::iterator iter)
+inline void FListBox::showNoBrackets (listBoxItems::iterator iter) const
 { iter->brackets = fc::NoBrackets; }
 
 //----------------------------------------------------------------------

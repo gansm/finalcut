@@ -1,17 +1,17 @@
 /***********************************************************************
 * background-color.cpp - Sets the background color palette             *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -42,7 +42,7 @@ class Background final : public finalcut::FDialog
     using FDialog::setGeometry;
 
     // Typedef
-    typedef std::tuple<uChar,uChar,uChar>  RGB;
+    typedef std::tuple<uChar, uChar, uChar>  RGB;
 
     // Constructor
     explicit Background (finalcut::FWidget* = nullptr);
@@ -58,8 +58,8 @@ class Background final : public finalcut::FDialog
 
   private:
     // Callback method
-    void cb_changed (const finalcut::FWidget*, const FDataPtr);
-    void cb_choice (const finalcut::FWidget*, const FDataPtr);
+    void cb_changed();
+    void cb_choice();
 
     // Data members
     finalcut::FComboBox color_choice{this};
@@ -148,7 +148,9 @@ Background::Background (finalcut::FWidget* parent)
   quit.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
+    finalcut::getFApplication(),
+    &finalcut::FApplication::cb_exitApp,
+    this
   );
 
   for (const auto spinbox : {&red, &green, &blue})
@@ -156,7 +158,7 @@ Background::Background (finalcut::FWidget* parent)
     spinbox->addCallback
     (
       "changed",
-      F_METHOD_CALLBACK (this, &Background::cb_changed)
+      this, &Background::cb_changed
     );
   }
 
@@ -165,7 +167,7 @@ Background::Background (finalcut::FWidget* parent)
     color_choice.addCallback
     (
       signal,
-      F_METHOD_CALLBACK (this, &Background::cb_choice)
+      this, &Background::cb_choice
     );
   }
 }
@@ -175,7 +177,7 @@ Background::~Background()  // destructor
 { }
 
 //----------------------------------------------------------------------
-void Background::cb_changed (const finalcut::FWidget*, const FDataPtr)
+void Background::cb_changed()
 {
   if ( ! finalcut::FTerm::canChangeColorPalette() )
     return;
@@ -189,7 +191,7 @@ void Background::cb_changed (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Background::cb_choice (const finalcut::FWidget*, const FDataPtr)
+void Background::cb_choice()
 {
   if ( ! finalcut::FTerm::canChangeColorPalette() )
     return;
@@ -217,8 +219,13 @@ void Background::cb_choice (const finalcut::FWidget*, const FDataPtr)
 
 int main (int argc, char* argv[])
 {
+  // Create the application object
   finalcut::FApplication app(argc, argv);
 
+  // Force terminal initialization without calling show()
+  app.initTerminal();
+
+  // The following lines require an initialized terminal
   if ( finalcut::FTerm::canChangeColorPalette() )
     app.setBackgroundColor(finalcut::fc::LightMagenta);
 

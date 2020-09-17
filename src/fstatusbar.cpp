@@ -1,17 +1,17 @@
 /***********************************************************************
 * fstatusbar.cpp - Widget FStatusBar and FStatusKey                    *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -38,7 +38,7 @@ namespace finalcut
 FStatusKey::FStatusKey(FWidget* parent)
   : FWidget{parent}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -47,7 +47,7 @@ FStatusKey::FStatusKey (FKey k, const FString& txt, FWidget* parent)
   , text{txt}
   , key{k}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -99,9 +99,10 @@ bool FStatusKey::setMouseFocus(bool enable)
 
 // private methods of FStatusKey
 //----------------------------------------------------------------------
-void FStatusKey::init (FWidget* parent)
+void FStatusKey::init()
 {
   setGeometry (FPoint{1, 1}, FSize{1, 1});
+  FWidget* parent = getParentWidget();
 
   if ( parent && parent->isInstanceOf("FStatusBar") )
   {
@@ -113,7 +114,7 @@ void FStatusKey::init (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-void FStatusKey::processActivate()
+void FStatusKey::processActivate() const
 {
   emitCallback("activate");
 }
@@ -272,7 +273,9 @@ void FStatusBar::insert (FStatusKey* skey)
   skey->addCallback
   (
     "activate",
-    F_METHOD_CALLBACK (this, &FStatusBar::cb_statuskey_activated)
+    this,
+    &FStatusBar::cb_statuskey_activated,
+    skey
   );
 }
 
@@ -485,11 +488,13 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FStatusBar::cb_statuskey_activated (FWidget* widget, const FDataPtr)
+void FStatusBar::cb_statuskey_activated (const FStatusKey* statuskey)
 {
+  if ( ! statuskey )
+    return;
+
   if ( ! key_list.empty() )
   {
-    const auto& statuskey = static_cast<FStatusKey*>(widget);
     auto iter = key_list.begin();
     const auto& last = key_list.end();
 
@@ -527,14 +532,14 @@ void FStatusBar::init()
 }
 
 //----------------------------------------------------------------------
-int FStatusBar::getKeyNameWidth (const FStatusKey* key)
+int FStatusBar::getKeyNameWidth (const FStatusKey* key) const
 {
   const FString& key_name = FTerm::getKeyName(key->getKey());
   return int(getColumnWidth(key_name));
 }
 
 //----------------------------------------------------------------------
-int FStatusBar::getKeyTextWidth (const FStatusKey* key)
+int FStatusBar::getKeyTextWidth (const FStatusKey* key) const
 {
   const FString& key_text = key->getText();
   return int(getColumnWidth(key_text));

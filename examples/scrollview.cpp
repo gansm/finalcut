@@ -1,17 +1,17 @@
 /***********************************************************************
 * scrollview.cpp - Shows client widgets in a scroll area               *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -54,10 +54,10 @@ class Scrollview final : public finalcut::FScrollView
     void draw() override;
 
     // Callback methods
-    void cb_goEast (const finalcut::FWidget*, const FDataPtr);
-    void cb_goSouth (const finalcut::FWidget*, const FDataPtr);
-    void cb_goWest (const finalcut::FWidget*, const FDataPtr);
-    void cb_goNorth (const finalcut::FWidget*, const FDataPtr);
+    void cb_goEast();
+    void cb_goSouth();
+    void cb_goWest();
+    void cb_goNorth();
 
     // Data members
     wchar_t pointer_right{fc::BlackRightPointingPointer};
@@ -88,25 +88,25 @@ Scrollview::Scrollview (finalcut::FWidget* parent)
   go_east.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Scrollview::cb_goEast)
+    this, &Scrollview::cb_goEast
   );
 
   go_south.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Scrollview::cb_goSouth)
+    this, &Scrollview::cb_goSouth
   );
 
   go_west.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Scrollview::cb_goWest)
+    this, &Scrollview::cb_goWest
   );
 
   go_north.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Scrollview::cb_goNorth)
+    this, &Scrollview::cb_goNorth
   );
 }
 
@@ -150,7 +150,7 @@ void Scrollview::draw()
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_goEast (const finalcut::FWidget*, const FDataPtr)
+void Scrollview::cb_goEast()
 {
   scrollToX (int(getScrollWidth() - getViewportWidth()) + 1);
   go_south.setFocus();
@@ -159,7 +159,7 @@ void Scrollview::cb_goEast (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_goSouth (const finalcut::FWidget*, const FDataPtr)
+void Scrollview::cb_goSouth()
 {
   scrollToY (int(getScrollHeight() - getViewportHeight()) + 1);
   go_west.setFocus();
@@ -168,7 +168,7 @@ void Scrollview::cb_goSouth (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_goWest (const finalcut::FWidget*, const FDataPtr)
+void Scrollview::cb_goWest()
 {
   scrollToX (1);
   go_north.setFocus();
@@ -177,7 +177,7 @@ void Scrollview::cb_goWest (const finalcut::FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_goNorth (const finalcut::FWidget*, const FDataPtr)
+void Scrollview::cb_goNorth()
 {
   scrollToY (1);
   go_east.setFocus();
@@ -203,7 +203,7 @@ class Scrollviewdemo final : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
-    void cb_quit (const finalcut::FWidget* = nullptr, const FDataPtr = nullptr);
+    void cb_quit();
 
     // Data members
     Scrollview sview{this};
@@ -230,7 +230,8 @@ Scrollviewdemo::Scrollviewdemo (finalcut::FWidget* parent)
   quit_btn.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Scrollviewdemo::cb_quit)
+    this,
+    &Scrollviewdemo::cb_quit
   );
 
   // Text label
@@ -244,7 +245,7 @@ Scrollviewdemo::~Scrollviewdemo()
 { }
 
 //----------------------------------------------------------------------
-void Scrollviewdemo::cb_quit (const finalcut::FWidget*, const FDataPtr)
+void Scrollviewdemo::cb_quit()
 {
   close();
 }

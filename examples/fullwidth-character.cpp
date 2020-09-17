@@ -1,17 +1,17 @@
 /***********************************************************************
 * fullwidth-letter.cpp - Demonstrates use of full-width characters     *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -105,16 +105,14 @@ int main (int argc, char* argv[])
 
   // Callback lambda expressions
   auto cb_exit = \
-      [] (const finalcut::FWidget*, FDataPtr data)
+      [] (const finalcut::FApplication& a)
       {
-        auto a = static_cast<finalcut::FApplication*>(data);
-        a->quit();
+        a.quit();
       };
 
   auto cb_tooltip = \
-      [] (const finalcut::FWidget*, FDataPtr data)
+      [] (finalcut::FApplication* a)
       {
-        auto a = static_cast<finalcut::FApplication*>(data);
         finalcut::FToolTip tooltip(a);
         tooltip.setText (full("A tooltip with\ncharacters\n"
                               "in full-width\nfor 3 seconds"));
@@ -123,9 +121,9 @@ int main (int argc, char* argv[])
       };
 
   // Connect the signals with the callback lambda expressions
-  btn.addCallback ("clicked", cb_exit, &app);
-  Exit.addCallback ("clicked", cb_exit, &app);
-  Quit.addCallback ("clicked", cb_exit, &app);
+  btn.addCallback ("clicked", cb_exit, std::ref(app));
+  Exit.addCallback ("clicked", cb_exit, std::ref(app));
+  Quit.addCallback ("clicked", cb_exit, std::ref(app));
   key_F1.addCallback ("activate", cb_tooltip, &app);
 
   // Set dialog object as main widget

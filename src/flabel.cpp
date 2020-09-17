@@ -1,17 +1,17 @@
 /***********************************************************************
 * flabel.cpp - Widget FLabel                                           *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -83,7 +83,7 @@ FLabel& FLabel::operator << (const wchar_t c)
 }
 
 //----------------------------------------------------------------------
-const FLabel& FLabel::operator >> (FString& s)
+const FLabel& FLabel::operator >> (FString& s) const
 {
   s += text;
   return *this;
@@ -100,7 +100,7 @@ void FLabel::setAccelWidget (FWidget* widget)
   accel_widget->addCallback
   (
     "destroy",
-    F_METHOD_CALLBACK (this, &FLabel::cb_accelWidgetDestroyed)
+    this, &FLabel::cb_accelWidgetDestroyed
   );
 }
 
@@ -113,6 +113,15 @@ void FLabel::setAlignment (fc::text_alignment align)
     alignment = fc::alignLeft;
   else
     alignment = align;
+}
+
+//----------------------------------------------------------------------
+void FLabel::resetColors()
+{
+  useParentWidgetColor();
+  const auto& wc = getColorTheme();
+  emphasis_color = wc->label_emphasis_fg;
+  ellipsis_color = wc->label_ellipsis_fg;
 }
 
 //----------------------------------------------------------------------
@@ -212,7 +221,7 @@ void FLabel::onAccel (FAccelEvent* ev)
 
   if ( ! accel_widget->hasFocus() )
   {
-    auto focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    auto focused_widget = ev->focusedWidget();
 
     if ( focused_widget && focused_widget->isWidget() )
     {
@@ -235,7 +244,7 @@ void FLabel::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FLabel::cb_accelWidgetDestroyed (const FWidget*, const FDataPtr)
+void FLabel::cb_accelWidgetDestroyed()
 {
   accel_widget = nullptr;
   delAccelerator();
@@ -247,6 +256,7 @@ void FLabel::cb_accelWidgetDestroyed (const FWidget*, const FDataPtr)
 void FLabel::init()
 {
   unsetFocusable();
+  resetColors();
 }
 
 //----------------------------------------------------------------------
@@ -256,7 +266,7 @@ void FLabel::setHotkeyAccelerator()
 }
 
 //----------------------------------------------------------------------
-std::size_t FLabel::getAlignOffset (const std::size_t length)
+std::size_t FLabel::getAlignOffset (const std::size_t length) const
 {
   const std::size_t width(getWidth());
   assert ( alignment == fc::alignLeft
@@ -289,8 +299,6 @@ void FLabel::draw()
 {
   if ( text.isEmpty() )
     return;
-
-  useParentWidgetColor();
 
   if ( FTerm::isMonochron() )
   {

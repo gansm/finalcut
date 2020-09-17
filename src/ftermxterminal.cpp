@@ -1,17 +1,17 @@
 /***********************************************************************
 * ftermxterminal.cpp - Contains all xterm-specific terminal functions  *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -36,11 +36,13 @@
 #include "final/ftermxterminal.h"
 #include "final/fsize.h"
 
-#define initCheck(ret_value)   \
-    if ( ! isInitialized() )   \
-    {                          \
-      warnNotInitialized();    \
-      return ret_value;        \
+#define initCheck(ret_value)           \
+    if ( ! isInitialized() )           \
+    {                                  \
+      if ( ! FApplication::isQuit() )  \
+        warnNotInitialized();          \
+                                       \
+      return ret_value;                \
     }
 
 namespace finalcut
@@ -201,7 +203,7 @@ void FTermXTerminal::setDefaults()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetColorMap()
+void FTermXTerminal::resetColorMap() const
 {
   // Reset the entire color table
 
@@ -307,7 +309,7 @@ void FTermXTerminal::captureFontAndTitle()
 
 // private methods of FTermXTerminal
 //----------------------------------------------------------------------
-void FTermXTerminal::warnNotInitialized()
+void FTermXTerminal::warnNotInitialized() const
 {
   *FApplication::getLog() << FLog::Warn
                           << "The FTermXTerminal object has "
@@ -367,7 +369,7 @@ void FTermXTerminal::setXTermTitle()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::setXTermSize()
+void FTermXTerminal::setXTermSize() const
 {
   initCheck();
 
@@ -571,7 +573,7 @@ inline void FTermXTerminal::setXTermDefaultsMouseCursor()
 }
 
 //----------------------------------------------------------------------
-inline bool FTermXTerminal::canSetXTermBackground()
+inline bool FTermXTerminal::canSetXTermBackground() const
 {
   initCheck(false);
 
@@ -586,7 +588,7 @@ inline bool FTermXTerminal::canSetXTermBackground()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetXTermColorMap()
+void FTermXTerminal::resetXTermColorMap() const
 {
   // Reset the entire color table
 
@@ -606,7 +608,7 @@ void FTermXTerminal::resetXTermColorMap()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetXTermForeground()
+void FTermXTerminal::resetXTermForeground() const
 {
   // Reset the XTerm text foreground color
 
@@ -620,7 +622,7 @@ void FTermXTerminal::resetXTermForeground()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetXTermBackground()
+void FTermXTerminal::resetXTermBackground() const
 {
   // Reset the XTerm text background color
 
@@ -634,7 +636,7 @@ void FTermXTerminal::resetXTermBackground()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetXTermCursorColor()
+void FTermXTerminal::resetXTermCursorColor() const
 {
   // Reset the text cursor color
 
@@ -648,7 +650,7 @@ void FTermXTerminal::resetXTermCursorColor()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetXTermMouseForeground()
+void FTermXTerminal::resetXTermMouseForeground() const
 {
   // Reset the mouse foreground color
 
@@ -662,7 +664,7 @@ void FTermXTerminal::resetXTermMouseForeground()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetXTermMouseBackground()
+void FTermXTerminal::resetXTermMouseBackground() const
 {
   // Reset the mouse background color
 
@@ -676,7 +678,7 @@ void FTermXTerminal::resetXTermMouseBackground()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::resetXTermHighlightBackground()
+void FTermXTerminal::resetXTermHighlightBackground() const
 {
   // Reset the highlight background color
 
@@ -690,7 +692,7 @@ void FTermXTerminal::resetXTermHighlightBackground()
 }
 
 //----------------------------------------------------------------------
-bool FTermXTerminal::canResetColor()
+bool FTermXTerminal::canResetColor() const
 {
   initCheck(false);
 
@@ -711,7 +713,7 @@ bool FTermXTerminal::canResetColor()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::oscPrefix()
+void FTermXTerminal::oscPrefix() const
 {
   initCheck();
 
@@ -728,7 +730,7 @@ void FTermXTerminal::oscPrefix()
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::oscPostfix()
+void FTermXTerminal::oscPostfix() const
 {
   initCheck();
 
@@ -741,7 +743,7 @@ void FTermXTerminal::oscPostfix()
 }
 
 //----------------------------------------------------------------------
-const FString FTermXTerminal::captureXTermFont()
+const FString FTermXTerminal::captureXTermFont() const
 {
   initCheck(FString{});
 
@@ -785,7 +787,7 @@ const FString FTermXTerminal::captureXTermFont()
 }
 
 //----------------------------------------------------------------------
-const FString FTermXTerminal::captureXTermTitle()
+const FString FTermXTerminal::captureXTermTitle() const
 {
   initCheck(FString{});
 
@@ -840,10 +842,10 @@ void FTermXTerminal::enableXTermMouse()
     fsystem = FTerm::getFSystem();
 
   FTerm::putstring (CSI "?1001s"    // save old highlight mouse tracking
-                    CSI "?1000h"    // enable x11 mouse tracking
-                    CSI "?1002h"    // enable cell motion mouse tracking
-                    CSI "?1015h"    // enable urxvt mouse mode
-                    CSI "?1006h");  // enable SGR mouse mode
+                    CSI "?1000;"    // enable x11 mouse tracking
+                         "1002;"    // enable cell motion mouse tracking
+                         "1015;"    // enable urxvt mouse mode
+                         "1006h");  // enable SGR mouse mode
   std::fflush(stdout);
   mouse_support = true;
 }
@@ -856,10 +858,10 @@ void FTermXTerminal::disableXTermMouse()
   if ( ! mouse_support )
     return;  // The mouse was already deactivated
 
-  FTerm::putstring (CSI "?1006l"    // disable SGR mouse mode
-                    CSI "?1015l"    // disable urxvt mouse mode
-                    CSI "?1002l"    // disable cell motion mouse tracking
-                    CSI "?1000l"    // disable x11 mouse tracking
+  FTerm::putstring (CSI "?1006;"    // disable SGR mouse mode
+                         "1015;"    // disable urxvt mouse mode
+                         "1002;"    // disable cell motion mouse tracking
+                         "1000l"    // disable x11 mouse tracking
                     CSI "?1001r");  // restore old highlight mouse tracking
   std::fflush(stdout);
   mouse_support = false;

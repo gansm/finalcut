@@ -1,17 +1,17 @@
 /***********************************************************************
 * fkeyboard.cpp - Read keyboard events                                 *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -42,9 +42,11 @@ namespace finalcut
 {
 
 // static class attributes
-uInt64 FKeyboard::read_blocking_time{100000};  // preset to 100 ms
-uInt64 FKeyboard::key_timeout{100000};         // preset to 100 ms
+uInt64 FKeyboard::read_blocking_time{100000};  // preset to 100 ms / 10 Hz
+uInt64 FKeyboard::key_timeout{100000};         // preset to 100 ms / 10 Hz
+uInt64 FKeyboard::interval_timeout{75000};     // preset to 75 ms / 13.3 Hz
 struct timeval FKeyboard::time_keypressed{};
+struct timeval FKeyboard::time_last_request{};
 
 #if defined(__linux__)
   FTermLinux* FKeyboard::linux{nullptr};
@@ -62,6 +64,8 @@ FKeyboard::FKeyboard()
   // Initialize keyboard values
   time_keypressed.tv_sec = 0;
   time_keypressed.tv_usec = 0;
+  time_last_request.tv_sec = 0;
+  time_last_request.tv_usec = 0;
 
   // Get the stdin file status flags
   stdin_status_flags = fcntl(FTermios::getStdIn(), F_GETFL);
@@ -82,7 +86,7 @@ void FKeyboard::fetchKeyCode()
 }
 
 //----------------------------------------------------------------------
-const FString FKeyboard::getKeyName (const FKey keynum)
+const FString FKeyboard::getKeyName (const FKey keynum) const
 {
   for (std::size_t i{0}; fc::fkeyname[i].string[0] != 0; i++)
     if ( fc::fkeyname[i].num && fc::fkeyname[i].num == keynum )
@@ -117,6 +121,9 @@ bool& FKeyboard::unprocessedInput()
 //----------------------------------------------------------------------
 bool FKeyboard::isKeyPressed() const
 {
+  if ( ! isIntervalTimeout() )
+    return false;
+
   fd_set ifds{};
   struct timeval tv{};
   const int stdin_no = FTermios::getStdIn();
@@ -124,7 +131,8 @@ bool FKeyboard::isKeyPressed() const
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = suseconds_t(FKeyboard::read_blocking_time);  // preset to 100 ms
+  tv.tv_usec = suseconds_t(read_blocking_time);  // preset to 100 ms
+  FObject::getCurrentTime (&time_last_request);
   const int result = select (stdin_no + 1, &ifds, nullptr, nullptr, &tv);
 
   if ( result > 0 && FD_ISSET(stdin_no, &ifds) )
@@ -179,7 +187,7 @@ void FKeyboard::escapeKeyHandling()
 
 // private methods of FKeyboard
 //----------------------------------------------------------------------
-inline FKey FKeyboard::getMouseProtocolKey()
+inline FKey FKeyboard::getMouseProtocolKey() const
 {
   // Looking for mouse string in the key buffer
 
@@ -351,13 +359,19 @@ bool FKeyboard::setNonBlockingInput (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FKeyboard::isKeypressTimeout()
+inline bool FKeyboard::isKeypressTimeout()
 {
   return FObject::isTimeout (&time_keypressed, key_timeout);
 }
 
 //----------------------------------------------------------------------
-FKey FKeyboard::UTF8decode (const char utf8[])
+inline bool FKeyboard::isIntervalTimeout()
+{
+  return FObject::isTimeout (&time_last_request, interval_timeout);
+}
+
+//----------------------------------------------------------------------
+FKey FKeyboard::UTF8decode (const char utf8[]) const
 {
   FKey ucs{0};  // Universal coded character
   constexpr std::size_t max = 4;
@@ -488,7 +502,7 @@ FKey FKeyboard::parseKeyString()
 }
 
 //----------------------------------------------------------------------
-FKey FKeyboard::keyCorrection (const FKey& keycode)
+FKey FKeyboard::keyCorrection (const FKey& keycode) const
 {
   FKey key_correction;
 
@@ -535,19 +549,19 @@ void FKeyboard::substringKeyHandling()
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::keyPressed()
+void FKeyboard::keyPressed() const
 {
   keypressed_cmd.execute();
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::keyReleased()
+void FKeyboard::keyReleased() const
 {
   keyreleased_cmd.execute();
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::escapeKeyPressed()
+void FKeyboard::escapeKeyPressed() const
 {
   escape_key_cmd.execute();
 }

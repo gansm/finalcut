@@ -1,17 +1,17 @@
 /***********************************************************************
 * flogger.h - The FINAL CUT text logger                                *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2020 Markus Gans                                           *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -77,6 +77,7 @@ class FLogger : public FLog
     void warn (const std::string&) override;
     void error (const std::string&) override;
     void debug (const std::string&) override;
+    void flush() override;
     void setOutputStream (const std::ostream&) override;
     void setLineEnding (LineEnding) override;
     void enableTimestamp() override;
@@ -84,9 +85,9 @@ class FLogger : public FLog
 
   private:
     // Methods
-    void              newlineReplace (std::string&, const std::string&);
-    const std::string getTimeString();
-    const std::string getEOL();
+    void              newlineReplace (std::string&, const std::string&) const;
+    const std::string getTimeString() const;
+    const std::string getEOL() const;
     void              printLogLine (const std::string&);
 
     // Data member
@@ -126,6 +127,10 @@ inline void FLogger::debug (const std::string& msg)
   setLevel() = Debug;
   printLogLine (msg);
 }
+
+//----------------------------------------------------------------------
+inline void FLogger::flush()
+{ output.flush(); }
 
 //----------------------------------------------------------------------
 inline void FLogger::setOutputStream (const std::ostream& os)

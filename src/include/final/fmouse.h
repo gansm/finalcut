@@ -1,17 +1,17 @@
 /***********************************************************************
 * fmouse.h - Read mouse events                                         *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -103,7 +103,7 @@ class FMouse
 
     // Accessors
     virtual const FString getClassName() const;
-    const FPoint&         getPos();
+    const FPoint&         getPos() const;
     void                  clearEvent();
 
     // Mutators
@@ -113,7 +113,7 @@ class FMouse
 
     // Inquiries
     virtual bool          hasData() = 0;
-    bool                  hasEvent();
+    bool                  hasEvent() const;
     bool                  isLeftButtonPressed();
     bool                  isLeftButtonReleased();
     bool                  isLeftButtonDoubleClick();
@@ -127,10 +127,11 @@ class FMouse
     bool                  isWheelUp();
     bool                  isWheelDown();
     bool                  isMoved();
-    bool                  isInputDataPending();
+    bool                  isInputDataPending() const;
 
     // Methods
-    static FMouse*        createMouseObject (const mouse_type);
+    template<typename ClassT>
+    static FMouse*        createMouseObject ();
     void                  clearButtonState();
     virtual void          setRawData (FKeyboard::keybuffer&) = 0;
     virtual void          processEvent (struct timeval*) = 0;
@@ -161,10 +162,10 @@ class FMouse
 
     // Accessors
     FMouseButton&       getButtonState();
-    const FPoint&       getNewPos();
-    uInt16              getMaxWidth();
-    uInt16              getMaxHeight();
-    uInt64              getDblclickInterval();
+    const FPoint&       getNewPos() const;
+    uInt16              getMaxWidth() const;
+    uInt16              getMaxHeight() const;
+    uInt64              getDblclickInterval() const;
     timeval*            getMousePressedTime();
 
     // Mutator
@@ -176,7 +177,7 @@ class FMouse
     void                resetMousePressedTime();
 
     // Inquiry
-    bool                isDblclickTimeout (const timeval*);
+    bool                isDblclickTimeout (const timeval*) const;
 
   private:
     // Data members
@@ -190,6 +191,13 @@ class FMouse
     FPoint              mouse{0, 0};       // mouse click position
     FPoint              new_mouse_position{};
 };
+
+//----------------------------------------------------------------------
+template<typename ClassT>
+inline FMouse* FMouse::createMouseObject()
+{
+  return new ClassT;
+}
 
 
 #ifdef F_HAVE_LIBGPM
@@ -214,7 +222,7 @@ class FMouseGPM final : public FMouse
 
     // Inquiry
     bool                 hasData() override;
-    bool                 isGpmMouseEnabled();
+    bool                 isGpmMouseEnabled() const;
 
     // Methods
     void                 setRawData (FKeyboard::keybuffer&) override;
@@ -222,11 +230,11 @@ class FMouseGPM final : public FMouse
     bool                 gpmMouse (bool);
     bool                 enableGpmMouse();
     bool                 disableGpmMouse();
-    bool                 hasSignificantEvents();
+    bool                 hasSignificantEvents() const;
     void                 interpretKeyDown();
     void                 interpretKeyUp();
     bool                 getGpmKeyPressed(bool);
-    void                 drawGpmPointer();
+    void                 drawGpmPointer() const;
 
   private:
     // Enumeration
@@ -238,7 +246,7 @@ class FMouseGPM final : public FMouse
     };
 
     // Method
-    int                gpmEvent (bool = true);
+    int                gpmEvent (bool = true) const;
 
     // Data member
     Gpm_Event          gpm_ev{};
@@ -256,7 +264,7 @@ inline bool FMouseGPM::disableGpmMouse()
 { return gpmMouse(false); }
 
 //----------------------------------------------------------------------
-inline bool FMouseGPM::isGpmMouseEnabled()
+inline bool FMouseGPM::isGpmMouseEnabled() const
 { return gpm_mouse_enabled; }
 #endif  // F_HAVE_LIBGPM
 
@@ -505,9 +513,9 @@ class FMouseControl
     // Accessor
     FMouse*               getMouseWithData();
     FMouse*               getMouseWithEvent();
-    void                  xtermMouse (bool);
-    void                  enableXTermMouse();
-    void                  disableXTermMouse();
+    void                  xtermMouse (bool) const;
+    void                  enableXTermMouse() const;
+    void                  disableXTermMouse() const;
 
     // Data member
     FMouseProtocol        mouse_protocol{};
@@ -522,11 +530,11 @@ inline const FString FMouseControl::getClassName() const
 { return "FMouseControl"; }
 
 //----------------------------------------------------------------------
-inline void FMouseControl::enableXTermMouse()
+inline void FMouseControl::enableXTermMouse() const
 { xtermMouse(true); }
 
 //----------------------------------------------------------------------
-inline void FMouseControl::disableXTermMouse()
+inline void FMouseControl::disableXTermMouse() const
 { xtermMouse(false); }
 
 }  // namespace finalcut

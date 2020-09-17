@@ -1,17 +1,17 @@
 /***********************************************************************
 * event-log.cpp - Logs events in a dialog box                          *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2020 Markus Gans                                           *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -58,7 +58,7 @@ class EventDialog final : public finalcut::FDialog
 
   private:
     // Methods
-    finalcut::FString getMouseButtonName (int);
+    finalcut::FString getMouseButtonName (int) const;
     void logMouseEvent ( const finalcut::FString&
                        , const finalcut::FMouseEvent& );
 
@@ -103,7 +103,7 @@ EventDialog::~EventDialog()  // destructor
 { }
 
 //----------------------------------------------------------------------
-finalcut::FString EventDialog::getMouseButtonName (int btn_state)
+finalcut::FString EventDialog::getMouseButtonName (int btn_state) const
 {
   switch ( btn_state )
   {

@@ -1,17 +1,17 @@
 /***********************************************************************
 * fwidget.cpp - Intermediate base class for all widget objects         *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -49,8 +49,8 @@ FWidget::FWidgetList* FWidget::window_list{nullptr};
 FWidget::FWidgetList* FWidget::dialog_list{nullptr};
 FWidget::FWidgetList* FWidget::always_on_top_list{nullptr};
 FWidget::FWidgetList* FWidget::close_widget{nullptr};
+bool                  FWidget::init_terminal{false};
 bool                  FWidget::init_desktop{false};
-bool                  FWidget::hideable{false};
 uInt                  FWidget::modal_dialog_counter{};
 
 //----------------------------------------------------------------------
@@ -59,8 +59,8 @@ uInt                  FWidget::modal_dialog_counter{};
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
-  : FVTerm{ ! (bool(parent) || root_widget), disable_alt_screen}
+FWidget::FWidget (FWidget* parent)
+  : FVTerm{}
   , FObject{parent}
 {
   // init bit field with 0
@@ -83,29 +83,25 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
       return;
     }
 
-    root_widget = this;
-    show_root_widget = nullptr;
-    redraw_root_widget = nullptr;
-    modal_dialog_counter = 0;
-    statusbar = nullptr;
     initRootWidget();
   }
   else
   {
-    flags.visible_cursor = ! hideable;
     woffset = parent->wclient_offset;
-    double_flatline_mask.top.resize (getWidth(), false);
-    double_flatline_mask.right.resize (getHeight(), false);
-    double_flatline_mask.bottom.resize (getWidth(), false);
-    double_flatline_mask.left.resize (getHeight(), false);
   }
+
+  flags.visible_cursor = false;
+  double_flatline_mask.top.resize (getWidth(), false);
+  double_flatline_mask.right.resize (getHeight(), false);
+  double_flatline_mask.bottom.resize (getWidth(), false);
+  double_flatline_mask.left.resize (getHeight(), false);
 }
 
 //----------------------------------------------------------------------
 FWidget::~FWidget()  // destructor
 {
   processDestroy();
-  delCallbacks();
+  delCallback();
   auto app_object = FApplication::getApplicationObject();
   app_object->removeQueuedEvent(this);
 
@@ -342,7 +338,7 @@ void FWidget::useParentWidgetColor()
 }
 
 //----------------------------------------------------------------------
-void FWidget::setColor()
+void FWidget::setColor() const
 {
   // Changes colors to the widget default colors
   setColor (foreground_color, background_color);
@@ -570,7 +566,7 @@ void FWidget::setRightPadding (int right, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setTermSize (const FSize& size)
+void FWidget::setTermSize (const FSize& size) const
 {
   // Set xterm size to width x height
 
@@ -658,9 +654,10 @@ bool FWidget::setCursorPos (const FPoint& pos)
       woffsetY += (1 - area->widget->getTopPadding());
     }
 
+    bool visible = ! isCursorHideable() || flags.visible_cursor;
     setAreaCursor ( { woffsetX + pos.getX()
                     , woffsetY + pos.getY() }
-                  , flags.visible_cursor
+                  , visible
                   , area );
     return true;
   }
@@ -836,94 +833,6 @@ bool FWidget::close()
 }
 
 //----------------------------------------------------------------------
-void FWidget::addCallback ( const FString& cb_signal
-                          , const FCallback& cb_function
-                          , FDataPtr data )
-{
-  // Add a (normal) function pointer as callback
-
-  FCallbackData obj{ cb_signal, nullptr, cb_function, data };
-  callback_objects.push_back(obj);
-}
-
-//----------------------------------------------------------------------
-void FWidget::addCallback ( const FString& cb_signal
-                          , FWidget*  cb_instance
-                          , const FCallback& cb_function
-                          , FDataPtr data )
-{
-  // Add a member function pointer as callback
-
-  FCallbackData obj{ cb_signal, cb_instance, cb_function, data };
-  callback_objects.push_back(obj);
-}
-
-//----------------------------------------------------------------------
-void FWidget::delCallback (const FCallback& cb_function)
-{
-  // Delete cb_function form callback list
-
-  if ( callback_objects.empty() )
-    return;
-
-  auto iter = callback_objects.begin();
-
-  while ( iter != callback_objects.end() )
-  {
-    if ( getCallbackPtr(iter->cb_function) == getCallbackPtr(cb_function) )
-      iter = callback_objects.erase(iter);
-    else
-      ++iter;
-  }
-}
-
-//----------------------------------------------------------------------
-void FWidget::delCallback (const FWidget* cb_instance)
-{
-  // Delete all member function pointer from cb_instance
-
-  if ( callback_objects.empty() )
-    return;
-
-  auto iter = callback_objects.begin();
-
-  while ( iter != callback_objects.end() )
-  {
-    if ( iter->cb_instance == cb_instance )
-      iter = callback_objects.erase(iter);
-    else
-      ++iter;
-  }
-}
-
-//----------------------------------------------------------------------
-void FWidget::delCallbacks()
-{
-  // Delete all callbacks from this widget
-
-  callback_objects.clear();  // function pointer
-}
-
-//----------------------------------------------------------------------
-void FWidget::emitCallback (const FString& emit_signal)
-{
-  // Initiate callback for the given signal
-
-  if ( callback_objects.empty() )
-    return;
-
-  for (auto&& cback : callback_objects)
-  {
-    if ( cback.cb_signal == emit_signal )
-    {
-      // Calling the stored function pointer
-      auto callback = cback.cb_function;
-      callback (this, cback.data);
-    }
-  }
-}
-
-//----------------------------------------------------------------------
 void FWidget::addAccelerator (FKey key, FWidget* obj)
 {
   // Adding a keyboard accelerator for the given widget
@@ -1032,20 +941,12 @@ void FWidget::show()
 {
   // Make the widget visible and draw it
 
-  if ( ! isVisible() )
+  if ( ! isVisible() || FApplication::isQuit() )
     return;
 
-  if ( ! init_desktop )
-  {
-    // Sets the initial screen settings
-    FTerm::initScreenSettings();
-    // Initializing vdesktop
-    const auto& r = getRootWidget();
-    setColor(r->getForegroundColor(), r->getBackgroundColor());
-    clearArea (getVirtualDesktop());
-    // Destop is now initialized
-    init_desktop = true;
-  }
+  // Initialize desktop on first call
+  if ( ! init_desktop && root_widget )
+    root_widget->initDesktop();
 
   if ( ! show_root_widget )
   {
@@ -1321,6 +1222,49 @@ void FWidget::setTermOffsetWithPadding()
 }
 
 //----------------------------------------------------------------------
+void FWidget::initTerminal()
+{
+  if ( hasParent() || init_terminal )
+    return;
+
+  // Initialize the physical and virtual terminal
+  FVTerm::initTerminal();
+
+  // Initialize default widget colors (after terminal detection)
+  initColorTheme();
+
+  // Set default foreground and background color of the desktop/terminal
+  auto color_theme = getColorTheme();
+  root_widget->foreground_color = color_theme->term_fg;
+  root_widget->background_color = color_theme->term_bg;
+  resetColors();
+
+  // The terminal is now initialized
+  init_terminal = true;
+}
+
+//----------------------------------------------------------------------
+void FWidget::initDesktop()
+{
+  if ( hasParent() || init_desktop )
+    return;
+
+  if ( ! init_terminal )
+    initTerminal();
+
+  // Sets the initial screen settings
+  FTerm::initScreenSettings();
+
+  // Initializing vdesktop
+  const auto& r = getRootWidget();
+  setColor(r->getForegroundColor(), r->getBackgroundColor());
+  clearArea (getVirtualDesktop());
+
+  // Destop is now initialized
+  init_desktop = true;
+}
+
+//----------------------------------------------------------------------
 void FWidget::adjustSize()
 {
   if ( ! isRootWidget() )
@@ -1375,7 +1319,7 @@ void FWidget::adjustSize()
 }
 
 //----------------------------------------------------------------------
-void FWidget::adjustSizeGlobal()
+void FWidget::adjustSizeGlobal() const
 {
   if ( ! isRootWidget() )
   {
@@ -1714,6 +1658,18 @@ void FWidget::onClose (FCloseEvent* ev)
 
 // private methods of FWidget
 //----------------------------------------------------------------------
+void FWidget::determineDesktopSize()
+{
+  // Determine width and height of the terminal
+
+  detectTermSize();
+  wsize.setRect(1, 1, getDesktopWidth(), getDesktopHeight());
+  adjust_wsize = wsize;
+  woffset.setRect(0, 0, getDesktopWidth(), getDesktopHeight());
+  wclient_offset = woffset;
+}
+
+//----------------------------------------------------------------------
 void FWidget::initRootWidget()
 {
   try
@@ -1730,29 +1686,19 @@ void FWidget::initRootWidget()
     return;
   }
 
-  hideable = FTerm::isCursorHideable();
-  flags.visible_cursor = ! hideable;
-
-  // Determine width and height of the terminal
-  detectTermSize();
-  wsize.setRect(1, 1, getDesktopWidth(), getDesktopHeight());
-  adjust_wsize = wsize;
-  woffset.setRect(0, 0, getDesktopWidth(), getDesktopHeight());
-  wclient_offset = woffset;
-
-  double_flatline_mask.top.resize (getWidth(), false);
-  double_flatline_mask.right.resize (getHeight(), false);
-  double_flatline_mask.bottom.resize (getWidth(), false);
-  double_flatline_mask.left.resize (getHeight(), false);
-
   // Initialize default widget colors
+  // (before terminal detection and root_widget is set)
   initColorTheme();
 
-  // Default foreground and background color of the desktop/terminal
-  auto color_theme = getColorTheme();
-  foreground_color = color_theme->term_fg;
-  background_color = color_theme->term_bg;
-  init_desktop = false;
+  // Root widget basic initialization
+  root_widget = this;
+  show_root_widget = nullptr;
+  redraw_root_widget = nullptr;
+  modal_dialog_counter = 0;
+  statusbar = nullptr;
+
+  // Determine width and height of the terminal
+  determineDesktopSize();
 }
 
 //----------------------------------------------------------------------
@@ -1887,7 +1833,7 @@ void FWidget::KeyDownEvent (FKeyEvent* kev)
 }
 
 //----------------------------------------------------------------------
-void FWidget::emitWheelCallback (const FWheelEvent* ev)
+void FWidget::emitWheelCallback (const FWheelEvent* ev) const
 {
   const int wheel = ev->getWheel();
 
@@ -1920,17 +1866,6 @@ void FWidget::setWindowFocus (bool enable)
   }
 
   window->setWindowFocusWidget(this);
-}
-
-//----------------------------------------------------------------------
-FWidget::FCallbackPtr FWidget::getCallbackPtr (const FCallback& cb_function)
-{
-  auto ptr = cb_function.template target<FCallbackPtr>();
-
-  if ( ptr )
-    return *ptr;
-  else
-    return nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -1979,7 +1914,7 @@ void FWidget::draw()
 { }
 
 //----------------------------------------------------------------------
-void FWidget::drawWindows()
+void FWidget::drawWindows() const
 {
   // redraw windows
   FChar default_char{};
@@ -2025,9 +1960,33 @@ void FWidget::drawChildren()
 }
 
 //----------------------------------------------------------------------
+inline bool FWidget::isDefaultTheme()
+{
+  FStringList default_themes
+  {
+    "default8ColorTheme",
+    "default16ColorTheme",
+    "default8ColorDarkTheme",
+    "default16ColorDarkTheme"
+  };
+
+  auto iter = std::find ( default_themes.begin()
+                        , default_themes.end()
+                        , getColorTheme()->getClassName() );
+
+  if ( iter == default_themes.end() )  // No default theme
+    return false;
+
+  return true;
+}
+
+//----------------------------------------------------------------------
 void FWidget::initColorTheme()
 {
   // Sets the default color theme
+
+  if ( getColorTheme().use_count() > 0 && ! isDefaultTheme() )
+    return;  // A user theme is in use
 
   if ( FStartOptions::getFStartOptions().dark_theme )
   {
@@ -2036,7 +1995,7 @@ void FWidget::initColorTheme()
     else
       setColorTheme<default16ColorDarkTheme>();
   }
-  else
+  else  // Default theme
   {
     if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
       setColorTheme<default8ColorTheme>();
@@ -2053,7 +2012,7 @@ void FWidget::destroyColorTheme()
 }
 
 //----------------------------------------------------------------------
-void FWidget::setStatusbarText (bool enable)
+void FWidget::setStatusbarText (bool enable) const
 {
   if ( ! isEnabled() || ! getStatusBar() )
     return;

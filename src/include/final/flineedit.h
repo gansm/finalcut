@@ -1,17 +1,17 @@
 /***********************************************************************
 * flineedit.h - Widget FLineEdit                                       *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -100,7 +100,7 @@ class FLineEdit : public FWidget
     FLineEdit& operator << (const typeT&);
     FLineEdit& operator << (fc::SpecialCharacter);
     FLineEdit& operator << (const wchar_t);
-    const FLineEdit& operator >> (FString&);
+    const FLineEdit& operator >> (FString&) const;
 
     // Accessors
     const FString       getClassName() const override;
@@ -108,7 +108,7 @@ class FLineEdit : public FWidget
     std::size_t         getMaxLength() const;
     std::size_t         getCursorPosition() const;
     FLabel*             getLabelObject() const;
-    label_o             getLabelOrientation();
+    label_o             getLabelOrientation() const;
 
     // Mutators
     void                setText (const FString&);
@@ -184,7 +184,7 @@ class FLineEdit : public FWidget
     void                drawInputField();
     std::size_t         printTextField();
     std::size_t         printPassword();
-    std::size_t         getCursorColumnPos();
+    std::size_t         getCursorColumnPos() const;
     const FString       getPasswordText() const;
     bool                isPasswordField() const;
     offsetPair          endPosToOffset (std::size_t);
@@ -199,9 +199,9 @@ class FLineEdit : public FWidget
     void                switchInsertMode();
     void                acceptInput();
     bool                keyInput (FKey);
-    wchar_t             characterFilter (const wchar_t);
+    wchar_t             characterFilter (const wchar_t) const;
     void                processActivate();
-    void                processChanged();
+    void                processChanged() const;
 
     // Data members
     FString       text{""};
@@ -257,7 +257,7 @@ inline FLabel* FLineEdit::getLabelObject() const
 { return label; }
 
 //----------------------------------------------------------------------
-inline FLineEdit::label_o FLineEdit::getLabelOrientation()
+inline FLineEdit::label_o FLineEdit::getLabelOrientation() const
 { return label_orientation; }
 
 //----------------------------------------------------------------------

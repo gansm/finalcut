@@ -1,17 +1,17 @@
 /***********************************************************************
 * fwidgetcolors.h - Set widget color theme                             *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -54,6 +54,7 @@ class FWidgetColors
     virtual ~FWidgetColors();
 
     // Method
+    virtual const FString getClassName() const;
     virtual void setColorTheme() = 0;
 
     // Data members
@@ -145,6 +146,11 @@ class FWidgetColors
     FColor progressbar_bg{fc::Default};
 };
 
+// FWidgetColors inline functions
+//----------------------------------------------------------------------
+inline const FString FWidgetColors::getClassName() const
+{ return "FWidgetColors"; }
+
 
 /*  Inheritance diagram
  *  ═══════════════════
@@ -173,8 +179,14 @@ class default8ColorTheme final : public FWidgetColors
     ~default8ColorTheme() override;
 
     // Method
+    const FString getClassName() const override;
     void setColorTheme() override;
 };
+
+// default8ColorTheme inline functions
+//----------------------------------------------------------------------
+inline const FString default8ColorTheme::getClassName() const
+{ return "default8ColorTheme"; }
 
 
 /*  Inheritance diagram
@@ -204,8 +216,14 @@ class default16ColorTheme final : public FWidgetColors
     ~default16ColorTheme() override;
 
     // Method
+    const FString getClassName() const override;
     void setColorTheme() override;
 };
+
+// default16ColorTheme inline functions
+//----------------------------------------------------------------------
+inline const FString default16ColorTheme::getClassName() const
+{ return "default16ColorTheme"; }
 
 
 /*  Inheritance diagram
@@ -235,8 +253,14 @@ class default8ColorDarkTheme final : public FWidgetColors
     ~default8ColorDarkTheme() override;
 
     // Method
+    const FString getClassName() const override;
     void setColorTheme() override;
 };
+
+// default8ColorDarkTheme inline functions
+//----------------------------------------------------------------------
+inline const FString default8ColorDarkTheme::getClassName() const
+{ return "default8ColorDarkTheme"; }
 
 
 /*  Inheritance diagram
@@ -266,8 +290,14 @@ class default16ColorDarkTheme final : public FWidgetColors
     ~default16ColorDarkTheme() override;
 
     // Method
+    const FString getClassName() const override;
     void setColorTheme() override;
 };
+
+// default16ColorDarkTheme inline functions
+//----------------------------------------------------------------------
+inline const FString default16ColorDarkTheme::getClassName() const
+{ return "default16ColorDarkTheme"; }
 
 }  // namespace finalcut
 

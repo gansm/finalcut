@@ -1,17 +1,17 @@
 /***********************************************************************
 * fwindow.cpp - Intermediate base class for all window objects         *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -156,7 +156,7 @@ bool FWindow::activateWindow (bool enable)
 }
 
 //----------------------------------------------------------------------
-void FWindow::unsetActiveWindow()
+void FWindow::unsetActiveWindow() const
 {
   // unset the active FWindow object
   FWidget::setActiveWindow (nullptr);
@@ -282,6 +282,8 @@ void FWindow::hide()
     getVWin()->visible = false;
 
   FWidget::hide();
+  const auto& t_geometry = getTermGeometryWithShadow();
+  restoreVTerm (t_geometry);
 }
 
 //----------------------------------------------------------------------
@@ -667,7 +669,7 @@ bool FWindow::zoomWindow()
 }
 
 //----------------------------------------------------------------------
-void FWindow::switchToPrevWindow (FWidget* widget)
+void FWindow::switchToPrevWindow (const FWidget* widget)
 {
   // switch to previous window
 
@@ -872,7 +874,7 @@ void FWindow::processAlwaysOnTop()
 
 // non-member functions
 //----------------------------------------------------------------------
-void closeDropDown (FWidget* widget, const FPoint& mouse_position)
+void closeDropDown (const FWidget* widget, const FPoint& mouse_position)
 {
   // Close the pop down windows
 
@@ -880,7 +882,7 @@ void closeDropDown (FWidget* widget, const FPoint& mouse_position)
   auto openmenu = FWidget::getOpenMenu();
 
   if ( ! openmenu )
-   return;
+    return;
 
   if ( openmenu->isInstanceOf("FMenu")
     || openmenu->isInstanceOf("FDialogListMenu") )

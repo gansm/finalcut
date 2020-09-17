@@ -1,17 +1,17 @@
 /***********************************************************************
 * rotozoomer.cpp - Rotozoomer effect demo                              *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2020 Markus Gans                                           *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -28,7 +28,10 @@
 #include <final/final.h>
 
 namespace fc = finalcut::fc;
-using namespace std::chrono;
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+using std::chrono::system_clock;
+using std::chrono::time_point;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -52,7 +55,7 @@ class RotoZoomer final : public finalcut::FDialog
     ~RotoZoomer() override;
 
     // Accessors
-    finalcut::FString getReport();
+    finalcut::FString getReport() const;
 
     // Event handlers
     void onShow (finalcut::FShowEvent*) override;
@@ -187,7 +190,7 @@ void RotoZoomer::generateReport()
   dimension_str << getDesktopWidth()
                 << "x" << getDesktopHeight();
   int elapsed_ms = int(duration_cast<milliseconds>(end - start).count());
-  time_str << double(elapsed_ms) / 1000 << "ms";
+  time_str << double(elapsed_ms) / 1000 << "s";
   fps_str << double(loops) * 1000.0 / double(elapsed_ms);
 
   rep << finalcut::FString{55, '-'} << "\n"
@@ -202,7 +205,7 @@ void RotoZoomer::generateReport()
 }
 
 //----------------------------------------------------------------------
-inline finalcut::FString RotoZoomer::getReport()
+inline finalcut::FString RotoZoomer::getReport() const
 {
   return report;
 }

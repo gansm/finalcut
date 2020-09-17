@@ -32,12 +32,14 @@ Makefile.in
 /missing
 /stamp-h1
 /test-driver
+src/.depend
 src/.deps/
 src/.libs/
 examples/.deps/
 examples/.libs/
 examples/calculator
 examples/dialog
+examples/busy
 examples/event-log
 examples/string-operations
 examples/background-color

@@ -1,17 +1,17 @@
 /***********************************************************************
 * flogger.cpp - The FINAL CUT text logger                              *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2020 Markus Gans                                           *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -19,6 +19,8 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
+
+#include <string>
 
 #include "final/flogger.h"
 
@@ -42,7 +44,7 @@ FLogger::~FLogger()  // destructor
 // private methods of FLogger
 //----------------------------------------------------------------------
 void FLogger::newlineReplace ( std::string& str
-                             , const std::string& replace_str )
+                             , const std::string& replace_str ) const
 {
   std::size_t pos{0};
   std::size_t npos{std::string::npos};
@@ -56,7 +58,7 @@ void FLogger::newlineReplace ( std::string& str
 }
 
 //----------------------------------------------------------------------
-const std::string FLogger::getTimeString()
+const std::string FLogger::getTimeString() const
 {
   char str[100];
   const auto& now = std::chrono::system_clock::now();
@@ -69,7 +71,7 @@ const std::string FLogger::getTimeString()
 }
 
 //----------------------------------------------------------------------
-const std::string FLogger::getEOL()
+const std::string FLogger::getEOL() const
 {
   if ( getEnding() == FLog::LF )
     return "\n";

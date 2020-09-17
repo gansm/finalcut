@@ -1,17 +1,17 @@
 /***********************************************************************
 * ffiledialog.cpp - Widget FFileDialog (a file chooser dialog)         *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -201,7 +201,7 @@ void FFileDialog::setPath (const FString& dir)
     return;
   }
 
-  if ( fsystem->realpath(dir.c_str(), resolved_path) != nullptr )
+  if ( fsystem && fsystem->realpath(dir.c_str(), resolved_path) != nullptr )
     r_dir.setString(resolved_path);
   else
     r_dir.setString(dir);
@@ -380,43 +380,43 @@ void FFileDialog::initCallbacks()
   filename.addCallback
   (
     "activate",
-    F_METHOD_CALLBACK (this, &FFileDialog::cb_processActivate)
+    this, &FFileDialog::cb_processActivate
   );
 
   filebrowser.addCallback
   (
     "row-changed",
-    F_METHOD_CALLBACK (this, &FFileDialog::cb_processRowChanged)
+    this, &FFileDialog::cb_processRowChanged
   );
 
   filebrowser.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FFileDialog::cb_processClicked)
+    this, &FFileDialog::cb_processClicked
   );
 
   hidden_check.addCallback
   (
     "toggled",
-    F_METHOD_CALLBACK (this, &FFileDialog::cb_processShowHidden)
+    this, &FFileDialog::cb_processShowHidden
   );
 
   cancel_btn.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FFileDialog::cb_processCancel)
+    this, &FFileDialog::cb_processCancel
   );
 
   open_btn.addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FFileDialog::cb_processOpen)
+    this, &FFileDialog::cb_processOpen
   );
 }
 
 //----------------------------------------------------------------------
-inline bool FFileDialog::pattern_match ( const char* const pattern
-                                       , const char fname[] )
+inline bool FFileDialog::patternMatch ( const char* const pattern
+                                      , const char fname[] ) const
 {
   char search[128]{};
 
@@ -583,14 +583,14 @@ void FFileDialog::getEntry (const char* const dir, const struct dirent* d_entry)
 
   if ( entry.directory )
     dir_entries.push_back (entry);
-  else if ( pattern_match(filter, entry.name.c_str()) )
+  else if ( patternMatch(filter, entry.name.c_str()) )
     dir_entries.push_back (entry);
   else
     entry.name.clear();
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::followSymLink (const char* const dir, FDirEntry& entry)
+void FFileDialog::followSymLink (const char* const dir, FDirEntry& entry) const
 {
   if ( ! entry.symbolic_link )
     return;  // No symbolic link
@@ -754,7 +754,7 @@ const FString FFileDialog::getHomeDir()
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processActivate (const FWidget*, const FDataPtr)
+void FFileDialog::cb_processActivate()
 {
   if ( filename.getText().includes('*')
     || filename.getText().includes('?') )
@@ -803,7 +803,7 @@ void FFileDialog::cb_processActivate (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processRowChanged (const FWidget*, const FDataPtr)
+void FFileDialog::cb_processRowChanged()
 {
   const std::size_t n = filebrowser.currentItem();
 
@@ -821,7 +821,7 @@ void FFileDialog::cb_processRowChanged (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processClicked (const FWidget*, const FDataPtr)
+void FFileDialog::cb_processClicked()
 {
   const uLong n = uLong(filebrowser.currentItem() - 1);
 
@@ -832,19 +832,19 @@ void FFileDialog::cb_processClicked (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processCancel (const FWidget*, const FDataPtr)
+void FFileDialog::cb_processCancel()
 {
   done (FDialog::Reject);
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processOpen (const FWidget*, const FDataPtr)
+void FFileDialog::cb_processOpen()
 {
   done (FDialog::Accept);
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processShowHidden (const FWidget*, const FDataPtr)
+void FFileDialog::cb_processShowHidden()
 {
   setShowHiddenFiles(! show_hidden);
 }

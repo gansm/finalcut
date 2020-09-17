@@ -1,17 +1,17 @@
 /***********************************************************************
 * termcap.cpp - Show the used termcap variables                        *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -32,7 +32,7 @@ namespace fc = finalcut::fc;
 void tcapBoolean (const std::string&, bool);
 void tcapNumeric (const std::string&, int);
 void tcapString (const std::string&, const char[]);
-void debug (finalcut::FApplication&);
+void debug (const finalcut::FApplication&);
 void booleans();
 void numeric();
 void string();
@@ -207,7 +207,7 @@ void tcapString (const std::string& name, const char cap_str[])
 
 //----------------------------------------------------------------------
 #if DEBUG
-void debug (finalcut::FApplication& TermApp)
+void debug (const finalcut::FApplication& TermApp)
 {
   const auto& fterm = TermApp.getFTerm();
   auto& debug_data = fterm.getFTermDebugData();
@@ -256,6 +256,8 @@ void booleans()
               , finalcut::FTermcap::automatic_right_margin );
   tcapBoolean ( "eat_nl_glitch"
               , finalcut::FTermcap::eat_nl_glitch );
+  tcapBoolean ( "has_ansi_escape_sequences"
+              , finalcut::FTermcap::has_ansi_escape_sequences );
   tcapBoolean ( "ansi_default_color"
               , finalcut::FTermcap::ansi_default_color );
   tcapBoolean ( "osc_support"
@@ -296,15 +298,30 @@ void string()
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
-  const bool disable_alt_screen{true};
-  finalcut::FApplication TermApp {argc, argv, disable_alt_screen};
+  // Disabling the switch to the alternative screen
+  finalcut::FTerm::useAlternateScreen(false);
+
+  // Disable color palette changes and terminal data requests
+  auto& start_options = finalcut::FStartOptions::getFStartOptions();
+  start_options.color_change = false;
+  start_options.terminal_data_request = false;
+
+  // Create the application object as root widget
+  finalcut::FApplication term_app {argc, argv};
+
+  // Force terminal initialization without calling show()
+  term_app.initTerminal();
+
+  if ( finalcut::FApplication::isQuit() )
+    return 0;
 
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";
   std::cout << "Terminal: " << finalcut::FTerm::getTermType() << "\r\n";
 
-  debug (TermApp);
+  debug (term_app);
 
   booleans();
   numeric();
   string();
+  return 0;
 }

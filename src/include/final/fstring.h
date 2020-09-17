@@ -1,17 +1,17 @@
 /***********************************************************************
 * fstring.h - Unicode string class with UTF-8 support                  *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -106,10 +106,6 @@ class FString
 
     const FString& operator += (const FString&);
 
-    const FString operator + (const FString&);
-    const FString operator + (const wchar_t);
-    const FString operator + (const char);
-
     FString& operator << (const FString&);
     FString& operator << (fc::SpecialCharacter);
     FString& operator << (const wchar_t);
@@ -120,25 +116,26 @@ class FString
                                      , int>::type = 0 >
     FString& operator << (const NumT);
 
-    const FString& operator >> (FString&);
-    const FString& operator >> (std::wstring&);
-    const FString& operator >> (std::string&);
-    const FString& operator >> (wchar_t&);
-    const FString& operator >> (char&);
-    const FString& operator >> (sInt16&);
-    const FString& operator >> (uInt16&);
-    const FString& operator >> (sInt32&);
-    const FString& operator >> (uInt32&);
-    const FString& operator >> (sInt64&);
-    const FString& operator >> (uInt64&);
-    const FString& operator >> (double&);
-    const FString& operator >> (float&);
+    const FString& operator >> (FString&) const;
+    const FString& operator >> (std::wstring&) const;
+    const FString& operator >> (std::string&) const;
+    const FString& operator >> (wchar_t&) const;
+    const FString& operator >> (char&) const;
+    const FString& operator >> (sInt16&) const;
+    const FString& operator >> (uInt16&) const;
+    const FString& operator >> (sInt32&) const;
+    const FString& operator >> (uInt32&) const;
+    const FString& operator >> (sInt64&) const;
+    const FString& operator >> (uInt64&) const;
+    const FString& operator >> (double&) const;
+    const FString& operator >> (float&) const;
 
     template <typename IndexT>
     wchar_t&       operator [] (const IndexT);
     template <typename IndexT>
     const wchar_t& operator [] (const IndexT) const;
-    const FString& operator () ();
+    explicit       operator bool () const;
+    const FString& operator () () const;
 
     bool operator <  (const FString&) const;
     template <typename CharT>
@@ -210,7 +207,7 @@ class FString
     const FString right (std::size_t) const;
     const FString mid (std::size_t, std::size_t) const;
 
-    FStringList split (const FString&);
+    FStringList split (const FString&) const;
     FString& setString (const FString&);
 
     template <typename NumT>
@@ -227,7 +224,7 @@ class FString
     const FString& insert (const FString&, int);
     const FString& insert (const FString&, std::size_t);
 
-    const FString replace (const FString&, const FString&);
+    const FString replace (const FString&, const FString&) const;
 
     const FString replaceControlCodes() const;
     const FString expandTabs (int = 8) const;
@@ -244,7 +241,6 @@ class FString
     // Constants
     static constexpr uInt FWDBUFFER = 15;
     static constexpr uInt INPBUFFER = 200;
-    static constexpr uInt CHAR_SIZE = sizeof(wchar_t);  // bytes per character
 
     // Methods
     void           _initLength (std::size_t);
@@ -254,7 +250,7 @@ class FString
     void           _remove (std::size_t, std::size_t);
     const char*    _to_cstring (const wchar_t[]) const;
     const wchar_t* _to_wcstring (const char[]) const;
-    const wchar_t* _extractToken (wchar_t*[], const wchar_t[], const wchar_t[]);
+    const wchar_t* _extractToken (wchar_t*[], const wchar_t[], const wchar_t[]) const;
 
     // Data members
     wchar_t*      string{nullptr};

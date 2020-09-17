@@ -1,17 +1,17 @@
 /***********************************************************************
 * ftermdata-test.cpp - FTermData unit tests                            *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -93,8 +93,8 @@ void FTermDataTest::defaultDataTest()
   CPPUNIT_ASSERT ( data.getTermGeometry() == finalcut::FRect() );
   CPPUNIT_ASSERT ( data.getTTYFileDescriptor() ==  -1 );
   CPPUNIT_ASSERT ( data.getBaudrate() == 0 );
-  CPPUNIT_ASSERT_CSTRING ( data.getTermType(), "") ;
-  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), "") ;
+  CPPUNIT_ASSERT_CSTRING ( data.getTermType(), "" );
+  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), "" );
   CPPUNIT_ASSERT ( data.getXtermFont() == finalcut::FString() );
   CPPUNIT_ASSERT ( data.getXtermTitle() == finalcut::FString() );
   CPPUNIT_ASSERT ( data.getExitMessage() == finalcut::FString() );
@@ -108,6 +108,7 @@ void FTermDataTest::defaultDataTest()
   CPPUNIT_ASSERT ( data.hasCursorOptimisation() == true );
   CPPUNIT_ASSERT ( data.isCursorHidden() == false );
   CPPUNIT_ASSERT ( data.hasAlternateScreen() == true );
+  CPPUNIT_ASSERT ( data.isInAlternateScreen() == false );
   CPPUNIT_ASSERT ( data.hasASCIIConsole() == false );
   CPPUNIT_ASSERT ( data.hasVT100Console() == false );
   CPPUNIT_ASSERT ( data.hasUTF8Console() == false );
@@ -177,13 +178,13 @@ void FTermDataTest::dataTest()
   CPPUNIT_ASSERT ( data.getBaudrate() != 9600 );
   CPPUNIT_ASSERT ( data.getBaudrate() == 38400 );
 
-  CPPUNIT_ASSERT_CSTRING ( data.getTermType(), "") ;
+  CPPUNIT_ASSERT_CSTRING ( data.getTermType(), "" );
   data.setTermType("linux");
-  CPPUNIT_ASSERT_CSTRING ( data.getTermType(), "linux") ;
+  CPPUNIT_ASSERT_CSTRING ( data.getTermType(), "linux" );
 
-  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), "") ;
+  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), "" );
   data.setTermFileName("/dev/pts/2");
-  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), "/dev/pts/2") ;
+  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), "/dev/pts/2" );
 
   CPPUNIT_ASSERT ( data.getXtermFont() == finalcut::FString() );
   data.setXtermFont("terminus-20");
@@ -222,6 +223,11 @@ void FTermDataTest::dataTest()
   CPPUNIT_ASSERT ( data.hasAlternateScreen() == true );
   data.useAlternateScreen (false);
   CPPUNIT_ASSERT ( data.hasAlternateScreen() == false );
+
+  CPPUNIT_ASSERT ( data.isInAlternateScreen() == false );
+  data.setAlternateScreenInUse (true);
+  CPPUNIT_ASSERT ( data.isInAlternateScreen() == true );
+
 
   CPPUNIT_ASSERT ( data.hasASCIIConsole() == false );
   data.setASCIIConsole (true);

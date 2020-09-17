@@ -1,17 +1,17 @@
 /***********************************************************************
 * fprogressbar.h - Widget FProgressbar                                 *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -70,7 +70,7 @@ class FProgressbar : public FWidget
 
     // Accessors
     const FString       getClassName() const override;
-    std::size_t         getPercentage();
+    std::size_t         getPercentage() const;
 
     // Mutators
     void                setPercentage (std::size_t);
@@ -93,6 +93,7 @@ class FProgressbar : public FWidget
     static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
     // Methods
+    void                init();
     void                draw() override;
     void                drawProgressLabel();
     void                drawProgressBar();
@@ -111,7 +112,7 @@ inline const FString FProgressbar::getClassName() const
 { return "FProgressbar"; }
 
 //----------------------------------------------------------------------
-inline std::size_t FProgressbar::getPercentage()
+inline std::size_t FProgressbar::getPercentage() const
 { return percentage; }
 
 //----------------------------------------------------------------------

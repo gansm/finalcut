@@ -1,17 +1,17 @@
 /***********************************************************************
 * flabel.cpp - Widget FLabel                                           *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -84,12 +84,12 @@ class FLabel : public FWidget
     FLabel& operator << (const typeT&);
     FLabel& operator << (fc::SpecialCharacter);
     FLabel& operator << (const wchar_t);
-    const FLabel& operator >> (FString&);
+    const FLabel& operator >> (FString&) const;
 
     // Accessors
     const FString       getClassName() const override;
     FWidget*            getAccelWidget();
-    fc::text_alignment  getAlignment();
+    fc::text_alignment  getAlignment() const;
     FString&            getText();
 
     // Mutators
@@ -98,6 +98,7 @@ class FLabel : public FWidget
     bool                setEmphasis (bool);
     bool                setEmphasis();
     bool                unsetEmphasis();
+    void                resetColors() override;
     bool                setReverseMode (bool);
     bool                setReverseMode();
     bool                unsetReverseMode();
@@ -122,7 +123,7 @@ class FLabel : public FWidget
     void                onAccel (FAccelEvent*) override;
 
     // Callback method
-    void                cb_accelWidgetDestroyed (const FWidget*, const FDataPtr);
+    void                cb_accelWidgetDestroyed();
 
   private:
     // Constants
@@ -131,7 +132,7 @@ class FLabel : public FWidget
     // Methods
     void                init();
     void                setHotkeyAccelerator();
-    std::size_t         getAlignOffset (const std::size_t);
+    std::size_t         getAlignOffset (const std::size_t) const;
     void                draw() override;
     void                drawMultiLine();
     void                drawSingleLine();
@@ -145,8 +146,8 @@ class FLabel : public FWidget
     std::size_t         align_offset{0};
     std::size_t         hotkeypos{NOT_SET};
     std::size_t         column_width{0};
-    FColor              emphasis_color{getColorTheme()->label_emphasis_fg};
-    FColor              ellipsis_color{getColorTheme()->label_ellipsis_fg};
+    FColor              emphasis_color{fc::Default};
+    FColor              ellipsis_color{fc::Default};
     bool                multiline{false};
     bool                emphasis{false};
     bool                reverse_mode{false};
@@ -172,7 +173,7 @@ inline FWidget* FLabel::getAccelWidget ()
 { return accel_widget; }
 
 //----------------------------------------------------------------------
-inline fc::text_alignment FLabel::getAlignment()
+inline fc::text_alignment FLabel::getAlignment() const
 { return alignment; }
 
 //----------------------------------------------------------------------

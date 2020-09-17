@@ -19,3 +19,7 @@ docdir = ${datadir}/doc/${PACKAGE}
 doc_DATA = AUTHORS COPYING COPYING.LESSER ChangeLog
 
 test: check
+
+uninstall-hook:
+	if test -d ${docdir}; then rmdir ${docdir}; fi
+

@@ -1,17 +1,17 @@
 /***********************************************************************
 * fevent.h - Base event class of widgets                               *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -218,24 +218,25 @@ class FFocusEvent : public FEvent  // focus event
 //----------------------------------------------------------------------
 // class FAccelEvent
 //----------------------------------------------------------------------
+class FWidget;  // class forward declaration
 
 class FAccelEvent : public FEvent  // focus event
 {
   public:
     FAccelEvent() = default;
-    FAccelEvent (fc::events, void*);
+    FAccelEvent (fc::events, FWidget*);
     FAccelEvent (const FAccelEvent&) = delete;
     ~FAccelEvent();
     FAccelEvent& operator = (const FAccelEvent&) = delete;
 
-    void*    focusedWidget() const;
+    FWidget* focusedWidget() const;
     bool     isAccepted() const;
     void     accept();
     void     ignore();
 
   private:
     bool     accpt{false};
-    void*    focus_widget{};
+    FWidget* focus_widget{};
 };
 
 
@@ -327,7 +328,7 @@ class FTimerEvent : public FEvent  // timer event
 // class FUserEvent
 //----------------------------------------------------------------------
 
-class FUserEvent : public FEvent  // timer event
+class FUserEvent : public FEvent  // user event
 {
   public:
     FUserEvent() = default;

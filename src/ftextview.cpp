@@ -1,17 +1,17 @@
 /***********************************************************************
 * ftextview.cpp - Widget FTextView (a multiline text viewer)           *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -562,13 +562,13 @@ void FTextView::adjustSize()
 
 // private methods of FTextView
 //----------------------------------------------------------------------
-std::size_t FTextView::getTextHeight()
+std::size_t FTextView::getTextHeight() const
 {
   return getHeight() - 2 + std::size_t(nf_offset);
 }
 
 //----------------------------------------------------------------------
-std::size_t FTextView::getTextWidth()
+std::size_t FTextView::getTextWidth() const
 {
   return getWidth() - 2 - std::size_t(nf_offset);
 }
@@ -642,7 +642,7 @@ void FTextView::drawBorder()
 }
 
 //----------------------------------------------------------------------
-void FTextView::drawScrollbars()
+void FTextView::drawScrollbars() const
 {
   if ( ! hbar->isShown() && isHorizontallyScrollable() )
     hbar->show();
@@ -702,7 +702,7 @@ void FTextView::drawText()
 }
 
 //----------------------------------------------------------------------
-inline bool FTextView::useFDialogBorder()
+inline bool FTextView::useFDialogBorder() const
 {
   const auto& parent = getParentWidget();
   bool use_fdialog_border{false};
@@ -722,27 +722,27 @@ inline bool FTextView::useFDialogBorder()
 }
 
 //----------------------------------------------------------------------
-inline bool FTextView::isPrintable (wchar_t ch)
+inline bool FTextView::isPrintable (wchar_t ch) const
 {
   // Check for printable characters
 
   const bool utf8 = ( FTerm::getEncoding() == fc::UTF8 ) ? true : false;
 
   if ( (utf8 && std::iswprint(std::wint_t(ch)))
-    || (!utf8 && std::isprint(ch)) )
+    || (!utf8 && std::isprint(char(ch))) )
     return true;
 
   return false;
 }
 
 //----------------------------------------------------------------------
-void FTextView::processChanged()
+void FTextView::processChanged() const
 {
   emitCallback("changed");
 }
 
 //----------------------------------------------------------------------
-void FTextView::changeOnResize()
+void FTextView::changeOnResize() const
 {
   const std::size_t width  = getWidth();
   const std::size_t height = getHeight();
@@ -763,7 +763,7 @@ void FTextView::changeOnResize()
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_vbarChange (const FWidget*, const FDataPtr)
+void FTextView::cb_vbarChange (const FWidget*)
 {
   const FScrollbar::sType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
@@ -818,7 +818,7 @@ void FTextView::cb_vbarChange (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_hbarChange (const FWidget*, const FDataPtr)
+void FTextView::cb_hbarChange (const FWidget*)
 {
   const FScrollbar::sType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;

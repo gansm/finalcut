@@ -1,17 +1,17 @@
 /***********************************************************************
 * fspinbox.h - Widget FSpinBox                                         *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2019-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -47,6 +47,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <limits>
+
 #include "final/fwidget.h"
 
 namespace finalcut
@@ -79,10 +81,10 @@ class FSpinBox : public FWidget
 
     // Accessors
     const FString       getClassName() const override;
-    sInt64              getValue();
+    sInt64              getValue() const;
     FString             getPrefix() const;
     FString             getSuffix() const;
-    FLineEdit::label_o  getLabelOrientation();
+    FLineEdit::label_o  getLabelOrientation() const;
 
     // Mutators
     void                setSize (const FSize&, bool = true) override;
@@ -135,11 +137,13 @@ class FSpinBox : public FWidget
     void                updateInputField();
     void                increaseValue();
     void                decreaseValue();
-    void                processChanged();
+    void                processActivate() const;
+    void                processChanged() const;
     void                forceFocus();
 
     // Callback methods
-    void                cb_inputFieldChange (finalcut::FWidget*, const FDataPtr);
+    void                cb_inputFieldActivate() const;
+    void                cb_inputFieldChange (const FLineEdit&);
 
     // Data members
     FLineEdit           input_field{this};
@@ -161,7 +165,7 @@ inline const FString FSpinBox::getClassName() const
 { return "FSpinBox"; }
 
 //----------------------------------------------------------------------
-inline sInt64 FSpinBox::getValue()
+inline sInt64 FSpinBox::getValue() const
 { return value; }
 
 //----------------------------------------------------------------------
@@ -173,7 +177,7 @@ inline FString FSpinBox::getSuffix() const
 { return sfix; }
 
 //----------------------------------------------------------------------
-inline FLineEdit::label_o FSpinBox::getLabelOrientation()
+inline FLineEdit::label_o FSpinBox::getLabelOrientation() const
 { return input_field.getLabelOrientation(); }
 
 //----------------------------------------------------------------------

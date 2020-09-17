@@ -1,17 +1,17 @@
 /***********************************************************************
 * fradiomenuitem.cpp - Widget FRadioMenuItem                           *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -19,6 +19,8 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
+
+#include <utility>
 
 #include "final/fc.h"
 #include "final/fradiomenuitem.h"
@@ -36,14 +38,14 @@ namespace finalcut
 FRadioMenuItem::FRadioMenuItem (FWidget* parent)
   : FMenuItem{parent}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
 FRadioMenuItem::FRadioMenuItem (const FString& txt, FWidget* parent)
   : FMenuItem{txt, parent}
 {
-  init (parent);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -53,10 +55,11 @@ FRadioMenuItem::~FRadioMenuItem()  // destructor
 
 // private methods of FRadioMenuItem
 //----------------------------------------------------------------------
-void FRadioMenuItem::init (FWidget* parent)
+void FRadioMenuItem::init()
 {
   setCheckable();
   setRadioButton();
+  FWidget* parent = getParentWidget();
 
   if ( ! parent )
     return;
@@ -69,13 +72,14 @@ void FRadioMenuItem::init (FWidget* parent)
     addCallback  // for this element
     (
       "toggled",
-      F_METHOD_CALLBACK (menu_ptr, &FMenu::cb_menuitemToggled)
+      std::move(menu_ptr), &FMenu::cb_menuitemToggled,
+      this
     );
   }
 }
 
 //----------------------------------------------------------------------
-void FRadioMenuItem::processToggle()
+void FRadioMenuItem::processToggle() const
 {
   emitCallback("toggled");
 }

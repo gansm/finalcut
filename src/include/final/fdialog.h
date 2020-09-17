@@ -1,17 +1,17 @@
 /***********************************************************************
 * fdialog.h - Widget FDialog                                           *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -188,13 +188,14 @@ class FDialog : public FWindow
     void                  openMenu();
     void                  selectFirstMenuItem();
     void                  setZoomItem();
-    std::size_t           getZoomButtonWidth();
+    std::size_t           getZoomButtonWidth() const;
     void                  activateZoomButton (const mouseStates&);
     void                  deactivateZoomButton();
     void                  leaveZoomButton (const mouseStates&);
     void                  pressZoomButton (const mouseStates&);
     bool                  isMouseOverMenu (const FPoint&) const;
-    void                  passEventToSubMenu (const mouseStates&, const FMouseEvent*);
+    void                  passEventToSubMenu ( const mouseStates&
+                                             , const FMouseEvent* );
     void                  moveSizeKey (FKeyEvent*);
     void                  raiseActivateDialog();
     void                  lowerActivateDialog();
@@ -209,9 +210,9 @@ class FDialog : public FWindow
     static void           delDialog (const FWidget*);
 
     // Callback methods
-    void                  cb_move (const FWidget*, const FDataPtr);
-    void                  cb_zoom (const FWidget*, const FDataPtr);
-    void                  cb_close (const FWidget*, const FDataPtr);
+    void                  cb_move();
+    void                  cb_zoom();
+    void                  cb_close();
 
     // Data members
     FString               tb_text{};  // title bar text
@@ -231,7 +232,7 @@ class FDialog : public FWindow
     FToolTip*             tooltip{nullptr};
 
     // Friend function from FMenu
-    friend void FMenu::hideSuperMenus();
+    friend void FMenu::hideSuperMenus() const;
 };
 
 // FDialog inline functions

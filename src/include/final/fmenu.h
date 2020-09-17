@@ -1,17 +1,17 @@
 /***********************************************************************
 * fmenu.h - Widget FMenu                                               *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -53,6 +53,8 @@
 #if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
   #error "Only <final/final.h> can be included directly."
 #endif
+
+#include <tuple>
 
 #include "final/fwindow.h"
 #include "final/fmenulist.h"
@@ -125,9 +127,9 @@ class FMenu : public FWindow, public FMenuList
     void                onAccel (FAccelEvent*) override;
 
     // Callback method
-    void                cb_menuitemEnabled (const FWidget*, const FDataPtr);
-    void                cb_menuitemDisabled (const FWidget*, const FDataPtr);
-    void                cb_menuitemToggled (FWidget*, const FDataPtr);
+    void                cb_menuitemEnabled();
+    void                cb_menuitemDisabled();
+    void                cb_menuitemToggled (const FMenuItem*) const;
 
   private:
     // Constants
@@ -169,18 +171,18 @@ class FMenu : public FWindow, public FMenuList
     bool         isMouseOverMenu (const FPoint&);
     bool         isMouseOverSubMenu (const FPoint&);
     bool         isMouseOverSuperMenu (const FPoint&);
-    bool         isMouseOverMenuBar (const FPoint&);
+    bool         isMouseOverMenuBar (const FPoint&) const;
 
     // Methods
-    void         init(FWidget*);
+    void         init();
     void         initCallbacks();
     void         calculateDimensions();
-    void         adjustItems();
-    int          adjustX(int);
+    void         adjustItems() const;
+    int          adjustX(int) const;
     void         openSubMenu (FMenu*, bool = false);
     void         closeOpenedSubMenu();
     void         hideSubMenus();
-    void         hideSuperMenus();
+    void         hideSuperMenus() const;
     bool         mouseDownOverList (const FPoint&);
     void         mouseDownSubmenu (const FMenuItem*);
     void         mouseDownSelection (FMenuItem*, bool&);
@@ -189,17 +191,17 @@ class FMenu : public FWindow, public FMenuList
     void         mouseMoveSelection (FMenuItem*, mouseStates&);
     void         mouseMoveDeselection (FMenuItem*, mouseStates&);
     void         mouseUpOverBorder();
-    void         mouseMoveOverBorder (mouseStates&);
+    void         mouseMoveOverBorder (mouseStates&) const;
     void         passEventToSubMenu (FMouseEvent* const&);
     void         passEventToSuperMenu (FMouseEvent* const&);
-    void         passEventToMenuBar (FMouseEvent* const&);
+    void         passEventToMenuBar (FMouseEvent* const&) const;
     bool         containsMenuStructure (const FPoint&);
     bool         containsMenuStructure (int, int);
     FMenu*       superMenuAt (const FPoint&);
     FMenu*       superMenuAt (int, int);
     bool         selectNextItem();
     bool         selectPrevItem();
-    void         keypressMenuBar (FKeyEvent*);
+    void         keypressMenuBar (FKeyEvent*) const;
     bool         hotkeyMenu (FKeyEvent*);
     void         draw() override;
     void         drawItems();
@@ -211,12 +213,12 @@ class FMenu : public FWindow, public FMenuList
     void         drawAcceleratorKey (std::size_t&, FKey);
     void         drawTrailingSpaces (std::size_t);
     void         setLineAttributes (const FMenuItem*, int);
-    void         setCursorToHotkeyPosition (FMenuItem*);
+    void         setCursorToHotkeyPosition (FMenuItem*) const;
     void         selectPrevMenu (FKeyEvent*);
     void         selectNextMenu (FKeyEvent*);
     void         acceptSelection();
     void         closeMenu();
-    void         processActivate();
+    void         processActivate() const;
 
     // Data members
     FMenuItem    menuitem{};

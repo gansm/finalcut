@@ -1,17 +1,17 @@
 /***********************************************************************
 * calculator.cpp - A simple calculator with trigonometric functions    *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2016-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -119,13 +119,6 @@ class Calc final : public finalcut::FDialog
     // Destructor
     ~Calc() override;
 
-    // Event handlers
-    void           onKeyPress (finalcut::FKeyEvent*) override;
-    void           onClose (finalcut::FCloseEvent*) override;
-
-    // Callback method
-    void           cb_buttonClicked (const finalcut::FWidget*, FDataPtr);
-
   private:
     // Typedef and Enumeration
     typedef std::function<void(lDouble&)> keyFunction;  // Member function
@@ -207,16 +200,23 @@ class Calc final : public finalcut::FDialog
     void           sine (lDouble&);
     void           cosine (lDouble&);
     void           tangent (lDouble&);
-    bool           isDataEntryKey (int);
-    bool           isOperatorKey (int);
+    bool           isDataEntryKey (int) const;
+    bool           isOperatorKey (int) const;
     lDouble&       getValue();
     void           setDisplay (lDouble);
     void           setInfixOperator (char);
     void           clearInfixOperator();
     void           calcInfixOperator();
     void           adjustSize() override;
-    const wchar_t* getButtonText (const std::size_t);
+    const wchar_t* getButtonText (const std::size_t) const;
     void           mapKeyFunctions();
+
+    // Event handlers
+    void           onKeyPress (finalcut::FKeyEvent*) override;
+    void           onClose (finalcut::FCloseEvent*) override;
+
+    // Callback method
+    void           cb_buttonClicked (Calc::button);
 
     // Data members
     bool              error{false};
@@ -230,7 +230,7 @@ class Calc final : public finalcut::FDialog
     char              infix_operator{'\0'};
     char              last_infix_operator{'\0'};
     finalcut::FString input{""};
-    std::size_t       button_no[Calc::NUM_OF_BUTTONS]{};
+    button            button_no[Calc::NUM_OF_BUTTONS]{};
 
     struct stack_data
     {
@@ -257,7 +257,7 @@ Calc::Calc (FWidget* parent)
   clearInfixOperator();
   std::setlocale(LC_NUMERIC, "C");
 
-  for (std::size_t key{0}; key < Calc::NUM_OF_BUTTONS; key++)
+  for (button key{Sine}; key < Calc::NUM_OF_BUTTONS; key = button(key + 1))
   {
     auto btn = std::make_shared<Button>(this);
     button_no[key] = key;
@@ -284,8 +284,8 @@ Calc::Calc (FWidget* parent)
     btn->addCallback
     (
       "clicked",
-      F_METHOD_CALLBACK (this, &Calc::cb_buttonClicked),
-      &button_no[key]
+      this, &Calc::cb_buttonClicked,
+      button_no[key]
     );
 
     calculator_buttons[button(key)] = btn;
@@ -364,10 +364,9 @@ void Calc::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Calc::cb_buttonClicked (const finalcut::FWidget*, FDataPtr data)
+void Calc::cb_buttonClicked (Calc::button key)
 {
   lDouble& x = getValue();
-  const Calc::button& key = *(static_cast<Calc::button*>(data));
 
   // Call the key function
   key_map[key](x);
@@ -941,7 +940,7 @@ void Calc::draw()
 }
 
 //----------------------------------------------------------------------
-bool Calc::isDataEntryKey (int key)
+bool Calc::isDataEntryKey (int key) const
 {
   // Test if key is in {'.', '0'..'9'}
   const int data_entry_keys[] =
@@ -968,7 +967,7 @@ bool Calc::isDataEntryKey (int key)
 }
 
 //----------------------------------------------------------------------
-bool Calc::isOperatorKey(int key)
+bool Calc::isOperatorKey(int key) const
 {
   // Test if key is in {'*', '/', '+', '-', '^', '='}
   const int operators[] =
@@ -1091,7 +1090,7 @@ void Calc::adjustSize()
 }
 
 //----------------------------------------------------------------------
-const wchar_t* Calc::getButtonText (const std::size_t key)
+const wchar_t* Calc::getButtonText (const std::size_t key) const
 {
   static const wchar_t* const button_text[Calc::NUM_OF_BUTTONS] =
   {

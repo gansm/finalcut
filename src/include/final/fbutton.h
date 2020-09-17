@@ -1,17 +1,17 @@
 /***********************************************************************
 * fbutton.h - Widget FButton                                           *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2012-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -78,7 +78,7 @@ class FButton : public FWidget
 
     // Accessors
     const FString       getClassName() const override;
-    FString&            getText();
+    FString             getText() const;
 
     // Mutators
     void                setForegroundColor (FColor) override;
@@ -147,9 +147,9 @@ class FButton : public FWidget
     void                drawTopBottomBackground();
     void                drawButtonTextLine (const FString&);
     void                draw() override;
-    void                updateStatusBar();
+    void                updateStatusBar() const;
     void                updateButtonColor();
-    void                processClick();
+    void                processClick() const;
 
     // Data members
     FString      text{};
@@ -158,13 +158,13 @@ class FButton : public FWidget
     bool         click_animation{true};
     int          click_time{150};
     int          space_char{int(' ')};
-    FColor       button_fg{getColorTheme()->button_active_fg};
-    FColor       button_bg{getColorTheme()->button_active_bg};
-    FColor       button_hotkey_fg{getColorTheme()->button_hotkey_fg};
-    FColor       button_focus_fg{getColorTheme()->button_active_focus_fg};
-    FColor       button_focus_bg{getColorTheme()->button_active_focus_bg};
-    FColor       button_inactive_fg{getColorTheme()->button_inactive_fg};
-    FColor       button_inactive_bg{getColorTheme()->button_inactive_bg};
+    FColor       button_fg{fc::Default};
+    FColor       button_bg{fc::Default};
+    FColor       button_hotkey_fg{fc::Default};
+    FColor       button_focus_fg{fc::Default};
+    FColor       button_focus_bg{fc::Default};
+    FColor       button_inactive_fg{fc::Default};
+    FColor       button_inactive_bg{fc::Default};
     std::size_t  hotkeypos{NOT_SET};
     std::size_t  indent{0};
     std::size_t  center_offset{0};
@@ -178,7 +178,7 @@ inline const FString FButton::getClassName() const
 { return "FButton"; }
 
 //----------------------------------------------------------------------
-inline FString& FButton::getText()
+inline FString FButton::getText() const
 { return text; }
 
 //----------------------------------------------------------------------

@@ -1,17 +1,17 @@
 /***********************************************************************
 * flistview.cpp - Widget FListView and FListViewItem                   *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -24,8 +24,10 @@
   #include <strings.h>  // need for strcasecmp
 #endif
 
+#include <limits>
 #include <memory>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "final/emptyfstring.h"
@@ -310,7 +312,7 @@ FObject::iterator FListViewItem::insert (FListViewItem* child)
 
 //----------------------------------------------------------------------
 FObject::iterator FListViewItem::insert ( FListViewItem* child
-                                        , iterator parent_iter )
+                                        , iterator parent_iter ) const
 {
   if ( parent_iter == FListView::getNullIterator() )
     return FListView::getNullIterator();
@@ -335,7 +337,7 @@ FObject::iterator FListViewItem::insert ( FListViewItem* child
 }
 
 //----------------------------------------------------------------------
-void FListViewItem::remove (FListViewItem* item)
+void FListViewItem::remove (FListViewItem* item) const
 {
   if ( item == nullptr || item == *FListView::getNullIterator() )
     return;
@@ -691,12 +693,12 @@ FListView::FListView (FWidget* parent)
 //----------------------------------------------------------------------
 FListView::~FListView()  // destructor
 {
-  delOwnTimer();
+  delOwnTimers();
 }
 
 // public methods of FListView
 //----------------------------------------------------------------------
-std::size_t FListView::getCount()
+std::size_t FListView::getCount() const
 {
   int n{0};
 
@@ -1282,12 +1284,11 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
 
   const int mouse_x = ev->getX();
   const int mouse_y = ev->getY();
-  const std::size_t element_count = getCount();
 
   if ( mouse_x > 1 && mouse_x < int(getWidth())
     && mouse_y > 1 && mouse_y < int(getHeight()) )
   {
-    if ( first_visible_line.getPosition() + mouse_y - 1 > int(element_count) )
+    if ( first_visible_line.getPosition() + mouse_y - 1 > int(getCount()) )
       return;
 
     if ( itemlist.empty() )
@@ -1302,7 +1303,7 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
       else
         item->expand();
 
-      adjustScrollbars (element_count);
+      adjustScrollbars (getCount());  // after expand or collapse
 
       if ( isShown() )
         draw();
@@ -1408,7 +1409,7 @@ void FListView::onFocusOut (FFocusEvent*)
     getStatusBar()->drawMessage();
   }
 
-  delOwnTimer();
+  delOwnTimers();
 }
 
 
@@ -1454,7 +1455,7 @@ void FListView::adjustViewport (const int element_count)
 }
 
 //----------------------------------------------------------------------
-void FListView::adjustScrollbars (const std::size_t element_count)
+void FListView::adjustScrollbars (const std::size_t element_count) const
 {
   const std::size_t width = getClientWidth();
   const std::size_t height = getClientHeight();
@@ -1585,7 +1586,7 @@ void FListView::sort (Compare cmp)
 //----------------------------------------------------------------------
 std::size_t FListView::getAlignOffset ( const fc::text_alignment align
                                       , const std::size_t column_width
-                                      , const std::size_t width )
+                                      , const std::size_t width ) const
 {
   assert ( align == fc::alignLeft
         || align == fc::alignCenter
@@ -1681,7 +1682,7 @@ void FListView::drawBorder()
 }
 
 //----------------------------------------------------------------------
-void FListView::drawScrollbars()
+void FListView::drawScrollbars() const
 {
   if ( ! hbar->isShown() && isHorizontallyScrollable() )
     hbar->show();
@@ -1892,7 +1893,7 @@ void FListView::clearList()
 
 //----------------------------------------------------------------------
 inline void FListView::setLineAttributes ( bool is_current
-                                         , bool is_focus )
+                                         , bool is_focus ) const
 {
   const auto& wc = getColorTheme();
   setColor (wc->list_fg, wc->list_bg);
@@ -1927,7 +1928,7 @@ inline void FListView::setLineAttributes ( bool is_current
 }
 
 //----------------------------------------------------------------------
-inline FString FListView::getCheckBox (const FListViewItem* item)
+inline FString FListView::getCheckBox (const FListViewItem* item) const
 {
   FString checkbox{""};
 
@@ -1958,7 +1959,7 @@ inline FString FListView::getCheckBox (const FListViewItem* item)
 
 //----------------------------------------------------------------------
 inline FString FListView::getLinePrefix ( const FListViewItem* item
-                                        , std::size_t indent )
+                                        , std::size_t indent ) const
 {
   FString line{""};
 
@@ -2286,7 +2287,7 @@ void FListView::recalculateHorizontalBar (std::size_t len)
 }
 
 //----------------------------------------------------------------------
-void FListView::recalculateVerticalBar (std::size_t element_count)
+void FListView::recalculateVerticalBar (std::size_t element_count) const
 {
   const std::size_t height = getClientHeight();
   const int vmax = ( element_count > height )
@@ -2447,7 +2448,7 @@ void FListView::dragUp (int mouse_button)
 
   if ( current_iter.getPosition() == 0 )
   {
-    delOwnTimer();
+    delOwnTimers();
     drag_scroll = fc::noScroll;
   }
 }
@@ -2472,7 +2473,7 @@ void FListView::dragDown (int mouse_button)
 
   if ( current_iter.getPosition() - 1 == int(getCount()) )
   {
-    delOwnTimer();
+    delOwnTimers();
     drag_scroll = fc::noScroll;
   }
 }
@@ -2480,7 +2481,7 @@ void FListView::dragDown (int mouse_button)
 //----------------------------------------------------------------------
 void FListView::stopDragScroll()
 {
-  delOwnTimer();
+  delOwnTimers();
   scroll_timer = false;
   scroll_distance = 1;
   drag_scroll = fc::noScroll;
@@ -2496,7 +2497,7 @@ FObject::iterator FListView::appendItem (FListViewItem* item)
 }
 
 //----------------------------------------------------------------------
-void FListView::processClick()
+void FListView::processClick() const
 {
   if ( itemlist.empty() )
     return;
@@ -2505,13 +2506,13 @@ void FListView::processClick()
 }
 
 //----------------------------------------------------------------------
-void FListView::processChanged()
+void FListView::processChanged() const
 {
   emitCallback("row-changed");
 }
 
 //----------------------------------------------------------------------
-void FListView::changeOnResize()
+void FListView::changeOnResize() const
 {
   if ( FTerm::isNewFont() )
   {
@@ -2855,7 +2856,7 @@ void FListView::scrollBy (int dx, int dy)
 }
 
 //----------------------------------------------------------------------
-void FListView::cb_vbarChange (const FWidget*, const FDataPtr)
+void FListView::cb_vbarChange (const FWidget*)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
@@ -2922,7 +2923,7 @@ void FListView::cb_vbarChange (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FListView::cb_hbarChange (const FWidget*, const FDataPtr)
+void FListView::cb_hbarChange (const FWidget*)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;

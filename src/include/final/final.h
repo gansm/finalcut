@@ -1,18 +1,18 @@
 /***********************************************************************
-* final.h - Include all in the Final Cut required functions, types     *
-*           and macros                                                 *
+* final.h - Include all in FINAL CUT required functions,               *
+*           types and macros                                           *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -32,6 +32,7 @@
 #include <final/fapplication.h>
 #include <final/fbuttongroup.h>
 #include <final/fbutton.h>
+#include <final/fbusyindicator.h>
 #include <final/fc.h>
 #include <final/fobject.h>
 #include <final/fcolorpalette.h>

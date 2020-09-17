@@ -1,17 +1,17 @@
 /***********************************************************************
 * flistbox.cpp - Widget FListBox and FListBoxItem                      *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2014-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -95,7 +95,7 @@ FListBox::FListBox (FWidget* parent)
 //----------------------------------------------------------------------
 FListBox::~FListBox()  // destructor
 {
-  delOwnTimer();
+  delOwnTimers();
 }
 
 
@@ -572,7 +572,7 @@ void FListBox::onFocusOut (FFocusEvent*)
     getStatusBar()->drawMessage();
   }
 
-  delOwnTimer();
+  delOwnTimers();
   inc_search.clear();
 }
 
@@ -644,7 +644,7 @@ void FListBox::adjustSize()
 
 // private methods of FListBox
 //----------------------------------------------------------------------
-inline FString& FListBox::getString (listBoxItems::iterator iter)
+inline FString FListBox::getString (listBoxItems::iterator iter)
 {
   return iter->getText();
 }
@@ -721,7 +721,6 @@ void FListBox::draw()
 
   useParentWidgetColor();
 
-
   if ( FTerm::isMonochron() )
     setReverse(true);
 
@@ -767,7 +766,7 @@ void FListBox::drawBorder()
 }
 
 //----------------------------------------------------------------------
-void FListBox::drawScrollbars()
+void FListBox::drawScrollbars() const
 {
   if ( ! hbar->isShown() && isHorizontallyScrollable() )
     hbar->show();
@@ -1062,7 +1061,7 @@ inline void FListBox::setLineAttributes ( int y
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::unsetAttributes()
+inline void FListBox::unsetAttributes() const
 {
   if ( FTerm::isMonochron() )  // unset for the last element
     setReverse(false);
@@ -1121,7 +1120,7 @@ void FListBox::recalculateHorizontalBar (std::size_t len, bool has_brackets)
 }
 
 //----------------------------------------------------------------------
-void FListBox::recalculateVerticalBar (std::size_t element_count)
+void FListBox::recalculateVerticalBar (std::size_t element_count) const
 {
   const int vmax = ( element_count + 2 > getHeight() )
                    ? int(element_count - getHeight() + 2)
@@ -1307,7 +1306,7 @@ void FListBox::dragUp (int mouse_button)
 
   if ( current == 1 )
   {
-    delOwnTimer();
+    delOwnTimers();
     drag_scroll = fc::noScroll;
   }
 }
@@ -1332,7 +1331,7 @@ void FListBox::dragDown (int mouse_button)
 
   if ( current == getCount() )
   {
-    delOwnTimer();
+    delOwnTimers();
     drag_scroll = fc::noScroll;
   }
 }
@@ -1340,7 +1339,7 @@ void FListBox::dragDown (int mouse_button)
 //----------------------------------------------------------------------
 void FListBox::stopDragScroll()
 {
-  delOwnTimer();
+  delOwnTimers();
   drag_scroll = fc::noScroll;
   scroll_distance = 1;
   scroll_timer = false;
@@ -1697,25 +1696,25 @@ inline bool FListBox::keyIncSearchInput (FKey key)
 }
 
 //----------------------------------------------------------------------
-void FListBox::processClick()
+void FListBox::processClick() const
 {
   emitCallback("clicked");
 }
 
 //----------------------------------------------------------------------
-void FListBox::processSelect()
+void FListBox::processSelect() const
 {
   emitCallback("row-selected");
 }
 
 //----------------------------------------------------------------------
-void FListBox::processChanged()
+void FListBox::processChanged() const
 {
   emitCallback("row-changed");
 }
 
 //----------------------------------------------------------------------
-void FListBox::changeOnResize()
+void FListBox::changeOnResize() const
 {
   if ( FTerm::isNewFont() )
   {
@@ -1744,7 +1743,7 @@ void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_vbarChange (const FWidget*, const FDataPtr)
+void FListBox::cb_vbarChange (const FWidget*)
 {
   FScrollbar::sType scrollType;
   const std::size_t current_before = current;
@@ -1815,7 +1814,7 @@ void FListBox::cb_vbarChange (const FWidget*, const FDataPtr)
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_hbarChange (const FWidget*, const FDataPtr)
+void FListBox::cb_hbarChange (const FWidget*)
 {
   static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
   static constexpr int wheel_distance = 4;

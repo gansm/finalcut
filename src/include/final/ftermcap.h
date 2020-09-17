@@ -1,17 +1,17 @@
 /***********************************************************************
 * ftermcap.h - Provides access to terminal capabilities                *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2016-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -56,6 +56,7 @@
 #endif
 
 #include <string>
+#include <utility>
 #include <vector>
 
 // FTermcap string macro
@@ -108,6 +109,9 @@ class FTermcap final
     template<typename CharT>
     static int           paddingPrint (const CharT&, int, fn_putc);
 
+    // Inquiry
+    static bool          isInitialized();
+
     // Methods
     static void init();
 
@@ -117,6 +121,7 @@ class FTermcap final
     static bool          automatic_left_margin;
     static bool          automatic_right_margin;
     static bool          eat_nl_glitch;
+    static bool          has_ansi_escape_sequences;
     static bool          ansi_default_color;
     static bool          osc_support;
     static bool          no_utf8_acs_chars;
@@ -128,6 +133,7 @@ class FTermcap final
   private:
     // Constant
     static constexpr std::size_t BUF_SIZE{2048};
+
 
     // Methods
     static void          termcap();
@@ -192,6 +198,12 @@ template<typename CharT>
 int FTermcap::paddingPrint (const CharT& str, int affcnt, fn_putc putc)
 {
   return _tputs (C_STR(str), affcnt, putc);
+}
+
+//----------------------------------------------------------------------
+inline bool FTermcap::isInitialized()
+{
+  return bool(fsystem && fterm_data && term_detection);
 }
 
 }  // namespace finalcut

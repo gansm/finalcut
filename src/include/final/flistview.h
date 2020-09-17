@@ -1,17 +1,17 @@
 /***********************************************************************
 * flistview.h - Widget FListView and FListViewItem                     *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2017-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -49,6 +49,7 @@
 
 #include <list>
 #include <stack>
+#include <unordered_map>
 #include <vector>
 
 #include "final/fscrollbar.h"
@@ -103,8 +104,8 @@ class FListViewItem : public FObject
 
     // Methods
     iterator            insert (FListViewItem*);
-    iterator            insert (FListViewItem*, iterator);
-    void                remove (FListViewItem*);
+    iterator            insert (FListViewItem*, iterator) const;
+    void                remove (FListViewItem*) const;
     void                expand();
     void                collapse();
 
@@ -279,7 +280,7 @@ class FListView : public FWidget
 
     // Accessors
     const FString        getClassName() const override;
-    std::size_t          getCount();
+    std::size_t          getCount() const;
     fc::text_alignment   getColumnAlignment (int) const;
     FString              getColumnText (int) const;
     fc::sorting_type     getColumnSortType (int) const;
@@ -358,7 +359,7 @@ class FListView : public FWidget
   protected:
     // Methods
     void                 adjustViewport (const int);
-    void                 adjustScrollbars (const std::size_t);
+    void                 adjustScrollbars (const std::size_t) const;
     void                 adjustSize() override;
 
   private:
@@ -384,8 +385,8 @@ class FListView : public FWidget
     static void          setNullIterator (const iterator&);
 
     // Inquiry
-    bool                 isHorizontallyScrollable();
-    bool                 isVerticallyScrollable();
+    bool                 isHorizontallyScrollable() const;
+    bool                 isVerticallyScrollable() const;
 
     // Methods
     void                 init();
@@ -395,18 +396,18 @@ class FListView : public FWidget
     void                 sort (Compare);
     std::size_t          getAlignOffset ( const fc::text_alignment
                                         , const std::size_t
-                                        , const std::size_t );
+                                        , const std::size_t ) const;
     iterator             getListEnd (const FListViewItem*);
     void                 draw() override;
     void                 drawBorder() override;
-    void                 drawScrollbars();
+    void                 drawScrollbars() const;
     void                 drawHeadlines();
     void                 drawList();
     void                 drawListLine (const FListViewItem*, bool, bool);
     void                 clearList();
-    void                 setLineAttributes (bool, bool);
-    FString              getCheckBox (const FListViewItem* item);
-    FString              getLinePrefix (const FListViewItem*, std::size_t);
+    void                 setLineAttributes (bool, bool) const;
+    FString              getCheckBox (const FListViewItem* item) const;
+    FString              getLinePrefix (const FListViewItem*, std::size_t) const;
     void                 drawSortIndicator (std::size_t&, std::size_t);
     void                 drawHeadlineLabel (const headerItems::const_iterator&);
     void                 drawHeaderBorder (std::size_t);
@@ -418,7 +419,7 @@ class FListView : public FWidget
     void                 beforeInsertion (FListViewItem*);
     void                 afterInsertion();
     void                 recalculateHorizontalBar (std::size_t);
-    void                 recalculateVerticalBar (std::size_t);
+    void                 recalculateVerticalBar (std::size_t) const;
     void                 mouseHeaderClicked();
     void                 wheelUp (int);
     void                 wheelDown (int);
@@ -428,9 +429,9 @@ class FListView : public FWidget
     void                 dragDown (int);
     void                 stopDragScroll();
     iterator             appendItem (FListViewItem*);
-    void                 processClick();
-    void                 processChanged();
-    void                 changeOnResize();
+    void                 processClick() const;
+    void                 processChanged() const;
+    void                 changeOnResize() const;
     void                 toggleCheckbox();
     void                 collapseAndScrollLeft();
     void                 expandAndScrollRight();
@@ -451,8 +452,8 @@ class FListView : public FWidget
     bool                 hasCheckableItems() const;
 
     // Callback methods
-    void                 cb_vbarChange (const FWidget*, const FDataPtr);
-    void                 cb_hbarChange (const FWidget*, const FDataPtr);
+    void                 cb_vbarChange (const FWidget*);
+    void                 cb_hbarChange (const FWidget*);
 
     // Data members
     iterator             root{};
@@ -650,11 +651,11 @@ inline FObject::iterator FListView::endOfList()
 { return itemlist.end(); }
 
 //----------------------------------------------------------------------
-inline bool FListView::isHorizontallyScrollable()
+inline bool FListView::isHorizontallyScrollable() const
 { return bool( max_line_width > getClientWidth() ); }
 
 //----------------------------------------------------------------------
-inline bool FListView::isVerticallyScrollable()
+inline bool FListView::isVerticallyScrollable() const
 { return bool( getCount() > getClientHeight() ); }
 
 //----------------------------------------------------------------------

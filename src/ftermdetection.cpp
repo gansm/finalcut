@@ -1,17 +1,17 @@
 /***********************************************************************
 * ftermdetection.cpp - Detection of the terminal type                  *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -30,6 +30,7 @@
 #include "final/flog.h"
 #include "final/fsystem.h"
 #include "final/fterm.h"
+#include "final/ftermcap.h"
 #include "final/ftermdata.h"
 #include "final/ftermdetection.h"
 #include "final/ftermios.h"
@@ -50,16 +51,16 @@ namespace finalcut
 FTermDetection::FTerminalType FTermDetection::terminal_type{};
 FTermDetection::colorEnv      FTermDetection::color_env{};
 FTermDetection::secondaryDA   FTermDetection::secondary_da{};
-FTermData*     FTermDetection::fterm_data{nullptr};
-FSystem*       FTermDetection::fsystem{nullptr};
-char           FTermDetection::termtype[256]{};
-char           FTermDetection::ttytypename[256]{};
-bool           FTermDetection::decscusr_support{};
-bool           FTermDetection::terminal_detection{};
-bool           FTermDetection::color256{};
-const FString* FTermDetection::answer_back{nullptr};
-const FString* FTermDetection::sec_da{nullptr};
-int            FTermDetection::gnome_terminal_id{};
+FTermData*                    FTermDetection::fterm_data{nullptr};
+FSystem*                      FTermDetection::fsystem{nullptr};
+char                          FTermDetection::termtype[256]{};
+char                          FTermDetection::ttytypename[256]{};
+bool                          FTermDetection::decscusr_support{};
+bool                          FTermDetection::terminal_detection{};
+bool                          FTermDetection::color256{};
+const FString*                FTermDetection::answer_back{nullptr};
+const FString*                FTermDetection::sec_da{nullptr};
+int                           FTermDetection::gnome_terminal_id{};
 
 #if DEBUG
   char FTermDetection::termtype_256color[256]{};
@@ -468,7 +469,10 @@ const char* FTermDetection::termtype_256color_quirks()
     color256 = true;
 
     if ( ! isScreenTerm() )
-      return (new_termtype = "gnome-256color");
+    {
+      new_termtype = "gnome-256color";
+      return new_termtype;
+    }
   }
 
   if ( ! color256 )
@@ -608,7 +612,7 @@ const char* FTermDetection::parseAnswerbackMsg (const char current_termtype[])
   }
 
   // cygwin needs a backspace to delete the '♣' char
-  if ( isCygwinTerminal() )
+  if ( isCygwinTerminal() || isWindowsTerminal() )
     FTerm::putstring (BS " " BS);
 
 #if DEBUG
@@ -857,7 +861,10 @@ inline const char* FTermDetection::secDA_Analysis_0 (const char current_termtype
 
   const char* new_termtype = current_termtype;
 
-  if ( secondary_da.terminal_id_version == 115 )
+  if ( secondary_da.terminal_id_version == 10
+    && secondary_da.terminal_id_hardware == 1 )
+    terminal_type.win_terminal = true;  // Windows Terminal >= 1.2
+  else if ( secondary_da.terminal_id_version == 115 )
     terminal_type.kde_konsole = true;
   else if ( secondary_da.terminal_id_version == 136 )
     terminal_type.putty = true;  // PuTTY

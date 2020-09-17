@@ -1,17 +1,17 @@
 /***********************************************************************
 * fkeyboard.h - Read keyboard events                                   *
 *                                                                      *
-* This file is part of the Final Cut widget toolkit                    *
+* This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
 * Copyright 2018-2020 Markus Gans                                      *
 *                                                                      *
-* The Final Cut is free software; you can redistribute it and/or       *
-* modify it under the terms of the GNU Lesser General Public License   *
-* as published by the Free Software Foundation; either version 3 of    *
+* FINAL CUT is free software; you can redistribute it and/or modify    *
+* it under the terms of the GNU Lesser General Public License as       *
+* published by the Free Software Foundation; either version 3 of       *
 * the License, or (at your option) any later version.                  *
 *                                                                      *
-* The Final Cut is distributed in the hope that it will be useful,     *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* FINAL CUT is distributed in the hope that it will be useful, but     *
+* WITHOUT ANY WARRANTY; without even the implied warranty of           *
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
 * GNU Lesser General Public License for more details.                  *
 *                                                                      *
@@ -62,7 +62,7 @@ class FKeyboardCommand final
     { }
 
     // Method
-    void execute()
+    void execute() const
     {
       handler();
     }
@@ -100,8 +100,8 @@ class FKeyboard final
 
     // Accessors
     const FString         getClassName() const;
-    FKey                  getKey();
-    const FString         getKeyName (const FKey);
+    FKey                  getKey() const;
+    const FString         getKeyName (const FKey) const;
     keybuffer&            getKeyBuffer();
     timeval*              getKeyPressedTime();
     static uInt64         getKeypressTimeout();
@@ -136,7 +136,7 @@ class FKeyboard final
     static constexpr FKey NOT_SET = static_cast<FKey>(-1);
 
     // Accessors
-    FKey                  getMouseProtocolKey();
+    FKey                  getMouseProtocolKey() const;
     FKey                  getTermcapKey();
     FKey                  getMetaKey();
     FKey                  getSingleKey();
@@ -148,17 +148,18 @@ class FKeyboard final
 
     // Inquiry
     static bool           isKeypressTimeout();
+    static bool           isIntervalTimeout();
 
     // Methods
-    FKey                  UTF8decode (const char[]);
+    FKey                  UTF8decode (const char[]) const;
     ssize_t               readKey();
     void                  parseKeyBuffer();
     FKey                  parseKeyString();
-    FKey                  keyCorrection (const FKey&);
+    FKey                  keyCorrection (const FKey&) const;
     void                  substringKeyHandling();
-    void                  keyPressed();
-    void                  keyReleased();
-    void                  escapeKeyPressed();
+    void                  keyPressed() const;
+    void                  keyReleased() const;
+    void                  escapeKeyPressed() const;
 
     // Data members
     FKeyboardCommand      keypressed_cmd{};
@@ -171,8 +172,10 @@ class FKeyboard final
 #endif
 
     static timeval        time_keypressed;
+    static timeval        time_last_request;
     static uInt64         read_blocking_time;
     static uInt64         key_timeout;
+    static uInt64         interval_timeout;
     fc::FKeyMap*          key_map{nullptr};
     FKey                  key{0};
     uChar                 read_character{};
@@ -192,7 +195,7 @@ inline const FString FKeyboard::getClassName() const
 { return "FKeyboard"; }
 
 //----------------------------------------------------------------------
-inline FKey FKeyboard::getKey()
+inline FKey FKeyboard::getKey() const
 { return key; }
 
 //----------------------------------------------------------------------
