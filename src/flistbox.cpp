@@ -834,7 +834,7 @@ void FListBox::drawList()
     const bool lineHasBrackets = hasBrackets(iter);
 
     // Import data via lazy conversion
-    lazyConvert (iter, int(y));
+    lazyConvert (iter, y);
 
     // Set screen position and attributes
     setLineAttributes ( int(y), isSelected(iter), lineHasBrackets

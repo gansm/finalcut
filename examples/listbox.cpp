@@ -51,7 +51,7 @@ void doubleToItem ( FListBoxItem& item
                   , std::size_t index )
 {
   typedef std::list<double> DblList;
-  DblList& dbl_list = FListBoxHelper::getContainer<DblList>(container);
+  DblList& dbl_list = flistboxhelper::getContainer<DblList>(container);
   std::list<double>::iterator iter = dbl_list.begin();
   std::advance (iter, index);
   item.setText (FString() << *iter);

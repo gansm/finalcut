@@ -371,7 +371,7 @@ class FListBox : public FWidget
 
 // non-member function
 //----------------------------------------------------------------------
-namespace FListBoxHelper
+namespace flistboxhelper
 {
 
 template <typename Container>

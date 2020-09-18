@@ -51,13 +51,11 @@ namespace finalcut
 //----------------------------------------------------------------------
 
 template <typename T>
-struct FData;  // Class forward declaration
+class FData;  // Class forward declaration
 
-struct FDataAccess
+class FDataAccess
 {
   public:
-    virtual ~FDataAccess();
-
     template <typename T>
     const T& get() const
     {
@@ -72,94 +70,75 @@ struct FDataAccess
     }
 };
 
-//----------------------------------------------------------------------
-inline FDataAccess::~FDataAccess()
-{ }
-
 
 //----------------------------------------------------------------------
 // struct FData
 //----------------------------------------------------------------------
 
 template <typename T>
-struct FData : public FDataAccess
+class FData : public FDataAccess
 {
-  explicit FData (T& v)  // constructor
-    : value_ref{v}
-  { }
+  public:
+    explicit FData (T& v)  // constructor
+      : value_ref{v}
+    { }
 
-  explicit FData (T&& v)  // constructor
-    : value{v}
-    , value_ref{value}
-  { }
+    explicit FData (T&& v)  // constructor
+      : value{std::move(v)}
+      , value_ref{value}
+    { }
 
-  ~FData()  // destructor
-  { }
+    T operator () () const
+    {
+      return value_ref;
+    }
 
-  FData (const FData& d)  // Copy constructor
-    : value{d.value}
-    , value_ref{d.value_ref}
-  { }
+    template <typename... Args>
+    T operator () (Args... args) const
+    {
+      return value_ref(args...);
+    }
 
-  FData& operator = (const FData& d)  // Copy assignment operator (=)
-  {
-    value = d.value;
-    value_ref = d.value_ref;
-    return *this;
-  }
+    explicit operator T () const
+    {
+      return value_ref;
+    }
 
-  T operator () () const
-  {
-    return value_ref;
-  }
+    T& get()
+    {
+      return value_ref;
+    }
 
-  template <typename... Args>
-  T operator () (Args... args) const
-  {
-    return value_ref(args...);
-  }
+    void set (const T& v)
+    {
+      value_ref = v;
+    }
 
-  explicit operator T () const
-  {
-    return value_ref;
-  }
+    bool isInitializedCopy()
+    {
+      return bool(value);
+    }
 
-  T& get()
-  {
-    return value_ref;
-  }
+    bool isInitializedReference()
+    {
+      return ! isInitializedCopy();
+    }
 
-  void set (const T& v)
-  {
-    value_ref = v;
-  }
+    FData& operator << (const T& v)
+    {
+      value_ref = v;
+      return *this;
+    }
 
-  bool isInitializedCopy()
-  {
-    return bool(value);
-  }
-
-  bool isInitializedReference()
-  {
-    return ! isInitializedCopy();
-  }
-
-  FData& operator << (const T& v)
-  {
-    value_ref = v;
-    return *this;
-  }
-
-  friend std::ostream& operator << (std::ostream &os, const FData& data)
-  {
-    os << data.value_ref;
-    return os;
-  }
+    friend std::ostream& operator << (std::ostream &os, const FData& data)
+    {
+      os << data.value_ref;
+      return os;
+    }
 
   private:
+    // Data members
     T value{};
-
-  public:
     T& value_ref;
 };
 
