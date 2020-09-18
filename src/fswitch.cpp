@@ -141,15 +141,15 @@ void FSwitch::drawCheckButton()
 //----------------------------------------------------------------------
 inline void FSwitch::drawChecked()
 {
-  wchar_t on[6]{L"  On "};
-  const wchar_t off[6]{L" Off "};
+  FString on{L"  On "};
+  const FString off{L" Off "};
   const auto& wc = getColorTheme();
 
   if ( hasFocus() && ! button_pressed )
   {
     if ( FTerm::isMonochron() )
     {
-      std::wcsncpy (on, L" <On>", 6);
+      on.setString(L" <On>");
       setBold(true);
     }
     else if ( FTerm::getMaxColor() < 16 )
@@ -191,8 +191,8 @@ inline void FSwitch::drawChecked()
 //----------------------------------------------------------------------
 inline void FSwitch::drawUnchecked()
 {
-  const wchar_t on[6]{L"  On "};
-  wchar_t off[6]{L" Off "};
+  const FString on{L"  On "};
+  FString off{L" Off "};
 
   const auto& wc = getColorTheme();
   setColor (wc->button_inactive_fg, wc->button_inactive_bg);
@@ -206,7 +206,7 @@ inline void FSwitch::drawUnchecked()
   {
     if ( FTerm::isMonochron() )
     {
-      std::wcsncpy (off, L"<Off>", 6);
+      off.setString(L"<Off>");
       setBold(true);
     }
     else if ( FTerm::getMaxColor() < 16 )

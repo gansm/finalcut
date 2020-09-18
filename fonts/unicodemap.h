@@ -17,7 +17,7 @@ namespace finalcut
 namespace fc
 {
 
-static struct unipair unicode_cp437_pairs[] =
+constexpr struct unipair unicode_cp437_pairs[] =
 {
   //  .----------- unicode
   //  |      .---- fontpos
@@ -306,7 +306,7 @@ static struct unipair unicode_cp437_pairs[] =
   {0x266c, 0x0e}
 };
 
-static struct unipair unicode_newfont_pairs[] =
+constexpr struct unipair unicode_newfont_pairs[] =
 {
   //  .----------- unicode
   //  |      .---- fontpos

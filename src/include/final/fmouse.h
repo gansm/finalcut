@@ -130,7 +130,7 @@ class FMouse
     bool                  isInputDataPending() const;
 
     // Methods
-    template<typename ClassT>
+    template <typename ClassT>
     static FMouse*        createMouseObject ();
     void                  clearButtonState();
     virtual void          setRawData (FKeyboard::keybuffer&) = 0;
@@ -193,7 +193,7 @@ class FMouse
 };
 
 //----------------------------------------------------------------------
-template<typename ClassT>
+template <typename ClassT>
 inline FMouse* FMouse::createMouseObject()
 {
   return new ClassT;

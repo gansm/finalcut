@@ -431,7 +431,7 @@ class extendedApplication : public FApplication
           || last_avg[2] != load_avg[2] )
         {
           FUserEvent user_event(fc::User_Event, 0);
-          user_event.setData (FDataPtr(&load_avg));
+          user_event.setData (load_avg);
           FApplication::sendEvent (getMainWidget(), &user_event);
         }
 
@@ -458,8 +458,7 @@ class dialogWidget final : public FDialog
   private:
     void onUserEvent (FUserEvent* ev) override
     {
-      FDataPtr dataPtr = ev->getData();
-      auto& lavg = *(reinterpret_cast<LoadAvg*>(dataPtr));
+      const auto& lavg = ev->getData<LoadAvg>();
       std::setlocale(LC_NUMERIC, "C");
       loadavg_label.clear();
       loadavg_label << "Load average: " << lavg[0] << ", "
@@ -530,9 +529,9 @@ to other widget objects.
 1. For calling functions or static methods via a pointer:
 
 ```cpp
-template<typename Function
-       , typename FunctionPointer<Function>::type = nullptr
-       , typename... Args>
+template< typename Function
+        , typename FunctionPointer<Function>::type = nullptr
+        , typename... Args >
 void FWidget::addCallback ( const FString& cb_signal
                           , Function&&     cb_function
                           , Args&&...      args)
@@ -542,9 +541,9 @@ void FWidget::addCallback ( const FString& cb_signal
 2. For calling functions or static methods via a reference:
 
 ```cpp
-template<typename Function
-       , typename FunctionReference<Function>::type = nullptr
-       , typename... Args>
+template< typename Function
+        , typename FunctionReference<Function>::type = nullptr
+        , typename... Args >
 void FWidget::addCallback ( const FString& cb_signal
                           , Function&      cb_function
                           , Args&&...      args)
@@ -554,11 +553,11 @@ void FWidget::addCallback ( const FString& cb_signal
 3. For calling a member method of a specific instance:
 
 ```cpp
-template<typename Object
-       , typename Function
-       , typename ObjectPointer<Object>::type = nullptr
-       , typename MemberFunctionPointer<Function>::type = nullptr
-       , typename... Args>
+template< typename Object
+        , typename Function
+        , typename ObjectPointer<Object>::type = nullptr
+        , typename MemberFunctionPointer<Function>::type = nullptr
+        , typename... Args >
 void FWidget::addCallback ( const FString& cb_signal
                           , Object&&       cb_instance
                           , Function&&     cb_member
@@ -568,9 +567,9 @@ void FWidget::addCallback ( const FString& cb_signal
 
 4. For calling a std::bind call wrapper or a lambda expression:
 ```cpp
-template<typename Function
-       , typename ClassObject<Function>::type = nullptr
-       , typename... Args>
+template< typename Function
+        , typename ClassObject<Function>::type = nullptr
+        , typename... Args >
 void FWidget::addCallback ( const FString& cb_signal
                           , Function&&     cb_function
                           , Args&&...      args)
@@ -580,11 +579,11 @@ void FWidget::addCallback ( const FString& cb_signal
 5. For calling a std::bind call wrapper to a specific instance:
 
 ```cpp
-template<typename Object
-       , typename Function
-       , typename ObjectPointer<Object>::type = nullptr
-       , typename ClassObject<Function>::type = nullptr
-       , typename... Args>
+template< typename Object
+        , typename Function
+        , typename ObjectPointer<Object>::type = nullptr
+        , typename ClassObject<Function>::type = nullptr
+        , typename... Args >
 void FWidget::addCallback ( const FString& cb_signal
                           , Object&&       cb_instance
                           , Function&&     cb_function
@@ -596,9 +595,9 @@ void FWidget::addCallback ( const FString& cb_signal
 with the keyword auto:
 
 ```cpp
-template<typename Function
-       , typename ClassObject<Function>::type = nullptr
-       , typename... Args>
+template< typename Function
+        , typename ClassObject<Function>::type = nullptr
+        , typename... Args >
 void FWidget::addCallback ( const FString& cb_signal
                           , Function&      cb_function
                           , Args&&...      args)
@@ -612,8 +611,8 @@ remove all existing callbacks from an object.
 1. To delete functions or static methods callbacks via a pointer:
 
 ```cpp
-template<typename FunctionPtr
-       , typename FunctionPointer<FunctionPtr>::type = nullptr>
+template< typename FunctionPtr
+        , typename FunctionPointer<FunctionPtr>::type = nullptr >
 void FWidget::delCallback (FunctionPtr&& cb_func_ptr)
 {...}
 ```
@@ -621,8 +620,8 @@ void FWidget::delCallback (FunctionPtr&& cb_func_ptr)
 2. To delete functions or static methods callbacks via a reference:
 
 ```cpp
-template<typename Function
-       , typename FunctionReference<Function>::type = nullptr>
+template< typename Function
+        , typename FunctionReference<Function>::type = nullptr >
 void FWidget::delCallback (Function& cb_function)
 {...}
 ```
@@ -630,8 +629,8 @@ void FWidget::delCallback (Function& cb_function)
 3. To delete all callbacks from a specific instance:
 
 ```cpp
-template<typename Object
-       , typename ObjectPointer<Object>::type = nullptr>
+template< typename Object
+        , typename ObjectPointer<Object>::type = nullptr >
 void FWidget::delCallback (Object&& cb_instance)
 {...}
 ```
@@ -646,8 +645,8 @@ void delCallback (const FString& cb_signal)
 5. To delete all callbacks of a signal and specific instance:
 
 ```cpp
-template<typename Object
-       , typename ObjectPointer<Object>::type = nullptr>
+template< typename Object
+        , typename ObjectPointer<Object>::type = nullptr >
 void delCallback (const FString& cb_signal, Object&& cb_instance)
 {...}
 ```

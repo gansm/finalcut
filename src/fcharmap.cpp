@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -163,7 +163,7 @@ const std::size_t lastCharItem = \
     std::size_t((sizeof(character) / sizeof(character[0])) - 1);
 
 
-int vt100_key_to_utf8[][2] =
+constexpr int vt100_key_to_utf8[][2] =
 {
   {fc::vt100_key_rarrow   , fc::BlackRightPointingPointer},     // ►
   {fc::vt100_key_larrow   , fc::BlackLeftPointingPointer},      // ◄
@@ -210,7 +210,7 @@ const std::size_t lastKeyItem = \
     std::size_t((sizeof(vt100_key_to_utf8) / sizeof(vt100_key_to_utf8[0])) - 1);
 
 
-wchar_t cp437_ucs[][2] =
+constexpr wchar_t cp437_ucs[][2] =
 {
   {0x00, 0x0000},  // null
   {0x01, 0x263a},  // white smiling face
@@ -474,7 +474,7 @@ const std::size_t lastCP437Item = \
     std::size_t((sizeof(cp437_ucs) / sizeof(cp437_ucs[0])) - 1);
 
 // Based on http://www.unicode.org/charts/PDF/UFF00.pdf
-const wchar_t halfWidth_fullWidth[][2] =
+constexpr wchar_t halfWidth_fullWidth[][2] =
 {
   // Fullwidth ASCII variants
   {0x0020, 0x3000},  // ' ' -> '　'

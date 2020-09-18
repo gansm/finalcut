@@ -75,7 +75,11 @@ typedef std::function<void()> FCall;
 namespace finalcut
 {
 
-template <typename T, bool is_signed>
+namespace internal
+{
+
+template <typename T
+        , bool is_signed>
 struct is_negative
 {
   inline bool operator () (const T& x) const
@@ -93,10 +97,12 @@ struct is_negative<T, false>
   }
 };
 
+}  // namespace internal
+
 template <typename T>
-inline bool isNegative (const T& x)
+constexpr bool isNegative (const T& x)
 {
-  return is_negative<T, std::numeric_limits<T>::is_signed>()(x);
+  return internal::is_negative<T, std::numeric_limits<T>::is_signed>()(x);
 }
 
 template <typename T>

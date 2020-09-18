@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -39,10 +39,10 @@ namespace fc
 extern uInt character[][fc::NUM_OF_ENCODINGS];
 extern const std::size_t lastCharItem;
 
-extern int vt100_key_to_utf8[][2];
+extern const int vt100_key_to_utf8[][2];
 extern const std::size_t lastKeyItem;
 
-extern wchar_t cp437_ucs[][2];
+extern const wchar_t cp437_ucs[][2];
 extern const std::size_t lastCP437Item;
 
 extern const wchar_t halfWidth_fullWidth[][2];

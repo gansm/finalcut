@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -34,8 +34,8 @@ namespace fc
 {
 
 extern FKeyMap fkey[];
-extern FMetakeyMap fmetakey[];
-extern FKeyName fkeyname[];
+extern const FMetakeyMap fmetakey[];
+extern const FKeyName fkeyname[];
 
 }  // namespace fc
 

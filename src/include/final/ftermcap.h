@@ -96,17 +96,18 @@ class FTermcap final
 
     // Accessors
     const FString        getClassName() const;
-    template<typename CharT>
+    template <typename CharT>
     static bool          getFlag (const CharT&);
-    template<typename CharT>
+    template <typename CharT>
     static int           getNumber (const CharT&);
-    template<typename CharT>
+    template <typename CharT>
     static char*         getString (const CharT&);
-    template<typename CharT>
+    template <typename CharT>
     static char*         encodeMotionParameter (const CharT&, int, int);
-    template<typename CharT, typename... Args>
+    template <typename CharT
+            , typename... Args>
     static char*         encodeParameter (const CharT&, Args&&...);
-    template<typename CharT>
+    template <typename CharT>
     static int           paddingPrint (const CharT&, int, fn_putc);
 
     // Inquiry
@@ -159,42 +160,43 @@ inline const FString FTermcap::getClassName() const
 { return "FTermcap"; }
 
 //----------------------------------------------------------------------
-template<typename CharT>
+template <typename CharT>
 bool FTermcap::getFlag (const CharT& cap)
 {
   return ::tgetflag(C_STR(cap));
 }
 
 //----------------------------------------------------------------------
-template<typename CharT>
+template <typename CharT>
 int FTermcap::getNumber (const CharT& cap)
 {
   return ::tgetnum(C_STR(cap));
 }
 
 //----------------------------------------------------------------------
-template<typename CharT>
+template <typename CharT>
 char* FTermcap::getString (const CharT& cap)
 {
   return ::tgetstr(C_STR(cap), reinterpret_cast<char**>(&string_buf));
 }
 
 //----------------------------------------------------------------------
-template<typename CharT>
+template <typename CharT>
 char* FTermcap::encodeMotionParameter (const CharT& cap, int col, int row)
 {
   return ::tgoto(C_STR(cap), col, row);
 }
 
 //----------------------------------------------------------------------
-template<typename CharT, typename... Args>
+template <typename CharT
+        , typename... Args>
 inline char* FTermcap::encodeParameter (const CharT& cap, Args&&... args)
 {
   return ::tparm (C_STR(cap), std::forward<Args>(args)...);
 }
 
 //----------------------------------------------------------------------
-template<typename CharT>
+template <typename CharT>
 int FTermcap::paddingPrint (const CharT& str, int affcnt, fn_putc putc)
 {
   return _tputs (C_STR(str), affcnt, putc);

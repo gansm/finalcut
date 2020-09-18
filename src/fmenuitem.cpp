@@ -605,47 +605,42 @@ void FMenuItem::createDialogList (FMenu* winmenu) const
     while ( iter != getDialogList()->end() && *iter )
     {
       auto win = static_cast<FDialog*>(*iter);
+      FMenuItem* win_item{};
+      const uInt32 n = uInt32(std::distance(first, iter));
+      // get the dialog title
+      const auto& name = win->getText();
 
-      if ( win )
+      try
       {
-        FMenuItem* win_item{};
-        const uInt32 n = uInt32(std::distance(first, iter));
-        // get the dialog title
-        const auto& name = win->getText();
-
-        try
-        {
-          // create a new dialog list item
-          win_item = new FMenuItem (name, winmenu);
-        }
-        catch (const std::bad_alloc&)
-        {
-          badAllocOutput ("FMenuItem");
-          return;
-        }
-
-        if ( n < 9 )
-          win_item->addAccelerator (fc::Fmkey_1 + n);  // Meta + 1..9
-
-        win_item->addCallback
-        (
-          "clicked",
-          static_cast<std::remove_reference<decltype(win_item)>::type>(win_item),
-          &FMenuItem::cb_switchToDialog,
-          win
-        );
-
-        win->addCallback
-        (
-          "destroy",
-          static_cast<std::remove_reference<decltype(win_item)>::type>(win_item),
-          &FMenuItem::cb_destroyDialog,
-          win
-        );
-
-        win_item->associated_window = win;
+        // create a new dialog list item
+        win_item = new FMenuItem (name, winmenu);
+      }
+      catch (const std::bad_alloc&)
+      {
+        badAllocOutput ("FMenuItem");
+        return;
       }
 
+      if ( n < 9 )
+        win_item->addAccelerator (fc::Fmkey_1 + n);  // Meta + 1..9
+
+      win_item->addCallback
+      (
+        "clicked",
+        static_cast<std::remove_reference<decltype(win_item)>::type>(win_item),
+        &FMenuItem::cb_switchToDialog,
+        win
+      );
+
+      win->addCallback
+      (
+        "destroy",
+        static_cast<std::remove_reference<decltype(win_item)>::type>(win_item),
+        &FMenuItem::cb_destroyDialog,
+        win
+      );
+
+      win_item->associated_window = win;
       ++iter;
     }
   }

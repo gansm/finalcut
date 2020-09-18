@@ -240,7 +240,7 @@ class FWidget : public FVTerm, public FObject
     static void              setMoveSizeWidget (FWidget*);
     static void              setActiveWindow (FWidget*);
     static void              setOpenMenu (FWidget*);
-    template<typename ClassT>
+    template <typename ClassT>
     static void              setColorTheme();
     FAcceleratorList&        setAcceleratorList();
     virtual void             setStatusbarMessage (const FString&);
@@ -317,9 +317,9 @@ class FWidget : public FVTerm, public FObject
     int                      numOfFocusableChildren();
     virtual bool             close();
     void                     clearStatusbarMessage();
-    template<typename... Args>
+    template <typename... Args>
     void                     addCallback (const FString&, Args&&...) noexcept;
-    template<typename... Args>
+    template <typename... Args>
     void                     delCallback (Args&&...) noexcept;
     void                     emitCallback (const FString&) const;
     void                     addAccelerator (FKey);
@@ -770,7 +770,7 @@ inline void FWidget::setOpenMenu (FWidget* obj)
 { open_menu = obj; }
 
 //----------------------------------------------------------------------
-template<typename ClassT>
+template <typename ClassT>
 inline void FWidget::setColorTheme()
 {
   getColorTheme() = std::make_shared<ClassT>();
@@ -984,14 +984,14 @@ inline void FWidget::clearStatusbarMessage()
 { statusbar_message.clear(); }
 
 //----------------------------------------------------------------------
-template<typename... Args>
+template <typename... Args>
 inline void FWidget::addCallback (const FString& cb_signal, Args&&... args) noexcept
 {
   callback_impl.addCallback (cb_signal, std::forward<Args>(args)...);
 }
 
 //----------------------------------------------------------------------
-template<typename... Args>
+template <typename... Args>
 inline void FWidget::delCallback (Args&&... args) noexcept
 {
   callback_impl.delCallback(std::forward<Args>(args)...);

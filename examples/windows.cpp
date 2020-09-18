@@ -199,7 +199,9 @@ class Window final : public finalcut::FDialog
     void configureDialogButtons();
     void activateWindow (finalcut::FDialog*) const;
     void adjustSize() override;
-    template<typename InstanceT, typename CallbackT, typename... Args>
+    template <typename InstanceT
+            , typename CallbackT
+            , typename... Args>
     void addClickedCallback ( finalcut::FWidget*
                             , InstanceT&&, CallbackT&&, Args&&... );
     template <typename IteratorT>
@@ -378,7 +380,9 @@ void Window::adjustSize()
 }
 
 //----------------------------------------------------------------------
-template<typename InstanceT, typename CallbackT, typename... Args>
+template <typename InstanceT
+        , typename CallbackT
+        , typename... Args>
 void Window::addClickedCallback ( finalcut::FWidget* widget
                                 , InstanceT&& instance
                                 , CallbackT&& callback

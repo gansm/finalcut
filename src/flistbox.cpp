@@ -52,12 +52,6 @@ FListBoxItem::FListBoxItem (const FListBoxItem& item)
 { }
 
 //----------------------------------------------------------------------
-FListBoxItem::FListBoxItem (const FString& txt, FDataPtr data)
-  : text{txt}
-  , data_pointer{data}
-{ }
-
-//----------------------------------------------------------------------
 FListBoxItem::~FListBoxItem()  // destructor
 { }
 
@@ -95,6 +89,9 @@ FListBox::FListBox (FWidget* parent)
 //----------------------------------------------------------------------
 FListBox::~FListBox()  // destructor
 {
+  if ( source_container )
+    delete source_container;  // for lazy conversion
+
   delOwnTimers();
 }
 
@@ -1729,12 +1726,12 @@ void FListBox::changeOnResize() const
 }
 
 //----------------------------------------------------------------------
-void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
+void FListBox::lazyConvert(listBoxItems::iterator iter, std::size_t y)
 {
   if ( conv_type != lazy_convert || ! iter->getText().isNull() )
     return;
 
-  lazy_inserter (*iter, source_container, y + yoffset);
+  lazy_inserter (*iter, source_container, y + std::size_t(yoffset));
   const auto column_width = getColumnWidth(iter->text);
   recalculateHorizontalBar (column_width, hasBrackets(iter));
 

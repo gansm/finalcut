@@ -122,6 +122,12 @@ FApplication* FApplication::getApplicationObject()
 }
 
 //----------------------------------------------------------------------
+FWidget* FApplication::getKeyboardWidget()
+{
+  return keyboard_widget;
+}
+
+//----------------------------------------------------------------------
 FApplication::FLogPtr& FApplication::getLog()
 {
   // Global logger object
@@ -304,6 +310,12 @@ void FApplication::setDarkTheme()
     setColorTheme<default8ColorDarkTheme>();
   else
     setColorTheme<default16ColorDarkTheme>();
+}
+
+//----------------------------------------------------------------------
+void FApplication::setKeyboardWidget (FWidget* widget)
+{
+  keyboard_widget = widget;
 }
 
 //----------------------------------------------------------------------

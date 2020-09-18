@@ -278,7 +278,7 @@ bool FTermLinux::loadVGAFont()
       struct unimapdesc unimap;
       unimap.entry_ct = uInt16 ( sizeof(fc::unicode_cp437_pairs)
                                / sizeof(unipair) );
-      unimap.entries = &fc::unicode_cp437_pairs[0];
+      unimap.entries = const_cast<unipair*>(&fc::unicode_cp437_pairs[0]);
       setUnicodeMap(&unimap);
     }
     else
@@ -327,7 +327,7 @@ bool FTermLinux::loadNewFont()
       struct unimapdesc unimap;
       unimap.entry_ct = uInt16 ( sizeof(fc::unicode_newfont_pairs)
                                / sizeof(unipair) );
-      unimap.entries = &fc::unicode_newfont_pairs[0];
+      unimap.entries = const_cast<unipair*>(&fc::unicode_newfont_pairs[0]);
       setUnicodeMap(&unimap);
     }
     else
@@ -660,7 +660,7 @@ FTermLinux::modifier_key& FTermLinux::getModifierKey()
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
+int FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
                               , uInt fontwidth, uInt fontheight
                               , bool direct)
 {
@@ -681,7 +681,7 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
   font.charcount = count;
 
   if ( direct )
-    font.data = fontdata;
+    font.data = const_cast<uChar*>(fontdata);
   else
   {
     const std::size_t bytes_per_line = font.width / 8;

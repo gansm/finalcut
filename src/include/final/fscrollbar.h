@@ -170,9 +170,10 @@ class FScrollbar : public FWidget
 };
 
 
-// non-member function forward declarations
+// non-member function
 //----------------------------------------------------------------------
-template<typename Instance, typename Callback>
+template <typename Instance
+        , typename Callback>
 void initScrollbar ( FScrollbarPtr& bar
                    , fc::orientation o
                    , Instance cb_instance

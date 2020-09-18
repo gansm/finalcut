@@ -20,6 +20,19 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+/*  Inheritance diagram
+ *  ═══════════════════
+ *
+ *      ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *      ▕ FDataAccess ▏
+ *      ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *             ▲
+ *             │
+ *         ▕▔▔▔▔▔▔▔▏
+ *         ▕ FData ▏
+ *         ▕▁▁▁▁▁▁▁▏
+ */
+
 #ifndef FDATA_H
 #define FDATA_H
 
@@ -29,11 +42,55 @@
 
 #include <utility>
 
-template<typename T>
-struct FData
+namespace finalcut
 {
-  explicit FData (T v)  // constructor
+
+
+//----------------------------------------------------------------------
+// struct FDataAccess
+//----------------------------------------------------------------------
+
+template <typename T>
+struct FData;  // Class forward declaration
+
+struct FDataAccess
+{
+  public:
+    virtual ~FDataAccess();
+
+    template <typename T>
+    const T& get() const
+    {
+      return static_cast<const FData<T>&>(*this).get();
+    }
+
+    template <typename T
+            , typename V>
+    void set (const V& v)
+    {
+      static_cast<FData<T>&>(*this).set(v);
+    }
+};
+
+//----------------------------------------------------------------------
+inline FDataAccess::~FDataAccess()
+{ }
+
+
+//----------------------------------------------------------------------
+// struct FData
+//----------------------------------------------------------------------
+
+template <typename T>
+struct FData : public FDataAccess
+{
+  explicit FData (T& v)  // constructor
+    : value_ref{v}
+  { }
+
+  explicit FData (T&& v)  // constructor
     : value{v}
+    , value_ref{value}
   { }
 
   ~FData()  // destructor
@@ -41,64 +98,131 @@ struct FData
 
   FData (const FData& d)  // Copy constructor
     : value{d.value}
+    , value_ref{d.value_ref}
   { }
 
   FData& operator = (const FData& d)  // Copy assignment operator (=)
   {
     value = d.value;
-    return *this;
-  }
-
-  FData (FData&& d) noexcept  // Move constructor
-    : value{std::move(d.value)}
-  { }
-
-  FData& operator = (FData&& d) noexcept  // Move assignment operator (=)
-  {
-    value = std::move(d.value);
+    value_ref = d.value_ref;
     return *this;
   }
 
   T operator () () const
   {
-    return value;
+    return value_ref;
   }
 
-  template<typename... Args>
+  template <typename... Args>
   T operator () (Args... args) const
   {
-    return value(args...);
+    return value_ref(args...);
   }
 
   explicit operator T () const
   {
-    return value;
+    return value_ref;
   }
 
   T& get()
   {
-    return value;
+    return value_ref;
   }
 
   void set (const T& v)
   {
-    value = v;
+    value_ref = v;
+  }
+
+  bool isInitializedCopy()
+  {
+    return bool(value);
+  }
+
+  bool isInitializedReference()
+  {
+    return ! isInitializedCopy();
   }
 
   FData& operator << (const T& v)
   {
-    value = v;
+    value_ref = v;
     return *this;
   }
 
   friend std::ostream& operator << (std::ostream &os, const FData& data)
   {
-    os << data.value;
+    os << data.value_ref;
     return os;
   }
 
-  T value;
+  private:
+    T value{};
+
+  public:
+    T& value_ref;
 };
 
-#endif  // FDATA_H
 
+// non-member functions
+//----------------------------------------------------------------------
+namespace internal
+{
+
+template <typename T
+        , bool isArray = std::is_array<T>::value
+        , bool isFunction = std::is_function<T>::value>
+struct cleanCondition;
+
+//----------------------------------------------------------------------
+template <typename T>
+struct cleanCondition<T, false, false>
+{
+  // Leave the type untouched
+  typedef T type;
+};
+
+//----------------------------------------------------------------------
+template <typename T>
+struct cleanCondition<T, true, false>
+{
+  // Array to pointer
+  typedef typename std::remove_extent<T>::type* type;
+};
+
+//----------------------------------------------------------------------
+template <typename T>
+struct cleanCondition<T, false, true>
+{
+  // Add pointer to function
+  typedef typename std::add_pointer<T>::type type;
+};
+
+}  // namespace internal
+
+//----------------------------------------------------------------------
+template <typename T>
+class cleanFData
+{
+  private:
+    typedef typename std::remove_reference<T>::type remove_ref;
+
+  public:
+    // Similar to std::decay, but keeps const and volatile
+    typedef typename internal::cleanCondition<remove_ref>::type type;
+};
+
+//----------------------------------------------------------------------
+template <typename T>
+using clean_fdata_t = typename cleanFData<T>::type;
+
+//----------------------------------------------------------------------
+template <typename T>
+constexpr FData<clean_fdata_t<T>>* makeFData (T&& data)
+{
+  return new FData<clean_fdata_t<T>>(std::forward<T>(data));
+}
+
+}  // namespace finalcut
+
+#endif  // FDATA_H

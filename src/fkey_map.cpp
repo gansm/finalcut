@@ -214,7 +214,7 @@ FKeyMap fkey[] =
   { 0                  , nullptr,   "\0" }
 };
 
-FMetakeyMap fmetakey[] =
+constexpr FMetakeyMap fmetakey[] =
 {
   { fc::Fmkey_ic                   , "\033[2;3~"   },  // M-insert
   { fc::Fmkey_ic                   , "\033\033[2~" },  // M-insert
@@ -447,7 +447,7 @@ FMetakeyMap fmetakey[] =
   { 0                              , "\0"  }
 };
 
-FKeyName fkeyname[] =
+constexpr FKeyName fkeyname[] =
 {
   { fc::Fckey_a                   , "Ctrl+A" },
   { fc::Fckey_b                   , "Ctrl+B" },

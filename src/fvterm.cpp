@@ -1471,20 +1471,17 @@ FVTerm::covered_state FVTerm::isCovered ( const FPoint& pos
 
   if ( FWidget::getWindowList() && ! FWidget::getWindowList()->empty() )
   {
-    bool found( area == vdesktop );
+    bool found{ area == vdesktop };
 
     for (auto& win_obj : *FWidget::getWindowList())
     {
       const auto& win = win_obj->getVWin();
 
-      if ( ! win )
+      if ( ! (win && win->visible) )
         continue;
 
-      if ( ! win->visible )
-        continue;
-
-      const int win_x = win->offset_left;
-      const int win_y = win->offset_top;
+      const int& win_x = win->offset_left;
+      const int& win_y = win->offset_top;
       const FRect geometry { win_x , win_y
           , std::size_t(win->width) + std::size_t(win->right_shadow)
           , std::size_t(win->height) + std::size_t(win->bottom_shadow) };
@@ -1492,9 +1489,9 @@ FVTerm::covered_state FVTerm::isCovered ( const FPoint& pos
       if ( found && geometry.contains(pos) )
       {
         const int width = win->width + win->right_shadow;
-        const int x = pos.getX();
-        const int y = pos.getY();
-        auto tmp = &win->data[(y - win_y) * width + (x - win_x)];
+        const int& x = pos.getX();
+        const int& y = pos.getY();
+        const auto& tmp = &win->data[(y - win_y) * width + (x - win_x)];
 
         if ( tmp->attr.bit.color_overlay )
         {

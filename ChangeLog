@@ -1,3 +1,7 @@
+2020-09-18  Markus Gans  <guru.mail@muenster.de>
+	* The generic data type FDataPtr is now deprecated and was 
+	  completely replaced by the template class FData
+
 2020-09-11  Markus Gans  <guru.mail@muenster.de>
 	* Fixes a problem with mouse input in Cygwin in non-blocking read mode
 

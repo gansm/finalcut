@@ -278,7 +278,7 @@ class FTerm final
     static void              saveColorMap();
     static void              resetColorMap();
     static void              setPalette (FColor, int, int, int);
-    template<typename ClassT>
+    template <typename ClassT>
     static void              setColorPaletteTheme (const FSetPalette& = &FTerm::setPalette);
     static void              setBeep (int, int);
     static void              resetBeep();
@@ -295,7 +295,7 @@ class FTerm final
     static bool              scrollTermReverse();
 
     static defaultPutChar&   putchar();  // function pointer
-    template<typename... Args>
+    template <typename... Args>
     static void              putstringf (const char[], Args&&...);
     static void              putstring (const char[], int = 1);
     static int               putchar_ASCII (int);
@@ -443,7 +443,7 @@ inline bool FTerm::unsetUTF8()
 { return setUTF8(false); }
 
 //----------------------------------------------------------------------
-template<typename ClassT>
+template <typename ClassT>
 inline void FTerm::setColorPaletteTheme (const FSetPalette& f)
 {
   getColorPaletteTheme() = std::make_shared<ClassT>(f);
@@ -451,7 +451,7 @@ inline void FTerm::setColorPaletteTheme (const FSetPalette& f)
 }
 
 //----------------------------------------------------------------------
-template<typename... Args>
+template <typename... Args>
 inline void FTerm::putstringf (const char format[], Args&&... args)
 {
   const int size = std::snprintf (nullptr, 0, format, args...) + 1;

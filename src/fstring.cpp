@@ -1212,7 +1212,7 @@ inline void FString::_initLength (std::size_t len)
 
   try
   {
-    string = new wchar_t[bufsize]();
+    string = new wchar_t[bufsize];
     std::wmemset (string, L'\0', bufsize);
   }
   catch (const std::bad_alloc&)
@@ -1244,7 +1244,7 @@ void FString::_assign (const wchar_t s[])
 
     try
     {
-      string = new wchar_t[bufsize]();
+      string = new wchar_t[bufsize];
     }
     catch (const std::bad_alloc&)
     {
@@ -1272,7 +1272,7 @@ void FString::_insert (std::size_t len, const wchar_t s[])
 
   try
   {
-    string = new wchar_t[bufsize]();
+    string = new wchar_t[bufsize];
   }
   catch (const std::bad_alloc&)
   {
@@ -1319,7 +1319,7 @@ void FString::_insert ( std::size_t pos
 
       try
       {
-        sptr = new wchar_t[bufsize]();  // generate new string
+        sptr = new wchar_t[bufsize];  // generate new string
       }
       catch (const std::bad_alloc&)
       {
@@ -1363,7 +1363,7 @@ void FString::_remove (std::size_t pos, std::size_t len)
 
     try
     {
-      sptr = new wchar_t[bufsize]();    // generate new string
+      sptr = new wchar_t[bufsize];    // generate new string
     }
     catch (const std::bad_alloc&)
     {
@@ -1417,7 +1417,7 @@ inline const char* FString::_to_cstring (const wchar_t s[]) const
 
   try
   {
-    c_string = new char[size]();
+    c_string = new char[size];
 
     // pre-initialiaze the whole string with '\0'
     std::memset (c_string, '\0', size);
@@ -1467,7 +1467,7 @@ inline const wchar_t* FString::_to_wcstring (const char s[]) const
 
   try
   {
-    dest = new wchar_t[size]();
+    dest = new wchar_t[size];
     // pre-initialiaze the whole string with '\0'
     std::wmemset (dest, L'\0', size);
   }

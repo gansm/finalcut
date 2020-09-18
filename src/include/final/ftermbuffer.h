@@ -63,7 +63,7 @@ class FTermBuffer
 
     // Constructor
     FTermBuffer() = default;
-    template<typename Iterator>
+    template <typename Iterator>
     FTermBuffer (Iterator, Iterator);
 
     // Destructor
@@ -95,7 +95,7 @@ class FTermBuffer
     FChar                  back() const;
     const FString          toString() const;
     void                   clear();
-    template<typename... Args>
+    template <typename... Args>
     int                    writef (const FString&, Args&&...);
     int                    write (const FString&);
     int                    write (wchar_t);
@@ -114,7 +114,7 @@ class FTermBuffer
 
 // FTermBuffer inline functions
 //----------------------------------------------------------------------
-template<typename Iterator>
+template <typename Iterator>
 inline FTermBuffer::FTermBuffer(Iterator first, Iterator last)
 {
   data.assign(first, last);
@@ -216,7 +216,7 @@ inline void FTermBuffer::clear()
 }
 
 //----------------------------------------------------------------------
-template<typename... Args>
+template <typename... Args>
 inline int FTermBuffer::writef (const FString& format, Args&&... args)
 {
   FString str{};

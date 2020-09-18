@@ -152,7 +152,7 @@ class FTermLinux final
     modifier_key&        getModifierKey();
 
     // Mutators
-    int                  setScreenFont ( uChar[], uInt, uInt, uInt
+    int                  setScreenFont ( const uChar[], uInt, uInt, uInt
                                        , bool = false );
     int                  setUnicodeMap (struct unimapdesc*);
     void                 setLinuxCursorStyle (fc::linuxConsoleCursorStyle) const;

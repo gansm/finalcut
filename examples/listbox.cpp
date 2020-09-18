@@ -38,8 +38,8 @@ static std::weak_ptr<FString> temp_str;
 
 // Function prototypes
 void doubleToItem ( FListBoxItem&
-                  , FDataPtr container
-                  , int index);
+                  , FDataAccess* container
+                  , std::size_t index);
 FString& doubleToString (std::list<double>::const_iterator iter);
 FString& mapToString ( std::map<FString
                      , FString>::const_iterator iter );
@@ -47,14 +47,15 @@ FString& mapToString ( std::map<FString
 
 // Lazy conversion insert function
 void doubleToItem ( FListBoxItem& item
-                  , FDataPtr container, int index)
+                  , FDataAccess* container
+                  , std::size_t index )
 {
-  typedef std::list<double>* double_list_ptr;
-  double_list_ptr dbllist = static_cast<double_list_ptr>(container);
-  std::list<double>::iterator iter = dbllist->begin();
+  typedef std::list<double> DblList;
+  DblList& dbl_list = FListBoxHelper::getContainer<DblList>(container);
+  std::list<double>::iterator iter = dbl_list.begin();
   std::advance (iter, index);
   item.setText (FString() << *iter);
-  item.setData (FDataPtr(&(*iter)));
+  item.setData (*iter);
 }
 
 // Insert converter functions
@@ -129,7 +130,7 @@ Listbox::Listbox (FWidget* parent)
   //
   // Insert via lazy conversion on print
   //
-  list2.insert (&double_list, doubleToItem);
+  list2.insert (double_list, doubleToItem);  // (container, converter)
 
   //
   // Direct insert of the complete list

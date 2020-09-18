@@ -259,7 +259,7 @@ class FVTerm
     virtual void          addPreprocessingHandler ( const FVTerm*
                                                   , const FPreprocessingFunction& );
     virtual void          delPreprocessingHandler (const FVTerm*);
-    template<typename... Args>
+    template <typename... Args>
     int                   printf (const FString&, Args&&...);
     int                   print (const FString&);
     int                   print (FTermArea*, const FString&);
@@ -926,7 +926,7 @@ inline bool FVTerm::isInheritBackground()
 { return next_attribute.attr.bit.inherit_background; }
 
 //----------------------------------------------------------------------
-template<typename... Args>
+template <typename... Args>
 inline int FVTerm::printf (const FString& format, Args&&... args)
 {
   FString str{};

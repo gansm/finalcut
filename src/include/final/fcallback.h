@@ -58,7 +58,7 @@ struct FCallbackData
   FCallbackData()
   { }
 
-  template<typename FuncPtr>
+  template <typename FuncPtr>
   FCallbackData (const FString& s, FWidget* i, FuncPtr m, const FCall& c)
     : cb_signal(s)
     , cb_instance(i)
@@ -88,7 +88,7 @@ class FCallback
 {
   public:
     // Using-declaration
-    template<typename T>
+    template <typename T>
     using ObjectPointer =
         typename std::enable_if< ! std::is_member_function_pointer<T>::value
                               && ! std::is_function<typename std::remove_pointer<T>::type>::value
@@ -97,7 +97,7 @@ class FCallback
                               && std::is_object<T>::value
                               && ! std::is_class<T>::value
                               , std::nullptr_t >;
-    template<typename T>
+    template <typename T>
     using ClassObject =
         typename std::enable_if< ! std::is_member_function_pointer<T>::value
                               && ! std::is_function<typename std::remove_pointer<T>::type>::value
@@ -106,7 +106,7 @@ class FCallback
                               && std::is_object<T>::value
                               && std::is_class<T>::value
                               , std::nullptr_t >;
-    template<typename T>
+    template <typename T>
     using MemberFunctionPointer =
         typename std::enable_if< std::is_member_function_pointer<T>::value
                               && ! std::is_function<typename std::remove_pointer<T>::type>::value
@@ -115,7 +115,7 @@ class FCallback
                               && std::is_object<T>::value
                               && ! std::is_class<T>::value
                               , std::nullptr_t >;
-    template<typename T>
+    template <typename T>
     using FunctionPointer =
         typename std::enable_if< ! std::is_member_function_pointer<T>::value
                               && std::is_function<typename std::remove_pointer<T>::type>::value
@@ -124,7 +124,7 @@ class FCallback
                               && std::is_object<T>::value
                               && ! std::is_class<T>::value
                               , std::nullptr_t >;
-    template<typename T>
+    template <typename T>
     using FunctionReference =
         typename std::enable_if< ! std::is_member_function_pointer<T>::value
                               && std::is_function<typename std::remove_pointer<T>::type>::value
@@ -151,61 +151,61 @@ class FCallback
     std::size_t getCallbackCount() const;
 
     // Methods
-    template<typename Object
-           , typename Function
-           , typename ObjectPointer<Object>::type = nullptr
-           , typename MemberFunctionPointer<Function>::type = nullptr
-           , typename... Args>
+    template <typename Object
+            , typename Function
+            , typename ObjectPointer<Object>::type = nullptr
+            , typename MemberFunctionPointer<Function>::type = nullptr
+            , typename... Args>
     void addCallback ( const FString& cb_signal
                      , Object&&       cb_instance
                      , Function&&     cb_member
                      , Args&&...      args) noexcept;
-    template<typename Object
-           , typename Function
-           , typename ObjectPointer<Object>::type = nullptr
-           , typename ClassObject<Function>::type = nullptr
-           , typename... Args>
+    template <typename Object
+             , typename Function
+             , typename ObjectPointer<Object>::type = nullptr
+             , typename ClassObject<Function>::type = nullptr
+             , typename... Args>
     void addCallback ( const FString& cb_signal
                      , Object&&       cb_instance
                      , Function&&     cb_function
                      , Args&&...      args) noexcept;
-    template<typename Function
-           , typename ClassObject<Function>::type = nullptr
-           , typename... Args>
+    template < typename Function
+             , typename ClassObject<Function>::type = nullptr
+             , typename... Args>
     void addCallback ( const FString& cb_signal
                      , Function&&     cb_function
                      , Args&&...      args) noexcept;
-    template<typename Function
-           , typename ClassObject<Function>::type = nullptr
-           , typename... Args>
+    template <typename Function
+            , typename ClassObject<Function>::type = nullptr
+            , typename... Args>
     void addCallback ( const FString& cb_signal
                      , Function&      cb_function
                      , Args&&...      args) noexcept;
-    template<typename Function
-           , typename FunctionReference<Function>::type = nullptr
-           , typename... Args>
+    template <typename Function
+            , typename FunctionReference<Function>::type = nullptr
+            , typename... Args>
     void addCallback ( const FString& cb_signal
                      , Function&      cb_function
                      , Args&&...      args) noexcept;
-    template<typename Function
-           , typename FunctionPointer<Function>::type = nullptr
-           , typename... Args>
+    template <typename Function
+            , typename FunctionPointer<Function>::type = nullptr
+            , typename... Args>
     void addCallback ( const FString& cb_signal
                      , Function&&     cb_function
                      , Args&&...      args) noexcept;
-    template<typename Object
-           , typename ObjectPointer<Object>::type = nullptr>
+    template <typename Object
+            , typename ObjectPointer<Object>::type = nullptr>
     void delCallback (Object&& cb_instance) noexcept;
     void delCallback (const FString& cb_signal);
-    template<typename Object
-           , typename ObjectPointer<Object>::type = nullptr>
+    template <typename Object
+            , typename ObjectPointer<Object>::type = nullptr>
     void delCallback ( const FString& cb_signal
                      , Object&& cb_instance ) noexcept;
-    template<typename FunctionPtr
-           , typename FunctionPointer<FunctionPtr>::type = nullptr>
+    template <typename FunctionPtr
+            , typename FunctionPointer<FunctionPtr>::type = nullptr>
     void delCallback (FunctionPtr&& cb_func_ptr) noexcept;
-    template<typename Function
-           , typename FunctionReference<Function>::type = nullptr>
+    template <typename Function
+            , typename FunctionReference<Function>::type = nullptr>
     void delCallback (const Function& cb_function);
     void delCallback();
     void emitCallback (const FString& emit_signal) const;
@@ -228,11 +228,11 @@ inline std::size_t FCallback::getCallbackCount() const
 { return callback_objects.size(); }
 
 //----------------------------------------------------------------------
-template<typename Object
-       , typename Function
-       , typename FCallback::ObjectPointer<Object>::type
-       , typename FCallback::MemberFunctionPointer<Function>::type
-       , typename... Args>
+template <typename Object
+        , typename Function
+        , typename FCallback::ObjectPointer<Object>::type
+        , typename FCallback::MemberFunctionPointer<Function>::type
+        , typename... Args>
 inline void FCallback::addCallback ( const FString& cb_signal
                                    , Object&&       cb_instance
                                    , Function&&     cb_member
@@ -249,11 +249,11 @@ inline void FCallback::addCallback ( const FString& cb_signal
 }
 
 //----------------------------------------------------------------------
-template<typename Object
-       , typename Function
-       , typename FCallback::ObjectPointer<Object>::type
-       , typename FCallback::ClassObject<Function>::type
-       , typename... Args>
+template <typename Object
+         , typename Function
+         , typename FCallback::ObjectPointer<Object>::type
+         , typename FCallback::ClassObject<Function>::type
+         , typename... Args>
 inline void FCallback::addCallback ( const FString& cb_signal
                                    , Object&&       cb_instance
                                    , Function&&     cb_function
@@ -267,9 +267,9 @@ inline void FCallback::addCallback ( const FString& cb_signal
 }
 
 //----------------------------------------------------------------------
-template<typename Function
-       , typename FCallback::ClassObject<Function>::type
-       , typename... Args>
+template <typename Function
+        , typename FCallback::ClassObject<Function>::type
+        , typename... Args>
 inline void FCallback::addCallback ( const FString& cb_signal
                                    , Function&&     cb_function
                                    , Args&&...      args) noexcept
@@ -283,9 +283,9 @@ inline void FCallback::addCallback ( const FString& cb_signal
 }
 
 //----------------------------------------------------------------------
-template<typename Function
-       , typename FCallback::ClassObject<Function>::type
-       , typename... Args>
+template <typename Function
+        , typename FCallback::ClassObject<Function>::type
+        , typename... Args>
 inline void FCallback::addCallback ( const FString& cb_signal
                                    , Function&      cb_function
                                    , Args&&...      args) noexcept
@@ -298,9 +298,9 @@ inline void FCallback::addCallback ( const FString& cb_signal
 }
 
 //----------------------------------------------------------------------
-template<typename Function
-       , typename FCallback::FunctionReference<Function>::type
-       , typename... Args>
+template <typename Function
+        , typename FCallback::FunctionReference<Function>::type
+        , typename... Args>
 inline void FCallback::addCallback ( const FString& cb_signal
                                    , Function&      cb_function
                                    , Args&&...      args) noexcept
@@ -314,9 +314,9 @@ inline void FCallback::addCallback ( const FString& cb_signal
 }
 
 //----------------------------------------------------------------------
-template<typename Function
-       , typename FCallback::FunctionPointer<Function>::type
-       , typename... Args>
+template <typename Function
+        , typename FCallback::FunctionPointer<Function>::type
+        , typename... Args>
 inline void FCallback::addCallback ( const FString& cb_signal
                                    , Function&&     cb_function
                                    , Args&&...      args) noexcept
@@ -331,8 +331,8 @@ inline void FCallback::addCallback ( const FString& cb_signal
 }
 
 //----------------------------------------------------------------------
-template<typename Object
-       , typename FCallback::ObjectPointer<Object>::type>
+template <typename Object
+        , typename FCallback::ObjectPointer<Object>::type>
 inline void FCallback::delCallback (Object&& cb_instance) noexcept
 {
   // Deletes entries with the given instance from the callback list
@@ -352,8 +352,8 @@ inline void FCallback::delCallback (Object&& cb_instance) noexcept
 }
 
 //----------------------------------------------------------------------
-template<typename Object
-       , typename FCallback::ObjectPointer<Object>::type>
+template <typename Object
+        , typename FCallback::ObjectPointer<Object>::type>
 inline void FCallback::delCallback ( const FString& cb_signal
                                    , Object&& cb_instance ) noexcept
 {
@@ -376,8 +376,8 @@ inline void FCallback::delCallback ( const FString& cb_signal
 }
 
 //----------------------------------------------------------------------
-template<typename FunctionPtr
-       , typename FCallback::FunctionPointer<FunctionPtr>::type>
+template <typename FunctionPtr
+        , typename FCallback::FunctionPointer<FunctionPtr>::type>
 inline void FCallback::delCallback (FunctionPtr&& cb_func_ptr) noexcept
 {
   // Deletes entries with the given function pointer
@@ -399,8 +399,8 @@ inline void FCallback::delCallback (FunctionPtr&& cb_func_ptr) noexcept
 }
 
 //----------------------------------------------------------------------
-template<typename Function
-       , typename FCallback::FunctionReference<Function>::type>
+template <typename Function
+        , typename FCallback::FunctionReference<Function>::type>
 inline void FCallback::delCallback (const Function& cb_function)
 {
   // Deletes entries with the given function reference

@@ -163,7 +163,7 @@ class FScrollView : public FWidget
     void                init();
     void                mapKeyFunctions();
     void                calculateScrollbarPos() const;
-    template<typename Callback>
+    template <typename Callback>
     void                initScrollbar ( FScrollbarPtr&
                                       , fc::orientation
                                       , Callback );
@@ -268,7 +268,7 @@ inline void FScrollView::print (const FPoint& pos)
 }
 
 //----------------------------------------------------------------------
-template<typename Callback>
+template <typename Callback>
 inline void FScrollView::initScrollbar ( FScrollbarPtr& bar
                                        , fc::orientation o
                                        , Callback cb_handler )

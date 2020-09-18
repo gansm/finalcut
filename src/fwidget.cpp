@@ -109,6 +109,10 @@ FWidget::~FWidget()  // destructor
   if ( this == getClickedWidget() )
     setClickedWidget(nullptr);
 
+  // unset keyboard widget
+  if ( this == FApplication::getKeyboardWidget() )
+    FApplication::setKeyboardWidget(nullptr);
+
   // unset the local window widget focus
   if ( flags.focus )
   {

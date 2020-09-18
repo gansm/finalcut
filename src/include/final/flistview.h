@@ -54,6 +54,7 @@
 
 #include "final/fscrollbar.h"
 #include "final/ftermbuffer.h"
+#include "final/ftypes.h"
 #include "final/fwidget.h"
 
 namespace finalcut
@@ -74,9 +75,8 @@ class FListViewItem : public FObject
     // Constructor
     FListViewItem (const FListViewItem&);  // copy constructor
     explicit FListViewItem (iterator);
-    FListViewItem ( const FStringList&
-                  , FDataPtr
-                  , iterator );
+    template <typename DT>
+    FListViewItem (const FStringList&, DT&&, iterator);
 
     // Destructor
     ~FListViewItem() override;
@@ -89,12 +89,14 @@ class FListViewItem : public FObject
     uInt                getColumnCount() const;
     int                 getSortColumn() const;
     FString             getText (int) const;
-    FDataPtr            getData() const;
+    template <typename DT>
+    clean_fdata_t<DT>& getData() const;
     uInt                getDepth() const;
 
     // Mutators
     void                setText (int, const FString&);
-    void                setData (FDataPtr);
+    template <typename DT>
+    void                setData (DT&&);
     void                setCheckable (bool);
     void                setChecked (bool);
 
@@ -124,7 +126,7 @@ class FListViewItem : public FObject
 
     // Data members
     FStringList         column_list{};
-    FDataPtr            data_pointer{nullptr};
+    FDataAccess*        data_pointer{nullptr};
     iterator            root{};
     std::size_t         visible_lines{1};
     bool                expandable{false};
@@ -140,6 +142,22 @@ class FListViewItem : public FObject
 
 // FListViewItem inline functions
 //----------------------------------------------------------------------
+template <typename DT>
+inline FListViewItem::FListViewItem ( const FStringList& cols
+                                    , DT&& data
+                                    , iterator parent_iter )
+  : FObject{nullptr}
+  , column_list{cols}
+  , data_pointer{makeFData(std::forward<DT>(data))}
+{
+  if ( cols.empty() )
+    return;
+
+  replaceControlCodes();
+  insert (this, parent_iter);
+}
+
+//----------------------------------------------------------------------
 inline const FString FListViewItem::getClassName() const
 { return "FListViewItem"; }
 
@@ -148,12 +166,18 @@ inline uInt FListViewItem::getColumnCount() const
 { return uInt(column_list.size()); }
 
 //----------------------------------------------------------------------
-inline FDataPtr FListViewItem::getData() const
-{ return data_pointer; }
+template <typename DT>
+inline clean_fdata_t<DT>& FListViewItem::getData() const
+{
+  return static_cast<FData<clean_fdata_t<DT>>&>(*data_pointer).get();
+}
 
 //----------------------------------------------------------------------
-inline void FListViewItem::setData (FDataPtr data)
-{ data_pointer = data; }
+template <typename DT>
+inline void FListViewItem::setData (DT&& data)
+{
+  data_pointer = makeFData(std::forward<DT>(data));
+}
 
 //----------------------------------------------------------------------
 inline void FListViewItem::setChecked (bool checked)
@@ -312,32 +336,38 @@ class FListView : public FWidget
     void                 hide() override;
     iterator             insert (FListViewItem*);
     iterator             insert (FListViewItem*, iterator);
+    template <typename DT = std::nullptr_t>
     iterator             insert ( const FStringList&
-                                , FDataPtr = nullptr );
+                                , DT&& = DT() );
     iterator             insert ( const FStringList&
                                 , iterator );
+    template <typename DT>
     iterator             insert ( const FStringList&
-                                , FDataPtr
+                                , DT&&
                                 , iterator );
+    template <typename T
+            , typename DT = std::nullptr_t>
+    iterator             insert ( const std::initializer_list<T>&
+                                , DT&& = DT() );
     template <typename T>
     iterator             insert ( const std::initializer_list<T>&
-                                , FDataPtr = nullptr );
-    template <typename T>
+                                , iterator );
+    template <typename T
+            , typename DT>
     iterator             insert ( const std::initializer_list<T>&
+                                , DT&&
                                 , iterator );
-    template <typename T>
-    iterator             insert ( const std::initializer_list<T>&
-                                , FDataPtr
-                                , iterator );
-    template <typename ColT>
+    template <typename ColT
+            , typename DT = std::nullptr_t>
     iterator             insert ( const std::vector<ColT>&
-                                , FDataPtr = nullptr );
+                                , DT&& = DT() );
     template <typename ColT>
     iterator             insert ( const std::vector<ColT>&
                                 , iterator );
-    template <typename ColT>
+    template <typename ColT
+            , typename DT>
     iterator             insert ( const std::vector<ColT>&
-                                , FDataPtr
+                                , DT&&
                                 , iterator );
     void                 remove (FListViewItem*);
     void                 clear();
@@ -560,9 +590,10 @@ inline FObject::iterator FListView::insert (FListViewItem* item)
 { return insert (item, root); }
 
 //----------------------------------------------------------------------
+template <typename DT>
 inline FObject::iterator
-    FListView::insert (const FStringList& cols, FDataPtr d)
-{ return insert (cols, d, root); }
+    FListView::insert (const FStringList& cols, DT&& d)
+{ return insert (cols, std::forward<DT>(d), root); }
 
 //----------------------------------------------------------------------
 inline FObject::iterator
@@ -571,23 +602,53 @@ inline FObject::iterator
 { return insert (cols, nullptr, parent_iter); }
 
 //----------------------------------------------------------------------
-template<typename T>
-inline FObject::iterator
-    FListView::insert (const std::initializer_list<T>& list, FDataPtr d)
-{ return insert (list, d, root); }
+template <typename DT>
+inline FObject::iterator FListView::insert ( const FStringList& cols
+                                           , DT&& d
+                                           , iterator parent_iter )
+{
+  FListViewItem* item;
+
+  if ( cols.empty() || parent_iter == getNullIterator() )
+    return getNullIterator();
+
+  if ( ! *parent_iter )
+    parent_iter = root;
+
+  try
+  {
+    item = new FListViewItem (cols, std::forward<DT>(d), getNullIterator());
+  }
+  catch (const std::bad_alloc&)
+  {
+    badAllocOutput ("FListViewItem");
+    return getNullIterator();
+  }
+
+  item->replaceControlCodes();
+  return insert(item, parent_iter);
+}
 
 //----------------------------------------------------------------------
-template<typename T>
+template <typename T
+        , typename DT>
+inline FObject::iterator
+    FListView::insert (const std::initializer_list<T>& list, DT&& d)
+{ return insert (list, std::forward<DT>(d), root); }
+
+//----------------------------------------------------------------------
+template <typename T>
 inline FObject::iterator
     FListView::insert ( const std::initializer_list<T>& list
                       , iterator parent_iter )
 { return insert (list, 0, parent_iter); }
 
 //----------------------------------------------------------------------
-template<typename T>
+template <typename T
+        , typename DT>
 FObject::iterator
     FListView::insert ( const std::initializer_list<T>& list
-                      , FDataPtr d
+                      , DT&& d
                       , iterator parent_iter )
 {
   FStringList str_cols;
@@ -602,15 +663,16 @@ FObject::iterator
                    }
                  );
 
-  auto item_iter = insert (str_cols, d, parent_iter);
+  auto item_iter = insert (str_cols, std::forward<DT>(d), parent_iter);
   return item_iter;
 }
 
 //----------------------------------------------------------------------
-template <typename ColT>
+template <typename ColT
+        , typename DT>
 inline FObject::iterator
-    FListView::insert (const std::vector<ColT>& cols, FDataPtr d)
-{ return insert (cols, d, root); }
+    FListView::insert (const std::vector<ColT>& cols, DT&& d)
+{ return insert (cols, std::forward<DT>(d), root); }
 
 //----------------------------------------------------------------------
 template <typename ColT>
@@ -620,10 +682,11 @@ inline FObject::iterator
 { return insert (cols, 0, parent_iter); }
 
 //----------------------------------------------------------------------
-template <typename ColT>
+template <typename ColT
+        , typename DT>
 FObject::iterator
     FListView::insert ( const std::vector<ColT>& cols
-                      , FDataPtr d
+                      , DT&& d
                       , iterator parent_iter )
 {
   FStringList str_cols;
@@ -638,7 +701,7 @@ FObject::iterator
                    }
                  );
 
-  auto item_iter = insert (str_cols, d, parent_iter);
+  auto item_iter = insert (str_cols, std::forward<DT>(d), parent_iter);
   return item_iter;
 }
 

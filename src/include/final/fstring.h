@@ -177,7 +177,7 @@ class FString
     wchar_t  front() const;
     wchar_t  back() const;
 
-    template<typename... Args>
+    template <typename... Args>
     FString& sprintf (const FString&, Args&&...);
     FString  clear();
 
@@ -416,7 +416,7 @@ inline wchar_t FString::back() const
 }
 
 //----------------------------------------------------------------------
-template<typename... Args>
+template <typename... Args>
 inline FString& FString::sprintf (const FString& format, Args&&... args)
 {
   static constexpr int BUFSIZE = 4096;

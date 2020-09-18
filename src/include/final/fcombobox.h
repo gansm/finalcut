@@ -150,7 +150,8 @@ class FComboBox : public FWidget
     const FString       getClassName() const override;
     std::size_t         getCount() const;
     FString             getText() const;
-    FDataPtr            getItemData();
+    template <typename DT>
+    clean_fdata_t<DT>&  getItemData();
     FLineEdit::label_o  getLabelOrientation() const;
 
     // Mutators
@@ -182,11 +183,13 @@ class FComboBox : public FWidget
 
     // Methods
     void                insert (const FListBoxItem&);
-    template <typename T>
+    template <typename T
+            , typename DT = std::nullptr_t>
     void                insert ( const std::initializer_list<T>& list
-                               , FDataPtr = nullptr );
-    template <typename ItemT>
-    void                insert (const ItemT&, FDataPtr = nullptr);
+                               , DT&& = DT() );
+    template <typename ItemT
+            , typename DT = std::nullptr_t>
+    void                insert (const ItemT&, DT&& = DT());
     void                remove (std::size_t);
     void                reserve (std::size_t);
     void                clear();
@@ -247,10 +250,11 @@ inline FString FComboBox::getText() const
 { return input_field.getText(); }
 
 //----------------------------------------------------------------------
-inline FDataPtr FComboBox::getItemData()
+template <typename DT>
+inline clean_fdata_t<DT>& FComboBox::getItemData()
 {
   const std::size_t index = list_window.list.currentItem();
-  return list_window.list.getItem(index).getData();
+  return list_window.list.getItem(index).getData<DT>();
 }
 
 //----------------------------------------------------------------------
@@ -298,21 +302,23 @@ inline bool FComboBox::hasShadow() const
 { return getFlags().shadow; }
 
 //----------------------------------------------------------------------
-template <typename T>
-void FComboBox::insert (const std::initializer_list<T>& list, FDataPtr d)
+template <typename T
+        , typename DT>
+void FComboBox::insert (const std::initializer_list<T>& list, DT&& d)
 {
   for (auto& item : list)
   {
-    FListBoxItem listItem (FString() << item, d);
+    FListBoxItem listItem (FString() << item, std::forward<DT>(d));
     insert (listItem);
   }
 }
 
 //----------------------------------------------------------------------
-template <typename ItemT>
-void FComboBox::insert (const ItemT& item, FDataPtr d)
+template <typename ItemT
+        , typename DT>
+void FComboBox::insert (const ItemT& item, DT&& d)
 {
-  FListBoxItem listItem (FString() << item, d);
+  FListBoxItem listItem (FString() << item, std::forward<DT>(d));
   insert (listItem);
 }
 

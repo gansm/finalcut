@@ -114,6 +114,7 @@ class FApplication : public FWidget
     int                   getArgc() const;
     char**                getArgv() const;
     static FApplication*  getApplicationObject();
+    static FWidget*       getKeyboardWidget();
     static FLogPtr&       getLog();
 
     // Mutator
@@ -136,6 +137,7 @@ class FApplication : public FWidget
     void                  initTerminal() override;
     static void           setDefaultTheme();
     static void           setDarkTheme();
+    static void           setKeyboardWidget (FWidget*);
     static void           closeConfirmationDialog (FWidget*, FCloseEvent*);
 
     // Callback method

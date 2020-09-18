@@ -72,7 +72,8 @@ class FListBoxItem
     // Constructors
     FListBoxItem ();
     FListBoxItem (const FListBoxItem&);  // copy constructor
-    explicit FListBoxItem (const FString&, FDataPtr = nullptr);
+    template <typename DT = std::nullptr_t>
+    explicit FListBoxItem (const FString&, DT&& = DT() );
 
     // Destructor
     virtual ~FListBoxItem();
@@ -83,11 +84,13 @@ class FListBoxItem
     // Accessors
     virtual const FString getClassName() const;
     virtual FString       getText() const;
-    virtual FDataPtr      getData() const;
+    template <typename DT>
+    clean_fdata_t<DT>&    getData() const;
 
     // Mutators
     void                  setText (const FString&);
-    void                  setData (FDataPtr);
+    template <typename DT>
+    void                  setData (DT&&);
 
     // Methods
     void                  clear();
@@ -95,7 +98,7 @@ class FListBoxItem
   private:
     // Data members
     FString               text{};
-    FDataPtr              data_pointer{nullptr};
+    FDataAccess*          data_pointer{nullptr};
     fc::brackets_type     brackets{fc::NoBrackets};
     bool                  selected{false};
 
@@ -106,6 +109,13 @@ class FListBoxItem
 
 // FListBoxItem inline functions
 //----------------------------------------------------------------------
+template <typename DT>
+inline FListBoxItem::FListBoxItem (const FString& txt, DT&& data)
+  : text{txt}
+  , data_pointer{makeFData(std::forward<DT>(data))}
+{ }
+
+//----------------------------------------------------------------------
 inline const FString FListBoxItem::getClassName() const
 { return "FListBoxItem"; }
 
@@ -114,16 +124,22 @@ inline FString FListBoxItem::getText() const
 { return text; }
 
 //----------------------------------------------------------------------
-inline FDataPtr FListBoxItem::getData() const
-{ return data_pointer; }
+template <typename DT>
+inline clean_fdata_t<DT>& FListBoxItem::getData() const
+{
+  return static_cast<FData<clean_fdata_t<DT>>&>(*data_pointer).get();
+}
 
 //----------------------------------------------------------------------
 inline void FListBoxItem::setText (const FString& txt)
 { text.setString(txt); }
 
 //----------------------------------------------------------------------
-inline void FListBoxItem::setData (FDataPtr data)
-{ data_pointer = data; }
+template <typename DT>
+inline void FListBoxItem::setData (DT&& data)
+{
+  data_pointer = makeFData(std::forward<DT>(data));
+}
 
 //----------------------------------------------------------------------
 inline void FListBoxItem::clear()
@@ -145,9 +161,11 @@ class FListBox : public FWidget
 
     // Constructor
     explicit FListBox (FWidget* = nullptr);
-    template <typename Iterator, typename InsertConverter>
+    template <typename Iterator
+            , typename InsertConverter>
     FListBox (Iterator, Iterator, InsertConverter, FWidget* = nullptr);
-    template <typename Container, typename LazyConverter>
+    template <typename Container
+            , typename LazyConverter>
     FListBox (Container, LazyConverter, FWidget* = nullptr);
 
     // Disable copy constructor
@@ -197,21 +215,30 @@ class FListBox : public FWidget
 
     // Methods
     void                hide() override;
-    template <typename Iterator, typename InsertConverter>
-    void                insert (Iterator, Iterator, InsertConverter);
-    template <typename Container, typename LazyConverter>
-    void                insert (Container, LazyConverter);
+    template <typename Iterator
+            , typename InsertConverter>
+    void                insert ( Iterator, Iterator
+                               , const InsertConverter& );
+    template <typename Container
+            , typename LazyConverter>
+    void                insert ( const Container&
+                               , const LazyConverter& );
+    template <typename Container
+            , typename LazyConverter>
+    void                insert (Container*, const LazyConverter&);
     void                insert (const FListBoxItem&);
-    template <typename T>
+    template <typename T
+            , typename DT = std::nullptr_t>
     void                insert ( const std::initializer_list<T>& list
                                , fc::brackets_type = fc::NoBrackets
                                , bool = false
-                               , FDataPtr = nullptr );
-    template <typename ItemT>
+                               , DT&& = DT() );
+    template <typename ItemT
+            , typename DT = std::nullptr_t>
     void                insert ( const ItemT&
                                , fc::brackets_type = fc::NoBrackets
                                , bool = false
-                               , FDataPtr = nullptr );
+                               , DT&& = DT() );
     void                remove (std::size_t);
     void                reserve (std::size_t);
     void                clear();
@@ -236,7 +263,7 @@ class FListBox : public FWidget
     // Typedefs
     typedef std::unordered_map<int, std::function<void()>> keyMap;
     typedef std::unordered_map<int, std::function<bool()>> keyMapResult;
-    typedef std::function<void(FListBoxItem&, FDataPtr, int)> lazyInsert;
+    typedef std::function<void(FListBoxItem&, FDataAccess*, std::size_t)> lazyInsert;
 
     // Enumeration
     enum convert_type
@@ -305,7 +332,7 @@ class FListBox : public FWidget
     void                processSelect() const;
     void                processChanged() const;
     void                changeOnResize() const;
-    void                lazyConvert (listBoxItems::iterator, int);
+    void                lazyConvert (listBoxItems::iterator, std::size_t);
     listBoxItems::iterator index2iterator (std::size_t);
     listBoxItems::const_iterator index2iterator (std::size_t index) const;
     // Callback methods
@@ -317,7 +344,7 @@ class FListBox : public FWidget
 
     // Data members
     listBoxItems    itemlist{};
-    FDataPtr        source_container{nullptr};
+    FDataAccess*    source_container{nullptr};
     FScrollbarPtr   vbar{nullptr};
     FScrollbarPtr   hbar{nullptr};
     FString         text{};
@@ -342,10 +369,23 @@ class FListBox : public FWidget
     bool            click_on_list{false};
 };
 
+// non-member function
+//----------------------------------------------------------------------
+namespace FListBoxHelper
+{
+
+template <typename Container>
+constexpr clean_fdata_t<Container>& getContainer(FDataAccess* container)
+{
+  return static_cast<FData<clean_fdata_t<Container>>&>(*container).get();
+}
+
+}  // namespace FListBoxHelper
 
 // FListBox inline functions
 //----------------------------------------------------------------------
-template <typename Iterator, typename InsertConverter>
+template <typename Iterator
+        , typename InsertConverter>
 inline FListBox::FListBox ( Iterator first
                           , Iterator last
                           , InsertConverter convert
@@ -362,7 +402,8 @@ inline FListBox::FListBox ( Iterator first
 }
 
 //----------------------------------------------------------------------
-template <typename Container, typename LazyConverter>
+template <typename Container
+        , typename LazyConverter>
 inline FListBox::FListBox ( Container container
                           , LazyConverter convert
                           , FWidget* parent )
@@ -475,10 +516,11 @@ inline void FListBox::reserve (std::size_t new_cap)
 { itemlist.reserve(new_cap); }
 
 //----------------------------------------------------------------------
-template <typename Iterator, typename InsertConverter>
+template <typename Iterator
+        , typename InsertConverter>
 inline void FListBox::insert ( Iterator first
                              , Iterator last
-                             , InsertConverter convert )
+                             , const InsertConverter& convert )
 {
   conv_type = direct_convert;
 
@@ -490,13 +532,14 @@ inline void FListBox::insert ( Iterator first
 }
 
 //----------------------------------------------------------------------
-template <typename Container, typename LazyConverter>
-void FListBox::insert (Container container, LazyConverter convert)
+template <typename Container
+        , typename LazyConverter>
+void FListBox::insert (const Container& container, const LazyConverter& converter)
 {
   conv_type = lazy_convert;
-  source_container = container;
-  lazy_inserter = convert;
-  const std::size_t size = container->size();
+  source_container = makeFData(container);
+  lazy_inserter = converter;
+  const std::size_t size = container.size();
 
   if ( size > 0 )
     itemlist.resize(size);
@@ -505,15 +548,24 @@ void FListBox::insert (Container container, LazyConverter convert)
 }
 
 //----------------------------------------------------------------------
-template <typename T>
+template <typename Container
+        , typename LazyConverter>
+void FListBox::insert (Container* container, const LazyConverter& converter)
+{
+  insert (*container, converter);
+}
+
+//----------------------------------------------------------------------
+template <typename T
+        , typename DT>
 void FListBox::insert ( const std::initializer_list<T>& list
                       , fc::brackets_type b
                       , bool s
-                      , FDataPtr d )
+                      , DT&& d )
 {
   for (auto& item : list)
   {
-    FListBoxItem listItem (FString() << item, d);
+    FListBoxItem listItem (FString() << item, std::forward<DT>(d));
     listItem.brackets = b;
     listItem.selected = s;
     insert (listItem);
@@ -521,13 +573,14 @@ void FListBox::insert ( const std::initializer_list<T>& list
 }
 
 //----------------------------------------------------------------------
-template <typename ItemT>
+template <typename ItemT
+        , typename DT>
 void FListBox::insert ( const ItemT& item
                       , fc::brackets_type b
                       , bool s
-                      , FDataPtr d )
+                      , DT&& d )
 {
-  FListBoxItem listItem (FString() << item, d);
+  FListBoxItem listItem (FString() << item, std::forward<DT>(d));
   listItem.brackets = b;
   listItem.selected = s;
   insert (listItem);

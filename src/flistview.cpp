@@ -199,21 +199,6 @@ FListViewItem::FListViewItem (iterator parent_iter)
 }
 
 //----------------------------------------------------------------------
-FListViewItem::FListViewItem ( const FStringList& cols
-                             , FDataPtr data
-                             , iterator parent_iter )
-  : FObject{nullptr}
-  , column_list{cols}
-  , data_pointer{data}
-{
-  if ( cols.empty() )
-    return;
-
-  replaceControlCodes();
-  insert (this, parent_iter);
-}
-
-//----------------------------------------------------------------------
 FListViewItem::~FListViewItem()  // destructor
 {
   // Remove from parent itemlist
@@ -893,33 +878,6 @@ FObject::iterator FListView::insert ( FListViewItem* item
 
   afterInsertion();  // post-processing
   return item_iter;
-}
-
-//----------------------------------------------------------------------
-FObject::iterator FListView::insert ( const FStringList& cols
-                                    , FDataPtr d
-                                    , iterator parent_iter )
-{
-  FListViewItem* item;
-
-  if ( cols.empty() || parent_iter == getNullIterator() )
-    return getNullIterator();
-
-  if ( ! *parent_iter )
-    parent_iter = root;
-
-  try
-  {
-    item = new FListViewItem (cols, d, getNullIterator());
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FListViewItem");
-    return getNullIterator();
-  }
-
-  item->replaceControlCodes();
-  return insert(item, parent_iter);
 }
 
 //----------------------------------------------------------------------

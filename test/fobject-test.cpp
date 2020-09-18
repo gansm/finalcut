@@ -122,7 +122,12 @@ class FObject_userEvent : public finalcut::FObject
     virtual void onUserEvent (finalcut::FUserEvent* ev)
     {
       if ( ev->getUserId() == 42 )
-        value = *(static_cast<int*>(ev->getData()));
+      {
+        value = ev->getData<int>();
+
+        if ( ev->getFDataObject<int>().isInitializedReference() )
+          ev->getData<int>()++;  // this has external effects
+      }
     }
 
   private:
@@ -625,9 +630,10 @@ void FObjectTest::userEventTest()
 
   int n = 9;
   finalcut::FUserEvent user_ev (finalcut::fc::User_Event, 42);
-  user_ev.setData( (void*)(&n) );
+  user_ev.setData(n);
   finalcut::FApplication::sendEvent (&user, &user_ev);
   CPPUNIT_ASSERT ( user.getValue() == 9 );
+  CPPUNIT_ASSERT ( n == 10 );
 }
 
 // Put the test suite in the registry

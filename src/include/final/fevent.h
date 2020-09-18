@@ -342,14 +342,50 @@ class FUserEvent : public FEvent  // user event
     // Disable copy assignment operator (=)
     FUserEvent& operator = (const FUserEvent&) = delete;
 
-    int      getUserId() const;
-    FDataPtr getData() const;
-    void     setData (FDataPtr);
+    int               getUserId() const;
+    template <typename T>
+    FData<T>&&        getFDataObject() const;
+    template <typename T>
+    clean_fdata_t<T>& getData() const;
+    template <typename T>
+    void              setFDataObject (T&&);
+    template <typename T>
+    void              setData (T&&);
 
   private:
-    int      uid{0};
-    FDataPtr data_pointer{nullptr};
+    int               uid{0};
+    FDataAccess*      data_pointer{nullptr};
+    bool              external_data_pointer{false};
 };
+
+//----------------------------------------------------------------------
+template <typename T>
+inline FData<T>&& FUserEvent::getFDataObject() const
+{
+  return static_cast<FData<T>&&>(*data_pointer);
+}
+
+//----------------------------------------------------------------------
+template <typename T>
+inline clean_fdata_t<T>& FUserEvent::getData() const
+{
+  return static_cast<FData<clean_fdata_t<T>>&>(*data_pointer).get();
+}
+
+//----------------------------------------------------------------------
+template <typename T>
+inline void FUserEvent::setFDataObject (T&& fdata)
+{
+  external_data_pointer = true;
+  data_pointer = &(std::forward<T>(fdata));
+}
+//----------------------------------------------------------------------
+template <typename T>
+inline void FUserEvent::setData (T&& data)
+{
+  external_data_pointer = false;
+  data_pointer = makeFData(std::forward<T>(data));
+}
 
 }  // namespace finalcut
 

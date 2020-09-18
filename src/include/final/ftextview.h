@@ -112,10 +112,10 @@ class FTextView : public FWidget
 
     // Methods
     void                hide() override;
-    template<typename T>
+    template <typename T>
     void                append (const std::initializer_list<T>&);
     void                append (const FString&);
-    template<typename T>
+    template <typename T>
     void                insert (const std::initializer_list<T>&, int);
     void                insert (const FString&, int);
     void                replaceRange (const FString&, int, int);
@@ -232,7 +232,7 @@ inline void FTextView::scrollTo (const FPoint& pos)
 { scrollTo(pos.getX(), pos.getY()); }
 
 //----------------------------------------------------------------------
-template<typename T>
+template <typename T>
 void FTextView::append (const std::initializer_list<T>& list)
 {
   for (auto& str : list)
@@ -240,7 +240,7 @@ void FTextView::append (const std::initializer_list<T>& list)
 }
 
 //----------------------------------------------------------------------
-template<typename T>
+template <typename T>
 void FTextView::insert (const std::initializer_list<T>& list, int pos)
 {
   for (auto& str : list)
