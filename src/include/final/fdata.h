@@ -42,9 +42,10 @@
 
 #include <utility>
 
+#include "final/fstring.h"
+
 namespace finalcut
 {
-
 
 //----------------------------------------------------------------------
 // struct FDataAccess
@@ -56,12 +57,23 @@ class FData;  // Class forward declaration
 class FDataAccess
 {
   public:
+    // Destructor
+    virtual ~FDataAccess()
+    { }
+
+    // Accessors
+    virtual const FString getClassName() const
+    {
+      return "FDataAccess";
+    }
+
     template <typename T>
     const T& get() const
     {
       return static_cast<const FData<T>&>(*this).get();
     }
 
+    // Mutator
     template <typename T
             , typename V>
     void set (const V& v)
@@ -79,6 +91,7 @@ template <typename T>
 class FData : public FDataAccess
 {
   public:
+    // Constructors
     explicit FData (T& v)  // constructor
       : value_ref{v}
     { }
@@ -88,6 +101,7 @@ class FData : public FDataAccess
       , value_ref{value}
     { }
 
+    // Overloaded operators
     T operator () () const
     {
       return value_ref;
@@ -104,16 +118,30 @@ class FData : public FDataAccess
       return value_ref;
     }
 
+    FData& operator << (const T& v)
+    {
+      value_ref = v;
+      return *this;
+    }
+
+    // Accessors
+    const FString getClassName() const override
+    {
+      return "FData";
+    }
+
     T& get()
     {
       return value_ref;
     }
 
+    // Mutator
     void set (const T& v)
     {
       value_ref = v;
     }
 
+    // Inquiries
     bool isInitializedCopy()
     {
       return bool(value);
@@ -124,12 +152,7 @@ class FData : public FDataAccess
       return ! isInitializedCopy();
     }
 
-    FData& operator << (const T& v)
-    {
-      value_ref = v;
-      return *this;
-    }
-
+    // Friend Non-member operator functions
     friend std::ostream& operator << (std::ostream &os, const FData& data)
     {
       os << data.value_ref;
@@ -141,7 +164,6 @@ class FData : public FDataAccess
     T value{};
     T& value_ref;
 };
-
 
 // non-member functions
 //----------------------------------------------------------------------

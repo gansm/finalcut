@@ -47,6 +47,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include "final/fdata.h"
 #include "final/flineedit.h"
 #include "final/flistbox.h"
 #include "final/fwidget.h"

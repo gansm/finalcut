@@ -452,6 +452,7 @@ class FWidget : public FVTerm, public FObject
     static bool              isDefaultTheme();
     static void              initColorTheme();
     void                     destroyColorTheme();
+    void                     removeQueuedEvent();
     void                     setStatusbarText (bool) const;
 
     // Data members

@@ -35,9 +35,9 @@
  *       ▕▁▁▁▁▁▁▁▁▁▏
  *            ▲
  *            │
- *       ▕▔▔▔▔▔▔▔▔▔▔▏1     *▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- *       ▕ FListBox ▏- - - -▕ FListBoxItem ▏
- *       ▕▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *       ▕▔▔▔▔▔▔▔▔▔▔▏1     *▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏1     1▕▔▔▔▔▔▔▔▏
+ *       ▕ FListBox ▏- - - -▕ FListBoxItem ▏- - - -▕ FData ▏
+ *       ▕▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▏
  *
  */
 
@@ -51,6 +51,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "final/fdata.h"
 #include "final/fscrollbar.h"
 #include "final/fwidget.h"
 

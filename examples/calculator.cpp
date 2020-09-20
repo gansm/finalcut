@@ -213,6 +213,7 @@ class Calc final : public finalcut::FDialog
 
     // Event handlers
     void           onKeyPress (finalcut::FKeyEvent*) override;
+    void           onShow (finalcut::FShowEvent*) override;
     void           onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
@@ -255,7 +256,6 @@ Calc::Calc (FWidget* parent)
 
   mapKeyFunctions();
   clearInfixOperator();
-  std::setlocale(LC_NUMERIC, "C");
 
   for (button key{Sine}; key < Calc::NUM_OF_BUTTONS; key = button(key + 1))
   {
@@ -355,6 +355,13 @@ void Calc::onKeyPress (finalcut::FKeyEvent* ev)
       finalcut::FDialog::onKeyPress(ev);
       break;
   }
+}
+
+//----------------------------------------------------------------------
+void Calc::onShow (finalcut::FShowEvent*)
+{
+  // Overwrites the initialized value of LC_NUMERIC
+  std::setlocale(LC_NUMERIC, "C");
 }
 
 //----------------------------------------------------------------------

@@ -68,9 +68,9 @@
  *      ├─────▏FTimerEvent ▏
  *      │    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
  *      │
- *      │    ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- *      └─────▏FUserEvent  ▏
- *           ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *      │    ▕▔▔▔▔▔▔▔▔▔▔▔▔▏1     1▕▔▔▔▔▔▔▔▏
+ *      └─────▏FUserEvent ▏- - - -▕ FData ▏
+ *           ▕▁▁▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▏
  */
 
 #ifndef FEVENT_H
@@ -81,6 +81,7 @@
 #endif
 
 #include "final/fc.h"
+#include "final/fdata.h"
 #include "final/fpoint.h"
 #include "final/ftypes.h"
 

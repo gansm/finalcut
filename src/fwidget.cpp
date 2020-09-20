@@ -102,8 +102,7 @@ FWidget::~FWidget()  // destructor
 {
   processDestroy();
   delCallback();
-  auto app_object = FApplication::getApplicationObject();
-  app_object->removeQueuedEvent(this);
+  removeQueuedEvent();
 
   // unset clicked widget
   if ( this == getClickedWidget() )
@@ -2013,6 +2012,15 @@ void FWidget::destroyColorTheme()
 {
   const FWidgetColorsPtr* theme = &(getColorTheme());
   delete theme;
+}
+
+//----------------------------------------------------------------------
+void FWidget::removeQueuedEvent()
+{
+  auto app_object = FApplication::getApplicationObject();
+
+  if ( app_object )
+    app_object->removeQueuedEvent(this);
 }
 
 //----------------------------------------------------------------------

@@ -1,5 +1,5 @@
 /***********************************************************************
-* callback-test.cpp - FCallback unit tests                             *
+* fcallback-test.cpp - FCallback unit tests                            *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *

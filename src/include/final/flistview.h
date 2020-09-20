@@ -35,9 +35,9 @@
  *       ▕▁▁▁▁▁▁▁▁▁▏           ▕▁▁▁▁▁▁▁▁▁▏
  *            ▲                     ▲
  *            │                     │
- *      ▕▔▔▔▔▔▔▔▔▔▔▔▏1     *▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- *      ▕ FListView ▏- - - -▕ FListViewItem ▏
- *      ▕▁▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *      ▕▔▔▔▔▔▔▔▔▔▔▔▏1     *▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏1     1▕▔▔▔▔▔▔▔▏
+ *      ▕ FListView ▏- - - -▕ FListViewItem ▏- - - -▕ FData ▏
+ *      ▕▁▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▏
  */
 
 #ifndef FLISTVIEW_H
@@ -52,6 +52,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "final/fdata.h"
 #include "final/fscrollbar.h"
 #include "final/ftermbuffer.h"
 #include "final/ftypes.h"

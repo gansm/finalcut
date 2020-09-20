@@ -34,6 +34,7 @@
 #include <final/fbutton.h>
 #include <final/fbusyindicator.h>
 #include <final/fc.h>
+#include <final/fdata.h>
 #include <final/fobject.h>
 #include <final/fcolorpalette.h>
 #include <final/fcolorpair.h>

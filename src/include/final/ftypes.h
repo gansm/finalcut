@@ -36,8 +36,6 @@
 #include <unordered_map>
 #include <string>
 
-#include <final/fdata.h>
-
 #define null nullptr
 
 #define badAllocOutput(object_name)                            \
