@@ -2015,7 +2015,7 @@ void FWidget::destroyColorTheme()
 }
 
 //----------------------------------------------------------------------
-void FWidget::removeQueuedEvent()
+void FWidget::removeQueuedEvent() const
 {
   auto app_object = FApplication::getApplicationObject();
 

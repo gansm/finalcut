@@ -1236,19 +1236,12 @@ class dialogWidget : public FDialog
       FDialog::adjustSize();
       // Centers the dialog in the terminal
       centerDialog();
-    }
-
-    void setSize (const FSize& size, bool) override
-    {
-      // Calling super class methods setSize() + adjustSize()
-      FDialog::setSize (size, false);
-      FDialog::adjustSize();
+      // Adjust widgets before drawing
+      adjustWidgets();
     }
 
     void draw() override
     {
-      adjustWidgets();  // Adjust widgets before drawing 
-
       // Calling super class method draw()
       FDialog::draw();
 

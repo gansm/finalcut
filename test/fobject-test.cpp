@@ -394,6 +394,19 @@ void FObjectTest::addTest()
   CPPUNIT_ASSERT ( child->hasParent() );
   CPPUNIT_ASSERT ( child->getParent() == obj );
 
+  // Switch of the parent by a second addChild
+  auto obj2 = new finalcut::FObject();
+  obj2->addChild(child);
+  CPPUNIT_ASSERT ( child->hasParent() );
+  CPPUNIT_ASSERT ( ! obj->hasChildren() );
+  CPPUNIT_ASSERT ( obj->numOfChildren() == 0 );
+  CPPUNIT_ASSERT ( ! obj->isChild(child) );
+  CPPUNIT_ASSERT ( child->getParent() != obj );
+  CPPUNIT_ASSERT ( obj2->hasChildren() );
+  CPPUNIT_ASSERT ( obj2->numOfChildren() == 1 );
+  CPPUNIT_ASSERT ( obj2->isChild(child) );
+  CPPUNIT_ASSERT ( child->getParent() == obj2 );
+
   delete obj;  // also deletes the child object
 }
 

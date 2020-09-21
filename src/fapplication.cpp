@@ -313,6 +313,29 @@ void FApplication::setDarkTheme()
 }
 
 //----------------------------------------------------------------------
+void FApplication::setLogFile (const FString& filename)
+{
+  auto& log_stream = getStartOptions().logfile_stream;
+  log_stream.open(filename, std::ofstream::out);
+
+  if ( log_stream.is_open() )
+  {
+    // Get the global logger object
+    FLog& log = *FApplication::getLog();
+    log.setOutputStream(log_stream);
+    log.enableTimestamp();
+    log.setLineEnding (finalcut::FLog::LF);
+  }
+  else
+  {
+    auto ftermdata = FTerm::getFTermData();
+    ftermdata->setExitMessage ( "Could not open log file \""
+                              + filename + "\"" );
+    exit(EXIT_FAILURE);
+  }
+}
+
+//----------------------------------------------------------------------
 void FApplication::setKeyboardWidget (FWidget* widget)
 {
   keyboard_widget = widget;
@@ -412,29 +435,6 @@ void FApplication::setTerminalEncoding (const FString& enc_str)
     ftermdata->setExitMessage ( "Unknown encoding \"" + enc_str
                               + "\"\n(Valid encodings are utf8, "
                               + "vt100, pc and ascii)" );
-    exit(EXIT_FAILURE);
-  }
-}
-
-//----------------------------------------------------------------------
-void FApplication::setLogFile (const FString& filename)
-{
-  auto& log_stream = getStartOptions().logfile_stream;
-  log_stream.open(filename, std::ofstream::out);
-
-  if ( log_stream.is_open() )
-  {
-    // Get the global logger object
-    FLog& log = *FApplication::getLog();
-    log.setOutputStream(log_stream);
-    log.enableTimestamp();
-    log.setLineEnding (finalcut::FLog::LF);
-  }
-  else
-  {
-    auto ftermdata = FTerm::getFTermData();
-    ftermdata->setExitMessage ( "Could not open log file \""
-                              + filename + "\"" );
     exit(EXIT_FAILURE);
   }
 }

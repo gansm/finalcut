@@ -1,3 +1,7 @@
+2020-09-22  Markus Gans  <guru.mail@muenster.de>
+	* Bugfix in FDialog::setSize(): Automatic size adjustment and 
+	  simultaneous widget movement are now possible.
+
 2020-09-18  Markus Gans  <guru.mail@muenster.de>
 	* The generic data type FDataPtr is now deprecated and was 
 	  completely replaced by the template class FData

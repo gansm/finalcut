@@ -137,6 +137,7 @@ class FApplication : public FWidget
     void                  initTerminal() override;
     static void           setDefaultTheme();
     static void           setDarkTheme();
+    static void           setLogFile (const FString&);
     static void           setKeyboardWidget (FWidget*);
     static void           closeConfirmationDialog (FWidget*, FCloseEvent*);
 
@@ -154,7 +155,6 @@ class FApplication : public FWidget
     // Methods
     void                  init();
     static void           setTerminalEncoding (const FString&);
-    static void           setLogFile (const FString&);
     static void           cmd_options (const int&, char*[]);
     static FStartOptions& getStartOptions();
     static void           showParameterUsage();

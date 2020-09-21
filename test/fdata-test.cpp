@@ -1,5 +1,5 @@
 /***********************************************************************
-* fdata-test.cpp - FCallback unit tests                                *
+* fdata-test.cpp - FData unit tests                                    *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *

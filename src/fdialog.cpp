@@ -323,7 +323,7 @@ void FDialog::setSize (const FSize& size, bool adjust)
   const int dw = int(getWidth()) - int(size.getWidth());
   const int dh = int(getHeight()) - int(size.getHeight());
   const auto& shadow = getShadow();
-  FWindow::setSize (size, adjust);
+  FWindow::setSize (size, false);
 
   // get adjust width and height
   const std::size_t w = getWidth() + shadow.getWidth();
@@ -345,6 +345,9 @@ void FDialog::setSize (const FSize& size, bool adjust)
 
   if ( dh > 0 )
     restoreVTerm ({x, y + int(h), w + d_width, d_height});  // restore bottom
+
+  if ( adjust )    // Adjust the size after restoreVTerm(),
+    adjustSize();  // because adjustSize() can also change x and y
 
   redraw();
 
@@ -1069,13 +1072,13 @@ inline void FDialog::drawRestoreSizeButton()
     if ( FTerm::isMonochron() )
     {
       print ('[');
-      print (fc::BlackDownPointingTriangle);  // ▼
+      print (fc::BlackDiamondSuit);  // ◆
       print (']');
     }
     else
     {
       print (' ');
-      print (fc::BlackDownPointingTriangle);  // ▼
+      print (fc::BlackDiamondSuit);  // ◆
       print (' ');
     }
   }
