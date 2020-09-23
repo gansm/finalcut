@@ -302,7 +302,7 @@ bool FMenuBar::selectNextItem()
         if ( next_element == list.end() )
           next_element = list.begin();
 
-        next = static_cast<FMenuItem*>(*next_element);
+        next = *next_element;
       } while ( ! next->isEnabled()
              || ! next->acceptFocus()
              || ! next->isShown()
@@ -365,7 +365,7 @@ bool FMenuBar::selectPrevItem()
           prev_element = list.end();
 
         --prev_element;
-        prev = static_cast<FMenuItem*>(*prev_element);
+        prev = *prev_element;
       }
       while ( ! prev->isEnabled()
            || ! prev->acceptFocus()

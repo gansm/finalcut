@@ -138,9 +138,7 @@ void FMenu::onKeyPress (FKeyEvent* ev)
 
   if ( menu_bar )
   {
-    auto mbar = static_cast<FMenuBar*>(menu_bar);
-
-    if ( mbar->hotkeyMenu(ev) )
+    if ( menu_bar->hotkeyMenu(ev) )
       return;
   }
 
@@ -989,9 +987,8 @@ void FMenu::passEventToMenuBar (FMouseEvent* const& ev) const
     const auto& _ev = \
         std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
     setClickedWidget(menu_bar);
-    auto& mbar = *(static_cast<FMenuBar*>(menu_bar));
-    mbar.mouse_down = true;
-    mbar.onMouseMove(_ev.get());
+    menu_bar->mouse_down = true;
+    menu_bar->onMouseMove(_ev.get());
   }
   catch (const std::bad_alloc&)
   {
@@ -1060,7 +1057,7 @@ bool FMenu::selectNextItem()
         ++next_element;
         if ( next_element == list.end() )
           next_element = list.begin();
-        next = static_cast<FMenuItem*>(*next_element);
+        next = *next_element;
       }
       while ( ! next->isEnabled()
            || ! next->acceptFocus()
@@ -1110,7 +1107,7 @@ bool FMenu::selectPrevItem()
         if ( prev_element == list.begin() )
           prev_element = list.end();
         --prev_element;
-        prev = static_cast<FMenuItem*>(*prev_element);
+        prev = *prev_element;
       }
       while ( ! prev->isEnabled()
            || ! prev->acceptFocus()

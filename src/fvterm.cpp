@@ -1706,9 +1706,10 @@ void FVTerm::updateVTerm() const
     vdesktop->has_changes = false;
   }
 
-  const FWidget* widget = static_cast<FWidget*>(vterm->widget);
+  const FWidget* widget = vterm->widget;
 
-  if ( ! widget->getWindowList() || widget->getWindowList()->empty() )
+  if ( ! widget || ! widget->getWindowList()
+    || widget->getWindowList()->empty() )
     return;
 
   for (auto&& window : *(widget->getWindowList()))

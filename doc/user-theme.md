@@ -438,6 +438,6 @@ int main (int argc, char* argv[])
 After entering the source code in *theme.cpp* you can compile
 the above program with gcc:
 ```cpp
-g++ -O2 -lfinal -std=c++11 theme.cpp -o theme
+g++ theme.cpp -o theme -O2 -lfinal -std=c++11
 ```
 

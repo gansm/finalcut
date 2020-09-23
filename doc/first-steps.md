@@ -93,7 +93,7 @@ int main (int argc, char* argv[])
 After entering the source code in *dialog.cpp* you can compile
 the above program with gcc:
 ```cpp
-g++ -O2 -lfinal dialog.cpp -o dialog
+g++ dialog.cpp -o dialog -O2 -lfinal
 ```
 
 
@@ -240,7 +240,7 @@ int main (int argc, char* argv[])
 After entering the source code in *memory.cpp* you can compile
 the above program with gcc:
 ```cpp
-g++ -O2 -lfinal memory.cpp -o memory
+g++ memory.cpp -o memory -O2 -lfinal
 ```
 
 
@@ -380,7 +380,7 @@ int main (int argc, char* argv[])
 After entering the source code in *timer.cpp* you can compile
 the above program with gcc:
 ```cpp
-g++ -O2 -lfinal -std=c++11 timer.cpp -o timer
+g++ timer.cpp -o timer -O2 -lfinal -std=c++11
 ```
 
 
@@ -493,7 +493,7 @@ int main (int argc, char* argv[])
 After entering the source code in *user-event.cpp* you can compile
 the above program with gcc:
 ```cpp
-g++ -O2 -lfinal -std=c++11 user-event.cpp -o user-event
+g++ user-event.cpp -o user-event -O2 -lfinal -std=c++11
 ```
 
 
@@ -764,7 +764,7 @@ int main (int argc, char* argv[])
 After entering the source code in *callback-function.cpp* you can compile
 the above program with gcc:
 ```cpp
-g++ -O2 -lfinal callback-function.cpp -o callback-function
+g++ callback-function.cpp -o callback-function -O2 -lfinal
 ```
 &nbsp;
 
@@ -827,7 +827,7 @@ int main (int argc, char* argv[])
 After entering the source code in *callback-lambda.cpp* you can compile
 the above program with gcc:
 ```cpp
-g++ -O2 -lfinal -std=c++11 callback-lambda.cpp -o callback-lambda
+g++ callback-lambda.cpp -o callback-lambda -O2 -lfinal -std=c++11
 ```
 &nbsp;
 
@@ -886,7 +886,7 @@ int main (int argc, char* argv[])
 After entering the source code in *callback-method.cpp* you can compile
 the above program with gcc:
 ```cpp
-g++ -O2 -lfinal -std=c++11 callback-method.cpp -o callback-method
+g++ callback-method.cpp -o callback-method -O2 -lfinal -std=c++11
 ```
 &nbsp;
 
@@ -1007,7 +1007,7 @@ int main (int argc, char* argv[])
 After entering the source code in *emit-signal.cpp* you can compile
 the above program with gcc:
 ```cpp
-g++ -O2 -lfinal -std=c++11 emit-signal.cpp -o emit-signal
+g++ emit-signal.cpp -o emit-signal -O2 -lfinal -std=c++11
 ```
 
 
@@ -1278,7 +1278,7 @@ int main (int argc, char* argv[])
 After entering the source code in *size-adjustment.cpp* you can compile
 the above program with gcc:
 ```cpp
-g++ -O2 -lfinal -std=c++11 size-adjustment.cpp -o size-adjustment
+g++ size-adjustment.cpp -o size-adjustment -O2 -lfinal -std=c++11
 ```
 
 
@@ -1406,5 +1406,5 @@ int main (int argc, char* argv[])
 After entering the source code in *scrollview.cpp* you can compile
 the above program with gcc:
 ```cpp
-g++ -O2 -lfinal -std=c++11 scrollview.cpp -o scrollview
+g++ scrollview.cpp -o scrollview -O2 -lfinal -std=c++11
 ```

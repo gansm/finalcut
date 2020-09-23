@@ -1537,9 +1537,12 @@ const FString operator + (const FString& s1, const FString& s2)
 //----------------------------------------------------------------------
 const FString operator + (const FString& s, const wchar_t c)
 {
-  FString tmp{s};
-  tmp._insert (tmp.length, 1, &c);
-  return tmp;
+  FString tmp1{s};
+  wchar_t tmp2[2];
+  tmp2[0] = c;
+  tmp2[1] = L'\0';
+  tmp1._insert (tmp1.length, 1, tmp2);
+  return tmp1;
 }
 
 //----------------------------------------------------------------------
@@ -1597,7 +1600,7 @@ const FString operator + (const FString& s, const char c)
   wchar_t tmp2[2];
   tmp2[0] = wchar_t(c & 0xff);
   tmp2[1] = L'\0';
-  tmp1._insert (s.length, 1, tmp2);
+  tmp1._insert (tmp1.length, 1, tmp2);
   return tmp1;
 }
 

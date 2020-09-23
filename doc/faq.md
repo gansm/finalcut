@@ -85,6 +85,7 @@ You need three things:
     * autoconf
     * autoconf-archive
     * libtool
+    * pkg-config
 
 3. Development packages for following libraries:
 

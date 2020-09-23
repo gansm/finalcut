@@ -40,7 +40,7 @@ FScrollbar::FScrollbar(FWidget* parent)
   : FWidget{parent}
 {
   // The default scrollbar orientation is vertical
-  setGeometry(FPoint{1, 1}, FSize{1, length}, false);
+  FScrollbar::setGeometry(FPoint{1, 1}, FSize{1, length}, false);
   init();
 }
 
