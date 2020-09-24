@@ -202,7 +202,7 @@ void FTermLinux::init()
   }
   else
   {
-    FApplication::getLog()->error("Can not open the console.");
+    std::clog << FLog::Error << "Can not open the console." << std::endl;
     std::abort();
   }
 }
@@ -217,7 +217,7 @@ void FTermLinux::initCharMap()
 
   if ( screen_unicode_map.entry_ct > 0 && screen_unicode_map.entries )
   {
-    for (std::size_t i{0}; i <= fc::lastCharItem; i++ )
+    for (std::size_t i{0}; i <= fc::last_char_item; i++ )
     {
       const auto ucs = wchar_t(fc::character[i][fc::UTF8]);
       const sInt16 fontpos = getFontPos(ucs);

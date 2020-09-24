@@ -256,12 +256,12 @@ void MainWindow::onShow (finalcut::FShowEvent*)
 //----------------------------------------------------------------------
 void MainWindow::onTimer (finalcut::FTimerEvent*)
 {
-  wchar_t first_Char[2];
+  wchar_t first_char[2];
   std::size_t length = line1.getLength();
-  first_Char[0] = line1[0];
-  first_Char[1] = line2[0];
-  line1 = line1.right(length - 1) + first_Char[0];
-  line2 = line2.right(length - 1) + first_Char[1];
+  first_char[0] = line1[0];
+  first_char[1] = line2[0];
+  line1 = line1.right(length - 1) + first_char[0];
+  line2 = line2.right(length - 1) + first_char[1];
   redraw();
   flush();
 }

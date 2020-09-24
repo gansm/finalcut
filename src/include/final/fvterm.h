@@ -579,9 +579,9 @@ inline FVTerm& FVTerm::operator << (const std::string& string)
 
 //----------------------------------------------------------------------
 inline FVTerm& FVTerm::operator << \
-    (const std::vector<FChar>& termString)
+    (const std::vector<FChar>& term_string)
 {
-  print (termString);
+  print (term_string);
   return *this;
 }
 

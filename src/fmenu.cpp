@@ -136,11 +136,8 @@ void FMenu::onKeyPress (FKeyEvent* ev)
   // looking for menu bar hotkey
   auto menu_bar = getMenuBar();
 
-  if ( menu_bar )
-  {
-    if ( menu_bar->hotkeyMenu(ev) )
-      return;
-  }
+  if ( menu_bar && menu_bar->hotkeyMenu(ev) )
+    return;
 
   switch ( ev->key() )
   {

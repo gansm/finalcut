@@ -68,8 +68,8 @@ class SegmentView final : public finalcut::FDialog
     // Data members
     std::map<wchar_t, sevenSegment> code{};
     finalcut::FString line[3]{};
-    finalcut::FLineEdit Input{"0123", this};
-    finalcut::FButton Exit{"E&xit", this};
+    finalcut::FLineEdit input{"0123", this};
+    finalcut::FButton exit{"E&xit", this};
 };
 
 //----------------------------------------------------------------------
@@ -86,18 +86,18 @@ SegmentView::SegmentView (finalcut::FWidget* parent)
   hexEncoding();
 
   // Input field
-  Input.setGeometry (FPoint(2, 2), FSize{12, 1});
-  Input.setLabelText (L"&Hex value");
-  Input.setLabelText (L"&Hex-digits or (.) (:) (H) (L) (P) (U)");
-  Input.setLabelOrientation(finalcut::FLineEdit::label_above);
-  Input.setMaxLength(9);
-  Input.setInputFilter("[:.hHlLpPuU[:xdigit:]]");
+  input.setGeometry (FPoint(2, 2), FSize{12, 1});
+  input.setLabelText (L"&Hex value");
+  input.setLabelText (L"&Hex-digits or (.) (:) (H) (L) (P) (U)");
+  input.setLabelOrientation(finalcut::FLineEdit::label_above);
+  input.setMaxLength(9);
+  input.setInputFilter("[:.hHlLpPuU[:xdigit:]]");
 
   // Exit button
-  Exit.setGeometry(FPoint{28, 11}, FSize{10, 1});
+  exit.setGeometry(FPoint{28, 11}, FSize{10, 1});
 
   // Add some function callbacks
-  Input.addCallback
+  input.addCallback
   (
     "changed",
     [] (SegmentView& dialog)
@@ -107,7 +107,7 @@ SegmentView::SegmentView (finalcut::FWidget* parent)
     std::ref(*this)
   );
 
-  Exit.addCallback
+  exit.addCallback
   (
     "clicked",
     finalcut::getFApplication(),
@@ -206,7 +206,7 @@ void SegmentView::draw()
   setColor(fc::LightGray, fc::Black);
   finalcut::drawBorder(this, FRect(FPoint{3, 6}, FPoint{40, 11}));
 
-  for (auto&& ch : Input.getText().toUpper())
+  for (auto&& ch : input.getText().toUpper())
   {
     const FColorPair color{fc::LightRed, fc::Black};
     get7Segment(ch);

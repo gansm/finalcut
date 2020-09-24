@@ -108,6 +108,9 @@ class FLog : public std::stringbuf
     LineEnding   end_of_line{CRLF};
     FLogPrint    current_log{std::bind(&FLog::info, this, std::placeholders::_1)};
     std::ostream stream{this};
+
+    // Friend Non-member operator functions
+    friend std::ostream& operator << (std::ostream&, LogLevel);
 };
 
 // FLog inline functions

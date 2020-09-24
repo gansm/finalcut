@@ -311,11 +311,11 @@ void FTermXTerminal::captureFontAndTitle()
 //----------------------------------------------------------------------
 void FTermXTerminal::warnNotInitialized() const
 {
-  *FApplication::getLog() << FLog::Warn
-                          << "The FTermXTerminal object has "
-                          << "not yet been initialized! "
-                          << "Please call the init() method first."
-                          << std::endl;
+  std::clog << FLog::Warn
+            << "The FTermXTerminal object has "
+            << "not yet been initialized! "
+            << "Please call the init() method first."
+            << std::endl;
 }
 
 //----------------------------------------------------------------------

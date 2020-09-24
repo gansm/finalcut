@@ -22,7 +22,9 @@
 
 #include <chrono>
 #include <fstream>
+#include <iostream>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <thread>
 
@@ -131,18 +133,28 @@ FWidget* FApplication::getKeyboardWidget()
 FApplication::FLogPtr& FApplication::getLog()
 {
   // Global logger object
-  static FLogPtr* logger = new FLogPtr();
+  static FLogPtr* logger_ptr = new FLogPtr();
 
-  if ( logger && logger->get() == nullptr )
-    *logger = std::make_shared<FLogger>();
+  if ( logger_ptr && logger_ptr->get() == nullptr )
+  {
+    *logger_ptr = std::make_shared<FLogger>();
 
-  return *logger;
+    // Set the logger as rdbuf of clog
+    std::clog.rdbuf(logger_ptr->get());
+  }
+
+  return *logger_ptr;
 }
 
 //----------------------------------------------------------------------
-void FApplication::setLog (const FLogPtr& logger)
+void FApplication::setLog (const FLogPtr& log)
 {
-  getLog() = logger;
+  FLogPtr& logger = getLog();
+  logger.reset();
+  logger = log;
+
+  // Set the logger as rdbuf of clog
+  std::clog.rdbuf(logger.get());
 }
 
 //----------------------------------------------------------------------
@@ -586,6 +598,10 @@ void FApplication::showParameterUsage()
 //----------------------------------------------------------------------
 inline void FApplication::destroyLog()
 {
+  // Reset the rdbuf of clog
+  std::clog.rdbuf(default_clog_rdbuf);
+
+  // Delete the logger
   const FLogPtr* logger = &(getLog());
   delete logger;
 }
@@ -1352,6 +1368,15 @@ bool FApplication::isEventProcessable ( const FObject* receiver
 bool FApplication::isNextEventTimeout()
 {
   return FObject::isTimeout (&time_last_event, next_event_wait);
+}
+
+
+// FLog non-member operators
+//----------------------------------------------------------------------
+std::ostream& operator << (std::ostream& outstr, FLog::LogLevel l)
+{
+  *FApplication::getLog() << l;
+  return outstr;
 }
 
 }  // namespace finalcut

@@ -37,16 +37,16 @@ namespace fc
 {
 
 extern uInt character[][fc::NUM_OF_ENCODINGS];
-extern const std::size_t lastCharItem;
+extern const std::size_t last_char_item;
 
 extern const int vt100_key_to_utf8[][2];
-extern const std::size_t lastKeyItem;
+extern const std::size_t last_key_item;
 
 extern const wchar_t cp437_ucs[][2];
-extern const std::size_t lastCP437Item;
+extern const std::size_t last_cp437_item;
 
-extern const wchar_t halfWidth_fullWidth[][2];
-extern const std::size_t lastHalfWidthItem;
+extern const wchar_t halfwidth_fullwidth[][2];
+extern const std::size_t last_halfwidth_item;
 
 }  // namespace fc
 

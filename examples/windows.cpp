@@ -122,7 +122,7 @@ void SmallWindow::adjustSize()
   else
   {
     top_right_label = "zoom";
-    bottom_label.setVisible();
+    bottom_label.show();
   }
 
   finalcut::FDialog::adjustSize();

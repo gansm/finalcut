@@ -67,7 +67,7 @@ class CheckList final : public finalcut::FDialog
     void cb_showList();
 
     // Data members
-    finalcut::FListView  listView{this};
+    finalcut::FListView  listview{this};
     finalcut::FStatusBar status_bar{this};
 };
 
@@ -83,22 +83,22 @@ CheckList::CheckList (finalcut::FWidget* parent)
   FDialog::setGeometry ( FPoint{int(1 + (parent->getWidth() - 28) / 2), 5}
                        , FSize{28 + nf_offset, 13} );
   setShadow();
-  listView.ignorePadding();
-  listView.setGeometry ( FPoint{1 + int(nf_offset), 2}
+  listview.ignorePadding();
+  listview.setGeometry ( FPoint{1 + int(nf_offset), 2}
                        , FSize{getWidth() - nf_offset, getHeight() - 1} );
 
   // Add columns to the view
-  listView.addColumn ("Item");
-  listView.addColumn ("Priority", 9);
+  listview.addColumn ("Item");
+  listview.addColumn ("Priority", 9);
 
   // Set the type of sorting
-  listView.setColumnSortType (1, fc::by_name);
-  listView.setColumnSortType (2, fc::by_name);
+  listview.setColumnSortType (1, fc::by_name);
+  listview.setColumnSortType (2, fc::by_name);
 
   // Statusbar at the bottom
   finalcut::FString separator{};
   separator << ' ' << fc::BoxDrawingsVertical << ' ';
-  listView.setStatusbarMessage ( finalcut::FString{}
+  listview.setStatusbarMessage ( finalcut::FString{}
                                  << "<Q> exit" << separator
                                  << "<Space> select an item" << separator
                                  << "<Enter> see your pick list");
@@ -107,7 +107,7 @@ CheckList::CheckList (finalcut::FWidget* parent)
   populate();
 
   // Add callback method
-  listView.addCallback
+  listview.addCallback
   (
     "clicked",
     this, &CheckList::cb_showList
@@ -138,7 +138,7 @@ void CheckList::populate()
   for (const auto& line : list)
   {
     const finalcut::FStringList string_line (&line[0], &line[0] + 2);
-    auto iter = listView.insert (string_line);
+    auto iter = listview.insert (string_line);
     auto item = static_cast<finalcut::FListViewItem*>(*iter);
     item->setCheckable(true);
   }
@@ -170,10 +170,10 @@ void CheckList::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void CheckList::cb_showList()
 {
-  auto iter = listView.beginOfList();
+  auto iter = listview.beginOfList();
   finalcut::FString shopping_list{};
 
-  while ( iter != listView.endOfList() )
+  while ( iter != listview.endOfList() )
   {
     const auto item = static_cast<finalcut::FListViewItem*>(*iter);
 

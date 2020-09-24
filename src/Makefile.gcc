@@ -13,6 +13,7 @@ INCLUDE_HEADERS = \
 	fbuttongroup.h \
 	fbutton.h \
 	fcallback.h \
+	fdata.h \
 	fcolorpair.h \
 	fstyle.h \
 	ftogglebutton.h \
@@ -93,6 +94,7 @@ OBJS = \
 	fsize.o \
 	frect.o \
 	fcallback.o \
+	fdata.o \
 	fscrollbar.o \
 	fprogressbar.o \
 	flineedit.o \

@@ -68,7 +68,7 @@ class ProgressDialog final : public finalcut::FDialog
     void cb_exit_bar();
 
     // Data members
-    finalcut::FProgressbar progressBar{this};
+    finalcut::FProgressbar progressbar{this};
     finalcut::FButton      reset{this};
     finalcut::FButton      more{this};
     finalcut::FButton      quit{this};
@@ -100,8 +100,8 @@ ProgressDialog::ProgressDialog (finalcut::FWidget* parent)
   quit.setGeometry(FPoint{28, 6}, FSize{8, 1}, false);
   quit.setDisable();
 
-  progressBar.setGeometry(FPoint{2, 3}, FSize{34, 1}, false);
-  //progressBar.setPercentage(78);
+  progressbar.setGeometry(FPoint{2, 3}, FSize{34, 1}, false);
+  //progressbar.setPercentage(78);
 
   reset.addCallback
   (
@@ -140,9 +140,9 @@ void ProgressDialog::onShow (finalcut::FShowEvent*)
 //----------------------------------------------------------------------
 void ProgressDialog::onTimer (finalcut::FTimerEvent*)
 {
-  auto p = progressBar.getPercentage();
+  auto p = progressbar.getPercentage();
   p++;
-  progressBar.setPercentage(p);
+  progressbar.setPercentage(p);
   flush();
 
   if ( p != 100 )
@@ -167,15 +167,15 @@ void ProgressDialog::onTimer (finalcut::FTimerEvent*)
 //----------------------------------------------------------------------
 void ProgressDialog::cb_reset_bar()
 {
-  progressBar.reset();
+  progressbar.reset();
 }
 
 //----------------------------------------------------------------------
 void ProgressDialog::cb_more_bar()
 {
-  auto p = progressBar.getPercentage();
+  auto p = progressbar.getPercentage();
   p++;
-  progressBar.setPercentage(p);
+  progressbar.setPercentage(p);
 }
 
 //----------------------------------------------------------------------
@@ -212,25 +212,25 @@ class TextWindow final : public finalcut::FDialog
     void adjustSize() override;
 
     // Data members
-    finalcut::FTextView scrollText{this};
+    finalcut::FTextView scrolltext{this};
 };
 
 //----------------------------------------------------------------------
 TextWindow::TextWindow (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  scrollText.ignorePadding();
-  scrollText.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});
+  scrolltext.ignorePadding();
+  scrolltext.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});
   setMinimumSize (FSize{51, 6});
-  scrollText.setFocus();
-  scrollText.insert(" -----------------------------------------------\n"
+  scrolltext.setFocus();
+  scrolltext.insert(" -----------------------------------------------\n"
                     " line 1\n"
                     " -----------------------------------------------\n"
                     " line 3\n"
                     " line 4"
                     , -1);
-  scrollText.replaceRange("                   File viewer", 1, 1);
-  scrollText.deleteRange(3, 4);
+  scrolltext.replaceRange("                   File viewer", 1, 1);
+  scrolltext.deleteRange(3, 4);
 }
 
 //----------------------------------------------------------------------
@@ -240,14 +240,14 @@ TextWindow::~TextWindow()  // destructor
 //----------------------------------------------------------------------
 void TextWindow::append (const finalcut::FString& str)
 {
-  scrollText.append(str);
+  scrolltext.append(str);
 }
 
 //----------------------------------------------------------------------
 void TextWindow::adjustSize()
 {
   finalcut::FDialog::adjustSize();
-  scrollText.setGeometry (FPoint{1, 2}, FSize(getWidth(), getHeight() - 1));
+  scrolltext.setGeometry (FPoint{1, 2}, FSize(getWidth(), getHeight() - 1));
 }
 
 
@@ -784,12 +784,12 @@ void MyDialog::adjustSize()
 {
   const auto h = getParentWidget()->getHeight() - 4;
   setHeight (h, false);
-  int X = int((getDesktopWidth() - getWidth()) / 2);
+  int x = int((getDesktopWidth() - getWidth()) / 2);
 
-  if ( X < 1 )
-    X = 1;
+  if ( x < 1 )
+    x = 1;
 
-  setX (X, false);
+  setX (x, false);
 
   if ( initialized )
     myList.setHeight (getHeight() - 3, false);

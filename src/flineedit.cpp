@@ -25,8 +25,8 @@
 #include "final/fapplication.h"
 #include "final/fevent.h"
 #include "final/flabel.h"
-#include "final/flog.h"
 #include "final/flineedit.h"
+#include "final/flog.h"
 #include "final/fpoint.h"
 #include "final/fsize.h"
 #include "final/fstatusbar.h"
@@ -833,8 +833,8 @@ inline FLineEdit::offsetPair FLineEdit::endPosToOffset (std::size_t pos)
     }
     catch (const std::out_of_range& ex)
     {
-      *FApplication::getLog() << FLog::Error
-          << "Out of Range error: " << ex.what() << std::endl;
+      std::clog << FLog::Error
+                << "Out of Range error: " << ex.what() << std::endl;
     }
 
     if ( input_width >= char_width )
@@ -857,8 +857,8 @@ inline FLineEdit::offsetPair FLineEdit::endPosToOffset (std::size_t pos)
         }
         catch (const std::out_of_range& ex)
         {
-          *FApplication::getLog() << FLog::Error
-              << "Out of Range error: " << ex.what() << std::endl;
+          std::clog << FLog::Error
+                    << "Out of Range error: " << ex.what() << std::endl;
         }
       }
 
@@ -893,8 +893,8 @@ std::size_t FLineEdit::clickPosToCursorPos (std::size_t pos)
     }
     catch (const std::out_of_range& ex)
     {
-      *FApplication::getLog() << FLog::Error
-          << "Out of Range error: " << ex.what() << std::endl;
+      std::clog << FLog::Error
+                << "Out of Range error: " << ex.what() << std::endl;
     }
 
     idx++;
@@ -927,8 +927,8 @@ void FLineEdit::adjustTextOffset()
     }
     catch (const std::out_of_range& ex)
     {
-      *FApplication::getLog() << FLog::Error
-          << "Out of Range error: " << ex.what() << std::endl;
+      std::clog << FLog::Error
+                << "Out of Range error: " << ex.what() << std::endl;
     }
   }
 
@@ -940,8 +940,8 @@ void FLineEdit::adjustTextOffset()
     }
     catch (const std::out_of_range& ex)
     {
-      *FApplication::getLog() << FLog::Error
-          << "Out of Range error: " << ex.what() << std::endl;
+      std::clog << FLog::Error
+                << "Out of Range error: " << ex.what() << std::endl;
     }
   }
 

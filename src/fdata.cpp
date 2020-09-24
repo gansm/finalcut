@@ -1,5 +1,5 @@
 /***********************************************************************
-* fdata-test.cpp - FData unit tests                                    *
+* fdata.cpp - A general-purpose data wrapper                           *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
@@ -20,80 +20,23 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include <utility>
+#include "final/fdata.h"
 
-#include <cppunit/BriefTestProgressListener.h>
-#include <cppunit/CompilerOutputter.h>
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit/TestFixture.h>
-#include <cppunit/TestResult.h>
-#include <cppunit/TestResultCollector.h>
-#include <cppunit/TestRunner.h>
-
-#include <final/final.h>
-
-//----------------------------------------------------------------------
-// functions
-//----------------------------------------------------------------------
-float my_function()
-{
-  return 13.45F;
-}
-
-//----------------------------------------------------------------------
-long int my_function2 (long int i)
-{
-  return 2 * i;
-}
-
-
-//----------------------------------------------------------------------
-// class FDataTest
-//----------------------------------------------------------------------
-
-class FDataTest : public CPPUNIT_NS::TestFixture
-{
-  public:
-    FDataTest()
-    { }
-
-  protected:
-    void classNameTest();
-    void dataTest();
-
-  private:
-    // Adds code needed to register the test suite
-    CPPUNIT_TEST_SUITE (FDataTest);
-
-    // Add a methods to the test suite
-    CPPUNIT_TEST (classNameTest);
-    CPPUNIT_TEST (dataTest);
-
-    // End of test suite definition
-    CPPUNIT_TEST_SUITE_END();
-
-    // Data member
-    static finalcut::FWidget root_widget;
-};
-
-// static class attributes
-finalcut::FWidget FDataTest::root_widget{nullptr};
-
-//----------------------------------------------------------------------
-void FDataTest::classNameTest()
-{
-  const finalcut::FCallback d;
-  const finalcut::FString& classname = d.getClassName();
-  CPPUNIT_ASSERT ( classname == "FData" );
-}
-
-//----------------------------------------------------------------------
-void FDataTest::dataTest()
+namespace finalcut
 {
 
-}
-// Put the test suite in the registry
-CPPUNIT_TEST_SUITE_REGISTRATION (FDataTest);
+//----------------------------------------------------------------------
+// class FDataAccess
+//----------------------------------------------------------------------
 
-// The general unit test main part
-#include <main-test.inc>
+// constructors and destructor
+//----------------------------------------------------------------------
+FDataAccess::FDataAccess()
+{ }
+
+//----------------------------------------------------------------------
+FDataAccess::~FDataAccess()  // destructor
+{ }
+
+}  // namespace finalcut
+

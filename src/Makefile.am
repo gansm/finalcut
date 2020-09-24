@@ -20,6 +20,7 @@ libfinal_la_SOURCES = \
 	fbutton.cpp \
 	fbuttongroup.cpp \
 	fcallback.cpp \
+	fdata.cpp \
 	ftogglebutton.cpp \
 	fradiobutton.cpp \
 	fcheckbox.cpp \

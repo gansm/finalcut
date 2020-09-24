@@ -27,6 +27,7 @@
 #include "final/emptyfstring.h"
 #include "final/fc.h"
 #include "final/fkey_map.h"
+#include "final/flog.h"
 #include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermdata.h"
@@ -127,23 +128,22 @@ void FTermcap::termcapError (int status)
   static constexpr int no_entry = 0;
   static constexpr int db_not_found = -1;
   static constexpr int uninitialized = -2;
-  finalcut::FLog& log = *FApplication::getLog();
 
   if ( status == no_entry || status == uninitialized )
   {
     const char* termtype = fterm_data->getTermType();
-    log << FLog::Error
-        << "Unknown terminal: \""  << termtype << "\". "
-        << "Check the TERM environment variable. "
-        << "Also make sure that the terminal "
-        << "is defined in the termcap/terminfo database."
-        << std::endl;
+    std::clog << FLog::Error
+              << "Unknown terminal: \""  << termtype << "\". "
+              << "Check the TERM environment variable. "
+              << "Also make sure that the terminal "
+              << "is defined in the termcap/terminfo database."
+              << std::endl;
     std::abort();
   }
   else if ( status == db_not_found )
   {
-    log << "The termcap/terminfo database could not be found."
-        << std::endl;
+    std::clog << "The termcap/terminfo database could not be found."
+              << std::endl;
     std::abort();
   }
 }

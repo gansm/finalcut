@@ -36,7 +36,7 @@ using finalcut::FRect;
 using finalcut::FSize;
 using finalcut::FColorPair;
 
-constexpr lDouble PI{3.141592653589793238L};
+constexpr lDouble pi_value{3.141592653589793238L};
 
 
 //----------------------------------------------------------------------
@@ -233,13 +233,13 @@ class Calc final : public finalcut::FDialog
     finalcut::FString input{""};
     button            button_no[Calc::NUM_OF_BUTTONS]{};
 
-    struct stack_data
+    struct StackData
     {
       lDouble term;
       char infix_operator;
     };
 
-    std::stack<stack_data> bracket_stack{};
+    std::stack<StackData> bracket_stack{};
     std::map<Calc::button, std::shared_ptr<Button> > calculator_buttons{};
     std::map<Calc::button, keyFunction> key_map{};
 };
@@ -703,14 +703,14 @@ void Calc::percent (lDouble& x)
 //----------------------------------------------------------------------
 void Calc::pi (lDouble& x)
 {
-  x = PI;
+  x = pi_value;
   setDisplay(x);
 }
 
 //----------------------------------------------------------------------
 void Calc::open_bracket (const lDouble&)
 {
-  const stack_data d{ a, infix_operator };
+  const StackData d{ a, infix_operator };
   bracket_stack.push(d);
   clearInfixOperator();
   input = "";
@@ -726,7 +726,7 @@ void Calc::close_bracket (const lDouble&)
 
   calcInfixOperator();
   setDisplay(a);
-  const stack_data d = bracket_stack.top();
+  const StackData d = bracket_stack.top();
   bracket_stack.pop();
   b = d.term;
   infix_operator = d.infix_operator;
@@ -835,11 +835,11 @@ void Calc::sine (lDouble& x)
   else
   {
     if ( arcus_mode )
-      x = std::asin(x) * 180.0L / PI;
+      x = std::asin(x) * 180.0L / pi_value;
     else if ( std::fabs(std::fmod(x, 180.0L)) < LDBL_EPSILON )  // x / 180 = 0
       x = 0.0L;
     else
-      x = std::sin(x * PI / 180.0L);
+      x = std::sin(x * pi_value / 180.0L);
   }
 
   if ( errno == EDOM )
@@ -873,11 +873,11 @@ void Calc::cosine (lDouble& x)
   else
   {
     if ( arcus_mode )
-      x = std::acos(x) * 180.0L / PI;
+      x = std::acos(x) * 180.0L / pi_value;
     else if ( std::fabs(std::fmod(x - 90.0L, 180.0L)) < LDBL_EPSILON )  // (x - 90) / 180 == 0
       x = 0.0L;
     else
-      x = std::cos(x * PI / 180.0L);
+      x = std::cos(x * pi_value / 180.0L);
   }
 
   if ( errno == EDOM )
@@ -911,7 +911,7 @@ void Calc::tangent (lDouble& x)
   else
   {
     if ( arcus_mode )
-      x = std::atan(x) * 180.0L / PI;
+      x = std::atan(x) * 180.0L / pi_value;
     else
     {
       // Test if (x / 180) != 0 and x / 90 == 0
@@ -921,7 +921,7 @@ void Calc::tangent (lDouble& x)
       else if ( std::fabs(std::fmod(x, 180.0L)) < LDBL_EPSILON )  // x / 180 == 0
         x = 0.0L;
       else
-        x = std::tan(x * PI / 180.0L);
+        x = std::tan(x * pi_value / 180.0L);
     }
   }
 

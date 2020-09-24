@@ -35,7 +35,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/fapplication.h"
+#include <iostream>
+
 #include "final/flog.h"
 #include "final/fstring.h"
 

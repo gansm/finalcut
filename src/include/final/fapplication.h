@@ -207,6 +207,7 @@ class FApplication : public FWidget
     char**                app_argv{};
     uInt64                key_timeout{100000};        // 100 ms
     uInt64                dblclick_interval{500000};  // 500 ms
+    std::streambuf*       default_clog_rdbuf{std::clog.rdbuf()};
     FEventQueue           event_queue{};
     static uInt64         next_event_wait;
     static timeval        time_last_event;

@@ -62,8 +62,8 @@ class Listview final : public finalcut::FDialog
     void cb_showInMessagebox();
 
     // Data members
-    finalcut::FListView listView{this};
-    finalcut::FButton   Quit{this};
+    finalcut::FListView listview{this};
+    finalcut::FButton   quit{this};
 };
 
 //----------------------------------------------------------------------
@@ -71,44 +71,44 @@ Listview::Listview (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
   // Set FListView geometry
-  listView.setGeometry(FPoint{2, 1}, FSize{33, 14});
+  listview.setGeometry(FPoint{2, 1}, FSize{33, 14});
 
   // Add columns to the view
-  listView.addColumn ("City");
-  listView.addColumn ("Condition");
-  listView.addColumn ("Temp.");
-  listView.addColumn ("Humidity");
-  listView.addColumn ("Pressure", 10);
+  listview.addColumn ("City");
+  listview.addColumn ("Condition");
+  listview.addColumn ("Temp.");
+  listview.addColumn ("Humidity");
+  listview.addColumn ("Pressure", 10);
 
   // Set right alignment for the third, fourth, and fifth column
-  listView.setColumnAlignment (3, fc::alignRight);
-  listView.setColumnAlignment (4, fc::alignRight);
-  listView.setColumnAlignment (5, fc::alignRight);
+  listview.setColumnAlignment (3, fc::alignRight);
+  listview.setColumnAlignment (4, fc::alignRight);
+  listview.setColumnAlignment (5, fc::alignRight);
 
   // Set the type of sorting
-  listView.setColumnSortType (1, fc::by_name);
-  listView.setColumnSortType (2, fc::by_name);
-  listView.setColumnSortType (3, fc::by_number);
-  listView.setColumnSortType (4, fc::by_number);
-  listView.setColumnSortType (5, fc::by_number);
+  listview.setColumnSortType (1, fc::by_name);
+  listview.setColumnSortType (2, fc::by_name);
+  listview.setColumnSortType (3, fc::by_number);
+  listview.setColumnSortType (4, fc::by_number);
+  listview.setColumnSortType (5, fc::by_number);
 
   // Sort in ascending order by the 1st column
-  listView.setColumnSort (1, fc::ascending);
+  listview.setColumnSort (1, fc::ascending);
   // Sorting follows later automatically on insert().
   // Otherwise you could start the sorting directly with sort()
 
   // Allways show the sort indicator (▼/▲)
-  listView.hideSortIndicator(false);
+  listview.hideSortIndicator(false);
 
   // Populate FListView with a list of items
   populate();
 
   // Quit button
-  Quit.setGeometry(FPoint{24, 16}, FSize{10, 1});
-  Quit.setText (L"&Quit");
+  quit.setGeometry(FPoint{24, 16}, FSize{10, 1});
+  quit.setText (L"&Quit");
 
   // Add some function callbacks
-  Quit.addCallback
+  quit.addCallback
   (
     "clicked",
     finalcut::getFApplication(),
@@ -116,7 +116,7 @@ Listview::Listview (finalcut::FWidget* parent)
     this
   );
 
-  listView.addCallback
+  listview.addCallback
   (
     "clicked",
     this, &Listview::cb_showInMessagebox
@@ -178,7 +178,7 @@ void Listview::populate()
   for (const auto& place : weather)
   {
     const finalcut::FStringList line (&place[0], &place[0] + 5);
-    listView.insert (line);
+    listview.insert (line);
   }
 }
 
@@ -191,7 +191,7 @@ void Listview::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Listview::cb_showInMessagebox()
 {
-  const auto& item = listView.getCurrentItem();
+  const auto& item = listview.getCurrentItem();
   finalcut::FMessageBox info ( "Weather in " + item->getText(1)
                              , "  Condition: " + item->getText(2) + "\n"
                                "Temperature: " + item->getText(3) + "\n"

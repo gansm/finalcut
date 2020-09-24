@@ -38,13 +38,13 @@
 
 #define null nullptr
 
-#define badAllocOutput(object_name)                            \
-    *FApplication::getLog() << FLog::Error                     \
-                            << __FILE__  << ":" << __LINE__    \
-                            << ": Not enough memory to alloc " \
-                            << (object_name)                   \
-                            << " in "                          \
-                            << __func__ << std::endl;
+#define badAllocOutput(object_name)              \
+    std::clog << FLog::Error                     \
+              << __FILE__  << ":" << __LINE__    \
+              << ": Not enough memory to alloc " \
+              << (object_name)                   \
+              << " in "                          \
+              << __func__ << std::endl;
 
 typedef unsigned char         uChar;
 typedef unsigned short        uShort;

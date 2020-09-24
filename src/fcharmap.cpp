@@ -159,7 +159,7 @@ uInt character[][fc::NUM_OF_ENCODINGS] =
  * (2) Only supported in use with newfont
  */
 
-const std::size_t lastCharItem = \
+constexpr std::size_t last_char_item = \
     std::size_t((sizeof(character) / sizeof(character[0])) - 1);
 
 
@@ -206,7 +206,7 @@ constexpr int vt100_key_to_utf8[][2] =
   {fc::vt100_key_diamond  , fc::Bullet}                         // ◆
 };
 
-const std::size_t lastKeyItem = \
+constexpr std::size_t last_key_item = \
     std::size_t((sizeof(vt100_key_to_utf8) / sizeof(vt100_key_to_utf8[0])) - 1);
 
 
@@ -470,11 +470,11 @@ constexpr wchar_t cp437_ucs[][2] =
   {0xff, 0x00a0}   // no-break space
 };
 
-const std::size_t lastCP437Item = \
+constexpr std::size_t last_cp437_item = \
     std::size_t((sizeof(cp437_ucs) / sizeof(cp437_ucs[0])) - 1);
 
 // Based on http://www.unicode.org/charts/PDF/UFF00.pdf
-constexpr wchar_t halfWidth_fullWidth[][2] =
+constexpr wchar_t halfwidth_fullwidth[][2] =
 {
   // Fullwidth ASCII variants
   {0x0020, 0x3000},  // ' ' -> '　'
@@ -712,8 +712,8 @@ constexpr wchar_t halfWidth_fullWidth[][2] =
   {0xffee, 0x25cb}   // ￮ -> ○
 };
 
-const std::size_t lastHalfWidthItem = \
-    std::size_t((sizeof(halfWidth_fullWidth) / sizeof(halfWidth_fullWidth[0])) - 1);
+constexpr std::size_t last_halfwidth_item = \
+    std::size_t((sizeof(halfwidth_fullwidth) / sizeof(halfwidth_fullwidth[0])) - 1);
 
 }  // namespace fc
 

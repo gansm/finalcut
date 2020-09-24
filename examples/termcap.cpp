@@ -42,21 +42,21 @@ void string();
 // struct data
 //----------------------------------------------------------------------
 
-struct data
+struct Data
 {
-  struct alignas(alignof(std::string)) termcap_string
+  struct alignas(alignof(std::string)) TermcapString
   {
     const std::string name;
     const fc::termcaps cap;
   };
 
-  static termcap_string strings[];
+  static TermcapString strings[];
 };
 
 //----------------------------------------------------------------------
 // struct data - string data array
 //----------------------------------------------------------------------
-data::termcap_string data::strings[] =
+Data::TermcapString Data::strings[] =
 {
   { "t_bell", fc::t_bell },
   { "t_erase_chars", fc::t_erase_chars },
@@ -285,7 +285,7 @@ void string()
   const finalcut::FTermcap::tcap_map (&tcap_strings)[] \
       = finalcut::FTermcap::strings;
 
-  for (const auto& entry : data::strings)
+  for (const auto& entry : Data::strings)
   {
     const std::string name = entry.name;
     const fc::termcaps cap = entry.cap;

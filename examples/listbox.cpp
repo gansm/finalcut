@@ -101,7 +101,7 @@ class Listbox final : public FDialog
     FListBox list1{this};
     FListBox list2{this};
     FListBox list3{this};
-    FButton  Quit{this};
+    FButton  quit{this};
 };
 
 //----------------------------------------------------------------------
@@ -151,11 +151,11 @@ Listbox::Listbox (FWidget* parent)
   list3.setText ("key: value");
 
   // Quit button
-  Quit.setGeometry(FPoint{42, 12}, FSize{10, 1});
-  Quit.setText (L"&Quit");
+  quit.setGeometry(FPoint{42, 12}, FSize{10, 1});
+  quit.setText (L"&Quit");
 
   // Add quit button function callback
-  Quit.addCallback
+  quit.addCallback
   (
     "clicked",
     finalcut::getFApplication(),

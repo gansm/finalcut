@@ -1191,7 +1191,7 @@ wchar_t FTerm::charEncode (wchar_t c, fc::encoding enc)
 {
   wchar_t ch_enc = c;
 
-  for (std::size_t i{0}; i <= fc::lastCharItem; i++)
+  for (std::size_t i{0}; i <= fc::last_char_item; i++)
   {
     if ( fc::character[i][fc::UTF8] == uInt(c) )
     {
@@ -1421,7 +1421,7 @@ void FTerm::init_alt_charset()
   };
 
   // Update array 'character' with discovered VT100 pairs
-  for (std::size_t n{0}; n <= fc::lastKeyItem; n++ )
+  for (std::size_t n{0}; n <= fc::last_key_item; n++ )
   {
     const uChar keyChar = uChar(fc::vt100_key_to_utf8[n][vt100_key]);
     const uChar altChar = uChar(vt100_alt_char[keyChar]);
@@ -1429,9 +1429,9 @@ void FTerm::init_alt_charset()
     const fc::encoding num{fc::NUM_OF_ENCODINGS};
 
     uInt* p = std::find ( fc::character[0]
-                        , fc::character[fc::lastCharItem] + num
+                        , fc::character[fc::last_char_item] + num
                         , utf8char );
-    if ( p != fc::character[fc::lastCharItem] + num )  // found in character
+    if ( p != fc::character[fc::last_char_item] + num )  // found in character
     {
       const int item = int(std::distance(fc::character[0], p) / num);
 
@@ -1506,7 +1506,7 @@ void FTerm::init_cygwin_charmap()
     return;
 
   // PC encoding changes
-  for (std::size_t i{0}; i <= fc::lastCharItem; i++ )
+  for (std::size_t i{0}; i <= fc::last_char_item; i++ )
   {
     if ( fc::character[i][fc::UTF8] == fc::BlackUpPointingTriangle )  // ▲
       fc::character[i][fc::PC] = 0x18;
@@ -1560,7 +1560,7 @@ void FTerm::init_teraterm_charmap()
   if ( ! isTeraTerm() )
     return;
 
-  for (std::size_t i{0}; i <= fc::lastCharItem; i++ )
+  for (std::size_t i{0}; i <= fc::last_char_item; i++ )
     if ( fc::character[i][fc::PC] < 0x20 )
       fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
 }

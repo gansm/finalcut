@@ -57,9 +57,11 @@ class FData;  // Class forward declaration
 class FDataAccess
 {
   public:
+    // Constructor
+    FDataAccess();
+
     // Destructor
-    virtual ~FDataAccess()
-    { }
+    virtual ~FDataAccess();
 
     // Accessors
     virtual const FString getClassName() const
@@ -101,7 +103,31 @@ class FData : public FDataAccess
       , value_ref{value}
     { }
 
+    FData (const FData& d)  // Copy constructor
+      : value{d.value}
+      , value_ref{value}
+    { }
+
+    FData (FData&& d) noexcept  // Move constructor
+      : value{std::move(d.value)}
+      , value_ref{value}
+    { }
+
     // Overloaded operators
+    FData& operator = (const FData& d)  // Copy assignment operator (=)
+    {
+      value = d.value;
+      value_ref = value;
+      return *this;
+    }
+
+    FData& operator = (FData&& d) noexcept  // Move assignment operator (=)
+    {
+      value = std::move(d.value);
+      value_ref = value;
+      return *this;
+    }
+
     T operator () () const
     {
       return value_ref;

@@ -274,7 +274,7 @@ wchar_t cp437_to_unicode (uChar c)
   constexpr std::size_t UNICODE = 1;
   wchar_t ucs = c;
 
-  for (std::size_t i{0}; i <= fc::lastCP437Item; i++)
+  for (std::size_t i{0}; i <= fc::last_cp437_item; i++)
   {
     if ( fc::cp437_ucs[i][CP437] == c )  // found
     {
@@ -293,7 +293,7 @@ uChar unicode_to_cp437 (wchar_t ucs)
   constexpr std::size_t UNICODE = 1;
   uChar c{'?'};
 
-  for (std::size_t i{0}; i <= fc::lastCP437Item; i++)
+  for (std::size_t i{0}; i <= fc::last_cp437_item; i++)
   {
     if ( fc::cp437_ucs[i][UNICODE] == ucs )  // found
     {
@@ -322,10 +322,10 @@ const FString getFullWidth (const FString& str)
     }
     else
     {
-      for (std::size_t i{0}; i <= fc::lastHalfWidthItem; i++)
+      for (std::size_t i{0}; i <= fc::last_halfwidth_item; i++)
       {
-        if ( fc::halfWidth_fullWidth[i][HALF] == c )  // found
-          c = fc::halfWidth_fullWidth[i][FULL];
+        if ( fc::halfwidth_fullwidth[i][HALF] == c )  // found
+          c = fc::halfwidth_fullwidth[i][FULL];
       }
     }
   }
@@ -350,10 +350,10 @@ const FString getHalfWidth (const FString& str)
     }
     else
     {
-      for (std::size_t i{0}; i <= fc::lastHalfWidthItem; i++)
+      for (std::size_t i{0}; i <= fc::last_halfwidth_item; i++)
       {
-        if ( fc::halfWidth_fullWidth[i][FULL] == c )  // found
-          c = fc::halfWidth_fullWidth[i][HALF];
+        if ( fc::halfwidth_fullwidth[i][FULL] == c )  // found
+          c = fc::halfwidth_fullwidth[i][HALF];
       }
     }
   }
@@ -457,8 +457,8 @@ std::size_t getColumnWidth (const FString& s, std::size_t pos)
     }
     catch (const std::out_of_range& ex)
     {
-      *FApplication::getLog() << FLog::Error
-          << "Out of Range error: " << ex.what() << std::endl;
+      std::clog << FLog::Error
+                << "Out of Range error: " << ex.what() << std::endl;
     }
   }
 

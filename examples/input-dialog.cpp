@@ -93,22 +93,22 @@ int main (int argc, char* argv[])
   c_field.setGeometry (FPoint{11, 11}, FSize{4, 1});
 
   // Create the button group
-  finalcut::FButtonGroup radioButtonGroup {"Sex", &dgl};
-  radioButtonGroup.setGeometry(FPoint{2, 13}, FSize{13, 4});
+  finalcut::FButtonGroup radiobutton_group {"Sex", &dgl};
+  radiobutton_group.setGeometry(FPoint{2, 13}, FSize{13, 4});
 
   // Create radio buttons
-  finalcut::FRadioButton male {"&Male", &radioButtonGroup};
-  finalcut::FRadioButton female {"&Female", &radioButtonGroup};
+  finalcut::FRadioButton male {"&Male", &radiobutton_group};
+  finalcut::FRadioButton female {"&Female", &radiobutton_group};
   male.setGeometry (FPoint{1, 1}, FSize{8, 1});
   female.setGeometry (FPoint{1, 2}, FSize{10, 1});
 
   // Create another button group
-  finalcut::FButtonGroup checkButtonGroup {"&Data options", &dgl};
-  checkButtonGroup.setGeometry(FPoint{16, 13}, FSize{19, 4});
+  finalcut::FButtonGroup checkbutton_group {"&Data options", &dgl};
+  checkbutton_group.setGeometry(FPoint{16, 13}, FSize{19, 4});
 
   // Create checkbox buttons
-  finalcut::FCheckBox check1 {"Save data", &checkButtonGroup};
-  finalcut::FCheckBox check2 {"Encrypt data", &checkButtonGroup};
+  finalcut::FCheckBox check1 {"Save data", &checkbutton_group};
+  finalcut::FCheckBox check2 {"Encrypt data", &checkbutton_group};
   check1.setGeometry (FPoint{1, 1}, FSize{13, 1});
   check2.setGeometry (FPoint{1, 2}, FSize{16, 1});
   check2.setDisable();
