@@ -48,7 +48,7 @@ namespace finalcut
 {
 
 //----------------------------------------------------------------------
-// struct FDataAccess
+// class FDataAccess
 //----------------------------------------------------------------------
 
 template <typename T>
@@ -86,7 +86,7 @@ class FDataAccess
 
 
 //----------------------------------------------------------------------
-// struct FData
+// class FData
 //----------------------------------------------------------------------
 
 template <typename T>
@@ -101,6 +101,10 @@ class FData : public FDataAccess
     explicit FData (T&& v)  // constructor
       : value{std::move(v)}
       , value_ref{value}
+    { }
+
+    // Destructor
+    ~FData() override
     { }
 
     FData (const FData& d)  // Copy constructor
@@ -170,7 +174,7 @@ class FData : public FDataAccess
     // Inquiries
     bool isInitializedCopy()
     {
-      return bool(value);
+      return bool( &value == &value_ref );
     }
 
     bool isInitializedReference()

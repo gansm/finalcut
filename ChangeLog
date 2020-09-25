@@ -1,5 +1,6 @@
 2020-09-25  Markus Gans  <guru.mail@muenster.de>
 	* std::clog now streams everything to the FLogger object
+	* Added a unit test for the FData class
 
 2020-09-23  Markus Gans  <guru.mail@muenster.de>
 	* Bugfix: empty FString() + wchar_t
