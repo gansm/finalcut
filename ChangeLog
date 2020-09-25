@@ -1,3 +1,6 @@
+2020-09-26  Markus Gans  <guru.mail@muenster.de>
+	* FData improvements
+
 2020-09-25  Markus Gans  <guru.mail@muenster.de>
 	* std::clog now streams everything to the FLogger object
 	* Added a unit test for the FData class

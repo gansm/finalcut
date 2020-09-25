@@ -46,6 +46,12 @@ long int my_function2 (long int i)
   return 2 * i;
 }
 
+//----------------------------------------------------------------------
+long int my_function3 (long int i)
+{
+  return 3 * i;
+}
+
 
 //----------------------------------------------------------------------
 // class FDataTest
@@ -60,6 +66,10 @@ class FDataTest : public CPPUNIT_NS::TestFixture
   protected:
     void classNameTest();
     void fdataTest();
+    void copyConstructorTest();
+    void moveConstructorTest();
+    void copyAssignmentTest();
+    void moveAssignmentTest();
     void makeFDataTest();
 
   private:
@@ -69,6 +79,10 @@ class FDataTest : public CPPUNIT_NS::TestFixture
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (fdataTest);
+    CPPUNIT_TEST (copyConstructorTest);
+    CPPUNIT_TEST (moveConstructorTest);
+    CPPUNIT_TEST (copyAssignmentTest);
+    CPPUNIT_TEST (moveAssignmentTest);
     CPPUNIT_TEST (makeFDataTest);
 
     // End of test suite definition
@@ -116,7 +130,7 @@ void FDataTest::fdataTest()
 
   // int value
   int integer_value = 10;
-  auto data2 = finalcut::FData<int>(integer_value);
+  auto data2 = finalcut::FData<int>(std::ref(integer_value));
   CPPUNIT_ASSERT ( ! data2.isInitializedCopy() );
   CPPUNIT_ASSERT ( data2.isInitializedReference() );
   stream.clear();
@@ -204,10 +218,116 @@ void FDataTest::fdataTest()
 }
 
 //----------------------------------------------------------------------
+void FDataTest::copyConstructorTest()
+{
+  // value copy
+  auto data1 = finalcut::FData<int>(2);
+  CPPUNIT_ASSERT ( data1.isInitializedCopy() );
+  CPPUNIT_ASSERT ( data1.get() == 2 );
+  auto data2 = finalcut::FData<int>(data1);
+  CPPUNIT_ASSERT ( data2.isInitializedCopy() );
+  data1.get()++;
+  CPPUNIT_ASSERT ( data1.get() == 3 );
+  CPPUNIT_ASSERT ( data2.get() == 2 );
+
+  // reference copy
+  uInt n = 100;
+  auto data3 = finalcut::FData<uInt>(n);
+  CPPUNIT_ASSERT ( data3.isInitializedReference() );
+  CPPUNIT_ASSERT ( data3.get() == 100 );
+  auto data4 = finalcut::FData<uInt>(data3);
+  CPPUNIT_ASSERT ( data4.isInitializedReference() );
+  data3.get()--;
+  CPPUNIT_ASSERT ( data3.get() == 99 );
+  CPPUNIT_ASSERT ( data4.get() == 99 );
+}
+
+//----------------------------------------------------------------------
+void FDataTest::moveConstructorTest()
+{
+  // value copy
+  auto data1 = finalcut::FData<int>(-5);
+  CPPUNIT_ASSERT ( data1.isInitializedCopy() );
+  CPPUNIT_ASSERT ( data1.get() == -5 );
+  auto data2 = finalcut::FData<int>(std::move(data1));
+  CPPUNIT_ASSERT ( data2.isInitializedCopy() );
+  data1.get() += 10;
+  CPPUNIT_ASSERT ( data1.get() == 5 );
+  CPPUNIT_ASSERT ( data2.get() == -5 );
+
+  // reference copy
+  long int n = 0xfffffff;
+  auto data3 = finalcut::FData<long int>(n);
+  CPPUNIT_ASSERT ( data3.isInitializedReference() );
+  CPPUNIT_ASSERT ( data3.get() == 0xfffffff );
+  auto data4 = finalcut::FData<long int>(std::move(data3));
+  CPPUNIT_ASSERT ( data4.isInitializedReference() );
+  data3.get()++;
+  CPPUNIT_ASSERT ( data3.get() == 0x10000000 );
+  CPPUNIT_ASSERT ( data4.get() == 0x10000000 );
+}
+
+//----------------------------------------------------------------------
+void FDataTest::copyAssignmentTest()
+{
+  // value copy
+  auto data1 = finalcut::FData<char>(123);
+  CPPUNIT_ASSERT ( data1.isInitializedCopy() );
+  CPPUNIT_ASSERT ( data1.get() == 123 );
+  finalcut::FData<char> data2{0};
+  data2 = data1;
+  CPPUNIT_ASSERT ( data2.isInitializedCopy() );
+  data1.get() -= 100;
+  CPPUNIT_ASSERT ( data1.get() == 23 );
+  CPPUNIT_ASSERT ( data2.get() == 123 );
+
+  // reference copy
+  double c = 299792458.0;  // Speed of light
+  auto data3 = finalcut::FData<double>(c);
+  CPPUNIT_ASSERT ( data3.isInitializedReference() );
+  CPPUNIT_ASSERT ( data3.get() == 299792458 );
+  finalcut::FData<double> data4{0.0};
+  data4 = data3;
+  CPPUNIT_ASSERT ( data4.isInitializedReference() );
+  data4.get() -= 343.2;  // Speed of sound
+
+  CPPUNIT_ASSERT ( data3.get() == 299792114.8 );
+  CPPUNIT_ASSERT ( data4.get() == 299792114.8 );
+}
+
+//----------------------------------------------------------------------
+void FDataTest::moveAssignmentTest()
+{
+  // value copy
+  auto data1 = finalcut::FData<float>(9.81F);
+  CPPUNIT_ASSERT ( data1.isInitializedCopy() );
+  CPPUNIT_ASSERT ( data1.get() == 9.81F );
+  finalcut::FData<float> data2{0};
+  data2 = std::move(data1);
+  CPPUNIT_ASSERT ( data2.isInitializedCopy() );
+  data1.get() -= 0.81;
+  CPPUNIT_ASSERT ( data1.get() == 9.0F );
+  CPPUNIT_ASSERT ( data2.get() == 9.81F );
+
+  // reference copy
+  auto au = 149597870700LL;  // Astronomical unit
+  auto data3 = finalcut::FData<long long int>(au);
+  CPPUNIT_ASSERT ( data3.isInitializedReference() );
+  CPPUNIT_ASSERT ( data3.get() == 149597870700LL );
+  finalcut::FData<long long int> data4{0};
+  data4 = std::move(data3);
+  CPPUNIT_ASSERT ( data4.isInitializedReference() );
+  data4.get() /= 2LL;
+  CPPUNIT_ASSERT ( data3.get() == 74798935350LL );
+  CPPUNIT_ASSERT ( data4.get() == 74798935350LL );
+}
+
+//----------------------------------------------------------------------
 void FDataTest::makeFDataTest()
 {
   finalcut::FDataAccess* data_pointer{nullptr};
 
+  // Array
   using ThreeInts = int[3];
   ThreeInts int_array{2, 1, 4};
   data_pointer = finalcut::makeFData(std::move(int_array));
@@ -215,10 +335,12 @@ void FDataTest::makeFDataTest()
   CPPUNIT_ASSERT ( ints[0] == 2 );
   CPPUNIT_ASSERT ( ints[1] == 1 );
   CPPUNIT_ASSERT ( ints[2] == 4 );
+  delete data_pointer;
 
+  // Integer
   int n = 9;
   data_pointer = finalcut::makeFData(std::move(n));
-  auto data = static_cast<finalcut::FData<int>&&>(*data_pointer);
+  auto& data = static_cast<finalcut::FData<int>&>(*data_pointer);
   CPPUNIT_ASSERT ( data.isInitializedCopy() );
   CPPUNIT_ASSERT ( ! data.isInitializedReference() );
   auto& n2 = data.get();
@@ -226,10 +348,18 @@ void FDataTest::makeFDataTest()
   n2++;
   CPPUNIT_ASSERT ( n2 == 10 );
   CPPUNIT_ASSERT ( data() == 10 );
+  CPPUNIT_ASSERT ( data_pointer->get<int>() == 10 );
+  //data_pointer->set<int>(33);
+  //CPPUNIT_ASSERT ( data_pointer->get<int>() == 33 );
+  delete data_pointer;
 
-  data_pointer = finalcut::makeFData(std::move(my_function2));
+  // Function
+  data_pointer = finalcut::makeFData(my_function2);
   const auto& func = static_cast<finalcut::FData<finalcut::clean_fdata_t<long int (*) (long int)>>&>(*data_pointer).get();
   CPPUNIT_ASSERT ( func(128) == 256 );
+  //data_pointer->set<long int (*) (long int)>(&my_function3);
+  //PUNIT_ASSERT ( func(128) == 384 );
+  delete data_pointer;
 }
 
 // Put the test suite in the registry
