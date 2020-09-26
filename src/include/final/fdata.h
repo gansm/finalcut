@@ -138,7 +138,7 @@ class FDataAccess
     // Mutator
     template <typename T
             , typename V>
-    void set (V& data)
+    void set (V&& data)
     {
       static_cast<FData<T>&>(*this).set(std::forward<V>(data));
     }

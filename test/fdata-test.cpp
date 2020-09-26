@@ -349,16 +349,16 @@ void FDataTest::makeFDataTest()
   CPPUNIT_ASSERT ( n2 == 10 );
   CPPUNIT_ASSERT ( data() == 10 );
   CPPUNIT_ASSERT ( data_pointer->get<int>() == 10 );
-  //data_pointer->set<int>(33);
-  //CPPUNIT_ASSERT ( data_pointer->get<int>() == 33 );
+  data_pointer->set<int>(33);
+  CPPUNIT_ASSERT ( data_pointer->get<int>() == 33 );
   delete data_pointer;
 
   // Function
   data_pointer = finalcut::makeFData(my_function2);
   const auto& func = static_cast<finalcut::FData<finalcut::clean_fdata_t<long int (*) (long int)>>&>(*data_pointer).get();
   CPPUNIT_ASSERT ( func(128) == 256 );
-  //data_pointer->set<long int (*) (long int)>(&my_function3);
-  //PUNIT_ASSERT ( func(128) == 384 );
+  data_pointer->set<long int (*) (long int)>(&my_function3);
+  CPPUNIT_ASSERT ( func(128) == 384 );
   delete data_pointer;
 }
 
