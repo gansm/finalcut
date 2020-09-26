@@ -376,38 +376,57 @@ void FObjectTest::addTest()
 {
   // obj -> child
 
-  auto obj =  new finalcut::FObject();
+  auto obj1 =  new finalcut::FObject();
   auto child = new finalcut::FObject();
 
-  CPPUNIT_ASSERT ( ! obj->hasChildren() );
-  CPPUNIT_ASSERT ( obj->numOfChildren() == 0 );
-  CPPUNIT_ASSERT ( ! obj->isChild(child) );
+  CPPUNIT_ASSERT ( ! obj1->hasChildren() );
+  CPPUNIT_ASSERT ( obj1->numOfChildren() == 0 );
+  CPPUNIT_ASSERT ( ! obj1->isChild(child) );
 
   CPPUNIT_ASSERT ( ! child->hasParent() );
-  CPPUNIT_ASSERT ( child->getParent() != obj );
+  CPPUNIT_ASSERT ( child->getParent() != obj1 );
 
-  obj->addChild(child);
-  CPPUNIT_ASSERT ( obj->hasChildren() );
-  CPPUNIT_ASSERT ( obj->numOfChildren() == 1 );
-  CPPUNIT_ASSERT ( obj->isChild(child) );
+  obj1->addChild(child);
+  CPPUNIT_ASSERT ( obj1->hasChildren() );
+  CPPUNIT_ASSERT ( obj1->numOfChildren() == 1 );
+  CPPUNIT_ASSERT ( obj1->isChild(child) );
 
   CPPUNIT_ASSERT ( child->hasParent() );
-  CPPUNIT_ASSERT ( child->getParent() == obj );
+  CPPUNIT_ASSERT ( child->getParent() == obj1 );
 
   // Switch of the parent by a second addChild
   auto obj2 = new finalcut::FObject();
   obj2->addChild(child);
   CPPUNIT_ASSERT ( child->hasParent() );
-  CPPUNIT_ASSERT ( ! obj->hasChildren() );
-  CPPUNIT_ASSERT ( obj->numOfChildren() == 0 );
-  CPPUNIT_ASSERT ( ! obj->isChild(child) );
-  CPPUNIT_ASSERT ( child->getParent() != obj );
+  CPPUNIT_ASSERT ( ! obj1->hasChildren() );
+  CPPUNIT_ASSERT ( obj1->numOfChildren() == 0 );
+  CPPUNIT_ASSERT ( ! obj1->isChild(child) );
+  CPPUNIT_ASSERT ( child->getParent() != obj1 );
   CPPUNIT_ASSERT ( obj2->hasChildren() );
   CPPUNIT_ASSERT ( obj2->numOfChildren() == 1 );
   CPPUNIT_ASSERT ( obj2->isChild(child) );
   CPPUNIT_ASSERT ( child->getParent() == obj2 );
 
-  delete obj;  // also deletes the child object
+  // Are the maximum number of child objects reached?
+  CPPUNIT_ASSERT ( obj2->getMaxChildren() == finalcut::FObject::UNLIMITED );
+  obj2->setMaxChildren(1);
+  CPPUNIT_ASSERT ( obj2->hasChildren() );
+  CPPUNIT_ASSERT ( obj2->getMaxChildren() == 1 );
+  CPPUNIT_ASSERT ( obj2->numOfChildren() == 1 );
+  auto child2 = new finalcut::FObject();
+  CPPUNIT_ASSERT ( ! child2->hasParent() );
+  CPPUNIT_ASSERT_THROW ( obj2->addChild(child2), std::length_error );
+  CPPUNIT_ASSERT ( obj2->numOfChildren() == 1 );
+  obj2->setMaxChildren(2);
+  CPPUNIT_ASSERT ( ! child2->hasParent() );
+  CPPUNIT_ASSERT ( obj2->getMaxChildren() == 2 );
+  obj2->addChild(child2);
+  CPPUNIT_ASSERT ( child2->hasParent() );
+  CPPUNIT_ASSERT ( obj2->hasChildren() );
+  CPPUNIT_ASSERT ( obj2->numOfChildren() == 2 );
+
+  delete obj1;
+  delete obj2;  // also deletes the child object
 }
 
 //----------------------------------------------------------------------
@@ -456,7 +475,7 @@ void FObjectTest::iteratorTest()
   finalcut::FObject::const_iterator c_iter, c_last;
   c_iter = obj->begin();
   c_last = obj->end();
-  int i = 0;
+  std::size_t i = 0;
 
   while ( c_iter != c_last )
   {

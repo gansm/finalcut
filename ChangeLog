@@ -1,5 +1,8 @@
 2020-09-26  Markus Gans  <guru.mail@muenster.de>
 	* FData improvements
+	* The number of FObject children can now be limited with 
+	  setMaxChildren()
+	* FApplication can now have no more than one child widget
 
 2020-09-25  Markus Gans  <guru.mail@muenster.de>
 	* std::clog now streams everything to the FLogger object

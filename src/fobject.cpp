@@ -48,7 +48,6 @@ FObject::FObject (FObject* parent)
   if ( parent )                // add object to parent
   {
     parent->addChild(this);
-    has_parent = true;
   }
   else
   {
@@ -107,7 +106,7 @@ FObject* FObject::getChild (int index) const
   if ( ! hasChildren() )
     return nullptr;
 
-  if ( index <= 0 || index > numOfChildren() )
+  if ( index <= 0 || index > int(numOfChildren()) )
     return nullptr;
 
   auto iter = begin();
@@ -147,6 +146,9 @@ void FObject::addChild (FObject* obj)
 
   if ( ! obj )
     return;
+
+  if ( max_children != UNLIMITED && max_children <= numOfChildren() )
+    throw std::length_error ("max. child objects reached");
 
   if ( obj->parent_obj )
     obj->parent_obj->delChild(obj);

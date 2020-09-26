@@ -388,6 +388,9 @@ void FApplication::processExternalUserEvent()
 //----------------------------------------------------------------------
 void FApplication::init()
 {
+  // FApplication cannot have a second child widget
+  setMaxChildren(1);
+
   // Initialize the last event time
   time_last_event.tv_sec = 0;
   time_last_event.tv_usec = 0;
