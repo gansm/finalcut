@@ -1,3 +1,7 @@
+2020-09-27  Markus Gans  <guru.mail@muenster.de>
+	* An explanation of the widget tree was added to the document 
+	  of the first steps
+
 2020-09-26  Markus Gans  <guru.mail@muenster.de>
 	* FData improvements
 	* The number of FObject children can now be limited with 

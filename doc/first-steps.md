@@ -7,6 +7,8 @@ Table of Contents
 
 <!-- TOC -->
 - [Basic functions](#basic-functions)
+- [Widgets](#widgets)
+- [Widget tree](#widget-tree)
 - [How to use the library](#how-to-use-the-library)
 - [Memory Management](#memory-management)
 - [Event Processing](#event-processing)
@@ -55,6 +57,48 @@ emulator. It uses various optimization methods to improve the drawing speed.
 </figure>
 
 
+Widgets
+-------
+
+FINAL CUT has many widgets. It offers buttons, input fields, menus, and 
+dialog boxes that cover the most common use cases. Widgets are visual 
+elements that are combined to create user interfaces. Own widgets can be 
+easily created by creating a derived class of `FWidget` or other existing 
+widgets. All widgets are instances of 
+[FWidget](https://codedocs.xyz/gansm/finalcut/classfinalcut_1_1FWidget.html) 
+or its subclasses.
+
+A widget can contain any number of child widgets. Child widgets are displayed 
+in the display area of the parent widget. Window widgets based on `FWindow` 
+have their own virtual display area and are independent of the parent widget.
+
+When a parent widget is disabled, hidden, or deleted, the same operation is 
+used recursively to all its child widgets. The base class `FObject` implements 
+the self-organized object tree behavior. For example, `addChild()` removes 
+the child ownership from an existing parent object before assigning it to 
+the new target. When a child becomes deleted, the parent-child relationship 
+causes its reference in the parent object to be removed. An explicit 
+`delChild()` is no longer required here.
+
+
+Widget tree
+-----------
+
+An `FApplication` widget is the top-level widget of an application. It is 
+unique and can not have a parent widget. The class `FApplication` manages 
+all settings and assigns keyboard and mouse input to the different widgets.
+
+<figure class="image">
+  <img src="final-cut-widget tree.svg" alt="application structure">
+  <figcaption>Figure 2.  Widget tree of a FINAL CUT application</figcaption>
+</figure>
+
+The main widget of a FINAL CUT application is the only object that 
+`FApplication` can have as a child. This main widget is usually a window 
+object that contains all sub-widgets of the application. A sub-widget can 
+also be another window.
+
+
 How to use the library
 ----------------------
 
@@ -82,7 +126,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_dialog.cpp.png" alt="dialog.cpp">
-  <figcaption>Figure 2.  A blank dialog</figcaption>
+  <figcaption>Figure 3.  A blank dialog</figcaption>
 </figure>
 <br /><br />
 
@@ -229,7 +273,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_memory.cpp.png" alt="memory.cpp">
-  <figcaption>Figure 3.  FObject manages its child objects</figcaption>
+  <figcaption>Figure 4.  FObject manages its child objects</figcaption>
 </figure>
 <br /><br />
 
@@ -369,7 +413,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_timer.cpp.png" alt="timer.cpp">
-  <figcaption>Figure 4.  FObject::onTimer event handler</figcaption>
+  <figcaption>Figure 5.  FObject::onTimer event handler</figcaption>
 </figure>
 <br /><br />
 
@@ -482,7 +526,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_user-event.cpp.png" alt="user-event.cpp">
-  <figcaption>Figure 5.  User event generation</figcaption>
+  <figcaption>Figure 6.  User event generation</figcaption>
 </figure>
 <br /><br />
 
@@ -753,7 +797,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_callback-function.cpp.png" alt="callback-function.cpp">
-  <figcaption>Figure 6.  Button with a callback function</figcaption>
+  <figcaption>Figure 7.  Button with a callback function</figcaption>
 </figure>
 <br /><br />
 
@@ -816,7 +860,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_callback-lambda.cpp.png" alt="callback-lambda.cpp">
-  <figcaption>Figure 7.  Button with lambda expression callback.</figcaption>
+  <figcaption>Figure 8.  Button with lambda expression callback.</figcaption>
 </figure>
 <br /><br />
 
@@ -875,7 +919,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_callback-method.cpp.png" alt="callback-method.cpp">
-  <figcaption>Figure 8.  Button with a callback method</figcaption>
+  <figcaption>Figure 9.  Button with a callback method</figcaption>
 </figure>
 <br /><br />
 
@@ -996,7 +1040,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_emit-signal.cpp.png" alt="emit-signal.cpp">
-  <figcaption>Figure 9.  Callbacks with custom signals</figcaption>
+  <figcaption>Figure 10.  Callbacks with custom signals</figcaption>
 </figure>
 <br /><br />
 
@@ -1037,7 +1081,7 @@ If you want to ignore padding spaces, you must force this with the
 
 <figure class="image">
   <img src="widget-coordinates.svg" alt="widget coordinates">
-  <figcaption>Figure 10.  Widget coordinates</figcaption>
+  <figcaption>Figure 11.  Widget coordinates</figcaption>
 </figure>
 <br /><br />
 
@@ -1087,7 +1131,7 @@ methods.
 
 <figure class="image">
   <img src="widget-lengths.svg" alt="widget lengths">
-  <figcaption>Figure 11.  Width and height of a widget</figcaption>
+  <figcaption>Figure 12.  Width and height of a widget</figcaption>
 </figure>
 <br /><br />
 
@@ -1140,7 +1184,7 @@ absolute geometry values as a `FRect` object, you can call the method
 
 <figure class="image">
   <img src="widget-geometry.svg" alt="widget geometry">
-  <figcaption>Figure 12.  Geometry of widgets</figcaption>
+  <figcaption>Figure 13.  Geometry of widgets</figcaption>
 </figure>
 <br /><br />
 
@@ -1267,7 +1311,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_size-adjustment.cpp.png" alt="size-adjustment.cpp">
-  <figcaption>Figure 13.  Dynamic layout</figcaption>
+  <figcaption>Figure 14.  Dynamic layout</figcaption>
 </figure>
 <br /><br />
 
@@ -1395,7 +1439,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_scrollview.cpp.png" alt="scrollview.cpp">
-  <figcaption>Figure 14.  Dialog with a scrolling viewport</figcaption>
+  <figcaption>Figure 15.  Dialog with a scrolling viewport</figcaption>
 </figure>
 <br /><br />
 
