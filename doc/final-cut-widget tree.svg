@@ -5,11 +5,39 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="svg61"
    version="1.1"
-   width="189.15524mm"
-   viewBox="0 0 189.15524 79.081643"
-   height="79.081642mm">
+   width="149.86537mm"
+   viewBox="0 0 149.86537 65.484895"
+   height="65.484894mm"
+   sodipodi:docname="final-cut-widget tree.svg"
+   inkscape:version="0.92.1 r15371">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="3840"
+     inkscape:window-height="1984"
+     id="namedview67"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="4.5793919"
+     inkscape:cx="296"
+     inkscape:cy="123.75099"
+     inkscape:window-x="0"
+     inkscape:window-y="55"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg61" />
   <metadata
      id="metadata67">
     <rdf:RDF>
@@ -34,7 +62,8 @@
          transform="matrix(-0.4,0,0,-0.4,-4,0)"
          style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
          d="M 0,0 5,-5 -12.5,0 5,5 Z"
-         id="path4659" />
+         id="path4659"
+         inkscape:connector-curvature="0" />
     </marker>
     <marker
        style="overflow:visible"
@@ -46,7 +75,8 @@
          transform="matrix(-1.1,0,0,-1.1,-1.1,0)"
          d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
          style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
-         id="path4671" />
+         id="path4671"
+         inkscape:connector-curvature="0" />
     </marker>
     <marker
        style="overflow:visible"
@@ -58,7 +88,8 @@
          transform="matrix(0.8,0,0,0.8,10,0)"
          style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
          d="M 0,0 5,-5 -12.5,0 5,5 Z"
-         id="path4650" />
+         id="path4650"
+         inkscape:connector-curvature="0" />
     </marker>
     <marker
        style="overflow:visible"
@@ -70,7 +101,8 @@
          transform="matrix(-0.4,0,0,-0.4,-4,0)"
          style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
          d="M 0,0 5,-5 -12.5,0 5,5 Z"
-         id="path4659-6" />
+         id="path4659-6"
+         inkscape:connector-curvature="0" />
     </marker>
     <marker
        style="overflow:visible"
@@ -82,7 +114,8 @@
          transform="matrix(-0.4,0,0,-0.4,-4,0)"
          style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
          d="M 0,0 5,-5 -12.5,0 5,5 Z"
-         id="path4659-6-0" />
+         id="path4659-6-0"
+         inkscape:connector-curvature="0" />
     </marker>
     <marker
        style="overflow:visible"
@@ -94,7 +127,8 @@
          transform="matrix(-0.4,0,0,-0.4,-4,0)"
          style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
          d="M 0,0 5,-5 -12.5,0 5,5 Z"
-         id="path4659-6-0-3" />
+         id="path4659-6-0-3"
+         inkscape:connector-curvature="0" />
     </marker>
     <marker
        style="overflow:visible"
@@ -106,7 +140,8 @@
          transform="matrix(-0.4,0,0,-0.4,-4,0)"
          style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
          d="M 0,0 5,-5 -12.5,0 5,5 Z"
-         id="path4659-6-0-3-2" />
+         id="path4659-6-0-3-2"
+         inkscape:connector-curvature="0" />
     </marker>
   </defs>
   <linearGradient
@@ -128,233 +163,251 @@
   </linearGradient>
   <g
      id="g59"
-     transform="translate(22.717556,-254.08671)">
+     transform="matrix(0.82806766,0,0,0.82760652,18.811674,-210.24741)"
+     style="stroke-width:1.20796716">
     <rect
        y="254.29825"
        x="7.8681464"
        height="10.661442"
        width="57.783382"
        id="rect4522"
-       style="opacity:1;fill:#f9f9f9;fill-opacity:1;stroke:#000000;stroke-width:0.42306876;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
+       style="opacity:1;fill:#f9f9f9;fill-opacity:1;stroke:#000000;stroke-width:0.5110532;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
     <text
        id="text47"
        y="261.55215"
        x="37.113487"
-       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.42300001;stroke-opacity:0">
+       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.51097012;stroke-opacity:0">
       <tspan
          y="261.55215"
          x="37.113487"
-         id="tspan4512">FApplication</tspan>
+         id="tspan4512"
+         style="stroke-width:0.51097012">FApplication</tspan>
     </text>
   </g>
   <g
-     transform="translate(30.374168,-0.28964391)"
-     id="g4560">
+     transform="matrix(0.82806766,0,0,0.82760652,25.151866,-0.20330766)"
+     id="g4560"
+     style="stroke-width:1.20796716">
     <rect
        y="19.022009"
        x="15.875"
        height="10.661442"
        width="26.458334"
        id="rect4522-3"
-       style="opacity:1;fill:#f9f9f9;fill-opacity:1;stroke:#000000;stroke-width:0.4230687;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
+       style="opacity:1;fill:#f9f9f9;fill-opacity:1;stroke:#000000;stroke-width:0.51105309;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
     <text
        id="text47-6"
        y="26.275915"
        x="29.24534"
-       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.42300001;stroke-opacity:0">
+       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.51097012;stroke-opacity:0">
       <tspan
          id="tspan4555"
          x="29.24534"
-         y="26.275915">FDialog</tspan>
+         y="26.275915"
+         style="stroke-width:0.51097012">FDialog</tspan>
     </text>
   </g>
   <g
      id="g4560-9"
-     transform="translate(46.035751,18.23119)">
+     transform="matrix(0.82806766,0,0,0.82760652,38.120716,15.124655)"
+     style="stroke-width:1.20796716">
     <rect
        y="19.022009"
        x="15.875"
        height="10.661442"
        width="26.458334"
        id="rect4522-3-7"
-       style="opacity:1;fill:#f9f9f9;fill-opacity:1;stroke:#000000;stroke-width:0.4230687;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
+       style="opacity:1;fill:#f9f9f9;fill-opacity:1;stroke:#000000;stroke-width:0.51105309;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
     <text
        id="text47-6-3"
        y="26.275915"
        x="29.24534"
-       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.42300001;stroke-opacity:0">
+       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.51097012;stroke-opacity:0">
       <tspan
          id="tspan4555-5"
          x="29.24534"
-         y="26.275915">FDialog</tspan>
+         y="26.275915"
+         style="stroke-width:0.51097012">FDialog</tspan>
     </text>
   </g>
   <g
      id="g4560-9-0"
-     transform="translate(14.499168,18.23119)">
+     transform="matrix(0.82806766,0,0,0.82760652,12.006292,15.124655)"
+     style="stroke-width:1.20796716">
     <rect
        y="19.022009"
        x="15.875"
        height="10.661442"
        width="26.458334"
        id="rect4522-3-7-9"
-       style="opacity:1;fill:#f9f9f9;fill-opacity:1;stroke:#000000;stroke-width:0.4230687;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
+       style="opacity:1;fill:#f9f9f9;fill-opacity:1;stroke:#000000;stroke-width:0.51105309;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
     <text
        id="text47-6-3-8"
        y="26.275915"
        x="29.24534"
-       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.42300001;stroke-opacity:0">
+       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.51097012;stroke-opacity:0">
       <tspan
          y="26.275915"
          x="29.24534"
-         id="tspan4610">FLabel</tspan>
+         id="tspan4610"
+         style="stroke-width:0.51097012">FLabel</tspan>
     </text>
   </g>
   <g
-     transform="translate(30.374168,-0.28964391)"
-     id="g6273">
+     transform="matrix(0.82806766,0,0,0.82760652,25.151866,-0.20330766)"
+     id="g6273"
+     style="stroke-width:1.20796716">
     <rect
        y="56.063679"
        x="31.75"
        height="10.661442"
        width="26.458334"
        id="rect4522-3-7-8"
-       style="opacity:1;fill:#f9f9f9;fill-opacity:1;stroke:#000000;stroke-width:0.4230687;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
+       style="opacity:1;fill:#f9f9f9;fill-opacity:1;stroke:#000000;stroke-width:0.51105309;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
     <text
        id="text47-6-3-6"
        y="63.317585"
        x="45.120338"
-       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.42300001;stroke-opacity:0">
+       style="font-weight:bold;font-size:4.93888903px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.51097012;stroke-opacity:0">
       <tspan
          id="tspan4555-5-2"
          x="45.120338"
-         y="63.317585">FButton</tspan>
+         y="63.317585"
+         style="stroke-width:0.51097012">FButton</tspan>
     </text>
   </g>
   <text
-     style="font-style:italic;font-weight:bold;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.42300001;stroke-opacity:0"
-     x="75.241615"
-     y="78.968048"
-     id="text47-6-3-6-5">
+     style="font-style:italic;font-weight:bold;font-size:4.08859491px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.42300001;stroke-opacity:0"
+     x="62.287796"
+     y="65.409096"
+     id="text47-6-3-6-5"
+     transform="scale(1.0002786,0.99972148)">
     <tspan
        style="stroke-width:0.42300001"
-       y="78.968048"
-       x="75.241615"
+       y="65.409096"
+       x="62.287796"
        id="tspan4555-5-2-2">etc.</tspan>
   </text>
   <path
      id="path4648"
-     d="m 59.477394,11.08451 v 6.992555"
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.42306876;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Mend)" />
+     d="M 49.251306,9.2100164 V 14.9971"
+     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.42306879;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Mend)"
+     inkscape:connector-curvature="0" />
   <path
      id="path4648-0"
-     d="m 51.540836,29.605341 v 6.983024"
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.42306873;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Mend-9)" />
+     d="m 42.679299,24.537976 v 5.779196"
+     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.42306873;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Mend-9)"
+     inkscape:connector-curvature="0" />
   <path
      id="path4648-0-0"
-     d="M 67.309127,29.605246 V 36.58827"
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.4230687;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Mend-9-7)" />
+     d="m 55.736511,24.537898 v 5.779196"
+     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.42306867;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Mend-9-7)"
+     inkscape:connector-curvature="0" />
   <path
      id="path4648-0-0-7"
-     d="m 75.31979,48.126173 v 6.704683"
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.42306867;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Mend-9-7-1)" />
+     d="m 62.369882,39.865938 v 5.548839"
+     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.42306867;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Mend-9-7-1)"
+     inkscape:connector-curvature="0" />
   <path
      id="path4648-0-0-7-6"
-     d="M 75.31979,66.647017 V 73.3517"
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.42306867;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Mend-9-7-1-7)" />
+     d="m 62.369882,55.193909 v 5.548839"
+     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.42306867;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Mend-9-7-1-7)"
+     inkscape:connector-curvature="0" />
   <g
-     transform="translate(30.374168,-0.28964391)"
-     id="level">
+     transform="matrix(0.82806766,0,0,0.82760652,25.151866,-0.20330766)"
+     id="level"
+     style="stroke-width:1.20796716">
     <text
-       style="font-weight:bold;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.42300001;stroke-opacity:0"
-       x="-22.323967"
+       style="font-weight:normal;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.51097012;stroke-opacity:0"
+       x="-23.01368"
        y="8.7182531"
        id="text47-7">
       <tspan
-         style="stroke-width:0.42300001"
+         style="stroke-width:0.51097012"
          id="tspan4512-1"
-         x="-22.323967"
+         x="-23.01368"
          y="8.7182531">Parent:</tspan>
     </text>
     <text
-       style="font-weight:bold;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.42300001;stroke-opacity:0"
-       x="-23.795216"
+       style="font-weight:normal;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.51097012;stroke-opacity:0"
+       x="-24.412582"
        y="27.239086"
        id="text47-7-2">
       <tspan
-         style="stroke-width:0.42300001"
+         style="stroke-width:0.51097012"
          id="tspan4512-1-2"
-         x="-23.795216"
+         x="-24.412582"
          y="27.239086">Child:</tspan>
     </text>
     <text
-       style="font-weight:bold;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.42300001;stroke-opacity:0"
-       x="-19.464041"
+       style="font-weight:normal;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.51097012;stroke-opacity:0"
+       x="-20.59841"
        y="44.796837"
        id="text47-7-0">
       <tspan
-         style="stroke-width:0.42300001"
+         style="stroke-width:0.51097012"
          id="tspan4512-1-21"
-         x="-19.464041"
+         x="-20.59841"
          y="44.796837">Subchild:</tspan>
     </text>
     <text
-       style="font-weight:bold;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.42300001;stroke-opacity:0"
-       x="-14.216478"
+       style="font-weight:normal;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.51097012;stroke-opacity:0"
+       x="-15.852447"
        y="63.317669"
        id="text47-7-7">
       <tspan
-         style="stroke-width:0.42300001"
+         style="stroke-width:0.51097012"
          id="tspan4512-1-5"
-         x="-14.216478"
+         x="-15.852447"
          y="63.317669">Sub-subchild:</tspan>
     </text>
   </g>
   <g
      id="level-7"
-     transform="translate(130.08273,-0.28964391)">
+     transform="matrix(0.82806766,0,0,0.82760652,107.7173,-0.20330766)"
+     style="stroke-width:1.20796716">
     <text
-       style="font-weight:bold;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.42300001;stroke-opacity:0"
-       x="-2.4976854"
+       style="font-weight:normal;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.51097012;stroke-opacity:0"
+       x="-5.0207996"
        y="8.7182531"
        id="text47-7-4">
       <tspan
-         style="stroke-width:0.42300001"
+         style="stroke-width:0.51097012"
          id="tspan4512-1-1"
-         x="-2.4976861"
+         x="-5.0208001"
          y="8.7182531">Application widget (= 1)</tspan>
     </text>
     <text
-       style="font-weight:bold;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.42300001;stroke-opacity:0"
-       x="-10.570067"
+       style="font-weight:normal;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.51097012;stroke-opacity:0"
+       x="-12.021867"
        y="27.239086"
        id="text47-7-2-7">
       <tspan
-         style="stroke-width:0.42300001"
+         style="stroke-width:0.51097012"
          id="tspan4512-1-2-1"
-         x="-10.570068"
+         x="-12.021868"
          y="27.239086">Main widget (= 1)</tspan>
     </text>
     <text
-       style="font-weight:bold;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.42300001;stroke-opacity:0"
-       x="9.3612423"
+       style="font-weight:normal;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.51097012;stroke-opacity:0"
+       x="5.9180651"
        y="44.796837"
        id="text47-7-0-1">
       <tspan
-         style="stroke-width:0.42300001"
+         style="stroke-width:0.51097012"
          id="tspan4512-1-21-1"
-         x="9.3612432"
+         x="5.918066"
          y="44.796837">Widget(s) of the main widget (≥ 0)</tspan>
     </text>
     <text
-       style="font-weight:bold;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.42300001;stroke-opacity:0"
-       x="14.415886"
+       style="font-weight:normal;font-size:4.93888855px;font-family:FreeSans, Arial, 'Bitstream Vera Sans', 'DejaVu Sans', 'Open Sans', sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:left;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#1a1a1a;stroke-width:0.51097012;stroke-opacity:0"
+       x="10.413227"
        y="63.317669"
        id="text47-7-7-7">
       <tspan
-         style="stroke-width:0.42300001"
+         style="stroke-width:0.51097012"
          id="tspan4512-1-5-0"
-         x="14.415885"
+         x="10.413226"
          y="63.317669">Widget(s) from the parent widget (≥ 0)</tspan>
     </text>
   </g>

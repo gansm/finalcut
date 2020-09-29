@@ -337,26 +337,6 @@ inline void FOptiAttr::setDefaultColorSupport()
 inline void FOptiAttr::unsetDefaultColorSupport()
 { ansi_default_color = false; }
 
-
-// FChar operator functions
-//----------------------------------------------------------------------
-inline bool operator == ( const FChar& lhs,
-                          const FChar& rhs )
-{
-  return lhs.ch           == rhs.ch
-      && lhs.fg_color     == rhs.fg_color
-      && lhs.bg_color     == rhs.bg_color
-      && lhs.attr.byte[0] == rhs.attr.byte[0]
-      && lhs.attr.byte[1] == rhs.attr.byte[1]
-      && lhs.attr.bit.fullwidth_padding \
-                          == rhs.attr.bit.fullwidth_padding;
-}
-
-//----------------------------------------------------------------------
-inline bool operator != ( const FChar& lhs,
-                          const FChar& rhs )
-{ return ! ( lhs == rhs ); }
-
 }  // namespace finalcut
 
 #endif  // FOPTIATTR_H
