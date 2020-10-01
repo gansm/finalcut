@@ -59,6 +59,8 @@ jobs:
     #    uses a compiled language
 
     - run: |
+       apt-get update
+       apt-get install autoconf-archive
        autoreconf -v --install --force
        ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -pedantic"
        make V=1 -j10
