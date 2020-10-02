@@ -58,11 +58,17 @@ jobs:
     #    and modify them (or add more) to build your code if your project
     #    uses a compiled language
 
-    - run: |
-       apt-get install autoconf-archive
-       autoreconf -v --install --force
-       ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -pedantic"
-       make V=1 -j10
+    - name: Build dependencies
+      run: apt-get install autoconf-archive
+
+    - name: Create configure file
+      run: autoreconf -v --install --force
+      
+    - name: Create makefiles
+      run: ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -pedantic"
+
+    - name: Build
+      run: make V=1 -j10
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
