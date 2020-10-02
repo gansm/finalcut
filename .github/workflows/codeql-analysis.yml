@@ -59,7 +59,7 @@ jobs:
     #    uses a compiled language
 
     - name: Build dependencies
-      run: apt-get install autoconf-archive
+      run: sudo apt-get install autoconf-archive
 
     - name: Create configure file
       run: autoreconf -v --install --force
