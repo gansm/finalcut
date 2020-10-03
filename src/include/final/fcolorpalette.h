@@ -59,7 +59,7 @@ class FColorPalette
     virtual ~FColorPalette();
 
     // Accessor
-    virtual const FString getClassName() const;
+    virtual FString getClassName() const;
 
     // Methods
     virtual void setColorPalette() = 0;
@@ -76,7 +76,7 @@ class FColorPalette
 
 // FColorPalette inline functions
 //----------------------------------------------------------------------
-inline const FString FColorPalette::getClassName() const
+inline FString FColorPalette::getClassName() const
 { return "FColorPalette"; }
 
 
@@ -107,7 +107,7 @@ class default8ColorPalette final : public FColorPalette
     ~default8ColorPalette();
 
     // Accessor
-    const FString getClassName() const override;
+    FString getClassName() const override;
 
     // Methods
     void setColorPalette() override;
@@ -116,7 +116,7 @@ class default8ColorPalette final : public FColorPalette
 
 // default8ColorPalette inline functions
 //----------------------------------------------------------------------
-inline const FString default8ColorPalette::getClassName() const
+inline FString default8ColorPalette::getClassName() const
 { return "default8ColorPalette"; }
 
 
@@ -147,7 +147,7 @@ class default16ColorPalette final : public FColorPalette
     ~default16ColorPalette();
 
     // Accessor
-    const FString getClassName() const override;
+    FString getClassName() const override;
 
     // Methods
     void setColorPalette() override;
@@ -156,7 +156,7 @@ class default16ColorPalette final : public FColorPalette
 
 // default16ColorPalette inline functions
 //----------------------------------------------------------------------
-inline const FString default16ColorPalette::getClassName() const
+inline FString default16ColorPalette::getClassName() const
 { return "default16ColorPalette"; }
 
 /*  Inheritance diagram
@@ -186,7 +186,7 @@ class default16DarkColorPalette final : public FColorPalette
     ~default16DarkColorPalette();
 
     // Accessor
-    const FString getClassName() const override;
+    FString getClassName() const override;
 
     // Methods
     void setColorPalette() override;
@@ -195,7 +195,7 @@ class default16DarkColorPalette final : public FColorPalette
 
 // default16ColorPalette inline functions
 //----------------------------------------------------------------------
-inline const FString default16DarkColorPalette::getClassName() const
+inline FString default16DarkColorPalette::getClassName() const
 { return "default16DarkColorPalette"; }
 
 }  // namespace finalcut

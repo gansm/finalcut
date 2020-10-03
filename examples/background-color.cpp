@@ -38,9 +38,6 @@ using finalcut::FSize;
 class Background final : public finalcut::FDialog
 {
   public:
-    // Using-declaration
-    using FDialog::setGeometry;
-
     // Typedef
     typedef std::tuple<uChar, uChar, uChar>  RGB;
 

@@ -97,7 +97,7 @@ std::size_t getHotkeyPos (const FString& src, FString& dest)
   // Find hotkey position in string
   // + generate a new string without the '&'-sign
 
-  constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
+  constexpr auto NOT_SET = static_cast<std::size_t>(-1);
   std::size_t hotkeypos{NOT_SET};
   std::size_t i{0};
 

@@ -531,11 +531,11 @@ FColor FOptiAttr::vga2ansi (FColor color)
     color = 0;
   else if ( color < 16 )
   {
-    static const FColor lookup_table[] =
-    {
+    constexpr std::array<FColor, 16> lookup_table =
+    {{
       0,  4,  2,  6,  1,  5,  3,  7,
       8, 12, 10, 14,  9, 13, 11, 15
-    };
+    }};
 
     color = lookup_table[color];
   }

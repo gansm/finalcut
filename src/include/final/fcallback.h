@@ -147,7 +147,7 @@ class FCallback
     FCallback& operator = (const FCallback&) = delete;
 
     // Accessors
-    const FString getClassName() const;
+    FString getClassName() const;
     std::size_t getCallbackCount() const;
 
     // Methods
@@ -220,7 +220,7 @@ class FCallback
 
 // FCallback inline functions
 //----------------------------------------------------------------------
-inline const FString FCallback::getClassName() const
+inline FString FCallback::getClassName() const
 { return "FCallback"; }
 
 //----------------------------------------------------------------------

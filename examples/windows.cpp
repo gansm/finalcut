@@ -243,6 +243,8 @@ class Window final : public finalcut::FDialog
 Window::Window (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
+  setSize ({40, 6});
+
   // Menu bar item
   File.setStatusbarMessage ("File management commands");
 
@@ -349,6 +351,8 @@ void Window::activateWindow (finalcut::FDialog* win) const
 //----------------------------------------------------------------------
 void Window::adjustSize()
 {
+  finalcut::FDialog::adjustSize();
+
   const std::size_t w = getDesktopWidth();
   const std::size_t h = getDesktopHeight();
   const int X = int(1 + (w - 40) / 2);
@@ -375,8 +379,6 @@ void Window::adjustSize()
 
     ++iter;
   }
-
-  finalcut::FDialog::adjustSize();
 }
 
 //----------------------------------------------------------------------
@@ -574,8 +576,6 @@ int main (int argc, char* argv[])
   // Create main dialog object
   Window main_dlg {&app};
   main_dlg.setText ("Main window");
-  main_dlg.setGeometry ( FPoint{int(1 + (app.getWidth() - 40) / 2), 2}
-                       , FSize{40, 6} );
 
   // Set dialog main_dlg as main widget
   finalcut::FWidget::setMainWidget (&main_dlg);

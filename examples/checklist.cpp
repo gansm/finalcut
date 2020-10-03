@@ -58,6 +58,7 @@ class CheckList final : public finalcut::FDialog
   private:
     // Method
     void populate();
+    void adjustSize() override;
 
     // Event handlers
     void onKeyPress (finalcut::FKeyEvent*) override;
@@ -80,8 +81,7 @@ CheckList::CheckList (finalcut::FWidget* parent)
   //   (CERT, OOP50-CPP)
   FDialog::setText (L"Shopping list");
   const std::size_t nf_offset = ( finalcut::FTerm::isNewFont() ) ? 1 : 0;
-  FDialog::setGeometry ( FPoint{int(1 + (parent->getWidth() - 28) / 2), 5}
-                       , FSize{28 + nf_offset, 13} );
+  FDialog::setSize (FSize{28 + nf_offset, 13} );
   setShadow();
   listview.ignorePadding();
   listview.setGeometry ( FPoint{1 + int(nf_offset), 2}
@@ -121,27 +121,34 @@ CheckList::~CheckList()  // destructor
 //----------------------------------------------------------------------
 void CheckList::populate()
 {
-  const std::string list[][2] =
-  {
-    { "Milk", "Highest" },
-    { "Cheese", "High" },
-    { "Yoghurt", "Medium" },
-    { "Bread", "Low" },
-    { "Eggs", "High" },
-    { "Toothpaste", "Medium" },
-    { "Apples", "Lowest" },
-    { "Bananas", "Medium" },
-    { "Fish", "Medium" },
-    { "Lemons", "Low" }
-  };
+  constexpr std::array<std::array<const char*, 2>, 10> list =
+  {{
+    {{ "Milk", "Highest" }},
+    {{ "Cheese", "High" }},
+    {{ "Yoghurt", "Medium" }},
+    {{ "Bread", "Low" }},
+    {{ "Eggs", "High" }},
+    {{ "Toothpaste", "Medium" }},
+    {{ "Apples", "Lowest" }},
+    {{ "Bananas", "Medium" }},
+    {{ "Fish", "Medium" }},
+    {{ "Lemons", "Low" }}
+  }};
 
   for (const auto& line : list)
   {
-    const finalcut::FStringList string_line (&line[0], &line[0] + 2);
+    const finalcut::FStringList string_line (line.begin(), line.end());
     auto iter = listview.insert (string_line);
     auto item = static_cast<finalcut::FListViewItem*>(*iter);
     item->setCheckable(true);
   }
+}
+
+//----------------------------------------------------------------------
+void CheckList::adjustSize()
+{
+  finalcut::FDialog::adjustSize();
+  setPos(FPoint{int(1 + (getDesktopWidth() - getWidth()) / 2), 5});
 }
 
 //----------------------------------------------------------------------

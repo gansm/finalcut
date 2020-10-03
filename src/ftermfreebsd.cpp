@@ -171,9 +171,9 @@ void FTermFreeBSD::initCharMap()
   if ( ! isFreeBSDConsole() )
     return;
 
-  for (std::size_t i{0}; i <= fc::last_char_item; i++)
-    if ( fc::character[i][fc::PC] < 0x1c )
-      fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
+  for (auto&& entry : fc::character)
+    if ( entry[fc::PC] < 0x1c )
+      entry[fc::PC] = entry[fc::ASCII];
 }
 
 //----------------------------------------------------------------------

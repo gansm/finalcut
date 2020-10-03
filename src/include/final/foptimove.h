@@ -92,7 +92,7 @@ class FOptiMove final
     ~FOptiMove();
 
     // Accessors
-    const FString getClassName() const;
+    FString       getClassName() const;
     uInt          getCursorHomeLength() const;
     uInt          getCarriageReturnLength() const;
     uInt          getCursorToLLLength() const;
@@ -224,7 +224,7 @@ class FOptiMove final
 
 // FOptiMove inline functions
 //----------------------------------------------------------------------
-inline const FString FOptiMove::getClassName() const
+inline FString FOptiMove::getClassName() const
 { return "FOptiMove"; }
 
 //----------------------------------------------------------------------

@@ -87,7 +87,7 @@ class FStatusKey : public FWidget
     FStatusKey& operator = (const FStatusKey&) = delete;
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     virtual FKey        getKey() const;
     virtual FString     getText() const;
 
@@ -128,7 +128,7 @@ class FStatusKey : public FWidget
 
 // FStatusKey inline functions
 //----------------------------------------------------------------------
-inline const FString FStatusKey::getClassName() const
+inline FString FStatusKey::getClassName() const
 { return "FStatusKey"; }
 
 //----------------------------------------------------------------------
@@ -196,7 +196,7 @@ class FStatusBar : public FWindow
     FStatusBar& operator = (const FStatusBar&) = delete;
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     FStatusKey*         getStatusKey (int) const;
     FString             getMessage() const;
     std::size_t         getCount() const;
@@ -255,7 +255,7 @@ class FStatusBar : public FWindow
 
 // FStatusBar inline functions
 //----------------------------------------------------------------------
-inline const FString FStatusBar::getClassName() const
+inline FString FStatusBar::getClassName() const
 { return "FStatusBar"; }
 
 //----------------------------------------------------------------------

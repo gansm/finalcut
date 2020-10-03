@@ -56,7 +56,7 @@ namespace test
 typedef struct
 {
   const char* string;
-  char  tname[3];
+  char  tname[alignof(char*)];
 }
 tcap_map;
 
@@ -222,7 +222,7 @@ void FTermcapQuirksTest::classNameTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::generalTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::strings;
+  auto& caps = finalcut::FTermcap::strings;
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
@@ -285,7 +285,7 @@ void FTermcapQuirksTest::generalTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::xtermTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::strings;
+  auto& caps = finalcut::FTermcap::strings;
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
@@ -316,7 +316,7 @@ void FTermcapQuirksTest::xtermTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::freebsdTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::strings;
+  auto& caps = finalcut::FTermcap::strings;
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
@@ -355,7 +355,7 @@ void FTermcapQuirksTest::freebsdTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::cygwinTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::strings;
+  auto& caps = finalcut::FTermcap::strings;
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
@@ -380,7 +380,7 @@ void FTermcapQuirksTest::cygwinTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::linuxTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::strings;
+  auto& caps = finalcut::FTermcap::strings;
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
@@ -452,7 +452,7 @@ void FTermcapQuirksTest::linuxTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::rxvtTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::strings;
+  auto& caps = finalcut::FTermcap::strings;
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
@@ -493,7 +493,7 @@ void FTermcapQuirksTest::rxvtTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::vteTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::strings;
+  auto& caps = finalcut::FTermcap::strings;
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
@@ -517,7 +517,7 @@ void FTermcapQuirksTest::vteTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::puttyTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::strings;
+  auto& caps = finalcut::FTermcap::strings;
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
@@ -607,7 +607,7 @@ void FTermcapQuirksTest::puttyTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::teratermTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::strings;
+  auto& caps = finalcut::FTermcap::strings;
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
@@ -637,7 +637,7 @@ void FTermcapQuirksTest::teratermTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::sunTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::strings;
+  auto& caps = finalcut::FTermcap::strings;
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)
@@ -755,7 +755,7 @@ void FTermcapQuirksTest::sunTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::screenTest()
 {
-  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::strings;
+  auto& caps = finalcut::FTermcap::strings;
   constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
   for (std::size_t i = 0; i < last_item; i++)

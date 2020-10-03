@@ -77,9 +77,6 @@ class FTermDetection;
 class FTermcap final
 {
   public:
-    // Using-declaration
-    using fn_putc = int (*)(int);
-
     // Typedef
     typedef struct
     {
@@ -88,6 +85,10 @@ class FTermcap final
     }
     tcap_map;
 
+    // Using-declaration
+    using fn_putc = int (*)(int);
+    using TCapMapType = std::array<tcap_map, 83>;
+
     // Constructors
     FTermcap() = default;
 
@@ -95,7 +96,7 @@ class FTermcap final
     ~FTermcap() = default;
 
     // Accessors
-    const FString        getClassName() const;
+    FString              getClassName() const;
     template <typename CharT>
     static bool          getFlag (const CharT&);
     template <typename CharT>
@@ -129,7 +130,7 @@ class FTermcap final
     static int           max_color;
     static int           tabstop;
     static int           attr_without_color;
-    static tcap_map      strings[];
+    static TCapMapType   strings;
 
   private:
     // Constant
@@ -156,7 +157,7 @@ class FTermcap final
 
 // FTermcap inline functions
 //----------------------------------------------------------------------
-inline const FString FTermcap::getClassName() const
+inline FString FTermcap::getClassName() const
 { return "FTermcap"; }
 
 //----------------------------------------------------------------------

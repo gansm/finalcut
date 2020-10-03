@@ -1446,7 +1446,7 @@ void FSystemTest::initVScreenInfo()
 void FSystemTest::initFScreenInfo()
 {
   char id[16] { "VESA VGA" };
-  std::strncpy (fb_terminal_fix_info.id, id, sizeof(id));
+  std::strncpy (fb_terminal_fix_info.id, id, sizeof(fb_terminal_fix_info.id));
   fb_terminal_fix_info.smem_start = 0xf9000000;
   fb_terminal_fix_info.smem_len = 0x00500000;
   fb_terminal_fix_info.type = 0;

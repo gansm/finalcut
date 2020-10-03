@@ -606,7 +606,7 @@ void FMenuItem::createDialogList (FMenu* winmenu) const
     {
       auto win = static_cast<FDialog*>(*iter);
       FMenuItem* win_item{};
-      const uInt32 n = uInt32(std::distance(first, iter));
+      const auto n = uInt32(std::distance(first, iter));
       // get the dialog title
       const auto& name = win->getText();
 

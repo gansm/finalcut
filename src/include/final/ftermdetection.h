@@ -92,7 +92,7 @@ class FTermDetection final
     FTermDetection& operator = (const FTermDetection&) = delete;
 
     // Accessor
-    static const FString  getClassName();
+    static FString        getClassName();
     static const char*    getTermType();
     static int            getGnomeTerminalID();
     FTerminalType&        getTermTypeStruct();
@@ -243,7 +243,7 @@ struct FTermDetection::secondaryDA
 
 // FTermDetection inline functions
 //----------------------------------------------------------------------
-inline const FString FTermDetection::getClassName()
+inline FString FTermDetection::getClassName()
 { return "FTermDetection"; }
 
 //----------------------------------------------------------------------

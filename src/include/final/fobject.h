@@ -79,7 +79,7 @@ class FObject
     typedef FObjectList::const_iterator const_iterator;
 
     // Constants
-    static constexpr std::size_t UNLIMITED = static_cast<std::size_t>(-1);
+    static constexpr auto UNLIMITED = static_cast<std::size_t>(-1);
 
     // Constructor
     explicit FObject (FObject* = nullptr);
@@ -94,7 +94,7 @@ class FObject
     FObject& operator = (const FObject&) = delete;
 
     // Accessors
-    virtual const FString getClassName() const;
+    virtual FString       getClassName() const;
     FObject*              getParent() const;
     FObject*              getChild (int) const;
     FObjectList&          getChildren();
@@ -176,7 +176,7 @@ class FObject
 
 
 //----------------------------------------------------------------------
-inline const FString FObject::getClassName() const
+inline FString FObject::getClassName() const
 { return "FObject"; }
 
 //----------------------------------------------------------------------

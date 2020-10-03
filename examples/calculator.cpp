@@ -23,6 +23,7 @@
 #include <cfloat>
 #include <cmath>
 #include <cstdlib>
+#include <array>
 #include <limits>
 #include <map>
 #include <memory>
@@ -231,7 +232,7 @@ class Calc final : public finalcut::FDialog
     char              infix_operator{'\0'};
     char              last_infix_operator{'\0'};
     finalcut::FString input{""};
-    button            button_no[Calc::NUM_OF_BUTTONS]{};
+    std::array<button, Calc::NUM_OF_BUTTONS> button_no{};
 
     struct StackData
     {
@@ -950,8 +951,8 @@ void Calc::draw()
 bool Calc::isDataEntryKey (int key) const
 {
   // Test if key is in {'.', '0'..'9'}
-  const int data_entry_keys[] =
-  {
+  constexpr std::array<int, 11> key_list =
+  {{
     Decimal_point,
     Zero,
     One,
@@ -963,11 +964,11 @@ bool Calc::isDataEntryKey (int key) const
     Seven,
     Eight,
     Nine
-  };
+  }};
 
-  const int* iter = std::find (data_entry_keys, data_entry_keys + 11, key);
+  const auto& iter = std::find (key_list.begin(), key_list.end(), key);
 
-  if ( iter != data_entry_keys + 11 )
+  if ( iter != key_list.end() )
     return true;
   else
     return false;
@@ -977,19 +978,19 @@ bool Calc::isDataEntryKey (int key) const
 bool Calc::isOperatorKey(int key) const
 {
   // Test if key is in {'*', '/', '+', '-', '^', '='}
-  const int operators[] =
-  {
+  constexpr std::array<int, 6> operators =
+  {{
     Multiply,
     Divide,
     Add,
     Subtract,
     Power,
     Equals
-  };
+  }};
 
-  const int* iter = std::find (operators, operators + 6, key);
+  const auto& iter = std::find (operators.begin(), operators.end(), key);
 
-  if ( iter != operators + 6 )
+  if ( iter != operators.end() )
     return true;
   else
     return false;
@@ -1099,8 +1100,8 @@ void Calc::adjustSize()
 //----------------------------------------------------------------------
 const wchar_t* Calc::getButtonText (const std::size_t key) const
 {
-  static const wchar_t* const button_text[Calc::NUM_OF_BUTTONS] =
-  {
+  constexpr std::array<const wchar_t*, Calc::NUM_OF_BUTTONS> button_text =
+  {{
     L"&Sin",
     L"&Cos",
     L"&Tan",
@@ -1135,7 +1136,7 @@ const wchar_t* Calc::getButtonText (const std::size_t key) const
     L"&.",
     L"&±",
     L"&="
-  };
+  }};
 
   return button_text[key];
 }

@@ -86,22 +86,25 @@ void FKeyboard::fetchKeyCode()
 }
 
 //----------------------------------------------------------------------
-const FString FKeyboard::getKeyName (const FKey keynum) const
+FString FKeyboard::getKeyName (const FKey keynum) const
 {
-  for (std::size_t i{0}; fc::fkeyname[i].string[0] != 0; i++)
-    if ( fc::fkeyname[i].num && fc::fkeyname[i].num == keynum )
-      return FString{fc::fkeyname[i].string};
+  const auto& key = std::find_if
+  (
+    fc::fkeyname.begin(),
+    fc::fkeyname.end(),
+    [&keynum] (fc::FKeyName kn)
+    {
+      return (kn.num > 0 && kn.num == keynum);
+    }
+  );
+
+  if ( key != fc::fkeyname.end() )
+    return FString{key->string};
 
   if ( keynum > 32 && keynum < 127 )
     return FString{char(keynum)};
 
   return FString{""};
-}
-
-//----------------------------------------------------------------------
-void FKeyboard::setTermcapMap (fc::FKeyMap* keymap)
-{
-  key_map = keymap;
 }
 
 //----------------------------------------------------------------------
@@ -221,12 +224,12 @@ inline FKey FKeyboard::getTermcapKey()
 
   assert ( FIFO_BUF_SIZE > 0 );
 
-  if ( ! key_map )
+  if ( key_map.use_count() == 0 )
     return NOT_SET;
 
-  for (std::size_t i{0}; key_map[i].tname[0] != 0; i++)
+  for (auto&& entry : *key_map)
   {
-    const char* k = key_map[i].string;
+    const char* k = entry.string;
     const std::size_t len = ( k ) ? std::strlen(k) : 0;
 
     if ( k && std::strncmp(k, fifo_buf, len) == 0 )  // found
@@ -240,7 +243,7 @@ inline FKey FKeyboard::getTermcapKey()
         fifo_buf[n] = '\0';
 
       input_data_pending = bool(fifo_buf[0] != '\0');
-      return fc::fkey[i].num;
+      return entry.num;
     }
   }
 
@@ -254,9 +257,9 @@ inline FKey FKeyboard::getMetaKey()
 
   assert ( FIFO_BUF_SIZE > 0 );
 
-  for (std::size_t i{0}; fc::fmetakey[i].string[0] != 0; i++)
+  for (auto&& entry : fc::fmetakey)
   {
-    const char* kmeta = fc::fmetakey[i].string;  // The string is never null
+    const char* kmeta = entry.string;  // The string is never null
     const std::size_t len = std::strlen(kmeta);
 
     if ( std::strncmp(kmeta, fifo_buf, len) == 0 )  // found
@@ -279,7 +282,7 @@ inline FKey FKeyboard::getMetaKey()
         fifo_buf[n] = '\0';
 
       input_data_pending = bool(fifo_buf[0] != '\0');
-      return fc::fmetakey[i].num;
+      return entry.num;
     }
   }
 

@@ -143,12 +143,12 @@ class FVTerm
     FVTerm& operator << (const FColorPair&);
 
     // Accessors
-    virtual const FString getClassName() const;
+    virtual FString       getClassName() const;
     static FColor         getTermForegroundColor();
     static FColor         getTermBackgroundColor();
     FTermArea*&           getVWin();
     const FTermArea*      getVWin() const;
-    const FPoint          getPrintCursor();
+    FPoint                getPrintCursor();
     static const FChar    getAttribute();
     FTerm&                getFTerm() const;
 
@@ -371,12 +371,12 @@ class FVTerm
     bool                  hasChildAreaChanges (FTermArea*) const;
     void                  clearChildAreaChanges (const FTermArea*) const;
     static bool           isInsideArea (const FPoint&, const FTermArea*);
-    static const FChar    generateCharacter (const FPoint&);
-    static const FChar    getCharacter ( character_type
+    static FChar          generateCharacter (const FPoint&);
+    static FChar          getCharacter ( character_type
                                        , const FPoint&
                                        , FVTerm* );
-    static const FChar    getCoveredCharacter (const FPoint&, FVTerm*);
-    static const FChar    getOverlappedCharacter (const FPoint&, FVTerm*);
+    static FChar          getCoveredCharacter (const FPoint&, FVTerm*);
+    static FChar          getOverlappedCharacter (const FPoint&, FVTerm*);
     void                  init();
     static void           init_characterLengths (const FOptiMove*);
     void                  finish();
@@ -607,7 +607,7 @@ inline FVTerm& FVTerm::operator << (const FColorPair& pair)
 }
 
 //----------------------------------------------------------------------
-inline const FString FVTerm::getClassName() const
+inline FString FVTerm::getClassName() const
 { return "FVTerm"; }
 
 //----------------------------------------------------------------------

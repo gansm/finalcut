@@ -62,7 +62,7 @@ public:
   // Disable copy assignment operator (=)
   emptyFString& operator = (const emptyFString&) = delete;
 
-  static const FString getClassName();
+  static FString getClassName();
   static bool isNull();
   static const FString& get();
   static void clear();
@@ -74,7 +74,7 @@ private:
 
 // emptyFString inline functions
 //----------------------------------------------------------------------
-inline const FString emptyFString::getClassName()
+inline FString emptyFString::getClassName()
 { return "emptyFString"; }
 
 //----------------------------------------------------------------------

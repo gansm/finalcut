@@ -82,7 +82,7 @@ class FBusyIndicator : public FToolTip
     FBusyIndicator& operator = (const FBusyIndicator&) = delete;
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
 
     // Inquiries
     bool                isRunning() const;
@@ -113,7 +113,7 @@ class FBusyIndicator : public FToolTip
 
 // FBusyIndicator inline functions
 //----------------------------------------------------------------------
-inline const FString FBusyIndicator::getClassName() const
+inline FString FBusyIndicator::getClassName() const
 { return "FBusyIndicator"; }
 
 //----------------------------------------------------------------------

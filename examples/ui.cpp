@@ -782,19 +782,19 @@ void MyDialog::initWidgetsCallbacks()
 //----------------------------------------------------------------------
 void MyDialog::adjustSize()
 {
-  const auto h = getParentWidget()->getHeight() - 4;
+  finalcut::FDialog::adjustSize();
+
+  const auto h = getDesktopHeight() - 4;
   setHeight (h, false);
-  int x = int((getDesktopWidth() - getWidth()) / 2);
+  auto x = int((getDesktopWidth() - getWidth()) / 2);
 
   if ( x < 1 )
     x = 1;
 
-  setX (x, false);
+  setPos (FPoint{x, 2}, false);
 
   if ( initialized )
-    myList.setHeight (getHeight() - 3, false);
-
-  finalcut::FDialog::adjustSize();
+    myList.setHeight (getHeight() - 3, true);
 }
 
 //----------------------------------------------------------------------
@@ -823,7 +823,10 @@ void MyDialog::cb_about()
                              , line + L" FINAL CUT " + line + L"\n\n"
                                L"Version " + libver + L"\n\n"
                                L"(c) 2020 by Markus Gans"
-                             , finalcut::FMessageBox::Ok, 0, 0, this );
+                             , finalcut::FMessageBox::Ok
+                             , finalcut::FMessageBox::Reject
+                             , finalcut::FMessageBox::Reject
+                             , this );
   info.setCenterText();
   info.show();
 }
@@ -843,7 +846,10 @@ void MyDialog::cb_terminfo()
       << "  Size: " << x << fc::Times
                     << y << "\n"
       << "Colors: " << finalcut::FTerm::getMaxColor()
-    , finalcut::FMessageBox::Ok, 0, 0, this
+    , finalcut::FMessageBox::Ok
+    , finalcut::FMessageBox::Reject
+    , finalcut::FMessageBox::Reject
+    , this
   );
   info1.setHeadline("Terminal:");
   info1.exec();
@@ -858,7 +864,10 @@ void MyDialog::cb_drives()
     , "Generic:       \n\n"
       "Network:       \n\n"
       "     CD:"
-    , finalcut::FMessageBox::Ok, 0, 0, this
+    , finalcut::FMessageBox::Ok
+    , finalcut::FMessageBox::Reject
+    , finalcut::FMessageBox::Reject
+    , this
   );
 
   if ( finalcut::FTerm::isNewFont() )
@@ -1057,8 +1066,7 @@ int main (int argc, char* argv[])
   // Create main dialog object d
   MyDialog d{&app};
   d.setText (title);
-  d.setGeometry ( FPoint{int((app.getWidth() - 56) / 2), 2}
-                , FSize{56, app.getHeight() - 4} );
+  d.setSize (FSize{56, app.getHeight() - 4});
   d.setShadow();
 
   // Set the dialog object d as the main widget of the application.

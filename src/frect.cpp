@@ -84,37 +84,37 @@ bool FRect::isEmpty() const
 }
 
 //----------------------------------------------------------------------
-const FPoint FRect::getPos() const
+FPoint FRect::getPos() const
 {
   return { X1, Y1 };
 }
 
 //----------------------------------------------------------------------
-const FPoint FRect::getUpperLeftPos() const
+FPoint FRect::getUpperLeftPos() const
 {
   return { X1, Y1 };
 }
 
 //----------------------------------------------------------------------
-const FPoint FRect::getUpperRightPos() const
+FPoint FRect::getUpperRightPos() const
 {
   return { X2, Y1 };
 }
 
 //----------------------------------------------------------------------
-const FPoint FRect::getLowerLeftPos() const
+FPoint FRect::getLowerLeftPos() const
 {
   return { X1, Y2 };
 }
 
 //----------------------------------------------------------------------
-const FPoint FRect::getLowerRightPos() const
+FPoint FRect::getLowerRightPos() const
 {
   return { X2, Y2 };
 }
 
 //----------------------------------------------------------------------
-const FSize FRect::getSize() const
+FSize FRect::getSize() const
 {
   return { getWidth(), getHeight() };
 }
@@ -338,7 +338,7 @@ FRect FRect::combined (const FRect& r) const
 
 // FRect non-member operators
 //----------------------------------------------------------------------
-const FRect operator + (const FRect& r, const FSize& s)
+FRect operator + (const FRect& r, const FSize& s)
 {
   return { r.X1
          , r.Y1
@@ -347,7 +347,7 @@ const FRect operator + (const FRect& r, const FSize& s)
 }
 
 //----------------------------------------------------------------------
-const FRect operator - (const FRect& r, const FSize& s)
+FRect operator - (const FRect& r, const FSize& s)
 {
   return { r.X1
          , r.Y1

@@ -178,10 +178,10 @@ class FTerm final
     FTerm& operator = (const FTerm&) = delete;
 
     // Accessors
-    static const FString     getClassName();
+    static FString           getClassName();
     static std::size_t       getLineNumber();
     static std::size_t       getColumnNumber();
-    static const FString     getKeyName (FKey);
+    static FString           getKeyName (FKey);
     static int               getTTYFileDescriptor();
     static const char*       getTermType();
     static const char*       getTermFileName();
@@ -406,9 +406,9 @@ bool isReverseNewFontchar (wchar_t);
 bool hasFullWidthSupports();
 wchar_t cp437_to_unicode (uChar);
 uChar unicode_to_cp437 (wchar_t);
-const FString getFullWidth (const FString&);
-const FString getHalfWidth (const FString&);
-const FString getColumnSubString (const FString&, std::size_t, std::size_t);
+FString getFullWidth (const FString&);
+FString getHalfWidth (const FString&);
+FString getColumnSubString (const FString&, std::size_t, std::size_t);
 std::size_t getLengthFromColumnWidth (const FString&, std::size_t);
 std::size_t getColumnWidth (const FString&, std::size_t);
 std::size_t getColumnWidth (const FString&);
@@ -419,7 +419,7 @@ std::size_t getColumnWidth (const FTermBuffer&);
 
 // FTerm inline functions
 //----------------------------------------------------------------------
-inline const FString FTerm::getClassName()
+inline FString FTerm::getClassName()
 { return "FTerm"; }
 
 //----------------------------------------------------------------------
@@ -462,7 +462,7 @@ inline void FTerm::putstringf (const char format[], Args&&... args)
   if ( ! fsys )
     getFSystem();  // Trying to set fsys
 
-  const std::size_t count = std::size_t(size);
+  const auto count = std::size_t(size);
   std::vector<char> buf(count);
   std::snprintf (&buf[0], count, format, std::forward<Args>(args)...);
 

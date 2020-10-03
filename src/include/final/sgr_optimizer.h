@@ -70,7 +70,7 @@ class SGRoptimizer final
 
   private:
     // Constants
-    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Methods
     void findParameter();

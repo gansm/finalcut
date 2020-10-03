@@ -84,7 +84,7 @@ class FLog : public std::stringbuf
     FLog& operator << (IOManip);
     FLog& operator << (LogLevel);
 
-    virtual const FString getClassName() const;
+    virtual FString getClassName() const;
     virtual void info (const std::string&) = 0;
     virtual void warn (const std::string&) = 0;
     virtual void error (const std::string&) = 0;
@@ -130,7 +130,7 @@ inline FLog& FLog::operator << (IOManip pf)
 }
 
 //----------------------------------------------------------------------
-inline const FString FLog::getClassName() const
+inline FString FLog::getClassName() const
 { return "FLog"; }
 
 //----------------------------------------------------------------------

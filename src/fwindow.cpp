@@ -815,19 +815,31 @@ bool FWindow::event (FEvent* ev)
 
 //----------------------------------------------------------------------
 void FWindow::onWindowActive (FEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive activation events for this window
+}
 
 //----------------------------------------------------------------------
 void FWindow::onWindowInactive (FEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive deactivation events for this window
+}
 
 //----------------------------------------------------------------------
 void FWindow::onWindowRaised (FEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive window raising events for this window
+}
 
 //----------------------------------------------------------------------
 void FWindow::onWindowLowered (FEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive window lowering events for this window
+}
 
 
 // private methods of FWindow

@@ -217,14 +217,14 @@ void FTermLinux::initCharMap()
 
   if ( screen_unicode_map.entry_ct > 0 && screen_unicode_map.entries )
   {
-    for (std::size_t i{0}; i <= fc::last_char_item; i++ )
+    for (auto&& entry : fc::character)
     {
-      const auto ucs = wchar_t(fc::character[i][fc::UTF8]);
+      const auto ucs = wchar_t(entry[fc::UTF8]);
       const sInt16 fontpos = getFontPos(ucs);
 
       // Fix for a non-cp437 Linux console with PC charset encoding
       if ( fontpos > 255 || fontpos == NOT_FOUND )
-        fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
+        entry[fc::PC] = entry[fc::ASCII];
 
       // Character substitutions for missing characters
       if ( fontpos == NOT_FOUND )
@@ -700,7 +700,7 @@ int FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
     for (std::size_t i{0}; i < count; i++)
       std::memcpy ( font.data + bytes_per_line * 32 * i
                   , &fontdata[i * font.height]
-                  , font.height);
+                  , font.height );
   }
 
   // Font operation
@@ -932,8 +932,8 @@ void FTermLinux::getVGAPalette()
 //----------------------------------------------------------------------
 void FTermLinux::setVGADefaultPalette()
 {
-  constexpr rgb defaultColor[16] =
-  {
+  constexpr std::array<rgb, 16> defaultColor =
+  {{
     {0x00, 0x00, 0x00}, {0xaa, 0x00, 0x00},
     {0x00, 0xaa, 0x00}, {0xaa, 0x55, 0x00},
     {0x00, 0x00, 0xaa}, {0xaa, 0x00, 0xaa},
@@ -942,7 +942,7 @@ void FTermLinux::setVGADefaultPalette()
     {0x55, 0xff, 0x55}, {0xff, 0xff, 0x55},
     {0x55, 0x55, 0xff}, {0xff, 0x55, 0xff},
     {0x55, 0xff, 0xff}, {0xff, 0xff, 0xff}
-  };
+  }};
 
   for (std::size_t index{0}; index < 16; index++)
   {

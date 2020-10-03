@@ -75,8 +75,8 @@ void Mandelbrot::draw()
 
   const int xoffset{2};
   const int yoffset{2};
-  const int Cols = int(getClientWidth());
-  const int Lines = int(getClientHeight());
+  const auto Cols = int(getClientWidth());
+  const auto Lines = int(getClientHeight());
   int current_line{0};
 
   if ( Cols < 2 || Lines < 2 )

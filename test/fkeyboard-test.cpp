@@ -43,8 +43,11 @@ typedef struct
 }
 FKeyMap;
 
-FKeyMap fkey[] =
-{
+using original_type = std::array<finalcut::fc::FKeyMap, 174>;
+using test_type = std::array<FKeyMap, 174>;
+
+test_type fkey =
+{{
   { finalcut::fc::Fkey_backspace , "\177"     , "kb" },  // backspace key
   { finalcut::fc::Fkey_catab     , 0          , "ka" },  // clear-all-tabs key
   { finalcut::fc::Fkey_clear     , 0          , "kC" },  // clear-screen or erase key
@@ -222,9 +225,8 @@ FKeyMap fkey[] =
   { finalcut::fc::Fkey_slash     , ESC "Oo"   , "KP1"},  // keypad slash
   { finalcut::fc::Fkey_asterisk  , ESC "Oj"   , "KP2"},  // keypad asterisk
   { finalcut::fc::Fkey_minus_sign, ESC "Om"   , "KP3"},  // keypad minus sign
-  { finalcut::fc::Fkey_plus_sign , ESC "Ok"   , "KP4"},  // keypad plus sign
-  { 0                            , 0          , "\0" }
-};
+  { finalcut::fc::Fkey_plus_sign , ESC "Ok"   , "KP4"}   // keypad plus sign
+}};
 
 }  // namespace test
 
@@ -2826,7 +2828,10 @@ void FKeyboardTest::init()
   CPPUNIT_ASSERT ( key_pressed == 0 );
   keyboard->enableUTF8();
   keyboard->enableMouseSequences();
-  keyboard->setTermcapMap (reinterpret_cast<finalcut::fc::FKeyMap*>(test::fkey));
+
+  auto ptr = &test::fkey;
+  const auto& ref = *reinterpret_cast<test::original_type*>(ptr);
+  keyboard->setTermcapMap (ref);
 }
 
 //----------------------------------------------------------------------

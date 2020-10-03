@@ -48,6 +48,7 @@
 #endif
 
 #include <list>
+#include <memory>
 #include <stack>
 #include <unordered_map>
 #include <vector>
@@ -86,7 +87,7 @@ class FListViewItem : public FObject
     FListViewItem& operator = (const FListViewItem&);
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     uInt                getColumnCount() const;
     int                 getSortColumn() const;
     FString             getText (int) const;
@@ -113,6 +114,9 @@ class FListViewItem : public FObject
     void                collapse();
 
   private:
+    // Using-declaration
+    using FDataAccessPtr = std::shared_ptr<FDataAccess>;
+
     // Inquiry
     bool                isExpandable() const;
     bool                isCheckable() const;
@@ -127,7 +131,7 @@ class FListViewItem : public FObject
 
     // Data members
     FStringList         column_list{};
-    FDataAccess*        data_pointer{nullptr};
+    FDataAccessPtr      data_pointer{};
     iterator            root{};
     std::size_t         visible_lines{1};
     bool                expandable{false};
@@ -159,7 +163,7 @@ inline FListViewItem::FListViewItem ( const FStringList& cols
 }
 
 //----------------------------------------------------------------------
-inline const FString FListViewItem::getClassName() const
+inline FString FListViewItem::getClassName() const
 { return "FListViewItem"; }
 
 //----------------------------------------------------------------------
@@ -177,7 +181,8 @@ inline clean_fdata_t<DT>& FListViewItem::getData() const
 template <typename DT>
 inline void FListViewItem::setData (DT&& data)
 {
-  data_pointer = makeFData(std::forward<DT>(data));
+  const auto data_obj = makeFData(std::forward<DT>(data));
+  data_pointer = data_obj;
 }
 
 //----------------------------------------------------------------------
@@ -237,7 +242,7 @@ class FListViewIterator
     bool               operator != (const FListViewIterator&) const;
 
     // Accessor
-    const FString      getClassName() const;
+    FString            getClassName() const;
     int&               getPosition();
 
     // Methods
@@ -273,7 +278,7 @@ inline bool FListViewIterator::operator != (const FListViewIterator& rhs) const
 { return node != rhs.node; }
 
 //----------------------------------------------------------------------
-inline const FString FListViewIterator::getClassName() const
+inline FString FListViewIterator::getClassName() const
 { return "FListViewIterator"; }
 
 //----------------------------------------------------------------------
@@ -304,7 +309,7 @@ class FListView : public FWidget
     FListView& operator = (const FListView&) = delete;
 
     // Accessors
-    const FString        getClassName() const override;
+    FString              getClassName() const override;
     std::size_t          getCount() const;
     fc::text_alignment   getColumnAlignment (int) const;
     FString              getColumnText (int) const;
@@ -545,7 +550,7 @@ struct FListView::Header
 
 // FListView inline functions
 //----------------------------------------------------------------------
-inline const FString FListView::getClassName() const
+inline FString FListView::getClassName() const
 { return "FListView"; }
 
 //----------------------------------------------------------------------

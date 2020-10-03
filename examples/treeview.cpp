@@ -401,6 +401,8 @@ Treeview::~Treeview()  // destructor
 //----------------------------------------------------------------------
 void Treeview::adjustSize()
 {
+  finalcut::FDialog::adjustSize();
+
   std::size_t h = getDesktopHeight() - 4;
   setHeight (h, false);
   int x = int((getDesktopWidth() - getWidth()) / 2);
@@ -408,15 +410,13 @@ void Treeview::adjustSize()
   if ( x < 1 )
     x = 1;
 
-  setX (x, false);
+  setPos (FPoint{x, 3}, false);
 
   if ( initialized )
   {
-    listview.setHeight (getHeight() - 6, false);
+    listview.setHeight (getHeight() - 6, true);
     quit.setY(int(getHeight()) - 4);
   }
-
-  finalcut::FDialog::adjustSize();
 }
 
 //----------------------------------------------------------------------
@@ -438,8 +438,7 @@ int main (int argc, char* argv[])
   // Create main dialog object
   Treeview d{&app};
   d.setText (L"Continents");
-  d.setGeometry ( FPoint{int(1 + (app.getWidth() - 57) / 2), 3}
-                , FSize{57, 20} );
+  d.setSize (FSize{57, 20});
   d.setShadow();
 
   // Set dialog d as main widget

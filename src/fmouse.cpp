@@ -54,7 +54,7 @@ FMouse::FMouse()
 
 // public methods of FMouse
 //----------------------------------------------------------------------
-const FString FMouse::getClassName() const
+FString FMouse::getClassName() const
 {
   return "FMouse";
 }
@@ -287,7 +287,7 @@ FMouseGPM::~FMouseGPM()  // destructor
 
 // public methods of FMouseX11
 //----------------------------------------------------------------------
-const FString FMouseGPM::getClassName() const
+FString FMouseGPM::getClassName() const
 {
   return "FMouseGPM";
 }
@@ -520,7 +520,7 @@ int FMouseGPM::gpmEvent (bool clear) const
 
 // public methods of FMouseX11
 //----------------------------------------------------------------------
-const FString FMouseX11::getClassName() const
+FString FMouseX11::getClassName() const
 {
   return "FMouseX11";
 }
@@ -698,7 +698,7 @@ void FMouseX11::setButtonState (const int btn, const struct timeval* time)
 
 // public methods of FMouseSGR
 //----------------------------------------------------------------------
-const FString FMouseSGR::getClassName() const
+FString FMouseSGR::getClassName() const
 {
   return "FMouseSGR";
 }
@@ -928,7 +928,7 @@ void FMouseSGR::setReleasedButtonState (const int btn)
 
 // public methods of FMouseUrxvt
 //----------------------------------------------------------------------
-const FString FMouseUrxvt::getClassName() const
+FString FMouseUrxvt::getClassName() const
 {
   return "FMouseUrxvt";
 }

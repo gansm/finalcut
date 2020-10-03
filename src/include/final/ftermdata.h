@@ -71,7 +71,7 @@ class FTermData final
     FTermData& operator = (const FTermData&) = delete;
 
     // Accessors
-    const FString     getClassName() const;
+    FString           getClassName() const;
     encodingMap&      getEncodingList();
     charSubstitution& getCharSubstitutionMap();
     fc::encoding      getTermEncoding() const;
@@ -166,7 +166,7 @@ class FTermData final
 
 // FTermData inline functions
 //----------------------------------------------------------------------
-inline const FString FTermData::getClassName() const
+inline FString FTermData::getClassName() const
 { return "FTermData"; }
 
 //----------------------------------------------------------------------

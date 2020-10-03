@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -50,14 +51,14 @@ struct Data
     const fc::termcaps cap;
   };
 
-  static TermcapString strings[];
+  static std::array<TermcapString, 83> strings;
 };
 
 //----------------------------------------------------------------------
 // struct data - string data array
 //----------------------------------------------------------------------
-Data::TermcapString Data::strings[] =
-{
+std::array<Data::TermcapString, 83> Data::strings =
+{{
   { "t_bell", fc::t_bell },
   { "t_erase_chars", fc::t_erase_chars },
   { "t_clear_screen", fc::t_clear_screen },
@@ -99,6 +100,7 @@ Data::TermcapString Data::strings[] =
   { "t_parm_right_cursor", fc::t_parm_right_cursor },
   { "t_save_cursor", fc::t_save_cursor },
   { "t_restore_cursor", fc::t_restore_cursor },
+  { "t_cursor_style", fc::t_cursor_style },
   { "t_scroll_forward", fc::t_scroll_forward },
   { "t_scroll_reverse", fc::t_scroll_reverse },
   { "t_enter_ca_mode", fc::t_enter_ca_mode },
@@ -140,7 +142,7 @@ Data::TermcapString Data::strings[] =
   { "t_keypad_xmit", fc::t_keypad_xmit },
   { "t_keypad_local", fc::t_keypad_local },
   { "t_key_mouse", fc::t_key_mouse }
-};
+}};
 
 
 //----------------------------------------------------------------------
@@ -174,11 +176,11 @@ void tcapString (const std::string& name, const char cap_str[])
     return;
   }
 
-  const uInt len = uInt(std::strlen(cap_str));
+  const auto len = uInt(std::strlen(cap_str));
 
   for (uInt i{0}; i < len; i++)
   {
-    const uChar c = uChar(cap_str[i]);
+    const auto c = uChar(cap_str[i]);
 
     if ( c > 127 )
     {
@@ -282,8 +284,7 @@ void numeric()
 void string()
 {
   std::cout << "\r\n[String]\r\n";
-  const finalcut::FTermcap::tcap_map (&tcap_strings)[] \
-      = finalcut::FTermcap::strings;
+  const auto& tcap_strings = finalcut::FTermcap::strings;
 
   for (const auto& entry : Data::strings)
   {

@@ -743,7 +743,7 @@ void FTermXTerminal::oscPostfix() const
 }
 
 //----------------------------------------------------------------------
-const FString FTermXTerminal::captureXTermFont() const
+FString FTermXTerminal::captureXTermFont() const
 {
   initCheck(FString{});
 
@@ -787,7 +787,7 @@ const FString FTermXTerminal::captureXTermFont() const
 }
 
 //----------------------------------------------------------------------
-const FString FTermXTerminal::captureXTermTitle() const
+FString FTermXTerminal::captureXTermTitle() const
 {
   initCheck(FString{});
 

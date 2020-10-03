@@ -91,8 +91,8 @@ class FDialog : public FWindow
     FDialog& operator = (const FDialog&) = delete;
 
     // Accessors
-    const FString         getClassName() const override;
-    virtual const FString getText() const;
+    FString               getClassName() const override;
+    virtual FString       getText() const;
 
     // Mutators
     bool                  setDialogWidget (bool);
@@ -200,6 +200,8 @@ class FDialog : public FWindow
     void                  raiseActivateDialog();
     void                  lowerActivateDialog();
     bool                  isOutsideTerminal (const FPoint&) const;
+    bool                  isLeftOutside();
+    bool                  isBottomOutside();
     bool                  isLowerRightResizeCorner (const mouseStates&) const;
     void                  resizeMouseDown (const mouseStates&);
     void                  resizeMouseUpMove (const mouseStates&, bool = false);
@@ -237,11 +239,11 @@ class FDialog : public FWindow
 
 // FDialog inline functions
 //----------------------------------------------------------------------
-inline const FString FDialog::getClassName() const
+inline FString FDialog::getClassName() const
 { return "FDialog"; }
 
 //----------------------------------------------------------------------
-inline const FString FDialog::getText() const
+inline FString FDialog::getText() const
 { return tb_text; }
 
 //----------------------------------------------------------------------

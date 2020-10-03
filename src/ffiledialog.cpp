@@ -55,10 +55,10 @@ bool sortDirFirst ( const FFileDialog::FDirEntry& lhs
 }
 
 //----------------------------------------------------------------------
-const FString fileChooser ( FWidget* parent
-                          , const FString& dirname
-                          , const FString& filter
-                          , FFileDialog::DialogType type )
+FString fileChooser ( FWidget* parent
+                    , const FString& dirname
+                    , const FString& filter
+                    , FFileDialog::DialogType type )
 {
   FString ret{};
   FString path{dirname};
@@ -165,7 +165,7 @@ FFileDialog& FFileDialog::operator = (const FFileDialog& fdlg)
 }
 
 //----------------------------------------------------------------------
-const FString FFileDialog::getSelectedFile() const
+FString FFileDialog::getSelectedFile() const
 {
   const uLong n = uLong(filebrowser.currentItem() - 1);
 
@@ -257,17 +257,17 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
 }
 
 //----------------------------------------------------------------------
-const FString FFileDialog::fileOpenChooser ( FWidget* parent
-                                           , const FString& dirname
-                                           , const FString& filter )
+FString FFileDialog::fileOpenChooser ( FWidget* parent
+                                     , const FString& dirname
+                                     , const FString& filter )
 {
   return fileChooser (parent, dirname, filter, FFileDialog::Open);
 }
 
 //----------------------------------------------------------------------
-const FString FFileDialog::fileSaveChooser ( FWidget* parent
-                                           , const FString& dirname
-                                           , const FString& filter )
+FString FFileDialog::fileSaveChooser ( FWidget* parent
+                                     , const FString& dirname
+                                     , const FString& filter )
 {
   return fileChooser (parent, dirname, filter, FFileDialog::Save);
 }
@@ -736,7 +736,7 @@ void FFileDialog::printPath (const FString& txt)
 }
 
 //----------------------------------------------------------------------
-const FString FFileDialog::getHomeDir()
+FString FFileDialog::getHomeDir()
 {
   struct passwd pwd{};
   struct passwd* pwd_ptr{};

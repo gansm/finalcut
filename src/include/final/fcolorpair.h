@@ -65,7 +65,7 @@ class FColorPair
     FColorPair& operator = (const FColorPair& pair) = default;
 
     // Accessor
-    const FString getClassName() const
+    FString getClassName() const
     { return "FColorPair"; }
 
     FColor getForegroundColor() const

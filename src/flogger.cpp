@@ -58,7 +58,7 @@ void FLogger::newlineReplace ( std::string& str
 }
 
 //----------------------------------------------------------------------
-const std::string FLogger::getTimeString() const
+std::string FLogger::getTimeString() const
 {
   char str[100];
   const auto& now = std::chrono::system_clock::now();
@@ -71,7 +71,7 @@ const std::string FLogger::getTimeString() const
 }
 
 //----------------------------------------------------------------------
-const std::string FLogger::getEOL() const
+std::string FLogger::getEOL() const
 {
   if ( getEnding() == FLog::LF )
     return "\n";

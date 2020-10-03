@@ -103,7 +103,7 @@ class FLineEdit : public FWidget
     const FLineEdit& operator >> (FString&) const;
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     FString             getText() const;
     std::size_t         getMaxLength() const;
     std::size_t         getCursorPosition() const;
@@ -175,7 +175,7 @@ class FLineEdit : public FWidget
     };
 
     // Constants
-    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Methods
     void                init();
@@ -237,7 +237,7 @@ inline FLineEdit& FLineEdit::operator << (const typeT& s)
 }
 
 //----------------------------------------------------------------------
-inline const FString FLineEdit::getClassName() const
+inline FString FLineEdit::getClassName() const
 { return "FLineEdit"; }
 
 //----------------------------------------------------------------------

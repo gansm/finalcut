@@ -282,7 +282,16 @@ void FDialog::move (const FPoint& d_pos)
 //----------------------------------------------------------------------
 inline bool FDialog::moveUp (int n)
 {
-  move ({0, -n});
+  if ( isBottomOutside() )
+  {
+    const auto y_max = int(getMaxHeight());
+    FWindow::setY(y_max, false);
+    putArea (getTermPos(), getVWin());
+    restoreOverlaidWindows();
+  }
+  else
+    move ({0, -n});
+
   return ! setPos_error;
 }
 
@@ -296,7 +305,16 @@ inline bool FDialog::moveDown (int n)
 //----------------------------------------------------------------------
 inline bool FDialog::moveLeft (int n)
 {
-  move ({-n, 0});
+  if ( isLeftOutside() )
+  {
+    const auto x_max = int(getMaxWidth());
+    FWindow::setX(x_max, false);
+    putArea (getTermPos(), getVWin());
+    restoreOverlaidWindows();
+  }
+  else
+    move ({-n, 0});
+
   return ! setPos_error;
 }
 
@@ -458,8 +476,9 @@ void FDialog::onKeyPress (FKeyEvent* ev)
   if ( this == getMainWidget() )
     return;
 
-  if ( ev->key() == fc::Fkey_escape
-    || ev->key() == fc::Fkey_escape_mintty )
+  if ( ! ev->isAccepted()
+    && ( ev->key() == fc::Fkey_escape
+      || ev->key() == fc::Fkey_escape_mintty) )
   {
     ev->accept();
 
@@ -1385,48 +1404,58 @@ inline void FDialog::moveSizeKey (FKeyEvent* ev)
   {
     case fc::Fkey_up:
       moveUp(1);
+      ev->accept();
       break;
 
     case fc::Fkey_down:
       moveDown(1);
+      ev->accept();
       break;
 
     case fc::Fkey_left:
       moveLeft(1);
+      ev->accept();
       break;
 
     case fc::Fkey_right:
       moveRight(1);
+      ev->accept();
       break;
 
     case fc::Fmkey_up:
     case fc::Fkey_sr:
       reduceHeight(1);
+      ev->accept();
       break;
 
     case fc::Fmkey_down:
     case fc::Fkey_sf:
       expandHeight(1);
+      ev->accept();
       break;
 
     case fc::Fmkey_left:
     case fc::Fkey_sleft:
       reduceWidth(1);
+      ev->accept();
       break;
 
     case fc::Fmkey_right:
     case fc::Fkey_sright:
       expandWidth(1);
+      ev->accept();
       break;
 
     case fc::Fkey_return:
     case fc::Fkey_enter:
       acceptMoveSize();
+      ev->accept();
       break;
 
     case fc::Fkey_escape:
     case fc::Fkey_escape_mintty:
       cancelMoveSize();
+      ev->accept();
       return;
 
     default:
@@ -1465,6 +1494,24 @@ bool FDialog::isOutsideTerminal (const FPoint& pos) const
     || pos.getX() > int(getMaxWidth())
     || pos.getY() < 1
     || pos.getY() > int(getMaxHeight()) )
+    return true;
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+bool FDialog::isLeftOutside()
+{
+  if ( getX() > int(getMaxWidth()) )
+    return true;
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+bool FDialog::isBottomOutside()
+{
+  if ( getY() > int(getMaxHeight()) )
     return true;
 
   return false;

@@ -189,7 +189,7 @@ FKeyName;
 
 // FChar operator functions
 //----------------------------------------------------------------------
-inline constexpr bool operator == (const FChar& lhs, const FChar& rhs)
+constexpr bool operator == (const FChar& lhs, const FChar& rhs)
 {
   return lhs.ch           == rhs.ch
       && lhs.fg_color     == rhs.fg_color
@@ -201,7 +201,7 @@ inline constexpr bool operator == (const FChar& lhs, const FChar& rhs)
 }
 
 //----------------------------------------------------------------------
-inline constexpr bool operator != (const FChar& lhs, const FChar& rhs)
+constexpr bool operator != (const FChar& lhs, const FChar& rhs)
 {
   return ! ( lhs == rhs );
 }

@@ -93,7 +93,7 @@ class FTermLinux final
     FTermLinux& operator = (const FTermLinux&) = delete;
 
     // Accessors
-    const FString        getClassName() const;
+    FString              getClassName() const;
     fc::linuxConsoleCursorStyle getCursorStyle() const;
     char*                getCursorStyleString();
     int                  getFramebufferBpp() const;
@@ -204,7 +204,7 @@ class FTermLinux final
 
 // FTermLinux inline functions
 //----------------------------------------------------------------------
-inline const FString FTermLinux::getClassName() const
+inline FString FTermLinux::getClassName() const
 { return "FTermLinux"; }
 
 //----------------------------------------------------------------------

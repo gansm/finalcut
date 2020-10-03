@@ -91,7 +91,7 @@ class FMenu : public FWindow, public FMenuList
     FMenu& operator = (const FMenu&) = delete;
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     FString             getText() const;
     FMenuItem*          getItem();
 
@@ -133,7 +133,7 @@ class FMenu : public FWindow, public FMenuList
 
   private:
     // Constants
-    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
     static constexpr bool SELECT_ITEM = true;
 
     // Typedef
@@ -248,7 +248,7 @@ std::tuple<bool, bool> closeOpenMenus (FMenu*, const FPoint&);
 
 // FMenu inline functions
 //----------------------------------------------------------------------
-inline const FString FMenu::getClassName() const
+inline FString FMenu::getClassName() const
 { return "FMenu"; }
 
 //----------------------------------------------------------------------

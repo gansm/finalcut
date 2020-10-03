@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
 #include <map>
 #include <vector>
 
@@ -39,9 +40,6 @@ using finalcut::FSize;
 class SegmentView final : public finalcut::FDialog
 {
   public:
-    // Using-declaration
-    using FDialog::setGeometry;
-
     // Constructor
     explicit SegmentView (finalcut::FWidget* = nullptr);
 
@@ -64,10 +62,9 @@ class SegmentView final : public finalcut::FDialog
     void get7Segment (const wchar_t);
     void draw() override;
 
-
     // Data members
     std::map<wchar_t, sevenSegment> code{};
-    finalcut::FString line[3]{};
+    std::array<finalcut::FString, 3> line{};
     finalcut::FLineEdit input{"0123", this};
     finalcut::FButton exit{"E&xit", this};
 };
@@ -140,7 +137,7 @@ void SegmentView::hexEncoding()
 //----------------------------------------------------------------------
 void SegmentView::get7Segment (const wchar_t c)
 {
-  for (int i{0}; i < 3; i++)
+  for (std::size_t i{0}; i < 3; i++)
     line[i].clear();
 
   switch ( c )
@@ -186,8 +183,8 @@ void SegmentView::get7Segment (const wchar_t c)
       if ( code.find(c) != code.end() )
       {
         const sevenSegment& s = code[c];
-        constexpr char h[2]{' ', '_'};
-        constexpr char v[2]{' ', '|'};
+        constexpr std::array<char, 2> h{{' ', '_'}};
+        constexpr std::array<char, 2> v{{' ', '|'}};
 
         line[0] <<   ' '  << h[s.a] <<   ' ';
         line[1] << v[s.f] << h[s.g] << v[s.b];

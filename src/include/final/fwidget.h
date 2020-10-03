@@ -183,7 +183,7 @@ class FWidget : public FVTerm, public FObject
     FWidget& operator = (const FWidget&) = delete;
 
     // Accessors
-    const FString            getClassName() const override;
+    FString                  getClassName() const override;
     FWidget*                 getRootWidget() const;
     FWidget*                 getParentWidget() const;
     static FWidget*&         getMainWidget();
@@ -230,8 +230,8 @@ class FWidget : public FVTerm, public FObject
     std::size_t              getDesktopWidth() const;
     std::size_t              getDesktopHeight() const;
     const FWidgetFlags&      getFlags() const;
-    const FPoint             getCursorPos() const;
-    const FPoint             getPrintPos();
+    FPoint                   getCursorPos() const;
+    FPoint                   getPrintPos();
 
     // Mutators
     static void              setMainWidget (FWidget*);
@@ -541,7 +541,7 @@ void          drawNewFontListBox (FWidget*, const FRect&);
 
 // FWidget inline functions
 //----------------------------------------------------------------------
-inline const FString FWidget::getClassName() const
+inline FString FWidget::getClassName() const
 { return "FWidget"; }
 
 //----------------------------------------------------------------------
@@ -751,7 +751,7 @@ inline const FWidget::FWidgetFlags& FWidget::getFlags() const
 { return flags; }
 
 //----------------------------------------------------------------------
-inline const FPoint FWidget::getCursorPos() const
+inline FPoint FWidget::getCursorPos() const
 { return widget_cursor_position; }
 
 //----------------------------------------------------------------------

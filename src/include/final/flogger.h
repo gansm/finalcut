@@ -72,7 +72,7 @@ class FLogger : public FLog
     ~FLogger() override;
 
     // Methods
-    const FString getClassName() const override;
+    FString getClassName() const override;
     void info (const std::string&) override;
     void warn (const std::string&) override;
     void error (const std::string&) override;
@@ -86,8 +86,8 @@ class FLogger : public FLog
   private:
     // Methods
     void              newlineReplace (std::string&, const std::string&) const;
-    const std::string getTimeString() const;
-    const std::string getEOL() const;
+    std::string       getTimeString() const;
+    std::string       getEOL() const;
     void              printLogLine (const std::string&);
 
     // Data member
@@ -97,7 +97,7 @@ class FLogger : public FLog
 
 // FLogger inline functions
 //----------------------------------------------------------------------
-inline const FString FLogger::getClassName() const
+inline FString FLogger::getClassName() const
 { return "FLogger"; }
 
 //----------------------------------------------------------------------

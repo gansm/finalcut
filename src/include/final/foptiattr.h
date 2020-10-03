@@ -107,7 +107,7 @@ class FOptiAttr final
     FOptiAttr& operator = (const FOptiAttr&) = delete;
 
     // Accessors
-    const FString getClassName() const;
+    FString       getClassName() const;
 
     // Mutators
     void          setTermEnvironment (const termEnv&);
@@ -318,7 +318,7 @@ class FOptiAttr final
 
 // FOptiAttr inline functions
 //----------------------------------------------------------------------
-inline const FString FOptiAttr::getClassName() const
+inline FString FOptiAttr::getClassName() const
 { return "FOptiAttr"; }
 
 //----------------------------------------------------------------------

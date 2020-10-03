@@ -51,7 +51,7 @@ class EventDialog final : public finalcut::FDialog
     EventDialog (const EventDialog&) = delete;
 
     // Destructor
-    ~EventDialog();
+    ~EventDialog() override;
 
     // Disable copy assignment operator (=)
     EventDialog& operator = (const EventDialog&) = delete;
@@ -245,7 +245,7 @@ class EventLog final : public finalcut::FDialog, public std::ostringstream
     EventLog (const EventLog&) = delete;
 
     // Destructor
-    ~EventLog();
+    ~EventLog() override;
 
     // Disable copy assignment operator (=)
     EventLog& operator = (const EventLog&) = delete;

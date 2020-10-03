@@ -102,7 +102,7 @@ class FMouse
     { }
 
     // Accessors
-    virtual const FString getClassName() const;
+    virtual FString       getClassName() const;
     const FPoint&         getPos() const;
     void                  clearEvent();
 
@@ -215,7 +215,7 @@ class FMouseGPM final : public FMouse
     ~FMouseGPM() override;
 
     // Accessors
-    const FString        getClassName() const override;
+    FString              getClassName() const override;
 
     // Mutators
     void                 setStdinNo(int);
@@ -283,7 +283,7 @@ class FMouseX11 final : public FMouse
     ~FMouseX11() override = default;
 
     // Accessors
-    const FString        getClassName() const override;
+    FString              getClassName() const override;
 
     // Inquiry
     bool                 hasData() override;
@@ -342,7 +342,7 @@ class FMouseSGR final : public FMouse
     ~FMouseSGR() override = default;
 
     // Accessors
-    const FString getClassName() const override;
+    FString       getClassName() const override;
 
     // Inquiry
     bool          hasData() override;
@@ -401,7 +401,7 @@ class FMouseUrxvt final : public FMouse
     ~FMouseUrxvt() override = default;
 
     // Accessors
-    const FString getClassName() const override;
+    FString       getClassName() const override;
 
     // Inquiry
     bool          hasData() override;
@@ -466,7 +466,7 @@ class FMouseControl
     FMouseControl& operator = (const FMouseControl&) = delete;
 
     // Accessors
-    virtual const FString getClassName() const;
+    virtual FString       getClassName() const;
     const FPoint&         getPos();
     void                  clearEvent();
 
@@ -526,7 +526,7 @@ class FMouseControl
 
 // FMouseControl inline functions
 //----------------------------------------------------------------------
-inline const FString FMouseControl::getClassName() const
+inline FString FMouseControl::getClassName() const
 { return "FMouseControl"; }
 
 //----------------------------------------------------------------------

@@ -74,21 +74,21 @@ class FRect
     FRect& operator = (FRect&&) noexcept;
 
     // Accessors
-    virtual const FString getClassName();
+    virtual FString       getClassName();
     int                   getX1() const;
     int                   getY1() const;
     int                   getX2() const;
     int                   getY2() const;
     int                   getX() const;
     int                   getY() const;
-    const FPoint          getPos() const;
-    const FPoint          getUpperLeftPos() const;
-    const FPoint          getUpperRightPos() const;
-    const FPoint          getLowerLeftPos() const;
-    const FPoint          getLowerRightPos() const;
+    FPoint                getPos() const;
+    FPoint                getUpperLeftPos() const;
+    FPoint                getUpperRightPos() const;
+    FPoint                getLowerLeftPos() const;
+    FPoint                getLowerRightPos() const;
     std::size_t           getWidth() const;
     std::size_t           getHeight() const;
-    const FSize           getSize() const;
+    FSize                 getSize() const;
 
     // Mutators
     void                  setX1 (int);
@@ -138,8 +138,8 @@ class FRect
     int Y2{-1};
 
     // Friend operator functions
-    friend const FRect operator + (const FRect&, const FSize&);
-    friend const FRect operator - (const FRect&, const FSize&);
+    friend FRect operator + (const FRect&, const FSize&);
+    friend FRect operator - (const FRect&, const FSize&);
     friend bool  operator == (const FRect&, const FRect&);
     friend bool  operator != (const FRect&, const FRect&);
     friend std::ostream& operator << (std::ostream&, const FRect&);
@@ -172,7 +172,7 @@ inline FRect::FRect (int x, int y, std::size_t width, std::size_t height)
 { }
 
 //----------------------------------------------------------------------
-inline const FString FRect::getClassName()
+inline FString FRect::getClassName()
 { return "FRect"; }
 
 //----------------------------------------------------------------------

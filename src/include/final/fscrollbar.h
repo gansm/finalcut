@@ -100,7 +100,7 @@ class FScrollbar : public FWidget
     FScrollbar& operator = (const FScrollbar&) = delete;
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     int                 getValue() const;
     sType               getScrollType() const;
 
@@ -203,7 +203,7 @@ void initScrollbar ( FScrollbarPtr& bar
 
 // FScrollbar inline functions
 //----------------------------------------------------------------------
-inline const FString FScrollbar::getClassName() const
+inline FString FScrollbar::getClassName() const
 { return "FScrollbar"; }
 
 //----------------------------------------------------------------------

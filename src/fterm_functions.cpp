@@ -274,11 +274,11 @@ wchar_t cp437_to_unicode (uChar c)
   constexpr std::size_t UNICODE = 1;
   wchar_t ucs = c;
 
-  for (std::size_t i{0}; i <= fc::last_cp437_item; i++)
+  for (auto&& entry : fc::cp437_ucs)
   {
-    if ( fc::cp437_ucs[i][CP437] == c )  // found
+    if ( entry[CP437] == c )  // found
     {
-      ucs = fc::cp437_ucs[i][UNICODE];
+      ucs = entry[UNICODE];
       break;
     }
   }
@@ -293,11 +293,11 @@ uChar unicode_to_cp437 (wchar_t ucs)
   constexpr std::size_t UNICODE = 1;
   uChar c{'?'};
 
-  for (std::size_t i{0}; i <= fc::last_cp437_item; i++)
+  for (auto&& entry : fc::cp437_ucs)
   {
-    if ( fc::cp437_ucs[i][UNICODE] == ucs )  // found
+    if ( entry[UNICODE] == ucs )  // found
     {
-      c = uChar(fc::cp437_ucs[i][CP437]);
+      c = uChar(entry[CP437]);
       break;
     }
   }
@@ -306,7 +306,7 @@ uChar unicode_to_cp437 (wchar_t ucs)
 }
 
 //----------------------------------------------------------------------
-const FString getFullWidth (const FString& str)
+FString getFullWidth (const FString& str)
 {
   // Converts half-width to full-width characters
 
@@ -322,10 +322,10 @@ const FString getFullWidth (const FString& str)
     }
     else
     {
-      for (std::size_t i{0}; i <= fc::last_halfwidth_item; i++)
+      for (auto&& entry : fc::halfwidth_fullwidth)
       {
-        if ( fc::halfwidth_fullwidth[i][HALF] == c )  // found
-          c = fc::halfwidth_fullwidth[i][FULL];
+        if ( entry[HALF] == c )  // found
+          c = entry[FULL];
       }
     }
   }
@@ -334,7 +334,7 @@ const FString getFullWidth (const FString& str)
 }
 
 //----------------------------------------------------------------------
-const FString getHalfWidth (const FString& str)
+FString getHalfWidth (const FString& str)
 {
   // Converts full-width to half-width characters
 
@@ -350,10 +350,10 @@ const FString getHalfWidth (const FString& str)
     }
     else
     {
-      for (std::size_t i{0}; i <= fc::last_halfwidth_item; i++)
+      for (auto&& entry : fc::halfwidth_fullwidth)
       {
-        if ( fc::halfwidth_fullwidth[i][FULL] == c )  // found
-          c = fc::halfwidth_fullwidth[i][HALF];
+        if ( entry[FULL] == c )  // found
+          c = entry[HALF];
       }
     }
   }
@@ -362,9 +362,9 @@ const FString getHalfWidth (const FString& str)
 }
 
 //----------------------------------------------------------------------
-const FString getColumnSubString ( const FString& str
-                                 , std::size_t col_pos
-                                 , std::size_t col_len )
+FString getColumnSubString ( const FString& str
+                           , std::size_t col_pos
+                           , std::size_t col_len )
 {
   FString s{str};
   std::size_t col_first{1};

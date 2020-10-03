@@ -111,7 +111,7 @@ FVTerm& FVTerm::operator << (const FTermBuffer& term_buffer)
 
 // public methods of FVTerm
 //----------------------------------------------------------------------
-const FPoint FVTerm::getPrintCursor()
+FPoint FVTerm::getPrintCursor()
 {
   const auto& win = getPrintArea();
 
@@ -130,8 +130,8 @@ void FVTerm::setTermXY (int x, int y) const
   if ( term_pos->getX() == x && term_pos->getY() == y )
     return;
 
-  const int term_width = int(FTerm::getColumnNumber());
-  const int term_height = int(FTerm::getLineNumber());
+  const auto term_width = int(FTerm::getColumnNumber());
+  const auto term_height = int(FTerm::getLineNumber());
 
   if ( x >= term_width && term_width > 0 )
   {
@@ -434,7 +434,7 @@ int FVTerm::print (const std::vector<FChar>& term_string)
 int FVTerm::print (FTermArea* area, const std::vector<FChar>& term_string)
 {
   int len{0};
-  const uInt tabstop = uInt(FTerm::getTabstop());
+  const auto tabstop = uInt(FTerm::getTabstop());
 
   if ( ! area )
     return -1;
@@ -734,10 +734,10 @@ void FVTerm::resizeArea ( const FRect& box
 
   const int offset_left = box.getX();
   const int offset_top  = box.getY();
-  const int width = int(box.getWidth());
-  const int height = int(box.getHeight());
-  const int rsw = int(shadow.getWidth());
-  const int bsh = int(shadow.getHeight());
+  const auto width = int(box.getWidth());
+  const auto height = int(box.getHeight());
+  const auto rsw = int(shadow.getWidth());
+  const auto bsh = int(shadow.getHeight());
 
   assert ( offset_top >= 0 );
   assert ( width > 0 && width + rsw > 0 );
@@ -827,8 +827,8 @@ void FVTerm::restoreVTerm (const FRect& box)
 
   int x = box.getX() - 1;
   int y = box.getY() - 1;
-  int w = int(box.getWidth());
-  int h = int(box.getHeight());
+  auto w = int(box.getWidth());
+  auto h = int(box.getHeight());
 
   if ( x < 0 )
     x = 0;
@@ -970,8 +970,8 @@ void FVTerm::getArea (const FRect& box, const FTermArea* area)
 
   const int x = box.getX();
   const int y = box.getY();
-  const int w = int(box.getWidth());
-  const int h = int(box.getHeight());
+  const auto w = int(box.getWidth());
+  const auto h = int(box.getHeight());
   const int dx = x - area->offset_left + 1;
   const int dy = y - area->offset_top + 1;
   int y_end{};
@@ -1040,8 +1040,8 @@ void FVTerm::putArea (const FTermArea* area) const
   for (int y{0}; y < y_end; y++)  // Line loop
   {
     bool modified{false};
-    int line_xmin = int(area->changes[y].xmin);
-    int line_xmax = int(area->changes[y].xmax);
+    auto line_xmin = int(area->changes[y].xmin);
+    auto line_xmax = int(area->changes[y].xmax);
 
     if ( line_xmin > line_xmax )
       continue;
@@ -1289,7 +1289,7 @@ void FVTerm::clearArea (FTermArea* area, int fillchar) const
     return;
   }
 
-  const uInt w = uInt(area->width + area->right_shadow);
+  const auto w = uInt(area->width + area->right_shadow);
 
   if ( area->right_shadow == 0 )
   {
@@ -1795,7 +1795,7 @@ bool FVTerm::isInsideArea (const FPoint& pos, const FTermArea* area)
 }
 
 //----------------------------------------------------------------------
-const FChar FVTerm::generateCharacter (const FPoint& pos)
+FChar FVTerm::generateCharacter (const FPoint& pos)
 {
   // Generates characters for a given position considering all areas
 
@@ -1865,7 +1865,7 @@ const FChar FVTerm::generateCharacter (const FPoint& pos)
 }
 
 //----------------------------------------------------------------------
-const FChar FVTerm::getCharacter ( character_type char_type
+FChar FVTerm::getCharacter ( character_type char_type
                            , const FPoint& pos
                            , FVTerm* obj )
 {
@@ -1925,14 +1925,14 @@ const FChar FVTerm::getCharacter ( character_type char_type
 }
 
 //----------------------------------------------------------------------
-const FChar FVTerm::getCoveredCharacter (const FPoint& pos, FVTerm* obj)
+FChar FVTerm::getCoveredCharacter (const FPoint& pos, FVTerm* obj)
 {
   // Gets the covered character for a given position
   return getCharacter (covered_character, pos, obj);
 }
 
 //----------------------------------------------------------------------
-const FChar FVTerm::getOverlappedCharacter (const FPoint& pos, FVTerm* obj)
+FChar FVTerm::getOverlappedCharacter (const FPoint& pos, FVTerm* obj)
 {
   // Gets the overlapped character for a given position
   return getCharacter (overlapped_character, pos, obj);

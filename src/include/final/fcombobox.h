@@ -84,7 +84,7 @@ class FDropDownListBox : public FWindow
     FDropDownListBox& operator = (const FDropDownListBox&) = delete;
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
 
     // Mutators
     void                setGeometry ( const FPoint&, const FSize&
@@ -115,7 +115,7 @@ class FDropDownListBox : public FWindow
 
 // FDropDownListBox inline functions
 //----------------------------------------------------------------------
-inline const FString FDropDownListBox::getClassName() const
+inline FString FDropDownListBox::getClassName() const
 { return "FDropDownListBox"; }
 
 //----------------------------------------------------------------------
@@ -148,7 +148,7 @@ class FComboBox : public FWidget
     // Overloaded operators
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     std::size_t         getCount() const;
     FString             getText() const;
     template <typename DT>
@@ -239,7 +239,7 @@ bool closeComboBox (FDropDownListBox*, const FPoint&);
 
 // FComboBox inline functions
 //----------------------------------------------------------------------
-inline const FString FComboBox::getClassName() const
+inline FString FComboBox::getClassName() const
 { return "FComboBox"; }
 
 //----------------------------------------------------------------------

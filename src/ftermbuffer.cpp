@@ -43,7 +43,7 @@ FTermBuffer::~FTermBuffer()  // destructor
 
 // public methods of FTermBuffer
 //----------------------------------------------------------------------
-const FString FTermBuffer::toString() const
+FString FTermBuffer::toString() const
 {
   std::wstring wide_string{};
   wide_string.reserve(data.size());
@@ -62,7 +62,7 @@ const FString FTermBuffer::toString() const
 int FTermBuffer::write (const FString& string)
 {
   assert ( ! string.isNull() );
-  const int len = int(string.getLength());
+  const auto len = int(string.getLength());
 
   for (auto&& c : string)
   {

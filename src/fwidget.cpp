@@ -242,7 +242,7 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (fc::sides side)
 }
 
 //----------------------------------------------------------------------
-const FPoint FWidget::getPrintPos()
+FPoint FWidget::getPrintPos()
 {
   const auto& cur = getPrintCursor();
   return { cur.getX() - woffset.getX1() - getX() + 1
@@ -721,7 +721,7 @@ void FWidget::setDoubleFlatLine (fc::sides side, int pos, bool bit)
   assert ( pos >= 1 );
 
   uLong length{};
-  const uLong index = uLong(pos - 1);
+  const auto index = uLong(pos - 1);
 
   switch ( side )
   {
@@ -957,7 +957,8 @@ void FWidget::show()
     show_root_widget = this;
   }
 
-  draw();  // Draw the widget
+  adjustSize();  // Alignment before drawing
+  draw();        // Draw the widget
   flags.hidden = false;
   flags.shown = true;
 
@@ -1209,8 +1210,8 @@ void FWidget::setParentOffset()
 void FWidget::setTermOffset()
 {
   const auto& r = getRootWidget();
-  const int w = int(r->getWidth());
-  const int h = int(r->getHeight());
+  const auto w = int(r->getWidth());
+  const auto h = int(r->getHeight());
   woffset.setCoordinates (0, 0, w - 1, h - 1);
 }
 
@@ -1585,55 +1586,94 @@ bool FWidget::event (FEvent* ev)
 
 //----------------------------------------------------------------------
 void FWidget::onKeyPress (FKeyEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive key press events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onKeyUp (FKeyEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive key up events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onKeyDown (FKeyEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive key down events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onMouseDown (FMouseEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive mouse down events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onMouseUp (FMouseEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive mouse up events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onMouseDoubleClick (FMouseEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive mouse double clicks events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onWheel (FWheelEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive mouse wheel events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onMouseMove (FMouseEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive mouse move events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onFocusIn (FFocusEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive a widget focus event (get focus)
+}
 
 //----------------------------------------------------------------------
 void FWidget::onFocusOut (FFocusEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive a widget focus event (lost focus)
+}
 
 //----------------------------------------------------------------------
 void FWidget::onChildFocusIn (FFocusEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive a child widget focus event (get focus)
+}
 
 //----------------------------------------------------------------------
 void FWidget::onChildFocusOut (FFocusEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive a child widget focus event (lost focus)
+}
 
 //----------------------------------------------------------------------
 void FWidget::onAccel (FAccelEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass to receive
+  // an event when an acceleration key is pressed for this widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onResize (FResizeEvent* ev)
@@ -1646,15 +1686,23 @@ void FWidget::onResize (FResizeEvent* ev)
 
 //----------------------------------------------------------------------
 void FWidget::onShow (FShowEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive a widget show event
+}
 
 //----------------------------------------------------------------------
 void FWidget::onHide (FHideEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive a widget hide event
+}
 
 //----------------------------------------------------------------------
 void FWidget::onClose (FCloseEvent* ev)
 {
+  // This event handler can be reimplemented in a subclass
+  // to receive a widget close event
   ev->accept();
 }
 
@@ -1914,7 +1962,10 @@ bool FWidget::changeFocus ( FWidget* follower, FWidget* parent
 
 //----------------------------------------------------------------------
 void FWidget::draw()
-{ }
+{
+  // This method must be reimplemented in a subclass
+  // for drawing the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::drawWindows() const

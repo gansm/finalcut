@@ -54,7 +54,7 @@ class FWidgetColors
     virtual ~FWidgetColors();
 
     // Method
-    virtual const FString getClassName() const;
+    virtual FString getClassName() const;
     virtual void setColorTheme() = 0;
 
     // Data members
@@ -148,7 +148,7 @@ class FWidgetColors
 
 // FWidgetColors inline functions
 //----------------------------------------------------------------------
-inline const FString FWidgetColors::getClassName() const
+inline FString FWidgetColors::getClassName() const
 { return "FWidgetColors"; }
 
 
@@ -179,13 +179,13 @@ class default8ColorTheme final : public FWidgetColors
     ~default8ColorTheme() override;
 
     // Method
-    const FString getClassName() const override;
+    FString getClassName() const override;
     void setColorTheme() override;
 };
 
 // default8ColorTheme inline functions
 //----------------------------------------------------------------------
-inline const FString default8ColorTheme::getClassName() const
+inline FString default8ColorTheme::getClassName() const
 { return "default8ColorTheme"; }
 
 
@@ -216,13 +216,13 @@ class default16ColorTheme final : public FWidgetColors
     ~default16ColorTheme() override;
 
     // Method
-    const FString getClassName() const override;
+    FString getClassName() const override;
     void setColorTheme() override;
 };
 
 // default16ColorTheme inline functions
 //----------------------------------------------------------------------
-inline const FString default16ColorTheme::getClassName() const
+inline FString default16ColorTheme::getClassName() const
 { return "default16ColorTheme"; }
 
 
@@ -253,13 +253,13 @@ class default8ColorDarkTheme final : public FWidgetColors
     ~default8ColorDarkTheme() override;
 
     // Method
-    const FString getClassName() const override;
+    FString getClassName() const override;
     void setColorTheme() override;
 };
 
 // default8ColorDarkTheme inline functions
 //----------------------------------------------------------------------
-inline const FString default8ColorDarkTheme::getClassName() const
+inline FString default8ColorDarkTheme::getClassName() const
 { return "default8ColorDarkTheme"; }
 
 
@@ -290,13 +290,13 @@ class default16ColorDarkTheme final : public FWidgetColors
     ~default16ColorDarkTheme() override;
 
     // Method
-    const FString getClassName() const override;
+    FString getClassName() const override;
     void setColorTheme() override;
 };
 
 // default16ColorDarkTheme inline functions
 //----------------------------------------------------------------------
-inline const FString default16ColorDarkTheme::getClassName() const
+inline FString default16ColorDarkTheme::getClassName() const
 { return "default16ColorDarkTheme"; }
 
 }  // namespace finalcut

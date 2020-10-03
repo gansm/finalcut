@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
+
 #include "final/fc.h"
 #include "final/fkey_map.h"
 #include "final/ftypes.h"
@@ -30,8 +32,8 @@ namespace finalcut
 namespace fc
 {
 
-FKeyMap fkey[] =
-{
+std::array<FKeyMap, 174> fkey
+{{
   { fc::Fkey_backspace , nullptr,   "kb" },  // backspace key
   { fc::Fkey_catab     , nullptr,   "ka" },  // clear-all-tabs key
   { fc::Fkey_clear     , nullptr,   "kC" },  // clear-screen or erase key
@@ -210,12 +212,11 @@ FKeyMap fkey[] =
   { fc::Fkey_slash     , ESC "Oo",  "KP1"},  // keypad slash
   { fc::Fkey_asterisk  , ESC "Oj",  "KP2"},  // keypad asterisk
   { fc::Fkey_minus_sign, ESC "Om",  "KP3"},  // keypad minus sign
-  { fc::Fkey_plus_sign , ESC "Ok",  "KP4"},  // keypad plus sign
-  { 0                  , nullptr,   "\0" }
-};
+  { fc::Fkey_plus_sign , ESC "Ok",  "KP4"}   // keypad plus sign
+}};
 
-constexpr FMetakeyMap fmetakey[] =
-{
+constexpr std::array<FMetakeyMap, 228> fmetakey =
+{{
   { fc::Fmkey_ic                   , "\033[2;3~"   },  // M-insert
   { fc::Fmkey_ic                   , "\033\033[2~" },  // M-insert
   { fc::Fmkey_dc                   , "\033[3;3~"   },  // M-delete
@@ -443,12 +444,11 @@ constexpr FMetakeyMap fmetakey[] =
   { fc::Fmkey_left_curly_bracket   , "\033{" },  // M-{
   { fc::Fmkey_vertical_bar         , "\033|" },  // M-|
   { fc::Fmkey_right_curly_bracket  , "\033}" },  // M-}
-  { fc::Fmkey_tilde                , "\033~" },  // M-~
-  { 0                              , "\0"  }
-};
+  { fc::Fmkey_tilde                , "\033~" }   // M-~
+}};
 
-constexpr FKeyName fkeyname[] =
-{
+constexpr std::array<FKeyName, 388> fkeyname =
+{{
   { fc::Fckey_a                   , "Ctrl+A" },
   { fc::Fckey_b                   , "Ctrl+B" },
   { fc::Fckey_c                   , "Ctrl+C" },
@@ -836,9 +836,8 @@ constexpr FKeyName fkeyname[] =
   { fc::Fkey_mouse                , "xterm mouse" },
   { fc::Fkey_extended_mouse       , "SGR extended mouse" },
   { fc::Fkey_urxvt_mouse          , "urxvt mouse extension" },
-  { fc::Fkey_incomplete           , "incomplete key string" },
-  { 0                             , "\0" }
-};
+  { fc::Fkey_incomplete           , "incomplete key string" }
+}};
 
 }  // namespace fc
 

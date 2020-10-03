@@ -366,10 +366,7 @@ FUserEvent::FUserEvent (fc::events ev_type, int user_event_id)  // constructor
 
 //----------------------------------------------------------------------
 FUserEvent::~FUserEvent()  // destructor
-{
-  if ( ! external_data_pointer && data_pointer )
-    delete data_pointer;
-}
+{ }
 
 //----------------------------------------------------------------------
 int FUserEvent::getUserId() const

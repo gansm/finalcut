@@ -224,8 +224,9 @@ void FTermcap::termcapStrings()
   // Get termcap strings
 
   // Read termcap output strings
-  for (std::size_t i{0}; strings[i].tname[0] != 0; i++)
-    strings[i].string = getString(strings[i].tname);
+
+  for (auto&& entry : strings)
+    entry.string = getString(entry.tname);
 
   const auto& ho = TCAP(fc::t_cursor_home);
 
@@ -239,10 +240,8 @@ void FTermcap::termcapKeys()
   // Get termcap keys
 
   // Read termcap key sequences up to the self-defined values
-  for ( std::size_t i{0};
-        fc::fkey[i].string == nullptr && fc::fkey[i].tname[0] != 0;
-        i++ )
-    fc::fkey[i].string = getString(fc::fkey[i].tname);
+  for (auto&& entry : fc::fkey)
+    entry.string = getString(entry.tname);
 }
 
 //----------------------------------------------------------------------
@@ -257,8 +256,8 @@ int FTermcap::_tputs (const char* str, int affcnt, fn_putc putc)
 
 // private Data Member of FTermcap - termcap capabilities
 //----------------------------------------------------------------------
-FTermcap::tcap_map FTermcap::strings[] =
-{
+FTermcap::TCapMapType FTermcap::strings =
+{{
 //  .------------- term string
 //  |    .-------- Tcap-code
 //  |    |      // variable name                -> description
@@ -347,9 +346,8 @@ FTermcap::tcap_map FTermcap::strings[] =
   { nullptr, "ac" },  // acs_chars              -> graphics charset pairs (vt100)
   { nullptr, "ks" },  // keypad_xmit            -> enter 'key-board_transmit' mode
   { nullptr, "ke" },  // keypad_local           -> leave 'key-board_transmit' mode
-  { nullptr, "Km" },  // key_mouse              -> Mouse event has occurred
-  { nullptr, "\0" }
-};
+  { nullptr, "Km" }   // key_mouse              -> Mouse event has occurred
+}};
 
 /*
  * (P)    indicates that padding may be specified

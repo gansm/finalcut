@@ -79,8 +79,7 @@ Watch::Watch (FWidget* parent)
   //   Avoids calling a virtual function from the constructor
   //   (CERT, OOP50-CPP)
   FDialog::setText ("Watch");
-  const int pw = int(getParentWidget()->getWidth());
-  FDialog::setGeometry (FPoint{1 + (pw - 22) / 2, 3}, FSize{22, 13});
+  FDialog::setSize ({22, 13});
 
   // Labels
   time_label.setGeometry(FPoint{5, 2}, FSize{5, 1});
@@ -193,8 +192,9 @@ void Watch::cb_seconds()
 //----------------------------------------------------------------------
 void Watch::adjustSize()
 {
-  const int pw = int(getParentWidget()->getWidth());
+  const int pw = int(getDesktopWidth());
   setX (1 + (pw - 22) / 2, false);
+  setY (3, false);
   finalcut::FDialog::adjustSize();
 }
 

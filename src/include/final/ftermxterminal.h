@@ -80,16 +80,16 @@ class FTermXTerminal final
     void                  metaSendsESC (bool);
 
     // Accessors
-    const FString         getClassName() const;
+    FString               getClassName() const;
     fc::xtermCursorStyle  getCursorStyle() const;
-    const FString         getFont() const;
-    const FString         getTitle() const;
-    const FString         getForeground() const;
-    const FString         getBackground() const;
-    const FString         getCursorColor() const;
-    const FString         getMouseForeground() const;
-    const FString         getMouseBackground() const;
-    const FString         getHighlightBackground() const;
+    FString               getFont() const;
+    FString               getTitle() const;
+    FString               getForeground() const;
+    FString               getBackground() const;
+    FString               getCursorColor() const;
+    FString               getMouseForeground() const;
+    FString               getMouseBackground() const;
+    FString               getHighlightBackground() const;
 
     // Inquiries
     bool                  hasFont() const;
@@ -136,8 +136,8 @@ class FTermXTerminal final
     bool                  canResetColor() const;
     void                  oscPrefix() const;
     void                  oscPostfix() const;
-    const FString         captureXTermFont() const;
-    const FString         captureXTermTitle() const;
+    FString               captureXTermFont() const;
+    FString               captureXTermTitle() const;
     static void           enableXTermMouse();
     static void           disableXTermMouse();
     void                  enableXTermMetaSendsESC();
@@ -165,7 +165,7 @@ class FTermXTerminal final
 
 // FTermXTerminal inline functions
 //----------------------------------------------------------------------
-inline const FString FTermXTerminal::getClassName() const
+inline FString FTermXTerminal::getClassName() const
 { return "FTermXTerminal"; }
 
 //----------------------------------------------------------------------
@@ -177,35 +177,35 @@ inline fc::xtermCursorStyle FTermXTerminal::getCursorStyle() const
 { return cursor_style; }
 
 //----------------------------------------------------------------------
-inline const FString FTermXTerminal::getFont() const
+inline FString FTermXTerminal::getFont() const
 { return xterm_font; }
 
 //----------------------------------------------------------------------
-inline const FString FTermXTerminal::getTitle() const
+inline FString FTermXTerminal::getTitle() const
 { return xterm_title; }
 
 //----------------------------------------------------------------------
-inline const FString FTermXTerminal::getForeground() const
+inline FString FTermXTerminal::getForeground() const
 { return foreground_color; }
 
 //----------------------------------------------------------------------
-inline const FString FTermXTerminal::getBackground() const
+inline FString FTermXTerminal::getBackground() const
 { return background_color; }
 
 //----------------------------------------------------------------------
-inline const FString FTermXTerminal::getCursorColor() const
+inline FString FTermXTerminal::getCursorColor() const
 { return cursor_color; }
 
 //----------------------------------------------------------------------
-inline const FString FTermXTerminal::getMouseForeground() const
+inline FString FTermXTerminal::getMouseForeground() const
 { return mouse_foreground_color; }
 
 //----------------------------------------------------------------------
-inline const FString FTermXTerminal::getMouseBackground() const
+inline FString FTermXTerminal::getMouseBackground() const
 { return mouse_background_color; }
 
 //----------------------------------------------------------------------
-inline const FString FTermXTerminal::getHighlightBackground() const
+inline FString FTermXTerminal::getHighlightBackground() const
 { return highlight_background_color; }
 
 //----------------------------------------------------------------------

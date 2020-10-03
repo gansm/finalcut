@@ -70,7 +70,7 @@ class FStyle
     }
 
     // Accessor
-    const FString getClassName() const
+    FString getClassName() const
     { return "FStyle"; }
 
     FColor getStyle() const

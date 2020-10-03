@@ -33,9 +33,9 @@ namespace finalcut
 namespace fc
 {
 
-extern FKeyMap fkey[];
-extern const FMetakeyMap fmetakey[];
-extern const FKeyName fkeyname[];
+extern std::array<FKeyMap, 174> fkey;
+extern const std::array<FMetakeyMap, 228> fmetakey;
+extern const std::array<FKeyName, 388> fkeyname;
 
 }  // namespace fc
 

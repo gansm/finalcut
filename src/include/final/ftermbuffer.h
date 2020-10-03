@@ -79,7 +79,7 @@ class FTermBuffer
     FTermBuffer& operator << (const FColorPair&);
 
     // Accessors
-    virtual const FString  getClassName() const;
+    virtual FString        getClassName() const;
     std::size_t            getLength() const;
     const FCharVector&     getBuffer() const;
 
@@ -93,7 +93,7 @@ class FTermBuffer
     const_iterator         end() const;
     FChar                  front() const;
     FChar                  back() const;
-    const FString          toString() const;
+    FString                toString() const;
     void                   clear();
     template <typename... Args>
     int                    writef (const FString&, Args&&...);
@@ -169,7 +169,7 @@ inline FTermBuffer& FTermBuffer::operator << (const FColorPair& pair)
 }
 
 //----------------------------------------------------------------------
-inline const FString FTermBuffer::getClassName() const
+inline FString FTermBuffer::getClassName() const
 { return "FTermBuffer"; }
 
 //----------------------------------------------------------------------

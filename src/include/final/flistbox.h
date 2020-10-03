@@ -48,6 +48,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
@@ -83,7 +84,7 @@ class FListBoxItem
     FListBoxItem& operator = (const FListBoxItem&);
 
     // Accessors
-    virtual const FString getClassName() const;
+    virtual FString       getClassName() const;
     virtual FString       getText() const;
     template <typename DT>
     clean_fdata_t<DT>&    getData() const;
@@ -97,9 +98,12 @@ class FListBoxItem
     void                  clear();
 
   private:
+    // Using-declaration
+    using FDataAccessPtr = std::shared_ptr<FDataAccess>;
+
     // Data members
     FString               text{};
-    FDataAccess*          data_pointer{nullptr};
+    FDataAccessPtr        data_pointer{};
     fc::brackets_type     brackets{fc::NoBrackets};
     bool                  selected{false};
 
@@ -117,7 +121,7 @@ inline FListBoxItem::FListBoxItem (const FString& txt, DT&& data)
 { }
 
 //----------------------------------------------------------------------
-inline const FString FListBoxItem::getClassName() const
+inline FString FListBoxItem::getClassName() const
 { return "FListBoxItem"; }
 
 //----------------------------------------------------------------------
@@ -139,7 +143,8 @@ inline void FListBoxItem::setText (const FString& txt)
 template <typename DT>
 inline void FListBoxItem::setData (DT&& data)
 {
-  data_pointer = makeFData(std::forward<DT>(data));
+  const auto data_obj = makeFData(std::forward<DT>(data));
+  data_pointer.reset(data_obj);
 }
 
 //----------------------------------------------------------------------
@@ -179,7 +184,7 @@ class FListBox : public FWidget
     FListBox& operator = (const FListBox&) = delete;
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     std::size_t         getCount() const;
     FListBoxItem&       getItem (std::size_t);
     const FListBoxItem& getItem (std::size_t) const;
@@ -415,7 +420,7 @@ inline FListBox::FListBox ( Container container
 }
 
 //----------------------------------------------------------------------
-inline const FString FListBox::getClassName() const
+inline FString FListBox::getClassName() const
 { return "FListBox"; }
 
 //----------------------------------------------------------------------

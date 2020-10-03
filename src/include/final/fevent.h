@@ -80,6 +80,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <memory>
+
 #include "final/fc.h"
 #include "final/fdata.h"
 #include "final/fpoint.h"
@@ -185,9 +187,9 @@ class FWheelEvent : public FEvent  // wheel event
     int           getWheel() const;
 
   private:
-    FPoint  p;
-    FPoint  tp;
-    int     w;
+    FPoint  p{};
+    FPoint  tp{};
+    int     w{};
 };
 
 
@@ -354,9 +356,12 @@ class FUserEvent : public FEvent  // user event
     void              setData (T&&);
 
   private:
+    // Using-declaration
+    using FDataAccessPtr = std::shared_ptr<FDataAccess>;
+
+    // Data members
     int               uid{0};
-    FDataAccess*      data_pointer{nullptr};
-    bool              external_data_pointer{false};
+    FDataAccessPtr    data_pointer{nullptr};
 };
 
 //----------------------------------------------------------------------
@@ -377,15 +382,14 @@ inline clean_fdata_t<T>& FUserEvent::getData() const
 template <typename T>
 inline void FUserEvent::setFDataObject (T&& fdata)
 {
-  external_data_pointer = true;
-  data_pointer = &(std::forward<T>(fdata));
+  data_pointer.reset(&(std::forward<T>(fdata)));
 }
+
 //----------------------------------------------------------------------
 template <typename T>
 inline void FUserEvent::setData (T&& data)
 {
-  external_data_pointer = false;
-  data_pointer = makeFData(std::forward<T>(data));
+  data_pointer.reset(makeFData(std::forward<T>(data)));
 }
 
 }  // namespace finalcut

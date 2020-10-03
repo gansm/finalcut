@@ -382,11 +382,17 @@ bool FObject::delAllTimers() const
 // protected methods of FObject
 //----------------------------------------------------------------------
 void FObject::onTimer (FTimerEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive timer events for this object
+}
 
 //----------------------------------------------------------------------
 void FObject::onUserEvent (FUserEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive user events for this object
+}
 
 //----------------------------------------------------------------------
 uInt FObject::processTimerEvent()

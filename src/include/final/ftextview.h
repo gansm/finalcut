@@ -90,10 +90,10 @@ class FTextView : public FWidget
     FTextView& operator << (const std::string&);
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     std::size_t         getColumns() const;
     std::size_t         getRows() const;
-    const FString       getText() const;
+    FString             getText() const;
     const FStringList&  getLines() const;
 
     // Mutators
@@ -212,7 +212,7 @@ inline FTextView& FTextView::operator << (const std::string& string)
 }
 
 //----------------------------------------------------------------------
-inline const FString FTextView::getClassName() const
+inline FString FTextView::getClassName() const
 { return "FTextView"; }
 
 //----------------------------------------------------------------------

@@ -124,7 +124,7 @@ class FDataAccess
     virtual ~FDataAccess();
 
     // Accessors
-    virtual const FString getClassName() const
+    virtual FString getClassName() const
     {
       return "FDataAccess";
     }
@@ -225,7 +225,7 @@ class FData : public FDataAccess
     }
 
     // Accessors
-    const FString getClassName() const override
+    FString getClassName() const override
     {
       return "FData";
     }

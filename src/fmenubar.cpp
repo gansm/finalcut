@@ -268,17 +268,17 @@ void FMenuBar::calculateDimensions() const
   // find the maximum item width
   for (auto&& item : getItemList())
   {
-    int len = int(item->getTextWidth());
-    int item_width = len + 2;
+    auto len = item->getTextWidth();
+    auto item_width = len + 2;
 
     // set item geometry
-    item->setGeometry (item_pos, FSize{std::size_t(item_width), 1}, false);
+    item->setGeometry (item_pos, FSize{item_width, 1}, false);
 
     // set menu position
     if ( item->hasMenu() )
       item->getMenu()->setPos (item_pos, false);
 
-    item_pos.x_ref() += item_width;
+    item_pos.x_ref() += int(item_width);
   }
 }
 
@@ -681,7 +681,7 @@ void FMenuBar::adjustItems() const
   for (auto&& item : getItemList())
   {
     // get item width
-    int item_width = int(item->getWidth());
+    auto item_width = item->getWidth();
 
     if ( item->hasMenu() )
     {
@@ -694,7 +694,7 @@ void FMenuBar::adjustItems() const
       menu->adjustItems();
     }
 
-    item_X += item_width;
+    item_X += int(item_width);
   }
 }
 

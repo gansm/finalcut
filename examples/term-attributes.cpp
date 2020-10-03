@@ -63,7 +63,7 @@ class AttribDlg final : public finalcut::FDialog
 
   private:
     // Constants
-    static constexpr FColor UNDEFINED = static_cast<FColor>(-2);
+    static constexpr auto UNDEFINED = static_cast<FColor>(-2);
 
     // Method
     void adjustSize() override;
@@ -498,8 +498,7 @@ int main (int argc, char* argv[])
   // This object will be automatically deleted by
   // the parent object "app" (FObject destructor).
   AttribDlg dialog{&app};
-
-  dialog.setGeometry (FPoint{6, 2}, FSize{69, 21});
+  dialog.setSize (FSize{69, 21});
   dialog.setShadow();
 
   // Create the attribute demo widget as a child object from the dialog

@@ -36,17 +36,10 @@ namespace finalcut
 namespace fc
 {
 
-extern uInt character[][fc::NUM_OF_ENCODINGS];
-extern const std::size_t last_char_item;
-
-extern const int vt100_key_to_utf8[][2];
-extern const std::size_t last_key_item;
-
-extern const wchar_t cp437_ucs[][2];
-extern const std::size_t last_cp437_item;
-
-extern const wchar_t halfwidth_fullwidth[][2];
-extern const std::size_t last_halfwidth_item;
+extern std::array<std::array<uInt, fc::NUM_OF_ENCODINGS>, 115> character;
+extern const std::array<std::array<int, 2>, 39> vt100_key_to_utf8;
+extern const std::array<std::array<wchar_t, 2>, 256> cp437_ucs;
+extern const std::array<std::array<wchar_t, 2>, 227> halfwidth_fullwidth;
 
 }  // namespace fc
 

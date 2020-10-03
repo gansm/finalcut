@@ -77,7 +77,7 @@ class FButton : public FWidget
     FButton& operator = (const FString&);
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     FString             getText() const;
 
     // Mutators
@@ -134,7 +134,7 @@ class FButton : public FWidget
 
   private:
     // Constants
-    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Methods
     void                init();
@@ -174,7 +174,7 @@ class FButton : public FWidget
 
 // FButton inline functions
 //----------------------------------------------------------------------
-inline const FString FButton::getClassName() const
+inline FString FButton::getClassName() const
 { return "FButton"; }
 
 //----------------------------------------------------------------------

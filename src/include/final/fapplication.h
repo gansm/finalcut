@@ -110,7 +110,7 @@ class FApplication : public FWidget
     FApplication& operator = (const FApplication&) = delete;
 
     // Accessors
-    const FString         getClassName() const override;
+    FString               getClassName() const override;
     int                   getArgc() const;
     char**                getArgv() const;
     static FApplication*  getApplicationObject();
@@ -229,7 +229,7 @@ FApplication* getFApplication();
 
 // FApplication inline functions
 //----------------------------------------------------------------------
-inline const FString FApplication::getClassName() const
+inline FString FApplication::getClassName() const
 { return "FApplication"; }
 
 //----------------------------------------------------------------------

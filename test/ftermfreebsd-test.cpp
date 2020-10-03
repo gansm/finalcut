@@ -819,11 +819,11 @@ wchar_t ftermfreebsdTest::charEncode (wchar_t c)
 {
   wchar_t ch_enc{L'\0'};
 
-  for (std::size_t i{0}; i <= finalcut::fc::last_char_item; i++)
+  for (auto&& entry : finalcut::fc::character)
   {
-    if ( finalcut::fc::character[i][finalcut::fc::UTF8] == uInt(c) )
+    if ( entry[finalcut::fc::UTF8] == uInt(c) )
     {
-      ch_enc = wchar_t(finalcut::fc::character[i][finalcut::fc::PC]);
+      ch_enc = wchar_t(entry[finalcut::fc::PC]);
       break;
     }
   }

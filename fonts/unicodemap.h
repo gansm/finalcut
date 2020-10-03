@@ -11,14 +11,16 @@
   #include <sys/kd.h>
 #endif
 
+#include <array>
+
 namespace finalcut
 {
 
 namespace fc
 {
 
-constexpr struct unipair unicode_cp437_pairs[] =
-{
+constexpr std::array<struct unipair, 282> unicode_cp437_pairs =
+{{
   //  .----------- unicode
   //  |      .---- fontpos
   //  |      |
@@ -304,10 +306,10 @@ constexpr struct unipair unicode_cp437_pairs[] =
   {0x266a, 0x0d},
   {0x266b, 0x0e},
   {0x266c, 0x0e}
-};
+}};
 
-constexpr struct unipair unicode_newfont_pairs[] =
-{
+constexpr std::array<struct unipair, 299> unicode_newfont_pairs =
+{{
   //  .----------- unicode
   //  |      .---- fontpos
   //  |      |
@@ -610,7 +612,7 @@ constexpr struct unipair unicode_newfont_pairs[] =
   {0xe1f9, 0xf9},
   {0xe1fb, 0xfb},
   {0xe1fc, 0xfc}
-};
+}};
 
 }  // namespace fc
 

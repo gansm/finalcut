@@ -226,7 +226,7 @@ void RotoZoomer::onShow (finalcut::FShowEvent*)
     end = system_clock::now();
     generateReport();
     flush();
-    quit();
+    close();
   }
 }
 
@@ -261,7 +261,9 @@ void RotoZoomer::onKeyPress (finalcut::FKeyEvent* ev)
 //----------------------------------------------------------------------
 void RotoZoomer::onClose (finalcut::FCloseEvent* ev)
 {
-  if ( ! benchmark )
+  if ( benchmark )
+    ev->accept();
+  else
     finalcut::FApplication::closeConfirmationDialog (this, ev);
 }
 
@@ -305,6 +307,9 @@ int main (int argc, char* argv[])
                       || strcmp(argv[1], "-b") == 0 ) )
   {
     benchmark = true;
+    // Disable terminal data requests
+    auto& start_options = finalcut::FStartOptions::getFStartOptions();
+    start_options.terminal_data_request = false;
   }
 
   {  // Create the application object in this scope
@@ -317,8 +322,6 @@ int main (int argc, char* argv[])
 
     if ( benchmark )
       roto.setGeometry (FPoint{1, 1}, FSize{80, 24});
-    else
-      roto.setGeometry (FPoint{5, 1}, FSize{72, 23});
 
     roto.setShadow();
 

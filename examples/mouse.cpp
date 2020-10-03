@@ -537,8 +537,8 @@ void MouseDraw::adjustSize()
 {
   const std::size_t w{60};
   const std::size_t h{18};
-  const int x = 1 + int((getParentWidget()->getWidth() - w) / 2);
-  const int y = 1 + int((getParentWidget()->getHeight() - h) / 2);
+  const int x = 1 + int((getDesktopWidth() - w) / 2);
+  const int y = 1 + int((getDesktopHeight() - h) / 2);
   setGeometry (FPoint{x, y}, FSize{w, h}, false);
   finalcut::FDialog::adjustSize();
 }
@@ -590,7 +590,6 @@ int main (int argc, char* argv[])
 
   // Create a simple dialog box
   MouseDraw mouse_draw{&app};
-  mouse_draw.setGeometry (FPoint{12, 4}, FSize{60, 18});
 
   // Set dialog object mouse_draw as main widget
   finalcut::FWidget::setMainWidget(&mouse_draw);

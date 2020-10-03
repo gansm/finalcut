@@ -158,7 +158,7 @@ std::size_t FTerm::getColumnNumber()
 }
 
 //----------------------------------------------------------------------
-const FString FTerm::getKeyName (FKey keynum)
+FString FTerm::getKeyName (FKey keynum)
 {
   return keyboard->getKeyName (keynum);
 }
@@ -202,7 +202,7 @@ int FTerm::getMaxColor()
 //----------------------------------------------------------------------
 FTerm::FColorPalettePtr& FTerm::getColorPaletteTheme()
 {
-  static FColorPalettePtr* color_theme = new FColorPalettePtr();
+  static auto color_theme = new FColorPalettePtr();
   return *color_theme;
 }
 
@@ -820,16 +820,15 @@ int FTerm::openConsole()
   int fd = data->getTTYFileDescriptor();
   const char* termfilename = data->getTermFileName();
 
-  static const char* terminal_devices[] =
-  {
+  constexpr std::array<const char*, 6> terminal_devices =
+  {{
     "/proc/self/fd/0",
     "/dev/tty",
     "/dev/tty0",
     "/dev/vc/0",
     "/dev/systty",
-    "/dev/console",
-    nullptr
-  };
+    "/dev/console"
+  }};
 
   if ( fd >= 0 )  // console is already opened
     return 0;
@@ -837,9 +836,9 @@ int FTerm::openConsole()
   if ( ! *termfilename || ! fsys )
     return 0;
 
-  for (std::size_t i{0}; terminal_devices[i] != nullptr; i++)
+  for (auto&& entry : terminal_devices)
   {
-    fd = fsys->open(terminal_devices[i], O_RDWR, 0);
+    fd = fsys->open(entry, O_RDWR, 0);
     data->setTTYFileDescriptor(fd);
 
     if ( fd >= 0 )
@@ -1191,11 +1190,11 @@ wchar_t FTerm::charEncode (wchar_t c, fc::encoding enc)
 {
   wchar_t ch_enc = c;
 
-  for (std::size_t i{0}; i <= fc::last_char_item; i++)
+  for (auto&& entry : fc::character)
   {
-    if ( fc::character[i][fc::UTF8] == uInt(c) )
+    if ( entry[fc::UTF8] == uInt(c) )
     {
-      ch_enc = wchar_t(fc::character[i][enc]);
+      ch_enc = wchar_t(entry[enc]);
       break;
     }
   }
@@ -1235,7 +1234,7 @@ bool FTerm::scrollTermReverse()
 //----------------------------------------------------------------------
 FTerm::defaultPutChar& FTerm::putchar()
 {
-  static defaultPutChar* fputchar = new defaultPutChar();
+  static auto fputchar = new defaultPutChar();
   return *fputchar;
 }
 
@@ -1408,8 +1407,8 @@ void FTerm::init_alt_charset()
     for (std::size_t n{0}; TCAP(fc::t_acs_chars)[n]; n += 2)
     {
       // insert the VT100 key/value pairs into a map
-      const uChar p1 = uChar(TCAP(fc::t_acs_chars)[n]);
-      const uChar p2 = uChar(TCAP(fc::t_acs_chars)[n + 1]);
+      const auto p1 = uChar(TCAP(fc::t_acs_chars)[n]);
+      const auto p2 = uChar(TCAP(fc::t_acs_chars)[n + 1]);
       vt100_alt_char[p1] = p2;
     }
   }
@@ -1421,19 +1420,18 @@ void FTerm::init_alt_charset()
   };
 
   // Update array 'character' with discovered VT100 pairs
-  for (std::size_t n{0}; n <= fc::last_key_item; n++ )
+  for (auto&& pair : fc::vt100_key_to_utf8)
   {
-    const uChar keyChar = uChar(fc::vt100_key_to_utf8[n][vt100_key]);
-    const uChar altChar = uChar(vt100_alt_char[keyChar]);
-    const uInt utf8char = uInt(fc::vt100_key_to_utf8[n][utf8_char]);
-    const fc::encoding num{fc::NUM_OF_ENCODINGS};
-
-    uInt* p = std::find ( fc::character[0]
-                        , fc::character[fc::last_char_item] + num
-                        , utf8char );
-    if ( p != fc::character[fc::last_char_item] + num )  // found in character
+    const auto keyChar = uChar(pair[vt100_key]);
+    const auto altChar = uChar(vt100_alt_char[keyChar]);
+    const auto utf8char = uInt(pair[utf8_char]);
+    const auto p = std::find_if ( fc::character.begin()
+                                , fc::character.end()
+                                , [&utf8char] (std::array<uInt, 4> entry)
+                                  { return entry[0] == utf8char; } );
+    if ( p != fc::character.end() )  // found in character
     {
-      const int item = int(std::distance(fc::character[0], p) / num);
+      const auto item = std::size_t(std::distance(fc::character.begin(), p));
 
       if ( altChar )                 // update alternate character set
         fc::character[item][fc::VT100] = altChar;
@@ -1506,24 +1504,24 @@ void FTerm::init_cygwin_charmap()
     return;
 
   // PC encoding changes
-  for (std::size_t i{0}; i <= fc::last_char_item; i++ )
+  for (auto&& entry : fc::character)
   {
-    if ( fc::character[i][fc::UTF8] == fc::BlackUpPointingTriangle )  // ▲
-      fc::character[i][fc::PC] = 0x18;
+    if ( entry[fc::UTF8] == fc::BlackUpPointingTriangle )  // ▲
+      entry[fc::PC] = 0x18;
 
-    if ( fc::character[i][fc::UTF8] == fc::BlackDownPointingTriangle )  // ▼
-      fc::character[i][fc::PC] = 0x19;
+    if ( entry[fc::UTF8] == fc::BlackDownPointingTriangle )  // ▼
+      entry[fc::PC] = 0x19;
 
-    if ( fc::character[i][fc::UTF8] == fc::InverseBullet  // ◘
-      || fc::character[i][fc::UTF8] == fc::InverseWhiteCircle  // ◙
-      || fc::character[i][fc::UTF8] == fc::UpDownArrow  // ↕
-      || fc::character[i][fc::UTF8] == fc::LeftRightArrow  // ↔
-      || fc::character[i][fc::UTF8] == fc::DoubleExclamationMark  // ‼
-      || fc::character[i][fc::UTF8] == fc::BlackRectangle  // ▬
-      || fc::character[i][fc::UTF8] == fc::RightwardsArrow  // →
-      || fc::character[i][fc::UTF8] == fc::Section  // §
-      || fc::character[i][fc::UTF8] == fc::SquareRoot )  // SquareRoot √
-      fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
+    if ( entry[fc::UTF8] == fc::InverseBullet  // ◘
+      || entry[fc::UTF8] == fc::InverseWhiteCircle  // ◙
+      || entry[fc::UTF8] == fc::UpDownArrow  // ↕
+      || entry[fc::UTF8] == fc::LeftRightArrow  // ↔
+      || entry[fc::UTF8] == fc::DoubleExclamationMark  // ‼
+      || entry[fc::UTF8] == fc::BlackRectangle  // ▬
+      || entry[fc::UTF8] == fc::RightwardsArrow  // →
+      || entry[fc::UTF8] == fc::Section  // §
+      || entry[fc::UTF8] == fc::SquareRoot )  // SquareRoot √
+      entry[fc::PC] = entry[fc::ASCII];
   }
 
   // General encoding changes
@@ -1560,9 +1558,9 @@ void FTerm::init_teraterm_charmap()
   if ( ! isTeraTerm() )
     return;
 
-  for (std::size_t i{0}; i <= fc::last_char_item; i++ )
-    if ( fc::character[i][fc::PC] < 0x20 )
-      fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
+  for (auto&& entry : fc::character)
+    if ( entry[fc::PC] < 0x20 )
+      entry[fc::PC] = entry[fc::ASCII];
 }
 
 //----------------------------------------------------------------------
