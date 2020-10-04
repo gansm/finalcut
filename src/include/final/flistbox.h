@@ -50,6 +50,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "final/fdata.h"
@@ -386,7 +387,7 @@ constexpr clean_fdata_t<Container>& getContainer(FDataAccess* container)
   return static_cast<FData<clean_fdata_t<Container>>&>(*container).get();
 }
 
-}  // namespace FListBoxHelper
+}  // namespace flistboxhelper
 
 // FListBox inline functions
 //----------------------------------------------------------------------

@@ -25,6 +25,7 @@
 #endif
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <numeric>
 #include <utility>

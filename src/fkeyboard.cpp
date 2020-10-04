@@ -26,6 +26,7 @@
   #include <sys/select.h>  // need for FD_ZERO, FD_SET, FD_CLR, ...
 #endif
 
+#include <algorithm>
 #include <string>
 
 #include "final/fkeyboard.h"

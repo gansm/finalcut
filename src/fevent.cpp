@@ -21,7 +21,6 @@
 ***********************************************************************/
 
 #include <cstdio>
-
 #include "final/fevent.h"
 
 namespace finalcut
