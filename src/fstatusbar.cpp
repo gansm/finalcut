@@ -516,7 +516,7 @@ void FStatusBar::init()
 {
   const auto& r = getRootWidget();
   const std::size_t w = r->getWidth();
-  const int h = int(r->getHeight());
+  const auto h = int(r->getHeight());
   // initialize geometry values
   setGeometry (FPoint{1, h}, FSize{w, 1}, false);
   setAlwaysOnTop();

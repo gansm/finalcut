@@ -428,7 +428,7 @@ void MouseDraw::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void MouseDraw::draw()
 {
-  const int y_max = int(getHeight());
+  const auto y_max = int(getHeight());
   finalcut::FDialog::draw();
   setColor();
 
@@ -463,8 +463,8 @@ void MouseDraw::draw()
 //----------------------------------------------------------------------
 void MouseDraw::drawBrush (int x, int y, bool swap_color)
 {
-  const int Cols = int(getWidth());
-  const int Lines = int(getHeight());
+  const auto Cols = int(getWidth());
+  const auto Lines = int(getHeight());
 
   if ( x > 10 && x < Cols && y > 2 && y < Lines )
   {

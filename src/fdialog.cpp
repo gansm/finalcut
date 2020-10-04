@@ -226,8 +226,8 @@ void FDialog::setPos (const FPoint& pos, bool)
   if ( getTermGeometry().overlap(old_geometry) )
   {
     FRect restore{};
-    const std::size_t d_width = std::size_t(std::abs(dx));
-    const std::size_t d_height = std::size_t(std::abs(dy));
+    const auto d_width = std::size_t(std::abs(dx));
+    const auto d_height = std::size_t(std::abs(dy));
 
     // dx > 0 : move left
     // dx = 0 : move vertical
@@ -354,8 +354,8 @@ void FDialog::setSize (const FSize& size, bool adjust)
   // dh = 0 : scale only width
   // dh < 0 : scale up height
 
-  const std::size_t d_width = std::size_t(dw);
-  const std::size_t d_height = std::size_t(dh);
+  const auto d_width = std::size_t(dw);
+  const auto d_height = std::size_t(dh);
 
   // restoring the non-covered terminal areas
   if ( dw > 0 )
@@ -492,7 +492,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseDown (FMouseEvent* ev)
 {
-  const int width = int(getWidth());
+  const auto width = int(getWidth());
 
   const mouseStates ms =
   {
@@ -1500,7 +1500,7 @@ bool FDialog::isOutsideTerminal (const FPoint& pos) const
 }
 
 //----------------------------------------------------------------------
-bool FDialog::isLeftOutside()
+bool FDialog::isLeftOutside() const
 {
   if ( getX() > int(getMaxWidth()) )
     return true;
@@ -1509,7 +1509,7 @@ bool FDialog::isLeftOutside()
 }
 
 //----------------------------------------------------------------------
-bool FDialog::isBottomOutside()
+bool FDialog::isBottomOutside() const
 {
   if ( getY() > int(getMaxHeight()) )
     return true;

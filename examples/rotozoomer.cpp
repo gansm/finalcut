@@ -129,10 +129,10 @@ void RotoZoomer::draw()
     start = system_clock::now();
 
   finalcut::FDialog::draw();
-  double cx = double(80.0 / 2.0 + (80.0 / 2.0 * std::sin(double(path) / 50.0)));
-  double cy = double(23.0 + (23.0 * std::cos(double(path) / 50.0)));
-  double r  = double(128.0 + 96.0 * std::cos(double(path) / 10.0));
-  double a  = double(path) / 50.0;
+  auto cx = double(80.0 / 2.0 + (80.0 / 2.0 * std::sin(double(path) / 50.0)));
+  auto cy = double(23.0 + (23.0 * std::cos(double(path) / 50.0)));
+  auto r  = double(128.0 + 96.0 * std::cos(double(path) / 10.0));
+  auto a  = double(path) / 50.0;
   rotozoomer (cx, cy, r, a);
 }
 
@@ -141,12 +141,12 @@ void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
 {
   const int Cols = int(getClientWidth());
   const int Lines = int(getClientHeight());
-  int  Ax   = int(4096.0 * (cx + r * std::cos(a)));
-  int  Ay   = int(4096.0 * (cy + r * std::sin(a)));
-  int  Bx   = int(4096.0 * (cx + r * std::cos(a + 2.02358)));
-  int  By   = int(4096.0 * (cy + r * std::sin(a + 2.02358)));
-  int  Cx   = int(4096.0 * (cx + r * std::cos(a - 1.11701)));
-  int  Cy   = int(4096.0 * (cy + r * std::sin(a - 1.11701)));
+  auto Ax   = int(4096.0 * (cx + r * std::cos(a)));
+  auto Ay   = int(4096.0 * (cy + r * std::sin(a)));
+  auto Bx   = int(4096.0 * (cx + r * std::cos(a + 2.02358)));
+  auto By   = int(4096.0 * (cy + r * std::sin(a + 2.02358)));
+  auto Cx   = int(4096.0 * (cx + r * std::cos(a - 1.11701)));
+  auto Cy   = int(4096.0 * (cy + r * std::sin(a - 1.11701)));
   int  dxdx = (Bx - Ax) / 80;
   int  dydx = (By - Ay) / 80;
   int  dxdy = (Cx - Ax) / 23;

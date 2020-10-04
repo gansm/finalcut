@@ -174,12 +174,12 @@ class FTermDetection final
     static bool           get256colorEnvString();
     static const char*    termtype_256color_quirks();
     static const char*    determineMaxColor (const char[]);
-    static const FString  getXTermColorName (FColor);
+    static FString        getXTermColorName (FColor);
     static const char*    parseAnswerbackMsg (const char[]);
-    static const FString  getAnswerbackMsg();
+    static FString        getAnswerbackMsg();
     static const char*    parseSecDA (const char[]);
     static int            str2int (const FString&);
-    static const FString  getSecDA();
+    static FString        getSecDA();
     static const char*    secDA_Analysis (const char[]);
     static const char*    secDA_Analysis_0 (const char[]);
     static const char*    secDA_Analysis_1 (const char[]);

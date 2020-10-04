@@ -752,9 +752,9 @@ void FLineEdit::drawInputField()
 
   // set the cursor to the insert pos.
   const auto cursor_pos_column = getCursorColumnPos();
-  const int xpos = int(2 + cursor_pos_column
-                         - text_offset_column
-                         + char_width_offset);
+  const auto xpos = int(2 + cursor_pos_column
+                          - text_offset_column
+                          + char_width_offset);
   setCursorPos ({xpos, 1});
 }
 
@@ -802,7 +802,7 @@ inline std::size_t FLineEdit::getCursorColumnPos() const
 }
 
 //----------------------------------------------------------------------
-inline const FString FLineEdit::getPasswordText() const
+inline FString FLineEdit::getPasswordText() const
 {
   return FString{text.getLength(), fc::Bullet};  // •
 }

@@ -185,7 +185,7 @@ class FLineEdit : public FWidget
     std::size_t         printTextField();
     std::size_t         printPassword();
     std::size_t         getCursorColumnPos() const;
-    const FString       getPasswordText() const;
+    FString             getPasswordText() const;
     bool                isPasswordField() const;
     offsetPair          endPosToOffset (std::size_t);
     std::size_t         clickPosToCursorPos (std::size_t);

@@ -149,7 +149,7 @@ class FVTerm
     FTermArea*&           getVWin();
     const FTermArea*      getVWin() const;
     FPoint                getPrintCursor();
-    static const FChar    getAttribute();
+    static FChar          getAttribute();
     FTerm&                getFTerm() const;
 
     // Mutators
@@ -627,7 +627,7 @@ inline const FVTerm::FTermArea* FVTerm::getVWin() const
 { return vwin; }
 
 //----------------------------------------------------------------------
-inline const FChar FVTerm::getAttribute()
+inline FChar FVTerm::getAttribute()
 { return next_attribute; }
 
 //----------------------------------------------------------------------

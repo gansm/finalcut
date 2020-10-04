@@ -254,7 +254,7 @@ bool FObject::isTimeout (const timeval* time, uInt64 timeout)
     diff.tv_usec += 1000000;
   }
 
-  const uInt64 diff_usec = uInt64((diff.tv_sec * 1000000) + diff.tv_usec);
+  const auto diff_usec = uInt64((diff.tv_sec * 1000000) + diff.tv_usec);
   return ( diff_usec > timeout );
 }
 

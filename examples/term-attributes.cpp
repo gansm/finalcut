@@ -177,8 +177,8 @@ void AttribDlg::cb_back()
 //----------------------------------------------------------------------
 void AttribDlg::adjustSize()
 {
-  int x = int((getDesktopWidth() - getWidth()) / 2);
-  int y = int((getDesktopHeight() - getHeight()) / 2) + 1;
+  auto x = int((getDesktopWidth() - getWidth()) / 2);
+  auto y = int((getDesktopHeight() - getHeight()) / 2) + 1;
 
   if ( x < 1 )
     x = 1;

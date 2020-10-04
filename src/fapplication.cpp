@@ -133,7 +133,7 @@ FWidget* FApplication::getKeyboardWidget()
 FApplication::FLogPtr& FApplication::getLog()
 {
   // Global logger object
-  static FLogPtr* logger_ptr = new FLogPtr();
+  static auto logger_ptr = new FLogPtr();
 
   if ( logger_ptr && logger_ptr->get() == nullptr )
   {

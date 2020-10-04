@@ -63,7 +63,7 @@ jobs:
 
     - name: Create configure file
       run: autoreconf -v --install --force
-      
+
     - name: Create makefiles
       run: ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -pedantic"
 

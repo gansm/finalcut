@@ -167,7 +167,7 @@ FFileDialog& FFileDialog::operator = (const FFileDialog& fdlg)
 //----------------------------------------------------------------------
 FString FFileDialog::getSelectedFile() const
 {
-  const uLong n = uLong(filebrowser.currentItem() - 1);
+  const auto n = uLong(filebrowser.currentItem() - 1);
 
   if ( dir_entries[n].directory )
     return FString{""};
@@ -823,7 +823,7 @@ void FFileDialog::cb_processRowChanged()
 //----------------------------------------------------------------------
 void FFileDialog::cb_processClicked()
 {
-  const uLong n = uLong(filebrowser.currentItem() - 1);
+  const auto n = uLong(filebrowser.currentItem() - 1);
 
   if ( dir_entries[n].directory )
     changeDir(dir_entries[n].name);

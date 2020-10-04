@@ -243,7 +243,7 @@ class Window final : public finalcut::FDialog
 Window::Window (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  setSize ({40, 6});
+  FDialog::setSize ({40, 6});
 
   // Menu bar item
   File.setStatusbarMessage ("File management commands");
@@ -355,8 +355,8 @@ void Window::adjustSize()
 
   const std::size_t w = getDesktopWidth();
   const std::size_t h = getDesktopHeight();
-  const int X = int(1 + (w - 40) / 2);
-  int Y = int(1 + (h - 22) / 2);
+  const auto X = int(1 + (w - 40) / 2);
+  auto Y = int(1 + (h - 22) / 2);
   const int dx = ( w > 80 ) ? int(w - 80) / 2 : 0;
   const int dy = ( h > 24 ) ? int(h - 24) / 2 : 0;
 
@@ -371,7 +371,7 @@ void Window::adjustSize()
   {
     if ( (*iter)->is_open )
     {
-      const int n = int(std::distance(first, iter));
+      const auto n = int(std::distance(first, iter));
       const int x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
       const int y = dy + 11 + int(n / 3) * 3;
       (*iter)->dgl->setPos (FPoint{x, y});
@@ -469,7 +469,7 @@ void Window::cb_createWindows()
       win_dat->dgl = win;
       win_dat->is_open = true;
       win->setText(win_dat->title);
-      const int n = int(std::distance(first, iter));
+      const auto n = int(std::distance(first, iter));
       const int x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
       const int y = dy + 11 + int(n / 3) * 3;
       win->setGeometry (FPoint{x, y}, FSize{20, 8});

@@ -157,7 +157,7 @@ class FScrollView : public FWidget
     static constexpr int horizontal_border_spacing = 2;
 
     // Accessors
-    const FPoint        getViewportCursorPos() const;
+    FPoint              getViewportCursorPos() const;
 
     // Methods
     void                init();

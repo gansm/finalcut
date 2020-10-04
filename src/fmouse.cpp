@@ -563,8 +563,8 @@ void FMouseX11::processEvent (struct timeval* time)
   // Parse and interpret the X11 xterm mouse string
 
   const auto& mouse_position = getPos();
-  const uChar x = uChar(x11_mouse[1] - 0x20);
-  const uChar y = uChar(x11_mouse[2] - 0x20);
+  const auto x = uChar(x11_mouse[1] - 0x20);
+  const auto y = uChar(x11_mouse[2] - 0x20);
   const int btn = x11_mouse[0];
   setNewPos (x, y);
   clearButtonState();

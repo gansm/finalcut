@@ -88,18 +88,18 @@ void FKeyboard::fetchKeyCode()
 //----------------------------------------------------------------------
 FString FKeyboard::getKeyName (const FKey keynum) const
 {
-  const auto& key = std::find_if
+  const auto& found_key = std::find_if
   (
     fc::fkeyname.begin(),
     fc::fkeyname.end(),
-    [&keynum] (fc::FKeyName kn)
+    [&keynum] (const fc::FKeyName& kn)
     {
       return (kn.num > 0 && kn.num == keynum);
     }
   );
 
-  if ( key != fc::fkeyname.end() )
-    return FString{key->string};
+  if ( found_key != fc::fkeyname.end() )
+    return FString{found_key->string};
 
   if ( keynum > 32 && keynum < 127 )
     return FString{char(keynum)};
@@ -296,7 +296,7 @@ inline FKey FKeyboard::getSingleKey()
 
   std::size_t n{};
   std::size_t len{1};
-  const uChar firstchar = uChar(fifo_buf[0]);
+  const auto firstchar = uChar(fifo_buf[0]);
   FKey keycode{};
 
   // Look for a utf-8 character
@@ -385,7 +385,7 @@ FKey FKeyboard::UTF8decode (const char utf8[]) const
 
   for (std::size_t i{0}; i < len; ++i)
   {
-    const uChar ch = uChar(utf8[i]);
+    const auto ch = uChar(utf8[i]);
 
     if ( (ch & 0xc0) == 0x80 )
     {
@@ -478,7 +478,7 @@ void FKeyboard::parseKeyBuffer()
 //----------------------------------------------------------------------
 FKey FKeyboard::parseKeyString()
 {
-  const uChar firstchar = uChar(fifo_buf[0]);
+  const auto firstchar = uChar(fifo_buf[0]);
 
   if ( firstchar == ESC[0] )
   {

@@ -200,8 +200,8 @@ class FDialog : public FWindow
     void                  raiseActivateDialog();
     void                  lowerActivateDialog();
     bool                  isOutsideTerminal (const FPoint&) const;
-    bool                  isLeftOutside();
-    bool                  isBottomOutside();
+    bool                  isLeftOutside() const;
+    bool                  isBottomOutside() const;
     bool                  isLowerRightResizeCorner (const mouseStates&) const;
     void                  resizeMouseDown (const mouseStates&);
     void                  resizeMouseUpMove (const mouseStates&, bool = false);

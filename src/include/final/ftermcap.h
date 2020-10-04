@@ -55,6 +55,7 @@
   #undef buttons  // from term.h
 #endif
 
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>

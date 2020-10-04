@@ -89,7 +89,7 @@ Dialog::Dialog (FWidget* parent)
 void Dialog::adjustSize()
 {
   finalcut::FDialog::adjustSize();
-  int x = int((getDesktopWidth() - getWidth()) / 2);
+  auto x = int((getDesktopWidth() - getWidth()) / 2);
   const int y = 5;
 
   if ( x < 1 )

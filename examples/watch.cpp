@@ -192,7 +192,7 @@ void Watch::cb_seconds()
 //----------------------------------------------------------------------
 void Watch::adjustSize()
 {
-  const int pw = int(getDesktopWidth());
+  const auto pw = int(getDesktopWidth());
   setX (1 + (pw - 22) / 2, false);
   setY (3, false);
   finalcut::FDialog::adjustSize();

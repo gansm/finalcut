@@ -213,7 +213,7 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   ibg->unsetTransparentShadow();
 
   // Set statusbar text for this window
-  setStatusbarMessage("Press Q to quit");
+  FDialog::setStatusbarMessage("Press Q to quit");
 
   unsetTransparentShadow();
   activateDialog();

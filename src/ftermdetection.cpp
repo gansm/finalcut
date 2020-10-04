@@ -548,7 +548,7 @@ const char* FTermDetection::determineMaxColor (const char current_termtype[])
 }
 
 //----------------------------------------------------------------------
-const FString FTermDetection::getXTermColorName (FColor color)
+FString FTermDetection::getXTermColorName (FColor color)
 {
   FString color_str{""};
   fd_set ifds{};
@@ -629,7 +629,7 @@ const char* FTermDetection::parseAnswerbackMsg (const char current_termtype[])
 }
 
 //----------------------------------------------------------------------
-const FString FTermDetection::getAnswerbackMsg()
+FString FTermDetection::getAnswerbackMsg()
 {
   FString answerback{""};
   fd_set ifds{};
@@ -746,7 +746,7 @@ int FTermDetection::str2int (const FString& s)
 }
 
 //----------------------------------------------------------------------
-const FString FTermDetection::getSecDA()
+FString FTermDetection::getSecDA()
 {
   FString sec_da_str{""};
 

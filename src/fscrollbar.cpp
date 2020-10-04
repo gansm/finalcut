@@ -411,7 +411,7 @@ void FScrollbar::onTimer (FTimerEvent*)
     || ( scroll_type == FScrollbar::scrollPageForward
       && slider_pos == slider_click_stop_pos ) )
   {
-    const int max_slider_pos = int(bar_length - slider_length);
+    const auto max_slider_pos = int(bar_length - slider_length);
 
     if ( scroll_type == FScrollbar::scrollPageBackward
       && slider_pos == 0 )

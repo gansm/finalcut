@@ -206,20 +206,20 @@ class FWidget : public FVTerm, public FObject
     // Positioning and sizes accessors...
     int                      getX() const;
     int                      getY() const;
-    const FPoint             getPos() const;
+    FPoint                   getPos() const;
     int                      getTermX() const;
     int                      getTermY() const;
-    const FPoint             getTermPos() const;
+    FPoint                   getTermPos() const;
     std::size_t              getWidth() const;
     std::size_t              getHeight() const;
-    const FSize              getSize() const;
+    FSize                    getSize() const;
     int                      getTopPadding() const;
     int                      getLeftPadding() const;
     int                      getBottomPadding() const;
     int                      getRightPadding() const;
     std::size_t              getClientWidth() const;
     std::size_t              getClientHeight() const;
-    const FSize              getClientSize() const;
+    FSize                    getClientSize() const;
     std::size_t              getMaxWidth() const;
     std::size_t              getMaxHeight() const;
     const FSize&             getShadow() const;
@@ -332,7 +332,7 @@ class FWidget : public FVTerm, public FObject
     virtual void             hide();
     virtual bool             focusFirstChild();  // widget focusing
     virtual bool             focusLastChild();
-    const FPoint             termToWidgetPos (const FPoint&) const;
+    FPoint                   termToWidgetPos (const FPoint&) const;
     void                     print (const FPoint&) override;
     virtual void             move (const FPoint&);
     virtual void             drawBorder();
@@ -583,7 +583,7 @@ inline FStatusBar* FWidget::getStatusBar()
 //----------------------------------------------------------------------
 inline FWidget::FWidgetColorsPtr& FWidget::getColorTheme()
 {
-  static FWidgetColorsPtr* color_theme = new FWidgetColorsPtr();
+  static auto color_theme = new FWidgetColorsPtr();
   return *color_theme;
 }
 
@@ -616,7 +616,7 @@ inline int FWidget::getY() const  // y-position relative to the widget
 { return adjust_wsize.getY(); }
 
 //----------------------------------------------------------------------
-inline const FPoint FWidget::getPos() const  // position relative to the widget
+inline FPoint FWidget::getPos() const  // position relative to the widget
 {
   const FPoint& pos = adjust_wsize.getPos();  // initialize pos
   return pos;
@@ -631,7 +631,7 @@ inline int FWidget::getTermY() const  // y-position on terminal
 { return woffset.getY1() + adjust_wsize.getY(); }
 
 //----------------------------------------------------------------------
-inline const FPoint FWidget::getTermPos() const  // position on terminal
+inline FPoint FWidget::getTermPos() const  // position on terminal
 { return {getTermX(), getTermY()}; }
 
 //----------------------------------------------------------------------
@@ -643,7 +643,7 @@ inline std::size_t FWidget::getHeight() const
 { return adjust_wsize.getHeight(); }
 
 //----------------------------------------------------------------------
-inline const FSize FWidget::getSize() const
+inline FSize FWidget::getSize() const
 {
   const FSize& size = adjust_wsize.getSize();  // initialize size
   return size;
@@ -674,7 +674,7 @@ inline std::size_t FWidget::getClientHeight() const
 { return wclient_offset.getHeight(); }
 
 //----------------------------------------------------------------------
-inline const FSize FWidget::getClientSize() const
+inline FSize FWidget::getClientSize() const
 {
   const FSize& size = wclient_offset.getSize();  // initialize size
   return size;
@@ -1013,7 +1013,7 @@ inline void FWidget::delAccelerator()
 { delAccelerator(this); }
 
 //----------------------------------------------------------------------
-inline const FPoint FWidget::termToWidgetPos (const FPoint& tPos) const
+inline FPoint FWidget::termToWidgetPos (const FPoint& tPos) const
 {
   return { tPos.getX() + 1 - woffset.getX1() - adjust_wsize.getX()
          , tPos.getY() + 1 - woffset.getY1() - adjust_wsize.getY() };

@@ -50,7 +50,7 @@ sInt64 stringToNumber (const finalcut::FString& str)
   auto num_string = str.left(str.getLength() - 1);
   num_string = num_string.replace(",", "");
   num_string = num_string.replace('.', "");
-  sInt64 number = sInt64(num_string.toLong());
+  auto number = sInt64(num_string.toLong());
   return number;
 }
 
@@ -405,7 +405,7 @@ void Treeview::adjustSize()
 
   std::size_t h = getDesktopHeight() - 4;
   setHeight (h, false);
-  int x = int((getDesktopWidth() - getWidth()) / 2);
+  auto x = int((getDesktopWidth() - getWidth()) / 2);
 
   if ( x < 1 )
     x = 1;

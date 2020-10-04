@@ -692,7 +692,7 @@ inline void FListBox::mapKeyFunctions()
 //----------------------------------------------------------------------
 void FListBox::processKeyAction (FKeyEvent* ev)
 {
-  const int idx = int(ev->key());
+  const auto idx = int(ev->key());
 
   if ( key_map.find(idx) != key_map.end() )
   {
@@ -933,7 +933,7 @@ inline void FListBox::drawListBracketsLine ( int y
     printLeftBracket (iter->brackets);
   }
 
-  const std::size_t first = std::size_t(xoffset);
+  const auto first = std::size_t(xoffset);
   const std::size_t max_width = getWidth() - nf_offset - 4 - b;
   const FString element(getColumnSubString (getString(iter), first, max_width));
   std::size_t column_width = getColumnWidth(element);
@@ -1233,7 +1233,7 @@ void FListBox::wheelUp (int pagesize)
 void FListBox::wheelDown (int pagesize)
 {
   const std::size_t element_count = getCount();
-  int yoffset_end = int(element_count - getClientHeight());
+  auto yoffset_end = int(element_count - getClientHeight());
 
   if ( yoffset_end < 0 )
     yoffset_end = 0;
@@ -1366,7 +1366,7 @@ void FListBox::prevListItem (int distance)
 void FListBox::nextListItem (int distance)
 {
   const std::size_t element_count = getCount();
-  const int yoffset_end = int(element_count - getClientHeight());
+  const auto yoffset_end = int(element_count - getClientHeight());
 
   if ( current == element_count )
     return;
@@ -1407,7 +1407,7 @@ void FListBox::scrollToX (int val)
 void FListBox::scrollToY (int val)
 {
   const std::size_t element_count = getCount();
-  const int yoffset_end = int(element_count - getClientHeight());
+  const auto yoffset_end = int(element_count - getClientHeight());
 
   if ( yoffset == val )
     return;
@@ -1516,7 +1516,7 @@ inline void FListBox::firstPos()
 inline void FListBox::lastPos()
 {
   const std::size_t element_count = getCount();
-  const int yoffset_end = int(element_count - getClientHeight());
+  const auto yoffset_end = int(element_count - getClientHeight());
   current = element_count;
 
   if ( current > getClientHeight() )
