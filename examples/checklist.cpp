@@ -82,7 +82,7 @@ CheckList::CheckList (finalcut::FWidget* parent)
   FDialog::setText (L"Shopping list");
   const std::size_t nf_offset = ( finalcut::FTerm::isNewFont() ) ? 1 : 0;
   FDialog::setSize (FSize{28 + nf_offset, 13} );
-  setShadow();
+  setShadow();  // Instead of the transparent window shadow
   listview.ignorePadding();
   listview.setGeometry ( FPoint{1 + int(nf_offset), 2}
                        , FSize{getWidth() - nf_offset, getHeight() - 1} );

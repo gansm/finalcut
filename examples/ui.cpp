@@ -1067,7 +1067,7 @@ int main (int argc, char* argv[])
   MyDialog d{&app};
   d.setText (title);
   d.setSize (FSize{56, app.getHeight() - 4});
-  d.setShadow();
+  d.setShadow();  // Instead of the transparent window shadow
 
   // Set the dialog object d as the main widget of the application.
   // When you close the main widget, the application will be closed.

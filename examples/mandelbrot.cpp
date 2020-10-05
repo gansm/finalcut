@@ -167,7 +167,7 @@ int main (int argc, char* argv[])
   // Create a simple dialog box
   Mandelbrot mb{&app};
   mb.setGeometry (FPoint{6, 1}, FSize{70, 23});
-  mb.setShadow();
+  mb.setShadow();  // Instead of the transparent window shadow
 
   // Set the mandelbrot object as main widget
   finalcut::FWidget::setMainWidget(&mb);

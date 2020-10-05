@@ -1,3 +1,6 @@
+2020-10-05  Markus Gans  <guru.mail@muenster.de>
+	* Now hides the input cursor when a widget gets hidden
+
 2020-10-04  Markus Gans  <guru.mail@muenster.de>
 	* Replaces some C-style arrays with std::array
 	* Now you can use the arrow keys to move a window into the visible area

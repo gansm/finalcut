@@ -800,23 +800,23 @@ void FVTerm::removeArea (FTermArea*& area)
 {
   // remove the virtual window
 
-  if ( area != nullptr )
+  if ( area == nullptr )
+    return;
+
+  if ( area->changes != nullptr )
   {
-    if ( area->changes != nullptr )
-    {
-      delete[] area->changes;
-      area->changes = nullptr;
-    }
-
-    if ( area->data != nullptr )
-    {
-      delete[] area->data;
-      area->data = nullptr;
-    }
-
-    delete area;
-    area = nullptr;
+    delete[] area->changes;
+    area->changes = nullptr;
   }
+
+  if ( area->data != nullptr )
+  {
+    delete[] area->data;
+    area->data = nullptr;
+  }
+
+  delete area;
+  area = nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -876,7 +876,7 @@ bool FVTerm::updateVTermCursor (const FTermArea* area) const
   if ( ! area )
     return false;
 
-  if ( area != active_area )
+  if ( ! isActive(area) )
     return false;
 
   if ( ! area->visible )

@@ -278,8 +278,17 @@ void FWindow::show()
 //----------------------------------------------------------------------
 void FWindow::hide()
 {
+  const auto& virtual_win = getVWin();
+
+  if ( isActive(virtual_win)
+    && virtual_win->visible
+    && virtual_win->input_cursor_visible )
+  {
+    hideVTermCursor();
+  }
+
   if ( isVirtualWindow() )
-    getVWin()->visible = false;
+    virtual_win->visible = false;
 
   FWidget::hide();
   const auto& t_geometry = getTermGeometryWithShadow();
@@ -680,7 +689,6 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
 
   const bool is_activated = activatePrevWindow();
   auto active_win = static_cast<FWindow*>(getActiveWindow());
-
 
   if ( ! is_activated
     && getWindowList() && getWindowList()->size() > 1 )

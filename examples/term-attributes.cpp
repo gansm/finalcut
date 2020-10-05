@@ -499,7 +499,7 @@ int main (int argc, char* argv[])
   // the parent object "app" (FObject destructor).
   AttribDlg dialog{&app};
   dialog.setSize (FSize{69, 21});
-  dialog.setShadow();
+  dialog.setShadow();  // Instead of the transparent window shadow
 
   // Create the attribute demo widget as a child object from the dialog
   AttribDemo demo(&dialog);

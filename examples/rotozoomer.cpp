@@ -139,8 +139,8 @@ void RotoZoomer::draw()
 //----------------------------------------------------------------------
 void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
 {
-  const int Cols = int(getClientWidth());
-  const int Lines = int(getClientHeight());
+  const auto Cols = int(getClientWidth());
+  const auto Lines = int(getClientHeight());
   auto Ax   = int(4096.0 * (cx + r * std::cos(a)));
   auto Ay   = int(4096.0 * (cy + r * std::sin(a)));
   auto Bx   = int(4096.0 * (cx + r * std::cos(a + 2.02358)));
@@ -323,7 +323,7 @@ int main (int argc, char* argv[])
     if ( benchmark )
       roto.setGeometry (FPoint{1, 1}, FSize{80, 24});
 
-    roto.setShadow();
+    roto.setShadow();  // Instead of the transparent window shadow
 
     // Set the RotoZoomer object as main widget
     finalcut::FWidget::setMainWidget(&roto);

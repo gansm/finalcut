@@ -292,6 +292,7 @@ class FVTerm
     void                  setActiveArea (FTermArea*) const;
 
     // Inquiries
+    bool                  isActive (const FTermArea*) const;
     bool                  hasPrintArea() const;
     bool                  hasChildPrintArea() const;
     bool                  isVirtualWindow() const;
@@ -307,6 +308,7 @@ class FVTerm
     static void           removeArea (FTermArea*&);
     static void           restoreVTerm (const FRect&);
     bool                  updateVTermCursor (const FTermArea*) const;
+    void                  hideVTermCursor() const;
     static void           setAreaCursor ( const FPoint&
                                         , bool, FTermArea* );
     static void           getArea (const FPoint&, const FTermArea*);
@@ -967,6 +969,10 @@ inline void FVTerm::setActiveArea (FTermArea* area) const
 { active_area = area; }
 
 //----------------------------------------------------------------------
+inline bool FVTerm::isActive (const FTermArea* area) const
+{ return bool( area == active_area ); }
+
+//----------------------------------------------------------------------
 inline bool FVTerm::hasPrintArea() const
 { return print_area; }
 
@@ -982,6 +988,9 @@ inline bool FVTerm::isVirtualWindow() const
 inline bool FVTerm::isCursorHideable() const
 { return cursor_hideable; }
 
+//----------------------------------------------------------------------
+inline void FVTerm::hideVTermCursor() const
+{ vterm->input_cursor_visible = false; }
 
 }  // namespace finalcut
 

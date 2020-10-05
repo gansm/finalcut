@@ -145,7 +145,7 @@ class FSystemImpl : public FSystem
     {
       va_list args{};
       va_start (args, flags);
-      mode_t mode = static_cast<mode_t>(va_arg (args, int));
+      auto mode = static_cast<mode_t>(va_arg (args, int));
       int ret = ::open (pathname, flags, mode);
       va_end (args);
       return ret;

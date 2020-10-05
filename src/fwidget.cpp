@@ -638,7 +638,7 @@ bool FWidget::setCursorPos (const FPoint& pos)
 
   widget_cursor_position.setPoint(pos);
 
-  if ( ! flags.focus || isWindowWidget() )
+  if ( ! flags.focus || flags.hidden || isWindowWidget() )
     return false;
 
   if ( ! FWindow::getWindowWidget(this) )
@@ -998,6 +998,11 @@ void FWidget::hide()
   if ( isVisible() )
   {
     flags.shown = false;
+
+    if ( flags.visible_cursor && FWidget::getFocusWidget() == this )
+    {
+      getPrintArea()->input_cursor_visible = false;
+    }
 
     if ( ! isDialogWidget()
       && FWidget::getFocusWidget() == this

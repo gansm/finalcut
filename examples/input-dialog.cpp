@@ -65,7 +65,7 @@ int main (int argc, char* argv[])
   finalcut::FDialog dgl{&app};
   dgl.setText ("Data input");
   dgl.setGeometry (FPoint{4, 2}, FSize{37, 22});
-  dgl.setShadow();
+  dgl.setShadow();  // Instead of the transparent window shadow
 
   // Create input fields
   finalcut::FLineEdit name_field {&dgl};
