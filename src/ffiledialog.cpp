@@ -25,6 +25,7 @@
   #include <strings.h>    // need for strcasecmp
 #endif
 
+#include <array>
 #include <vector>
 
 #include "final/fevent.h"
@@ -427,7 +428,7 @@ inline bool FFileDialog::patternMatch ( const char* const pattern
     std::strncat(search.data(), pattern, search.size() - std::strlen(search.data()) - 1);
   }
   else
-    std::strncpy(search.data(), pattern, search.size());
+    std::strncpy(search.data(), pattern, search.size() - 1);
 
   search[search.size() - 1] = '\0';
 
@@ -602,7 +603,7 @@ void FFileDialog::followSymLink (const char* const dir, FDirEntry& entry) const
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
 
-  std::strncpy (symLink.data(), dir, symLink.size());
+  std::strncpy (symLink.data(), dir, symLink.size() - 1);
   symLink[symLink.size() - 1] = '\0';
   std::strncat ( symLink.data()
                , entry.name.c_str()

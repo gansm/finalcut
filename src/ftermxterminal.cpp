@@ -765,56 +765,58 @@ FString FTermXTerminal::captureXTermFont() const
 {
   initCheck(FString{});
 
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
-    || FTermcap::osc_support )
+  if ( ! term_detection->isXTerminal()
+    && ! term_detection->isScreenTerm()
+    && ! FTermcap::osc_support )
   {
-    fd_set ifds{};
-    struct timeval tv{};
-    const int stdin_no = FTermios::getStdIn();
+    return FString{};
+  }
 
-    // Querying the terminal font
-    oscPrefix();
-    FTerm::putstring (OSC "50;?" BEL);
-    oscPostfix();
-    std::fflush(stdout);
-    FD_ZERO(&ifds);
-    FD_SET(stdin_no, &ifds);
-    tv.tv_sec  = 0;
-    tv.tv_usec = 150000;  // 150 ms
+  fd_set ifds{};
+  struct timeval tv{};
+  const int stdin_no = FTermios::getStdIn();
 
-    // Read the terminal answer
-    if ( select(stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0 )
-    {
-      std::array<char, 150> temp{};
-      std::size_t pos{0};
+  // Querying the terminal font
+  oscPrefix();
+  FTerm::putstring (OSC "50;?" BEL);
+  oscPostfix();
+  std::fflush(stdout);
+  FD_ZERO(&ifds);
+  FD_SET(stdin_no, &ifds);
+  tv.tv_sec  = 0;
+  tv.tv_usec = 150000;  // 150 ms
 
-      do
-      {
-        std::size_t bytes_free = temp.size() - pos - 1;
-        const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
+  // Read the terminal answer
+  if ( select(stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
+    return FString{};
 
-        if ( bytes <= 0 )
-          break;
+  std::array<char, 150> temp{};
+  std::size_t pos{0};
 
-        pos += std::size_t(bytes);
-      }
-      while ( pos < temp.size() && std::strchr(temp.data(), '\a') == nullptr );
+  do
+  {
+    std::size_t bytes_free = temp.size() - pos - 1;
+    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
 
-      if ( pos > 5 && temp[0] == ESC[0] && temp[1] == ']'
-        && temp[2] == '5' && temp[3] == '0' && temp[4] == ';' )
-      {
-        // Skip leading Esc ] 5 0 ;
-        char* str = &temp[5];
-        const std::size_t n = std::strlen(str);
+    if ( bytes <= 0 )
+      break;
 
-        // BEL + '\0' = string terminator
-        if ( n >= 5 && str[n - 1] == BEL[0] && str[n] == '\0' )
-          str[n - 1] = '\0';
+    pos += std::size_t(bytes);
+  }
+  while ( pos < temp.size() && std::strchr(temp.data(), '\a') == nullptr );
 
-        return FString{str};
-      }
-    }
+  if ( pos > 5 && temp[0] == ESC[0] && temp[1] == ']' && temp[2] == '5'
+               && temp[3] == '0' && temp[4] == ';' )
+  {
+    // Skip leading Esc ] 5 0 ;
+    char* str = &temp[5];
+    const std::size_t n = std::strlen(str);
+
+    // BEL + '\0' = string terminator
+    if ( n >= 5 && str[n - 1] == BEL[0] && str[n] == '\0' )
+      str[n - 1] = '\0';
+
+    return FString{str};
   }
 
   return FString{};
@@ -841,38 +843,38 @@ FString FTermXTerminal::captureXTermTitle() const
   tv.tv_usec = 150000;  // 150 ms
 
   // read the terminal answer
-  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0 )
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
+    return FString{};
+
+  std::array<char, 512> temp{};
+  std::size_t pos{0};
+
+  do
   {
-    std::array<char, 512> temp{};
-    std::size_t pos{0};
+    std::size_t bytes_free = temp.size() - pos - 1;
+    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
 
-    do
+    if ( bytes <= 0 )
+      break;
+
+    pos += std::size_t(bytes);
+  }
+  while ( pos < temp.size() && std::strstr(temp.data(), ESC "\\") == nullptr );
+
+  if ( pos > 6 && temp[0] == ESC[0] && temp[1] == ']' && temp[2] == 'l' )
+  {
+    // Skip leading Esc + ] + l = OSC l
+    char* str = &temp[3];
+    const std::size_t n = std::strlen(str);
+
+    // Esc + \ = OSC string terminator
+    if ( n >= 2 && str[n - 2] == ESC[0] && str[n - 1] == '\\' )
     {
-      std::size_t bytes_free = temp.size() - pos - 1;
-      const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
+      if ( n < 4 )
+        return FString{};
 
-      if ( bytes <= 0 )
-        break;
-
-      pos += std::size_t(bytes);
-    }
-    while ( pos < temp.size() && std::strstr(temp.data(), ESC "\\") == nullptr );
-
-    if ( pos > 6 && temp[0] == ESC[0] && temp[1] == ']' && temp[2] == 'l' )
-    {
-      // Skip leading Esc + ] + l = OSC l
-      char* str = &temp[3];
-      const std::size_t n = std::strlen(str);
-
-      // Esc + \ = OSC string terminator
-      if ( n >= 2 && str[n - 2] == ESC[0] && str[n - 1] == '\\' )
-      {
-        if ( n < 4 )
-          return FString{};
-
-        str[n - 2] = '\0';
-        return FString{str};
-      }
+      str[n - 2] = '\0';
+      return FString{str};
     }
   }
 

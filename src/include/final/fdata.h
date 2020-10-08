@@ -153,6 +153,8 @@ template <typename T>
 class FData : public FDataAccess
 {
   public:
+    typedef typename std::remove_cv<T>::type T_nocv;
+
     // Constructors
     explicit FData (T& v)  // constructor
       : value_ref{v}
@@ -244,8 +246,9 @@ class FData : public FDataAccess
     // Inquiries
     bool isInitializedCopy() const
     {
-      return bool( reinterpret_cast<void*>(&value)
-                == reinterpret_cast<void*>(&value_ref.get()) );
+      const auto& v = reinterpret_cast<void*>(const_cast<T_nocv*>(&value));
+      const auto& r = reinterpret_cast<void*>(const_cast<T_nocv*>(&value_ref.get()));
+      return bool( v == r );
     }
 
     bool isInitializedReference() const

@@ -545,39 +545,37 @@ FPoint readCursorPos()
   constexpr auto& DECXCPR{ESC "[6n"};
 
   // Report Cursor Position (DECXCPR)
-  const ssize_t ret = write(stdout_no, DECXCPR, std::strlen(DECXCPR));
+  if ( write(stdout_no, DECXCPR, std::strlen(DECXCPR)) < 1 )
+    return FPoint{x, y};
 
-  if ( ret > 0 )
+  std::fflush(stdout);
+  FD_ZERO(&ifds);
+  FD_SET(stdin_no, &ifds);
+  tv.tv_sec  = 0;
+  tv.tv_usec = 100000;  // 100 ms
+
+  // Read the answer
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) != 1 )
+    return FPoint{x, y};
+
+  constexpr auto parse = "\033[%4d;%4dR";
+  std::array<char, 20> temp{};
+  std::size_t pos{0};
+
+  do
   {
-    std::fflush(stdout);
-    FD_ZERO(&ifds);
-    FD_SET(stdin_no, &ifds);
-    tv.tv_sec  = 0;
-    tv.tv_usec = 100000;  // 100 ms
+    std::size_t bytes_free = temp.size() - pos - 1;
+    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
 
-    // Read the answer
-    if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) == 1 )
-    {
-      constexpr auto parse = "\033[%4d;%4dR";
-      std::array<char, 20> temp{};
-      std::size_t pos{0};
+    if ( bytes <= 0 )
+      break;
 
-      do
-      {
-        std::size_t bytes_free = temp.size() - pos - 1;
-        const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
-
-        if ( bytes <= 0 )
-          break;
-
-        pos += std::size_t(bytes);
-      }
-      while ( pos < temp.size() && std::strchr(temp.data(), 'R') == nullptr );
-
-      if ( pos > 4 )
-        std::sscanf(temp.data(), parse, &x, &y);
-    }
+    pos += std::size_t(bytes);
   }
+  while ( pos < temp.size() && std::strchr(temp.data(), 'R') == nullptr );
+
+  if ( pos > 4 )
+    std::sscanf(temp.data(), parse, &x, &y);
 
   return FPoint{x, y};
 }

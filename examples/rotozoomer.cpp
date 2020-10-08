@@ -96,12 +96,14 @@ RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool b, int l)
   {
     for (std::size_t i{0}; i < 8; i++)
     {
-      data[h++] = L' ';
+      data[h] = L' ';
+      h++;
     }
 
     for (std::size_t i{0}; i < 8; i++)
     {
-      data[h++] = L'+';
+      data[h] = L'+';
+      h++;
     }
   }
 
@@ -109,12 +111,14 @@ RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool b, int l)
   {
     for (std::size_t i{0}; i < 8; i++)
     {
-      data[h++] = L'x';
+      data[h] = L'x';
+      h++;
     }
 
     for (std::size_t i{0}; i < 8; i++)
     {
-      data[h++] = L' ';
+      data[h] = L' ';
+      h++;
     }
   }
 }

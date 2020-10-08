@@ -580,39 +580,38 @@ FString FTermDetection::getXTermColorName (FColor color)
   tv.tv_usec = 150000;  // 150 ms
 
   // read the terminal answer
-  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0 )
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
+    return color_str;
+
+  constexpr auto parse = "\033]4;%10hu;%509[^\n]s";
+  std::array<char, 35> temp{};
+  std::size_t pos{0};
+
+  do
   {
-    constexpr auto parse = "\033]4;%10hu;%509[^\n]s";
-    std::array<char, 35> temp{};
-    std::size_t pos{0};
+    std::size_t bytes_free = temp.size() - pos - 1;
+    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
 
-    do
-    {
-      std::size_t bytes_free = temp.size() - pos - 1;
-      const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
+    if ( bytes <= 0 )
+      break;
 
-      if ( bytes <= 0 )
-        break;
+    pos += std::size_t(bytes);
+  }
+  while ( pos < temp.size() );
 
-      pos += std::size_t(bytes);
-    }
-    while ( pos < temp.size() );
+  if ( pos > 4 && std::sscanf(temp.data(), parse, &color, buf.data()) == 2 )
+  {
+    std::size_t n = std::strlen(buf.data());
 
-    if ( pos > 4
-      && std::sscanf(temp.data(), parse, &color, buf.data()) == 2 )
-    {
-      std::size_t n = std::strlen(buf.data());
+    // BEL + '\0' = string terminator
+    if ( n >= 6 && buf[n - 1] == BEL[0] && buf[n] == '\0' )
+      buf[n - 1] = '\0';
 
-      // BEL + '\0' = string terminator
-      if ( n >= 6 && buf[n - 1] == BEL[0] && buf[n] == '\0' )
-        buf[n - 1] = '\0';
+    // Esc + \ = OSC string terminator (mintty)
+    if ( n >= 6 && buf[n - 2] == ESC[0] && buf[n - 1] == '\\' )
+      buf[n - 2] = '\0';
 
-      // Esc + \ = OSC string terminator (mintty)
-      if ( n >= 6 && buf[n - 2] == ESC[0] && buf[n - 1] == '\\' )
-        buf[n - 2] = '\0';
-
-      color_str = buf.data();
-    }
+    color_str = buf.data();
   }
 
   return color_str;
@@ -647,8 +646,8 @@ const char* FTermDetection::parseAnswerbackMsg (const char current_termtype[])
       new_termtype = "putty";
   }
 
-  // Some terminal like cygwin or the windows terminal
-  // needs to delete the '♣' char
+  // Some terminals like cygwin or the Windows terminal
+  // have to delete the printed character '♣'
   std::fprintf (stdout, "\r " BS);
   std::fflush (stdout);
 
@@ -681,26 +680,26 @@ FString FTermDetection::getAnswerbackMsg()
   tv.tv_usec = 150000;  // 150 ms
 
   // Read the answerback message
-  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0 )
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
+    return answerback;
+
+  std::array<char, 10> temp{};
+  std::size_t pos{0};
+
+  do
   {
-    std::array<char, 10> temp{};
-    std::size_t pos{0};
+    std::size_t bytes_free = temp.size() - pos - 1;
+    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
 
-    do
-    {
-      std::size_t bytes_free = temp.size() - pos - 1;
-      const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
+    if ( bytes <= 0 )
+      break;
 
-      if ( bytes <= 0 )
-        break;
-
-      pos += std::size_t(bytes);
-    }
-    while ( pos < temp.size() );
-
-    if ( pos > 0 )
-      answerback = temp.data();
+    pos += std::size_t(bytes);
   }
+  while ( pos < temp.size() );
+
+  if ( pos > 0 )
+    answerback = temp.data();
 
   return answerback;
 }
@@ -815,9 +814,7 @@ FString FTermDetection::getSecDA()
   constexpr auto& SECDA{ESC "[>c"};
 
   // Get the secondary device attributes
-  const ssize_t ret = write(stdout_no, SECDA, std::strlen(SECDA));
-
-  if ( ret == -1 )
+  if ( write(stdout_no, SECDA, std::strlen(SECDA)) == -1 )
     return sec_da_str;
 
   std::fflush(stdout);
@@ -827,28 +824,27 @@ FString FTermDetection::getSecDA()
   tv.tv_usec = 600000;  // 600 ms
 
   // Read the answer
-  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) == 1 )
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
+    return sec_da_str;
+
+  constexpr auto parse = "\033[>%10d;%10d;%10dc";
+  std::array<char, 40> temp{};
+  std::size_t pos{0};
+
+  do
   {
-    constexpr auto parse = "\033[>%10d;%10d;%10dc";
-    std::array<char, 40> temp{};
-    std::size_t pos{0};
+    std::size_t bytes_free = temp.size() - pos - 1;
+    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
 
-    do
-    {
-      std::size_t bytes_free = temp.size() - pos - 1;
-      const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
+    if ( bytes <= 0 )
+      break;
 
-      if ( bytes <= 0 )
-        break;
-
-      pos += std::size_t(bytes);
-    }
-    while ( pos < temp.size() && std::strchr(temp.data(), 'c') == nullptr );
-
-    if ( pos > 3
-      && std::sscanf(temp.data(), parse, &a, &b, &c) == 3 )
-      sec_da_str.sprintf("\033[>%d;%d;%dc", a, b, c);
+    pos += std::size_t(bytes);
   }
+  while ( pos < temp.size() && std::strchr(temp.data(), 'c') == nullptr );
+
+  if ( pos > 3 && std::sscanf(temp.data(), parse, &a, &b, &c) == 3 )
+    sec_da_str.sprintf("\033[>%d;%d;%dc", a, b, c);
 
   return sec_da_str;
 }
