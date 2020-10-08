@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
 #include <chrono>
 #include <fstream>
 #include <iostream>

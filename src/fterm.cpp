@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
 #include <algorithm>
 #include <unordered_map>
 #include <string>
