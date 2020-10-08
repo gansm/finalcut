@@ -32,6 +32,23 @@
 
 #include <final/final.h>
 
+#define CPPUNIT_ASSERT_CSTRING(expected, actual) \
+            check_c_string (expected, actual, CPPUNIT_SOURCELINE())
+
+//----------------------------------------------------------------------
+void check_c_string ( const char* s1
+                    , const char* s2
+                    , CppUnit::SourceLine sourceLine )
+{
+  if ( s1 == 0 && s2 == 0 )  // Strings are equal
+    return;
+
+  if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
+      return;
+
+  ::CppUnit::Asserter::fail ("Strings are not equal", sourceLine);
+}
+
 namespace test
 {
 
@@ -379,6 +396,11 @@ void FKeyboardTest::noArgumentTest()
 
   keyboard->setReadBlockingTime(100000);  // 100 ms
   CPPUNIT_ASSERT ( keyboard->getReadBlockingTime() == 100 * 1000 );
+
+  // Check key map
+  CPPUNIT_ASSERT ( test::fkey[0].num == finalcut::fc::Fkey_backspace );
+  CPPUNIT_ASSERT_CSTRING ( test::fkey[0].string, "\177" );
+  CPPUNIT_ASSERT_CSTRING ( test::fkey[0].tname, "kb" );
 }
 
 //----------------------------------------------------------------------

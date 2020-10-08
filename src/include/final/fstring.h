@@ -49,6 +49,7 @@
 #include <cwchar>
 #include <cwctype>
 
+#include <array>
 #include <limits>
 #include <iostream>
 #include <new>

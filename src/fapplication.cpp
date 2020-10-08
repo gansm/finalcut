@@ -97,7 +97,7 @@ FApplication::FApplication (const int& _argc, char* _argv[])
   if ( ! (_argc && _argv) )
   {
     typedef char* CString;
-    static std::array<CString, 1> empty{CString("")};
+    static std::array<CString, 1> empty{{CString("")}};
     app_argc = 0;
     app_argv = empty.data();
   }

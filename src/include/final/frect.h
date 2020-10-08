@@ -202,14 +202,14 @@ inline int FRect::getY() const
 //----------------------------------------------------------------------
 inline std::size_t FRect::getWidth() const
 {
-  const int w = X2 - X1 + 1;
+  const int w = X2 - (X1 - 1);  // overflow save
   return ( w < 0 ) ? 0 : std::size_t(w);
 }
 
 //----------------------------------------------------------------------
 inline std::size_t FRect::getHeight() const
 {
-  const int h = Y2 - Y1 + 1;
+  const int h = Y2 - (Y1 - 1);  // overflow save
   return ( h < 0 ) ? 0 : std::size_t(h);
 }
 

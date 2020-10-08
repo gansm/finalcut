@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
 #include <regex>
 
 #include "final/fapplication.h"

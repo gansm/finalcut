@@ -27,6 +27,7 @@
 #endif
 
 #include <algorithm>
+#include <array>
 #include <string>
 
 #include "final/fkeyboard.h"

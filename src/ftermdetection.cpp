@@ -24,6 +24,8 @@
   #include "final/fconfig.h"  // includes _GNU_SOURCE for fd_set
 #endif
 
+#include <array>
+
 #include "final/emptyfstring.h"
 #include "final/fapplication.h"
 #include "final/fc.h"

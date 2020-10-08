@@ -535,7 +535,7 @@ void FTextView::adjustSize()
   if ( width < 3 )
     return;
 
-  const int hmax = ( max_width > int(width) - nf_offset - 2 )
+  const int hmax = ( max_width >= int(width) - nf_offset - 1 )
                    ? max_width - int(width) + nf_offset + 2
                    : 0;
   hbar->setMaximum (hmax);

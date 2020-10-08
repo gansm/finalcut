@@ -1798,21 +1798,23 @@ inline void FWidget::insufficientSpaceAdjust()
   // move left if not enough space
   while ( getTermX() + int(getWidth()) - padding.right > woffset.getX2() + 2 )
   {
-    adjust_wsize.x1_ref()--;
-    adjust_wsize.x2_ref()--;
-
-    if ( adjust_wsize.x1_ref() < 1 )
+    if ( adjust_wsize.x1_ref() < 2 )
       adjust_wsize.x1_ref() = 1;
+    else
+      adjust_wsize.x1_ref()--;
+
+    adjust_wsize.x2_ref()--;
   }
 
   // move up if not enough space
   while ( getTermY() + int(getHeight()) - padding.bottom > woffset.getY2() + 2 )
   {
-    adjust_wsize.y1_ref()--;
-    adjust_wsize.y2_ref()--;
-
-    if ( adjust_wsize.y1_ref() < 1 )
+    if ( adjust_wsize.y1_ref() < 2 )
       adjust_wsize.y1_ref() = 1;
+    else
+      adjust_wsize.y1_ref()--;
+
+    adjust_wsize.y2_ref()--;
   }
 
   // reduce the width if not enough space

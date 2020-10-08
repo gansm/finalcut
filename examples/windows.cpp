@@ -261,10 +261,10 @@ Window::Window (finalcut::FWidget* parent)
   Statusbar.setMessage("Status bar message");
 
   // Generate data vector for the windows
-  for (int n{1}; n <= 6; n++)
+  for (uInt n{1}; n < 7; n++)
   {
     auto win_dat = new win_data;
-    win_dat->title.sprintf("Window %1d", n);
+    win_dat->title.sprintf("Window %1u", n);
     windows.push_back(win_dat);
   }
 }

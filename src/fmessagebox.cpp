@@ -207,8 +207,8 @@ void FMessageBox::init()
 {
   calculateDimensions();
 
-  if ( (button_digit[2] && ! button_digit[1])
-    || (button_digit[1] && ! button_digit[0]) )
+  if ( (button_digit[2] != Reject && button_digit[1] == Reject)
+    || (button_digit[1] != Reject && button_digit[0] == Reject) )
   {
     button_digit[0] = button_digit[1] \
                     = button_digit[2] \
