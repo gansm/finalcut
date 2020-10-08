@@ -84,11 +84,11 @@ class FTermcap final
       const char* string;
       char  tname[alignof(char*)];
     }
-    tcap_map;
+    TCapMap;
 
     // Using-declaration
     using fn_putc = int (*)(int);
-    using TCapMapType = std::array<tcap_map, 83>;
+    using TCapMapType = std::array<TCapMap, 83>;
 
     // Constructors
     FTermcap() = default;

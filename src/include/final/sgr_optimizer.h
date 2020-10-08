@@ -51,10 +51,10 @@ class SGRoptimizer final
     static constexpr std::size_t ATTR_BUF_SIZE{8192};
 
     // Typedefs
-    typedef char attributebuffer[ATTR_BUF_SIZE];
+    typedef std::array<char, ATTR_BUF_SIZE> AttributeBuffer;
 
     // Constructors
-    explicit SGRoptimizer (attributebuffer&);
+    explicit SGRoptimizer (AttributeBuffer&);
 
     // Disable copy constructor
     SGRoptimizer (const SGRoptimizer&) = delete;
@@ -77,7 +77,7 @@ class SGRoptimizer final
     void combineParameter();
 
     // Data member
-    attributebuffer& seq;
+    AttributeBuffer& seq;
 
     struct parameter
     {

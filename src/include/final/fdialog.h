@@ -163,7 +163,7 @@ class FDialog : public FWindow
       FPoint      termPos;
       std::size_t zoom_btn;
       bool        mouse_over_menu;
-    } mouseStates;
+    } MouseStates;
 
     // Constant
     static constexpr std::size_t MENU_BTN = 3;
@@ -189,12 +189,12 @@ class FDialog : public FWindow
     void                  selectFirstMenuItem();
     void                  setZoomItem();
     std::size_t           getZoomButtonWidth() const;
-    void                  activateZoomButton (const mouseStates&);
+    void                  activateZoomButton (const MouseStates&);
     void                  deactivateZoomButton();
-    void                  leaveZoomButton (const mouseStates&);
-    void                  pressZoomButton (const mouseStates&);
+    void                  leaveZoomButton (const MouseStates&);
+    void                  pressZoomButton (const MouseStates&);
     bool                  isMouseOverMenu (const FPoint&) const;
-    void                  passEventToSubMenu ( const mouseStates&
+    void                  passEventToSubMenu ( const MouseStates&
                                              , const FMouseEvent* );
     void                  moveSizeKey (FKeyEvent*);
     void                  raiseActivateDialog();
@@ -202,9 +202,9 @@ class FDialog : public FWindow
     bool                  isOutsideTerminal (const FPoint&) const;
     bool                  isLeftOutside() const;
     bool                  isBottomOutside() const;
-    bool                  isLowerRightResizeCorner (const mouseStates&) const;
-    void                  resizeMouseDown (const mouseStates&);
-    void                  resizeMouseUpMove (const mouseStates&, bool = false);
+    bool                  isLowerRightResizeCorner (const MouseStates&) const;
+    void                  resizeMouseDown (const MouseStates&);
+    void                  resizeMouseUpMove (const MouseStates&, bool = false);
     void                  cancelMouseResize();
     void                  acceptMoveSize();
     void                  cancelMoveSize();

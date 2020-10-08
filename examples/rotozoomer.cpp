@@ -20,10 +20,11 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <cmath>
+
 #include <chrono>
 #include <iomanip>
-
-#include <cmath>
+#include <string>
 
 #include <final/final.h>
 
@@ -74,7 +75,7 @@ class RotoZoomer final : public finalcut::FDialog
     bool                     benchmark{false};
     int                      loops{0};
     int                      path{0};
-    wchar_t                  data[256]{};
+    std::wstring             data{std::wstring(256, L'\0')};
     finalcut::FString        report{};
     time_point<system_clock> start{};
     time_point<system_clock> end{};
@@ -89,29 +90,29 @@ RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool b, int l)
 {
   FDialog::setText ("Rotozoomer effect");
 
-  int h{0};
+  std::size_t h{0};
 
-  for (int j{0}; j < 8; j++)
+  for (std::size_t j{0}; j < 8; j++)
   {
-    for (int i{0}; i < 8; i++)
+    for (std::size_t i{0}; i < 8; i++)
     {
       data[h++] = L' ';
     }
 
-    for (int i{0}; i < 8; i++)
+    for (std::size_t i{0}; i < 8; i++)
     {
       data[h++] = L'+';
     }
   }
 
-  for (int j{0}; j < 8; j++)
+  for (std::size_t j{0}; j < 8; j++)
   {
-    for (int i{0}; i < 8; i++)
+    for (std::size_t i{0}; i < 8; i++)
     {
       data[h++] = L'x';
     }
 
-    for (int i{0}; i < 8; i++)
+    for (std::size_t i{0}; i < 8; i++)
     {
       data[h++] = L' ';
     }
@@ -160,7 +161,7 @@ void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
 
     for (int x = 0; x < Cols; x++)
     {
-      wchar_t ch = data[((Cy >> 14) & 0xf) + ((Cx >> 10) & 0xf0)];
+      auto ch = data[((Cy >> 14) & 0xf) + ((Cx >> 10) & 0xf0)];
 
       if ( ch == '+' )
         print() << finalcut::FColorPair{fc::Black, fc::Red};

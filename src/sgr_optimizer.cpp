@@ -35,7 +35,7 @@ namespace finalcut
 
 // constructors and destructor
 //----------------------------------------------------------------------
-SGRoptimizer::SGRoptimizer (attributebuffer& sequence)
+SGRoptimizer::SGRoptimizer (AttributeBuffer& sequence)
   : seq{sequence}
 { }
 
@@ -59,7 +59,7 @@ void SGRoptimizer::findParameter()
 {
   // Find ANSI X3.64 terminal SGR (Select Graphic Rendition) strings
 
-  const std::size_t len = std::strlen(seq);
+  const std::size_t len = std::strlen(seq.data());
   csi_parameter.clear();
 
   if ( len < 6 )

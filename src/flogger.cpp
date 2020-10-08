@@ -60,14 +60,14 @@ void FLogger::newlineReplace ( std::string& str
 //----------------------------------------------------------------------
 std::string FLogger::getTimeString() const
 {
-  char str[100];
+  std::array<char, 100> str;
   const auto& now = std::chrono::system_clock::now();
   const auto& t = std::chrono::system_clock::to_time_t(now);
   // Print RFC 2822 date
   struct tm time{};
   localtime_r (&t, &time);
-  std::strftime (str, sizeof(str), "%a, %d %b %Y %T %z", &time);
-  return std::string(str);
+  std::strftime (str.data(), str.size(), "%a, %d %b %Y %T %z", &time);
+  return std::string(str.data());
 }
 
 //----------------------------------------------------------------------

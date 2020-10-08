@@ -244,7 +244,8 @@ class FData : public FDataAccess
     // Inquiries
     bool isInitializedCopy() const
     {
-      return bool( (void*)&value == (void*)&value_ref.get() );
+      return bool( reinterpret_cast<void*>(&value)
+                == reinterpret_cast<void*>(&value_ref.get()) );
     }
 
     bool isInitializedReference() const

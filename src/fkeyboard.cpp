@@ -109,6 +109,30 @@ FString FKeyboard::getKeyName (const FKey keynum) const
 }
 
 //----------------------------------------------------------------------
+bool FKeyboard::setNonBlockingInput (bool enable)
+{
+  if ( enable == non_blocking_stdin )
+    return non_blocking_stdin;
+
+  if ( enable )  // make stdin non-blocking
+  {
+    stdin_status_flags |= O_NONBLOCK;
+
+    if ( fcntl (FTermios::getStdIn(), F_SETFL, stdin_status_flags) != -1 )
+      non_blocking_stdin = true;
+  }
+  else
+  {
+    stdin_status_flags &= ~O_NONBLOCK;
+
+    if ( fcntl (FTermios::getStdIn(), F_SETFL, stdin_status_flags) != -1 )
+      non_blocking_stdin = false;
+  }
+
+  return non_blocking_stdin;
+}
+
+//----------------------------------------------------------------------
 void FKeyboard::init()
 {
 #if defined(__linux__)
@@ -303,7 +327,7 @@ inline FKey FKeyboard::getSingleKey()
   // Look for a utf-8 character
   if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
   {
-    char utf8char[5]{};  // Init array with '\0'
+    std::array<char, 5> utf8char{};  // Init array with '\0'
     const std::size_t buf_len = std::strlen(fifo_buf);
 
     if ( (firstchar & 0xe0) == 0xc0 )
@@ -319,7 +343,7 @@ inline FKey FKeyboard::getSingleKey()
     for (std::size_t i{0}; i < len ; i++)
       utf8char[i] = char(fifo_buf[i] & 0xff);
 
-    keycode = UTF8decode(utf8char);
+    keycode = UTF8decode(utf8char.data());
   }
   else
     keycode = uChar(fifo_buf[0] & 0xff);
@@ -336,30 +360,6 @@ inline FKey FKeyboard::getSingleKey()
     keycode = fc::Fckey_space;
 
   return FKey(keycode == 127 ? fc::Fkey_backspace : keycode);
-}
-
-//----------------------------------------------------------------------
-bool FKeyboard::setNonBlockingInput (bool enable)
-{
-  if ( enable == non_blocking_stdin )
-    return non_blocking_stdin;
-
-  if ( enable )  // make stdin non-blocking
-  {
-    stdin_status_flags |= O_NONBLOCK;
-
-    if ( fcntl (FTermios::getStdIn(), F_SETFL, stdin_status_flags) != -1 )
-      non_blocking_stdin = true;
-  }
-  else
-  {
-    stdin_status_flags &= ~O_NONBLOCK;
-
-    if ( fcntl (FTermios::getStdIn(), F_SETFL, stdin_status_flags) != -1 )
-      non_blocking_stdin = false;
-  }
-
-  return non_blocking_stdin;
 }
 
 //----------------------------------------------------------------------

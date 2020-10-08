@@ -1058,7 +1058,7 @@ inline void FWidget::processDestroy() const
 
 // Non-member elements for NewFont
 //----------------------------------------------------------------------
-const wchar_t NF_menu_button[4] =
+constexpr wchar_t NF_menu_button[]
 {
   fc::NF_rev_menu_button1,
   fc::NF_rev_menu_button2,
@@ -1066,49 +1066,49 @@ const wchar_t NF_menu_button[4] =
   '\0'
 };
 
-const wchar_t NF_button_up[3] =
+constexpr wchar_t NF_button_up[]
 {
   fc::NF_rev_up_pointing_triangle1,
   fc::NF_rev_up_pointing_triangle2,
   '\0'
 };
 
-const wchar_t NF_button_down[3] =
+constexpr wchar_t NF_button_down[]
 {
   fc::NF_rev_down_pointing_triangle1,
   fc::NF_rev_down_pointing_triangle2,
   '\0'
 };
 
-const wchar_t NF_button_arrow_up[3] =
+constexpr wchar_t NF_button_arrow_up[]
 {
   fc::NF_rev_up_arrow1,
   fc::NF_rev_up_arrow2,
   '\0'
 };
 
-const wchar_t NF_button_arrow_down[3] =
+constexpr wchar_t NF_button_arrow_down[]
 {
   fc::NF_rev_down_arrow1,
   fc::NF_rev_down_arrow2,
   '\0'
 };
 
-const wchar_t NF_button_arrow_left[3] =
+constexpr wchar_t NF_button_arrow_left[]
 {
   fc::NF_rev_left_arrow1,
   fc::NF_rev_left_arrow2,
   '\0'
 };
 
-const wchar_t NF_button_arrow_right[3] =
+constexpr wchar_t NF_button_arrow_right[]
 {
   fc::NF_rev_right_arrow1,
   fc::NF_rev_right_arrow2,
   '\0'
 };
 
-const wchar_t NF_Drive[5] =
+constexpr wchar_t NF_Drive[]
 {
   fc::NF_shadow_box_left,
   fc::NF_shadow_box_middle,
@@ -1117,7 +1117,7 @@ const wchar_t NF_Drive[5] =
   '\0'
 };
 
-const wchar_t NF_CD_ROM[5] =
+constexpr wchar_t NF_CD_ROM[]
 {
   fc::NF_shadow_box_left,
   fc::NF_shadow_box_middle,
@@ -1126,7 +1126,7 @@ const wchar_t NF_CD_ROM[5] =
   '\0'
 };
 
-const wchar_t NF_Net_Drive[5] =
+constexpr wchar_t NF_Net_Drive[]
 {
   fc::NF_shadow_box_left,
   fc::NF_shadow_box_middle,
@@ -1135,7 +1135,7 @@ const wchar_t NF_Net_Drive[5] =
   '\0'
 };
 
-const wchar_t CHECKBOX[4] =
+constexpr wchar_t CHECKBOX[]
 {
   fc::NF_shadow_box_left,
   fc::NF_shadow_box_middle,
@@ -1143,7 +1143,7 @@ const wchar_t CHECKBOX[4] =
   '\0'
 };
 
-const wchar_t CHECKBOX_ON[4] =
+constexpr wchar_t CHECKBOX_ON[]
 {
   fc::NF_shadow_box_left,
   fc::NF_shadow_box_checked,
@@ -1151,7 +1151,7 @@ const wchar_t CHECKBOX_ON[4] =
   '\0'
 };
 
-const wchar_t RADIO_BUTTON[4] =
+constexpr wchar_t RADIO_BUTTON[]
 {
   fc::NF_radio_button1,
   fc::NF_radio_button2,
@@ -1159,7 +1159,7 @@ const wchar_t RADIO_BUTTON[4] =
   '\0'
 };
 
-const wchar_t CHECKED_RADIO_BUTTON[4] =
+constexpr wchar_t CHECKED_RADIO_BUTTON[]
 {
   fc::NF_radio_button1,
   fc::NF_radio_button2_checked,

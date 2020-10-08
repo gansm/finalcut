@@ -267,7 +267,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   if ( !  mouse_down || getItemList().empty() )
     return;
 
-  mouseStates ms =
+  MouseStates ms =
   {
     false,  // focus_changed
     false,  // hide_sub_menu
@@ -819,7 +819,7 @@ bool FMenu::mouseUpOverList (const FPoint& mouse_pos)
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseMoveOverList (const FPoint& mouse_pos, mouseStates& ms)
+void FMenu::mouseMoveOverList (const FPoint& mouse_pos, MouseStates& ms)
 {
   FPoint pos{mouse_pos};
   pos -= FPoint{getRightPadding(), getTopPadding()};
@@ -840,7 +840,7 @@ void FMenu::mouseMoveOverList (const FPoint& mouse_pos, mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseMoveSelection (FMenuItem* m_item, mouseStates& ms)
+void FMenu::mouseMoveSelection (FMenuItem* m_item, MouseStates& ms)
 {
   if ( ! m_item->isEnabled()
     || m_item->isSelected()
@@ -873,7 +873,7 @@ void FMenu::mouseMoveSelection (FMenuItem* m_item, mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseMoveDeselection (FMenuItem* m_item, mouseStates& ms)
+void FMenu::mouseMoveDeselection (FMenuItem* m_item, MouseStates& ms)
 {
   if ( ! ms.mouse_over_menu
     || ! m_item->isEnabled()
@@ -902,7 +902,7 @@ void FMenu::mouseUpOverBorder()
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseMoveOverBorder (mouseStates& ms) const
+void FMenu::mouseMoveOverBorder (MouseStates& ms) const
 {
   // Mouse is moved over border or separator line
 
@@ -1271,7 +1271,7 @@ inline void FMenu::drawSeparator (int y)
 inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
 {
   FString txt{m_item->getText()};
-  menuText txtdata{};
+  MenuText txtdata{};
   std::size_t column_width = getColumnWidth(txt);
   const FKey accel_key   = m_item->accel_key;
   const bool is_enabled  = m_item->isEnabled();
@@ -1361,7 +1361,7 @@ inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
 }
 
 //----------------------------------------------------------------------
-inline void FMenu::drawMenuText (menuText& data)
+inline void FMenu::drawMenuText (MenuText& data)
 {
   // Print menu text
 

@@ -435,6 +435,9 @@ uInt FObject::processTimerEvent()
 
 //----------------------------------------------------------------------
 void FObject::performTimerAction (FObject*, FEvent*)
-{ }
+{
+  // This method must be reimplemented in a subclass
+  // to process the passed object and timer event
+}
 
 }  // namespace finalcut

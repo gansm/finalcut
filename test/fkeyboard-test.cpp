@@ -43,8 +43,8 @@ typedef struct
 }
 FKeyMap;
 
-using original_type = std::array<finalcut::fc::FKeyMap, 174>;
-using test_type = std::array<FKeyMap, 174>;
+using original_type = std::array<finalcut::fc::FKeyMap, 188>;
+using test_type = std::array<FKeyMap, 188>;
 
 test_type fkey =
 {{
@@ -53,7 +53,6 @@ test_type fkey =
   { finalcut::fc::Fkey_clear     , 0          , "kC" },  // clear-screen or erase key
   { finalcut::fc::Fkey_ctab      , CSI "3~"   , "kt" },  // clear-tab key
   { finalcut::fc::Fkey_dc        , 0          , "kD" },  // delete-character key
-  { finalcut::fc::Fkey_dc        , 0          , "kDx" }, // delete-character key
   { finalcut::fc::Fkey_dl        , 0          , "kL" },  // delete-line key
   { finalcut::fc::Fkey_down      , ESC "OB"   , "kd" },  // down-arrow key
   { finalcut::fc::Fkey_eic       , 0          , "kM" },  // sent by rmir or smir in insert mode
@@ -199,33 +198,48 @@ test_type fkey =
   { finalcut::fc::Fkey_f62       , ESC "O1;4Q", "Fq" },  // F62 function key
   { finalcut::fc::Fkey_f63       , ESC "O1;4R", "Fr" },  // F63 function key
   // vt100 key codes for arrow and function keys
-  { finalcut::fc::Fkey_down      , CSI "B"    , "kdx"},  // down-arrow key (standard mode)
-  { finalcut::fc::Fkey_down      , ESC "OB"   , "kdX"},  // down-arrow key (application mode)
-  { finalcut::fc::Fkey_f1        , ESC "OP"   , "k1X"},  // PF1 (application mode)
-  { finalcut::fc::Fkey_f2        , CSI "OQ"   , "k2X"},  // PF2 (application mode)
-  { finalcut::fc::Fkey_f3        , ESC "OR"   , "k3X"},  // PF3 (application mode)
-  { finalcut::fc::Fkey_f4        , ESC "OS"   , "k4X"},  // PF4 (application mode)
+  { finalcut::fc::Fkey_f1        , ESC "OP"   , "k1x"},  // PF1 (application mode)
+  { finalcut::fc::Fkey_f2        , ESC "OQ"   , "k2x"},  // PF2 (application mode)
+  { finalcut::fc::Fkey_f3        , ESC "OR"   , "k3x"},  // PF3 (application mode)
+  { finalcut::fc::Fkey_f4        , ESC "OS"   , "k4x"},  // PF4 (application mode)
   { finalcut::fc::Fkey_left      , CSI "D"    , "klx"},  // left-arrow key (standard mode)
   { finalcut::fc::Fkey_left      , ESC "OD"   , "klX"},  // left-arrow key (application mode)
   { finalcut::fc::Fkey_right     , CSI "C"    , "krx"},  // right-arrow key (standard mode)
   { finalcut::fc::Fkey_right     , ESC "OC"   , "krX"},  // right-arrow key (application mode)
   { finalcut::fc::Fkey_up        , CSI "A"    , "kux"},  // up-arrow key (standard mode)
   { finalcut::fc::Fkey_up        , ESC "OA"   , "kuX"},  // up-arrow key (application mode)
+  { finalcut::fc::Fkey_down      , CSI "B"    , "kdx"},  // down-arrow key (standard mode)
+  { finalcut::fc::Fkey_down      , ESC "OB"   , "kdX"},  // down-arrow key (application mode)
+  { finalcut::fc::Fkey_sf        , CSI "a"    , "kFx"},  // scroll-forward key (shift-up)
+  { finalcut::fc::Fkey_sr        , CSI "b"    , "kRx"},  // scroll-backward key (shift-down)
   // Fallback for rxvt with TERM=xterm
   { finalcut::fc::Fkey_home      , CSI "7~"   , "khx"},  // home key
   { finalcut::fc::Fkey_end       , CSI "8~"   , "@7x"},  // end key
-  { finalcut::fc::Fkey_f1        , CSI "11~"  , "k1x"},  // F1 function key
-  { finalcut::fc::Fkey_f2        , CSI "12~"  , "k2x"},  // F2 function key
-  { finalcut::fc::Fkey_f3        , CSI "13~"  , "k3x"},  // F3 function key
-  { finalcut::fc::Fkey_f4        , CSI "14~"  , "k4x"},  // F4 function key
+  { finalcut::fc::Fkey_f1        , CSI "11~"  , "k1X"},  // F1 function key
+  { finalcut::fc::Fkey_f2        , CSI "12~"  , "k2X"},  // F2 function key
+  { finalcut::fc::Fkey_f3        , CSI "13~"  , "k3X"},  // F3 function key
+  { finalcut::fc::Fkey_f4        , CSI "14~"  , "k4X"},  // F4 function key
   // Fallback for TERM=ansi
-  { finalcut::fc::Fkey_end       , CSI "K"    , "@7X"},  // end key
+  { finalcut::fc::Fkey_home      , CSI "H"    , "khX"},  // home key
+  { finalcut::fc::Fkey_end       , CSI "F"    , "@7X"},  // end key
+  { finalcut::fc::Fkey_end       , CSI "K"    , "@7y"},  // end key (Microsoft HyperTerminal)
   // Keypad keys
   { finalcut::fc::Fkey_enter     , ESC "OM"   , "@8x"},  // enter key
   { finalcut::fc::Fkey_slash     , ESC "Oo"   , "KP1"},  // keypad slash
   { finalcut::fc::Fkey_asterisk  , ESC "Oj"   , "KP2"},  // keypad asterisk
   { finalcut::fc::Fkey_minus_sign, ESC "Om"   , "KP3"},  // keypad minus sign
-  { finalcut::fc::Fkey_plus_sign , ESC "Ok"   , "KP4"}   // keypad plus sign
+  { finalcut::fc::Fkey_plus_sign , ESC "Ok"   , "KP4"},  // keypad plus sign
+  { finalcut::fc::Fkey_ic        , ESC "Op"   , "kIx"},  // keypad insert
+  { finalcut::fc::Fkey_dc        , ESC "On"   , "kDx"},  // keypad delete
+  { finalcut::fc::Fkey_left      , ESC "Ot"   , "kly"},  // keypad left-arrow
+  { finalcut::fc::Fkey_right     , ESC "Ov"   , "kry"},  // keypad right-arrow
+  { finalcut::fc::Fkey_up        , ESC "Ox"   , "kuy"},  // keypad up-arrow
+  { finalcut::fc::Fkey_down      , ESC "Or"   , "kdy"},  // keypad down-arrow
+  { finalcut::fc::Fkey_a1        , ESC "Ow"   , "K1x"},  // keypad upper left
+  { finalcut::fc::Fkey_a3        , ESC "Oy"   , "K3x"},  // keypad upper right
+  { finalcut::fc::Fkey_b2        , ESC "Ou"   , "K2x"},  // keypad center
+  { finalcut::fc::Fkey_c1        , ESC "Oq"   , "K4x"},  // keypad lower left
+  { finalcut::fc::Fkey_c3        , ESC "Os"   , "K5x"}   // keypad lower right
 }};
 
 }  // namespace test
@@ -2539,6 +2553,13 @@ void FKeyboardTest::sequencesTest()
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_home );
   clear();
 
+  // Home key (ANSI terminal)
+  input("\033[H");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_home );
+  clear();
+
   // End key in positioning mode
   input("\033[8~");
   processInput();
@@ -2554,6 +2575,13 @@ void FKeyboardTest::sequencesTest()
   clear();
 
   // End key (ANSI terminal)
+  input("\033[F");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_end );
+  clear();
+
+  // End key (Microsoft HyperTerminal)
   input("\033[K");
   processInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
@@ -2588,8 +2616,22 @@ void FKeyboardTest::sequencesTest()
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_sf );
   clear();
 
+  // Scroll-forward key (shift + up-arrow) in applications mode
+  input("\033[a");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_sf );
+  clear();
+
   // Scroll-backward key (shift + down-arrow)
   input("\033[1;2A");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_sr );
+  clear();
+
+  // Scroll-backward key (shift + down-arrow) in applications mode
+  input("\033[b");
   processInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_sr );
@@ -2706,6 +2748,84 @@ void FKeyboardTest::sequencesTest()
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_plus_sign );
   clear();
+
+  // Keypad insert (numlock off)
+  input("\033Op");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_ic );
+  clear();
+
+  // Keypad delete (numlock off)
+  input("\033On");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_dc );
+  clear();
+
+  // Keypad left-arrow (numlock off)
+  input("\033Ot");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_left );
+  clear();
+
+  // Keypad right-arrow (numlock off)
+  input("\033Ov");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_right );
+  clear();
+
+  // Keypad up-arrow (numlock off)
+  input("\033Ox");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_up );
+  clear();
+
+  // Keypad down-arrow (numlock off)
+  input("\033Or");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_down );
+  clear();
+
+  // Keypad upper left (numlock off)
+  input("\033Ow");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_a1 );
+  clear();
+
+  // Keypad upper right (numlock off)
+  input("\033Oy");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_a3 );
+  clear();
+
+  // Keypad center (numlock off)
+  input("\033Ou");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_b2 );
+  clear();
+
+  // Keypad lower left (numlock off)
+  input("\033Oq");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_c1 );
+  clear();
+
+  // Keypad lower right (numlock off)
+  input("\033Os");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_c3 );
+  clear();
+
 }
 
 //----------------------------------------------------------------------

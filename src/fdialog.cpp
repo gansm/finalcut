@@ -494,7 +494,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 {
   const auto width = int(getWidth());
 
-  const mouseStates ms =
+  const MouseStates ms =
   {
     ev->getX(),
     ev->getY(),
@@ -553,7 +553,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseUp (FMouseEvent* ev)
 {
-  const mouseStates ms =
+  const MouseStates ms =
   {
     ev->getX(),
     ev->getY(),
@@ -602,7 +602,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseMove (FMouseEvent* ev)
 {
-  const mouseStates ms =
+  const MouseStates ms =
   {
     ev->getX(),
     ev->getY(),
@@ -632,7 +632,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 {
-  const mouseStates ms =
+  const MouseStates ms =
   {
     ev->getX(),
     ev->getY(),
@@ -1317,7 +1317,7 @@ inline void FDialog::deactivateZoomButton()
 }
 
 //----------------------------------------------------------------------
-inline void FDialog::activateZoomButton (const mouseStates& ms)
+inline void FDialog::activateZoomButton (const MouseStates& ms)
 {
   if ( ms.mouse_x <= int(getWidth() - ms.zoom_btn)
     || ms.mouse_y != 1 )
@@ -1329,7 +1329,7 @@ inline void FDialog::activateZoomButton (const mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-inline void FDialog::leaveZoomButton (const mouseStates& ms)
+inline void FDialog::leaveZoomButton (const MouseStates& ms)
 {
   bool zoom_button_pressed_before = zoom_button_pressed;
 
@@ -1346,7 +1346,7 @@ inline void FDialog::leaveZoomButton (const mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-void FDialog::pressZoomButton (const mouseStates& ms)
+void FDialog::pressZoomButton (const MouseStates& ms)
 {
   if ( ms.mouse_x <= int(getWidth() - ms.zoom_btn)
     || ms.mouse_y != 1
@@ -1370,7 +1370,7 @@ inline bool FDialog::isMouseOverMenu (const FPoint& termpos) const
 }
 
 //----------------------------------------------------------------------
-inline void FDialog::passEventToSubMenu ( const mouseStates& ms
+inline void FDialog::passEventToSubMenu ( const MouseStates& ms
                                         , const FMouseEvent* ev )
 {
   // Mouse event handover to the dialog menu
@@ -1518,7 +1518,7 @@ bool FDialog::isBottomOutside() const
 }
 
 //----------------------------------------------------------------------
-bool FDialog::isLowerRightResizeCorner (const mouseStates& ms) const
+bool FDialog::isLowerRightResizeCorner (const MouseStates& ms) const
 {
   // 3 characters in the lower right corner  |
   //                                         x
@@ -1537,7 +1537,7 @@ bool FDialog::isLowerRightResizeCorner (const mouseStates& ms) const
 }
 
 //----------------------------------------------------------------------
-void FDialog::resizeMouseDown (const mouseStates& ms)
+void FDialog::resizeMouseDown (const MouseStates& ms)
 {
   // Click on the lower right resize corner
 
@@ -1562,7 +1562,7 @@ void FDialog::resizeMouseDown (const mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-void FDialog::resizeMouseUpMove (const mouseStates& ms, bool mouse_up)
+void FDialog::resizeMouseUpMove (const MouseStates& ms, bool mouse_up)
 {
   // Resize the dialog
   if ( isResizeable() && ! resize_click_pos.isOrigin() )

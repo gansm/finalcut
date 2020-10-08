@@ -1109,9 +1109,9 @@ inline wchar_t FLineEdit::characterFilter (const wchar_t c) const
   if ( input_filter.empty() )
     return c;
 
-  const wchar_t character[2]{c, L'\0'};
+  std::array<const wchar_t, 2> character{{c, L'\0'}};
 
-  if ( regex_match(character, std::wregex(input_filter)) )
+  if ( regex_match(character.data(), std::wregex(input_filter)) )
     return c;
   else
     return L'\0';

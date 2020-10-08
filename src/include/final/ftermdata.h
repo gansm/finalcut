@@ -54,7 +54,7 @@ class FTermData final
 {
   public:
     // Typedefs
-    typedef std::unordered_map<std::string, fc::encoding> encodingMap;
+    typedef std::unordered_map<std::string, fc::encoding> EncodingMap;
 
     // Constructors
     FTermData()
@@ -72,7 +72,7 @@ class FTermData final
 
     // Accessors
     FString           getClassName() const;
-    encodingMap&      getEncodingList();
+    EncodingMap&      getEncodingList();
     charSubstitution& getCharSubstitutionMap();
     fc::encoding      getTermEncoding() const;
     FRect&            getTermGeometry();
@@ -132,7 +132,7 @@ class FTermData final
 
   private:
     // Data members
-    encodingMap       encoding_list{};
+    EncodingMap       encoding_list{};
     charSubstitution  char_substitution_map{};
     FRect             term_geometry{};  // current terminal geometry
     FString           xterm_font{};
@@ -170,7 +170,7 @@ inline FString FTermData::getClassName() const
 { return "FTermData"; }
 
 //----------------------------------------------------------------------
-inline FTermData::encodingMap& FTermData::getEncodingList()
+inline FTermData::EncodingMap& FTermData::getEncodingList()
 { return encoding_list; }
 
 //----------------------------------------------------------------------

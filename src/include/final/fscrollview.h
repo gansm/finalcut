@@ -150,7 +150,7 @@ class FScrollView : public FWidget
 
   private:
     // Typedefs
-    typedef std::unordered_map<int, std::function<void()>> keyMap;
+    typedef std::unordered_map<int, std::function<void()>> KeyMap;
 
     // Constants
     static constexpr int vertical_border_spacing = 2;
@@ -181,7 +181,7 @@ class FScrollView : public FWidget
     FTermArea*         viewport{nullptr};  // virtual scroll content
     FScrollbarPtr      vbar{nullptr};
     FScrollbarPtr      hbar{nullptr};
-    keyMap             key_map{};
+    KeyMap             key_map{};
     uInt8              nf_offset{0};
     bool               use_own_print_area{false};
     bool               update_scrollbar{true};

@@ -41,6 +41,7 @@ namespace finalcut
 // class forward declaration
 class FString;
 class FSystem;
+class FKeyboard;
 class FTermDetection;
 
 //----------------------------------------------------------------------
@@ -106,6 +107,7 @@ class FTermXTerminal final
     void                  resetMouseBackground();
     void                  resetHighlightBackground();
     void                  resetDefaults();
+    void                  resetTitle();
     void                  captureFontAndTitle();
 
   private:
@@ -147,6 +149,7 @@ class FTermXTerminal final
     static bool           mouse_support;
     bool                  meta_sends_esc{false};
     bool                  xterm_default_colors{false};
+    bool                  title_was_changed{false};
     std::size_t           term_width{80};
     std::size_t           term_height{24};
     FString               xterm_font{};
@@ -158,6 +161,7 @@ class FTermXTerminal final
     FString               mouse_background_color{};
     FString               highlight_background_color{};
     static FSystem*       fsystem;
+    static FKeyboard*     keyboard;
     FTermDetection*       term_detection{nullptr};
     fc::xtermCursorStyle  cursor_style{fc::unknown_cursor_style};
 };

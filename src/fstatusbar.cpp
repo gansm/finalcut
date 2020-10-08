@@ -602,7 +602,7 @@ void FStatusBar::drawKeys()
 }
 
 //----------------------------------------------------------------------
-void FStatusBar::drawKey (keyList::const_iterator iter)
+void FStatusBar::drawKey (FKeyList::const_iterator iter)
 {
   // Draw not active key
 
@@ -660,7 +660,7 @@ void FStatusBar::drawKey (keyList::const_iterator iter)
 }
 
 //----------------------------------------------------------------------
-void FStatusBar::drawActiveKey (keyList::const_iterator iter)
+void FStatusBar::drawActiveKey (FKeyList::const_iterator iter)
 {
   // Draw active key
 

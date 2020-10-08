@@ -419,8 +419,7 @@ inline wchar_t FString::back() const
 template <typename... Args>
 inline FString& FString::sprintf (const FString& format, Args&&... args)
 {
-  static constexpr int BUFSIZE = 4096;
-  wchar_t buf[BUFSIZE]{};
+  std::array<wchar_t, 4096> buf{};
 
   if ( format.isEmpty() )
   {
@@ -428,9 +427,9 @@ inline FString& FString::sprintf (const FString& format, Args&&... args)
     return *this;
   }
 
-  std::swprintf ( buf, BUFSIZE, format.wc_str()
+  std::swprintf ( buf.data(), buf.size(), format.wc_str()
                 , std::forward<Args>(args)... );
-  _assign(buf);
+  _assign(buf.data());
   return *this;
 }
 

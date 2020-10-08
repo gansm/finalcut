@@ -27,14 +27,16 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include "final/ftypes.h"
+
 namespace finalcut
 {
 
 namespace fc
 {
 
-extern std::array<FKeyMap, 174> fkey;
-extern const std::array<FMetakeyMap, 228> fmetakey;
+extern std::array<FKeyMap, 188> fkey;
+extern const std::array<FMetakeyMap, 232> fmetakey;
 extern const std::array<FKeyName, 388> fkeyname;
 
 }  // namespace fc

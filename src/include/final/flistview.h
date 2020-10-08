@@ -92,7 +92,7 @@ class FListViewItem : public FObject
     int                 getSortColumn() const;
     FString             getText (int) const;
     template <typename DT>
-    clean_fdata_t<DT>& getData() const;
+    clean_fdata_t<DT>&  getData() const;
     uInt                getDepth() const;
 
     // Mutators
@@ -296,6 +296,9 @@ class FListView : public FWidget
     // Using-declaration
     using FWidget::setGeometry;
 
+    // Typedef
+    typedef std::list<FListViewItem*>  FListViewItems;
+
     // Constructor
     explicit FListView (FWidget* = nullptr);
 
@@ -309,218 +312,219 @@ class FListView : public FWidget
     FListView& operator = (const FListView&) = delete;
 
     // Accessors
-    FString              getClassName() const override;
-    std::size_t          getCount() const;
-    fc::text_alignment   getColumnAlignment (int) const;
-    FString              getColumnText (int) const;
-    fc::sorting_type     getColumnSortType (int) const;
-    fc::sorting_order    getSortOrder() const;
-    int                  getSortColumn() const;
-    FListViewItem*       getCurrentItem();
+    FString               getClassName() const override;
+    std::size_t           getCount() const;
+    fc::text_alignment    getColumnAlignment (int) const;
+    FString               getColumnText (int) const;
+    fc::sorting_type      getColumnSortType (int) const;
+    fc::sorting_order     getSortOrder() const;
+    int                   getSortColumn() const;
+    FListViewItem*        getCurrentItem();
 
     // Mutators
-    void                 setSize (const FSize&, bool = true) override;
-    void                 setGeometry ( const FPoint&, const FSize&
-                                     , bool = true ) override;
-    void                 setColumnAlignment (int, fc::text_alignment);
-    void                 setColumnText (int, const FString&);
-    void                 setColumnSortType (int, fc::sorting_type \
-                                                     = fc::by_name);
-    void                 setColumnSort (int, fc::sorting_order \
-                                                 = fc::ascending);
+    void                  setSize (const FSize&, bool = true) override;
+    void                  setGeometry ( const FPoint&, const FSize&
+                                      , bool = true ) override;
+    void                  setColumnAlignment (int, fc::text_alignment);
+    void                  setColumnText (int, const FString&);
+    void                  setColumnSortType (int, fc::sorting_type \
+                                                      = fc::by_name);
+    void                  setColumnSort (int, fc::sorting_order \
+                                                  = fc::ascending);
     template <typename Compare>
-    void                 setUserAscendingCompare (Compare);
+    void                  setUserAscendingCompare (Compare);
     template <typename Compare>
-    void                 setUserDescendingCompare (Compare);
-    void                 hideSortIndicator (bool);
-    bool                 setTreeView (bool);
-    bool                 setTreeView();
-    bool                 unsetTreeView();
+    void                  setUserDescendingCompare (Compare);
+    void                  hideSortIndicator (bool);
+    bool                  setTreeView (bool);
+    bool                  setTreeView();
+    bool                  unsetTreeView();
 
     // Methods
-    virtual int          addColumn (const FString&, int = USE_MAX_SIZE);
-    void                 hide() override;
-    iterator             insert (FListViewItem*);
-    iterator             insert (FListViewItem*, iterator);
+    virtual int           addColumn (const FString&, int = USE_MAX_SIZE);
+    void                  hide() override;
+    iterator              insert (FListViewItem*);
+    iterator              insert (FListViewItem*, iterator);
     template <typename DT = std::nullptr_t>
-    iterator             insert ( const FStringList&
-                                , DT&& = DT() );
-    iterator             insert ( const FStringList&
-                                , iterator );
+    iterator              insert ( const FStringList&
+                                 , DT&& = DT() );
+    iterator              insert ( const FStringList&
+                                 , iterator );
     template <typename DT>
-    iterator             insert ( const FStringList&
-                                , DT&&
-                                , iterator );
+    iterator              insert ( const FStringList&
+                                 , DT&&
+                                 , iterator );
     template <typename T
             , typename DT = std::nullptr_t>
-    iterator             insert ( const std::initializer_list<T>&
-                                , DT&& = DT() );
+    iterator              insert ( const std::initializer_list<T>&
+                                 , DT&& = DT() );
     template <typename T>
-    iterator             insert ( const std::initializer_list<T>&
-                                , iterator );
+    iterator              insert ( const std::initializer_list<T>&
+                                 , iterator );
     template <typename T
             , typename DT>
-    iterator             insert ( const std::initializer_list<T>&
-                                , DT&&
-                                , iterator );
+    iterator              insert ( const std::initializer_list<T>&
+                                 , DT&&
+                                 , iterator );
     template <typename ColT
             , typename DT = std::nullptr_t>
-    iterator             insert ( const std::vector<ColT>&
-                                , DT&& = DT() );
+    iterator              insert ( const std::vector<ColT>&
+                                 , DT&& = DT() );
     template <typename ColT>
-    iterator             insert ( const std::vector<ColT>&
-                                , iterator );
+    iterator              insert ( const std::vector<ColT>&
+                                 , iterator );
     template <typename ColT
             , typename DT>
-    iterator             insert ( const std::vector<ColT>&
-                                , DT&&
-                                , iterator );
-    void                 remove (FListViewItem*);
-    void                 clear();
-    iterator             beginOfList();
-    iterator             endOfList();
-    virtual void         sort();
+    iterator              insert ( const std::vector<ColT>&
+                                 , DT&&
+                                 , iterator );
+    void                  remove (FListViewItem*);
+    void                  clear();
+    FListViewItems&       getData();
+    const FListViewItems& getData() const;
+
+    virtual void          sort();
 
     // Event handlers
-    void                 onKeyPress (FKeyEvent*) override;
-    void                 onMouseDown (FMouseEvent*) override;
-    void                 onMouseUp (FMouseEvent*) override;
-    void                 onMouseMove (FMouseEvent*) override;
-    void                 onMouseDoubleClick (FMouseEvent*) override;
-    void                 onWheel (FWheelEvent*) override;
-    void                 onTimer (FTimerEvent*) override;
-    void                 onFocusIn (FFocusEvent*) override;
-    void                 onFocusOut (FFocusEvent*) override;
+    void                  onKeyPress (FKeyEvent*) override;
+    void                  onMouseDown (FMouseEvent*) override;
+    void                  onMouseUp (FMouseEvent*) override;
+    void                  onMouseMove (FMouseEvent*) override;
+    void                  onMouseDoubleClick (FMouseEvent*) override;
+    void                  onWheel (FWheelEvent*) override;
+    void                  onTimer (FTimerEvent*) override;
+    void                  onFocusIn (FFocusEvent*) override;
+    void                  onFocusOut (FFocusEvent*) override;
 
   protected:
     // Methods
-    void                 adjustViewport (const int);
-    void                 adjustScrollbars (const std::size_t) const;
-    void                 adjustSize() override;
+    void                  adjustViewport (const int);
+    void                  adjustScrollbars (const std::size_t) const;
+    void                  adjustSize() override;
 
   private:
     // Typedefs
-    typedef std::unordered_map<int, std::function<void()>> keyMap;
-    typedef std::unordered_map<int, std::function<bool()>> keyMapResult;
+    typedef std::unordered_map<int, std::function<void()>> KeyMap;
+    typedef std::unordered_map<int, std::function<bool()>> KeyMapResult;
 
     // Constants
     static constexpr std::size_t checkbox_space = 4;
 
     // Typedef
     struct Header;  // forward declaration
-    typedef std::vector<Header> headerItems;
-    typedef std::vector<fc::sorting_type> sortTypes;
+    typedef std::vector<Header> HeaderItems;
+    typedef std::vector<fc::sorting_type> SortTypes;
 
     // Constants
     static constexpr int USE_MAX_SIZE = -1;
 
     // Accessors
-    static iterator&     getNullIterator();
+    static iterator&      getNullIterator();
 
     // Mutators
-    static void          setNullIterator (const iterator&);
+    static void           setNullIterator (const iterator&);
 
     // Inquiry
-    bool                 isHorizontallyScrollable() const;
-    bool                 isVerticallyScrollable() const;
+    bool                  isHorizontallyScrollable() const;
+    bool                  isVerticallyScrollable() const;
 
     // Methods
-    void                 init();
-    void                 mapKeyFunctions();
-    void                 processKeyAction (FKeyEvent*);
+    void                  init();
+    void                  mapKeyFunctions();
+    void                  processKeyAction (FKeyEvent*);
     template <typename Compare>
-    void                 sort (Compare);
-    std::size_t          getAlignOffset ( const fc::text_alignment
-                                        , const std::size_t
-                                        , const std::size_t ) const;
-    iterator             getListEnd (const FListViewItem*);
-    void                 draw() override;
-    void                 drawBorder() override;
-    void                 drawScrollbars() const;
-    void                 drawHeadlines();
-    void                 drawList();
-    void                 drawListLine (const FListViewItem*, bool, bool);
-    void                 clearList();
-    void                 setLineAttributes (bool, bool) const;
-    FString              getCheckBox (const FListViewItem* item) const;
-    FString              getLinePrefix (const FListViewItem*, std::size_t) const;
-    void                 drawSortIndicator (std::size_t&, std::size_t);
-    void                 drawHeadlineLabel (const headerItems::const_iterator&);
-    void                 drawHeaderBorder (std::size_t);
-    void                 drawBufferedHeadline();
-    void                 drawColumnEllipsis ( const headerItems::const_iterator&
-                                            , const FString& );
-    void                 updateDrawing (bool, bool);
-    std::size_t          determineLineWidth (FListViewItem*);
-    void                 beforeInsertion (FListViewItem*);
-    void                 afterInsertion();
-    void                 recalculateHorizontalBar (std::size_t);
-    void                 recalculateVerticalBar (std::size_t) const;
-    void                 mouseHeaderClicked();
-    void                 wheelUp (int);
-    void                 wheelDown (int);
-    bool                 dragScrollUp (int);
-    bool                 dragScrollDown (int);
-    void                 dragUp (int);
-    void                 dragDown (int);
-    void                 stopDragScroll();
-    iterator             appendItem (FListViewItem*);
-    void                 processClick() const;
-    void                 processChanged() const;
-    void                 changeOnResize() const;
-    void                 toggleCheckbox();
-    void                 collapseAndScrollLeft();
-    void                 expandAndScrollRight();
-    void                 firstPos();
-    void                 lastPos();
-    bool                 expandSubtree();
-    bool                 collapseSubtree();
-    void                 setRelativePosition (int);
-    void                 stepForward();
-    void                 stepBackward();
-    void                 stepForward (int);
-    void                 stepBackward (int);
-    void                 scrollToX (int);
-    void                 scrollToY (int);
-    void                 scrollTo (const FPoint &);
-    void                 scrollTo (int, int);
-    void                 scrollBy (int, int);
-    bool                 hasCheckableItems() const;
+    void                  sort (Compare);
+    std::size_t           getAlignOffset ( const fc::text_alignment
+                                         , const std::size_t
+                                         , const std::size_t ) const;
+    iterator              getListEnd (const FListViewItem*);
+    void                  draw() override;
+    void                  drawBorder() override;
+    void                  drawScrollbars() const;
+    void                  drawHeadlines();
+    void                  drawList();
+    void                  drawListLine (const FListViewItem*, bool, bool);
+    void                  clearList();
+    void                  setLineAttributes (bool, bool) const;
+    FString               getCheckBox (const FListViewItem* item) const;
+    FString               getLinePrefix (const FListViewItem*, std::size_t) const;
+    void                  drawSortIndicator (std::size_t&, std::size_t);
+    void                  drawHeadlineLabel (const HeaderItems::const_iterator&);
+    void                  drawHeaderBorder (std::size_t);
+    void                  drawBufferedHeadline();
+    void                  drawColumnEllipsis ( const HeaderItems::const_iterator&
+                                             , const FString& );
+    void                  updateDrawing (bool, bool);
+    std::size_t           determineLineWidth (FListViewItem*);
+    void                  beforeInsertion (FListViewItem*);
+    void                  afterInsertion();
+    void                  recalculateHorizontalBar (std::size_t);
+    void                  recalculateVerticalBar (std::size_t) const;
+    void                  mouseHeaderClicked();
+    void                  wheelUp (int);
+    void                  wheelDown (int);
+    bool                  dragScrollUp (int);
+    bool                  dragScrollDown (int);
+    void                  dragUp (int);
+    void                  dragDown (int);
+    void                  stopDragScroll();
+    iterator              appendItem (FListViewItem*);
+    void                  processClick() const;
+    void                  processChanged() const;
+    void                  changeOnResize() const;
+    void                  toggleCheckbox();
+    void                  collapseAndScrollLeft();
+    void                  expandAndScrollRight();
+    void                  firstPos();
+    void                  lastPos();
+    bool                  expandSubtree();
+    bool                  collapseSubtree();
+    void                  setRelativePosition (int);
+    void                  stepForward();
+    void                  stepBackward();
+    void                  stepForward (int);
+    void                  stepBackward (int);
+    void                  scrollToX (int);
+    void                  scrollToY (int);
+    void                  scrollTo (const FPoint &);
+    void                  scrollTo (int, int);
+    void                  scrollBy (int, int);
+    bool                  hasCheckableItems() const;
 
     // Callback methods
-    void                 cb_vbarChange (const FWidget*);
-    void                 cb_hbarChange (const FWidget*);
+    void                  cb_vbarChange (const FWidget*);
+    void                  cb_hbarChange (const FWidget*);
 
     // Data members
-    iterator             root{};
-    FObjectList          selflist{};
-    FObjectList          itemlist{};
-    FListViewIterator    current_iter{};
-    FListViewIterator    first_visible_line{};
-    FListViewIterator    last_visible_line{};
-    headerItems          header{};
-    FTermBuffer          headerline{};
-    FScrollbarPtr        vbar{nullptr};
-    FScrollbarPtr        hbar{nullptr};
-    sortTypes            sort_type{};
-    FPoint               clicked_expander_pos{-1, -1};
-    FPoint               clicked_header_pos{-1, -1};
-    keyMap               key_map{};
-    keyMapResult         key_map_result{};
-    const FListViewItem* clicked_checkbox_item{nullptr};
-    std::size_t          nf_offset{0};
-    std::size_t          max_line_width{1};
-    fc::dragScroll       drag_scroll{fc::noScroll};
-    int                  first_line_position_before{-1};
-    int                  scroll_repeat{100};
-    int                  scroll_distance{1};
-    int                  xoffset{0};
-    int                  sort_column{-1};
-    fc::sorting_order    sort_order{fc::unsorted};
-    bool                 scroll_timer{false};
-    bool                 tree_view{false};
-    bool                 hide_sort_indicator{false};
-    bool                 has_checkable_items{false};
+    iterator              root{};
+    FObjectList           selflist{};
+    FObjectList           itemlist{};
+    FListViewIterator     current_iter{};
+    FListViewIterator     first_visible_line{};
+    FListViewIterator     last_visible_line{};
+    HeaderItems           header{};
+    FTermBuffer           headerline{};
+    FScrollbarPtr         vbar{nullptr};
+    FScrollbarPtr         hbar{nullptr};
+    SortTypes             sort_type{};
+    FPoint                clicked_expander_pos{-1, -1};
+    FPoint                clicked_header_pos{-1, -1};
+    KeyMap                key_map{};
+    KeyMapResult          key_map_result{};
+    const FListViewItem*  clicked_checkbox_item{nullptr};
+    std::size_t           nf_offset{0};
+    std::size_t           max_line_width{1};
+    fc::dragScroll        drag_scroll{fc::noScroll};
+    int                   first_line_position_before{-1};
+    int                   scroll_repeat{100};
+    int                   scroll_distance{1};
+    int                   xoffset{0};
+    int                   sort_column{-1};
+    fc::sorting_order     sort_order{fc::unsorted};
+    bool                  scroll_timer{false};
+    bool                  tree_view{false};
+    bool                  hide_sort_indicator{false};
+    bool                  has_checkable_items{false};
 
     // Function Pointer
     bool (*user_defined_ascending) (const FObject*, const FObject*){nullptr};
@@ -712,12 +716,12 @@ FObject::iterator
 }
 
 //----------------------------------------------------------------------
-inline FObject::iterator FListView::beginOfList()
-{ return itemlist.begin(); }
+inline FListView::FListViewItems& FListView::getData()
+{ return reinterpret_cast<FListViewItems&>(itemlist); }
 
 //----------------------------------------------------------------------
-inline FObject::iterator FListView::endOfList()
-{ return itemlist.end(); }
+inline const FListView::FListViewItems& FListView::getData() const
+{ return reinterpret_cast<const FListViewItems&>(itemlist); }
 
 //----------------------------------------------------------------------
 inline bool FListView::isHorizontallyScrollable() const

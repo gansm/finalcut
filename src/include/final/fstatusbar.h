@@ -231,7 +231,7 @@ class FStatusBar : public FWindow
 
   private:
     // Typedef
-    typedef std::vector<FStatusKey*> keyList;
+    typedef std::vector<FStatusKey*> FKeyList;
 
     // Methods
     void                init();
@@ -239,11 +239,11 @@ class FStatusBar : public FWindow
     int                 getKeyTextWidth (const FStatusKey*) const;
     void                draw() override;
     void                drawKeys();
-    void                drawKey (keyList::const_iterator);
-    void                drawActiveKey (keyList::const_iterator);
+    void                drawKey (FKeyList::const_iterator);
+    void                drawActiveKey (FKeyList::const_iterator);
 
     // Data members
-    keyList             key_list{};
+    FKeyList            key_list{};
     FString             text{""};
     std::size_t         screenWidth{80};
     int                 keyname_len{0};

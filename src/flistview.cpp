@@ -1662,7 +1662,7 @@ void FListView::drawHeadlines()
     || max_line_width < 1 )
     return;
 
-  headerItems::const_iterator iter = header.begin();
+  HeaderItems::const_iterator iter = header.begin();
   headerline.clear();
 
   if ( hasCheckableItems() )
@@ -1983,7 +1983,7 @@ inline void FListView::drawHeaderBorder (std::size_t length)
 
 
 //----------------------------------------------------------------------
-void FListView::drawHeadlineLabel (const headerItems::const_iterator& iter)
+void FListView::drawHeadlineLabel (const HeaderItems::const_iterator& iter)
 {
   // Print label text
   static constexpr std::size_t leading_space = 1;
@@ -1992,7 +1992,7 @@ void FListView::drawHeadlineLabel (const headerItems::const_iterator& iter)
   const auto width = std::size_t(iter->width);
   std::size_t column_width = getColumnWidth(txt);
   const std::size_t column_max = leading_space + width;
-  const headerItems::const_iterator first = header.begin();
+  const HeaderItems::const_iterator first = header.begin();
   const int column = int(std::distance(first, iter)) + 1;
   const bool has_sort_indicator( sort_column == column && ! hide_sort_indicator );
   const auto& wc = getColorTheme();
@@ -2119,7 +2119,7 @@ void FListView::drawBufferedHeadline()
 }
 
 //----------------------------------------------------------------------
-void FListView::drawColumnEllipsis ( const headerItems::const_iterator& iter
+void FListView::drawColumnEllipsis ( const HeaderItems::const_iterator& iter
                                    , const FString& text )
 {
   // Print label ellipsis

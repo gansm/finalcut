@@ -120,7 +120,7 @@ void FListBox::setCurrentItem (std::size_t index)
 }
 
 //----------------------------------------------------------------------
-void FListBox::setCurrentItem (listBoxItems::iterator iter)
+void FListBox::setCurrentItem (FListBoxItems::iterator iter)
 {
   const auto index = std::size_t(std::distance(itemlist.begin(), iter)) + 1;
   setCurrentItem(index);
@@ -641,7 +641,7 @@ void FListBox::adjustSize()
 
 // private methods of FListBox
 //----------------------------------------------------------------------
-inline FString FListBox::getString (listBoxItems::iterator iter)
+inline FString FListBox::getString (FListBoxItems::iterator iter)
 {
   return iter->getText();
 }
@@ -860,7 +860,7 @@ void FListBox::drawList()
 
 //----------------------------------------------------------------------
 inline void FListBox::drawListLine ( int y
-                                   , listBoxItems::iterator iter
+                                   , FListBoxItems::iterator iter
                                    , bool serach_mark )
 {
   const std::size_t inc_len = inc_search.getLength();
@@ -915,7 +915,7 @@ inline void FListBox::printRightBracket (fc::brackets_type bracket_type)
 
 //----------------------------------------------------------------------
 inline void FListBox::drawListBracketsLine ( int y
-                                           , listBoxItems::iterator iter
+                                           , FListBoxItems::iterator iter
                                            , bool serach_mark )
 {
   std::size_t b{0};
@@ -1726,7 +1726,7 @@ void FListBox::changeOnResize() const
 }
 
 //----------------------------------------------------------------------
-void FListBox::lazyConvert(listBoxItems::iterator iter, std::size_t y)
+void FListBox::lazyConvert(FListBoxItems::iterator iter, std::size_t y)
 {
   if ( conv_type != lazy_convert || ! iter->getText().isNull() )
     return;

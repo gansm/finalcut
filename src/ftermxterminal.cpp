@@ -27,6 +27,7 @@
 #include "final/fapplication.h"
 #include "final/fc.h"
 #include "final/flog.h"
+#include "final/fkeyboard.h"
 #include "final/fstring.h"
 #include "final/fterm.h"
 #include "final/ftermcap.h"
@@ -49,8 +50,9 @@ namespace finalcut
 {
 
 // static class attributes
-bool     FTermXTerminal::mouse_support{false};
-FSystem* FTermXTerminal::fsystem{nullptr};
+bool       FTermXTerminal::mouse_support{false};
+FSystem*   FTermXTerminal::fsystem{nullptr};
+FKeyboard* FTermXTerminal::keyboard{nullptr};
 
 
 //----------------------------------------------------------------------
@@ -63,6 +65,7 @@ FTermXTerminal::FTermXTerminal()
 {
   // Get FSystem object
   fsystem = FTerm::getFSystem();
+  keyboard = FTerm::getFKeyboard();
 }
 
 //----------------------------------------------------------------------
@@ -291,6 +294,13 @@ void FTermXTerminal::resetDefaults()
 }
 
 //----------------------------------------------------------------------
+void FTermXTerminal::resetTitle()
+{
+  if ( title_was_changed )
+    setTitle(xterm_title);
+}
+
+//----------------------------------------------------------------------
 void FTermXTerminal::captureFontAndTitle()
 {
   initCheck();
@@ -300,8 +310,10 @@ void FTermXTerminal::captureFontAndTitle()
     && ! term_detection->isRxvtTerminal() )
   {
     FTermios::setCaptureSendCharacters();
+    keyboard->setNonBlockingInput();
     xterm_font  = captureXTermFont();
     xterm_title = captureXTermTitle();
+    keyboard->unsetNonBlockingInput();
     FTermios::unsetCaptureSendCharacters();
   }
 }
@@ -356,15 +368,21 @@ void FTermXTerminal::setXTermTitle()
 
   if ( term_detection->isXTerminal()
     || term_detection->isScreenTerm()
+    || term_detection->isUrxvtTerminal()
     || term_detection->isCygwinTerminal()
     || term_detection->isMinttyTerm()
     || term_detection->isPuttyTerminal()
     || FTermcap::osc_support )
   {
     oscPrefix();
+
+    if ( xterm_title.isNull() )
+      xterm_title = "";
+
     FTerm::putstringf (OSC "0;%s" BEL, xterm_title.c_str());
     oscPostfix();
     std::fflush(stdout);
+    title_was_changed = true;
   }
 }
 
@@ -755,11 +773,11 @@ FString FTermXTerminal::captureXTermFont() const
     struct timeval tv{};
     const int stdin_no = FTermios::getStdIn();
 
+    // Querying the terminal font
     oscPrefix();
-    FTerm::putstring (OSC "50;?" BEL);  // get font
+    FTerm::putstring (OSC "50;?" BEL);
     oscPostfix();
     std::fflush(stdout);
-
     FD_ZERO(&ifds);
     FD_SET(stdin_no, &ifds);
     tv.tv_sec  = 0;
@@ -768,17 +786,33 @@ FString FTermXTerminal::captureXTermFont() const
     // Read the terminal answer
     if ( select(stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0 )
     {
-      char temp[150]{};
+      std::array<char, 150> temp{};
+      std::size_t pos{0};
 
-      if ( std::scanf("\033]50;%148[^\n]s", temp) == 1 )
+      do
       {
-        const std::size_t n = std::strlen(temp);
+        std::size_t bytes_free = temp.size() - pos - 1;
+        const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
+
+        if ( bytes <= 0 )
+          break;
+
+        pos += std::size_t(bytes);
+      }
+      while ( pos < temp.size() && std::strchr(temp.data(), '\a') == nullptr );
+
+      if ( pos > 5 && temp[0] == ESC[0] && temp[1] == ']'
+        && temp[2] == '5' && temp[3] == '0' && temp[4] == ';' )
+      {
+        // Skip leading Esc ] 5 0 ;
+        char* str = &temp[5];
+        const std::size_t n = std::strlen(str);
 
         // BEL + '\0' = string terminator
-        if ( n >= 5 && temp[n - 1] == BEL[0] && temp[n] == '\0' )
-          temp[n - 1] = '\0';
+        if ( n >= 5 && str[n - 1] == BEL[0] && str[n] == '\0' )
+          str[n - 1] = '\0';
 
-        return FString{temp};
+        return FString{str};
       }
     }
   }
@@ -796,11 +830,11 @@ FString FTermXTerminal::captureXTermTitle() const
 
   fd_set ifds{};
   struct timeval tv{};
-  const int stdin_no = FTermios::getStdIn();
+  const int stdin_no{FTermios::getStdIn()};
 
-  FTerm::putstring (CSI "21t");  // get title
+  // Report window title
+  FTerm::putstring (CSI "21t");
   std::fflush(stdout);
-
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
@@ -809,20 +843,35 @@ FString FTermXTerminal::captureXTermTitle() const
   // read the terminal answer
   if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0 )
   {
-    char temp[512]{};
+    std::array<char, 512> temp{};
+    std::size_t pos{0};
 
-    if ( std::scanf("\033]l%509[^\n]s", temp) == 1 )
+    do
     {
-      const std::size_t n = std::strlen(temp);
+      std::size_t bytes_free = temp.size() - pos - 1;
+      const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
+
+      if ( bytes <= 0 )
+        break;
+
+      pos += std::size_t(bytes);
+    }
+    while ( pos < temp.size() && std::strstr(temp.data(), ESC "\\") == nullptr );
+
+    if ( pos > 6 && temp[0] == ESC[0] && temp[1] == ']' && temp[2] == 'l' )
+    {
+      // Skip leading Esc + ] + l = OSC l
+      char* str = &temp[3];
+      const std::size_t n = std::strlen(str);
 
       // Esc + \ = OSC string terminator
-      if ( n >= 2 && temp[n - 2] == ESC[0] && temp[n - 1] == '\\' )
+      if ( n >= 2 && str[n - 2] == ESC[0] && str[n - 1] == '\\' )
       {
         if ( n < 4 )
           return FString{};
 
-        temp[n - 2] = '\0';
-        return FString{temp};
+        str[n - 2] = '\0';
+        return FString{str};
       }
     }
   }

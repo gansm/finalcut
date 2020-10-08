@@ -305,8 +305,7 @@ class MyDialog final : public finalcut::FDialog
                              , const finalcut::FLineEdit& ) const;
     void cb_setTitlebar (const finalcut::FLineEdit&);
     void cb_showProgressBar();
-    void cb_updateNumber ( const finalcut::FListBox&
-                         , finalcut::FLabel& ) const;
+    void cb_updateNumber();
     void cb_activateButton ( const finalcut::FRadioButton&
                            , finalcut::FButton& ) const;
     void cb_view (const finalcut::FMenuItem*);
@@ -774,8 +773,7 @@ void MyDialog::initWidgetsCallbacks()
   myList.addCallback
   (
     "row-selected",
-    this, &MyDialog::cb_updateNumber,
-    std::ref(myList), std::ref(tagged_count)
+    this, &MyDialog::cb_updateNumber
   );
 }
 
@@ -977,19 +975,17 @@ void MyDialog::cb_showProgressBar()
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_updateNumber ( const finalcut::FListBox& list
-                               , finalcut::FLabel& num) const
+void MyDialog::cb_updateNumber()
 {
-  const auto count = list.getCount();
   int select_num = 0;
 
-  for (std::size_t n{1}; n <= count; n++)
-    if ( list.isSelected(n) )
+  for (auto&& item : myList.getData() )
+    if ( item.isSelected() )
       select_num++;
 
-  num.clear();
-  num << select_num;
-  num.redraw();
+  tagged_count.clear();
+  tagged_count << select_num;
+  tagged_count.redraw();
 }
 
 //----------------------------------------------------------------------

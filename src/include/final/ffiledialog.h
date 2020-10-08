@@ -186,7 +186,7 @@ class FFileDialog : public FDialog
       uChar                  : 1;  // padding bits
     };
 
-    typedef std::vector<FDirEntry> dirEntries;
+    typedef std::vector<FDirEntry> DirEntries;
 
     // Methods
     void                 init();
@@ -216,7 +216,7 @@ class FFileDialog : public FDialog
     // Data members
     static FSystem*  fsystem;
     DIR*             directory_stream{nullptr};
-    dirEntries       dir_entries{};
+    DirEntries       dir_entries{};
     FString          directory{};
     FString          filter_pattern{};
     FLineEdit        filename{this};

@@ -177,18 +177,12 @@ void CheckList::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void CheckList::cb_showList()
 {
-  auto iter = listview.beginOfList();
   finalcut::FString shopping_list{};
 
-  while ( iter != listview.endOfList() )
+  for (auto item : listview.getData())
   {
-    const auto item = static_cast<finalcut::FListViewItem*>(*iter);
-
     if ( item->isChecked() )
-      shopping_list << fc::Bullet << ' '
-                    << item->getText(1) << '\n';
-
-    ++iter;
+      shopping_list << fc::Bullet << ' ' << item->getText(1) << '\n';
   }
 
   if ( shopping_list.isEmpty() )

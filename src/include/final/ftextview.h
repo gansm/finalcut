@@ -138,7 +138,7 @@ class FTextView : public FWidget
 
   private:
     // Typedefs
-    typedef std::unordered_map<int, std::function<void()>> keyMap;
+    typedef std::unordered_map<int, std::function<void()>> KeyMap;
 
     // Accessors
     std::size_t         getTextHeight() const;
@@ -168,7 +168,7 @@ class FTextView : public FWidget
     FStringList        data{};
     FScrollbarPtr      vbar{nullptr};
     FScrollbarPtr      hbar{nullptr};
-    keyMap             key_map{};
+    KeyMap             key_map{};
     bool               update_scrollbar{true};
     int                xoffset{0};
     int                yoffset{0};

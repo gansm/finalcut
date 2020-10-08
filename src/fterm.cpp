@@ -767,7 +767,7 @@ bool FTerm::setNewFont()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::setOldFont()
+bool FTerm::resetFont()
 {
   bool retval{false};
 
@@ -1590,7 +1590,7 @@ void FTerm::init_optiMove()
 {
   // Duration precalculation of the cursor movement strings
 
-  FOptiMove::termEnv optimove_env =
+  FOptiMove::TermEnv optimove_env =
   {
     TCAP(fc::t_cursor_home),
     TCAP(fc::t_carriage_return),
@@ -1625,7 +1625,7 @@ void FTerm::init_optiAttr()
 {
   // Setting video attribute optimization
 
-  FOptiAttr::termEnv optiattr_env =
+  FOptiAttr::TermEnv optiattr_env =
   {
     TCAP(fc::t_enter_bold_mode),
     TCAP(fc::t_exit_bold_mode),
@@ -2469,12 +2469,10 @@ void FTerm::initBaudRate() const
 void FTerm::finish() const
 {
   // Set default signal handler
-
-  const auto& title = data->getXtermTitle();
   resetSignalHandler();
 
-  if ( title && isXTerminal() && ! isRxvtTerminal() )
-    setTermTitle (title);
+  if ( isXTerminal() && ! isRxvtTerminal() )
+    getFTermXTerminal()->resetTitle();
 
   // Restore the saved termios settings
   FTermios::restoreTTYsettings();
@@ -2529,7 +2527,7 @@ void FTerm::finish() const
   finish_encoding();
 
   if ( data->isNewFont() || data->isVGAFont() )
-    setOldFont();
+    resetFont();
 }
 
 //----------------------------------------------------------------------

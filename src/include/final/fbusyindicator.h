@@ -76,7 +76,7 @@ class FBusyIndicator : public FToolTip
     FBusyIndicator (const FBusyIndicator&) = delete;
 
     // Destructor
-    ~FBusyIndicator();
+    ~FBusyIndicator() override;
 
     // Disable copy assignment operator (=)
     FBusyIndicator& operator = (const FBusyIndicator&) = delete;

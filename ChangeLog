@@ -1,3 +1,10 @@
+2020-10-08  Markus Gans  <guru.mail@muenster.de>
+	* Better keyboard support for urxvt terminals
+	* Screen reports (like Secondary DA) are now read directly
+	* Report Cursor Position (DECXCPR) support
+	* FListView and FListBox now have direct access to the list of client 
+	  elements via data()
+
 2020-10-05  Markus Gans  <guru.mail@muenster.de>
 	* Now hides the input cursor when a widget gets hidden
 

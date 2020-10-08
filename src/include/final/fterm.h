@@ -132,6 +132,7 @@ class FKeyboard;
 class FMouseControl;
 class FOptiAttr;
 class FOptiMove;
+class FPoint;
 class FStartOptions;
 class FSize;
 class FString;
@@ -266,7 +267,7 @@ class FTerm final
     // Methods
     static bool              setVGAFont();
     static bool              setNewFont();
-    static bool              setOldFont();
+    static bool              resetFont();
     static int               openConsole();
     static int               closeConsole();
     static const char*       moveCursorString (int, int, int, int);
@@ -415,7 +416,7 @@ std::size_t getColumnWidth (const FString&);
 std::size_t getColumnWidth (const wchar_t);
 std::size_t getColumnWidth (FChar&);
 std::size_t getColumnWidth (const FTermBuffer&);
-
+FPoint readCursorPos();
 
 // FTerm inline functions
 //----------------------------------------------------------------------

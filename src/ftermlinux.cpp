@@ -460,7 +460,7 @@ FKey FTermLinux::modifierKeyCorrection (const FKey& key_id)
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
 
-  const modifier_key& m = getModifierKey();
+  const ModifierKey& m = getModifierKey();
 
   if ( ! (m.shift || m.ctrl || m.alt) )
   {
@@ -631,7 +631,7 @@ bool FTermLinux::getUnicodeMap()
 }
 
 //----------------------------------------------------------------------
-FTermLinux::modifier_key& FTermLinux::getModifierKey()
+FTermLinux::ModifierKey& FTermLinux::getModifierKey()
 {
   // Get Linux console shift state
 
@@ -932,7 +932,7 @@ void FTermLinux::getVGAPalette()
 //----------------------------------------------------------------------
 void FTermLinux::setVGADefaultPalette()
 {
-  constexpr std::array<rgb, 16> defaultColor =
+  constexpr std::array<RGB, 16> defaultColor =
   {{
     {0x00, 0x00, 0x00}, {0xaa, 0x00, 0x00},
     {0x00, 0xaa, 0x00}, {0xaa, 0x55, 0x00},

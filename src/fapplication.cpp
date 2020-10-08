@@ -96,9 +96,10 @@ FApplication::FApplication (const int& _argc, char* _argv[])
 
   if ( ! (_argc && _argv) )
   {
-    static char empty_str[1] = "";
+    typedef char* CString;
+    static CString empty[1]{CString("")};
     app_argc = 0;
-    app_argv = reinterpret_cast<char**>(&empty_str);
+    app_argv = empty;
   }
 
   init();

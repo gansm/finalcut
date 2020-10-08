@@ -24,7 +24,6 @@
 
 #include "final/fc.h"
 #include "final/fkey_map.h"
-#include "final/ftypes.h"
 
 namespace finalcut
 {
@@ -32,14 +31,13 @@ namespace finalcut
 namespace fc
 {
 
-std::array<FKeyMap, 174> fkey
+std::array<FKeyMap, 188> fkey
 {{
   { fc::Fkey_backspace , nullptr,   "kb" },  // backspace key
   { fc::Fkey_catab     , nullptr,   "ka" },  // clear-all-tabs key
   { fc::Fkey_clear     , nullptr,   "kC" },  // clear-screen or erase key
   { fc::Fkey_ctab      , nullptr,   "kt" },  // clear-tab key
   { fc::Fkey_dc        , nullptr,   "kD" },  // delete-character key
-  { fc::Fkey_dc        , nullptr,   "kDx"},  // keypad delete
   { fc::Fkey_dl        , nullptr,   "kL" },  // delete-line key
   { fc::Fkey_down      , nullptr,   "kd" },  // down-arrow key
   { fc::Fkey_eic       , nullptr,   "kM" },  // sent by rmir or smir in insert mode
@@ -186,36 +184,51 @@ std::array<FKeyMap, 174> fkey
   { fc::Fkey_f63       , nullptr,   "Fr" },  // F63 function key
   // Some terminals (e.g. PuTTY) send vt100 key codes
   // when the arrow and function keys are pressed
-  { fc::Fkey_down      , CSI "B",   "kdx"},  // down-arrow key (standard mode)
-  { fc::Fkey_down      , ESC "OB",  "kdX"},  // down-arrow key (application mode)
-  { fc::Fkey_f1        , ESC "OP",  "k1X"},  // PF1 (application mode)
-  { fc::Fkey_f2        , ESC "OQ",  "k2X"},  // PF2 (application mode)
-  { fc::Fkey_f3        , ESC "OR",  "k3X"},  // PF3 (application mode)
-  { fc::Fkey_f4        , ESC "OS",  "k4X"},  // PF4 (application mode)
+  { fc::Fkey_f1        , ESC "OP",  "k1x"},  // PF1 (application mode)
+  { fc::Fkey_f2        , ESC "OQ",  "k2x"},  // PF2 (application mode)
+  { fc::Fkey_f3        , ESC "OR",  "k3x"},  // PF3 (application mode)
+  { fc::Fkey_f4        , ESC "OS",  "k4x"},  // PF4 (application mode)
   { fc::Fkey_left      , CSI "D",   "klx"},  // left-arrow key (standard mode)
   { fc::Fkey_left      , ESC "OD",  "klX"},  // left-arrow key (application mode)
   { fc::Fkey_right     , CSI "C",   "krx"},  // right-arrow key (standard mode)
   { fc::Fkey_right     , ESC "OC",  "krX"},  // right-arrow key (application mode)
   { fc::Fkey_up        , CSI "A",   "kux"},  // up-arrow key (standard mode)
   { fc::Fkey_up        , ESC "OA",  "kuX"},  // up-arrow key (application mode)
+  { fc::Fkey_down      , CSI "B",   "kdx"},  // down-arrow key (standard mode)
+  { fc::Fkey_down      , ESC "OB",  "kdX"},  // down-arrow key (application mode)
+  { fc::Fkey_sf        , CSI "a",   "kFx"},  // scroll-forward key (shift-up)
+  { fc::Fkey_sr        , CSI "b",   "kRx"},  // scroll-backward key (shift-down)
   // Fallback for rxvt with TERM=xterm
   { fc::Fkey_home      , CSI "7~",  "khx"},  // home key
   { fc::Fkey_end       , CSI "8~",  "@7x"},  // end key
-  { fc::Fkey_f1        , CSI "11~", "k1x"},  // F1 function key
-  { fc::Fkey_f2        , CSI "12~", "k2x"},  // F2 function key
-  { fc::Fkey_f3        , CSI "13~", "k3x"},  // F3 function key
-  { fc::Fkey_f4        , CSI "14~", "k4x"},  // F4 function key
+  { fc::Fkey_f1        , CSI "11~", "k1X"},  // F1 function key
+  { fc::Fkey_f2        , CSI "12~", "k2X"},  // F2 function key
+  { fc::Fkey_f3        , CSI "13~", "k3X"},  // F3 function key
+  { fc::Fkey_f4        , CSI "14~", "k4X"},  // F4 function key
   // Fallback for TERM=ansi
-  { fc::Fkey_end       , CSI "K",   "@7X"},  // end key
+  { fc::Fkey_home      , CSI "H",   "khX"},  // home key
+  { fc::Fkey_end       , CSI "F",   "@7X"},  // end key
+  { fc::Fkey_end       , CSI "K",   "@7y"},  // end key (Microsoft HyperTerminal)
   // Keypad keys
   { fc::Fkey_enter     , ESC "OM",  "@8x"},  // enter key
   { fc::Fkey_slash     , ESC "Oo",  "KP1"},  // keypad slash
   { fc::Fkey_asterisk  , ESC "Oj",  "KP2"},  // keypad asterisk
   { fc::Fkey_minus_sign, ESC "Om",  "KP3"},  // keypad minus sign
-  { fc::Fkey_plus_sign , ESC "Ok",  "KP4"}   // keypad plus sign
+  { fc::Fkey_plus_sign , ESC "Ok",  "KP4"},  // keypad plus sign
+  { fc::Fkey_ic        , ESC "Op",  "kIx"},  // keypad insert
+  { fc::Fkey_dc        , ESC "On",  "kDx"},  // keypad delete
+  { fc::Fkey_left      , ESC "Ot",  "kly"},  // keypad left-arrow
+  { fc::Fkey_right     , ESC "Ov",  "kry"},  // keypad right-arrow
+  { fc::Fkey_up        , ESC "Ox",  "kuy"},  // keypad up-arrow
+  { fc::Fkey_down      , ESC "Or",  "kdy"},  // keypad down-arrow
+  { fc::Fkey_a1        , ESC "Ow",  "K1x"},  // keypad upper left
+  { fc::Fkey_a3        , ESC "Oy",  "K3x"},  // keypad upper right
+  { fc::Fkey_b2        , ESC "Ou",  "K2x"},  // keypad center
+  { fc::Fkey_c1        , ESC "Oq",  "K4x"},  // keypad lower left
+  { fc::Fkey_c3        , ESC "Os",  "K5x"}   // keypad lower right
 }};
 
-constexpr std::array<FMetakeyMap, 228> fmetakey =
+constexpr std::array<FMetakeyMap, 232> fmetakey =
 {{
   { fc::Fmkey_ic                   , "\033[2;3~"   },  // M-insert
   { fc::Fmkey_ic                   , "\033\033[2~" },  // M-insert
@@ -290,9 +303,13 @@ constexpr std::array<FMetakeyMap, 228> fmetakey =
   { fc::Fckey_ppage                , "\033[5;5~"   },  // ctrl-prev-page
   { fc::Fckey_npage                , "\033[6;5~"   },  // ctrl-next-page
   { fc::Fckey_up                   , "\033[1;5A"   },  // ctrl-up
+  { fc::Fckey_up                   , "\033Oa"      },  // ctrl-up
   { fc::Fckey_down                 , "\033[1;5B"   },  // ctrl-down
+  { fc::Fckey_down                 , "\033Ob"      },  // ctrl-down
   { fc::Fckey_right                , "\033[1;5C"   },  // ctrl-right
+  { fc::Fckey_right                , "\033Oc"      },  // ctrl-right
   { fc::Fckey_left                 , "\033[1;5D"   },  // ctrl-left
+  { fc::Fckey_left                 , "\033Od"      },  // ctrl-left
   { fc::Fckey_sic                  , "\033[2;6~"   },  // shift-ctrl-M-insert
   { fc::Fckey_sdc                  , "\033[3;6~"   },  // shift-ctrl-M-delete
   { fc::Fckey_shome                , "\033[1;6H"   },  // shift-ctrl-M-home

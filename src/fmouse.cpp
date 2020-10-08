@@ -306,7 +306,9 @@ bool FMouseGPM::hasData()
 
 //----------------------------------------------------------------------
 void FMouseGPM::setRawData (FKeyboard::keybuffer&)
-{ }
+{
+  // This method need not be implemented for FMouseGPM
+}
 
 //----------------------------------------------------------------------
 void FMouseGPM::processEvent (struct timeval*)

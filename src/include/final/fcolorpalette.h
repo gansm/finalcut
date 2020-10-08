@@ -104,7 +104,7 @@ class default8ColorPalette final : public FColorPalette
     explicit default8ColorPalette (const FSetPalette&);
 
     // Destructor
-    ~default8ColorPalette();
+    ~default8ColorPalette() override;
 
     // Accessor
     FString getClassName() const override;
@@ -144,7 +144,7 @@ class default16ColorPalette final : public FColorPalette
     explicit default16ColorPalette (const FSetPalette&);
 
     // Destructor
-    ~default16ColorPalette();
+    ~default16ColorPalette() override;
 
     // Accessor
     FString getClassName() const override;
@@ -183,7 +183,7 @@ class default16DarkColorPalette final : public FColorPalette
     explicit default16DarkColorPalette (const FSetPalette&);
 
     // Destructor
-    ~default16DarkColorPalette();
+    ~default16DarkColorPalette() override;
 
     // Accessor
     FString getClassName() const override;

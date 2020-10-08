@@ -241,7 +241,12 @@ void FTermcap::termcapKeys()
 
   // Read termcap key sequences up to the self-defined values
   for (auto&& entry : fc::fkey)
+  {
+    if ( entry.string != nullptr )
+      break;
+
     entry.string = getString(entry.tname);
+  }
 }
 
 //----------------------------------------------------------------------
