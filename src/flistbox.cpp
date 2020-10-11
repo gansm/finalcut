@@ -1622,7 +1622,7 @@ inline bool FListBox::deletePreviousCharacter()
 {
   const std::size_t inc_len = inc_search.getLength();
 
-  if ( inc_len <= 0 )
+  if ( inc_len == 0 )
     return false;
 
   inc_search.remove(inc_len - 1, 1);

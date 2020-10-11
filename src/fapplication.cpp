@@ -493,35 +493,35 @@ inline FApplication::CmdMap& FApplication::mapCmdOptions()
   static CmdMap cmd_map{};
 
   // --encoding
-  cmd_map['e'] = [enc] (char* arg) { enc(FString(arg)); };
+  cmd_map['e'] = [enc] (const char* arg) { enc(FString(arg)); };
   // --log-file
-  cmd_map['l'] = [log] (char* arg) { log(FString(arg)); };
+  cmd_map['l'] = [log] (const char* arg) { log(FString(arg)); };
   // --no-mouse
-  cmd_map['m'] = [opt] (char*) { opt().mouse_support = false; };
+  cmd_map['m'] = [opt] (const char*) { opt().mouse_support = false; };
   // --no-optimized-cursor
-  cmd_map['o'] = [opt] (char*) { opt().cursor_optimisation = false; };
+  cmd_map['o'] = [opt] (const char*) { opt().cursor_optimisation = false; };
   // --no-terminal-detection
-  cmd_map['d'] = [opt] (char*) { opt().terminal_detection = false; };
+  cmd_map['d'] = [opt] (const char*) { opt().terminal_detection = false; };
   // --no-terminal-data-request
-  cmd_map['r'] = [opt] (char*) { opt().terminal_data_request = false; };
+  cmd_map['r'] = [opt] (const char*) { opt().terminal_data_request = false; };
   // --no-color-change
-  cmd_map['c'] = [opt] (char*) { opt().color_change = false; };
+  cmd_map['c'] = [opt] (const char*) { opt().color_change = false; };
   // --no-sgr-optimizer
-  cmd_map['s'] = [opt] (char*) { opt().sgr_optimizer = false; };
+  cmd_map['s'] = [opt] (const char*) { opt().sgr_optimizer = false; };
   // --vgafont
-  cmd_map['v'] = [opt] (char*) { opt().vgafont = true; };
+  cmd_map['v'] = [opt] (const char*) { opt().vgafont = true; };
   // --newfont
-  cmd_map['n'] = [opt] (char*) { opt().newfont = true; };
+  cmd_map['n'] = [opt] (const char*) { opt().newfont = true; };
   // --dark-theme
-  cmd_map['t'] = [opt] (char*) { opt().dark_theme = true; };
+  cmd_map['t'] = [opt] (const char*) { opt().dark_theme = true; };
 #if defined(__FreeBSD__) || defined(__DragonFly__)
   // --no-esc-for-alt-meta
-  cmd_map['E'] = [opt] (char*) { opt().meta_sends_escape = false; };
+  cmd_map['E'] = [opt] (const char*) { opt().meta_sends_escape = false; };
   // --no-cursorstyle-change
-  cmd_map['C'] = [opt] (char*) { opt().change_cursorstyle = false; };
+  cmd_map['C'] = [opt] (const char*) { opt().change_cursorstyle = false; };
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
   // --no-esc-for-alt-meta
-  cmd_map['E'] = [opt] (char*) { opt().meta_sends_escape = false; };
+  cmd_map['E'] = [opt] (const char*) { opt().meta_sends_escape = false; };
 #endif
   return cmd_map;
 }
@@ -836,7 +836,7 @@ bool FApplication::processAccelerator (const FWidget* const& widget) const
 {
   bool accpt{false};
 
-  if ( widget && widget->getAcceleratorList().empty() )
+  if ( widget || widget->getAcceleratorList().empty() )
     return accpt;
 
   for (auto&& item : widget->getAcceleratorList())

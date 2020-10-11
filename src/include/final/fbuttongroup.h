@@ -127,7 +127,7 @@ class FButtonGroup : public FScrollView
     // Methods
     void                init();
     void                drawText (const FString&, std::size_t);
-    bool                directFocusCheckedRadioButton (FToggleButton*);
+    bool                directFocusCheckedRadioButton (FToggleButton*) const;
     bool                directFocusRadioButton();
     void                directFocus();
     void                focusCheckedRadioButton (FToggleButton*, FFocusEvent*);

@@ -451,7 +451,7 @@ void FButtonGroup::drawText ( const FString& label_text
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::directFocusCheckedRadioButton (FToggleButton* item)
+bool FButtonGroup::directFocusCheckedRadioButton (FToggleButton* item) const
 {
   if ( ! isRadioButton(item) )
     return false;
