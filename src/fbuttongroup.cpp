@@ -471,7 +471,7 @@ bool FButtonGroup::directFocusCheckedRadioButton (FToggleButton* item) const
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::directFocusRadioButton()
+bool FButtonGroup::directFocusRadioButton() const
 {
   if ( ! hasCheckedButton() || buttonlist.empty() )
     return false;

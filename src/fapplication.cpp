@@ -836,7 +836,7 @@ bool FApplication::processAccelerator (const FWidget* const& widget) const
 {
   bool accpt{false};
 
-  if ( widget || widget->getAcceleratorList().empty() )
+  if ( ! widget || widget->getAcceleratorList().empty() )
     return accpt;
 
   for (auto&& item : widget->getAcceleratorList())
