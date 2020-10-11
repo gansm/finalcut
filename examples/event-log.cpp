@@ -283,10 +283,7 @@ EventLog::EventLog (finalcut::FWidget* parent)
 
 //----------------------------------------------------------------------
 EventLog::~EventLog()  // destructor
-{
-  if ( event_dialog )
-    delete event_dialog;
-}
+{ }
 
 //----------------------------------------------------------------------
 void EventLog::onTimer (finalcut::FTimerEvent*)

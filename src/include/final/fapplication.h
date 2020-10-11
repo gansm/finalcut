@@ -64,6 +64,8 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <unordered_map>
+#include <vector>
 
 #include "final/ftypes.h"
 #include "final/fwidget.h"
@@ -151,11 +153,13 @@ class FApplication : public FWidget
     // Typedefs
     typedef std::pair<FObject*, FEvent*> EventPair;
     typedef std::deque<EventPair> FEventQueue;
+    typedef std::unordered_map<int, std::function<void(char*)>> CmdMap;
 
     // Methods
     void                  init();
     static void           setTerminalEncoding (const FString&);
-    static void           cmd_options (const int&, char*[]);
+    static CmdMap&        mapCmdOptions();
+    static void           cmdOptions (const int&, char*[]);
     static FStartOptions& getStartOptions();
     static void           showParameterUsage();
     void                  destroyLog();
@@ -231,7 +235,7 @@ class FApplication : public FWidget
     using CmdOption = struct option;
 #endif
 
-    static const CmdOption long_options[];
+    static const std::vector<CmdOption> long_options;
 };
 
 

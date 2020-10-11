@@ -76,10 +76,10 @@ char* FTermLinux::getCursorStyleString()
 {
   // Gets the current cursor style string of the Linux console
 
-  static char buf[16]{};
+  static std::array<char, 16> buf{};
   std::fill (std::begin(buf), std::end(buf), '\0');
-  std::snprintf (buf, sizeof(buf), CSI "?%dc", getCursorStyle());
-  return buf;
+  std::snprintf (buf.data(), buf.size(), CSI "?%dc", getCursorStyle());
+  return buf.data();
 }
 
 //----------------------------------------------------------------------

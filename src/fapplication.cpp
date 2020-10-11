@@ -20,7 +20,6 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include <array>
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -70,7 +69,7 @@ uInt64         FApplication::next_event_wait {5000};     // preset to 5 ms (200 
 struct timeval FApplication::time_last_event{};
 
 
-constexpr FApplication::CmdOption FApplication::long_options[] =
+const std::vector<FApplication::CmdOption> FApplication::long_options =
 {
   {"encoding",                 required_argument, nullptr,  'e' },
   {"log-file",                 required_argument, nullptr,  'l' },
@@ -485,81 +484,70 @@ void FApplication::setTerminalEncoding (const FString& enc_str)
 }
 
 //----------------------------------------------------------------------
-void FApplication::cmd_options (const int& argc, char* argv[])
+inline FApplication::CmdMap& FApplication::mapCmdOptions()
+{
+  using std::placeholders::_1;
+  auto enc = std::bind(&FApplication::setTerminalEncoding, _1);
+  auto log = std::bind(&FApplication::setLogFile, _1);
+  auto opt = &FApplication::getStartOptions;
+  static CmdMap cmd_map{};
+
+  // --encoding
+  cmd_map['e'] = [enc] (char* arg) { enc(FString(arg)); };
+  // --log-file
+  cmd_map['l'] = [log] (char* arg) { log(FString(arg)); };
+  // --no-mouse
+  cmd_map['m'] = [opt] (char*) { opt().mouse_support = false; };
+  // --no-optimized-cursor
+  cmd_map['o'] = [opt] (char*) { opt().cursor_optimisation = false; };
+  // --no-terminal-detection
+  cmd_map['d'] = [opt] (char*) { opt().terminal_detection = false; };
+  // --no-terminal-data-request
+  cmd_map['r'] = [opt] (char*) { opt().terminal_data_request = false; };
+  // --no-color-change
+  cmd_map['c'] = [opt] (char*) { opt().color_change = false; };
+  // --no-sgr-optimizer
+  cmd_map['s'] = [opt] (char*) { opt().sgr_optimizer = false; };
+  // --vgafont
+  cmd_map['v'] = [opt] (char*) { opt().vgafont = true; };
+  // --newfont
+  cmd_map['n'] = [opt] (char*) { opt().newfont = true; };
+  // --dark-theme
+  cmd_map['t'] = [opt] (char*) { opt().dark_theme = true; };
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+  // --no-esc-for-alt-meta
+  cmd_map['E'] = [opt] (char*) { opt().meta_sends_escape = false; };
+  // --no-cursorstyle-change
+  cmd_map['C'] = [opt] (char*) { opt().change_cursorstyle = false; };
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
+  // --no-esc-for-alt-meta
+  cmd_map['E'] = [opt] (char*) { opt().meta_sends_escape = false; };
+#endif
+  return cmd_map;
+}
+
+//----------------------------------------------------------------------
+void FApplication::cmdOptions (const int& argc, char* argv[])
 {
   // Interpret the command line options
+
+  auto& cmd_map = mapCmdOptions();
 
   while ( true )
   {
     opterr = 0;
     int idx{0};
-    auto p = reinterpret_cast<const struct option*>(long_options);
+    auto p = reinterpret_cast<const struct option*>(long_options.data());
     const int opt = getopt_long (argc, argv, "", p, &idx);
 
     if ( opt == -1 )
       break;
 
-    switch ( opt )
-    {
-      case 'e':  // --encoding
-        setTerminalEncoding(FString(optarg));
-        break;
-
-      case 'l':  // --log-file
-        setLogFile(FString(optarg));
-        break;
-
-      case 'm':  // --no-mouse
-        getStartOptions().mouse_support = false;
-        break;
-
-      case 'o':  // --no-optimized-cursor
-        getStartOptions().cursor_optimisation = false;
-        break;
-
-      case 'd':  // --no-terminal-detection
-        getStartOptions().terminal_detection = false;
-        break;
-
-      case 'r':  // --no-terminal-data-request
-        getStartOptions().terminal_data_request = false;
-        break;
-
-      case 'c':  // --no-color-change
-        getStartOptions().color_change = false;
-        break;
-
-      case 's':  // --no-sgr-optimizer
-        getStartOptions().sgr_optimizer = false;
-        break;
-
-      case 'v':  // --vgafont
-        getStartOptions().vgafont = true;
-        break;
-
-      case 'n':  // --newfont
-        getStartOptions().newfont = true;
-        break;
-
-      case 't':  // --dark-theme
-        getStartOptions().dark_theme = true;
-        break;
-
-    #if defined(__FreeBSD__) || defined(__DragonFly__)
-      case 'E':  // --no-esc-for-alt-meta
-        getStartOptions().meta_sends_escape = false;
-        break;
-
-      case 'C':  // --no-cursorstyle-change
-        getStartOptions().change_cursorstyle = false;
-        break;
-    #elif defined(__NetBSD__) || defined(__OpenBSD__)
-      case 'E':  // --no-esc-for-alt-meta
-        getStartOptions().meta_sends_escape = false;
-        break;
-    #endif
-    }
+    if ( cmd_map.find(opt) != cmd_map.end() )
+      cmd_map[opt](optarg);
   }
+
+  cmd_map.clear();
 }
 
 //----------------------------------------------------------------------
@@ -848,34 +836,30 @@ bool FApplication::processAccelerator (const FWidget* const& widget) const
 {
   bool accpt{false};
 
-  if ( widget
-    && ! widget->getAcceleratorList().empty() )
+  if ( widget && widget->getAcceleratorList().empty() )
+    return accpt;
+
+  for (auto&& item : widget->getAcceleratorList())
   {
-    auto iter = widget->getAcceleratorList().begin();
-    const auto& last = widget->getAcceleratorList().end();
-
-    while ( iter != last && ! quit_now && ! app_exit_loop )
+    if ( item.key == keyboard->getKey() )
     {
-      if ( iter->key == keyboard->getKey() )
+      // unset the move/size mode
+      auto move_size = getMoveSizeWidget();
+
+      if ( move_size )
       {
-        // unset the move/size mode
-        auto move_size = getMoveSizeWidget();
-
-        if ( move_size )
-        {
-          auto w = move_size;
-          setMoveSizeWidget(nullptr);
-          w->redraw();
-        }
-
-        FAccelEvent a_ev (fc::Accelerator_Event, getFocusWidget());
-        sendEvent (iter->object, &a_ev);
-        accpt = a_ev.isAccepted();
-        break;
+        setMoveSizeWidget(nullptr);
+        move_size->redraw();
       }
 
-      ++iter;
+      FAccelEvent a_ev (fc::Accelerator_Event, getFocusWidget());
+      sendEvent (item.object, &a_ev);
+      accpt = a_ev.isAccepted();
+      break;
     }
+
+    if ( quit_now || app_exit_loop )
+      break;
   }
 
   return accpt;
@@ -1225,7 +1209,7 @@ FWidget* FApplication::processParameters (const int& argc, char* argv[])
     FApplication::exit(EXIT_SUCCESS);
   }
 
-  cmd_options (argc, argv);
+  cmdOptions (argc, argv);
   return nullptr;
 }
 

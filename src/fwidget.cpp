@@ -966,13 +966,10 @@ void FWidget::show()
   {
     for (auto&& child : getChildren())
     {
-      if ( child->isWidget() )
-      {
-        auto widget = static_cast<FWidget*>(child);
+      auto widget = static_cast<FWidget*>(child);
 
-        if ( ! widget->flags.hidden )
-          widget->show();
-      }
+      if ( child->isWidget() && ! widget->flags.hidden )
+        widget->show();
     }
   }
 
@@ -1316,13 +1313,10 @@ void FWidget::adjustSize()
   {
     for (auto&& child : getChildren())
     {
-      if ( child->isWidget() )
-      {
-        auto widget = static_cast<FWidget*>(child);
+      auto widget = static_cast<FWidget*>(child);
 
-        if ( ! widget->isWindowWidget() )
-          widget->adjustSize();
-      }
+      if ( child->isWidget() && ! widget->isWindowWidget() )
+        widget->adjustSize();
     }
   }
 }

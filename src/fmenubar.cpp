@@ -50,7 +50,7 @@ FMenuBar::FMenuBar(FWidget* parent)
 //----------------------------------------------------------------------
 FMenuBar::~FMenuBar()  // destructor
 {
-  setMenuBar(nullptr);
+  FWidget::setMenuBar(nullptr);
 }
 
 

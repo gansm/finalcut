@@ -437,13 +437,12 @@ FWindow* FWindow::getWindowWidgetAt (int x, int y)
     do
     {
       --iter;
-      if ( *iter )
-      {
-        auto w = static_cast<FWindow*>(*iter);
+      auto w = static_cast<FWindow*>(*iter);
 
-        if ( ! w->isWindowHidden()
-          && w->getTermGeometry().contains(x, y) )
-          return w;
+      if ( *iter && ! w->isWindowHidden()
+        && w->getTermGeometry().contains(x, y) )
+      {
+        return w;
       }
     }
     while ( iter != begin );

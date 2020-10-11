@@ -713,6 +713,7 @@ bool FTerm::setVGAFont()
     data->setVGAFont(true);
     // Set font in xterm to vga
     getFTermXTerminal()->setFont("vga");
+    data->setTermEncoding (fc::PC);
     data->setNewFont(false);
   }
 #if defined(__linux__)
@@ -1362,13 +1363,13 @@ void FTerm::init_global_values()
 //----------------------------------------------------------------------
 void FTerm::init_terminal_device_path()
 {
-  char termfilename[256]{};
+  std::array<char, 256> termfilename{};
   const int stdout_no = FTermios::getStdOut();
 
-  if ( ttyname_r(stdout_no, termfilename, sizeof(termfilename)) )
+  if ( ttyname_r(stdout_no, termfilename.data(), termfilename.size()) )
     termfilename[0] = '\0';
 
-  data->setTermFileName(termfilename);
+  data->setTermFileName(termfilename.data());
 }
 
 //----------------------------------------------------------------------
@@ -2005,21 +2006,22 @@ const char* FTerm::enableCursorString()
   // Returns the cursor enable string
 
   static constexpr std::size_t SIZE = 32;
-  static char enable_str[SIZE]{};
+  static std::array<char, SIZE> enable_str{};
   const auto& vs = TCAP(fc::t_cursor_visible);
   const auto& ve = TCAP(fc::t_cursor_normal);
 
   if ( ve )
-    std::strncpy (enable_str, ve, SIZE - 1);
+    std::strncpy (enable_str.data(), ve, SIZE - 1);
   else if ( vs )
-    std::strncpy (enable_str, vs, SIZE - 1);
+    std::strncpy (enable_str.data(), vs, SIZE - 1);
 
 #if defined(__linux__)
   if ( isLinuxTerm() )
   {
     // Restore the last used Linux console cursor style
     const char* cstyle = linux->getCursorStyleString();
-    std::strncat (enable_str, cstyle, SIZE - std::strlen(enable_str) - 1);
+    std::size_t length = std::strlen(enable_str.data());
+    std::strncat (enable_str.data(), cstyle, SIZE - length - 1);
   }
 #endif  // defined(__linux__)
 
@@ -2033,7 +2035,7 @@ const char* FTerm::enableCursorString()
   }
 #endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 
-  return enable_str;
+  return enable_str.data();
 }
 
 //----------------------------------------------------------------------
