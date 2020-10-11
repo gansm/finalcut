@@ -66,8 +66,34 @@ FMouseControl* FApplication::mouse           {nullptr};  // mouse control
 int            FApplication::loop_level      {0};        // event loop level
 int            FApplication::quit_code       {EXIT_SUCCESS};
 bool           FApplication::quit_now        {false};
-uInt64         FApplication::next_event_wait {5000};     // preset to 5 ms /200 Hz
+uInt64         FApplication::next_event_wait {5000};     // preset to 5 ms (200 Hz)
 struct timeval FApplication::time_last_event{};
+
+
+constexpr FApplication::CmdOption FApplication::long_options[] =
+{
+  {"encoding",                 required_argument, nullptr,  'e' },
+  {"log-file",                 required_argument, nullptr,  'l' },
+  {"no-mouse",                 no_argument,       nullptr,  'm' },
+  {"no-optimized-cursor",      no_argument,       nullptr,  'o' },
+  {"no-terminal-detection",    no_argument,       nullptr,  'd' },
+  {"no-terminal-data-request", no_argument,       nullptr,  'r' },
+  {"no-color-change",          no_argument,       nullptr,  'c' },
+  {"no-sgr-optimizer",         no_argument,       nullptr,  's' },
+  {"vgafont",                  no_argument,       nullptr,  'v' },
+  {"newfont",                  no_argument,       nullptr,  'n' },
+  {"dark-theme",               no_argument,       nullptr,  't' },
+
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+  {"no-esc-for-alt-meta",      no_argument,       nullptr,  'E' },
+  {"no-cursorstyle-change",    no_argument,       nullptr,  'C' },
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
+  {"no-esc-for-alt-meta",      no_argument,       nullptr,  'E' },
+#endif
+
+  {nullptr,                    0,                 nullptr,  0   }
+};
+
 
 //----------------------------------------------------------------------
 // class FApplication
@@ -382,7 +408,9 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 void FApplication::processExternalUserEvent()
 {
   // This method can be overloaded and replaced by own code
-  std::this_thread::sleep_for(std::chrono::milliseconds(5));
+
+  if ( FKeyboard::getReadBlockingTime() < 10000 )
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
 }
 
 
@@ -463,81 +491,72 @@ void FApplication::cmd_options (const int& argc, char* argv[])
 
   while ( true )
   {
-    static struct option long_options[] =
-    {
-      {"encoding",                 required_argument, nullptr,  0 },
-      {"log-file",                 required_argument, nullptr,  0 },
-      {"no-mouse",                 no_argument,       nullptr,  0 },
-      {"no-optimized-cursor",      no_argument,       nullptr,  0 },
-      {"no-terminal-detection",    no_argument,       nullptr,  0 },
-      {"no-terminal-data-request", no_argument,       nullptr,  0 },
-      {"no-color-change",          no_argument,       nullptr,  0 },
-      {"no-sgr-optimizer",         no_argument,       nullptr,  0 },
-      {"vgafont",                  no_argument,       nullptr,  0 },
-      {"newfont",                  no_argument,       nullptr,  0 },
-      {"dark-theme",               no_argument,       nullptr,  0 },
-
-    #if defined(__FreeBSD__) || defined(__DragonFly__)
-      {"no-esc-for-alt-meta",      no_argument,       nullptr,  0 },
-      {"no-cursorstyle-change",    no_argument,       nullptr,  0 },
-    #elif defined(__NetBSD__) || defined(__OpenBSD__)
-      {"no-esc-for-alt-meta",      no_argument,       nullptr,  0 },
-    #endif
-
-      {nullptr,                    0,                 nullptr,  0 }
-    };
-
     opterr = 0;
     int idx{0};
-    const int c = getopt_long (argc, argv, "", long_options, &idx);
+    auto p = reinterpret_cast<const struct option*>(long_options);
+    const int opt = getopt_long (argc, argv, "", p, &idx);
 
-    if ( c == -1 )
+    if ( opt == -1 )
       break;
 
-    if ( c == 0 )
+    switch ( opt )
     {
-      if ( std::strcmp(long_options[idx].name, "encoding") == 0 )
+      case 'e':  // --encoding
         setTerminalEncoding(FString(optarg));
+        break;
 
-      if ( std::strcmp(long_options[idx].name, "log-file") == 0 )
+      case 'l':  // --log-file
         setLogFile(FString(optarg));
+        break;
 
-      if ( std::strcmp(long_options[idx].name, "no-mouse") == 0 )
+      case 'm':  // --no-mouse
         getStartOptions().mouse_support = false;
+        break;
 
-      if ( std::strcmp(long_options[idx].name, "no-optimized-cursor") == 0 )
+      case 'o':  // --no-optimized-cursor
         getStartOptions().cursor_optimisation = false;
+        break;
 
-      if ( std::strcmp(long_options[idx].name, "no-terminal-detection") == 0 )
+      case 'd':  // --no-terminal-detection
         getStartOptions().terminal_detection = false;
+        break;
 
-      if ( std::strcmp(long_options[idx].name, "no-terminal-data-request") == 0 )
+      case 'r':  // --no-terminal-data-request
         getStartOptions().terminal_data_request = false;
+        break;
 
-      if ( std::strcmp(long_options[idx].name, "no-color-change") == 0 )
+      case 'c':  // --no-color-change
         getStartOptions().color_change = false;
+        break;
 
-      if ( std::strcmp(long_options[idx].name, "no-sgr-optimizer") == 0 )
+      case 's':  // --no-sgr-optimizer
         getStartOptions().sgr_optimizer = false;
+        break;
 
-      if ( std::strcmp(long_options[idx].name, "vgafont") == 0 )
+      case 'v':  // --vgafont
         getStartOptions().vgafont = true;
+        break;
 
-      if ( std::strcmp(long_options[idx].name, "newfont") == 0 )
+      case 'n':  // --newfont
         getStartOptions().newfont = true;
+        break;
 
-      if ( std::strcmp(long_options[idx].name, "dark-theme") == 0 )
+      case 't':  // --dark-theme
         getStartOptions().dark_theme = true;
+        break;
 
     #if defined(__FreeBSD__) || defined(__DragonFly__)
-      if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta") == 0 )
+      case 'E':  // --no-esc-for-alt-meta
         getStartOptions().meta_sends_escape = false;
+        break;
 
-      if ( std::strcmp(long_options[idx].name, "no-cursorstyle-change") == 0 )
+      case 'C':  // --no-cursorstyle-change
         getStartOptions().change_cursorstyle = false;
+        break;
     #elif defined(__NetBSD__) || defined(__OpenBSD__)
-      if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta") == 0 )
+      case 'E':  // --no-esc-for-alt-meta
         getStartOptions().meta_sends_escape = false;
+        break;
     #endif
     }
   }

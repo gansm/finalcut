@@ -47,6 +47,7 @@ FLog& FLog::operator << (LogLevel l)
 {
   using std::placeholders::_1;
   sync();
+  std::lock_guard<std::mutex> lock_guard(mut);
 
   switch ( l )
   {
@@ -77,6 +78,7 @@ int FLog::sync()
 {
   if ( ! str().empty() )
   {
+    std::lock_guard<std::mutex> lock_guard(mut);
     current_log (str());
     str("");
   }

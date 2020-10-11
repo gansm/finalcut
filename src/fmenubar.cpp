@@ -256,6 +256,7 @@ void FMenuBar::init()
 
   addAccelerator (fc::Fkey_f10);
   addAccelerator (fc::Fckey_space);
+  addAccelerator (fc::Fkey_menu);
   resetColors();
   unsetFocusable();
 }

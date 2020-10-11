@@ -459,8 +459,9 @@ void FDialog::onKeyPress (FKeyEvent* ev)
 
   cancelMouseResize();
 
-  if ( ev->key() == fc::Fckey_caret  // Ctrl+^ (Ctrl+6)
-    || ev->key() == fc::Fkey_f22 )   // Shift+F10
+  if ( ev->key() == fc::Fckey_caret   // Ctrl+^ (Ctrl+6)
+    || ev->key() == fc::Fkey_f22      // Shift+F10
+    || ev->key() == fc::Fkey_smenu )  // Shift+Menu
   {
     ev->accept();
     // open the titlebar menu

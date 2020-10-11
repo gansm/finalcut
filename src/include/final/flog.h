@@ -42,6 +42,7 @@
 
 #include <functional>
 #include <iostream>
+#include <mutex>
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -97,15 +98,17 @@ class FLog : public std::stringbuf
 
   protected:
     int               sync() override;
-    const LogLevel&   getLevel() const;
+    const LogLevel&   getLevel();
     LogLevel&         setLevel();
-    const LineEnding& getEnding() const;
+    const LineEnding& getEnding();
     LineEnding&       setEnding();
+    std::mutex&       getMutex();
 
   private:
     // Data member
     LogLevel     level{Info};
     LineEnding   end_of_line{CRLF};
+    std::mutex   mut;
     FLogPrint    current_log{std::bind(&FLog::info, this, std::placeholders::_1)};
     std::ostream stream{this};
 
@@ -118,6 +121,7 @@ class FLog : public std::stringbuf
 template <typename T>
 inline FLog& FLog::operator << (const T& s)
 {
+  std::lock_guard<std::mutex> lock_guard(mut);
   stream << s;
   return *this;
 }
@@ -125,6 +129,7 @@ inline FLog& FLog::operator << (const T& s)
 //----------------------------------------------------------------------
 inline FLog& FLog::operator << (IOManip pf)
 {
+  std::lock_guard<std::mutex> lock_guard(mut);
   pf(stream);
   return *this;
 }
@@ -134,21 +139,33 @@ inline FString FLog::getClassName() const
 { return "FLog"; }
 
 //----------------------------------------------------------------------
-inline const FLog::LogLevel& FLog::getLevel() const
-{ return level; }
+inline const FLog::LogLevel& FLog::getLevel()
+{
+  return level;
+}
 
 //----------------------------------------------------------------------
 inline FLog::LogLevel& FLog::setLevel()
-{ return level; }
+{
+  return level;
+}
 
 //----------------------------------------------------------------------
-inline const FLog::LineEnding& FLog::getEnding() const
-{ return end_of_line; }
+inline const FLog::LineEnding& FLog::getEnding()
+{
+  std::lock_guard<std::mutex> lock_guard(mut);
+  return end_of_line;
+}
 
 //----------------------------------------------------------------------
 inline FLog::LineEnding& FLog::setEnding()
-{ return end_of_line; }
+{
+  return end_of_line;
+}
 
+//----------------------------------------------------------------------
+inline std::mutex& FLog::getMutex()
+{ return mut; }
 
 }  // namespace finalcut
 

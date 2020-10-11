@@ -780,10 +780,9 @@ void MyDialog::initWidgetsCallbacks()
 //----------------------------------------------------------------------
 void MyDialog::adjustSize()
 {
-  finalcut::FDialog::adjustSize();
-
   const auto h = getDesktopHeight() - 4;
   setHeight (h, false);
+  finalcut::FDialog::adjustSize();  // with new client area size
   auto x = int((getDesktopWidth() - getWidth()) / 2);
 
   if ( x < 1 )
@@ -792,7 +791,7 @@ void MyDialog::adjustSize()
   setPos (FPoint{x, 2}, false);
 
   if ( initialized )
-    myList.setHeight (getHeight() - 3, true);
+    myList.setHeight (h - 3, true);
 }
 
 //----------------------------------------------------------------------

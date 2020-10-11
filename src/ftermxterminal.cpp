@@ -805,7 +805,7 @@ FString FTermXTerminal::captureXTermFont() const
 
     pos += std::size_t(bytes);
   }
-  while ( pos < temp.size() && std::strchr(temp.data(), '\a') == nullptr );
+  while ( pos < temp.size() && ! std::strchr(temp.data(), '\a') );
 
   if ( pos > 5 && temp[0] == ESC[0] && temp[1] == ']' && temp[2] == '5'
                && temp[3] == '0' && temp[4] == ';' )

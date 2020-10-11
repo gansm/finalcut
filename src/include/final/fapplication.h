@@ -218,6 +218,20 @@ class FApplication : public FWidget
     static FMouseControl* mouse;
     static FKeyboard*     keyboard;
     static FWidget*       keyboard_widget;
+
+#if defined(__sun) && defined(__SVR4)
+    struct CmdOption
+    {
+      const char* name;  // <- name is without 'const' in Solaris
+      int         has_arg;
+      int*        flag;
+      int         val;
+    };
+#else
+    using CmdOption = struct option;
+#endif
+
+    static const CmdOption long_options[];
 };
 
 

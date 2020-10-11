@@ -843,7 +843,7 @@ FString FTermDetection::getSecDA()
 
     pos += std::size_t(bytes);
   }
-  while ( pos < temp.size() && std::strchr(temp.data(), 'c') == nullptr );
+  while ( pos < temp.size() && ! std::strchr(temp.data(), 'c') );
 
   if ( pos > 3 && std::sscanf(temp.data(), parse, &a, &b, &c) == 3 )
     sec_da_str.sprintf("\033[>%d;%d;%dc", a, b, c);

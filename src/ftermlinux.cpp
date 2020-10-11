@@ -316,9 +316,11 @@ bool FTermLinux::loadNewFont()
       // Set the graphical font
       int ret;
 
+#if defined(ISA_SYSCTL_SUPPORT)
       if ( has9BitCharacters() )
         ret = setScreenFont(fc::__9x16graph, 256, 8, 16);  // set 9×16
       else
+#endif
         ret = setScreenFont(fc::__8x16graph, 256, 8, 16);  // set 8×16
 
       if ( ret != 0 )

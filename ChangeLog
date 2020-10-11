@@ -1,3 +1,10 @@
+2020-10-11  Markus Gans  <guru.mail@muenster.de>
+	* Solaris build fix
+	* Added saving and restoring xterm titles to the stack 
+	  for vte terminals
+	* Menu key - activates the menu bar
+	* Shift-Menu - opens the dialog menu
+
 2020-10-08  Markus Gans  <guru.mail@muenster.de>
 	* Better keyboard support for urxvt terminals
 	* Screen reports (like Secondary DA) are now read directly

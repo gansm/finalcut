@@ -553,14 +553,12 @@ FPoint readCursorPos()
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
   tv.tv_usec = 100000;  // 100 ms
+  std::array<char, 20> temp{};
+  std::size_t pos{0};
 
   // Read the answer
   if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) != 1 )
     return FPoint{x, y};
-
-  constexpr auto parse = "\033[%4d;%4dR";
-  std::array<char, 20> temp{};
-  std::size_t pos{0};
 
   do
   {
@@ -572,10 +570,13 @@ FPoint readCursorPos()
 
     pos += std::size_t(bytes);
   }
-  while ( pos < temp.size() && std::strchr(temp.data(), 'R') == nullptr );
+  while ( pos < temp.size() && ! std::strchr(temp.data(), 'R') );
 
   if ( pos > 4 )
+  {
+    constexpr auto parse = "\033[%4d;%4dR";
     std::sscanf(temp.data(), parse, &x, &y);
+  }
 
   return FPoint{x, y};
 }

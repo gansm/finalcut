@@ -91,7 +91,7 @@ void FTermcap::termcap()
 
   // Open termcap file
 #if defined(__sun) && defined(__SVR4)
-  char* termtype = fterm_data->getTermType();
+  char* termtype = const_cast<char*>(fterm_data->getTermType());
 #else
   const char* termtype = fterm_data->getTermType();
 #endif
