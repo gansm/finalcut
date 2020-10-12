@@ -143,13 +143,13 @@ class FVTerm
     FVTerm& operator << (const FColorPair&);
 
     // Accessors
-    virtual const FString getClassName() const;
+    virtual FString       getClassName() const;
     static FColor         getTermForegroundColor();
     static FColor         getTermBackgroundColor();
     FTermArea*&           getVWin();
     const FTermArea*      getVWin() const;
-    const FPoint          getPrintCursor();
-    static const FChar    getAttribute();
+    FPoint                getPrintCursor();
+    static FChar          getAttribute();
     FTerm&                getFTerm() const;
 
     // Mutators
@@ -259,7 +259,7 @@ class FVTerm
     virtual void          addPreprocessingHandler ( const FVTerm*
                                                   , const FPreprocessingFunction& );
     virtual void          delPreprocessingHandler (const FVTerm*);
-    template<typename... Args>
+    template <typename... Args>
     int                   printf (const FString&, Args&&...);
     int                   print (const FString&);
     int                   print (FTermArea*, const FString&);
@@ -292,6 +292,7 @@ class FVTerm
     void                  setActiveArea (FTermArea*) const;
 
     // Inquiries
+    bool                  isActive (const FTermArea*) const;
     bool                  hasPrintArea() const;
     bool                  hasChildPrintArea() const;
     bool                  isVirtualWindow() const;
@@ -307,6 +308,7 @@ class FVTerm
     static void           removeArea (FTermArea*&);
     static void           restoreVTerm (const FRect&);
     bool                  updateVTermCursor (const FTermArea*) const;
+    void                  hideVTermCursor() const;
     static void           setAreaCursor ( const FPoint&
                                         , bool, FTermArea* );
     static void           getArea (const FPoint&, const FTermArea*);
@@ -371,12 +373,12 @@ class FVTerm
     bool                  hasChildAreaChanges (FTermArea*) const;
     void                  clearChildAreaChanges (const FTermArea*) const;
     static bool           isInsideArea (const FPoint&, const FTermArea*);
-    static const FChar    generateCharacter (const FPoint&);
-    static const FChar    getCharacter ( character_type
+    static FChar          generateCharacter (const FPoint&);
+    static FChar          getCharacter ( character_type
                                        , const FPoint&
                                        , FVTerm* );
-    static const FChar    getCoveredCharacter (const FPoint&, FVTerm*);
-    static const FChar    getOverlappedCharacter (const FPoint&, FVTerm*);
+    static FChar          getCoveredCharacter (const FPoint&, FVTerm*);
+    static FChar          getOverlappedCharacter (const FPoint&, FVTerm*);
     void                  init();
     static void           init_characterLengths (const FOptiMove*);
     void                  finish();
@@ -579,9 +581,9 @@ inline FVTerm& FVTerm::operator << (const std::string& string)
 
 //----------------------------------------------------------------------
 inline FVTerm& FVTerm::operator << \
-    (const std::vector<FChar>& termString)
+    (const std::vector<FChar>& term_string)
 {
-  print (termString);
+  print (term_string);
   return *this;
 }
 
@@ -607,7 +609,7 @@ inline FVTerm& FVTerm::operator << (const FColorPair& pair)
 }
 
 //----------------------------------------------------------------------
-inline const FString FVTerm::getClassName() const
+inline FString FVTerm::getClassName() const
 { return "FVTerm"; }
 
 //----------------------------------------------------------------------
@@ -627,7 +629,7 @@ inline const FVTerm::FTermArea* FVTerm::getVWin() const
 { return vwin; }
 
 //----------------------------------------------------------------------
-inline const FChar FVTerm::getAttribute()
+inline FChar FVTerm::getAttribute()
 { return next_attribute; }
 
 //----------------------------------------------------------------------
@@ -926,7 +928,7 @@ inline bool FVTerm::isInheritBackground()
 { return next_attribute.attr.bit.inherit_background; }
 
 //----------------------------------------------------------------------
-template<typename... Args>
+template <typename... Args>
 inline int FVTerm::printf (const FString& format, Args&&... args)
 {
   FString str{};
@@ -967,6 +969,10 @@ inline void FVTerm::setActiveArea (FTermArea* area) const
 { active_area = area; }
 
 //----------------------------------------------------------------------
+inline bool FVTerm::isActive (const FTermArea* area) const
+{ return bool( area == active_area ); }
+
+//----------------------------------------------------------------------
 inline bool FVTerm::hasPrintArea() const
 { return print_area; }
 
@@ -982,6 +988,9 @@ inline bool FVTerm::isVirtualWindow() const
 inline bool FVTerm::isCursorHideable() const
 { return cursor_hideable; }
 
+//----------------------------------------------------------------------
+inline void FVTerm::hideVTermCursor() const
+{ vterm->input_cursor_visible = false; }
 
 }  // namespace finalcut
 

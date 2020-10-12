@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -58,6 +59,7 @@ class CheckList final : public finalcut::FDialog
   private:
     // Method
     void populate();
+    void adjustSize() override;
 
     // Event handlers
     void onKeyPress (finalcut::FKeyEvent*) override;
@@ -67,7 +69,7 @@ class CheckList final : public finalcut::FDialog
     void cb_showList();
 
     // Data members
-    finalcut::FListView  listView{this};
+    finalcut::FListView  listview{this};
     finalcut::FStatusBar status_bar{this};
 };
 
@@ -80,25 +82,24 @@ CheckList::CheckList (finalcut::FWidget* parent)
   //   (CERT, OOP50-CPP)
   FDialog::setText (L"Shopping list");
   const std::size_t nf_offset = ( finalcut::FTerm::isNewFont() ) ? 1 : 0;
-  FDialog::setGeometry ( FPoint{int(1 + (parent->getWidth() - 28) / 2), 5}
-                       , FSize{28 + nf_offset, 13} );
-  setShadow();
-  listView.ignorePadding();
-  listView.setGeometry ( FPoint{1 + int(nf_offset), 2}
+  FDialog::setSize (FSize{28 + nf_offset, 13} );
+  setShadow();  // Instead of the transparent window shadow
+  listview.ignorePadding();
+  listview.setGeometry ( FPoint{1 + int(nf_offset), 2}
                        , FSize{getWidth() - nf_offset, getHeight() - 1} );
 
   // Add columns to the view
-  listView.addColumn ("Item");
-  listView.addColumn ("Priority", 9);
+  listview.addColumn ("Item");
+  listview.addColumn ("Priority", 9);
 
   // Set the type of sorting
-  listView.setColumnSortType (1, fc::by_name);
-  listView.setColumnSortType (2, fc::by_name);
+  listview.setColumnSortType (1, fc::by_name);
+  listview.setColumnSortType (2, fc::by_name);
 
   // Statusbar at the bottom
   finalcut::FString separator{};
   separator << ' ' << fc::BoxDrawingsVertical << ' ';
-  listView.setStatusbarMessage ( finalcut::FString{}
+  listview.setStatusbarMessage ( finalcut::FString{}
                                  << "<Q> exit" << separator
                                  << "<Space> select an item" << separator
                                  << "<Enter> see your pick list");
@@ -107,7 +108,7 @@ CheckList::CheckList (finalcut::FWidget* parent)
   populate();
 
   // Add callback method
-  listView.addCallback
+  listview.addCallback
   (
     "clicked",
     this, &CheckList::cb_showList
@@ -121,27 +122,34 @@ CheckList::~CheckList()  // destructor
 //----------------------------------------------------------------------
 void CheckList::populate()
 {
-  const std::string list[][2] =
-  {
-    { "Milk", "Highest" },
-    { "Cheese", "High" },
-    { "Yoghurt", "Medium" },
-    { "Bread", "Low" },
-    { "Eggs", "High" },
-    { "Toothpaste", "Medium" },
-    { "Apples", "Lowest" },
-    { "Bananas", "Medium" },
-    { "Fish", "Medium" },
-    { "Lemons", "Low" }
-  };
+  constexpr std::array<std::array<const char*, 2>, 10> list =
+  {{
+    {{ "Milk", "Highest" }},
+    {{ "Cheese", "High" }},
+    {{ "Yoghurt", "Medium" }},
+    {{ "Bread", "Low" }},
+    {{ "Eggs", "High" }},
+    {{ "Toothpaste", "Medium" }},
+    {{ "Apples", "Lowest" }},
+    {{ "Bananas", "Medium" }},
+    {{ "Fish", "Medium" }},
+    {{ "Lemons", "Low" }}
+  }};
 
   for (const auto& line : list)
   {
-    const finalcut::FStringList string_line (&line[0], &line[0] + 2);
-    auto iter = listView.insert (string_line);
+    const finalcut::FStringList string_line (line.begin(), line.end());
+    auto iter = listview.insert (string_line);
     auto item = static_cast<finalcut::FListViewItem*>(*iter);
     item->setCheckable(true);
   }
+}
+
+//----------------------------------------------------------------------
+void CheckList::adjustSize()
+{
+  finalcut::FDialog::adjustSize();
+  setPos(FPoint{int(1 + (getDesktopWidth() - getWidth()) / 2), 5});
 }
 
 //----------------------------------------------------------------------
@@ -170,18 +178,12 @@ void CheckList::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void CheckList::cb_showList()
 {
-  auto iter = listView.beginOfList();
   finalcut::FString shopping_list{};
 
-  while ( iter != listView.endOfList() )
+  for (auto item : listview.getData())
   {
-    const auto item = static_cast<finalcut::FListViewItem*>(*iter);
-
     if ( item->isChecked() )
-      shopping_list << fc::Bullet << ' '
-                    << item->getText(1) << '\n';
-
-    ++iter;
+      shopping_list << fc::Bullet << ' ' << item->getText(1) << '\n';
   }
 
   if ( shopping_list.isEmpty() )

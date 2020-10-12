@@ -25,6 +25,7 @@
 #endif
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <numeric>
 #include <utility>
@@ -32,8 +33,10 @@
 #include "final/fapplication.h"
 #include "final/fcharmap.h"
 #include "final/flog.h"
+#include "final/fpoint.h"
 #include "final/fterm.h"
 #include "final/ftermbuffer.h"
+#include "final/ftermios.h"
 
 
 namespace finalcut
@@ -274,11 +277,11 @@ wchar_t cp437_to_unicode (uChar c)
   constexpr std::size_t UNICODE = 1;
   wchar_t ucs = c;
 
-  for (std::size_t i{0}; i <= fc::lastCP437Item; i++)
+  for (auto&& entry : fc::cp437_ucs)
   {
-    if ( fc::cp437_ucs[i][CP437] == c )  // found
+    if ( entry[CP437] == c )  // found
     {
-      ucs = fc::cp437_ucs[i][UNICODE];
+      ucs = entry[UNICODE];
       break;
     }
   }
@@ -293,11 +296,11 @@ uChar unicode_to_cp437 (wchar_t ucs)
   constexpr std::size_t UNICODE = 1;
   uChar c{'?'};
 
-  for (std::size_t i{0}; i <= fc::lastCP437Item; i++)
+  for (auto&& entry : fc::cp437_ucs)
   {
-    if ( fc::cp437_ucs[i][UNICODE] == ucs )  // found
+    if ( entry[UNICODE] == ucs )  // found
     {
-      c = uChar(fc::cp437_ucs[i][CP437]);
+      c = uChar(entry[CP437]);
       break;
     }
   }
@@ -306,7 +309,7 @@ uChar unicode_to_cp437 (wchar_t ucs)
 }
 
 //----------------------------------------------------------------------
-const FString getFullWidth (const FString& str)
+FString getFullWidth (const FString& str)
 {
   // Converts half-width to full-width characters
 
@@ -322,10 +325,10 @@ const FString getFullWidth (const FString& str)
     }
     else
     {
-      for (std::size_t i{0}; i <= fc::lastHalfWidthItem; i++)
+      for (auto&& entry : fc::halfwidth_fullwidth)
       {
-        if ( fc::halfWidth_fullWidth[i][HALF] == c )  // found
-          c = fc::halfWidth_fullWidth[i][FULL];
+        if ( entry[HALF] == c )  // found
+          c = entry[FULL];
       }
     }
   }
@@ -334,7 +337,7 @@ const FString getFullWidth (const FString& str)
 }
 
 //----------------------------------------------------------------------
-const FString getHalfWidth (const FString& str)
+FString getHalfWidth (const FString& str)
 {
   // Converts full-width to half-width characters
 
@@ -350,10 +353,10 @@ const FString getHalfWidth (const FString& str)
     }
     else
     {
-      for (std::size_t i{0}; i <= fc::lastHalfWidthItem; i++)
+      for (auto&& entry : fc::halfwidth_fullwidth)
       {
-        if ( fc::halfWidth_fullWidth[i][FULL] == c )  // found
-          c = fc::halfWidth_fullWidth[i][HALF];
+        if ( entry[FULL] == c )  // found
+          c = entry[HALF];
       }
     }
   }
@@ -362,9 +365,9 @@ const FString getHalfWidth (const FString& str)
 }
 
 //----------------------------------------------------------------------
-const FString getColumnSubString ( const FString& str
-                                 , std::size_t col_pos
-                                 , std::size_t col_len )
+FString getColumnSubString ( const FString& str
+                           , std::size_t col_pos
+                           , std::size_t col_len )
 {
   FString s{str};
   std::size_t col_first{1};
@@ -457,8 +460,8 @@ std::size_t getColumnWidth (const FString& s, std::size_t pos)
     }
     catch (const std::out_of_range& ex)
     {
-      *FApplication::getLog() << FLog::Error
-          << "Out of Range error: " << ex.what() << std::endl;
+      std::clog << FLog::Error
+                << "Out of Range error: " << ex.what() << std::endl;
     }
   }
 
@@ -528,6 +531,54 @@ std::size_t getColumnWidth (const FTermBuffer& tb)
                              return std::move(s) + c.attr.bit.char_width;
                            }
                          );
+}
+
+//----------------------------------------------------------------------
+FPoint readCursorPos()
+{
+  int x{-1};
+  int y{-1};
+  const int stdin_no{FTermios::getStdIn()};
+  const int stdout_no{FTermios::getStdOut()};
+  fd_set ifds{};
+  struct timeval tv{};
+  constexpr auto& DECXCPR{ESC "[6n"};
+
+  // Report Cursor Position (DECXCPR)
+  if ( write(stdout_no, DECXCPR, std::strlen(DECXCPR)) < 1 )
+    return FPoint{x, y};
+
+  std::fflush(stdout);
+  FD_ZERO(&ifds);
+  FD_SET(stdin_no, &ifds);
+  tv.tv_sec  = 0;
+  tv.tv_usec = 100000;  // 100 ms
+  std::array<char, 20> temp{};
+  std::size_t pos{0};
+
+  // Read the answer
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) != 1 )
+    return FPoint{x, y};
+
+  do
+  {
+    std::size_t bytes_free = temp.size() - pos - 1;
+    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
+
+    if ( bytes <= 0 )
+      break;
+
+    pos += std::size_t(bytes);
+  }
+  while ( pos < temp.size() && ! std::strchr(temp.data(), 'R') );
+
+  if ( pos > 4 )
+  {
+    constexpr auto parse = "\033[%4d;%4dR";
+    std::sscanf(temp.data(), parse, &x, &y);
+  }
+
+  return FPoint{x, y};
 }
 
 }  // namespace finalcut

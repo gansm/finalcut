@@ -54,7 +54,7 @@ FTextView::~FTextView()  // destructor
 
 // public methods of FTextView
 //----------------------------------------------------------------------
-const FString FTextView::getText() const
+FString FTextView::getText() const
 {
   if ( data.empty() )
     return FString{""};
@@ -149,7 +149,7 @@ void FTextView::scrollTo (int x, int y)
 
   if ( changeX && isHorizontallyScrollable() )
   {
-    const int xoffset_end = int(max_line_width - getTextWidth());
+    const auto xoffset_end = int(max_line_width - getTextWidth());
     xoffset = x;
 
     if ( xoffset < 0 )
@@ -167,7 +167,7 @@ void FTextView::scrollTo (int x, int y)
 
   if ( changeY && isVerticallyScrollable() )
   {
-    const int yoffset_end = int(getRows() - getTextHeight());
+    const auto yoffset_end = int(getRows() - getTextHeight());
     yoffset = y;
 
     if ( yoffset < 0 )
@@ -335,7 +335,7 @@ void FTextView::clear()
 //----------------------------------------------------------------------
 void FTextView::onKeyPress (FKeyEvent* ev)
 {
-  const int idx = int(ev->key());
+  const auto idx = int(ev->key());
 
   if ( key_map.find(idx) != key_map.end() )
   {
@@ -504,8 +504,8 @@ void FTextView::adjustSize()
   FWidget::adjustSize();
   const std::size_t width = getWidth();
   const std::size_t height = getHeight();
-  const int last_line = int(getRows());
-  const int max_width = int(max_line_width);
+  const auto last_line = int(getRows());
+  const auto max_width = int(max_line_width);
 
   if ( xoffset >= max_width - int(width) - nf_offset )
     xoffset = max_width - int(width) - nf_offset - 1;
@@ -535,7 +535,7 @@ void FTextView::adjustSize()
   if ( width < 3 )
     return;
 
-  const int hmax = ( max_width > int(width) - nf_offset - 2 )
+  const int hmax = ( max_width >= int(width) - nf_offset - 1 )
                    ? max_width - int(width) + nf_offset + 2
                    : 0;
   hbar->setMaximum (hmax);

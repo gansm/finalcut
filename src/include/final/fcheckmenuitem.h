@@ -40,9 +40,9 @@
  *      ▕▁▁▁▁▁▁▁▁▁▁▁▏
  *            ▲
  *            │
- *    ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏*       1▕▔▔▔▔▔▔▔▏
- *    ▕ FCheckMenuItem ▏- - - - -▕ FMenu ▏
- *    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏         ▕▁▁▁▁▁▁▁▏
+ *    ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏*     1▕▔▔▔▔▔▔▔▏
+ *    ▕ FCheckMenuItem ▏- - - -▕ FMenu ▏
+ *    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▏
  */
 
 #ifndef FCHECKMENUITEM_H
@@ -78,7 +78,7 @@ class FCheckMenuItem : public FMenuItem
     FCheckMenuItem& operator = (const FCheckMenuItem&) = delete;
 
     // Accessor
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
 
   private:
     // Methods
@@ -89,7 +89,7 @@ class FCheckMenuItem : public FMenuItem
 
 // FCheckMenuItem inline functions
 //----------------------------------------------------------------------
-inline const FString FCheckMenuItem::getClassName() const
+inline FString FCheckMenuItem::getClassName() const
 { return "FCheckMenuItem"; }
 
 }  // namespace finalcut

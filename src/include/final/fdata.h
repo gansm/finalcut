@@ -20,6 +20,19 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+/*  Inheritance diagram
+ *  ═══════════════════
+ *
+ *      ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *      ▕ FDataAccess ▏
+ *      ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *             ▲
+ *             │
+ *         ▕▔▔▔▔▔▔▔▏
+ *         ▕ FData ▏
+ *         ▕▁▁▁▁▁▁▁▏
+ */
+
 #ifndef FDATA_H
 #define FDATA_H
 
@@ -29,76 +42,233 @@
 
 #include <utility>
 
-template<typename T>
-struct FData
+#include "final/fstring.h"
+
+namespace finalcut
 {
-  explicit FData (T v)  // constructor
-    : value{v}
-  { }
 
-  ~FData()  // destructor
-  { }
+template <typename T>
+class FData;  // Class forward declaration
 
-  FData (const FData& d)  // Copy constructor
-    : value{d.value}
-  { }
+// non-member functions
+//----------------------------------------------------------------------
+namespace internal
+{
 
-  FData& operator = (const FData& d)  // Copy assignment operator (=)
-  {
-    value = d.value;
-    return *this;
-  }
+template <typename T
+        , bool isArray = std::is_array<T>::value
+        , bool isFunction = std::is_function<T>::value>
+struct cleanCondition;
 
-  FData (FData&& d) noexcept  // Move constructor
-    : value{std::move(d.value)}
-  { }
-
-  FData& operator = (FData&& d) noexcept  // Move assignment operator (=)
-  {
-    value = std::move(d.value);
-    return *this;
-  }
-
-  T operator () () const
-  {
-    return value;
-  }
-
-  template<typename... Args>
-  T operator () (Args... args) const
-  {
-    return value(args...);
-  }
-
-  explicit operator T () const
-  {
-    return value;
-  }
-
-  T& get()
-  {
-    return value;
-  }
-
-  void set (const T& v)
-  {
-    value = v;
-  }
-
-  FData& operator << (const T& v)
-  {
-    value = v;
-    return *this;
-  }
-
-  friend std::ostream& operator << (std::ostream &os, const FData& data)
-  {
-    os << data.value;
-    return os;
-  }
-
-  T value;
+//----------------------------------------------------------------------
+template <typename T>
+struct cleanCondition<T, false, false>
+{
+  // Leave the type untouched
+  typedef T type;
 };
 
-#endif  // FDATA_H
+//----------------------------------------------------------------------
+template <typename T>
+struct cleanCondition<T, true, false>
+{
+  // Array to pointer
+  typedef typename std::remove_extent<T>::type* type;
+};
 
+//----------------------------------------------------------------------
+template <typename T>
+struct cleanCondition<T, false, true>
+{
+  // Add pointer to function
+  typedef typename std::add_pointer<T>::type type;
+};
+
+}  // namespace internal
+
+//----------------------------------------------------------------------
+template <typename T>
+class cleanFData
+{
+  private:
+    typedef typename std::remove_reference<T>::type remove_ref;
+
+  public:
+    // Similar to std::decay, but keeps const and volatile
+    typedef typename internal::cleanCondition<remove_ref>::type type;
+};
+
+//----------------------------------------------------------------------
+template <typename T>
+using clean_fdata_t = typename cleanFData<T>::type;
+
+//----------------------------------------------------------------------
+template <typename T>
+constexpr FData<clean_fdata_t<T>>* makeFData (T&& data)
+{
+  return new FData<clean_fdata_t<T>>(std::forward<T>(data));
+}
+
+
+//----------------------------------------------------------------------
+// class FDataAccess
+//----------------------------------------------------------------------
+
+class FDataAccess
+{
+  public:
+    // Constructor
+    FDataAccess();
+
+    // Destructor
+    virtual ~FDataAccess();
+
+    // Accessors
+    virtual FString getClassName() const
+    {
+      return "FDataAccess";
+    }
+
+    template<typename T>
+    clean_fdata_t<T>& get()
+    {
+      return static_cast<FData<clean_fdata_t<T>>&>(*this).get();
+    }
+
+    // Mutator
+    template <typename T
+            , typename V>
+    void set (V&& data)
+    {
+      static_cast<FData<T>&>(*this).set(std::forward<V>(data));
+    }
+};
+
+
+//----------------------------------------------------------------------
+// class FData
+//----------------------------------------------------------------------
+
+template <typename T>
+class FData : public FDataAccess
+{
+  public:
+    typedef typename std::remove_cv<T>::type T_nocv;
+
+    // Constructors
+    explicit FData (T& v)  // constructor
+      : value_ref{v}
+    { }
+
+    explicit FData (T&& v)  // constructor
+      : value{std::move(v)}
+      , value_ref{value}
+    { }
+
+    // Destructor
+    ~FData() override
+    { }
+
+    FData (const FData& d)  // Copy constructor
+      : value{d.value}
+      , value_ref{d.isInitializedCopy() ? std::ref(value) : d.value_ref}
+    { }
+
+    FData (FData&& d) noexcept  // Move constructor
+      : value{std::move(d.value)}
+      , value_ref{d.isInitializedCopy() ? std::ref(value) : std::move(d.value_ref)}
+    { }
+
+    // Overloaded operators
+    FData& operator = (const FData& d)  // Copy assignment operator (=)
+    {
+      if ( &d != this )
+      {
+        value = d.value;
+
+        if ( d.isInitializedCopy() )
+          value_ref = value;
+        else
+          value_ref = d.value_ref;
+      }
+
+      return *this;
+    }
+
+    FData& operator = (FData&& d) noexcept  // Move assignment operator (=)
+    {
+      if ( &d != this )
+      {
+        value = std::move(d.value);
+
+        if ( d.isInitializedCopy() )
+          value_ref = value;
+        else
+          value_ref = std::move(d.value_ref);
+      }
+
+      return *this;
+    }
+
+    T operator () () const
+    {
+      return value_ref;
+    }
+
+    explicit operator T () const
+    {
+      return value_ref;
+    }
+
+    FData& operator << (const T& v)
+    {
+      value_ref.get() = v;
+      return *this;
+    }
+
+    // Accessors
+    FString getClassName() const override
+    {
+      return "FData";
+    }
+
+    T& get() const
+    {
+      return value_ref;
+    }
+
+    // Mutator
+    void set (const T& v)
+    {
+      value_ref.get() = v;
+    }
+
+    // Inquiries
+    bool isInitializedCopy() const
+    {
+      const auto& v = reinterpret_cast<void*>(const_cast<T_nocv*>(&value));
+      const auto& r = reinterpret_cast<void*>(const_cast<T_nocv*>(&value_ref.get()));
+      return bool( v == r );
+    }
+
+    bool isInitializedReference() const
+    {
+      return ! isInitializedCopy();
+    }
+
+    // Friend Non-member operator functions
+    friend std::ostream& operator << (std::ostream &os, const FData& data)
+    {
+      os << data.value_ref.get();
+      return os;
+    }
+
+  private:
+    // Data members
+    T value{};
+    std::reference_wrapper<T> value_ref;
+};
+
+}  // namespace finalcut
+
+#endif  // FDATA_H

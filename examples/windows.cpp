@@ -122,7 +122,7 @@ void SmallWindow::adjustSize()
   else
   {
     top_right_label = "zoom";
-    bottom_label.setVisible();
+    bottom_label.show();
   }
 
   finalcut::FDialog::adjustSize();
@@ -199,7 +199,9 @@ class Window final : public finalcut::FDialog
     void configureDialogButtons();
     void activateWindow (finalcut::FDialog*) const;
     void adjustSize() override;
-    template<typename InstanceT, typename CallbackT, typename... Args>
+    template <typename InstanceT
+            , typename CallbackT
+            , typename... Args>
     void addClickedCallback ( finalcut::FWidget*
                             , InstanceT&&, CallbackT&&, Args&&... );
     template <typename IteratorT>
@@ -241,6 +243,8 @@ class Window final : public finalcut::FDialog
 Window::Window (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
+  FDialog::setSize ({40, 6});
+
   // Menu bar item
   File.setStatusbarMessage ("File management commands");
 
@@ -257,10 +261,10 @@ Window::Window (finalcut::FWidget* parent)
   Statusbar.setMessage("Status bar message");
 
   // Generate data vector for the windows
-  for (int n{1}; n <= 6; n++)
+  for (uInt n{1}; n < 7; n++)
   {
     auto win_dat = new win_data;
-    win_dat->title.sprintf("Window %1d", n);
+    win_dat->title.sprintf("Window %1u", n);
     windows.push_back(win_dat);
   }
 }
@@ -347,10 +351,12 @@ void Window::activateWindow (finalcut::FDialog* win) const
 //----------------------------------------------------------------------
 void Window::adjustSize()
 {
+  finalcut::FDialog::adjustSize();
+
   const std::size_t w = getDesktopWidth();
   const std::size_t h = getDesktopHeight();
-  const int X = int(1 + (w - 40) / 2);
-  int Y = int(1 + (h - 22) / 2);
+  const auto X = int(1 + (w - 40) / 2);
+  auto Y = int(1 + (h - 22) / 2);
   const int dx = ( w > 80 ) ? int(w - 80) / 2 : 0;
   const int dy = ( h > 24 ) ? int(h - 24) / 2 : 0;
 
@@ -365,7 +371,7 @@ void Window::adjustSize()
   {
     if ( (*iter)->is_open )
     {
-      const int n = int(std::distance(first, iter));
+      const auto n = int(std::distance(first, iter));
       const int x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
       const int y = dy + 11 + int(n / 3) * 3;
       (*iter)->dgl->setPos (FPoint{x, y});
@@ -373,12 +379,12 @@ void Window::adjustSize()
 
     ++iter;
   }
-
-  finalcut::FDialog::adjustSize();
 }
 
 //----------------------------------------------------------------------
-template<typename InstanceT, typename CallbackT, typename... Args>
+template <typename InstanceT
+        , typename CallbackT
+        , typename... Args>
 void Window::addClickedCallback ( finalcut::FWidget* widget
                                 , InstanceT&& instance
                                 , CallbackT&& callback
@@ -463,7 +469,7 @@ void Window::cb_createWindows()
       win_dat->dgl = win;
       win_dat->is_open = true;
       win->setText(win_dat->title);
-      const int n = int(std::distance(first, iter));
+      const auto n = int(std::distance(first, iter));
       const int x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
       const int y = dy + 11 + int(n / 3) * 3;
       win->setGeometry (FPoint{x, y}, FSize{20, 8});
@@ -570,8 +576,6 @@ int main (int argc, char* argv[])
   // Create main dialog object
   Window main_dlg {&app};
   main_dlg.setText ("Main window");
-  main_dlg.setGeometry ( FPoint{int(1 + (app.getWidth() - 40) / 2), 2}
-                       , FSize{40, 6} );
 
   // Set dialog main_dlg as main widget
   finalcut::FWidget::setMainWidget (&main_dlg);

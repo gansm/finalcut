@@ -23,6 +23,7 @@
 #include <cfloat>
 #include <cmath>
 #include <cstdlib>
+#include <array>
 #include <limits>
 #include <map>
 #include <memory>
@@ -36,7 +37,7 @@ using finalcut::FRect;
 using finalcut::FSize;
 using finalcut::FColorPair;
 
-constexpr lDouble PI{3.141592653589793238L};
+constexpr lDouble pi_value{3.141592653589793238L};
 
 
 //----------------------------------------------------------------------
@@ -213,6 +214,7 @@ class Calc final : public finalcut::FDialog
 
     // Event handlers
     void           onKeyPress (finalcut::FKeyEvent*) override;
+    void           onShow (finalcut::FShowEvent*) override;
     void           onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
@@ -230,15 +232,15 @@ class Calc final : public finalcut::FDialog
     char              infix_operator{'\0'};
     char              last_infix_operator{'\0'};
     finalcut::FString input{""};
-    button            button_no[Calc::NUM_OF_BUTTONS]{};
+    std::array<button, Calc::NUM_OF_BUTTONS> button_no{};
 
-    struct stack_data
+    struct StackData
     {
       lDouble term;
       char infix_operator;
     };
 
-    std::stack<stack_data> bracket_stack{};
+    std::stack<StackData> bracket_stack{};
     std::map<Calc::button, std::shared_ptr<Button> > calculator_buttons{};
     std::map<Calc::button, keyFunction> key_map{};
 };
@@ -255,7 +257,6 @@ Calc::Calc (FWidget* parent)
 
   mapKeyFunctions();
   clearInfixOperator();
-  std::setlocale(LC_NUMERIC, "C");
 
   for (button key{Sine}; key < Calc::NUM_OF_BUTTONS; key = button(key + 1))
   {
@@ -355,6 +356,13 @@ void Calc::onKeyPress (finalcut::FKeyEvent* ev)
       finalcut::FDialog::onKeyPress(ev);
       break;
   }
+}
+
+//----------------------------------------------------------------------
+void Calc::onShow (finalcut::FShowEvent*)
+{
+  // Overwrites the initialized value of LC_NUMERIC
+  std::setlocale(LC_NUMERIC, "C");
 }
 
 //----------------------------------------------------------------------
@@ -696,14 +704,14 @@ void Calc::percent (lDouble& x)
 //----------------------------------------------------------------------
 void Calc::pi (lDouble& x)
 {
-  x = PI;
+  x = pi_value;
   setDisplay(x);
 }
 
 //----------------------------------------------------------------------
 void Calc::open_bracket (const lDouble&)
 {
-  const stack_data d{ a, infix_operator };
+  const StackData d{ a, infix_operator };
   bracket_stack.push(d);
   clearInfixOperator();
   input = "";
@@ -719,7 +727,7 @@ void Calc::close_bracket (const lDouble&)
 
   calcInfixOperator();
   setDisplay(a);
-  const stack_data d = bracket_stack.top();
+  const StackData d = bracket_stack.top();
   bracket_stack.pop();
   b = d.term;
   infix_operator = d.infix_operator;
@@ -828,11 +836,11 @@ void Calc::sine (lDouble& x)
   else
   {
     if ( arcus_mode )
-      x = std::asin(x) * 180.0L / PI;
+      x = std::asin(x) * 180.0L / pi_value;
     else if ( std::fabs(std::fmod(x, 180.0L)) < LDBL_EPSILON )  // x / 180 = 0
       x = 0.0L;
     else
-      x = std::sin(x * PI / 180.0L);
+      x = std::sin(x * pi_value / 180.0L);
   }
 
   if ( errno == EDOM )
@@ -866,11 +874,11 @@ void Calc::cosine (lDouble& x)
   else
   {
     if ( arcus_mode )
-      x = std::acos(x) * 180.0L / PI;
+      x = std::acos(x) * 180.0L / pi_value;
     else if ( std::fabs(std::fmod(x - 90.0L, 180.0L)) < LDBL_EPSILON )  // (x - 90) / 180 == 0
       x = 0.0L;
     else
-      x = std::cos(x * PI / 180.0L);
+      x = std::cos(x * pi_value / 180.0L);
   }
 
   if ( errno == EDOM )
@@ -904,7 +912,7 @@ void Calc::tangent (lDouble& x)
   else
   {
     if ( arcus_mode )
-      x = std::atan(x) * 180.0L / PI;
+      x = std::atan(x) * 180.0L / pi_value;
     else
     {
       // Test if (x / 180) != 0 and x / 90 == 0
@@ -914,7 +922,7 @@ void Calc::tangent (lDouble& x)
       else if ( std::fabs(std::fmod(x, 180.0L)) < LDBL_EPSILON )  // x / 180 == 0
         x = 0.0L;
       else
-        x = std::tan(x * PI / 180.0L);
+        x = std::tan(x * pi_value / 180.0L);
     }
   }
 
@@ -943,8 +951,8 @@ void Calc::draw()
 bool Calc::isDataEntryKey (int key) const
 {
   // Test if key is in {'.', '0'..'9'}
-  const int data_entry_keys[] =
-  {
+  constexpr std::array<int, 11> key_list =
+  {{
     Decimal_point,
     Zero,
     One,
@@ -956,11 +964,11 @@ bool Calc::isDataEntryKey (int key) const
     Seven,
     Eight,
     Nine
-  };
+  }};
 
-  const int* iter = std::find (data_entry_keys, data_entry_keys + 11, key);
+  const auto& iter = std::find (key_list.begin(), key_list.end(), key);
 
-  if ( iter != data_entry_keys + 11 )
+  if ( iter != key_list.end() )
     return true;
   else
     return false;
@@ -970,19 +978,19 @@ bool Calc::isDataEntryKey (int key) const
 bool Calc::isOperatorKey(int key) const
 {
   // Test if key is in {'*', '/', '+', '-', '^', '='}
-  const int operators[] =
-  {
+  constexpr std::array<int, 6> operators =
+  {{
     Multiply,
     Divide,
     Add,
     Subtract,
     Power,
     Equals
-  };
+  }};
 
-  const int* iter = std::find (operators, operators + 6, key);
+  const auto& iter = std::find (operators.begin(), operators.end(), key);
 
-  if ( iter != operators + 6 )
+  if ( iter != operators.end() )
     return true;
   else
     return false;
@@ -1092,8 +1100,8 @@ void Calc::adjustSize()
 //----------------------------------------------------------------------
 const wchar_t* Calc::getButtonText (const std::size_t key) const
 {
-  static const wchar_t* const button_text[Calc::NUM_OF_BUTTONS] =
-  {
+  constexpr std::array<const wchar_t*, Calc::NUM_OF_BUTTONS> button_text =
+  {{
     L"&Sin",
     L"&Cos",
     L"&Tan",
@@ -1128,7 +1136,7 @@ const wchar_t* Calc::getButtonText (const std::size_t key) const
     L"&.",
     L"&±",
     L"&="
-  };
+  }};
 
   return button_text[key];
 }

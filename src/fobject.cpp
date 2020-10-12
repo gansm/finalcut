@@ -48,7 +48,6 @@ FObject::FObject (FObject* parent)
   if ( parent )                // add object to parent
   {
     parent->addChild(this);
-    has_parent = true;
   }
   else
   {
@@ -107,7 +106,7 @@ FObject* FObject::getChild (int index) const
   if ( ! hasChildren() )
     return nullptr;
 
-  if ( index <= 0 || index > numOfChildren() )
+  if ( index <= 0 || index > int(numOfChildren()) )
     return nullptr;
 
   auto iter = begin();
@@ -147,6 +146,9 @@ void FObject::addChild (FObject* obj)
 
   if ( ! obj )
     return;
+
+  if ( max_children != UNLIMITED && max_children <= numOfChildren() )
+    throw std::length_error ("max. child objects reached");
 
   if ( obj->parent_obj )
     obj->parent_obj->delChild(obj);
@@ -252,7 +254,7 @@ bool FObject::isTimeout (const timeval* time, uInt64 timeout)
     diff.tv_usec += 1000000;
   }
 
-  const uInt64 diff_usec = uInt64((diff.tv_sec * 1000000) + diff.tv_usec);
+  const auto diff_usec = uInt64((diff.tv_sec * 1000000) + diff.tv_usec);
   return ( diff_usec > timeout );
 }
 
@@ -380,11 +382,17 @@ bool FObject::delAllTimers() const
 // protected methods of FObject
 //----------------------------------------------------------------------
 void FObject::onTimer (FTimerEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive timer events for this object
+}
 
 //----------------------------------------------------------------------
 void FObject::onUserEvent (FUserEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive user events for this object
+}
 
 //----------------------------------------------------------------------
 uInt FObject::processTimerEvent()
@@ -427,6 +435,9 @@ uInt FObject::processTimerEvent()
 
 //----------------------------------------------------------------------
 void FObject::performTimerAction (FObject*, FEvent*)
-{ }
+{
+  // This method must be reimplemented in a subclass
+  // to process the passed object and timer event
+}
 
 }  // namespace finalcut

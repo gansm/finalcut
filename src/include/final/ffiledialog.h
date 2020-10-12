@@ -112,10 +112,10 @@ class FFileDialog : public FDialog
     FFileDialog& operator = (const FFileDialog&);
 
     // Accessors
-    const FString        getClassName() const override;
-    const FString        getPath() const;
-    const FString        getFilter() const;
-    const FString        getSelectedFile() const;
+    FString              getClassName() const override;
+    FString              getPath() const;
+    FString              getFilter() const;
+    FString              getSelectedFile() const;
     bool                 getShowHiddenFiles() const;
 
     // Mutators
@@ -129,12 +129,12 @@ class FFileDialog : public FDialog
     void                 onKeyPress (FKeyEvent*) override;
 
     // Methods
-    static const FString fileOpenChooser ( FWidget*
-                                         , const FString& = FString()
-                                         , const FString& = FString() );
-    static const FString fileSaveChooser ( FWidget*
-                                         , const FString& = FString()
-                                         , const FString& = FString() );
+    static FString fileOpenChooser ( FWidget*
+                                   , const FString& = FString()
+                                   , const FString& = FString() );
+    static FString fileSaveChooser ( FWidget*
+                                   , const FString& = FString()
+                                   , const FString& = FString() );
 
   protected:
     // Method
@@ -186,7 +186,7 @@ class FFileDialog : public FDialog
       uChar                  : 1;  // padding bits
     };
 
-    typedef std::vector<FDirEntry> dirEntries;
+    typedef std::vector<FDirEntry> DirEntries;
 
     // Methods
     void                 init();
@@ -203,7 +203,7 @@ class FFileDialog : public FDialog
     void                 selectDirectoryEntry (const char* const);
     int                  changeDir (const FString&);
     void                 printPath (const FString&);
-    static const FString getHomeDir();
+    static FString       getHomeDir();
 
     // Callback methods
     void                 cb_processActivate();
@@ -216,7 +216,7 @@ class FFileDialog : public FDialog
     // Data members
     static FSystem*  fsystem;
     DIR*             directory_stream{nullptr};
-    dirEntries       dir_entries{};
+    DirEntries       dir_entries{};
     FString          directory{};
     FString          filter_pattern{};
     FLineEdit        filename{this};
@@ -232,23 +232,23 @@ class FFileDialog : public FDialog
                            , const FFileDialog::FDirEntry& );
     friend bool sortDirFirst ( const FFileDialog::FDirEntry&
                              , const FFileDialog::FDirEntry& );
-    friend const FString fileChooser ( FWidget*
-                                     , const FString&
-                                     , const FString&
-                                     , FFileDialog::DialogType);
+    friend FString fileChooser ( FWidget*
+                               , const FString&
+                               , const FString&
+                               , FFileDialog::DialogType);
 };
 
 // FMessageBox inline functions
 //----------------------------------------------------------------------
-inline const FString FFileDialog::getClassName() const
+inline FString FFileDialog::getClassName() const
 { return "FFileDialog"; }
 
 //----------------------------------------------------------------------
-inline const FString FFileDialog::getPath() const
+inline FString FFileDialog::getPath() const
 { return directory; }
 
 //----------------------------------------------------------------------
-inline const FString FFileDialog::getFilter() const
+inline FString FFileDialog::getFilter() const
 { return filter_pattern; }
 
 //----------------------------------------------------------------------

@@ -612,7 +612,7 @@ void FOptiMoveTest::teratermTest()
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
 
-  finalcut::FOptiMove::termEnv optimove_env =
+  finalcut::FOptiMove::TermEnv optimove_env =
   {
     CSI "H",               // Cursor home
     "\r",                  // Carriage return

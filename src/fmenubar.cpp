@@ -50,7 +50,7 @@ FMenuBar::FMenuBar(FWidget* parent)
 //----------------------------------------------------------------------
 FMenuBar::~FMenuBar()  // destructor
 {
-  setMenuBar(nullptr);
+  FWidget::setMenuBar(nullptr);
 }
 
 
@@ -256,6 +256,7 @@ void FMenuBar::init()
 
   addAccelerator (fc::Fkey_f10);
   addAccelerator (fc::Fckey_space);
+  addAccelerator (fc::Fkey_menu);
   resetColors();
   unsetFocusable();
 }
@@ -268,17 +269,17 @@ void FMenuBar::calculateDimensions() const
   // find the maximum item width
   for (auto&& item : getItemList())
   {
-    int len = int(item->getTextWidth());
-    int item_width = len + 2;
+    auto len = item->getTextWidth();
+    auto item_width = len + 2;
 
     // set item geometry
-    item->setGeometry (item_pos, FSize{std::size_t(item_width), 1}, false);
+    item->setGeometry (item_pos, FSize{item_width, 1}, false);
 
     // set menu position
     if ( item->hasMenu() )
       item->getMenu()->setPos (item_pos, false);
 
-    item_pos.x_ref() += item_width;
+    item_pos.x_ref() += int(item_width);
   }
 }
 
@@ -302,7 +303,7 @@ bool FMenuBar::selectNextItem()
         if ( next_element == list.end() )
           next_element = list.begin();
 
-        next = static_cast<FMenuItem*>(*next_element);
+        next = *next_element;
       } while ( ! next->isEnabled()
              || ! next->acceptFocus()
              || ! next->isShown()
@@ -365,7 +366,7 @@ bool FMenuBar::selectPrevItem()
           prev_element = list.end();
 
         --prev_element;
-        prev = static_cast<FMenuItem*>(*prev_element);
+        prev = *prev_element;
       }
       while ( ! prev->isEnabled()
            || ! prev->acceptFocus()
@@ -681,7 +682,7 @@ void FMenuBar::adjustItems() const
   for (auto&& item : getItemList())
   {
     // get item width
-    int item_width = int(item->getWidth());
+    auto item_width = item->getWidth();
 
     if ( item->hasMenu() )
     {
@@ -694,7 +695,7 @@ void FMenuBar::adjustItems() const
       menu->adjustItems();
     }
 
-    item_X += item_width;
+    item_X += int(item_width);
   }
 }
 

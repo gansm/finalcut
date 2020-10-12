@@ -26,6 +26,8 @@
   #include <sys/select.h>  // need for FD_ZERO, FD_SET, FD_CLR, ...
 #endif
 
+#include <algorithm>
+#include <array>
 #include <string>
 
 #include "final/fkeyboard.h"
@@ -86,11 +88,20 @@ void FKeyboard::fetchKeyCode()
 }
 
 //----------------------------------------------------------------------
-const FString FKeyboard::getKeyName (const FKey keynum) const
+FString FKeyboard::getKeyName (const FKey keynum) const
 {
-  for (std::size_t i{0}; fc::fkeyname[i].string[0] != 0; i++)
-    if ( fc::fkeyname[i].num && fc::fkeyname[i].num == keynum )
-      return FString{fc::fkeyname[i].string};
+  const auto& found_key = std::find_if
+  (
+    fc::fkeyname.begin(),
+    fc::fkeyname.end(),
+    [&keynum] (const fc::FKeyName& kn)
+    {
+      return (kn.num > 0 && kn.num == keynum);
+    }
+  );
+
+  if ( found_key != fc::fkeyname.end() )
+    return FString{found_key->string};
 
   if ( keynum > 32 && keynum < 127 )
     return FString{char(keynum)};
@@ -99,9 +110,27 @@ const FString FKeyboard::getKeyName (const FKey keynum) const
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::setTermcapMap (fc::FKeyMap* keymap)
+bool FKeyboard::setNonBlockingInput (bool enable)
 {
-  key_map = keymap;
+  if ( enable == non_blocking_stdin )
+    return non_blocking_stdin;
+
+  if ( enable )  // make stdin non-blocking
+  {
+    stdin_status_flags |= O_NONBLOCK;
+
+    if ( fcntl (FTermios::getStdIn(), F_SETFL, stdin_status_flags) != -1 )
+      non_blocking_stdin = true;
+  }
+  else
+  {
+    stdin_status_flags &= ~O_NONBLOCK;
+
+    if ( fcntl (FTermios::getStdIn(), F_SETFL, stdin_status_flags) != -1 )
+      non_blocking_stdin = false;
+  }
+
+  return non_blocking_stdin;
 }
 
 //----------------------------------------------------------------------
@@ -221,12 +250,12 @@ inline FKey FKeyboard::getTermcapKey()
 
   assert ( FIFO_BUF_SIZE > 0 );
 
-  if ( ! key_map )
+  if ( key_map.use_count() == 0 )
     return NOT_SET;
 
-  for (std::size_t i{0}; key_map[i].tname[0] != 0; i++)
+  for (auto&& entry : *key_map)
   {
-    const char* k = key_map[i].string;
+    const char* k = entry.string;
     const std::size_t len = ( k ) ? std::strlen(k) : 0;
 
     if ( k && std::strncmp(k, fifo_buf, len) == 0 )  // found
@@ -240,7 +269,7 @@ inline FKey FKeyboard::getTermcapKey()
         fifo_buf[n] = '\0';
 
       input_data_pending = bool(fifo_buf[0] != '\0');
-      return fc::fkey[i].num;
+      return entry.num;
     }
   }
 
@@ -254,9 +283,9 @@ inline FKey FKeyboard::getMetaKey()
 
   assert ( FIFO_BUF_SIZE > 0 );
 
-  for (std::size_t i{0}; fc::fmetakey[i].string[0] != 0; i++)
+  for (auto&& entry : fc::fmetakey)
   {
-    const char* kmeta = fc::fmetakey[i].string;  // The string is never null
+    const char* kmeta = entry.string;  // The string is never null
     const std::size_t len = std::strlen(kmeta);
 
     if ( std::strncmp(kmeta, fifo_buf, len) == 0 )  // found
@@ -279,7 +308,7 @@ inline FKey FKeyboard::getMetaKey()
         fifo_buf[n] = '\0';
 
       input_data_pending = bool(fifo_buf[0] != '\0');
-      return fc::fmetakey[i].num;
+      return entry.num;
     }
   }
 
@@ -293,13 +322,13 @@ inline FKey FKeyboard::getSingleKey()
 
   std::size_t n{};
   std::size_t len{1};
-  const uChar firstchar = uChar(fifo_buf[0]);
+  const auto firstchar = uChar(fifo_buf[0]);
   FKey keycode{};
 
   // Look for a utf-8 character
   if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
   {
-    char utf8char[5]{};  // Init array with '\0'
+    std::array<char, 5> utf8char{};  // Init array with '\0'
     const std::size_t buf_len = std::strlen(fifo_buf);
 
     if ( (firstchar & 0xe0) == 0xc0 )
@@ -315,7 +344,7 @@ inline FKey FKeyboard::getSingleKey()
     for (std::size_t i{0}; i < len ; i++)
       utf8char[i] = char(fifo_buf[i] & 0xff);
 
-    keycode = UTF8decode(utf8char);
+    keycode = UTF8decode(utf8char.data());
   }
   else
     keycode = uChar(fifo_buf[0] & 0xff);
@@ -332,30 +361,6 @@ inline FKey FKeyboard::getSingleKey()
     keycode = fc::Fckey_space;
 
   return FKey(keycode == 127 ? fc::Fkey_backspace : keycode);
-}
-
-//----------------------------------------------------------------------
-bool FKeyboard::setNonBlockingInput (bool enable)
-{
-  if ( enable == non_blocking_stdin )
-    return non_blocking_stdin;
-
-  if ( enable )  // make stdin non-blocking
-  {
-    stdin_status_flags |= O_NONBLOCK;
-
-    if ( fcntl (FTermios::getStdIn(), F_SETFL, stdin_status_flags) != -1 )
-      non_blocking_stdin = true;
-  }
-  else
-  {
-    stdin_status_flags &= ~O_NONBLOCK;
-
-    if ( fcntl (FTermios::getStdIn(), F_SETFL, stdin_status_flags) != -1 )
-      non_blocking_stdin = false;
-  }
-
-  return non_blocking_stdin;
 }
 
 //----------------------------------------------------------------------
@@ -382,7 +387,7 @@ FKey FKeyboard::UTF8decode (const char utf8[]) const
 
   for (std::size_t i{0}; i < len; ++i)
   {
-    const uChar ch = uChar(utf8[i]);
+    const auto ch = uChar(utf8[i]);
 
     if ( (ch & 0xc0) == 0x80 )
     {
@@ -475,7 +480,7 @@ void FKeyboard::parseKeyBuffer()
 //----------------------------------------------------------------------
 FKey FKeyboard::parseKeyString()
 {
-  const uChar firstchar = uChar(fifo_buf[0]);
+  const auto firstchar = uChar(fifo_buf[0]);
 
   if ( firstchar == ESC[0] )
   {

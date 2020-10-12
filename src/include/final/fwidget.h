@@ -183,7 +183,7 @@ class FWidget : public FVTerm, public FObject
     FWidget& operator = (const FWidget&) = delete;
 
     // Accessors
-    const FString            getClassName() const override;
+    FString                  getClassName() const override;
     FWidget*                 getRootWidget() const;
     FWidget*                 getParentWidget() const;
     static FWidget*&         getMainWidget();
@@ -206,20 +206,20 @@ class FWidget : public FVTerm, public FObject
     // Positioning and sizes accessors...
     int                      getX() const;
     int                      getY() const;
-    const FPoint             getPos() const;
+    FPoint                   getPos() const;
     int                      getTermX() const;
     int                      getTermY() const;
-    const FPoint             getTermPos() const;
+    FPoint                   getTermPos() const;
     std::size_t              getWidth() const;
     std::size_t              getHeight() const;
-    const FSize              getSize() const;
+    FSize                    getSize() const;
     int                      getTopPadding() const;
     int                      getLeftPadding() const;
     int                      getBottomPadding() const;
     int                      getRightPadding() const;
     std::size_t              getClientWidth() const;
     std::size_t              getClientHeight() const;
-    const FSize              getClientSize() const;
+    FSize                    getClientSize() const;
     std::size_t              getMaxWidth() const;
     std::size_t              getMaxHeight() const;
     const FSize&             getShadow() const;
@@ -230,8 +230,8 @@ class FWidget : public FVTerm, public FObject
     std::size_t              getDesktopWidth() const;
     std::size_t              getDesktopHeight() const;
     const FWidgetFlags&      getFlags() const;
-    const FPoint             getCursorPos() const;
-    const FPoint             getPrintPos();
+    FPoint                   getCursorPos() const;
+    FPoint                   getPrintPos();
 
     // Mutators
     static void              setMainWidget (FWidget*);
@@ -240,7 +240,7 @@ class FWidget : public FVTerm, public FObject
     static void              setMoveSizeWidget (FWidget*);
     static void              setActiveWindow (FWidget*);
     static void              setOpenMenu (FWidget*);
-    template<typename ClassT>
+    template <typename ClassT>
     static void              setColorTheme();
     FAcceleratorList&        setAcceleratorList();
     virtual void             setStatusbarMessage (const FString&);
@@ -317,9 +317,9 @@ class FWidget : public FVTerm, public FObject
     int                      numOfFocusableChildren();
     virtual bool             close();
     void                     clearStatusbarMessage();
-    template<typename... Args>
+    template <typename... Args>
     void                     addCallback (const FString&, Args&&...) noexcept;
-    template<typename... Args>
+    template <typename... Args>
     void                     delCallback (Args&&...) noexcept;
     void                     emitCallback (const FString&) const;
     void                     addAccelerator (FKey);
@@ -332,7 +332,7 @@ class FWidget : public FVTerm, public FObject
     virtual void             hide();
     virtual bool             focusFirstChild();  // widget focusing
     virtual bool             focusLastChild();
-    const FPoint             termToWidgetPos (const FPoint&) const;
+    FPoint                   termToWidgetPos (const FPoint&) const;
     void                     print (const FPoint&) override;
     virtual void             move (const FPoint&);
     virtual void             drawBorder();
@@ -452,6 +452,7 @@ class FWidget : public FVTerm, public FObject
     static bool              isDefaultTheme();
     static void              initColorTheme();
     void                     destroyColorTheme();
+    void                     removeQueuedEvent() const;
     void                     setStatusbarText (bool) const;
 
     // Data members
@@ -540,7 +541,7 @@ void          drawNewFontListBox (FWidget*, const FRect&);
 
 // FWidget inline functions
 //----------------------------------------------------------------------
-inline const FString FWidget::getClassName() const
+inline FString FWidget::getClassName() const
 { return "FWidget"; }
 
 //----------------------------------------------------------------------
@@ -582,7 +583,7 @@ inline FStatusBar* FWidget::getStatusBar()
 //----------------------------------------------------------------------
 inline FWidget::FWidgetColorsPtr& FWidget::getColorTheme()
 {
-  static FWidgetColorsPtr* color_theme = new FWidgetColorsPtr();
+  static auto color_theme = new FWidgetColorsPtr();
   return *color_theme;
 }
 
@@ -615,7 +616,7 @@ inline int FWidget::getY() const  // y-position relative to the widget
 { return adjust_wsize.getY(); }
 
 //----------------------------------------------------------------------
-inline const FPoint FWidget::getPos() const  // position relative to the widget
+inline FPoint FWidget::getPos() const  // position relative to the widget
 {
   const FPoint& pos = adjust_wsize.getPos();  // initialize pos
   return pos;
@@ -630,7 +631,7 @@ inline int FWidget::getTermY() const  // y-position on terminal
 { return woffset.getY1() + adjust_wsize.getY(); }
 
 //----------------------------------------------------------------------
-inline const FPoint FWidget::getTermPos() const  // position on terminal
+inline FPoint FWidget::getTermPos() const  // position on terminal
 { return {getTermX(), getTermY()}; }
 
 //----------------------------------------------------------------------
@@ -642,7 +643,7 @@ inline std::size_t FWidget::getHeight() const
 { return adjust_wsize.getHeight(); }
 
 //----------------------------------------------------------------------
-inline const FSize FWidget::getSize() const
+inline FSize FWidget::getSize() const
 {
   const FSize& size = adjust_wsize.getSize();  // initialize size
   return size;
@@ -673,7 +674,7 @@ inline std::size_t FWidget::getClientHeight() const
 { return wclient_offset.getHeight(); }
 
 //----------------------------------------------------------------------
-inline const FSize FWidget::getClientSize() const
+inline FSize FWidget::getClientSize() const
 {
   const FSize& size = wclient_offset.getSize();  // initialize size
   return size;
@@ -750,7 +751,7 @@ inline const FWidget::FWidgetFlags& FWidget::getFlags() const
 { return flags; }
 
 //----------------------------------------------------------------------
-inline const FPoint FWidget::getCursorPos() const
+inline FPoint FWidget::getCursorPos() const
 { return widget_cursor_position; }
 
 //----------------------------------------------------------------------
@@ -770,7 +771,7 @@ inline void FWidget::setOpenMenu (FWidget* obj)
 { open_menu = obj; }
 
 //----------------------------------------------------------------------
-template<typename ClassT>
+template <typename ClassT>
 inline void FWidget::setColorTheme()
 {
   getColorTheme() = std::make_shared<ClassT>();
@@ -984,14 +985,14 @@ inline void FWidget::clearStatusbarMessage()
 { statusbar_message.clear(); }
 
 //----------------------------------------------------------------------
-template<typename... Args>
+template <typename... Args>
 inline void FWidget::addCallback (const FString& cb_signal, Args&&... args) noexcept
 {
   callback_impl.addCallback (cb_signal, std::forward<Args>(args)...);
 }
 
 //----------------------------------------------------------------------
-template<typename... Args>
+template <typename... Args>
 inline void FWidget::delCallback (Args&&... args) noexcept
 {
   callback_impl.delCallback(std::forward<Args>(args)...);
@@ -1012,7 +1013,7 @@ inline void FWidget::delAccelerator()
 { delAccelerator(this); }
 
 //----------------------------------------------------------------------
-inline const FPoint FWidget::termToWidgetPos (const FPoint& tPos) const
+inline FPoint FWidget::termToWidgetPos (const FPoint& tPos) const
 {
   return { tPos.getX() + 1 - woffset.getX1() - adjust_wsize.getX()
          , tPos.getY() + 1 - woffset.getY1() - adjust_wsize.getY() };
@@ -1057,7 +1058,7 @@ inline void FWidget::processDestroy() const
 
 // Non-member elements for NewFont
 //----------------------------------------------------------------------
-const wchar_t NF_menu_button[4] =
+constexpr wchar_t NF_menu_button[]
 {
   fc::NF_rev_menu_button1,
   fc::NF_rev_menu_button2,
@@ -1065,49 +1066,49 @@ const wchar_t NF_menu_button[4] =
   '\0'
 };
 
-const wchar_t NF_button_up[3] =
+constexpr wchar_t NF_button_up[]
 {
   fc::NF_rev_up_pointing_triangle1,
   fc::NF_rev_up_pointing_triangle2,
   '\0'
 };
 
-const wchar_t NF_button_down[3] =
+constexpr wchar_t NF_button_down[]
 {
   fc::NF_rev_down_pointing_triangle1,
   fc::NF_rev_down_pointing_triangle2,
   '\0'
 };
 
-const wchar_t NF_button_arrow_up[3] =
+constexpr wchar_t NF_button_arrow_up[]
 {
   fc::NF_rev_up_arrow1,
   fc::NF_rev_up_arrow2,
   '\0'
 };
 
-const wchar_t NF_button_arrow_down[3] =
+constexpr wchar_t NF_button_arrow_down[]
 {
   fc::NF_rev_down_arrow1,
   fc::NF_rev_down_arrow2,
   '\0'
 };
 
-const wchar_t NF_button_arrow_left[3] =
+constexpr wchar_t NF_button_arrow_left[]
 {
   fc::NF_rev_left_arrow1,
   fc::NF_rev_left_arrow2,
   '\0'
 };
 
-const wchar_t NF_button_arrow_right[3] =
+constexpr wchar_t NF_button_arrow_right[]
 {
   fc::NF_rev_right_arrow1,
   fc::NF_rev_right_arrow2,
   '\0'
 };
 
-const wchar_t NF_Drive[5] =
+constexpr wchar_t NF_Drive[]
 {
   fc::NF_shadow_box_left,
   fc::NF_shadow_box_middle,
@@ -1116,7 +1117,7 @@ const wchar_t NF_Drive[5] =
   '\0'
 };
 
-const wchar_t NF_CD_ROM[5] =
+constexpr wchar_t NF_CD_ROM[]
 {
   fc::NF_shadow_box_left,
   fc::NF_shadow_box_middle,
@@ -1125,7 +1126,7 @@ const wchar_t NF_CD_ROM[5] =
   '\0'
 };
 
-const wchar_t NF_Net_Drive[5] =
+constexpr wchar_t NF_Net_Drive[]
 {
   fc::NF_shadow_box_left,
   fc::NF_shadow_box_middle,
@@ -1134,7 +1135,7 @@ const wchar_t NF_Net_Drive[5] =
   '\0'
 };
 
-const wchar_t CHECKBOX[4] =
+constexpr wchar_t CHECKBOX[]
 {
   fc::NF_shadow_box_left,
   fc::NF_shadow_box_middle,
@@ -1142,7 +1143,7 @@ const wchar_t CHECKBOX[4] =
   '\0'
 };
 
-const wchar_t CHECKBOX_ON[4] =
+constexpr wchar_t CHECKBOX_ON[]
 {
   fc::NF_shadow_box_left,
   fc::NF_shadow_box_checked,
@@ -1150,7 +1151,7 @@ const wchar_t CHECKBOX_ON[4] =
   '\0'
 };
 
-const wchar_t RADIO_BUTTON[4] =
+constexpr wchar_t RADIO_BUTTON[]
 {
   fc::NF_radio_button1,
   fc::NF_radio_button2,
@@ -1158,7 +1159,7 @@ const wchar_t RADIO_BUTTON[4] =
   '\0'
 };
 
-const wchar_t CHECKED_RADIO_BUTTON[4] =
+constexpr wchar_t CHECKED_RADIO_BUTTON[]
 {
   fc::NF_radio_button1,
   fc::NF_radio_button2_checked,

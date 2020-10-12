@@ -316,6 +316,9 @@ void FLoggerTest::fileTest()
 //----------------------------------------------------------------------
 void FLoggerTest::applicationObjectTest()
 {
+  // Save the rdbuf of clog
+  std::streambuf* default_clog_rdbuf = std::clog.rdbuf();
+
   // Generation of a logger in a shared_ptr via a pointer
   finalcut::FApplication::setLog (std::make_shared<finalcut::FLogger>());
   // Get the shared_ptr with the base class
@@ -348,6 +351,15 @@ void FLoggerTest::applicationObjectTest()
   CPPUNIT_ASSERT ( buf.str() == "[ERROR] test6\r\n" );
   buf.str("");  // Clear buffer
 
+  // Logging to std::clog
+  std::clog << finalcut::FLog::Info << "test7" << std::flush;
+  CPPUNIT_ASSERT ( buf.str() == "[INFO] test7\r\n" );
+  buf.str("");  // Clear buffer
+
+  std::clog << finalcut::FLog::Warn << "test8" << std::endl;
+  CPPUNIT_ASSERT ( buf.str() == "[WARNING] test8\n\r\n" );
+  buf.str("");  // Clear buffer
+
   // Replace the logger with another one
   finalcut::FApplication::setLog(std::make_shared<myLogger>());
   log = finalcut::FApplication::getLog();
@@ -369,8 +381,23 @@ void FLoggerTest::applicationObjectTest()
   CPPUNIT_ASSERT ( buf.str() == "Debug: myLogger 4\n" );
   buf.str("");  // Clear buffer
 
-  std::shared_ptr<finalcut::FLog>* logger = &(finalcut::FApplication::getLog());
-  delete logger;
+  // Logging to std::clog with the replaced logger
+  std::clog << finalcut::FLog::Info << "myLogger 5" << std::flush;
+  CPPUNIT_ASSERT ( buf.str() == " Info: myLogger 5\n" );
+  buf.str("");  // Clear buffer
+
+  std::clog << finalcut::FLog::Error << "myLogger 6" << std::endl;
+  CPPUNIT_ASSERT ( buf.str() == "Error: myLogger 6\n\n" );
+  buf.str("");  // Clear buffer
+
+  // Reset to the default rdbuf of clog
+  std::clog.rdbuf(default_clog_rdbuf);
+
+  // Delete the global FApplication logger object
+  auto logger = &(finalcut::FApplication::getLog());
+
+  if ( logger )
+    delete logger;
 }
 
 

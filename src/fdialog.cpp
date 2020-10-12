@@ -226,8 +226,8 @@ void FDialog::setPos (const FPoint& pos, bool)
   if ( getTermGeometry().overlap(old_geometry) )
   {
     FRect restore{};
-    const std::size_t d_width = std::size_t(std::abs(dx));
-    const std::size_t d_height = std::size_t(std::abs(dy));
+    const auto d_width = std::size_t(std::abs(dx));
+    const auto d_height = std::size_t(std::abs(dy));
 
     // dx > 0 : move left
     // dx = 0 : move vertical
@@ -282,7 +282,16 @@ void FDialog::move (const FPoint& d_pos)
 //----------------------------------------------------------------------
 inline bool FDialog::moveUp (int n)
 {
-  move ({0, -n});
+  if ( isBottomOutside() )
+  {
+    const auto y_max = int(getMaxHeight());
+    FWindow::setY(y_max, false);
+    putArea (getTermPos(), getVWin());
+    restoreOverlaidWindows();
+  }
+  else
+    move ({0, -n});
+
   return ! setPos_error;
 }
 
@@ -296,7 +305,16 @@ inline bool FDialog::moveDown (int n)
 //----------------------------------------------------------------------
 inline bool FDialog::moveLeft (int n)
 {
-  move ({-n, 0});
+  if ( isLeftOutside() )
+  {
+    const auto x_max = int(getMaxWidth());
+    FWindow::setX(x_max, false);
+    putArea (getTermPos(), getVWin());
+    restoreOverlaidWindows();
+  }
+  else
+    move ({-n, 0});
+
   return ! setPos_error;
 }
 
@@ -323,7 +341,7 @@ void FDialog::setSize (const FSize& size, bool adjust)
   const int dw = int(getWidth()) - int(size.getWidth());
   const int dh = int(getHeight()) - int(size.getHeight());
   const auto& shadow = getShadow();
-  FWindow::setSize (size, adjust);
+  FWindow::setSize (size, false);
 
   // get adjust width and height
   const std::size_t w = getWidth() + shadow.getWidth();
@@ -336,8 +354,8 @@ void FDialog::setSize (const FSize& size, bool adjust)
   // dh = 0 : scale only width
   // dh < 0 : scale up height
 
-  const std::size_t d_width = std::size_t(dw);
-  const std::size_t d_height = std::size_t(dh);
+  const auto d_width = std::size_t(dw);
+  const auto d_height = std::size_t(dh);
 
   // restoring the non-covered terminal areas
   if ( dw > 0 )
@@ -345,6 +363,9 @@ void FDialog::setSize (const FSize& size, bool adjust)
 
   if ( dh > 0 )
     restoreVTerm ({x, y + int(h), w + d_width, d_height});  // restore bottom
+
+  if ( adjust )    // Adjust the size after restoreVTerm(),
+    adjustSize();  // because adjustSize() can also change x and y
 
   redraw();
 
@@ -438,8 +459,9 @@ void FDialog::onKeyPress (FKeyEvent* ev)
 
   cancelMouseResize();
 
-  if ( ev->key() == fc::Fckey_caret  // Ctrl+^ (Ctrl+6)
-    || ev->key() == fc::Fkey_f22 )   // Shift+F10
+  if ( ev->key() == fc::Fckey_caret   // Ctrl+^ (Ctrl+6)
+    || ev->key() == fc::Fkey_f22      // Shift+F10
+    || ev->key() == fc::Fkey_smenu )  // Shift+Menu
   {
     ev->accept();
     // open the titlebar menu
@@ -455,8 +477,9 @@ void FDialog::onKeyPress (FKeyEvent* ev)
   if ( this == getMainWidget() )
     return;
 
-  if ( ev->key() == fc::Fkey_escape
-    || ev->key() == fc::Fkey_escape_mintty )
+  if ( ! ev->isAccepted()
+    && ( ev->key() == fc::Fkey_escape
+      || ev->key() == fc::Fkey_escape_mintty) )
   {
     ev->accept();
 
@@ -470,9 +493,9 @@ void FDialog::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseDown (FMouseEvent* ev)
 {
-  const int width = int(getWidth());
+  const auto width = int(getWidth());
 
-  const mouseStates ms =
+  const MouseStates ms =
   {
     ev->getX(),
     ev->getY(),
@@ -531,7 +554,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseUp (FMouseEvent* ev)
 {
-  const mouseStates ms =
+  const MouseStates ms =
   {
     ev->getX(),
     ev->getY(),
@@ -580,7 +603,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseMove (FMouseEvent* ev)
 {
-  const mouseStates ms =
+  const MouseStates ms =
   {
     ev->getX(),
     ev->getY(),
@@ -610,7 +633,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 {
-  const mouseStates ms =
+  const MouseStates ms =
   {
     ev->getX(),
     ev->getY(),
@@ -1069,13 +1092,13 @@ inline void FDialog::drawRestoreSizeButton()
     if ( FTerm::isMonochron() )
     {
       print ('[');
-      print (fc::BlackDownPointingTriangle);  // ▼
+      print (fc::BlackDiamondSuit);  // ◆
       print (']');
     }
     else
     {
       print (' ');
-      print (fc::BlackDownPointingTriangle);  // ▼
+      print (fc::BlackDiamondSuit);  // ◆
       print (' ');
     }
   }
@@ -1295,7 +1318,7 @@ inline void FDialog::deactivateZoomButton()
 }
 
 //----------------------------------------------------------------------
-inline void FDialog::activateZoomButton (const mouseStates& ms)
+inline void FDialog::activateZoomButton (const MouseStates& ms)
 {
   if ( ms.mouse_x <= int(getWidth() - ms.zoom_btn)
     || ms.mouse_y != 1 )
@@ -1307,7 +1330,7 @@ inline void FDialog::activateZoomButton (const mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-inline void FDialog::leaveZoomButton (const mouseStates& ms)
+inline void FDialog::leaveZoomButton (const MouseStates& ms)
 {
   bool zoom_button_pressed_before = zoom_button_pressed;
 
@@ -1324,7 +1347,7 @@ inline void FDialog::leaveZoomButton (const mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-void FDialog::pressZoomButton (const mouseStates& ms)
+void FDialog::pressZoomButton (const MouseStates& ms)
 {
   if ( ms.mouse_x <= int(getWidth() - ms.zoom_btn)
     || ms.mouse_y != 1
@@ -1348,7 +1371,7 @@ inline bool FDialog::isMouseOverMenu (const FPoint& termpos) const
 }
 
 //----------------------------------------------------------------------
-inline void FDialog::passEventToSubMenu ( const mouseStates& ms
+inline void FDialog::passEventToSubMenu ( const MouseStates& ms
                                         , const FMouseEvent* ev )
 {
   // Mouse event handover to the dialog menu
@@ -1382,48 +1405,58 @@ inline void FDialog::moveSizeKey (FKeyEvent* ev)
   {
     case fc::Fkey_up:
       moveUp(1);
+      ev->accept();
       break;
 
     case fc::Fkey_down:
       moveDown(1);
+      ev->accept();
       break;
 
     case fc::Fkey_left:
       moveLeft(1);
+      ev->accept();
       break;
 
     case fc::Fkey_right:
       moveRight(1);
+      ev->accept();
       break;
 
     case fc::Fmkey_up:
     case fc::Fkey_sr:
       reduceHeight(1);
+      ev->accept();
       break;
 
     case fc::Fmkey_down:
     case fc::Fkey_sf:
       expandHeight(1);
+      ev->accept();
       break;
 
     case fc::Fmkey_left:
     case fc::Fkey_sleft:
       reduceWidth(1);
+      ev->accept();
       break;
 
     case fc::Fmkey_right:
     case fc::Fkey_sright:
       expandWidth(1);
+      ev->accept();
       break;
 
     case fc::Fkey_return:
     case fc::Fkey_enter:
       acceptMoveSize();
+      ev->accept();
       break;
 
     case fc::Fkey_escape:
     case fc::Fkey_escape_mintty:
       cancelMoveSize();
+      ev->accept();
       return;
 
     default:
@@ -1468,7 +1501,25 @@ bool FDialog::isOutsideTerminal (const FPoint& pos) const
 }
 
 //----------------------------------------------------------------------
-bool FDialog::isLowerRightResizeCorner (const mouseStates& ms) const
+bool FDialog::isLeftOutside() const
+{
+  if ( getX() > int(getMaxWidth()) )
+    return true;
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+bool FDialog::isBottomOutside() const
+{
+  if ( getY() > int(getMaxHeight()) )
+    return true;
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+bool FDialog::isLowerRightResizeCorner (const MouseStates& ms) const
 {
   // 3 characters in the lower right corner  |
   //                                         x
@@ -1487,7 +1538,7 @@ bool FDialog::isLowerRightResizeCorner (const mouseStates& ms) const
 }
 
 //----------------------------------------------------------------------
-void FDialog::resizeMouseDown (const mouseStates& ms)
+void FDialog::resizeMouseDown (const MouseStates& ms)
 {
   // Click on the lower right resize corner
 
@@ -1512,7 +1563,7 @@ void FDialog::resizeMouseDown (const mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-void FDialog::resizeMouseUpMove (const mouseStates& ms, bool mouse_up)
+void FDialog::resizeMouseUpMove (const MouseStates& ms, bool mouse_up)
 {
   // Resize the dialog
   if ( isResizeable() && ! resize_click_pos.isOrigin() )

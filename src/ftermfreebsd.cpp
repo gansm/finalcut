@@ -171,9 +171,9 @@ void FTermFreeBSD::initCharMap()
   if ( ! isFreeBSDConsole() )
     return;
 
-  for (std::size_t i{0}; i <= fc::lastCharItem; i++)
-    if ( fc::character[i][fc::PC] < 0x1c )
-      fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
+  for (auto&& entry : fc::character)
+    if ( entry[fc::PC] < 0x1c )
+      entry[fc::PC] = entry[fc::ASCII];
 }
 
 //----------------------------------------------------------------------
@@ -195,11 +195,11 @@ void FTermFreeBSD::finish()
 //----------------------------------------------------------------------
 void FTermFreeBSD::warnNotInitialized()
 {
-  *FApplication::getLog() << FLog::Warn
-                          << "The FTermFreeBSD object has "
-                          << "not yet been initialized! "
-                          << "Please call the init() method first."
-                          << std::endl;
+  std::clog << FLog::Warn
+            << "The FTermFreeBSD object has "
+            << "not yet been initialized! "
+            << "Please call the init() method first."
+            << std::endl;
 }
 
 //----------------------------------------------------------------------

@@ -68,7 +68,7 @@ class ProgressDialog final : public finalcut::FDialog
     void cb_exit_bar();
 
     // Data members
-    finalcut::FProgressbar progressBar{this};
+    finalcut::FProgressbar progressbar{this};
     finalcut::FButton      reset{this};
     finalcut::FButton      more{this};
     finalcut::FButton      quit{this};
@@ -100,8 +100,8 @@ ProgressDialog::ProgressDialog (finalcut::FWidget* parent)
   quit.setGeometry(FPoint{28, 6}, FSize{8, 1}, false);
   quit.setDisable();
 
-  progressBar.setGeometry(FPoint{2, 3}, FSize{34, 1}, false);
-  //progressBar.setPercentage(78);
+  progressbar.setGeometry(FPoint{2, 3}, FSize{34, 1}, false);
+  //progressbar.setPercentage(78);
 
   reset.addCallback
   (
@@ -140,9 +140,9 @@ void ProgressDialog::onShow (finalcut::FShowEvent*)
 //----------------------------------------------------------------------
 void ProgressDialog::onTimer (finalcut::FTimerEvent*)
 {
-  auto p = progressBar.getPercentage();
+  auto p = progressbar.getPercentage();
   p++;
-  progressBar.setPercentage(p);
+  progressbar.setPercentage(p);
   flush();
 
   if ( p != 100 )
@@ -167,15 +167,15 @@ void ProgressDialog::onTimer (finalcut::FTimerEvent*)
 //----------------------------------------------------------------------
 void ProgressDialog::cb_reset_bar()
 {
-  progressBar.reset();
+  progressbar.reset();
 }
 
 //----------------------------------------------------------------------
 void ProgressDialog::cb_more_bar()
 {
-  auto p = progressBar.getPercentage();
+  auto p = progressbar.getPercentage();
   p++;
-  progressBar.setPercentage(p);
+  progressbar.setPercentage(p);
 }
 
 //----------------------------------------------------------------------
@@ -212,25 +212,25 @@ class TextWindow final : public finalcut::FDialog
     void adjustSize() override;
 
     // Data members
-    finalcut::FTextView scrollText{this};
+    finalcut::FTextView scrolltext{this};
 };
 
 //----------------------------------------------------------------------
 TextWindow::TextWindow (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  scrollText.ignorePadding();
-  scrollText.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});
+  scrolltext.ignorePadding();
+  scrolltext.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});
   setMinimumSize (FSize{51, 6});
-  scrollText.setFocus();
-  scrollText.insert(" -----------------------------------------------\n"
+  scrolltext.setFocus();
+  scrolltext.insert(" -----------------------------------------------\n"
                     " line 1\n"
                     " -----------------------------------------------\n"
                     " line 3\n"
                     " line 4"
                     , -1);
-  scrollText.replaceRange("                   File viewer", 1, 1);
-  scrollText.deleteRange(3, 4);
+  scrolltext.replaceRange("                   File viewer", 1, 1);
+  scrolltext.deleteRange(3, 4);
 }
 
 //----------------------------------------------------------------------
@@ -240,14 +240,14 @@ TextWindow::~TextWindow()  // destructor
 //----------------------------------------------------------------------
 void TextWindow::append (const finalcut::FString& str)
 {
-  scrollText.append(str);
+  scrolltext.append(str);
 }
 
 //----------------------------------------------------------------------
 void TextWindow::adjustSize()
 {
   finalcut::FDialog::adjustSize();
-  scrollText.setGeometry (FPoint{1, 2}, FSize(getWidth(), getHeight() - 1));
+  scrolltext.setGeometry (FPoint{1, 2}, FSize(getWidth(), getHeight() - 1));
 }
 
 
@@ -305,8 +305,7 @@ class MyDialog final : public finalcut::FDialog
                              , const finalcut::FLineEdit& ) const;
     void cb_setTitlebar (const finalcut::FLineEdit&);
     void cb_showProgressBar();
-    void cb_updateNumber ( const finalcut::FListBox&
-                         , finalcut::FLabel& ) const;
+    void cb_updateNumber();
     void cb_activateButton ( const finalcut::FRadioButton&
                            , finalcut::FButton& ) const;
     void cb_view (const finalcut::FMenuItem*);
@@ -774,27 +773,25 @@ void MyDialog::initWidgetsCallbacks()
   myList.addCallback
   (
     "row-selected",
-    this, &MyDialog::cb_updateNumber,
-    std::ref(myList), std::ref(tagged_count)
+    this, &MyDialog::cb_updateNumber
   );
 }
 
 //----------------------------------------------------------------------
 void MyDialog::adjustSize()
 {
-  const auto h = getParentWidget()->getHeight() - 4;
+  const auto h = getDesktopHeight() - 4;
   setHeight (h, false);
-  int X = int((getDesktopWidth() - getWidth()) / 2);
+  finalcut::FDialog::adjustSize();  // with new client area size
+  auto x = int((getDesktopWidth() - getWidth()) / 2);
 
-  if ( X < 1 )
-    X = 1;
+  if ( x < 1 )
+    x = 1;
 
-  setX (X, false);
+  setPos (FPoint{x, 2}, false);
 
   if ( initialized )
-    myList.setHeight (getHeight() - 3, false);
-
-  finalcut::FDialog::adjustSize();
+    myList.setHeight (h - 3, true);
 }
 
 //----------------------------------------------------------------------
@@ -823,7 +820,10 @@ void MyDialog::cb_about()
                              , line + L" FINAL CUT " + line + L"\n\n"
                                L"Version " + libver + L"\n\n"
                                L"(c) 2020 by Markus Gans"
-                             , finalcut::FMessageBox::Ok, 0, 0, this );
+                             , finalcut::FMessageBox::Ok
+                             , finalcut::FMessageBox::Reject
+                             , finalcut::FMessageBox::Reject
+                             , this );
   info.setCenterText();
   info.show();
 }
@@ -843,7 +843,10 @@ void MyDialog::cb_terminfo()
       << "  Size: " << x << fc::Times
                     << y << "\n"
       << "Colors: " << finalcut::FTerm::getMaxColor()
-    , finalcut::FMessageBox::Ok, 0, 0, this
+    , finalcut::FMessageBox::Ok
+    , finalcut::FMessageBox::Reject
+    , finalcut::FMessageBox::Reject
+    , this
   );
   info1.setHeadline("Terminal:");
   info1.exec();
@@ -858,7 +861,10 @@ void MyDialog::cb_drives()
     , "Generic:       \n\n"
       "Network:       \n\n"
       "     CD:"
-    , finalcut::FMessageBox::Ok, 0, 0, this
+    , finalcut::FMessageBox::Ok
+    , finalcut::FMessageBox::Reject
+    , finalcut::FMessageBox::Reject
+    , this
   );
 
   if ( finalcut::FTerm::isNewFont() )
@@ -968,19 +974,17 @@ void MyDialog::cb_showProgressBar()
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_updateNumber ( const finalcut::FListBox& list
-                               , finalcut::FLabel& num) const
+void MyDialog::cb_updateNumber()
 {
-  const auto count = list.getCount();
   int select_num = 0;
 
-  for (std::size_t n{1}; n <= count; n++)
-    if ( list.isSelected(n) )
+  for (auto&& item : myList.getData() )
+    if ( item.isSelected() )
       select_num++;
 
-  num.clear();
-  num << select_num;
-  num.redraw();
+  tagged_count.clear();
+  tagged_count << select_num;
+  tagged_count.redraw();
 }
 
 //----------------------------------------------------------------------
@@ -1057,9 +1061,8 @@ int main (int argc, char* argv[])
   // Create main dialog object d
   MyDialog d{&app};
   d.setText (title);
-  d.setGeometry ( FPoint{int((app.getWidth() - 56) / 2), 2}
-                , FSize{56, app.getHeight() - 4} );
-  d.setShadow();
+  d.setSize (FSize{56, app.getHeight() - 4});
+  d.setShadow();  // Instead of the transparent window shadow
 
   // Set the dialog object d as the main widget of the application.
   // When you close the main widget, the application will be closed.

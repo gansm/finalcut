@@ -80,7 +80,7 @@ class FStringStream : public std::wiostream
     // Move assignment operator (=)
     FStringStream& operator = (FStringStream&& sstream) noexcept;
 
-    virtual const FString getClassName() const;
+    virtual FString getClassName() const;
     void swap (FStringStream&) noexcept;
     void clear();
     std::wstringbuf* rdbuf() const;
@@ -93,7 +93,7 @@ class FStringStream : public std::wiostream
 
 // FStringStream inline functions
 //----------------------------------------------------------------------
-inline const FString FStringStream::getClassName() const
+inline FString FStringStream::getClassName() const
 { return "FStringStream"; }
 
 //----------------------------------------------------------------------

@@ -29,7 +29,6 @@
 #include "final/flabel.h"
 #include "final/flineedit.h"
 #include "final/flistbox.h"
-#include "final/flog.h"
 #include "final/fmouse.h"
 #include "final/fpoint.h"
 #include "final/fsize.h"

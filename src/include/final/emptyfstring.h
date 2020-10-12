@@ -35,7 +35,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include "final/fapplication.h"
+#include <iostream>
+
 #include "final/flog.h"
 #include "final/fstring.h"
 
@@ -61,7 +62,7 @@ public:
   // Disable copy assignment operator (=)
   emptyFString& operator = (const emptyFString&) = delete;
 
-  static const FString getClassName();
+  static FString getClassName();
   static bool isNull();
   static const FString& get();
   static void clear();
@@ -73,7 +74,7 @@ private:
 
 // emptyFString inline functions
 //----------------------------------------------------------------------
-inline const FString emptyFString::getClassName()
+inline FString emptyFString::getClassName()
 { return "emptyFString"; }
 
 //----------------------------------------------------------------------

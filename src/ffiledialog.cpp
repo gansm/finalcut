@@ -25,6 +25,7 @@
   #include <strings.h>    // need for strcasecmp
 #endif
 
+#include <array>
 #include <vector>
 
 #include "final/fevent.h"
@@ -55,10 +56,10 @@ bool sortDirFirst ( const FFileDialog::FDirEntry& lhs
 }
 
 //----------------------------------------------------------------------
-const FString fileChooser ( FWidget* parent
-                          , const FString& dirname
-                          , const FString& filter
-                          , FFileDialog::DialogType type )
+FString fileChooser ( FWidget* parent
+                    , const FString& dirname
+                    , const FString& filter
+                    , FFileDialog::DialogType type )
 {
   FString ret{};
   FString path{dirname};
@@ -165,9 +166,9 @@ FFileDialog& FFileDialog::operator = (const FFileDialog& fdlg)
 }
 
 //----------------------------------------------------------------------
-const FString FFileDialog::getSelectedFile() const
+FString FFileDialog::getSelectedFile() const
 {
-  const uLong n = uLong(filebrowser.currentItem() - 1);
+  const auto n = uLong(filebrowser.currentItem() - 1);
 
   if ( dir_entries[n].directory )
     return FString{""};
@@ -179,7 +180,7 @@ const FString FFileDialog::getSelectedFile() const
 void FFileDialog::setPath (const FString& dir)
 {
   const char* const dirname = dir.c_str();
-  char resolved_path[MAXPATHLEN]{};
+  std::array<char, MAXPATHLEN> resolved_path{};
   FString r_dir{};
   struct stat sb{};
 
@@ -201,8 +202,8 @@ void FFileDialog::setPath (const FString& dir)
     return;
   }
 
-  if ( fsystem && fsystem->realpath(dir.c_str(), resolved_path) != nullptr )
-    r_dir.setString(resolved_path);
+  if ( fsystem && fsystem->realpath(dir.c_str(), resolved_path.data()) != nullptr )
+    r_dir.setString(resolved_path.data());
   else
     r_dir.setString(dir);
 
@@ -257,17 +258,17 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
 }
 
 //----------------------------------------------------------------------
-const FString FFileDialog::fileOpenChooser ( FWidget* parent
-                                           , const FString& dirname
-                                           , const FString& filter )
+FString FFileDialog::fileOpenChooser ( FWidget* parent
+                                     , const FString& dirname
+                                     , const FString& filter )
 {
   return fileChooser (parent, dirname, filter, FFileDialog::Open);
 }
 
 //----------------------------------------------------------------------
-const FString FFileDialog::fileSaveChooser ( FWidget* parent
-                                           , const FString& dirname
-                                           , const FString& filter )
+FString FFileDialog::fileSaveChooser ( FWidget* parent
+                                     , const FString& dirname
+                                     , const FString& filter )
 {
   return fileChooser (parent, dirname, filter, FFileDialog::Save);
 }
@@ -418,20 +419,20 @@ void FFileDialog::initCallbacks()
 inline bool FFileDialog::patternMatch ( const char* const pattern
                                       , const char fname[] ) const
 {
-  char search[128]{};
+  std::array<char, 128> search{};
 
   if ( show_hidden && fname[0] == '.' && fname[1] != '\0' )  // hidden files
   {
     search[0] = '.';
     search[1] = '\0';
-    std::strncat(search, pattern, sizeof(search) - std::strlen(search) - 1);
+    std::strncat(search.data(), pattern, search.size() - std::strlen(search.data()) - 1);
   }
   else
-    std::strncpy(search, pattern, sizeof(search));
+    std::strncpy(search.data(), pattern, search.size() - 1);
 
-  search[sizeof(search) - 1] = '\0';
+  search[search.size() - 1] = '\0';
 
-  if ( fnmatch (search, fname, FNM_PERIOD) == 0 )
+  if ( fnmatch (search.data(), fname, FNM_PERIOD) == 0 )
     return true;
   else
     return false;
@@ -595,24 +596,24 @@ void FFileDialog::followSymLink (const char* const dir, FDirEntry& entry) const
   if ( ! entry.symbolic_link )
     return;  // No symbolic link
 
-  char resolved_path[MAXPATHLEN]{};
-  char symLink[MAXPATHLEN]{};
+  std::array<char, MAXPATHLEN> resolved_path{};
+  std::array<char, MAXPATHLEN> symLink{};
   struct stat sb{};
 
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
 
-  std::strncpy (symLink, dir, sizeof(symLink));
-  symLink[sizeof(symLink) - 1] = '\0';
-  std::strncat ( symLink
+  std::strncpy (symLink.data(), dir, symLink.size() - 1);
+  symLink[symLink.size() - 1] = '\0';
+  std::strncat ( symLink.data()
                , entry.name.c_str()
-               , sizeof(symLink) - std::strlen(symLink) - 1);
-  symLink[sizeof(symLink) - 1] = '\0';
+               , symLink.size() - std::strlen(symLink.data()) - 1);
+  symLink[symLink.size() - 1] = '\0';
 
-  if ( fsystem->realpath(symLink, resolved_path) == nullptr )
+  if ( fsystem->realpath(symLink.data(), resolved_path.data()) == nullptr )
     return;  // Cannot follow the symlink
 
-  if ( lstat(resolved_path, &sb) == -1 )
+  if ( lstat(resolved_path.data(), &sb) == -1 )
     return;  // Cannot get file status
 
   if ( S_ISDIR(sb.st_mode) )
@@ -736,18 +737,18 @@ void FFileDialog::printPath (const FString& txt)
 }
 
 //----------------------------------------------------------------------
-const FString FFileDialog::getHomeDir()
+FString FFileDialog::getHomeDir()
 {
   struct passwd pwd{};
   struct passwd* pwd_ptr{};
-  char buf[1024]{};
+  std::array<char, 1024> buf{};
 
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
 
   const uid_t euid = fsystem->geteuid();
 
-  if ( fsystem->getpwuid_r(euid, &pwd, buf, sizeof(buf), &pwd_ptr) )
+  if ( fsystem->getpwuid_r(euid, &pwd, buf.data(), buf.size(), &pwd_ptr) )
     return FString{""};
   else
     return FString{pwd.pw_dir};
@@ -823,7 +824,7 @@ void FFileDialog::cb_processRowChanged()
 //----------------------------------------------------------------------
 void FFileDialog::cb_processClicked()
 {
-  const uLong n = uLong(filebrowser.currentItem() - 1);
+  const auto n = uLong(filebrowser.currentItem() - 1);
 
   if ( dir_entries[n].directory )
     changeDir(dir_entries[n].name);

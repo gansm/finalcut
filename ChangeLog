@@ -1,3 +1,50 @@
+2020-10-11  Markus Gans  <guru.mail@muenster.de>
+	* Solaris build fix
+	* Added saving and restoring xterm titles to the stack 
+	  for vte terminals
+	* Menu key - activates the menu bar
+	* Shift-Menu - opens the dialog menu
+
+2020-10-08  Markus Gans  <guru.mail@muenster.de>
+	* Better keyboard support for urxvt terminals
+	* Screen reports (like Secondary DA) are now read directly
+	* Report Cursor Position (DECXCPR) support
+	* FListView and FListBox now have direct access to the list of client 
+	  elements via data()
+
+2020-10-05  Markus Gans  <guru.mail@muenster.de>
+	* Now hides the input cursor when a widget gets hidden
+
+2020-10-04  Markus Gans  <guru.mail@muenster.de>
+	* Replaces some C-style arrays with std::array
+	* Now you can use the arrow keys to move a window into the visible area
+	* Removes FData memory leak in FListBoxItem and FListViewItem
+
+2020-09-27  Markus Gans  <guru.mail@muenster.de>
+	* An explanation of the widget tree was added to the document 
+	  of the first steps
+
+2020-09-26  Markus Gans  <guru.mail@muenster.de>
+	* FData improvements
+	* The number of FObject children can now be limited with 
+	  setMaxChildren()
+	* FApplication can now have no more than one child widget
+
+2020-09-25  Markus Gans  <guru.mail@muenster.de>
+	* std::clog now streams everything to the FLogger object
+	* Added a unit test for the FData class
+
+2020-09-23  Markus Gans  <guru.mail@muenster.de>
+	* Bugfix: empty FString() + wchar_t
+
+2020-09-22  Markus Gans  <guru.mail@muenster.de>
+	* Bugfix in FDialog::setSize(): Automatic size adjustment and 
+	  simultaneous widget movement are now possible.
+
+2020-09-18  Markus Gans  <guru.mail@muenster.de>
+	* The generic data type FDataPtr is now deprecated and was 
+	  completely replaced by the template class FData
+
 2020-09-11  Markus Gans  <guru.mail@muenster.de>
 	* Fixes a problem with mouse input in Cygwin in non-blocking read mode
 

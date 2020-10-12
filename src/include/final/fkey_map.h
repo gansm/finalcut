@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -27,15 +27,19 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <array>
+
+#include "final/ftypes.h"
+
 namespace finalcut
 {
 
 namespace fc
 {
 
-extern FKeyMap fkey[];
-extern FMetakeyMap fmetakey[];
-extern FKeyName fkeyname[];
+extern std::array<FKeyMap, 188> fkey;
+extern const std::array<FMetakeyMap, 232> fmetakey;
+extern const std::array<FKeyName, 388> fkeyname;
 
 }  // namespace fc
 

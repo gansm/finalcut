@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
 #include <string>
 
 #include "final/flogger.h"
@@ -58,21 +59,23 @@ void FLogger::newlineReplace ( std::string& str
 }
 
 //----------------------------------------------------------------------
-const std::string FLogger::getTimeString() const
+std::string FLogger::getTimeString() const
 {
-  char str[100];
+  std::array<char, 100> str;
   const auto& now = std::chrono::system_clock::now();
   const auto& t = std::chrono::system_clock::to_time_t(now);
   // Print RFC 2822 date
   struct tm time{};
   localtime_r (&t, &time);
-  std::strftime (str, sizeof(str), "%a, %d %b %Y %T %z", &time);
-  return std::string(str);
+  std::strftime (str.data(), str.size(), "%a, %d %b %Y %T %z", &time);
+  return std::string(str.data());
 }
 
 //----------------------------------------------------------------------
-const std::string FLogger::getEOL() const
+std::string FLogger::getEOL()
 {
+  std::lock_guard<std::mutex> lock_guard(getMutex());
+
   if ( getEnding() == FLog::LF )
     return "\n";
   else if ( getEnding() == FLog::CR )
@@ -88,6 +91,8 @@ void FLogger::printLogLine (const std::string& msg)
 {
   const std::string& log_level = [this] ()
   {
+    std::lock_guard<std::mutex> lock_guard(getMutex());
+
     switch ( getLevel() )
     {
       case Info:

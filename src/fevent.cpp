@@ -21,7 +21,6 @@
 ***********************************************************************/
 
 #include <cstdio>
-
 #include "final/fevent.h"
 
 namespace finalcut
@@ -371,13 +370,5 @@ FUserEvent::~FUserEvent()  // destructor
 //----------------------------------------------------------------------
 int FUserEvent::getUserId() const
 { return uid; }
-
-//----------------------------------------------------------------------
-FDataPtr FUserEvent::getData() const
-{ return data_pointer; }
-
-//----------------------------------------------------------------------
-void FUserEvent::setData (FDataPtr data)
-{ data_pointer = data; }
 
 }  // namespace finalcut

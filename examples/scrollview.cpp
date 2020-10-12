@@ -118,8 +118,8 @@ Scrollview::~Scrollview()
 void Scrollview::setScrollSize (const FSize& size)
 {
   FScrollView::setScrollSize (size);
-  const int width = int(size.getWidth());
-  const int height = int(size.getHeight());
+  const auto width = int(size.getWidth());
+  const auto height = int(size.getHeight());
   go_south.setPos (FPoint{width - 5, 1});
   go_west.setPos (FPoint{width - 5, height - 1});
   go_north.setPos (FPoint{1, height - 1});

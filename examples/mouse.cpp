@@ -428,7 +428,7 @@ void MouseDraw::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void MouseDraw::draw()
 {
-  const int y_max = int(getHeight());
+  const auto y_max = int(getHeight());
   finalcut::FDialog::draw();
   setColor();
 
@@ -463,8 +463,8 @@ void MouseDraw::draw()
 //----------------------------------------------------------------------
 void MouseDraw::drawBrush (int x, int y, bool swap_color)
 {
-  const int Cols = int(getWidth());
-  const int Lines = int(getHeight());
+  const auto Cols = int(getWidth());
+  const auto Lines = int(getHeight());
 
   if ( x > 10 && x < Cols && y > 2 && y < Lines )
   {
@@ -537,8 +537,8 @@ void MouseDraw::adjustSize()
 {
   const std::size_t w{60};
   const std::size_t h{18};
-  const int x = 1 + int((getParentWidget()->getWidth() - w) / 2);
-  const int y = 1 + int((getParentWidget()->getHeight() - h) / 2);
+  const int x = 1 + int((getDesktopWidth() - w) / 2);
+  const int y = 1 + int((getDesktopHeight() - h) / 2);
   setGeometry (FPoint{x, y}, FSize{w, h}, false);
   finalcut::FDialog::adjustSize();
 }
@@ -590,7 +590,6 @@ int main (int argc, char* argv[])
 
   // Create a simple dialog box
   MouseDraw mouse_draw{&app};
-  mouse_draw.setGeometry (FPoint{12, 4}, FSize{60, 18});
 
   // Set dialog object mouse_draw as main widget
   finalcut::FWidget::setMainWidget(&mouse_draw);

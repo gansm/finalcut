@@ -20,13 +20,14 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
 #include <regex>
 
 #include "final/fapplication.h"
 #include "final/fevent.h"
 #include "final/flabel.h"
-#include "final/flog.h"
 #include "final/flineedit.h"
+#include "final/flog.h"
 #include "final/fpoint.h"
 #include "final/fsize.h"
 #include "final/fstatusbar.h"
@@ -752,9 +753,9 @@ void FLineEdit::drawInputField()
 
   // set the cursor to the insert pos.
   const auto cursor_pos_column = getCursorColumnPos();
-  const int xpos = int(2 + cursor_pos_column
-                         - text_offset_column
-                         + char_width_offset);
+  const auto xpos = int(2 + cursor_pos_column
+                          - text_offset_column
+                          + char_width_offset);
   setCursorPos ({xpos, 1});
 }
 
@@ -802,7 +803,7 @@ inline std::size_t FLineEdit::getCursorColumnPos() const
 }
 
 //----------------------------------------------------------------------
-inline const FString FLineEdit::getPasswordText() const
+inline FString FLineEdit::getPasswordText() const
 {
   return FString{text.getLength(), fc::Bullet};  // •
 }
@@ -833,8 +834,8 @@ inline FLineEdit::offsetPair FLineEdit::endPosToOffset (std::size_t pos)
     }
     catch (const std::out_of_range& ex)
     {
-      *FApplication::getLog() << FLog::Error
-          << "Out of Range error: " << ex.what() << std::endl;
+      std::clog << FLog::Error
+                << "Out of Range error: " << ex.what() << std::endl;
     }
 
     if ( input_width >= char_width )
@@ -857,8 +858,8 @@ inline FLineEdit::offsetPair FLineEdit::endPosToOffset (std::size_t pos)
         }
         catch (const std::out_of_range& ex)
         {
-          *FApplication::getLog() << FLog::Error
-              << "Out of Range error: " << ex.what() << std::endl;
+          std::clog << FLog::Error
+                    << "Out of Range error: " << ex.what() << std::endl;
         }
       }
 
@@ -893,8 +894,8 @@ std::size_t FLineEdit::clickPosToCursorPos (std::size_t pos)
     }
     catch (const std::out_of_range& ex)
     {
-      *FApplication::getLog() << FLog::Error
-          << "Out of Range error: " << ex.what() << std::endl;
+      std::clog << FLog::Error
+                << "Out of Range error: " << ex.what() << std::endl;
     }
 
     idx++;
@@ -927,8 +928,8 @@ void FLineEdit::adjustTextOffset()
     }
     catch (const std::out_of_range& ex)
     {
-      *FApplication::getLog() << FLog::Error
-          << "Out of Range error: " << ex.what() << std::endl;
+      std::clog << FLog::Error
+                << "Out of Range error: " << ex.what() << std::endl;
     }
   }
 
@@ -940,8 +941,8 @@ void FLineEdit::adjustTextOffset()
     }
     catch (const std::out_of_range& ex)
     {
-      *FApplication::getLog() << FLog::Error
-          << "Out of Range error: " << ex.what() << std::endl;
+      std::clog << FLog::Error
+                << "Out of Range error: " << ex.what() << std::endl;
     }
   }
 
@@ -1109,9 +1110,9 @@ inline wchar_t FLineEdit::characterFilter (const wchar_t c) const
   if ( input_filter.empty() )
     return c;
 
-  const wchar_t character[2]{c, L'\0'};
+  std::array<const wchar_t, 2> character{{c, L'\0'}};
 
-  if ( regex_match(character, std::wregex(input_filter)) )
+  if ( regex_match(character.data(), std::wregex(input_filter)) )
     return c;
   else
     return L'\0';

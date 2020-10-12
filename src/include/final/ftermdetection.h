@@ -92,7 +92,7 @@ class FTermDetection final
     FTermDetection& operator = (const FTermDetection&) = delete;
 
     // Accessor
-    static const FString  getClassName();
+    static FString        getClassName();
     static const char*    getTermType();
     static int            getGnomeTerminalID();
     FTerminalType&        getTermTypeStruct();
@@ -174,12 +174,12 @@ class FTermDetection final
     static bool           get256colorEnvString();
     static const char*    termtype_256color_quirks();
     static const char*    determineMaxColor (const char[]);
-    static const FString  getXTermColorName (FColor);
+    static FString        getXTermColorName (FColor);
     static const char*    parseAnswerbackMsg (const char[]);
-    static const FString  getAnswerbackMsg();
+    static FString        getAnswerbackMsg();
     static const char*    parseSecDA (const char[]);
     static int            str2int (const FString&);
-    static const FString  getSecDA();
+    static FString        getSecDA();
     static const char*    secDA_Analysis (const char[]);
     static const char*    secDA_Analysis_0 (const char[]);
     static const char*    secDA_Analysis_1 (const char[]);
@@ -210,6 +210,7 @@ class FTermDetection final
     static const FString* sec_da;
     static FTermData*     fterm_data;
     static FSystem*       fsystem;
+    static FKeyboard*     keyboard;
     static FTerminalType  terminal_type;
     static colorEnv       color_env;
     static secondaryDA    secondary_da;
@@ -243,7 +244,7 @@ struct FTermDetection::secondaryDA
 
 // FTermDetection inline functions
 //----------------------------------------------------------------------
-inline const FString FTermDetection::getClassName()
+inline FString FTermDetection::getClassName()
 { return "FTermDetection"; }
 
 //----------------------------------------------------------------------

@@ -33,7 +33,7 @@ using finalcut::FSize;
 
 
 // Function prototypes
-sInt64 StringToNumber (const finalcut::FString&);
+sInt64 stringToNumber (const finalcut::FString&);
 bool sortAscending (const finalcut::FObject*, const finalcut::FObject*);
 bool sortDescending (const finalcut::FObject*, const finalcut::FObject*);
 bool isLessThanInteger (const finalcut::FString&, const finalcut::FString&);
@@ -44,13 +44,13 @@ bool isGreaterThanDouble (const finalcut::FString&, const finalcut::FString&);
 
 // non-member functions
 //----------------------------------------------------------------------
-sInt64 StringToNumber (const finalcut::FString& str)
+sInt64 stringToNumber (const finalcut::FString& str)
 {
   // Cut off one character (because LONG_MAX = 2147483647)
-  auto NumString = str.left(str.getLength() - 1);
-  NumString = NumString.replace(",", "");
-  NumString = NumString.replace('.', "");
-  sInt64 number = sInt64(NumString.toLong());
+  auto num_string = str.left(str.getLength() - 1);
+  num_string = num_string.replace(",", "");
+  num_string = num_string.replace('.', "");
+  auto number = sInt64(num_string.toLong());
   return number;
 }
 
@@ -58,8 +58,8 @@ sInt64 StringToNumber (const finalcut::FString& str)
 inline bool isLessThanInteger ( const finalcut::FString& lhs
                               , const finalcut::FString& rhs )
 {
-  const sInt64 l_number = StringToNumber(lhs);
-  const sInt64 r_number = StringToNumber(rhs);
+  const sInt64 l_number = stringToNumber(lhs);
+  const sInt64 r_number = stringToNumber(rhs);
   return bool( l_number < r_number );  // lhs < rhs
 }
 
@@ -77,8 +77,8 @@ inline bool isLessThanDouble ( const finalcut::FString& lhs
 inline bool isGreaterThanInteger ( const finalcut::FString& lhs
                                  , const finalcut::FString& rhs )
 {
-  const sInt64 l_number = StringToNumber(lhs);
-  const sInt64 r_number = StringToNumber(rhs);
+  const sInt64 l_number = stringToNumber(lhs);
+  const sInt64 r_number = stringToNumber(rhs);
   return bool( l_number > r_number );  // lhs > rhs
 }
 
@@ -168,8 +168,8 @@ class Treeview final : public finalcut::FDialog
 
     // Data members
     bool                initialized{false};
-    finalcut::FListView listView{this};
-    finalcut::FButton   Quit{this};
+    finalcut::FListView listview{this};
+    finalcut::FButton   quit{this};
     static TreeItem     africa[];
     static TreeItem     asia[];
     static TreeItem     europe[];
@@ -329,26 +329,26 @@ Treeview::Treeview (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
   // Set FListView geometry
-  listView.setGeometry(FPoint{2, 1}, FSize{53, 14});
+  listview.setGeometry(FPoint{2, 1}, FSize{53, 14});
 
   // Add columns to the view
-  listView.addColumn ("Name", 23);
-  listView.addColumn ("Population");
-  listView.addColumn ("Density/km²");
+  listview.addColumn ("Name", 23);
+  listview.addColumn ("Population");
+  listview.addColumn ("Density/km²");
 
   // Set right alignment for the second and third column
-  listView.setColumnAlignment (2, fc::alignRight);
-  listView.setColumnAlignment (3, fc::alignRight);
+  listview.setColumnAlignment (2, fc::alignRight);
+  listview.setColumnAlignment (3, fc::alignRight);
 
   // Set the type of sorting
-  listView.setColumnSortType (1, fc::by_name);
-  listView.setColumnSortType (2, fc::user_defined);
-  listView.setColumnSortType (3, fc::user_defined);
-  listView.setUserAscendingCompare(sortAscending);
-  listView.setUserDescendingCompare(sortDescending);
+  listview.setColumnSortType (1, fc::by_name);
+  listview.setColumnSortType (2, fc::user_defined);
+  listview.setColumnSortType (3, fc::user_defined);
+  listview.setUserAscendingCompare(sortAscending);
+  listview.setUserDescendingCompare(sortDescending);
 
   // Activate tree view
-  listView.setTreeView();
+  listview.setTreeView();
 
   // Populate FListView with a list of items
   static TreeItem continent_list[] =
@@ -367,23 +367,23 @@ Treeview::Treeview (finalcut::FWidget* parent)
     const TreeItem* country_list = continent.child_element;
     finalcut::FStringList continent_line ( continent.begin()
                                          , continent.end() );
-    auto iter = listView.insert (continent_line);
+    auto iter = listview.insert (continent_line);
 
     while ( country_list && country_list->name )
     {
       finalcut::FStringList country_line ( country_list->begin()
                                          , country_list->end() );
-      listView.insert (country_line, iter);
+      listview.insert (country_line, iter);
       country_list++;
     }
   }
 
-  // Quit button
-  Quit.setGeometry(FPoint{24, 16}, FSize{10, 1});
-  Quit.setText (L"&Quit");
+  // quit button
+  quit.setGeometry(FPoint{24, 16}, FSize{10, 1});
+  quit.setText (L"&Quit");
 
   // Callback function
-  Quit.addCallback
+  quit.addCallback
   (
     "clicked",
     finalcut::getFApplication(),
@@ -401,22 +401,22 @@ Treeview::~Treeview()  // destructor
 //----------------------------------------------------------------------
 void Treeview::adjustSize()
 {
+  finalcut::FDialog::adjustSize();
+
   std::size_t h = getDesktopHeight() - 4;
   setHeight (h, false);
-  int X = int((getDesktopWidth() - getWidth()) / 2);
+  auto x = int((getDesktopWidth() - getWidth()) / 2);
 
-  if ( X < 1 )
-    X = 1;
+  if ( x < 1 )
+    x = 1;
 
-  setX (X, false);
+  setPos (FPoint{x, 3}, false);
 
   if ( initialized )
   {
-    listView.setHeight (getHeight() - 6, false);
-    Quit.setY(int(getHeight()) - 4);
+    listview.setHeight (getHeight() - 6, true);
+    quit.setY(int(getHeight()) - 4);
   }
-
-  finalcut::FDialog::adjustSize();
 }
 
 //----------------------------------------------------------------------
@@ -438,8 +438,7 @@ int main (int argc, char* argv[])
   // Create main dialog object
   Treeview d{&app};
   d.setText (L"Continents");
-  d.setGeometry ( FPoint{int(1 + (app.getWidth() - 57) / 2), 3}
-                , FSize{57, 20} );
+  d.setSize (FSize{57, 20});
   d.setShadow();
 
   // Set dialog d as main widget

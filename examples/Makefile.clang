@@ -24,7 +24,7 @@ endif
 # $@ = name of the targets
 # $^ = all dependency (without double entries)
 .cpp:
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o $@ $^
+	$(CXX) $^ -o $@ $(CCXFLAGS) $(INCLUDES) $(LDFLAGS)
 
 all: $(OBJS)
 

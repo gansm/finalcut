@@ -278,8 +278,17 @@ void FWindow::show()
 //----------------------------------------------------------------------
 void FWindow::hide()
 {
+  const auto& virtual_win = getVWin();
+
+  if ( isActive(virtual_win)
+    && virtual_win->visible
+    && virtual_win->input_cursor_visible )
+  {
+    hideVTermCursor();
+  }
+
   if ( isVirtualWindow() )
-    getVWin()->visible = false;
+    virtual_win->visible = false;
 
   FWidget::hide();
   const auto& t_geometry = getTermGeometryWithShadow();
@@ -428,13 +437,12 @@ FWindow* FWindow::getWindowWidgetAt (int x, int y)
     do
     {
       --iter;
-      if ( *iter )
-      {
-        auto w = static_cast<FWindow*>(*iter);
+      auto w = static_cast<FWindow*>(*iter);
 
-        if ( ! w->isWindowHidden()
-          && w->getTermGeometry().contains(x, y) )
-          return w;
+      if ( *iter && ! w->isWindowHidden()
+        && w->getTermGeometry().contains(x, y) )
+      {
+        return w;
       }
     }
     while ( iter != begin );
@@ -681,7 +689,6 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
   const bool is_activated = activatePrevWindow();
   auto active_win = static_cast<FWindow*>(getActiveWindow());
 
-
   if ( ! is_activated
     && getWindowList() && getWindowList()->size() > 1 )
   {
@@ -815,19 +822,31 @@ bool FWindow::event (FEvent* ev)
 
 //----------------------------------------------------------------------
 void FWindow::onWindowActive (FEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive activation events for this window
+}
 
 //----------------------------------------------------------------------
 void FWindow::onWindowInactive (FEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive deactivation events for this window
+}
 
 //----------------------------------------------------------------------
 void FWindow::onWindowRaised (FEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive window raising events for this window
+}
 
 //----------------------------------------------------------------------
 void FWindow::onWindowLowered (FEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive window lowering events for this window
+}
 
 
 // private methods of FWindow

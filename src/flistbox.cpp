@@ -52,12 +52,6 @@ FListBoxItem::FListBoxItem (const FListBoxItem& item)
 { }
 
 //----------------------------------------------------------------------
-FListBoxItem::FListBoxItem (const FString& txt, FDataPtr data)
-  : text{txt}
-  , data_pointer{data}
-{ }
-
-//----------------------------------------------------------------------
 FListBoxItem::~FListBoxItem()  // destructor
 { }
 
@@ -95,6 +89,9 @@ FListBox::FListBox (FWidget* parent)
 //----------------------------------------------------------------------
 FListBox::~FListBox()  // destructor
 {
+  if ( source_container )
+    delete source_container;  // for lazy conversion
+
   delOwnTimers();
 }
 
@@ -123,7 +120,7 @@ void FListBox::setCurrentItem (std::size_t index)
 }
 
 //----------------------------------------------------------------------
-void FListBox::setCurrentItem (listBoxItems::iterator iter)
+void FListBox::setCurrentItem (FListBoxItems::iterator iter)
 {
   const auto index = std::size_t(std::distance(itemlist.begin(), iter)) + 1;
   setCurrentItem(index);
@@ -644,7 +641,7 @@ void FListBox::adjustSize()
 
 // private methods of FListBox
 //----------------------------------------------------------------------
-inline FString FListBox::getString (listBoxItems::iterator iter)
+inline FString FListBox::getString (FListBoxItems::iterator iter)
 {
   return iter->getText();
 }
@@ -695,7 +692,7 @@ inline void FListBox::mapKeyFunctions()
 //----------------------------------------------------------------------
 void FListBox::processKeyAction (FKeyEvent* ev)
 {
-  const int idx = int(ev->key());
+  const auto idx = int(ev->key());
 
   if ( key_map.find(idx) != key_map.end() )
   {
@@ -837,7 +834,7 @@ void FListBox::drawList()
     const bool lineHasBrackets = hasBrackets(iter);
 
     // Import data via lazy conversion
-    lazyConvert (iter, int(y));
+    lazyConvert (iter, y);
 
     // Set screen position and attributes
     setLineAttributes ( int(y), isSelected(iter), lineHasBrackets
@@ -863,7 +860,7 @@ void FListBox::drawList()
 
 //----------------------------------------------------------------------
 inline void FListBox::drawListLine ( int y
-                                   , listBoxItems::iterator iter
+                                   , FListBoxItems::iterator iter
                                    , bool serach_mark )
 {
   const std::size_t inc_len = inc_search.getLength();
@@ -918,7 +915,7 @@ inline void FListBox::printRightBracket (fc::brackets_type bracket_type)
 
 //----------------------------------------------------------------------
 inline void FListBox::drawListBracketsLine ( int y
-                                           , listBoxItems::iterator iter
+                                           , FListBoxItems::iterator iter
                                            , bool serach_mark )
 {
   std::size_t b{0};
@@ -936,7 +933,7 @@ inline void FListBox::drawListBracketsLine ( int y
     printLeftBracket (iter->brackets);
   }
 
-  const std::size_t first = std::size_t(xoffset);
+  const auto first = std::size_t(xoffset);
   const std::size_t max_width = getWidth() - nf_offset - 4 - b;
   const FString element(getColumnSubString (getString(iter), first, max_width));
   std::size_t column_width = getColumnWidth(element);
@@ -1236,7 +1233,7 @@ void FListBox::wheelUp (int pagesize)
 void FListBox::wheelDown (int pagesize)
 {
   const std::size_t element_count = getCount();
-  int yoffset_end = int(element_count - getClientHeight());
+  auto yoffset_end = int(element_count - getClientHeight());
 
   if ( yoffset_end < 0 )
     yoffset_end = 0;
@@ -1369,7 +1366,7 @@ void FListBox::prevListItem (int distance)
 void FListBox::nextListItem (int distance)
 {
   const std::size_t element_count = getCount();
-  const int yoffset_end = int(element_count - getClientHeight());
+  const auto yoffset_end = int(element_count - getClientHeight());
 
   if ( current == element_count )
     return;
@@ -1410,7 +1407,7 @@ void FListBox::scrollToX (int val)
 void FListBox::scrollToY (int val)
 {
   const std::size_t element_count = getCount();
-  const int yoffset_end = int(element_count - getClientHeight());
+  const auto yoffset_end = int(element_count - getClientHeight());
 
   if ( yoffset == val )
     return;
@@ -1519,7 +1516,7 @@ inline void FListBox::firstPos()
 inline void FListBox::lastPos()
 {
   const std::size_t element_count = getCount();
-  const int yoffset_end = int(element_count - getClientHeight());
+  const auto yoffset_end = int(element_count - getClientHeight());
   current = element_count;
 
   if ( current > getClientHeight() )
@@ -1625,31 +1622,29 @@ inline bool FListBox::deletePreviousCharacter()
 {
   const std::size_t inc_len = inc_search.getLength();
 
-  if ( inc_len > 0 )
+  if ( inc_len == 0 )
+    return false;
+
+  inc_search.remove(inc_len - 1, 1);
+
+  if ( inc_len > 1 )
   {
-    inc_search.remove(inc_len - 1, 1);
+    auto iter = itemlist.begin();
 
-    if ( inc_len > 1 )
+    while ( iter != itemlist.end() )
     {
-      auto iter = itemlist.begin();
-
-      while ( iter != itemlist.end() )
+      if ( inc_search.toLower()
+           == iter->getText().left(inc_len - 1).toLower() )
       {
-        if ( inc_search.toLower()
-             == iter->getText().left(inc_len - 1).toLower() )
-        {
-          setCurrentItem(iter);
-          break;
-        }
-
-        ++iter;
+        setCurrentItem(iter);
+        break;
       }
-    }
 
-    return true;
+      ++iter;
+    }
   }
 
-  return false;
+  return true;
 }
 
 //----------------------------------------------------------------------
@@ -1729,12 +1724,12 @@ void FListBox::changeOnResize() const
 }
 
 //----------------------------------------------------------------------
-void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
+void FListBox::lazyConvert(FListBoxItems::iterator iter, std::size_t y)
 {
   if ( conv_type != lazy_convert || ! iter->getText().isNull() )
     return;
 
-  lazy_inserter (*iter, source_container, y + yoffset);
+  lazy_inserter (*iter, source_container, y + std::size_t(yoffset));
   const auto column_width = getColumnWidth(iter->text);
   recalculateHorizontalBar (column_width, hasBrackets(iter));
 

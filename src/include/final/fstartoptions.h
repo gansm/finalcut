@@ -65,7 +65,7 @@ class FStartOptions final
     FStartOptions& operator = (const FStartOptions&) = delete;
 
     // Accessors
-    static const FString getClassName();
+    static FString getClassName();
     static FStartOptions& getFStartOptions();
 
     // Mutator
@@ -102,7 +102,7 @@ class FStartOptions final
 };
 
 //----------------------------------------------------------------------
-inline const FString FStartOptions::getClassName()
+inline FString FStartOptions::getClassName()
 { return "FStartOptions"; }
 
 }  // namespace finalcut

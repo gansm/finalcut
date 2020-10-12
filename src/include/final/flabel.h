@@ -87,7 +87,7 @@ class FLabel : public FWidget
     const FLabel& operator >> (FString&) const;
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     FWidget*            getAccelWidget();
     fc::text_alignment  getAlignment() const;
     FString&            getText();
@@ -127,7 +127,7 @@ class FLabel : public FWidget
 
   private:
     // Constants
-    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Methods
     void                init();
@@ -165,7 +165,7 @@ inline FLabel& FLabel::operator << (const typeT& s)
 }
 
 //----------------------------------------------------------------------
-inline const FString FLabel::getClassName() const
+inline FString FLabel::getClassName() const
 { return "FLabel"; }
 
 //----------------------------------------------------------------------

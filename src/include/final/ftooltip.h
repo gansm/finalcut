@@ -80,8 +80,8 @@ class FToolTip : public FWindow
     FToolTip& operator = (const FToolTip&) = delete;
 
     // Accessors
-    const FString       getClassName() const override;
-    const FString       getText() const;
+    FString             getClassName() const override;
+    FString             getText() const;
 
     // Mutators
     void                setText (const FString&);
@@ -116,8 +116,12 @@ class FToolTip : public FWindow
 
 // FToolTip inline functions
 //----------------------------------------------------------------------
-inline const FString FToolTip::getClassName() const
+inline FString FToolTip::getClassName() const
 { return "FToolTip"; }
+
+//----------------------------------------------------------------------
+inline FString FToolTip::getText() const
+{ return text; }
 
 //----------------------------------------------------------------------
 inline bool FToolTip::setBorder()

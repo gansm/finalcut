@@ -75,18 +75,18 @@ class FSystemTest : public finalcut::FSystem
       uChar ctrl   : 1;
       uChar alt    : 1;
       uChar        : 4;  // padding bits
-    } shiftstate;
+    } ShiftState;
 
     typedef struct
     {
       uChar red;
       uChar green;
       uChar blue;
-    } rgb;
+    } RGB;
 
     typedef struct
     {
-      rgb color[16];
+      RGB color[16];
     } ColorMap;
 
     enum ac_mode
@@ -117,9 +117,9 @@ class FSystemTest : public finalcut::FSystem
     int              getpwuid_r (uid_t, struct passwd*, char*
                                 , size_t, struct passwd** ) override;
     char*            realpath (const char*, char*) override;
-    rgb&             getRGB (std::size_t);
+    RGB&             getRGB (std::size_t);
     console_font_op& getConsoleFont();
-    shiftstate&      getShiftState();
+    ShiftState&      getShiftState();
     std::string&     getCharacters();
 
   private:
@@ -129,9 +129,9 @@ class FSystemTest : public finalcut::FSystem
 
     // Data members
     std::string characters;
-    static shiftstate shift_state;
-    static rgb terminal_color[16];
-    static rgb defaultColor[16];
+    static ShiftState shift_state;
+    static RGB terminal_color[16];
+    static RGB defaultColor[16];
     static struct console_font_op terminal_font;
     static unimapdesc terminal_unicode_map;
     static struct fb_var_screeninfo fb_terminal_info;
@@ -948,9 +948,9 @@ struct unipair FSystemTest::unicode_cp437_pairs[] =
   {0x266c, 0x0e}
 };
 
-FSystemTest::rgb FSystemTest::terminal_color[16] { };
+FSystemTest::RGB FSystemTest::terminal_color[16] { };
 
-FSystemTest::rgb FSystemTest::defaultColor[16]
+FSystemTest::RGB FSystemTest::defaultColor[16]
 {
   {0x00, 0x00, 0x00}, {0xaa, 0x00, 0x00},
   {0x00, 0xaa, 0x00}, {0xaa, 0x55, 0x00},
@@ -965,7 +965,7 @@ FSystemTest::rgb FSystemTest::defaultColor[16]
 
 // static class attributes
 //----------------------------------------------------------------------
-FSystemTest::shiftstate   FSystemTest::shift_state{};
+FSystemTest::ShiftState   FSystemTest::shift_state{};
 struct console_font_op    FSystemTest::terminal_font{};
 unimapdesc                FSystemTest::terminal_unicode_map{};
 struct fb_var_screeninfo  FSystemTest::fb_terminal_info{};
@@ -1368,7 +1368,7 @@ char* FSystemTest::realpath (const char*, char*)
 }
 
 //----------------------------------------------------------------------
-FSystemTest::rgb& FSystemTest::getRGB (std::size_t i)
+FSystemTest::RGB& FSystemTest::getRGB (std::size_t i)
 {
   if ( i < 16 )
     return terminal_color[i];
@@ -1383,7 +1383,7 @@ console_font_op& FSystemTest::getConsoleFont()
 }
 
 //----------------------------------------------------------------------
-FSystemTest::shiftstate& FSystemTest::getShiftState()
+FSystemTest::ShiftState& FSystemTest::getShiftState()
 {
   return shift_state;
 }
@@ -1446,7 +1446,7 @@ void FSystemTest::initVScreenInfo()
 void FSystemTest::initFScreenInfo()
 {
   char id[16] { "VESA VGA" };
-  std::strncpy (fb_terminal_fix_info.id, id, sizeof(id));
+  std::strncpy (fb_terminal_fix_info.id, id, sizeof(fb_terminal_fix_info.id));
   fb_terminal_fix_info.smem_start = 0xf9000000;
   fb_terminal_fix_info.smem_len = 0x00500000;
   fb_terminal_fix_info.type = 0;
@@ -1894,7 +1894,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( linux.resetColorMap() == true );
     CPPUNIT_ASSERT ( linux.saveColorMap() == true );
     FColor index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Black);
-    test::FSystemTest::rgb& RGB0 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB0 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB0.red   == 0x00 );
     CPPUNIT_ASSERT ( RGB0.green == 0x00 );
     CPPUNIT_ASSERT ( RGB0.blue  == 0x00 );
@@ -1904,7 +1904,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB0.blue  == 0x03 );
 
     index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Blue);
-    test::FSystemTest::rgb& RGB1 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB1 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB1.red   == 0x00 );
     CPPUNIT_ASSERT ( RGB1.green == 0x00 );
     CPPUNIT_ASSERT ( RGB1.blue  == 0xaa );
@@ -1914,7 +1914,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB1.blue  == 0x06 );
 
     index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Green);
-    test::FSystemTest::rgb& RGB2 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB2 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB2.red   == 0x00 );
     CPPUNIT_ASSERT ( RGB2.green == 0xaa );
     CPPUNIT_ASSERT ( RGB2.blue  == 0x00 );
@@ -1924,7 +1924,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB2.blue  == 0x09 );
 
     index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Cyan);
-    test::FSystemTest::rgb& RGB3 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB3 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB3.red   == 0x00 );
     CPPUNIT_ASSERT ( RGB3.green == 0xaa );
     CPPUNIT_ASSERT ( RGB3.blue  == 0xaa );
@@ -1934,7 +1934,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB3.blue  == 0x0c );
 
     index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Red);
-    test::FSystemTest::rgb& RGB4 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB4 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB4.red   == 0xaa );
     CPPUNIT_ASSERT ( RGB4.green == 0x00 );
     CPPUNIT_ASSERT ( RGB4.blue  == 0x00 );
@@ -1944,7 +1944,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB4.blue  == 0x0f );
 
     index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Magenta);
-    test::FSystemTest::rgb& RGB5 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB5 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB5.red   == 0xaa );
     CPPUNIT_ASSERT ( RGB5.green == 0x00 );
     CPPUNIT_ASSERT ( RGB5.blue  == 0xaa );
@@ -1954,7 +1954,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB5.blue  == 0x12 );
 
     index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Brown);
-    test::FSystemTest::rgb& RGB6 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB6 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB6.red   == 0xaa );
     CPPUNIT_ASSERT ( RGB6.green == 0x55 );
     CPPUNIT_ASSERT ( RGB6.blue  == 0x00 );
@@ -1964,7 +1964,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB6.blue  == 0x15 );
 
     index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::LightGray);
-    test::FSystemTest::rgb& RGB7 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB7 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB7.red   == 0xaa );
     CPPUNIT_ASSERT ( RGB7.green == 0xaa );
     CPPUNIT_ASSERT ( RGB7.blue  == 0xaa );
@@ -1974,7 +1974,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB7.blue  == 0x18 );
 
     index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::DarkGray);
-    test::FSystemTest::rgb& RGB8 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB8 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB8.red   == 0x55 );
     CPPUNIT_ASSERT ( RGB8.green == 0x55 );
     CPPUNIT_ASSERT ( RGB8.blue  == 0x55 );
@@ -1984,7 +1984,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB8.blue  == 0x21 );
 
     index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::LightBlue);
-    test::FSystemTest::rgb& RGB9 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB9 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB9.red   == 0x55 );
     CPPUNIT_ASSERT ( RGB9.green == 0x55 );
     CPPUNIT_ASSERT ( RGB9.blue  == 0xff );
@@ -1994,7 +1994,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB9.blue  == 0x24 );
 
     index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::LightGreen);
-    test::FSystemTest::rgb& RGB10 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB10 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB10.red   == 0x55 );
     CPPUNIT_ASSERT ( RGB10.green == 0xff );
     CPPUNIT_ASSERT ( RGB10.blue  == 0x55 );
@@ -2004,7 +2004,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB10.blue  == 0x27 );
 
     index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::LightCyan);
-    test::FSystemTest::rgb& RGB11 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB11 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB11.red   == 0x55 );
     CPPUNIT_ASSERT ( RGB11.green == 0xff );
     CPPUNIT_ASSERT ( RGB11.blue  == 0xff );
@@ -2014,7 +2014,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB11.blue  == 0x30 );
 
     index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::LightRed);
-    test::FSystemTest::rgb& RGB12 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB12 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB12.red   == 0xff );
     CPPUNIT_ASSERT ( RGB12.green == 0x55 );
     CPPUNIT_ASSERT ( RGB12.blue  == 0x55 );
@@ -2024,7 +2024,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB12.blue  == 0x33 );
 
     index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::LightMagenta);
-    test::FSystemTest::rgb& RGB13 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB13 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB13.red   == 0xff );
     CPPUNIT_ASSERT ( RGB13.green == 0x55 );
     CPPUNIT_ASSERT ( RGB13.blue  == 0xff );
@@ -2034,7 +2034,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB13.blue  == 0x36 );
 
     index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::Yellow);
-    test::FSystemTest::rgb& RGB14 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB14 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB14.red   == 0xff );
     CPPUNIT_ASSERT ( RGB14.green == 0xff );
     CPPUNIT_ASSERT ( RGB14.blue  == 0x55 );
@@ -2044,7 +2044,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     CPPUNIT_ASSERT ( RGB14.blue  == 0x39 );
 
     index = finalcut::FOptiAttr::vga2ansi(finalcut::fc::White);
-    test::FSystemTest::rgb& RGB15 = fsystest->getRGB(index);
+    test::FSystemTest::RGB& RGB15 = fsystest->getRGB(index);
     CPPUNIT_ASSERT ( RGB15.red   == 0xff );
     CPPUNIT_ASSERT ( RGB15.green == 0xff );
     CPPUNIT_ASSERT ( RGB15.blue  == 0xff );
@@ -2253,7 +2253,7 @@ void FTermLinuxTest::modifierKeyTest()
   finalcut::FTermLinux linux{};
   finalcut::FSystem* fsys(new test::FSystemTest());
   test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
-  test::FSystemTest::shiftstate& mod_key = fsystest->getShiftState();
+  test::FSystemTest::ShiftState& mod_key = fsystest->getShiftState();
 
   // Up key
   keycode = finalcut::fc::Fkey_up;

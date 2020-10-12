@@ -13,6 +13,7 @@ INCLUDE_HEADERS = \
 	fbuttongroup.h \
 	fbutton.h \
 	fcallback.h \
+	fdata.h \
 	fcolorpair.h \
 	fstyle.h \
 	ftogglebutton.h \
@@ -93,6 +94,7 @@ OBJS = \
 	fsize.o \
 	frect.o \
 	fcallback.o \
+	fdata.o \
 	fscrollbar.o \
 	fprogressbar.o \
 	flineedit.o \
@@ -172,7 +174,7 @@ endif
 	$(CXX) -c $(CCXFLAGS) $(INCLUDES) -fpic -o $@ $<
 
 all: dep $(OBJS)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -shared -Wl,-soname,$(LIB).$(MAJOR) -o $(LIB).$(VERSION) $(OBJS)
+	$(CXX) $(OBJS) -o $(LIB).$(VERSION) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -shared -Wl,-soname,$(LIB).$(MAJOR)
 	ln -s -f $(LIB).$(VERSION) libfinal.so.$(MAJOR)
 	ln -s -f $(LIB).$(MAJOR) libfinal.so
 

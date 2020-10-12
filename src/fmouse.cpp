@@ -54,7 +54,7 @@ FMouse::FMouse()
 
 // public methods of FMouse
 //----------------------------------------------------------------------
-const FString FMouse::getClassName() const
+FString FMouse::getClassName() const
 {
   return "FMouse";
 }
@@ -287,7 +287,7 @@ FMouseGPM::~FMouseGPM()  // destructor
 
 // public methods of FMouseX11
 //----------------------------------------------------------------------
-const FString FMouseGPM::getClassName() const
+FString FMouseGPM::getClassName() const
 {
   return "FMouseGPM";
 }
@@ -306,7 +306,9 @@ bool FMouseGPM::hasData()
 
 //----------------------------------------------------------------------
 void FMouseGPM::setRawData (FKeyboard::keybuffer&)
-{ }
+{
+  // This method need not be implemented for FMouseGPM
+}
 
 //----------------------------------------------------------------------
 void FMouseGPM::processEvent (struct timeval*)
@@ -520,7 +522,7 @@ int FMouseGPM::gpmEvent (bool clear) const
 
 // public methods of FMouseX11
 //----------------------------------------------------------------------
-const FString FMouseX11::getClassName() const
+FString FMouseX11::getClassName() const
 {
   return "FMouseX11";
 }
@@ -563,8 +565,8 @@ void FMouseX11::processEvent (struct timeval* time)
   // Parse and interpret the X11 xterm mouse string
 
   const auto& mouse_position = getPos();
-  const uChar x = uChar(x11_mouse[1] - 0x20);
-  const uChar y = uChar(x11_mouse[2] - 0x20);
+  const auto x = uChar(x11_mouse[1] - 0x20);
+  const auto y = uChar(x11_mouse[2] - 0x20);
   const int btn = x11_mouse[0];
   setNewPos (x, y);
   clearButtonState();
@@ -698,7 +700,7 @@ void FMouseX11::setButtonState (const int btn, const struct timeval* time)
 
 // public methods of FMouseSGR
 //----------------------------------------------------------------------
-const FString FMouseSGR::getClassName() const
+FString FMouseSGR::getClassName() const
 {
   return "FMouseSGR";
 }
@@ -928,7 +930,7 @@ void FMouseSGR::setReleasedButtonState (const int btn)
 
 // public methods of FMouseUrxvt
 //----------------------------------------------------------------------
-const FString FMouseUrxvt::getClassName() const
+FString FMouseUrxvt::getClassName() const
 {
   return "FMouseUrxvt";
 }

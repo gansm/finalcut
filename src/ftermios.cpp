@@ -153,7 +153,7 @@ void FTermios::setCaptureSendCharacters()
   struct termios t{};
   tcgetattr (stdin_no, &t);
   t.c_lflag &= uInt(~(ICANON | ECHO));
-  t.c_cc[VTIME] = 1;  // Timeout in deciseconds
+  t.c_cc[VTIME] = 10;  // Timeout in deciseconds
   t.c_cc[VMIN]  = 0;  // Minimum number of characters
   tcsetattr (stdin_no, TCSANOW, &t);
 }

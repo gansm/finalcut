@@ -78,7 +78,7 @@ class FSwitch : public FToggleButton
     FSwitch& operator = (const FSwitch&) = delete;
 
     // Accessor
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
 
     // Mutator
     void                setText (const FString&) override;
@@ -102,7 +102,7 @@ class FSwitch : public FToggleButton
 
 // FSwitch inline functions
 //----------------------------------------------------------------------
-inline const FString FSwitch::getClassName() const
+inline FString FSwitch::getClassName() const
 { return "FSwitch"; }
 
 }  // namespace finalcut

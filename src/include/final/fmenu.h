@@ -91,7 +91,7 @@ class FMenu : public FWindow, public FMenuList
     FMenu& operator = (const FMenu&) = delete;
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     FString             getText() const;
     FMenuItem*          getItem();
 
@@ -133,7 +133,7 @@ class FMenu : public FWindow, public FMenuList
 
   private:
     // Constants
-    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
     static constexpr bool SELECT_ITEM = true;
 
     // Typedef
@@ -146,14 +146,14 @@ class FMenu : public FWindow, public FMenuList
       uChar mouse_over_supermenu : 1;
       uChar mouse_over_menubar   : 1;
       uChar                      : 2;  // padding bits
-    } mouseStates;
+    } MouseStates;
 
     typedef struct
     {
       FString text;
       std::size_t hotkeypos;
       bool no_underline;
-    } menuText;
+    } MenuText;
 
     // Accessors
     FWidget*     getSuperMenu() const;
@@ -187,11 +187,11 @@ class FMenu : public FWindow, public FMenuList
     void         mouseDownSubmenu (const FMenuItem*);
     void         mouseDownSelection (FMenuItem*, bool&);
     bool         mouseUpOverList (const FPoint&);
-    void         mouseMoveOverList (const FPoint&, mouseStates&);
-    void         mouseMoveSelection (FMenuItem*, mouseStates&);
-    void         mouseMoveDeselection (FMenuItem*, mouseStates&);
+    void         mouseMoveOverList (const FPoint&, MouseStates&);
+    void         mouseMoveSelection (FMenuItem*, MouseStates&);
+    void         mouseMoveDeselection (FMenuItem*, MouseStates&);
     void         mouseUpOverBorder();
-    void         mouseMoveOverBorder (mouseStates&) const;
+    void         mouseMoveOverBorder (MouseStates&) const;
     void         passEventToSubMenu (FMouseEvent* const&);
     void         passEventToSuperMenu (FMouseEvent* const&);
     void         passEventToMenuBar (FMouseEvent* const&) const;
@@ -208,7 +208,7 @@ class FMenu : public FWindow, public FMenuList
     void         drawSeparator (int);
     void         drawMenuLine (FMenuItem*, int);
     void         drawCheckMarkPrefix (const FMenuItem*);
-    void         drawMenuText (menuText&);
+    void         drawMenuText (MenuText&);
     void         drawSubMenuIndicator (std::size_t&);
     void         drawAcceleratorKey (std::size_t&, FKey);
     void         drawTrailingSpaces (std::size_t);
@@ -248,7 +248,7 @@ std::tuple<bool, bool> closeOpenMenus (FMenu*, const FPoint&);
 
 // FMenu inline functions
 //----------------------------------------------------------------------
-inline const FString FMenu::getClassName() const
+inline FString FMenu::getClassName() const
 { return "FMenu"; }
 
 //----------------------------------------------------------------------

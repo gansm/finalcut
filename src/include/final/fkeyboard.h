@@ -36,7 +36,12 @@
 #endif
 
 #include <sys/time.h>
+
+#include <array>
 #include <functional>
+#include <memory>
+
+#include "final/fkey_map.h"
 #include "final/fstring.h"
 #include "final/ftypes.h"
 
@@ -99,18 +104,22 @@ class FKeyboard final
     FKeyboard& operator = (const FKeyboard&) = delete;
 
     // Accessors
-    const FString         getClassName() const;
+    FString               getClassName() const;
     FKey                  getKey() const;
-    const FString         getKeyName (const FKey) const;
+    FString               getKeyName (const FKey) const;
     keybuffer&            getKeyBuffer();
     timeval*              getKeyPressedTime();
     static uInt64         getKeypressTimeout();
     static uInt64         getReadBlockingTime();
 
     // Mutators
-    void                  setTermcapMap (fc::FKeyMap*);
+    template <typename T>
+    void                  setTermcapMap (const T&);
     static void           setKeypressTimeout (const uInt64);
     static void           setReadBlockingTime (const uInt64);
+    bool                  setNonBlockingInput (bool);
+    bool                  setNonBlockingInput();
+    bool                  unsetNonBlockingInput();
     void                  enableUTF8();
     void                  disableUTF8();
     void                  enableMouseSequences();
@@ -132,6 +141,9 @@ class FKeyboard final
     void                  escapeKeyHandling();
 
   private:
+    // Using-declaration
+    using FKeyMapPtr = std::shared_ptr<decltype(fc::fkey)>;
+
     // Constants
     static constexpr FKey NOT_SET = static_cast<FKey>(-1);
 
@@ -140,11 +152,6 @@ class FKeyboard final
     FKey                  getTermcapKey();
     FKey                  getMetaKey();
     FKey                  getSingleKey();
-
-    // Mutators
-    bool                  setNonBlockingInput (bool);
-    bool                  setNonBlockingInput();
-    bool                  unsetNonBlockingInput();
 
     // Inquiry
     static bool           isKeypressTimeout();
@@ -176,7 +183,7 @@ class FKeyboard final
     static uInt64         read_blocking_time;
     static uInt64         key_timeout;
     static uInt64         interval_timeout;
-    fc::FKeyMap*          key_map{nullptr};
+    FKeyMapPtr            key_map{};
     FKey                  key{0};
     uChar                 read_character{};
     char                  fifo_buf[FIFO_BUF_SIZE]{'\0'};
@@ -191,7 +198,7 @@ class FKeyboard final
 
 // FKeyboard inline functions
 //----------------------------------------------------------------------
-inline const FString FKeyboard::getClassName() const
+inline FString FKeyboard::getClassName() const
 { return "FKeyboard"; }
 
 //----------------------------------------------------------------------
@@ -215,12 +222,29 @@ inline uInt64 FKeyboard::getReadBlockingTime()
 { return read_blocking_time; }
 
 //----------------------------------------------------------------------
+template <typename T>
+inline void FKeyboard::setTermcapMap (const T& keymap)
+{ key_map = std::make_shared<T>(keymap); }
+
+//----------------------------------------------------------------------
 inline void FKeyboard::setKeypressTimeout (const uInt64 timeout)
 { key_timeout = timeout; }
 
 //----------------------------------------------------------------------
 inline void FKeyboard::setReadBlockingTime (const uInt64 blocking_time)
 { read_blocking_time = blocking_time; }
+
+//----------------------------------------------------------------------
+inline bool FKeyboard::setNonBlockingInput()
+{ return setNonBlockingInput(true); }
+
+//----------------------------------------------------------------------
+inline bool FKeyboard::unsetNonBlockingInput()
+{ return setNonBlockingInput(false); }
+
+//----------------------------------------------------------------------
+inline bool FKeyboard::isInputDataPending() const
+{ return input_data_pending; }
 
 //----------------------------------------------------------------------
 inline void FKeyboard::enableUTF8()
@@ -249,17 +273,6 @@ inline void FKeyboard::setReleaseCommand (const FKeyboardCommand& cmd)
 //----------------------------------------------------------------------
 inline void FKeyboard::setEscPressedCommand (const FKeyboardCommand& cmd)
 { escape_key_cmd = cmd; }
-
-//----------------------------------------------------------------------
-inline bool FKeyboard::isInputDataPending() const
-{ return input_data_pending; }
-//----------------------------------------------------------------------
-inline bool FKeyboard::setNonBlockingInput()
-{ return setNonBlockingInput(true); }
-
-//----------------------------------------------------------------------
-inline bool FKeyboard::unsetNonBlockingInput()
-{ return setNonBlockingInput(false); }
 
 }  // namespace finalcut
 

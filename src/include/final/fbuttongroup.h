@@ -78,7 +78,7 @@ class FButtonGroup : public FScrollView
     FButtonGroup& operator = (const FButtonGroup&) = delete;
 
     // Accessor
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     FToggleButton*      getFirstButton();
     FToggleButton*      getLastButton();
     FToggleButton*      getButton (int) const;
@@ -119,7 +119,7 @@ class FButtonGroup : public FScrollView
 
   private:
     // Constants
-    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Inquiries
     bool                isRadioButton (const FToggleButton*) const;
@@ -127,7 +127,11 @@ class FButtonGroup : public FScrollView
     // Methods
     void                init();
     void                drawText (const FString&, std::size_t);
+    bool                directFocusCheckedRadioButton (FToggleButton*) const;
+    bool                directFocusRadioButton() const;
     void                directFocus();
+    void                focusCheckedRadioButton (FToggleButton*, FFocusEvent*);
+    void                focusInRadioButton (FFocusEvent*);
 
     // Callback method
     void                cb_buttonToggled (const FToggleButton*) const;
@@ -139,7 +143,7 @@ class FButtonGroup : public FScrollView
 
 // FButtonGroup inline functions
 //----------------------------------------------------------------------
-inline const FString FButtonGroup::getClassName() const
+inline FString FButtonGroup::getClassName() const
 { return "FButtonGroup"; }
 
 //----------------------------------------------------------------------

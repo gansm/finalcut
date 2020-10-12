@@ -20,11 +20,11 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
 #include <cstring>
 
 #include "final/fapplication.h"
 #include "final/fc.h"
-#include "final/flog.h"
 #include "final/foptimove.h"
 #include "final/ftermcap.h"
 
@@ -83,7 +83,7 @@ void FOptiMove::setTermSize (std::size_t w, std::size_t h)
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::setTermEnvironment (const termEnv& term_env)
+void FOptiMove::setTermEnvironment (const TermEnv& term_env)
 {
   // Set all required termcap values at once
 
@@ -607,7 +607,7 @@ int FOptiMove::capDurationToLength (int duration) const
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::repeatedAppend ( const capability& o
+int FOptiMove::repeatedAppend ( const Capability& o
                               , volatile int count
                               , char* dst ) const
 {
@@ -801,7 +801,7 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
 
   if ( F_cursor_right.cap )
   {
-    char str[BUF_SIZE]{};
+    std::array<char, BUF_SIZE> str{};
     int htime_r{0};
     str[0] = '\0';
 
@@ -817,7 +817,7 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
         if ( tab_pos > to_x )
           break;
 
-        htime_r += repeatedAppend (F_tab, 1, str);
+        htime_r += repeatedAppend (F_tab, 1, str.data());
 
         if ( htime_r >= LONG_DURATION )
           break;
@@ -828,11 +828,11 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
       num = to_x - pos;
     }
 
-    htime_r += repeatedAppend (F_cursor_right, num, str);
+    htime_r += repeatedAppend (F_cursor_right, num, str.data());
 
     if ( htime_r < htime )
     {
-      std::strncpy (hmove, str, BUF_SIZE);
+      std::strncpy (hmove, str.data(), BUF_SIZE);
       hmove[BUF_SIZE - 1] = '\0';
       htime = htime_r;
     }
@@ -856,7 +856,7 @@ inline void FOptiMove::leftMove ( char hmove[], int& htime
 
   if ( F_cursor_left.cap )
   {
-    char str[BUF_SIZE]{};
+    std::array<char, BUF_SIZE> str{};
     int htime_l{0};
     str[0] = '\0';
 
@@ -872,7 +872,7 @@ inline void FOptiMove::leftMove ( char hmove[], int& htime
         if ( tab_pos < to_x )
           break;
 
-        htime_l += repeatedAppend (F_back_tab, 1, str);
+        htime_l += repeatedAppend (F_back_tab, 1, str.data());
 
         if ( htime_l >= LONG_DURATION )
           break;
@@ -883,11 +883,11 @@ inline void FOptiMove::leftMove ( char hmove[], int& htime
       num = pos - to_x;
     }
 
-    htime_l += repeatedAppend (F_cursor_left, num, str);
+    htime_l += repeatedAppend (F_cursor_left, num, str.data());
 
     if ( htime_l < htime )
     {
-      std::strncpy (hmove, str, BUF_SIZE);
+      std::strncpy (hmove, str.data(), BUF_SIZE);
       hmove[BUF_SIZE - 1] = '\0';
       htime = htime_l;
     }
@@ -933,8 +933,8 @@ inline bool FOptiMove::isMethod1Faster ( int& move_time
 
   if ( xold >= 0 && yold >= 0 )
   {
-    char null_result[BUF_SIZE];
-    const int new_time = relativeMove (null_result, xold, yold, xnew, ynew);
+    std::array<char, BUF_SIZE> null_result{};
+    const int new_time = relativeMove (null_result.data(), xold, yold, xnew, ynew);
 
     if ( new_time < LONG_DURATION && new_time < move_time )
     {
@@ -955,8 +955,8 @@ inline bool FOptiMove::isMethod2Faster ( int& move_time
 
   if ( yold >= 0 && F_carriage_return.cap )
   {
-    char null_result[BUF_SIZE];
-    const int new_time = relativeMove (null_result, 0, yold, xnew, ynew);
+    std::array<char, BUF_SIZE> null_result{};
+    const int new_time = relativeMove (null_result.data(), 0, yold, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_carriage_return.duration + new_time < move_time )
@@ -977,8 +977,8 @@ inline bool FOptiMove::isMethod3Faster ( int& move_time
 
   if ( F_cursor_home.cap )
   {
-    char null_result[BUF_SIZE];
-    const int new_time = relativeMove (null_result, 0, 0, xnew, ynew);
+    std::array<char, BUF_SIZE> null_result{};
+    const int new_time = relativeMove (null_result.data(), 0, 0, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_cursor_home.duration + new_time < move_time )
@@ -998,8 +998,8 @@ inline bool FOptiMove::isMethod4Faster ( int& move_time
   // Test method 4: home-down + local movement
   if ( F_cursor_to_ll.cap )
   {
-    char null_result[BUF_SIZE];
-    const int new_time = relativeMove ( null_result
+    std::array<char, BUF_SIZE> null_result{};
+    const int new_time = relativeMove ( null_result.data()
                                       , 0, int(screen_height) - 1
                                       , xnew, ynew );
 
@@ -1025,8 +1025,8 @@ inline bool FOptiMove::isMethod5Faster ( int& move_time
     && yold > 0
     && F_cursor_left.cap )
   {
-    char null_result[BUF_SIZE];
-    const int new_time = relativeMove ( null_result
+    std::array<char, BUF_SIZE> null_result{};
+    const int new_time = relativeMove ( null_result.data()
                                       , int(screen_width) - 1, yold - 1
                                       , xnew, ynew );
 
@@ -1107,43 +1107,42 @@ void FOptiMove::moveByMethod ( int method
 //----------------------------------------------------------------------
 void printDurations (const FOptiMove& om)
 {
-  finalcut::FLog& log = *FApplication::getLog();
-  log << "            speed: "
-      << om.baudrate << " baud" << std::flush;
-  log << "    char_duration: "
-      << om.char_duration << " ms" << std::flush;
-  log << "      cursor_home: "
-      << om.F_cursor_home.duration << " ms" << std::flush;
-  log << "     cursor_to_ll: "
-      << om.F_cursor_to_ll.duration << " ms" << std::flush;
-  log << "  carriage_return: "
-      << om.F_carriage_return.duration << " ms" << std::flush;
-  log << "              tab: "
-      << om.F_tab.duration << " ms" << std::flush;
-  log << "         back_tab: "
-      << om.F_back_tab.duration << " ms" << std::flush;
-  log << "        cursor_up: "
-      << om.F_cursor_up.duration << " ms" << std::flush;
-  log << "      cursor_down: "
-      << om.F_cursor_down.duration << " ms" << std::flush;
-  log << "      cursor_left: "
-      << om.F_cursor_left.duration << " ms" << std::flush;
-  log << "     cursor_right: "
-      << om.F_cursor_right.duration << " ms" << std::flush;
-  log << "   cursor_address: "
-      << om.F_cursor_address.duration << " ms" << std::flush;
-  log << "   column_address: "
-      << om.F_column_address.duration << " ms" << std::flush;
-  log << "      row_address: "
-      << om.F_row_address.duration << " ms" << std::flush;
-  log << "   parm_up_cursor: "
-      << om.F_parm_up_cursor.duration << " ms" << std::flush;
-  log << " parm_down_cursor: "
-      << om.F_parm_down_cursor.duration << " ms" << std::flush;
-  log << " parm_left_cursor: "
-      << om.F_parm_left_cursor.duration << " ms" << std::flush;
-  log << "parm_right_cursor: "
-      << om.F_parm_right_cursor.duration << " ms" << std::flush;
+  std::clog << "            speed: "
+            << om.baudrate << " baud" << std::flush;
+  std::clog << "    char_duration: "
+            << om.char_duration << " ms" << std::flush;
+  std::clog << "      cursor_home: "
+            << om.F_cursor_home.duration << " ms" << std::flush;
+  std::clog << "     cursor_to_ll: "
+            << om.F_cursor_to_ll.duration << " ms" << std::flush;
+  std::clog << "  carriage_return: "
+            << om.F_carriage_return.duration << " ms" << std::flush;
+  std::clog << "              tab: "
+            << om.F_tab.duration << " ms" << std::flush;
+  std::clog << "         back_tab: "
+            << om.F_back_tab.duration << " ms" << std::flush;
+  std::clog << "        cursor_up: "
+            << om.F_cursor_up.duration << " ms" << std::flush;
+  std::clog << "      cursor_down: "
+            << om.F_cursor_down.duration << " ms" << std::flush;
+  std::clog << "      cursor_left: "
+            << om.F_cursor_left.duration << " ms" << std::flush;
+  std::clog << "     cursor_right: "
+            << om.F_cursor_right.duration << " ms" << std::flush;
+  std::clog << "   cursor_address: "
+            << om.F_cursor_address.duration << " ms" << std::flush;
+  std::clog << "   column_address: "
+            << om.F_column_address.duration << " ms" << std::flush;
+  std::clog << "      row_address: "
+            << om.F_row_address.duration << " ms" << std::flush;
+  std::clog << "   parm_up_cursor: "
+            << om.F_parm_up_cursor.duration << " ms" << std::flush;
+  std::clog << " parm_down_cursor: "
+            << om.F_parm_down_cursor.duration << " ms" << std::flush;
+  std::clog << " parm_left_cursor: "
+            << om.F_parm_left_cursor.duration << " ms" << std::flush;
+  std::clog << "parm_right_cursor: "
+            << om.F_parm_right_cursor.duration << " ms" << std::flush;
 }
 
 }  // namespace finalcut

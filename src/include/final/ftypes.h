@@ -36,17 +36,15 @@
 #include <unordered_map>
 #include <string>
 
-#include <final/fdata.h>
-
 #define null nullptr
 
-#define badAllocOutput(object_name)                            \
-    *FApplication::getLog() << FLog::Error                     \
-                            << __FILE__  << ":" << __LINE__    \
-                            << ": Not enough memory to alloc " \
-                            << (object_name)                   \
-                            << " in "                          \
-                            << __func__ << std::endl;
+#define badAllocOutput(object_name)              \
+    std::clog << FLog::Error                     \
+              << __FILE__  << ":" << __LINE__    \
+              << ": Not enough memory to alloc " \
+              << (object_name)                   \
+              << " in "                          \
+              << __func__ << std::endl;
 
 typedef unsigned char         uChar;
 typedef unsigned short        uShort;
@@ -75,7 +73,11 @@ typedef std::function<void()> FCall;
 namespace finalcut
 {
 
-template <typename T, bool is_signed>
+namespace internal
+{
+
+template <typename T
+        , bool is_signed>
 struct is_negative
 {
   inline bool operator () (const T& x) const
@@ -93,10 +95,12 @@ struct is_negative<T, false>
   }
 };
 
+}  // namespace internal
+
 template <typename T>
-inline bool isNegative (const T& x)
+constexpr bool isNegative (const T& x)
 {
-  return is_negative<T, std::numeric_limits<T>::is_signed>()(x);
+  return internal::is_negative<T, std::numeric_limits<T>::is_signed>()(x);
 }
 
 template <typename T>
@@ -182,6 +186,25 @@ typedef struct
 FKeyName;
 
 }  // namespace fc
+
+// FChar operator functions
+//----------------------------------------------------------------------
+constexpr bool operator == (const FChar& lhs, const FChar& rhs)
+{
+  return lhs.ch           == rhs.ch
+      && lhs.fg_color     == rhs.fg_color
+      && lhs.bg_color     == rhs.bg_color
+      && lhs.attr.byte[0] == rhs.attr.byte[0]
+      && lhs.attr.byte[1] == rhs.attr.byte[1]
+      && lhs.attr.bit.fullwidth_padding \
+                          == rhs.attr.bit.fullwidth_padding;
+}
+
+//----------------------------------------------------------------------
+constexpr bool operator != (const FChar& lhs, const FChar& rhs)
+{
+  return ! ( lhs == rhs );
+}
 
 }  // namespace finalcut
 

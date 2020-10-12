@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
 #include <vector>
 
 #include "final/fapplication.h"
@@ -75,10 +76,10 @@ char* FTermLinux::getCursorStyleString()
 {
   // Gets the current cursor style string of the Linux console
 
-  static char buf[16]{};
+  static std::array<char, 16> buf{};
   std::fill (std::begin(buf), std::end(buf), '\0');
-  std::snprintf (buf, sizeof(buf), CSI "?%dc", getCursorStyle());
-  return buf;
+  std::snprintf (buf.data(), buf.size(), CSI "?%dc", getCursorStyle());
+  return buf.data();
 }
 
 //----------------------------------------------------------------------
@@ -202,7 +203,7 @@ void FTermLinux::init()
   }
   else
   {
-    FApplication::getLog()->error("Can not open the console.");
+    std::clog << FLog::Error << "Can not open the console." << std::endl;
     std::abort();
   }
 }
@@ -217,14 +218,14 @@ void FTermLinux::initCharMap()
 
   if ( screen_unicode_map.entry_ct > 0 && screen_unicode_map.entries )
   {
-    for (std::size_t i{0}; i <= fc::lastCharItem; i++ )
+    for (auto&& entry : fc::character)
     {
-      const auto ucs = wchar_t(fc::character[i][fc::UTF8]);
+      const auto ucs = wchar_t(entry[fc::UTF8]);
       const sInt16 fontpos = getFontPos(ucs);
 
       // Fix for a non-cp437 Linux console with PC charset encoding
       if ( fontpos > 255 || fontpos == NOT_FOUND )
-        fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
+        entry[fc::PC] = entry[fc::ASCII];
 
       // Character substitutions for missing characters
       if ( fontpos == NOT_FOUND )
@@ -278,7 +279,7 @@ bool FTermLinux::loadVGAFont()
       struct unimapdesc unimap;
       unimap.entry_ct = uInt16 ( sizeof(fc::unicode_cp437_pairs)
                                / sizeof(unipair) );
-      unimap.entries = &fc::unicode_cp437_pairs[0];
+      unimap.entries = const_cast<unipair*>(&fc::unicode_cp437_pairs[0]);
       setUnicodeMap(&unimap);
     }
     else
@@ -315,9 +316,11 @@ bool FTermLinux::loadNewFont()
       // Set the graphical font
       int ret;
 
+#if defined(ISA_SYSCTL_SUPPORT)
       if ( has9BitCharacters() )
         ret = setScreenFont(fc::__9x16graph, 256, 8, 16);  // set 9×16
       else
+#endif
         ret = setScreenFont(fc::__8x16graph, 256, 8, 16);  // set 8×16
 
       if ( ret != 0 )
@@ -327,7 +330,7 @@ bool FTermLinux::loadNewFont()
       struct unimapdesc unimap;
       unimap.entry_ct = uInt16 ( sizeof(fc::unicode_newfont_pairs)
                                / sizeof(unipair) );
-      unimap.entries = &fc::unicode_newfont_pairs[0];
+      unimap.entries = const_cast<unipair*>(&fc::unicode_newfont_pairs[0]);
       setUnicodeMap(&unimap);
     }
     else
@@ -460,7 +463,7 @@ FKey FTermLinux::modifierKeyCorrection (const FKey& key_id)
   if ( ! fsystem )
     fsystem = FTerm::getFSystem();
 
-  const modifier_key& m = getModifierKey();
+  const ModifierKey& m = getModifierKey();
 
   if ( ! (m.shift || m.ctrl || m.alt) )
   {
@@ -631,7 +634,7 @@ bool FTermLinux::getUnicodeMap()
 }
 
 //----------------------------------------------------------------------
-FTermLinux::modifier_key& FTermLinux::getModifierKey()
+FTermLinux::ModifierKey& FTermLinux::getModifierKey()
 {
   // Get Linux console shift state
 
@@ -660,7 +663,7 @@ FTermLinux::modifier_key& FTermLinux::getModifierKey()
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
+int FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
                               , uInt fontwidth, uInt fontheight
                               , bool direct)
 {
@@ -681,7 +684,7 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
   font.charcount = count;
 
   if ( direct )
-    font.data = fontdata;
+    font.data = const_cast<uChar*>(fontdata);
   else
   {
     const std::size_t bytes_per_line = font.width / 8;
@@ -698,9 +701,9 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
     }
 
     for (std::size_t i{0}; i < count; i++)
-      std::memcpy ( const_cast<uChar*>(font.data + bytes_per_line * 32 * i)
+      std::memcpy ( font.data + bytes_per_line * 32 * i
                   , &fontdata[i * font.height]
-                  , font.height);
+                  , font.height );
   }
 
   // Font operation
@@ -932,8 +935,8 @@ void FTermLinux::getVGAPalette()
 //----------------------------------------------------------------------
 void FTermLinux::setVGADefaultPalette()
 {
-  constexpr rgb defaultColor[16] =
-  {
+  constexpr std::array<RGB, 16> defaultColor =
+  {{
     {0x00, 0x00, 0x00}, {0xaa, 0x00, 0x00},
     {0x00, 0xaa, 0x00}, {0xaa, 0x55, 0x00},
     {0x00, 0x00, 0xaa}, {0xaa, 0x00, 0xaa},
@@ -942,7 +945,7 @@ void FTermLinux::setVGADefaultPalette()
     {0x55, 0xff, 0x55}, {0xff, 0xff, 0x55},
     {0x55, 0x55, 0xff}, {0xff, 0x55, 0xff},
     {0x55, 0xff, 0xff}, {0xff, 0xff, 0xff}
-  };
+  }};
 
   for (std::size_t index{0}; index < 16; index++)
   {

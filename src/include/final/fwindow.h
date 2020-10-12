@@ -83,7 +83,7 @@ class FWindow : public FWidget
     FWindow& operator = (const FWindow&) = delete;
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     static FWindow*     getWindowWidget (const FWidget*);
     static int          getWindowLayer (const FWidget*);
     FWidget*            getWindowFocusWidget() const;
@@ -181,7 +181,7 @@ void closeDropDown (const FWidget*, const FPoint&);
 
 // FWindow inline functions
 //----------------------------------------------------------------------
-inline const FString FWindow::getClassName() const
+inline FString FWindow::getClassName() const
 { return "FWindow"; }
 
 //----------------------------------------------------------------------

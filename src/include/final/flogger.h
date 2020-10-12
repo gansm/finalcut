@@ -72,7 +72,7 @@ class FLogger : public FLog
     ~FLogger() override;
 
     // Methods
-    const FString getClassName() const override;
+    FString getClassName() const override;
     void info (const std::string&) override;
     void warn (const std::string&) override;
     void error (const std::string&) override;
@@ -86,8 +86,8 @@ class FLogger : public FLog
   private:
     // Methods
     void              newlineReplace (std::string&, const std::string&) const;
-    const std::string getTimeString() const;
-    const std::string getEOL() const;
+    std::string       getTimeString() const;
+    std::string       getEOL();
     void              printLogLine (const std::string&);
 
     // Data member
@@ -97,12 +97,13 @@ class FLogger : public FLog
 
 // FLogger inline functions
 //----------------------------------------------------------------------
-inline const FString FLogger::getClassName() const
+inline FString FLogger::getClassName() const
 { return "FLogger"; }
 
 //----------------------------------------------------------------------
 inline void FLogger::info (const std::string& msg)
 {
+  std::lock_guard<std::mutex> lock_guard(getMutex());
   setLevel() = Info;
   printLogLine (msg);
 }
@@ -110,6 +111,7 @@ inline void FLogger::info (const std::string& msg)
 //----------------------------------------------------------------------
 inline void FLogger::warn (const std::string& msg)
 {
+  std::lock_guard<std::mutex> lock_guard(getMutex());
   setLevel() = Warn;
   printLogLine (msg);
 }
@@ -117,6 +119,7 @@ inline void FLogger::warn (const std::string& msg)
 //----------------------------------------------------------------------
 inline void FLogger::error (const std::string& msg)
 {
+  std::lock_guard<std::mutex> lock_guard(getMutex());
   setLevel() = Error;
   printLogLine (msg);
 }
@@ -124,29 +127,45 @@ inline void FLogger::error (const std::string& msg)
 //----------------------------------------------------------------------
 inline void FLogger::debug (const std::string& msg)
 {
+  std::lock_guard<std::mutex> lock_guard(getMutex());
   setLevel() = Debug;
   printLogLine (msg);
 }
 
 //----------------------------------------------------------------------
 inline void FLogger::flush()
-{ output.flush(); }
+{
+  std::lock_guard<std::mutex> lock_guard(getMutex());
+  output.flush();
+}
 
 //----------------------------------------------------------------------
 inline void FLogger::setOutputStream (const std::ostream& os)
-{ output.rdbuf(os.rdbuf()); }
+{
+  std::lock_guard<std::mutex> lock_guard(getMutex());
+  output.rdbuf(os.rdbuf());
+}
 
 //----------------------------------------------------------------------
 inline void FLogger::setLineEnding (LineEnding eol)
-{ setEnding() = eol; }
+{
+  std::lock_guard<std::mutex> lock_guard(getMutex());
+  setEnding() = eol;
+}
 
 //----------------------------------------------------------------------
 inline void FLogger::enableTimestamp()
-{ timestamp = true; }
+{
+  std::lock_guard<std::mutex> lock_guard(getMutex());
+  timestamp = true;
+}
 
 //----------------------------------------------------------------------
 inline void FLogger::disableTimestamp()
-{ timestamp = false; }
+{
+  std::lock_guard<std::mutex> lock_guard(getMutex());
+  timestamp = false;
+}
 
 }  // namespace finalcut
 

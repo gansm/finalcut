@@ -78,6 +78,9 @@ class FObject
     typedef FObjectList::iterator       iterator;
     typedef FObjectList::const_iterator const_iterator;
 
+    // Constants
+    static constexpr auto UNLIMITED = static_cast<std::size_t>(-1);
+
     // Constructor
     explicit FObject (FObject* = nullptr);
 
@@ -91,16 +94,20 @@ class FObject
     FObject& operator = (const FObject&) = delete;
 
     // Accessors
-    virtual const FString getClassName() const;
+    virtual FString       getClassName() const;
     FObject*              getParent() const;
     FObject*              getChild (int) const;
     FObjectList&          getChildren();
     const FObjectList&    getChildren() const;
-    int                   numOfChildren() const;
+    std::size_t           getMaxChildren() const;
+    std::size_t           numOfChildren() const;
     iterator              begin();
     iterator              end();
     const_iterator        begin() const;
     const_iterator        end() const;
+
+    // Mutator
+    void                  setMaxChildren (std::size_t);
 
     // Inquiries
     bool                  hasParent() const;
@@ -160,6 +167,7 @@ class FObject
     // Data members
     FObject*              parent_obj{nullptr};
     FObjectList           children_list{};  // no children yet
+    std::size_t           max_children{UNLIMITED};
     bool                  has_parent{false};
     bool                  widget_object{false};
     static bool           timer_modify_lock;
@@ -168,7 +176,7 @@ class FObject
 
 
 //----------------------------------------------------------------------
-inline const FString FObject::getClassName() const
+inline FString FObject::getClassName() const
 { return "FObject"; }
 
 //----------------------------------------------------------------------
@@ -184,8 +192,12 @@ inline const FObject::FObjectList& FObject::getChildren() const
 { return children_list; }
 
 //----------------------------------------------------------------------
-inline int FObject::numOfChildren() const
-{ return int(children_list.size()); }
+inline std::size_t FObject::getMaxChildren() const
+{ return max_children; }
+
+//----------------------------------------------------------------------
+inline std::size_t FObject::numOfChildren() const
+{ return children_list.size(); }
 
 //----------------------------------------------------------------------
 inline FObject::iterator FObject::begin()
@@ -202,6 +214,10 @@ inline FObject::const_iterator FObject::begin() const
 //----------------------------------------------------------------------
 inline FObject::const_iterator FObject::end() const
 { return children_list.end(); }
+
+//----------------------------------------------------------------------
+inline void FObject::setMaxChildren (std::size_t max)
+{ max_children = max; }
 
 //----------------------------------------------------------------------
 inline bool FObject::hasParent() const

@@ -35,6 +35,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <array>
 #include <vector>
 
 namespace finalcut
@@ -51,10 +52,10 @@ class SGRoptimizer final
     static constexpr std::size_t ATTR_BUF_SIZE{8192};
 
     // Typedefs
-    typedef char attributebuffer[ATTR_BUF_SIZE];
+    typedef std::array<char, ATTR_BUF_SIZE> AttributeBuffer;
 
     // Constructors
-    explicit SGRoptimizer (attributebuffer&);
+    explicit SGRoptimizer (AttributeBuffer&);
 
     // Disable copy constructor
     SGRoptimizer (const SGRoptimizer&) = delete;
@@ -70,14 +71,14 @@ class SGRoptimizer final
 
   private:
     // Constants
-    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Methods
     void findParameter();
     void combineParameter();
 
     // Data member
-    attributebuffer& seq;
+    AttributeBuffer& seq;
 
     struct parameter
     {

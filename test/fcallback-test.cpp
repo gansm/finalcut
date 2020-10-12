@@ -1,5 +1,5 @@
 /***********************************************************************
-* callback-test.cpp - FCallback unit tests                             *
+* fcallback-test.cpp - FCallback unit tests                            *
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
@@ -39,13 +39,13 @@
 class Widget
 {
   public:
-    template<typename... Args>
+    template <typename... Args>
     void addCallback (const finalcut::FString& cb_signal, Args&&... args)
     {
       cb.addCallback (cb_signal, std::forward<Args>(args)...);
     }
 
-    template<typename... Args>
+    template <typename... Args>
     void delCallback (Args&&... args)
     {
       cb.delCallback (std::forward<Args>(args)...);

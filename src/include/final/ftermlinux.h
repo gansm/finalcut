@@ -93,7 +93,7 @@ class FTermLinux final
     FTermLinux& operator = (const FTermLinux&) = delete;
 
     // Accessors
-    const FString        getClassName() const;
+    FString              getClassName() const;
     fc::linuxConsoleCursorStyle getCursorStyle() const;
     char*                getCursorStyleString();
     int                  getFramebufferBpp() const;
@@ -124,7 +124,7 @@ class FTermLinux final
 
   private:
     // Typedef
-    struct modifier_key  // bit field
+    struct ModifierKey  // bit field
     {
       uChar shift  : 1;  // 0..1
       uChar alt_gr : 1;  // 0..1
@@ -138,21 +138,21 @@ class FTermLinux final
       uChar red;
       uChar green;
       uChar blue;
-    } rgb;
+    } RGB;
 
     typedef struct
     {
-      rgb color[16];
+      RGB color[16];
     } ColorMap;
 
     // Accessors
     int                  getFramebuffer_bpp();
     bool                 getScreenFont();
     bool                 getUnicodeMap ();
-    modifier_key&        getModifierKey();
+    ModifierKey&        getModifierKey();
 
     // Mutators
-    int                  setScreenFont ( uChar[], uInt, uInt, uInt
+    int                  setScreenFont ( const uChar[], uInt, uInt, uInt
                                        , bool = false );
     int                  setUnicodeMap (struct unimapdesc*);
     void                 setLinuxCursorStyle (fc::linuxConsoleCursorStyle) const;
@@ -197,14 +197,14 @@ class FTermLinux final
     ColorMap             saved_color_map{};
     ColorMap             cmap{};
     int                  framebuffer_bpp{-1};
-    modifier_key         mod_key{};
+    ModifierKey          mod_key{};
 #endif  // defined(__linux__)
 };
 
 
 // FTermLinux inline functions
 //----------------------------------------------------------------------
-inline const FString FTermLinux::getClassName() const
+inline FString FTermLinux::getClassName() const
 { return "FTermLinux"; }
 
 //----------------------------------------------------------------------

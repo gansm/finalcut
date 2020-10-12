@@ -49,6 +49,7 @@
 #include <cwchar>
 #include <cwctype>
 
+#include <array>
 #include <limits>
 #include <iostream>
 #include <new>
@@ -159,7 +160,7 @@ class FString
     operator const char* () const { return c_str(); }
 
     // Accessor
-    virtual const FString getClassName() const;
+    virtual FString getClassName() const;
 
     // inquiries
     bool isNull() const;
@@ -177,7 +178,7 @@ class FString
     wchar_t  front() const;
     wchar_t  back() const;
 
-    template<typename... Args>
+    template <typename... Args>
     FString& sprintf (const FString&, Args&&...);
     FString  clear();
 
@@ -185,10 +186,10 @@ class FString
     wchar_t* wc_str();
     const char* c_str() const;
     char* c_str();
-    const std::string toString() const;
+    std::string toString() const;
 
-    const FString toLower()  const;
-    const FString toUpper()  const;
+    FString toLower()  const;
+    FString toUpper()  const;
 
     sInt16  toShort()  const;
     uInt16  toUShort() const;
@@ -199,13 +200,13 @@ class FString
     float   toFloat()  const;
     double  toDouble() const;
 
-    const FString ltrim() const;
-    const FString rtrim() const;
-    const FString trim()  const;
+    FString ltrim() const;
+    FString rtrim() const;
+    FString trim()  const;
 
-    const FString left (std::size_t) const;
-    const FString right (std::size_t) const;
-    const FString mid (std::size_t, std::size_t) const;
+    FString left (std::size_t) const;
+    FString right (std::size_t) const;
+    FString mid (std::size_t, std::size_t) const;
 
     FStringList split (const FString&) const;
     FString& setString (const FString&);
@@ -224,10 +225,10 @@ class FString
     const FString& insert (const FString&, int);
     const FString& insert (const FString&, std::size_t);
 
-    const FString replace (const FString&, const FString&) const;
+    FString replace (const FString&, const FString&) const;
 
-    const FString replaceControlCodes() const;
-    const FString expandTabs (int = 8) const;
+    FString replaceControlCodes() const;
+    FString expandTabs (int = 8) const;
     FString removeDel() const;
     FString removeBackspaces() const;
 
@@ -261,15 +262,15 @@ class FString
     static const wchar_t const_null_char;
 
     // Friend Non-member operator functions
-    friend const FString operator + (const FString&, const FString&);
-    friend const FString operator + (const FString&, const wchar_t);
-    friend const FString operator + (const std::wstring&, const FString&);
-    friend const FString operator + (const wchar_t[], const FString&);
-    friend const FString operator + (const std::string&, const FString&);
-    friend const FString operator + (const char[], const FString&);
-    friend const FString operator + (const wchar_t, const FString&);
-    friend const FString operator + (const char, const FString&);
-    friend const FString operator + (const FString&, const char);
+    friend FString operator + (const FString&, const FString&);
+    friend FString operator + (const FString&, const wchar_t);
+    friend FString operator + (const std::wstring&, const FString&);
+    friend FString operator + (const wchar_t[], const FString&);
+    friend FString operator + (const std::string&, const FString&);
+    friend FString operator + (const char[], const FString&);
+    friend FString operator + (const wchar_t, const FString&);
+    friend FString operator + (const char, const FString&);
+    friend FString operator + (const FString&, const char);
 
     friend std::ostream&  operator << (std::ostream&, const FString&);
     friend std::istream&  operator >> (std::istream&, FString& s);
@@ -366,7 +367,7 @@ inline bool FString::operator > (const CharT& s) const
 }
 
 //----------------------------------------------------------------------
-inline const FString FString::getClassName() const
+inline FString FString::getClassName() const
 { return "FString"; }
 
 //----------------------------------------------------------------------
@@ -416,11 +417,10 @@ inline wchar_t FString::back() const
 }
 
 //----------------------------------------------------------------------
-template<typename... Args>
+template <typename... Args>
 inline FString& FString::sprintf (const FString& format, Args&&... args)
 {
-  static constexpr int BUFSIZE = 4096;
-  wchar_t buf[BUFSIZE]{};
+  std::array<wchar_t, 4096> buf{};
 
   if ( format.isEmpty() )
   {
@@ -428,9 +428,9 @@ inline FString& FString::sprintf (const FString& format, Args&&... args)
     return *this;
   }
 
-  std::swprintf ( buf, BUFSIZE, format.wc_str()
+  std::swprintf ( buf.data(), buf.size(), format.wc_str()
                 , std::forward<Args>(args)... );
-  _assign(buf);
+  _assign(buf.data());
   return *this;
 }
 

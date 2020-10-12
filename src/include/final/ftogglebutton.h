@@ -79,7 +79,7 @@ class FToggleButton : public FWidget
     FToggleButton& operator = (const FToggleButton&) = delete;
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     FString&            getText();
 
     // Mutators
@@ -141,7 +141,7 @@ class FToggleButton : public FWidget
 
   private:
     // Constants
-    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Mutator
     void                setGroup (FButtonGroup*);
@@ -165,7 +165,7 @@ class FToggleButton : public FWidget
 
 // FRadioButton inline functions
 //----------------------------------------------------------------------
-inline const FString FToggleButton::getClassName() const
+inline FString FToggleButton::getClassName() const
 { return "FToggleButton"; }
 
 //----------------------------------------------------------------------

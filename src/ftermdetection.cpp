@@ -24,10 +24,13 @@
   #include "final/fconfig.h"  // includes _GNU_SOURCE for fd_set
 #endif
 
+#include <array>
+
 #include "final/emptyfstring.h"
 #include "final/fapplication.h"
 #include "final/fc.h"
 #include "final/flog.h"
+#include "final/fkeyboard.h"
 #include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermcap.h"
@@ -53,6 +56,7 @@ FTermDetection::colorEnv      FTermDetection::color_env{};
 FTermDetection::secondaryDA   FTermDetection::secondary_da{};
 FTermData*                    FTermDetection::fterm_data{nullptr};
 FSystem*                      FTermDetection::fsystem{nullptr};
+FKeyboard*                    FTermDetection::keyboard{nullptr};
 char                          FTermDetection::termtype[256]{};
 char                          FTermDetection::ttytypename[256]{};
 bool                          FTermDetection::decscusr_support{};
@@ -130,6 +134,7 @@ void FTermDetection::detect()
 {
   fterm_data = FTerm::getFTermData();
   fsystem = FTerm::getFSystem();
+  keyboard = FTerm::getFKeyboard();
   deallocation();
 
   // Set the variable 'termtype' to the predefined type of the terminal
@@ -320,6 +325,14 @@ void FTermDetection::termtypeAnalysis()
   if ( std::strncmp(termtype, "mlterm", 6) == 0 )
     terminal_type.mlterm = true;
 
+  // rxvt
+  if ( std::strncmp(termtype, "rxvt", 4) == 0 )
+    terminal_type.rxvt = true;
+
+  // urxvt
+  if ( std::strncmp(termtype, "rxvt-unicode", 12) == 0 )
+    terminal_type.urxvt = true;
+
   // screen/tmux
   if ( std::strncmp(termtype, "screen", 6) == 0 )
   {
@@ -350,6 +363,7 @@ void FTermDetection::detectTerminal()
   if ( terminal_detection )
   {
     FTermios::setCaptureSendCharacters();
+    keyboard->setNonBlockingInput();
 
     // Initialize 256 colors terminals
     new_termtype = init_256colorTerminal();
@@ -363,6 +377,7 @@ void FTermDetection::detectTerminal()
     // Determines the maximum number of colors
     new_termtype = determineMaxColor(new_termtype);
 
+    keyboard->unsetNonBlockingInput();
     FTermios::unsetCaptureSendCharacters();
   }
 
@@ -517,6 +532,7 @@ const char* FTermDetection::determineMaxColor (const char current_termtype[])
   // Determine xterm maximum number of colors via OSC 4
 
   const char* new_termtype = current_termtype;
+  keyboard->setNonBlockingInput();
 
   if ( ! color256
     && ! isCygwinTerminal()
@@ -544,13 +560,15 @@ const char* FTermDetection::determineMaxColor (const char current_termtype[])
     }
   }
 
+  keyboard->unsetNonBlockingInput();
   return new_termtype;
 }
 
 //----------------------------------------------------------------------
-const FString FTermDetection::getXTermColorName (FColor color)
+FString FTermDetection::getXTermColorName (FColor color)
 {
   FString color_str{""};
+  std::array<char, 30> buf{};
   fd_set ifds{};
   struct timeval tv{};
   const int stdin_no = FTermios::getStdIn();
@@ -558,28 +576,44 @@ const FString FTermDetection::getXTermColorName (FColor color)
   // get color
   std::fprintf (stdout, OSC "4;%hu;?" BEL, color);
   std::fflush (stdout);
-
-  char temp[512]{};
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
   tv.tv_usec = 150000;  // 150 ms
 
   // read the terminal answer
-  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0
-    && std::scanf("\033]4;%10hu;%509[^\n]s", &color, temp) == 2 )
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
+    return color_str;
+
+  constexpr auto parse = "\033]4;%10hu;%509[^\n]s";
+  std::array<char, 35> temp{};
+  std::size_t pos{0};
+
+  do
   {
-    std::size_t n = std::strlen(temp);
+    std::size_t bytes_free = temp.size() - pos - 1;
+    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
+
+    if ( bytes <= 0 )
+      break;
+
+    pos += std::size_t(bytes);
+  }
+  while ( pos < temp.size() );
+
+  if ( pos > 4 && std::sscanf(temp.data(), parse, &color, buf.data()) == 2 )
+  {
+    std::size_t n = std::strlen(buf.data());
 
     // BEL + '\0' = string terminator
-    if ( n >= 6 && temp[n - 1] == BEL[0] && temp[n] == '\0' )
-      temp[n - 1] = '\0';
+    if ( n >= 6 && buf[n - 1] == BEL[0] && buf[n] == '\0' )
+      buf[n - 1] = '\0';
 
     // Esc + \ = OSC string terminator (mintty)
-    if ( n >= 6 && temp[n - 2] == ESC[0] && temp[n - 1] == '\\' )
-      temp[n - 2] = '\0';
+    if ( n >= 6 && buf[n - 2] == ESC[0] && buf[n - 1] == '\\' )
+      buf[n - 2] = '\0';
 
-    color_str = temp;
+    color_str = buf.data();
   }
 
   return color_str;
@@ -589,11 +623,14 @@ const FString FTermDetection::getXTermColorName (FColor color)
 const char* FTermDetection::parseAnswerbackMsg (const char current_termtype[])
 {
   const char* new_termtype = current_termtype;
-
+  keyboard->setNonBlockingInput();
   // send ENQ and read the answerback message
+  const auto& ans = getAnswerbackMsg();
+  keyboard->unsetNonBlockingInput();
+
   try
   {
-    answer_back = new FString(getAnswerbackMsg());
+    answer_back = new FString(ans);
   }
   catch (const std::bad_alloc&)
   {
@@ -611,9 +648,10 @@ const char* FTermDetection::parseAnswerbackMsg (const char current_termtype[])
       new_termtype = "putty";
   }
 
-  // cygwin needs a backspace to delete the '♣' char
-  if ( isCygwinTerminal() || isWindowsTerminal() )
-    FTerm::putstring (BS " " BS);
+  // Some terminals like cygwin or the Windows terminal
+  // have to delete the printed character '♣'
+  std::fprintf (stdout, "\r " BS);
+  std::fflush (stdout);
 
 #if DEBUG
   if ( new_termtype )
@@ -629,26 +667,41 @@ const char* FTermDetection::parseAnswerbackMsg (const char current_termtype[])
 }
 
 //----------------------------------------------------------------------
-const FString FTermDetection::getAnswerbackMsg()
+FString FTermDetection::getAnswerbackMsg()
 {
   FString answerback{""};
   fd_set ifds{};
   struct timeval tv{};
-  char temp[10]{};
   const int stdin_no = FTermios::getStdIn();
-
-  std::putchar (ENQ[0]);  // Send enquiry character
+  // Send enquiry character
+  std::putchar (ENQ[0]);
   std::fflush(stdout);
-
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
   tv.tv_usec = 150000;  // 150 ms
 
   // Read the answerback message
-  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0
-    && std::fgets (temp, sizeof(temp) - 1, stdin) != nullptr )
-    answerback = temp;
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
+    return answerback;
+
+  std::array<char, 10> temp{};
+  std::size_t pos{0};
+
+  do
+  {
+    std::size_t bytes_free = temp.size() - pos - 1;
+    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
+
+    if ( bytes <= 0 )
+      break;
+
+    pos += std::size_t(bytes);
+  }
+  while ( pos < temp.size() );
+
+  if ( pos > 0 )
+    answerback = temp.data();
 
   return answerback;
 }
@@ -660,10 +713,13 @@ const char* FTermDetection::parseSecDA (const char current_termtype[])
   if ( isLinuxTerm() || isCygwinTerminal() )
     return current_termtype;
 
+   // Secondary device attributes (SEC_DA) <- decTerminalID string
+  const auto& ans = getSecDA();
+
   try
   {
     // Secondary device attributes (SEC_DA) <- decTerminalID string
-    sec_da = new FString(getSecDA());
+    sec_da = new FString(ans);
   }
   catch (const std::bad_alloc&)
   {
@@ -746,7 +802,7 @@ int FTermDetection::str2int (const FString& s)
 }
 
 //----------------------------------------------------------------------
-const FString FTermDetection::getSecDA()
+FString FTermDetection::getSecDA()
 {
   FString sec_da_str{""};
 
@@ -757,11 +813,10 @@ const FString FTermDetection::getSecDA()
   const int stdout_no{FTermios::getStdOut()};
   fd_set ifds{};
   struct timeval tv{};
+  constexpr auto& SECDA{ESC "[>c"};
 
   // Get the secondary device attributes
-  const ssize_t ret = write(stdout_no, SECDA, std::strlen(SECDA));
-
-  if ( ret == -1 )
+  if ( write(stdout_no, SECDA, std::strlen(SECDA)) == -1 )
     return sec_da_str;
 
   std::fflush(stdout);
@@ -771,9 +826,27 @@ const FString FTermDetection::getSecDA()
   tv.tv_usec = 600000;  // 600 ms
 
   // Read the answer
-  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) == 1
-    && std::scanf("\033[>%10d;%10d;%10dc", &a, &b, &c) == 3 )
-      sec_da_str.sprintf("\033[>%d;%d;%dc", a, b, c);
+  if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
+    return sec_da_str;
+
+  constexpr auto parse = "\033[>%10d;%10d;%10dc";
+  std::array<char, 40> temp{};
+  std::size_t pos{0};
+
+  do
+  {
+    std::size_t bytes_free = temp.size() - pos - 1;
+    const ssize_t bytes = read(stdin_no, &temp[pos], bytes_free);
+
+    if ( bytes <= 0 )
+      break;
+
+    pos += std::size_t(bytes);
+  }
+  while ( pos < temp.size() && ! std::strchr(temp.data(), 'c') );
+
+  if ( pos > 3 && std::sscanf(temp.data(), parse, &a, &b, &c) == 3 )
+    sec_da_str.sprintf("\033[>%d;%d;%dc", a, b, c);
 
   return sec_da_str;
 }

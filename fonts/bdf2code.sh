@@ -10,7 +10,7 @@ function create_code_file ()
     echo -e "#define ${INCLUDE_GUARD}\\n"
     echo -e "namespace finalcut\\n{\\n"
     echo -e "namespace fc\\n{\\n"
-    echo -e "static unsigned char ${NAME}[] =\\n{"
+    echo -e "constexpr unsigned char ${NAME}[] =\\n{"
 
     grep -A"${HEIGHT}" "^BITMAP" "$NEWFONTFILE" \
     | tr '\n' ',' \

@@ -481,9 +481,9 @@ void stringSplittingExample()
 void fromatStringExample()
 {
   // Test: format a string with sprintf
-  finalcut::FString formatStr{""};
+  finalcut::FString format_str{""};
   std::cout << " formatted: "
-            << formatStr.sprintf("sqrt(%d) = %d", 16, 4)
+            << format_str.sprintf("sqrt(%d) = %d", 16, 4)
             << std::endl;
 }
 

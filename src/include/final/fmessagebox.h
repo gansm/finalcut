@@ -92,7 +92,7 @@ class FMessageBox : public FDialog
     explicit FMessageBox (FWidget* = nullptr);
     FMessageBox (const FMessageBox&);  // copy constructor
     FMessageBox ( const FString&, const FString&
-                , int, int, int
+                , ButtonType, ButtonType, ButtonType
                 , FWidget* = nullptr );
     // Destructor
     ~FMessageBox() override;
@@ -101,10 +101,10 @@ class FMessageBox : public FDialog
     FMessageBox& operator = (const FMessageBox&);
 
     // Accessor
-    const FString       getClassName() const override;
-    const FString       getTitlebarText() const;
-    const FString       getHeadline() const;
-    const FString       getText() const override;
+    FString             getClassName() const override;
+    FString             getTitlebarText() const;
+    FString             getHeadline() const;
+    FString             getText() const override;
 
     // Mutator
     void                setTitlebarText (const FString&);
@@ -119,22 +119,22 @@ class FMessageBox : public FDialog
     static int          info ( FWidget*
                              , const FString&
                              , const messageType&
-                             , int = FMessageBox::Ok
-                             , int = 0
-                             , int = 0 );
+                             , ButtonType = FMessageBox::Ok
+                             , ButtonType = FMessageBox::Reject
+                             , ButtonType = FMessageBox::Reject );
 
     template <typename messageType>
     static int          error ( FWidget*
                               , const messageType&
-                              , int = FMessageBox::Ok
-                              , int = 0
-                              , int = 0 );
+                              , ButtonType = FMessageBox::Ok
+                              , ButtonType = FMessageBox::Reject
+                              , ButtonType = FMessageBox::Reject );
    protected:
     // Method
     void                adjustSize() override;
 
     // Callback method
-    void                cb_processClick (int);
+    void                cb_processClick (ButtonType);
 
   private:
     // Constants
@@ -157,7 +157,7 @@ class FMessageBox : public FDialog
     FButton*      button[MAX_BUTTONS]{nullptr};
     std::size_t   max_line_width{0};
     FColor        emphasis_color{getColorTheme()->dialog_emphasis_fg};
-    int           button_digit[MAX_BUTTONS]{0};
+    ButtonType    button_digit[MAX_BUTTONS]{FMessageBox::Reject};
     std::size_t   num_buttons{0};
     std::size_t   text_num_lines{0};
     bool          center_text{false};
@@ -166,22 +166,22 @@ class FMessageBox : public FDialog
 
 // FMessageBox inline functions
 //----------------------------------------------------------------------
-inline const FString FMessageBox::getClassName() const
+inline FString FMessageBox::getClassName() const
 { return "FMessageBox"; }
 
 //----------------------------------------------------------------------
-inline const FString FMessageBox::getTitlebarText() const
+inline FString FMessageBox::getTitlebarText() const
 {
   const FString& title = FDialog::getText();  // initialize text
   return title;
 }
 
 //----------------------------------------------------------------------
-inline const FString FMessageBox::getHeadline() const
+inline FString FMessageBox::getHeadline() const
 { return headline_text; }
 
 //----------------------------------------------------------------------
-inline const FString FMessageBox::getText() const
+inline FString FMessageBox::getText() const
 { return text; }
 
 //----------------------------------------------------------------------
@@ -205,9 +205,9 @@ template <typename messageType>
 int FMessageBox::info ( FWidget* parent
                       , const FString& caption
                       , const messageType& message
-                      , int button0
-                      , int button1
-                      , int button2 )
+                      , ButtonType button0
+                      , ButtonType button1
+                      , ButtonType button2 )
 {
   FMessageBox mbox ( caption
                    , FString() << message
@@ -221,9 +221,9 @@ int FMessageBox::info ( FWidget* parent
 template <typename messageType>
 int FMessageBox::error ( FWidget* parent
                        , const messageType& message
-                       , int button0
-                       , int button1
-                       , int button2 )
+                       , ButtonType button0
+                       , ButtonType button1
+                       , ButtonType button2 )
 {
   const FString caption{"Error message"};
 

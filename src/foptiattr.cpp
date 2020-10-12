@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
 #include <cstring>
 
 #include "final/fc.h"
@@ -53,7 +54,7 @@ FOptiAttr::~FOptiAttr()  // destructor
 
 // public methods of FOptiAttr
 //----------------------------------------------------------------------
-void FOptiAttr::setTermEnvironment (const termEnv& term_env)
+void FOptiAttr::setTermEnvironment (const TermEnv& term_env)
 {
   // Set all required termcap values at once
   // and initialize the FOptiAttr environment
@@ -531,11 +532,11 @@ FColor FOptiAttr::vga2ansi (FColor color)
     color = 0;
   else if ( color < 16 )
   {
-    static const FColor lookup_table[] =
-    {
+    constexpr std::array<FColor, 16> lookup_table =
+    {{
       0,  4,  2,  6,  1,  5,  3,  7,
       8, 12, 10, 14,  9, 13, 11, 15
-    };
+    }};
 
     color = lookup_table[color];
   }
@@ -551,7 +552,7 @@ const char* FOptiAttr::changeAttribute (FChar*& term, FChar*& next)
   attr_buf[0] = '\0';
 
   if ( ! (term && next) )
-    return attr_buf;
+    return attr_buf.data();
 
   prevent_no_color_video_attributes (term, next_has_color);
   prevent_no_color_video_attributes (next);
@@ -583,7 +584,7 @@ const char* FOptiAttr::changeAttribute (FChar*& term, FChar*& next)
   if ( FStartOptions::getFStartOptions().sgr_optimizer )
     sgr_optimizer.optimize();
 
-  return attr_buf;
+  return attr_buf.data();
 }
 
 
@@ -1086,8 +1087,8 @@ bool FOptiAttr::setTermDefaultColor (FChar*& term)
     return true;
   else if ( ansi_default_color )
   {
-    char sgr_39_49[] = CSI "39;49m";
-    append_sequence (sgr_39_49);
+    std::string sgr_39_49{CSI "39;49m"};
+    append_sequence (sgr_39_49.c_str());
     return true;
   }
   else
@@ -1453,8 +1454,8 @@ inline void FOptiAttr::change_to_default_color ( FChar*& term
     }
     else if ( fg == fc::Default && term->fg_color != fc::Default )
     {
-      char sgr_39[]{ CSI "39m" };
-      append_sequence (sgr_39);
+      std::string sgr_39{CSI "39m"};
+      append_sequence (sgr_39.c_str());
       term->fg_color = fc::Default;
     }
     else if ( bg == fc::Default && term->bg_color != fc::Default )
@@ -1667,8 +1668,9 @@ inline bool FOptiAttr::append_sequence (const char seq[])
   if ( ! seq )
     return false;
 
-  std::strncat (attr_ptr, seq, sizeof(attr_buf) - std::strlen(attr_ptr));
-  attr_buf[sizeof(attr_buf) - 1] = '\0';
+  char* attr_ptr{attr_buf.data()};
+  std::strncat (attr_ptr, seq, attr_buf.size() - std::strlen(attr_ptr));
+  attr_buf[attr_buf.size() - 1] = '\0';
   return true;
 }
 

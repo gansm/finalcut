@@ -224,80 +224,80 @@ void FOptiAttrTest::sgrOptimizerTest()
 
   // Test only the optimizer
   // -----------------------
-  char buffer[8192] = { CSI "0;10m" CSI "11m"  CSI "36m" CSI "44m" };
+  finalcut::SGRoptimizer::AttributeBuffer buffer = { CSI "0;10m" CSI "11m"  CSI "36m" CSI "44m" };
   finalcut::SGRoptimizer sgr_optimizer(buffer);
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "0;10;11;36;44m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;10;11;36;44m" );
 
-  std::strcpy(buffer, CSI "0;1m" CSI "34m");
+  std::strcpy(buffer.data(), CSI "0;1m" CSI "34m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "0;1;34m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;1;34m" );
 
-  std::strcpy(buffer, CSI "m" CSI "34m");
+  std::strcpy(buffer.data(), CSI "m" CSI "34m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "0;34m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;34m" );
 
-  std::strcpy(buffer, CSI "1m" CSI "m" CSI "45m");
+  std::strcpy(buffer.data(), CSI "1m" CSI "m" CSI "45m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "1;0;45m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "1;0;45m" );
 
-  std::strcpy(buffer, CSI "47m");
+  std::strcpy(buffer.data(), CSI "47m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "47m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "47m" );
 
-  std::strcpy(buffer, CSI "47m" CSI "m" CSI "1m");
+  std::strcpy(buffer.data(), CSI "47m" CSI "m" CSI "1m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "47;0;1m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "47;0;1m" );
 
-  std::strcpy(buffer, CSI "49m" CSI "m" CSI "0m");
+  std::strcpy(buffer.data(), CSI "49m" CSI "m" CSI "0m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "49;0;0m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "49;0;0m" );
 
-  std::strcpy(buffer, CSI "m" CSI "m" CSI "m");
+  std::strcpy(buffer.data(), CSI "m" CSI "m" CSI "m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "0;0;0m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;0;0m" );
 
-  std::strcpy(buffer, CSI "m");
+  std::strcpy(buffer.data(), CSI "m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "m" );
 
-  std::strcpy(buffer, CSI "0;10;1;7m" CSI "3m" CSI "39m" CSI "49m");
+  std::strcpy(buffer.data(), CSI "0;10;1;7m" CSI "3m" CSI "39m" CSI "49m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "0;10;1;7;3;39;49m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;10;1;7;3;39;49m" );
 
-  std::strcpy(buffer, CSI "m" CSI "38;5;20m" CSI "48;5;229m");
+  std::strcpy(buffer.data(), CSI "m" CSI "38;5;20m" CSI "48;5;229m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "0;38;5;20;48;5;229m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;38;5;20;48;5;229m" );
 
-  std::strcpy(buffer, CSI "m" CSI "38;5;20m" CSI "11;16H");
+  std::strcpy(buffer.data(), CSI "m" CSI "38;5;20m" CSI "11;16H");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "0;38;5;20m" CSI "11;16H" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;38;5;20m" CSI "11;16H" );
 
-  std::strcpy(buffer, CSI "1;1H" CSI "m" CSI "38;5;35m");
+  std::strcpy(buffer.data(), CSI "1;1H" CSI "m" CSI "38;5;35m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "1;1H" CSI "0;38;5;35m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "1;1H" CSI "0;38;5;35m" );
 
-  std::strcpy(buffer, CSI "m" CSI "38;5;20m" CSI "11;16H" CSI "48;5;229m");
+  std::strcpy(buffer.data(), CSI "m" CSI "38;5;20m" CSI "11;16H" CSI "48;5;229m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "0;38;5;20m" CSI "11;16H" CSI "48;5;229m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;38;5;20m" CSI "11;16H" CSI "48;5;229m" );
 
-  std::strcpy(buffer, CSI "m" CSI "38;5;20m" "ABC" CSI "48;5;229m");
+  std::strcpy(buffer.data(), CSI "m" CSI "38;5;20m" "ABC" CSI "48;5;229m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "0;38;5;20mABC" CSI "48;5;229m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;38;5;20mABC" CSI "48;5;229m" );
 
 
-  std::strcpy(buffer, CSI "m" CSI "1m" CSI "2m" CSI "3m" CSI "4m"
+  std::strcpy(buffer.data(), CSI "m" CSI "1m" CSI "2m" CSI "3m" CSI "4m"
                       CSI "5m" CSI "7m" CSI "8m" CSI "9m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "0;1;2;3;4;5;7;8;9m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;1;2;3;4;5;7;8;9m" );
 
-  std::strcpy(buffer, CSI "0m" CSI "46;36;1m");
+  std::strcpy(buffer.data(), CSI "0m" CSI "46;36;1m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "0;46;36;1m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;46;36;1m" );
 
-  std::strcpy(buffer, CSI "m" CSI "38;2;0;139;139m" CSI "48;2;240;255;240m");
+  std::strcpy(buffer.data(), CSI "m" CSI "38;2;0;139;139m" CSI "48;2;240;255;240m");
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer, CSI "0;38;2;0;139;139;48;2;240;255;240m" );
+  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;38;2;0;139;139;48;2;240;255;240m" );
 
   delete to;
   delete from;
@@ -4163,7 +4163,7 @@ void FOptiAttrTest::wyse50Test()
 
   finalcut::FStartOptions::getFStartOptions().sgr_optimizer = false;
   finalcut::FOptiAttr oa;
-  finalcut::FOptiAttr::termEnv optiattr_env =
+  finalcut::FOptiAttr::TermEnv optiattr_env =
   {
     0,                           // Enter bold
     ESC "("  ESC "H\003"

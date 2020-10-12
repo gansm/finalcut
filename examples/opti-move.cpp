@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
 #include <iomanip>
 #include <memory>
 #include <string>
@@ -65,8 +66,8 @@ bool keyPressed()
 void term_boundaries (int& x, int& y)
 {
   // checks and corrects the terminal boundaries
-  const int term_width  = int(app->getDesktopWidth());
-  const int term_height = int(app->getDesktopHeight());
+  const auto term_width  = int(app->getDesktopWidth());
+  const auto term_height = int(app->getDesktopHeight());
 
   if ( x < 0 )
     x = 0;
@@ -93,14 +94,15 @@ void move (int xold, int yold, int xnew, int ynew)
   finalcut::FString from{};
   finalcut::FString to{};
   finalcut::FString byte{};
-  const std::string ctrl_character[] =
-  {
+
+  constexpr std::array<const char*, 33> ctrl_character =
+  {{
     "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL",
     "BS",  "Tab", "LF",  "VT",  "FF",  "CR",  "SO",  "SI",
     "DLE", "DC1", "DC2", "DC3", "DC4", "NAK", "SYN", "ETB",
     "CAN", "EM",  "SUB", "Esc", "FS",  "GS",  "RS",  "US",
     "Space"
-  };
+  }};
 
   term_boundaries(xold, yold);
   term_boundaries(xnew, ynew);
@@ -209,8 +211,11 @@ DirectLogger::~DirectLogger()  // destructor
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
-  // Disable mouse
-  finalcut::FStartOptions::getFStartOptions().mouse_support = false;
+  // Disable mouse, color palette changes and terminal data requests
+  auto& start_options = finalcut::FStartOptions::getFStartOptions();
+  start_options.mouse_support = false;
+  start_options.color_change = false;
+  start_options.terminal_data_request = false;
 
   // Create the application object
   finalcut::FApplication term_app{argc, argv};
@@ -225,8 +230,8 @@ int main (int argc, char* argv[])
   app = &term_app;
 
   // Get screen dimension
-  int xmax = int(term_app.getDesktopWidth() - 1);
-  int ymax = int(term_app.getDesktopHeight() - 1);
+  auto xmax = int(term_app.getDesktopWidth() - 1);
+  auto ymax = int(term_app.getDesktopHeight() - 1);
   finalcut::FString line{std::size_t(xmax) + 1, '-'};
 
   // Place the cursor in the upper left corner

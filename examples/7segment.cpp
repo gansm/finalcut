@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
 #include <map>
 #include <vector>
 
@@ -39,9 +40,6 @@ using finalcut::FSize;
 class SegmentView final : public finalcut::FDialog
 {
   public:
-    // Using-declaration
-    using FDialog::setGeometry;
-
     // Constructor
     explicit SegmentView (finalcut::FWidget* = nullptr);
 
@@ -64,12 +62,11 @@ class SegmentView final : public finalcut::FDialog
     void get7Segment (const wchar_t);
     void draw() override;
 
-
     // Data members
     std::map<wchar_t, sevenSegment> code{};
-    finalcut::FString line[3]{};
-    finalcut::FLineEdit Input{"0123", this};
-    finalcut::FButton Exit{"E&xit", this};
+    std::array<finalcut::FString, 3> line{};
+    finalcut::FLineEdit input{"0123", this};
+    finalcut::FButton exit{"E&xit", this};
 };
 
 //----------------------------------------------------------------------
@@ -86,18 +83,18 @@ SegmentView::SegmentView (finalcut::FWidget* parent)
   hexEncoding();
 
   // Input field
-  Input.setGeometry (FPoint(2, 2), FSize{12, 1});
-  Input.setLabelText (L"&Hex value");
-  Input.setLabelText (L"&Hex-digits or (.) (:) (H) (L) (P) (U)");
-  Input.setLabelOrientation(finalcut::FLineEdit::label_above);
-  Input.setMaxLength(9);
-  Input.setInputFilter("[:.hHlLpPuU[:xdigit:]]");
+  input.setGeometry (FPoint(2, 2), FSize{12, 1});
+  input.setLabelText (L"&Hex value");
+  input.setLabelText (L"&Hex-digits or (.) (:) (H) (L) (P) (U)");
+  input.setLabelOrientation(finalcut::FLineEdit::label_above);
+  input.setMaxLength(9);
+  input.setInputFilter("[:.hHlLpPuU[:xdigit:]]");
 
   // Exit button
-  Exit.setGeometry(FPoint{28, 11}, FSize{10, 1});
+  exit.setGeometry(FPoint{28, 11}, FSize{10, 1});
 
   // Add some function callbacks
-  Input.addCallback
+  input.addCallback
   (
     "changed",
     [] (SegmentView& dialog)
@@ -107,7 +104,7 @@ SegmentView::SegmentView (finalcut::FWidget* parent)
     std::ref(*this)
   );
 
-  Exit.addCallback
+  exit.addCallback
   (
     "clicked",
     finalcut::getFApplication(),
@@ -140,7 +137,7 @@ void SegmentView::hexEncoding()
 //----------------------------------------------------------------------
 void SegmentView::get7Segment (const wchar_t c)
 {
-  for (int i{0}; i < 3; i++)
+  for (std::size_t i{0}; i < 3; i++)
     line[i].clear();
 
   switch ( c )
@@ -186,8 +183,8 @@ void SegmentView::get7Segment (const wchar_t c)
       if ( code.find(c) != code.end() )
       {
         const sevenSegment& s = code[c];
-        constexpr char h[2]{' ', '_'};
-        constexpr char v[2]{' ', '|'};
+        constexpr std::array<char, 2> h{{' ', '_'}};
+        constexpr std::array<char, 2> v{{' ', '|'}};
 
         line[0] <<   ' '  << h[s.a] <<   ' ';
         line[1] << v[s.f] << h[s.g] << v[s.b];
@@ -206,7 +203,7 @@ void SegmentView::draw()
   setColor(fc::LightGray, fc::Black);
   finalcut::drawBorder(this, FRect(FPoint{3, 6}, FPoint{40, 11}));
 
-  for (auto&& ch : Input.getText().toUpper())
+  for (auto&& ch : input.getText().toUpper())
   {
     const FColorPair color{fc::LightRed, fc::Black};
     get7Segment(ch);

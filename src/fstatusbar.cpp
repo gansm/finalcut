@@ -516,7 +516,7 @@ void FStatusBar::init()
 {
   const auto& r = getRootWidget();
   const std::size_t w = r->getWidth();
-  const int h = int(r->getHeight());
+  const auto h = int(r->getHeight());
   // initialize geometry values
   setGeometry (FPoint{1, h}, FSize{w, 1}, false);
   setAlwaysOnTop();
@@ -602,7 +602,7 @@ void FStatusBar::drawKeys()
 }
 
 //----------------------------------------------------------------------
-void FStatusBar::drawKey (keyList::const_iterator iter)
+void FStatusBar::drawKey (FKeyList::const_iterator iter)
 {
   // Draw not active key
 
@@ -660,7 +660,7 @@ void FStatusBar::drawKey (keyList::const_iterator iter)
 }
 
 //----------------------------------------------------------------------
-void FStatusBar::drawActiveKey (keyList::const_iterator iter)
+void FStatusBar::drawActiveKey (FKeyList::const_iterator iter)
 {
   // Draw active key
 

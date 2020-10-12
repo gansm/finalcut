@@ -51,7 +51,7 @@ class EventDialog final : public finalcut::FDialog
     EventDialog (const EventDialog&) = delete;
 
     // Destructor
-    ~EventDialog();
+    ~EventDialog() override;
 
     // Disable copy assignment operator (=)
     EventDialog& operator = (const EventDialog&) = delete;
@@ -162,8 +162,10 @@ void EventDialog::onKeyPress (finalcut::FKeyEvent* ev)
   if ( key_name.isEmpty() )
     key_name = wchar_t(key_id);
 
-  log << finalcut::FLog::Info
-      << "Key " << key_name << " (id " << key_id << ")" << std::flush;
+  // std::clog redirects all stream data to FLogger
+  std::clog << finalcut::FLog::Info
+            << "Key " << key_name
+            << " (id " << key_id << ")" << std::flush;
 
   finalcut::FDialog::onKeyPress(ev);
 }
@@ -243,7 +245,7 @@ class EventLog final : public finalcut::FDialog, public std::ostringstream
     EventLog (const EventLog&) = delete;
 
     // Destructor
-    ~EventLog();
+    ~EventLog() override;
 
     // Disable copy assignment operator (=)
     EventLog& operator = (const EventLog&) = delete;
@@ -257,7 +259,7 @@ class EventLog final : public finalcut::FDialog, public std::ostringstream
     void adjustSize() override;
 
     // Data members
-    finalcut::FTextView scrollText{this};
+    finalcut::FTextView scrolltext{this};
     EventDialog* event_dialog{new EventDialog(this)};
 };
 
@@ -273,8 +275,8 @@ EventLog::EventLog (finalcut::FWidget* parent)
   FDialog::setResizeable();
   setMinimumSize (FSize{75, 5});
   setShadow();
-  scrollText.ignorePadding();
-  scrollText.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});
+  scrolltext.ignorePadding();
+  scrolltext.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});
   event_dialog->setFocus();
   addTimer(250);  // Starts the timer every 250 milliseconds
 }
@@ -288,9 +290,9 @@ void EventLog::onTimer (finalcut::FTimerEvent*)
 {
   if ( ! str().empty() )
   {
-    scrollText.append(str());
+    scrolltext.append(str());
     str("");
-    scrollText.scrollToEnd();
+    scrolltext.scrollToEnd();
     redraw();
     updateTerminal();
   }
@@ -306,7 +308,7 @@ void EventLog::onClose (finalcut::FCloseEvent* ev)
 void EventLog::adjustSize()
 {
   finalcut::FDialog::adjustSize();
-  scrollText.setGeometry (FPoint{1, 2}, FSize(getWidth(), getHeight() - 1));
+  scrolltext.setGeometry (FPoint{1, 2}, FSize(getWidth(), getHeight() - 1));
 }
 
 

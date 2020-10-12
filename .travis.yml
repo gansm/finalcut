@@ -1,6 +1,5 @@
 language: cpp
 dist: xenial
-sudo: required
 compiler:
   - gcc
 
@@ -41,7 +40,7 @@ env:
       bL/epiiMBKJ37X1UcRU4WZYq+peLME8EefcPcXOSWNLwJtR7mtON8uMBrLL9CWmRMFD5Hy
       lQYALW2DhCnDBROKB3gxB/VkBGFNE0IPGeDtBGbLqDtKWPQoL125I=
 
-matrix:
+jobs:
   include:
   #
   # Coverity Scan

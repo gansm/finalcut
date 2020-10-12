@@ -213,7 +213,7 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   ibg->unsetTransparentShadow();
 
   // Set statusbar text for this window
-  setStatusbarMessage("Press Q to quit");
+  FDialog::setStatusbarMessage("Press Q to quit");
 
   unsetTransparentShadow();
   activateDialog();
@@ -256,12 +256,11 @@ void MainWindow::onShow (finalcut::FShowEvent*)
 //----------------------------------------------------------------------
 void MainWindow::onTimer (finalcut::FTimerEvent*)
 {
-  wchar_t first_Char[2];
   std::size_t length = line1.getLength();
-  first_Char[0] = line1[0];
-  first_Char[1] = line2[0];
-  line1 = line1.right(length - 1) + first_Char[0];
-  line2 = line2.right(length - 1) + first_Char[1];
+  const wchar_t first_char1 = line1[0];
+  const wchar_t first_char2 = line2[0];
+  line1 = line1.right(length - 1) + first_char1;
+  line2 = line2.right(length - 1) + first_char2;
   redraw();
   flush();
 }

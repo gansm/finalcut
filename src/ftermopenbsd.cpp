@@ -162,11 +162,11 @@ bool FTermOpenBSD::resetBeep()
 //----------------------------------------------------------------------
 void FTermOpenBSD::warnNotInitialized()
 {
-  *FApplication::getLog() << FLog::Warn
-                          << "The FTermOpenBSD object has "
-                          << "not yet been initialized! "
-                          << "Please call the init() method first."
-                          << std::endl;
+  std::clog << FLog::Warn
+            << "The FTermOpenBSD object has "
+            << "not yet been initialized! "
+            << "Please call the init() method first."
+            << std::endl;
 }
 
 //----------------------------------------------------------------------

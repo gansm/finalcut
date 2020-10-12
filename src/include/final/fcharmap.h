@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2019 Markus Gans                                      *
+* Copyright 2015-2020 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -27,6 +27,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <array>
+
 #include "final/fc.h"
 #include "final/ftypes.h"
 
@@ -36,17 +38,10 @@ namespace finalcut
 namespace fc
 {
 
-extern uInt character[][fc::NUM_OF_ENCODINGS];
-extern const std::size_t lastCharItem;
-
-extern int vt100_key_to_utf8[][2];
-extern const std::size_t lastKeyItem;
-
-extern wchar_t cp437_ucs[][2];
-extern const std::size_t lastCP437Item;
-
-extern const wchar_t halfWidth_fullWidth[][2];
-extern const std::size_t lastHalfWidthItem;
+extern std::array<std::array<uInt, fc::NUM_OF_ENCODINGS>, 115> character;
+extern const std::array<std::array<int, 2>, 39> vt100_key_to_utf8;
+extern const std::array<std::array<wchar_t, 2>, 256> cp437_ucs;
+extern const std::array<std::array<wchar_t, 2>, 227> halfwidth_fullwidth;
 
 }  // namespace fc
 

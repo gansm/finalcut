@@ -102,12 +102,15 @@ FWidget::~FWidget()  // destructor
 {
   processDestroy();
   delCallback();
-  auto app_object = FApplication::getApplicationObject();
-  app_object->removeQueuedEvent(this);
+  removeQueuedEvent();
 
   // unset clicked widget
   if ( this == getClickedWidget() )
     setClickedWidget(nullptr);
+
+  // unset keyboard widget
+  if ( this == FApplication::getKeyboardWidget() )
+    FApplication::setKeyboardWidget(nullptr);
 
   // unset the local window widget focus
   if ( flags.focus )
@@ -239,7 +242,7 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (fc::sides side)
 }
 
 //----------------------------------------------------------------------
-const FPoint FWidget::getPrintPos()
+FPoint FWidget::getPrintPos()
 {
   const auto& cur = getPrintCursor();
   return { cur.getX() - woffset.getX1() - getX() + 1
@@ -635,7 +638,7 @@ bool FWidget::setCursorPos (const FPoint& pos)
 
   widget_cursor_position.setPoint(pos);
 
-  if ( ! flags.focus || isWindowWidget() )
+  if ( ! flags.focus || flags.hidden || isWindowWidget() )
     return false;
 
   if ( ! FWindow::getWindowWidget(this) )
@@ -718,7 +721,7 @@ void FWidget::setDoubleFlatLine (fc::sides side, int pos, bool bit)
   assert ( pos >= 1 );
 
   uLong length{};
-  const uLong index = uLong(pos - 1);
+  const auto index = uLong(pos - 1);
 
   switch ( side )
   {
@@ -954,7 +957,8 @@ void FWidget::show()
     show_root_widget = this;
   }
 
-  draw();  // Draw the widget
+  adjustSize();  // Alignment before drawing
+  draw();        // Draw the widget
   flags.hidden = false;
   flags.shown = true;
 
@@ -962,13 +966,10 @@ void FWidget::show()
   {
     for (auto&& child : getChildren())
     {
-      if ( child->isWidget() )
-      {
-        auto widget = static_cast<FWidget*>(child);
+      auto widget = static_cast<FWidget*>(child);
 
-        if ( ! widget->flags.hidden )
-          widget->show();
-      }
+      if ( child->isWidget() && ! widget->flags.hidden )
+        widget->show();
     }
   }
 
@@ -994,6 +995,11 @@ void FWidget::hide()
   if ( isVisible() )
   {
     flags.shown = false;
+
+    if ( flags.visible_cursor && FWidget::getFocusWidget() == this )
+    {
+      getPrintArea()->input_cursor_visible = false;
+    }
 
     if ( ! isDialogWidget()
       && FWidget::getFocusWidget() == this
@@ -1206,8 +1212,8 @@ void FWidget::setParentOffset()
 void FWidget::setTermOffset()
 {
   const auto& r = getRootWidget();
-  const int w = int(r->getWidth());
-  const int h = int(r->getHeight());
+  const auto w = int(r->getWidth());
+  const auto h = int(r->getHeight());
   woffset.setCoordinates (0, 0, w - 1, h - 1);
 }
 
@@ -1307,13 +1313,10 @@ void FWidget::adjustSize()
   {
     for (auto&& child : getChildren())
     {
-      if ( child->isWidget() )
-      {
-        auto widget = static_cast<FWidget*>(child);
+      auto widget = static_cast<FWidget*>(child);
 
-        if ( ! widget->isWindowWidget() )
-          widget->adjustSize();
-      }
+      if ( child->isWidget() && ! widget->isWindowWidget() )
+        widget->adjustSize();
     }
   }
 }
@@ -1582,55 +1585,94 @@ bool FWidget::event (FEvent* ev)
 
 //----------------------------------------------------------------------
 void FWidget::onKeyPress (FKeyEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive key press events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onKeyUp (FKeyEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive key up events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onKeyDown (FKeyEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive key down events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onMouseDown (FMouseEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive mouse down events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onMouseUp (FMouseEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive mouse up events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onMouseDoubleClick (FMouseEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive mouse double clicks events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onWheel (FWheelEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive mouse wheel events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onMouseMove (FMouseEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive mouse move events for the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onFocusIn (FFocusEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive a widget focus event (get focus)
+}
 
 //----------------------------------------------------------------------
 void FWidget::onFocusOut (FFocusEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive a widget focus event (lost focus)
+}
 
 //----------------------------------------------------------------------
 void FWidget::onChildFocusIn (FFocusEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive a child widget focus event (get focus)
+}
 
 //----------------------------------------------------------------------
 void FWidget::onChildFocusOut (FFocusEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive a child widget focus event (lost focus)
+}
 
 //----------------------------------------------------------------------
 void FWidget::onAccel (FAccelEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass to receive
+  // an event when an acceleration key is pressed for this widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::onResize (FResizeEvent* ev)
@@ -1643,15 +1685,23 @@ void FWidget::onResize (FResizeEvent* ev)
 
 //----------------------------------------------------------------------
 void FWidget::onShow (FShowEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive a widget show event
+}
 
 //----------------------------------------------------------------------
 void FWidget::onHide (FHideEvent*)
-{ }
+{
+  // This event handler can be reimplemented in a subclass
+  // to receive a widget hide event
+}
 
 //----------------------------------------------------------------------
 void FWidget::onClose (FCloseEvent* ev)
 {
+  // This event handler can be reimplemented in a subclass
+  // to receive a widget close event
   ev->accept();
 }
 
@@ -1742,21 +1792,23 @@ inline void FWidget::insufficientSpaceAdjust()
   // move left if not enough space
   while ( getTermX() + int(getWidth()) - padding.right > woffset.getX2() + 2 )
   {
-    adjust_wsize.x1_ref()--;
-    adjust_wsize.x2_ref()--;
-
-    if ( adjust_wsize.x1_ref() < 1 )
+    if ( adjust_wsize.x1_ref() < 2 )
       adjust_wsize.x1_ref() = 1;
+    else
+      adjust_wsize.x1_ref()--;
+
+    adjust_wsize.x2_ref()--;
   }
 
   // move up if not enough space
   while ( getTermY() + int(getHeight()) - padding.bottom > woffset.getY2() + 2 )
   {
-    adjust_wsize.y1_ref()--;
-    adjust_wsize.y2_ref()--;
-
-    if ( adjust_wsize.y1_ref() < 1 )
+    if ( adjust_wsize.y1_ref() < 2 )
       adjust_wsize.y1_ref() = 1;
+    else
+      adjust_wsize.y1_ref()--;
+
+    adjust_wsize.y2_ref()--;
   }
 
   // reduce the width if not enough space
@@ -1911,7 +1963,10 @@ bool FWidget::changeFocus ( FWidget* follower, FWidget* parent
 
 //----------------------------------------------------------------------
 void FWidget::draw()
-{ }
+{
+  // This method must be reimplemented in a subclass
+  // for drawing the widget
+}
 
 //----------------------------------------------------------------------
 void FWidget::drawWindows() const
@@ -2009,6 +2064,15 @@ void FWidget::destroyColorTheme()
 {
   const FWidgetColorsPtr* theme = &(getColorTheme());
   delete theme;
+}
+
+//----------------------------------------------------------------------
+void FWidget::removeQueuedEvent() const
+{
+  auto app_object = FApplication::getApplicationObject();
+
+  if ( app_object )
+    app_object->removeQueuedEvent(this);
 }
 
 //----------------------------------------------------------------------

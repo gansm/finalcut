@@ -163,8 +163,8 @@ void FStringTest::noArgumentTest()
   CPPUNIT_ASSERT ( empty.getLength() == 0 );
   CPPUNIT_ASSERT ( empty.capacity() == 0 );
   CPPUNIT_ASSERT ( empty.getUTF8length() == 0 );
-  CPPUNIT_ASSERT ( empty.wc_str() == 0 );
-  CPPUNIT_ASSERT ( empty.c_str() == 0 );
+  CPPUNIT_ASSERT ( empty.wc_str() == nullptr );
+  CPPUNIT_ASSERT ( empty.c_str() == nullptr );
   CPPUNIT_ASSERT_EQUAL ( empty.toString(), std::string() );
   CPPUNIT_ASSERT ( strlen(finalcut::FString(99).c_str()) == 0 );
   CPPUNIT_ASSERT ( wcslen(finalcut::FString(99).wc_str()) == 0 );
@@ -172,9 +172,9 @@ void FStringTest::noArgumentTest()
   CPPUNIT_ASSERT ( wcslen(finalcut::FString("").wc_str()) == 0 );
 
   char* cstr = empty.c_str();
-  CPPUNIT_ASSERT ( cstr == 0 );
+  CPPUNIT_ASSERT ( cstr == nullptr );
   wchar_t* wcstr = empty.wc_str();
-  CPPUNIT_ASSERT ( wcstr == 0 );
+  CPPUNIT_ASSERT ( wcstr == nullptr );
   std::string str = empty.toString();
   CPPUNIT_ASSERT ( str.length() == 0 );
   CPPUNIT_ASSERT ( str.size() == 0 );
@@ -516,7 +516,7 @@ void FStringTest::additionAssignmentTest()
 //----------------------------------------------------------------------
 void FStringTest::additionTest()
 {
-  // finalcut::FString member operator
+  // const finalcut::FString + ...
   const finalcut::FString s1("abc");
   CPPUNIT_ASSERT ( s1.getLength() == 3 );
   CPPUNIT_ASSERT ( *(s1.c_str() + s1.getLength()) == '\0' );
@@ -529,8 +529,7 @@ void FStringTest::additionTest()
   CPPUNIT_ASSERT ( s1 + wchar_t(L'd') == L"abcd" );
   CPPUNIT_ASSERT ( s1 + char('d') == L"abcd" );
 
-
-  // finalcut::FString non-member operator
+  // finalcut::FString + ...
   finalcut::FString s2("abc");
   CPPUNIT_ASSERT ( s2.getLength() == 3 );
   CPPUNIT_ASSERT ( *(s2.c_str() + s2.getLength()) == '\0' );
@@ -543,25 +542,70 @@ void FStringTest::additionTest()
   CPPUNIT_ASSERT ( s2 + wchar_t(L'd') == L"abcd" );
   CPPUNIT_ASSERT ( s2 + char('d') == L"abcd" );
 
-  const std::wstring& s3 = L"abc";
-  CPPUNIT_ASSERT ( s3 + finalcut::FString("def") == L"abcdef" );
+  // Empty const finalcut::FString + ...
+  const finalcut::FString s3;
+  CPPUNIT_ASSERT ( s3.getLength() == 0 );
+  CPPUNIT_ASSERT ( s3.c_str() == nullptr );
+  CPPUNIT_ASSERT ( s3.wc_str() == nullptr );
+  CPPUNIT_ASSERT ( s3 + finalcut::FString("def") == L"def" );
+  CPPUNIT_ASSERT ( s3 + std::wstring(L"def") == L"def" );
+  CPPUNIT_ASSERT ( s3 + const_cast<wchar_t*>(L"def") == L"def" );
+  CPPUNIT_ASSERT ( s3 + std::string("def") == L"def" );
+  CPPUNIT_ASSERT ( s3 + const_cast<char*>("def") == L"def" );
+  CPPUNIT_ASSERT ( s3 + wchar_t(L'd') == L"d" );
+  CPPUNIT_ASSERT ( s3 + char('d') == L"d" );
 
-  constexpr wchar_t s4[] = L"abc";
-  CPPUNIT_ASSERT ( s4 + finalcut::FString("def") == L"abcdef" );
+  // Empty finalcut::FString + ...
+  finalcut::FString s4;
+  CPPUNIT_ASSERT ( s4.getLength() == 0 );
+  CPPUNIT_ASSERT ( s4.c_str() == nullptr );
+  CPPUNIT_ASSERT ( s4.wc_str() == nullptr );
+  CPPUNIT_ASSERT ( s4 + finalcut::FString("def") == L"def" );
+  CPPUNIT_ASSERT ( s4 + std::wstring(L"def") == L"def" );
+  CPPUNIT_ASSERT ( s4 + const_cast<wchar_t*>(L"def") == L"def" );
+  CPPUNIT_ASSERT ( s4 + std::string("def") == L"def" );
+  CPPUNIT_ASSERT ( s4 + const_cast<char*>("def") == L"def" );
+  CPPUNIT_ASSERT ( s4 + wchar_t(L'd') == L"d" );
+  CPPUNIT_ASSERT ( s4 + char('d') == L"d" );
 
-  const std::string& s5 = "abc";
+  // Other string types + finalcut::FString
+  const std::wstring& s5 = L"abc";
   CPPUNIT_ASSERT ( s5 + finalcut::FString("def") == L"abcdef" );
 
-  constexpr char s6[] = "abc";
+  constexpr wchar_t s6[] = L"abc";
   CPPUNIT_ASSERT ( s6 + finalcut::FString("def") == L"abcdef" );
 
+  const std::string& s7 = "abc";
+  CPPUNIT_ASSERT ( s7 + finalcut::FString("def") == L"abcdef" );
+
+  constexpr char s8[] = "abc";
+  CPPUNIT_ASSERT ( s8 + finalcut::FString("def") == L"abcdef" );
+
   constexpr wchar_t c1 = L'a';
-  CPPUNIT_ASSERT ( c1 + s3 == L"aabc" );
+  CPPUNIT_ASSERT ( c1 + s5 == L"aabc" );
   CPPUNIT_ASSERT ( c1 + finalcut::FString("def") == L"adef" );
 
   constexpr char c2 = 'a';
-  CPPUNIT_ASSERT ( c2 + s5 == "aabc" );
+  CPPUNIT_ASSERT ( c2 + s7 == "aabc" );
   CPPUNIT_ASSERT ( c2 + finalcut::FString("def") == L"adef" );
+
+  // Other string types + empty const finalcut::FString
+  CPPUNIT_ASSERT ( s5 + s3 == L"abc" );
+  CPPUNIT_ASSERT ( s6 + s3 == L"abc" );
+  CPPUNIT_ASSERT ( s7 + s3 == L"abc" );
+  CPPUNIT_ASSERT ( s8 + s3 == L"abc" );
+  CPPUNIT_ASSERT ( c1 + s3 == L"a" );
+  CPPUNIT_ASSERT ( c1 + s3 == L"a" );
+  CPPUNIT_ASSERT ( c2 + s3 == "a" );
+
+  // Other string types + empty finalcut::FString
+  CPPUNIT_ASSERT ( s5 + s4 == L"abc" );
+  CPPUNIT_ASSERT ( s6 + s4 == L"abc" );
+  CPPUNIT_ASSERT ( s7 + s4 == L"abc" );
+  CPPUNIT_ASSERT ( s8 + s4 == L"abc" );
+  CPPUNIT_ASSERT ( c1 + s4 == L"a" );
+  CPPUNIT_ASSERT ( c1 + s4 == L"a" );
+  CPPUNIT_ASSERT ( c2 + s4 == "a" );
 }
 
 //----------------------------------------------------------------------

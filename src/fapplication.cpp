@@ -22,7 +22,9 @@
 
 #include <chrono>
 #include <fstream>
+#include <iostream>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <thread>
 
@@ -63,8 +65,34 @@ FMouseControl* FApplication::mouse           {nullptr};  // mouse control
 int            FApplication::loop_level      {0};        // event loop level
 int            FApplication::quit_code       {EXIT_SUCCESS};
 bool           FApplication::quit_now        {false};
-uInt64         FApplication::next_event_wait {5000};     // preset to 5 ms /200 Hz
+uInt64         FApplication::next_event_wait {5000};     // preset to 5 ms (200 Hz)
 struct timeval FApplication::time_last_event{};
+
+
+const std::vector<FApplication::CmdOption> FApplication::long_options =
+{
+  {"encoding",                 required_argument, nullptr,  'e' },
+  {"log-file",                 required_argument, nullptr,  'l' },
+  {"no-mouse",                 no_argument,       nullptr,  'm' },
+  {"no-optimized-cursor",      no_argument,       nullptr,  'o' },
+  {"no-terminal-detection",    no_argument,       nullptr,  'd' },
+  {"no-terminal-data-request", no_argument,       nullptr,  'r' },
+  {"no-color-change",          no_argument,       nullptr,  'c' },
+  {"no-sgr-optimizer",         no_argument,       nullptr,  's' },
+  {"vgafont",                  no_argument,       nullptr,  'v' },
+  {"newfont",                  no_argument,       nullptr,  'n' },
+  {"dark-theme",               no_argument,       nullptr,  't' },
+
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+  {"no-esc-for-alt-meta",      no_argument,       nullptr,  'E' },
+  {"no-cursorstyle-change",    no_argument,       nullptr,  'C' },
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
+  {"no-esc-for-alt-meta",      no_argument,       nullptr,  'E' },
+#endif
+
+  {nullptr,                    0,                 nullptr,  0   }
+};
+
 
 //----------------------------------------------------------------------
 // class FApplication
@@ -94,9 +122,10 @@ FApplication::FApplication (const int& _argc, char* _argv[])
 
   if ( ! (_argc && _argv) )
   {
-    static char empty_str[1] = "";
+    typedef char* CString;
+    static std::array<CString, 1> empty{{CString("")}};
     app_argc = 0;
-    app_argv = reinterpret_cast<char**>(&empty_str);
+    app_argv = empty.data();
   }
 
   init();
@@ -122,21 +151,37 @@ FApplication* FApplication::getApplicationObject()
 }
 
 //----------------------------------------------------------------------
-FApplication::FLogPtr& FApplication::getLog()
+FWidget* FApplication::getKeyboardWidget()
 {
-  // Global logger object
-  static FLogPtr* logger = new FLogPtr();
-
-  if ( logger && logger->get() == nullptr )
-    *logger = std::make_shared<FLogger>();
-
-  return *logger;
+  return keyboard_widget;
 }
 
 //----------------------------------------------------------------------
-void FApplication::setLog (const FLogPtr& logger)
+FApplication::FLogPtr& FApplication::getLog()
 {
-  getLog() = logger;
+  // Global logger object
+  static auto logger_ptr = new FLogPtr();
+
+  if ( logger_ptr && logger_ptr->get() == nullptr )
+  {
+    *logger_ptr = std::make_shared<FLogger>();
+
+    // Set the logger as rdbuf of clog
+    std::clog.rdbuf(logger_ptr->get());
+  }
+
+  return *logger_ptr;
+}
+
+//----------------------------------------------------------------------
+void FApplication::setLog (const FLogPtr& log)
+{
+  FLogPtr& logger = getLog();
+  logger.reset();
+  logger = log;
+
+  // Set the logger as rdbuf of clog
+  std::clog.rdbuf(logger.get());
 }
 
 //----------------------------------------------------------------------
@@ -307,6 +352,35 @@ void FApplication::setDarkTheme()
 }
 
 //----------------------------------------------------------------------
+void FApplication::setLogFile (const FString& filename)
+{
+  auto& log_stream = getStartOptions().logfile_stream;
+  log_stream.open(filename, std::ofstream::out);
+
+  if ( log_stream.is_open() )
+  {
+    // Get the global logger object
+    FLog& log = *FApplication::getLog();
+    log.setOutputStream(log_stream);
+    log.enableTimestamp();
+    log.setLineEnding (finalcut::FLog::LF);
+  }
+  else
+  {
+    auto ftermdata = FTerm::getFTermData();
+    ftermdata->setExitMessage ( "Could not open log file \""
+                              + filename + "\"" );
+    exit(EXIT_FAILURE);
+  }
+}
+
+//----------------------------------------------------------------------
+void FApplication::setKeyboardWidget (FWidget* widget)
+{
+  keyboard_widget = widget;
+}
+
+//----------------------------------------------------------------------
 void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 {
   app_object->unsetMoveSizeMode();
@@ -333,7 +407,9 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 void FApplication::processExternalUserEvent()
 {
   // This method can be overloaded and replaced by own code
-  std::this_thread::sleep_for(std::chrono::milliseconds(5));
+
+  if ( FKeyboard::getReadBlockingTime() < 10000 )
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
 }
 
 
@@ -341,6 +417,9 @@ void FApplication::processExternalUserEvent()
 //----------------------------------------------------------------------
 void FApplication::init()
 {
+  // FApplication cannot have a second child widget
+  setMaxChildren(1);
+
   // Initialize the last event time
   time_last_event.tv_sec = 0;
   time_last_event.tv_usec = 0;
@@ -405,113 +484,70 @@ void FApplication::setTerminalEncoding (const FString& enc_str)
 }
 
 //----------------------------------------------------------------------
-void FApplication::setLogFile (const FString& filename)
+inline FApplication::CmdMap& FApplication::mapCmdOptions()
 {
-  auto& log_stream = getStartOptions().logfile_stream;
-  log_stream.open(filename, std::ofstream::out);
+  using std::placeholders::_1;
+  auto enc = std::bind(&FApplication::setTerminalEncoding, _1);
+  auto log = std::bind(&FApplication::setLogFile, _1);
+  auto opt = &FApplication::getStartOptions;
+  static CmdMap cmd_map{};
 
-  if ( log_stream.is_open() )
-  {
-    // Get the global logger object
-    FLog& log = *FApplication::getLog();
-    log.setOutputStream(log_stream);
-    log.enableTimestamp();
-    log.setLineEnding (finalcut::FLog::LF);
-  }
-  else
-  {
-    auto ftermdata = FTerm::getFTermData();
-    ftermdata->setExitMessage ( "Could not open log file \""
-                              + filename + "\"" );
-    exit(EXIT_FAILURE);
-  }
+  // --encoding
+  cmd_map['e'] = [enc] (const char* arg) { enc(FString(arg)); };
+  // --log-file
+  cmd_map['l'] = [log] (const char* arg) { log(FString(arg)); };
+  // --no-mouse
+  cmd_map['m'] = [opt] (const char*) { opt().mouse_support = false; };
+  // --no-optimized-cursor
+  cmd_map['o'] = [opt] (const char*) { opt().cursor_optimisation = false; };
+  // --no-terminal-detection
+  cmd_map['d'] = [opt] (const char*) { opt().terminal_detection = false; };
+  // --no-terminal-data-request
+  cmd_map['r'] = [opt] (const char*) { opt().terminal_data_request = false; };
+  // --no-color-change
+  cmd_map['c'] = [opt] (const char*) { opt().color_change = false; };
+  // --no-sgr-optimizer
+  cmd_map['s'] = [opt] (const char*) { opt().sgr_optimizer = false; };
+  // --vgafont
+  cmd_map['v'] = [opt] (const char*) { opt().vgafont = true; };
+  // --newfont
+  cmd_map['n'] = [opt] (const char*) { opt().newfont = true; };
+  // --dark-theme
+  cmd_map['t'] = [opt] (const char*) { opt().dark_theme = true; };
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+  // --no-esc-for-alt-meta
+  cmd_map['E'] = [opt] (const char*) { opt().meta_sends_escape = false; };
+  // --no-cursorstyle-change
+  cmd_map['C'] = [opt] (const char*) { opt().change_cursorstyle = false; };
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
+  // --no-esc-for-alt-meta
+  cmd_map['E'] = [opt] (const char*) { opt().meta_sends_escape = false; };
+#endif
+  return cmd_map;
 }
 
 //----------------------------------------------------------------------
-void FApplication::cmd_options (const int& argc, char* argv[])
+void FApplication::cmdOptions (const int& argc, char* argv[])
 {
   // Interpret the command line options
 
+  auto& cmd_map = mapCmdOptions();
+
   while ( true )
   {
-    static struct option long_options[] =
-    {
-      {"encoding",                 required_argument, nullptr,  0 },
-      {"log-file",                 required_argument, nullptr,  0 },
-      {"no-mouse",                 no_argument,       nullptr,  0 },
-      {"no-optimized-cursor",      no_argument,       nullptr,  0 },
-      {"no-terminal-detection",    no_argument,       nullptr,  0 },
-      {"no-terminal-data-request", no_argument,       nullptr,  0 },
-      {"no-color-change",          no_argument,       nullptr,  0 },
-      {"no-sgr-optimizer",         no_argument,       nullptr,  0 },
-      {"vgafont",                  no_argument,       nullptr,  0 },
-      {"newfont",                  no_argument,       nullptr,  0 },
-      {"dark-theme",               no_argument,       nullptr,  0 },
-
-    #if defined(__FreeBSD__) || defined(__DragonFly__)
-      {"no-esc-for-alt-meta",      no_argument,       nullptr,  0 },
-      {"no-cursorstyle-change",    no_argument,       nullptr,  0 },
-    #elif defined(__NetBSD__) || defined(__OpenBSD__)
-      {"no-esc-for-alt-meta",      no_argument,       nullptr,  0 },
-    #endif
-
-      {nullptr,                    0,                 nullptr,  0 }
-    };
-
     opterr = 0;
     int idx{0};
-    const int c = getopt_long (argc, argv, "", long_options, &idx);
+    auto p = reinterpret_cast<const struct option*>(long_options.data());
+    const int opt = getopt_long (argc, argv, "", p, &idx);
 
-    if ( c == -1 )
+    if ( opt == -1 )
       break;
 
-    if ( c == 0 )
-    {
-      if ( std::strcmp(long_options[idx].name, "encoding") == 0 )
-        setTerminalEncoding(FString(optarg));
-
-      if ( std::strcmp(long_options[idx].name, "log-file") == 0 )
-        setLogFile(FString(optarg));
-
-      if ( std::strcmp(long_options[idx].name, "no-mouse") == 0 )
-        getStartOptions().mouse_support = false;
-
-      if ( std::strcmp(long_options[idx].name, "no-optimized-cursor") == 0 )
-        getStartOptions().cursor_optimisation = false;
-
-      if ( std::strcmp(long_options[idx].name, "no-terminal-detection") == 0 )
-        getStartOptions().terminal_detection = false;
-
-      if ( std::strcmp(long_options[idx].name, "no-terminal-data-request") == 0 )
-        getStartOptions().terminal_data_request = false;
-
-      if ( std::strcmp(long_options[idx].name, "no-color-change") == 0 )
-        getStartOptions().color_change = false;
-
-      if ( std::strcmp(long_options[idx].name, "no-sgr-optimizer") == 0 )
-        getStartOptions().sgr_optimizer = false;
-
-      if ( std::strcmp(long_options[idx].name, "vgafont") == 0 )
-        getStartOptions().vgafont = true;
-
-      if ( std::strcmp(long_options[idx].name, "newfont") == 0 )
-        getStartOptions().newfont = true;
-
-      if ( std::strcmp(long_options[idx].name, "dark-theme") == 0 )
-        getStartOptions().dark_theme = true;
-
-    #if defined(__FreeBSD__) || defined(__DragonFly__)
-      if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta") == 0 )
-        getStartOptions().meta_sends_escape = false;
-
-      if ( std::strcmp(long_options[idx].name, "no-cursorstyle-change") == 0 )
-        getStartOptions().change_cursorstyle = false;
-    #elif defined(__NetBSD__) || defined(__OpenBSD__)
-      if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta") == 0 )
-        getStartOptions().meta_sends_escape = false;
-    #endif
-    }
+    if ( cmd_map.find(opt) != cmd_map.end() )
+      cmd_map[opt](optarg);
   }
+
+  cmd_map.clear();
 }
 
 //----------------------------------------------------------------------
@@ -574,6 +610,10 @@ void FApplication::showParameterUsage()
 //----------------------------------------------------------------------
 inline void FApplication::destroyLog()
 {
+  // Reset the rdbuf of clog
+  std::clog.rdbuf(default_clog_rdbuf);
+
+  // Delete the logger
   const FLogPtr* logger = &(getLog());
   delete logger;
 }
@@ -796,34 +836,30 @@ bool FApplication::processAccelerator (const FWidget* const& widget) const
 {
   bool accpt{false};
 
-  if ( widget
-    && ! widget->getAcceleratorList().empty() )
+  if ( ! widget || widget->getAcceleratorList().empty() )
+    return accpt;
+
+  for (auto&& item : widget->getAcceleratorList())
   {
-    auto iter = widget->getAcceleratorList().begin();
-    const auto& last = widget->getAcceleratorList().end();
-
-    while ( iter != last && ! quit_now && ! app_exit_loop )
+    if ( item.key == keyboard->getKey() )
     {
-      if ( iter->key == keyboard->getKey() )
+      // unset the move/size mode
+      auto move_size = getMoveSizeWidget();
+
+      if ( move_size )
       {
-        // unset the move/size mode
-        auto move_size = getMoveSizeWidget();
-
-        if ( move_size )
-        {
-          auto w = move_size;
-          setMoveSizeWidget(nullptr);
-          w->redraw();
-        }
-
-        FAccelEvent a_ev (fc::Accelerator_Event, getFocusWidget());
-        sendEvent (iter->object, &a_ev);
-        accpt = a_ev.isAccepted();
-        break;
+        setMoveSizeWidget(nullptr);
+        move_size->redraw();
       }
 
-      ++iter;
+      FAccelEvent a_ev (fc::Accelerator_Event, getFocusWidget());
+      sendEvent (item.object, &a_ev);
+      accpt = a_ev.isAccepted();
+      break;
     }
+
+    if ( quit_now || app_exit_loop )
+      break;
   }
 
   return accpt;
@@ -1173,7 +1209,7 @@ FWidget* FApplication::processParameters (const int& argc, char* argv[])
     FApplication::exit(EXIT_SUCCESS);
   }
 
-  cmd_options (argc, argv);
+  cmdOptions (argc, argv);
   return nullptr;
 }
 
@@ -1340,6 +1376,15 @@ bool FApplication::isEventProcessable ( const FObject* receiver
 bool FApplication::isNextEventTimeout()
 {
   return FObject::isTimeout (&time_last_event, next_event_wait);
+}
+
+
+// FLog non-member operators
+//----------------------------------------------------------------------
+std::ostream& operator << (std::ostream& outstr, FLog::LogLevel l)
+{
+  *FApplication::getLog() << l;
+  return outstr;
 }
 
 }  // namespace finalcut

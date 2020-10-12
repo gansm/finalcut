@@ -151,8 +151,10 @@ Menu::Menu (finalcut::FWidget* parent)
   // Info label
   Info << "<F10>            Activate menu bar\n"
        << "<Ctrl>+<Space>   Activate menu bar\n"
+       << "<Menu>           Activate menu bar\n"
+       << "<Shift>+<Menu>   Open dialog menu\n"
        << "<Meta>+<X>       Exit";
-  Info.setGeometry(FPoint{2, 1}, FSize{36, 3});
+  Info.setGeometry(FPoint{2, 1}, FSize{36, 5});
 }
 
 //----------------------------------------------------------------------
@@ -291,8 +293,8 @@ void Menu::defaultCallback (const finalcut::FMenuList* mb)
 //----------------------------------------------------------------------
 void Menu::adjustSize()
 {
-  const int pw = int(getDesktopWidth());
-  const int ph = int(getDesktopHeight());
+  const auto pw = int(getDesktopWidth());
+  const auto ph = int(getDesktopHeight());
   setX (1 + (pw - int(getWidth())) / 2, false);
   setY (1 + (ph - int(getHeight())) / 4, false);
   finalcut::FDialog::adjustSize();
@@ -327,8 +329,7 @@ int main (int argc, char* argv[])
   // Create main dialog object
   Menu main_dlg {&app};
   main_dlg.setText ("Menu example");
-  main_dlg.setGeometry ( FPoint{int(1 + (app.getWidth() - 40) / 2), 2}
-                       , FSize{40, 6} );
+  main_dlg.setSize ({40, 8});
   main_dlg.setShadow();
 
   // Set dialog main_dlg as main widget

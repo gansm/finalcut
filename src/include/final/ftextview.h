@@ -90,10 +90,10 @@ class FTextView : public FWidget
     FTextView& operator << (const std::string&);
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     std::size_t         getColumns() const;
     std::size_t         getRows() const;
-    const FString       getText() const;
+    FString             getText() const;
     const FStringList&  getLines() const;
 
     // Mutators
@@ -112,10 +112,10 @@ class FTextView : public FWidget
 
     // Methods
     void                hide() override;
-    template<typename T>
+    template <typename T>
     void                append (const std::initializer_list<T>&);
     void                append (const FString&);
-    template<typename T>
+    template <typename T>
     void                insert (const std::initializer_list<T>&, int);
     void                insert (const FString&, int);
     void                replaceRange (const FString&, int, int);
@@ -138,7 +138,7 @@ class FTextView : public FWidget
 
   private:
     // Typedefs
-    typedef std::unordered_map<int, std::function<void()>> keyMap;
+    typedef std::unordered_map<int, std::function<void()>> KeyMap;
 
     // Accessors
     std::size_t         getTextHeight() const;
@@ -168,7 +168,7 @@ class FTextView : public FWidget
     FStringList        data{};
     FScrollbarPtr      vbar{nullptr};
     FScrollbarPtr      hbar{nullptr};
-    keyMap             key_map{};
+    KeyMap             key_map{};
     bool               update_scrollbar{true};
     int                xoffset{0};
     int                yoffset{0};
@@ -212,7 +212,7 @@ inline FTextView& FTextView::operator << (const std::string& string)
 }
 
 //----------------------------------------------------------------------
-inline const FString FTextView::getClassName() const
+inline FString FTextView::getClassName() const
 { return "FTextView"; }
 
 //----------------------------------------------------------------------
@@ -232,7 +232,7 @@ inline void FTextView::scrollTo (const FPoint& pos)
 { scrollTo(pos.getX(), pos.getY()); }
 
 //----------------------------------------------------------------------
-template<typename T>
+template <typename T>
 void FTextView::append (const std::initializer_list<T>& list)
 {
   for (auto& str : list)
@@ -240,7 +240,7 @@ void FTextView::append (const std::initializer_list<T>& list)
 }
 
 //----------------------------------------------------------------------
-template<typename T>
+template <typename T>
 void FTextView::insert (const std::initializer_list<T>& list, int pos)
 {
   for (auto& str : list)

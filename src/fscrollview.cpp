@@ -139,8 +139,8 @@ void FScrollView::setScrollSize (const FSize& size)
     setChildPrintArea (viewport);
   }
 
-  const int xoffset_end = int(getScrollWidth() - getViewportWidth());
-  const int yoffset_end = int(getScrollHeight() - getViewportHeight());
+  const auto xoffset_end = int(getScrollWidth() - getViewportWidth());
+  const auto yoffset_end = int(getScrollHeight() - getViewportHeight());
   setTopPadding (1 - getScrollY());
   setLeftPadding (1 - getScrollX());
   setBottomPadding (1 - (yoffset_end - getScrollY()));
@@ -352,8 +352,8 @@ void FScrollView::scrollTo (int x, int y)
   int& yoffset = viewport_geometry.y1_ref();
   const int xoffset_before = xoffset;
   const int yoffset_before = yoffset;
-  const int xoffset_end = int(getScrollWidth() - getViewportWidth());
-  const int yoffset_end = int(getScrollHeight() - getViewportHeight());
+  const auto xoffset_end = int(getScrollWidth() - getViewportWidth());
+  const auto yoffset_end = int(getScrollHeight() - getViewportHeight());
   const std::size_t save_width = viewport_geometry.getWidth();
   const std::size_t save_height = viewport_geometry.getHeight();
   x--;
@@ -462,7 +462,7 @@ void FScrollView::drawBorder()
 //----------------------------------------------------------------------
 void FScrollView::onKeyPress (FKeyEvent* ev)
 {
-  const int idx = int(ev->key());
+  const auto idx = int(ev->key());
 
   if ( key_map.find(idx) != key_map.end() )
   {
@@ -658,8 +658,8 @@ void FScrollView::copy2area()
   const int ay = getTermY() - printarea->offset_top;
   const int dx = viewport_geometry.getX();
   const int dy = viewport_geometry.getY();
-  int y_end = int(getViewportHeight());
-  int x_end = int(getViewportWidth());
+  auto y_end = int(getViewportHeight());
+  auto x_end = int(getViewportWidth());
 
   // viewport width does not fit into the printarea
   if ( printarea->width <= ax + x_end )
@@ -694,7 +694,7 @@ void FScrollView::copy2area()
 
 // private methods of FScrollView
 //----------------------------------------------------------------------
-inline const FPoint FScrollView::getViewportCursorPos() const
+inline FPoint FScrollView::getViewportCursorPos() const
 {
   const auto& window = FWindow::getWindowWidget(this);
 
@@ -726,8 +726,8 @@ void FScrollView::init()
   resetColors();
   setGeometry (FPoint{1, 1}, FSize{4, 4});
   setMinimumSize (FSize{4, 4});
-  const int xoffset_end = int(getScrollWidth() - getViewportWidth());
-  const int yoffset_end = int(getScrollHeight() - getViewportHeight());
+  const auto xoffset_end = int(getScrollWidth() - getViewportWidth());
+  const auto yoffset_end = int(getScrollHeight() - getViewportHeight());
   nf_offset = FTerm::isNewFont() ? 1 : 0;
   setTopPadding (1 - getScrollY());
   setLeftPadding (1 - getScrollX());
@@ -767,7 +767,7 @@ inline void FScrollView::mapKeyFunctions()
   key_map[fc::Fkey_end]   = \
       [this] ()
       {
-        int yoffset_end = int(getScrollHeight() - getViewportHeight());
+        auto yoffset_end = int(getScrollHeight() - getViewportHeight());
         scrollToY (1 + yoffset_end);
       };
 }

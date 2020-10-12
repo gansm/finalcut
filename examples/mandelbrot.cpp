@@ -75,8 +75,8 @@ void Mandelbrot::draw()
 
   const int xoffset{2};
   const int yoffset{2};
-  const int Cols = int(getClientWidth());
-  const int Lines = int(getClientHeight());
+  const auto Cols = int(getClientWidth());
+  const auto Lines = int(getClientHeight());
   int current_line{0};
 
   if ( Cols < 2 || Lines < 2 )
@@ -167,7 +167,7 @@ int main (int argc, char* argv[])
   // Create a simple dialog box
   Mandelbrot mb{&app};
   mb.setGeometry (FPoint{6, 1}, FSize{70, 23});
-  mb.setShadow();
+  mb.setShadow();  // Instead of the transparent window shadow
 
   // Set the mandelbrot object as main widget
   finalcut::FWidget::setMainWidget(&mb);

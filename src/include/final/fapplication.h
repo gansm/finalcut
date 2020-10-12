@@ -64,6 +64,8 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <unordered_map>
+#include <vector>
 
 #include "final/ftypes.h"
 #include "final/fwidget.h"
@@ -110,10 +112,11 @@ class FApplication : public FWidget
     FApplication& operator = (const FApplication&) = delete;
 
     // Accessors
-    const FString         getClassName() const override;
+    FString               getClassName() const override;
     int                   getArgc() const;
     char**                getArgv() const;
     static FApplication*  getApplicationObject();
+    static FWidget*       getKeyboardWidget();
     static FLogPtr&       getLog();
 
     // Mutator
@@ -136,6 +139,8 @@ class FApplication : public FWidget
     void                  initTerminal() override;
     static void           setDefaultTheme();
     static void           setDarkTheme();
+    static void           setLogFile (const FString&);
+    static void           setKeyboardWidget (FWidget*);
     static void           closeConfirmationDialog (FWidget*, FCloseEvent*);
 
     // Callback method
@@ -148,12 +153,13 @@ class FApplication : public FWidget
     // Typedefs
     typedef std::pair<FObject*, FEvent*> EventPair;
     typedef std::deque<EventPair> FEventQueue;
+    typedef std::unordered_map<int, std::function<void(char*)>> CmdMap;
 
     // Methods
     void                  init();
     static void           setTerminalEncoding (const FString&);
-    static void           setLogFile (const FString&);
-    static void           cmd_options (const int&, char*[]);
+    static CmdMap&        mapCmdOptions();
+    static void           cmdOptions (const int&, char*[]);
     static FStartOptions& getStartOptions();
     static void           showParameterUsage();
     void                  destroyLog();
@@ -205,6 +211,7 @@ class FApplication : public FWidget
     char**                app_argv{};
     uInt64                key_timeout{100000};        // 100 ms
     uInt64                dblclick_interval{500000};  // 500 ms
+    std::streambuf*       default_clog_rdbuf{std::clog.rdbuf()};
     FEventQueue           event_queue{};
     static uInt64         next_event_wait;
     static timeval        time_last_event;
@@ -215,6 +222,20 @@ class FApplication : public FWidget
     static FMouseControl* mouse;
     static FKeyboard*     keyboard;
     static FWidget*       keyboard_widget;
+
+#if defined(__sun) && defined(__SVR4)
+    struct CmdOption
+    {
+      const char* name;  // <- name is without 'const' in Solaris
+      int         has_arg;
+      int*        flag;
+      int         val;
+    };
+#else
+    using CmdOption = struct option;
+#endif
+
+    static const std::vector<CmdOption> long_options;
 };
 
 
@@ -226,7 +247,7 @@ FApplication* getFApplication();
 
 // FApplication inline functions
 //----------------------------------------------------------------------
-inline const FString FApplication::getClassName() const
+inline FString FApplication::getClassName() const
 { return "FApplication"; }
 
 //----------------------------------------------------------------------

@@ -83,7 +83,7 @@ class FMenuBar : public FWindow, public FMenuList
     FMenuBar& operator = (const FMenuBar&) = delete;
 
     // Accessors
-    const FString getClassName() const override;
+    FString       getClassName() const override;
 
     // Methods
     void          resetColors() override;
@@ -103,7 +103,7 @@ class FMenuBar : public FWindow, public FMenuList
 
   private:
     // Constants
-    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Typedef
     typedef struct
@@ -157,7 +157,7 @@ class FMenuBar : public FWindow, public FMenuList
 
 // FMenuBar inline functions
 //----------------------------------------------------------------------
-inline const FString FMenuBar::getClassName() const
+inline FString FMenuBar::getClassName() const
 { return "FMenuBar"; }
 
 //----------------------------------------------------------------------

@@ -92,7 +92,7 @@ class FOptiAttr final
       int   max_color;
       int   attr_without_color;
       bool  ansi_default_color;
-    } termEnv;
+    } TermEnv;
 
     // Constructor
     FOptiAttr();
@@ -107,10 +107,10 @@ class FOptiAttr final
     FOptiAttr& operator = (const FOptiAttr&) = delete;
 
     // Accessors
-    const FString getClassName() const;
+    FString       getClassName() const;
 
     // Mutators
-    void          setTermEnvironment (const termEnv&);
+    void          setTermEnvironment (const TermEnv&);
     void          setMaxColor (const int&);
     void          setNoColorVideo (int);
     void          setDefaultColorSupport();
@@ -161,13 +161,13 @@ class FOptiAttr final
 
   private:
     // Typedefs and Enumerations
-    typedef char attributebuffer[SGRoptimizer::ATTR_BUF_SIZE];
+    typedef SGRoptimizer::AttributeBuffer AttributeBuffer;
 
     typedef struct
     {
       const char* cap;
       bool  caused_reset;
-    } capability;
+    } Capability;
 
     enum init_reset_tests
     {
@@ -263,62 +263,61 @@ class FOptiAttr final
     bool          append_sequence (const char[]);
 
     // Data members
-    capability    F_enter_bold_mode{};
-    capability    F_exit_bold_mode{};
-    capability    F_enter_dim_mode{};
-    capability    F_exit_dim_mode{};
-    capability    F_enter_italics_mode{};
-    capability    F_exit_italics_mode{};
-    capability    F_enter_underline_mode{};
-    capability    F_exit_underline_mode{};
-    capability    F_enter_blink_mode{};
-    capability    F_exit_blink_mode{};
-    capability    F_enter_reverse_mode{};
-    capability    F_exit_reverse_mode{};
-    capability    F_enter_standout_mode{};
-    capability    F_exit_standout_mode{};
-    capability    F_enter_secure_mode{};
-    capability    F_exit_secure_mode{};
-    capability    F_enter_protected_mode{};
-    capability    F_exit_protected_mode{};
-    capability    F_enter_crossed_out_mode{};
-    capability    F_exit_crossed_out_mode{};
-    capability    F_enter_dbl_underline_mode{};
-    capability    F_exit_dbl_underline_mode{};
-    capability    F_set_attributes{};
-    capability    F_exit_attribute_mode{};
-    capability    F_enter_alt_charset_mode{};
-    capability    F_exit_alt_charset_mode{};
-    capability    F_enter_pc_charset_mode{};
-    capability    F_exit_pc_charset_mode{};
-    capability    F_set_a_foreground{};
-    capability    F_set_a_background{};
-    capability    F_set_foreground{};
-    capability    F_set_background{};
-    capability    F_set_color_pair{};
-    capability    F_orig_pair{};
-    capability    F_orig_colors{};
+    Capability      F_enter_bold_mode{};
+    Capability      F_exit_bold_mode{};
+    Capability      F_enter_dim_mode{};
+    Capability      F_exit_dim_mode{};
+    Capability      F_enter_italics_mode{};
+    Capability      F_exit_italics_mode{};
+    Capability      F_enter_underline_mode{};
+    Capability      F_exit_underline_mode{};
+    Capability      F_enter_blink_mode{};
+    Capability      F_exit_blink_mode{};
+    Capability      F_enter_reverse_mode{};
+    Capability      F_exit_reverse_mode{};
+    Capability      F_enter_standout_mode{};
+    Capability      F_exit_standout_mode{};
+    Capability      F_enter_secure_mode{};
+    Capability      F_exit_secure_mode{};
+    Capability      F_enter_protected_mode{};
+    Capability      F_exit_protected_mode{};
+    Capability      F_enter_crossed_out_mode{};
+    Capability      F_exit_crossed_out_mode{};
+    Capability      F_enter_dbl_underline_mode{};
+    Capability      F_exit_dbl_underline_mode{};
+    Capability      F_set_attributes{};
+    Capability      F_exit_attribute_mode{};
+    Capability      F_enter_alt_charset_mode{};
+    Capability      F_exit_alt_charset_mode{};
+    Capability      F_enter_pc_charset_mode{};
+    Capability      F_exit_pc_charset_mode{};
+    Capability      F_set_a_foreground{};
+    Capability      F_set_a_background{};
+    Capability      F_set_foreground{};
+    Capability      F_set_background{};
+    Capability      F_set_color_pair{};
+    Capability      F_orig_pair{};
+    Capability      F_orig_colors{};
 
-    FChar         on{};
-    FChar         off{};
-    FChar         reset_byte_mask{};
+    FChar           on{};
+    FChar           off{};
+    FChar           reset_byte_mask{};
 
-    SGRoptimizer  sgr_optimizer{attr_buf};
+    SGRoptimizer    sgr_optimizer{attr_buf};
+    AttributeBuffer attr_buf{};
 
-    int           max_color{1};
-    int           attr_without_color{0};
-    char*         attr_ptr{attr_buf};
-    char          attr_buf[SGRoptimizer::ATTR_BUF_SIZE]{'\0'};
-    bool          ansi_default_color{false};
-    bool          alt_equal_pc_charset{false};
-    bool          monochron{true};
-    bool          fake_reverse{false};
+    int             max_color{1};
+    int             attr_without_color{0};
+    bool            ansi_default_color{false};
+    bool            alt_equal_pc_charset{false};
+    bool            monochron{true};
+    bool            fake_reverse{false};
 };
 
 
 // FOptiAttr inline functions
 //----------------------------------------------------------------------
-inline const FString FOptiAttr::getClassName() const
+inline FString FOptiAttr::getClassName() const
 { return "FOptiAttr"; }
 
 //----------------------------------------------------------------------
@@ -336,26 +335,6 @@ inline void FOptiAttr::setDefaultColorSupport()
 //----------------------------------------------------------------------
 inline void FOptiAttr::unsetDefaultColorSupport()
 { ansi_default_color = false; }
-
-
-// FChar operator functions
-//----------------------------------------------------------------------
-inline bool operator == ( const FChar& lhs,
-                          const FChar& rhs )
-{
-  return lhs.ch           == rhs.ch
-      && lhs.fg_color     == rhs.fg_color
-      && lhs.bg_color     == rhs.bg_color
-      && lhs.attr.byte[0] == rhs.attr.byte[0]
-      && lhs.attr.byte[1] == rhs.attr.byte[1]
-      && lhs.attr.bit.fullwidth_padding \
-                          == rhs.attr.bit.fullwidth_padding;
-}
-
-//----------------------------------------------------------------------
-inline bool operator != ( const FChar& lhs,
-                          const FChar& rhs )
-{ return ! ( lhs == rhs ); }
 
 }  // namespace finalcut
 

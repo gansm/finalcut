@@ -66,7 +66,7 @@ class FPoint
     FPoint& operator -= (const FPoint&);
 
     // Accessors
-    virtual const FString getClassName();
+    virtual FString       getClassName();
     int                   getX() const;
     int                   getY() const;
     void                  setX (int);
@@ -93,9 +93,9 @@ class FPoint
     // Friend operator functions
     friend bool operator == (const FPoint&, const FPoint&);
     friend bool operator != (const FPoint&, const FPoint&);
-    friend const FPoint operator +  (const FPoint&, const FPoint&);
-    friend const FPoint operator -  (const FPoint&, const FPoint&);
-    friend const FPoint operator -  (const FPoint&);
+    friend FPoint operator +  (const FPoint&, const FPoint&);
+    friend FPoint operator -  (const FPoint&, const FPoint&);
+    friend FPoint operator -  (const FPoint&);
     friend std::ostream& operator << (std::ostream&, const FPoint&);
     friend std::istream& operator >> (std::istream&, FPoint&);
 };
@@ -121,7 +121,7 @@ inline FPoint::FPoint (int x, int y)
 { }
 
 //----------------------------------------------------------------------
-inline const FString FPoint::getClassName()
+inline FString FPoint::getClassName()
 { return "FPoint"; }
 
 //----------------------------------------------------------------------
@@ -155,15 +155,15 @@ inline bool operator != (const FPoint& p1, const FPoint& p2)
 { return p1.xpos != p2.xpos || p1.ypos != p2.ypos; }
 
 //----------------------------------------------------------------------
-inline const FPoint operator + (const FPoint& p1, const FPoint& p2)
+inline FPoint operator + (const FPoint& p1, const FPoint& p2)
 { return {p1.xpos + p2.xpos, p1.ypos + p2.ypos}; }
 
 //----------------------------------------------------------------------
-inline const FPoint operator - (const FPoint& p1, const FPoint& p2)
+inline FPoint operator - (const FPoint& p1, const FPoint& p2)
 { return {p1.xpos - p2.xpos, p1.ypos - p2.ypos}; }
 
 //----------------------------------------------------------------------
-inline const FPoint operator - (const FPoint& p)
+inline FPoint operator - (const FPoint& p)
 { return {-p.xpos, -p.ypos}; }
 
 }  // namespace finalcut

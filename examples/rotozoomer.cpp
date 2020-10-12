@@ -20,10 +20,11 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <cmath>
+
 #include <chrono>
 #include <iomanip>
-
-#include <cmath>
+#include <string>
 
 #include <final/final.h>
 
@@ -74,7 +75,7 @@ class RotoZoomer final : public finalcut::FDialog
     bool                     benchmark{false};
     int                      loops{0};
     int                      path{0};
-    wchar_t                  data[256]{};
+    std::wstring             data{std::wstring(256, L'\0')};
     finalcut::FString        report{};
     time_point<system_clock> start{};
     time_point<system_clock> end{};
@@ -89,31 +90,35 @@ RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool b, int l)
 {
   FDialog::setText ("Rotozoomer effect");
 
-  int h{0};
+  std::size_t h{0};
 
-  for (int j{0}; j < 8; j++)
+  for (std::size_t j{0}; j < 8; j++)
   {
-    for (int i{0}; i < 8; i++)
+    for (std::size_t i{0}; i < 8; i++)
     {
-      data[h++] = L' ';
+      data[h] = L' ';
+      h++;
     }
 
-    for (int i{0}; i < 8; i++)
+    for (std::size_t i{0}; i < 8; i++)
     {
-      data[h++] = L'+';
+      data[h] = L'+';
+      h++;
     }
   }
 
-  for (int j{0}; j < 8; j++)
+  for (std::size_t j{0}; j < 8; j++)
   {
-    for (int i{0}; i < 8; i++)
+    for (std::size_t i{0}; i < 8; i++)
     {
-      data[h++] = L'x';
+      data[h] = L'x';
+      h++;
     }
 
-    for (int i{0}; i < 8; i++)
+    for (std::size_t i{0}; i < 8; i++)
     {
-      data[h++] = L' ';
+      data[h] = L' ';
+      h++;
     }
   }
 }
@@ -129,24 +134,24 @@ void RotoZoomer::draw()
     start = system_clock::now();
 
   finalcut::FDialog::draw();
-  double cx = double(80.0 / 2.0 + (80.0 / 2.0 * std::sin(double(path) / 50.0)));
-  double cy = double(23.0 + (23.0 * std::cos(double(path) / 50.0)));
-  double r  = double(128.0 + 96.0 * std::cos(double(path) / 10.0));
-  double a  = double(path) / 50.0;
+  auto cx = double(80.0 / 2.0 + (80.0 / 2.0 * std::sin(double(path) / 50.0)));
+  auto cy = double(23.0 + (23.0 * std::cos(double(path) / 50.0)));
+  auto r  = double(128.0 + 96.0 * std::cos(double(path) / 10.0));
+  auto a  = double(path) / 50.0;
   rotozoomer (cx, cy, r, a);
 }
 
 //----------------------------------------------------------------------
 void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
 {
-  const int Cols = int(getClientWidth());
-  const int Lines = int(getClientHeight());
-  int  Ax   = int(4096.0 * (cx + r * std::cos(a)));
-  int  Ay   = int(4096.0 * (cy + r * std::sin(a)));
-  int  Bx   = int(4096.0 * (cx + r * std::cos(a + 2.02358)));
-  int  By   = int(4096.0 * (cy + r * std::sin(a + 2.02358)));
-  int  Cx   = int(4096.0 * (cx + r * std::cos(a - 1.11701)));
-  int  Cy   = int(4096.0 * (cy + r * std::sin(a - 1.11701)));
+  const auto Cols = int(getClientWidth());
+  const auto Lines = int(getClientHeight());
+  auto Ax   = int(4096.0 * (cx + r * std::cos(a)));
+  auto Ay   = int(4096.0 * (cy + r * std::sin(a)));
+  auto Bx   = int(4096.0 * (cx + r * std::cos(a + 2.02358)));
+  auto By   = int(4096.0 * (cy + r * std::sin(a + 2.02358)));
+  auto Cx   = int(4096.0 * (cx + r * std::cos(a - 1.11701)));
+  auto Cy   = int(4096.0 * (cy + r * std::sin(a - 1.11701)));
   int  dxdx = (Bx - Ax) / 80;
   int  dydx = (By - Ay) / 80;
   int  dxdy = (Cx - Ax) / 23;
@@ -160,7 +165,7 @@ void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
 
     for (int x = 0; x < Cols; x++)
     {
-      wchar_t ch = data[((Cy >> 14) & 0xf) + ((Cx >> 10) & 0xf0)];
+      auto ch = data[((Cy >> 14) & 0xf) + ((Cx >> 10) & 0xf0)];
 
       if ( ch == '+' )
         print() << finalcut::FColorPair{fc::Black, fc::Red};
@@ -226,7 +231,7 @@ void RotoZoomer::onShow (finalcut::FShowEvent*)
     end = system_clock::now();
     generateReport();
     flush();
-    quit();
+    close();
   }
 }
 
@@ -261,7 +266,9 @@ void RotoZoomer::onKeyPress (finalcut::FKeyEvent* ev)
 //----------------------------------------------------------------------
 void RotoZoomer::onClose (finalcut::FCloseEvent* ev)
 {
-  if ( ! benchmark )
+  if ( benchmark )
+    ev->accept();
+  else
     finalcut::FApplication::closeConfirmationDialog (this, ev);
 }
 
@@ -305,6 +312,9 @@ int main (int argc, char* argv[])
                       || strcmp(argv[1], "-b") == 0 ) )
   {
     benchmark = true;
+    // Disable terminal data requests
+    auto& start_options = finalcut::FStartOptions::getFStartOptions();
+    start_options.terminal_data_request = false;
   }
 
   {  // Create the application object in this scope
@@ -317,10 +327,8 @@ int main (int argc, char* argv[])
 
     if ( benchmark )
       roto.setGeometry (FPoint{1, 1}, FSize{80, 24});
-    else
-      roto.setGeometry (FPoint{5, 1}, FSize{72, 23});
 
-    roto.setShadow();
+    roto.setShadow();  // Instead of the transparent window shadow
 
     // Set the RotoZoomer object as main widget
     finalcut::FWidget::setMainWidget(&roto);

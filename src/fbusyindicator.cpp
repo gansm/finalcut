@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <array>
 #include "final/fbusyindicator.h"
 
 namespace finalcut
@@ -75,11 +76,11 @@ void FBusyIndicator::init()
 //----------------------------------------------------------------------
 void FBusyIndicator::createIndicatorText()
 {
-  FString line[4]{};
+  std::array<FString, 4> line{};
 
   if ( FTerm::getEncoding() == fc::UTF8 )
   {
-    const wchar_t (&p)[8] = uni_pattern;
+    const auto& p = uni_pattern;
     line[0] << "   " << p[7] << " " << p[0] << "   \n";
     line[1] << " " << p[6] << "     " << p[1] << " \n";
     line[2] << " " << p[5] << "     " << p[2] << " \n";
@@ -87,7 +88,7 @@ void FBusyIndicator::createIndicatorText()
   }
   else
   {
-    const char (&p)[8] = pattern;
+    const auto& p = pattern;
     line[0] << "   " << p[7] << " " << p[0] << "   \n";
     line[1] << " " << p[6] << "     " << p[1] << " \n";
     line[2] << " " << p[5] << "     " << p[2] << " \n";

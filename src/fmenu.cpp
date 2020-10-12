@@ -136,13 +136,8 @@ void FMenu::onKeyPress (FKeyEvent* ev)
   // looking for menu bar hotkey
   auto menu_bar = getMenuBar();
 
-  if ( menu_bar )
-  {
-    auto mbar = static_cast<FMenuBar*>(menu_bar);
-
-    if ( mbar->hotkeyMenu(ev) )
-      return;
-  }
+  if ( menu_bar && menu_bar->hotkeyMenu(ev) )
+    return;
 
   switch ( ev->key() )
   {
@@ -272,7 +267,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   if ( !  mouse_down || getItemList().empty() )
     return;
 
-  mouseStates ms =
+  MouseStates ms =
   {
     false,  // focus_changed
     false,  // hide_sub_menu
@@ -824,7 +819,7 @@ bool FMenu::mouseUpOverList (const FPoint& mouse_pos)
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseMoveOverList (const FPoint& mouse_pos, mouseStates& ms)
+void FMenu::mouseMoveOverList (const FPoint& mouse_pos, MouseStates& ms)
 {
   FPoint pos{mouse_pos};
   pos -= FPoint{getRightPadding(), getTopPadding()};
@@ -845,7 +840,7 @@ void FMenu::mouseMoveOverList (const FPoint& mouse_pos, mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseMoveSelection (FMenuItem* m_item, mouseStates& ms)
+void FMenu::mouseMoveSelection (FMenuItem* m_item, MouseStates& ms)
 {
   if ( ! m_item->isEnabled()
     || m_item->isSelected()
@@ -878,7 +873,7 @@ void FMenu::mouseMoveSelection (FMenuItem* m_item, mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseMoveDeselection (FMenuItem* m_item, mouseStates& ms)
+void FMenu::mouseMoveDeselection (FMenuItem* m_item, MouseStates& ms)
 {
   if ( ! ms.mouse_over_menu
     || ! m_item->isEnabled()
@@ -907,7 +902,7 @@ void FMenu::mouseUpOverBorder()
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseMoveOverBorder (mouseStates& ms) const
+void FMenu::mouseMoveOverBorder (MouseStates& ms) const
 {
   // Mouse is moved over border or separator line
 
@@ -989,9 +984,8 @@ void FMenu::passEventToMenuBar (FMouseEvent* const& ev) const
     const auto& _ev = \
         std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
     setClickedWidget(menu_bar);
-    auto& mbar = *(static_cast<FMenuBar*>(menu_bar));
-    mbar.mouse_down = true;
-    mbar.onMouseMove(_ev.get());
+    menu_bar->mouse_down = true;
+    menu_bar->onMouseMove(_ev.get());
   }
   catch (const std::bad_alloc&)
   {
@@ -1060,7 +1054,7 @@ bool FMenu::selectNextItem()
         ++next_element;
         if ( next_element == list.end() )
           next_element = list.begin();
-        next = static_cast<FMenuItem*>(*next_element);
+        next = *next_element;
       }
       while ( ! next->isEnabled()
            || ! next->acceptFocus()
@@ -1110,7 +1104,7 @@ bool FMenu::selectPrevItem()
         if ( prev_element == list.begin() )
           prev_element = list.end();
         --prev_element;
-        prev = static_cast<FMenuItem*>(*prev_element);
+        prev = *prev_element;
       }
       while ( ! prev->isEnabled()
            || ! prev->acceptFocus()
@@ -1277,7 +1271,7 @@ inline void FMenu::drawSeparator (int y)
 inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
 {
   FString txt{m_item->getText()};
-  menuText txtdata{};
+  MenuText txtdata{};
   std::size_t column_width = getColumnWidth(txt);
   const FKey accel_key   = m_item->accel_key;
   const bool is_enabled  = m_item->isEnabled();
@@ -1367,7 +1361,7 @@ inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
 }
 
 //----------------------------------------------------------------------
-inline void FMenu::drawMenuText (menuText& data)
+inline void FMenu::drawMenuText (MenuText& data)
 {
   // Print menu text
 

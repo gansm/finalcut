@@ -83,7 +83,7 @@ class FOptiMove final
       int   tabstop;
       bool  automatic_left_margin;
       bool  eat_nl_glitch;
-    } termEnv;
+    } TermEnv;
 
     // Constructor
     explicit FOptiMove (int = 0);
@@ -92,7 +92,7 @@ class FOptiMove final
     ~FOptiMove();
 
     // Accessors
-    const FString getClassName() const;
+    FString       getClassName() const;
     uInt          getCursorHomeLength() const;
     uInt          getCarriageReturnLength() const;
     uInt          getCursorToLLLength() const;
@@ -118,7 +118,7 @@ class FOptiMove final
     void          setBaudRate (int);
     void          setTabStop (int);
     void          setTermSize (std::size_t, std::size_t);
-    void          setTermEnvironment (const termEnv&);
+    void          setTermEnvironment (const TermEnv&);
     void          set_cursor_home (const char[]);
     void          set_cursor_to_ll (const char[]);
     void          set_carriage_return (const char[]);
@@ -156,7 +156,7 @@ class FOptiMove final
       const char* cap;
       int duration;
       int length;
-    } capability;
+    } Capability;
 
     // Constants
     static constexpr int LONG_DURATION{INT_MAX};
@@ -168,7 +168,7 @@ class FOptiMove final
     void          calculateCharDuration();
     int           capDuration (const char[], int) const;
     int           capDurationToLength (int) const;
-    int           repeatedAppend (const capability&, volatile int, char*) const;
+    int           repeatedAppend (const Capability&, volatile int, char*) const;
     int           relativeMove (char[], int, int, int, int) const;
     int           verticalMove (char[], int, int) const;
     void          downMove (char[], int&, int, int) const;
@@ -187,26 +187,26 @@ class FOptiMove final
     void          moveByMethod (int, int, int, int, int);
 
     // Data members
-    capability    F_cursor_home{};
-    capability    F_carriage_return{};
-    capability    F_cursor_to_ll{};
-    capability    F_tab{};
-    capability    F_back_tab{};
-    capability    F_cursor_up{};
-    capability    F_cursor_down{};
-    capability    F_cursor_left{};
-    capability    F_cursor_right{};
-    capability    F_cursor_address{};
-    capability    F_column_address{};
-    capability    F_row_address{};
-    capability    F_parm_up_cursor{};
-    capability    F_parm_down_cursor{};
-    capability    F_parm_left_cursor{};
-    capability    F_parm_right_cursor{};
-    capability    F_erase_chars{};
-    capability    F_repeat_char{};
-    capability    F_clr_bol{};
-    capability    F_clr_eol{};
+    Capability    F_cursor_home{};
+    Capability    F_carriage_return{};
+    Capability    F_cursor_to_ll{};
+    Capability    F_tab{};
+    Capability    F_back_tab{};
+    Capability    F_cursor_up{};
+    Capability    F_cursor_down{};
+    Capability    F_cursor_left{};
+    Capability    F_cursor_right{};
+    Capability    F_cursor_address{};
+    Capability    F_column_address{};
+    Capability    F_row_address{};
+    Capability    F_parm_up_cursor{};
+    Capability    F_parm_down_cursor{};
+    Capability    F_parm_left_cursor{};
+    Capability    F_parm_right_cursor{};
+    Capability    F_erase_chars{};
+    Capability    F_repeat_char{};
+    Capability    F_clr_bol{};
+    Capability    F_clr_eol{};
 
     std::size_t   screen_width{80};
     std::size_t   screen_height{24};
@@ -224,7 +224,7 @@ class FOptiMove final
 
 // FOptiMove inline functions
 //----------------------------------------------------------------------
-inline const FString FOptiMove::getClassName() const
+inline FString FOptiMove::getClassName() const
 { return "FOptiMove"; }
 
 //----------------------------------------------------------------------

@@ -7,6 +7,8 @@ Table of Contents
 
 <!-- TOC -->
 - [Basic functions](#basic-functions)
+- [Widgets](#widgets)
+- [Widget tree](#widget-tree)
 - [How to use the library](#how-to-use-the-library)
 - [Memory Management](#memory-management)
 - [Event Processing](#event-processing)
@@ -55,6 +57,49 @@ emulator. It uses various optimization methods to improve the drawing speed.
 </figure>
 
 
+Widgets
+-------
+
+FINAL CUT has many widgets. It offers buttons, input fields, menus, and 
+dialog boxes that cover the most common use cases. Widgets are visual 
+elements that are combined to create user interfaces. Own widgets can be 
+easily created by creating a derived class of `FWidget` or other existing 
+widgets. All widgets are instances of 
+[FWidget](https://codedocs.xyz/gansm/finalcut/classfinalcut_1_1FWidget.html) 
+or its subclasses.
+
+A widget can contain any number of child widgets. Child widgets are displayed 
+in the display area of the parent widget. Window widgets based on `FWindow` 
+have their own virtual display area and are independent of the parent widget.
+
+When a parent widget is disabled, hidden, or deleted, the same operation is 
+used recursively to all its child widgets. The base class `FObject` implements 
+the self-organized object tree behavior. For example, `addChild()` removes 
+the child ownership from an existing parent object before assigning it to 
+the new target. When a child becomes deleted, the parent-child relationship 
+causes its reference in the parent object to be removed. An explicit 
+`delChild()` is no longer required here.
+
+
+Widget tree
+-----------
+
+An `FApplication` widget is the top-level widget of an application. It is 
+unique and can not have a parent widget. The class `FApplication` manages 
+all settings and assigns keyboard and mouse input to the different widgets.
+
+<figure class="image">
+  <img src="final-cut-widget tree.svg" alt="widget tree">
+  <figcaption>Figure 2.  Widget tree of a FINAL CUT application</figcaption>
+</figure>
+<br /><br />
+
+The main widget of a FINAL CUT application is the only object that 
+`FApplication` can have as a child. This main widget is usually a window 
+object that contains all sub-widgets of the application. A sub-widget can 
+also be another window.
+
+
 How to use the library
 ----------------------
 
@@ -82,7 +127,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_dialog.cpp.png" alt="dialog.cpp">
-  <figcaption>Figure 2.  A blank dialog</figcaption>
+  <figcaption>Figure 3.  A blank dialog</figcaption>
 </figure>
 <br /><br />
 
@@ -92,8 +137,8 @@ int main (int argc, char* argv[])
 
 After entering the source code in *dialog.cpp* you can compile
 the above program with gcc:
-```cpp
-g++ -O2 -lfinal dialog.cpp -o dialog
+```bash
+g++ dialog.cpp -o dialog -O2 -lfinal
 ```
 
 
@@ -229,7 +274,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_memory.cpp.png" alt="memory.cpp">
-  <figcaption>Figure 3.  FObject manages its child objects</figcaption>
+  <figcaption>Figure 4.  FObject manages its child objects</figcaption>
 </figure>
 <br /><br />
 
@@ -239,8 +284,8 @@ int main (int argc, char* argv[])
 
 After entering the source code in *memory.cpp* you can compile
 the above program with gcc:
-```cpp
-g++ -O2 -lfinal memory.cpp -o memory
+```bash
+g++ memory.cpp -o memory -O2 -lfinal
 ```
 
 
@@ -369,7 +414,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_timer.cpp.png" alt="timer.cpp">
-  <figcaption>Figure 4.  FObject::onTimer event handler</figcaption>
+  <figcaption>Figure 5.  FObject::onTimer event handler</figcaption>
 </figure>
 <br /><br />
 
@@ -379,8 +424,8 @@ int main (int argc, char* argv[])
 
 After entering the source code in *timer.cpp* you can compile
 the above program with gcc:
-```cpp
-g++ -O2 -lfinal -std=c++11 timer.cpp -o timer
+```bash
+g++ timer.cpp -o timer -O2 -lfinal -std=c++11
 ```
 
 
@@ -431,7 +476,7 @@ class extendedApplication : public FApplication
           || last_avg[2] != load_avg[2] )
         {
           FUserEvent user_event(fc::User_Event, 0);
-          user_event.setData (FDataPtr(&load_avg));
+          user_event.setData (load_avg);
           FApplication::sendEvent (getMainWidget(), &user_event);
         }
 
@@ -458,8 +503,7 @@ class dialogWidget final : public FDialog
   private:
     void onUserEvent (FUserEvent* ev) override
     {
-      FDataPtr dataPtr = ev->getData();
-      auto& lavg = *(reinterpret_cast<LoadAvg*>(dataPtr));
+      const auto& lavg = ev->getData<LoadAvg>();
       std::setlocale(LC_NUMERIC, "C");
       loadavg_label.clear();
       loadavg_label << "Load average: " << lavg[0] << ", "
@@ -483,7 +527,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_user-event.cpp.png" alt="user-event.cpp">
-  <figcaption>Figure 5.  User event generation</figcaption>
+  <figcaption>Figure 6.  User event generation</figcaption>
 </figure>
 <br /><br />
 
@@ -493,8 +537,8 @@ int main (int argc, char* argv[])
 
 After entering the source code in *user-event.cpp* you can compile
 the above program with gcc:
-```cpp
-g++ -O2 -lfinal -std=c++11 user-event.cpp -o user-event
+```bash
+g++ user-event.cpp -o user-event -O2 -lfinal -std=c++11
 ```
 
 
@@ -530,9 +574,9 @@ to other widget objects.
 1. For calling functions or static methods via a pointer:
 
 ```cpp
-template<typename Function
-       , typename FunctionPointer<Function>::type = nullptr
-       , typename... Args>
+template< typename Function
+        , typename FunctionPointer<Function>::type = nullptr
+        , typename... Args >
 void FWidget::addCallback ( const FString& cb_signal
                           , Function&&     cb_function
                           , Args&&...      args)
@@ -542,9 +586,9 @@ void FWidget::addCallback ( const FString& cb_signal
 2. For calling functions or static methods via a reference:
 
 ```cpp
-template<typename Function
-       , typename FunctionReference<Function>::type = nullptr
-       , typename... Args>
+template< typename Function
+        , typename FunctionReference<Function>::type = nullptr
+        , typename... Args >
 void FWidget::addCallback ( const FString& cb_signal
                           , Function&      cb_function
                           , Args&&...      args)
@@ -554,11 +598,11 @@ void FWidget::addCallback ( const FString& cb_signal
 3. For calling a member method of a specific instance:
 
 ```cpp
-template<typename Object
-       , typename Function
-       , typename ObjectPointer<Object>::type = nullptr
-       , typename MemberFunctionPointer<Function>::type = nullptr
-       , typename... Args>
+template< typename Object
+        , typename Function
+        , typename ObjectPointer<Object>::type = nullptr
+        , typename MemberFunctionPointer<Function>::type = nullptr
+        , typename... Args >
 void FWidget::addCallback ( const FString& cb_signal
                           , Object&&       cb_instance
                           , Function&&     cb_member
@@ -568,9 +612,9 @@ void FWidget::addCallback ( const FString& cb_signal
 
 4. For calling a std::bind call wrapper or a lambda expression:
 ```cpp
-template<typename Function
-       , typename ClassObject<Function>::type = nullptr
-       , typename... Args>
+template< typename Function
+        , typename ClassObject<Function>::type = nullptr
+        , typename... Args >
 void FWidget::addCallback ( const FString& cb_signal
                           , Function&&     cb_function
                           , Args&&...      args)
@@ -580,11 +624,11 @@ void FWidget::addCallback ( const FString& cb_signal
 5. For calling a std::bind call wrapper to a specific instance:
 
 ```cpp
-template<typename Object
-       , typename Function
-       , typename ObjectPointer<Object>::type = nullptr
-       , typename ClassObject<Function>::type = nullptr
-       , typename... Args>
+template< typename Object
+        , typename Function
+        , typename ObjectPointer<Object>::type = nullptr
+        , typename ClassObject<Function>::type = nullptr
+        , typename... Args >
 void FWidget::addCallback ( const FString& cb_signal
                           , Object&&       cb_instance
                           , Function&&     cb_function
@@ -596,9 +640,9 @@ void FWidget::addCallback ( const FString& cb_signal
 with the keyword auto:
 
 ```cpp
-template<typename Function
-       , typename ClassObject<Function>::type = nullptr
-       , typename... Args>
+template< typename Function
+        , typename ClassObject<Function>::type = nullptr
+        , typename... Args >
 void FWidget::addCallback ( const FString& cb_signal
                           , Function&      cb_function
                           , Args&&...      args)
@@ -612,8 +656,8 @@ remove all existing callbacks from an object.
 1. To delete functions or static methods callbacks via a pointer:
 
 ```cpp
-template<typename FunctionPtr
-       , typename FunctionPointer<FunctionPtr>::type = nullptr>
+template< typename FunctionPtr
+        , typename FunctionPointer<FunctionPtr>::type = nullptr >
 void FWidget::delCallback (FunctionPtr&& cb_func_ptr)
 {...}
 ```
@@ -621,8 +665,8 @@ void FWidget::delCallback (FunctionPtr&& cb_func_ptr)
 2. To delete functions or static methods callbacks via a reference:
 
 ```cpp
-template<typename Function
-       , typename FunctionReference<Function>::type = nullptr>
+template< typename Function
+        , typename FunctionReference<Function>::type = nullptr >
 void FWidget::delCallback (Function& cb_function)
 {...}
 ```
@@ -630,8 +674,8 @@ void FWidget::delCallback (Function& cb_function)
 3. To delete all callbacks from a specific instance:
 
 ```cpp
-template<typename Object
-       , typename ObjectPointer<Object>::type = nullptr>
+template< typename Object
+        , typename ObjectPointer<Object>::type = nullptr >
 void FWidget::delCallback (Object&& cb_instance)
 {...}
 ```
@@ -646,8 +690,8 @@ void delCallback (const FString& cb_signal)
 5. To delete all callbacks of a signal and specific instance:
 
 ```cpp
-template<typename Object
-       , typename ObjectPointer<Object>::type = nullptr>
+template< typename Object
+        , typename ObjectPointer<Object>::type = nullptr >
 void delCallback (const FString& cb_signal, Object&& cb_instance)
 {...}
 ```
@@ -754,7 +798,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_callback-function.cpp.png" alt="callback-function.cpp">
-  <figcaption>Figure 6.  Button with a callback function</figcaption>
+  <figcaption>Figure 7.  Button with a callback function</figcaption>
 </figure>
 <br /><br />
 
@@ -764,8 +808,8 @@ int main (int argc, char* argv[])
 
 After entering the source code in *callback-function.cpp* you can compile
 the above program with gcc:
-```cpp
-g++ -O2 -lfinal callback-function.cpp -o callback-function
+```bash
+g++ callback-function.cpp -o callback-function -O2 -lfinal
 ```
 &nbsp;
 
@@ -817,7 +861,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_callback-lambda.cpp.png" alt="callback-lambda.cpp">
-  <figcaption>Figure 7.  Button with lambda expression callback.</figcaption>
+  <figcaption>Figure 8.  Button with lambda expression callback.</figcaption>
 </figure>
 <br /><br />
 
@@ -827,8 +871,8 @@ int main (int argc, char* argv[])
 
 After entering the source code in *callback-lambda.cpp* you can compile
 the above program with gcc:
-```cpp
-g++ -O2 -lfinal -std=c++11 callback-lambda.cpp -o callback-lambda
+```bash
+g++ callback-lambda.cpp -o callback-lambda -O2 -lfinal -std=c++11
 ```
 &nbsp;
 
@@ -876,7 +920,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_callback-method.cpp.png" alt="callback-method.cpp">
-  <figcaption>Figure 8.  Button with a callback method</figcaption>
+  <figcaption>Figure 9.  Button with a callback method</figcaption>
 </figure>
 <br /><br />
 
@@ -886,8 +930,8 @@ int main (int argc, char* argv[])
 
 After entering the source code in *callback-method.cpp* you can compile
 the above program with gcc:
-```cpp
-g++ -O2 -lfinal -std=c++11 callback-method.cpp -o callback-method
+```bash
+g++ callback-method.cpp -o callback-method -O2 -lfinal -std=c++11
 ```
 &nbsp;
 
@@ -997,7 +1041,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_emit-signal.cpp.png" alt="emit-signal.cpp">
-  <figcaption>Figure 9.  Callbacks with custom signals</figcaption>
+  <figcaption>Figure 10.  Callbacks with custom signals</figcaption>
 </figure>
 <br /><br />
 
@@ -1007,8 +1051,8 @@ int main (int argc, char* argv[])
 
 After entering the source code in *emit-signal.cpp* you can compile
 the above program with gcc:
-```cpp
-g++ -O2 -lfinal -std=c++11 emit-signal.cpp -o emit-signal
+```bash
+g++ emit-signal.cpp -o emit-signal -O2 -lfinal -std=c++11
 ```
 
 
@@ -1038,7 +1082,7 @@ If you want to ignore padding spaces, you must force this with the
 
 <figure class="image">
   <img src="widget-coordinates.svg" alt="widget coordinates">
-  <figcaption>Figure 10.  Widget coordinates</figcaption>
+  <figcaption>Figure 11.  Widget coordinates</figcaption>
 </figure>
 <br /><br />
 
@@ -1088,7 +1132,7 @@ methods.
 
 <figure class="image">
   <img src="widget-lengths.svg" alt="widget lengths">
-  <figcaption>Figure 11.  Width and height of a widget</figcaption>
+  <figcaption>Figure 12.  Width and height of a widget</figcaption>
 </figure>
 <br /><br />
 
@@ -1141,7 +1185,7 @@ absolute geometry values as a `FRect` object, you can call the method
 
 <figure class="image">
   <img src="widget-geometry.svg" alt="widget geometry">
-  <figcaption>Figure 12.  Geometry of widgets</figcaption>
+  <figcaption>Figure 13.  Geometry of widgets</figcaption>
 </figure>
 <br /><br />
 
@@ -1237,19 +1281,12 @@ class dialogWidget : public FDialog
       FDialog::adjustSize();
       // Centers the dialog in the terminal
       centerDialog();
-    }
-
-    void setSize (const FSize& size, bool) override
-    {
-      // Calling super class methods setSize() + adjustSize()
-      FDialog::setSize (size, false);
-      FDialog::adjustSize();
+      // Adjust widgets before drawing
+      adjustWidgets();
     }
 
     void draw() override
     {
-      adjustWidgets();  // Adjust widgets before drawing 
-
       // Calling super class method draw()
       FDialog::draw();
 
@@ -1275,7 +1312,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_size-adjustment.cpp.png" alt="size-adjustment.cpp">
-  <figcaption>Figure 13.  Dynamic layout</figcaption>
+  <figcaption>Figure 14.  Dynamic layout</figcaption>
 </figure>
 <br /><br />
 
@@ -1285,8 +1322,8 @@ int main (int argc, char* argv[])
 
 After entering the source code in *size-adjustment.cpp* you can compile
 the above program with gcc:
-```cpp
-g++ -O2 -lfinal -std=c++11 size-adjustment.cpp -o size-adjustment
+```bash
+g++ size-adjustment.cpp -o size-adjustment -O2 -lfinal -std=c++11
 ```
 
 
@@ -1403,7 +1440,7 @@ int main (int argc, char* argv[])
 ```
 <figure class="image">
   <img src="first-steps_scrollview.cpp.png" alt="scrollview.cpp">
-  <figcaption>Figure 14.  Dialog with a scrolling viewport</figcaption>
+  <figcaption>Figure 15.  Dialog with a scrolling viewport</figcaption>
 </figure>
 <br /><br />
 
@@ -1413,6 +1450,6 @@ int main (int argc, char* argv[])
 
 After entering the source code in *scrollview.cpp* you can compile
 the above program with gcc:
-```cpp
-g++ -O2 -lfinal -std=c++11 scrollview.cpp -o scrollview
+```bash
+g++ scrollview.cpp -o scrollview -O2 -lfinal -std=c++11
 ```

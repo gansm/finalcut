@@ -38,9 +38,6 @@ using finalcut::FSize;
 class Background final : public finalcut::FDialog
 {
   public:
-    // Using-declaration
-    using FDialog::setGeometry;
-
     // Typedef
     typedef std::tuple<uChar, uChar, uChar>  RGB;
 
@@ -108,8 +105,7 @@ Background::Background (finalcut::FWidget* parent)
 
   for (auto& c : color_list)
   {
-    FDataPtr data_ptr = reinterpret_cast<FDataPtr>(&c.second);
-    finalcut::FListBoxItem item (c.first, data_ptr);
+    finalcut::FListBoxItem item (c.first, c.second);
     color_choice.insert(item);
   }
 
@@ -199,9 +195,8 @@ void Background::cb_choice()
   uChar r{};
   uChar g{};
   uChar b{};
-  const FDataPtr data_ptr = color_choice.getItemData();
-  const RGB* rgb = reinterpret_cast<RGB*>(data_ptr);
-  std::tie(r, g, b) = *rgb;
+  const RGB rgb = color_choice.getItemData<RGB>();
+  std::tie(r, g, b) = rgb;
   red.setValue(r);
   green.setValue(g);
   blue.setValue(b);

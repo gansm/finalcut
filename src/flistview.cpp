@@ -199,21 +199,6 @@ FListViewItem::FListViewItem (iterator parent_iter)
 }
 
 //----------------------------------------------------------------------
-FListViewItem::FListViewItem ( const FStringList& cols
-                             , FDataPtr data
-                             , iterator parent_iter )
-  : FObject{nullptr}
-  , column_list{cols}
-  , data_pointer{data}
-{
-  if ( cols.empty() )
-    return;
-
-  replaceControlCodes();
-  insert (this, parent_iter);
-}
-
-//----------------------------------------------------------------------
 FListViewItem::~FListViewItem()  // destructor
 {
   // Remove from parent itemlist
@@ -254,7 +239,7 @@ FString FListViewItem::getText (int column) const
     return fc::emptyFString::get();
 
   // Convert column position to address offset (index)
-  const std::size_t index = std::size_t(column - 1);
+  const auto index = std::size_t(column - 1);
   return column_list[index];
 }
 
@@ -290,7 +275,7 @@ void FListViewItem::setText (int column, const FString& text)
 
     if ( ! listview->header[index].fixed_width )
     {
-      const int column_width = int(getColumnWidth(text));
+      const auto column_width = int(getColumnWidth(text));
 
       if ( column_width > listview->header[index].width )
         listview->header[index].width = column_width;
@@ -720,7 +705,7 @@ fc::text_alignment FListView::getColumnAlignment (int column) const
     return fc::alignLeft;
 
   // Convert column position to address offset (index)
-  const std::size_t index = std::size_t(column - 1);
+  const auto index = std::size_t(column - 1);
   return header[index].alignment;
 }
 
@@ -733,7 +718,7 @@ FString FListView::getColumnText (int column) const
     return fc::emptyFString::get();
 
   // Convert column position to address offset (index)
-  const std::size_t index = std::size_t(column - 1);
+  const auto index = std::size_t(column - 1);
   return header[index].name;
 }
 
@@ -741,7 +726,7 @@ FString FListView::getColumnText (int column) const
 fc::sorting_type FListView::getColumnSortType (int column) const
 {
   fc::sorting_type type;
-  const std::size_t col = std::size_t(column);
+  const auto col = std::size_t(column);
 
   try
   {
@@ -779,7 +764,7 @@ void FListView::setColumnAlignment (int column, fc::text_alignment align)
     return;
 
   // Convert column position to address offset (index)
-  const std::size_t index = std::size_t(column - 1);
+  const auto index = std::size_t(column - 1);
   header[index].alignment = align;
 }
 
@@ -792,11 +777,11 @@ void FListView::setColumnText (int column, const FString& label)
     return;
 
   // Convert column position to address offset (index)
-  std::size_t index = std::size_t(column - 1);
+  auto index = std::size_t(column - 1);
 
   if ( ! header[index].fixed_width )
   {
-    const int column_width = int(getColumnWidth(label));
+    const auto column_width = int(getColumnWidth(label));
 
     if ( column_width > header[index].width )
       header[index].width = column_width;
@@ -893,33 +878,6 @@ FObject::iterator FListView::insert ( FListViewItem* item
 
   afterInsertion();  // post-processing
   return item_iter;
-}
-
-//----------------------------------------------------------------------
-FObject::iterator FListView::insert ( const FStringList& cols
-                                    , FDataPtr d
-                                    , iterator parent_iter )
-{
-  FListViewItem* item;
-
-  if ( cols.empty() || parent_iter == getNullIterator() )
-    return getNullIterator();
-
-  if ( ! *parent_iter )
-    parent_iter = root;
-
-  try
-  {
-    item = new FListViewItem (cols, d, getNullIterator());
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FListViewItem");
-    return getNullIterator();
-  }
-
-  item->replaceControlCodes();
-  return insert(item, parent_iter);
 }
 
 //----------------------------------------------------------------------
@@ -1417,7 +1375,7 @@ void FListView::onFocusOut (FFocusEvent*)
 //----------------------------------------------------------------------
 void FListView::adjustViewport (const int element_count)
 {
-  const int height = int(getClientHeight());
+  const auto height = int(getClientHeight());
 
   if ( height <= 0 || element_count == 0 )
     return;
@@ -1553,7 +1511,7 @@ inline void FListView::mapKeyFunctions()
 //----------------------------------------------------------------------
 void FListView::processKeyAction (FKeyEvent* ev)
 {
-  const int idx = int(ev->key());
+  const auto idx = int(ev->key());
 
   if ( key_map.find(idx) != key_map.end() )
   {
@@ -1704,7 +1662,7 @@ void FListView::drawHeadlines()
     || max_line_width < 1 )
     return;
 
-  headerItems::const_iterator iter = header.begin();
+  HeaderItems::const_iterator iter = header.begin();
   headerline.clear();
 
   if ( hasCheckableItems() )
@@ -1802,7 +1760,7 @@ void FListView::drawListLine ( const FListViewItem* item
     {
       static constexpr std::size_t ellipsis_length = 2;
       const auto& text = item->column_list[col];
-      std::size_t width = std::size_t(header[col].width);
+      auto width = std::size_t(header[col].width);
       const std::size_t column_width = getColumnWidth(text);
       // Increment the value of col for the column position
       // and the next iteration
@@ -2025,16 +1983,16 @@ inline void FListView::drawHeaderBorder (std::size_t length)
 
 
 //----------------------------------------------------------------------
-void FListView::drawHeadlineLabel (const headerItems::const_iterator& iter)
+void FListView::drawHeadlineLabel (const HeaderItems::const_iterator& iter)
 {
   // Print label text
   static constexpr std::size_t leading_space = 1;
   const auto& text = iter->name;
   FString txt{" " + text};
-  const std::size_t width = std::size_t(iter->width);
+  const auto width = std::size_t(iter->width);
   std::size_t column_width = getColumnWidth(txt);
   const std::size_t column_max = leading_space + width;
-  const headerItems::const_iterator first = header.begin();
+  const HeaderItems::const_iterator first = header.begin();
   const int column = int(std::distance(first, iter)) + 1;
   const bool has_sort_indicator( sort_column == column && ! hide_sort_indicator );
   const auto& wc = getColorTheme();
@@ -2161,7 +2119,7 @@ void FListView::drawBufferedHeadline()
 }
 
 //----------------------------------------------------------------------
-void FListView::drawColumnEllipsis ( const headerItems::const_iterator& iter
+void FListView::drawColumnEllipsis ( const HeaderItems::const_iterator& iter
                                    , const FString& text )
 {
   // Print label ellipsis
@@ -2211,7 +2169,7 @@ std::size_t FListView::determineLineWidth (FListViewItem* item)
 
   for (auto&& header_item : header)
   {
-    const std::size_t width = std::size_t(header_item.width);
+    const auto width = std::size_t(header_item.width);
     const bool fixed_width = header_item.fixed_width;
 
     if ( ! fixed_width )
@@ -2318,7 +2276,7 @@ void FListView::mouseHeaderClicked()
   {
     static constexpr int leading_space = 1;
     const bool has_sort_indicator( column == sort_column );
-    int click_width = int(getColumnWidth(item.name));
+    auto click_width = int(getColumnWidth(item.name));
 
     if ( has_sort_indicator )
       click_width += 2;
@@ -2377,7 +2335,7 @@ void FListView::wheelDown (int pagesize)
   if ( itemlist.empty() )
     return;
 
-  const int element_count = int(getCount());
+  const auto element_count = int(getCount());
 
   if ( current_iter.getPosition() + 1 == element_count )
     return;
@@ -2416,7 +2374,7 @@ bool FListView::dragScrollUp (int position_before)
 //----------------------------------------------------------------------
 bool FListView::dragScrollDown (int position_before)
 {
-  const int element_count = int(getCount());
+  const auto element_count = int(getCount());
 
   if ( position_before + 1 == element_count )
   {
@@ -2635,7 +2593,7 @@ inline void FListView::lastPos()
   if ( itemlist.empty() )
     return;
 
-  const int element_count = int(getCount());
+  const auto element_count = int(getCount());
   current_iter += element_count - current_iter.getPosition() - 1;
   const int difference = element_count - last_visible_line.getPosition() - 1;
   first_visible_line += difference;
@@ -2730,7 +2688,7 @@ void FListView::stepForward (int distance)
   if ( itemlist.empty() )
     return;
 
-  const int element_count = int(getCount());
+  const auto element_count = int(getCount());
 
   if ( current_iter.getPosition() + 1 == element_count )
     return;
@@ -2811,7 +2769,7 @@ void FListView::scrollToX (int x)
 void FListView::scrollToY (int y)
 {
   const int pagesize = int(getClientHeight()) - 1;
-  const int element_count = int(getCount());
+  const auto element_count = int(getCount());
 
   if ( first_visible_line.getPosition() == y )
     return;

@@ -27,6 +27,7 @@
 #include "final/emptyfstring.h"
 #include "final/fc.h"
 #include "final/fkey_map.h"
+#include "final/flog.h"
 #include "final/fsystem.h"
 #include "final/fterm.h"
 #include "final/ftermdata.h"
@@ -90,7 +91,7 @@ void FTermcap::termcap()
 
   // Open termcap file
 #if defined(__sun) && defined(__SVR4)
-  char* termtype = fterm_data->getTermType();
+  char* termtype = const_cast<char*>(fterm_data->getTermType());
 #else
   const char* termtype = fterm_data->getTermType();
 #endif
@@ -127,23 +128,22 @@ void FTermcap::termcapError (int status)
   static constexpr int no_entry = 0;
   static constexpr int db_not_found = -1;
   static constexpr int uninitialized = -2;
-  finalcut::FLog& log = *FApplication::getLog();
 
   if ( status == no_entry || status == uninitialized )
   {
     const char* termtype = fterm_data->getTermType();
-    log << FLog::Error
-        << "Unknown terminal: \""  << termtype << "\". "
-        << "Check the TERM environment variable. "
-        << "Also make sure that the terminal "
-        << "is defined in the termcap/terminfo database."
-        << std::endl;
+    std::clog << FLog::Error
+              << "Unknown terminal: \""  << termtype << "\". "
+              << "Check the TERM environment variable. "
+              << "Also make sure that the terminal "
+              << "is defined in the termcap/terminfo database."
+              << std::endl;
     std::abort();
   }
   else if ( status == db_not_found )
   {
-    log << "The termcap/terminfo database could not be found."
-        << std::endl;
+    std::clog << "The termcap/terminfo database could not be found."
+              << std::endl;
     std::abort();
   }
 }
@@ -224,8 +224,9 @@ void FTermcap::termcapStrings()
   // Get termcap strings
 
   // Read termcap output strings
-  for (std::size_t i{0}; strings[i].tname[0] != 0; i++)
-    strings[i].string = getString(strings[i].tname);
+
+  for (auto&& entry : strings)
+    entry.string = getString(entry.tname);
 
   const auto& ho = TCAP(fc::t_cursor_home);
 
@@ -239,10 +240,13 @@ void FTermcap::termcapKeys()
   // Get termcap keys
 
   // Read termcap key sequences up to the self-defined values
-  for ( std::size_t i{0};
-        fc::fkey[i].string == nullptr && fc::fkey[i].tname[0] != 0;
-        i++ )
-    fc::fkey[i].string = getString(fc::fkey[i].tname);
+  for (auto&& entry : fc::fkey)
+  {
+    if ( entry.string != nullptr )
+      break;
+
+    entry.string = getString(entry.tname);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -257,8 +261,8 @@ int FTermcap::_tputs (const char* str, int affcnt, fn_putc putc)
 
 // private Data Member of FTermcap - termcap capabilities
 //----------------------------------------------------------------------
-FTermcap::tcap_map FTermcap::strings[] =
-{
+FTermcap::TCapMapType FTermcap::strings =
+{{
 //  .------------- term string
 //  |    .-------- Tcap-code
 //  |    |      // variable name                -> description
@@ -347,9 +351,8 @@ FTermcap::tcap_map FTermcap::strings[] =
   { nullptr, "ac" },  // acs_chars              -> graphics charset pairs (vt100)
   { nullptr, "ks" },  // keypad_xmit            -> enter 'key-board_transmit' mode
   { nullptr, "ke" },  // keypad_local           -> leave 'key-board_transmit' mode
-  { nullptr, "Km" },  // key_mouse              -> Mouse event has occurred
-  { nullptr, "\0" }
-};
+  { nullptr, "Km" }   // key_mouse              -> Mouse event has occurred
+}};
 
 /*
  * (P)    indicates that padding may be specified

@@ -80,14 +80,14 @@ class FScrollView : public FWidget
     FScrollView& operator = (const FScrollView&) = delete;
 
     // Accessors
-    const FString       getClassName() const override;
+    FString             getClassName() const override;
     std::size_t         getViewportWidth() const;
     std::size_t         getViewportHeight() const;
-    const FSize         getViewportSize() const;
+    FSize               getViewportSize() const;
     std::size_t         getScrollWidth() const;
     std::size_t         getScrollHeight() const;
-    const FSize         getScrollSize() const;
-    const FPoint        getScrollPos() const;
+    FSize               getScrollSize() const;
+    FPoint              getScrollPos() const;
     int                 getScrollX() const;
     int                 getScrollY() const;
 
@@ -150,20 +150,20 @@ class FScrollView : public FWidget
 
   private:
     // Typedefs
-    typedef std::unordered_map<int, std::function<void()>> keyMap;
+    typedef std::unordered_map<int, std::function<void()>> KeyMap;
 
     // Constants
     static constexpr int vertical_border_spacing = 2;
     static constexpr int horizontal_border_spacing = 2;
 
     // Accessors
-    const FPoint        getViewportCursorPos() const;
+    FPoint              getViewportCursorPos() const;
 
     // Methods
     void                init();
     void                mapKeyFunctions();
     void                calculateScrollbarPos() const;
-    template<typename Callback>
+    template <typename Callback>
     void                initScrollbar ( FScrollbarPtr&
                                       , fc::orientation
                                       , Callback );
@@ -181,7 +181,7 @@ class FScrollView : public FWidget
     FTermArea*         viewport{nullptr};  // virtual scroll content
     FScrollbarPtr      vbar{nullptr};
     FScrollbarPtr      hbar{nullptr};
-    keyMap             key_map{};
+    KeyMap             key_map{};
     uInt8              nf_offset{0};
     bool               use_own_print_area{false};
     bool               update_scrollbar{true};
@@ -191,7 +191,7 @@ class FScrollView : public FWidget
 
 // FScrollView inline functions
 //----------------------------------------------------------------------
-inline const FString FScrollView::getClassName() const
+inline FString FScrollView::getClassName() const
 { return "FScrollView"; }
 
 //----------------------------------------------------------------------
@@ -203,7 +203,7 @@ inline std::size_t FScrollView::getViewportHeight() const
 { return getHeight() - horizontal_border_spacing; }
 
 //----------------------------------------------------------------------
-inline const FSize FScrollView::getViewportSize() const
+inline FSize FScrollView::getViewportSize() const
 { return FSize(getViewportWidth(), getViewportHeight()); }
 
 //----------------------------------------------------------------------
@@ -215,11 +215,11 @@ inline std::size_t FScrollView::getScrollHeight() const
 { return scroll_geometry.getHeight(); }
 
 //----------------------------------------------------------------------
-inline const FSize FScrollView::getScrollSize() const
+inline FSize FScrollView::getScrollSize() const
 { return scroll_geometry.getSize(); }
 
 //----------------------------------------------------------------------
-inline const FPoint FScrollView::getScrollPos() const
+inline FPoint FScrollView::getScrollPos() const
 { return viewport_geometry.getPos(); }
 
 //----------------------------------------------------------------------
@@ -268,7 +268,7 @@ inline void FScrollView::print (const FPoint& pos)
 }
 
 //----------------------------------------------------------------------
-template<typename Callback>
+template <typename Callback>
 inline void FScrollView::initScrollbar ( FScrollbarPtr& bar
                                        , fc::orientation o
                                        , Callback cb_handler )

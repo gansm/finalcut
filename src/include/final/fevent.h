@@ -68,9 +68,9 @@
  *      ├─────▏FTimerEvent ▏
  *      │    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
  *      │
- *      │    ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- *      └─────▏FUserEvent  ▏
- *           ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *      │    ▕▔▔▔▔▔▔▔▔▔▔▔▔▏1     1▕▔▔▔▔▔▔▔▏
+ *      └─────▏FUserEvent ▏- - - -▕ FData ▏
+ *           ▕▁▁▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▏
  */
 
 #ifndef FEVENT_H
@@ -80,7 +80,11 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <memory>
+#include <utility>
+
 #include "final/fc.h"
+#include "final/fdata.h"
 #include "final/fpoint.h"
 #include "final/ftypes.h"
 
@@ -184,9 +188,9 @@ class FWheelEvent : public FEvent  // wheel event
     int           getWheel() const;
 
   private:
-    FPoint  p;
-    FPoint  tp;
-    int     w;
+    FPoint  p{};
+    FPoint  tp{};
+    int     w{};
 };
 
 
@@ -342,14 +346,52 @@ class FUserEvent : public FEvent  // user event
     // Disable copy assignment operator (=)
     FUserEvent& operator = (const FUserEvent&) = delete;
 
-    int      getUserId() const;
-    FDataPtr getData() const;
-    void     setData (FDataPtr);
+    int               getUserId() const;
+    template <typename T>
+    FData<T>&&        getFDataObject() const;
+    template <typename T>
+    clean_fdata_t<T>& getData() const;
+    template <typename T>
+    void              setFDataObject (T&&);
+    template <typename T>
+    void              setData (T&&);
 
   private:
-    int      uid{0};
-    FDataPtr data_pointer{nullptr};
+    // Using-declaration
+    using FDataAccessPtr = std::shared_ptr<FDataAccess>;
+
+    // Data members
+    int               uid{0};
+    FDataAccessPtr    data_pointer{nullptr};
 };
+
+//----------------------------------------------------------------------
+template <typename T>
+inline FData<T>&& FUserEvent::getFDataObject() const
+{
+  return static_cast<FData<T>&&>(*data_pointer);
+}
+
+//----------------------------------------------------------------------
+template <typename T>
+inline clean_fdata_t<T>& FUserEvent::getData() const
+{
+  return static_cast<FData<clean_fdata_t<T>>&>(*data_pointer).get();
+}
+
+//----------------------------------------------------------------------
+template <typename T>
+inline void FUserEvent::setFDataObject (T&& fdata)
+{
+  data_pointer.reset(&(std::forward<T>(fdata)));
+}
+
+//----------------------------------------------------------------------
+template <typename T>
+inline void FUserEvent::setData (T&& data)
+{
+  data_pointer.reset(makeFData(std::forward<T>(data)));
+}
 
 }  // namespace finalcut
 

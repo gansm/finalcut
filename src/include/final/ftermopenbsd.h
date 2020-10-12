@@ -87,7 +87,7 @@ class FTermOpenBSD final
     FTermOpenBSD& operator = (const FTermOpenBSD&) = delete;
 
     // Accessor
-    const FString      getClassName() const;
+    FString            getClassName() const;
 
     // Inquiries
     static bool        isBSDConsole();
@@ -122,7 +122,7 @@ class FTermOpenBSD final
 
 // FTermOpenBSD inline functions
 //----------------------------------------------------------------------
-inline const FString FTermOpenBSD::getClassName() const
+inline FString FTermOpenBSD::getClassName() const
 { return "FTermOpenBSD"; }
 
 //----------------------------------------------------------------------
