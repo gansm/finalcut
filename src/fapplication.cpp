@@ -69,31 +69,6 @@ uInt64         FApplication::next_event_wait {5000};     // preset to 5 ms (200 
 struct timeval FApplication::time_last_event{};
 
 
-const std::vector<FApplication::CmdOption> FApplication::long_options =
-{
-  {"encoding",                 required_argument, nullptr,  'e' },
-  {"log-file",                 required_argument, nullptr,  'l' },
-  {"no-mouse",                 no_argument,       nullptr,  'm' },
-  {"no-optimized-cursor",      no_argument,       nullptr,  'o' },
-  {"no-terminal-detection",    no_argument,       nullptr,  'd' },
-  {"no-terminal-data-request", no_argument,       nullptr,  'r' },
-  {"no-color-change",          no_argument,       nullptr,  'c' },
-  {"no-sgr-optimizer",         no_argument,       nullptr,  's' },
-  {"vgafont",                  no_argument,       nullptr,  'v' },
-  {"newfont",                  no_argument,       nullptr,  'n' },
-  {"dark-theme",               no_argument,       nullptr,  't' },
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-  {"no-esc-for-alt-meta",      no_argument,       nullptr,  'E' },
-  {"no-cursorstyle-change",    no_argument,       nullptr,  'C' },
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
-  {"no-esc-for-alt-meta",      no_argument,       nullptr,  'E' },
-#endif
-
-  {nullptr,                    0,                 nullptr,  0   }
-};
-
-
 //----------------------------------------------------------------------
 // class FApplication
 //----------------------------------------------------------------------
@@ -484,13 +459,40 @@ void FApplication::setTerminalEncoding (const FString& enc_str)
 }
 
 //----------------------------------------------------------------------
-inline FApplication::CmdMap& FApplication::mapCmdOptions()
+inline void FApplication::setLongOptions (std::vector<CmdOption>& long_options)
+{
+  long_options =
+  {
+    {"encoding",                 required_argument, nullptr,  'e' },
+    {"log-file",                 required_argument, nullptr,  'l' },
+    {"no-mouse",                 no_argument,       nullptr,  'm' },
+    {"no-optimized-cursor",      no_argument,       nullptr,  'o' },
+    {"no-terminal-detection",    no_argument,       nullptr,  'd' },
+    {"no-terminal-data-request", no_argument,       nullptr,  'r' },
+    {"no-color-change",          no_argument,       nullptr,  'c' },
+    {"no-sgr-optimizer",         no_argument,       nullptr,  's' },
+    {"vgafont",                  no_argument,       nullptr,  'v' },
+    {"newfont",                  no_argument,       nullptr,  'n' },
+    {"dark-theme",               no_argument,       nullptr,  't' },
+
+  #if defined(__FreeBSD__) || defined(__DragonFly__)
+    {"no-esc-for-alt-meta",      no_argument,       nullptr,  'E' },
+    {"no-cursorstyle-change",    no_argument,       nullptr,  'C' },
+  #elif defined(__NetBSD__) || defined(__OpenBSD__)
+    {"no-esc-for-alt-meta",      no_argument,       nullptr,  'E' },
+  #endif
+
+    {nullptr,                    0,                 nullptr,  0   }
+  };
+}
+
+//----------------------------------------------------------------------
+inline void FApplication::setCmdOptionsMap (CmdMap& cmd_map)
 {
   using std::placeholders::_1;
   auto enc = std::bind(&FApplication::setTerminalEncoding, _1);
   auto log = std::bind(&FApplication::setLogFile, _1);
   auto opt = &FApplication::getStartOptions;
-  static CmdMap cmd_map{};
 
   // --encoding
   cmd_map['e'] = [enc] (const char* arg) { enc(FString(arg)); };
@@ -523,7 +525,6 @@ inline FApplication::CmdMap& FApplication::mapCmdOptions()
   // --no-esc-for-alt-meta
   cmd_map['E'] = [opt] (const char*) { opt().meta_sends_escape = false; };
 #endif
-  return cmd_map;
 }
 
 //----------------------------------------------------------------------
@@ -531,12 +532,15 @@ void FApplication::cmdOptions (const int& argc, char* argv[])
 {
   // Interpret the command line options
 
-  auto& cmd_map = mapCmdOptions();
+  CmdMap cmd_map{};
+  setCmdOptionsMap(cmd_map);
 
   while ( true )
   {
     opterr = 0;
     int idx{0};
+    std::vector<CmdOption> long_options{};
+    setLongOptions(long_options);
     auto p = reinterpret_cast<const struct option*>(long_options.data());
     const int opt = getopt_long (argc, argv, "", p, &idx);
 

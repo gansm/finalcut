@@ -150,6 +150,18 @@ class FApplication : public FWidget
     virtual void          processExternalUserEvent();
 
   private:
+#if defined(__sun) && defined(__SVR4)
+    struct CmdOption
+    {
+      const char* name;  // <- name is without 'const' in Solaris
+      int         has_arg;
+      int*        flag;
+      int         val;
+    };
+#else
+    using CmdOption = struct option;
+#endif
+
     // Typedefs
     typedef std::pair<FObject*, FEvent*> EventPair;
     typedef std::deque<EventPair> FEventQueue;
@@ -158,7 +170,8 @@ class FApplication : public FWidget
     // Methods
     void                  init();
     static void           setTerminalEncoding (const FString&);
-    static CmdMap&        mapCmdOptions();
+    static void           setLongOptions(std::vector<CmdOption>&);
+    static void           setCmdOptionsMap (CmdMap&);
     static void           cmdOptions (const int&, char*[]);
     static FStartOptions& getStartOptions();
     static void           showParameterUsage();
@@ -222,22 +235,7 @@ class FApplication : public FWidget
     static FMouseControl* mouse;
     static FKeyboard*     keyboard;
     static FWidget*       keyboard_widget;
-
-#if defined(__sun) && defined(__SVR4)
-    struct CmdOption
-    {
-      const char* name;  // <- name is without 'const' in Solaris
-      int         has_arg;
-      int*        flag;
-      int         val;
-    };
-#else
-    using CmdOption = struct option;
-#endif
-
-    static const std::vector<CmdOption> long_options;
 };
-
 
 // non-member function forward declarations
 // implemented in fwidget_functions.cpp
