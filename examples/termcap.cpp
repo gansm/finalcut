@@ -230,10 +230,10 @@ void debug (const finalcut::FApplication& TermApp)
             << debug_data.getTermType_SecDA() << "\r\n";
 
   if ( ! ab_s.isEmpty() )
-    tcapString ("|         The answerback String", ab_s);
+    tcapString ("|         The answerback String", ab_s.c_str());
 
   if ( ! sec_da.isEmpty() )
-    tcapString ("|              The SecDA String", sec_da);
+    tcapString ("|              The SecDA String", sec_da.c_str());
 
   std::cout << "`------------------- debug -------------------\r\n";
 }

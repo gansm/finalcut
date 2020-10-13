@@ -355,7 +355,7 @@ void FApplication::setDarkTheme()
 void FApplication::setLogFile (const FString& filename)
 {
   auto& log_stream = getStartOptions().logfile_stream;
-  log_stream.open(filename, std::ofstream::out);
+  log_stream.open(filename.c_str(), std::ofstream::out);
 
   if ( log_stream.is_open() )
   {
@@ -834,10 +834,8 @@ bool FApplication::processDialogSwitchAccelerator() const
 //----------------------------------------------------------------------
 bool FApplication::processAccelerator (const FWidget* const& widget) const
 {
-  bool accpt{false};
-
   if ( ! widget || widget->getAcceleratorList().empty() )
-    return accpt;
+    return false;
 
   for (auto&& item : widget->getAcceleratorList())
   {
@@ -854,15 +852,14 @@ bool FApplication::processAccelerator (const FWidget* const& widget) const
 
       FAccelEvent a_ev (fc::Accelerator_Event, getFocusWidget());
       sendEvent (item.object, &a_ev);
-      accpt = a_ev.isAccepted();
-      break;
+      return a_ev.isAccepted();
     }
 
     if ( quit_now || app_exit_loop )
       break;
   }
 
-  return accpt;
+  return false;
 }
 
 //----------------------------------------------------------------------

@@ -106,7 +106,7 @@ inline std::wstringbuf* FStringStream::rdbuf() const
 
 //----------------------------------------------------------------------
 inline FString FStringStream::str() const
-{ return buffer.str(); }
+{ return FString{buffer.str()}; }
 
 
 // FStringStream non-member function

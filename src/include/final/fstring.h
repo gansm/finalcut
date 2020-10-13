@@ -113,7 +113,10 @@ class FString
     FString& operator << (const char);
     template <typename NumT
             , typename std::enable_if< std::is_integral<NumT>::value
+                                    && ! std::is_same<NumT, bool>::value
+                                    && ! std::is_pointer<NumT>::value
                                     || std::is_floating_point<NumT>::value
+                                    && ! std::is_pointer<NumT>::value
                                      , int>::type = 0 >
     FString& operator << (const NumT);
 
@@ -156,8 +159,6 @@ class FString
     bool operator >  (const FString&) const;
     template <typename CharT>
     bool operator >  (const CharT&) const;
-
-    operator const char* () const { return c_str(); }
 
     // Accessor
     virtual FString getClassName() const;
@@ -263,14 +264,6 @@ class FString
 
     // Friend Non-member operator functions
     friend FString operator + (const FString&, const FString&);
-    friend FString operator + (const FString&, const wchar_t);
-    friend FString operator + (const std::wstring&, const FString&);
-    friend FString operator + (const wchar_t[], const FString&);
-    friend FString operator + (const std::string&, const FString&);
-    friend FString operator + (const char[], const FString&);
-    friend FString operator + (const wchar_t, const FString&);
-    friend FString operator + (const char, const FString&);
-    friend FString operator + (const FString&, const char);
 
     friend std::ostream&  operator << (std::ostream&, const FString&);
     friend std::istream&  operator >> (std::istream&, FString& s);
@@ -283,7 +276,10 @@ class FString
 //----------------------------------------------------------------------
 template <typename NumT
         , typename std::enable_if< std::is_integral<NumT>::value
+                                && ! std::is_same<NumT, bool>::value
+                                && ! std::is_pointer<NumT>::value
                                 || std::is_floating_point<NumT>::value
+                                && ! std::is_pointer<NumT>::value
                                  , int>::type >
 inline FString& FString::operator << (const NumT val)
 {

@@ -790,7 +790,7 @@ void FFileDialog::cb_processActivate()
                               return ! entry.name.empty()
                                   && input
                                   && ! input.isNull()
-                                  && std::strcmp(entry.name.c_str(), input) == 0
+                                  && std::strcmp(entry.name.c_str(), input.c_str()) == 0
                                   && entry.directory;
                             }
                           );
