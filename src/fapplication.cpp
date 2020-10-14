@@ -1329,7 +1329,7 @@ bool FApplication::isEventProcessable ( FObject* receiver
 
   if ( getModalDialogCounter() > 0 )
   {
-    FWidget* window;
+    const FWidget* window;
 
     if ( widget->isWindowWidget() )
       window = widget;

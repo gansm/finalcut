@@ -398,8 +398,8 @@ char* FString::c_str()
     return const_cast<char*>(_to_cstring(string));
   else if ( string )
   {
-    static char empty_string[] = "";
-    return empty_string;
+    static char empty_string{'\0'};
+    return &empty_string;
   }
   else
     return nullptr;

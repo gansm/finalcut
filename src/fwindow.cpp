@@ -505,7 +505,7 @@ int FWindow::getWindowLayer (FWidget* obj)
 {
   // returns the window layer from the widget obj
 
-  FWidget* window;
+  const FWidget* window;
 
   if ( ! getWindowList() )
     return -1;
