@@ -2849,11 +2849,8 @@ void FListView::cb_vbarChange (const FWidget*)
       break;
 
     case FScrollbar::scrollJump:
-    {
-      int value = vbar->getValue();
-      scrollToY (value);
+      scrollToY (vbar->getValue());
       break;
-    }
 
     case FScrollbar::scrollWheelUp:
       wheelUp (wheel_distance);

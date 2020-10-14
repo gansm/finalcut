@@ -694,9 +694,9 @@ void FScrollView::copy2area()
 
 // private methods of FScrollView
 //----------------------------------------------------------------------
-inline FPoint FScrollView::getViewportCursorPos() const
+inline FPoint FScrollView::getViewportCursorPos()
 {
-  const auto& window = FWindow::getWindowWidget(this);
+  auto window = FWindow::getWindowWidget(this);
 
   if ( window )
   {
@@ -846,7 +846,7 @@ void FScrollView::setVerticalScrollBarVisibility() const
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setViewportCursor() const
+void FScrollView::setViewportCursor()
 {
   if ( ! isChild(getFocusWidget()) )
     return;

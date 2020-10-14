@@ -186,7 +186,7 @@ class FApplication : public FWidget
     bool                  sendKeyDownEvent (FWidget*) const;
     bool                  sendKeyPressEvent (FWidget*) const;
     bool                  sendKeyUpEvent (FWidget*) const;
-    void                  sendKeyboardAccelerator() const;
+    void                  sendKeyboardAccelerator();
     void                  processKeyboardEvent() const;
     bool                  processDialogSwitchAccelerator() const;
     bool                  processAccelerator (const FWidget* const&) const;
@@ -216,7 +216,7 @@ class FApplication : public FWidget
     void                  processLogger() const;
     bool                  processNextEvent();
     void                  performTimerAction (FObject*, FEvent*) override;
-    static bool           isEventProcessable (const FObject*, const FEvent*);
+    static bool           isEventProcessable (FObject*, const FEvent*);
     static bool           isNextEventTimeout();
 
     // Data members

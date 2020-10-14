@@ -184,7 +184,7 @@ class FWidget : public FVTerm, public FObject
 
     // Accessors
     FString                  getClassName() const override;
-    FWidget*                 getRootWidget() const;
+    FWidget*                 getRootWidget();
     FWidget*                 getParentWidget() const;
     static FWidget*&         getMainWidget();
     static FWidget*&         getActiveWindow();
@@ -364,7 +364,7 @@ class FWidget : public FVTerm, public FObject
     void                     initTerminal() override;
     void                     initDesktop();
     virtual void             adjustSize();
-    void                     adjustSizeGlobal() const;
+    void                     adjustSizeGlobal();
     void                     hideArea (const FSize&);
     virtual bool             focusNextChild();  // Change child...
     virtual bool             focusPrevChild();  // ...focus

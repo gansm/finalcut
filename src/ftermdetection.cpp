@@ -211,7 +211,7 @@ bool FTermDetection::getTTYtype()
     term_basename++;
 
   std::FILE* fp{};
-  char str[BUFSIZ]{};
+  std::array<char, BUFSIZ> str{};
 
   if ( ! fsystem )
     return false;
@@ -220,11 +220,11 @@ bool FTermDetection::getTTYtype()
     return false;
 
   // Read and parse the file
-  while ( fgets(str, sizeof(str) - 1, fp) != nullptr )
+  while ( fgets(str.data(), str.size() - 1, fp) != nullptr )
   {
     const char* type{nullptr};  // nullptr == not found
     const char* name{nullptr};
-    char* p = str;
+    char* p = str.data();
 
     while ( *p )
     {
@@ -232,7 +232,7 @@ bool FTermDetection::getTTYtype()
         *p = '\0';
       else if ( type == nullptr )
         type = p;
-      else if ( name == nullptr && p != str && p[-1] == '\0' )
+      else if ( name == nullptr && p != str.data() && p[-1] == '\0' )
         name = p;
 
       p++;

@@ -483,7 +483,7 @@ void FWindow::delWindow (const FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-FWindow* FWindow::getWindowWidget (const FWidget* obj)
+FWindow* FWindow::getWindowWidget (FWidget* obj)
 {
   // returns the window object to the given widget obj
   auto p_obj = obj->getParentWidget();
@@ -495,17 +495,17 @@ FWindow* FWindow::getWindowWidget (const FWidget* obj)
   }
 
   if ( obj->isWindowWidget() )
-    return const_cast<FWindow*>(reinterpret_cast<const FWindow*>(obj));
+    return static_cast<FWindow*>(obj);
   else
     return nullptr;
 }
 
 //----------------------------------------------------------------------
-int FWindow::getWindowLayer (const FWidget* obj)
+int FWindow::getWindowLayer (FWidget* obj)
 {
   // returns the window layer from the widget obj
 
-  const FWidget* window;
+  FWidget* window;
 
   if ( ! getWindowList() )
     return -1;

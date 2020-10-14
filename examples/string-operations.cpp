@@ -370,7 +370,7 @@ void stringConcatenationExample()
 
   // Test: concatenate a FString and a wide string (operator +)
   const finalcut::FString& add3 = finalcut::FString("FString + ")
-                                + const_cast<wchar_t*>(L"wchar_t*");
+                                + L"wchar_t*";
   std::cout << "       add: " << add3 << std::endl;
 
   // Test: concatenate a FString and a c++ string (operator +)
@@ -402,7 +402,7 @@ void stringConcatenationExample()
   std::cout << "       add: " << add9 << std::endl;
 
   // Test: concatenate a c-string and a FString (operator +)
-  const finalcut::FString& add10 = const_cast<char*>("char*")
+  const finalcut::FString& add10 = "char*"
                                  + finalcut::FString(" + FString");
   std::cout << "       add: " << add10 << std::endl;
 
@@ -412,7 +412,7 @@ void stringConcatenationExample()
   std::cout << "       add: " << add11 << std::endl;
 
   // Test: concatenate a wide string and a FString (operator +)
-  const finalcut::FString& add12 = const_cast<wchar_t*>(L"wchar_t*")
+  const finalcut::FString& add12 = L"wchar_t*"
                                  + finalcut::FString(" + FString");
   std::cout << "       add: " << add12 << std::endl;
 

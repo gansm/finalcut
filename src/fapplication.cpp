@@ -762,7 +762,7 @@ inline bool FApplication::sendKeyUpEvent (FWidget* widget) const
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::sendKeyboardAccelerator() const
+inline void FApplication::sendKeyboardAccelerator()
 {
   if ( FWidget::getOpenMenu() )
     return;
@@ -782,7 +782,7 @@ inline void FApplication::sendKeyboardAccelerator() const
   // Global keyboard accelerator
   if ( ! accpt )
   {
-    auto root_widget = static_cast<const FWidget*>(getRootWidget());
+    auto root_widget = getRootWidget();
 
     if ( root_widget )
       processAccelerator (root_widget);
@@ -1319,17 +1319,17 @@ void FApplication::performTimerAction (FObject* receiver, FEvent* event)
 }
 
 //----------------------------------------------------------------------
-bool FApplication::isEventProcessable ( const FObject* receiver
+bool FApplication::isEventProcessable ( FObject* receiver
                                       , const FEvent* event )
 {
   if ( ! receiver->isWidget() )  // No restrictions for non-widgets
     return true;
 
-  const auto widget = static_cast<const FWidget*>(receiver);
+  auto widget = static_cast<FWidget*>(receiver);
 
   if ( getModalDialogCounter() > 0 )
   {
-    const FWidget* window;
+    FWidget* window;
 
     if ( widget->isWindowWidget() )
       window = widget;

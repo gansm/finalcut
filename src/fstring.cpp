@@ -128,10 +128,8 @@ FString::FString (fc::SpecialCharacter c)
 {
   if ( c )
   {
-    wchar_t s[2];
-    s[0] = static_cast<wchar_t>(c);
-    s[1] = L'\0';
-    _assign (s);
+    std::array<wchar_t, 2> s{{ static_cast<wchar_t>(c), L'\0' }};
+    _assign (s.data());
   }
 }
 
@@ -140,10 +138,8 @@ FString::FString (const wchar_t c)
 {
   if ( c )
   {
-    wchar_t s[2];
-    s[0] = c;
-    s[1] = L'\0';
-    _assign (s);
+    std::array<wchar_t, 2> s{{ c, L'\0' }};
+    _assign (s.data());
   }
 }
 
@@ -152,10 +148,8 @@ FString::FString (const char c)
 {
   if ( c )
   {
-    wchar_t s[2];
-    s[0] = wchar_t(c & 0xff);
-    s[1] = L'\0';
-    _assign (s);
+    std::array<wchar_t, 2> s{{ wchar_t(c & 0xff), L'\0' }};
+    _assign (s.data());
   }
 }
 
@@ -403,7 +397,10 @@ char* FString::c_str()
   if ( length > 0 )
     return const_cast<char*>(_to_cstring(string));
   else if ( string )
-    return const_cast<char*>("");
+  {
+    static char empty_string[] = "";
+    return empty_string;
+  }
   else
     return nullptr;
 }
@@ -769,7 +766,7 @@ FString& FString::setString (const FString& s)
 //----------------------------------------------------------------------
 FString& FString::setNumber (sInt64 num)
 {
-  wchar_t buf[30]{};
+  std::array<wchar_t, 30> buf{};
   wchar_t* s = &buf[29];  // Pointer to the last character
   auto abs_num = static_cast<uInt64>(num);
 
@@ -813,7 +810,7 @@ FString& FString::setNumber (uInt64 num)
 //----------------------------------------------------------------------
 FString& FString::setNumber (lDouble f_num, int precision)
 {
-  wchar_t format[20]{};  // = "%.<precision>Lg"
+  std::array<wchar_t, 20> format{};  // = "%.<precision>Lg"
   wchar_t* s = &format[0];
   *s++ = L'%';
   *s++ = L'.';
@@ -838,14 +835,14 @@ FString& FString::setNumber (lDouble f_num, int precision)
   *s++ = L'g';
   *s = L'\0';
 
-  return sprintf(format, f_num);
+  return sprintf(format.data(), f_num);
 }
 
 //----------------------------------------------------------------------
 FString& FString::setFormatedNumber (sInt64 num, char separator)
 {
   int n{0};
-  wchar_t buf[30]{};
+  std::array<wchar_t, 30> buf{};
   wchar_t* s = &buf[29];  // Pointer to the last character
   auto abs_num = static_cast<uInt64>(num);
 
@@ -1515,7 +1512,7 @@ inline const wchar_t* FString::_extractToken ( wchar_t* rest[]
   if ( ! token[0] )
     return nullptr;
 
-  *rest = std::wcspbrk(token, delim);
+  *rest = std::wcspbrk(std::move(token), delim);
 
   if ( *rest )
     *(*rest)++ = '\0';
@@ -1555,9 +1552,9 @@ std::ostream& operator << (std::ostream& outstr, const FString& s)
 //----------------------------------------------------------------------
 std::istream& operator >> (std::istream& instr, FString& s)
 {
-  char buf[FString::INPBUFFER + 1]{};
-  instr.getline (buf, FString::INPBUFFER);
-  const wchar_t* wc_str = s._to_wcstring(buf);
+  std::array<char, FString::INPBUFFER + 1> buf{};
+  instr.getline (buf.data(), FString::INPBUFFER);
+  const wchar_t* wc_str = s._to_wcstring(buf.data());
 
   if ( wc_str )
   {
@@ -1589,9 +1586,9 @@ std::wostream& operator << (std::wostream& outstr, const FString& s)
 //----------------------------------------------------------------------
 std::wistream& operator >> (std::wistream& instr, FString& s)
 {
-  wchar_t buf[FString::INPBUFFER + 1]{};
-  instr.getline (buf, FString::INPBUFFER);
-  s._assign (buf);
+  std::array<wchar_t, FString::INPBUFFER + 1> buf{};
+  instr.getline (buf.data(), FString::INPBUFFER);
+  s._assign (buf.data());
   return instr;
 }
 

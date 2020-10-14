@@ -141,9 +141,9 @@ FWidget::~FWidget()  // destructor
 
 // public methods of FWidget
 //----------------------------------------------------------------------
-FWidget* FWidget::getRootWidget() const
+FWidget* FWidget::getRootWidget()
 {
-  auto obj = const_cast<FWidget*>(this);
+  FWidget* obj = this;
   auto p_obj = getParentWidget();
 
   while ( ! obj->isRootWidget() && p_obj )
@@ -1322,7 +1322,7 @@ void FWidget::adjustSize()
 }
 
 //----------------------------------------------------------------------
-void FWidget::adjustSizeGlobal() const
+void FWidget::adjustSizeGlobal()
 {
   if ( ! isRootWidget() )
   {
