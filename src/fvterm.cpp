@@ -907,7 +907,7 @@ void FVTerm::getArea (const FPoint& pos, const FTermArea* area)
 
   for (int y{0}; y < y_end; y++)  // line loop
   {
-    auto& tc = vterm->data[(ay + y) * vterm->width + ax];  // terminal character
+    const auto& tc = vterm->data[(ay + y) * vterm->width + ax];  // terminal character
     auto& ac = area->data[y * area->width];  // area character
     std::memcpy (&ac, &tc, sizeof(ac) * unsigned(length));
 
@@ -955,7 +955,7 @@ void FVTerm::getArea (const FRect& box, const FTermArea* area)
   for (int _y = 0; _y < y_end; _y++)  // line loop
   {
     const int line_len = area->width + area->right_shadow;
-    auto& tc = vterm->data[(y + _y - 1) * vterm->width + x - 1];  // terminal character
+    const auto& tc = vterm->data[(y + _y - 1) * vterm->width + x - 1];  // terminal character
     auto& ac = area->data[(dy + _y) * line_len + dx];  // area character
     std::memcpy (&ac, &tc, sizeof(ac) * unsigned(length));
 
@@ -1138,7 +1138,7 @@ void FVTerm::scrollAreaForward (FTermArea* area) const
   {
     const int pos1 = y * total_width;
     const int pos2 = (y + 1) * total_width;
-    auto& sc = area->data[pos2];  // source character
+    const auto& sc = area->data[pos2];  // source character
     auto& dc = area->data[pos1];  // destination character
     std::memcpy (&dc, &sc, sizeof(dc) * unsigned(length));
     area->changes[y].xmin = 0;
@@ -1191,7 +1191,7 @@ void FVTerm::scrollAreaReverse (FTermArea* area) const
   {
     const int pos1 = (y - 1) * total_width;
     const int pos2 = y * total_width;
-    auto& sc = area->data[pos1];  // source character
+    const auto& sc = area->data[pos1];  // source character
     auto& dc = area->data[pos2];  // destination character
     std::memcpy (&dc, &sc, sizeof(dc) * unsigned(length));
     area->changes[y].xmin = 0;
@@ -1477,7 +1477,7 @@ void FVTerm::updateOverlappedColor ( const FTermArea* area
   const int ty = terminal_pos.getY();
   const int width = area->width + area->right_shadow;
   // Area character
-  auto& ac = area->data[y * width + x];
+  const auto& ac = area->data[y * width + x];
   // Terminal character
   auto& tc = vterm->data[ty * vterm->width + tx];
   // New character
@@ -1612,7 +1612,7 @@ bool FVTerm::updateVTermCharacter ( const FTermArea* area
   const int y = area_pos.getY();
   const int width = area->width + area->right_shadow;
   // Area character
-  auto& ac = area->data[y * width + x];
+  const auto& ac = area->data[y * width + x];
 
   // Get covered state
   const auto is_covered = isCovered(terminal_pos, area);
@@ -2742,7 +2742,7 @@ bool FVTerm::printWrap (FTermArea* area) const
 inline void FVTerm::printCharacterOnCoordinate ( FTermArea* area
                                                , const int& ax
                                                , const int& ay
-                                               , FChar& ch)
+                                               , const FChar& ch) const
 {
   if ( area->cursor_x <= 0
     || area->cursor_y <= 0

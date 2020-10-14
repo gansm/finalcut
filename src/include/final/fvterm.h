@@ -407,7 +407,10 @@ class FVTerm
     bool                  isFullWidthPaddingChar (const FChar* const&) const;
     static void           cursorWrap();
     bool                  printWrap (FTermArea*) const;
-    void                  printCharacterOnCoordinate (FTermArea*, const int&, const int&, FChar&);
+    void                  printCharacterOnCoordinate ( FTermArea*
+                                                     , const int&
+                                                     , const int&
+                                                     , const FChar&) const;
     void                  printPaddingCharacter (FTermArea*, const FChar&);
     void                  updateTerminalLine (uInt) const;
     bool                  updateTerminalCursor() const;
