@@ -1243,9 +1243,6 @@ FTerm::defaultPutChar& FTerm::putchar()
 //----------------------------------------------------------------------
 void FTerm::putstring (const char str[], int affcnt)
 {
-  if ( ! fsys )
-    getFSystem();
-
   FTermcap::paddingPrint (str, affcnt, FTerm::putchar_ASCII);
 }
 

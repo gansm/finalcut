@@ -157,6 +157,7 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     void setParentTest();
     void addTest();
     void delTest();
+    void elementAccessTest();
     void iteratorTest();
     void timeTest();
     void timerTest();
@@ -176,6 +177,7 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (setParentTest);
     CPPUNIT_TEST (addTest);
     CPPUNIT_TEST (delTest);
+    CPPUNIT_TEST (elementAccessTest);
     CPPUNIT_TEST (iteratorTest);
     CPPUNIT_TEST (timeTest);
     CPPUNIT_TEST (timerTest);
@@ -453,6 +455,51 @@ void FObjectTest::delTest()
   CPPUNIT_ASSERT ( child->getParent() != obj );
 
   delete child;
+  delete obj;
+}
+
+//----------------------------------------------------------------------
+void FObjectTest::elementAccessTest()
+{
+  // obj -> child1
+  //     -> child2
+  //     -> child3
+  //     -> child4
+  //     -> child5
+
+  auto obj =  new finalcut::FObject();
+  auto child1 = new finalcut::FObject(obj);
+  auto child2 = new finalcut::FObject(obj);
+  auto child3 = new finalcut::FObject(obj);
+  auto child4 = new finalcut::FObject(obj);
+  auto child5 = new finalcut::FObject(obj);
+
+  CPPUNIT_ASSERT ( child1->getParent() == obj );
+  CPPUNIT_ASSERT ( child2->getParent() == obj );
+  CPPUNIT_ASSERT ( child3->getParent() == obj );
+  CPPUNIT_ASSERT ( child4->getParent() == obj );
+  CPPUNIT_ASSERT ( child5->getParent() == obj );
+
+  finalcut::FObject::const_reference c_first = obj->front();
+  finalcut::FObject::const_reference c_last = obj->back();
+  CPPUNIT_ASSERT ( c_first == child1 );
+  CPPUNIT_ASSERT ( c_last == child5 );
+  CPPUNIT_ASSERT ( obj->numOfChildren() == 5 );
+  obj->delChild(child1);
+  CPPUNIT_ASSERT ( obj->numOfChildren() == 4 );
+  CPPUNIT_ASSERT ( obj->front() == child2 );
+  CPPUNIT_ASSERT ( obj->back() == child5 );
+
+  finalcut::FObject::reference first = obj->front();
+  finalcut::FObject::reference last = obj->back();
+  CPPUNIT_ASSERT ( first == child2 );
+  CPPUNIT_ASSERT ( last == child5 );
+  CPPUNIT_ASSERT ( obj->numOfChildren() == 4 );
+  obj->delChild(child5);
+  CPPUNIT_ASSERT ( obj->numOfChildren() == 3 );
+  CPPUNIT_ASSERT ( obj->front() == child2 );
+  CPPUNIT_ASSERT ( obj->back() == child4 );
+
   delete obj;
 }
 
