@@ -294,7 +294,6 @@ void EventLog::onTimer (finalcut::FTimerEvent*)
     str("");
     scrolltext.scrollToEnd();
     redraw();
-    updateTerminal();
   }
 }
 

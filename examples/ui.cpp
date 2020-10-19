@@ -159,9 +159,6 @@ void ProgressDialog::onTimer (finalcut::FTimerEvent*)
 
   if ( getStatusBar() )
     getStatusBar()->drawMessage();
-
-  updateTerminal();
-  flush();
 }
 
 //----------------------------------------------------------------------

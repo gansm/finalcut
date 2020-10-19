@@ -929,9 +929,6 @@ void closeDropDown (const FWidget* widget, const FPoint& mouse_position)
 
   if ( FWidget::getStatusBar() )
     FWidget::getStatusBar()->drawMessage();
-
-  widget->updateTerminal();
-  FVTerm::flush();
 }
 
 }  // namespace finalcut

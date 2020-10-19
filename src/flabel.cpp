@@ -205,11 +205,7 @@ void FLabel::onMouseDown (FMouseEvent* ev)
     accel_widget->redraw();
 
     if ( getStatusBar() )
-    {
       accel_widget->getStatusBar()->drawMessage();
-      updateTerminal();
-      flush();
-    }
   }
 }
 
@@ -232,11 +228,7 @@ void FLabel::onAccel (FAccelEvent* ev)
       FApplication::sendEvent(accel_widget, &in);
 
       if ( getStatusBar() )
-      {
         accel_widget->getStatusBar()->drawMessage();
-        updateTerminal();
-        flush();
-      }
     }
   }
 

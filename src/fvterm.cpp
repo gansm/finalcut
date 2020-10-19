@@ -183,9 +183,10 @@ void FVTerm::hideCursor (bool enable) const
 
   const char* visibility_str = FTerm::cursorsVisibilityString (enable);
 
-  if ( visibility_str )
-    appendOutputBuffer(visibility_str);
+  if ( ! visibility_str )
+    return;
 
+  appendOutputBuffer(visibility_str);
   flush();
 }
 
@@ -286,24 +287,8 @@ void FVTerm::updateTerminal() const
     }
   }
 
-  const auto& data = FTerm::getFTermData();
-
-  // Checks if the resizing of the terminal is not finished
-  if ( data && data->hasTermResized() )
-    return;
-
-  // Monitor whether the terminal size has changed
-  if ( isTermSizeChanged() )
-  {
-    raise (SIGWINCH);  // Send SIGWINCH
-    return;
-  }
-
-  // Update data on VTerm
-  updateVTerm();
-
   // Checks if VTerm has changes
-  if ( ! vterm->has_changes )
+  if ( ! hasPendingUpdates(vterm) )
     return;
 
   for (uInt y{0}; y < uInt(vterm->height); y++)
@@ -630,8 +615,12 @@ void FVTerm::flush()
   while ( ! output_buffer->empty() )
   {
     static const FTerm::defaultPutChar& FTermPutchar = FTerm::putchar();
-    FTermPutchar (output_buffer->front());
-    output_buffer->pop();
+
+    if ( FTermPutchar )
+    {
+      FTermPutchar (output_buffer->front());
+      output_buffer->pop();
+    }
   }
 
   std::fflush(stdout);
@@ -1283,7 +1272,23 @@ void FVTerm::processTerminalUpdate() const
   // Retains terminal updates if there are unprocessed inputs
   static constexpr int max_skip = 8;
 
-  if ( ! terminal_update_pending )
+  const auto& data = FTerm::getFTermData();
+
+  // Checks if the resizing of the terminal is not finished
+  if ( data && data->hasTermResized() )
+    return;
+
+  // Monitor whether the terminal size has changed
+  if ( isTermSizeChanged() )
+  {
+    raise (SIGWINCH);  // Send SIGWINCH
+    return;
+  }
+
+  // Update data on VTerm
+  updateVTerm();
+
+  if ( ! terminal_update_pending && ! hasPendingUpdates(vterm) )
     return;
 
   if ( ! keyboard->isInputDataPending() )
@@ -1652,7 +1657,7 @@ void FVTerm::updateVTerm() const
 {
   // Updates the character data from all areas to VTerm
 
-  if ( vdesktop && vdesktop->has_changes )
+  if ( hasPendingUpdates(vdesktop) )
   {
     putArea(vdesktop);
     vdesktop->has_changes = false;
@@ -1671,7 +1676,7 @@ void FVTerm::updateVTerm() const
     if ( ! (v_win && v_win->visible) )
       continue;
 
-    if ( v_win->has_changes )
+    if ( hasPendingUpdates(v_win) )
     {
       putArea(v_win);
       v_win->has_changes = false;
@@ -2939,6 +2944,12 @@ inline bool FVTerm::isTermSizeChanged() const
 inline bool FVTerm::isTermSizeCheckTimeout()
 {
   return FObject::isTimeout (&last_term_size_check, term_size_check_timeout);
+}
+
+//----------------------------------------------------------------------
+inline bool FVTerm::hasPendingUpdates (FTermArea* area)
+{
+  return ( area && area->has_changes ) ? true : false;
 }
 
 //----------------------------------------------------------------------

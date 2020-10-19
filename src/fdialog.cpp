@@ -447,8 +447,6 @@ void FDialog::activateDialog()
 
   if ( getStatusBar() )
     getStatusBar()->drawMessage();
-
-  updateTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -530,8 +528,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
   else  // ev->getButton() != fc::LeftButton
   {
     // Click on titlebar menu button
-    if ( ms.mouse_x < 4 && ms.mouse_y == 1
-      && dialog_menu->isShown() )
+    if ( ms.mouse_x < 4 && ms.mouse_y == 1 && dialog_menu->isShown() )
       leaveMenu();  // close menu
 
     cancelMouseResize();  // Cancel resize
@@ -690,8 +687,6 @@ void FDialog::onAccel (FAccelEvent*)
 
     if ( has_raised )
       redraw();
-
-    updateTerminal();
   }
 }
 
@@ -717,8 +712,6 @@ void FDialog::onWindowActive (FEvent*)
 
   if ( getStatusBar() )
     getStatusBar()->drawMessage();
-
-  updateTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -1227,9 +1220,6 @@ void FDialog::leaveMenu()
 
   if ( getStatusBar() )
     getStatusBar()->drawMessage();
-
-  updateTerminal();
-  flush();
 }
 
 //----------------------------------------------------------------------
@@ -1273,9 +1263,6 @@ void FDialog::selectFirstMenuItem()
 
   if ( getStatusBar() )
     getStatusBar()->drawMessage();
-
-  updateTerminal();
-  flush();
 }
 
 //----------------------------------------------------------------------
@@ -1480,12 +1467,10 @@ inline void FDialog::raiseActivateDialog()
 //----------------------------------------------------------------------
 inline void FDialog::lowerActivateDialog()
 {
-  const bool has_lowered = lowerWindow();
+  lowerWindow();
 
   if ( ! isWindowActive() )
     activateDialog();
-  else if ( has_lowered )
-    updateTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -1624,7 +1609,6 @@ void FDialog::cancelMouseResize()
 
   resize_click_pos.setPoint (0, 0);
   drawBorder();
-  updateTerminal();
 }
 
 //----------------------------------------------------------------------

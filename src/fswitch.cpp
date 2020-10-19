@@ -123,8 +123,6 @@ void FSwitch::draw()
   drawLabel();
   drawCheckButton();
   FToggleButton::draw();
-  updateTerminal();
-  flush();
 }
 
 //----------------------------------------------------------------------

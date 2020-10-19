@@ -905,11 +905,7 @@ void FWidget::redraw()
     finishTerminalUpdate();
 
   if ( redraw_root_widget == this )
-  {
-    updateTerminal();
-    flush();
     redraw_root_widget = nullptr;
-  }
 }
 
 //----------------------------------------------------------------------
@@ -976,8 +972,6 @@ void FWidget::show()
   if ( show_root_widget && show_root_widget == this )
   {
     finishTerminalUpdate();
-    updateTerminal();
-    flush();
     show_root_widget = nullptr;
   }
 
@@ -1953,8 +1947,6 @@ bool FWidget::changeFocus ( FWidget* follower, FWidget* parent
     {
       redraw();
       follower->redraw();
-      updateTerminal();
-      flush();
     }
   }
 

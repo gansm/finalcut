@@ -189,7 +189,6 @@ void FStatusBar::hide()
   const FColor bg = wc->term_bg;
   setColor (fg, bg);
   print() << FPoint{1, 1} << FString{getDesktopWidth(), L' '};
-  updateTerminal();
   FWindow::hide();
 }
 

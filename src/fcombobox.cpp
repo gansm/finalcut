@@ -102,8 +102,6 @@ void FDropDownListBox::hide()
   setOpenMenu(nullptr);
   const auto& t_geometry = getTermGeometryWithShadow();
   restoreVTerm (t_geometry);
-  updateTerminal();
-  flush();
 }
 
 
@@ -428,8 +426,6 @@ void FComboBox::onMouseDown (FMouseEvent* ev)
     else
       list_window.hide();
   }
-
-  updateTerminal();
 }
 
 //----------------------------------------------------------------------

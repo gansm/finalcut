@@ -184,7 +184,7 @@ void FTextView::scrollTo (int x, int y)
   }
 
   drawText();
-  updateTerminal();
+  processTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -328,7 +328,6 @@ void FTextView::clear()
             << FString{size, L' '};
   }
 
-  updateTerminal();
   processChanged();
 }
 
@@ -476,7 +475,7 @@ void FTextView::onWheel (FWheelEvent* ev)
   if ( isShown() )
     drawText();
 
-  updateTerminal();
+  processTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -621,8 +620,6 @@ void FTextView::draw()
   }
 
   setCursorPos ({int(getWidth()), int(getHeight())});
-  updateTerminal();
-  flush();
 }
 
 //----------------------------------------------------------------------

@@ -971,9 +971,6 @@ void FApplication::unselectMenubarItems() const
 
     if ( FWidget::getStatusBar() )
       FWidget::getStatusBar()->drawMessage();
-
-    updateTerminal();
-    flush();
   }
 }
 
@@ -1290,13 +1287,13 @@ bool FApplication::processNextEvent()
   if ( is_timeout )
   {
     FObject::getCurrentTime (&time_last_event);
+    processTerminalUpdate();  // before user input
     processKeyboardEvent();
     processMouseEvent();
     processResizeEvent();
-    processTerminalUpdate();
+    processTerminalUpdate();  // after user input
     processCloseWidget();
     processLogger();
-    updateTerminal();
   }
 
   processExternalUserEvent();

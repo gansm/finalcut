@@ -340,7 +340,7 @@ class FVTerm
 
     // Constants
     //   Buffer size for character output on the terminal
-    static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
+    static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 131072;
 
     // Methods
     void                  resetTextAreaToDefault ( const FTermArea*
@@ -417,6 +417,7 @@ class FVTerm
     bool                  isInsideTerminal (const FPoint&) const;
     bool                  isTermSizeChanged() const;
     static bool           isTermSizeCheckTimeout();
+    static bool           hasPendingUpdates (FTermArea*);
     static void           markAsPrinted (uInt, uInt);
     static void           markAsPrinted (uInt, uInt, uInt);
     static void           newFontChanges (FChar*&);

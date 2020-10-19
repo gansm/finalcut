@@ -222,11 +222,7 @@ void FToggleButton::onMouseDown (FMouseEvent* ev)
   redraw();
 
   if ( getStatusBar() )
-  {
     getStatusBar()->drawMessage();
-    updateTerminal();
-    flush();
-  }
 }
 
 //----------------------------------------------------------------------
@@ -299,11 +295,7 @@ void FToggleButton::onAccel (FAccelEvent* ev)
   redraw();
 
   if ( getStatusBar() )
-  {
     getStatusBar()->drawMessage();
-    updateTerminal();
-    flush();
-  }
 
   processClick();
   ev->accept();
@@ -474,10 +466,7 @@ void FToggleButton::onKeyPress (FKeyEvent* ev)
   }
 
   if ( ev->isAccepted() )
-  {
     draw();
-    updateTerminal();
-  }
 }
 
 

@@ -352,8 +352,7 @@ void FListBox::onMouseDown (FMouseEvent* ev)
     if ( yoffset_before != yoffset )
       vbar->drawBar();
 
-    updateTerminal();
-    flush();
+    processTerminalUpdate();
   }
 }
 
@@ -426,8 +425,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
     if ( yoffset_before != yoffset )
       vbar->drawBar();
 
-    updateTerminal();
-    flush();
+    processTerminalUpdate();
   }
 
   // Auto-scrolling when dragging mouse outside the widget
@@ -504,8 +502,7 @@ void FListBox::onTimer (FTimerEvent*)
   if ( yoffset_before != yoffset )
     vbar->drawBar();
 
-  updateTerminal();
-  flush();
+  processTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -547,8 +544,7 @@ void FListBox::onWheel (FWheelEvent* ev)
   if ( yoffset_before != yoffset )
     vbar->drawBar();
 
-  updateTerminal();
-  flush();
+  processTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -1082,8 +1078,7 @@ inline void FListBox::updateDrawing (bool draw_vbar, bool draw_hbar)
   if ( draw_hbar )
     hbar->drawBar();
 
-  updateTerminal();
-  flush();
+  processTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -1803,8 +1798,7 @@ void FListBox::cb_vbarChange (const FWidget*)
     if ( yoffset_before != yoffset )
       vbar->drawBar();
 
-    updateTerminal();
-    flush();
+    processTerminalUpdate();
   }
 }
 
@@ -1862,11 +1856,8 @@ void FListBox::cb_hbarChange (const FWidget*)
     inc_search.clear();
 
   if ( isShown() )
-  {
     drawList();
-    updateTerminal();
-    flush();
-  }
+
 
   if ( scrollType >= FScrollbar::scrollStepBackward )
   {
@@ -1875,8 +1866,7 @@ void FListBox::cb_hbarChange (const FWidget*)
     if ( xoffset_before != xoffset )
       hbar->drawBar();
 
-    updateTerminal();
-    flush();
+    processTerminalUpdate();
   }
 }
 

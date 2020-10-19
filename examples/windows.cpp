@@ -153,7 +153,6 @@ void SmallWindow::onTimer (finalcut::FTimerEvent*)
   top_right_label.redraw();
   bottom_label.unsetEmphasis();
   bottom_label.redraw();
-  updateTerminal();
   delOwnTimers();
 }
 
@@ -344,8 +343,6 @@ void Window::activateWindow (finalcut::FDialog* win) const
 
   if ( has_raised )
     win->redraw();
-
-  updateTerminal();
 }
 
 //----------------------------------------------------------------------

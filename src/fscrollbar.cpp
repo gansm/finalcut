@@ -352,7 +352,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
     {
       setValue(new_val);
       drawBar();
-      updateTerminal();
+      processTerminalUpdate();
       processScroll();
     }
   }
@@ -757,7 +757,7 @@ void FScrollbar::jumpToClickPos (int x, int y)
   {
     setValue(new_val);
     drawBar();
-    updateTerminal();
+    processTerminalUpdate();
     scroll_type = FScrollbar::scrollJump;
     processScroll();
   }

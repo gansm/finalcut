@@ -237,8 +237,6 @@ void MainWindow::draw()
 
   if ( finalcut::FTerm::isMonochron() )
     setReverse(false);
-
-  updateTerminal();
 }
 
 //----------------------------------------------------------------------

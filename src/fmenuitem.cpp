@@ -250,8 +250,6 @@ void FMenuItem::openMenu() const
   dd_menu->show();
   dd_menu->raiseWindow();
   dd_menu->redraw();
-  updateTerminal();
-  flush();
 }
 
 //----------------------------------------------------------------------

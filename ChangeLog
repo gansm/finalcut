@@ -1,3 +1,6 @@
+2020-10-19  Markus Gans  <guru.mail@muenster.de>
+	* Optimize the terminal output speed
+
 2020-10-17  Markus Gans  <guru.mail@muenster.de>
 	* Fixes unit test segfault
 
