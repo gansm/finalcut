@@ -885,7 +885,7 @@ void FWidget::redraw()
 
   if ( isRootWidget() )
   {
-    startTerminalUpdate();
+    startDrawing();
     // clean desktop
     auto color_theme = getColorTheme();
     setColor (color_theme->term_fg, color_theme->term_bg);
@@ -902,7 +902,7 @@ void FWidget::redraw()
     drawChildren();
 
   if ( isRootWidget() )
-    finishTerminalUpdate();
+    finishDrawing();
 
   if ( redraw_root_widget == this )
     redraw_root_widget = nullptr;
@@ -949,7 +949,7 @@ void FWidget::show()
 
   if ( ! show_root_widget )
   {
-    startTerminalUpdate();
+    startDrawing();
     show_root_widget = this;
   }
 
@@ -971,7 +971,9 @@ void FWidget::show()
 
   if ( show_root_widget && show_root_widget == this )
   {
-    finishTerminalUpdate();
+    finishDrawing();
+    processTerminalUpdate();
+    flush();
     show_root_widget = nullptr;
   }
 

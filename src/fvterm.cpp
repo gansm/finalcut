@@ -54,7 +54,7 @@ namespace finalcut
 static FVTerm* init_object{nullptr};
 
 // static class attributes
-bool                 FVTerm::terminal_update_complete{false};
+bool                 FVTerm::draw_completed{false};
 bool                 FVTerm::terminal_update_pending{false};
 bool                 FVTerm::force_terminal_update{false};
 bool                 FVTerm::no_terminal_updates{false};
@@ -277,7 +277,7 @@ void FVTerm::updateTerminal() const
 
   if ( ! force_terminal_update )
   {
-    if ( ! terminal_update_complete )
+    if ( ! draw_completed )
       return;
 
     if ( keyboard->isInputDataPending() )
@@ -1310,17 +1310,17 @@ void FVTerm::processTerminalUpdate() const
 }
 
 //----------------------------------------------------------------------
-void FVTerm::startTerminalUpdate()
+void FVTerm::startDrawing()
 {
   // Pauses the terminal updates for the printing phase
-  terminal_update_complete = false;
+  draw_completed = false;
 }
 
 //----------------------------------------------------------------------
-void FVTerm::finishTerminalUpdate()
+void FVTerm::finishDrawing()
 {
   // After the printing phase is completed, the terminal will be updated
-  terminal_update_complete = true;
+  draw_completed = true;
 }
 
 //----------------------------------------------------------------------
@@ -2947,7 +2947,7 @@ inline bool FVTerm::isTermSizeCheckTimeout()
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::hasPendingUpdates (FTermArea* area)
+inline bool FVTerm::hasPendingUpdates (const FTermArea* area)
 {
   return ( area && area->has_changes ) ? true : false;
 }

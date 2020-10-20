@@ -319,8 +319,8 @@ class FVTerm
     void                  scrollAreaReverse (FTermArea*) const;
     void                  clearArea (FTermArea*, int = ' ') const;
     void                  processTerminalUpdate() const;
-    static void           startTerminalUpdate();
-    static void           finishTerminalUpdate();
+    static void           startDrawing();
+    static void           finishDrawing();
     virtual void          initTerminal();
 
   private:
@@ -417,7 +417,7 @@ class FVTerm
     bool                  isInsideTerminal (const FPoint&) const;
     bool                  isTermSizeChanged() const;
     static bool           isTermSizeCheckTimeout();
-    static bool           hasPendingUpdates (FTermArea*);
+    static bool           hasPendingUpdates (const FTermArea*);
     static void           markAsPrinted (uInt, uInt);
     static void           markAsPrinted (uInt, uInt, uInt);
     static void           newFontChanges (FChar*&);
@@ -448,7 +448,7 @@ class FVTerm
     static FPoint*          term_pos;  // terminal cursor position
     static FKeyboard*       keyboard;
     static timeval          last_term_size_check;
-    static bool             terminal_update_complete;
+    static bool             draw_completed;
     static bool             terminal_update_pending;
     static bool             force_terminal_update;
     static bool             no_terminal_updates;

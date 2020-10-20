@@ -157,7 +157,6 @@ int main (int argc, char* argv[])
     }
   }  // Hide and destroy the dialog object
 
-
   // Create and show tooltip for two seconds
   finalcut::FToolTip tooltip{&app};
   tooltip.setText ("You have chosen " + label_text);
