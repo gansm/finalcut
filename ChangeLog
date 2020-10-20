@@ -1,3 +1,7 @@
+2020-10-20  Markus Gans  <guru.mail@muenster.de>
+	* For fast mouse movements the keyboard interval was increased 
+	  from 13.3 to 30 Hz
+
 2020-10-19  Markus Gans  <guru.mail@muenster.de>
 	* Optimize the terminal output speed
 

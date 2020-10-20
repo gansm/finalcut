@@ -152,7 +152,6 @@ void FVTerm::setTermXY (int x, int y) const
   if ( move_str )
     appendOutputBuffer(move_str);
 
-  flush();
   term_pos->setPoint(x, y);
 }
 
@@ -183,7 +182,7 @@ void FVTerm::hideCursor (bool enable) const
 
   const char* visibility_str = FTerm::cursorsVisibilityString (enable);
 
-  if ( ! visibility_str )
+  if ( ! visibility_str )  // Exit the function if the string is empty
     return;
 
   appendOutputBuffer(visibility_str);

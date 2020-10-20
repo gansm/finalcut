@@ -426,6 +426,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
       vbar->drawBar();
 
     processTerminalUpdate();
+    flush();
   }
 
   // Auto-scrolling when dragging mouse outside the widget

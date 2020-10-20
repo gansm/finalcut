@@ -312,6 +312,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   {
     closeOpenedSubMenu();
     processTerminalUpdate();
+    flush();
   }
 }
 
