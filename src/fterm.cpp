@@ -442,9 +442,9 @@ FTermDebugData& FTerm::getFTermDebugData()
 #endif  // DEBUG
 
 //----------------------------------------------------------------------
-bool FTerm::isNormal (const FChar* const& ch)
+bool FTerm::isNormal (const FChar& ch)
 {
-  return FOptiAttr::isNormal(ch);
+  return FOptiAttr::isNormal(&ch);
 }
 
 //----------------------------------------------------------------------

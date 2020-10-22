@@ -352,20 +352,11 @@ class FVTerm
     static bool           reallocateTextArea ( FTermArea*
                                              , std::size_t );
     static covered_state  isCovered (const FPoint&, const FTermArea*);
-    static void           updateOverlappedColor ( const FTermArea*
-                                                , const FPoint&
-                                                , const FPoint& );
-    static void           updateOverlappedCharacter ( const FTermArea*
-                                                    , const FPoint& );
-    static void           updateShadedCharacter ( const FTermArea*
-                                                , const FPoint&
-                                                , const FPoint& );
-    static void           updateInheritBackground ( const FTermArea*
-                                                  , const FPoint&
-                                                  , const FPoint& );
-    static void           updateCharacter ( const FTermArea*
-                                          , const FPoint&
-                                          , const FPoint& );
+    static void           updateOverlappedColor (const FChar&, FChar&&, FChar&);
+    static void           updateOverlappedCharacter (FChar&&, FChar&);
+    static void           updateShadedCharacter (const FChar&, FChar&&, FChar&);
+    static void           updateInheritBackground (const FChar&, FChar&&, FChar&);
+    static void           updateCharacter (const FChar&, FChar&);
     static bool           updateVTermCharacter ( const FTermArea*
                                                , const FPoint&
                                                , const FPoint& );
@@ -377,15 +368,15 @@ class FVTerm
     static FChar          generateCharacter (const FPoint&);
     static FChar          getCharacter ( character_type
                                        , const FPoint&
-                                       , FVTerm* );
-    static FChar          getCoveredCharacter (const FPoint&, FVTerm*);
-    static FChar          getOverlappedCharacter (const FPoint&, FVTerm*);
+                                       , const FTermArea* );
+    static FChar          getCoveredCharacter (const FPoint&, const FTermArea*);
+    static FChar          getOverlappedCharacter (const FPoint&, const FTermArea*);
     void                  init();
     static void           init_characterLengths (const FOptiMove*);
     void                  finish();
-    static void           putAreaLine (const FChar*, FChar*, int);
-    static void           putAreaCharacter ( const FPoint&, FVTerm*
-                                           , const FChar*, FChar* );
+    static void           putAreaLine (const FChar&, FChar&, std::size_t);
+    static void           putAreaCharacter ( const FPoint&, const FTermArea*
+                                           , const FChar&, FChar& );
     static void           getAreaCharacter ( const FPoint&, const FTermArea*
                                            , FChar*& );
     bool                  clearTerm (int = ' ') const;

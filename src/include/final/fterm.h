@@ -216,7 +216,7 @@ class FTerm final
 #endif
 
     // Inquiries
-    static bool              isNormal (const FChar* const&);
+    static bool              isNormal (const FChar&);
     static bool              isRaw();
     static bool              hasUTF8();
     static bool              hasVT100();
