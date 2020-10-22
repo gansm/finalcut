@@ -1,3 +1,6 @@
+2020-10-22  Markus Gans  <guru.mail@muenster.de>
+	* Repair terminal update skipping
+
 2020-10-20  Markus Gans  <guru.mail@muenster.de>
 	* For fast mouse movements the keyboard interval was increased 
 	  from 13.3 to 30 Hz

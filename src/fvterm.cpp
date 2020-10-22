@@ -55,11 +55,9 @@ static FVTerm* init_object{nullptr};
 
 // static class attributes
 bool                 FVTerm::draw_completed{false};
-bool                 FVTerm::terminal_update_pending{false};
-bool                 FVTerm::force_terminal_update{false};
 bool                 FVTerm::no_terminal_updates{false};
 bool                 FVTerm::cursor_hideable{false};
-int                  FVTerm::skipped_terminal_update{};
+int                  FVTerm::skipped_terminal_update{0};
 uInt64               FVTerm::term_size_check_timeout{500000};  // 500 ms
 uInt                 FVTerm::erase_char_length{};
 uInt                 FVTerm::repeat_char_length{};
@@ -271,24 +269,23 @@ void FVTerm::updateTerminal() const
 {
   // Updates pending changes to the terminal
 
-  if ( no_terminal_updates || FApplication::isQuit() )
-    return;
-
-  if ( ! force_terminal_update )
+  // Check if terminal updates were stopped, application is stopping,
+  // VTerm has changes or the drawing is not completed
+  if ( no_terminal_updates || FApplication::isQuit()
+    || ! (hasPendingUpdates(vterm) && draw_completed) )
   {
-    if ( ! draw_completed )
-      return;
-
-    if ( keyboard->isInputDataPending() )
-    {
-      terminal_update_pending = true;
-      return;
-    }
+    return;
   }
 
-  // Checks if VTerm has changes
-  if ( ! hasPendingUpdates(vterm) )
+  if ( (keyboard->isInputDataPending() || keyboard->isKeyPressed())
+    && skipped_terminal_update <= max_skip )
+  {
+    // Skipping terminal updates if there is unprocessed inputs
+    skipped_terminal_update++;
     return;
+  }
+
+  skipped_terminal_update = 0;
 
   for (uInt y{0}; y < uInt(vterm->height); y++)
     updateTerminalLine (y);
@@ -1268,9 +1265,6 @@ void FVTerm::clearArea (FTermArea* area, int fillchar) const
 //----------------------------------------------------------------------
 void FVTerm::processTerminalUpdate() const
 {
-  // Retains terminal updates if there are unprocessed inputs
-  static constexpr int max_skip = 8;
-
   const auto& data = FTerm::getFTermData();
 
   // Checks if the resizing of the terminal is not finished
@@ -1287,25 +1281,8 @@ void FVTerm::processTerminalUpdate() const
   // Update data on VTerm
   updateVTerm();
 
-  if ( ! terminal_update_pending && ! hasPendingUpdates(vterm) )
-    return;
-
-  if ( ! keyboard->isInputDataPending() )
-  {
-    updateTerminal();
-    terminal_update_pending = false;
-    skipped_terminal_update = 0;
-  }
-  else if ( skipped_terminal_update > max_skip )
-  {
-    force_terminal_update = true;
-    updateTerminal();
-    force_terminal_update = false;
-    terminal_update_pending = false;
-    skipped_terminal_update = 0;
-  }
-  else
-    skipped_terminal_update++;
+  // Update the visible terminal
+  updateTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -1693,7 +1670,7 @@ void FVTerm::callPreprocessingHandler (const FTermArea* area)
 {
   // Call preprocessing handler
 
-  if ( area->preproc_list.empty() )
+  if ( ! area || area->preproc_list.empty() )
     return;
 
   for (auto&& pcall : area->preproc_list)
@@ -1707,7 +1684,7 @@ void FVTerm::callPreprocessingHandler (const FTermArea* area)
 //----------------------------------------------------------------------
 bool FVTerm::hasChildAreaChanges (FTermArea* area) const
 {
-  if ( ! area )
+  if ( ! area || area->preproc_list.empty() )
     return false;
 
   return std::any_of ( area->preproc_list.begin()
@@ -1724,13 +1701,12 @@ bool FVTerm::hasChildAreaChanges (FTermArea* area) const
 //----------------------------------------------------------------------
 void FVTerm::clearChildAreaChanges (const FTermArea* area) const
 {
-  if ( ! area )
+  if ( ! area || area->preproc_list.empty() )
     return;
 
   for (auto&& pcall : area->preproc_list)
   {
-    if ( pcall.instance
-      && pcall.instance->child_print_area )
+    if ( pcall.instance && pcall.instance->child_print_area )
       pcall.instance->child_print_area->has_changes = false;
   }
 }

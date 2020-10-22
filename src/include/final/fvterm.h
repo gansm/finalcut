@@ -341,6 +341,7 @@ class FVTerm
     // Constants
     //   Buffer size for character output on the terminal
     static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 131072;
+    static constexpr int max_skip = 20;
 
     // Methods
     void                  resetTextAreaToDefault ( const FTermArea*
@@ -449,8 +450,6 @@ class FVTerm
     static FKeyboard*       keyboard;
     static timeval          last_term_size_check;
     static bool             draw_completed;
-    static bool             terminal_update_pending;
-    static bool             force_terminal_update;
     static bool             no_terminal_updates;
     static uInt64           term_size_check_timeout;
     static int              skipped_terminal_update;
