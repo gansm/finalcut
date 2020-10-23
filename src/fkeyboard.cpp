@@ -142,15 +142,15 @@ void FKeyboard::init()
 }
 
 //----------------------------------------------------------------------
-bool& FKeyboard::unprocessedInput()
+bool& FKeyboard::hasUnprocessedInput()
 {
-  return input_data_pending;
+  return unprocessed_buffer_data;
 }
 
 //----------------------------------------------------------------------
-bool FKeyboard::isKeyPressed() const
+bool FKeyboard::isKeyPressed ( uInt64 blocking_time)
 {
-  if ( ! isIntervalTimeout() )
+  if ( has_pending_input || ! isIntervalTimeout() )
     return false;
 
   fd_set ifds{};
@@ -160,14 +160,15 @@ bool FKeyboard::isKeyPressed() const
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = suseconds_t(read_blocking_time);  // preset to 100 ms
+  tv.tv_usec = suseconds_t(blocking_time);  // preset to 100 ms
   FObject::getCurrentTime (&time_last_request);
   const int result = select (stdin_no + 1, &ifds, nullptr, nullptr, &tv);
+  has_pending_input = bool( result > 0 );
 
-  if ( result > 0 && FD_ISSET(stdin_no, &ifds) )
+  if ( has_pending_input && FD_ISSET(stdin_no, &ifds) )
     FD_CLR (stdin_no, &ifds);
 
-  return ( result > 0 );
+  return has_pending_input;
 }
 
 //----------------------------------------------------------------------
@@ -205,7 +206,7 @@ void FKeyboard::escapeKeyHandling()
     fifo_offset = 0;
     fifo_buf[0] = 0x00;
     fifo_in_use = false;
-    input_data_pending = false;
+    unprocessed_buffer_data = false;
     escapeKeyPressed();
   }
 
@@ -268,7 +269,7 @@ inline FKey FKeyboard::getTermcapKey()
       for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill rest with '\0'
         fifo_buf[n] = '\0';
 
-      input_data_pending = bool(fifo_buf[0] != '\0');
+      unprocessed_buffer_data = bool(fifo_buf[0] != '\0');
       return entry.num;
     }
   }
@@ -307,7 +308,7 @@ inline FKey FKeyboard::getMetaKey()
       for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill rest with '\0'
         fifo_buf[n] = '\0';
 
-      input_data_pending = bool(fifo_buf[0] != '\0');
+      unprocessed_buffer_data = bool(fifo_buf[0] != '\0');
       return entry.num;
     }
   }
@@ -355,7 +356,7 @@ inline FKey FKeyboard::getSingleKey()
   for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill the rest with '\0' bytes
     fifo_buf[n] = '\0';
 
-  input_data_pending = bool(fifo_buf[0] != '\0');
+  unprocessed_buffer_data = bool(fifo_buf[0] != '\0');
 
   if ( keycode == 0 )  // Ctrl+Space or Ctrl+@
     keycode = fc::Fckey_space;
@@ -441,6 +442,8 @@ void FKeyboard::parseKeyBuffer()
 
   while ( (bytesread = readKey()) > 0 )
   {
+    has_pending_input = false;
+
     if ( bytesread + fifo_offset <= int(FIFO_BUF_SIZE) )
     {
       fifo_buf[fifo_offset] = char(read_character);
@@ -539,7 +542,7 @@ void FKeyboard::substringKeyHandling()
     fifo_offset = 0;
     fifo_buf[0] = 0x00;
     fifo_in_use = false;
-    input_data_pending = false;
+    unprocessed_buffer_data = false;
 
     if ( fifo_buf[1] == 'O' )
       key = fc::Fmkey_O;

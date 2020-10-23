@@ -352,10 +352,10 @@ class FVTerm
     static bool           reallocateTextArea ( FTermArea*
                                              , std::size_t );
     static covered_state  isCovered (const FPoint&, const FTermArea*);
-    static void           updateOverlappedColor (const FChar&, FChar&&, FChar&);
-    static void           updateOverlappedCharacter (FChar&&, FChar&);
-    static void           updateShadedCharacter (const FChar&, FChar&&, FChar&);
-    static void           updateInheritBackground (const FChar&, FChar&&, FChar&);
+    static void           updateOverlappedColor (const FChar&, const FChar&, FChar&);
+    static void           updateOverlappedCharacter (FChar&, FChar&);
+    static void           updateShadedCharacter (const FChar&, FChar&, FChar&);
+    static void           updateInheritBackground (const FChar&, const FChar&, FChar&);
     static void           updateCharacter (const FChar&, FChar&);
     static bool           updateVTermCharacter ( const FTermArea*
                                                , const FPoint&
@@ -395,8 +395,8 @@ class FVTerm
     void                  skipPaddingCharacter (uInt&, uInt, const FChar* const&) const;
     exit_state            eraseCharacters (uInt&, uInt, uInt, bool) const;
     exit_state            repeatCharacter (uInt&, uInt, uInt) const;
-    bool                  isFullWidthChar (const FChar* const&) const;
-    bool                  isFullWidthPaddingChar (const FChar* const&) const;
+    bool                  isFullWidthChar (const FChar&) const;
+    bool                  isFullWidthPaddingChar (const FChar&) const;
     static void           cursorWrap();
     bool                  printWrap (FTermArea*) const;
     void                  printCharacterOnCoordinate ( FTermArea*
@@ -404,7 +404,7 @@ class FVTerm
                                                      , const int&
                                                      , const FChar&) const;
     void                  printPaddingCharacter (FTermArea*, const FChar&);
-    void                  updateTerminalLine (uInt) const;
+    bool                  updateTerminalLine (uInt) const;
     bool                  updateTerminalCursor() const;
     bool                  isInsideTerminal (const FPoint&) const;
     bool                  isTermSizeChanged() const;

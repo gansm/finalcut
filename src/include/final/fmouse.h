@@ -127,7 +127,7 @@ class FMouse
     bool                  isWheelUp();
     bool                  isWheelDown();
     bool                  isMoved();
-    bool                  isInputDataPending() const;
+    bool                  hasUnprocessedInput() const;
 
     // Methods
     template <typename ClassT>
@@ -183,7 +183,7 @@ class FMouse
     // Data members
     FMouseButton        b_state{};
     bool                mouse_event_occurred{false};
-    bool                input_data_pending{false};
+    bool                unprocessed_buffer_data{false};
     uInt16              max_width{80};
     uInt16              max_height{25};
     uInt64              dblclick_interval{500000};  // 500 ms
@@ -494,7 +494,7 @@ class FMouseControl
     bool                  isWheelUp();
     bool                  isWheelDown();
     bool                  isMoved();
-    bool                  isInputDataPending();
+    bool                  hasUnprocessedInput();
     bool                  isGpmMouseEnabled();
 
     // Methods

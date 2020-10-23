@@ -507,10 +507,7 @@ int FWindow::getWindowLayer (FWidget* obj)
 
   const FWidget* window;
 
-  if ( ! getWindowList() )
-    return -1;
-
-  if ( getWindowList()->empty() )
+  if ( ! getWindowList() || getWindowList()->empty() )
     return -1;
 
   if ( ! obj->isWindowWidget() )

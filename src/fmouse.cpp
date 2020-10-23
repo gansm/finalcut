@@ -173,9 +173,9 @@ inline bool FMouse::isMoved()
 }
 
 //----------------------------------------------------------------------
-inline bool FMouse::isInputDataPending() const
+inline bool FMouse::hasUnprocessedInput() const
 {
-  return input_data_pending;
+  return unprocessed_buffer_data;
 }
 
 //----------------------------------------------------------------------
@@ -238,7 +238,7 @@ void FMouse::setNewPos (int x, int y)
 //----------------------------------------------------------------------
 void FMouse::setPending (bool is_pending)
 {
-  input_data_pending = is_pending;
+  unprocessed_buffer_data = is_pending;
 }
 
 //----------------------------------------------------------------------
@@ -1434,14 +1434,14 @@ bool FMouseControl::isMoved()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::isInputDataPending()
+bool FMouseControl::hasUnprocessedInput()
 {
   return std::any_of ( std::begin(mouse_protocol)
                      , std::end(mouse_protocol)
                      , [] (FMouseProtocol::const_reference m)
                        {
                          return m.second
-                             && m.second->isInputDataPending();
+                             && m.second->hasUnprocessedInput();
                        }
                      );
 }

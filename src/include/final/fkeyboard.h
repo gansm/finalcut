@@ -129,12 +129,12 @@ class FKeyboard final
     void                  setEscPressedCommand (const FKeyboardCommand&);
 
     // Inquiry
-    bool                  isInputDataPending() const;
+    bool                  hasPendingInput() const;
 
     // Methods
     static void           init();
-    bool&                 unprocessedInput();
-    bool                  isKeyPressed() const;
+    bool&                 hasUnprocessedInput();
+    bool                  isKeyPressed (uInt64 = read_blocking_time);
     void                  clearKeyBuffer();
     void                  clearKeyBufferOnTimeout();
     void                  fetchKeyCode();
@@ -189,8 +189,9 @@ class FKeyboard final
     char                  fifo_buf[FIFO_BUF_SIZE]{'\0'};
     int                   fifo_offset{0};
     int                   stdin_status_flags{0};
+    bool                  has_pending_input{false};
     bool                  fifo_in_use{false};
-    bool                  input_data_pending{false};
+    bool                  unprocessed_buffer_data{false};
     bool                  utf8_input{false};
     bool                  mouse_support{true};
     bool                  non_blocking_stdin{false};
@@ -243,8 +244,8 @@ inline bool FKeyboard::unsetNonBlockingInput()
 { return setNonBlockingInput(false); }
 
 //----------------------------------------------------------------------
-inline bool FKeyboard::isInputDataPending() const
-{ return input_data_pending; }
+inline bool FKeyboard::hasPendingInput() const
+{ return has_pending_input; }
 
 //----------------------------------------------------------------------
 inline void FKeyboard::enableUTF8()

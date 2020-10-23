@@ -277,18 +277,25 @@ void FVTerm::updateTerminal() const
     return;
   }
 
-  if ( (keyboard->isInputDataPending() || keyboard->isKeyPressed())
-    && skipped_terminal_update <= max_skip )
-  {
-    // Skipping terminal updates if there is unprocessed inputs
-    skipped_terminal_update++;
-    return;
-  }
-
   skipped_terminal_update = 0;
+  std::size_t changedlines = 0;
+  static constexpr int check_interval = 5;
 
   for (uInt y{0}; y < uInt(vterm->height); y++)
-    updateTerminalLine (y);
+  {
+    if ( updateTerminalLine(y) )
+      changedlines++;
+
+    if ( changedlines % check_interval == 0
+      && (keyboard->hasUnprocessedInput() || keyboard->isKeyPressed(0))
+      && skipped_terminal_update <= max_skip )
+    {
+      // Skipping terminal updates if there is unprocessed inputs
+      skipped_terminal_update++;
+      return;
+    }
+  }
+
 
   vterm->has_changes = false;
 
@@ -1124,7 +1131,7 @@ void FVTerm::scrollAreaForward (FTermArea* area) const
 
   // insert a new line below
   FChar nc{};  // next character
-  std::size_t bottom_right = (y_max * total_width) - area->right_shadow - 1;
+  auto bottom_right = std::size_t((y_max * total_width) - area->right_shadow - 1);
   const auto& lc = area->data[bottom_right];  // last character
   std::memcpy (&nc, &lc, sizeof(nc));
   nc.ch = ' ';
@@ -1438,9 +1445,9 @@ FVTerm::covered_state FVTerm::isCovered ( const FPoint& pos
 }
 
 //----------------------------------------------------------------------
-void FVTerm::updateOverlappedColor ( const FChar& area_char
-                                   , FChar&& over_char
-                                   , FChar& vterm_char )
+inline void FVTerm::updateOverlappedColor ( const FChar& area_char
+                                          , const FChar& over_char
+                                          , FChar& vterm_char )
 {
   // Add the overlapping color to this character
 
@@ -1465,8 +1472,8 @@ void FVTerm::updateOverlappedColor ( const FChar& area_char
 }
 
 //----------------------------------------------------------------------
-void FVTerm::updateOverlappedCharacter ( FChar&& cover_char
-                                       , FChar& vterm_char )
+inline void FVTerm::updateOverlappedCharacter ( FChar& cover_char
+                                              , FChar& vterm_char )
 {
   // Restore one character on vterm
 
@@ -1476,9 +1483,9 @@ void FVTerm::updateOverlappedCharacter ( FChar&& cover_char
 }
 
 //----------------------------------------------------------------------
-void FVTerm::updateShadedCharacter ( const FChar& area_char
-                                   , FChar&& cover_char
-                                   , FChar& vterm_char )
+inline void FVTerm::updateShadedCharacter ( const FChar& area_char
+                                          , FChar& cover_char
+                                          , FChar& vterm_char )
 {
   // Get covered character + add the current color
 
@@ -1501,9 +1508,9 @@ void FVTerm::updateShadedCharacter ( const FChar& area_char
 }
 
 //----------------------------------------------------------------------
-void FVTerm::updateInheritBackground ( const FChar& area_char
-                                     , FChar&& cover_char
-                                     , FChar& vterm_char )
+inline void FVTerm::updateInheritBackground ( const FChar& area_char
+                                            , const FChar& cover_char
+                                            , FChar& vterm_char )
 {
   // Add the covered background to this character
 
@@ -1517,7 +1524,7 @@ void FVTerm::updateInheritBackground ( const FChar& area_char
 }
 
 //----------------------------------------------------------------------
-void FVTerm::updateCharacter (const FChar& area_char, FChar& vterm_char)
+inline void FVTerm::updateCharacter (const FChar& area_char, FChar& vterm_char)
 {
   // Copy a area character to the virtual terminal
 
@@ -1553,13 +1560,13 @@ bool FVTerm::updateVTermCharacter ( const FTermArea* area
   {
     // Overlapped character
     auto oc = getOverlappedCharacter (terminal_pos, area);
-    updateOverlappedColor (ac, std::move(oc), tc);
+    updateOverlappedColor (ac, oc, tc);
   }
   else if ( ac.attr.bit.transparent )   // Transparent
   {
     // Covered character
     auto cc = getCoveredCharacter (terminal_pos, area);
-    updateOverlappedCharacter (std::move(cc), tc);
+    updateOverlappedCharacter (cc, tc);
   }
   else  // Not transparent
   {
@@ -1567,13 +1574,13 @@ bool FVTerm::updateVTermCharacter ( const FTermArea* area
     {
       // Covered character
       auto cc = getCoveredCharacter (terminal_pos, area);
-      updateShadedCharacter (ac, std::move(cc), tc);
+      updateShadedCharacter (ac, cc, tc);
     }
     else if ( ac.attr.bit.inherit_background )
     {
       // Covered character
       auto cc = getCoveredCharacter (terminal_pos, area);
-      updateInheritBackground (ac, std::move(cc), tc);
+      updateInheritBackground (ac, cc, tc);
     }
     else  // Default
     {
@@ -1775,9 +1782,8 @@ FChar FVTerm::getCharacter ( character_type char_type
   if ( ! area || ! FWidget::getWindowList() || FWidget::getWindowList()->empty() )
     return *cc;
 
-  // Get the window layer of this object
-  const auto& w = static_cast<FWidget*>(area->widget);
-  const int layer = FWindow::getWindowLayer(w);
+  // Get the window layer of this widget object
+  const int layer = FWindow::getWindowLayer(area->widget);
 
   for (auto&& win_obj : *FWidget::getWindowList())
   {
@@ -1813,14 +1819,14 @@ FChar FVTerm::getCharacter ( character_type char_type
 }
 
 //----------------------------------------------------------------------
-FChar FVTerm::getCoveredCharacter (const FPoint& pos, const FTermArea* area)
+inline FChar FVTerm::getCoveredCharacter (const FPoint& pos, const FTermArea* area)
 {
   // Gets the covered character for a given position
   return getCharacter (covered_character, pos, area);
 }
 
 //----------------------------------------------------------------------
-FChar FVTerm::getOverlappedCharacter (const FPoint& pos, const FTermArea* area)
+inline FChar FVTerm::getOverlappedCharacter (const FPoint& pos, const FTermArea* area)
 {
   // Gets the overlapped character for a given position
   return getCharacter (overlapped_character, pos, area);
@@ -2310,13 +2316,13 @@ inline void FVTerm::replaceNonPrintableFullwidth ( uInt x
   // Replace non-printable full-width characters that are truncated
   // from the right or left terminal side
 
-  if ( x == 0 && isFullWidthPaddingChar(print_char) )
+  if ( x == 0 && isFullWidthPaddingChar(*print_char) )
   {
     print_char->ch = fc::SingleLeftAngleQuotationMark;  // ‹
     print_char->attr.bit.fullwidth_padding = false;
   }
   else if ( x == uInt(vterm->width - 1)
-         && isFullWidthChar(print_char) )
+         && isFullWidthChar(*print_char) )
   {
     print_char->ch = fc::SingleRightAngleQuotationMark;  // ›
     print_char->attr.bit.char_width = 1;
@@ -2329,12 +2335,12 @@ void FVTerm::printCharacter ( uInt& x, uInt y, bool min_and_not_max
 {
   // General character output on terminal
 
-  if ( x < uInt(vterm->width - 1) && isFullWidthChar(print_char) )
+  if ( x < uInt(vterm->width - 1) && isFullWidthChar(*print_char) )
   {
     printFullWidthCharacter (x, y, print_char);
   }
   else if ( x > 0 && x < uInt(vterm->width - 1)
-         && isFullWidthPaddingChar(print_char)  )
+         && isFullWidthPaddingChar(*print_char)  )
   {
     printFullWidthPaddingCharacter (x, y, print_char);
   }
@@ -2361,8 +2367,8 @@ void FVTerm::printFullWidthCharacter ( uInt& x, uInt y
     && print_char->attr.byte[1] == next_char->attr.byte[1]
     && print_char->fg_color == next_char->fg_color
     && print_char->bg_color == next_char->bg_color
-    && isFullWidthChar(print_char)
-    && isFullWidthPaddingChar(next_char) )
+    && isFullWidthChar(*print_char)
+    && isFullWidthPaddingChar(*next_char) )
   {
     // Print a full-width character
     appendCharacter (print_char);
@@ -2377,7 +2383,7 @@ void FVTerm::printFullWidthCharacter ( uInt& x, uInt y
     term_pos->x_ref()++;
     markAsPrinted (x, y);
 
-    if ( isFullWidthPaddingChar(next_char) )
+    if ( isFullWidthPaddingChar(*next_char) )
     {
       // Print ellipses for the 2nd full-width character column
       x++;
@@ -2400,8 +2406,8 @@ void FVTerm::printFullWidthPaddingCharacter ( uInt& x, uInt y
     && print_char->attr.byte[1] == prev_char->attr.byte[1]
     && print_char->fg_color == prev_char->fg_color
     && print_char->bg_color == prev_char->bg_color
-    && isFullWidthChar(prev_char)
-    && isFullWidthPaddingChar(print_char) )
+    && isFullWidthChar(*prev_char)
+    && isFullWidthPaddingChar(*print_char) )
   {
     // Move cursor one character to the left
     const auto& le = TCAP(fc::t_cursor_left);
@@ -2441,7 +2447,7 @@ void FVTerm::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
   const auto vt = vterm;
   auto prev_char = &vt->data[y * uInt(vt->width) + x - 1];
 
-  if ( isFullWidthChar(prev_char) && ! isFullWidthPaddingChar(print_char) )
+  if ( isFullWidthChar(*prev_char) && ! isFullWidthPaddingChar(*print_char) )
   {
     // Move cursor one character to the left
     const auto& le = TCAP(fc::t_cursor_left);
@@ -2474,7 +2480,7 @@ void FVTerm::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
 inline void FVTerm::skipPaddingCharacter ( uInt& x, uInt y
                                          , const FChar* const& print_char ) const
 {
-  if ( isFullWidthChar(print_char) )  // full-width character
+  if ( isFullWidthChar(*print_char) )  // full-width character
   {
     x++;  // Skip the following padding character
     term_pos->x_ref()++;
@@ -2565,9 +2571,9 @@ FVTerm::exit_state FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y) const
 
   for (uInt i = x + 1; i <= xmax; i++)
   {
-    auto ch = &vt->data[y * uInt(vt->width) + i];
+    const auto& ch = vt->data[y * uInt(vt->width) + i];
 
-    if ( *print_char == *ch )
+    if ( *print_char == ch )
       repetitions++;
     else
       break;
@@ -2610,15 +2616,15 @@ FVTerm::exit_state FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y) const
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isFullWidthChar (const FChar* const& ch) const
+inline bool FVTerm::isFullWidthChar (const FChar& ch) const
 {
-  return bool(ch->attr.bit.char_width == 2);
+  return bool(ch.attr.bit.char_width == 2);
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isFullWidthPaddingChar (const FChar* const& ch) const
+inline bool FVTerm::isFullWidthPaddingChar (const FChar& ch) const
 {
-  return ch->attr.bit.fullwidth_padding;
+  return ch.attr.bit.fullwidth_padding;
 }
 
 //----------------------------------------------------------------------
@@ -2747,16 +2753,18 @@ void FVTerm::printPaddingCharacter (FTermArea* area, const FChar& term_char)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::updateTerminalLine (uInt y) const
+bool FVTerm::updateTerminalLine (uInt y) const
 {
   // Updates pending changes from line y to the terminal
 
+  bool ret{};
   const auto& vt = vterm;
   uInt& xmin = vt->changes[y].xmin;
   uInt& xmax = vt->changes[y].xmax;
 
   if ( xmin <= xmax )  // Line has changes
   {
+    ret = true;
     bool draw_leading_ws = false;
     bool draw_trailing_ws = false;
     const auto& ce = TCAP(fc::t_clr_eol);
@@ -2808,8 +2816,11 @@ void FVTerm::updateTerminalLine (uInt y) const
     xmin = uInt(vt->width);
     xmax = 0;
   }
+  else
+    ret = false;
 
   cursorWrap();
+  return ret;
 }
 
 //----------------------------------------------------------------------

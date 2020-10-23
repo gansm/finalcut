@@ -359,8 +359,7 @@ void FKeyboardTest::noArgumentTest()
   CPPUNIT_ASSERT ( time->tv_sec == 0);
   CPPUNIT_ASSERT ( time->tv_usec == 0);
 
-  CPPUNIT_ASSERT ( ! keyboard->isInputDataPending() );
-  CPPUNIT_ASSERT ( ! keyboard->unprocessedInput() );
+  CPPUNIT_ASSERT ( ! keyboard->hasUnprocessedInput() );
   CPPUNIT_ASSERT ( ! keyboard->isKeyPressed() );
 
   keyboard->clearKeyBufferOnTimeout();

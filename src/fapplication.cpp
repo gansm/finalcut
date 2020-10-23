@@ -653,9 +653,9 @@ inline void FApplication::findKeyboardWidget() const
 inline bool FApplication::isKeyPressed() const
 {
   if ( mouse && mouse->isGpmMouseEnabled() )
-    return mouse->getGpmKeyPressed(keyboard->unprocessedInput());
+    return mouse->getGpmKeyPressed(keyboard->hasUnprocessedInput());
 
-  return keyboard->isKeyPressed();
+  return (keyboard->isKeyPressed() || keyboard->hasPendingInput());
 }
 
 //----------------------------------------------------------------------
@@ -690,7 +690,7 @@ inline void FApplication::performKeyboardAction()
       {
         FKeyboard::keybuffer& buffer = keyboard->getKeyBuffer();
         mouse->setRawData (FMouse::x11, buffer);
-        keyboard->unprocessedInput() = mouse->isInputDataPending();
+        keyboard->hasUnprocessedInput() = mouse->hasUnprocessedInput();
         processMouseEvent();
       }
       break;
@@ -700,7 +700,7 @@ inline void FApplication::performKeyboardAction()
       {
         FKeyboard::keybuffer& buffer = keyboard->getKeyBuffer();
         mouse->setRawData (FMouse::sgr, buffer);
-        keyboard->unprocessedInput() = mouse->isInputDataPending();
+        keyboard->hasUnprocessedInput() = mouse->hasUnprocessedInput();
         processMouseEvent();
       }
       break;
@@ -710,7 +710,7 @@ inline void FApplication::performKeyboardAction()
       {
         FKeyboard::keybuffer& buffer = keyboard->getKeyBuffer();
         mouse->setRawData (FMouse::urxvt, buffer);
-        keyboard->unprocessedInput() = mouse->isInputDataPending();
+        keyboard->hasUnprocessedInput() = mouse->hasUnprocessedInput();
         processMouseEvent();
       }
       break;
@@ -875,7 +875,7 @@ bool FApplication::getMouseEvent() const
   {
     struct timeval* time_keypressed = keyboard->getKeyPressedTime();
     mouse->processEvent (time_keypressed);
-    keyboard->unprocessedInput() = mouse->isInputDataPending();
+    keyboard->hasUnprocessedInput() = mouse->hasUnprocessedInput();
     mouse_event_occurred = mouse->hasEvent();
   }
 
