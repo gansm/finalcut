@@ -444,7 +444,7 @@ FTermDebugData& FTerm::getFTermDebugData()
 //----------------------------------------------------------------------
 bool FTerm::isNormal (const FChar& ch)
 {
-  return FOptiAttr::isNormal(&ch);
+  return FOptiAttr::isNormal(ch);
 }
 
 //----------------------------------------------------------------------
@@ -1319,7 +1319,7 @@ void FTerm::initScreenSettings()
 }
 
 //----------------------------------------------------------------------
-const char* FTerm::changeAttribute (FChar*& term_attr, FChar*& next_attr)
+const char* FTerm::changeAttribute (FChar& term_attr, FChar& next_attr)
 {
   return opti_attr->changeAttribute (term_attr, next_attr);
 }

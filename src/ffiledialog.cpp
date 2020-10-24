@@ -179,7 +179,7 @@ FString FFileDialog::getSelectedFile() const
 //----------------------------------------------------------------------
 void FFileDialog::setPath (const FString& dir)
 {
-  const char* const dirname = dir.c_str();
+  const auto& dirname = dir.c_str();
   std::array<char, MAXPATHLEN> resolved_path{};
   FString r_dir{};
   struct stat sb{};
@@ -491,7 +491,7 @@ void FFileDialog::sortDir()
 //----------------------------------------------------------------------
 int FFileDialog::readDir()
 {
-  const char* const dir = directory.c_str();
+  const auto& dir = directory.c_str();
   directory_stream = opendir(dir);
 
   if ( ! directory_stream )
@@ -555,7 +555,7 @@ int FFileDialog::readDir()
 //----------------------------------------------------------------------
 void FFileDialog::getEntry (const char* const dir, const struct dirent* d_entry)
 {
-  const char* const filter = filter_pattern.c_str();
+  const auto& filter = filter_pattern.c_str();
   FDirEntry entry{};
 
   entry.name = d_entry->d_name;

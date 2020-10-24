@@ -163,8 +163,8 @@ void FTermDetection::deallocation()
 void FTermDetection::getSystemTermType()
 {
   // Import the untrusted environment variable TERM
-  const char* const& term_env = std::getenv("TERM");
-  const char* termfilename = fterm_data->getTermFileName();
+  const auto& term_env = std::getenv("TERM");
+  const auto& termfilename = fterm_data->getTermFileName();
 
   if ( term_env )
   {

@@ -279,19 +279,19 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 
   if ( ms.mouse_over_submenu )
   {
-    passEventToSubMenu(ev);  // Event handover to sub-menu
+    passEventToSubMenu(*ev);  // Event handover to sub-menu
     return;
   }
 
   if ( ! ms.mouse_over_menu && ms.mouse_over_supermenu )
   {
-    passEventToSuperMenu(ev);  // Event handover to super-menu
+    passEventToSuperMenu(*ev);  // Event handover to super-menu
     return;
   }
 
   if ( ms.mouse_over_menubar )
   {
-    passEventToMenuBar(ev);  // Event handover to the menu bar
+    passEventToMenuBar(*ev);  // Event handover to the menu bar
     return;
   }
 
@@ -909,13 +909,13 @@ void FMenu::mouseMoveOverBorder (MouseStates& ms) const
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToSubMenu (FMouseEvent* const& ev)
+void FMenu::passEventToSubMenu (const FMouseEvent& ev)
 {
   // Mouse event handover to sub-menu
 
-  const auto& t = ev->getTermPos();
+  const auto& t = ev.getTermPos();
   const auto& p = opened_sub_menu->termToWidgetPos(t);
-  const int b = ev->getButton();
+  const int b = ev.getButton();
 
   try
   {
@@ -932,14 +932,14 @@ void FMenu::passEventToSubMenu (FMouseEvent* const& ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToSuperMenu (FMouseEvent* const& ev)
+void FMenu::passEventToSuperMenu (const FMouseEvent& ev)
 {
   // Mouse event handover to super-menu
 
-  auto smenu = superMenuAt (ev->getTermPos());
-  const auto& t = ev->getTermPos();
+  auto smenu = superMenuAt (ev.getTermPos());
+  const auto& t = ev.getTermPos();
   const auto& p = smenu->termToWidgetPos(t);
-  const int b = ev->getButton();
+  const int b = ev.getButton();
 
   try
   {
@@ -956,14 +956,14 @@ void FMenu::passEventToSuperMenu (FMouseEvent* const& ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToMenuBar (FMouseEvent* const& ev) const
+void FMenu::passEventToMenuBar (const FMouseEvent& ev) const
 {
   // Mouse event handover to the menu bar
 
   auto menu_bar = getMenuBar();
-  const auto& t = ev->getTermPos();
+  const auto& t = ev.getTermPos();
   const auto& p = menu_bar->termToWidgetPos(t);
-  const int b = ev->getButton();
+  const int b = ev.getButton();
 
   try
   {

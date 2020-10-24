@@ -695,7 +695,7 @@ void FObjectTest::performTimerActionTest()
   CPPUNIT_ASSERT ( t2.getValue() == 0 );
   finalcut::FTimerEvent timer_ev (finalcut::fc::Timer_Event, 1);
 
-  for (int x = 0; x < 10; x++)
+  for (auto x = 0; x < 10; x++)
     finalcut::FApplication::sendEvent (&t2, &timer_ev);
 
   CPPUNIT_ASSERT ( t2.getValue() == 10 );

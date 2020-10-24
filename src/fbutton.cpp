@@ -443,7 +443,7 @@ inline std::size_t FButton::clickAnimationIndent (const FWidget* parent_widget)
     setColor ( parent_widget->getForegroundColor()
              , parent_widget->getBackgroundColor() );
 
-  for (int y{1}; y <= int(getHeight()); y++)
+  for (auto y{1}; y <= int(getHeight()); y++)
   {
     print() << FPoint{1, y} << ' ';  // clear one left █
   }
@@ -462,7 +462,7 @@ inline void FButton::clearRightMargin (const FWidget* parent_widget)
     setColor ( parent_widget->getForegroundColor()
              , parent_widget->getBackgroundColor() );
 
-  for (int y{1}; y <= int(getHeight()); y++)
+  for (auto y{1}; y <= int(getHeight()); y++)
   {
     if ( FTerm::isMonochron() )
       setReverse(true);  // Light background

@@ -2196,7 +2196,7 @@ void FStringTest::controlCodesTest()
   // C0 control codes (0x01 - 0x1f) - without null (0x00)
   finalcut::FString c0(0x1f);
 
-  for (int i = 0; i < 0x1f; i++)
+  for (auto i = 0; i < 0x1f; i++)
     c0[i] = i + 1;
 
   CPPUNIT_ASSERT ( c0.getLength() == 31 );
@@ -2210,7 +2210,8 @@ void FStringTest::controlCodesTest()
   // C1 control codes (0x80 - 0x9f)
   // Used as print characters in some character sets
   finalcut::FString c1(0x20);
-  for (int i = 0; i <= 0x1f; i++)
+
+  for (auto i = 0; i <= 0x1f; i++)
     c1[i] = i + 0x80;
 
   CPPUNIT_ASSERT ( c1.replaceControlCodes() == finalcut::FString(32, L' ') );

@@ -417,6 +417,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
 
     mbar->redraw();
     mbar->drop_down = true;
+
   }
   else
   {
@@ -427,6 +428,8 @@ void FMenuItem::onAccel (FAccelEvent* ev)
     mbar->drop_down = false;
   }
 
+  processTerminalUpdate();
+  flush();
   ev->accept();
 }
 

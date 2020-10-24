@@ -255,7 +255,7 @@ void FStatusBar::drawMessage()
     }
   }
 
-  for (int i = x; i <= int(termWidth); i++)
+  for (auto i = x; i <= int(termWidth); i++)
     print (' ');
 
   if ( FTerm::isMonochron() )

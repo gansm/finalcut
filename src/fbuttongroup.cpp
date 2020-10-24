@@ -210,7 +210,7 @@ void FButtonGroup::hide()
   // Hide border
   unsetViewportPrint();
 
-  for (int y{0}; y < int(getHeight()); y++)
+  for (auto y{0}; y < int(getHeight()); y++)
     print() << FPoint{1, 1 + y} << FString{size, L' '};
 
   setViewportPrint();

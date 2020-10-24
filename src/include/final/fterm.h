@@ -304,7 +304,7 @@ class FTerm final
 
     void                     initTerminal();
     static void              initScreenSettings();
-    static const char*       changeAttribute (FChar*&, FChar*&);
+    static const char*       changeAttribute (FChar&, FChar&);
     static void              changeTermSizeFinished();
 
   private:

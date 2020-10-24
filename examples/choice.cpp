@@ -147,7 +147,7 @@ int main (int argc, char* argv[])
     dgl.show();
 
     // Get the checked radio button text
-    for (int n{1}; n <= int(checkButtonGroup.getCount()); n++)
+    for (auto n{1}; n <= int(checkButtonGroup.getCount()); n++)
     {
       if ( checkButtonGroup.isChecked(n) )
       {

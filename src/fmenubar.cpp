@@ -223,6 +223,8 @@ void FMenuBar::onAccel (FAccelEvent* ev)
     getStatusBar()->drawMessage();
 
   redraw();
+  processTerminalUpdate();
+  flush();
   ev->accept();
 }
 
@@ -902,7 +904,7 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
       else
       {
         // Event handover to the menu
-        passEventToMenu(ev);
+        passEventToMenu(*ev);
       }
     }
   }
@@ -916,11 +918,15 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
   }
 
   if ( focus_changed )
+  {
     redraw();
+    processTerminalUpdate();
+    flush();
+  }
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::passEventToMenu (const FMouseEvent* const& ev) const
+void FMenuBar::passEventToMenu (const FMouseEvent& ev) const
 {
   if ( ! hasSelectedItem() || ! getSelectedItem()->hasMenu() )
     return;
@@ -930,11 +936,11 @@ void FMenuBar::passEventToMenu (const FMouseEvent* const& ev) const
   const auto& menu_geometry = menu->getTermGeometry();
 
   if ( menu->getCount() > 0
-    && menu_geometry.contains(ev->getTermPos()) )
+    && menu_geometry.contains(ev.getTermPos()) )
   {
-    const auto& t = ev->getTermPos();
+    const auto& t = ev.getTermPos();
     const auto& p = menu->termToWidgetPos(t);
-    const int b = ev->getButton();
+    const int b = ev.getButton();
 
     try
     {

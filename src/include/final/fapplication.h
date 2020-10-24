@@ -189,7 +189,7 @@ class FApplication : public FWidget
     void                  sendKeyboardAccelerator();
     void                  processKeyboardEvent() const;
     bool                  processDialogSwitchAccelerator() const;
-    bool                  processAccelerator (const FWidget* const&) const;
+    bool                  processAccelerator (const FWidget&) const;
     bool                  getMouseEvent() const;
     FWidget*&             determineClickedWidget();
     void                  unsetMoveSizeMode() const;

@@ -280,7 +280,7 @@ void FListBox::clear()
   if ( size == 0 )
     return;
 
-  for (int y{0}; y < int(getHeight()) - 2; y++)
+  for (auto y{0}; y < int(getHeight()) - 2; y++)
   {
     print() << FPoint{2, 2 + y} << FString{size, L' '};
   }
@@ -724,7 +724,7 @@ void FListBox::draw()
   {
     setColor();
 
-    for (int y{2}; y < int(getHeight()); y++)
+    for (auto y{2}; y < int(getHeight()); y++)
     {
       print() << FPoint{int(getWidth()) - 1, y}
               << ' ';  // clear right side of the scrollbar

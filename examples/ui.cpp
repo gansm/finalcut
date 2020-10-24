@@ -597,7 +597,7 @@ void MyDialog::initWidgets()
   myList.setMultiSelection();
   myList.reserve(100);
 
-  for (int z{1}; z < 100; z++)
+  for (auto z{1}; z < 100; z++)
     myList.insert (finalcut::FString{} << z << L" placeholder");
 
   // Text labels

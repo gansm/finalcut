@@ -1360,7 +1360,7 @@ void FWidget::hideArea (const FSize& size)
   if ( size.getWidth() == 0 )
     return;
 
-  for (int y{0}; y < int(size.getHeight()); y++)
+  for (auto y{0}; y < int(size.getHeight()); y++)
   {
     print() << FPoint{1, 1 + y} << FString{size.getWidth(), L' '};
   }

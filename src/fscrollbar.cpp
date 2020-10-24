@@ -463,7 +463,7 @@ void FScrollbar::drawVerticalBar()
   const auto& wc = getColorTheme();
   setColor (wc->scrollbar_fg, wc->scrollbar_bg);
 
-  for (int z{1}; z <= slider_pos; z++)
+  for (auto z{1}; z <= slider_pos; z++)
   {
     print() << FPoint{1, 1 + z};
     drawVerticalBackgroundLine();
@@ -474,7 +474,7 @@ void FScrollbar::drawVerticalBar()
   if ( FTerm::isMonochron() )
     setReverse(false);
 
-  for (int z{1}; z <= int(slider_length); z++)  // Draw slider
+  for (auto z{1}; z <= int(slider_length); z++)  // Draw slider
   {
     print() << FPoint{1, 1 + slider_pos + z};
 
@@ -489,7 +489,7 @@ void FScrollbar::drawVerticalBar()
 
   setColor (wc->scrollbar_fg, wc->scrollbar_bg);
 
-  for (int z = slider_pos + int(slider_length) + 1; z <= int(bar_length); z++)
+  for (auto z = slider_pos + int(slider_length) + 1; z <= int(bar_length); z++)
   {
     print() << FPoint{1, 1 + z};
     drawVerticalBackgroundLine();
@@ -529,7 +529,7 @@ void FScrollbar::drawHorizontalBar()
   else
     print() << FPoint{2, 1};
 
-  for (int z{0}; z < slider_pos; z++)
+  for (auto z{0}; z < slider_pos; z++)
     drawHorizontalBackgroundColumn();
 
   setColor (wc->scrollbar_bg, wc->scrollbar_fg);
@@ -537,7 +537,7 @@ void FScrollbar::drawHorizontalBar()
   if ( FTerm::isMonochron() )
     setReverse(false);
 
-  for (int z{0}; z < int(slider_length); z++)  // Draw slider
+  for (auto z{0}; z < int(slider_length); z++)  // Draw slider
     print (' ');
 
   if ( FTerm::isMonochron() )

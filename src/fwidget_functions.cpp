@@ -451,7 +451,7 @@ inline void drawBox (FWidget* w, const FRect& r)
              << FString{r.getWidth() - 2, fc::BoxDrawingsHorizontal}  // ─
              << fc::BoxDrawingsDownAndLeft;   // ┐
 
-  for (int y = r.getY1() + 1; y < r.getY2(); y++)
+  for (auto y = r.getY1() + 1; y < r.getY2(); y++)
   {
     w->print() << FPoint{r.getX1(), y}
                << fc::BoxDrawingsVertical     // │
@@ -475,7 +475,7 @@ inline void drawNewFontBox (FWidget* w, const FRect& r)
              << FString{r.getWidth() - 2, fc::NF_border_line_horizontal}  // ─
              << fc::NF_border_corner_middle_upper_right;  // ┐
 
-  for (int y = r.getY1() + 1; y < r.getY2(); y++)
+  for (auto y = r.getY1() + 1; y < r.getY2(); y++)
   {
     w->print() << FPoint{r.getX1(), y}
                << fc::NF_border_line_vertical   // │
@@ -497,7 +497,7 @@ inline void drawNewFontListBox (FWidget* w, const FRect& r)
              << FString{r.getWidth() - 2, fc::NF_border_line_horizontal}  // ─
              << fc::NF_border_line_left_down;        // ╷
 
-  for (int y = r.getY1() + 1; y < r.getY2(); y++)
+  for (auto y = r.getY1() + 1; y < r.getY2(); y++)
   {
     w->print() << FPoint{r.getX1(), y}
                << fc::NF_border_line_left   // border left ⎸

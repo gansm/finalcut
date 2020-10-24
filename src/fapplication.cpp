@@ -776,7 +776,7 @@ inline void FApplication::sendKeyboardAccelerator()
     auto window = static_cast<const FWidget*>(getActiveWindow());
 
     if ( window )
-      accpt = processAccelerator (window);
+      accpt = processAccelerator(*window);
   }
 
   // Global keyboard accelerator
@@ -785,7 +785,7 @@ inline void FApplication::sendKeyboardAccelerator()
     auto root_widget = getRootWidget();
 
     if ( root_widget )
-      processAccelerator (root_widget);
+      processAccelerator(*root_widget);
   }
 }
 
@@ -836,12 +836,12 @@ bool FApplication::processDialogSwitchAccelerator() const
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processAccelerator (const FWidget* const& widget) const
+bool FApplication::processAccelerator (const FWidget& widget) const
 {
-  if ( ! widget || widget->getAcceleratorList().empty() )
+  if ( widget.getAcceleratorList().empty() )
     return false;
 
-  for (auto&& item : widget->getAcceleratorList())
+  for (auto&& item : widget.getAcceleratorList())
   {
     if ( item.key == keyboard->getKey() )
     {

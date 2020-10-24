@@ -157,13 +157,13 @@ void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
   int  dxdy = (Cx - Ax) / 23;
   int  dydy = (Cy - Ay) / 23;
 
-  for (int y = 0; y < Lines; y++)
+  for (auto y = 0; y < Lines; y++)
   {
     Cx = Ax;
     Cy = Ay;
     print() << FPoint{2, 3 + y};
 
-    for (int x = 0; x < Cols; x++)
+    for (auto x = 0; x < Cols; x++)
     {
       auto ch = data[((Cy >> 14) & 0xf) + ((Cx >> 10) & 0xf0)];
 

@@ -247,7 +247,7 @@ void FWindow::drawBorder()
             << FString{r.getWidth() - 2, fc::NF_border_line_upper}  // ¯
             << fc::NF_rev_border_corner_upper_right;                // ⎤
 
-    for (int y = r.getY1() + 1; y < r.getY2(); y++)
+    for (auto y = r.getY1() + 1; y < r.getY2(); y++)
     {
       print() << FPoint{r.getX1(), y}
               << fc::NF_border_line_left        // border left ⎸

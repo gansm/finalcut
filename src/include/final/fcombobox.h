@@ -216,7 +216,7 @@ class FComboBox : public FWidget
     void                draw() override;
     void                onePosUp();
     void                onePosDown();
-    void                passEventToListWindow (FMouseEvent* const&);
+    void                passEventToListWindow (const FMouseEvent&);
     void                processClick() const;
     void                processChanged() const;
 

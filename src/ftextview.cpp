@@ -322,7 +322,7 @@ void FTextView::clear()
   if ( size == 0 )
     return;
 
-  for (int y{0}; y < int(getTextHeight()); y++)
+  for (auto y{0}; y < int(getTextHeight()); y++)
   {
     print() << FPoint{2, 2 - nf_offset + y}
             << FString{size, L' '};

@@ -152,12 +152,12 @@ class FOptiAttr final
     void          set_orig_orig_colors (const char[]);
 
     // Inquiry
-    static bool   isNormal (const FChar* const&);
+    static bool   isNormal (const FChar&);
 
     // Methods
     void          initialize();
     static FColor vga2ansi (FColor);
-    const char*   changeAttribute (FChar*&, FChar*&);
+    const char*   changeAttribute (FChar&, FChar&);
 
   private:
     // Typedefs and Enumerations
@@ -202,62 +202,62 @@ class FOptiAttr final
     };
 
     // Mutators
-    bool          setTermBold (FChar*&);
-    bool          unsetTermBold (FChar*&);
-    bool          setTermDim (FChar*&);
-    bool          unsetTermDim (FChar*&);
-    bool          setTermItalic (FChar*&);
-    bool          unsetTermItalic (FChar*&);
-    bool          setTermUnderline (FChar*&);
-    bool          unsetTermUnderline (FChar*&);
-    bool          setTermBlink (FChar*&);
-    bool          unsetTermBlink (FChar*&);
-    bool          setTermReverse (FChar*&);
-    bool          unsetTermReverse (FChar*&);
-    bool          setTermStandout (FChar*&);
-    bool          unsetTermStandout (FChar*&);
-    bool          setTermInvisible (FChar*&);
-    bool          unsetTermInvisible (FChar*&);
-    bool          setTermProtected (FChar*&);
-    bool          unsetTermProtected (FChar*&);
-    bool          setTermCrossedOut (FChar*&);
-    bool          unsetTermCrossedOut (FChar*&);
-    bool          setTermDoubleUnderline (FChar*&);
-    bool          unsetTermDoubleUnderline (FChar*&);
-    bool          setTermAttributes ( FChar*&
+    bool          setTermBold (FChar&);
+    bool          unsetTermBold (FChar&);
+    bool          setTermDim (FChar&);
+    bool          unsetTermDim (FChar&);
+    bool          setTermItalic (FChar&);
+    bool          unsetTermItalic (FChar&);
+    bool          setTermUnderline (FChar&);
+    bool          unsetTermUnderline (FChar&);
+    bool          setTermBlink (FChar&);
+    bool          unsetTermBlink (FChar&);
+    bool          setTermReverse (FChar&);
+    bool          unsetTermReverse (FChar&);
+    bool          setTermStandout (FChar&);
+    bool          unsetTermStandout (FChar&);
+    bool          setTermInvisible (FChar&);
+    bool          unsetTermInvisible (FChar&);
+    bool          setTermProtected (FChar&);
+    bool          unsetTermProtected (FChar&);
+    bool          setTermCrossedOut (FChar&);
+    bool          unsetTermCrossedOut (FChar&);
+    bool          setTermDoubleUnderline (FChar&);
+    bool          unsetTermDoubleUnderline (FChar&);
+    bool          setTermAttributes ( FChar&
                                     , bool, bool, bool
                                     , bool, bool, bool
                                     , bool, bool, bool );
-    bool          unsetTermAttributes (FChar*&);
-    bool          setTermAltCharset (FChar*&);
-    bool          unsetTermAltCharset (FChar*&);
-    bool          setTermPCcharset (FChar*&);
-    bool          unsetTermPCcharset (FChar*&);
-    bool          setTermDefaultColor (FChar*&);
-    void          setAttributesOn (FChar*&);
-    void          setAttributesOff (FChar*&);
+    bool          unsetTermAttributes (FChar&);
+    bool          setTermAltCharset (FChar&);
+    bool          unsetTermAltCharset (FChar&);
+    bool          setTermPCcharset (FChar&);
+    bool          unsetTermPCcharset (FChar&);
+    bool          setTermDefaultColor (FChar&);
+    void          setAttributesOn (FChar&);
+    void          setAttributesOff (FChar&);
 
     // Inquiries
-    static bool   hasColor (const FChar* const&);
-    static bool   hasAttribute (const FChar* const&);
-    static bool   hasNoAttribute (const FChar* const&);
+    static bool   hasColor (const FChar&);
+    static bool   hasAttribute (const FChar&);
+    static bool   hasNoAttribute (const FChar&);
 
     // Methods
-    bool          hasColorChanged (const FChar* const&, const FChar* const&) const;
-    void          resetColor (FChar*&) const;
-    void          prevent_no_color_video_attributes (FChar*&, bool = false);
-    void          deactivateAttributes (FChar*&, FChar*&);
-    void          changeAttributeSGR (FChar*&, FChar*&);
-    void          changeAttributeSeparately (FChar*&, FChar*&);
-    void          change_color (FChar*&, FChar*&);
-    void          change_to_default_color (FChar*&, FChar*&, FColor&, FColor&);
-    void          change_current_color (const FChar* const&, FColor, FColor);
-    void          resetAttribute (FChar*&) const;
-    void          reset (FChar*&) const;
+    bool          hasColorChanged (const FChar&, const FChar&) const;
+    void          resetColor (FChar&) const;
+    void          prevent_no_color_video_attributes (FChar&, bool = false);
+    void          deactivateAttributes (FChar&, FChar&);
+    void          changeAttributeSGR (FChar&, FChar&);
+    void          changeAttributeSeparately (FChar&, FChar&);
+    void          change_color (FChar&, FChar&);
+    void          change_to_default_color (FChar&, FChar&, FColor&, FColor&);
+    void          change_current_color (const FChar&, FColor, FColor);
+    void          resetAttribute (FChar&) const;
+    void          reset (FChar&) const;
     bool          caused_reset_attributes (const char[], uChar = all_tests) const;
     bool          hasCharsetEquivalence() const;
-    void          detectSwitchOn (const FChar* const&, const FChar* const&);
-    void          detectSwitchOff (const FChar* const&, const FChar* const&);
+    void          detectSwitchOn (const FChar&, const FChar&);
+    void          detectSwitchOff (const FChar&, const FChar&);
     bool          switchOn() const;
     bool          switchOff() const;
     bool          append_sequence (const char[]);
