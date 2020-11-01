@@ -1576,7 +1576,7 @@ void FMouseControl::processEvent (struct timeval* time)
   if ( mouse_object )
   {
     mouse_object->processEvent(time);
-    const auto& md = static_cast<FMouseData>(*mouse_object);
+    auto& md = static_cast<FMouseData&>(*mouse_object);
     fmousedata_queue.emplace(new FMouseData(std::move(md)));
   }
 }
