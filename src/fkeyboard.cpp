@@ -30,10 +30,12 @@
 #include <array>
 #include <string>
 
+#include "final/fapplication.h"
 #include "final/fkeyboard.h"
 #include "final/fkey_map.h"
 #include "final/fobject.h"
 #include "final/fterm.h"
+#include "final/ftermdetection.h"
 #include "final/ftermios.h"
 
 #if defined(__linux__)
@@ -46,9 +48,7 @@ namespace finalcut
 // static class attributes
 uInt64 FKeyboard::read_blocking_time{100000};  // preset to 100 ms (10 Hz)
 uInt64 FKeyboard::key_timeout{100000};         // preset to 100 ms (10 Hz)
-uInt64 FKeyboard::interval_timeout{33333};     // preset to 33.333 ms (30 Hz)
 struct timeval FKeyboard::time_keypressed{};
-struct timeval FKeyboard::time_last_request{};
 
 #if defined(__linux__)
   FTermLinux* FKeyboard::linux{nullptr};
@@ -66,14 +66,14 @@ FKeyboard::FKeyboard()
   // Initialize keyboard values
   time_keypressed.tv_sec = 0;
   time_keypressed.tv_usec = 0;
-  time_last_request.tv_sec = 0;
-  time_last_request.tv_usec = 0;
 
   // Get the stdin file status flags
   stdin_status_flags = fcntl(FTermios::getStdIn(), F_GETFL);
 
   if ( stdin_status_flags == -1 )
     std::abort();
+
+  term_detection = FTerm::getFTermDetection();
 }
 
 //----------------------------------------------------------------------
@@ -148,9 +148,9 @@ bool& FKeyboard::hasUnprocessedInput()
 }
 
 //----------------------------------------------------------------------
-bool FKeyboard::isKeyPressed ( uInt64 blocking_time)
+bool FKeyboard::isKeyPressed (uInt64 blocking_time)
 {
-  if ( has_pending_input || ! isIntervalTimeout() )
+  if ( has_pending_input )
     return false;
 
   fd_set ifds{};
@@ -159,14 +159,26 @@ bool FKeyboard::isKeyPressed ( uInt64 blocking_time)
 
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
-  tv.tv_sec  = 0;
-  tv.tv_usec = suseconds_t(blocking_time);  // preset to 100 ms
-  FObject::getCurrentTime (&time_last_request);
-  const int result = select (stdin_no + 1, &ifds, nullptr, nullptr, &tv);
-  has_pending_input = bool( result > 0 );
+  tv.tv_sec = tv.tv_usec = 0;  // Non-blocking input
 
-  if ( has_pending_input && FD_ISSET(stdin_no, &ifds) )
+  if ( blocking_time > 0
+     && term_detection->hasNonBlockingInputSupport()
+     && select(stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0
+     && FD_ISSET(stdin_no, &ifds) )
+  {
+    has_pending_input = true;
     FD_CLR (stdin_no, &ifds);
+    tv.tv_sec = 0;
+  }
+
+  tv.tv_usec = suseconds_t(blocking_time);  // preset to 100 ms
+
+  if ( ! has_pending_input
+    && select(stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0
+    && FD_ISSET(stdin_no, &ifds) )
+  {
+    has_pending_input = true;
+  }
 
   return has_pending_input;
 }
@@ -177,6 +189,7 @@ void FKeyboard::clearKeyBuffer()
   // Empty the buffer
 
   fifo_offset = 0;
+  fkey = 0;
   key = 0;
   std::fill_n (fifo_buf, FIFO_BUF_SIZE, '\0');
   fifo_in_use = false;
@@ -214,6 +227,30 @@ void FKeyboard::escapeKeyHandling()
   substringKeyHandling();
 }
 
+//----------------------------------------------------------------------
+void FKeyboard::processQueuedInput()
+{
+  while ( ! fkey_queue.empty() )
+  {
+    key = fkey_queue.front();
+    fkey_queue.pop();
+
+    if ( key > 0 )
+    {
+      keyPressed();
+
+      if ( FApplication::isQuit() )
+        return;
+
+      keyReleased();
+
+      if ( FApplication::isQuit() )
+        return;
+
+      key = 0;
+    }
+  }
+}
 
 // private methods of FKeyboard
 //----------------------------------------------------------------------
@@ -371,12 +408,6 @@ inline bool FKeyboard::isKeypressTimeout()
 }
 
 //----------------------------------------------------------------------
-inline bool FKeyboard::isIntervalTimeout()
-{
-  return FObject::isTimeout (&time_last_request, interval_timeout);
-}
-
-//----------------------------------------------------------------------
 FKey FKeyboard::UTF8decode (const char utf8[]) const
 {
   FKey ucs{0};  // Universal coded character
@@ -440,7 +471,8 @@ void FKeyboard::parseKeyBuffer()
   ssize_t bytesread{};
   FObject::getCurrentTime (&time_keypressed);
 
-  while ( (bytesread = readKey()) > 0 )
+  while ( fkey_queue.size() < MAX_QUEUE_SIZE
+       && (bytesread = readKey()) > 0 )
   {
     has_pending_input = false;
 
@@ -454,27 +486,29 @@ void FKeyboard::parseKeyBuffer()
     // Read the rest from the fifo buffer
     while ( ! isKeypressTimeout()
          && fifo_offset > 0
-         && key != fc::Fkey_incomplete )
+         && fkey != fc::Fkey_incomplete )
     {
-      key = parseKeyString();
-      key = keyCorrection(key);
+      fkey = parseKeyString();
+      fkey = keyCorrection(fkey);
 
-      if ( key != fc::Fkey_incomplete )
-        keyPressed();
-
-      fifo_offset = int(std::strlen(fifo_buf));
-
-      if ( key == fc::Fkey_mouse
-        || key == fc::Fkey_extended_mouse
-        || key == fc::Fkey_urxvt_mouse )
+      if ( fkey == fc::Fkey_mouse
+        || fkey == fc::Fkey_extended_mouse
+        || fkey == fc::Fkey_urxvt_mouse )
+      {
+        key = fkey;
+        mouseTracking();
+        fifo_offset = int(std::strlen(fifo_buf));
         break;
+      }
+
+      if ( fkey != fc::Fkey_incomplete )
+      {
+        fkey_queue.push(fkey);
+        fifo_offset = int(std::strlen(fifo_buf));
+      }
     }
 
-    // Send key up event
-    if ( key > 0 )
-      keyReleased();
-
-    key = 0;
+    fkey = 0;
   }
 
   read_character = 0;
@@ -545,14 +579,13 @@ void FKeyboard::substringKeyHandling()
     unprocessed_buffer_data = false;
 
     if ( fifo_buf[1] == 'O' )
-      key = fc::Fmkey_O;
+      fkey = fc::Fmkey_O;
     else if ( fifo_buf[1] == '[' )
-      key = fc::Fmkey_left_square_bracket;
+      fkey = fc::Fmkey_left_square_bracket;
     else
-      key = fc::Fmkey_right_square_bracket;
+      fkey = fc::Fmkey_right_square_bracket;
 
-    keyPressed();
-    keyReleased();
+    fkey_queue.push(fkey);
   }
 }
 
@@ -572,6 +605,12 @@ void FKeyboard::keyReleased() const
 void FKeyboard::escapeKeyPressed() const
 {
   escape_key_cmd.execute();
+}
+
+//----------------------------------------------------------------------
+void FKeyboard::mouseTracking() const
+{
+  mouse_tracking_cmd.execute();
 }
 
 }  // namespace finalcut

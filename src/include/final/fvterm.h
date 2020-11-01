@@ -427,6 +427,7 @@ class FVTerm
     FTermArea*              print_area{nullptr};        // print area for this object
     FTermArea*              child_print_area{nullptr};  // print area for children
     FTermArea*              vwin{nullptr};              // virtual window
+    static const FVTerm*    init_object;  // Global FVTerm object
     static FSystem*         fsystem;
     static FTerm*           fterm;
     static FTermArea*       vterm;        // virtual terminal

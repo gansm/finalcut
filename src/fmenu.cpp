@@ -279,19 +279,19 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 
   if ( ms.mouse_over_submenu )
   {
-    passEventToSubMenu(*ev);  // Event handover to sub-menu
+    passEventToSubMenu(std::move(*ev));  // Event handover to sub-menu
     return;
   }
 
   if ( ! ms.mouse_over_menu && ms.mouse_over_supermenu )
   {
-    passEventToSuperMenu(*ev);  // Event handover to super-menu
+    passEventToSuperMenu(std::move(*ev));  // Event handover to super-menu
     return;
   }
 
   if ( ms.mouse_over_menubar )
   {
-    passEventToMenuBar(*ev);  // Event handover to the menu bar
+    passEventToMenuBar(std::move(*ev));  // Event handover to the menu bar
     return;
   }
 
@@ -909,7 +909,7 @@ void FMenu::mouseMoveOverBorder (MouseStates& ms) const
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToSubMenu (const FMouseEvent& ev)
+void FMenu::passEventToSubMenu (const FMouseEvent&& ev)
 {
   // Mouse event handover to sub-menu
 
@@ -932,7 +932,7 @@ void FMenu::passEventToSubMenu (const FMouseEvent& ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToSuperMenu (const FMouseEvent& ev)
+void FMenu::passEventToSuperMenu (const FMouseEvent&& ev)
 {
   // Mouse event handover to super-menu
 
@@ -956,7 +956,7 @@ void FMenu::passEventToSuperMenu (const FMouseEvent& ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToMenuBar (const FMouseEvent& ev) const
+void FMenu::passEventToMenuBar (const FMouseEvent&& ev) const
 {
   // Mouse event handover to the menu bar
 

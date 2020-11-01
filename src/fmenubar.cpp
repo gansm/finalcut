@@ -209,7 +209,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
 
   // Handle menu entries
   if ( mouse_down )
-    mouseMoveOverList(ev);
+    mouseMoveOverList(std::move(*ev));
 }
 
 //----------------------------------------------------------------------
@@ -867,7 +867,7 @@ void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
+void FMenuBar::mouseMoveOverList (const FMouseEvent&& ev)
 {
   auto list = getItemList();
 
@@ -876,10 +876,10 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
 
   focus_changed = false;
   bool mouse_over_menubar{false};
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
+  int mouse_x = ev.getX();
+  int mouse_y = ev.getY();
 
-  if ( getTermGeometry().contains(ev->getTermPos()) )
+  if ( getTermGeometry().contains(ev.getTermPos()) )
     mouse_over_menubar = true;
 
   for (auto&& item : list)
@@ -904,7 +904,7 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
       else
       {
         // Event handover to the menu
-        passEventToMenu(*ev);
+        passEventToMenu(std::move(ev));
       }
     }
   }
@@ -926,7 +926,7 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::passEventToMenu (const FMouseEvent& ev) const
+void FMenuBar::passEventToMenu (const FMouseEvent&& ev) const
 {
   if ( ! hasSelectedItem() || ! getSelectedItem()->hasMenu() )
     return;

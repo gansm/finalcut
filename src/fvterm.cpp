@@ -50,9 +50,6 @@
 namespace finalcut
 {
 
-// global FVTerm object
-static FVTerm* init_object{nullptr};
-
 // static class attributes
 bool                 FVTerm::draw_completed{false};
 bool                 FVTerm::no_terminal_updates{false};
@@ -67,6 +64,7 @@ uInt                 FVTerm::cursor_address_length{};
 struct timeval       FVTerm::last_term_size_check{};
 std::queue<int>*     FVTerm::output_buffer{nullptr};
 FPoint*              FVTerm::term_pos{nullptr};
+const FVTerm*        FVTerm::init_object{nullptr};
 FSystem*             FVTerm::fsystem{nullptr};
 FTerm*               FVTerm::fterm{nullptr};
 FVTerm::FTermArea*   FVTerm::vterm{nullptr};
@@ -277,7 +275,6 @@ void FVTerm::updateTerminal() const
     return;
   }
 
-  skipped_terminal_update = 0;
   std::size_t changedlines = 0;
   static constexpr int check_interval = 5;
 
@@ -296,7 +293,7 @@ void FVTerm::updateTerminal() const
     }
   }
 
-
+  skipped_terminal_update = 0;
   vterm->has_changes = false;
 
   // sets the new input cursor position
@@ -359,6 +356,7 @@ int FVTerm::print (FTermArea* area, const FString& s)
     return -1;
 
   std::vector<FChar> term_string{};
+  term_string.reserve(s.getLength());
   const wchar_t* p = s.wc_str();
 
   if ( p )
@@ -373,7 +371,7 @@ int FVTerm::print (FTermArea* area, const FString& s)
       nc.attr.byte[1] = next_attribute.attr.byte[1];
       nc.attr.byte[2] = 0;
       nc.attr.byte[3] = 0;
-      term_string.push_back(nc);
+      term_string.push_back(std::move(nc));
       p++;
     }  // end of while
 
@@ -2755,7 +2753,7 @@ bool FVTerm::updateTerminalLine (uInt y) const
 {
   // Updates pending changes from line y to the terminal
 
-  bool ret{};
+  bool ret{false};
   const auto& vt = vterm;
   uInt& xmin = vt->changes[y].xmin;
   uInt& xmax = vt->changes[y].xmax;
@@ -2766,9 +2764,6 @@ bool FVTerm::updateTerminalLine (uInt y) const
     bool draw_leading_ws = false;
     bool draw_trailing_ws = false;
     const auto& ce = TCAP(fc::t_clr_eol);
-    auto& first_char = vt->data[y * uInt(vt->width)];
-    auto& last_char  = vt->data[(y + 1) * uInt(vt->width) - 1];
-    auto& min_char   = vt->data[y * uInt(vt->width) + xmin];
 
     // Clear rest of line
     bool is_eol_clean = canClearToEOL (xmin, y);
@@ -2786,6 +2781,7 @@ bool FVTerm::updateTerminalLine (uInt y) const
 
     if ( is_eol_clean )
     {
+      auto& min_char = vt->data[y * uInt(vt->width) + xmin];
       appendAttributes (min_char);
       appendOutputBuffer (ce);
       markAsPrinted (xmin, uInt(vt->width - 1), y);
@@ -2795,6 +2791,7 @@ bool FVTerm::updateTerminalLine (uInt y) const
       if ( draw_leading_ws )
       {
         const auto& cb = TCAP(fc::t_clr_bol);
+        auto& first_char = vt->data[y * uInt(vt->width)];
         appendAttributes (first_char);
         appendOutputBuffer (cb);
         markAsPrinted (0, xmin, y);
@@ -2804,6 +2801,7 @@ bool FVTerm::updateTerminalLine (uInt y) const
 
       if ( draw_trailing_ws )
       {
+        auto& last_char = vt->data[(y + 1) * uInt(vt->width) - 1];
         appendAttributes (last_char);
         appendOutputBuffer (ce);
         markAsPrinted (xmax + 1, uInt(vt->width - 1), y);
@@ -2814,8 +2812,6 @@ bool FVTerm::updateTerminalLine (uInt y) const
     xmin = uInt(vt->width);
     xmax = 0;
   }
-  else
-    ret = false;
 
   cursorWrap();
   return ret;

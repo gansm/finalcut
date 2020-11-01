@@ -80,6 +80,7 @@ class FEvent;
 class FFocusEvent;
 class FKeyEvent;
 class FLog;
+class FMouseData;
 class FMouseEvent;
 class FStartOptions;
 class FTimerEvent;
@@ -181,36 +182,47 @@ class FApplication : public FWidget
     void                  keyPressed();
     void                  keyReleased() const;
     void                  escapeKeyPressed() const;
+    void                  mouseTracking();
     void                  performKeyboardAction();
+    void                  performMouseAction();
+    void                  mouseEvent (const FMouseData&);
     void                  sendEscapeKeyPressEvent() const;
     bool                  sendKeyDownEvent (FWidget*) const;
     bool                  sendKeyPressEvent (FWidget*) const;
     bool                  sendKeyUpEvent (FWidget*) const;
     void                  sendKeyboardAccelerator();
+    bool                  hasDataInQueue() const;
+    void                  queuingKeyboardInput() const;
+    void                  queuingMouseInput() const;
     void                  processKeyboardEvent() const;
+    void                  processMouseEvent() const;
     bool                  processDialogSwitchAccelerator() const;
     bool                  processAccelerator (const FWidget&) const;
-    bool                  getMouseEvent() const;
-    FWidget*&             determineClickedWidget();
+    void                  determineClickedWidget (const FMouseData&);
     void                  unsetMoveSizeMode() const;
-    void                  closeDropDown() const;
-    void                  unselectMenubarItems() const;
-    void                  sendMouseEvent() const;
-    void                  sendMouseMoveEvent ( const FPoint&
+    void                  closeDropDown (const FMouseData&) const;
+    void                  unselectMenubarItems (const FMouseData&) const;
+    void                  sendMouseEvent (const FMouseData&) const;
+    void                  sendMouseMoveEvent ( const FMouseData&
+                                             , const FPoint&
                                              , const FPoint&
                                              , int ) const;
-    void                  sendMouseLeftClickEvent ( const FPoint&
+    void                  sendMouseLeftClickEvent ( const FMouseData&
+                                                  , const FPoint&
                                                   , const FPoint&
                                                   , int ) const;
-    void                  sendMouseRightClickEvent ( const FPoint&
+    void                  sendMouseRightClickEvent ( const FMouseData&
+                                                   , const FPoint&
                                                    , const FPoint&
                                                    , int ) const;
-    void                  sendMouseMiddleClickEvent ( const FPoint&
+    void                  sendMouseMiddleClickEvent ( const FMouseData&
+                                                    , const FPoint&
                                                     , const FPoint&
                                                     , int ) const;
-    void                  sendWheelEvent (const FPoint&, const FPoint&) const;
+    void                  sendWheelEvent ( const FMouseData&
+                                         , const FPoint&
+                                         , const FPoint& ) const;
     static FWidget*       processParameters (const int&, char*[]);
-    void                  processMouseEvent();
     void                  processResizeEvent() const;
     void                  processCloseWidget();
     void                  processLogger() const;
@@ -225,6 +237,7 @@ class FApplication : public FWidget
     uInt64                key_timeout{100000};        // 100 ms
     uInt64                dblclick_interval{500000};  // 500 ms
     std::streambuf*       default_clog_rdbuf{std::clog.rdbuf()};
+    FWidget*              clicked_widget{};
     FEventQueue           event_queue{};
     static uInt64         next_event_wait;
     static timeval        time_last_event;

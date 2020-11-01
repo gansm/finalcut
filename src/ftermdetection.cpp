@@ -60,6 +60,7 @@ FKeyboard*                    FTermDetection::keyboard{nullptr};
 char                          FTermDetection::termtype[256]{};
 char                          FTermDetection::ttytypename[256]{};
 bool                          FTermDetection::decscusr_support{};
+bool                          FTermDetection::non_blocking_input_support{};
 bool                          FTermDetection::terminal_detection{};
 bool                          FTermDetection::color256{};
 const FString*                FTermDetection::answer_back{nullptr};
@@ -83,6 +84,7 @@ FTermDetection::FTermDetection()
 {
   // Preset to true
   terminal_detection = true;
+  non_blocking_input_support = true;
 
   // Preset to false
   decscusr_support = false;
@@ -405,6 +407,13 @@ void FTermDetection::detectTerminal()
     std::strncpy (termtype, new_termtype, sizeof(termtype));
     termtype[sizeof(termtype) - 1] = '\0';
   }
+
+#if defined(__CYGWIN__)
+  const auto& termfilename = fterm_data->getTermFileName();
+
+  if ( std::strncmp(termfilename, "/dev/cons", 9) == 0 )
+    non_blocking_input_support = false;  // Fixes problem with mouse input
+#endif
 }
 
 //----------------------------------------------------------------------

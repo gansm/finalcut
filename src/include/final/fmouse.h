@@ -23,6 +23,11 @@
 /*  Inheritance diagram
  *  ═══════════════════
  *
+ *                     ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *                     ▕  FMouseData  ▏
+ *                     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *                            ▲
+ *                            │
  *                       ▕▔▔▔▔▔▔▔▔▔▔▏
  *                       ▕  FMouse  ▏
  *                       ▕▁▁▁▁▁▁▁▁▁▁▏
@@ -61,7 +66,9 @@
 #endif
 
 #include <cstddef>
+#include <functional>
 #include <map>
+#include <queue>
 
 #include "final/fkeyboard.h"
 #include "final/fpoint.h"
@@ -78,63 +85,47 @@ namespace finalcut
 {
 
 //----------------------------------------------------------------------
-// class FMouse
+// class FMouseData
 //----------------------------------------------------------------------
-
-class FMouse
+class FMouseData
 {
   public:
-    // Enumeration
-    enum mouse_type
-    {
-      none  = 0,
-      gpm   = 1,
-      x11   = 2,
-      sgr   = 3,
-      urxvt = 4
-    };
-
-    // Constructor
-    FMouse();
-
-    // Destructor
-    virtual ~FMouse()
-    { }
-
     // Accessors
     virtual FString       getClassName() const;
     const FPoint&         getPos() const;
-    void                  clearEvent();
 
-    // Mutators
-    void                  setMaxWidth (uInt16);
-    void                  setMaxHeight (uInt16);
-    void                  setDblclickInterval (const uInt64);
+    // Constructor
+    FMouseData();
+
+    // Default copy constructor
+    FMouseData (const FMouseData&) = default;
+    // Default move constructor
+    FMouseData (FMouseData&&) = default;
+    // Default copy assignment operator (=)
+    FMouseData& operator = (const FMouseData&) = default;
+    // Default move assignment operator (=)
+    FMouseData& operator = (FMouseData&&) = default;
+
+    // Destructor
+    virtual ~FMouseData();
 
     // Inquiries
-    virtual bool          hasData() = 0;
-    bool                  hasEvent() const;
-    bool                  isLeftButtonPressed();
-    bool                  isLeftButtonReleased();
-    bool                  isLeftButtonDoubleClick();
-    bool                  isRightButtonPressed();
-    bool                  isRightButtonReleased();
-    bool                  isMiddleButtonPressed();
-    bool                  isMiddleButtonReleased();
-    bool                  isShiftKeyPressed();
-    bool                  isControlKeyPressed();
-    bool                  isMetaKeyPressed();
-    bool                  isWheelUp();
-    bool                  isWheelDown();
-    bool                  isMoved();
-    bool                  hasUnprocessedInput() const;
+    bool                  isLeftButtonPressed() const;
+    bool                  isLeftButtonReleased() const;
+    bool                  isLeftButtonDoubleClick() const;
+    bool                  isRightButtonPressed() const;
+    bool                  isRightButtonReleased() const;
+    bool                  isMiddleButtonPressed() const;
+    bool                  isMiddleButtonReleased() const;
+    bool                  isShiftKeyPressed() const;
+    bool                  isControlKeyPressed() const;
+    bool                  isMetaKeyPressed() const;
+    bool                  isWheelUp() const;
+    bool                  isWheelDown() const;
+    bool                  isMoved() const;
 
     // Methods
-    template <typename ClassT>
-    static FMouse*        createMouseObject ();
     void                  clearButtonState();
-    virtual void          setRawData (FKeyboard::keybuffer&) = 0;
-    virtual void          processEvent (struct timeval*) = 0;
 
   protected:
     // Typedef and Enumerations
@@ -162,34 +153,88 @@ class FMouse
 
     // Accessors
     FMouseButton&       getButtonState();
-    const FPoint&       getNewPos() const;
-    uInt16              getMaxWidth() const;
-    uInt16              getMaxHeight() const;
-    uInt64              getDblclickInterval() const;
-    timeval*            getMousePressedTime();
+    const FMouseButton& getButtonState() const;
 
     // Mutator
     void                setPos (const FPoint&);
-    void                setNewPos (int, int);
-    void                setPending (bool);
-    void                setEvent();
-    void                setMousePressedTime (const timeval*);
-    void                resetMousePressedTime();
-
-    // Inquiry
-    bool                isDblclickTimeout (const timeval*) const;
 
   private:
     // Data members
     FMouseButton        b_state{};
-    bool                mouse_event_occurred{false};
-    bool                unprocessed_buffer_data{false};
-    uInt16              max_width{80};
-    uInt16              max_height{25};
-    uInt64              dblclick_interval{500000};  // 500 ms
-    struct timeval      time_mousepressed{};
-    FPoint              mouse{0, 0};       // mouse click position
-    FPoint              new_mouse_position{};
+    FPoint              mouse{0, 0};  // mouse click position
+};
+
+
+//----------------------------------------------------------------------
+// class FMouse
+//----------------------------------------------------------------------
+
+class FMouse : public FMouseData
+{
+  public:
+    // Enumeration
+    enum mouse_type
+    {
+      none  = 0,
+      gpm   = 1,
+      x11   = 2,
+      sgr   = 3,
+      urxvt = 4
+    };
+
+    // Constructor
+    FMouse();
+
+    // Destructor
+    ~FMouse() override;
+
+    // Accessors
+    FString               getClassName() const override;
+    void                  clearEvent();
+
+    // Mutators
+    void                  setMaxWidth (uInt16);
+    void                  setMaxHeight (uInt16);
+    void                  setDblclickInterval (const uInt64);
+
+    // Inquiries
+    virtual bool          hasData() = 0;
+    bool                  hasEvent() const;
+    bool                  hasUnprocessedInput() const;
+
+    // Methods
+    template <typename ClassT>
+    static FMouse*        createMouseObject ();
+    virtual void          setRawData (FKeyboard::keybuffer&) = 0;
+    virtual void          processEvent (struct timeval*) = 0;
+
+  protected:
+    // Accessors
+    const FPoint&         getNewPos() const;
+    uInt16                getMaxWidth() const;
+    uInt16                getMaxHeight() const;
+    uInt64                getDblclickInterval() const;
+    timeval*              getMousePressedTime();
+
+    // Mutator
+    void                   setNewPos (int, int);
+    void                   setPending (bool);
+    void                   setEvent();
+    void                   setMousePressedTime (const timeval*);
+    void                   resetMousePressedTime();
+
+    // Inquiry
+    bool                   isDblclickTimeout (const timeval*) const;
+
+  private:
+    // Data members
+    bool                   mouse_event_occurred{false};
+    bool                   unprocessed_buffer_data{false};
+    uInt16                 max_width{80};
+    uInt16                 max_height{25};
+    uInt64                 dblclick_interval{500000};  // 500 ms
+    struct timeval         time_mousepressed{};
+    FPoint                 new_mouse_position{};
 };
 
 //----------------------------------------------------------------------
@@ -447,6 +492,32 @@ class FMouseUrxvt final : public FMouse
 
 
 //----------------------------------------------------------------------
+// class FMouseCommand
+//----------------------------------------------------------------------
+
+class FMouseCommand final
+{
+  public:
+    // Constructors
+    FMouseCommand () = default;
+    explicit FMouseCommand (const std::function<void(const FMouseData&)>& fn)
+      : handler(fn)
+    { }
+
+    // Method
+    template <typename T>
+    void execute(T&& arg) const
+    {
+      handler(std::forward<T>(arg));
+    }
+
+  private:
+    // Data members
+    std::function<void(const FMouseData&)> handler{};
+};
+
+
+//----------------------------------------------------------------------
 // class FMouseControl
 //----------------------------------------------------------------------
 
@@ -466,68 +537,82 @@ class FMouseControl
     FMouseControl& operator = (const FMouseControl&) = delete;
 
     // Accessors
-    virtual FString       getClassName() const;
-    const FPoint&         getPos();
-    void                  clearEvent();
+    virtual FString           getClassName() const;
+    const FPoint&             getPos();
+    void                      clearEvent();
 
     // Mutators
-    void                  setStdinNo (int);
-    void                  setMaxWidth (uInt16);
-    void                  setMaxHeight (uInt16);
-    void                  setDblclickInterval (const uInt64);
-    void                  useGpmMouse (bool = true);
-    void                  useXtermMouse (bool = true);
+    void                      setStdinNo (int);
+    void                      setMaxWidth (uInt16);
+    void                      setMaxHeight (uInt16);
+    void                      setDblclickInterval (const uInt64);
+    void                      setEventCommand (const FMouseCommand&);
+    void                      useGpmMouse (bool = true);
+    void                      useXtermMouse (bool = true);
 
     // Inquiries
-    bool                  hasData();
-    bool                  hasEvent();
-    bool                  isLeftButtonPressed();
-    bool                  isLeftButtonReleased();
-    bool                  isLeftButtonDoubleClick();
-    bool                  isRightButtonPressed();
-    bool                  isRightButtonReleased();
-    bool                  isMiddleButtonPressed();
-    bool                  isMiddleButtonReleased();
-    bool                  isShiftKeyPressed();
-    bool                  isControlKeyPressed();
-    bool                  isMetaKeyPressed();
-    bool                  isWheelUp();
-    bool                  isWheelDown();
-    bool                  isMoved();
-    bool                  hasUnprocessedInput();
-    bool                  isGpmMouseEnabled();
+    bool                      hasData();
+    bool                      hasEvent();
+    bool                      isLeftButtonPressed();
+    bool                      isLeftButtonReleased();
+    bool                      isLeftButtonDoubleClick();
+    bool                      isRightButtonPressed();
+    bool                      isRightButtonReleased();
+    bool                      isMiddleButtonPressed();
+    bool                      isMiddleButtonReleased();
+    bool                      isShiftKeyPressed();
+    bool                      isControlKeyPressed();
+    bool                      isMetaKeyPressed();
+    bool                      isWheelUp();
+    bool                      isWheelDown();
+    bool                      isMoved();
+    bool                      hasUnprocessedInput();
+    bool                      hasDataInQueue() const;
+    bool                      isGpmMouseEnabled();
 
     // Methods
-    void                  enable();
-    void                  disable();
-    virtual void          setRawData ( FMouse::mouse_type
-                                     , FKeyboard::keybuffer& );
-    virtual void          processEvent (struct timeval* time);
-    bool                  getGpmKeyPressed (bool);
-    void                  drawGpmPointer();
+    void                      enable();
+    void                      disable();
+    virtual void              setRawData ( FMouse::mouse_type
+                                         , FKeyboard::keybuffer& );
+    virtual void              processEvent (struct timeval* time);
+    void                      processQueuedInput();
+    bool                      getGpmKeyPressed (bool);
+    void                      drawGpmPointer();
 
   private:
     // Typedef
     typedef std::map<FMouse::mouse_type, FMouse*> FMouseProtocol;
+    typedef std::unique_ptr<FMouseData> FMouseDataPtr;
 
     // Accessor
-    FMouse*               getMouseWithData();
-    FMouse*               getMouseWithEvent();
-    void                  xtermMouse (bool) const;
-    void                  enableXTermMouse() const;
-    void                  disableXTermMouse() const;
+    FMouse*                   getMouseWithData();
+    FMouse*                   getMouseWithEvent();
+    void                      xtermMouse (bool) const;
+    void                      enableXTermMouse() const;
+    void                      disableXTermMouse() const;
 
     // Data member
-    FMouseProtocol        mouse_protocol{};
-    FPoint                zero_point{0, 0};
-    bool                  use_gpm_mouse{false};
-    bool                  use_xterm_mouse{false};
+    FMouseProtocol            mouse_protocol{};
+    FMouseCommand             event_cmd{};
+    std::queue<FMouseDataPtr> fmousedata_queue{};
+    FPoint                    zero_point{0, 0};
+    bool                      use_gpm_mouse{false};
+    bool                      use_xterm_mouse{false};
 };
 
 // FMouseControl inline functions
 //----------------------------------------------------------------------
 inline FString FMouseControl::getClassName() const
 { return "FMouseControl"; }
+
+//----------------------------------------------------------------------
+inline void FMouseControl::setEventCommand (const FMouseCommand& cmd)
+{ event_cmd = cmd; }
+
+//----------------------------------------------------------------------
+inline bool FMouseControl::hasDataInQueue() const
+{ return ! fmousedata_queue.empty(); }
 
 //----------------------------------------------------------------------
 inline void FMouseControl::enableXTermMouse() const

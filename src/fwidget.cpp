@@ -37,8 +37,17 @@
 namespace finalcut
 {
 
-// global FWidget object
-static FWidget* root_widget{nullptr};
+namespace internal
+{
+
+struct var
+{
+  static FWidget* root_widget;  // global FWidget object
+};
+
+FWidget* var::root_widget{nullptr};
+
+}  // namespace internal
 
 // static class attributes
 FStatusBar*           FWidget::statusbar{nullptr};
@@ -74,7 +83,7 @@ FWidget::FWidget (FWidget* parent)
 
   if ( ! parent )
   {
-    if ( root_widget )
+    if ( internal::var::root_widget )
     {
       auto ftermdata = FTerm::getFTermData();
       ftermdata->setExitMessage("FWidget: No parent defined! "
@@ -134,7 +143,7 @@ FWidget::~FWidget()  // destructor
   accelerator_list.clear();
 
   // finish the program
-  if ( root_widget == this )
+  if ( internal::var::root_widget == this )
     finish();
 }
 
@@ -496,7 +505,7 @@ void FWidget::setTopPadding (int top, bool adjust)
   {
     if ( isRootWidget() )
     {
-      auto r = root_widget;
+      auto r = internal::var::root_widget;
       r->wclient_offset.setY1 (r->padding.top);
       adjustSizeGlobal();
     }
@@ -517,7 +526,7 @@ void FWidget::setLeftPadding (int left, bool adjust)
   {
     if ( isRootWidget() )
     {
-      auto r = root_widget;
+      auto r = internal::var::root_widget;
       r->wclient_offset.setX1 (r->padding.left);
       adjustSizeGlobal();
     }
@@ -538,7 +547,7 @@ void FWidget::setBottomPadding (int bottom, bool adjust)
   {
     if ( isRootWidget() )
     {
-      auto r = root_widget;
+      auto r = internal::var::root_widget;
       r->wclient_offset.setY2 (int(r->getHeight()) - 1 - r->padding.bottom);
       adjustSizeGlobal();
     }
@@ -559,7 +568,7 @@ void FWidget::setRightPadding (int right, bool adjust)
   {
     if ( isRootWidget() )
     {
-      auto r = root_widget;
+      auto r = internal::var::root_widget;
       r->wclient_offset.setX2  (int(r->getWidth()) - 1 - r->padding.right);
       adjustSizeGlobal();
     }
@@ -575,8 +584,8 @@ void FWidget::setTermSize (const FSize& size) const
 
   if ( FTerm::isXTerminal() )
   {
-    root_widget->wsize.setRect(FPoint{1, 1}, size);
-    root_widget->adjust_wsize = root_widget->wsize;
+    internal::var::root_widget->wsize.setRect(FPoint{1, 1}, size);
+    internal::var::root_widget->adjust_wsize = internal::var::root_widget->wsize;
     FTerm::setTermSize(size);  // width = columns / height = lines
     detectTermSize();
   }
@@ -944,8 +953,8 @@ void FWidget::show()
     return;
 
   // Initialize desktop on first call
-  if ( ! init_desktop && root_widget )
-    root_widget->initDesktop();
+  if ( ! init_desktop && internal::var::root_widget )
+    internal::var::root_widget->initDesktop();
 
   if ( ! show_root_widget )
   {
@@ -1237,8 +1246,8 @@ void FWidget::initTerminal()
 
   // Set default foreground and background color of the desktop/terminal
   auto color_theme = getColorTheme();
-  root_widget->foreground_color = color_theme->term_fg;
-  root_widget->background_color = color_theme->term_bg;
+  internal::var::root_widget->foreground_color = color_theme->term_fg;
+  internal::var::root_widget->background_color = color_theme->term_bg;
   resetColors();
 
   // The terminal is now initialized
@@ -1278,7 +1287,7 @@ void FWidget::adjustSize()
       if ( ignore_padding && ! isDialogWidget() )
         setTermOffset();
       else
-        woffset = root_widget->wclient_offset;
+        woffset = internal::var::root_widget->wclient_offset;
     }
     else if ( ignore_padding && p )
     {
@@ -1674,8 +1683,8 @@ void FWidget::onAccel (FAccelEvent*)
 void FWidget::onResize (FResizeEvent* ev)
 {
   // The terminal was resized
-  root_widget->resize();
-  root_widget->redraw();
+  internal::var::root_widget->resize();
+  internal::var::root_widget->redraw();
   ev->accept();
 }
 
@@ -1733,11 +1742,11 @@ void FWidget::initRootWidget()
   }
 
   // Initialize default widget colors
-  // (before terminal detection and root_widget is set)
+  // (before terminal detection and internal::var::root_widget is set)
   initColorTheme();
 
   // Root widget basic initialization
-  root_widget = this;
+  internal::var::root_widget = this;
   show_root_widget = nullptr;
   redraw_root_widget = nullptr;
   modal_dialog_counter = 0;
@@ -2094,7 +2103,7 @@ void FWidget::setStatusbarText (bool enable) const
 //----------------------------------------------------------------------
 void detectTermSize()
 {
-  const auto& r = root_widget;
+  const auto& r = internal::var::root_widget;
   FTerm::detectTermSize();
   r->adjust_wsize.setRect (1, 1, r->getDesktopWidth(), r->getDesktopHeight());
   r->woffset.setRect (0, 0, r->getDesktopWidth(), r->getDesktopHeight());

@@ -1512,7 +1512,7 @@ inline const wchar_t* FString::_extractToken ( wchar_t* rest[]
   if ( ! token[0] )
     return nullptr;
 
-  *rest = std::wcspbrk(std::move(token), delim);
+  *rest = std::wcspbrk(token, delim);
 
   if ( *rest )
     *(*rest)++ = '\0';

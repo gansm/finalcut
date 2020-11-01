@@ -1,3 +1,7 @@
+2020-11-01  Markus Gans  <guru.mail@muenster.de>
+	* Now FINAL CUT queues keyboard and mouse input to speed up 
+	  the processing of widget events
+
 2020-10-22  Markus Gans  <guru.mail@muenster.de>
 	* Repair terminal update skipping
 
