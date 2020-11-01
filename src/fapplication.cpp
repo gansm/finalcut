@@ -716,7 +716,7 @@ inline void FApplication::performKeyboardAction()
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::performMouseAction()
+inline void FApplication::performMouseAction() const
 {
   if ( ! mouse )
     return;
@@ -736,6 +736,9 @@ inline void FApplication::performMouseAction()
     case fc::Fkey_urxvt_mouse:
       mouse->setRawData (FMouse::urxvt, buffer);
       break;
+
+    default:
+      return;
   }
 
   keyboard->hasUnprocessedInput() = mouse->hasUnprocessedInput();

@@ -84,7 +84,8 @@ FKeyboard::~FKeyboard()  // destructor
 //----------------------------------------------------------------------
 void FKeyboard::fetchKeyCode()
 {
-  parseKeyBuffer();
+  if ( fkey_queue.size() < MAX_QUEUE_SIZE )
+    parseKeyBuffer();
 }
 
 //----------------------------------------------------------------------
@@ -471,8 +472,7 @@ void FKeyboard::parseKeyBuffer()
   ssize_t bytesread{};
   FObject::getCurrentTime (&time_keypressed);
 
-  while ( fkey_queue.size() < MAX_QUEUE_SIZE
-       && (bytesread = readKey()) > 0 )
+  while ( (bytesread = readKey()) > 0 )
   {
     has_pending_input = false;
 
@@ -509,6 +509,9 @@ void FKeyboard::parseKeyBuffer()
     }
 
     fkey = 0;
+
+    if ( fkey_queue.size() >= MAX_QUEUE_SIZE )
+      break;
   }
 
   read_character = 0;

@@ -184,7 +184,7 @@ class FApplication : public FWidget
     void                  escapeKeyPressed() const;
     void                  mouseTracking();
     void                  performKeyboardAction();
-    void                  performMouseAction();
+    void                  performMouseAction() const;
     void                  mouseEvent (const FMouseData&);
     void                  sendEscapeKeyPressEvent() const;
     bool                  sendKeyDownEvent (FWidget*) const;
