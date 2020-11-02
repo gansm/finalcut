@@ -128,7 +128,6 @@ class FTermDetection final
     static bool           isMltermTerminal();
     static bool           canDisplay256Colors();
     static bool           hasTerminalDetection();
-    static bool           hasNonBlockingInputSupport();
     static bool           hasSetCursorStyleSupport();
 
     // Mutators
@@ -204,7 +203,6 @@ class FTermDetection final
     static char           termtype[256];
     static char           ttytypename[256];
     static bool           decscusr_support;
-    static bool           non_blocking_input_support;
     static bool           terminal_detection;
     static bool           color256;
     static int            gnome_terminal_id;
@@ -278,10 +276,6 @@ inline const char* FTermDetection::getTermType_SecDA()
 //----------------------------------------------------------------------
 inline bool FTermDetection::canDisplay256Colors()
 { return color256; }
-
-//----------------------------------------------------------------------
-inline bool FTermDetection::hasNonBlockingInputSupport()
-{ return non_blocking_input_support; }
 
 //----------------------------------------------------------------------
 inline bool FTermDetection::hasSetCursorStyleSupport()

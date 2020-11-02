@@ -46,8 +46,10 @@ namespace finalcut
 {
 
 // static class attributes
-uInt64 FKeyboard::read_blocking_time{100000};  // preset to 100 ms (10 Hz)
-uInt64 FKeyboard::key_timeout{100000};         // preset to 100 ms (10 Hz)
+uInt64 FKeyboard::key_timeout{100000};             // 100 ms  (10 Hz)
+uInt64 FKeyboard::read_blocking_time{100000};      // 100 ms  (10 Hz)
+uInt64 FKeyboard::read_blocking_time_short{5000};  //   5 ms (200 Hz)
+bool   FKeyboard::non_blocking_input_support{true};
 struct timeval FKeyboard::time_keypressed{};
 
 #if defined(__linux__)
@@ -163,7 +165,7 @@ bool FKeyboard::isKeyPressed (uInt64 blocking_time)
   tv.tv_sec = tv.tv_usec = 0;  // Non-blocking input
 
   if ( blocking_time > 0
-     && term_detection->hasNonBlockingInputSupport()
+     && non_blocking_input_support
      && select(stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0
      && FD_ISSET(stdin_no, &ifds) )
   {
@@ -172,7 +174,10 @@ bool FKeyboard::isKeyPressed (uInt64 blocking_time)
     tv.tv_sec = 0;
   }
 
-  tv.tv_usec = suseconds_t(blocking_time);  // preset to 100 ms
+  if ( isKeypressTimeout() || ! non_blocking_input_support )
+    tv.tv_usec = suseconds_t(blocking_time);
+  else
+    tv.tv_usec = suseconds_t(read_blocking_time_short);
 
   if ( ! has_pending_input
     && select(stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0

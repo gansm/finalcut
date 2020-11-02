@@ -182,7 +182,7 @@ class FApplication : public FWidget
     void                  keyPressed();
     void                  keyReleased() const;
     void                  escapeKeyPressed() const;
-    void                  mouseTracking();
+    void                  mouseTracking() const;
     void                  performKeyboardAction();
     void                  performMouseAction() const;
     void                  mouseEvent (const FMouseData&);
@@ -222,6 +222,7 @@ class FApplication : public FWidget
     void                  sendWheelEvent ( const FMouseData&
                                          , const FPoint&
                                          , const FPoint& ) const;
+    void                  flushTerminal();
     static FWidget*       processParameters (const int&, char*[]);
     void                  processResizeEvent() const;
     void                  processCloseWidget();
@@ -239,6 +240,7 @@ class FApplication : public FWidget
     std::streambuf*       default_clog_rdbuf{std::clog.rdbuf()};
     FWidget*              clicked_widget{};
     FEventQueue           event_queue{};
+    int                   flush_count{0};
     static uInt64         next_event_wait;
     static timeval        time_last_event;
     static int            quit_code;

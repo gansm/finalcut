@@ -73,7 +73,7 @@ FMouseControl* FApplication::mouse           {nullptr};  // mouse control
 int            FApplication::loop_level      {0};        // event loop level
 int            FApplication::quit_code       {EXIT_SUCCESS};
 bool           FApplication::quit_now        {false};
-uInt64         FApplication::next_event_wait {5000};     // preset to 5 ms (200 Hz)
+uInt64         FApplication::next_event_wait {5000};     // 5 ms (200 Hz)
 struct timeval FApplication::time_last_event {};
 
 
@@ -693,7 +693,7 @@ void FApplication::escapeKeyPressed() const
 }
 
 //----------------------------------------------------------------------
-void FApplication::mouseTracking()
+void FApplication::mouseTracking() const
 {
   performMouseAction();
 }
@@ -1232,6 +1232,16 @@ void FApplication::sendWheelEvent ( const FMouseData& md
 }
 
 //----------------------------------------------------------------------
+inline void FApplication::flushTerminal()
+{
+  if ( flush_count == 0 || flush_count % 4 != 0 )
+    return;
+
+  flush();
+  flush_count = 0;
+}
+
+//----------------------------------------------------------------------
 FWidget* FApplication::processParameters (const int& argc, char* argv[])
 {
   if ( argc > 0 && argv[1] && ( std::strcmp(argv[1], "--help") == 0
@@ -1312,7 +1322,8 @@ bool FApplication::processNextEvent()
     processResizeEvent();
     processCloseWidget();
     processTerminalUpdate();  // after terminal changes
-    flush();
+    flushTerminal();
+    flush_count++;
     processLogger();
   }
 

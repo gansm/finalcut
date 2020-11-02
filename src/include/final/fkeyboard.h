@@ -119,6 +119,7 @@ class FKeyboard final
     void                  setTermcapMap (const T&);
     static void           setKeypressTimeout (const uInt64);
     static void           setReadBlockingTime (const uInt64);
+    static void           setNonBlockingInputSupport (bool);
     bool                  setNonBlockingInput (bool);
     bool                  setNonBlockingInput();
     bool                  unsetNonBlockingInput();
@@ -189,7 +190,9 @@ class FKeyboard final
     FTermDetection*       term_detection{nullptr};
     static timeval        time_keypressed;
     static uInt64         read_blocking_time;
+    static uInt64         read_blocking_time_short;
     static uInt64         key_timeout;
+    static bool           non_blocking_input_support;
     FKeyMapPtr            key_map{};
     std::queue<FKey>      fkey_queue{};
     FKey                  fkey{0};
@@ -243,6 +246,10 @@ inline void FKeyboard::setKeypressTimeout (const uInt64 timeout)
 //----------------------------------------------------------------------
 inline void FKeyboard::setReadBlockingTime (const uInt64 blocking_time)
 { read_blocking_time = blocking_time; }
+
+//----------------------------------------------------------------------
+inline void FKeyboard::setNonBlockingInputSupport (bool enable)
+{ non_blocking_input_support = enable; }
 
 //----------------------------------------------------------------------
 inline bool FKeyboard::setNonBlockingInput()

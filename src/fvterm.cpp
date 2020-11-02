@@ -217,7 +217,10 @@ void FVTerm::setNonBlockingRead (bool enable)
     termfilename[0] = '\0';
 
   if ( std::strncmp(termfilename, "/dev/cons", 9) == 0 )
+  {
+    FKeyboard::setNonBlockingInputSupport(false);
     return;
+  }
 #endif
 
   uInt64 blocking_time = (enable) ? 5000 : 100000;  // 5 or 100 ms
