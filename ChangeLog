@@ -1,6 +1,7 @@
 2020-11-02  Markus Gans  <guru.mail@muenster.de>
 	* Non-blocking reading before timeout after keystroke
 	* Every fourth event processing causes a terminal flush
+	* Call of TIOCLINUX only in the Linux console
 
 2020-11-01  Markus Gans  <guru.mail@muenster.de>
 	* Now FINAL CUT queues keyboard and mouse input to speed up 

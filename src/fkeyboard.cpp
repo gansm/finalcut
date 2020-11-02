@@ -557,7 +557,7 @@ FKey FKeyboard::keyCorrection (const FKey& keycode) const
   FKey key_correction;
 
 #if defined(__linux__)
-  if ( linux )
+  if ( linux && FTerm::isLinuxTerm() )
     key_correction = linux->modifierKeyCorrection(keycode);
   else
     key_correction = keycode;
