@@ -28,9 +28,6 @@ int main (int argc, char* argv[])
   // Create the application object
   finalcut::FApplication app{argc, argv};
 
-  // Enable the non-blocking reading mode
-  //app.setNonBlockingRead();
-
   // Create a simple dialog box
   finalcut::FMessageBox mbox{&app};
   mbox.setText("Hello world");
