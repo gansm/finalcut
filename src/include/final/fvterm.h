@@ -50,7 +50,6 @@
 
 #include <sys/time.h>  // need for timeval (cygwin)
 
-#include <queue>
 #include <string>
 #include <utility>
 #include <vector>
@@ -255,7 +254,7 @@ class FVTerm
     void                  createVTerm (const FSize&);
     void                  resizeVTerm (const FSize&) const;
     void                  putVTerm() const;
-    void                  updateTerminal() const;
+    bool                  updateTerminal() const;
     virtual void          addPreprocessingHandler ( const FVTerm*
                                                   , const FPreprocessingFunction& );
     virtual void          delPreprocessingHandler (const FVTerm*);
@@ -318,7 +317,7 @@ class FVTerm
     void                  scrollAreaForward (FTermArea*) const;
     void                  scrollAreaReverse (FTermArea*) const;
     void                  clearArea (FTermArea*, int = ' ') const;
-    void                  processTerminalUpdate() const;
+    bool                  processTerminalUpdate() const;
     static void           startDrawing();
     static void           finishDrawing();
     virtual void          initTerminal();
@@ -420,37 +419,38 @@ class FVTerm
     void                  appendLowerRight (FChar&) const;
     static void           characterFilter (FChar&);
     static void           appendOutputBuffer (const std::string&);
-    static void           appendOutputBuffer (const char[]);
+    template <std::size_t N>
+    static void           appendOutputBuffer (const char (&)[N]);
     static int            appendOutputBuffer (int);
 
     // Data members
-    FTermArea*              print_area{nullptr};        // print area for this object
-    FTermArea*              child_print_area{nullptr};  // print area for children
-    FTermArea*              vwin{nullptr};              // virtual window
-    static const FVTerm*    init_object;  // Global FVTerm object
-    static FSystem*         fsystem;
-    static FTerm*           fterm;
-    static FTermArea*       vterm;        // virtual terminal
-    static FTermArea*       vdesktop;     // virtual desktop
-    static FTermArea*       active_area;  // active area
-    static std::queue<int>* output_buffer;
-    static FChar            term_attribute;
-    static FChar            next_attribute;
-    static FChar            s_ch;      // shadow character
-    static FChar            i_ch;      // inherit background character
-    static FPoint*          term_pos;  // terminal cursor position
-    static FKeyboard*       keyboard;
-    static timeval          last_term_size_check;
-    static bool             draw_completed;
-    static bool             no_terminal_updates;
-    static uInt64           term_size_check_timeout;
-    static int              skipped_terminal_update;
-    static uInt             erase_char_length;
-    static uInt             repeat_char_length;
-    static uInt             clr_bol_length;
-    static uInt             clr_eol_length;
-    static uInt             cursor_address_length;
-    static bool             cursor_hideable;
+    FTermArea*               print_area{nullptr};        // print area for this object
+    FTermArea*               child_print_area{nullptr};  // print area for children
+    FTermArea*               vwin{nullptr};              // virtual window
+    static const FVTerm*     init_object;  // Global FVTerm object
+    static FSystem*          fsystem;
+    static FTerm*            fterm;
+    static FTermArea*        vterm;        // virtual terminal
+    static FTermArea*        vdesktop;     // virtual desktop
+    static FTermArea*        active_area;  // active area
+    static std::vector<int>* output_buffer;
+    static FChar             term_attribute;
+    static FChar             next_attribute;
+    static FChar             s_ch;      // shadow character
+    static FChar             i_ch;      // inherit background character
+    static FPoint*           term_pos;  // terminal cursor position
+    static FKeyboard*        keyboard;
+    static timeval           last_term_size_check;
+    static bool              draw_completed;
+    static bool              no_terminal_updates;
+    static uInt64            term_size_check_timeout;
+    static int               skipped_terminal_update;
+    static uInt              erase_char_length;
+    static uInt              repeat_char_length;
+    static uInt              clr_bol_length;
+    static uInt              clr_eol_length;
+    static uInt              cursor_address_length;
+    static bool              cursor_hideable;
 };
 
 
@@ -987,6 +987,14 @@ inline bool FVTerm::isCursorHideable() const
 //----------------------------------------------------------------------
 inline void FVTerm::hideVTermCursor() const
 { vterm->input_cursor_visible = false; }
+
+//----------------------------------------------------------------------
+template <std::size_t N>
+inline void FVTerm::appendOutputBuffer (const char (&str)[N])
+{
+  for (auto&& ch : str)
+    FVTerm::appendOutputBuffer(int(ch));
+}
 
 }  // namespace finalcut
 

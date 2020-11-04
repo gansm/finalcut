@@ -73,6 +73,7 @@ FMouseControl* FApplication::mouse           {nullptr};  // mouse control
 int            FApplication::loop_level      {0};        // event loop level
 int            FApplication::quit_code       {EXIT_SUCCESS};
 bool           FApplication::quit_now        {false};
+bool           FApplication::pending_updates {false};
 uInt64         FApplication::next_event_wait {5000};     // 5 ms (200 Hz)
 struct timeval FApplication::time_last_event {};
 
@@ -845,7 +846,6 @@ void FApplication::queuingKeyboardInput() const
   findKeyboardWidget();
   keyboard->escapeKeyHandling();  // special case: Esc key
   keyboard->clearKeyBufferOnTimeout();
-  std::fflush(stdout);
 
   if ( isKeyPressed() )
     keyboard->fetchKeyCode();
@@ -1234,11 +1234,18 @@ void FApplication::sendWheelEvent ( const FMouseData& md
 //----------------------------------------------------------------------
 inline void FApplication::flushTerminal()
 {
-  if ( flush_count == 0 || flush_count % 4 != 0 )
+  if ( ! pending_updates )
     return;
+
+  if ( flush_count < 4 )
+  {
+    flush_count++;
+    return;
+  }
 
   flush();
   flush_count = 0;
+  pending_updates = false;
 }
 
 //----------------------------------------------------------------------
@@ -1321,9 +1328,11 @@ bool FApplication::processNextEvent()
     processMouseEvent();
     processResizeEvent();
     processCloseWidget();
-    processTerminalUpdate();  // after terminal changes
+
+    if ( processTerminalUpdate() )  // after terminal changes
+      pending_updates = true;
+
     flushTerminal();
-    flush_count++;
     processLogger();
   }
 

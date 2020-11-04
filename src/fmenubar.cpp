@@ -223,8 +223,10 @@ void FMenuBar::onAccel (FAccelEvent* ev)
     getStatusBar()->drawMessage();
 
   redraw();
-  processTerminalUpdate();
-  flush();
+
+  if ( processTerminalUpdate() )
+    flush();
+
   ev->accept();
 }
 
@@ -920,8 +922,9 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent&& ev)
   if ( focus_changed )
   {
     redraw();
-    processTerminalUpdate();
-    flush();
+
+    if ( processTerminalUpdate() )
+      flush();
   }
 }
 

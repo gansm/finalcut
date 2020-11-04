@@ -197,7 +197,7 @@ class FKeyboard final
     std::queue<FKey>      fkey_queue{};
     FKey                  fkey{0};
     FKey                  key{0};
-    uChar                 read_character{};
+    char                  read_character{};
     char                  fifo_buf[FIFO_BUF_SIZE]{'\0'};
     int                   fifo_offset{0};
     int                   stdin_status_flags{0};

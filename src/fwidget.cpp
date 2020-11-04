@@ -981,8 +981,10 @@ void FWidget::show()
   if ( show_root_widget && show_root_widget == this )
   {
     finishDrawing();
-    processTerminalUpdate();
-    flush();
+
+    if ( processTerminalUpdate() )
+      flush();
+
     show_root_widget = nullptr;
   }
 

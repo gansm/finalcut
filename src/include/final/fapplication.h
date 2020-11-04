@@ -243,10 +243,10 @@ class FApplication : public FWidget
     int                   flush_count{0};
     static uInt64         next_event_wait;
     static timeval        time_last_event;
+    static int            loop_level;
     static int            quit_code;
     static bool           quit_now;
-    static int            loop_level;
-    static bool           process_timer_event;
+    static bool           pending_updates;
     static FMouseControl* mouse;
     static FKeyboard*     keyboard;
     static FWidget*       keyboard_widget;

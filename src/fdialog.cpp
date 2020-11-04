@@ -270,7 +270,9 @@ void FDialog::setPos (const FPoint& pos, bool)
   restoreOverlaidWindows();
   FWindow::adjustSize();
   setCursorToFocusWidget();
-  updateTerminal();
+
+  if ( updateTerminal() )
+    flush();
 }
 
 //----------------------------------------------------------------------

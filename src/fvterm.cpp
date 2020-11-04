@@ -62,7 +62,7 @@ uInt                 FVTerm::clr_bol_length{};
 uInt                 FVTerm::clr_eol_length{};
 uInt                 FVTerm::cursor_address_length{};
 struct timeval       FVTerm::last_term_size_check{};
-std::queue<int>*     FVTerm::output_buffer{nullptr};
+std::vector<int>*    FVTerm::output_buffer{nullptr};
 FPoint*              FVTerm::term_pos{nullptr};
 const FVTerm*        FVTerm::init_object{nullptr};
 FSystem*             FVTerm::fsystem{nullptr};
@@ -266,7 +266,7 @@ void FVTerm::putVTerm() const
 }
 
 //----------------------------------------------------------------------
-void FVTerm::updateTerminal() const
+bool FVTerm::updateTerminal() const
 {
   // Updates pending changes to the terminal
 
@@ -275,7 +275,7 @@ void FVTerm::updateTerminal() const
   if ( no_terminal_updates || FApplication::isQuit()
     || ! (hasPendingUpdates(vterm) && draw_completed) )
   {
-    return;
+    return false;
   }
 
   std::size_t changedlines = 0;
@@ -287,12 +287,12 @@ void FVTerm::updateTerminal() const
       changedlines++;
 
     if ( changedlines % check_interval == 0
-      && (keyboard->hasUnprocessedInput() || keyboard->isKeyPressed(0))
+      && (keyboard->hasUnprocessedInput() || keyboard->isKeyPressed(0) )
       && skipped_terminal_update <= max_skip )
     {
       // Skipping terminal updates if there is unprocessed inputs
       skipped_terminal_update++;
-      return;
+      return false;
     }
   }
 
@@ -301,6 +301,7 @@ void FVTerm::updateTerminal() const
 
   // sets the new input cursor position
   updateTerminalCursor();
+  return changedlines > 0;
 }
 
 //----------------------------------------------------------------------
@@ -613,20 +614,18 @@ void FVTerm::flush()
 {
   // Flush the output buffer
 
-  if ( ! output_buffer )
+  if ( ! output_buffer || output_buffer->empty() )
     return;
 
-  while ( ! output_buffer->empty() )
-  {
-    static const FTerm::defaultPutChar& FTermPutchar = FTerm::putchar();
+  static const FTerm::defaultPutChar& FTermPutchar = FTerm::putchar();
 
-    if ( FTermPutchar )
-    {
-      FTermPutchar (output_buffer->front());
-      output_buffer->pop();
-    }
-  }
+  if ( ! FTermPutchar )
+    return;
 
+  for (auto&& ch : *output_buffer)
+    FTermPutchar(ch);
+
+  output_buffer->clear();
   std::fflush(stdout);
 }
 
@@ -1263,26 +1262,26 @@ void FVTerm::clearArea (FTermArea* area, int fillchar) const
 }
 
 //----------------------------------------------------------------------
-void FVTerm::processTerminalUpdate() const
+bool FVTerm::processTerminalUpdate() const
 {
   const auto& data = FTerm::getFTermData();
 
   // Checks if the resizing of the terminal is not finished
   if ( data && data->hasTermResized() )
-    return;
+    return false;
 
   // Monitor whether the terminal size has changed
   if ( isTermSizeChanged() )
   {
     raise (SIGWINCH);  // Send SIGWINCH
-    return;
+    return false;
   }
 
   // Update data on VTerm
   updateVTerm();
 
   // Update the visible terminal
-  updateTerminal();
+  return updateTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -1845,7 +1844,7 @@ void FVTerm::init()
   {
     fterm         = new FTerm();
     term_pos      = new FPoint(-1, -1);
-    output_buffer = new std::queue<int>;
+    output_buffer = new std::vector<int>;
   }
   catch (const std::bad_alloc&)
   {
@@ -1856,6 +1855,9 @@ void FVTerm::init()
   // Presetting of the current locale for full-width character support.
   // The final setting is made later in FTerm::init_locale().
   std::setlocale (LC_ALL, "");
+
+  // Reserve memory on the terminal output buffer
+  output_buffer->reserve(TERMINAL_OUTPUT_BUFFER_SIZE + 256);
 
   // term_attribute stores the current state of the terminal
   term_attribute.ch           = '\0';
@@ -3072,23 +3074,17 @@ inline void FVTerm::characterFilter (FChar& next_char)
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::appendOutputBuffer (const std::string& s)
+inline void FVTerm::appendOutputBuffer (const std::string& str)
 {
-  const auto& c_string = s.c_str();
-  FTermcap::paddingPrint (c_string, 1, appendOutputBuffer);
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::appendOutputBuffer (const char s[])
-{
-  FTermcap::paddingPrint (s, 1, appendOutputBuffer);
+  for (auto&& ch : str)
+    FVTerm::appendOutputBuffer(int(ch));
 }
 
 //----------------------------------------------------------------------
 int FVTerm::appendOutputBuffer (int ch)
 {
   // append method for unicode character
-  output_buffer->push(ch);
+  output_buffer->push_back(ch);
 
   if ( output_buffer->size() >= TERMINAL_OUTPUT_BUFFER_SIZE )
     flush();

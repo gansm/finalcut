@@ -1116,7 +1116,8 @@ void FListView::onMouseDown (FMouseEvent* ev)
       if ( first_line_position_before != first_visible_line.getPosition() )
         vbar->drawBar();
 
-      processTerminalUpdate();
+      if ( processTerminalUpdate() )
+        flush();
     }
   }
 }
@@ -1220,8 +1221,8 @@ void FListView::onMouseMove (FMouseEvent* ev)
     if ( first_line_position_before != first_visible_line.getPosition() )
       vbar->drawBar();
 
-    processTerminalUpdate();
-    flush();
+    if ( processTerminalUpdate() )
+      flush();
   }
 
   // auto-scrolling when dragging mouse outside the widget
@@ -1307,7 +1308,8 @@ void FListView::onTimer (FTimerEvent*)
   if ( first_line_position_before != first_visible_line.getPosition() )
     vbar->drawBar();
 
-  processTerminalUpdate();
+  if ( processTerminalUpdate() )
+    flush();
 }
 
 //----------------------------------------------------------------------
@@ -1345,7 +1347,8 @@ void FListView::onWheel (FWheelEvent* ev)
   if ( first_line_position_before != first_visible_line.getPosition() )
     vbar->drawBar();
 
-  processTerminalUpdate();
+  if ( processTerminalUpdate() )
+    flush();
 }
 
 //----------------------------------------------------------------------
@@ -2149,7 +2152,8 @@ void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
   if ( draw_hbar )
     hbar->drawBar();
 
-  processTerminalUpdate();
+  if ( processTerminalUpdate() )
+    flush();
 }
 
 //----------------------------------------------------------------------
@@ -2868,7 +2872,8 @@ void FListView::cb_vbarChange (const FWidget*)
     if ( first_line_position_before != first_visible_line.getPosition() )
       vbar->drawBar();
 
-    processTerminalUpdate();
+    if ( processTerminalUpdate() )
+      flush();
   }
 }
 
@@ -2933,7 +2938,8 @@ void FListView::cb_hbarChange (const FWidget*)
     if ( xoffset_before != xoffset )
       hbar->drawBar();
 
-    processTerminalUpdate();
+    if ( processTerminalUpdate() )
+      flush();
   }
 }
 

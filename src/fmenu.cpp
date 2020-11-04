@@ -311,8 +311,9 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   else if ( ms.hide_sub_menu )
   {
     closeOpenedSubMenu();
-    processTerminalUpdate();
-    flush();
+
+    if ( processTerminalUpdate() )
+      flush();
   }
 }
 

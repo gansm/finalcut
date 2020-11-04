@@ -467,15 +467,13 @@ FKey FKeyboard::UTF8decode (const char utf8[]) const
 //----------------------------------------------------------------------
 inline ssize_t FKeyboard::readKey()
 {
-  setNonBlockingInput();
   int len{0};
 
-  if ( ioctl(FTermios::getStdIn(), FIONREAD, &len) >= 0 && len > int(FIFO_BUF_SIZE) )
-    len = int(FIFO_BUF_SIZE);
-  else
-    len = 1;
+  if ( ioctl(FTermios::getStdIn(), FIONREAD, &len) < 0 || len == 0 )
+    return 0;
 
-  const ssize_t bytes = read(FTermios::getStdIn(), &read_character, std::size_t(len));
+  setNonBlockingInput();
+  const ssize_t bytes = read(FTermios::getStdIn(), &read_character, 1);
   unsetNonBlockingInput();
   return bytes;
 }
@@ -492,7 +490,7 @@ void FKeyboard::parseKeyBuffer()
 
     if ( bytesread + fifo_offset <= int(FIFO_BUF_SIZE) )
     {
-      fifo_buf[fifo_offset] = char(read_character);
+      fifo_buf[fifo_offset] = read_character;
       fifo_offset++;
       fifo_in_use = true;
     }
@@ -527,8 +525,6 @@ void FKeyboard::parseKeyBuffer()
     if ( fkey_queue.size() >= MAX_QUEUE_SIZE )
       break;
   }
-
-  read_character = 0;
 }
 
 //----------------------------------------------------------------------
