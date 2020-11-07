@@ -157,7 +157,7 @@ class FScrollView : public FWidget
     static constexpr int horizontal_border_spacing = 2;
 
     // Accessors
-    FPoint              getViewportCursorPos() const;
+    FPoint              getViewportCursorPos();
 
     // Methods
     void                init();
@@ -169,7 +169,7 @@ class FScrollView : public FWidget
                                       , Callback );
     void                setHorizontalScrollBarVisibility() const;
     void                setVerticalScrollBarVisibility() const;
-    void                setViewportCursor() const;
+    void                setViewportCursor();
 
     // Callback methods
     void                cb_vbarChange (const FWidget*);

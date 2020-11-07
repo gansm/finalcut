@@ -277,9 +277,8 @@ bool FTermLinux::loadVGAFont()
 
       // Unicode character mapping
       struct unimapdesc unimap;
-      unimap.entry_ct = uInt16 ( sizeof(fc::unicode_cp437_pairs)
-                               / sizeof(unipair) );
-      unimap.entries = const_cast<unipair*>(&fc::unicode_cp437_pairs[0]);
+      unimap.entry_ct = uInt16(fc::unicode_cp437_pairs.size());
+      unimap.entries = const_cast<unipair*>(fc::unicode_cp437_pairs.data());
       setUnicodeMap(&unimap);
     }
     else
@@ -328,9 +327,8 @@ bool FTermLinux::loadNewFont()
 
       // Unicode character mapping
       struct unimapdesc unimap;
-      unimap.entry_ct = uInt16 ( sizeof(fc::unicode_newfont_pairs)
-                               / sizeof(unipair) );
-      unimap.entries = const_cast<unipair*>(&fc::unicode_newfont_pairs[0]);
+      unimap.entry_ct = uInt16(fc::unicode_newfont_pairs.size());
+      unimap.entries = const_cast<unipair*>(fc::unicode_newfont_pairs.data());
       setUnicodeMap(&unimap);
     }
     else

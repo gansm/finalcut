@@ -28,6 +28,7 @@
 #include <iostream>
 #include <new>
 
+#include "final/fapplication.h"
 #include "final/fconfig.h"
 #include "final/fkeyboard.h"
 #include "final/fmouse.h"
@@ -38,6 +39,136 @@
 
 namespace finalcut
 {
+
+//----------------------------------------------------------------------
+// class FMouseData
+//----------------------------------------------------------------------
+
+// constructors and destructor
+//----------------------------------------------------------------------
+FMouseData::FMouseData()
+{ }
+
+//----------------------------------------------------------------------
+FMouseData::~FMouseData()
+{ }
+
+// public methods of FMouseData
+//----------------------------------------------------------------------
+FString FMouseData::getClassName() const
+{
+  return "FMouseData";
+}
+
+//----------------------------------------------------------------------
+const FPoint& FMouseData::getPos() const
+{
+  return mouse;
+}
+//----------------------------------------------------------------------
+bool FMouseData::isLeftButtonPressed() const
+{
+  return bool(getButtonState().left_button == Pressed);
+}
+
+//----------------------------------------------------------------------
+bool FMouseData::isLeftButtonReleased() const
+{
+  return bool(getButtonState().left_button == Released);
+}
+
+//----------------------------------------------------------------------
+bool FMouseData::isLeftButtonDoubleClick() const
+{
+  return bool(getButtonState().left_button == DoubleClick);
+}
+
+//----------------------------------------------------------------------
+bool FMouseData::isRightButtonPressed() const
+{
+  return bool(getButtonState().right_button == Pressed);
+}
+
+//----------------------------------------------------------------------
+bool FMouseData::isRightButtonReleased() const
+{
+  return bool(getButtonState().right_button == Released);
+}
+//----------------------------------------------------------------------
+bool FMouseData::isMiddleButtonPressed() const
+{
+  return bool(getButtonState().middle_button == Pressed);
+}
+
+//----------------------------------------------------------------------
+bool FMouseData::isMiddleButtonReleased() const
+{
+  return bool(getButtonState().middle_button == Released);
+}
+
+//----------------------------------------------------------------------
+bool FMouseData::isShiftKeyPressed() const
+{
+  return bool(getButtonState().shift_button);
+}
+
+//----------------------------------------------------------------------
+bool FMouseData::isControlKeyPressed() const
+{
+  return bool(getButtonState().control_button);
+}
+
+//----------------------------------------------------------------------
+bool FMouseData::isMetaKeyPressed() const
+{
+  return bool(getButtonState().meta_button);
+}
+
+//----------------------------------------------------------------------
+bool FMouseData::isWheelUp() const
+{
+  return bool(getButtonState().wheel_up);
+}
+
+//----------------------------------------------------------------------
+bool FMouseData::isWheelDown() const
+{
+  return bool(getButtonState().wheel_down);
+}
+
+//----------------------------------------------------------------------
+bool FMouseData::isMoved() const
+{
+  return bool(getButtonState().mouse_moved);
+}
+
+//----------------------------------------------------------------------
+void FMouseData::clearButtonState()
+{
+  // Fill bit field with 0
+  std::memset(&b_state, 0x00, sizeof(b_state));
+}
+
+
+// protected methods of FMouseData
+//----------------------------------------------------------------------
+inline FMouseData::FMouseButton& FMouseData::getButtonState()
+{
+  return b_state;
+}
+
+//----------------------------------------------------------------------
+inline const FMouseData::FMouseButton& FMouseData::getButtonState() const
+{
+  return b_state;
+}
+
+//----------------------------------------------------------------------
+void FMouseData::setPos (const FPoint& m)
+{
+  mouse = m;
+}
+
 
 //----------------------------------------------------------------------
 // class FMouse
@@ -51,18 +182,16 @@ FMouse::FMouse()
   clearButtonState();
 }
 
+//----------------------------------------------------------------------
+FMouse::~FMouse()  // destructor
+{ }
+
 
 // public methods of FMouse
 //----------------------------------------------------------------------
 FString FMouse::getClassName() const
 {
   return "FMouse";
-}
-
-//----------------------------------------------------------------------
-inline const FPoint& FMouse::getPos() const
-{
-  return mouse;
 }
 
 //----------------------------------------------------------------------
@@ -96,103 +225,13 @@ inline bool FMouse::hasEvent() const
 }
 
 //----------------------------------------------------------------------
-inline bool FMouse::isLeftButtonPressed()
+inline bool FMouse::hasUnprocessedInput() const
 {
-  return bool(getButtonState().left_button == Pressed);
-}
-
-//----------------------------------------------------------------------
-inline bool FMouse::isLeftButtonReleased()
-{
-  return bool(getButtonState().left_button == Released);
-}
-
-//----------------------------------------------------------------------
-inline bool FMouse::isLeftButtonDoubleClick()
-{
-  return bool(getButtonState().left_button == DoubleClick);
-}
-
-//----------------------------------------------------------------------
-inline bool FMouse::isRightButtonPressed()
-{
-  return bool(getButtonState().right_button == Pressed);
-}
-
-//----------------------------------------------------------------------
-inline bool FMouse::isRightButtonReleased()
-{
-  return bool(getButtonState().right_button == Released);
-}
-//----------------------------------------------------------------------
-inline bool FMouse::isMiddleButtonPressed()
-{
-  return bool(getButtonState().middle_button == Pressed);
-}
-
-//----------------------------------------------------------------------
-inline bool FMouse::isMiddleButtonReleased()
-{
-  return bool(getButtonState().middle_button == Released);
-}
-
-//----------------------------------------------------------------------
-inline bool FMouse::isShiftKeyPressed()
-{
-  return bool(getButtonState().shift_button);
-}
-
-//----------------------------------------------------------------------
-inline bool FMouse::isControlKeyPressed()
-{
-  return bool(getButtonState().control_button);
-}
-
-//----------------------------------------------------------------------
-inline bool FMouse::isMetaKeyPressed()
-{
-  return bool(getButtonState().meta_button);
-}
-
-//----------------------------------------------------------------------
-inline bool FMouse::isWheelUp()
-{
-  return bool(getButtonState().wheel_up);
-}
-
-//----------------------------------------------------------------------
-inline bool FMouse::isWheelDown()
-{
-  return bool(getButtonState().wheel_down);
-}
-
-//----------------------------------------------------------------------
-inline bool FMouse::isMoved()
-{
-  return bool(getButtonState().mouse_moved);
-}
-
-//----------------------------------------------------------------------
-inline bool FMouse::isInputDataPending() const
-{
-  return input_data_pending;
-}
-
-//----------------------------------------------------------------------
-void FMouse::clearButtonState()
-{
-  // Fill bit field with 0
-  std::memset(&b_state, 0x00, sizeof(b_state));
+  return unprocessed_buffer_data;
 }
 
 
 // protected methods of FMouse
-//----------------------------------------------------------------------
-inline FMouse::FMouseButton& FMouse::getButtonState()
-{
-  return b_state;
-}
-
 //----------------------------------------------------------------------
 inline const FPoint& FMouse::getNewPos() const
 {
@@ -224,12 +263,6 @@ timeval* FMouse::getMousePressedTime()
 }
 
 //----------------------------------------------------------------------
-void FMouse::setPos (const FPoint& m)
-{
-  mouse = m;
-}
-
-//----------------------------------------------------------------------
 void FMouse::setNewPos (int x, int y)
 {
   new_mouse_position.setPoint (x, y);
@@ -238,7 +271,7 @@ void FMouse::setNewPos (int x, int y)
 //----------------------------------------------------------------------
 void FMouse::setPending (bool is_pending)
 {
-  input_data_pending = is_pending;
+  unprocessed_buffer_data = is_pending;
 }
 
 //----------------------------------------------------------------------
@@ -1434,14 +1467,14 @@ bool FMouseControl::isMoved()
 }
 
 //----------------------------------------------------------------------
-bool FMouseControl::isInputDataPending()
+bool FMouseControl::hasUnprocessedInput()
 {
   return std::any_of ( std::begin(mouse_protocol)
                      , std::end(mouse_protocol)
                      , [] (FMouseProtocol::const_reference m)
                        {
                          return m.second
-                             && m.second->isInputDataPending();
+                             && m.second->hasUnprocessedInput();
                        }
                      );
 }
@@ -1515,6 +1548,25 @@ void FMouseControl::setRawData ( FMouse::mouse_type mt
 }
 
 //----------------------------------------------------------------------
+void FMouseControl::processQueuedInput()
+{
+  while ( ! fmousedata_queue.empty() )
+  {
+    if ( FApplication::isQuit() )
+      return;
+
+    FMouseDataPtr md(std::move(fmousedata_queue.front()));
+    fmousedata_queue.pop();
+
+    if ( md.get() )
+      event_cmd.execute(*md);
+
+    if ( FApplication::isQuit() )
+      return;
+  }
+}
+
+//----------------------------------------------------------------------
 void FMouseControl::processEvent (struct timeval* time)
 {
   auto mouse_object = getMouseWithData();
@@ -1522,7 +1574,11 @@ void FMouseControl::processEvent (struct timeval* time)
   clearEvent();
 
   if ( mouse_object )
+  {
     mouse_object->processEvent(time);
+    auto& md = static_cast<FMouseData&>(*mouse_object);
+    fmousedata_queue.emplace(new FMouseData(std::move(md)));
+  }
 }
 
 //----------------------------------------------------------------------

@@ -213,10 +213,10 @@ inline bool FListViewItem::isCheckable() const
 class FListViewIterator
 {
   public:
-    // Typedefs
-    typedef std::list<FObject*>   FObjectList;
-    typedef FObjectList::iterator iterator;
-    typedef std::stack<iterator>  iterator_stack;
+    // Using-declarations
+    using FObjectList    = std::list<FObject*>;
+    using iterator       = FObjectList::iterator;
+    using iterator_stack = std::stack<iterator>;
 
     // Constructor
     FListViewIterator ();

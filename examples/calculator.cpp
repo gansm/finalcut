@@ -335,7 +335,6 @@ void Calc::onKeyPress (finalcut::FKeyEvent* ev)
         }
 
         drawDispay();
-        updateTerminal();
       }
 
       ev->accept();
@@ -394,7 +393,6 @@ void Calc::cb_buttonClicked (Calc::button key)
   }
 
   drawDispay();
-  updateTerminal();
 
   if ( infix_operator && ! isDataEntryKey(key) )
     input = "";

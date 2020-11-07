@@ -84,8 +84,8 @@ class FWindow : public FWidget
 
     // Accessors
     FString             getClassName() const override;
-    static FWindow*     getWindowWidget (const FWidget*);
-    static int          getWindowLayer (const FWidget*);
+    static FWindow*     getWindowWidget (FWidget*);
+    static int          getWindowLayer (FWidget*);
     FWidget*            getWindowFocusWidget() const;
 
     // Mutators

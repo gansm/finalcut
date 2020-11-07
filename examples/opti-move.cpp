@@ -27,10 +27,6 @@
 
 #include <final/final.h>
 
-
-// Global FApplication object
-static finalcut::FApplication* app{nullptr};
-
 // function prototype
 bool keyPressed();
 void term_boundaries (int&, int&);
@@ -66,8 +62,8 @@ bool keyPressed()
 void term_boundaries (int& x, int& y)
 {
   // checks and corrects the terminal boundaries
-  const auto term_width  = int(app->getDesktopWidth());
-  const auto term_height = int(app->getDesktopHeight());
+  const auto term_width  = int(finalcut::FTerm::getColumnNumber());
+  const auto term_height = int(finalcut::FTerm::getLineNumber());
 
   if ( x < 0 )
     x = 0;
@@ -226,9 +222,6 @@ int main (int argc, char* argv[])
   if ( finalcut::FApplication::isQuit() )
     return 0;
 
-  // Pointer to the global virtual terminal object
-  app = &term_app;
-
   // Get screen dimension
   auto xmax = int(term_app.getDesktopWidth() - 1);
   auto ymax = int(term_app.getDesktopHeight() - 1);
@@ -282,7 +275,5 @@ int main (int argc, char* argv[])
 
   // Waiting for keypress
   keyPressed();
-  app = nullptr;  // End of term_app object scope
-
   return 0;
 }

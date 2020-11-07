@@ -79,7 +79,6 @@ void FMenuBar::hide()
   FColor bg = wc->term_bg;
   setColor (fg, bg);
   print() << FPoint{1, 1} << FString{getDesktopWidth(), L' '};
-  updateTerminal();
   FWindow::hide();
 }
 
@@ -210,7 +209,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
 
   // Handle menu entries
   if ( mouse_down )
-    mouseMoveOverList(ev);
+    mouseMoveOverList(std::move(*ev));
 }
 
 //----------------------------------------------------------------------
@@ -224,6 +223,10 @@ void FMenuBar::onAccel (FAccelEvent* ev)
     getStatusBar()->drawMessage();
 
   redraw();
+
+  if ( processTerminalUpdate() )
+    flush();
+
   ev->accept();
 }
 
@@ -825,10 +828,7 @@ void FMenuBar::mouseDownOverList (const FMouseEvent* ev)
   }
 
   if ( focus_changed )
-  {
     redraw();
-    updateTerminal();
-  }
 }
 
 //----------------------------------------------------------------------
@@ -869,7 +869,7 @@ void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
+void FMenuBar::mouseMoveOverList (const FMouseEvent&& ev)
 {
   auto list = getItemList();
 
@@ -878,10 +878,10 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
 
   focus_changed = false;
   bool mouse_over_menubar{false};
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
+  int mouse_x = ev.getX();
+  int mouse_y = ev.getY();
 
-  if ( getTermGeometry().contains(ev->getTermPos()) )
+  if ( getTermGeometry().contains(ev.getTermPos()) )
     mouse_over_menubar = true;
 
   for (auto&& item : list)
@@ -906,7 +906,7 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
       else
       {
         // Event handover to the menu
-        passEventToMenu(ev);
+        passEventToMenu(std::move(ev));
       }
     }
   }
@@ -922,12 +922,14 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
   if ( focus_changed )
   {
     redraw();
-    updateTerminal();
+
+    if ( processTerminalUpdate() )
+      flush();
   }
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::passEventToMenu (const FMouseEvent* const& ev) const
+void FMenuBar::passEventToMenu (const FMouseEvent&& ev) const
 {
   if ( ! hasSelectedItem() || ! getSelectedItem()->hasMenu() )
     return;
@@ -937,11 +939,11 @@ void FMenuBar::passEventToMenu (const FMouseEvent* const& ev) const
   const auto& menu_geometry = menu->getTermGeometry();
 
   if ( menu->getCount() > 0
-    && menu_geometry.contains(ev->getTermPos()) )
+    && menu_geometry.contains(ev.getTermPos()) )
   {
-    const auto& t = ev->getTermPos();
+    const auto& t = ev.getTermPos();
     const auto& p = menu->termToWidgetPos(t);
-    const int b = ev->getButton();
+    const int b = ev.getButton();
 
     try
     {
@@ -972,8 +974,6 @@ void FMenuBar::leaveMenuBar()
   if ( getStatusBar() )
     getStatusBar()->drawMessage();
 
-  updateTerminal();
-  flush();
   mouse_down = false;
 }
 

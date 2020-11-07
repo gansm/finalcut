@@ -49,6 +49,24 @@ void check_c_string ( const char* s1
   ::CppUnit::Asserter::fail ("Strings are not equal", sourceLine);
 }
 
+namespace finalcut
+{
+
+namespace internal
+{
+
+struct var
+{
+  // Global application object is need for FApplication::isQuit()
+  static FApplication* app_object;
+};
+
+FApplication*  var::app_object {nullptr};
+}  // namespace internal
+
+}  // namespace finalcut
+
+
 namespace test
 {
 
@@ -311,6 +329,7 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     void keyPressed();
     void keyReleased();
     void escapeKeyPressed();
+    void mouseTracking();
 
     // Data members
     FKey key_pressed{0};
@@ -359,8 +378,7 @@ void FKeyboardTest::noArgumentTest()
   CPPUNIT_ASSERT ( time->tv_sec == 0);
   CPPUNIT_ASSERT ( time->tv_usec == 0);
 
-  CPPUNIT_ASSERT ( ! keyboard->isInputDataPending() );
-  CPPUNIT_ASSERT ( ! keyboard->unprocessedInput() );
+  CPPUNIT_ASSERT ( ! keyboard->hasUnprocessedInput() );
   CPPUNIT_ASSERT ( ! keyboard->isKeyPressed() );
 
   keyboard->clearKeyBufferOnTimeout();
@@ -2153,6 +2171,7 @@ void FKeyboardTest::metaKeyTest()
   const struct timespec ms[]{{0, 100000000L}};
   nanosleep (ms, NULL);
   keyboard->escapeKeyHandling();
+  keyboard->processQueuedInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fmkey_O );
   clear();
@@ -2240,6 +2259,7 @@ void FKeyboardTest::metaKeyTest()
   // Wait 100 ms - Substring keys needs a timeout
   nanosleep (ms, NULL);
   keyboard->escapeKeyHandling();
+  keyboard->processQueuedInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fmkey_left_square_bracket );
   clear();
@@ -2257,6 +2277,7 @@ void FKeyboardTest::metaKeyTest()
   // Wait 100 ms - Substring keys needs a timeout
   nanosleep (ms, NULL);
   keyboard->escapeKeyHandling();
+  keyboard->processQueuedInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fmkey_right_square_bracket );
   clear();
@@ -2955,16 +2976,21 @@ void FKeyboardTest::unknownKeyTest()
 //----------------------------------------------------------------------
 void FKeyboardTest::init()
 {
+  finalcut::internal::var::app_object \
+      = reinterpret_cast<finalcut::FApplication*>(this);  // Need for isQuit()
   keyboard = new finalcut::FKeyboard();
   auto cmd1 = std::bind(&FKeyboardTest::keyPressed, this);
   auto cmd2 = std::bind(&FKeyboardTest::keyReleased, this);
   auto cmd3 = std::bind(&FKeyboardTest::escapeKeyPressed, this);
+  auto cmd4 = std::bind(&FKeyboardTest::mouseTracking, this);
   finalcut::FKeyboardCommand key_cmd1 (cmd1);
   finalcut::FKeyboardCommand key_cmd2 (cmd2);
   finalcut::FKeyboardCommand key_cmd3 (cmd3);
+  finalcut::FKeyboardCommand key_cmd4 (cmd4);
   keyboard->setPressCommand (key_cmd1);
   keyboard->setReleaseCommand (key_cmd2);
   keyboard->setEscPressedCommand (key_cmd3);
+  keyboard->setMouseTrackingCommand (key_cmd4);
   keyboard->setKeypressTimeout (100000);  // 100 ms
   processInput();
   CPPUNIT_ASSERT ( key_pressed == 0 );
@@ -3009,6 +3035,7 @@ void FKeyboardTest::processInput()
   if ( keyboard->isKeyPressed() )
     keyboard->fetchKeyCode();
 
+  keyboard->processQueuedInput();
   // Keyboard interval timeout 75 ms (= 75,000,000 ns)
   const struct timespec ms[]{{0, 75000000L}};
   nanosleep (ms, NULL);
@@ -3042,6 +3069,12 @@ void FKeyboardTest::escapeKeyPressed()
   key_pressed = finalcut::fc::Fkey_escape;
   key_released = finalcut::fc::Fkey_escape;
   number_of_keys++;
+}
+
+//----------------------------------------------------------------------
+void FKeyboardTest::mouseTracking()
+{
+  key_pressed = keyboard->getKey();
 }
 
 // Put the test suite in the registry

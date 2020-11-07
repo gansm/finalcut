@@ -250,8 +250,6 @@ void FMenuItem::openMenu() const
   dd_menu->show();
   dd_menu->raiseWindow();
   dd_menu->redraw();
-  updateTerminal();
-  flush();
 }
 
 //----------------------------------------------------------------------
@@ -419,6 +417,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
 
     mbar->redraw();
     mbar->drop_down = true;
+
   }
   else
   {
@@ -428,6 +427,9 @@ void FMenuItem::onAccel (FAccelEvent* ev)
     processClicked();
     mbar->drop_down = false;
   }
+
+  if ( processTerminalUpdate() )
+    flush();
 
   ev->accept();
 }

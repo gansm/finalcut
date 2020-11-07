@@ -411,7 +411,9 @@ void FScrollView::scrollTo (int x, int y)
 
   viewport->has_changes = true;
   copy2area();
-  updateTerminal();
+
+  if ( processTerminalUpdate() )
+    flush();
 }
 
 //----------------------------------------------------------------------
@@ -647,10 +649,7 @@ void FScrollView::copy2area()
   if ( ! hasPrintArea() )
     FWidget::getPrintArea();
 
-  if ( ! (hasPrintArea() && viewport) )
-    return;
-
-  if ( ! viewport->has_changes )
+  if ( ! (hasPrintArea() && viewport && viewport->has_changes) )
     return;
 
   auto printarea = getCurrentPrintArea();
@@ -669,15 +668,15 @@ void FScrollView::copy2area()
   if ( printarea->height <= ay + y_end )
     y_end = printarea->height - ay;
 
-  for (int y{0}; y < y_end; y++)  // line loop
+  for (auto y{0}; y < y_end; y++)  // line loop
   {
-    const FChar* vc{};  // viewport character
-    FChar* ac{};  // area character
     const int v_line_len = viewport->width;
     const int a_line_len = printarea->width + printarea->right_shadow;
-    vc = &viewport->data[(dy + y) * v_line_len + dx];
-    ac = &printarea->data[(ay + y) * a_line_len + ax];
-    std::memcpy (ac, vc, sizeof(FChar) * unsigned(x_end));
+    // viewport character
+    const auto& vc = viewport->data[(dy + y) * v_line_len + dx];
+    // area character
+    auto& ac = printarea->data[(ay + y) * a_line_len + ax];
+    std::memcpy (&ac, &vc, sizeof(FChar) * unsigned(x_end));
 
     if ( int(printarea->changes[ay + y].xmin) > ax )
       printarea->changes[ay + y].xmin = uInt(ax);
@@ -694,9 +693,9 @@ void FScrollView::copy2area()
 
 // private methods of FScrollView
 //----------------------------------------------------------------------
-inline FPoint FScrollView::getViewportCursorPos() const
+inline FPoint FScrollView::getViewportCursorPos()
 {
-  const auto& window = FWindow::getWindowWidget(this);
+  auto window = FWindow::getWindowWidget(this);
 
   if ( window )
   {
@@ -846,7 +845,7 @@ void FScrollView::setVerticalScrollBarVisibility() const
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setViewportCursor() const
+void FScrollView::setViewportCursor()
 {
   if ( ! isChild(getFocusWidget()) )
     return;

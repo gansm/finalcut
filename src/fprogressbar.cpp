@@ -64,8 +64,6 @@ void FProgressbar::setPercentage (std::size_t percentage_value)
     drawProgressLabel();
     drawProgressBar();
   }
-
-  updateTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -126,8 +124,6 @@ void FProgressbar::reset()
     drawProgressLabel();
     drawProgressBar();
   }
-
-  updateTerminal();
 }
 
 
@@ -148,7 +144,8 @@ void FProgressbar::draw()
   if ( getFlags().shadow )
     drawShadow(this);
 
-  flush();
+  if ( processTerminalUpdate() )
+    flush();
 }
 
 //----------------------------------------------------------------------
@@ -182,9 +179,6 @@ void FProgressbar::drawProgressBar()
 
   if ( FTerm::isMonochron() )
     setReverse(false);
-
-  updateTerminal();
-  flush();
 }
 
 //----------------------------------------------------------------------

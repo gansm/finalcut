@@ -189,7 +189,6 @@ void FStatusBar::hide()
   const FColor bg = wc->term_bg;
   setColor (fg, bg);
   print() << FPoint{1, 1} << FString{getDesktopWidth(), L' '};
-  updateTerminal();
   FWindow::hide();
 }
 
@@ -256,7 +255,7 @@ void FStatusBar::drawMessage()
     }
   }
 
-  for (int i = x; i <= int(termWidth); i++)
+  for (auto i = x; i <= int(termWidth); i++)
     print (' ');
 
   if ( FTerm::isMonochron() )

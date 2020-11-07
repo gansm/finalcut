@@ -113,7 +113,7 @@ void Transparent::draw()
   const finalcut::FString line{getClientWidth(), '.'};
 
   // Fill window area
-  for (int n{1}; n <= int(getClientHeight()); n++)
+  for (auto n{1}; n <= int(getClientHeight()); n++)
   {
     print() << FPoint{2, 2 + n}
             << line;
@@ -237,8 +237,6 @@ void MainWindow::draw()
 
   if ( finalcut::FTerm::isMonochron() )
     setReverse(false);
-
-  updateTerminal();
 }
 
 //----------------------------------------------------------------------

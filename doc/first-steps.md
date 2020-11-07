@@ -89,7 +89,7 @@ unique and can not have a parent widget. The class `FApplication` manages
 all settings and assigns keyboard and mouse input to the different widgets.
 
 <figure class="image">
-  <img src="final-cut-widget tree.svg" alt="widget tree">
+  <img src="final-cut-widget-tree.svg" alt="widget tree">
   <figcaption>Figure 2.  Widget tree of a FINAL CUT application</figcaption>
 </figure>
 <br /><br />

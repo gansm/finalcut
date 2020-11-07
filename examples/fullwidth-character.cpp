@@ -111,7 +111,7 @@ int main (int argc, char* argv[])
       };
 
   auto cb_tooltip = \
-      [] (finalcut::FApplication* a)
+      [] (finalcut::FDialog* a)
       {
         finalcut::FToolTip tooltip(a);
         tooltip.setText (full("A tooltip with\ncharacters\n"
@@ -124,7 +124,7 @@ int main (int argc, char* argv[])
   btn.addCallback ("clicked", cb_exit, std::ref(app));
   Exit.addCallback ("clicked", cb_exit, std::ref(app));
   Quit.addCallback ("clicked", cb_exit, std::ref(app));
-  key_F1.addCallback ("activate", cb_tooltip, &app);
+  key_F1.addCallback ("activate", cb_tooltip, &dgl);
 
   // Set dialog object as main widget
   finalcut::FWidget::setMainWidget(&dgl);

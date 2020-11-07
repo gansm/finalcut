@@ -210,7 +210,7 @@ void FButtonGroup::hide()
   // Hide border
   unsetViewportPrint();
 
-  for (int y{0}; y < int(getHeight()); y++)
+  for (auto y{0}; y < int(getHeight()); y++)
     print() << FPoint{1, 1 + y} << FString{size, L' '};
 
   setViewportPrint();
@@ -331,8 +331,6 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
   if ( getStatusBar() )
   {
     getStatusBar()->drawMessage();
-    updateTerminal();
-    flush();
   }
 }
 
@@ -476,20 +474,15 @@ bool FButtonGroup::directFocusRadioButton() const
   if ( ! hasCheckedButton() || buttonlist.empty() )
     return false;
 
-  bool found_checked{false};
-
   for (auto&& item : buttonlist)
   {
     auto toggle_button = static_cast<FToggleButton*>(item);
 
     if ( toggle_button->isChecked() )
-    {
-      found_checked = directFocusCheckedRadioButton(toggle_button);
-      break;
-    }
+      return directFocusCheckedRadioButton (toggle_button);
   }
 
-  return found_checked;
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -512,8 +505,6 @@ void FButtonGroup::directFocus()
   if ( getStatusBar() )
   {
     getStatusBar()->drawMessage();
-    updateTerminal();
-    flush();
   }
 }
 

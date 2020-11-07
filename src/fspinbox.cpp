@@ -371,7 +371,6 @@ inline void FSpinBox::updateInputField()
   input_field << pfix << value << sfix;
   input_field.redraw();
   redraw();
-  updateTerminal();
 }
 
 //----------------------------------------------------------------------

@@ -1116,8 +1116,8 @@ void FListView::onMouseDown (FMouseEvent* ev)
       if ( first_line_position_before != first_visible_line.getPosition() )
         vbar->drawBar();
 
-      updateTerminal();
-      flush();
+      if ( processTerminalUpdate() )
+        flush();
     }
   }
 }
@@ -1221,8 +1221,8 @@ void FListView::onMouseMove (FMouseEvent* ev)
     if ( first_line_position_before != first_visible_line.getPosition() )
       vbar->drawBar();
 
-    updateTerminal();
-    flush();
+    if ( processTerminalUpdate() )
+      flush();
   }
 
   // auto-scrolling when dragging mouse outside the widget
@@ -1308,8 +1308,8 @@ void FListView::onTimer (FTimerEvent*)
   if ( first_line_position_before != first_visible_line.getPosition() )
     vbar->drawBar();
 
-  updateTerminal();
-  flush();
+  if ( processTerminalUpdate() )
+    flush();
 }
 
 //----------------------------------------------------------------------
@@ -1347,8 +1347,8 @@ void FListView::onWheel (FWheelEvent* ev)
   if ( first_line_position_before != first_visible_line.getPosition() )
     vbar->drawBar();
 
-  updateTerminal();
-  flush();
+  if ( processTerminalUpdate() )
+    flush();
 }
 
 //----------------------------------------------------------------------
@@ -1604,7 +1604,7 @@ void FListView::draw()
   {
     setColor();
 
-    for (int y{2}; y < int(getHeight()); y++)
+    for (auto y{2}; y < int(getHeight()); y++)
     {
       print() << FPoint{int(getWidth()) - 1, y}
               << ' ';  // clear right side of the scrollbar
@@ -1841,7 +1841,7 @@ void FListView::clearList()
   if ( size == 0 )
     return;
 
-  for (int y{0}; y < int(getHeight()) - 2; y++)
+  for (auto y{0}; y < int(getHeight()) - 2; y++)
   {
     print() << FPoint{2, 2 + y} << FString{size, L' '};
   }
@@ -2152,8 +2152,8 @@ void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
   if ( draw_hbar )
     hbar->drawBar();
 
-  updateTerminal();
-  flush();
+  if ( processTerminalUpdate() )
+    flush();
 }
 
 //----------------------------------------------------------------------
@@ -2849,11 +2849,8 @@ void FListView::cb_vbarChange (const FWidget*)
       break;
 
     case FScrollbar::scrollJump:
-    {
-      int value = vbar->getValue();
-      scrollToY (value);
+      scrollToY (vbar->getValue());
       break;
-    }
 
     case FScrollbar::scrollWheelUp:
       wheelUp (wheel_distance);
@@ -2875,8 +2872,8 @@ void FListView::cb_vbarChange (const FWidget*)
     if ( first_line_position_before != first_visible_line.getPosition() )
       vbar->drawBar();
 
-    updateTerminal();
-    flush();
+    if ( processTerminalUpdate() )
+      flush();
   }
 }
 
@@ -2932,8 +2929,6 @@ void FListView::cb_hbarChange (const FWidget*)
   {
     drawHeadlines();
     drawList();
-    updateTerminal();
-    flush();
   }
 
   if ( scrollType >= FScrollbar::scrollStepBackward )
@@ -2943,8 +2938,8 @@ void FListView::cb_hbarChange (const FWidget*)
     if ( xoffset_before != xoffset )
       hbar->drawBar();
 
-    updateTerminal();
-    flush();
+    if ( processTerminalUpdate() )
+      flush();
   }
 }
 

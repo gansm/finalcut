@@ -216,7 +216,7 @@ class FTerm final
 #endif
 
     // Inquiries
-    static bool              isNormal (const FChar* const&);
+    static bool              isNormal (const FChar&);
     static bool              isRaw();
     static bool              hasUTF8();
     static bool              hasVT100();
@@ -304,7 +304,7 @@ class FTerm final
 
     void                     initTerminal();
     static void              initScreenSettings();
-    static const char*       changeAttribute (FChar*&, FChar*&);
+    static const char*       changeAttribute (FChar&, FChar&);
     static void              changeTermSizeFinished();
 
   private:

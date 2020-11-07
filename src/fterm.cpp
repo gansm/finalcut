@@ -63,14 +63,21 @@
 namespace finalcut
 {
 
-// Global FTerm object
-static FTerm* init_term_object{nullptr};
+namespace internal
+{
 
-// Global init state
-static bool term_initialized{false};
+struct var
+{
+  static FTerm* init_term_object;  // Global FTerm object
+  static bool   term_initialized;  // Global init state
+  static uInt   object_counter;    // Counts the number of object instances
+};
 
-// Counts the number of object instances
-static uInt object_counter{0};
+FTerm* var::init_term_object{nullptr};
+bool   var::term_initialized{false};
+uInt   var::object_counter{0};
+
+}  // namespace internal
 
 // Static class attributes
 FTermData*      FTerm::data          {nullptr};
@@ -107,21 +114,21 @@ FMouseControl*  FTerm::mouse         {nullptr};
 //----------------------------------------------------------------------
 FTerm::FTerm()
 {
-  if ( object_counter == 0 )
+  if ( internal::var::object_counter == 0 )
     allocationValues();  // Allocation of global objects
 
-  object_counter++;
+  internal::var::object_counter++;
 }
 
 //----------------------------------------------------------------------
 FTerm::~FTerm()  // destructor
 {
-  if ( init_term_object == this )
+  if ( internal::var::init_term_object == this )
     finish();  // Resetting console settings
 
-  object_counter--;
+  internal::var::object_counter--;
 
-  if ( object_counter == 0 )
+  if ( internal::var::object_counter == 0 )
   {
     printExitMessage();
     deallocationValues();  // Deallocation of global objects
@@ -442,7 +449,7 @@ FTermDebugData& FTerm::getFTermDebugData()
 #endif  // DEBUG
 
 //----------------------------------------------------------------------
-bool FTerm::isNormal (const FChar* const& ch)
+bool FTerm::isNormal (const FChar& ch)
 {
   return FOptiAttr::isNormal(ch);
 }
@@ -588,7 +595,7 @@ bool FTerm::isNewFont()
 //----------------------------------------------------------------------
 bool FTerm::isInitialized()
 {
-  return term_initialized;
+  return internal::var::term_initialized;
 }
 
 //----------------------------------------------------------------------
@@ -1243,9 +1250,6 @@ FTerm::defaultPutChar& FTerm::putchar()
 //----------------------------------------------------------------------
 void FTerm::putstring (const char str[], int affcnt)
 {
-  if ( ! fsys )
-    getFSystem();
-
   FTermcap::paddingPrint (str, affcnt, FTerm::putchar_ASCII);
 }
 
@@ -1322,7 +1326,7 @@ void FTerm::initScreenSettings()
 }
 
 //----------------------------------------------------------------------
-const char* FTerm::changeAttribute (FChar*& term_attr, FChar*& next_attr)
+const char* FTerm::changeAttribute (FChar& term_attr, FChar& next_attr)
 {
   return opti_attr->changeAttribute (term_attr, next_attr);
 }
@@ -2274,7 +2278,7 @@ inline void FTerm::deallocationValues()
 //----------------------------------------------------------------------
 void FTerm::init()
 {
-  init_term_object = this;
+  internal::var::init_term_object = this;
 
   // Initialize global values for all objects
   init_global_values();
@@ -2362,7 +2366,7 @@ void FTerm::init()
   FTermios::setRawMode();
 
   // The terminal is now initialized
-  term_initialized = true;
+  internal::var::term_initialized = true;
 }
 
 //----------------------------------------------------------------------
@@ -2587,8 +2591,8 @@ void FTerm::terminalSizeChange()
 //----------------------------------------------------------------------
 void FTerm::processTermination (int signum)
 {
-  if ( init_term_object )
-    init_term_object->finish();
+  if ( internal::var::init_term_object )
+    internal::var::init_term_object->finish();
 
   std::fflush (stderr);
   std::fflush (stdout);
@@ -2602,8 +2606,8 @@ void FTerm::processTermination (int signum)
     printExitMessage();
   }
 
-  if ( init_term_object )
-    init_term_object->deallocationValues();
+  if ( internal::var::init_term_object )
+    internal::var::init_term_object->deallocationValues();
 
   std::terminate();
 }

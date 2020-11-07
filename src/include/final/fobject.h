@@ -73,10 +73,12 @@ class FUserEvent;
 class FObject
 {
   public:
-    // Typedef
-    typedef std::list<FObject*>         FObjectList;
-    typedef FObjectList::iterator       iterator;
-    typedef FObjectList::const_iterator const_iterator;
+    // Using-declarations
+    using FObjectList     = std::list<FObject*>;
+    using iterator        = FObjectList::iterator;
+    using const_iterator  = FObjectList::const_iterator;
+    using reference       = FObjectList::reference;
+    using const_reference = FObjectList::const_reference;
 
     // Constants
     static constexpr auto UNLIMITED = static_cast<std::size_t>(-1);
@@ -105,6 +107,10 @@ class FObject
     iterator              end();
     const_iterator        begin() const;
     const_iterator        end() const;
+    reference             front();
+    reference             back();
+    const_reference       front() const;
+    const_reference       back() const;
 
     // Mutator
     void                  setMaxChildren (std::size_t);
@@ -214,6 +220,22 @@ inline FObject::const_iterator FObject::begin() const
 //----------------------------------------------------------------------
 inline FObject::const_iterator FObject::end() const
 { return children_list.end(); }
+
+//----------------------------------------------------------------------
+inline FObject::reference FObject::front()
+{ return children_list.front(); }
+
+//----------------------------------------------------------------------
+inline FObject::reference FObject::back()
+{ return children_list.back(); }
+
+//----------------------------------------------------------------------
+inline FObject::const_reference FObject::front() const
+{ return children_list.front(); }
+
+//----------------------------------------------------------------------
+inline FObject::const_reference FObject::back() const
+{ return children_list.back(); }
 
 //----------------------------------------------------------------------
 inline void FObject::setMaxChildren (std::size_t max)

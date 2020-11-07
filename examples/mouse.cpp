@@ -152,7 +152,7 @@ void ColorChooser::onMouseDown (finalcut::FMouseEvent* ev)
   if ( ev->getButton() == fc::MiddleButton )
     return;
 
-  for (int c{0}; c < 16; c++)
+  for (auto c{0}; c < 16; c++)
   {
     const int xmin = 2 + (c / 8) * 3;
     const int xmax = 4 + (c / 8) * 3;
@@ -434,7 +434,7 @@ void MouseDraw::draw()
 
   if ( finalcut::FTerm::isNewFont() )
   {
-    for (int y{2}; y < y_max; y++)
+    for (auto y{2}; y < y_max; y++)
     {
       print() << FPoint{10, y}
               << fc::NF_rev_border_line_right;
@@ -448,7 +448,7 @@ void MouseDraw::draw()
     print() << FPoint{10, 2}
             << fc::BoxDrawingsDownAndHorizontal;
 
-    for (int y{3}; y < y_max; y++)
+    for (auto y{3}; y < y_max; y++)
     {
       print() << FPoint{10, y} << fc::BoxDrawingsVertical;
     }
@@ -503,14 +503,14 @@ void MouseDraw::drawCanvas()
   const int x_end = canvas->width;
   const int w_line_len = printarea->width + printarea->right_shadow;
 
-  for (int y{0}; y < y_end; y++)  // line loop
+  for (auto y{0}; y < y_end; y++)  // line loop
   {
-    const finalcut::FChar* canvaschar{};  // canvas character
-    finalcut::FChar* winchar{};     // window character
-    canvaschar = &canvas->data[y * x_end];
-    winchar = &printarea->data[(ay + y) * w_line_len + ax];
-    std::memcpy ( winchar
-                , canvaschar
+    // canvas character
+    const auto& canvaschar = canvas->data[y * x_end];
+    // window character
+    auto& winchar = printarea->data[(ay + y) * w_line_len + ax];
+    std::memcpy ( &winchar
+                , &canvaschar
                 , sizeof(finalcut::FChar) * unsigned(x_end) );
 
     if ( int(printarea->changes[ay + y].xmin) > ax )
@@ -521,6 +521,9 @@ void MouseDraw::drawCanvas()
   }
 
   printarea->has_changes = true;
+
+  if ( updateTerminal() )
+    flush();
 }
 
 //----------------------------------------------------------------------

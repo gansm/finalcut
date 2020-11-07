@@ -40,6 +40,7 @@
 #include <array>
 #include <functional>
 #include <memory>
+#include <queue>
 
 #include "final/fkey_map.h"
 #include "final/fstring.h"
@@ -51,6 +52,7 @@ namespace finalcut
 // class forward declaration
 class FApplication;
 class FString;
+class FTermDetection;
 class FTermLinux;
 
 //----------------------------------------------------------------------
@@ -117,6 +119,7 @@ class FKeyboard final
     void                  setTermcapMap (const T&);
     static void           setKeypressTimeout (const uInt64);
     static void           setReadBlockingTime (const uInt64);
+    static void           setNonBlockingInputSupport (bool);
     bool                  setNonBlockingInput (bool);
     bool                  setNonBlockingInput();
     bool                  unsetNonBlockingInput();
@@ -127,18 +130,21 @@ class FKeyboard final
     void                  setPressCommand (const FKeyboardCommand&);
     void                  setReleaseCommand (const FKeyboardCommand&);
     void                  setEscPressedCommand (const FKeyboardCommand&);
+    void                  setMouseTrackingCommand (const FKeyboardCommand&);
 
     // Inquiry
-    bool                  isInputDataPending() const;
+    bool                  hasPendingInput() const;
+    bool                  hasDataInQueue() const;
 
     // Methods
     static void           init();
-    bool&                 unprocessedInput();
-    bool                  isKeyPressed() const;
+    bool&                 hasUnprocessedInput();
+    bool                  isKeyPressed (uInt64 = read_blocking_time);
     void                  clearKeyBuffer();
     void                  clearKeyBufferOnTimeout();
     void                  fetchKeyCode();
     void                  escapeKeyHandling();
+    void                  processQueuedInput();
 
   private:
     // Using-declaration
@@ -146,6 +152,7 @@ class FKeyboard final
 
     // Constants
     static constexpr FKey NOT_SET = static_cast<FKey>(-1);
+    static constexpr std::size_t MAX_QUEUE_SIZE = 32;
 
     // Accessors
     FKey                  getMouseProtocolKey() const;
@@ -167,30 +174,36 @@ class FKeyboard final
     void                  keyPressed() const;
     void                  keyReleased() const;
     void                  escapeKeyPressed() const;
+    void                  mouseTracking() const;
 
     // Data members
     FKeyboardCommand      keypressed_cmd{};
     FKeyboardCommand      keyreleased_cmd{};
     FKeyboardCommand      escape_key_cmd{};
+    FKeyboardCommand      mouse_tracking_cmd{};
 
 #if defined(__linux__)
     #undef linux
     static FTermLinux*    linux;
 #endif
 
+    FTermDetection*       term_detection{nullptr};
     static timeval        time_keypressed;
-    static timeval        time_last_request;
     static uInt64         read_blocking_time;
+    static uInt64         read_blocking_time_short;
     static uInt64         key_timeout;
-    static uInt64         interval_timeout;
+    static bool           non_blocking_input_support;
     FKeyMapPtr            key_map{};
+    std::queue<FKey>      fkey_queue{};
+    FKey                  fkey{0};
     FKey                  key{0};
-    uChar                 read_character{};
+    char                  read_character{};
     char                  fifo_buf[FIFO_BUF_SIZE]{'\0'};
     int                   fifo_offset{0};
     int                   stdin_status_flags{0};
+    bool                  has_pending_input{false};
     bool                  fifo_in_use{false};
-    bool                  input_data_pending{false};
+    bool                  unprocessed_buffer_data{false};
     bool                  utf8_input{false};
     bool                  mouse_support{true};
     bool                  non_blocking_stdin{false};
@@ -235,6 +248,10 @@ inline void FKeyboard::setReadBlockingTime (const uInt64 blocking_time)
 { read_blocking_time = blocking_time; }
 
 //----------------------------------------------------------------------
+inline void FKeyboard::setNonBlockingInputSupport (bool enable)
+{ non_blocking_input_support = enable; }
+
+//----------------------------------------------------------------------
 inline bool FKeyboard::setNonBlockingInput()
 { return setNonBlockingInput(true); }
 
@@ -243,8 +260,12 @@ inline bool FKeyboard::unsetNonBlockingInput()
 { return setNonBlockingInput(false); }
 
 //----------------------------------------------------------------------
-inline bool FKeyboard::isInputDataPending() const
-{ return input_data_pending; }
+inline bool FKeyboard::hasPendingInput() const
+{ return has_pending_input; }
+
+//----------------------------------------------------------------------
+inline bool FKeyboard::hasDataInQueue() const
+{ return ! fkey_queue.empty(); }
 
 //----------------------------------------------------------------------
 inline void FKeyboard::enableUTF8()
@@ -273,6 +294,10 @@ inline void FKeyboard::setReleaseCommand (const FKeyboardCommand& cmd)
 //----------------------------------------------------------------------
 inline void FKeyboard::setEscPressedCommand (const FKeyboardCommand& cmd)
 { escape_key_cmd = cmd; }
+
+//----------------------------------------------------------------------
+inline void FKeyboard::setMouseTrackingCommand (const FKeyboardCommand& cmd)
+{ mouse_tracking_cmd = cmd; }
 
 }  // namespace finalcut
 

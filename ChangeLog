@@ -1,3 +1,35 @@
+2019-11-07  Markus Gans  <guru.mail@muenster.de>
+        * Version 0.7.0
+
+2020-11-04  Markus Gans  <guru.mail@muenster.de>
+	* Elimination of unnecessary terminal flushes
+
+2020-11-03  Markus Gans  <guru.mail@muenster.de>
+	* Use FIONREAD to get the number of characters available 
+	  for reading on stdin
+
+2020-11-02  Markus Gans  <guru.mail@muenster.de>
+	* Non-blocking reading before timeout after keystroke
+	* Every fourth event processing causes a terminal flush
+	* Call of TIOCLINUX only in the Linux console
+
+2020-11-01  Markus Gans  <guru.mail@muenster.de>
+	* Now FINAL CUT queues keyboard and mouse input to speed up 
+	  the processing of widget events
+
+2020-10-22  Markus Gans  <guru.mail@muenster.de>
+	* Repair terminal update skipping
+
+2020-10-20  Markus Gans  <guru.mail@muenster.de>
+	* For fast mouse movements the keyboard interval was increased 
+	  from 13.3 to 30 Hz
+
+2020-10-19  Markus Gans  <guru.mail@muenster.de>
+	* Optimize the terminal output speed
+
+2020-10-17  Markus Gans  <guru.mail@muenster.de>
+	* Fixes unit test segfault
+
 2020-10-11  Markus Gans  <guru.mail@muenster.de>
 	* Solaris build fix
 	* Added saving and restoring xterm titles to the stack 
@@ -224,7 +256,7 @@
 	* Revision of FString number input stream
 
 2019-11-16  Markus Gans  <guru.mail@muenster.de>
-	* New Widget class FSpinBox to provide spin boxes
+	* New widget class FSpinBox to provide spin boxes
 
 2019-11-06  Markus Gans  <guru.mail@muenster.de>
 	* Improved display of the NewFont midline 

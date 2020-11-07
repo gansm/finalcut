@@ -56,10 +56,12 @@ class FColorPair;
 class FTermBuffer
 {
   public:
-    // Typedef
-    typedef std::vector<FChar>          FCharVector;
-    typedef FCharVector::iterator       iterator;
-    typedef FCharVector::const_iterator const_iterator;
+    // Using-declarations
+    using FCharVector     = std::vector<FChar>;
+    using iterator        = FCharVector::iterator;
+    using const_iterator  = FCharVector::const_iterator;
+    using reference       = FCharVector::reference;
+    using const_reference = FCharVector::const_reference;
 
     // Constructor
     FTermBuffer() = default;
@@ -91,8 +93,10 @@ class FTermBuffer
     iterator               end();
     const_iterator         begin() const;
     const_iterator         end() const;
-    FChar                  front() const;
-    FChar                  back() const;
+    reference              front();
+    reference              back();
+    const_reference        front() const;
+    const_reference        back() const;
     FString                toString() const;
     void                   clear();
     template <typename... Args>
@@ -201,11 +205,19 @@ inline FTermBuffer::const_iterator FTermBuffer::end() const
 { return data.end(); }
 
 //----------------------------------------------------------------------
-inline FChar FTermBuffer::front() const
+inline FTermBuffer::reference FTermBuffer::front()
 { return data.front(); }
 
 //----------------------------------------------------------------------
-inline FChar FTermBuffer::back() const
+inline FTermBuffer::reference FTermBuffer::back()
+{ return data.back(); }
+
+//----------------------------------------------------------------------
+inline FTermBuffer::const_reference FTermBuffer::front() const
+{ return data.front(); }
+
+//----------------------------------------------------------------------
+inline FTermBuffer::const_reference FTermBuffer::back() const
 { return data.back(); }
 
 //----------------------------------------------------------------------

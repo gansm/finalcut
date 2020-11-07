@@ -357,7 +357,9 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
     && key != fc::Fkey_enter )
   {
     drawInputField();
-    updateTerminal();
+
+    if ( processTerminalUpdate() )
+      flush();
   }
 }
 
@@ -397,7 +399,9 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
       adjustTextOffset();
 
     drawInputField();
-    updateTerminal();
+
+    if ( processTerminalUpdate() )
+      flush();
   }
 }
 
@@ -431,7 +435,9 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
 
     adjustTextOffset();
     drawInputField();
-    updateTerminal();
+
+    if ( processTerminalUpdate() )
+      flush();
   }
 
   // auto-scrolling when dragging mouse outside the widget
@@ -534,7 +540,9 @@ void FLineEdit::onTimer (FTimerEvent*)
 
   adjustTextOffset();
   drawInputField();
-  updateTerminal();
+
+  if ( processTerminalUpdate() )
+    flush();
 }
 
 //----------------------------------------------------------------------
@@ -554,11 +562,7 @@ void FLineEdit::onAccel (FAccelEvent* ev)
       redraw();
 
       if ( getStatusBar() )
-      {
         getStatusBar()->drawMessage();
-        updateTerminal();
-        flush();
-      }
     }
   }
 
@@ -584,11 +588,7 @@ void FLineEdit::onFocusIn (FFocusEvent*)
   }
 
   if ( getStatusBar() )
-  {
     getStatusBar()->drawMessage();
-    updateTerminal();
-    flush();
-  }
 }
 
 //----------------------------------------------------------------------

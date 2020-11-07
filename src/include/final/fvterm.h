@@ -50,7 +50,6 @@
 
 #include <sys/time.h>  // need for timeval (cygwin)
 
-#include <queue>
 #include <string>
 #include <utility>
 #include <vector>
@@ -255,7 +254,7 @@ class FVTerm
     void                  createVTerm (const FSize&);
     void                  resizeVTerm (const FSize&) const;
     void                  putVTerm() const;
-    void                  updateTerminal() const;
+    bool                  updateTerminal() const;
     virtual void          addPreprocessingHandler ( const FVTerm*
                                                   , const FPreprocessingFunction& );
     virtual void          delPreprocessingHandler (const FVTerm*);
@@ -318,9 +317,9 @@ class FVTerm
     void                  scrollAreaForward (FTermArea*) const;
     void                  scrollAreaReverse (FTermArea*) const;
     void                  clearArea (FTermArea*, int = ' ') const;
-    void                  processTerminalUpdate() const;
-    static void           startTerminalUpdate();
-    static void           finishTerminalUpdate();
+    bool                  processTerminalUpdate() const;
+    static void           startDrawing();
+    static void           finishDrawing();
     virtual void          initTerminal();
 
   private:
@@ -340,7 +339,8 @@ class FVTerm
 
     // Constants
     //   Buffer size for character output on the terminal
-    static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
+    static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 131072;
+    static constexpr int max_skip = 20;
 
     // Methods
     void                  resetTextAreaToDefault ( const FTermArea*
@@ -351,20 +351,11 @@ class FVTerm
     static bool           reallocateTextArea ( FTermArea*
                                              , std::size_t );
     static covered_state  isCovered (const FPoint&, const FTermArea*);
-    static void           updateOverlappedColor ( const FTermArea*
-                                                , const FPoint&
-                                                , const FPoint& );
-    static void           updateOverlappedCharacter ( const FTermArea*
-                                                    , const FPoint& );
-    static void           updateShadedCharacter ( const FTermArea*
-                                                , const FPoint&
-                                                , const FPoint& );
-    static void           updateInheritBackground ( const FTermArea*
-                                                  , const FPoint&
-                                                  , const FPoint& );
-    static void           updateCharacter ( const FTermArea*
-                                          , const FPoint&
-                                          , const FPoint& );
+    static void           updateOverlappedColor (const FChar&, const FChar&, FChar&);
+    static void           updateOverlappedCharacter (FChar&, FChar&);
+    static void           updateShadedCharacter (const FChar&, FChar&, FChar&);
+    static void           updateInheritBackground (const FChar&, const FChar&, FChar&);
+    static void           updateCharacter (const FChar&, FChar&);
     static bool           updateVTermCharacter ( const FTermArea*
                                                , const FPoint&
                                                , const FPoint& );
@@ -376,15 +367,15 @@ class FVTerm
     static FChar          generateCharacter (const FPoint&);
     static FChar          getCharacter ( character_type
                                        , const FPoint&
-                                       , FVTerm* );
-    static FChar          getCoveredCharacter (const FPoint&, FVTerm*);
-    static FChar          getOverlappedCharacter (const FPoint&, FVTerm*);
+                                       , const FTermArea* );
+    static FChar          getCoveredCharacter (const FPoint&, const FTermArea*);
+    static FChar          getOverlappedCharacter (const FPoint&, const FTermArea*);
     void                  init();
     static void           init_characterLengths (const FOptiMove*);
     void                  finish();
-    static void           putAreaLine (const FChar*, FChar*, int);
-    static void           putAreaCharacter ( const FPoint&, FVTerm*
-                                           , const FChar*, FChar* );
+    static void           putAreaLine (const FChar&, FChar&, std::size_t);
+    static void           putAreaCharacter ( const FPoint&, const FTermArea*
+                                           , const FChar&, FChar& );
     static void           getAreaCharacter ( const FPoint&, const FTermArea*
                                            , FChar*& );
     bool                  clearTerm (int = ' ') const;
@@ -395,66 +386,69 @@ class FVTerm
     static bool           canClearTrailingWS (uInt&, uInt);
     bool                  skipUnchangedCharacters (uInt&, uInt, uInt) const;
     void                  printRange (uInt, uInt, uInt, bool) const;
-    void                  replaceNonPrintableFullwidth (uInt, FChar*&) const;
-    void                  printCharacter (uInt&, uInt, bool, FChar*&) const;
-    void                  printFullWidthCharacter (uInt&, uInt, FChar*&) const;
-    void                  printFullWidthPaddingCharacter (uInt&, uInt, FChar*&) const;
-    void                  printHalfCovertFullWidthCharacter (uInt&, uInt, FChar*&) const;
-    void                  skipPaddingCharacter (uInt&, uInt, const FChar* const&) const;
+    void                  replaceNonPrintableFullwidth (uInt, FChar&) const;
+    void                  printCharacter (uInt&, uInt, bool, FChar&) const;
+    void                  printFullWidthCharacter (uInt&, uInt, FChar&) const;
+    void                  printFullWidthPaddingCharacter (uInt&, uInt, FChar&) const;
+    void                  printHalfCovertFullWidthCharacter (uInt&, uInt, FChar&) const;
+    void                  skipPaddingCharacter (uInt&, uInt, const FChar&) const;
     exit_state            eraseCharacters (uInt&, uInt, uInt, bool) const;
     exit_state            repeatCharacter (uInt&, uInt, uInt) const;
-    bool                  isFullWidthChar (const FChar* const&) const;
-    bool                  isFullWidthPaddingChar (const FChar* const&) const;
+    bool                  isFullWidthChar (const FChar&) const;
+    bool                  isFullWidthPaddingChar (const FChar&) const;
     static void           cursorWrap();
     bool                  printWrap (FTermArea*) const;
+    void                  printCharacterOnCoordinate ( FTermArea*
+                                                     , const int&
+                                                     , const int&
+                                                     , const FChar&) const;
     void                  printPaddingCharacter (FTermArea*, const FChar&);
-    void                  updateTerminalLine (uInt) const;
+    bool                  updateTerminalLine (uInt) const;
     bool                  updateTerminalCursor() const;
     bool                  isInsideTerminal (const FPoint&) const;
     bool                  isTermSizeChanged() const;
     static bool           isTermSizeCheckTimeout();
+    static bool           hasPendingUpdates (const FTermArea*);
     static void           markAsPrinted (uInt, uInt);
     static void           markAsPrinted (uInt, uInt, uInt);
-    static void           newFontChanges (FChar*&);
-    static void           charsetChanges (FChar*&);
-    void                  appendCharacter (FChar*&) const;
-    void                  appendChar (FChar*&) const;
-    void                  appendAttributes (FChar*&) const;
-    int                   appendLowerRight (FChar*&) const;
-    static void           characterFilter (FChar*&);
+    static void           newFontChanges (FChar&);
+    static void           charsetChanges (FChar&);
+    void                  appendCharacter (FChar&) const;
+    void                  appendChar (FChar&) const;
+    void                  appendAttributes (FChar&) const;
+    void                  appendLowerRight (FChar&) const;
+    static void           characterFilter (FChar&);
     static void           appendOutputBuffer (const std::string&);
-    static void           appendOutputBuffer (const char[]);
     static int            appendOutputBuffer (int);
 
     // Data members
-    FTermArea*              print_area{nullptr};        // print area for this object
-    FTermArea*              child_print_area{nullptr};  // print area for children
-    FTermArea*              vwin{nullptr};              // virtual window
-    static FSystem*         fsystem;
-    static FTerm*           fterm;
-    static FTermArea*       vterm;        // virtual terminal
-    static FTermArea*       vdesktop;     // virtual desktop
-    static FTermArea*       active_area;  // active area
-    static std::queue<int>* output_buffer;
-    static FChar            term_attribute;
-    static FChar            next_attribute;
-    static FChar            s_ch;      // shadow character
-    static FChar            i_ch;      // inherit background character
-    static FPoint*          term_pos;  // terminal cursor position
-    static FKeyboard*       keyboard;
-    static timeval          last_term_size_check;
-    static bool             terminal_update_complete;
-    static bool             terminal_update_pending;
-    static bool             force_terminal_update;
-    static bool             no_terminal_updates;
-    static uInt64           term_size_check_timeout;
-    static int              skipped_terminal_update;
-    static uInt             erase_char_length;
-    static uInt             repeat_char_length;
-    static uInt             clr_bol_length;
-    static uInt             clr_eol_length;
-    static uInt             cursor_address_length;
-    static bool             cursor_hideable;
+    FTermArea*               print_area{nullptr};        // print area for this object
+    FTermArea*               child_print_area{nullptr};  // print area for children
+    FTermArea*               vwin{nullptr};              // virtual window
+    static const FVTerm*     init_object;  // Global FVTerm object
+    static FSystem*          fsystem;
+    static FTerm*            fterm;
+    static FTermArea*        vterm;        // virtual terminal
+    static FTermArea*        vdesktop;     // virtual desktop
+    static FTermArea*        active_area;  // active area
+    static std::vector<int>* output_buffer;
+    static FChar             term_attribute;
+    static FChar             next_attribute;
+    static FChar             s_ch;      // shadow character
+    static FChar             i_ch;      // inherit background character
+    static FPoint*           term_pos;  // terminal cursor position
+    static FKeyboard*        keyboard;
+    static timeval           last_term_size_check;
+    static bool              draw_completed;
+    static bool              no_terminal_updates;
+    static uInt64            term_size_check_timeout;
+    static int               skipped_terminal_update;
+    static uInt              erase_char_length;
+    static uInt              repeat_char_length;
+    static uInt              clr_bol_length;
+    static uInt              clr_eol_length;
+    static uInt              cursor_address_length;
+    static bool              cursor_hideable;
 };
 
 
@@ -991,6 +985,7 @@ inline bool FVTerm::isCursorHideable() const
 //----------------------------------------------------------------------
 inline void FVTerm::hideVTermCursor() const
 { vterm->input_cursor_visible = false; }
+
 
 }  // namespace finalcut
 

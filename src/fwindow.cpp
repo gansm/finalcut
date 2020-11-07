@@ -247,7 +247,7 @@ void FWindow::drawBorder()
             << FString{r.getWidth() - 2, fc::NF_border_line_upper}  // ¯
             << fc::NF_rev_border_corner_upper_right;                // ⎤
 
-    for (int y = r.getY1() + 1; y < r.getY2(); y++)
+    for (auto y = r.getY1() + 1; y < r.getY2(); y++)
     {
       print() << FPoint{r.getX1(), y}
               << fc::NF_border_line_left        // border left ⎸
@@ -483,7 +483,7 @@ void FWindow::delWindow (const FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-FWindow* FWindow::getWindowWidget (const FWidget* obj)
+FWindow* FWindow::getWindowWidget (FWidget* obj)
 {
   // returns the window object to the given widget obj
   auto p_obj = obj->getParentWidget();
@@ -495,22 +495,19 @@ FWindow* FWindow::getWindowWidget (const FWidget* obj)
   }
 
   if ( obj->isWindowWidget() )
-    return const_cast<FWindow*>(reinterpret_cast<const FWindow*>(obj));
+    return static_cast<FWindow*>(obj);
   else
     return nullptr;
 }
 
 //----------------------------------------------------------------------
-int FWindow::getWindowLayer (const FWidget* obj)
+int FWindow::getWindowLayer (FWidget* obj)
 {
   // returns the window layer from the widget obj
 
   const FWidget* window;
 
-  if ( ! getWindowList() )
-    return -1;
-
-  if ( getWindowList()->empty() )
+  if ( ! getWindowList() || getWindowList()->empty() )
     return -1;
 
   if ( ! obj->isWindowWidget() )
@@ -929,9 +926,6 @@ void closeDropDown (const FWidget* widget, const FPoint& mouse_position)
 
   if ( FWidget::getStatusBar() )
     FWidget::getStatusBar()->drawMessage();
-
-  widget->updateTerminal();
-  FVTerm::flush();
 }
 
 }  // namespace finalcut

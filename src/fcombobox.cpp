@@ -102,8 +102,6 @@ void FDropDownListBox::hide()
   setOpenMenu(nullptr);
   const auto& t_geometry = getTermGeometryWithShadow();
   restoreVTerm (t_geometry);
-  updateTerminal();
-  flush();
 }
 
 
@@ -428,8 +426,6 @@ void FComboBox::onMouseDown (FMouseEvent* ev)
     else
       list_window.hide();
   }
-
-  updateTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -440,7 +436,7 @@ void FComboBox::onMouseMove (FMouseEvent* ev)
 
   if ( isMouseOverListWindow(ev->getTermPos()) )
   {
-    passEventToListWindow(ev);  // Event handover to window list
+    passEventToListWindow(*ev);  // Event handover to window list
     return;
   }
 }
@@ -594,13 +590,13 @@ void FComboBox::onePosDown()
 }
 
 //----------------------------------------------------------------------
-void FComboBox::passEventToListWindow (FMouseEvent* const& ev)
+void FComboBox::passEventToListWindow (const FMouseEvent& ev)
 {
   // Mouse event handover to list window
 
-  const auto& t = ev->getTermPos();
+  const auto& t = ev.getTermPos();
   const auto& p = list_window.list.termToWidgetPos(t);
-  const int b = ev->getButton();
+  const int b = ev.getButton();
 
   try
   {

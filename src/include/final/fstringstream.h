@@ -83,7 +83,7 @@ class FStringStream : public std::wiostream
     virtual FString getClassName() const;
     void swap (FStringStream&) noexcept;
     void clear();
-    std::wstringbuf* rdbuf() const;
+    std::wstringbuf* rdbuf();
     FString str() const;
 
   private:
@@ -101,12 +101,12 @@ inline void FStringStream::clear()
 { buffer.str(L""); }
 
 //----------------------------------------------------------------------
-inline std::wstringbuf* FStringStream::rdbuf() const
-{ return const_cast<std::wstringbuf*>(&buffer); }
+inline std::wstringbuf* FStringStream::rdbuf()
+{ return &buffer; }
 
 //----------------------------------------------------------------------
 inline FString FStringStream::str() const
-{ return buffer.str(); }
+{ return FString{buffer.str()}; }
 
 
 // FStringStream non-member function

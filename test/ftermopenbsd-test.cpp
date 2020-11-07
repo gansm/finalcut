@@ -377,6 +377,8 @@ void ftermopenbsdTest::netbsdConsoleTest()
   data->setMonochron (false);
   data->setTermResized (false);
 
+  // setupterm is needed for tputs in ncurses >= 6.1
+  setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
   term_detection = finalcut::FTerm::getFTermDetection();
   term_detection->setTerminalDetection(true);
   pid_t pid = forkConEmu();
@@ -482,6 +484,8 @@ void ftermopenbsdTest::openbsdConsoleTest()
   data->setMonochron (false);
   data->setTermResized (false);
 
+  // setupterm is needed for tputs in ncurses >= 6.1
+  setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
   term_detection = finalcut::FTerm::getFTermDetection();
   term_detection->setTerminalDetection(true);
   pid_t pid = forkConEmu();

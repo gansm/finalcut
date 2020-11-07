@@ -110,8 +110,6 @@ void FMenu::hide()
   FWindow::hide();
   const auto& t_geometry = getTermGeometryWithShadow();
   restoreVTerm (t_geometry);
-  updateTerminal();
-  flush();
 
   if ( ! isSubMenu() )
   {
@@ -206,9 +204,6 @@ void FMenu::onMouseDown (FMouseEvent* ev)
 
       if ( getStatusBar() )
         getStatusBar()->drawMessage();
-
-      updateTerminal();
-      flush();
     }
 
     return;
@@ -284,19 +279,19 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 
   if ( ms.mouse_over_submenu )
   {
-    passEventToSubMenu(ev);  // Event handover to sub-menu
+    passEventToSubMenu(std::move(*ev));  // Event handover to sub-menu
     return;
   }
 
   if ( ! ms.mouse_over_menu && ms.mouse_over_supermenu )
   {
-    passEventToSuperMenu(ev);  // Event handover to super-menu
+    passEventToSuperMenu(std::move(*ev));  // Event handover to super-menu
     return;
   }
 
   if ( ms.mouse_over_menubar )
   {
-    passEventToMenuBar(ev);  // Event handover to the menu bar
+    passEventToMenuBar(std::move(*ev));  // Event handover to the menu bar
     return;
   }
 
@@ -316,8 +311,9 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   else if ( ms.hide_sub_menu )
   {
     closeOpenedSubMenu();
-    updateTerminal();
-    flush();
+
+    if ( processTerminalUpdate() )
+      flush();
   }
 }
 
@@ -615,9 +611,6 @@ void FMenu::openSubMenu (FMenu* sub_menu, bool select)
 
   if ( getStatusBar() )
     getStatusBar()->drawMessage();
-
-  updateTerminal();
-  flush();
 }
 
 //----------------------------------------------------------------------
@@ -728,9 +721,6 @@ void FMenu::mouseDownSubmenu (const FMenuItem* m_item)
 
     if ( getStatusBar() )
       getStatusBar()->drawMessage();
-
-    updateTerminal();
-    flush();
   }
 }
 
@@ -798,9 +788,6 @@ bool FMenu::mouseUpOverList (const FPoint& mouse_pos)
 
           if ( getStatusBar() )
             getStatusBar()->drawMessage();
-
-          updateTerminal();
-          flush();
         }
 
         return true;
@@ -923,13 +910,13 @@ void FMenu::mouseMoveOverBorder (MouseStates& ms) const
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToSubMenu (FMouseEvent* const& ev)
+void FMenu::passEventToSubMenu (const FMouseEvent&& ev)
 {
   // Mouse event handover to sub-menu
 
-  const auto& t = ev->getTermPos();
+  const auto& t = ev.getTermPos();
   const auto& p = opened_sub_menu->termToWidgetPos(t);
-  const int b = ev->getButton();
+  const int b = ev.getButton();
 
   try
   {
@@ -946,14 +933,14 @@ void FMenu::passEventToSubMenu (FMouseEvent* const& ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToSuperMenu (FMouseEvent* const& ev)
+void FMenu::passEventToSuperMenu (const FMouseEvent&& ev)
 {
   // Mouse event handover to super-menu
 
-  auto smenu = superMenuAt (ev->getTermPos());
-  const auto& t = ev->getTermPos();
+  auto smenu = superMenuAt (ev.getTermPos());
+  const auto& t = ev.getTermPos();
   const auto& p = smenu->termToWidgetPos(t);
-  const int b = ev->getButton();
+  const int b = ev.getButton();
 
   try
   {
@@ -970,14 +957,14 @@ void FMenu::passEventToSuperMenu (FMouseEvent* const& ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::passEventToMenuBar (FMouseEvent* const& ev) const
+void FMenu::passEventToMenuBar (const FMouseEvent&& ev) const
 {
   // Mouse event handover to the menu bar
 
   auto menu_bar = getMenuBar();
-  const auto& t = ev->getTermPos();
+  const auto& t = ev.getTermPos();
   const auto& p = menu_bar->termToWidgetPos(t);
-  const int b = ev->getButton();
+  const int b = ev.getButton();
 
   try
   {
@@ -1073,8 +1060,6 @@ bool FMenu::selectNextItem()
         getStatusBar()->drawMessage();
 
       redraw();
-      updateTerminal();
-      flush();
       break;
     }
 
@@ -1123,8 +1108,6 @@ bool FMenu::selectPrevItem()
         getStatusBar()->drawMessage();
 
       redraw();
-      updateTerminal();
-      flush();
       break;
     }
   }
@@ -1186,8 +1169,6 @@ bool FMenu::hotkeyMenu (FKeyEvent* ev)
           hideSubMenus();
           hide();
           hideSuperMenus();
-          updateTerminal();
-          flush();
           ev->accept();
           item->processClicked();
         }
@@ -1527,9 +1508,6 @@ inline void FMenu::selectPrevMenu (FKeyEvent* ev)
 
     if ( getStatusBar() )
       getStatusBar()->drawMessage();
-
-    updateTerminal();
-    flush();
   }
   else
     keypressMenuBar(ev);  // select previous menu
@@ -1600,9 +1578,6 @@ inline void FMenu::closeMenu()
 
   if ( getStatusBar() )
     getStatusBar()->drawMessage();
-
-  updateTerminal();
-  flush();
 }
 
 //----------------------------------------------------------------------

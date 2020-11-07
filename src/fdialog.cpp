@@ -270,7 +270,9 @@ void FDialog::setPos (const FPoint& pos, bool)
   restoreOverlaidWindows();
   FWindow::adjustSize();
   setCursorToFocusWidget();
-  updateTerminal();
+
+  if ( updateTerminal() )
+    flush();
 }
 
 //----------------------------------------------------------------------
@@ -447,8 +449,6 @@ void FDialog::activateDialog()
 
   if ( getStatusBar() )
     getStatusBar()->drawMessage();
-
-  updateTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -530,8 +530,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
   else  // ev->getButton() != fc::LeftButton
   {
     // Click on titlebar menu button
-    if ( ms.mouse_x < 4 && ms.mouse_y == 1
-      && dialog_menu->isShown() )
+    if ( ms.mouse_x < 4 && ms.mouse_y == 1 && dialog_menu->isShown() )
       leaveMenu();  // close menu
 
     cancelMouseResize();  // Cancel resize
@@ -624,7 +623,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 
   // Mouse event handover to the menu
   if ( ms.mouse_over_menu )
-    passEventToSubMenu (ms, ev);
+    passEventToSubMenu (ms, std::move(*ev));
 
   leaveZoomButton(ms);    // Check zoom button pressed
   resizeMouseUpMove(ms);  // Resize the dialog
@@ -690,8 +689,6 @@ void FDialog::onAccel (FAccelEvent*)
 
     if ( has_raised )
       redraw();
-
-    updateTerminal();
   }
 }
 
@@ -717,8 +714,6 @@ void FDialog::onWindowActive (FEvent*)
 
   if ( getStatusBar() )
     getStatusBar()->drawMessage();
-
-  updateTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -967,7 +962,7 @@ void FDialog::drawBorder()
   {
     const FRect r{FPoint{1, 1}, getSize()};
 
-    for (int y = r.getY1() + 1; y < r.getY2(); y++)
+    for (auto y = r.getY1() + 1; y < r.getY2(); y++)
     {
       print() << FPoint{r.getX1(), y}
               << fc::NF_border_line_left        // border left ⎸
@@ -1227,9 +1222,6 @@ void FDialog::leaveMenu()
 
   if ( getStatusBar() )
     getStatusBar()->drawMessage();
-
-  updateTerminal();
-  flush();
 }
 
 //----------------------------------------------------------------------
@@ -1273,9 +1265,6 @@ void FDialog::selectFirstMenuItem()
 
   if ( getStatusBar() )
     getStatusBar()->drawMessage();
-
-  updateTerminal();
-  flush();
 }
 
 //----------------------------------------------------------------------
@@ -1372,7 +1361,7 @@ inline bool FDialog::isMouseOverMenu (const FPoint& termpos) const
 
 //----------------------------------------------------------------------
 inline void FDialog::passEventToSubMenu ( const MouseStates& ms
-                                        , const FMouseEvent* ev )
+                                        , const FMouseEvent&& ev )
 {
   // Mouse event handover to the dialog menu
   if ( ! ms.mouse_over_menu
@@ -1381,7 +1370,7 @@ inline void FDialog::passEventToSubMenu ( const MouseStates& ms
 
   const auto& g = ms.termPos;
   const auto& p = dialog_menu->termToWidgetPos(g);
-  const int b = ev->getButton();
+  const int b = ev.getButton();
 
   try
   {
@@ -1480,12 +1469,10 @@ inline void FDialog::raiseActivateDialog()
 //----------------------------------------------------------------------
 inline void FDialog::lowerActivateDialog()
 {
-  const bool has_lowered = lowerWindow();
+  lowerWindow();
 
   if ( ! isWindowActive() )
     activateDialog();
-  else if ( has_lowered )
-    updateTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -1624,7 +1611,6 @@ void FDialog::cancelMouseResize()
 
   resize_click_pos.setPoint (0, 0);
   drawBorder();
-  updateTerminal();
 }
 
 //----------------------------------------------------------------------

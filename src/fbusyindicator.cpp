@@ -50,8 +50,6 @@ void FBusyIndicator::start()
   running = true;
   createIndicatorText();
   show();
-  updateTerminal();
-  flush();
   addTimer(TIMER);
 }
 
@@ -61,8 +59,6 @@ void FBusyIndicator::stop()
   delOwnTimers();
   running = false;
   hide();
-  updateTerminal();
-  flush();
 }
 
 
@@ -119,8 +115,6 @@ void FBusyIndicator::onTimer (finalcut::FTimerEvent*)
   // Redraw the rotated pattern
   createIndicatorText();
   redraw();
-  updateTerminal();
-  flush();
 }
 
 }  // namespace finalcut

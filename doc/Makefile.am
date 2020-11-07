@@ -18,6 +18,7 @@ EXTRA_DIST = \
 	faq.md \
 	fileopen-dialog.png \
 	final-cut-application-structure.svg \
+	final-cut-widget-tree.svg \
 	first-steps.md \
 	first-steps_callback-function.cpp.png \
 	first-steps_callback-lambda.cpp.png \
@@ -74,6 +75,7 @@ doc_DATA = \
 	faq.md \
 	fileopen-dialog.png \
 	final-cut-application-structure.svg \
+	final-cut-widget-tree.svg \
 	first-steps.md \
 	first-steps_callback-function.cpp.png \
 	first-steps_callback-lambda.cpp.png \

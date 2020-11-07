@@ -280,7 +280,7 @@ void FListBox::clear()
   if ( size == 0 )
     return;
 
-  for (int y{0}; y < int(getHeight()) - 2; y++)
+  for (auto y{0}; y < int(getHeight()) - 2; y++)
   {
     print() << FPoint{2, 2 + y} << FString{size, L' '};
   }
@@ -352,8 +352,8 @@ void FListBox::onMouseDown (FMouseEvent* ev)
     if ( yoffset_before != yoffset )
       vbar->drawBar();
 
-    updateTerminal();
-    flush();
+    if ( processTerminalUpdate() )
+      flush();
   }
 }
 
@@ -426,8 +426,8 @@ void FListBox::onMouseMove (FMouseEvent* ev)
     if ( yoffset_before != yoffset )
       vbar->drawBar();
 
-    updateTerminal();
-    flush();
+    if ( processTerminalUpdate() )
+      flush();
   }
 
   // Auto-scrolling when dragging mouse outside the widget
@@ -504,8 +504,8 @@ void FListBox::onTimer (FTimerEvent*)
   if ( yoffset_before != yoffset )
     vbar->drawBar();
 
-  updateTerminal();
-  flush();
+  if ( processTerminalUpdate() )
+    flush();
 }
 
 //----------------------------------------------------------------------
@@ -547,8 +547,8 @@ void FListBox::onWheel (FWheelEvent* ev)
   if ( yoffset_before != yoffset )
     vbar->drawBar();
 
-  updateTerminal();
-  flush();
+  if ( processTerminalUpdate() )
+    flush();
 }
 
 //----------------------------------------------------------------------
@@ -727,7 +727,7 @@ void FListBox::draw()
   {
     setColor();
 
-    for (int y{2}; y < int(getHeight()); y++)
+    for (auto y{2}; y < int(getHeight()); y++)
     {
       print() << FPoint{int(getWidth()) - 1, y}
               << ' ';  // clear right side of the scrollbar
@@ -1082,8 +1082,8 @@ inline void FListBox::updateDrawing (bool draw_vbar, bool draw_hbar)
   if ( draw_hbar )
     hbar->drawBar();
 
-  updateTerminal();
-  flush();
+  if ( processTerminalUpdate() )
+    flush();
 }
 
 //----------------------------------------------------------------------
@@ -1803,8 +1803,8 @@ void FListBox::cb_vbarChange (const FWidget*)
     if ( yoffset_before != yoffset )
       vbar->drawBar();
 
-    updateTerminal();
-    flush();
+    if ( processTerminalUpdate() )
+      flush();
   }
 }
 
@@ -1862,11 +1862,8 @@ void FListBox::cb_hbarChange (const FWidget*)
     inc_search.clear();
 
   if ( isShown() )
-  {
     drawList();
-    updateTerminal();
-    flush();
-  }
+
 
   if ( scrollType >= FScrollbar::scrollStepBackward )
   {
@@ -1875,8 +1872,8 @@ void FListBox::cb_hbarChange (const FWidget*)
     if ( xoffset_before != xoffset )
       hbar->drawBar();
 
-    updateTerminal();
-    flush();
+    if ( processTerminalUpdate() )
+      flush();
   }
 }
 

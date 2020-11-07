@@ -137,7 +137,6 @@ class FTermcap final
     // Constant
     static constexpr std::size_t BUF_SIZE{2048};
 
-
     // Methods
     static void          termcap();
     static void          termcapError (int);

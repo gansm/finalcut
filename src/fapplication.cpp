@@ -46,11 +46,19 @@
 namespace finalcut
 {
 
-// Global application object
-static FApplication* app_object{nullptr};
+namespace internal
+{
 
-// Flag to exit the local event loop
-static bool app_exit_loop{false};
+struct var
+{
+  static FApplication* app_object;  // Global application object
+  static bool          exit_loop;   // Flag to exit the local event loop
+};
+
+FApplication*  var::app_object {nullptr};
+bool           var::exit_loop  {false};
+
+}  // namespace internal
 
 // Static attributes
 FWidget*       FWidget::main_widget          {nullptr};  // main application widget
@@ -65,33 +73,9 @@ FMouseControl* FApplication::mouse           {nullptr};  // mouse control
 int            FApplication::loop_level      {0};        // event loop level
 int            FApplication::quit_code       {EXIT_SUCCESS};
 bool           FApplication::quit_now        {false};
-uInt64         FApplication::next_event_wait {5000};     // preset to 5 ms (200 Hz)
-struct timeval FApplication::time_last_event{};
-
-
-const std::vector<FApplication::CmdOption> FApplication::long_options =
-{
-  {"encoding",                 required_argument, nullptr,  'e' },
-  {"log-file",                 required_argument, nullptr,  'l' },
-  {"no-mouse",                 no_argument,       nullptr,  'm' },
-  {"no-optimized-cursor",      no_argument,       nullptr,  'o' },
-  {"no-terminal-detection",    no_argument,       nullptr,  'd' },
-  {"no-terminal-data-request", no_argument,       nullptr,  'r' },
-  {"no-color-change",          no_argument,       nullptr,  'c' },
-  {"no-sgr-optimizer",         no_argument,       nullptr,  's' },
-  {"vgafont",                  no_argument,       nullptr,  'v' },
-  {"newfont",                  no_argument,       nullptr,  'n' },
-  {"dark-theme",               no_argument,       nullptr,  't' },
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-  {"no-esc-for-alt-meta",      no_argument,       nullptr,  'E' },
-  {"no-cursorstyle-change",    no_argument,       nullptr,  'C' },
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
-  {"no-esc-for-alt-meta",      no_argument,       nullptr,  'E' },
-#endif
-
-  {nullptr,                    0,                 nullptr,  0   }
-};
+bool           FApplication::pending_updates {false};
+uInt64         FApplication::next_event_wait {5000};     // 5 ms (200 Hz)
+struct timeval FApplication::time_last_event {};
 
 
 //----------------------------------------------------------------------
@@ -108,7 +92,7 @@ FApplication::FApplication (const int& _argc, char* _argv[])
   if ( quit_now )
     return;
 
-  if ( app_object )
+  if ( internal::var::app_object )
   {
     auto ftermdata = FTerm::getFTermData();
     ftermdata->setExitMessage("FApplication: There should be "
@@ -118,7 +102,7 @@ FApplication::FApplication (const int& _argc, char* _argv[])
   }
 
   // First define the application object
-  app_object = this;
+  internal::var::app_object = this;
 
   if ( ! (_argc && _argv) )
   {
@@ -134,7 +118,7 @@ FApplication::FApplication (const int& _argc, char* _argv[])
 //----------------------------------------------------------------------
 FApplication::~FApplication()  // destructor
 {
-  app_object = nullptr;
+  internal::var::app_object = nullptr;
 
   if ( eventInQueue() )
     event_queue.clear();
@@ -147,7 +131,7 @@ FApplication::~FApplication()  // destructor
 //----------------------------------------------------------------------
 FApplication* FApplication::getApplicationObject()
 {
-  return app_object;
+  return internal::var::app_object;
 }
 
 //----------------------------------------------------------------------
@@ -187,7 +171,7 @@ void FApplication::setLog (const FLogPtr& log)
 //----------------------------------------------------------------------
 bool FApplication::isQuit()
 {
-  return ( app_object ) ? quit_now : true;
+  return ( internal::var::app_object ) ? quit_now : true;
 }
 
 //----------------------------------------------------------------------
@@ -210,13 +194,13 @@ int FApplication::enterLoop()  // event loop
   loop_level++;
   quit_now = false;
 
-  const bool old_app_exit_loop = app_exit_loop;
-  app_exit_loop = false;
+  const bool old_app_exit_loop = internal::var::exit_loop;
+  internal::var::exit_loop = false;
 
-  while ( ! (quit_now || app_exit_loop) )
+  while ( ! (quit_now || internal::var::exit_loop) )
     processNextEvent();
 
-  app_exit_loop = old_app_exit_loop;
+  internal::var::exit_loop = old_app_exit_loop;
   loop_level--;
   return 0;
 }
@@ -224,7 +208,7 @@ int FApplication::enterLoop()  // event loop
 //----------------------------------------------------------------------
 void FApplication::exitLoop() const
 {
-  app_exit_loop = true;
+  internal::var::exit_loop = true;
 }
 
 //----------------------------------------------------------------------
@@ -243,7 +227,7 @@ void FApplication::quit() const
 //----------------------------------------------------------------------
 bool FApplication::sendEvent (FObject* receiver, FEvent* event )
 {
-  if ( quit_now || app_exit_loop || ! (bool(receiver) && bool(event)) )
+  if ( quit_now || internal::var::exit_loop || ! (bool(receiver) && bool(event)) )
     return false;
 
   if ( ! isEventProcessable (receiver, event) )
@@ -281,7 +265,7 @@ void FApplication::sendQueuedEvents()
 //----------------------------------------------------------------------
 bool FApplication::eventInQueue() const
 {
-  if ( app_object )
+  if ( internal::var::app_object )
     return ( ! event_queue.empty() );
   else
     return false;
@@ -355,7 +339,7 @@ void FApplication::setDarkTheme()
 void FApplication::setLogFile (const FString& filename)
 {
   auto& log_stream = getStartOptions().logfile_stream;
-  log_stream.open(filename, std::ofstream::out);
+  log_stream.open(filename.c_str(), std::ofstream::out);
 
   if ( log_stream.is_open() )
   {
@@ -383,7 +367,7 @@ void FApplication::setKeyboardWidget (FWidget* widget)
 //----------------------------------------------------------------------
 void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 {
-  app_object->unsetMoveSizeMode();
+  internal::var::app_object->unsetMoveSizeMode();
   const int ret = FMessageBox::info ( w, "Quit"
                                     , "Do you really want\n"
                                       "to quit the program ?"
@@ -427,31 +411,39 @@ void FApplication::init()
   // Initialize keyboard
   keyboard = FTerm::getFKeyboard();
 
-  // Set the keyboard keypress timeout
+
   if ( keyboard )
   {
     auto cmd1 = std::bind(&FApplication::keyPressed, this);
     auto cmd2 = std::bind(&FApplication::keyReleased, this);
     auto cmd3 = std::bind(&FApplication::escapeKeyPressed, this);
+    auto cmd4 = std::bind(&FApplication::mouseTracking, this);
     FKeyboardCommand key_cmd1 (cmd1);
     FKeyboardCommand key_cmd2 (cmd2);
     FKeyboardCommand key_cmd3 (cmd3);
+    FKeyboardCommand key_cmd4 (cmd4);
     keyboard->setPressCommand (key_cmd1);
     keyboard->setReleaseCommand (key_cmd2);
     keyboard->setEscPressedCommand (key_cmd3);
+    keyboard->setMouseTrackingCommand (key_cmd4);
+    // Set the keyboard keypress timeout
     keyboard->setKeypressTimeout (key_timeout);
   }
 
   // Initialize mouse control
   mouse = FTerm::getFMouseControl();
 
-  // Set stdin number for a gpm-mouse
   if ( mouse )
+  {
+    using namespace std::placeholders;
+    auto cmd = std::bind(&FApplication::mouseEvent, this, _1);
+    FMouseCommand mouse_cmd (cmd);
+    mouse->setEventCommand (mouse_cmd);
+    // Set stdin number for a gpm-mouse
     mouse->setStdinNo (FTermios::getStdIn());
-
-  // Set the default double click interval
-  if ( mouse )
+    // Set the default double click interval
     mouse->setDblclickInterval (dblclick_interval);
+  }
 
   // Initialize logging
   if ( ! getStartOptions().logfile_stream.is_open() )
@@ -484,13 +476,40 @@ void FApplication::setTerminalEncoding (const FString& enc_str)
 }
 
 //----------------------------------------------------------------------
-inline FApplication::CmdMap& FApplication::mapCmdOptions()
+inline void FApplication::setLongOptions (std::vector<CmdOption>& long_options)
+{
+  long_options =
+  {
+    {"encoding",                 required_argument, nullptr,  'e' },
+    {"log-file",                 required_argument, nullptr,  'l' },
+    {"no-mouse",                 no_argument,       nullptr,  'm' },
+    {"no-optimized-cursor",      no_argument,       nullptr,  'o' },
+    {"no-terminal-detection",    no_argument,       nullptr,  'd' },
+    {"no-terminal-data-request", no_argument,       nullptr,  'r' },
+    {"no-color-change",          no_argument,       nullptr,  'c' },
+    {"no-sgr-optimizer",         no_argument,       nullptr,  's' },
+    {"vgafont",                  no_argument,       nullptr,  'v' },
+    {"newfont",                  no_argument,       nullptr,  'n' },
+    {"dark-theme",               no_argument,       nullptr,  't' },
+
+  #if defined(__FreeBSD__) || defined(__DragonFly__)
+    {"no-esc-for-alt-meta",      no_argument,       nullptr,  'E' },
+    {"no-cursorstyle-change",    no_argument,       nullptr,  'C' },
+  #elif defined(__NetBSD__) || defined(__OpenBSD__)
+    {"no-esc-for-alt-meta",      no_argument,       nullptr,  'E' },
+  #endif
+
+    {nullptr,                    0,                 nullptr,  0   }
+  };
+}
+
+//----------------------------------------------------------------------
+inline void FApplication::setCmdOptionsMap (CmdMap& cmd_map)
 {
   using std::placeholders::_1;
   auto enc = std::bind(&FApplication::setTerminalEncoding, _1);
   auto log = std::bind(&FApplication::setLogFile, _1);
   auto opt = &FApplication::getStartOptions;
-  static CmdMap cmd_map{};
 
   // --encoding
   cmd_map['e'] = [enc] (const char* arg) { enc(FString(arg)); };
@@ -523,7 +542,6 @@ inline FApplication::CmdMap& FApplication::mapCmdOptions()
   // --no-esc-for-alt-meta
   cmd_map['E'] = [opt] (const char*) { opt().meta_sends_escape = false; };
 #endif
-  return cmd_map;
 }
 
 //----------------------------------------------------------------------
@@ -531,12 +549,15 @@ void FApplication::cmdOptions (const int& argc, char* argv[])
 {
   // Interpret the command line options
 
-  auto& cmd_map = mapCmdOptions();
+  CmdMap cmd_map{};
+  setCmdOptionsMap(cmd_map);
 
   while ( true )
   {
     opterr = 0;
     int idx{0};
+    std::vector<CmdOption> long_options{};
+    setLongOptions(long_options);
     auto p = reinterpret_cast<const struct option*>(long_options.data());
     const int opt = getopt_long (argc, argv, "", p, &idx);
 
@@ -649,9 +670,9 @@ inline void FApplication::findKeyboardWidget() const
 inline bool FApplication::isKeyPressed() const
 {
   if ( mouse && mouse->isGpmMouseEnabled() )
-    return mouse->getGpmKeyPressed(keyboard->unprocessedInput());
+    return mouse->getGpmKeyPressed(keyboard->hasUnprocessedInput());
 
-  return keyboard->isKeyPressed();
+  return (keyboard->isKeyPressed() || keyboard->hasPendingInput());
 }
 
 //----------------------------------------------------------------------
@@ -673,53 +694,73 @@ void FApplication::escapeKeyPressed() const
 }
 
 //----------------------------------------------------------------------
+void FApplication::mouseTracking() const
+{
+  performMouseAction();
+}
+
+//----------------------------------------------------------------------
 inline void FApplication::performKeyboardAction()
 {
+  if ( keyboard->getKey() == fc::Fckey_l )  // Ctrl-L (redraw the screen)
+  {
+    redraw();
+  }
+  else
+  {
+    const bool acceptKeyDown = sendKeyDownEvent (keyboard_widget);
+    const bool acceptKeyPress = sendKeyPressEvent (keyboard_widget);
+
+    if ( ! (acceptKeyDown || acceptKeyPress) )
+      sendKeyboardAccelerator();
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FApplication::performMouseAction() const
+{
+  if ( ! mouse )
+    return;
+
+  auto& buffer = keyboard->getKeyBuffer();
+
   switch ( keyboard->getKey() )
   {
-    case fc::Fckey_l:  // Ctrl-L (redraw the screen)
-      redraw();
-      break;
-
     case fc::Fkey_mouse:
-      if ( mouse )
-      {
-        FKeyboard::keybuffer& buffer = keyboard->getKeyBuffer();
-        mouse->setRawData (FMouse::x11, buffer);
-        keyboard->unprocessedInput() = mouse->isInputDataPending();
-        processMouseEvent();
-      }
+      mouse->setRawData (FMouse::x11, buffer);
       break;
 
     case fc::Fkey_extended_mouse:
-      if ( mouse )
-      {
-        FKeyboard::keybuffer& buffer = keyboard->getKeyBuffer();
-        mouse->setRawData (FMouse::sgr, buffer);
-        keyboard->unprocessedInput() = mouse->isInputDataPending();
-        processMouseEvent();
-      }
+      mouse->setRawData (FMouse::sgr, buffer);
       break;
 
     case fc::Fkey_urxvt_mouse:
-      if ( mouse )
-      {
-        FKeyboard::keybuffer& buffer = keyboard->getKeyBuffer();
-        mouse->setRawData (FMouse::urxvt, buffer);
-        keyboard->unprocessedInput() = mouse->isInputDataPending();
-        processMouseEvent();
-      }
+      mouse->setRawData (FMouse::urxvt, buffer);
       break;
 
     default:
-      const bool acceptKeyDown = sendKeyDownEvent (keyboard_widget);
-      const bool acceptKeyPress = sendKeyPressEvent (keyboard_widget);
-
-      if ( ! (acceptKeyDown || acceptKeyPress) )
-        sendKeyboardAccelerator();
-
-      break;
+      return;
   }
+
+  keyboard->hasUnprocessedInput() = mouse->hasUnprocessedInput();
+  queuingMouseInput();
+}
+
+//----------------------------------------------------------------------
+void FApplication::mouseEvent (const FMouseData& md)
+{
+  determineClickedWidget (md);
+
+  if ( FWidget::getClickedWidget() )
+  {
+    unsetMoveSizeMode();
+    closeDropDown (md);
+    unselectMenubarItems (md);
+    sendMouseEvent (md);
+  }
+
+  if ( mouse )
+    mouse->drawGpmPointer();
 }
 
 //----------------------------------------------------------------------
@@ -758,7 +799,7 @@ inline bool FApplication::sendKeyUpEvent (FWidget* widget) const
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::sendKeyboardAccelerator() const
+inline void FApplication::sendKeyboardAccelerator()
 {
   if ( FWidget::getOpenMenu() )
     return;
@@ -772,32 +813,73 @@ inline void FApplication::sendKeyboardAccelerator() const
     auto window = static_cast<const FWidget*>(getActiveWindow());
 
     if ( window )
-      accpt = processAccelerator (window);
+      accpt = processAccelerator(*window);
   }
 
   // Global keyboard accelerator
   if ( ! accpt )
   {
-    auto root_widget = static_cast<const FWidget*>(getRootWidget());
+    auto root_widget = getRootWidget();
 
     if ( root_widget )
-      processAccelerator (root_widget);
+      processAccelerator(*root_widget);
   }
 }
 
 //----------------------------------------------------------------------
-void FApplication::processKeyboardEvent() const
+inline bool FApplication::hasDataInQueue() const
 {
-  if ( quit_now || app_exit_loop )
+  if ( keyboard && keyboard->hasDataInQueue() )
+    return true;
+  else if ( mouse && mouse->hasDataInQueue() )
+    return true;
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+void FApplication::queuingKeyboardInput() const
+{
+  if ( quit_now || internal::var::exit_loop || ! keyboard )
     return;
 
   findKeyboardWidget();
-  flush();
   keyboard->escapeKeyHandling();  // special case: Esc key
   keyboard->clearKeyBufferOnTimeout();
 
   if ( isKeyPressed() )
     keyboard->fetchKeyCode();
+}
+
+//----------------------------------------------------------------------
+void FApplication::queuingMouseInput() const
+{
+  if ( quit_now || internal::var::exit_loop
+    || ! mouse || ! mouse->hasData() )
+    return;
+
+  struct timeval* time_keypressed = keyboard->getKeyPressedTime();
+  mouse->processEvent (time_keypressed);
+  keyboard->hasUnprocessedInput() = mouse->hasUnprocessedInput();
+  mouse->clearEvent();
+}
+
+//----------------------------------------------------------------------
+void FApplication::processKeyboardEvent() const
+{
+  if ( quit_now || internal::var::exit_loop || ! keyboard )
+    return;
+
+  keyboard->processQueuedInput();
+}
+
+//----------------------------------------------------------------------
+void FApplication::processMouseEvent() const
+{
+  if ( quit_now || internal::var::exit_loop || ! mouse )
+    return;
+
+  mouse->processQueuedInput();
 }
 
 //----------------------------------------------------------------------
@@ -832,14 +914,12 @@ bool FApplication::processDialogSwitchAccelerator() const
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processAccelerator (const FWidget* const& widget) const
+bool FApplication::processAccelerator (const FWidget& widget) const
 {
-  bool accpt{false};
+  if ( widget.getAcceleratorList().empty() )
+    return false;
 
-  if ( ! widget || widget->getAcceleratorList().empty() )
-    return accpt;
-
-  for (auto&& item : widget->getAcceleratorList())
+  for (auto&& item : widget.getAcceleratorList())
   {
     if ( item.key == keyboard->getKey() )
     {
@@ -854,50 +934,33 @@ bool FApplication::processAccelerator (const FWidget* const& widget) const
 
       FAccelEvent a_ev (fc::Accelerator_Event, getFocusWidget());
       sendEvent (item.object, &a_ev);
-      accpt = a_ev.isAccepted();
-      break;
+      return a_ev.isAccepted();
     }
 
-    if ( quit_now || app_exit_loop )
+    if ( quit_now || internal::var::exit_loop )
       break;
   }
 
-  return accpt;
+  return false;
 }
 
 //----------------------------------------------------------------------
-bool FApplication::getMouseEvent() const
+void FApplication::determineClickedWidget (const FMouseData& md)
 {
-  bool mouse_event_occurred{false};
+  clicked_widget = FWidget::getClickedWidget();
 
-  if ( mouse && mouse->hasData() )
-  {
-    struct timeval* time_keypressed = keyboard->getKeyPressedTime();
-    mouse->processEvent (time_keypressed);
-    keyboard->unprocessedInput() = mouse->isInputDataPending();
-    mouse_event_occurred = mouse->hasEvent();
-  }
+  if ( clicked_widget )
+    return;  // The clicked widget was already found
 
-  return mouse_event_occurred;
-}
+  if ( ! md.isLeftButtonPressed()
+    && ! md.isLeftButtonDoubleClick()
+    && ! md.isRightButtonPressed()
+    && ! md.isMiddleButtonPressed()
+    && ! md.isWheelUp()
+    && ! md.isWheelDown() )
+    return;
 
-//----------------------------------------------------------------------
-FWidget*& FApplication::determineClickedWidget()
-{
-  FWidget*& clicked = FWidget::getClickedWidget();
-
-  if ( clicked || ! mouse )
-    return clicked;
-
-  if ( ! mouse->isLeftButtonPressed()
-    && ! mouse->isLeftButtonDoubleClick()
-    && ! mouse->isRightButtonPressed()
-    && ! mouse->isMiddleButtonPressed()
-    && ! mouse->isWheelUp()
-    && ! mouse->isWheelDown() )
-    return clicked;
-
-  auto mouse_position = mouse->getPos();
+  const auto& mouse_position = md.getPos();
 
   // Determine the window object on the current click position
   auto window = FWindow::getWindowWidgetAt (mouse_position);
@@ -905,12 +968,10 @@ FWidget*& FApplication::determineClickedWidget()
   if ( window )
   {
     // Determine the widget at the current click position
-    auto child = window->childWidgetAt (mouse_position);
-    clicked = ( child != nullptr ) ? child : window;
-    setClickedWidget (clicked);
+    auto child = window->childWidgetAt(mouse_position);
+    clicked_widget = ( child != nullptr ) ? child : window;
+    setClickedWidget (clicked_widget);
   }
-
-  return clicked;
 }
 
 //----------------------------------------------------------------------
@@ -918,43 +979,43 @@ void FApplication::unsetMoveSizeMode() const
 {
   // Unset the move/size mode
 
-  auto move_size = getMoveSizeWidget();
+  auto& move_size = getMoveSizeWidget();
 
   if ( move_size )
   {
-    auto w = move_size;
-    setMoveSizeWidget(nullptr);
+    FWidget* w{nullptr};
+    std::swap(w, move_size);  // Clear move_size_widget
     w->redraw();
   }
 }
 
 //----------------------------------------------------------------------
-void FApplication::closeDropDown() const
+void FApplication::closeDropDown (const FMouseData& md) const
 {
   // Close the open menu
 
-  if ( ! mouse || mouse->isMoved() )
+  if ( md.isMoved() )
     return;
 
-  auto mouse_position = mouse->getPos();
+  const auto& mouse_position = md.getPos();
   finalcut::closeDropDown (this, mouse_position);
 }
 
 //----------------------------------------------------------------------
-void FApplication::unselectMenubarItems() const
+void FApplication::unselectMenubarItems (const FMouseData& md) const
 {
   // Unselect the menu bar items
 
   const auto& openmenu = FWidget::getOpenMenu();
   auto menu_bar = FWidget::getMenuBar();
 
-  if ( openmenu || (mouse && mouse->isMoved()) )
+  if ( openmenu || md.isMoved() )
     return;
 
-  if ( ! (menu_bar && menu_bar->hasSelectedItem() && mouse) )
+  if ( ! (menu_bar && menu_bar->hasSelectedItem()) )
     return;
 
-  const auto& mouse_position = mouse->getPos();
+  const auto& mouse_position = md.getPos();
 
   if ( ! menu_bar->getTermGeometry().contains(mouse_position) )
   {
@@ -970,123 +1031,106 @@ void FApplication::unselectMenubarItems() const
 
     if ( FWidget::getStatusBar() )
       FWidget::getStatusBar()->drawMessage();
-
-    updateTerminal();
-    flush();
   }
 }
 
 //----------------------------------------------------------------------
-void FApplication::sendMouseEvent() const
+void FApplication::sendMouseEvent (const FMouseData& md) const
 {
-  auto clicked = FWidget::getClickedWidget();
-
-  if ( ! (clicked && mouse) )
-    return;
-
-  const auto& mouse_position = mouse->getPos();
+  const auto& mouse_position = md.getPos();
   int key_state{0};
 
-  if ( mouse->isShiftKeyPressed() )
+  if ( md.isShiftKeyPressed() )
     key_state |= fc::ShiftButton;
 
-  if ( mouse->isControlKeyPressed() )
+  if ( md.isControlKeyPressed() )
     key_state |= fc::ControlButton;
 
-  if ( mouse->isMetaKeyPressed() )
+  if ( md.isMetaKeyPressed() )
     key_state |= fc::MetaButton;
 
-  const auto& widgetMousePos = clicked->termToWidgetPos(mouse_position);
+  const auto& widgetMousePos = clicked_widget->termToWidgetPos(mouse_position);
 
-  if ( mouse->isMoved() )
+  if ( md.isMoved() )
   {
-    sendMouseMoveEvent (widgetMousePos, mouse_position, key_state);
+    sendMouseMoveEvent (md, widgetMousePos, mouse_position, key_state);
   }
   else
   {
-    sendMouseLeftClickEvent (widgetMousePos, mouse_position, key_state);
-    sendMouseRightClickEvent (widgetMousePos, mouse_position, key_state);
-    sendMouseMiddleClickEvent (widgetMousePos, mouse_position, key_state);
+    sendMouseLeftClickEvent (md, widgetMousePos, mouse_position, key_state);
+    sendMouseRightClickEvent (md, widgetMousePos, mouse_position, key_state);
+    sendMouseMiddleClickEvent (md, widgetMousePos, mouse_position, key_state);
   }
 
-  sendWheelEvent (widgetMousePos, mouse_position);
-  mouse->clearEvent();
+  sendWheelEvent (md, widgetMousePos, mouse_position);
 }
 
 //----------------------------------------------------------------------
-void FApplication::sendMouseMoveEvent ( const FPoint& widgetMousePos
+void FApplication::sendMouseMoveEvent ( const FMouseData& md
+                                      , const FPoint& widgetMousePos
                                       , const FPoint& mouse_position
                                       , int key_state ) const
 {
-  if ( ! mouse )
-    return;
-
-  auto clicked = FWidget::getClickedWidget();
-
-  if ( mouse->isLeftButtonPressed() )
+  if ( md.isLeftButtonPressed() )
   {
     FMouseEvent m_down_ev ( fc::MouseMove_Event
                           , widgetMousePos
                           , mouse_position
                           , fc::LeftButton | key_state );
-    sendEvent (clicked, &m_down_ev);
+    sendEvent (clicked_widget, &m_down_ev);
   }
 
-  if ( mouse->isRightButtonPressed() )
+  if ( md.isRightButtonPressed() )
   {
     FMouseEvent m_down_ev ( fc::MouseMove_Event
                           , widgetMousePos
                           , mouse_position
                           , fc::RightButton | key_state );
-    sendEvent (clicked, &m_down_ev);
+    sendEvent (clicked_widget, &m_down_ev);
   }
 
-  if ( mouse->isMiddleButtonPressed() )
+  if ( md.isMiddleButtonPressed() )
   {
     FMouseEvent m_down_ev ( fc::MouseMove_Event
                           , widgetMousePos
                           , mouse_position
                           , fc::MiddleButton | key_state );
-    sendEvent (clicked, &m_down_ev);
+    sendEvent (clicked_widget, &m_down_ev);
   }
 }
 
 //----------------------------------------------------------------------
-void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
+void FApplication::sendMouseLeftClickEvent ( const FMouseData& md
+                                           , const FPoint& widgetMousePos
                                            , const FPoint& mouse_position
                                            , int key_state ) const
 {
-  if ( ! mouse )
-    return;
-
-  auto clicked = FWidget::getClickedWidget();
-
-  if ( mouse->isLeftButtonDoubleClick() )
+  if ( md.isLeftButtonDoubleClick() )
   {
     FMouseEvent m_dblclick_ev ( fc::MouseDoubleClick_Event
                               , widgetMousePos
                               , mouse_position
                               , fc::LeftButton | key_state );
-    sendEvent (clicked, &m_dblclick_ev);
+    sendEvent (clicked_widget, &m_dblclick_ev);
   }
-  else if ( mouse->isLeftButtonPressed() )
+  else if ( md.isLeftButtonPressed() )
   {
     FMouseEvent m_down_ev ( fc::MouseDown_Event
                           , widgetMousePos
                           , mouse_position
                           , fc::LeftButton | key_state );
-    sendEvent (clicked, &m_down_ev);
+    sendEvent (clicked_widget, &m_down_ev);
   }
-  else if ( mouse->isLeftButtonReleased() )
+  else if ( md.isLeftButtonReleased() )
   {
     FMouseEvent m_up_ev ( fc::MouseUp_Event
                         , widgetMousePos
                         , mouse_position
                         , fc::LeftButton | key_state );
-    auto released_widget = clicked;
+    auto released_widget = clicked_widget;
 
-    if ( ! mouse->isRightButtonPressed()
-      && ! mouse->isMiddleButtonPressed() )
+    if ( ! md.isRightButtonPressed()
+      && ! md.isMiddleButtonPressed() )
       setClickedWidget(nullptr);
 
     sendEvent (released_widget, &m_up_ev);
@@ -1094,33 +1138,29 @@ void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
 }
 
 //----------------------------------------------------------------------
-void FApplication::sendMouseRightClickEvent ( const FPoint& widgetMousePos
+void FApplication::sendMouseRightClickEvent ( const FMouseData& md
+                                            , const FPoint& widgetMousePos
                                             , const FPoint& mouse_position
                                             , int key_state ) const
 {
-  if ( ! mouse )
-    return;
-
-  auto clicked = FWidget::getClickedWidget();
-
-  if ( mouse->isRightButtonPressed() )
+  if ( md.isRightButtonPressed() )
   {
     FMouseEvent m_down_ev ( fc::MouseDown_Event
                           , widgetMousePos
                           , mouse_position
                           , fc::RightButton | key_state );
-    sendEvent (clicked, &m_down_ev);
+    sendEvent (clicked_widget, &m_down_ev);
   }
-  else if ( mouse->isRightButtonReleased() )
+  else if ( md.isRightButtonReleased() )
   {
     FMouseEvent m_up_ev ( fc::MouseUp_Event
                         , widgetMousePos
                         , mouse_position
                         , fc::RightButton | key_state );
-    auto released_widget = clicked;
+    auto released_widget = clicked_widget;
 
-    if ( ! mouse->isLeftButtonPressed()
-      && ! mouse->isMiddleButtonPressed() )
+    if ( ! md.isLeftButtonPressed()
+      && ! md.isMiddleButtonPressed() )
       setClickedWidget(nullptr);
 
     sendEvent (released_widget, &m_up_ev);
@@ -1128,37 +1168,33 @@ void FApplication::sendMouseRightClickEvent ( const FPoint& widgetMousePos
 }
 
 //----------------------------------------------------------------------
-void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
+void FApplication::sendMouseMiddleClickEvent ( const FMouseData& md
+                                             , const FPoint& widgetMousePos
                                              , const FPoint& mouse_position
                                              , int key_state ) const
 {
-  if ( ! mouse )
-    return;
-
-  auto clicked = FWidget::getClickedWidget();
-
-  if ( mouse->isMiddleButtonPressed() )
+  if ( md.isMiddleButtonPressed() )
   {
     FMouseEvent m_down_ev ( fc::MouseDown_Event
                           , widgetMousePos
                           , mouse_position
                           , fc::MiddleButton | key_state );
-    sendEvent (clicked, &m_down_ev);
+    sendEvent (clicked_widget, &m_down_ev);
 
     // gnome-terminal sends no released on middle click
     if ( FTerm::isGnomeTerminal() )
       setClickedWidget(nullptr);
   }
-  else if ( mouse->isMiddleButtonReleased() )
+  else if ( md.isMiddleButtonReleased() )
   {
     FMouseEvent m_up_ev ( fc::MouseUp_Event
                         , widgetMousePos
                         , mouse_position
                         , fc::MiddleButton | key_state );
-    auto released_widget = clicked;
+    auto released_widget = clicked_widget;
 
-    if ( ! mouse->isLeftButtonPressed()
-      && ! mouse->isRightButtonPressed() )
+    if ( ! md.isLeftButtonPressed()
+      && ! md.isRightButtonPressed() )
     {
       setClickedWidget(nullptr);
     }
@@ -1168,35 +1204,48 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
 }
 
 //----------------------------------------------------------------------
-void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
+void FApplication::sendWheelEvent ( const FMouseData& md
+                                  , const FPoint& widgetMousePos
                                   , const FPoint& mouse_position ) const
 {
-  if ( ! mouse )
-    return;
-
-  auto clicked = FWidget::getClickedWidget();
-
-  if ( mouse->isWheelUp() )
+  if ( md.isWheelUp() )
   {
     FWheelEvent wheel_ev ( fc::MouseWheel_Event
                          , widgetMousePos
                          , mouse_position
                          , fc::WheelUp );
-    auto scroll_over_widget = clicked;
+    auto scroll_over_widget = clicked_widget;
     setClickedWidget(nullptr);
     sendEvent(scroll_over_widget, &wheel_ev);
   }
 
-  if ( mouse->isWheelDown() )
+  if ( md.isWheelDown() )
   {
     FWheelEvent wheel_ev ( fc::MouseWheel_Event
                          , widgetMousePos
                          , mouse_position
                          , fc::WheelDown );
-    auto scroll_over_widget = clicked;
+    auto scroll_over_widget = clicked_widget;
     setClickedWidget(nullptr);
     sendEvent (scroll_over_widget, &wheel_ev);
   }
+}
+
+//----------------------------------------------------------------------
+inline void FApplication::flushTerminal()
+{
+  if ( ! pending_updates )
+    return;
+
+  if ( flush_count < 4 )
+  {
+    flush_count++;
+    return;
+  }
+
+  flush();
+  flush_count = 0;
+  pending_updates = false;
 }
 
 //----------------------------------------------------------------------
@@ -1214,22 +1263,6 @@ FWidget* FApplication::processParameters (const int& argc, char* argv[])
 }
 
 //----------------------------------------------------------------------
-void FApplication::processMouseEvent()
-{
-  if ( ! getMouseEvent() )
-    return;
-
-  determineClickedWidget();
-  unsetMoveSizeMode();
-  closeDropDown();
-  unselectMenubarItems();
-  sendMouseEvent();
-
-  if ( mouse )
-    mouse->drawGpmPointer();
-}
-
-//----------------------------------------------------------------------
 void FApplication::processResizeEvent() const
 {
   if ( ! FTerm::hasChangedTermSize() )
@@ -1242,7 +1275,7 @@ void FApplication::processResizeEvent() const
   }
 
   FResizeEvent r_ev(fc::Resize_Event);
-  sendEvent(app_object, &r_ev);
+  sendEvent(internal::var::app_object, &r_ev);
 
   if ( r_ev.isAccepted() )
     FTerm::changeTermSizeFinished();
@@ -1286,16 +1319,21 @@ bool FApplication::processNextEvent()
   uInt num_events{0};
   bool is_timeout = isNextEventTimeout();
 
-  if ( is_timeout )
+  if ( is_timeout || hasDataInQueue() )
   {
     FObject::getCurrentTime (&time_last_event);
+    queuingKeyboardInput();
+    queuingMouseInput();
     processKeyboardEvent();
     processMouseEvent();
     processResizeEvent();
-    processTerminalUpdate();
     processCloseWidget();
+
+    if ( processTerminalUpdate() )  // after terminal changes
+      pending_updates = true;
+
+    flushTerminal();
     processLogger();
-    updateTerminal();
   }
 
   processExternalUserEvent();
@@ -1318,13 +1356,13 @@ void FApplication::performTimerAction (FObject* receiver, FEvent* event)
 }
 
 //----------------------------------------------------------------------
-bool FApplication::isEventProcessable ( const FObject* receiver
+bool FApplication::isEventProcessable ( FObject* receiver
                                       , const FEvent* event )
 {
   if ( ! receiver->isWidget() )  // No restrictions for non-widgets
     return true;
 
-  const auto widget = static_cast<const FWidget*>(receiver);
+  auto widget = static_cast<FWidget*>(receiver);
 
   if ( getModalDialogCounter() > 0 )
   {

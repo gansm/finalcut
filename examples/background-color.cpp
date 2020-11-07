@@ -183,7 +183,6 @@ void Background::cb_changed()
                               , int(green.getValue())
                               , int(blue.getValue()) );
   redraw();
-  updateTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -205,7 +204,6 @@ void Background::cb_choice()
                               , int(green.getValue())
                               , int(blue.getValue()) );
   redraw();
-  updateTerminal();
 }
 
 //----------------------------------------------------------------------

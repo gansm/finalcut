@@ -79,9 +79,11 @@ typedef std::vector<FString> FStringList;
 class FString
 {
   public:
-    // Typedef
-    typedef const wchar_t* const_iterator;
-    typedef wchar_t* iterator;
+    // Using-declarations
+    using iterator        = wchar_t*;
+    using const_iterator  = const wchar_t*;
+    using reference       = wchar_t&;
+    using const_reference = const wchar_t&;
 
     // Constructors
     FString () = default;
@@ -112,8 +114,11 @@ class FString
     FString& operator << (const wchar_t);
     FString& operator << (const char);
     template <typename NumT
-            , typename std::enable_if< std::is_integral<NumT>::value
-                                    || std::is_floating_point<NumT>::value
+            , typename std::enable_if< ( std::is_integral<NumT>::value
+                                    && ! std::is_same<NumT, bool>::value
+                                    && ! std::is_pointer<NumT>::value )
+                                    || ( std::is_floating_point<NumT>::value
+                                    && ! std::is_pointer<NumT>::value )
                                      , int>::type = 0 >
     FString& operator << (const NumT);
 
@@ -132,11 +137,11 @@ class FString
     const FString& operator >> (float&) const;
 
     template <typename IndexT>
-    wchar_t&       operator [] (const IndexT);
+    reference       operator [] (const IndexT);
     template <typename IndexT>
-    const wchar_t& operator [] (const IndexT) const;
-    explicit       operator bool () const;
-    const FString& operator () () const;
+    const_reference operator [] (const IndexT) const;
+    explicit        operator bool () const;
+    const FString&  operator () () const;
 
     bool operator <  (const FString&) const;
     template <typename CharT>
@@ -157,8 +162,6 @@ class FString
     template <typename CharT>
     bool operator >  (const CharT&) const;
 
-    operator const char* () const { return c_str(); }
-
     // Accessor
     virtual FString getClassName() const;
 
@@ -175,8 +178,10 @@ class FString
     iterator end();
     const_iterator begin() const;
     const_iterator end() const;
-    wchar_t  front() const;
-    wchar_t  back() const;
+    reference front();
+    reference back() ;
+    const_reference front() const;
+    const_reference back() const;
 
     template <typename... Args>
     FString& sprintf (const FString&, Args&&...);
@@ -263,14 +268,6 @@ class FString
 
     // Friend Non-member operator functions
     friend FString operator + (const FString&, const FString&);
-    friend FString operator + (const FString&, const wchar_t);
-    friend FString operator + (const std::wstring&, const FString&);
-    friend FString operator + (const wchar_t[], const FString&);
-    friend FString operator + (const std::string&, const FString&);
-    friend FString operator + (const char[], const FString&);
-    friend FString operator + (const wchar_t, const FString&);
-    friend FString operator + (const char, const FString&);
-    friend FString operator + (const FString&, const char);
 
     friend std::ostream&  operator << (std::ostream&, const FString&);
     friend std::istream&  operator >> (std::istream&, FString& s);
@@ -282,8 +279,11 @@ class FString
 // FString inline functions
 //----------------------------------------------------------------------
 template <typename NumT
-        , typename std::enable_if< std::is_integral<NumT>::value
-                                || std::is_floating_point<NumT>::value
+        , typename std::enable_if< ( std::is_integral<NumT>::value
+                                && ! std::is_same<NumT, bool>::value
+                                && ! std::is_pointer<NumT>::value )
+                                || ( std::is_floating_point<NumT>::value
+                                && ! std::is_pointer<NumT>::value )
                                  , int>::type >
 inline FString& FString::operator << (const NumT val)
 {
@@ -294,7 +294,7 @@ inline FString& FString::operator << (const NumT val)
 
 //----------------------------------------------------------------------
 template <typename IndexT>
-inline wchar_t& FString::operator [] (const IndexT pos)
+inline FString::reference FString::operator [] (const IndexT pos)
 {
   if ( isNegative(pos) || pos > IndexT(length) )
     throw std::out_of_range("");  // Invalid index position
@@ -307,7 +307,7 @@ inline wchar_t& FString::operator [] (const IndexT pos)
 
 //----------------------------------------------------------------------
 template <typename IndexT>
-inline const wchar_t& FString::operator [] (const IndexT pos) const
+inline FString::const_reference FString::operator [] (const IndexT pos) const
 {
   if ( isNegative(pos) || pos > IndexT(length) )
     throw std::out_of_range("");  // Invalid index position
@@ -403,17 +403,31 @@ inline FString::const_iterator FString::end() const
 { return string + length; }
 
 //----------------------------------------------------------------------
-inline wchar_t FString::front() const
+inline FString::reference FString::front()
 {
   assert ( ! isEmpty() );
-  return string[0];
+  return (*this)[0];
 }
 
 //----------------------------------------------------------------------
-inline wchar_t FString::back() const
+inline FString::reference FString::back()
 {
   assert( ! isEmpty() );
-  return string[length - 1];
+  return (*this)[length - 1];
+}
+
+//----------------------------------------------------------------------
+inline FString::const_reference FString::front() const
+{
+  assert ( ! isEmpty() );
+  return (*this)[0];
+}
+
+//----------------------------------------------------------------------
+inline FString::const_reference FString::back() const
+{
+  assert( ! isEmpty() );
+  return (*this)[length - 1];
 }
 
 //----------------------------------------------------------------------
