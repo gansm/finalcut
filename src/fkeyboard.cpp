@@ -23,9 +23,10 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 
-#if defined(__CYGWIN__)
+#if defined(__sun) && defined(__SVR4)
+  #include <sys/filio.h>   // need for FIONREAD
+#elif defined(__CYGWIN__)
   #include <sys/select.h>  // need for FD_ZERO, FD_SET, FD_CLR, ...
-  #include <sys/socket.h>  // need for FIONREAD
 #endif
 
 #include <algorithm>
@@ -467,10 +468,12 @@ FKey FKeyboard::UTF8decode (const char utf8[]) const
 //----------------------------------------------------------------------
 inline ssize_t FKeyboard::readKey()
 {
+#if !defined(__CYGWIN__)
   int len{0};
 
   if ( ioctl(FTermios::getStdIn(), FIONREAD, &len) < 0 || len == 0 )
     return 0;
+#endif
 
   setNonBlockingInput();
   const ssize_t bytes = read(FTermios::getStdIn(), &read_character, 1);

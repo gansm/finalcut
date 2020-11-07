@@ -271,7 +271,7 @@ bool FVTerm::updateTerminal() const
   // Updates pending changes to the terminal
 
   // Check if terminal updates were stopped, application is stopping,
-  // VTerm has changes or the drawing is not completed
+  // VTerm has no changes, or the drawing is not completed
   if ( no_terminal_updates || FApplication::isQuit()
     || ! (hasPendingUpdates(vterm) && draw_completed) )
   {

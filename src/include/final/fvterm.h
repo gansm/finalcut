@@ -419,8 +419,6 @@ class FVTerm
     void                  appendLowerRight (FChar&) const;
     static void           characterFilter (FChar&);
     static void           appendOutputBuffer (const std::string&);
-    template <std::size_t N>
-    static void           appendOutputBuffer (const char (&)[N]);
     static int            appendOutputBuffer (int);
 
     // Data members
@@ -988,13 +986,6 @@ inline bool FVTerm::isCursorHideable() const
 inline void FVTerm::hideVTermCursor() const
 { vterm->input_cursor_visible = false; }
 
-//----------------------------------------------------------------------
-template <std::size_t N>
-inline void FVTerm::appendOutputBuffer (const char (&str)[N])
-{
-  for (auto&& ch : str)
-    FVTerm::appendOutputBuffer(int(ch));
-}
 
 }  // namespace finalcut
 

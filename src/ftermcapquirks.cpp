@@ -271,7 +271,8 @@ void FTermcapQuirks::vte()
 
   if ( term_detection->getGnomeTerminalID() >= 5300 )  // vte >= 0.53.0
   {
-    if ( ! std::strstr(TCAP(fc::t_enter_ca_mode), "\033[22;0;0t") )
+    if ( TCAP(fc::t_enter_ca_mode)
+      && ! std::strstr(TCAP(fc::t_enter_ca_mode), "\033[22;0;0t") )
     {
       // Save the cursor position, enter alternate screen buffer
       // and save xterm icon and window title on stack
@@ -279,7 +280,8 @@ void FTermcapQuirks::vte()
           CSI "?1049h" CSI "22;0;0t";
     }
 
-    if ( ! std::strstr(TCAP(fc::t_exit_ca_mode), "\033[23;0;0t") )
+    if ( TCAP(fc::t_exit_ca_mode)
+      && ! std::strstr(TCAP(fc::t_exit_ca_mode), "\033[23;0;0t") )
     {
       // Use normal screen buffer, restore the cursor position
       // and restore xterm icon and window title from stack

@@ -444,7 +444,8 @@ void FStringTest::assignmentTest()
   CPPUNIT_ASSERT ( ! s1 );
 
   // Move assignment operator
-  const finalcut::FString s9 = std::move(finalcut::FString(0));
+  auto empty = finalcut::FString(0);
+  const finalcut::FString s9 = std::move(empty);
   CPPUNIT_ASSERT ( ! s9 );
   CPPUNIT_ASSERT ( s9.isNull() );
   CPPUNIT_ASSERT ( s9.isEmpty() );
