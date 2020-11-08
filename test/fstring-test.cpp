@@ -162,7 +162,6 @@ void FStringTest::noArgumentTest()
   CPPUNIT_ASSERT ( empty.isEmpty() );
   CPPUNIT_ASSERT ( empty.getLength() == 0 );
   CPPUNIT_ASSERT ( empty.capacity() == 0 );
-  CPPUNIT_ASSERT ( empty.getUTF8length() == 0 );
   CPPUNIT_ASSERT ( empty.wc_str() == nullptr );
   CPPUNIT_ASSERT ( empty.c_str() == nullptr );
   CPPUNIT_ASSERT_EQUAL ( empty.toString(), std::string() );
@@ -657,7 +656,6 @@ void FStringTest::equalTest()
   constexpr char cstr[] = "abc";
   CPPUNIT_ASSERT ( str == cstr );
   CPPUNIT_ASSERT ( str.getLength() == 3 );
-  CPPUNIT_ASSERT ( str.getUTF8length() == 3 );
   CPPUNIT_ASSERT ( str.capacity() == 18 );
   CPPUNIT_ASSERT ( strncmp(cstr, str.c_str(), 3) == 0 );
 
@@ -706,8 +704,6 @@ void FStringTest::notEqualTest()
   CPPUNIT_ASSERT ( strlen(s1.c_str()) == 3 );
   CPPUNIT_ASSERT ( s2.getLength() == 3 );
   CPPUNIT_ASSERT ( strlen(s2.c_str()) == 6 );
-  CPPUNIT_ASSERT ( s1.getUTF8length() == 3 );
-  CPPUNIT_ASSERT ( s2.getUTF8length() == 3 );
   CPPUNIT_ASSERT ( s1.capacity() == 18 );
   CPPUNIT_ASSERT ( s2.capacity() == 18 );
   CPPUNIT_ASSERT ( strncmp(cstr, s1.c_str(), 3) != 0 );

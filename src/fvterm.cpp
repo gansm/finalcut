@@ -2254,7 +2254,7 @@ bool FVTerm::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y) const
 
     for (uInt i = x + 1; i <= xmax; i++)
     {
-      auto& ch = vt->data[y * uInt(vt->width) + i];
+      const auto& ch = vt->data[y * uInt(vt->width) + i];
 
       if ( ch.attr.bit.no_changes )
         count++;
@@ -2999,7 +2999,7 @@ inline void FVTerm::appendChar (FChar& next_char) const
 inline void FVTerm::appendAttributes (FChar& next_attr) const
 {
   // generate attribute string for the next character
-  const auto attr_str = FTerm::changeAttribute (term_attribute, next_attr);
+  const auto& attr_str = FTerm::changeAttribute (term_attribute, next_attr);
 
   if ( attr_str )
     appendOutputBuffer (attr_str);
