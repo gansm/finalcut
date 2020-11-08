@@ -107,12 +107,6 @@
 #include "final/ftypes.h"
 #include "final/fvterm.h"
 
-// Old callback macros (deprecated)
-#define F_FUNCTION_CALLBACK(h)  (h), this, nullptr
-#define F_FUNCTION_CALLBACK_DATA(h)  (h), this
-#define F_METHOD_CALLBACK(i,h)  (i), (h), this, nullptr
-#define F_METHOD_CALLBACK_DATA(i,h)  (i), (h), this
-
 namespace finalcut
 {
 

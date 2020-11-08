@@ -2,7 +2,7 @@
 
 # Library for creating terminal applications with text-based widgets
 
-The FINAL CUT is a C++ class library and widget toolkit with full [mouse](doc/mouse-control.md#title-bar-actions-on-mouse-clicks) support for creating a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple text windows on the screen.
+FINAL CUT is a C++ class library and widget toolkit with full [mouse](doc/mouse-control.md#title-bar-actions-on-mouse-clicks) support for creating a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple text windows on the screen.
 
 The structure of the Qt framework was originally the inspiration for the C++ class design of FINAL CUT. It provides common controls like dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, status bars and so on.
 

@@ -2245,18 +2245,18 @@ bool FVTerm::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y) const
   // Skip characters without changes if it is faster than redrawing
 
   auto& vt = vterm;
-  auto print_char = &vt->data[y * uInt(vt->width) + x];
-  print_char->attr.bit.printed = true;
+  auto& print_char = vt->data[y * uInt(vt->width) + x];
+  print_char.attr.bit.printed = true;
 
-  if ( print_char->attr.bit.no_changes )
+  if ( print_char.attr.bit.no_changes )
   {
     uInt count{1};
 
     for (uInt i = x + 1; i <= xmax; i++)
     {
-      auto ch = &vt->data[y * uInt(vt->width) + i];
+      auto& ch = vt->data[y * uInt(vt->width) + i];
 
-      if ( ch->attr.bit.no_changes )
+      if ( ch.attr.bit.no_changes )
         count++;
       else
         break;

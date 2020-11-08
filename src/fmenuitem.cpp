@@ -417,7 +417,6 @@ void FMenuItem::onAccel (FAccelEvent* ev)
 
     mbar->redraw();
     mbar->drop_down = true;
-
   }
   else
   {
