@@ -33,6 +33,7 @@
 #include <cstddef>
 #include <cstring>
 
+#include <array>
 #include <functional>
 #include <limits>
 #include <unordered_map>
