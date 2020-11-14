@@ -427,9 +427,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
     mbar->drop_down = false;
   }
 
-  if ( processTerminalUpdate() )
-    flush();
-
+  forceTerminalUpdate();
   ev->accept();
 }
 

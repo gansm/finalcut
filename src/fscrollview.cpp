@@ -411,9 +411,7 @@ void FScrollView::scrollTo (int x, int y)
 
   viewport->has_changes = true;
   copy2area();
-
-  if ( processTerminalUpdate() )
-    flush();
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------

@@ -225,7 +225,7 @@ void RotoZoomer::onShow (finalcut::FShowEvent*)
     for (path = 1; path < loops; path++)
     {
       redraw();
-      processTerminalUpdate();
+      forceTerminalUpdate();
     }
 
     end = system_clock::now();
@@ -244,6 +244,7 @@ void RotoZoomer::onTimer (finalcut::FTimerEvent*)
     path++;
 
   redraw();
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------

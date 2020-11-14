@@ -981,10 +981,7 @@ void FWidget::show()
   if ( show_root_widget && show_root_widget == this )
   {
     finishDrawing();
-
-    if ( processTerminalUpdate() )
-      flush();
-
+    forceTerminalUpdate();
     show_root_widget = nullptr;
   }
 
@@ -1978,7 +1975,7 @@ void FWidget::drawWindows() const
 {
   // redraw windows
   FChar default_char{};
-  default_char.ch           = ' ';
+  default_char.ch[0]        = ' ';
   default_char.fg_color     = fc::Black;
   default_char.bg_color     = fc::Black;
   default_char.attr.byte[0] = 0;

@@ -52,7 +52,7 @@ FString FTermBuffer::toString() const
                  , std::back_inserter(wide_string)
                  , [] (const FChar& fchar)
                    {
-                     return fchar.ch;
+                     return fchar.ch[0];
                    }
                  );
   return wide_string;
@@ -68,11 +68,11 @@ int FTermBuffer::write (const FString& string)
   {
     FChar nc;  // next character
     nc = FVTerm::getAttribute();
-    nc.ch = c;
+    nc.ch[0] = c;
+    nc.attr.byte[2] = 0;
+    nc.attr.byte[3] = 0;
     getColumnWidth(nc);  // add column width
-    nc.attr.bit.no_changes = false;
-    nc.attr.bit.printed = false;
-    data.push_back(nc);
+    data.push_back(std::move(nc));
   }
 
   return len;
@@ -82,7 +82,7 @@ int FTermBuffer::write (const FString& string)
 int FTermBuffer::write (wchar_t ch)
 {
   FChar nc = FVTerm::getAttribute();  // next character
-  nc.ch = ch;
+  nc.ch[0] = ch;
   getColumnWidth(nc);  // add column width
   nc.attr.bit.no_changes = false;
   nc.attr.bit.printed = false;

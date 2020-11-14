@@ -557,7 +557,7 @@ const char* FOptiAttr::changeAttribute (FChar& term, FChar& next)
 
   // Simulate invisible characters
   if ( ! F_enter_secure_mode.cap && next.attr.bit.invisible )
-    next.encoded_char = ' ';
+    next.encoded_char[0] = ' ';
 
   // Look for no changes
   if ( ! (switchOn() || switchOff() || hasColorChanged(term, next)) )
