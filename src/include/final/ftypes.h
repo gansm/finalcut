@@ -31,6 +31,9 @@
 #include <sys/types.h>
 
 #include <cstddef>
+#include <cstring>
+
+#include <array>
 #include <functional>
 #include <limits>
 #include <unordered_map>
@@ -150,13 +153,17 @@ union attribute
   uInt8 byte[4];
 };
 
+static constexpr uInt UNICODE_MAX = 5;
+
+typedef std::array<wchar_t, UNICODE_MAX> FUnicode;
+
 typedef struct
 {
-  wchar_t ch;            // Character code
-  wchar_t encoded_char;  // Encoded output character
-  FColor  fg_color;      // Foreground color
-  FColor  bg_color;      // Background color
-  attribute attr;        // Attributes
+  FUnicode  ch;            // Character code
+  FUnicode  encoded_char;  // Encoded output character
+  FColor    fg_color;      // Foreground color
+  FColor    bg_color;      // Background color
+  attribute attr;          // Attributes
 } FChar;
 
 
@@ -189,9 +196,9 @@ FKeyName;
 
 // FChar operator functions
 //----------------------------------------------------------------------
-constexpr bool operator == (const FChar& lhs, const FChar& rhs)
+inline bool operator == (const FChar& lhs, const FChar& rhs)
 {
-  return lhs.ch           == rhs.ch
+  return operator == (lhs.ch, rhs.ch)
       && lhs.fg_color     == rhs.fg_color
       && lhs.bg_color     == rhs.bg_color
       && lhs.attr.byte[0] == rhs.attr.byte[0]
@@ -201,7 +208,7 @@ constexpr bool operator == (const FChar& lhs, const FChar& rhs)
 }
 
 //----------------------------------------------------------------------
-constexpr bool operator != (const FChar& lhs, const FChar& rhs)
+inline bool operator != (const FChar& lhs, const FChar& rhs)
 {
   return ! ( lhs == rhs );
 }

@@ -144,8 +144,7 @@ void FProgressbar::draw()
   if ( getFlags().shadow )
     drawShadow(this);
 
-  if ( processTerminalUpdate() )
-    flush();
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------

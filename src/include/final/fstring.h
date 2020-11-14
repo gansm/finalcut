@@ -171,7 +171,6 @@ class FString
 
     // Methods
     std::size_t getLength() const;
-    std::size_t getUTF8length() const;
     std::size_t capacity() const;
 
     iterator begin();

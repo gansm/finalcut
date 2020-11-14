@@ -262,10 +262,10 @@ class FVTerm
     int                   printf (const FString&, Args&&...);
     int                   print (const FString&);
     int                   print (FTermArea*, const FString&);
-    int                   print (const FTermBuffer&);
-    int                   print (FTermArea*, const FTermBuffer&);
     int                   print (const std::vector<FChar>&);
     int                   print (FTermArea*, const std::vector<FChar>&);
+    int                   print (const FTermBuffer&);
+    int                   print (FTermArea*, const FTermBuffer&);
     int                   print (wchar_t);
     int                   print (FTermArea*, wchar_t);
     int                   print (FChar&);
@@ -317,6 +317,7 @@ class FVTerm
     void                  scrollAreaForward (FTermArea*) const;
     void                  scrollAreaReverse (FTermArea*) const;
     void                  clearArea (FTermArea*, int = ' ') const;
+    void                  forceTerminalUpdate() const;
     bool                  processTerminalUpdate() const;
     static void           startDrawing();
     static void           finishDrawing();
@@ -340,7 +341,7 @@ class FVTerm
     // Constants
     //   Buffer size for character output on the terminal
     static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 131072;
-    static constexpr int max_skip = 20;
+    static constexpr int max_skip = 2;
 
     // Methods
     void                  resetTextAreaToDefault ( const FTermArea*
@@ -441,8 +442,9 @@ class FVTerm
     static timeval           last_term_size_check;
     static bool              draw_completed;
     static bool              no_terminal_updates;
-    static uInt64            term_size_check_timeout;
+    static bool              force_terminal_update;
     static int               skipped_terminal_update;
+    static uInt64            term_size_check_timeout;
     static uInt              erase_char_length;
     static uInt              repeat_char_length;
     static uInt              clr_bol_length;

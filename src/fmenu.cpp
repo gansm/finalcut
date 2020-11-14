@@ -311,9 +311,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   else if ( ms.hide_sub_menu )
   {
     closeOpenedSubMenu();
-
-    if ( processTerminalUpdate() )
-      flush();
+    forceTerminalUpdate();
   }
 }
 
@@ -1060,6 +1058,7 @@ bool FMenu::selectNextItem()
         getStatusBar()->drawMessage();
 
       redraw();
+      forceTerminalUpdate();
       break;
     }
 
@@ -1108,6 +1107,7 @@ bool FMenu::selectPrevItem()
         getStatusBar()->drawMessage();
 
       redraw();
+      forceTerminalUpdate();
       break;
     }
   }

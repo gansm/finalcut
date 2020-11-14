@@ -184,9 +184,7 @@ void FTextView::scrollTo (int x, int y)
   }
 
   drawText();
-
-  if ( processTerminalUpdate() )
-    flush();
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------
@@ -477,8 +475,7 @@ void FTextView::onWheel (FWheelEvent* ev)
   if ( isShown() )
     drawText();
 
-  if ( processTerminalUpdate() )
-    flush();
+  forceTerminalUpdate();
 }
 
 //----------------------------------------------------------------------

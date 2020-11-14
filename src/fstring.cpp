@@ -343,12 +343,6 @@ const FString& FString::operator () () const
 
 // public methods of FString
 //----------------------------------------------------------------------
-std::size_t FString::getUTF8length() const
-{
-  return length;
-}
-
-//----------------------------------------------------------------------
 FString FString::clear()
 {
   if ( string )

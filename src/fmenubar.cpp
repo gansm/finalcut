@@ -223,10 +223,7 @@ void FMenuBar::onAccel (FAccelEvent* ev)
     getStatusBar()->drawMessage();
 
   redraw();
-
-  if ( processTerminalUpdate() )
-    flush();
-
+  forceTerminalUpdate();
   ev->accept();
 }
 
@@ -339,6 +336,7 @@ bool FMenuBar::selectNextItem()
 
       redraw();
       setTerminalUpdates (FVTerm::start_terminal_updates);
+      forceTerminalUpdate();
       break;
     }
 
@@ -403,6 +401,7 @@ bool FMenuBar::selectPrevItem()
       setSelectedItem(prev);
       redraw();
       setTerminalUpdates (FVTerm::start_terminal_updates);
+      forceTerminalUpdate();
       break;
     }
   }
@@ -922,9 +921,7 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent&& ev)
   if ( focus_changed )
   {
     redraw();
-
-    if ( processTerminalUpdate() )
-      flush();
+    forceTerminalUpdate();
   }
 }
 
