@@ -1260,7 +1260,7 @@ void FMouseTest::mouseControlTest()
   if ( mouse_control.isGpmMouseEnabled() )
   {
     CPPUNIT_ASSERT ( ! mouse_control.getGpmKeyPressed(false) );
-    mouse_control.drawGpmPointer();
+    mouse_control.drawPointer();
   }
 
   // Left mouse button pressed on an X11 mouse
