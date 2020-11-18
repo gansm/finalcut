@@ -34,6 +34,7 @@
 #include "final/fcolorpair.h"
 #include "final/fkeyboard.h"
 #include "final/flog.h"
+#include "final/fmouse.h"
 #include "final/foptiattr.h"
 #include "final/foptimove.h"
 #include "final/fstyle.h"
@@ -55,13 +56,14 @@ bool                 FVTerm::draw_completed{false};
 bool                 FVTerm::no_terminal_updates{false};
 bool                 FVTerm::cursor_hideable{false};
 bool                 FVTerm::force_terminal_update{false};
-int                  FVTerm::skipped_terminal_update{0};
+uInt64               FVTerm::flush_wait{16667};  // 16.6 ms  (60 Hz)
 uInt64               FVTerm::term_size_check_timeout{500000};  // 500 ms
 uInt                 FVTerm::erase_char_length{};
 uInt                 FVTerm::repeat_char_length{};
 uInt                 FVTerm::clr_bol_length{};
 uInt                 FVTerm::clr_eol_length{};
 uInt                 FVTerm::cursor_address_length{};
+struct timeval       FVTerm::time_last_flush{};
 struct timeval       FVTerm::last_term_size_check{};
 std::vector<int>*    FVTerm::output_buffer{nullptr};
 FPoint*              FVTerm::term_pos{nullptr};
@@ -71,7 +73,7 @@ FTerm*               FVTerm::fterm{nullptr};
 FVTerm::FTermArea*   FVTerm::vterm{nullptr};
 FVTerm::FTermArea*   FVTerm::vdesktop{nullptr};
 FVTerm::FTermArea*   FVTerm::active_area{nullptr};
-FKeyboard*           FVTerm::keyboard{nullptr};
+FMouseControl*       FVTerm::mouse{nullptr};
 FChar                FVTerm::term_attribute{};
 FChar                FVTerm::next_attribute{};
 FChar                FVTerm::s_ch{};
@@ -280,25 +282,14 @@ bool FVTerm::updateTerminal() const
   }
 
   std::size_t changedlines = 0;
-  static constexpr int check_interval = 5;
+
 
   for (uInt y{0}; y < uInt(vterm->height); y++)
   {
     if ( updateTerminalLine(y) )
       changedlines++;
-
-    if ( ! force_terminal_update
-      && changedlines % check_interval == 0
-      && (keyboard->hasUnprocessedInput() || keyboard->isKeyPressed(0) )
-      && skipped_terminal_update < max_skip )
-    {
-      // Skipping terminal updates if there is unprocessed inputs
-      skipped_terminal_update++;
-      return false;
-    }
   }
 
-  skipped_terminal_update = 0;
   vterm->has_changes = false;
 
   // sets the new input cursor position
@@ -586,7 +577,8 @@ void FVTerm::flush()
 {
   // Flush the output buffer
 
-  if ( ! output_buffer || output_buffer->empty() )
+  if ( ! output_buffer || output_buffer->empty()
+    || ! (isFlushTimeout() || force_terminal_update) )
     return;
 
   static const FTerm::defaultPutChar& FTermPutchar = FTerm::putchar();
@@ -599,6 +591,8 @@ void FVTerm::flush()
 
   output_buffer->clear();
   std::fflush(stdout);
+  mouse->drawPointer();
+  FObject::getCurrentTime (&time_last_flush);
 }
 
 
@@ -1259,8 +1253,7 @@ bool FVTerm::processTerminalUpdate() const
   }
 
   // Update data on VTerm
-  if ( force_terminal_update || skipped_terminal_update == 0 )
-    updateVTerm();
+  updateVTerm();
 
   // Update the visible terminal
   return updateTerminal();
@@ -1286,8 +1279,8 @@ void FVTerm::initTerminal()
   if ( fterm )
     fterm->initTerminal();
 
-  // Get FKeyboard object
-  keyboard = FTerm::getFKeyboard();
+  // Get the global FMouseControl object
+  mouse = FTerm::getFMouseControl();
 
   // Hide the input cursor
   cursor_hideable = FTerm::isCursorHideable();
@@ -1863,7 +1856,9 @@ void FVTerm::init()
   vdesktop->visible = true;
   active_area = vdesktop;
 
-  // Initialize the last terminal size check time
+  // Initialize the flush and last terminal size check time
+  time_last_flush.tv_sec = 0;
+  time_last_flush.tv_usec = 0;
   last_term_size_check.tv_sec = 0;
   last_term_size_check.tv_usec = 0;
 }
@@ -1902,7 +1897,7 @@ void FVTerm::finish()
     && FTerm::getFTermData()->isInAlternateScreen() )
     clearTerm();
 
-  flush();
+  forceTerminalUpdate();
 
   if ( output_buffer )
     delete output_buffer;
@@ -2864,6 +2859,12 @@ inline bool FVTerm::isTermSizeChanged() const
     return true;
 
   return false;
+}
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isFlushTimeout()
+{
+  return FObject::isTimeout (&time_last_flush, flush_wait);
 }
 
 //----------------------------------------------------------------------

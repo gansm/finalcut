@@ -279,7 +279,7 @@ class FMouseGPM final : public FMouse
     void                 interpretKeyDown();
     void                 interpretKeyUp();
     bool                 getGpmKeyPressed(bool);
-    void                 drawGpmPointer() const;
+    void                 drawPointer() const;
 
   private:
     // Enumeration
@@ -578,7 +578,7 @@ class FMouseControl
     virtual void              processEvent (struct timeval* time);
     void                      processQueuedInput();
     bool                      getGpmKeyPressed (bool);
-    void                      drawGpmPointer();
+    void                      drawPointer();
 
   private:
     // Typedef

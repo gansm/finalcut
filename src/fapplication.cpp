@@ -73,7 +73,6 @@ FMouseControl* FApplication::mouse           {nullptr};  // mouse control
 int            FApplication::loop_level      {0};        // event loop level
 int            FApplication::quit_code       {EXIT_SUCCESS};
 bool           FApplication::quit_now        {false};
-bool           FApplication::pending_updates {false};
 uInt64         FApplication::next_event_wait {5000};     // 5 ms (200 Hz)
 struct timeval FApplication::time_last_event {};
 
@@ -391,9 +390,6 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 void FApplication::processExternalUserEvent()
 {
   // This method can be overloaded and replaced by own code
-
-  if ( FKeyboard::getReadBlockingTime() < 10000 )
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
 }
 
 
@@ -758,9 +754,6 @@ void FApplication::mouseEvent (const FMouseData& md)
     unselectMenubarItems (md);
     sendMouseEvent (md);
   }
-
-  if ( mouse )
-    mouse->drawGpmPointer();
 }
 
 //----------------------------------------------------------------------
@@ -1232,23 +1225,6 @@ void FApplication::sendWheelEvent ( const FMouseData& md
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::flushTerminal()
-{
-  if ( ! pending_updates )
-    return;
-
-  if ( flush_count < 4 )
-  {
-    flush_count++;
-    return;
-  }
-
-  flush();
-  flush_count = 0;
-  pending_updates = false;
-}
-
-//----------------------------------------------------------------------
 FWidget* FApplication::processParameters (const int& argc, char* argv[])
 {
   if ( argc > 0 && argv[1] && ( std::strcmp(argv[1], "--help") == 0
@@ -1328,11 +1304,8 @@ bool FApplication::processNextEvent()
     processMouseEvent();
     processResizeEvent();
     processCloseWidget();
-
-    if ( processTerminalUpdate() )  // after terminal changes
-      pending_updates = true;
-
-    flushTerminal();
+    processTerminalUpdate();  // after terminal changes
+    flush();
     processLogger();
   }
 
@@ -1342,8 +1315,6 @@ bool FApplication::processNextEvent()
   {
     sendQueuedEvents();
     num_events += processTimerEvent();
-    uInt64 wait{next_event_wait / 2};
-    std::this_thread::sleep_for(std::chrono::microseconds(wait));
   }
 
   return ( num_events > 0 );

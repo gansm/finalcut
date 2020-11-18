@@ -1,3 +1,6 @@
+2019-11-18  Markus Gans  <guru.mail@muenster.de>
+	* The terminal update rate is now limited to 60 Hz
+
 2019-11-14  Markus Gans  <guru.mail@muenster.de>
 	* Version 0.7.1
 	* Bugfix: The cursor position was not changed anymore 

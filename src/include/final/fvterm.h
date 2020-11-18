@@ -68,7 +68,6 @@ namespace finalcut
 
 // class forward declaration
 class FColorPair;
-class FKeyboard;
 class FMouseControl;
 class FPoint;
 class FRect;
@@ -341,7 +340,6 @@ class FVTerm
     // Constants
     //   Buffer size for character output on the terminal
     static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 131072;
-    static constexpr int max_skip = 2;
 
     // Methods
     void                  resetTextAreaToDefault ( const FTermArea*
@@ -408,6 +406,7 @@ class FVTerm
     bool                  updateTerminalCursor() const;
     bool                  isInsideTerminal (const FPoint&) const;
     bool                  isTermSizeChanged() const;
+    static bool           isFlushTimeout();
     static bool           isTermSizeCheckTimeout();
     static bool           hasPendingUpdates (const FTermArea*);
     static void           markAsPrinted (uInt, uInt);
@@ -438,12 +437,13 @@ class FVTerm
     static FChar             s_ch;      // shadow character
     static FChar             i_ch;      // inherit background character
     static FPoint*           term_pos;  // terminal cursor position
-    static FKeyboard*        keyboard;
+    static FMouseControl*    mouse;
+    static timeval           time_last_flush;
     static timeval           last_term_size_check;
     static bool              draw_completed;
     static bool              no_terminal_updates;
     static bool              force_terminal_update;
-    static int               skipped_terminal_update;
+    static uInt64            flush_wait;
     static uInt64            term_size_check_timeout;
     static uInt              erase_char_length;
     static uInt              repeat_char_length;

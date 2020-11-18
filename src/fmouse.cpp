@@ -510,7 +510,7 @@ bool FMouseGPM::getGpmKeyPressed (bool is_pending)
 }
 
 //----------------------------------------------------------------------
-void FMouseGPM::drawGpmPointer() const
+void FMouseGPM::drawPointer() const
 {
   if ( isGpmMouseEnabled() && gpm_ev.x != -1 )
     GPM_DRAWPOINTER(&gpm_ev);
@@ -1605,7 +1605,7 @@ bool FMouseControl::getGpmKeyPressed (bool)
 
 //----------------------------------------------------------------------
 #ifdef F_HAVE_LIBGPM
-void FMouseControl::drawGpmPointer()
+void FMouseControl::drawPointer()
 {
   if ( mouse_protocol.empty() )
     return;
@@ -1614,10 +1614,10 @@ void FMouseControl::drawGpmPointer()
   auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
-    gpm_mouse->drawGpmPointer();
+    gpm_mouse->drawPointer();
 }
 #else  // F_HAVE_LIBGPM
-void FMouseControl::drawGpmPointer()
+void FMouseControl::drawPointer()
 { }
 #endif  // F_HAVE_LIBGPM
 
