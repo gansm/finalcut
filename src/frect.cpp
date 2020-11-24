@@ -51,32 +51,8 @@ FRect::FRect (const FPoint& p1, const FPoint& p2)
   , Y2{p2.getY()}
 { }
 
-//----------------------------------------------------------------------
-FRect::~FRect()  // destructor
-{ }
-
 
 // public methods of FRect
-//----------------------------------------------------------------------
-FRect& FRect::operator = (const FRect& r)
-{
-  X1 = r.X1;
-  Y1 = r.Y1;
-  X2 = r.X2;
-  Y2 = r.Y2;
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FRect& FRect::operator = (FRect&& r) noexcept
-{
-  X1 = std::move(r.X1);
-  Y1 = std::move(r.Y1);
-  X2 = std::move(r.X2);
-  Y2 = std::move(r.Y2);
-  return *this;
-}
-
 //----------------------------------------------------------------------
 bool FRect::isEmpty() const
 {

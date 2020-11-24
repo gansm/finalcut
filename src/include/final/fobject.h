@@ -150,8 +150,9 @@ class FObject
       FObject*  object;
     };
 
-    // Typedefs
-    typedef std::vector<FTimerData> FTimerList;
+    // Using-declaration
+    using FTimerList = std::vector<FTimerData>;
+    using FTimerListPtr = const std::unique_ptr<FTimerList>;
 
     // Accessor
     FTimerList*           getTimerList() const;
@@ -169,6 +170,7 @@ class FObject
   private:
     // Method
     virtual void          performTimerAction (FObject*, FEvent*);
+    static FTimerListPtr& globalTimerList();
 
     // Data members
     FObject*              parent_obj{nullptr};
@@ -177,7 +179,6 @@ class FObject
     bool                  has_parent{false};
     bool                  widget_object{false};
     static bool           timer_modify_lock;
-    static FTimerList*    timer_list;
 };
 
 
@@ -267,7 +268,7 @@ inline bool FObject::isTimerInUpdating() const
 
 //----------------------------------------------------------------------
 inline FObject::FTimerList* FObject::getTimerList() const
-{ return timer_list; }
+{ return globalTimerList().get(); }
 
 //----------------------------------------------------------------------
 inline void FObject::setWidgetProperty (bool property)

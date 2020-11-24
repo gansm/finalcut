@@ -59,6 +59,10 @@
 
 #include <cstring>
 
+#include <array>
+#include <memory>
+
+#include "final/fbutton.h"
 #include "final/fdialog.h"
 #include "final/fwidgetcolors.h"
 
@@ -95,7 +99,7 @@ class FMessageBox : public FDialog
                 , ButtonType, ButtonType, ButtonType
                 , FWidget* = nullptr );
     // Destructor
-    ~FMessageBox() override;
+    virtual ~FMessageBox() noexcept override;
 
     // copy assignment operator (=)
     FMessageBox& operator = (const FMessageBox&);
@@ -140,10 +144,12 @@ class FMessageBox : public FDialog
     // Constants
     static constexpr std::size_t MAX_BUTTONS = 3;
 
+    // Using-declaration
+    using FButtons = std::array<std::unique_ptr<FButton>, MAX_BUTTONS>;
+
     // Methods
     void                init();
     void                allocation();
-    void                deallocation();
     void                initCallbacks();
     void                calculateDimensions();
     void                draw() override;
@@ -154,7 +160,8 @@ class FMessageBox : public FDialog
     FString       headline_text{};
     FString       text{};
     FStringList   text_components{};
-    FButton*      button[MAX_BUTTONS]{nullptr};
+
+    FButtons      button;
     std::size_t   max_line_width{0};
     FColor        emphasis_color{getColorTheme()->dialog_emphasis_fg};
     ButtonType    button_digit[MAX_BUTTONS]{FMessageBox::Reject};

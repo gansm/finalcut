@@ -142,7 +142,7 @@ class FComboBox : public FWidget
     FComboBox (const FComboBox&) = delete;
 
     // Destructor
-    ~FComboBox() override;
+    ~FComboBox() noexcept override;
 
     // Disable copy assignment operator (=)
     FComboBox& operator = (const FComboBox&) = delete;

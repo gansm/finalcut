@@ -43,15 +43,15 @@ namespace finalcut
 {
 
 // Enumeration
-enum fullWidthSupport
+enum class FullWidthSupport
 {
-  unknown_fullwidth_support = -1,
-  supports_fullwidth = 0,
-  no_fullwidth_support = 1
+  unknown = -1,
+  no = 0,
+  yes = 1
 };
 
 // global state
-static fullWidthSupport has_fullwidth_support = unknown_fullwidth_support;
+static FullWidthSupport has_fullwidth_support = FullWidthSupport::unknown;
 
 // Function prototypes
 bool hasAmbiguousWidth (wchar_t);
@@ -250,7 +250,7 @@ bool hasFullWidthSupports()
 {
   // Checks if the terminal has full-width character support
 
-  if ( has_fullwidth_support == unknown_fullwidth_support )
+  if ( has_fullwidth_support == FullWidthSupport::unknown )
   {
     if ( ! FTerm::isInitialized() )
       return true;  // Assume that it is a modern terminal with full-width support
@@ -262,12 +262,12 @@ bool hasFullWidthSupports()
       || FTerm::isOpenBSDTerm()
       || FTerm::isSunTerminal()
       || FTerm::isAnsiTerminal() )
-      has_fullwidth_support = no_fullwidth_support;
+      has_fullwidth_support = FullWidthSupport::no;
     else
-      has_fullwidth_support = supports_fullwidth;
+      has_fullwidth_support = FullWidthSupport::yes;
   }
 
-  return ( has_fullwidth_support == supports_fullwidth) ? true : false;
+  return ( has_fullwidth_support == FullWidthSupport::yes) ? true : false;
 }
 
 //----------------------------------------------------------------------
@@ -528,7 +528,7 @@ std::size_t getColumnWidth (const FTermBuffer& tb)
                          , tb.front().attr.bit.char_width
                          , [] (std::size_t s, const FChar& c)
                            {
-                             return std::move(s) + c.attr.bit.char_width;
+                             return s + c.attr.bit.char_width;
                            }
                          );
 }

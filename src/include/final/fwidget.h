@@ -125,20 +125,18 @@ class FWidgetColors;
 class FWidget : public FVTerm, public FObject
 {
   public:
-    // Using-declaration
-    using FVTerm::setColor;
-    using FVTerm::print;
-
     struct FAccelerator
     {
       alignas(8) FKey key;
       FWidget* object;
     };
 
-    // Typedefs
-    typedef std::vector<FWidget*> FWidgetList;
-    typedef std::vector<FAccelerator> FAcceleratorList;
-    typedef std::shared_ptr<FWidgetColors> FWidgetColorsPtr;
+    // Using-declarations
+    using FVTerm::setColor;
+    using FVTerm::print;
+    using FWidgetList = std::vector<FWidget*>;
+    using FAcceleratorList = std::vector<FAccelerator>;
+    using FWidgetColorsPtr = std::shared_ptr<FWidgetColors>;
 
     struct FWidgetFlags  // Properties of a widget ⚑
     {

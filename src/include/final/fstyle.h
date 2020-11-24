@@ -54,21 +54,6 @@ class FStyle
       : attribute{attr}
     { }
 
-    // Copy constructor
-    FStyle (const FStyle& style)
-      : attribute{style.attribute}
-    { }
-
-    // Destructor
-    ~FStyle() = default;
-
-    // copy assignment operator (=)
-    FStyle& operator = (const FStyle& style)
-    {
-      attribute = style.attribute;
-      return *this;
-    }
-
     // Accessor
     FString getClassName() const
     { return "FStyle"; }

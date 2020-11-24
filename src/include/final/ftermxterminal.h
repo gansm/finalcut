@@ -58,7 +58,7 @@ class FTermXTerminal final
     FTermXTerminal (const FTermXTerminal&) = delete;
 
     // Destructor
-    ~FTermXTerminal();
+    ~FTermXTerminal() noexcept = default;
 
     // Disable copy assignment operator (=)
     FTermXTerminal& operator = (const FTermXTerminal&) = delete;

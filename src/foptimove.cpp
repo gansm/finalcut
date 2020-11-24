@@ -52,10 +52,6 @@ FOptiMove::FOptiMove (int baud)
   set_cursor_down ("\n");
 }
 
-//----------------------------------------------------------------------
-FOptiMove::~FOptiMove()  // destructor
-{ }
-
 
 // public methods of FOptiMove
 //----------------------------------------------------------------------
@@ -608,7 +604,7 @@ int FOptiMove::capDurationToLength (int duration) const
 
 //----------------------------------------------------------------------
 int FOptiMove::repeatedAppend ( const Capability& o
-                              , volatile int count
+                              , int count
                               , char* dst ) const
 {
   const std::size_t src_len = std::strlen(o.cap);
@@ -623,8 +619,9 @@ int FOptiMove::repeatedAppend ( const Capability& o
     {
       dst += dst_len;
       std::size_t free = BUF_SIZE - dst_len - 2;
+      int cnt = count;
 
-      while ( count-- > 0 )
+      while ( cnt-- > 0 )
       {
         std::strncpy (dst, o.cap, free);
         dst += src_len;

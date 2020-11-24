@@ -51,8 +51,7 @@ namespace finalcut
 class FOptiAttr final
 {
   public:
-    // Typedef
-    typedef struct
+    struct TermEnv
     {
       const char* t_enter_bold_mode;
       const char* t_exit_bold_mode;
@@ -92,7 +91,7 @@ class FOptiAttr final
       int   max_color;
       int   attr_without_color;
       bool  ansi_default_color;
-    } TermEnv;
+    };
 
     // Constructor
     FOptiAttr();
@@ -101,7 +100,7 @@ class FOptiAttr final
     FOptiAttr (const FOptiAttr&) = delete;
 
     // Destructor
-    ~FOptiAttr();
+    ~FOptiAttr() noexcept = default;
 
     // Disable copy assignment operator (=)
     FOptiAttr& operator = (const FOptiAttr&) = delete;

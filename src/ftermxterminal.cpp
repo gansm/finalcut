@@ -70,10 +70,6 @@ FTermXTerminal::FTermXTerminal()
   keyboard = FTerm::getFKeyboard();
 }
 
-//----------------------------------------------------------------------
-FTermXTerminal::~FTermXTerminal()  // destructor
-{ }
-
 
 // public methods of FTermXTerminal
 //----------------------------------------------------------------------

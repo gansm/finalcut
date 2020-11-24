@@ -44,7 +44,7 @@ class AttribDlg final : public finalcut::FDialog
     AttribDlg (const AttribDlg&) = delete;
 
     // Destructor
-    ~AttribDlg() override;
+    ~AttribDlg() override = default;
 
     // Disable copy assignment operator (=)
     AttribDlg& operator = (const AttribDlg&) = delete;
@@ -99,10 +99,6 @@ AttribDlg::AttribDlg (finalcut::FWidget* parent)
     this, &AttribDlg::cb_back
   );
 }
-
-//----------------------------------------------------------------------
-AttribDlg::~AttribDlg()
-{ }
 
 //----------------------------------------------------------------------
 FColor AttribDlg::getBGColor() const
@@ -226,8 +222,7 @@ class AttribDemo final : public finalcut::FWidget
     explicit AttribDemo (FWidget* = nullptr);
 
     // Destructor
-    ~AttribDemo() override
-    { }
+    ~AttribDemo() override = default;
 
     // Event handler
     void onWheel (finalcut::FWheelEvent* ev) override

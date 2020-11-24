@@ -57,10 +57,6 @@ FKeyEvent::FKeyEvent (fc::events ev_type, FKey key_num)  // constructor
 { }
 
 //----------------------------------------------------------------------
-FKeyEvent::~FKeyEvent()  // destructor
-{ }
-
-//----------------------------------------------------------------------
 FKey FKeyEvent::key() const
 { return k; }
 
@@ -96,10 +92,6 @@ FMouseEvent::FMouseEvent ( fc::events ev_type  // constructor
                          , const FPoint& pos
                          , int button )
   : FMouseEvent{ev_type, pos, FPoint{}, button}
-{ }
-
-//----------------------------------------------------------------------
-FMouseEvent::~FMouseEvent()  // destructor
 { }
 
 //----------------------------------------------------------------------
@@ -153,10 +145,6 @@ FWheelEvent::FWheelEvent ( fc::events ev_type  // constructor
 { }
 
 //----------------------------------------------------------------------
-FWheelEvent::~FWheelEvent()  // destructor
-{ }
-
-//----------------------------------------------------------------------
 const FPoint& FWheelEvent::getPos() const
 { return p; }
 
@@ -191,10 +179,6 @@ int FWheelEvent::getWheel() const
 
 FFocusEvent::FFocusEvent (fc::events ev_type)  // constructor
   : FEvent{ev_type}
-{ }
-
-//----------------------------------------------------------------------
-FFocusEvent::~FFocusEvent()  // destructor
 { }
 
 //----------------------------------------------------------------------
@@ -240,10 +224,6 @@ FAccelEvent::FAccelEvent (fc::events ev_type, FWidget* focused)  // constructor
 { }
 
 //----------------------------------------------------------------------
-FAccelEvent::~FAccelEvent()  // destructor
-{ }
-
-//----------------------------------------------------------------------
 FWidget* FAccelEvent::focusedWidget() const
 { return focus_widget; }
 
@@ -269,10 +249,6 @@ FResizeEvent::FResizeEvent (fc::events ev_type)  // constructor
 { }
 
 //----------------------------------------------------------------------
-FResizeEvent::~FResizeEvent()  // destructor
-{ }
-
-//----------------------------------------------------------------------
 bool FResizeEvent::isAccepted() const
 { return accpt; }
 
@@ -293,10 +269,6 @@ FShowEvent::FShowEvent (fc::events ev_type)  // constructor
   : FEvent{ev_type}
 { }
 
-//----------------------------------------------------------------------
-FShowEvent::~FShowEvent()  // destructor
-{ }
-
 
 //----------------------------------------------------------------------
 // class FHideEvent
@@ -306,10 +278,6 @@ FHideEvent::FHideEvent (fc::events ev_type)  // constructor
   : FEvent{ev_type}
 { }
 
-//----------------------------------------------------------------------
-FHideEvent::~FHideEvent()  // destructor
-{ }
-
 
 //----------------------------------------------------------------------
 // class FCloseEvent
@@ -317,10 +285,6 @@ FHideEvent::~FHideEvent()  // destructor
 
 FCloseEvent::FCloseEvent (fc::events ev_type)  // constructor
   : FEvent{ev_type}
-{ }
-
-//----------------------------------------------------------------------
-FCloseEvent::~FCloseEvent()  // destructor
 { }
 
 //----------------------------------------------------------------------
@@ -346,10 +310,6 @@ FTimerEvent::FTimerEvent (fc::events ev_type, int timer_id)  // constructor
 { }
 
 //----------------------------------------------------------------------
-FTimerEvent::~FTimerEvent()  // destructor
-{ }
-
-//----------------------------------------------------------------------
 int FTimerEvent::getTimerId() const
 { return id; }
 
@@ -361,10 +321,6 @@ int FTimerEvent::getTimerId() const
 FUserEvent::FUserEvent (fc::events ev_type, int user_event_id)  // constructor
   : FEvent{ev_type}
   , uid{user_event_id}
-{ }
-
-//----------------------------------------------------------------------
-FUserEvent::~FUserEvent()  // destructor
 { }
 
 //----------------------------------------------------------------------

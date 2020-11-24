@@ -100,7 +100,7 @@ class FKeyboard final
     FKeyboard (const FKeyboard&) = delete;
 
     // Destructor
-    ~FKeyboard();
+    ~FKeyboard() = default;
 
     // Disable copy assignment operator (=)
     FKeyboard& operator = (const FKeyboard&) = delete;

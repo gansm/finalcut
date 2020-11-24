@@ -102,17 +102,16 @@ class FMenuBar : public FWindow, public FMenuList
     void          cb_itemDeactivated (const FMenuItem*) const;
 
   private:
-    // Constants
-    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
-
-    // Typedef
-    typedef struct
+    struct menuText
     {
       FString text;
       std::size_t startpos;
       std::size_t hotkeypos;
       bool no_underline;
-    } menuText;
+    };
+
+    // Constants
+    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Inquiry
     bool          isMenu (const FMenuItem*) const;

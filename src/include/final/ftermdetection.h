@@ -50,8 +50,7 @@ namespace finalcut
 class FTermDetection final
 {
   public:
-    // Typedefs
-    typedef struct
+    struct FTerminalType
     {
       // byte #0
       uInt8 ansi           : 1;
@@ -77,7 +76,7 @@ class FTermDetection final
       uInt8 kterm          : 1;
       uInt8 mlterm         : 1;
       uInt8                : 4;  // padding bits
-    } FTerminalType;
+    };
 
     // Constructors
     FTermDetection();

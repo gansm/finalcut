@@ -60,8 +60,8 @@ namespace finalcut
 // class forward declaration
 class FScrollbar;
 
-// Global typedef
-typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
+// Global using-declaration
+using FScrollbarPtr = std::shared_ptr<FScrollbar>;
 
 //----------------------------------------------------------------------
 // class FScrollbar
@@ -70,7 +70,7 @@ typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
 class FScrollbar : public FWidget
 {
   public:
-    // Using-declarations
+    // Using-declaration
     using FWidget::setGeometry;
 
     // Enumeration

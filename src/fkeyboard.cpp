@@ -81,9 +81,6 @@ FKeyboard::FKeyboard()
   term_detection = FTerm::getFTermDetection();
 }
 
-//----------------------------------------------------------------------
-FKeyboard::~FKeyboard()  // destructor
-{ }
 
 // public methods of FKeyboard
 //----------------------------------------------------------------------

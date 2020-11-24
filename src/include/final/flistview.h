@@ -219,23 +219,16 @@ class FListViewIterator
     using iterator_stack = std::stack<iterator>;
 
     // Constructor
-    FListViewIterator ();
+    FListViewIterator () = default;
     FListViewIterator (iterator);
-    FListViewIterator (const FListViewIterator&);  // copy constructor
-    FListViewIterator (FListViewIterator&&) noexcept;  // move constructor
-
-    // Destructor
-    ~FListViewIterator();
 
     // Overloaded operators
-    FListViewIterator& operator = (const FListViewIterator&);
-    FListViewIterator& operator = (FListViewIterator&&) noexcept;
     FListViewIterator& operator ++ ();     // prefix
     FListViewIterator  operator ++ (int);  // postfix
     FListViewIterator& operator -- ();     // prefix
     FListViewIterator  operator -- (int);  // postfix
-    FListViewIterator& operator += (volatile int);
-    FListViewIterator& operator -= (volatile int);
+    FListViewIterator& operator += (int);
+    FListViewIterator& operator -= (int);
     FObject*&          operator * () const;
     FObject*           operator -> () const;
     bool               operator == (const FListViewIterator&) const;
@@ -542,8 +535,7 @@ class FListView : public FWidget
 struct FListView::Header
 {
   public:
-    Header()
-    { }
+    Header () = default;
 
     FString name{};
     fc::text_alignment alignment{fc::alignLeft};

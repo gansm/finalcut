@@ -163,8 +163,8 @@ class FLineEdit : public FWidget
     void                adjustSize() override;
 
   private:
-    // Typedef
-    typedef std::pair<std::size_t, std::size_t> offsetPair;
+    // Using-declaration
+    using offsetPair = std::pair<std::size_t, std::size_t>;
 
     // Enumeration
     enum dragScroll

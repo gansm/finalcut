@@ -41,7 +41,7 @@ class Menu final : public finalcut::FDialog
     Menu (const Menu&) = delete;
 
     // Destructor
-    ~Menu() override;
+    ~Menu() override = default;
 
     // Disable copy assignment operator (=)
     Menu& operator = (const Menu&) = delete;
@@ -156,10 +156,6 @@ Menu::Menu (finalcut::FWidget* parent)
        << "<Meta>+<X>       Exit";
   Info.setGeometry(FPoint{2, 1}, FSize{36, 5});
 }
-
-//----------------------------------------------------------------------
-Menu::~Menu()
-{ }
 
 //----------------------------------------------------------------------
 void Menu::configureFileMenuItems()

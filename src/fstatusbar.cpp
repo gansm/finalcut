@@ -143,12 +143,12 @@ FStatusBar::~FStatusBar()  // destructor
     while ( iter != key_list.end() )
     {
       (*iter)->setConnectedStatusbar(nullptr);
-      delAccelerator (*iter);
+      FWidget::delAccelerator (*iter);
       iter = key_list.erase(iter);
     }
   }
 
-  setStatusBar(nullptr);
+  FWidget::setStatusBar(nullptr);
 }
 
 

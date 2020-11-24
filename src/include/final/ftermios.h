@@ -55,7 +55,7 @@ class FTermios final
     FTermios();
 
     // Destructor
-    ~FTermios();
+    ~FTermios() noexcept = default;
 
     // Accessors
     FString         getClassName() const;

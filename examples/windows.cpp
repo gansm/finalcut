@@ -44,7 +44,7 @@ class SmallWindow final : public finalcut::FDialog
     SmallWindow (const SmallWindow&) = delete;
 
     // Destructor
-    ~SmallWindow() override;
+    ~SmallWindow() override = default;
 
     // Disable copy assignment operator (=)
     SmallWindow& operator = (const SmallWindow&) = delete;
@@ -106,10 +106,6 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   bottom_label.setEmphasis();
   bottom_label.setGeometry (FPoint{13, 3}, FSize{6, 3});
 }
-
-//----------------------------------------------------------------------
-SmallWindow::~SmallWindow()
-{ }
 
 //----------------------------------------------------------------------
 void SmallWindow::adjustSize()
@@ -177,15 +173,22 @@ class Window final : public finalcut::FDialog
     Window& operator = (const Window&) = delete;
 
   private:
-    struct win_data
+    struct WinData
     {
         // Constructor
-        win_data() = default;
-        // Disable copy constructor
-        win_data (const win_data&) = delete;
+        WinData() = default;
 
-        // Disable copy assignment operator (=)
-        win_data& operator = (const win_data&) = delete;
+        // copy constructor
+        WinData (const WinData&) = default;
+
+        // move constructor
+        WinData (WinData&&) noexcept = default;
+
+        // copy assignment operator (=)
+        WinData& operator = (const WinData&) = default;
+
+        // move assignment operator (=)
+        WinData& operator = (WinData&&) noexcept = default;
 
         // Data members
         bool is_open{false};
@@ -216,10 +219,10 @@ class Window final : public finalcut::FDialog
     void cb_closeWindows();
     void cb_next();
     void cb_previous();
-    void cb_destroyWindow (win_data*) const;
+    void cb_destroyWindow (WinData&) const;
 
     // Data members
-    std::vector<win_data*>    windows{};
+    std::vector<WinData>      windows{};
     finalcut::FString         drop_down_symbol{fc::BlackDownPointingTriangle};
     finalcut::FMenuBar        Menubar{this};
     finalcut::FMenu           File{"&File", &Menubar};
@@ -262,9 +265,9 @@ Window::Window (finalcut::FWidget* parent)
   // Generate data vector for the windows
   for (uInt n{1}; n < 7; n++)
   {
-    auto win_dat = new win_data;
-    win_dat->title.sprintf("Window %1u", n);
-    windows.push_back(win_dat);
+    WinData win_dat;
+    win_dat.title.sprintf("Window %1u", n);
+    windows.emplace_back(std::move(win_dat));
   }
 }
 
@@ -275,13 +278,12 @@ Window::~Window()
 
   while ( iter != windows.end() )
   {
-    auto win_dat = *iter;
+    auto& win_dat = *iter;
 
     // Remove all callbacks before Window::cb_destroyWindow() will be called
-    if ( win_dat->is_open && win_dat->dgl )
-      win_dat->dgl->delCallback();
+    if ( win_dat.is_open && win_dat.dgl )
+      win_dat.dgl->delCallback();
 
-    delete win_dat;
     iter = windows.erase(iter);
   }
 }
@@ -366,12 +368,12 @@ void Window::adjustSize()
 
   while ( iter != windows.end() )
   {
-    if ( (*iter)->is_open )
+    if ( (*iter).is_open )
     {
       const auto n = int(std::distance(first, iter));
       const int x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
       const int y = dy + 11 + int(n / 3) * 3;
-      (*iter)->dgl->setPos (FPoint{x, y});
+      (*iter).dgl->setPos (FPoint{x, y});
     }
 
     ++iter;
@@ -459,13 +461,13 @@ void Window::cb_createWindows()
 
   while ( iter != windows.end() )
   {
-    if ( ! (*iter)->is_open )
+    if ( ! (*iter).is_open )
     {
-      auto win_dat = *iter;
+      auto& win_dat = *iter;
       auto win = new SmallWindow(this);
-      win_dat->dgl = win;
-      win_dat->is_open = true;
-      win->setText(win_dat->title);
+      win_dat.dgl = win;
+      win_dat.is_open = true;
+      win->setText(win_dat.title);
       const auto n = int(std::distance(first, iter));
       const int x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
       const int y = dy + 11 + int(n / 3) * 3;
@@ -478,7 +480,7 @@ void Window::cb_createWindows()
       (
         "destroy",
         this, &Window::cb_destroyWindow,
-        win_dat
+        std::ref(win_dat)
       );
     }
 
@@ -551,13 +553,10 @@ void Window::cb_previous()
 }
 
 //----------------------------------------------------------------------
-void Window::cb_destroyWindow (win_data* win_dat) const
+void Window::cb_destroyWindow (WinData& win_dat) const
 {
-  if ( win_dat )
-  {
-    win_dat->is_open = false;
-    win_dat->dgl = nullptr;
-  }
+  win_dat.is_open = false;
+  win_dat.dgl = nullptr;
 }
 
 

@@ -33,26 +33,7 @@ namespace finalcut
 // class FSize
 //----------------------------------------------------------------------
 
-FSize::~FSize()  // destructor
-{ }
-
 // public methods of FSize
-//----------------------------------------------------------------------
-FSize& FSize::operator = (const FSize& s)
-{
-  width = s.width;
-  height = s.height;
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FSize& FSize::operator = (FSize&& s) noexcept
-{
-  width = std::move(s.width);
-  height = std::move(s.height);
-  return *this;
-}
-
 //----------------------------------------------------------------------
 FSize& FSize::operator += (const FSize& s)
 {

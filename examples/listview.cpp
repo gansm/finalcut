@@ -47,7 +47,7 @@ class Listview final : public finalcut::FDialog
     Listview (const Listview&) = delete;
 
     // Destructor
-    ~Listview() override;
+    ~Listview() override = default;
 
     // Disable copy assignment operator (=)
     Listview& operator = (const Listview&) = delete;
@@ -123,10 +123,6 @@ Listview::Listview (finalcut::FWidget* parent)
     this, &Listview::cb_showInMessagebox
   );
 }
-
-//----------------------------------------------------------------------
-Listview::~Listview()  // destructor
-{ }
 
 //----------------------------------------------------------------------
 void Listview::populate()

@@ -38,8 +38,8 @@ using finalcut::FSize;
 class Background final : public finalcut::FDialog
 {
   public:
-    // Typedef
-    typedef std::tuple<uChar, uChar, uChar>  RGB;
+    // Using-declaration
+    using RGB = std::tuple<uChar, uChar, uChar>;
 
     // Constructor
     explicit Background (finalcut::FWidget* = nullptr);
@@ -48,7 +48,7 @@ class Background final : public finalcut::FDialog
     Background (const Background&) = delete;
 
     // Destructor
-    ~Background();
+    ~Background() noexcept override;
 
     // Disable copy assignment operator (=)
     Background& operator = (const Background&) = delete;
@@ -169,8 +169,7 @@ Background::Background (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-Background::~Background()  // destructor
-{ }
+Background::~Background() noexcept = default;  // destructor
 
 //----------------------------------------------------------------------
 void Background::cb_changed()

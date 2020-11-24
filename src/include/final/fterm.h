@@ -161,10 +161,10 @@ class FTermXTerminal;
 class FTerm final
 {
   public:
-    // Typedef
-    typedef std::function<int(int)> defaultPutChar;
-    typedef std::shared_ptr<FColorPalette> FColorPalettePtr;
-    typedef FColorPalette::FSetPalette FSetPalette;
+    // Using-declarations
+    using defaultPutChar = std::function<int(int)>;
+    using FColorPalettePtr = std::shared_ptr<FColorPalette>;
+    using FSetPalette = FColorPalette::FSetPalette;
 
     // Constructor
     FTerm();

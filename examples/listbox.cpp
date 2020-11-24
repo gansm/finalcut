@@ -87,7 +87,7 @@ class Listbox final : public FDialog
     Listbox (const Listbox&) = delete;
 
     // Destructor
-    ~Listbox() override;
+    ~Listbox() override = default;
 
     // Disable copy assignment operator (=)
     Listbox& operator = (const Listbox&) = delete;
@@ -163,10 +163,6 @@ Listbox::Listbox (FWidget* parent)
     this
   );
 }
-
-//----------------------------------------------------------------------
-Listbox::~Listbox()  // destructor
-{ }
 
 //----------------------------------------------------------------------
 void Listbox::onClose (FCloseEvent* ev)

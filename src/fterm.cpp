@@ -1419,7 +1419,7 @@ void FTerm::init_alt_charset()
     }
   }
 
-  enum column
+  enum Column : int
   {
     vt100_key = 0,
     utf8_char = 1
@@ -2272,7 +2272,6 @@ inline void FTerm::deallocationValues()
   const defaultPutChar* putchar_ptr = &(putchar());
   delete putchar_ptr;
   destroyColorPaletteTheme();
-  FStartOptions::destroyObject();
 }
 
 //----------------------------------------------------------------------

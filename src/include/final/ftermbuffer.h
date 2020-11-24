@@ -69,7 +69,7 @@ class FTermBuffer
     FTermBuffer (Iterator, Iterator);
 
     // Destructor
-    virtual ~FTermBuffer();
+    virtual ~FTermBuffer() noexcept;
 
     // Overloaded operators
     template <typename typeT>

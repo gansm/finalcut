@@ -46,8 +46,7 @@ FDialogListMenu::FDialogListMenu (const FString& txt, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FDialogListMenu::~FDialogListMenu()
-{ }
+FDialogListMenu::~FDialogListMenu() noexcept = default;  // destructor
 
 
 // private methods of FMenu

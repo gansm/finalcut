@@ -44,8 +44,7 @@ class SegmentView final : public finalcut::FDialog
     explicit SegmentView (finalcut::FWidget* = nullptr);
 
   private:
-    // Typedef
-    typedef struct
+    struct sevenSegment
     {
       unsigned char a : 1;
       unsigned char b : 1;
@@ -55,7 +54,7 @@ class SegmentView final : public finalcut::FDialog
       unsigned char f : 1;
       unsigned char g : 1;
       unsigned char   : 1;  // padding bit
-    } sevenSegment;
+    };
 
     // Methods
     void hexEncoding();

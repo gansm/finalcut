@@ -87,22 +87,22 @@ class FWidget;
 class FVTerm
 {
   public:
-    // Typedefs and Enumeration
-    typedef struct
+    struct FTermArea;             // forward declaration
+    struct FVTermPreprocessing;   // forward declaration
+
+    struct FLineChanges
     {
       uInt xmin;           // X-position with the first change
       uInt xmax;           // X-position with the last change
       uInt trans_count;    // Number of transparent characters
-    } FLineChanges;
+    };
 
-    typedef void (FVTerm::*FPreprocessingHandler)();
-    typedef std::function<void()> FPreprocessingFunction;
+    // Using-declarations
+    using FPreprocessingHandler = void (FVTerm::*)();
+    using FPreprocessingFunction = std::function<void()> ;
+    using FPreprocessing = std::vector<FVTermPreprocessing>;
 
-    struct FTermArea;             // forward declaration
-    struct FVTermPreprocessing;   // forward declaration
-
-    typedef std::vector<FVTermPreprocessing> FPreprocessing;
-
+    // Enumerations
     enum covered_state
     {
       non_covered,
@@ -500,50 +500,16 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
 struct FVTerm::FVTermPreprocessing
 {
   // Constructor
-  FVTermPreprocessing()
-    : instance(nullptr)
-    , function(nullptr)
-  { }
+  FVTermPreprocessing() = default;
 
   FVTermPreprocessing (const FVTerm* i, const FPreprocessingFunction& f)
     : instance(i)
     , function(f)
   { }
 
-  FVTermPreprocessing (const FVTermPreprocessing& p)  // copy constructor
-    : instance(p.instance)
-    , function(p.function)
-  { }
-
-  FVTermPreprocessing (FVTermPreprocessing&& p) noexcept  // move constructor
-    : instance(std::move(p.instance))
-    , function(std::move(p.function))
-  { }
-
-  // Overloaded operators
-  FVTermPreprocessing& operator = (const FVTermPreprocessing& p)
-  {
-    instance = p.instance;
-    function = p.function;
-    return *this;
-  }
-
-  FVTermPreprocessing& operator = (FVTermPreprocessing&& p) noexcept
-  {
-    instance = p.instance;
-    function = p.function;
-    p.instance = nullptr;
-    p.function = nullptr;
-    return *this;
-  }
-
-  // Destructor
-  ~FVTermPreprocessing()
-  { }
-
   // Data members
-  const FVTerm* instance{};
-  FPreprocessingFunction function{};
+  const FVTerm* instance{nullptr};
+  FPreprocessingFunction function{nullptr};
 };
 
 

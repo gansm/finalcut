@@ -79,8 +79,8 @@ class FTermData;
 class FTermFreeBSD final
 {
   public:
-    // Typedef
-    typedef fc::freebsdConsoleCursorStyle  CursorStyle;
+    // Using-declaration
+    using CursorStyle = fc::freebsdConsoleCursorStyle;
 
     // Constructors
     FTermFreeBSD() = default;

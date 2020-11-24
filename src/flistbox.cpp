@@ -40,10 +40,6 @@ namespace finalcut
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FListBoxItem::FListBoxItem()
-{ }
-
-//----------------------------------------------------------------------
 FListBoxItem::FListBoxItem (const FListBoxItem& item)
   : text{item.text}
   , data_pointer{item.data_pointer}
@@ -52,8 +48,8 @@ FListBoxItem::FListBoxItem (const FListBoxItem& item)
 { }
 
 //----------------------------------------------------------------------
-FListBoxItem::~FListBoxItem()  // destructor
-{ }
+FListBoxItem::~FListBoxItem() noexcept = default;  // destructor
+
 
 // public methods of FListBoxItem
 //----------------------------------------------------------------------

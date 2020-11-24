@@ -48,8 +48,7 @@ FSpinBox::FSpinBox (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FSpinBox::~FSpinBox()  // destructor
-{ }
+FSpinBox::~FSpinBox() noexcept = default;  // destructor
 
 
 // public methods of FSpinBox

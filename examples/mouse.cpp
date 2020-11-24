@@ -43,7 +43,7 @@ class ColorChooser final : public finalcut::FWidget
     ColorChooser (const ColorChooser&) = delete;
 
     // Destructor
-    ~ColorChooser() override;
+    ~ColorChooser() override = default;
 
     // Disable copy assignment operator (=)
     ColorChooser& operator = (const ColorChooser&) = delete;
@@ -84,10 +84,6 @@ ColorChooser::ColorChooser (finalcut::FWidget* parent)
   headline.setAlignment (fc::alignCenter);
   headline << "Color";
 }
-
-//----------------------------------------------------------------------
-ColorChooser::~ColorChooser()
-{ }
 
 //----------------------------------------------------------------------
 inline FColor ColorChooser::getForeground() const
@@ -186,7 +182,7 @@ class Brushes final : public finalcut::FWidget
     Brushes (const Brushes&) = delete;
 
     // Destructor
-    ~Brushes() override;
+    ~Brushes() override = default;
 
     // Disable copy assignment operator (=)
     Brushes& operator = (const Brushes&) = delete;
@@ -230,10 +226,6 @@ Brushes::Brushes (finalcut::FWidget* parent)
   headline.setAlignment (fc::alignCenter);
   headline << "Brush";
 }
-
-//----------------------------------------------------------------------
-Brushes::~Brushes()
-{ }
 
 //----------------------------------------------------------------------
 void Brushes::setSize (const FSize& size, bool adjust)
@@ -328,7 +320,7 @@ class MouseDraw final : public finalcut::FDialog
     MouseDraw (const MouseDraw&) = delete;
 
     // Destructor
-    ~MouseDraw() override;
+    ~MouseDraw() override = default;
 
     // Disable copy assignment operator (=)
     MouseDraw& operator = (const MouseDraw&) = delete;
@@ -376,10 +368,6 @@ MouseDraw::MouseDraw (finalcut::FWidget* parent)
 
   brush.setPos (FPoint{1, 12});
 }
-
-//----------------------------------------------------------------------
-MouseDraw::~MouseDraw()
-{ }
 
 //----------------------------------------------------------------------
 void MouseDraw::setGeometry ( const FPoint& p, const FSize& s, bool adjust)

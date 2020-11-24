@@ -43,16 +43,6 @@ FTermDetection*  FTermcapQuirks::term_detection {nullptr};
 // class FTermcapQuirks
 //----------------------------------------------------------------------
 
-// constructors and destructor
-//----------------------------------------------------------------------
-FTermcapQuirks::FTermcapQuirks()
-{ }
-
-//----------------------------------------------------------------------
-FTermcapQuirks::~FTermcapQuirks()  // destructor
-{ }
-
-
 // public methods of FTermcapQuirks
 //----------------------------------------------------------------------
 void FTermcapQuirks::terminalFixup()

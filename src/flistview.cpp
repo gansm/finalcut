@@ -478,51 +478,11 @@ void FListViewItem::resetVisibleLineCounter()
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FListViewIterator::FListViewIterator()
-{ }
-
-//----------------------------------------------------------------------
 FListViewIterator::FListViewIterator (iterator iter)
   : node{iter}
 { }
 
-//----------------------------------------------------------------------
-FListViewIterator::~FListViewIterator()  // destructor
-{ }
-
-//----------------------------------------------------------------------
-FListViewIterator::FListViewIterator (const FListViewIterator& i)
-  : iter_path{i.iter_path}  // copy constructor
-  , node{i.node}
-  , position{i.position}
-{ }
-
-//----------------------------------------------------------------------
-FListViewIterator::FListViewIterator (FListViewIterator&& i) noexcept
-  : iter_path{std::move(i.iter_path)}  // move constructor
-  , node{std::move(i.node)}
-  , position{std::move(i.position)}
-{ }
-
 // FListViewIterator operators
-//----------------------------------------------------------------------
-FListViewIterator& FListViewIterator::operator = (const FListViewIterator& i)
-{
-  iter_path = i.iter_path;
-  node = i.node;
-  position = i.position;
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FListViewIterator& FListViewIterator::operator = (FListViewIterator&& i) noexcept
-{
-  iter_path = std::move(i.iter_path);
-  node = std::move(i.node);
-  position = std::move(i.position);
-  return *this;
-}
-
 //----------------------------------------------------------------------
 FListViewIterator& FListViewIterator::operator ++ ()  // prefix
 {
@@ -554,25 +514,19 @@ FListViewIterator FListViewIterator::operator -- (int)  // postfix
 }
 
 //----------------------------------------------------------------------
-FListViewIterator& FListViewIterator::operator += (volatile int n)
+FListViewIterator& FListViewIterator::operator += (int n)
 {
-  while ( n > 0 )
-  {
+  for (int i = n; i > 0 ; i--)
     nextElement(node);
-    n--;
-  }
 
   return *this;
 }
 
 //----------------------------------------------------------------------
-FListViewIterator& FListViewIterator::operator -= (volatile int n)
+FListViewIterator& FListViewIterator::operator -= (int n)
 {
-  while ( n > 0 )
-  {
+  for (int i = n; i > 0 ; i--)
     prevElement(node);
-    n--;
-  }
 
   return *this;
 }

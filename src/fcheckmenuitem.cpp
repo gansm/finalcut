@@ -47,8 +47,7 @@ FCheckMenuItem::FCheckMenuItem (const FString& txt, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FCheckMenuItem::~FCheckMenuItem()  // destructor
-{ }
+FCheckMenuItem::~FCheckMenuItem() noexcept = default;  // destructor
 
 
 // private methods of FCheckMenuItem

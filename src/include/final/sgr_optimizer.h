@@ -61,7 +61,7 @@ class SGRoptimizer final
     SGRoptimizer (const SGRoptimizer&) = delete;
 
     // Destructor
-    ~SGRoptimizer();
+    ~SGRoptimizer() noexcept = default;
 
     // Disable copy assignment operator (=)
     SGRoptimizer& operator = (const SGRoptimizer&) = delete;

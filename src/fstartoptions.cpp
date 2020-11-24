@@ -54,35 +54,13 @@ FStartOptions::FStartOptions()
   , dark_theme{false}
 { }
 
-//----------------------------------------------------------------------
-FStartOptions::~FStartOptions()  // destructor
-{ }
 
 // public methods of FStartOptions
 //----------------------------------------------------------------------
 FStartOptions& FStartOptions::getFStartOptions()
 {
-  if ( start_options == nullptr )
-  {
-    try
-    {
-      start_options = new FStartOptions;
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("FStartOptions");
-      std::abort();
-    }
-  }
-
-  return *start_options;
-}
-
-//----------------------------------------------------------------------
-void FStartOptions::destroyObject()
-{
-  if ( start_options )
-    delete start_options;
+  static const auto& start_options = make_unique<FStartOptions>();
+  return *start_options.get();
 }
 
 //----------------------------------------------------------------------

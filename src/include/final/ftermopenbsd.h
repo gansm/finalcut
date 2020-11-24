@@ -81,7 +81,7 @@ class FTermOpenBSD final
     FTermOpenBSD (const FTermOpenBSD&) = delete;
 
     // Destructor
-    ~FTermOpenBSD();
+    ~FTermOpenBSD() noexcept = default;
 
     // Disable copy assignment operator (=)
     FTermOpenBSD& operator = (const FTermOpenBSD&) = delete;

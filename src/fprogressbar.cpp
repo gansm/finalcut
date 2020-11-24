@@ -42,8 +42,7 @@ FProgressbar::FProgressbar(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FProgressbar::~FProgressbar()  // destructor
-{ }
+FProgressbar::~FProgressbar() noexcept = default;  // destructor
 
 
 // public methods of FProgressbar

@@ -443,8 +443,7 @@ int FVTerm::print (FTermArea* area, const FTermBuffer& term_buffer)
 //----------------------------------------------------------------------
 int FVTerm::print (wchar_t c)
 {
-  FChar nc{};  // next character
-  nc = FVTerm::getAttribute();
+  FChar nc{FVTerm::getAttribute()};  // next character
   nc.ch[0] = c;
   nc.attr.byte[2] = 0;
   nc.attr.byte[3] = 0;

@@ -41,7 +41,7 @@ class Watch final : public finalcut::FDialog
     Watch (const Watch&) = delete;
 
     // Destructor
-    ~Watch() override;
+    ~Watch() override = default;
 
     // Disable copy assignment operator (=)
     Watch& operator = (const Watch&) = delete;
@@ -117,10 +117,6 @@ Watch::Watch (FWidget* parent)
     this
   );
 }
-
-//----------------------------------------------------------------------
-Watch::~Watch()
-{ }
 
 //----------------------------------------------------------------------
 void Watch::printTime()

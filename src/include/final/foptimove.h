@@ -89,7 +89,7 @@ class FOptiMove final
     explicit FOptiMove (int = 0);
 
     // Destructor
-    ~FOptiMove();
+    ~FOptiMove() noexcept = default;
 
     // Accessors
     FString       getClassName() const;
@@ -168,7 +168,7 @@ class FOptiMove final
     void          calculateCharDuration();
     int           capDuration (const char[], int) const;
     int           capDurationToLength (int) const;
-    int           repeatedAppend (const Capability&, volatile int, char*) const;
+    int           repeatedAppend (const Capability&, int, char*) const;
     int           relativeMove (char[], int, int, int, int) const;
     int           verticalMove (char[], int, int) const;
     void          downMove (char[], int&, int, int) const;

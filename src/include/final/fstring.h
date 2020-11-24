@@ -68,8 +68,8 @@ namespace finalcut
 // class forward declaration
 class FString;
 
-// Global typedef
-typedef std::vector<FString> FStringList;
+// Global using-declaration
+using FStringList = std::vector<FString>;
 
 
 //----------------------------------------------------------------------

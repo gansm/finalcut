@@ -36,6 +36,7 @@
 #include <array>
 #include <functional>
 #include <limits>
+#include <memory>
 #include <unordered_map>
 #include <string>
 
@@ -49,29 +50,28 @@
               << " in "                          \
               << __func__ << std::endl;
 
-typedef unsigned char         uChar;
-typedef unsigned short        uShort;
-typedef unsigned int          uInt;
-typedef unsigned long         uLong;
-typedef std::uint8_t          uInt8;
-typedef std::uint16_t         uInt16;
-typedef std::uint32_t         uInt32;
-typedef std::uint64_t         uInt64;
+using uChar      = unsigned char;
+using uShort     = unsigned short;
+using uInt       = unsigned int;
+using uLong      = unsigned long;
+using uInt8      = std::uint8_t;
+using uInt16     = std::uint16_t;
+using uInt32     = std::uint32_t;
+using uInt64     = std::uint64_t;
 
-typedef signed int            sInt;
-typedef signed long           sLong;
-typedef std::int8_t           sInt8;
-typedef std::int16_t          sInt16;
-typedef std::int32_t          sInt32;
-typedef std::int64_t          sInt64;
+using sInt       = signed int;
+using sLong      = signed long;
+using sInt8      = std::int8_t;
+using sInt16     = std::int16_t;
+using sInt32     = std::int32_t;
+using sInt64     = std::int64_t;
 
-typedef long double           lDouble;
+using lDouble    = long double;
 
-typedef uInt16                FColor;
-typedef uInt16                FAttribute;
-typedef uInt32                FKey;
-typedef void*                 FDataPtr;
-typedef std::function<void()> FCall;
+using FColor     = uInt16;
+using FAttribute = uInt16;
+using FKey       = uInt32;
+using FCall      = std::function<void()>;
 
 namespace finalcut
 {
@@ -115,7 +115,13 @@ struct getPrecision
   }
 };
 
-typedef std::unordered_map<wchar_t, wchar_t> charSubstitution;
+template <typename T, typename... Args>
+std::unique_ptr<T> make_unique (Args&&... args)
+{
+  return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+
+using charSubstitution = std::unordered_map<wchar_t, wchar_t>;
 
 struct FCharAttribute
 {
@@ -155,42 +161,39 @@ union attribute
 
 static constexpr uInt UNICODE_MAX = 5;
 
-typedef std::array<wchar_t, UNICODE_MAX> FUnicode;
+using FUnicode = std::array<wchar_t, UNICODE_MAX>;
 
-typedef struct
+struct FChar
 {
-  FUnicode  ch;            // Character code
-  FUnicode  encoded_char;  // Encoded output character
-  FColor    fg_color;      // Foreground color
-  FColor    bg_color;      // Background color
-  attribute attr;          // Attributes
-} FChar;
+  FUnicode  ch{};            // Character code
+  FUnicode  encoded_char{};  // Encoded output character
+  FColor    fg_color{};      // Foreground color
+  FColor    bg_color{};      // Background color
+  attribute attr{};          // Attributes
+};
 
 
 namespace fc
 {
 
-typedef struct
+struct FKeyMap
 {
   FKey  num;
   const char* string;
   char  tname[4];
-}
-FKeyMap;
+};
 
-typedef struct
+struct FMetakeyMap
 {
   FKey num;
   char string[8];
-}
-FMetakeyMap;
+};
 
-typedef struct
+struct FKeyName
 {
   FKey num;
   char string[25];
-}
-FKeyName;
+};
 
 }  // namespace fc
 
@@ -198,7 +201,7 @@ FKeyName;
 //----------------------------------------------------------------------
 inline bool operator == (const FChar& lhs, const FChar& rhs)
 {
-  return operator == (lhs.ch, rhs.ch)
+  return operator == (lhs.ch, rhs.ch)  // Compare FUnicode
       && lhs.fg_color     == rhs.fg_color
       && lhs.bg_color     == rhs.bg_color
       && lhs.attr.byte[0] == rhs.attr.byte[0]

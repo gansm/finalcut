@@ -46,9 +46,7 @@ FCheckBox::FCheckBox (const FString& txt, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FCheckBox::~FCheckBox()  // destructor
-{ }
-
+FCheckBox::~FCheckBox() noexcept = default;  // destructor
 
 // private methods of FCheckBox
 //----------------------------------------------------------------------

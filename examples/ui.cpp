@@ -196,7 +196,7 @@ class TextWindow final : public finalcut::FDialog
     TextWindow (const TextWindow&) = delete;
 
     // Destructor
-    ~TextWindow() override;
+    ~TextWindow() override = default;
 
     // Disable copy assignment operator (=)
     TextWindow& operator = (const TextWindow&) = delete;
@@ -231,10 +231,6 @@ TextWindow::TextWindow (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-TextWindow::~TextWindow()  // destructor
-{ }
-
-//----------------------------------------------------------------------
 void TextWindow::append (const finalcut::FString& str)
 {
   scrolltext.append(str);
@@ -262,7 +258,7 @@ class MyDialog final : public finalcut::FDialog
     MyDialog (const MyDialog&) = delete;
 
     // Destructor
-    ~MyDialog() override;
+    ~MyDialog() override = default;
 
     // Disable copy assignment operator (=)
     MyDialog& operator = (const MyDialog&) = delete;
@@ -374,10 +370,6 @@ MyDialog::MyDialog (finalcut::FWidget* parent)
 {
   init();
 }
-
-//----------------------------------------------------------------------
-MyDialog::~MyDialog()  // destructor
-{ }
 
 //----------------------------------------------------------------------
 void MyDialog::init()

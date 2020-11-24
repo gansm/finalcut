@@ -257,7 +257,7 @@ class FMouseGPM final : public FMouse
     FMouseGPM();
 
     // Destructor
-    ~FMouseGPM() override;
+    ~FMouseGPM() override = default;
 
     // Accessors
     FString              getClassName() const override;
@@ -581,13 +581,14 @@ class FMouseControl
     void                      drawPointer();
 
   private:
-    // Typedef
-    typedef std::map<FMouse::mouse_type, FMouse*> FMouseProtocol;
-    typedef std::unique_ptr<FMouseData> FMouseDataPtr;
+    // Using-declaration
+    using FMousePtr = std::unique_ptr<FMouse>;
+    using FMouseDataPtr = std::unique_ptr<FMouseData>;
+    using FMouseProtocol = std::map<FMouse::mouse_type, FMousePtr>;
 
     // Accessor
-    FMouse*                   getMouseWithData();
-    FMouse*                   getMouseWithEvent();
+    FMouse::mouse_type        getMouseWithData();
+    FMouse::mouse_type        getMouseWithEvent();
     void                      xtermMouse (bool) const;
     void                      enableXTermMouse() const;
     void                      disableXTermMouse() const;

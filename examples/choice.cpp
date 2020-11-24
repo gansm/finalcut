@@ -27,8 +27,8 @@
 using finalcut::FPoint;
 using finalcut::FSize;
 
-// Typedef
-typedef std::shared_ptr<finalcut::FRadioButton> FRadioButtonPtr;
+// Using-declaration
+using FRadioButtonPtr = std::shared_ptr<finalcut::FRadioButton>;
 
 // Function prototypes
 void cb_quit (finalcut::FDialog&);

@@ -72,7 +72,7 @@ class FSwitch : public FToggleButton
     FSwitch (const FSwitch&) = delete;
 
     // Destructor
-    ~FSwitch() override;
+    ~FSwitch() noexcept override;
 
     // Disable copy assignment operator (=)
     FSwitch& operator = (const FSwitch&) = delete;

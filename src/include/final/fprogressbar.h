@@ -66,7 +66,7 @@ class FProgressbar : public FWidget
     explicit FProgressbar(FWidget* = nullptr);
 
     // Destructor
-    ~FProgressbar() override;
+    ~FProgressbar() noexcept override;
 
     // Accessors
     FString             getClassName() const override;

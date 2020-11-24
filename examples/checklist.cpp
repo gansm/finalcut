@@ -51,7 +51,7 @@ class CheckList final : public finalcut::FDialog
     CheckList (const CheckList&) = delete;
 
     // Destructor
-    ~CheckList() override;
+    ~CheckList() override = default;
 
     // Disable copy assignment operator (=)
     CheckList& operator = (const CheckList&) = delete;
@@ -114,10 +114,6 @@ CheckList::CheckList (finalcut::FWidget* parent)
     this, &CheckList::cb_showList
   );
 }
-
-//----------------------------------------------------------------------
-CheckList::~CheckList()  // destructor
-{ }
 
 //----------------------------------------------------------------------
 void CheckList::populate()

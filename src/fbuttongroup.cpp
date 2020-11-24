@@ -374,7 +374,7 @@ void FButtonGroup::drawLabel()
   else
     FWidget::setPrintPos (FPoint{0, 1});
 
-  drawText (label_text, hotkeypos);
+  drawText (std::move(label_text), hotkeypos);
   setViewportPrint();
 }
 
@@ -397,7 +397,7 @@ void FButtonGroup::init()
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::drawText ( const FString& label_text
+void FButtonGroup::drawText ( FString&& label_text
                             , std::size_t hotkeypos )
 {
   const auto& wc = getColorTheme();

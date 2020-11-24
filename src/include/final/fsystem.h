@@ -52,10 +52,10 @@ class FSystem
     using fn_putc = int (*)(int);
 
     // Constructor
-    FSystem();
+    FSystem () = default;
 
     // Destructor
-    virtual ~FSystem();
+    virtual ~FSystem() noexcept;
 
     // Methods
     virtual uChar inPortByte (uShort) = 0;

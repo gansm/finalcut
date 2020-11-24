@@ -118,7 +118,7 @@ class Calc final : public finalcut::FDialog
     explicit Calc (finalcut::FWidget* parent = nullptr);
 
     // Destructor
-    ~Calc() override;
+    ~Calc() override = default;
 
   private:
     // Typedef and Enumeration
@@ -304,10 +304,6 @@ Calc::Calc (FWidget* parent)
   calculator_buttons[Equals]->addAccelerator(fc::Fkey_return);
   calculator_buttons[Equals]->addAccelerator(fc::Fkey_enter);
 }
-
-//----------------------------------------------------------------------
-Calc::~Calc()
-{ }
 
 //----------------------------------------------------------------------
 void Calc::onKeyPress (finalcut::FKeyEvent* ev)

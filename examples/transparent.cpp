@@ -36,23 +36,23 @@ using finalcut::FStyle;
 class Transparent final : public finalcut::FDialog
 {
   public:
-    // Typedef and Enumeration
-    typedef enum ttype
+    // Enumeration
+    enum class Type
     {
       transparent        = 0,
       shadow             = 1,
       inherit_background = 2
-    } trans_type;
+    };
 
     // Constructor
     explicit Transparent ( finalcut::FWidget* = nullptr
-                         , trans_type = transparent );
+                         , Type = Type::transparent );
 
     // Disable copy constructor
     Transparent (const Transparent&) = delete;
 
     // Destructor
-    ~Transparent() override;
+    ~Transparent() override = default;
 
     // Disable copy assignment operator (=)
     Transparent& operator = (const Transparent&) = delete;
@@ -65,12 +65,12 @@ class Transparent final : public finalcut::FDialog
     void onKeyPress (finalcut::FKeyEvent* ev) override;
 
     // Data members
-    trans_type type;
+    Type type;
 };
 
 //----------------------------------------------------------------------
 Transparent::Transparent ( finalcut::FWidget* parent
-                         , Transparent::trans_type tt )
+                         , Transparent::Type tt )
   : finalcut::FDialog{parent}
   , type{tt}
 {
@@ -81,10 +81,6 @@ Transparent::Transparent ( finalcut::FWidget* parent
 }
 
 //----------------------------------------------------------------------
-Transparent::~Transparent()
-{ }
-
-//----------------------------------------------------------------------
 void Transparent::draw()
 {
   finalcut::FDialog::draw();
@@ -92,13 +88,13 @@ void Transparent::draw()
   if ( finalcut::FTerm::isMonochron() )
     setReverse(true);
 
-  if ( type == shadow )
+  if ( type == Type::shadow )
   {
     const auto& wc = getColorTheme();
     print() << FColorPair {wc->shadow_bg, wc->shadow_fg}
             << FStyle {fc::ColorOverlay};
   }
-  else if ( type == inherit_background )
+  else if ( type == Type::inherit_background )
   {
     if ( finalcut::FTerm::getMaxColor() > 8 )
       print() << FColorPair {fc::Blue, fc::Black};
@@ -152,7 +148,7 @@ class MainWindow final : public finalcut::FDialog
     MainWindow (const MainWindow&) = delete;
 
     // Destructor
-    ~MainWindow() override;
+    ~MainWindow() override = default;
 
     // Disable copy assignment operator (=)
     MainWindow& operator = (const MainWindow&) = delete;
@@ -202,12 +198,12 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   transpwin->setGeometry (FPoint{6, 3}, FSize{29, 12});
   transpwin->unsetTransparentShadow();
 
-  shadowwin = new Transparent(this, Transparent::shadow);
+  shadowwin = new Transparent(this, Transparent::Type::shadow);
   shadowwin->setText("shadow");
   shadowwin->setGeometry (FPoint{46, 11}, FSize{29, 12});
   shadowwin->unsetTransparentShadow();
 
-  ibg = new Transparent(this, Transparent::inherit_background);
+  ibg = new Transparent(this, Transparent::Type::inherit_background);
   ibg->setText("inherit background");
   ibg->setGeometry (FPoint{42, 3}, FSize{29, 7});
   ibg->unsetTransparentShadow();
@@ -218,10 +214,6 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   unsetTransparentShadow();
   activateDialog();
 }
-
-//----------------------------------------------------------------------
-MainWindow::~MainWindow()
-{ }
 
 //----------------------------------------------------------------------
 void MainWindow::draw()

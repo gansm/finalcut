@@ -57,15 +57,13 @@ class FTermData final
     typedef std::unordered_map<std::string, fc::encoding> EncodingMap;
 
     // Constructors
-    FTermData()
-    { }
+    FTermData () = default;
 
     // Disable copy constructor
     FTermData (const FTermData&) = delete;
 
     // Destructor
-    ~FTermData()
-    { }
+    ~FTermData() noexcept = default;
 
     // Disable copy assignment operator (=)
     FTermData& operator = (const FTermData&) = delete;

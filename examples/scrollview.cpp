@@ -41,7 +41,7 @@ class Scrollview final : public finalcut::FScrollView
     Scrollview (const Scrollview&) = delete;
 
     // Destructor
-    ~Scrollview() override;
+    ~Scrollview() override = default;
 
     // Disable copy assignment operator (=)
     Scrollview& operator = (const Scrollview&) = delete;
@@ -109,10 +109,6 @@ Scrollview::Scrollview (finalcut::FWidget* parent)
     this, &Scrollview::cb_goNorth
   );
 }
-
-//----------------------------------------------------------------------
-Scrollview::~Scrollview()
-{ }
 
 //----------------------------------------------------------------------
 void Scrollview::setScrollSize (const FSize& size)
@@ -197,7 +193,7 @@ class Scrollviewdemo final : public finalcut::FDialog
     explicit Scrollviewdemo (finalcut::FWidget* = nullptr);
 
     // Destructor
-    ~Scrollviewdemo() override;
+    ~Scrollviewdemo() override = default;
 
     // Event handler
     void onClose (finalcut::FCloseEvent*) override;
@@ -239,10 +235,6 @@ Scrollviewdemo::Scrollviewdemo (finalcut::FWidget* parent)
   label.setEmphasis();
   label << L"Use scrollbars to change the viewport position";
 }
-
-//----------------------------------------------------------------------
-Scrollviewdemo::~Scrollviewdemo()
-{ }
 
 //----------------------------------------------------------------------
 void Scrollviewdemo::cb_quit()

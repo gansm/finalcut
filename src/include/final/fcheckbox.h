@@ -72,7 +72,7 @@ class FCheckBox : public FToggleButton
     FCheckBox (const FCheckBox&) = delete;
 
     // Destructor
-    ~FCheckBox() override;
+    ~FCheckBox() noexcept override;
 
     // Disable copy assignment operator (=)
     FCheckBox& operator = (const FCheckBox&) = delete;

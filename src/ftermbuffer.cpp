@@ -38,8 +38,8 @@ namespace finalcut
 //----------------------------------------------------------------------
 // class FTermBuffer
 //----------------------------------------------------------------------
-FTermBuffer::~FTermBuffer()  // destructor
-{ }
+FTermBuffer::~FTermBuffer() noexcept = default;  // destructor
+
 
 // public methods of FTermBuffer
 //----------------------------------------------------------------------
@@ -72,7 +72,7 @@ int FTermBuffer::write (const FString& string)
     nc.attr.byte[2] = 0;
     nc.attr.byte[3] = 0;
     getColumnWidth(nc);  // add column width
-    data.push_back(std::move(nc));
+    data.emplace_back(std::move(nc));
   }
 
   return len;
@@ -86,8 +86,7 @@ int FTermBuffer::write (wchar_t ch)
   getColumnWidth(nc);  // add column width
   nc.attr.bit.no_changes = false;
   nc.attr.bit.printed = false;
-
-  data.push_back(nc);
+  data.emplace_back(std::move(nc));
   return 1;
 }
 

@@ -47,10 +47,6 @@ FOptiAttr::FOptiAttr()
   reset_byte_mask.attr.bit.printed = true;
 }
 
-//----------------------------------------------------------------------
-FOptiAttr::~FOptiAttr()  // destructor
-{ }
-
 
 // public methods of FOptiAttr
 //----------------------------------------------------------------------

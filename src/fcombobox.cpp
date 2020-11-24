@@ -177,9 +177,7 @@ FComboBox::FComboBox (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FComboBox::~FComboBox()  // destructor
-{ }
-
+FComboBox::~FComboBox() noexcept = default;  // destructor
 
 // public methods of FComboBox
 //----------------------------------------------------------------------

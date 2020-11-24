@@ -127,7 +127,7 @@ class FKeyEvent : public FEvent  // keyboard event
   public:
     FKeyEvent() = default;
     FKeyEvent (fc::events, FKey);
-    ~FKeyEvent();
+    ~FKeyEvent() = default;
 
     FKey     key() const;
     bool     isAccepted() const;
@@ -150,7 +150,7 @@ class FMouseEvent : public FEvent  // mouse event
     FMouseEvent() = default;
     FMouseEvent (fc::events, const FPoint&, const FPoint&, int);
     FMouseEvent (fc::events, const FPoint&, int);
-    ~FMouseEvent();
+    ~FMouseEvent() = default;
 
     const FPoint& getPos() const;
     const FPoint& getTermPos() const;
@@ -177,7 +177,7 @@ class FWheelEvent : public FEvent  // wheel event
     FWheelEvent() = default;
     FWheelEvent (fc::events, const FPoint&, int);
     FWheelEvent (fc::events, const FPoint&, const FPoint&, int);
-    ~FWheelEvent();
+    ~FWheelEvent() = default;
 
     const FPoint& getPos() const;
     const FPoint& getTermPos() const;
@@ -203,7 +203,7 @@ class FFocusEvent : public FEvent  // focus event
   public:
     FFocusEvent() = default;
     explicit FFocusEvent (fc::events);
-    ~FFocusEvent();
+    ~FFocusEvent() = default;
 
     bool           gotFocus()  const;
     bool           lostFocus() const;
@@ -230,7 +230,7 @@ class FAccelEvent : public FEvent  // focus event
     FAccelEvent() = default;
     FAccelEvent (fc::events, FWidget*);
     FAccelEvent (const FAccelEvent&) = delete;
-    ~FAccelEvent();
+    ~FAccelEvent() = default;
     FAccelEvent& operator = (const FAccelEvent&) = delete;
 
     FWidget* focusedWidget() const;
@@ -253,7 +253,7 @@ class FResizeEvent : public FEvent  // resize event
   public:
     FResizeEvent() = default;
     explicit FResizeEvent (fc::events);
-    ~FResizeEvent();
+    ~FResizeEvent() = default;
 
     bool     isAccepted() const;
     void     accept();
@@ -273,7 +273,7 @@ class FShowEvent : public FEvent  // show event
   public:
     FShowEvent() = default;
     explicit FShowEvent (fc::events);
-    ~FShowEvent();
+    ~FShowEvent() = default;
 };
 
 
@@ -286,7 +286,7 @@ class FHideEvent : public FEvent  // hide event
   public:
     FHideEvent() = default;
     explicit FHideEvent (fc::events);
-    ~FHideEvent();
+    ~FHideEvent() = default;
 };
 
 
@@ -299,7 +299,7 @@ class FCloseEvent : public FEvent  // close event
   public:
     FCloseEvent() = default;
     explicit FCloseEvent(fc::events);
-    ~FCloseEvent();
+    ~FCloseEvent() = default;
 
     bool     isAccepted() const;
     void     accept();
@@ -319,7 +319,7 @@ class FTimerEvent : public FEvent  // timer event
   public:
     FTimerEvent() = default;
     FTimerEvent (fc::events, int);
-    ~FTimerEvent();
+    ~FTimerEvent() = default;
 
     int      getTimerId() const;
 
@@ -341,7 +341,7 @@ class FUserEvent : public FEvent  // user event
     FUserEvent (const FUserEvent&) = delete;
     FUserEvent (fc::events, int);
 
-    ~FUserEvent();
+    ~FUserEvent() = default;
 
     // Disable copy assignment operator (=)
     FUserEvent& operator = (const FUserEvent&) = delete;

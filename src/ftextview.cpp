@@ -48,8 +48,7 @@ FTextView::FTextView(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FTextView::~FTextView()  // destructor
-{ }
+FTextView::~FTextView() noexcept = default;  // destructor
 
 
 // public methods of FTextView

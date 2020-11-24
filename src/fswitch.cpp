@@ -49,8 +49,7 @@ FSwitch::FSwitch (const FString& txt, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FSwitch::~FSwitch()  // destructor
-{ }
+FSwitch::~FSwitch() noexcept = default;  // destructor
 
 
 // public methods of FSwitch

@@ -39,10 +39,6 @@ SGRoptimizer::SGRoptimizer (AttributeBuffer& sequence)
   : seq{sequence}
 { }
 
-//----------------------------------------------------------------------
-SGRoptimizer::~SGRoptimizer()  // destructor
-{ }
-
 
 // public methods of SGRoptimizer
 //----------------------------------------------------------------------

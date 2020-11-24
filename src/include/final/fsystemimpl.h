@@ -97,10 +97,10 @@ class FSystemImpl : public FSystem
 {
   public:
     // Constructor
-    FSystemImpl();
+    FSystemImpl() = default;
 
     // Destructor
-    ~FSystemImpl() override;
+    ~FSystemImpl() noexcept override;
 
     // Methods
 #if defined(ISA_SYSCTL_SUPPORT)

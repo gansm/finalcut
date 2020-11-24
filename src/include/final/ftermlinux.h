@@ -77,8 +77,8 @@ class FTermDetection;
 class FTermLinux final
 {
   public:
-    // Typedef
-    typedef fc::linuxConsoleCursorStyle  CursorStyle;
+    // Using-declaration
+    using CursorStyle = fc::linuxConsoleCursorStyle;
 
     // Constructors
     FTermLinux() = default;
@@ -123,7 +123,6 @@ class FTermLinux final
     FKey                 modifierKeyCorrection (const FKey&);
 
   private:
-    // Typedef
     struct ModifierKey  // bit field
     {
       uChar shift  : 1;  // 0..1
@@ -133,17 +132,17 @@ class FTermLinux final
       uChar        : 4;  // padding bits
     };
 
-    typedef struct
+    struct RGB
     {
       uChar red;
       uChar green;
       uChar blue;
-    } RGB;
+    };
 
-    typedef struct
+    struct ColorMap
     {
       RGB color[16];
-    } ColorMap;
+    };
 
     // Accessors
     int                  getFramebuffer_bpp();

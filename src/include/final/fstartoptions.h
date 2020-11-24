@@ -59,7 +59,7 @@ class FStartOptions final
     FStartOptions (const FStartOptions&) = delete;
 
     // Destructor
-    ~FStartOptions();
+    ~FStartOptions() = default;
 
     // Disable copy assignment operator (=)
     FStartOptions& operator = (const FStartOptions&) = delete;
@@ -70,9 +70,6 @@ class FStartOptions final
 
     // Mutator
     void setDefault();
-
-    // Method
-    static void destroyObject();
 
     // Data members
     uInt8 cursor_optimisation   : 1;

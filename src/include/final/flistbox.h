@@ -73,13 +73,13 @@ class FListBoxItem
 {
   public:
     // Constructors
-    FListBoxItem ();
+    FListBoxItem() = default;
     FListBoxItem (const FListBoxItem&);  // copy constructor
     template <typename DT = std::nullptr_t>
     explicit FListBoxItem (const FString&, DT&& = DT() );
 
     // Destructor
-    virtual ~FListBoxItem();
+    virtual ~FListBoxItem() noexcept;
 
     // copy copy assignment operator (=)
     FListBoxItem& operator = (const FListBoxItem&);
