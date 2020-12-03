@@ -149,8 +149,8 @@ class FScrollView : public FWidget
     void                copy2area();
 
   private:
-    // Typedefs
-    typedef std::unordered_map<int, std::function<void()>> KeyMap;
+    // Using-declaration
+    using KeyMap = std::unordered_map<int, std::function<void()>>;
 
     // Constants
     static constexpr int vertical_border_spacing = 2;

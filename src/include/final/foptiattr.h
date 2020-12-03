@@ -159,15 +159,16 @@ class FOptiAttr final
     const char*   changeAttribute (FChar&, FChar&);
 
   private:
-    // Typedefs and Enumerations
-    typedef SGRoptimizer::AttributeBuffer AttributeBuffer;
-
-    typedef struct
+    struct Capability
     {
       const char* cap;
       bool  caused_reset;
-    } Capability;
+    };
 
+    // Using-declaration
+    using AttributeBuffer = SGRoptimizer::AttributeBuffer;
+
+    // Enumerations
     enum init_reset_tests
     {
       no_test         = 0x00,

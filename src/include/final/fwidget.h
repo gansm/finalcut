@@ -136,7 +136,6 @@ class FWidget : public FVTerm, public FObject
     using FVTerm::print;
     using FWidgetList = std::vector<FWidget*>;
     using FAcceleratorList = std::vector<FAccelerator>;
-    using FWidgetColorsPtr = std::shared_ptr<FWidgetColors>;
 
     struct FWidgetFlags  // Properties of a widget ⚑
     {
@@ -187,7 +186,7 @@ class FWidget : public FVTerm, public FObject
     static FWidgetList*&     getWindowList();
     static FMenuBar*         getMenuBar();
     static FStatusBar*       getStatusBar();
-    static FWidgetColorsPtr& getColorTheme();
+    static auto              getColorTheme() -> std::shared_ptr<FWidgetColors>&;
     virtual FWidget*         getFirstFocusableWidget (FObjectList);
     virtual FWidget*         getLastFocusableWidget (FObjectList);
     const FAcceleratorList&  getAcceleratorList() const;
@@ -338,7 +337,7 @@ class FWidget : public FVTerm, public FObject
     static FWidgetList*&     getAlwaysOnTopList();
     static FWidgetList*&     getWidgetCloseList();
     void                     addPreprocessingHandler ( const FVTerm*
-                                                     , const FPreprocessingFunction& ) override;
+                                                     , FPreprocessingFunction&& ) override;
     void                     delPreprocessingHandler (const FVTerm*) override;
 
     // Inquiry
@@ -443,7 +442,6 @@ class FWidget : public FVTerm, public FObject
     void                     drawChildren();
     static bool              isDefaultTheme();
     static void              initColorTheme();
-    void                     destroyColorTheme();
     void                     removeQueuedEvent() const;
     void                     setStatusbarText (bool) const;
 
@@ -573,9 +571,9 @@ inline FStatusBar* FWidget::getStatusBar()
 { return statusbar; }
 
 //----------------------------------------------------------------------
-inline FWidget::FWidgetColorsPtr& FWidget::getColorTheme()
+inline auto FWidget::getColorTheme() -> std::shared_ptr<FWidgetColors>&
 {
-  static auto color_theme = new FWidgetColorsPtr();
+  static const auto& color_theme = make_unique<std::shared_ptr<FWidgetColors>>();
   return *color_theme;
 }
 

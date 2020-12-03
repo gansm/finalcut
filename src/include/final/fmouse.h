@@ -122,8 +122,7 @@ class FMouseData
     void                  clearButtonState();
 
   protected:
-    // Typedef and Enumerations
-    typedef struct
+    struct FMouseButton  // bit field
     {
       uChar left_button    : 2;  // 0..3
       uChar right_button   : 2;  // 0..3
@@ -135,8 +134,9 @@ class FMouseData
       uChar wheel_down     : 1;  // 0..1
       uChar mouse_moved    : 1;  // 0..1
       uChar                : 4;  // padding bits
-    } FMouseButton;  // bit field
+    };
 
+    // Enumerations
     enum states
     {
       Undefined   = 0,

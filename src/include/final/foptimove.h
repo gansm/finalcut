@@ -57,8 +57,7 @@ namespace finalcut
 class FOptiMove final
 {
   public:
-    // Typedef
-    typedef struct
+    struct TermEnv
     {
       const char* t_cursor_home;
       const char* t_carriage_return;
@@ -83,7 +82,7 @@ class FOptiMove final
       int   tabstop;
       bool  automatic_left_margin;
       bool  eat_nl_glitch;
-    } TermEnv;
+    };
 
     // Constructor
     explicit FOptiMove (int = 0);
@@ -147,16 +146,15 @@ class FOptiMove final
     const char*   moveCursor (int, int, int, int);
 
   private:
-    // Constant
-    static constexpr std::size_t BUF_SIZE{512};
-
-    // Typedef
-    typedef struct
+    struct Capability
     {
       const char* cap;
       int duration;
       int length;
-    } Capability;
+    };
+
+    // Constant
+    static constexpr std::size_t BUF_SIZE{512};
 
     // Constants
     static constexpr int LONG_DURATION{INT_MAX};

@@ -130,7 +130,7 @@ bool FTermLinux::setPalette (FColor, int, int, int)
 #endif
 
 //----------------------------------------------------------------------
-bool FTermLinux::isLinuxConsole()
+bool FTermLinux::isLinuxConsole() const
 {
   // Check if it's a Linux console
 
@@ -484,7 +484,7 @@ FKey FTermLinux::modifierKeyCorrection (const FKey& key_id)
 
 // private methods of FTermLinux
 //----------------------------------------------------------------------
-int FTermLinux::getFramebuffer_bpp()
+int FTermLinux::getFramebuffer_bpp() const
 {
   int fd{-1};
   const char* fb = "/dev/fb/0";
@@ -707,7 +707,7 @@ int FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::setUnicodeMap (struct unimapdesc* unimap)
+int FTermLinux::setUnicodeMap (struct unimapdesc* unimap) const
 {
   struct unimapinit advice;
   const int fd_tty = FTerm::getTTYFileDescriptor();
@@ -751,7 +751,7 @@ void FTermLinux::setLinuxCursorStyle (CursorStyle style) const
 
 #if defined(ISA_SYSCTL_SUPPORT)
 //----------------------------------------------------------------------
-inline uInt16 FTermLinux::getInputStatusRegisterOne()
+inline uInt16 FTermLinux::getInputStatusRegisterOne() const
 {
   // Gets the VGA input-status-register-1
 
@@ -1271,7 +1271,7 @@ FKey FTermLinux::shiftCtrlAltKeyCorrection (const FKey& key_id) const
 }
 
 //----------------------------------------------------------------------
-inline void FTermLinux::initSpecialCharacter()
+inline void FTermLinux::initSpecialCharacter() const
 {
   const auto& fterm_data = FTerm::getFTermData();
   const wchar_t c1 = fc::UpperHalfBlock;
@@ -1311,7 +1311,7 @@ sInt16 FTermLinux::getFontPos (wchar_t ucs) const
 
 //----------------------------------------------------------------------
 void FTermLinux::characterFallback ( wchar_t ucs
-                                   , std::vector<wchar_t> fallback )
+                                   , std::vector<wchar_t> fallback ) const
 {
   constexpr sInt16 NOT_FOUND = -1;
   const auto& fterm_data = FTerm::getFTermData();

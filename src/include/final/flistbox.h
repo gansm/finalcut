@@ -169,9 +169,7 @@ class FListBox : public FWidget
   public:
     // Using-declaration
     using FWidget::setGeometry;
-
-    // Typedef
-    typedef std::vector<FListBoxItem> FListBoxItems;
+    using FListBoxItems = std::vector<FListBoxItem>;
 
     // Constructor
     explicit FListBox (FWidget* = nullptr);
@@ -276,10 +274,10 @@ class FListBox : public FWidget
     void                 adjustSize() override;
 
   private:
-    // Typedefs
-    typedef std::unordered_map<int, std::function<void()>> KeyMap;
-    typedef std::unordered_map<int, std::function<bool()>> KeyMapResult;
-    typedef std::function<void(FListBoxItem&, FDataAccess*, std::size_t)> LazyInsert;
+    // Using-declaration
+    using KeyMap = std::unordered_map<int, std::function<void()>>;
+    using KeyMapResult = std::unordered_map<int, std::function<bool()>>;
+    using LazyInsert = std::function<void(FListBoxItem&, FDataAccess*, std::size_t)>;
 
     // Enumeration
     enum convert_type

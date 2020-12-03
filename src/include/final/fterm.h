@@ -251,7 +251,7 @@ class FTerm final
     static bool              canChangeColorPalette();
 
     // Mutators
-    static void              setFSystem (std::unique_ptr<FSystem>&&);
+    static void              setFSystem (std::unique_ptr<FSystem>&);
     static void              setTermType (const char[]);
     static void              setInsertCursor (bool);
     static void              setInsertCursor();
@@ -391,7 +391,7 @@ inline FString FTerm::getClassName()
 { return "FTerm"; }
 
 //----------------------------------------------------------------------
-inline void FTerm::setFSystem (std::unique_ptr<FSystem>&& fsystem)
+inline void FTerm::setFSystem (std::unique_ptr<FSystem>& fsystem)
 {
   getFSystem().swap(fsystem);
 }

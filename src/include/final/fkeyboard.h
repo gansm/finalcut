@@ -88,8 +88,8 @@ class FKeyboard final
     // Constants
     static constexpr std::size_t FIFO_BUF_SIZE{512};
 
-    // Typedef
-    typedef char keybuffer[FIFO_BUF_SIZE];
+    // Using-declaration
+    using keybuffer = char[FIFO_BUF_SIZE];
 
     // Constructor
     FKeyboard();

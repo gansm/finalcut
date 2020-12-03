@@ -298,14 +298,14 @@ bool FVTerm::updateTerminal() const
 
 //----------------------------------------------------------------------
 void FVTerm::addPreprocessingHandler ( const FVTerm* instance
-                                     , const FPreprocessingFunction& function )
+                                     , FPreprocessingFunction&& function )
 {
   if ( ! print_area )
     FVTerm::getPrintArea();
 
   if ( print_area )
   {
-    FVTermPreprocessing obj{ instance, function };
+    FVTermPreprocessing obj{ instance, std::move(function) };
     delPreprocessingHandler (instance);
     print_area->preproc_list.emplace_back(std::move(obj));
   }
@@ -325,7 +325,7 @@ void FVTerm::delPreprocessingHandler (const FVTerm* instance)
   while ( iter != print_area->preproc_list.end() )
   {
     if ( iter->instance.get() == instance )
-      iter = std::move(print_area->preproc_list.erase(iter));
+      iter = print_area->preproc_list.erase(iter);
     else
       ++iter;
   }

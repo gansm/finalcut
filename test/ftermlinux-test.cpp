@@ -1559,8 +1559,8 @@ void FTermLinuxTest::classNameTest()
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxConsoleTest()
 {
-  auto fsys = finalcut::make_unique<test::FSystemTest>();
-  finalcut::FTerm::setFSystem(std::move(fsys));
+  std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
+  finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
   const auto& data = finalcut::FTerm::getFTermData();
 
@@ -1681,8 +1681,8 @@ void FTermLinuxTest::linuxConsoleTest()
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxCursorStyleTest()
 {
-  auto fsys = finalcut::make_unique<test::FSystemTest>();
-  finalcut::FTerm::setFSystem(std::move(fsys));
+  std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
+  finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
   const auto& data = finalcut::FTerm::getFTermData();
 
@@ -1870,8 +1870,8 @@ void FTermLinuxTest::linuxCursorStyleTest()
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxColorPaletteTest()
 {
-  auto fsys = finalcut::make_unique<test::FSystemTest>();
-  finalcut::FTerm::setFSystem(std::move(fsys));
+  std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
+  finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
   const auto& data = finalcut::FTerm::getFTermData();
 
@@ -2145,8 +2145,8 @@ void FTermLinuxTest::linuxColorPaletteTest()
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxFontTest()
 {
-  auto fsys = finalcut::make_unique<test::FSystemTest>();
-  finalcut::FTerm::setFSystem(std::move(fsys));
+  std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
+  finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
   const auto& data = finalcut::FTerm::getFTermData();
 
@@ -2288,8 +2288,8 @@ void FTermLinuxTest::linuxFontTest()
 //----------------------------------------------------------------------
 void FTermLinuxTest::modifierKeyTest()
 {
-  auto fsys = finalcut::make_unique<test::FSystemTest>();
-  finalcut::FTerm::setFSystem(std::move(fsys));
+  std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
+  finalcut::FTerm::setFSystem(fsys);
 
   const auto& fsystem = finalcut::FTerm::getFSystem();
   auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());

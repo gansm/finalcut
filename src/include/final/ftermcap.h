@@ -75,13 +75,11 @@ namespace finalcut
 class FTermcap final
 {
   public:
-    // Typedef
-    typedef struct
+    struct TCapMap
     {
       const char* string;
       char  tname[alignof(char*)];
-    }
-    TCapMap;
+    };
 
     // Using-declaration
     using fn_putc = int (*)(int);

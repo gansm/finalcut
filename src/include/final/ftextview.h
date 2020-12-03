@@ -137,8 +137,8 @@ class FTextView : public FWidget
     void                adjustSize() override;
 
   private:
-    // Typedefs
-    typedef std::unordered_map<int, std::function<void()>> KeyMap;
+    // Using-declaration
+    using KeyMap = std::unordered_map<int, std::function<void()>>;
 
     // Accessors
     std::size_t         getTextHeight() const;

@@ -211,8 +211,8 @@ class FCallback
     void emitCallback (const FString& emit_signal) const;
 
   private:
-    // Typedefs
-    typedef std::vector<FCallbackData>  FCallbackObjects;
+    // Using-declaration
+    using FCallbackObjects = std::vector<FCallbackData>;
 
     // Data members
     FCallbackObjects  callback_objects{};

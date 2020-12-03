@@ -48,6 +48,7 @@
 #endif
 
 #include <list>
+#include <iterator>
 #include <memory>
 #include <stack>
 #include <unordered_map>
@@ -214,17 +215,20 @@ class FListViewIterator
 {
   public:
     // Using-declarations
-    using FObjectList    = std::list<FObject*>;
-    using iterator       = FObjectList::iterator;
-    using iterator_stack = std::stack<iterator>;
+    using FObjectList   = std::list<FObject*>;
+    using Iterator      = FObjectList::iterator;
+    using IteratorStack = std::stack<Iterator>;
 
     // Constructor
     FListViewIterator () = default;
-    FListViewIterator (iterator);
+    FListViewIterator (Iterator);
     FListViewIterator (const FListViewIterator&) = default;
-    FListViewIterator (FListViewIterator&& )
-        noexcept (std::is_nothrow_move_constructible<FListViewIterator>::value)
-        = default;
+    FListViewIterator (FListViewIterator&& i) noexcept
+      : iter_path{std::move(i.iter_path)}
+      , node{i.node}
+      , position{i.position}
+    { }
+
     // Overloaded operators
     FListViewIterator& operator = (const FListViewIterator&) = default;
     FListViewIterator& operator = (FListViewIterator&&) noexcept = default;
@@ -248,12 +252,12 @@ class FListViewIterator
 
   private:
     // Methods
-    void               nextElement (iterator&);
-    void               prevElement (iterator&);
+    void               nextElement (Iterator&);
+    void               prevElement (Iterator&);
 
     // Data members
-    iterator_stack     iter_path{};
-    iterator           node{};
+    IteratorStack      iter_path{};
+    Iterator           node{};
     int                position{0};
 };
 
@@ -293,9 +297,7 @@ class FListView : public FWidget
   public:
     // Using-declaration
     using FWidget::setGeometry;
-
-    // Typedef
-    typedef std::list<FListViewItem*>  FListViewItems;
+    using FListViewItems = std::list<FListViewItem*>;
 
     // Constructor
     explicit FListView (FWidget* = nullptr);
@@ -401,17 +403,16 @@ class FListView : public FWidget
     void                  adjustSize() override;
 
   private:
-    // Typedefs
-    typedef std::unordered_map<int, std::function<void()>> KeyMap;
-    typedef std::unordered_map<int, std::function<bool()>> KeyMapResult;
+    struct Header;  // forward declaration
+
+    // Using-declaration
+    using KeyMap = std::unordered_map<int, std::function<void()>>;
+    using KeyMapResult = std::unordered_map<int, std::function<bool()>>;
+    using HeaderItems = std::vector<Header>;
+    using SortTypes = std::vector<fc::sorting_type>;
 
     // Constants
     static constexpr std::size_t checkbox_space = 4;
-
-    // Typedef
-    struct Header;  // forward declaration
-    typedef std::vector<Header> HeaderItems;
-    typedef std::vector<fc::sorting_type> SortTypes;
 
     // Constants
     static constexpr int USE_MAX_SIZE = -1;

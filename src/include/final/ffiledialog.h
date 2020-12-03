@@ -138,7 +138,6 @@ class FFileDialog : public FDialog
     void                 adjustSize() override;
 
   private:
-    // Typedef
     struct FDirEntry
     {
       // Constructor
@@ -183,7 +182,7 @@ class FFileDialog : public FDialog
       uChar                  : 1;  // padding bits
     };
 
-    typedef std::vector<FDirEntry> DirEntries;
+    using DirEntries = std::vector<FDirEntry>;
 
     // Methods
     void                 init();

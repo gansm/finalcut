@@ -49,8 +49,8 @@ namespace finalcut
 class FColorPalette
 {
   public:
-    // Typedef
-    typedef std::function<void(FColor, int, int, int)> FSetPalette;
+    // Using-declaration
+    using FSetPalette = std::function<void(FColor, int, int, int)>;
 
     // Constructor
     explicit FColorPalette (const FSetPalette&);

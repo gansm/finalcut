@@ -230,8 +230,8 @@ class FStatusBar : public FWindow
     void                cb_statuskey_activated (const FStatusKey*);
 
   private:
-    // Typedef
-    typedef std::vector<FStatusKey*> FKeyList;
+    // Using-declaration
+    using FKeyList = std::vector<FStatusKey*>;
 
     // Methods
     void                init();

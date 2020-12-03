@@ -478,7 +478,7 @@ void FListViewItem::resetVisibleLineCounter()
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FListViewIterator::FListViewIterator (iterator iter)
+FListViewIterator::FListViewIterator (Iterator iter)
   : node{iter}
 { }
 
@@ -533,7 +533,7 @@ FListViewIterator& FListViewIterator::operator -= (int n)
 
 // private methods of FListViewIterator
 //----------------------------------------------------------------------
-void FListViewIterator::nextElement (iterator& iter)
+void FListViewIterator::nextElement (Iterator& iter)
 {
   const auto& item = static_cast<FListViewItem*>(*iter);
 
@@ -570,7 +570,7 @@ void FListViewIterator::nextElement (iterator& iter)
 }
 
 //----------------------------------------------------------------------
-void FListViewIterator::prevElement (iterator& iter)
+void FListViewIterator::prevElement (Iterator& iter)
 {
   auto start_iter = iter;
 

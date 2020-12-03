@@ -623,8 +623,8 @@ void ftermfreebsdTest::freebsdConsoleTest()
   setenv ("COLUMNS", "80", 1);
   setenv ("LINES", "25", 1);
 
-  auto fsys = finalcut::make_unique<test::FSystemTest>();
-  finalcut::FTerm::setFSystem(std::move(fsys));
+  std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
+  finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
   const auto& data = finalcut::FTerm::getFTermData();
 

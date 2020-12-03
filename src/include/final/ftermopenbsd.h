@@ -47,7 +47,7 @@
   #define WSKBD_BELL_DOVOLUME 0x4  // get/set volume
   #define WSKBD_BELL_DOALL    0x7  // all of the above
 
-  typedef uInt32 kbd_t;
+  using kbd_t = uInt32;
 
   struct wskbd_bell_data
   {

@@ -53,8 +53,8 @@ namespace finalcut
 class FTermData final
 {
   public:
-    // Typedefs
-    typedef std::unordered_map<std::string, fc::encoding> EncodingMap;
+    // Using-declaration
+    using EncodingMap = std::unordered_map<std::string, fc::encoding>;
 
     // Constructors
     FTermData () = default;

@@ -99,7 +99,7 @@ class FTermLinux final
     void                 setUTF8 (bool) const;
 
     // Inquiries
-    bool                 isLinuxConsole();
+    bool                 isLinuxConsole() const;
     bool                 isVGAFontUsed() const;
     bool                 isNewFontUsed() const;
 
@@ -140,7 +140,7 @@ class FTermLinux final
     };
 
     // Accessors
-    int                  getFramebuffer_bpp();
+    int                  getFramebuffer_bpp() const;
     bool                 getScreenFont();
     bool                 getUnicodeMap ();
     ModifierKey&         getModifierKey();
@@ -148,12 +148,12 @@ class FTermLinux final
     // Mutators
     int                  setScreenFont ( const uChar[], uInt, uInt, uInt
                                        , bool = false );
-    int                  setUnicodeMap (struct unimapdesc*);
+    int                  setUnicodeMap (struct unimapdesc*) const;
     void                 setLinuxCursorStyle (fc::linuxConsoleCursorStyle) const;
 
     // Methods
 #if defined(ISA_SYSCTL_SUPPORT)
-    uInt16               getInputStatusRegisterOne();
+    uInt16               getInputStatusRegisterOne() const;
     uChar                readAttributeController (uChar);
     void                 writeAttributeController (uChar, uChar);
     uChar                getAttributeMode();
@@ -174,8 +174,8 @@ class FTermLinux final
     FKey                 ctrlAltKeyCorrection (const FKey&) const;
     FKey                 shiftCtrlAltKeyCorrection (const FKey&) const;
     sInt16               getFontPos (wchar_t ucs) const;
-    void                 initSpecialCharacter();
-    void                 characterFallback (wchar_t, std::vector<wchar_t>);
+    void                 initSpecialCharacter() const;
+    void                 characterFallback (wchar_t, std::vector<wchar_t>) const;
 
     // Data members
 #if defined(__linux__)

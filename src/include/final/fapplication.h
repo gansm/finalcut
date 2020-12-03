@@ -162,7 +162,7 @@ class FApplication : public FWidget
     using CmdOption = struct option;
 #endif
 
-    // Typedefs
+    // Using-declaration
     using EventPair = std::pair<FObject*, FEvent*>;
     using FEventQueue = std::deque<EventPair>;
     using CmdMap = std::unordered_map<int, std::function<void(char*)>>;

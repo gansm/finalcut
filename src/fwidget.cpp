@@ -1149,12 +1149,12 @@ FVTerm::FTermArea* FWidget::getPrintArea()
 
 //----------------------------------------------------------------------
 void FWidget::addPreprocessingHandler ( const FVTerm* instance
-                                      , const FPreprocessingFunction& function )
+                                      , FPreprocessingFunction&& function )
 {
   if ( ! getCurrentPrintArea() )
     FWidget::getPrintArea();
 
-  FVTerm::addPreprocessingHandler (instance, function);
+  FVTerm::addPreprocessingHandler (instance, std::move(function));
 }
 
 //----------------------------------------------------------------------
@@ -1781,8 +1781,6 @@ void FWidget::finish()
     delete window_list;
     window_list = nullptr;
   }
-
-  destroyColorTheme();
 }
 
 //----------------------------------------------------------------------
@@ -2059,13 +2057,6 @@ void FWidget::initColorTheme()
     else
       setColorTheme<default16ColorTheme>();
   }
-}
-
-//----------------------------------------------------------------------
-void FWidget::destroyColorTheme()
-{
-  const FWidgetColorsPtr* theme = &(getColorTheme());
-  delete theme;
 }
 
 //----------------------------------------------------------------------

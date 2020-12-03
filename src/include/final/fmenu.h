@@ -132,12 +132,7 @@ class FMenu : public FWindow, public FMenuList
     void                cb_menuitemToggled (const FMenuItem*) const;
 
   private:
-    // Constants
-    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
-    static constexpr bool SELECT_ITEM = true;
-
-    // Typedef
-    typedef struct
+    struct MouseStates
     {
       uChar focus_changed        : 1;
       uChar hide_sub_menu        : 1;
@@ -146,14 +141,18 @@ class FMenu : public FWindow, public FMenuList
       uChar mouse_over_supermenu : 1;
       uChar mouse_over_menubar   : 1;
       uChar                      : 2;  // padding bits
-    } MouseStates;
+    };
 
-    typedef struct
+    struct MenuText
     {
       FString text;
       std::size_t hotkeypos;
       bool no_underline;
-    } MenuText;
+    };
+
+    // Constants
+    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr bool SELECT_ITEM = true;
 
     // Accessors
     FWidget*     getSuperMenu() const;

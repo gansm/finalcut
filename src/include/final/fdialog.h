@@ -155,15 +155,14 @@ class FDialog : public FWindow
     void                  onClose (FCloseEvent*) override;
 
   private:
-    // Typedef
-    typedef struct
+    struct MouseStates
     {
       int         mouse_x;
       int         mouse_y;
       FPoint      termPos;
       std::size_t zoom_btn;
       bool        mouse_over_menu;
-    } MouseStates;
+    };
 
     // Constant
     static constexpr std::size_t MENU_BTN = 3;

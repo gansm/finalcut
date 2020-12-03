@@ -97,7 +97,7 @@ class FVTerm
 
     // Using-declarations
     using FPreprocessingHandler = void (FVTerm::*)();
-    using FPreprocessingFunction = std::function<void()> ;
+    using FPreprocessingFunction = std::function<void()>;
     using FPreprocessing = std::vector<FVTermPreprocessing>;
 
     // Enumerations
@@ -253,7 +253,7 @@ class FVTerm
     void                  putVTerm() const;
     bool                  updateTerminal() const;
     virtual void          addPreprocessingHandler ( const FVTerm*
-                                                  , const FPreprocessingFunction& );
+                                                  , FPreprocessingFunction&& );
     virtual void          delPreprocessingHandler (const FVTerm*);
     template <typename... Args>
     int                   printf (const FString&, Args&&...);
@@ -491,7 +491,9 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
 struct D
 {
   void operator () (const FVTerm*) const
-  { }
+  {
+    // No deleting of pointer objects when exiting the std::unique_ptr
+  }
 };
 
 //----------------------------------------------------------------------
@@ -501,9 +503,9 @@ struct D
 struct FVTerm::FVTermPreprocessing
 {
   // Constructor
-  FVTermPreprocessing (const FVTerm* i, const FPreprocessingFunction& f)
+  FVTermPreprocessing (const FVTerm* i, FPreprocessingFunction&& f)
     : instance(std::unique_ptr<const FVTerm, D>(i))
-    , function(f)
+    , function(std::move(f))
   { }
 
   FVTermPreprocessing (const FVTermPreprocessing&) = delete;
