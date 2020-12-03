@@ -623,7 +623,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 
   // Mouse event handover to the menu
   if ( ms.mouse_over_menu )
-    passEventToSubMenu (ms, std::move(*ev));
+    passEventToSubMenu (ms, *ev);
 
   leaveZoomButton(ms);    // Check zoom button pressed
   resizeMouseUpMove(ms);  // Resize the dialog
@@ -1361,7 +1361,7 @@ inline bool FDialog::isMouseOverMenu (const FPoint& termpos) const
 
 //----------------------------------------------------------------------
 inline void FDialog::passEventToSubMenu ( const MouseStates& ms
-                                        , const FMouseEvent&& ev )
+                                        , const FMouseEvent& ev )
 {
   // Mouse event handover to the dialog menu
   if ( ! ms.mouse_over_menu

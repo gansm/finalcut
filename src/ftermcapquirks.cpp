@@ -34,11 +34,6 @@
 namespace finalcut
 {
 
-// static class attributes
-FTermData*       FTermcapQuirks::fterm_data     {nullptr};
-FTermDetection*  FTermcapQuirks::term_detection {nullptr};
-
-
 //----------------------------------------------------------------------
 // class FTermcapQuirks
 //----------------------------------------------------------------------
@@ -47,9 +42,7 @@ FTermDetection*  FTermcapQuirks::term_detection {nullptr};
 //----------------------------------------------------------------------
 void FTermcapQuirks::terminalFixup()
 {
-  fterm_data = FTerm::getFTermData();
-  term_detection = FTerm::getFTermDetection();
-  const auto& td = term_detection;
+  const auto& td = FTerm::getFTermDetection();
 
   if ( td->isCygwinTerminal() )
   {
@@ -231,7 +224,9 @@ void FTermcapQuirks::xterm()
 void FTermcapQuirks::rxvt()
 {
   // Set enter/exit alternative charset mode for rxvt terminal
+  const auto& fterm_data = FTerm::getFTermData();
   const char* termtype = fterm_data->getTermType();
+  const auto& term_detection = FTerm::getFTermDetection();
 
   if ( std::strncmp(termtype, "rxvt-16color", 12) == 0 )
   {
@@ -252,12 +247,13 @@ void FTermcapQuirks::rxvt()
 //----------------------------------------------------------------------
 void FTermcapQuirks::vte()
 {
+  const auto& term_detection = FTerm::getFTermDetection();
+
   // gnome-terminal has NC=16 however, it can use the dim attribute
   FTermcap::attr_without_color = 0;
 
   // set exit underline for gnome terminal
-  TCAP(fc::t_exit_underline_mode) = \
-      CSI "24m";
+  TCAP(fc::t_exit_underline_mode) = CSI "24m";
 
   if ( term_detection->getGnomeTerminalID() >= 5300 )  // vte >= 0.53.0
   {
@@ -266,8 +262,7 @@ void FTermcapQuirks::vte()
     {
       // Save the cursor position, enter alternate screen buffer
       // and save xterm icon and window title on stack
-      TCAP(fc::t_enter_ca_mode) = \
-          CSI "?1049h" CSI "22;0;0t";
+      TCAP(fc::t_enter_ca_mode) = CSI "?1049h" CSI "22;0;0t";
     }
 
     if ( TCAP(fc::t_exit_ca_mode)
@@ -275,8 +270,7 @@ void FTermcapQuirks::vte()
     {
       // Use normal screen buffer, restore the cursor position
       // and restore xterm icon and window title from stack
-      TCAP(fc::t_exit_ca_mode) = \
-          CSI "?1049l" CSI "23;0;0t";
+      TCAP(fc::t_exit_ca_mode) = CSI "?1049l" CSI "23;0;0t";
     }
   }
 }
@@ -457,6 +451,8 @@ void FTermcapQuirks::sunConsole()
 //----------------------------------------------------------------------
 void FTermcapQuirks::screen()
 {
+  const auto& term_detection = FTerm::getFTermDetection();
+
   // Fallback if "Ic" is not found
   if ( ! TCAP(fc::t_initialize_color) )
   {

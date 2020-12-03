@@ -345,11 +345,10 @@ void ftermopenbsdTest::classNameTest()
 //----------------------------------------------------------------------
 void ftermopenbsdTest::netbsdConsoleTest()
 {
-  finalcut::FSystem* fsys = new test::FSystemTest();
-  finalcut::FTerm::setFSystem(fsys);
-  finalcut::FTermDetection* term_detection{};
+  auto fsys = finalcut::make_unique<test::FSystemTest>();
+  finalcut::FTerm::setFSystem(std::move(fsys));
   std::cout << "\n";
-  finalcut::FTermData* data = finalcut::FTerm::getFTermData();
+  const auto& data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
   encoding_list["UTF-8"] = finalcut::fc::UTF8;
@@ -379,7 +378,7 @@ void ftermopenbsdTest::netbsdConsoleTest()
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  term_detection = finalcut::FTerm::getFTermDetection();
+  const auto& term_detection = finalcut::FTerm::getFTermDetection();
   term_detection->setTerminalDetection(true);
   pid_t pid = forkConEmu();
 
@@ -407,7 +406,7 @@ void ftermopenbsdTest::netbsdConsoleTest()
 
 #if DEBUG
     const finalcut::FString& sec_da = \
-        finalcut::FTerm::getFTermDebugData().getSecDAString();
+        finalcut::FTerm::getFTermDebugData()->getSecDAString();
     CPPUNIT_ASSERT ( sec_da == "\033[>24;20;0c" );
 #endif
 
@@ -445,18 +444,15 @@ void ftermopenbsdTest::netbsdConsoleTest()
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
-
-  delete fsys;
 }
 
 //----------------------------------------------------------------------
 void ftermopenbsdTest::openbsdConsoleTest()
 {
-  finalcut::FSystem* fsys = new test::FSystemTest();
-  finalcut::FTerm::setFSystem(fsys);
-  finalcut::FTermDetection* term_detection{};
+  auto fsys = finalcut::make_unique<test::FSystemTest>();
+  finalcut::FTerm::setFSystem(std::move(fsys));
   std::cout << "\n";
-  finalcut::FTermData* data = finalcut::FTerm::getFTermData();
+  const auto& data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
   encoding_list["UTF-8"] = finalcut::fc::UTF8;
@@ -486,7 +482,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  term_detection = finalcut::FTerm::getFTermDetection();
+  const auto& term_detection = finalcut::FTerm::getFTermDetection();
   term_detection->setTerminalDetection(true);
   pid_t pid = forkConEmu();
 
@@ -507,7 +503,8 @@ void ftermopenbsdTest::openbsdConsoleTest()
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
 
-    test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
+    const auto& fsystem = finalcut::FTerm::getFSystem();
+    auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
     wskbd_bell_data& speaker = fsystest->getBell();
     openbsd.disableMetaSendsEscape();
     openbsd.init();
@@ -516,7 +513,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
 
 #if DEBUG
     const finalcut::FString& sec_da = \
-        finalcut::FTerm::getFTermDebugData().getSecDAString();
+        finalcut::FTerm::getFTermDebugData()->getSecDAString();
     CPPUNIT_ASSERT ( sec_da == "\033[>24;20;0c" );
 #endif
 
@@ -583,8 +580,6 @@ void ftermopenbsdTest::openbsdConsoleTest()
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
-
-  delete fsys;
 }
 
 

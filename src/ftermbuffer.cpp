@@ -66,13 +66,12 @@ int FTermBuffer::write (const FString& string)
 
   for (auto&& c : string)
   {
-    FChar nc;  // next character
-    nc = FVTerm::getAttribute();
+    FChar nc{FVTerm::getAttribute()};  // next character
     nc.ch[0] = c;
     nc.attr.byte[2] = 0;
     nc.attr.byte[3] = 0;
     getColumnWidth(nc);  // add column width
-    data.emplace_back(std::move(nc));
+    data.emplace_back(nc);
   }
 
   return len;
@@ -81,12 +80,12 @@ int FTermBuffer::write (const FString& string)
 //----------------------------------------------------------------------
 int FTermBuffer::write (wchar_t ch)
 {
-  FChar nc = FVTerm::getAttribute();  // next character
+  FChar nc{FVTerm::getAttribute()};  // next character
   nc.ch[0] = ch;
   getColumnWidth(nc);  // add column width
   nc.attr.bit.no_changes = false;
   nc.attr.bit.printed = false;
-  data.emplace_back(std::move(nc));
+  data.emplace_back(nc);
   return 1;
 }
 

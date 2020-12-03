@@ -40,8 +40,6 @@ namespace finalcut
 
 // class forward declaration
 class FTerm;
-class FTermData;
-class FTermDetection;
 
 #if DEBUG
 //----------------------------------------------------------------------
@@ -72,14 +70,6 @@ class FTermDebugData final
 #if defined(__linux__)
     int            getFramebufferBpp();
 #endif
-
-    // Methods
-    static void    init();
-
-  private:
-    // Data members
-    static FTermData*      data;
-    static FTermDetection* term_detection;
 };
 #endif  // DEBUG
 

@@ -402,7 +402,7 @@ void FToggleButton::drawLabel()
   FString label_text{};
   auto hotkeypos = finalcut::getHotkeyPos(txt, label_text);
   print() << FPoint{1 + int(label_offset_pos), 1};
-  drawText (std::move(label_text), hotkeypos);
+  drawText (label_text, hotkeypos);
 }
 
 //----------------------------------------------------------------------
@@ -485,7 +485,7 @@ void FToggleButton::init()
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::drawText (FString&& label_text, std::size_t hotkeypos)
+void FToggleButton::drawText (const FString& label_text, std::size_t hotkeypos)
 {
   if ( FTerm::isMonochron() )
     setReverse(true);

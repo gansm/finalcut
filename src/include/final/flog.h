@@ -75,7 +75,7 @@ class FLog : public std::stringbuf
     };
 
     // Constructor
-    FLog();
+    FLog() = default;
 
     // Destructor
     ~FLog() override;

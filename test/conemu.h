@@ -531,7 +531,7 @@ inline pid_t ConEmu::forkConEmu()
 
 #ifdef TIOCSWINSZ
     // Set slave tty window size
-    struct winsize size;
+    struct winsize size{};
     size.ws_row = 25;
     size.ws_col = 80;
 

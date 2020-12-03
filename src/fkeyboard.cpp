@@ -23,9 +23,7 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 
-#if defined(__sun) && defined(__SVR4)
-  #include <sys/filio.h>   // need for FIONREAD
-#elif defined(__CYGWIN__)
+#if defined(__CYGWIN__)
   #include <sys/select.h>  // need for FD_ZERO, FD_SET, FD_CLR, ...
 #endif
 
@@ -55,10 +53,6 @@ uInt64 FKeyboard::read_blocking_time_short{5000};  //   5 ms (200 Hz)
 bool   FKeyboard::non_blocking_input_support{true};
 struct timeval FKeyboard::time_keypressed{};
 
-#if defined(__linux__)
-  FTermLinux* FKeyboard::linux{nullptr};
-#endif
-
 
 //----------------------------------------------------------------------
 // class FKeyboard
@@ -77,8 +71,6 @@ FKeyboard::FKeyboard()
 
   if ( stdin_status_flags == -1 )
     std::abort();
-
-  term_detection = FTerm::getFTermDetection();
 }
 
 
@@ -134,14 +126,6 @@ bool FKeyboard::setNonBlockingInput (bool enable)
   }
 
   return non_blocking_stdin;
-}
-
-//----------------------------------------------------------------------
-void FKeyboard::init()
-{
-#if defined(__linux__)
-  linux = FTerm::getFTermLinux();
-#endif
 }
 
 //----------------------------------------------------------------------
@@ -465,13 +449,6 @@ FKey FKeyboard::UTF8decode (const char utf8[]) const
 //----------------------------------------------------------------------
 inline ssize_t FKeyboard::readKey()
 {
-#if !defined(__CYGWIN__)
-  int len{0};
-
-  if ( ioctl(FTermios::getStdIn(), FIONREAD, &len) < 0 || len == 0 )
-    return 0;
-#endif
-
   setNonBlockingInput();
   const ssize_t bytes = read(FTermios::getStdIn(), &read_character, 1);
   unsetNonBlockingInput();
@@ -562,8 +539,11 @@ FKey FKeyboard::keyCorrection (const FKey& keycode) const
   FKey key_correction;
 
 #if defined(__linux__)
-  if ( linux && FTerm::isLinuxTerm() )
-    key_correction = linux->modifierKeyCorrection(keycode);
+  if ( FTerm::isLinuxTerm() )
+  {
+    const auto& linux_console = FTerm::getFTermLinux();
+    key_correction = linux_console->modifierKeyCorrection(keycode);
+  }
   else
     key_correction = keycode;
 #else

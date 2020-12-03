@@ -39,8 +39,7 @@ FBusyIndicator::FBusyIndicator (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FBusyIndicator::~FBusyIndicator()  // destructor
-{ }
+FBusyIndicator::~FBusyIndicator() noexcept = default;  // destructor
 
 
 // public methods of FBusyIndicator

@@ -89,9 +89,6 @@ FString fileChooser ( FWidget* parent
   return ret;
 }
 
-// static class attributes
-FSystem*  FFileDialog::fsystem{nullptr};
-
 
 //----------------------------------------------------------------------
 // class FFileDialog
@@ -202,7 +199,9 @@ void FFileDialog::setPath (const FString& dir)
     return;
   }
 
-  if ( fsystem && fsystem->realpath(dir.c_str(), resolved_path.data()) != nullptr )
+  const auto& fsystem = FTerm::getFSystem();
+
+  if ( fsystem->realpath(dir.c_str(), resolved_path.data()) != nullptr )
     r_dir.setString(resolved_path.data());
   else
     r_dir.setString(dir);
@@ -323,9 +322,6 @@ void FFileDialog::init()
   static constexpr std::size_t h = 15;
   int x{};
   int y{};
-
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
 
   setGeometry(FPoint{1, 1}, FSize{w, h}, false);
   const auto& parent_widget = getParentWidget();
@@ -600,9 +596,7 @@ void FFileDialog::followSymLink (const char* const dir, FDirEntry& entry) const
   std::array<char, MAXPATHLEN> symLink{};
   struct stat sb{};
 
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
-
+  const auto& fsystem = FTerm::getFSystem();
   std::strncpy (symLink.data(), dir, symLink.size() - 1);
   symLink[symLink.size() - 1] = '\0';
   std::strncat ( symLink.data()
@@ -665,9 +659,6 @@ int FFileDialog::changeDir (const FString& dirname)
 {
   FString lastdir{directory};
   FString newdir{dirname};
-
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
 
   if ( newdir.includes('~') )
     newdir = newdir.replace('~', getHomeDir());
@@ -743,9 +734,7 @@ FString FFileDialog::getHomeDir()
   struct passwd* pwd_ptr{};
   std::array<char, 1024> buf{};
 
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
-
+  const auto& fsystem = FTerm::getFSystem();
   const uid_t euid = fsystem->geteuid();
 
   if ( fsystem->getpwuid_r(euid, &pwd, buf.data(), buf.size(), &pwd_ptr) )

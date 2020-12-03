@@ -80,9 +80,6 @@
 namespace finalcut
 {
 
-// class forward declaration
-class FSystem;
-
 //----------------------------------------------------------------------
 // class FFileDialog
 //----------------------------------------------------------------------
@@ -214,7 +211,6 @@ class FFileDialog : public FDialog
     void                 cb_processShowHidden();
 
     // Data members
-    static FSystem*  fsystem;
     DIR*             directory_stream{nullptr};
     DirEntries       dir_entries{};
     FString          directory{};

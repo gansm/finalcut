@@ -56,7 +56,7 @@ class FColorPalette
     explicit FColorPalette (const FSetPalette&);
 
     // Destructor
-    virtual ~FColorPalette();
+    virtual ~FColorPalette() noexcept;
 
     // Accessor
     virtual FString getClassName() const;
@@ -104,7 +104,7 @@ class default8ColorPalette final : public FColorPalette
     explicit default8ColorPalette (const FSetPalette&);
 
     // Destructor
-    ~default8ColorPalette() override;
+    ~default8ColorPalette() noexcept override;
 
     // Accessor
     FString getClassName() const override;
@@ -144,7 +144,7 @@ class default16ColorPalette final : public FColorPalette
     explicit default16ColorPalette (const FSetPalette&);
 
     // Destructor
-    ~default16ColorPalette() override;
+    ~default16ColorPalette() noexcept override;
 
     // Accessor
     FString getClassName() const override;
@@ -183,7 +183,7 @@ class default16DarkColorPalette final : public FColorPalette
     explicit default16DarkColorPalette (const FSetPalette&);
 
     // Destructor
-    ~default16DarkColorPalette() override;
+    ~default16DarkColorPalette() noexcept override;
 
     // Accessor
     FString getClassName() const override;

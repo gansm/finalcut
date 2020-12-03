@@ -36,8 +36,7 @@ FColorPalette::FColorPalette (const FSetPalette& f)
 { }
 
 //----------------------------------------------------------------------
-FColorPalette::~FColorPalette()  // destructor
-{ }
+FColorPalette::~FColorPalette() noexcept = default;  // destructor
 
 
 // protected methods of FColorPalette
@@ -79,8 +78,8 @@ default8ColorPalette::default8ColorPalette (const FSetPalette& f)
 { }
 
 //----------------------------------------------------------------------
-default8ColorPalette::~default8ColorPalette()
-{ }
+default8ColorPalette::~default8ColorPalette() noexcept = default;  // destructor
+
 
 // public methods of default8ColorPalette
 //----------------------------------------------------------------------
@@ -123,8 +122,8 @@ default16ColorPalette::default16ColorPalette (const FSetPalette& f)
 { }
 
 //----------------------------------------------------------------------
-default16ColorPalette::~default16ColorPalette()
-{ }
+default16ColorPalette::~default16ColorPalette() noexcept = default;  // destructor
+
 
 // public methods of default16ColorPalette
 //----------------------------------------------------------------------
@@ -166,8 +165,8 @@ default16DarkColorPalette::default16DarkColorPalette (const FSetPalette& f)
 { }
 
 //----------------------------------------------------------------------
-default16DarkColorPalette::~default16DarkColorPalette()
-{ }
+default16DarkColorPalette::~default16DarkColorPalette() noexcept = default;  // destructor
+
 
 // public methods of default16DarkColorPalette
 //----------------------------------------------------------------------

@@ -573,7 +573,6 @@ struct keymap_t& FSystemTest::getTerminalKeymap()
   return terminal_keymap;
 }
 
-
 }  // namespace test
 
 
@@ -624,11 +623,10 @@ void ftermfreebsdTest::freebsdConsoleTest()
   setenv ("COLUMNS", "80", 1);
   setenv ("LINES", "25", 1);
 
-  finalcut::FSystem* fsys = new test::FSystemTest();
-  finalcut::FTermDetection* term_detection{};
-  finalcut::FTerm::setFSystem(fsys);
+  auto fsys = finalcut::make_unique<test::FSystemTest>();
+  finalcut::FTerm::setFSystem(std::move(fsys));
   std::cout << "\n";
-  finalcut::FTermData* data = finalcut::FTerm::getFTermData();
+  const auto& data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
   encoding_list["UTF-8"] = finalcut::fc::UTF8;
@@ -655,10 +653,9 @@ void ftermfreebsdTest::freebsdConsoleTest()
   data->setVGAFont (false);
   data->setMonochron (false);
   data->setTermResized (false);
-
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  term_detection = finalcut::FTerm::getFTermDetection();
+  const auto& term_detection = finalcut::FTerm::getFTermDetection();
   term_detection->setTerminalDetection(true);
   pid_t pid = forkConEmu();
 
@@ -666,7 +663,8 @@ void ftermfreebsdTest::freebsdConsoleTest()
   {
     static constexpr int left_alt = 0x38;
     finalcut::FTermFreeBSD freebsd;
-    test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
+    const auto& fsystem = finalcut::FTerm::getFSystem();
+    auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
     struct keymap_t& keymap = fsystest->getTerminalKeymap();
 
     setenv ("TERM", "xterm", 1);
@@ -760,7 +758,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
 
 #if DEBUG
     const finalcut::FString& sec_da = \
-        finalcut::FTerm::getFTermDebugData().getSecDAString();
+        finalcut::FTerm::getFTermDebugData()->getSecDAString();
     CPPUNIT_ASSERT ( sec_da == "\033[>0;10;0c" );
 #endif
 
@@ -773,6 +771,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
 
     data->setCursorHidden (false);
     freebsd.setCursorStyle (finalcut::fc::normal_cursor);
+
     CPPUNIT_ASSERT ( fsystest->getCursorType() == finalcut::fc::normal_cursor );
 
     freebsd.setCursorStyle (finalcut::fc::blink_cursor);
@@ -812,8 +811,6 @@ void ftermfreebsdTest::freebsdConsoleTest()
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
-
-  delete fsys;
 }
 
 //----------------------------------------------------------------------

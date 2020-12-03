@@ -40,9 +40,6 @@ namespace finalcut
 
 // class forward declaration
 class FString;
-class FSystem;
-class FKeyboard;
-class FTermDetection;
 
 //----------------------------------------------------------------------
 // class FTermXTerminal
@@ -52,7 +49,7 @@ class FTermXTerminal final
 {
   public:
     // Constructors
-    FTermXTerminal();
+    FTermXTerminal() = default;
 
     // Disable copy constructor
     FTermXTerminal (const FTermXTerminal&) = delete;
@@ -97,7 +94,6 @@ class FTermXTerminal final
     bool                  hasTitle() const;
 
     // Methods
-    void                  init();
     void                  setDefaults();
     void                  resetColorMap() const;
     void                  resetForeground();
@@ -134,7 +130,6 @@ class FTermXTerminal final
     void                  resetXTermMouseForeground() const;
     void                  resetXTermMouseBackground() const;
     void                  resetXTermHighlightBackground() const;
-    bool                  isInitialized() const;
     bool                  canResetColor() const;
     void                  oscPrefix() const;
     void                  oscPostfix() const;
@@ -160,9 +155,6 @@ class FTermXTerminal final
     FString               mouse_foreground_color{};
     FString               mouse_background_color{};
     FString               highlight_background_color{};
-    static FSystem*       fsystem;
-    static FKeyboard*     keyboard;
-    FTermDetection*       term_detection{nullptr};
     fc::xtermCursorStyle  cursor_style{fc::unknown_cursor_style};
 };
 
@@ -227,10 +219,6 @@ inline void FTermXTerminal::setMouseSupport()
 //----------------------------------------------------------------------
 inline void FTermXTerminal::unsetMouseSupport()
 { setMouseSupport (false); }
-
-//----------------------------------------------------------------------
-inline bool FTermXTerminal::isInitialized() const
-{ return bool(fsystem && term_detection); }
 
 }  // namespace finalcut
 

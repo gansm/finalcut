@@ -44,14 +44,10 @@ namespace finalcut
 // class FMouseData
 //----------------------------------------------------------------------
 
-// constructors and destructor
+// constructor and destructor
 //----------------------------------------------------------------------
-FMouseData::FMouseData()
-{ }
+FMouseData::~FMouseData() noexcept = default;  // destructor
 
-//----------------------------------------------------------------------
-FMouseData::~FMouseData()
-{ }
 
 // public methods of FMouseData
 //----------------------------------------------------------------------
@@ -181,10 +177,6 @@ FMouse::FMouse()
   resetMousePressedTime();
   clearButtonState();
 }
-
-//----------------------------------------------------------------------
-FMouse::~FMouse()  // destructor
-{ }
 
 
 // public methods of FMouse
@@ -1282,7 +1274,7 @@ void FMouseControl::setMaxHeight (uInt16 y_max)
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::setDblclickInterval (const uInt64 timeout)
+void FMouseControl::setDblclickInterval (const uInt64 timeout) const
 {
   for (auto&& m : mouse_protocol)
     if ( m.second )
@@ -1580,7 +1572,7 @@ void FMouseControl::processEvent (struct timeval* time)
   {
     mouse_object->processEvent(time);
     auto& md = static_cast<FMouseData&>(*mouse_object);
-    fmousedata_queue.emplace(new FMouseData(std::move(md)));
+    fmousedata_queue.emplace(make_unique<FMouseData>(std::move(md)));
   }
 }
 

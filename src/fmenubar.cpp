@@ -209,7 +209,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
 
   // Handle menu entries
   if ( mouse_down )
-    mouseMoveOverList(std::move(*ev));
+    mouseMoveOverList(*ev);
 }
 
 //----------------------------------------------------------------------
@@ -868,7 +868,7 @@ void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::mouseMoveOverList (const FMouseEvent&& ev)
+void FMenuBar::mouseMoveOverList (const FMouseEvent& ev)
 {
   auto list = getItemList();
 

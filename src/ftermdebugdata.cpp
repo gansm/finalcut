@@ -30,9 +30,6 @@ namespace finalcut
 {
 
 #if DEBUG
-// static class attributes
-FTermData*      FTermDebugData::data           {nullptr};
-FTermDetection* FTermDebugData::term_detection {nullptr};
 
 //----------------------------------------------------------------------
 // class FTermDebugData
@@ -40,39 +37,37 @@ FTermDetection* FTermDebugData::term_detection {nullptr};
 
 // public methods of FTermDebugData
 //----------------------------------------------------------------------
-void FTermDebugData::init()
-{
-  data = FTerm::getFTermData();
-  term_detection = FTerm::getFTermDetection();
-}
-
-//----------------------------------------------------------------------
 const FString& FTermDebugData::getAnswerbackString()
 {
+  const auto& term_detection = FTerm::getFTermDetection();
   return term_detection->getAnswerbackString();
 }
 
 //----------------------------------------------------------------------
 const FString& FTermDebugData::getSecDAString()
 {
+  const auto& term_detection = FTerm::getFTermDetection();
   return term_detection->getSecDAString();
 }
 
 //----------------------------------------------------------------------
 const char* FTermDebugData::getTermType_256color()
 {
+  const auto& term_detection = FTerm::getFTermDetection();
   return term_detection->getTermType_256color();
 }
 
 //----------------------------------------------------------------------
 const char* FTermDebugData::getTermType_Answerback()
 {
+  const auto& term_detection = FTerm::getFTermDetection();
   return term_detection->getTermType_Answerback();
 }
 
 //----------------------------------------------------------------------
 const char* FTermDebugData::getTermType_SecDA()
 {
+  const auto& term_detection = FTerm::getFTermDetection();
   return term_detection->getTermType_SecDA();
 }
 
@@ -80,7 +75,8 @@ const char* FTermDebugData::getTermType_SecDA()
 #if defined(__linux__)
 int FTermDebugData::getFramebufferBpp()
 {
-  return data->getFramebufferBpp();
+  const auto& fterm_data = FTerm::getFTermData();
+  return fterm_data->getFramebufferBpp();
 }
 #endif  // defined(__linux__)
 

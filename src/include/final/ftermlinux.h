@@ -65,11 +65,6 @@
 namespace finalcut
 {
 
-// class forward declaration
-class FSystem;
-class FTermData;
-class FTermDetection;
-
 //----------------------------------------------------------------------
 // class FTermLinux
 //----------------------------------------------------------------------
@@ -148,7 +143,7 @@ class FTermLinux final
     int                  getFramebuffer_bpp();
     bool                 getScreenFont();
     bool                 getUnicodeMap ();
-    ModifierKey&        getModifierKey();
+    ModifierKey&         getModifierKey();
 
     // Mutators
     int                  setScreenFont ( const uChar[], uInt, uInt, uInt
@@ -187,9 +182,6 @@ class FTermLinux final
     bool                 vga_font{};
     bool                 new_font{};
     bool                 has_saved_palette{};
-    FTermData*           fterm_data{nullptr};
-    FSystem*             fsystem{nullptr};
-    FTermDetection*      term_detection{nullptr};
     CursorStyle          linux_console_cursor_style{};
     console_font_op      screen_font{};
     unimapdesc           screen_unicode_map{};

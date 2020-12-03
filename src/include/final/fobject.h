@@ -152,7 +152,7 @@ class FObject
 
     // Using-declaration
     using FTimerList = std::vector<FTimerData>;
-    using FTimerListPtr = const std::unique_ptr<FTimerList>;
+    using FTimerListUniquePtr = std::unique_ptr<FTimerList>;
 
     // Accessor
     FTimerList*           getTimerList() const;
@@ -170,7 +170,7 @@ class FObject
   private:
     // Method
     virtual void          performTimerAction (FObject*, FEvent*);
-    static FTimerListPtr& globalTimerList();
+    static auto           globalTimerList() -> const FTimerListUniquePtr&;
 
     // Data members
     FObject*              parent_obj{nullptr};

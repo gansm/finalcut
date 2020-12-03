@@ -51,7 +51,7 @@ class EventDialog final : public finalcut::FDialog
     EventDialog (const EventDialog&) = delete;
 
     // Destructor
-    ~EventDialog() override;
+    ~EventDialog() noexcept override;
 
     // Disable copy assignment operator (=)
     EventDialog& operator = (const EventDialog&) = delete;
@@ -99,8 +99,7 @@ EventDialog::EventDialog (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-EventDialog::~EventDialog()  // destructor
-{ }
+EventDialog::~EventDialog() noexcept = default; // destructor
 
 //----------------------------------------------------------------------
 finalcut::FString EventDialog::getMouseButtonName (int btn_state) const
@@ -245,7 +244,7 @@ class EventLog final : public finalcut::FDialog, public std::ostringstream
     EventLog (const EventLog&) = delete;
 
     // Destructor
-    ~EventLog() override;
+    ~EventLog() noexcept override;
 
     // Disable copy assignment operator (=)
     EventLog& operator = (const EventLog&) = delete;
@@ -282,8 +281,7 @@ EventLog::EventLog (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-EventLog::~EventLog()  // destructor
-{ }
+EventLog::~EventLog() noexcept = default;  // destructor
 
 //----------------------------------------------------------------------
 void EventLog::onTimer (finalcut::FTimerEvent*)

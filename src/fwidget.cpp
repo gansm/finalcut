@@ -85,9 +85,9 @@ FWidget::FWidget (FWidget* parent)
   {
     if ( internal::var::root_widget )
     {
-      auto ftermdata = FTerm::getFTermData();
-      ftermdata->setExitMessage("FWidget: No parent defined! "
-                                "There should be only one root object");
+      const auto& fterm_data = FTerm::getFTermData();
+      fterm_data->setExitMessage("FWidget: No parent defined! "
+                                 "There should be only one root object");
       FApplication::exit(EXIT_FAILURE);
       return;
     }

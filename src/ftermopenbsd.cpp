@@ -27,25 +27,13 @@
 #include "final/ftermopenbsd.h"
 
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
-#define initCheck(ret_value)           \
-    if ( ! isInitialized() )           \
-    {                                  \
-      if ( ! FApplication::isQuit() )  \
-        warnNotInitialized();          \
-                                       \
-      return ret_value;                \
-    }
-#endif
 
 namespace finalcut
 {
 
 // static class attributes
-#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
-  kbd_t    FTermOpenBSD::bsd_keyboard_encoding{0};
-  bool     FTermOpenBSD::meta_sends_escape{true};
-  FSystem* FTermOpenBSD::fsystem{nullptr};
-#endif
+kbd_t    FTermOpenBSD::bsd_keyboard_encoding{0};
+bool     FTermOpenBSD::meta_sends_escape{true};
 
 
 //----------------------------------------------------------------------
@@ -54,18 +42,14 @@ namespace finalcut
 
 // public methods of FTermOpenBSD
 //----------------------------------------------------------------------
-#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 bool FTermOpenBSD::isBSDConsole()
 {
   // Check if it's a NetBSD/OpenBSD workstation console
 
   static kbd_t kbdencoding{};
+  const auto& fsystem = FTerm::getFSystem();
 
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
-
-  if ( fsystem
-    && fsystem->ioctl(0, WSKBDIO_GETENCODING, &kbdencoding) == 0 )
+  if ( fsystem->ioctl(0, WSKBDIO_GETENCODING, &kbdencoding) == 0 )
     return true;
   else
     return false;
@@ -75,8 +59,6 @@ bool FTermOpenBSD::isBSDConsole()
 void FTermOpenBSD::init()
 {
   // Initialize BSD workstation console
-
-  fsystem = FTerm::getFSystem();
 
   if ( ! isBSDConsole() )
     return;
@@ -94,8 +76,6 @@ void FTermOpenBSD::init()
 //----------------------------------------------------------------------
 void FTermOpenBSD::finish()
 {
-  initCheck();
-
   if ( ! isBSDConsole() )
     return;
 
@@ -106,8 +86,6 @@ void FTermOpenBSD::finish()
 //----------------------------------------------------------------------
 bool FTermOpenBSD::setBeep (int Hz, int ms)
 {
-  initCheck(false);
-
   if ( ! isBSDConsole() )
     return false;
 
@@ -124,8 +102,9 @@ bool FTermOpenBSD::setBeep (int Hz, int ms)
   bell.pitch  = uInt(Hz);
   bell.period = uInt(ms);
   bell.volume = 50;  // 50% volume
+  const auto& fsystem = FTerm::getFSystem();
 
-  if ( fsystem && fsystem->ioctl(0, WSKBDIO_SETBELL, &bell) < 0 )
+  if ( fsystem->ioctl(0, WSKBDIO_SETBELL, &bell) < 0 )
     return false;
   else
     return true;
@@ -134,19 +113,17 @@ bool FTermOpenBSD::setBeep (int Hz, int ms)
 //----------------------------------------------------------------------
 bool FTermOpenBSD::resetBeep()
 {
-  initCheck(false);
   wskbd_bell_data default_bell;
+  const auto& fsystem = FTerm::getFSystem();
 
   // Gets the default setting for the bell
-  if ( fsystem
-    && fsystem->ioctl(0, WSKBDIO_GETDEFAULTBELL, &default_bell) < 0 )
+  if ( fsystem->ioctl(0, WSKBDIO_GETDEFAULTBELL, &default_bell) < 0 )
     return false;
 
   default_bell.which = WSKBD_BELL_DOALL;
 
   // Sets the bell settings
-  if ( fsystem
-    && fsystem->ioctl(0, WSKBDIO_SETBELL, &default_bell) < 0 )
+  if ( fsystem->ioctl(0, WSKBDIO_SETBELL, &default_bell) < 0 )
     return false;
   else
     return true;
@@ -170,8 +147,8 @@ bool FTermOpenBSD::saveBSDConsoleEncoding()
   static kbd_t k_encoding{};
   int ret{-1};
 
-  if ( fsystem )
-    ret = fsystem->ioctl (0, WSKBDIO_GETENCODING, &k_encoding);
+  const auto& fsystem = FTerm::getFSystem();
+  ret = fsystem->ioctl (0, WSKBDIO_GETENCODING, &k_encoding);
 
   if ( ret < 0 )
     return false;
@@ -184,8 +161,9 @@ bool FTermOpenBSD::saveBSDConsoleEncoding()
 //----------------------------------------------------------------------
 bool FTermOpenBSD::setBSDConsoleEncoding (kbd_t k_encoding)
 {
-  if ( fsystem
-    && fsystem->ioctl(0, WSKBDIO_SETENCODING, &k_encoding) < 0 )
+  const auto& fsystem = FTerm::getFSystem();
+
+  if ( fsystem->ioctl(0, WSKBDIO_SETENCODING, &k_encoding) < 0 )
     return false;
   else
     return true;
@@ -204,6 +182,7 @@ bool FTermOpenBSD::resetBSDConsoleEncoding()
 {
   return setBSDConsoleEncoding (bsd_keyboard_encoding);
 }
-#endif  // defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 
 }  // namespace finalcut
+
+#endif  // defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)

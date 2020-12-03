@@ -64,9 +64,6 @@
 namespace finalcut
 {
 
-// class forward declaration
-class FSystem;
-
 //----------------------------------------------------------------------
 // class FTermOpenBSD
 //----------------------------------------------------------------------
@@ -110,12 +107,10 @@ class FTermOpenBSD final
     static bool        setBSDConsoleEncoding (kbd_t);
     static bool        setBSDConsoleMetaEsc();
     static bool        resetBSDConsoleEncoding();
-    static bool        isInitialized();
 
     // Data members
     static kbd_t       bsd_keyboard_encoding;
     static bool        meta_sends_escape;
-    static FSystem*    fsystem;
 #endif  // defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 };
 
@@ -134,9 +129,6 @@ inline void FTermOpenBSD::enableMetaSendsEscape()
 inline void FTermOpenBSD::disableMetaSendsEscape()
 { meta_sends_escape = false; }
 
-//----------------------------------------------------------------------
-inline bool FTermOpenBSD::isInitialized()
-{ return bool(fsystem); }
 #endif  // defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 
 }  // namespace finalcut

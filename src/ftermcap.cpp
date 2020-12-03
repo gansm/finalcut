@@ -38,6 +38,7 @@ namespace finalcut
 {
 
 // static class attributes
+bool             FTermcap::initialized              {false};
 bool             FTermcap::background_color_erase   {false};
 bool             FTermcap::can_change_color_palette {false};
 bool             FTermcap::automatic_left_margin    {false};
@@ -50,9 +51,6 @@ bool             FTermcap::no_utf8_acs_chars        {false};
 int              FTermcap::max_color                {1};
 int              FTermcap::tabstop                  {8};
 int              FTermcap::attr_without_color       {0};
-FSystem*         FTermcap::fsystem                  {nullptr};
-FTermData*       FTermcap::fterm_data               {nullptr};
-FTermDetection*  FTermcap::term_detection           {nullptr};
 char             FTermcap::string_buf[2048]         {};
 
 //----------------------------------------------------------------------
@@ -72,9 +70,6 @@ char             FTermcap::string_buf[2048]         {};
 //----------------------------------------------------------------------
 void FTermcap::init()
 {
-  fsystem = FTerm::getFSystem();
-  fterm_data = FTerm::getFTermData();
-  term_detection = FTerm::getFTermDetection();
   termcap();
 }
 
@@ -82,11 +77,13 @@ void FTermcap::init()
 //----------------------------------------------------------------------
 void FTermcap::termcap()
 {
+  const auto& fterm_data = FTerm::getFTermData();
   std::vector<std::string> terminals{};
   static constexpr int success = 1;
   static constexpr int uninitialized = -2;
   static char term_buffer[BUF_SIZE]{};
   int status = uninitialized;
+  const auto& term_detection = FTerm::getFTermDetection();
   const bool color256 = term_detection->canDisplay256Colors();
 
   // Open termcap file
@@ -112,6 +109,9 @@ void FTermcap::termcap()
     // Open the termcap file + load entry for termtype
     status = tgetent(term_buffer, termtype);
 
+    if ( status == success )
+      initialized = true;
+
     if ( status == success || ! term_detection->hasTerminalDetection() )
       break;
 
@@ -131,6 +131,7 @@ void FTermcap::termcapError (int status)
 
   if ( status == no_entry || status == uninitialized )
   {
+    const auto& fterm_data = FTerm::getFTermData();
     const char* termtype = fterm_data->getTermType();
     std::clog << FLog::Error
               << "Unknown terminal: \""  << termtype << "\". "
@@ -200,6 +201,8 @@ void FTermcap::termcapNumerics()
 {
   // Get termcap numerics
 
+  const auto& fterm_data = FTerm::getFTermData();
+
   // Maximum number of colors on screen
   max_color = std::max(max_color, getNumber("Co"));
 
@@ -252,9 +255,7 @@ void FTermcap::termcapKeys()
 //----------------------------------------------------------------------
 int FTermcap::_tputs (const char* str, int affcnt, fn_putc putc)
 {
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
-
+  const auto& fsystem = FTerm::getFSystem();
   return fsystem->tputs (str, affcnt, putc);
 }
 

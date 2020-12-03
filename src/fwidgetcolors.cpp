@@ -33,12 +33,7 @@ namespace finalcut
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FWidgetColors::FWidgetColors()
-{ }
-
-//----------------------------------------------------------------------
-FWidgetColors::~FWidgetColors()
-{ }
+FWidgetColors::~FWidgetColors() noexcept = default;
 
 
 //----------------------------------------------------------------------
@@ -53,8 +48,8 @@ default8ColorTheme::default8ColorTheme()
 }
 
 //----------------------------------------------------------------------
-default8ColorTheme::~default8ColorTheme()
-{ }
+default8ColorTheme::~default8ColorTheme() noexcept = default;
+
 
 // public methods of default8ColorTheme
 //----------------------------------------------------------------------
@@ -161,8 +156,8 @@ default16ColorTheme::default16ColorTheme()
 }
 
 //----------------------------------------------------------------------
-default16ColorTheme::~default16ColorTheme()
-{ }
+default16ColorTheme::~default16ColorTheme() noexcept = default;
+
 
 // public methods of default16ColorTheme
 //----------------------------------------------------------------------
@@ -271,8 +266,8 @@ default8ColorDarkTheme::default8ColorDarkTheme()
 }
 
 //----------------------------------------------------------------------
-default8ColorDarkTheme::~default8ColorDarkTheme()
-{ }
+default8ColorDarkTheme::~default8ColorDarkTheme() noexcept = default;
+
 
 // public methods of default8ColorDarkTheme
 //----------------------------------------------------------------------
@@ -379,8 +374,8 @@ default16ColorDarkTheme::default16ColorDarkTheme()
 }
 
 //----------------------------------------------------------------------
-default16ColorDarkTheme::~default16ColorDarkTheme()
-{ }
+default16ColorDarkTheme::~default16ColorDarkTheme() noexcept = default;
+
 
 // public methods of default16ColorDarkTheme
 //----------------------------------------------------------------------

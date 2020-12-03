@@ -221,8 +221,13 @@ class FListViewIterator
     // Constructor
     FListViewIterator () = default;
     FListViewIterator (iterator);
-
+    FListViewIterator (const FListViewIterator&) = default;
+    FListViewIterator (FListViewIterator&& )
+        noexcept (std::is_nothrow_move_constructible<FListViewIterator>::value)
+        = default;
     // Overloaded operators
+    FListViewIterator& operator = (const FListViewIterator&) = default;
+    FListViewIterator& operator = (FListViewIterator&&) noexcept = default;
     FListViewIterator& operator ++ ();     // prefix
     FListViewIterator  operator ++ (int);  // postfix
     FListViewIterator& operator -- ();     // prefix

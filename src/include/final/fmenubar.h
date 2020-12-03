@@ -138,7 +138,7 @@ class FMenuBar : public FWindow, public FMenuList
     void          selectMenuItem (FMenuItem*);
     void          mouseDownOverList (const FMouseEvent*);
     void          mouseUpOverList (const FMouseEvent*);
-    void          mouseMoveOverList (const FMouseEvent&&);
+    void          mouseMoveOverList (const FMouseEvent&);
     void          passEventToMenu (const FMouseEvent&&) const;
     void          leaveMenuBar();
 

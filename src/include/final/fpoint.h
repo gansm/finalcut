@@ -59,7 +59,7 @@ class FPoint
     FPoint& operator -= (const FPoint&);
 
     // Accessors
-    FString               getClassName();
+    FString               getClassName() const;
     int                   getX() const;
     int                   getY() const;
     void                  setX (int);
@@ -102,7 +102,7 @@ inline FPoint::FPoint (int x, int y)
 { }
 
 //----------------------------------------------------------------------
-inline FString FPoint::getClassName()
+inline FString FPoint::getClassName() const
 { return "FPoint"; }
 
 //----------------------------------------------------------------------

@@ -68,12 +68,10 @@ namespace finalcut
 
 // class forward declaration
 class FColorPair;
-class FMouseControl;
 class FPoint;
 class FRect;
 class FSize;
 class FString;
-class FSystem;
 class FTerm;
 class FTermBuffer;
 class FTermDebugData;
@@ -370,7 +368,7 @@ class FVTerm
     static FChar          getCoveredCharacter (const FPoint&, const FTermArea*);
     static FChar          getOverlappedCharacter (const FPoint&, const FTermArea*);
     void                  init();
-    static void           init_characterLengths (const FOptiMove*);
+    static void           init_characterLengths();
     void                  finish();
     static void           putAreaLine (const FChar&, FChar&, std::size_t);
     static void           putAreaCharacter ( const FPoint&, const FTermArea*
@@ -426,7 +424,6 @@ class FVTerm
     FTermArea*               child_print_area{nullptr};  // print area for children
     FTermArea*               vwin{nullptr};              // virtual window
     static const FVTerm*     init_object;  // Global FVTerm object
-    static FSystem*          fsystem;
     static FTerm*            fterm;
     static FTermArea*        vterm;        // virtual terminal
     static FTermArea*        vdesktop;     // virtual desktop
@@ -437,7 +434,6 @@ class FVTerm
     static FChar             s_ch;      // shadow character
     static FChar             i_ch;      // inherit background character
     static FPoint*           term_pos;  // terminal cursor position
-    static FMouseControl*    mouse;
     static timeval           time_last_flush;
     static timeval           last_term_size_check;
     static bool              draw_completed;
@@ -492,6 +488,11 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   bool visible{false};
 };
 
+struct D
+{
+  void operator () (const FVTerm*) const
+  { }
+};
 
 //----------------------------------------------------------------------
 // struct FVTerm::FVTermPreprocessing
@@ -500,16 +501,19 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
 struct FVTerm::FVTermPreprocessing
 {
   // Constructor
-  FVTermPreprocessing() = default;
-
   FVTermPreprocessing (const FVTerm* i, const FPreprocessingFunction& f)
-    : instance(i)
+    : instance(std::unique_ptr<const FVTerm, D>(i))
     , function(f)
   { }
 
+  FVTermPreprocessing (const FVTermPreprocessing&) = delete;
+  FVTermPreprocessing (FVTermPreprocessing&&) = default;
+  FVTermPreprocessing& operator = (const FVTermPreprocessing&) = delete;
+  FVTermPreprocessing& operator = (FVTermPreprocessing&&) noexcept = default;
+
   // Data members
-  const FVTerm* instance{nullptr};
-  FPreprocessingFunction function{nullptr};
+  std::unique_ptr<const FVTerm, D> instance{};
+  FPreprocessingFunction function{};
 };
 
 

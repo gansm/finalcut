@@ -22,7 +22,6 @@
 
 #include <memory>
 
-#include "final/emptyfstring.h"
 #include "final/fevent.h"
 #include "final/fc.h"
 #include "final/fobject.h"
@@ -32,7 +31,6 @@ namespace finalcut
 
 // static class attributes
 bool FObject::timer_modify_lock;
-const FString* fc::emptyFString::empty_string{nullptr};
 
 
 //----------------------------------------------------------------------
@@ -54,9 +52,6 @@ FObject::FObject (FObject* parent)
 FObject::~FObject()  // destructor
 {
   delOwnTimers();  // Delete all timers of this object
-
-  if ( ! has_parent && ! fc::emptyFString::isNull() )
-    fc::emptyFString::clear();
 
   // Delete children objects
   if ( hasChildren() )
@@ -425,7 +420,7 @@ void FObject::performTimerAction (FObject*, FEvent*)
 }
 
 //----------------------------------------------------------------------
-FObject::FTimerListPtr& FObject::globalTimerList()
+auto FObject::globalTimerList() -> const FTimerListUniquePtr&
 {
   static const auto& timer_list = make_unique<FTimerList>();
   return timer_list;

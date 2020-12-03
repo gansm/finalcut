@@ -86,7 +86,6 @@ class FStartOptions;
 class FTimerEvent;
 class FWheelEvent;
 class FMouseControl;
-class FKeyboard;
 class FPoint;
 class FObject;
 
@@ -98,7 +97,7 @@ class FApplication : public FWidget
 {
   public:
     // Typedef
-    typedef std::shared_ptr<FLog> FLogPtr;
+    using FLogPtr = std::shared_ptr<FLog>;
 
     // Constructor
     FApplication (const int&, char*[]);
@@ -164,9 +163,9 @@ class FApplication : public FWidget
 #endif
 
     // Typedefs
-    typedef std::pair<FObject*, FEvent*> EventPair;
-    typedef std::deque<EventPair> FEventQueue;
-    typedef std::unordered_map<int, std::function<void(char*)>> CmdMap;
+    using EventPair = std::pair<FObject*, FEvent*>;
+    using FEventQueue = std::deque<EventPair>;
+    using CmdMap = std::unordered_map<int, std::function<void(char*)>>;
 
     // Methods
     void                  init();
@@ -244,8 +243,6 @@ class FApplication : public FWidget
     static int            loop_level;
     static int            quit_code;
     static bool           quit_now;
-    static FMouseControl* mouse;
-    static FKeyboard*     keyboard;
     static FWidget*       keyboard_widget;
 };
 

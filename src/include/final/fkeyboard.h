@@ -52,8 +52,6 @@ namespace finalcut
 // class forward declaration
 class FApplication;
 class FString;
-class FTermDetection;
-class FTermLinux;
 
 //----------------------------------------------------------------------
 // class FKeyboardCommand
@@ -137,7 +135,6 @@ class FKeyboard final
     bool                  hasDataInQueue() const;
 
     // Methods
-    static void           init();
     bool&                 hasUnprocessedInput();
     bool                  isKeyPressed (uInt64 = read_blocking_time);
     void                  clearKeyBuffer();
@@ -182,12 +179,6 @@ class FKeyboard final
     FKeyboardCommand      escape_key_cmd{};
     FKeyboardCommand      mouse_tracking_cmd{};
 
-#if defined(__linux__)
-    #undef linux
-    static FTermLinux*    linux;
-#endif
-
-    FTermDetection*       term_detection{nullptr};
     static timeval        time_keypressed;
     static uInt64         read_blocking_time;
     static uInt64         read_blocking_time_short;

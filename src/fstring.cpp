@@ -76,10 +76,10 @@ FString::FString (const FString& s)  // copy constructor
 
 //----------------------------------------------------------------------
 FString::FString (FString&& s) noexcept  // move constructor
-  : string{std::move(s.string)}
+  : string{s.string}
   , length{s.length}
   , bufsize{s.bufsize}
-  , c_string{std::move(s.c_string)}
+  , c_string{s.c_string}
 {
   s.string = nullptr;
   s.length = 0;
@@ -185,10 +185,10 @@ FString& FString::operator = (FString&& s) noexcept
     if ( c_string )
       delete[](c_string);
 
-    string = std::move(s.string);
+    string = s.string;
     length = s.length;
     bufsize = s.bufsize;
-    c_string = std::move(s.c_string);
+    c_string = s.c_string;
 
     s.string = nullptr;
     s.length = 0;
@@ -1455,6 +1455,9 @@ inline const wchar_t* FString::_to_wcstring (const char s[]) const
   wchar_t* dest{};
   auto state = std::mbstate_t();
   auto size = std::mbsrtowcs(nullptr, &src, 0, &state) + 1;
+
+  if ( size == 0 )  // ...malformed UTF-8 string
+    return nullptr;
 
   try
   {

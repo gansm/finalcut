@@ -48,10 +48,10 @@ class FWidgetColors
 {
   public:
     // Constructor
-    FWidgetColors();
+    FWidgetColors() = default;
 
     // Destructor
-    virtual ~FWidgetColors();
+    virtual ~FWidgetColors() noexcept;
 
     // Method
     virtual FString getClassName() const;
@@ -176,7 +176,7 @@ class default8ColorTheme final : public FWidgetColors
     default8ColorTheme();
 
     // Destructor
-    ~default8ColorTheme() override;
+    ~default8ColorTheme() noexcept override;
 
     // Method
     FString getClassName() const override;
@@ -213,7 +213,7 @@ class default16ColorTheme final : public FWidgetColors
     default16ColorTheme();
 
     // Destructor
-    ~default16ColorTheme() override;
+    ~default16ColorTheme() noexcept override;
 
     // Method
     FString getClassName() const override;
@@ -250,7 +250,7 @@ class default8ColorDarkTheme final : public FWidgetColors
     default8ColorDarkTheme();
 
     // Destructor
-    ~default8ColorDarkTheme() override;
+    ~default8ColorDarkTheme() noexcept override;
 
     // Method
     FString getClassName() const override;
@@ -287,7 +287,7 @@ class default16ColorDarkTheme final : public FWidgetColors
     default16ColorDarkTheme();
 
     // Destructor
-    ~default16ColorDarkTheme() override;
+    ~default16ColorDarkTheme() noexcept override;
 
     // Method
     FString getClassName() const override;

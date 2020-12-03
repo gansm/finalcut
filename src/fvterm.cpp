@@ -68,12 +68,10 @@ struct timeval       FVTerm::last_term_size_check{};
 std::vector<int>*    FVTerm::output_buffer{nullptr};
 FPoint*              FVTerm::term_pos{nullptr};
 const FVTerm*        FVTerm::init_object{nullptr};
-FSystem*             FVTerm::fsystem{nullptr};
 FTerm*               FVTerm::fterm{nullptr};
 FVTerm::FTermArea*   FVTerm::vterm{nullptr};
 FVTerm::FTermArea*   FVTerm::vdesktop{nullptr};
 FVTerm::FTermArea*   FVTerm::active_area{nullptr};
-FMouseControl*       FVTerm::mouse{nullptr};
 FChar                FVTerm::term_attribute{};
 FChar                FVTerm::next_attribute{};
 FChar                FVTerm::s_ch{};
@@ -276,6 +274,7 @@ bool FVTerm::updateTerminal() const
   // Check if terminal updates were stopped, application is stopping,
   // VTerm has no changes, or the drawing is not completed
   if ( no_terminal_updates || FApplication::isQuit()
+    || ! isFlushTimeout()
     || ! (hasPendingUpdates(vterm) && draw_completed) )
   {
     return false;
@@ -308,7 +307,7 @@ void FVTerm::addPreprocessingHandler ( const FVTerm* instance
   {
     FVTermPreprocessing obj{ instance, function };
     delPreprocessingHandler (instance);
-    print_area->preproc_list.push_back(obj);
+    print_area->preproc_list.emplace_back(std::move(obj));
   }
 }
 
@@ -325,8 +324,8 @@ void FVTerm::delPreprocessingHandler (const FVTerm* instance)
 
   while ( iter != print_area->preproc_list.end() )
   {
-    if ( iter->instance == instance )
-      iter = print_area->preproc_list.erase(iter);
+    if ( iter->instance.get() == instance )
+      iter = std::move(print_area->preproc_list.erase(iter));
     else
       ++iter;
   }
@@ -590,6 +589,7 @@ void FVTerm::flush()
 
   output_buffer->clear();
   std::fflush(stdout);
+  const auto& mouse = FTerm::getFMouseControl();
   mouse->drawPointer();
   FObject::getCurrentTime (&time_last_flush);
 }
@@ -1278,15 +1278,12 @@ void FVTerm::initTerminal()
   if ( fterm )
     fterm->initTerminal();
 
-  // Get the global FMouseControl object
-  mouse = FTerm::getFMouseControl();
-
   // Hide the input cursor
   cursor_hideable = FTerm::isCursorHideable();
   hideCursor();
 
   // Initialize character lengths
-  init_characterLengths(FTerm::getFOptiMove());
+  init_characterLengths();
 }
 
 
@@ -1812,7 +1809,6 @@ void FVTerm::init()
   init_object = this;
   vterm       = nullptr;
   vdesktop    = nullptr;
-  fsystem     = FTerm::getFSystem();
 
   try
   {
@@ -1863,24 +1859,29 @@ void FVTerm::init()
 }
 
 //----------------------------------------------------------------------
-void FVTerm::init_characterLengths (const FOptiMove* optimove)
+void FVTerm::init_characterLengths()
 {
-  if ( optimove )
-  {
-    cursor_address_length = optimove->getCursorAddressLength();
-    erase_char_length     = optimove->getEraseCharsLength();
-    repeat_char_length    = optimove->getRepeatCharLength();
-    clr_bol_length        = optimove->getClrBolLength();
-    clr_eol_length        = optimove->getClrEolLength();
-  }
-  else
-  {
+  const auto& opti_move = FTerm::getFOptiMove();
+  cursor_address_length = opti_move->getCursorAddressLength();
+  erase_char_length     = opti_move->getEraseCharsLength();
+  repeat_char_length    = opti_move->getRepeatCharLength();
+  clr_bol_length        = opti_move->getClrBolLength();
+  clr_eol_length        = opti_move->getClrEolLength();
+
+  if ( cursor_address_length == 0 )
     cursor_address_length = INT_MAX;
-    erase_char_length     = INT_MAX;
-    repeat_char_length    = INT_MAX;
-    clr_bol_length        = INT_MAX;
-    clr_eol_length        = INT_MAX;
-  }
+
+  if ( erase_char_length == 0 )
+    erase_char_length = INT_MAX;
+
+  if ( repeat_char_length == 0 )
+    repeat_char_length = INT_MAX;
+
+  if ( clr_bol_length == 0 )
+    clr_bol_length = INT_MAX;
+
+  if ( clr_eol_length == 0 )
+    clr_eol_length = INT_MAX;
 }
 
 //----------------------------------------------------------------------

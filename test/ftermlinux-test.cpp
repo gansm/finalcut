@@ -994,10 +994,16 @@ FSystemTest::FSystemTest()  // constructor
 FSystemTest::~FSystemTest()  // destructor
 {
   if ( terminal_font.data )
+  {
     delete[] terminal_font.data;
+    terminal_font.data = nullptr;
+  }
 
   if ( terminal_unicode_map.entries )
+  {
     delete[] terminal_unicode_map.entries;
+    terminal_unicode_map.entries = nullptr;
+  }
 }
 
 
@@ -1091,19 +1097,25 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
       constexpr std::size_t font_data_size = 4 * 32 * 512;
       struct console_font_op* fn = static_cast<console_font_op*>(argp);
 
-      // Set Default
-      if ( terminal_font.data && terminal_font.data[219 * 32] == 0 )
-      {
-        terminal_font.width = 8;
-        terminal_font.height = 16;
-        terminal_font.charcount = 256;
-
-        if ( fn->data )
-          std::memcpy (terminal_font.data, &vga8x16, sizeof(vga8x16));
-      }
-
       if ( fn->op == KD_FONT_OP_GET )
       {
+        // If data is empty
+        if ( ! terminal_font.data )
+        {
+          terminal_font.data = new uChar[font_data_size]{ };
+        }
+
+        // Set Default
+        if ( terminal_font.data[219 * 32] == 0 )
+        {
+          terminal_font.width = 8;
+          terminal_font.height = 16;
+          terminal_font.charcount = 256;
+
+          if ( fn->data )
+            std::memcpy (terminal_font.data, &vga8x16, sizeof(vga8x16));
+        }
+
         fn->flags     = terminal_font.flags;
         fn->width     = terminal_font.width;
         fn->height    = terminal_font.height;
@@ -1117,11 +1129,17 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
 
       if ( fn->op == KD_FONT_OP_SET )
       {
-        terminal_font.flags     = fn->flags;
-        terminal_font.width     = fn->width;
-        terminal_font.height    = fn->height;
-        terminal_font.charcount = fn->charcount;
-        auto size = fn->width / 8 * fn->height * fn->charcount;
+        terminal_font.flags      = fn->flags;
+        terminal_font.width      = fn->width;
+        terminal_font.height     = fn->height;
+        terminal_font.charcount  = fn->charcount;
+        constexpr int fix_height = 32;  // This value is identical for all fonts
+        auto size = fn->width / 8 * fix_height * fn->charcount;
+
+        if ( ! terminal_font.data )  // If data is empty on a second run
+        {
+          terminal_font.data = new uChar[font_data_size]{ };
+        }
 
         if ( fn->data && terminal_font.data )
           std::memcpy (terminal_font.data, fn->data, size);
@@ -1194,7 +1212,7 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
       std::size_t pairs_size = pairs * sizeof(unipair);
 
       // Sets the default unicode map of the terminal on the first call
-      if ( terminal_unicode_map.entries == 0 )
+      if ( ! terminal_unicode_map.entries )
       {
         terminal_unicode_map.entry_ct = pairs;
         terminal_unicode_map.entries = new unipair[pairs]();
@@ -1222,8 +1240,30 @@ int FSystemTest::ioctl (int fd, uLong request, ...)
     {
       req_string = "PIO_UNIMAP";
       unimapdesc* umap = static_cast<unimapdesc*>(argp);
-      std::memcpy (&terminal_unicode_map, umap, sizeof(*umap));
-      ret_val = 0;
+      std::size_t pairs = umap->entry_ct;
+      std::size_t pairs_size = pairs * sizeof(unipair);
+      terminal_unicode_map.entry_ct = umap->entry_ct;
+
+      if ( terminal_unicode_map.entries )
+      {
+        delete[] terminal_unicode_map.entries;
+        terminal_unicode_map.entries = nullptr;
+      }
+
+      terminal_unicode_map.entries = new unipair[pairs]();
+
+      if ( umap->entries && terminal_unicode_map.entries )
+      {
+        std::memcpy (terminal_unicode_map.entries, umap->entries, pairs_size);
+        errno = 0;
+        ret_val = 0;
+      }
+      else
+      {
+        errno = ENOMEM;
+        ret_val = 0;
+      }
+
       break;
     }
 
@@ -1519,11 +1559,10 @@ void FTermLinuxTest::classNameTest()
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxConsoleTest()
 {
-  finalcut::FSystem* fsys = new test::FSystemTest();
-  finalcut::FTerm::setFSystem(fsys);
-  finalcut::FTermDetection* term_detection{};
+  auto fsys = finalcut::make_unique<test::FSystemTest>();
+  finalcut::FTerm::setFSystem(std::move(fsys));
   std::cout << "\n";
-  finalcut::FTermData* data = finalcut::FTerm::getFTermData();
+  const auto& data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
   encoding_list["UTF-8"] = finalcut::fc::UTF8;
@@ -1555,7 +1594,7 @@ void FTermLinuxTest::linuxConsoleTest()
   data->setMonochron (false);
   data->setTermResized (false);
 
-  term_detection = finalcut::FTerm::getFTermDetection();
+  const auto& term_detection = finalcut::FTerm::getFTermDetection();
   finalcut::FTermLinux linux;
 
   // setupterm is needed for tputs in ncurses >= 6.1
@@ -1590,7 +1629,8 @@ void FTermLinuxTest::linuxConsoleTest()
     CPPUNIT_ASSERT ( data->hasHalfBlockCharacter() );
     CPPUNIT_ASSERT ( linux.getFramebufferBpp() == 32 );
 
-    test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
+    const auto& fsystem = finalcut::FTerm::getFSystem();
+    auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
     std::string& characters = fsystest->getCharacters();
     linux.setUTF8 (false);
     CPPUNIT_ASSERT ( characters == ESC "%@" );
@@ -1636,18 +1676,15 @@ void FTermLinuxTest::linuxConsoleTest()
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
-
-  delete fsys;
 }
 
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxCursorStyleTest()
 {
-  finalcut::FSystem* fsys = new test::FSystemTest();
-  finalcut::FTerm::setFSystem(fsys);
-  finalcut::FTermDetection* term_detection{};
+  auto fsys = finalcut::make_unique<test::FSystemTest>();
+  finalcut::FTerm::setFSystem(std::move(fsys));
   std::cout << "\n";
-  finalcut::FTermData* data = finalcut::FTerm::getFTermData();
+  const auto& data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
   encoding_list["UTF-8"] = finalcut::fc::UTF8;
@@ -1681,7 +1718,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  term_detection = finalcut::FTerm::getFTermDetection();
+  const auto& term_detection = finalcut::FTerm::getFTermDetection();
   finalcut::FTermLinux linux;
 
   pid_t pid = forkConEmu();
@@ -1704,7 +1741,8 @@ void FTermLinuxTest::linuxCursorStyleTest()
     term_detection->detect();
     linux.init();
 
-    test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
+    const auto& fsystem = finalcut::FTerm::getFSystem();
+    auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
     std::string& characters = fsystest->getCharacters();
     characters.clear();
     linux.setCursorStyle (finalcut::fc::default_cursor);
@@ -1827,18 +1865,15 @@ void FTermLinuxTest::linuxCursorStyleTest()
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
-
-  delete fsys;
 }
 
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxColorPaletteTest()
 {
-  finalcut::FSystem* fsys = new test::FSystemTest();
-  finalcut::FTerm::setFSystem(fsys);
-  finalcut::FTermDetection* term_detection{};
+  auto fsys = finalcut::make_unique<test::FSystemTest>();
+  finalcut::FTerm::setFSystem(std::move(fsys));
   std::cout << "\n";
-  finalcut::FTermData* data = finalcut::FTerm::getFTermData();
+  const auto& data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
   encoding_list["UTF-8"] = finalcut::fc::UTF8;
@@ -1872,7 +1907,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  term_detection = finalcut::FTerm::getFTermDetection();
+  const auto& term_detection = finalcut::FTerm::getFTermDetection();
   finalcut::FTermLinux linux;
   term_detection->setLinuxTerm(true);
 
@@ -1895,7 +1930,8 @@ void FTermLinuxTest::linuxColorPaletteTest()
 
     term_detection->detect();
     linux.init();
-    test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
+    const auto& fsystem = finalcut::FTerm::getFSystem();
+    auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
 
     CPPUNIT_ASSERT ( linux.resetColorMap() == true );
     CPPUNIT_ASSERT ( linux.saveColorMap() == true );
@@ -2104,18 +2140,15 @@ void FTermLinuxTest::linuxColorPaletteTest()
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
-
-  delete fsys;
 }
 
 //----------------------------------------------------------------------
 void FTermLinuxTest::linuxFontTest()
 {
-  finalcut::FSystem* fsys = new test::FSystemTest();
-  finalcut::FTerm::setFSystem(fsys);
-  finalcut::FTermDetection* term_detection{};
+  auto fsys = finalcut::make_unique<test::FSystemTest>();
+  finalcut::FTerm::setFSystem(std::move(fsys));
   std::cout << "\n";
-  finalcut::FTermData* data = finalcut::FTerm::getFTermData();
+  const auto& data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
   encoding_list["UTF-8"] = finalcut::fc::UTF8;
@@ -2149,7 +2182,7 @@ void FTermLinuxTest::linuxFontTest()
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  term_detection = finalcut::FTerm::getFTermDetection();
+  const auto& term_detection = finalcut::FTerm::getFTermDetection();
   finalcut::FTermLinux linux;
 
   pid_t pid = forkConEmu();
@@ -2171,18 +2204,19 @@ void FTermLinuxTest::linuxFontTest()
 
     term_detection->detect();
     linux.init();
-    test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
+    const auto& fsystem = finalcut::FTerm::getFSystem();
+    auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
     console_font_op& font = fsystest->getConsoleFont();
     CPPUNIT_ASSERT ( font.op == KD_FONT_OP_GET );
     CPPUNIT_ASSERT ( ! linux.isVGAFontUsed() );
     CPPUNIT_ASSERT ( ! linux.isNewFontUsed() );
-
     linux.loadVGAFont();
- /*   CPPUNIT_ASSERT ( data->hasShadowCharacter() );
+    CPPUNIT_ASSERT ( data->hasShadowCharacter() );
     CPPUNIT_ASSERT ( data->hasHalfBlockCharacter() );
     CPPUNIT_ASSERT ( font.op == KD_FONT_OP_SET );
     CPPUNIT_ASSERT ( linux.isVGAFontUsed() );
     CPPUNIT_ASSERT ( ! linux.isNewFontUsed() );
+    CPPUNIT_ASSERT ( font.data );
 
     // Full block character test
     for (std::size_t i = 0; i < 16 ; i++)
@@ -2235,7 +2269,7 @@ void FTermLinuxTest::linuxFontTest()
     CPPUNIT_ASSERT ( font.data[249 * 32 + 13] == 0x00 );
     CPPUNIT_ASSERT ( font.data[249 * 32 + 14] == 0x00 );
     CPPUNIT_ASSERT ( font.data[249 * 32 + 15] == 0x00 );
-*/
+
     linux.finish();
 
     closeConEmuStdStreams();
@@ -2249,19 +2283,20 @@ void FTermLinuxTest::linuxFontTest()
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
-
-  delete fsys;
 }
 
 //----------------------------------------------------------------------
 void FTermLinuxTest::modifierKeyTest()
 {
+  auto fsys = finalcut::make_unique<test::FSystemTest>();
+  finalcut::FTerm::setFSystem(std::move(fsys));
+
+  const auto& fsystem = finalcut::FTerm::getFSystem();
+  auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
+  test::FSystemTest::ShiftState& mod_key = fsystest->getShiftState();
+  finalcut::FTermLinux linux{};
   FKey keycode{};
   FKey mod_keycode{};
-  finalcut::FTermLinux linux{};
-  finalcut::FSystem* fsys(new test::FSystemTest());
-  test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
-  test::FSystemTest::ShiftState& mod_key = fsystest->getShiftState();
 
   // Up key
   keycode = finalcut::fc::Fkey_up;
@@ -2721,7 +2756,6 @@ void FTermLinuxTest::modifierKeyTest()
   mod_key.shift = 1;
   mod_keycode = linux.modifierKeyCorrection(keycode);
   CPPUNIT_ASSERT ( mod_keycode == finalcut::fc::Fkey_space );
-  delete fsys;
 }
 
 // Put the test suite in the registry

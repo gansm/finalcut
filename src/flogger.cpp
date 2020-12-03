@@ -34,12 +34,7 @@ namespace finalcut
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FLogger::FLogger()
-{ }
-
-//----------------------------------------------------------------------
-FLogger::~FLogger()  // destructor
-{ }
+FLogger::~FLogger() noexcept = default;  // destructor
 
 
 // private methods of FLogger

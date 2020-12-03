@@ -192,9 +192,9 @@ class FMenu : public FWindow, public FMenuList
     void         mouseMoveDeselection (FMenuItem*, MouseStates&);
     void         mouseUpOverBorder();
     void         mouseMoveOverBorder (MouseStates&) const;
-    void         passEventToSubMenu (const FMouseEvent&&);
-    void         passEventToSuperMenu (const FMouseEvent&&);
-    void         passEventToMenuBar (const FMouseEvent&&) const;
+    void         passEventToSubMenu (const FMouseEvent&);
+    void         passEventToSuperMenu (const FMouseEvent&);
+    void         passEventToMenuBar (const FMouseEvent&) const;
     bool         containsMenuStructure (const FPoint&);
     bool         containsMenuStructure (int, int);
     FMenu*       superMenuAt (const FPoint&);

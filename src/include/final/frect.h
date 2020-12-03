@@ -65,7 +65,7 @@ class FRect
     FRect (const FPoint&, const FPoint&);
 
     // Accessors
-    FString               getClassName();
+    FString               getClassName() const;
     int                   getX1() const;
     int                   getY1() const;
     int                   getX2() const;
@@ -147,7 +147,7 @@ inline FRect::FRect (int x, int y, std::size_t width, std::size_t height)
 { }
 
 //----------------------------------------------------------------------
-inline FString FRect::getClassName()
+inline FString FRect::getClassName() const
 { return "FRect"; }
 
 //----------------------------------------------------------------------

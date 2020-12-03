@@ -99,7 +99,7 @@ class FMessageBox : public FDialog
                 , ButtonType, ButtonType, ButtonType
                 , FWidget* = nullptr );
     // Destructor
-    virtual ~FMessageBox() noexcept override;
+    ~FMessageBox() noexcept override;
 
     // copy assignment operator (=)
     FMessageBox& operator = (const FMessageBox&);

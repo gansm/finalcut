@@ -64,7 +64,7 @@ class FSize
     FSize& operator -= (const FSize&);
 
     // Accessors
-    FString               getClassName();
+    FString               getClassName() const;
     std::size_t           getWidth() const;
     std::size_t           getHeight() const;
     std::size_t           getArea() const;
@@ -111,7 +111,7 @@ inline FSize::FSize (std::size_t w, std::size_t h)
 { }
 
 //----------------------------------------------------------------------
-inline FString FSize::getClassName()
+inline FString FSize::getClassName() const
 { return "FSize"; }
 
 //----------------------------------------------------------------------

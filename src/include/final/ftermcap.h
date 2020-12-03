@@ -60,16 +60,13 @@
 #include <utility>
 #include <vector>
 
+#include "final/ftermcap.h"
+
 // FTermcap string macro
 #define TCAP(...)  FTermcap::strings[__VA_ARGS__].string
 
 namespace finalcut
 {
-
-// class forward declaration
-class FSystem;
-class FTermData;
-class FTermDetection;
 
 //----------------------------------------------------------------------
 // class FTermcap
@@ -148,10 +145,8 @@ class FTermcap final
     static int           _tputs (const char*, int, fn_putc);
 
     // Data member
-    static FSystem*        fsystem;
-    static FTermData*      fterm_data;
-    static FTermDetection* term_detection;
-    static char            string_buf[BUF_SIZE];
+    static char          string_buf[BUF_SIZE];
+    static bool          initialized;
 };
 
 
@@ -206,7 +201,7 @@ int FTermcap::paddingPrint (const CharT& str, int affcnt, fn_putc putc)
 //----------------------------------------------------------------------
 inline bool FTermcap::isInitialized()
 {
-  return bool(fsystem && fterm_data && term_detection);
+  return initialized;
 }
 
 }  // namespace finalcut

@@ -90,24 +90,18 @@ namespace finalcut
 class FMouseData
 {
   public:
+    // Constructor
+    FMouseData() = default;
+
+    // Copy constructor
+    FMouseData (const FMouseData&) = default;
+
+    // Destructor
+    virtual ~FMouseData() noexcept;
+
     // Accessors
     virtual FString       getClassName() const;
     const FPoint&         getPos() const;
-
-    // Constructor
-    FMouseData();
-
-    // Default copy constructor
-    FMouseData (const FMouseData&) = default;
-    // Default move constructor
-    FMouseData (FMouseData&&) = default;
-    // Default copy assignment operator (=)
-    FMouseData& operator = (const FMouseData&) = default;
-    // Default move assignment operator (=)
-    FMouseData& operator = (FMouseData&&) = default;
-
-    // Destructor
-    virtual ~FMouseData();
 
     // Inquiries
     bool                  isLeftButtonPressed() const;
@@ -185,9 +179,6 @@ class FMouse : public FMouseData
     // Constructor
     FMouse();
 
-    // Destructor
-    ~FMouse() override;
-
     // Accessors
     FString               getClassName() const override;
     void                  clearEvent();
@@ -256,9 +247,6 @@ class FMouseGPM final : public FMouse
     // Constructor
     FMouseGPM();
 
-    // Destructor
-    ~FMouseGPM() override = default;
-
     // Accessors
     FString              getClassName() const override;
 
@@ -321,12 +309,6 @@ inline bool FMouseGPM::isGpmMouseEnabled() const
 class FMouseX11 final : public FMouse
 {
   public:
-    // Constructor
-    FMouseX11() = default;
-
-    // Destructor
-    ~FMouseX11() override = default;
-
     // Accessors
     FString              getClassName() const override;
 
@@ -380,12 +362,6 @@ class FMouseX11 final : public FMouse
 class FMouseSGR final : public FMouse
 {
   public:
-    // Constructor
-    FMouseSGR() = default;
-
-    // Destructor
-    ~FMouseSGR() override = default;
-
     // Accessors
     FString       getClassName() const override;
 
@@ -439,12 +415,6 @@ class FMouseSGR final : public FMouse
 class FMouseUrxvt final : public FMouse
 {
   public:
-    // Constructor
-    FMouseUrxvt() = default;
-
-    // Destructor
-    ~FMouseUrxvt() override = default;
-
     // Accessors
     FString       getClassName() const override;
 
@@ -527,14 +497,8 @@ class FMouseControl
     // Constructor
     FMouseControl();
 
-    // Disable copy constructor
-    FMouseControl (const FMouseControl&) = delete;
-
     // Destructor
     virtual ~FMouseControl();
-
-    // Disable copy assignment operator (=)
-    FMouseControl& operator = (const FMouseControl&) = delete;
 
     // Accessors
     virtual FString           getClassName() const;
@@ -545,7 +509,7 @@ class FMouseControl
     void                      setStdinNo (int);
     void                      setMaxWidth (uInt16);
     void                      setMaxHeight (uInt16);
-    void                      setDblclickInterval (const uInt64);
+    void                      setDblclickInterval (const uInt64) const;
     void                      setEventCommand (const FMouseCommand&);
     void                      useGpmMouse (bool = true);
     void                      useXtermMouse (bool = true);

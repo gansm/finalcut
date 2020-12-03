@@ -54,8 +54,8 @@ FStringStream::FStringStream (FStringStream&& sstream) noexcept
 }
 
 //----------------------------------------------------------------------
-FStringStream::~FStringStream()  // destructor
-{ }
+FStringStream::~FStringStream() noexcept = default;
+
 
 // public methods of FStringStream
 //----------------------------------------------------------------------

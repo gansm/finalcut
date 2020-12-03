@@ -195,7 +195,7 @@ class FDialog : public FWindow
     void                  pressZoomButton (const MouseStates&);
     bool                  isMouseOverMenu (const FPoint&) const;
     void                  passEventToSubMenu ( const MouseStates&
-                                             , const FMouseEvent&& );
+                                             , const FMouseEvent& );
     void                  moveSizeKey (FKeyEvent*);
     void                  raiseActivateDialog();
     void                  lowerActivateDialog();

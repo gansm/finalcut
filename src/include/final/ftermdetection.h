@@ -207,9 +207,6 @@ class FTermDetection final
     static int            gnome_terminal_id;
     static const FString* answer_back;
     static const FString* sec_da;
-    static FTermData*     fterm_data;
-    static FSystem*       fsystem;
-    static FKeyboard*     keyboard;
     static FTerminalType  terminal_type;
     static colorEnv       color_env;
     static secondaryDA    secondary_da;

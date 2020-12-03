@@ -66,10 +66,10 @@ class FLogger : public FLog
 {
   public:
     // Constructor
-    FLogger();
+    FLogger() = default;
 
     // Destructor
-    ~FLogger() override;
+    ~FLogger() noexcept override;
 
     // Methods
     FString getClassName() const override;

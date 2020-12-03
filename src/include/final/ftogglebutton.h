@@ -148,7 +148,7 @@ class FToggleButton : public FWidget
 
     // Methods
     void                init();
-    void                drawText (FString&&, std::size_t);
+    void                drawText (const FString&, std::size_t);
     void                correctSize (FSize&) const;
 
     // Data members

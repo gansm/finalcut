@@ -38,10 +38,6 @@
 namespace finalcut
 {
 
-// class forward declaration
-class FTermData;
-class FTermDetection;
-
 //----------------------------------------------------------------------
 // class FTermcapsQuirks
 //----------------------------------------------------------------------
@@ -77,10 +73,6 @@ class FTermcapQuirks final
     static void screen();
     static void general();
     static void ecma48();
-
-    // Data members
-    static FTermData*          fterm_data;
-    static FTermDetection*     term_detection;
 };
 
 // FTermcapQuirks inline functions

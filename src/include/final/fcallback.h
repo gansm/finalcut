@@ -135,13 +135,13 @@ class FCallback
                               , std::nullptr_t >;
 
     // Constructors
-    FCallback();
+    FCallback() = default;
 
     // Disable copy constructor
     FCallback (const FCallback&) = delete;
 
     // Destructor
-    ~FCallback();
+    ~FCallback() noexcept = default;
 
     // Disable copy assignment operator (=)
     FCallback& operator = (const FCallback&) = delete;

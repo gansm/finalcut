@@ -50,7 +50,7 @@ void doubleToItem ( FListBoxItem& item
                   , FDataAccess* container
                   , std::size_t index )
 {
-  typedef std::list<double> DblList;
+  using DblList = std::list<double>;
   DblList& dbl_list = flistboxhelper::getContainer<DblList>(container);
   std::list<double>::iterator iter = dbl_list.begin();
   std::advance (iter, index);

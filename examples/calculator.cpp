@@ -122,7 +122,7 @@ class Calc final : public finalcut::FDialog
 
   private:
     // Typedef and Enumeration
-    typedef std::function<void(lDouble&)> keyFunction;  // Member function
+    using keyFunction = std::function<void(lDouble&)>;  // Member function
 
     enum button
     {

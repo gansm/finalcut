@@ -72,13 +72,13 @@ class FStringStream : public std::wiostream
     FStringStream (FStringStream&&) noexcept;
 
     // Destructor
-    ~FStringStream();
+    ~FStringStream() noexcept;
 
     // Disable copy assignment operator (=)
     FStringStream& operator = (const FStringStream&) = delete;
 
     // Move assignment operator (=)
-    FStringStream& operator = (FStringStream&& sstream) noexcept;
+    FStringStream& operator = (FStringStream&&) noexcept;
 
     virtual FString getClassName() const;
     void swap (FStringStream&) noexcept;

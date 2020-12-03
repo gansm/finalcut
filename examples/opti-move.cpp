@@ -136,10 +136,10 @@ class DirectLogger final : public finalcut::FLog
 {
   public:
     // Constructor
-    DirectLogger();
+    DirectLogger() = default;
 
     // Destructor
-    ~DirectLogger() override;
+    ~DirectLogger() noexcept override;
 
     void info (const std::string& entry) override
     {
@@ -194,12 +194,7 @@ class DirectLogger final : public finalcut::FLog
 };
 
 //----------------------------------------------------------------------
-DirectLogger::DirectLogger()  // constructor
-{ }
-
-//----------------------------------------------------------------------
-DirectLogger::~DirectLogger()  // destructor
-{ }
+DirectLogger::~DirectLogger() noexcept = default;  // destructor
 
 
 //----------------------------------------------------------------------

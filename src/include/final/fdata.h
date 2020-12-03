@@ -118,10 +118,10 @@ class FDataAccess
 {
   public:
     // Constructor
-    FDataAccess();
+    FDataAccess() = default;
 
     // Destructor
-    virtual ~FDataAccess();
+    virtual ~FDataAccess() noexcept;
 
     // Accessors
     virtual FString getClassName() const
@@ -166,8 +166,7 @@ class FData : public FDataAccess
     { }
 
     // Destructor
-    ~FData() override
-    { }
+    ~FData() noexcept override = default;
 
     FData (const FData& d)  // Copy constructor
       : value{d.value}
