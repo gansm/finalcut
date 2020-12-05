@@ -815,7 +815,7 @@ void FTermLinux::writeAttributeController (uChar index, uChar data) const
 }
 
 //----------------------------------------------------------------------
-inline uChar FTermLinux::getAttributeMode()
+inline uChar FTermLinux::getAttributeMode() const
 {
   // Gets the attribute mode value from the vga attribute controller
   static constexpr uChar attrib_mode = 0x10;
@@ -823,7 +823,7 @@ inline uChar FTermLinux::getAttributeMode()
 }
 
 //----------------------------------------------------------------------
-inline void FTermLinux::setAttributeMode (uChar data)
+inline void FTermLinux::setAttributeMode (uChar data) const
 {
   // Sets the attribute mode value from the vga attribute controller
   static constexpr uChar attrib_mode = 0x10;

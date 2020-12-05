@@ -95,7 +95,8 @@ class FMessageBox : public FDialog
     // Constructors
     explicit FMessageBox (FWidget* = nullptr);
 
-    FMessageBox (const FMessageBox&) = default;  // copy constructor
+    // Disable copy constructor
+    FMessageBox (const FMessageBox&) = delete;
 
     FMessageBox ( const FString&, const FString&
                 , ButtonType, ButtonType, ButtonType
@@ -104,8 +105,8 @@ class FMessageBox : public FDialog
     // Destructor
     ~FMessageBox() noexcept override;
 
-    // copy assignment operator (=)
-    FMessageBox& operator = (const FMessageBox&);
+    // Disable copy assignment operator (=)
+    FMessageBox& operator = (const FMessageBox&) = delete;
 
     // Accessor
     FString             getClassName() const override;
@@ -151,6 +152,7 @@ class FMessageBox : public FDialog
 
     // Using-declaration
     using FButtons = std::array<std::unique_ptr<FButton>, MAX_BUTTONS>;
+    using FButtonsDigit = std::array<ButtonType, MAX_BUTTONS>;
 
     // Methods
     void                init();
@@ -165,12 +167,11 @@ class FMessageBox : public FDialog
     FString       headline_text{};
     FString       text{};
     FStringList   text_components{};
-
     FButtons      button{};
     std::size_t   max_line_width{0};
     FColor        emphasis_color{getColorTheme()->dialog_emphasis_fg};
     ButtonType    result_code{ButtonType::Reject};
-    ButtonType    button_digit[MAX_BUTTONS]{ButtonType::Reject};
+    FButtonsDigit button_digit{ButtonType::Reject};
     std::size_t   num_buttons{0};
     std::size_t   text_num_lines{0};
     bool          center_text{false};

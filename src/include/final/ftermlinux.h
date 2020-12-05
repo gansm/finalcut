@@ -156,8 +156,8 @@ class FTermLinux final
     uInt16               getInputStatusRegisterOne() const;
     uChar                readAttributeController (uChar) const;
     void                 writeAttributeController (uChar, uChar) const;
-    uChar                getAttributeMode();
-    void                 setAttributeMode (uChar);
+    uChar                getAttributeMode() const;
+    void                 setAttributeMode (uChar) const;
     int                  setBlinkAsIntensity (bool);
     bool                 has9BitCharacters();
     void                 getVGAPalette();

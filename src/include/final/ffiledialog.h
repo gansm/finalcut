@@ -96,17 +96,20 @@ class FFileDialog : public FDialog
 
     // Constructors
     explicit FFileDialog (FWidget* = nullptr);
-    FFileDialog (const FFileDialog&);  // copy constructor
+
     FFileDialog ( const FString&
                 , const FString&
                 , DialogType = DialogType::Open
                 , FWidget* = nullptr );
 
+    // Disable copy constructor
+    FFileDialog (const FFileDialog&) = delete;
+
     // Destructor
     ~FFileDialog() override;
 
-    // copy assignment operator (=)
-    FFileDialog& operator = (const FFileDialog&);
+    // Disable copy assignment operator (=)
+    FFileDialog& operator = (const FFileDialog&) = delete;
 
     // Accessors
     FString              getClassName() const override;

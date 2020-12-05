@@ -55,8 +55,7 @@ class FWidget;
 struct FCallbackData
 {
   // Constructor
-  FCallbackData()
-  { }
+  FCallbackData() = default;
 
   template <typename FuncPtr>
   FCallbackData (const FString& s, FWidget* i, FuncPtr m, const FCall& c)

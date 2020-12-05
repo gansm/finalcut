@@ -1287,18 +1287,14 @@ void FTerm::init_alt_charset()
     }
   }
 
-  enum Column : int
-  {
-    vt100_key = 0,
-    utf8_char = 1
-  };
-
   // Update array 'character' with discovered VT100 pairs
-  for (auto&& pair : fc::vt100_key_to_utf8)
+  for (auto&& pair : fc::dec_special_graphics)
   {
-    const auto keyChar = uChar(pair[vt100_key]);
+    const auto vt100 = std::size_t(fc::DECSpecialGraphics::vt100);
+    const auto utf8 = std::size_t(fc::DECSpecialGraphics::utf8);
+    const auto keyChar = uChar(pair[vt100]);
     const auto altChar = uChar(vt100_alt_char[keyChar]);
-    const auto utf8char = uInt(pair[utf8_char]);
+    const auto utf8char = uInt(pair[utf8]);
     const auto p = std::find_if ( fc::character.begin()
                                 , fc::character.end()
                                 , [&utf8char] (std::array<uInt, 4> entry)

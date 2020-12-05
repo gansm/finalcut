@@ -92,6 +92,13 @@ enum encoding
   UNKNOWN
 };
 
+// vt100 <-> utf-8
+enum class DECSpecialGraphics : std::size_t
+{
+  vt100 = 0,  // First column
+  utf8 = 1    // Second column
+};
+
 // VT100 line graphic keys
 enum vt100_keys : char
 {

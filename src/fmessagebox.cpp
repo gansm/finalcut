@@ -78,36 +78,6 @@ FMessageBox::~FMessageBox() noexcept = default;  // destructor
 
 // public methods of FMessageBox
 //----------------------------------------------------------------------
-FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
-{
-  if ( &mbox == this )
-  {
-    return *this;
-  }
-  else
-  {
-    if ( mbox.getParentWidget() )
-      mbox.getParentWidget()->addChild (this);
-
-    setTitlebarText (mbox.getTitlebarText());
-    headline_text   = mbox.headline_text;
-    text            = mbox.text;
-    text_components = mbox.text_components;
-    max_line_width  = mbox.max_line_width;
-    center_text     = mbox.center_text;
-    emphasis_color  = mbox.emphasis_color;
-    num_buttons     = mbox.num_buttons;
-    text_num_lines  = mbox.text_num_lines;
-    button_digit[0] = mbox.button_digit[0];
-    button_digit[1] = mbox.button_digit[1];
-    button_digit[2] = mbox.button_digit[2];
-    init();
-
-    return *this;
-  }
-}
-
-//----------------------------------------------------------------------
 void FMessageBox::setHeadline (const FString& headline)
 {
   headline_text.setString(headline);

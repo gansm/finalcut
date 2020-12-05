@@ -103,16 +103,6 @@ FFileDialog::FFileDialog (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FFileDialog::FFileDialog (const FFileDialog& fdlg)
-  : FDialog{fdlg.getParentWidget()}
-{
-  if ( fdlg.directory )
-    setPath(fdlg.directory);
-
-  init();
-}
-
-//----------------------------------------------------------------------
 FFileDialog::FFileDialog ( const FString& dirname
                          , const FString& filter
                          , DialogType type
@@ -135,33 +125,6 @@ FFileDialog::~FFileDialog()  // destructor
 
 
 // public methods of FFileDialog
-//----------------------------------------------------------------------
-FFileDialog& FFileDialog::operator = (const FFileDialog& fdlg)
-{
-  if ( &fdlg == this )
-  {
-    return *this;
-  }
-  else
-  {
-    clear();
-
-    if ( fdlg.getParentWidget() )
-      fdlg.getParentWidget()->addChild (this);
-
-    directory = fdlg.directory;
-    filter_pattern = fdlg.filter_pattern;
-    dlg_type = fdlg.dlg_type;
-    show_hidden = fdlg.show_hidden;
-
-    if ( directory )
-      setPath(directory);
-
-    init();
-    return *this;
-  }
-}
-
 //----------------------------------------------------------------------
 FString FFileDialog::getSelectedFile() const
 {

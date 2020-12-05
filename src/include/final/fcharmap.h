@@ -39,7 +39,7 @@ namespace fc
 {
 
 extern std::array<std::array<uInt, fc::NUM_OF_ENCODINGS>, 115> character;
-extern const std::array<std::array<int, 2>, 39> vt100_key_to_utf8;
+extern const std::array<std::array<int, 2>, 39> dec_special_graphics;
 extern const std::array<std::array<wchar_t, 2>, 256> cp437_ucs;
 extern const std::array<std::array<wchar_t, 2>, 227> halfwidth_fullwidth;
 

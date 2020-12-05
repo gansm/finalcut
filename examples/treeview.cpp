@@ -161,12 +161,12 @@ class Treeview final : public finalcut::FDialog
     struct TreeItem;  // forward declaration
 
     // Methods
-    auto initAfrica() -> std::initializer_list<TreeItem> const;
-    auto initAsia() -> std::initializer_list<TreeItem> const;
-    auto initEurope() -> std::initializer_list<TreeItem> const;
-    auto initNorthAmerica() -> std::initializer_list<TreeItem> const;
-    auto initSouthAmerica() -> std::initializer_list<TreeItem> const;
-    auto initOceania() -> std::initializer_list<TreeItem> const;
+    auto initAfrica() const -> std::initializer_list<TreeItem>;
+    auto initAsia() const -> std::initializer_list<TreeItem>;
+    auto initEurope() const -> std::initializer_list<TreeItem>;
+    auto initNorthAmerica() const -> std::initializer_list<TreeItem>;
+    auto initSouthAmerica() const -> std::initializer_list<TreeItem>;
+    auto initOceania() const -> std::initializer_list<TreeItem>;
     void adjustSize() override;
 
     // Event handler
@@ -275,7 +275,7 @@ Treeview::Treeview (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initAfrica() -> std::initializer_list<Treeview::TreeItem> const
+auto Treeview::initAfrica() const -> std::initializer_list<Treeview::TreeItem>
 {
   static const auto list = std::initializer_list<Treeview::TreeItem>
   {
@@ -306,7 +306,7 @@ auto Treeview::initAfrica() -> std::initializer_list<Treeview::TreeItem> const
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initAsia() -> std::initializer_list<Treeview::TreeItem> const
+auto Treeview::initAsia() const -> std::initializer_list<Treeview::TreeItem>
 {
   static const auto list = std::initializer_list<Treeview::TreeItem>
   {
@@ -334,7 +334,7 @@ auto Treeview::initAsia() -> std::initializer_list<Treeview::TreeItem> const
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initEurope() -> std::initializer_list<Treeview::TreeItem> const
+auto Treeview::initEurope() const -> std::initializer_list<Treeview::TreeItem>
 {
   static const auto list = std::initializer_list<Treeview::TreeItem>
   {
@@ -362,7 +362,7 @@ auto Treeview::initEurope() -> std::initializer_list<Treeview::TreeItem> const
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initNorthAmerica() -> std::initializer_list<Treeview::TreeItem> const
+auto Treeview::initNorthAmerica() const -> std::initializer_list<Treeview::TreeItem>
 {
   static const auto list = std::initializer_list<Treeview::TreeItem>
   {
@@ -379,7 +379,7 @@ auto Treeview::initNorthAmerica() -> std::initializer_list<Treeview::TreeItem> c
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initSouthAmerica() -> std::initializer_list<Treeview::TreeItem> const
+auto Treeview::initSouthAmerica() const -> std::initializer_list<Treeview::TreeItem>
 {
   static const auto list = std::initializer_list<Treeview::TreeItem>
   {
@@ -398,7 +398,7 @@ auto Treeview::initSouthAmerica() -> std::initializer_list<Treeview::TreeItem> c
 }
 
 //----------------------------------------------------------------------
-auto Treeview::initOceania() -> std::initializer_list<Treeview::TreeItem> const
+auto Treeview::initOceania() const -> std::initializer_list<Treeview::TreeItem>
 {
   static const auto list = std::initializer_list<Treeview::TreeItem>
   {

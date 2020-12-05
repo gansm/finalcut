@@ -161,7 +161,7 @@ std::array<std::array<uInt, fc::NUM_OF_ENCODINGS>, 115> character =
  * (2) Only supported in use with newfont
  */
 
-constexpr std::array<std::array<int, 2>, 39> vt100_key_to_utf8 =
+constexpr std::array<std::array<int, 2>, 39> dec_special_graphics =
 {{
   {{fc::vt100_key_rarrow   , fc::BlackRightPointingPointer}},     // ►
   {{fc::vt100_key_larrow   , fc::BlackLeftPointingPointer}},      // ◄
