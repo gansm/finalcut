@@ -36,7 +36,7 @@ namespace finalcut
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FRect::FRect (const FPoint& p, const FSize& s)
+FRect::FRect (const FPoint& p, const FSize& s) noexcept
   : X1{p.getX()}
   , Y1{p.getY()}
   , X2{p.getX() + int(s.getWidth()) - 1}
@@ -44,7 +44,7 @@ FRect::FRect (const FPoint& p, const FSize& s)
 { }
 
 //----------------------------------------------------------------------
-FRect::FRect (const FPoint& p1, const FPoint& p2)
+FRect::FRect (const FPoint& p1, const FPoint& p2) noexcept
   : X1{p1.getX()}
   , Y1{p1.getY()}
   , X2{p2.getX()}

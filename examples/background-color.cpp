@@ -99,7 +99,7 @@ Background::Background (finalcut::FWidget* parent)
 
   // Combobox
   color_choice.setGeometry (FPoint{2, 2}, FSize{18, 1});
-  color_choice.setLabelOrientation (finalcut::FLineEdit::label_above);
+  color_choice.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::above);
   color_choice.setLabelText ("Color choice");
   color_choice.unsetEditable();
 
@@ -111,19 +111,19 @@ Background::Background (finalcut::FWidget* parent)
 
   // Spin boxes
   red.setGeometry (FPoint{2, 5}, FSize{7, 1});
-  red.setLabelOrientation (finalcut::FLineEdit::label_above);
+  red.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::above);
   red.setLabelText ("Red");
   red.setRange (0, 255);
   red.setValue (0x80);
 
   green.setGeometry (FPoint{12, 5}, FSize{7, 1});
-  green.setLabelOrientation (finalcut::FLineEdit::label_above);
+  green.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::above);
   green.setLabelText ("Green");
   green.setRange (0, 255);
   green.setValue (0xa4);
 
   blue.setGeometry (FPoint{22, 5}, FSize{7, 1});
-  blue.setLabelOrientation (finalcut::FLineEdit::label_above);
+  blue.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::above);
   blue.setLabelText ("Blue");
   blue.setRange (0, 255);
   blue.setValue (0xec);

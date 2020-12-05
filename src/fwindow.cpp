@@ -681,7 +681,7 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
   // Disable terminal updates to avoid flickering
   // when redrawing the focused widget
   if ( widget )
-    widget->setTerminalUpdates (FVTerm::stop_terminal_updates);
+    widget->setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
 
   const bool is_activated = activatePrevWindow();
   auto active_win = static_cast<FWindow*>(getActiveWindow());
@@ -729,7 +729,7 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
 
   // Enable terminal updates again
   if ( widget )
-    widget->setTerminalUpdates (FVTerm::continue_terminal_updates);
+    widget->setTerminalUpdates (FVTerm::TerminalUpdate::Continue);
 }
 
 //----------------------------------------------------------------------

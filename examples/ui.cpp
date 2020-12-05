@@ -809,9 +809,9 @@ void MyDialog::cb_about()
                              , line + L" FINAL CUT " + line + L"\n\n"
                                L"Version " + libver + L"\n\n"
                                L"(c) 2020 by Markus Gans"
-                             , finalcut::FMessageBox::Ok
-                             , finalcut::FMessageBox::Reject
-                             , finalcut::FMessageBox::Reject
+                             , finalcut::FMessageBox::ButtonType::Ok
+                             , finalcut::FMessageBox::ButtonType::Reject
+                             , finalcut::FMessageBox::ButtonType::Reject
                              , this );
   info.setCenterText();
   info.show();
@@ -832,9 +832,9 @@ void MyDialog::cb_terminfo()
       << "  Size: " << x << fc::Times
                     << y << "\n"
       << "Colors: " << finalcut::FTerm::getMaxColor()
-    , finalcut::FMessageBox::Ok
-    , finalcut::FMessageBox::Reject
-    , finalcut::FMessageBox::Reject
+    , finalcut::FMessageBox::ButtonType::Ok
+    , finalcut::FMessageBox::ButtonType::Reject
+    , finalcut::FMessageBox::ButtonType::Reject
     , this
   );
   info1.setHeadline("Terminal:");
@@ -850,9 +850,9 @@ void MyDialog::cb_drives()
     , "Generic:       \n\n"
       "Network:       \n\n"
       "     CD:"
-    , finalcut::FMessageBox::Ok
-    , finalcut::FMessageBox::Reject
-    , finalcut::FMessageBox::Reject
+    , finalcut::FMessageBox::ButtonType::Ok
+    , finalcut::FMessageBox::ButtonType::Reject
+    , finalcut::FMessageBox::ButtonType::Reject
     , this
   );
 

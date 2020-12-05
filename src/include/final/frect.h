@@ -59,10 +59,10 @@ class FRect
 {
   public:
     // Constructors
-    FRect () = default;
-    FRect (int, int, std::size_t, std::size_t);
-    FRect (const FPoint&, const FSize&);
-    FRect (const FPoint&, const FPoint&);
+    FRect () noexcept = default;
+    FRect (int, int, std::size_t, std::size_t) noexcept;
+    FRect (const FPoint&, const FSize&) noexcept;
+    FRect (const FPoint&, const FPoint&) noexcept;
 
     // Accessors
     FString               getClassName() const;
@@ -139,7 +139,7 @@ class FRect
 
 // FRect inline functions
 //----------------------------------------------------------------------
-inline FRect::FRect (int x, int y, std::size_t width, std::size_t height)
+inline FRect::FRect (int x, int y, std::size_t width, std::size_t height) noexcept
   : X1{x}
   , Y1{y}
   , X2{x + int(width) - 1}

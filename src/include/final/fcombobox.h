@@ -134,6 +134,7 @@ class FComboBox : public FWidget
   public:
     // Using-declaration
     using FWidget::setGeometry;
+    using LabelOrientation = FLineEdit::LabelOrientation;
 
     // Constructors
     explicit FComboBox (FWidget* = nullptr);
@@ -155,7 +156,7 @@ class FComboBox : public FWidget
     FString             getText() const;
     template <typename DT>
     clean_fdata_t<DT>&  getItemData();
-    FLineEdit::label_o  getLabelOrientation() const;
+    LabelOrientation    getLabelOrientation() const;
 
     // Mutators
     void                setSize (const FSize&, bool = true) override;
@@ -179,7 +180,7 @@ class FComboBox : public FWidget
     void                setText (const FString&);
     void                clearText();
     void                setLabelText (const FString&);
-    void                setLabelOrientation (const FLineEdit::label_o);
+    void                setLabelOrientation (const LabelOrientation);
 
     // Inquiries
     bool                hasShadow() const;
@@ -261,7 +262,7 @@ inline clean_fdata_t<DT>& FComboBox::getItemData()
 }
 
 //----------------------------------------------------------------------
-inline FLineEdit::label_o FComboBox::getLabelOrientation() const
+inline FLineEdit::LabelOrientation FComboBox::getLabelOrientation() const
 { return input_field.getLabelOrientation(); }
 
 //----------------------------------------------------------------------
@@ -342,7 +343,7 @@ inline void FComboBox::setLabelText (const FString& s)
 { input_field.setLabelText(s); }
 
 //----------------------------------------------------------------------
-inline void FComboBox::setLabelOrientation (const FLineEdit::label_o o)
+inline void FComboBox::setLabelOrientation (const LabelOrientation o)
 { input_field.setLabelOrientation(o); }
 
 }  // namespace finalcut

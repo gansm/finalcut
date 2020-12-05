@@ -198,7 +198,7 @@ void FTermLinux::init()
 }
 
 //----------------------------------------------------------------------
-void FTermLinux::initCharMap()
+void FTermLinux::initCharMap() const
 {
   constexpr sInt16 NOT_FOUND = -1;
 
@@ -767,7 +767,7 @@ inline uInt16 FTermLinux::getInputStatusRegisterOne() const
 }
 
 //----------------------------------------------------------------------
-uChar FTermLinux::readAttributeController (uChar index)
+uChar FTermLinux::readAttributeController (uChar index) const
 {
   // Reads a byte from the attribute controller from a given index
 
@@ -793,7 +793,7 @@ uChar FTermLinux::readAttributeController (uChar index)
 }
 
 //----------------------------------------------------------------------
-void FTermLinux::writeAttributeController (uChar index, uChar data)
+void FTermLinux::writeAttributeController (uChar index, uChar data) const
 {
   // Writes a byte from the attribute controller from a given index
 

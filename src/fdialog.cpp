@@ -189,9 +189,9 @@ void FDialog::hide()
 }
 
 //----------------------------------------------------------------------
-int FDialog::exec()
+FDialog::ResultCode FDialog::exec()
 {
-  result_code = FDialog::Reject;
+  result_code = ResultCode::Reject;
   show();
   return result_code;
 }
@@ -484,7 +484,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
     ev->accept();
 
     if ( isModal() )
-      done (FDialog::Reject);
+      done (ResultCode::Reject);
     else
       close();
   }
@@ -664,7 +664,7 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
     setClickedWidget(nullptr);
 
     if ( isModal() )
-      done (FDialog::Reject);
+      done (ResultCode::Reject);
     else
       close();
   }
@@ -761,7 +761,7 @@ void FDialog::onWindowLowered (FEvent*)
 
 // protected methods of FDialog
 //----------------------------------------------------------------------
-void FDialog::done(int result)
+void FDialog::done (ResultCode result)
 {
   hide();
   result_code = result;
@@ -807,7 +807,7 @@ void FDialog::drawDialogShadow()
 void FDialog::onClose (FCloseEvent* ev)
 {
   ev->accept();
-  result_code = FDialog::Reject;
+  result_code = ResultCode::Reject;
 }
 
 

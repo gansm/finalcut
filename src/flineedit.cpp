@@ -214,7 +214,7 @@ void FLineEdit::setLabelText (const FString& ltxt)
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::setLabelOrientation (const label_o o)
+void FLineEdit::setLabelOrientation (const LabelOrientation o)
 {
   label_orientation = o;
   adjustLabel();
@@ -610,15 +610,15 @@ void FLineEdit::adjustLabel()
   if ( hasHotkey() )
     label_width--;
 
-  assert ( label_orientation == label_above
-        || label_orientation == label_left );
+  assert ( label_orientation == LabelOrientation::above
+        || label_orientation == LabelOrientation::left );
 
-  if ( label_orientation == label_above )
+  if ( label_orientation == LabelOrientation::above )
   {
     label->setGeometry ( FPoint{w->getX(), w->getY() - 1}
                        , FSize{label_width, 1} );
   }
-  else if ( label_orientation == label_left )
+  else if ( label_orientation == LabelOrientation::left )
   {
     label->setGeometry ( FPoint{w->getX() - int(label_width) - 1, w->getY()}
                        , FSize{label_width, 1} );
@@ -710,15 +710,15 @@ void FLineEdit::drawInputField()
 
   const std::size_t text_offset_column = [this] ()
   {
-    assert ( input_type == FLineEdit::textfield
-          || input_type == FLineEdit::password );
+    assert ( input_type == InputType::textfield
+          || input_type == InputType::password );
 
     switch ( input_type )
     {
-      case FLineEdit::textfield:
+      case InputType::textfield:
         return printTextField();
 
-      case FLineEdit::password:
+      case InputType::password:
         return printPassword();
     }
 
@@ -782,11 +782,11 @@ inline std::size_t FLineEdit::printPassword()
 //----------------------------------------------------------------------
 inline std::size_t FLineEdit::getCursorColumnPos() const
 {
-  if ( input_type == FLineEdit::textfield )
+  if ( input_type == InputType::textfield )
   {
     return getColumnWidth (print_text, cursor_pos);
   }
-  else if ( input_type == FLineEdit::password )
+  else if ( input_type == InputType::password )
   {
     return cursor_pos;
   }
@@ -803,7 +803,7 @@ inline FString FLineEdit::getPasswordText() const
 //----------------------------------------------------------------------
 inline bool FLineEdit::isPasswordField() const
 {
-  return bool( input_type == FLineEdit::password );
+  return bool( input_type == InputType::password );
 }
 
 //----------------------------------------------------------------------

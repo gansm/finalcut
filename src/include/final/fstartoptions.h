@@ -95,7 +95,6 @@ class FStartOptions final
 
     fc::encoding                encoding{fc::UNKNOWN};
     std::ofstream               logfile_stream{};
-    static FStartOptions*       start_options;
 };
 
 //----------------------------------------------------------------------

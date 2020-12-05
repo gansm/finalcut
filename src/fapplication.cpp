@@ -365,12 +365,14 @@ void FApplication::setKeyboardWidget (FWidget* widget)
 void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 {
   internal::var::app_object->unsetMoveSizeMode();
-  const int ret = FMessageBox::info ( w, "Quit"
-                                    , "Do you really want\n"
-                                      "to quit the program ?"
-                                    , FMessageBox::Yes
-                                    , FMessageBox::No );
-  if ( ret == FMessageBox::Yes )
+  const FMessageBox::ButtonType ret = \
+      FMessageBox::info ( w, "Quit"
+                        , "Do you really want\n"
+                          "to quit the program ?"
+                        , FMessageBox::ButtonType::Yes
+                        , FMessageBox::ButtonType::No );
+
+  if ( ret == FMessageBox::ButtonType::Yes )
     ev->accept();
   else
   {
@@ -1265,7 +1267,7 @@ void FApplication::processCloseWidget()
   if ( ! getWidgetCloseList() || getWidgetCloseList()->empty() )
     return;
 
-  setTerminalUpdates (FVTerm::stop_terminal_updates);
+  setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
   auto iter = getWidgetCloseList()->begin();
 
   while ( iter != getWidgetCloseList()->end() && *iter )
@@ -1275,7 +1277,7 @@ void FApplication::processCloseWidget()
   }
 
   getWidgetCloseList()->clear();
-  setTerminalUpdates (FVTerm::start_terminal_updates);
+  setTerminalUpdates (FVTerm::TerminalUpdate::Start);
 }
 
 //----------------------------------------------------------------------

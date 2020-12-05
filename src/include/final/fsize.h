@@ -56,8 +56,8 @@ class FSize
 {
   public:
     // Constructors
-    FSize () = default;
-    FSize (std::size_t, std::size_t);
+    FSize () noexcept = default;
+    FSize (std::size_t, std::size_t) noexcept;
 
     // Overloaded operators
     FSize& operator += (const FSize&);
@@ -105,7 +105,7 @@ class FSize
 
 // FSize inline functions
 //----------------------------------------------------------------------
-inline FSize::FSize (std::size_t w, std::size_t h)
+inline FSize::FSize (std::size_t w, std::size_t h) noexcept
   : width{w}
   , height{h}
 { }

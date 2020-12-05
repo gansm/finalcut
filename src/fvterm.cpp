@@ -153,19 +153,19 @@ void FVTerm::setTermXY (int x, int y) const
 }
 
 //----------------------------------------------------------------------
-void FVTerm::setTerminalUpdates (terminal_update refresh_state) const
+void FVTerm::setTerminalUpdates (TerminalUpdate refresh_state) const
 {
-  if ( refresh_state == stop_terminal_updates )
+  if ( refresh_state == TerminalUpdate::Stop )
   {
     no_terminal_updates = true;
   }
-  else if ( refresh_state == continue_terminal_updates
-         || refresh_state == start_terminal_updates )
+  else if ( refresh_state == TerminalUpdate::Continue
+         || refresh_state == TerminalUpdate::Start )
   {
     no_terminal_updates = false;
   }
 
-  if ( refresh_state == start_terminal_updates )
+  if ( refresh_state == TerminalUpdate::Start )
     updateTerminal();
 }
 
@@ -305,8 +305,9 @@ void FVTerm::addPreprocessingHandler ( const FVTerm* instance
 
   if ( print_area )
   {
-    FVTermPreprocessing obj{ instance, std::move(function) };
     delPreprocessingHandler (instance);
+    auto obj = make_unique<FVTermPreprocessing> \
+        (instance, std::forward<FPreprocessingFunction>(function));
     print_area->preproc_list.emplace_back(std::move(obj));
   }
 }
@@ -324,7 +325,7 @@ void FVTerm::delPreprocessingHandler (const FVTerm* instance)
 
   while ( iter != print_area->preproc_list.end() )
   {
-    if ( iter->instance.get() == instance )
+    if ( iter->get()->instance.get() == instance )
       iter = print_area->preproc_list.erase(iter);
     else
       ++iter;
@@ -803,7 +804,7 @@ bool FVTerm::updateVTermCursor (const FTermArea* area) const
 
     if ( isInsideArea (FPoint{cx, cy}, area)
       && isInsideTerminal (FPoint{x, y})
-      && isCovered (FPoint{x, y}, area) == non_covered )
+      && isCovered (FPoint{x, y}, area) == CoveredState::non_covered )
     {
       vterm->input_cursor_x = x;
       vterm->input_cursor_y = y;
@@ -1362,15 +1363,15 @@ inline bool FVTerm::reallocateTextArea (FTermArea* area, std::size_t size)
 }
 
 //----------------------------------------------------------------------
-FVTerm::covered_state FVTerm::isCovered ( const FPoint& pos
-                                        , const FTermArea* area )
+FVTerm::CoveredState FVTerm::isCovered ( const FPoint& pos
+                                       , const FTermArea* area )
 {
   // Determines the covered state for the given position
 
   if ( ! area )
-    return non_covered;
+    return CoveredState::non_covered;
 
-  auto is_covered = non_covered;
+  auto is_covered = CoveredState::non_covered;
 
   if ( FWidget::getWindowList() && ! FWidget::getWindowList()->empty() )
   {
@@ -1398,11 +1399,11 @@ FVTerm::covered_state FVTerm::isCovered ( const FPoint& pos
 
         if ( tmp->attr.bit.color_overlay )
         {
-          is_covered = half_covered;
+          is_covered = CoveredState::half_covered;
         }
         else if ( ! tmp->attr.bit.transparent )
         {
-          is_covered = fully_covered;
+          is_covered = CoveredState::fully_covered;
           break;
         }
       }
@@ -1524,10 +1525,10 @@ bool FVTerm::updateVTermCharacter ( const FTermArea* area
   // Get covered state
   const auto is_covered = isCovered(terminal_pos, area);
 
-  if ( is_covered == fully_covered )
+  if ( is_covered == CoveredState::fully_covered )
     return false;
 
-  if ( is_covered == half_covered )
+  if ( is_covered == CoveredState::half_covered )
   {
     // Overlapped character
     auto oc = getOverlappedCharacter (terminal_pos, area);
@@ -1610,7 +1611,7 @@ void FVTerm::callPreprocessingHandler (const FTermArea* area)
   for (auto&& pcall : area->preproc_list)
   {
     // call the preprocessing handler
-    auto preprocessingHandler = pcall.function;
+    auto preprocessingHandler = pcall->function;
     preprocessingHandler();
   }
 }
@@ -1623,11 +1624,11 @@ bool FVTerm::hasChildAreaChanges (FTermArea* area) const
 
   return std::any_of ( area->preproc_list.begin()
                      , area->preproc_list.end()
-                     , [] (const FVTermPreprocessing& pcall)
+                     , [] (const std::unique_ptr<FVTermPreprocessing>& pcall)
                        {
-                         return pcall.instance
-                             && pcall.instance->child_print_area
-                             && pcall.instance->child_print_area->has_changes;
+                         return pcall->instance
+                             && pcall->instance->child_print_area
+                             && pcall->instance->child_print_area->has_changes;
                        }
                      );
 }
@@ -1640,8 +1641,8 @@ void FVTerm::clearChildAreaChanges (const FTermArea* area) const
 
   for (auto&& pcall : area->preproc_list)
   {
-    if ( pcall.instance && pcall.instance->child_print_area )
-      pcall.instance->child_print_area->has_changes = false;
+    if ( pcall->instance && pcall->instance->child_print_area )
+      pcall->instance->child_print_area->has_changes = false;
   }
 }
 
@@ -1830,7 +1831,7 @@ void FVTerm::init()
   output_buffer->reserve(TERMINAL_OUTPUT_BUFFER_SIZE + 256);
 
   // term_attribute stores the current state of the terminal
-  term_attribute.ch           = { L'\0' };
+  term_attribute.ch           = {{ L'\0' }};
   term_attribute.fg_color     = fc::Default;
   term_attribute.bg_color     = fc::Default;
   term_attribute.attr.byte[0] = 0;
@@ -2718,7 +2719,7 @@ void FVTerm::printPaddingCharacter (FTermArea* area, const FChar& term_char)
 
   if ( FTerm::getEncoding() == fc::UTF8 )
   {
-    pc.ch = { L'\0' };
+    pc.ch = {{ L'\0' }};
     pc.attr.bit.fullwidth_padding = true;
     pc.attr.bit.char_width = 0;
   }

@@ -98,21 +98,21 @@ class FVTerm
     // Using-declarations
     using FPreprocessingHandler = void (FVTerm::*)();
     using FPreprocessingFunction = std::function<void()>;
-    using FPreprocessing = std::vector<FVTermPreprocessing>;
+    using FPreprocessing = std::vector<std::unique_ptr<FVTermPreprocessing>>;
 
     // Enumerations
-    enum covered_state
+    enum class CoveredState
     {
       non_covered,
       half_covered,
       fully_covered
     };
 
-    enum terminal_update
+    enum class TerminalUpdate
     {
-      stop_terminal_updates,      // No terminal refresh
-      continue_terminal_updates,  // Resuming terminal refresh
-      start_terminal_updates      // Allowing terminal refresh
+      Stop,      // No terminal refresh
+      Continue,  // Resuming terminal refresh
+      Start      // Allowing terminal refresh
     };
 
     // Constructor
@@ -150,7 +150,7 @@ class FVTerm
 
     // Mutators
     void                  setTermXY (int, int) const;
-    void                  setTerminalUpdates (terminal_update) const;
+    void                  setTerminalUpdates (TerminalUpdate) const;
     void                  hideCursor (bool) const;
     void                  hideCursor() const;
     void                  showCursor() const;
@@ -347,7 +347,7 @@ class FVTerm
                                              , std::size_t );
     static bool           reallocateTextArea ( FTermArea*
                                              , std::size_t );
-    static covered_state  isCovered (const FPoint&, const FTermArea*);
+    static CoveredState   isCovered (const FPoint&, const FTermArea*);
     static void           updateOverlappedColor (const FChar&, const FChar&, FChar&);
     static void           updateOverlappedCharacter (FChar&, FChar&);
     static void           updateShadedCharacter (const FChar&, FChar&, FChar&);
@@ -509,7 +509,7 @@ struct FVTerm::FVTermPreprocessing
   { }
 
   FVTermPreprocessing (const FVTermPreprocessing&) = delete;
-  FVTermPreprocessing (FVTermPreprocessing&&) = default;
+  FVTermPreprocessing (FVTermPreprocessing&&) noexcept = default;
   FVTermPreprocessing& operator = (const FVTermPreprocessing&) = delete;
   FVTermPreprocessing& operator = (FVTermPreprocessing&&) noexcept = default;
 

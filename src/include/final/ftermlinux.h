@@ -105,7 +105,7 @@ class FTermLinux final
 
     // Methods
     void                 init();
-    void                 initCharMap();
+    void                 initCharMap() const;
     void                 finish();
     bool                 loadVGAFont();
     bool                 loadNewFont();
@@ -154,8 +154,8 @@ class FTermLinux final
     // Methods
 #if defined(ISA_SYSCTL_SUPPORT)
     uInt16               getInputStatusRegisterOne() const;
-    uChar                readAttributeController (uChar);
-    void                 writeAttributeController (uChar, uChar);
+    uChar                readAttributeController (uChar) const;
+    void                 writeAttributeController (uChar, uChar) const;
     uChar                getAttributeMode();
     void                 setAttributeMode (uChar);
     int                  setBlinkAsIntensity (bool);

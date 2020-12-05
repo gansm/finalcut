@@ -194,9 +194,9 @@ void Listview::cb_showInMessagebox()
                                "Temperature: " + item->getText(3) + "\n"
                                "   Humidity: " + item->getText(4) + "\n"
                                "   Pressure: " + item->getText(5)
-                             , finalcut::FMessageBox::Ok
-                             , finalcut::FMessageBox::Reject
-                             , finalcut::FMessageBox::Reject
+                             , finalcut::FMessageBox::ButtonType::Ok
+                             , finalcut::FMessageBox::ButtonType::Reject
+                             , finalcut::FMessageBox::ButtonType::Reject
                              , this );
   info.show();
 }

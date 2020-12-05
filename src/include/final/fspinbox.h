@@ -66,6 +66,7 @@ class FSpinBox : public FWidget
   public:
     // Using-declaration
     using FWidget::setGeometry;
+    using LabelOrientation = FLineEdit::LabelOrientation;
 
     // Constructors
     explicit FSpinBox (FWidget* = nullptr);
@@ -84,7 +85,7 @@ class FSpinBox : public FWidget
     sInt64              getValue() const;
     FString             getPrefix() const;
     FString             getSuffix() const;
-    FLineEdit::label_o  getLabelOrientation() const;
+    LabelOrientation    getLabelOrientation() const;
 
     // Mutators
     void                setSize (const FSize&, bool = true) override;
@@ -107,7 +108,7 @@ class FSpinBox : public FWidget
     void                setPrefix (const FString&);
     void                setSuffix (const FString&);
     void                setLabelText (const FString&);
-    void                setLabelOrientation (const FLineEdit::label_o);
+    void                setLabelOrientation (const LabelOrientation);
 
     // Inquiries
     bool                hasShadow() const;
@@ -177,7 +178,7 @@ inline FString FSpinBox::getSuffix() const
 { return sfix; }
 
 //----------------------------------------------------------------------
-inline FLineEdit::label_o FSpinBox::getLabelOrientation() const
+inline FLineEdit::LabelOrientation FSpinBox::getLabelOrientation() const
 { return input_field.getLabelOrientation(); }
 
 //----------------------------------------------------------------------
@@ -217,7 +218,7 @@ inline void FSpinBox::setLabelText (const FString& s)
 { input_field.setLabelText(s); }
 
 //----------------------------------------------------------------------
-inline void FSpinBox::setLabelOrientation (const FLineEdit::label_o o)
+inline void FSpinBox::setLabelOrientation (const LabelOrientation o)
 { input_field.setLabelOrientation(o); }
 
 }  // namespace finalcut

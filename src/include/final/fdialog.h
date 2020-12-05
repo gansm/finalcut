@@ -71,7 +71,7 @@ class FDialog : public FWindow
     using FWindow::setResizeable;
 
     // Enumeration
-    enum DialogCode
+    enum class ResultCode : int
     {
       Reject = 0,
       Accept = 1
@@ -119,7 +119,7 @@ class FDialog : public FWindow
     // Methods
     void                  show() override;
     void                  hide() override;
-    int                   exec();
+    ResultCode            exec();
     void                  setPos (const FPoint&, bool = true) override;
     void                  move (const FPoint&) override;
     bool                  moveUp (int);
@@ -147,7 +147,7 @@ class FDialog : public FWindow
 
   protected:
     // Methods
-    virtual void          done (int);
+    void                  done (ResultCode);
     void                  draw() override;
     void                  drawDialogShadow();
 
@@ -217,7 +217,7 @@ class FDialog : public FWindow
 
     // Data members
     FString               tb_text{};  // title bar text
-    int                   result_code{FDialog::Reject};
+    ResultCode            result_code{ResultCode::Reject};
     bool                  zoom_button_pressed{false};
     bool                  zoom_button_active{false};
     bool                  setPos_error{false};

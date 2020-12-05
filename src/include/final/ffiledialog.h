@@ -88,7 +88,7 @@ class FFileDialog : public FDialog
 {
   public:
     // Enumeration
-    enum DialogType
+    enum class DialogType
     {
       Open = 0,
       Save = 1
@@ -99,7 +99,7 @@ class FFileDialog : public FDialog
     FFileDialog (const FFileDialog&);  // copy constructor
     FFileDialog ( const FString&
                 , const FString&
-                , DialogType = FFileDialog::Open
+                , DialogType = DialogType::Open
                 , FWidget* = nullptr );
 
     // Destructor
@@ -219,7 +219,7 @@ class FFileDialog : public FDialog
     FCheckBox        hidden_check{this};
     FButton          cancel_btn{this};
     FButton          open_btn{this};
-    DialogType       dlg_type{FFileDialog::Open};
+    DialogType       dlg_type{DialogType::Open};
     bool             show_hidden{false};
 
     // Friend functions

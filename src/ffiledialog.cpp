@@ -81,7 +81,7 @@ FString fileChooser ( FWidget* parent
                        , type
                        , parent );
 
-  if ( fileopen.exec() == FDialog::Accept )
+  if ( fileopen.exec() == FDialog::ResultCode::Accept )
     ret = fileopen.getPath() + fileopen.getSelectedFile();
   else
     ret = FString{};
@@ -261,7 +261,7 @@ FString FFileDialog::fileOpenChooser ( FWidget* parent
                                      , const FString& dirname
                                      , const FString& filter )
 {
-  return fileChooser (parent, dirname, filter, FFileDialog::Open);
+  return fileChooser (parent, dirname, filter, DialogType::Open);
 }
 
 //----------------------------------------------------------------------
@@ -269,7 +269,7 @@ FString FFileDialog::fileSaveChooser ( FWidget* parent
                                      , const FString& dirname
                                      , const FString& filter )
 {
-  return fileChooser (parent, dirname, filter, FFileDialog::Save);
+  return fileChooser (parent, dirname, filter, DialogType::Save);
 }
 
 
@@ -334,7 +334,7 @@ void FFileDialog::init()
   else
     x = y = 1;
 
-  if ( dlg_type == FFileDialog::Save )
+  if ( dlg_type == DialogType::Save )
     FDialog::setText("Save file");
   else
     FDialog::setText("Open file");
@@ -362,7 +362,7 @@ inline void FFileDialog::widgetSettings (const FPoint& pos)
   cancel_btn.setText ("&Cancel");
   cancel_btn.setGeometry(FPoint{19, 10}, FSize{9, 1});
 
-  if ( dlg_type == FFileDialog::Save )
+  if ( dlg_type == DialogType::Save )
     open_btn.setText ("&Save");
   else
     open_btn.setText ("&Open");
@@ -788,7 +788,7 @@ void FFileDialog::cb_processActivate()
     if ( found )
       changeDir(input);
     else
-      done (FDialog::Accept);
+      done (ResultCode::Accept);
   }
 }
 
@@ -818,19 +818,19 @@ void FFileDialog::cb_processClicked()
   if ( dir_entries[n].directory )
     changeDir(dir_entries[n].name);
   else
-    done (FDialog::Accept);
+    done (ResultCode::Accept);
 }
 
 //----------------------------------------------------------------------
 void FFileDialog::cb_processCancel()
 {
-  done (FDialog::Reject);
+  done (ResultCode::Reject);
 }
 
 //----------------------------------------------------------------------
 void FFileDialog::cb_processOpen()
 {
-  done (FDialog::Accept);
+  done (ResultCode::Accept);
 }
 
 //----------------------------------------------------------------------

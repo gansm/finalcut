@@ -51,8 +51,8 @@ class FPoint
 {
   public:
     // Constructors
-    FPoint () = default;
-    FPoint (int, int);
+    FPoint () noexcept = default;
+    FPoint (int, int) noexcept;
 
     // Overloaded operators
     FPoint& operator += (const FPoint&);
@@ -96,7 +96,7 @@ class FPoint
 
 // FPoint inline functions
 //----------------------------------------------------------------------
-inline FPoint::FPoint (int x, int y)
+inline FPoint::FPoint (int x, int y) noexcept
   : xpos{x}
   , ypos{y}
 { }

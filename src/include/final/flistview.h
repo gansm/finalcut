@@ -221,6 +221,7 @@ class FListViewIterator
 
     // Constructor
     FListViewIterator () = default;
+    ~FListViewIterator () = default;
     FListViewIterator (Iterator);
     FListViewIterator (const FListViewIterator&) = default;
     FListViewIterator (FListViewIterator&& i) noexcept

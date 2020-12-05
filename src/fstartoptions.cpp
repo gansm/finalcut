@@ -27,9 +27,6 @@
 namespace finalcut
 {
 
-// static class attribute
-FStartOptions* FStartOptions::start_options{};
-
 //----------------------------------------------------------------------
 // class FStartOptions
 //----------------------------------------------------------------------

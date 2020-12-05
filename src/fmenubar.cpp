@@ -312,7 +312,7 @@ bool FMenuBar::selectNextItem()
       if ( next == *iter )
         return false;
 
-      setTerminalUpdates (FVTerm::stop_terminal_updates);
+      setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
       unselectItem();
       next->setSelected();
       setSelectedItem(next);
@@ -335,7 +335,7 @@ bool FMenuBar::selectNextItem()
         getStatusBar()->drawMessage();
 
       redraw();
-      setTerminalUpdates (FVTerm::start_terminal_updates);
+      setTerminalUpdates (FVTerm::TerminalUpdate::Start);
       forceTerminalUpdate();
       break;
     }
@@ -377,7 +377,7 @@ bool FMenuBar::selectPrevItem()
       if ( prev == *iter )
         return false;
 
-      setTerminalUpdates (FVTerm::stop_terminal_updates);
+      setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
       unselectItem();
       prev->setSelected();
       prev->setFocus();
@@ -400,7 +400,7 @@ bool FMenuBar::selectPrevItem()
 
       setSelectedItem(prev);
       redraw();
-      setTerminalUpdates (FVTerm::start_terminal_updates);
+      setTerminalUpdates (FVTerm::TerminalUpdate::Start);
       forceTerminalUpdate();
       break;
     }
@@ -905,7 +905,7 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent& ev)
       else
       {
         // Event handover to the menu
-        passEventToMenu(std::move(ev));
+        passEventToMenu(ev);
       }
     }
   }
@@ -926,7 +926,7 @@ void FMenuBar::mouseMoveOverList (const FMouseEvent& ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::passEventToMenu (const FMouseEvent&& ev) const
+void FMenuBar::passEventToMenu (const FMouseEvent& ev) const
 {
   if ( ! hasSelectedItem() || ! getSelectedItem()->hasMenu() )
     return;

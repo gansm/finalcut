@@ -85,7 +85,7 @@ SegmentView::SegmentView (finalcut::FWidget* parent)
   input.setGeometry (FPoint(2, 2), FSize{12, 1});
   input.setLabelText (L"&Hex value");
   input.setLabelText (L"&Hex-digits or (.) (:) (H) (L) (P) (U)");
-  input.setLabelOrientation(finalcut::FLineEdit::label_above);
+  input.setLabelOrientation(finalcut::FLineEdit::LabelOrientation::above);
   input.setMaxLength(9);
   input.setInputFilter("[:.hHlLpPuU[:xdigit:]]");
 
