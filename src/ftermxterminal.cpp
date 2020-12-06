@@ -295,7 +295,7 @@ void FTermXTerminal::captureFontAndTitle()
 //----------------------------------------------------------------------
 void FTermXTerminal::warnNotInitialized() const
 {
-  std::clog << FLog::Warn
+  std::clog << FLog::LogLevel::Warn
             << "The FTermXTerminal object has "
             << "not yet been initialized! "
             << "Please call the init() method first."

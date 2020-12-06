@@ -192,7 +192,7 @@ void FTermLinux::init()
   }
   else
   {
-    std::clog << FLog::Error << "Can not open the console." << std::endl;
+    std::clog << FLog::LogLevel::Error << "Can not open the console." << std::endl;
     std::abort();
   }
 }

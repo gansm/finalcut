@@ -460,7 +460,7 @@ std::size_t getColumnWidth (const FString& s, std::size_t pos)
     }
     catch (const std::out_of_range& ex)
     {
-      std::clog << FLog::Error
+      std::clog << FLog::LogLevel::Error
                 << "Out of Range error: " << ex.what() << std::endl;
     }
   }

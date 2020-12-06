@@ -171,7 +171,7 @@ class FMessageBox : public FDialog
     std::size_t   max_line_width{0};
     FColor        emphasis_color{getColorTheme()->dialog_emphasis_fg};
     ButtonType    result_code{ButtonType::Reject};
-    FButtonsDigit button_digit{ButtonType::Reject};
+    FButtonsDigit button_digit{};
     std::size_t   num_buttons{0};
     std::size_t   text_num_lines{0};
     bool          center_text{false};

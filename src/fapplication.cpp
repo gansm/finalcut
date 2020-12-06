@@ -344,7 +344,7 @@ void FApplication::setLogFile (const FString& filename)
     FLog& log = *FApplication::getLog();
     log.setOutputStream(log_stream);
     log.enableTimestamp();
-    log.setLineEnding (finalcut::FLog::LF);
+    log.setLineEnding (FLog::LineEnding::LF);
   }
   else
   {
@@ -434,7 +434,7 @@ void FApplication::init()
 
   // Initialize logging
   if ( ! getStartOptions().logfile_stream.is_open() )
-    getLog()->setLineEnding(FLog::CRLF);
+    getLog()->setLineEnding(FLog::LineEnding::CRLF);
 }
 
 //----------------------------------------------------------------------
@@ -718,15 +718,15 @@ inline void FApplication::performMouseAction() const
   switch ( keyboard->getKey() )
   {
     case fc::Fkey_mouse:
-      mouse->setRawData (FMouse::x11, buffer);
+      mouse->setRawData (FMouse::MouseType::x11, buffer);
       break;
 
     case fc::Fkey_extended_mouse:
-      mouse->setRawData (FMouse::sgr, buffer);
+      mouse->setRawData (FMouse::MouseType::sgr, buffer);
       break;
 
     case fc::Fkey_urxvt_mouse:
-      mouse->setRawData (FMouse::urxvt, buffer);
+      mouse->setRawData (FMouse::MouseType::urxvt, buffer);
       break;
 
     default:

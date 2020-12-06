@@ -104,7 +104,7 @@ inline FString FLogger::getClassName() const
 inline void FLogger::info (const std::string& msg)
 {
   std::lock_guard<std::mutex> lock_guard(getMutex());
-  setLevel() = Info;
+  setLevel() = LogLevel::Info;
   printLogLine (msg);
 }
 
@@ -112,7 +112,7 @@ inline void FLogger::info (const std::string& msg)
 inline void FLogger::warn (const std::string& msg)
 {
   std::lock_guard<std::mutex> lock_guard(getMutex());
-  setLevel() = Warn;
+  setLevel() = LogLevel::Warn;
   printLogLine (msg);
 }
 
@@ -120,7 +120,7 @@ inline void FLogger::warn (const std::string& msg)
 inline void FLogger::error (const std::string& msg)
 {
   std::lock_guard<std::mutex> lock_guard(getMutex());
-  setLevel() = Error;
+  setLevel() = LogLevel::Error;
   printLogLine (msg);
 }
 
@@ -128,7 +128,7 @@ inline void FLogger::error (const std::string& msg)
 inline void FLogger::debug (const std::string& msg)
 {
   std::lock_guard<std::mutex> lock_guard(getMutex());
-  setLevel() = Debug;
+  setLevel() = LogLevel::Debug;
   printLogLine (msg);
 }
 

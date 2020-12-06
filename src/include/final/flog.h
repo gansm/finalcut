@@ -64,12 +64,12 @@ class FLog : public std::stringbuf
     using IOManip = std::ostream& (*)(std::ostream&);
 
     // Enumerations
-    enum LogLevel
+    enum class LogLevel
     {
       Info, Warn, Error, Debug
     };
 
-    enum LineEnding
+    enum class LineEnding
     {
       LF, CR, CRLF
     };
@@ -106,8 +106,8 @@ class FLog : public std::stringbuf
 
   private:
     // Data member
-    LogLevel     level{Info};
-    LineEnding   end_of_line{CRLF};
+    LogLevel     level{LogLevel::Info};
+    LineEnding   end_of_line{LineEnding::CRLF};
     std::mutex   mut{};
     FLogPrint    current_log{std::bind(&FLog::info, this, std::placeholders::_1)};
     std::ostream stream{this};

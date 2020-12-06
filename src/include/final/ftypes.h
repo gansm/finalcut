@@ -43,7 +43,7 @@
 #define null nullptr
 
 #define badAllocOutput(object_name)              \
-    std::clog << FLog::Error                     \
+    std::clog << FLog::LogLevel::Error           \
               << __FILE__  << ":" << __LINE__    \
               << ": Not enough memory to alloc " \
               << (object_name)                   \

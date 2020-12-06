@@ -133,7 +133,7 @@ void FTermcap::termcapError (int status)
   {
     const auto& fterm_data = FTerm::getFTermData();
     const char* termtype = fterm_data->getTermType();
-    std::clog << FLog::Error
+    std::clog << FLog::LogLevel::Error
               << "Unknown terminal: \""  << termtype << "\". "
               << "Check the TERM environment variable. "
               << "Also make sure that the terminal "

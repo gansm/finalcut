@@ -47,19 +47,19 @@ FLog& FLog::operator << (LogLevel l)
 
   switch ( l )
   {
-    case Info:
+    case LogLevel::Info:
       current_log = std::bind(&FLog::info, this, _1);
       break;
 
-    case Warn:
+    case LogLevel::Warn:
       current_log = std::bind(&FLog::warn, this, _1);
       break;
 
-    case Error:
+    case LogLevel::Error:
       current_log = std::bind(&FLog::error, this, _1);
       break;
 
-    case Debug:
+    case LogLevel::Debug:
       current_log = std::bind(&FLog::debug, this, _1);
       break;
   }

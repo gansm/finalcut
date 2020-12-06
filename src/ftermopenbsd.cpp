@@ -134,7 +134,7 @@ bool FTermOpenBSD::resetBeep()
 //----------------------------------------------------------------------
 void FTermOpenBSD::warnNotInitialized()
 {
-  std::clog << FLog::Warn
+  std::clog << FLog::LogLevel::Warn
             << "The FTermOpenBSD object has "
             << "not yet been initialized! "
             << "Please call the init() method first."

@@ -826,7 +826,7 @@ inline FLineEdit::offsetPair FLineEdit::endPosToOffset (std::size_t pos)
     }
     catch (const std::out_of_range& ex)
     {
-      std::clog << FLog::Error
+      std::clog << FLog::LogLevel::Error
                 << "Out of Range error: " << ex.what() << std::endl;
     }
 
@@ -850,7 +850,7 @@ inline FLineEdit::offsetPair FLineEdit::endPosToOffset (std::size_t pos)
         }
         catch (const std::out_of_range& ex)
         {
-          std::clog << FLog::Error
+          std::clog << FLog::LogLevel::Error
                     << "Out of Range error: " << ex.what() << std::endl;
         }
       }
@@ -886,7 +886,7 @@ std::size_t FLineEdit::clickPosToCursorPos (std::size_t pos)
     }
     catch (const std::out_of_range& ex)
     {
-      std::clog << FLog::Error
+      std::clog << FLog::LogLevel::Error
                 << "Out of Range error: " << ex.what() << std::endl;
     }
 
@@ -920,7 +920,7 @@ void FLineEdit::adjustTextOffset()
     }
     catch (const std::out_of_range& ex)
     {
-      std::clog << FLog::Error
+      std::clog << FLog::LogLevel::Error
                 << "Out of Range error: " << ex.what() << std::endl;
     }
   }
@@ -933,7 +933,7 @@ void FLineEdit::adjustTextOffset()
     }
     catch (const std::out_of_range& ex)
     {
-      std::clog << FLog::Error
+      std::clog << FLog::LogLevel::Error
                 << "Out of Range error: " << ex.what() << std::endl;
     }
   }

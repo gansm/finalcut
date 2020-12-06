@@ -74,7 +74,7 @@ class FScrollbar : public FWidget
     using FWidget::setGeometry;
 
     // Enumeration
-    enum sType
+    enum class SType
     {
       noScroll           = 0,
       scrollJump         = 1,
@@ -102,7 +102,7 @@ class FScrollbar : public FWidget
     // Accessors
     FString             getClassName() const override;
     int                 getValue() const;
-    sType               getScrollType() const;
+    SType               getScrollType() const;
 
     // Mutators
     void                setMinimum (int);
@@ -138,9 +138,9 @@ class FScrollbar : public FWidget
     void                drawHorizontalBar();
     void                drawHorizontalBackgroundColumn();
     void                drawButtons();
-    sType               getClickedScrollType (int, int) const;
-    sType               getVerticalClickedScrollType (int) const;
-    sType               getHorizontalClickedScrollType (int) const;
+    SType               getClickedScrollType (int, int) const;
+    SType               getVerticalClickedScrollType (int) const;
+    SType               getHorizontalClickedScrollType (int) const;
     int                 getSliderClickPos (int, int) const;
     void                jumpToClickPos (int, int);
     void                jumpToClickPos (int);
@@ -149,7 +149,7 @@ class FScrollbar : public FWidget
     void                changeOnResize();
 
     // Data members
-    sType               scroll_type{FScrollbar::noScroll};
+    SType               scroll_type{SType::noScroll};
     bool                threshold_reached{false};
     int                 threshold_time{500};
     int                 repeat_time{80};
@@ -211,7 +211,7 @@ inline int FScrollbar::getValue() const
 { return val; }
 
 //----------------------------------------------------------------------
-inline FScrollbar::sType FScrollbar::getScrollType() const
+inline FScrollbar::SType FScrollbar::getScrollType() const
 { return scroll_type; }
 
 }  // namespace finalcut

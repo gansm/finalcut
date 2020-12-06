@@ -126,7 +126,7 @@ void EventDialog::logMouseEvent ( const finalcut::FString& state
   const int mouse_x = ev.getX();
   const int mouse_y = ev.getY();
 
-  log << finalcut::FLog::Info
+  log << finalcut::FLog::LogLevel::Info
       << getMouseButtonName(ev.getButton())
       << " mouse button " << state << " at ("
       << mouse_x << ", " << mouse_y << ")" << std::flush;
@@ -162,7 +162,7 @@ void EventDialog::onKeyPress (finalcut::FKeyEvent* ev)
     key_name = wchar_t(key_id);
 
   // std::clog redirects all stream data to FLogger
-  std::clog << finalcut::FLog::Info
+  std::clog << finalcut::FLog::LogLevel::Info
             << "Key " << key_name
             << " (id " << key_id << ")" << std::flush;
 
@@ -322,7 +322,7 @@ int main (int argc, char* argv[])
   finalcut::FLog& log = *finalcut::FApplication::getLog();
 
   // Set the line endings (default = CRLF)
-  log.setLineEnding (finalcut::FLog::LF);
+  log.setLineEnding (finalcut::FLog::LineEnding::LF);
 
   // Write a timestamp before each output line
   log.enableTimestamp();

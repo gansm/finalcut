@@ -122,27 +122,26 @@ class FMouseData
     void                  clearButtonState();
 
   protected:
-    struct FMouseButton  // bit field
-    {
-      uChar left_button    : 2;  // 0..3
-      uChar right_button   : 2;  // 0..3
-      uChar middle_button  : 2;  // 0..3
-      uChar shift_button   : 1;  // 0..1
-      uChar control_button : 1;  // 0..1
-      uChar meta_button    : 1;  // 0..1
-      uChar wheel_up       : 1;  // 0..1
-      uChar wheel_down     : 1;  // 0..1
-      uChar mouse_moved    : 1;  // 0..1
-      uChar                : 4;  // padding bits
-    };
-
     // Enumerations
-    enum states
+    enum class State : uChar
     {
       Undefined   = 0,
       Pressed     = 1,
       Released    = 2,
       DoubleClick = 3
+    };
+
+    struct FMouseButton
+    {     
+      State left_button{};
+      State right_button{};
+      State middle_button{};
+      bool  shift_button{};
+      bool  control_button{};
+      bool  meta_button{};
+      bool  wheel_up{};
+      bool  wheel_down{};
+      bool  mouse_moved{};
     };
 
     // Accessors
@@ -167,7 +166,7 @@ class FMouse : public FMouseData
 {
   public:
     // Enumeration
-    enum mouse_type
+    enum class MouseType
     {
       none  = 0,
       gpm   = 1,
@@ -537,7 +536,7 @@ class FMouseControl
     // Methods
     void                      enable();
     void                      disable();
-    virtual void              setRawData ( FMouse::mouse_type
+    virtual void              setRawData ( FMouse::MouseType
                                          , FKeyboard::keybuffer& );
     virtual void              processEvent (struct timeval* time);
     void                      processQueuedInput();
@@ -548,11 +547,11 @@ class FMouseControl
     // Using-declaration
     using FMousePtr = std::unique_ptr<FMouse>;
     using FMouseDataPtr = std::unique_ptr<FMouseData>;
-    using FMouseProtocol = std::map<FMouse::mouse_type, FMousePtr>;
+    using FMouseProtocol = std::map<FMouse::MouseType, FMousePtr>;
 
     // Accessor
-    FMouse::mouse_type        getMouseWithData();
-    FMouse::mouse_type        getMouseWithEvent();
+    FMouse::MouseType         getMouseWithData();
+    FMouse::MouseType         getMouseWithEvent();
     void                      xtermMouse (bool) const;
     void                      enableXTermMouse() const;
     void                      disableXTermMouse() const;

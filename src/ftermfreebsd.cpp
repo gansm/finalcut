@@ -172,7 +172,7 @@ void FTermFreeBSD::finish()
 //----------------------------------------------------------------------
 void FTermFreeBSD::warnNotInitialized()
 {
-  std::clog << FLog::Warn
+  std::clog << FLog::LogLevel::Warn
             << "The FTermFreeBSD object has "
             << "not yet been initialized! "
             << "Please call the init() method first."

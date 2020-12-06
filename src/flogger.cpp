@@ -71,11 +71,11 @@ std::string FLogger::getEOL()
 {
   std::lock_guard<std::mutex> lock_guard(getMutex());
 
-  if ( getEnding() == FLog::LF )
+  if ( getEnding() == LineEnding::LF )
     return "\n";
-  else if ( getEnding() == FLog::CR )
+  else if ( getEnding() == LineEnding::CR )
     return "\r";
-  else if ( getEnding() == FLog::CRLF )
+  else if ( getEnding() == LineEnding::CRLF )
     return "\r\n";
 
   return "";
@@ -90,16 +90,16 @@ void FLogger::printLogLine (const std::string& msg)
 
     switch ( getLevel() )
     {
-      case Info:
+      case LogLevel::Info:
         return "INFO";
 
-      case Warn:
+      case LogLevel::Warn:
         return "WARNING";
 
-      case Error:
+      case LogLevel::Error:
         return "ERROR";
 
-      case Debug:
+      case LogLevel::Debug:
         return "DEBUG";
     }
 

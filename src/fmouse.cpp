@@ -64,42 +64,42 @@ const FPoint& FMouseData::getPos() const
 //----------------------------------------------------------------------
 bool FMouseData::isLeftButtonPressed() const
 {
-  return bool(getButtonState().left_button == Pressed);
+  return bool(getButtonState().left_button == State::Pressed);
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isLeftButtonReleased() const
 {
-  return bool(getButtonState().left_button == Released);
+  return bool(getButtonState().left_button == State::Released);
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isLeftButtonDoubleClick() const
 {
-  return bool(getButtonState().left_button == DoubleClick);
+  return bool(getButtonState().left_button == State::DoubleClick);
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isRightButtonPressed() const
 {
-  return bool(getButtonState().right_button == Pressed);
+  return bool(getButtonState().right_button == State::Pressed);
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isRightButtonReleased() const
 {
-  return bool(getButtonState().right_button == Released);
+  return bool(getButtonState().right_button == State::Released);
 }
 //----------------------------------------------------------------------
 bool FMouseData::isMiddleButtonPressed() const
 {
-  return bool(getButtonState().middle_button == Pressed);
+  return bool(getButtonState().middle_button == State::Pressed);
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isMiddleButtonReleased() const
 {
-  return bool(getButtonState().middle_button == Released);
+  return bool(getButtonState().middle_button == State::Released);
 }
 
 //----------------------------------------------------------------------
@@ -141,8 +141,15 @@ bool FMouseData::isMoved() const
 //----------------------------------------------------------------------
 void FMouseData::clearButtonState()
 {
-  // Fill bit field with 0
-  std::memset(&b_state, 0x00, sizeof(b_state));
+  b_state.left_button    = State::Undefined;
+  b_state.right_button   = State::Undefined;
+  b_state.middle_button  = State::Undefined;
+  b_state.shift_button   = 0;
+  b_state.control_button = 0;
+  b_state.meta_button    = 0;
+  b_state.wheel_up       = 0;
+  b_state.wheel_down     = 0;
+  b_state.mouse_moved    = 0;
 }
 
 
@@ -433,16 +440,16 @@ void FMouseGPM::interpretKeyDown()
   if ( gpm_ev.buttons & GPM_B_LEFT )
   {
     if ( gpm_ev.type & GPM_DOUBLE )
-      getButtonState().left_button = DoubleClick;
+      getButtonState().left_button = State::DoubleClick;
     else
-      getButtonState().left_button = Pressed;
+      getButtonState().left_button = State::Pressed;
   }
 
   if ( gpm_ev.buttons & GPM_B_MIDDLE )
-    getButtonState().middle_button = Pressed;
+    getButtonState().middle_button = State::Pressed;
 
   if ( gpm_ev.buttons & GPM_B_RIGHT )
-    getButtonState().right_button = Pressed;
+    getButtonState().right_button = State::Pressed;
 
   if ( gpm_ev.buttons & GPM_B_UP )
     getButtonState().wheel_up = true;
@@ -465,13 +472,13 @@ void FMouseGPM::interpretKeyDown()
 void FMouseGPM::interpretKeyUp()
 {
   if ( gpm_ev.buttons & GPM_B_LEFT )
-    getButtonState().left_button = Released;
+    getButtonState().left_button = State::Released;
 
   if ( gpm_ev.buttons & GPM_B_MIDDLE )
-    getButtonState().middle_button = Released;
+    getButtonState().middle_button = State::Released;
 
   if ( gpm_ev.buttons & GPM_B_RIGHT )
-    getButtonState().right_button = Released;
+    getButtonState().right_button = State::Released;
 }
 
 //----------------------------------------------------------------------
@@ -619,13 +626,13 @@ void FMouseX11::processEvent (struct timeval* time)
 void FMouseX11::setKeyState (int btn)
 {
   if ( (btn & key_shift) == key_shift )
-    getButtonState().shift_button = Pressed;
+    getButtonState().shift_button = true;
 
   if ( (btn & key_meta) == key_meta )
-    getButtonState().meta_button = Pressed;
+    getButtonState().meta_button = true;
 
   if ( (btn & key_ctrl) == key_ctrl )
-    getButtonState().control_button = Pressed;
+    getButtonState().control_button = true;
 }
 
 //----------------------------------------------------------------------
@@ -655,25 +662,25 @@ void FMouseX11::setButtonState (const int btn, const struct timeval* time)
         && ! isDblclickTimeout(getMousePressedTime()) )
       {
         resetMousePressedTime();
-        getButtonState().left_button = DoubleClick;
+        getButtonState().left_button = State::DoubleClick;
       }
       else
       {
         setMousePressedTime (time);  // save click time
-        getButtonState().left_button = Pressed;
+        getButtonState().left_button = State::Pressed;
       }
       break;
 
     case button2_pressed:
     case button2_pressed_move:
       resetMousePressedTime();
-      getButtonState().middle_button = Pressed;
+      getButtonState().middle_button = State::Pressed;
       break;
 
     case button3_pressed:
     case button3_pressed_move:
       resetMousePressedTime();
-      getButtonState().right_button = Pressed;
+      getButtonState().right_button = State::Pressed;
       break;
 
     case all_buttons_released:
@@ -681,17 +688,17 @@ void FMouseX11::setButtonState (const int btn, const struct timeval* time)
       {
         case button1_pressed:
         case button1_pressed_move:
-          getButtonState().left_button = Released;
+          getButtonState().left_button = State::Released;
           break;
 
         case button2_pressed:
         case button2_pressed_move:
-          getButtonState().middle_button = Released;
+          getButtonState().middle_button = State::Released;
           break;
 
         case button3_pressed:
         case button3_pressed_move:
-          getButtonState().right_button = Released;
+          getButtonState().right_button = State::Released;
           break;
 
         default:
@@ -701,12 +708,12 @@ void FMouseX11::setButtonState (const int btn, const struct timeval* time)
 
     case button_up:
       resetMousePressedTime();
-      getButtonState().wheel_up = Pressed;
+      getButtonState().wheel_up = true;
       break;
 
     case button_down:
       resetMousePressedTime();
-      getButtonState().wheel_down = Pressed;
+      getButtonState().wheel_down = true;
       break;
 
       default:
@@ -881,25 +888,25 @@ void FMouseSGR::setPressedButtonState ( const int btn
         && ! isDblclickTimeout(getMousePressedTime()) )
       {
         resetMousePressedTime();
-        getButtonState().left_button = DoubleClick;
+        getButtonState().left_button = State::DoubleClick;
       }
       else
       {
         setMousePressedTime (time);  // save click time
-        getButtonState().left_button = Pressed;
+        getButtonState().left_button = State::Pressed;
       }
       break;
 
     case button2:
     case button2_move:
       resetMousePressedTime();
-      getButtonState().middle_button = Pressed;
+      getButtonState().middle_button = State::Pressed;
       break;
 
     case button3:
     case button3_move:
       resetMousePressedTime();
-      getButtonState().right_button = Pressed;
+      getButtonState().right_button = State::Pressed;
       break;
 
     case button_up:
@@ -926,17 +933,17 @@ void FMouseSGR::setReleasedButtonState (const int btn)
   {
     case button1:
     case button1_move:
-      getButtonState().left_button = Released;
+      getButtonState().left_button = State::Released;
       break;
 
     case button2:
     case button2_move:
-      getButtonState().middle_button = Released;
+      getButtonState().middle_button = State::Released;
       break;
 
     case button3:
     case button3_move:
-      getButtonState().right_button = Released;
+      getButtonState().right_button = State::Released;
       break;
 
     default:
@@ -1100,13 +1107,13 @@ void FMouseUrxvt::processEvent (struct timeval* time)
 void FMouseUrxvt::setKeyState (int btn)
 {
   if ( (btn & key_shift) == key_shift )
-    getButtonState().shift_button = Pressed;
+    getButtonState().shift_button = true;
 
   if ( (btn & key_meta) == key_meta )
-    getButtonState().meta_button = Pressed;
+    getButtonState().meta_button = true;
 
   if ( (btn & key_ctrl) == key_ctrl )
-    getButtonState().control_button = Pressed;
+    getButtonState().control_button = true;
 }
 
 //----------------------------------------------------------------------
@@ -1136,25 +1143,25 @@ void FMouseUrxvt::setButtonState (const int btn, const struct timeval* time)
         && ! isDblclickTimeout(getMousePressedTime()) )
       {
         resetMousePressedTime();
-        getButtonState().left_button = DoubleClick;
+        getButtonState().left_button = State::DoubleClick;
       }
       else
       {
         setMousePressedTime (time);  // save click time
-        getButtonState().left_button = Pressed;
+        getButtonState().left_button = State::Pressed;
       }
       break;
 
     case button2_pressed:
     case button2_pressed_move:
       resetMousePressedTime();
-      getButtonState().middle_button = Pressed;
+      getButtonState().middle_button = State::Pressed;
       break;
 
     case button3_pressed:
     case button3_pressed_move:
       resetMousePressedTime();
-      getButtonState().right_button = Pressed;
+      getButtonState().right_button = State::Pressed;
       break;
 
     case all_buttons_released:
@@ -1162,17 +1169,17 @@ void FMouseUrxvt::setButtonState (const int btn, const struct timeval* time)
       {
         case button1_pressed:
         case button1_pressed_move:
-          getButtonState().left_button = Released;
+          getButtonState().left_button = State::Released;
           break;
 
         case button2_pressed:
         case button2_pressed_move:
-          getButtonState().middle_button = Released;
+          getButtonState().middle_button = State::Released;
           break;
 
         case button3_pressed:
         case button3_pressed_move:
-          getButtonState().right_button = Released;
+          getButtonState().right_button = State::Released;
           break;
 
         default:
@@ -1182,12 +1189,12 @@ void FMouseUrxvt::setButtonState (const int btn, const struct timeval* time)
 
     case button_up:
       resetMousePressedTime();
-      getButtonState().wheel_up = Pressed;
+      getButtonState().wheel_up = true;
       break;
 
     case button_down:
       resetMousePressedTime();
-      getButtonState().wheel_down = Pressed;
+      getButtonState().wheel_down = true;
       break;
 
       default:
@@ -1206,12 +1213,12 @@ FMouseControl::FMouseControl()
 {
 #ifdef F_HAVE_LIBGPM
   if ( FTerm::isLinuxTerm() )
-    mouse_protocol[FMouse::gpm].reset(FMouse::createMouseObject<FMouseGPM>());
+    mouse_protocol[FMouse::MouseType::gpm].reset(FMouse::createMouseObject<FMouseGPM>());
 #endif
 
-  mouse_protocol[FMouse::x11].reset(FMouse::createMouseObject<FMouseX11>());
-  mouse_protocol[FMouse::sgr].reset(FMouse::createMouseObject<FMouseSGR>());
-  mouse_protocol[FMouse::urxvt].reset(FMouse::createMouseObject<FMouseUrxvt>());
+  mouse_protocol[FMouse::MouseType::x11].reset(FMouse::createMouseObject<FMouseX11>());
+  mouse_protocol[FMouse::MouseType::sgr].reset(FMouse::createMouseObject<FMouseSGR>());
+  mouse_protocol[FMouse::MouseType::urxvt].reset(FMouse::createMouseObject<FMouseUrxvt>());
 }
 
 //----------------------------------------------------------------------
@@ -1234,7 +1241,7 @@ const FPoint& FMouseControl::getPos()
 //----------------------------------------------------------------------
 void FMouseControl::clearEvent()
 {
-  FMouse::mouse_type mtype;
+  FMouse::MouseType mtype;
 
   do
   {
@@ -1243,14 +1250,14 @@ void FMouseControl::clearEvent()
     if ( mouse_protocol[mtype] )
       mouse_protocol[mtype]->clearEvent();
   }
-  while ( mtype != FMouse::none );
+  while ( mtype != FMouse::MouseType::none );
 }
 
 //----------------------------------------------------------------------
 #ifdef F_HAVE_LIBGPM
 void FMouseControl::setStdinNo (int file_descriptor)
 {
-  auto mouse = mouse_protocol[FMouse::gpm].get();
+  auto mouse = mouse_protocol[FMouse::MouseType::gpm].get();
   auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
@@ -1264,13 +1271,13 @@ void FMouseControl::setStdinNo (int)
 //----------------------------------------------------------------------
 void FMouseControl::setMaxWidth (uInt16 x_max)
 {
-  mouse_protocol[FMouse::urxvt]->setMaxWidth(x_max);
+  mouse_protocol[FMouse::MouseType::urxvt]->setMaxWidth(x_max);
 }
 
 //----------------------------------------------------------------------
 void FMouseControl::setMaxHeight (uInt16 y_max)
 {
-  mouse_protocol[FMouse::urxvt]->setMaxHeight(y_max);
+  mouse_protocol[FMouse::MouseType::urxvt]->setMaxHeight(y_max);
 }
 
 //----------------------------------------------------------------------
@@ -1479,7 +1486,7 @@ bool FMouseControl::isGpmMouseEnabled()
   if ( mouse_protocol.empty() )
     return false;
 
-  const auto& mouse = mouse_protocol[FMouse::gpm].get();
+  const auto& mouse = mouse_protocol[FMouse::MouseType::gpm].get();
   const auto& gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
@@ -1500,7 +1507,7 @@ void FMouseControl::enable()
 #ifdef F_HAVE_LIBGPM
   if ( use_gpm_mouse )
   {
-    auto mouse = mouse_protocol[FMouse::gpm].get();
+    auto mouse = mouse_protocol[FMouse::MouseType::gpm].get();
     auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
     if ( gpm_mouse )
@@ -1518,7 +1525,7 @@ void FMouseControl::disable()
 #ifdef F_HAVE_LIBGPM
   if ( use_gpm_mouse )
   {
-    auto mouse = mouse_protocol[FMouse::gpm].get();
+    auto mouse = mouse_protocol[FMouse::MouseType::gpm].get();
     auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
     if ( gpm_mouse )
@@ -1531,7 +1538,7 @@ void FMouseControl::disable()
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::setRawData ( FMouse::mouse_type mt
+void FMouseControl::setRawData ( FMouse::MouseType mt
                                , FKeyboard::keybuffer& fifo_buf)
 {
   auto mouse = mouse_protocol[mt].get();
@@ -1583,7 +1590,7 @@ bool FMouseControl::getGpmKeyPressed (bool pending)
   if ( mouse_protocol.empty() )
     return false;
 
-  auto mouse = mouse_protocol[FMouse::gpm].get();
+  auto mouse = mouse_protocol[FMouse::MouseType::gpm].get();
   auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
@@ -1605,7 +1612,7 @@ void FMouseControl::drawPointer()
   if ( mouse_protocol.empty() )
     return;
 
-  auto mouse = mouse_protocol[FMouse::gpm].get();
+  auto mouse = mouse_protocol[FMouse::MouseType::gpm].get();
   auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
@@ -1619,7 +1626,7 @@ void FMouseControl::drawPointer()
 
 // private methods of FMouseControl
 //----------------------------------------------------------------------
-FMouse::mouse_type FMouseControl::getMouseWithData()
+FMouse::MouseType FMouseControl::getMouseWithData()
 {
   const auto& iter = \
       std::find_if ( std::begin(mouse_protocol)
@@ -1631,11 +1638,11 @@ FMouse::mouse_type FMouseControl::getMouseWithData()
                      }
                    );
 
-  return ( iter != mouse_protocol.end() ) ? iter->first : FMouse::none;
+  return ( iter != mouse_protocol.end() ) ? iter->first : FMouse::MouseType::none;
 }
 
 //----------------------------------------------------------------------
-FMouse::mouse_type FMouseControl::getMouseWithEvent()
+FMouse::MouseType FMouseControl::getMouseWithEvent()
 {
   const auto& iter = \
       std::find_if ( std::begin(mouse_protocol)
@@ -1647,7 +1654,7 @@ FMouse::mouse_type FMouseControl::getMouseWithEvent()
                      }
                    );
 
-  return ( iter != mouse_protocol.end() ) ? iter->first : FMouse::none;
+  return ( iter != mouse_protocol.end() ) ? iter->first : FMouse::MouseType::none;
 }
 
 //----------------------------------------------------------------------
