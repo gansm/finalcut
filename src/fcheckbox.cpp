@@ -99,7 +99,7 @@ inline void FCheckBox::drawChecked()
   else
   {
     print ('[');
-    print (fc::Times);  // Times ×
+    print (UniChar::Times);  // Times ×
     print (']');
   }
 }

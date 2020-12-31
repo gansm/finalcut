@@ -68,6 +68,11 @@ FString::FString (std::size_t len, wchar_t c)
 }
 
 //----------------------------------------------------------------------
+FString::FString (std::size_t len, const UniChar& c)
+ : FString(len, wchar_t(c))
+{ }
+
+//----------------------------------------------------------------------
 FString::FString (const FString& s)  // copy constructor
 {
   if ( ! s.isNull() )
@@ -124,13 +129,10 @@ FString::FString (const char s[])
 }
 
 //----------------------------------------------------------------------
-FString::FString (fc::SpecialCharacter c)
+FString::FString (const UniChar& c)
 {
-  if ( c )
-  {
-    std::array<wchar_t, 2> s{{ static_cast<wchar_t>(c), L'\0' }};
-    _assign (s.data());
-  }
+  std::array<wchar_t, 2> s{{ static_cast<wchar_t>(c), L'\0' }};
+  _assign (s.data());
 }
 
 //----------------------------------------------------------------------
@@ -214,7 +216,7 @@ FString& FString::operator << (const FString& s)
 }
 
 //----------------------------------------------------------------------
-FString& FString::operator << (fc::SpecialCharacter c)
+FString& FString::operator << (const UniChar& c)
 {
   FString s{static_cast<wchar_t>(c)};
   _insert (length, s.length, s.string);

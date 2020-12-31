@@ -62,7 +62,7 @@ class FTermXTerminal final
 
     // Mutators
     void                  redefineDefaultColors (bool);
-    void                  setCursorStyle (fc::xtermCursorStyle);
+    void                  setCursorStyle (XTermCursorStyle);
     void                  setFont (const FString&);
     void                  setTitle (const FString&);
     void                  setTermSize (const FSize&);
@@ -79,7 +79,7 @@ class FTermXTerminal final
 
     // Accessors
     FString               getClassName() const;
-    fc::xtermCursorStyle  getCursorStyle() const;
+    XTermCursorStyle      getCursorStyle() const;
     FString               getFont() const;
     FString               getTitle() const;
     FString               getForeground() const;
@@ -155,7 +155,7 @@ class FTermXTerminal final
     FString               mouse_foreground_color{};
     FString               mouse_background_color{};
     FString               highlight_background_color{};
-    fc::xtermCursorStyle  cursor_style{fc::unknown_cursor_style};
+    XTermCursorStyle      cursor_style{XTermCursorStyle::UnknownCursorStyle};
 };
 
 
@@ -169,7 +169,7 @@ inline void FTermXTerminal::redefineDefaultColors (bool enable)
 { xterm_default_colors = enable; }
 
 //----------------------------------------------------------------------
-inline fc::xtermCursorStyle FTermXTerminal::getCursorStyle() const
+inline XTermCursorStyle FTermXTerminal::getCursorStyle() const
 { return cursor_style; }
 
 //----------------------------------------------------------------------

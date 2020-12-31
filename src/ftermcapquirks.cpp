@@ -101,7 +101,7 @@ void FTermcapQuirks::freebsd()
 {
   // FreeBSD console fixes
 
-  TCAP(fc::t_acs_chars) = \
+  TCAP(t_acs_chars) = \
       "-\036.\0370\333"
       "a\260f\370g\361"
       "h\261j\331k\277"
@@ -110,7 +110,7 @@ void FTermcapQuirks::freebsd()
       "v\301w\302x\263"
       "y\363z\362~\371";
 
-    TCAP(fc::t_set_attributes) = \
+    TCAP(t_set_attributes) = \
         CSI "0"
             "%?%p1%p6%|%t;1%;"
             "%?%p2%t;4%;"
@@ -126,20 +126,20 @@ void FTermcapQuirks::freebsd()
 void FTermcapQuirks::cygwin()
 {
   // Set invisible cursor for cygwin terminal
-  if ( ! TCAP(fc::t_cursor_invisible) )
-    TCAP(fc::t_cursor_invisible) = CSI "?25l";
+  if ( ! TCAP(t_cursor_invisible) )
+    TCAP(t_cursor_invisible) = CSI "?25l";
 
   // Set visible cursor for cygwin terminal
-  if ( ! TCAP(fc::t_cursor_visible) )
-    TCAP(fc::t_cursor_visible) = CSI "?25h";
+  if ( ! TCAP(t_cursor_visible) )
+    TCAP(t_cursor_visible) = CSI "?25h";
 
   // Set ansi blink for cygwin terminal
-  if ( ! TCAP(fc::t_enter_blink_mode) )
-    TCAP(fc::t_enter_blink_mode) = CSI "5m";
+  if ( ! TCAP(t_enter_blink_mode) )
+    TCAP(t_enter_blink_mode) = CSI "5m";
 
   // Set enable alternate character set for cygwin terminal
-  if ( ! TCAP(fc::t_enable_acs) )
-    TCAP(fc::t_enable_acs) = ESC "(B" ESC ")0";
+  if ( ! TCAP(t_enable_acs) )
+    TCAP(t_enable_acs) = ESC "(B" ESC ")0";
 
   // Set background color erase for cygwin terminal
   FTermcap::background_color_erase = true;
@@ -156,55 +156,55 @@ void FTermcapQuirks::linux()
   // Set ansi foreground and background color
   if ( FTerm::getMaxColor() > 8 )
   {
-    TCAP(fc::t_set_a_foreground) = \
+    TCAP(t_set_a_foreground) = \
         CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;22%;m";
-    TCAP(fc::t_set_a_background) = \
+    TCAP(t_set_a_background) = \
         CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m";
     // Avoid underline, blink, dim mode and reverse
     FTermcap::attr_without_color = 30;
   }
   else
   {
-    TCAP(fc::t_set_a_foreground) = CSI "3%p1%dm";
-    TCAP(fc::t_set_a_background) = CSI "4%p1%dm";
+    TCAP(t_set_a_foreground) = CSI "3%p1%dm";
+    TCAP(t_set_a_background) = CSI "4%p1%dm";
     // Avoid underline and dim mode
     FTermcap::attr_without_color = 18;
   }
 
   // Set select graphic rendition attributes
-  TCAP(fc::t_set_attributes) = \
+  TCAP(t_set_attributes) = \
       CSI "0"
           "%?%p6%t;1%;"
           "%?%p1%p3%|%t;7%;"
           "%?%p4%t;5%;m"
           "%?%p9%t\016%e\017%;";
 
-  TCAP(fc::t_enter_alt_charset_mode) = SO;
-  TCAP(fc::t_exit_alt_charset_mode) = SI;
-  TCAP(fc::t_exit_attribute_mode) = CSI "0m" SI;
-  TCAP(fc::t_exit_bold_mode) = CSI "22m";
-  TCAP(fc::t_exit_blink_mode) = CSI "25m";
-  TCAP(fc::t_exit_reverse_mode) = CSI "27m";
-  TCAP(fc::t_exit_secure_mode) = nullptr;
-  TCAP(fc::t_exit_protected_mode) = nullptr;
-  TCAP(fc::t_exit_crossed_out_mode) = nullptr;
-  TCAP(fc::t_orig_pair) = CSI "39;49;25m";
+  TCAP(t_enter_alt_charset_mode) = SO;
+  TCAP(t_exit_alt_charset_mode) = SI;
+  TCAP(t_exit_attribute_mode) = CSI "0m" SI;
+  TCAP(t_exit_bold_mode) = CSI "22m";
+  TCAP(t_exit_blink_mode) = CSI "25m";
+  TCAP(t_exit_reverse_mode) = CSI "27m";
+  TCAP(t_exit_secure_mode) = nullptr;
+  TCAP(t_exit_protected_mode) = nullptr;
+  TCAP(t_exit_crossed_out_mode) = nullptr;
+  TCAP(t_orig_pair) = CSI "39;49;25m";
 
   // Avoid underline and dim mode
-  TCAP(fc::t_enter_dim_mode)       = nullptr;
-  TCAP(fc::t_exit_dim_mode)        = nullptr;
-  TCAP(fc::t_enter_underline_mode) = nullptr;
-  TCAP(fc::t_exit_underline_mode)  = nullptr;
+  TCAP(t_enter_dim_mode)       = nullptr;
+  TCAP(t_exit_dim_mode)        = nullptr;
+  TCAP(t_enter_underline_mode) = nullptr;
+  TCAP(t_exit_underline_mode)  = nullptr;
 }
 
 //----------------------------------------------------------------------
 void FTermcapQuirks::xterm()
 {
   // Fallback if "Ic" is not found
-  if ( ! TCAP(fc::t_initialize_color) )
+  if ( ! TCAP(t_initialize_color) )
   {
     FTermcap::can_change_color_palette = true;
-    TCAP(fc::t_initialize_color) = \
+    TCAP(t_initialize_color) = \
         OSC "4;%p1%d;rgb:"
             "%p2%{255}%*%{1000}%/%2.2X/"
             "%p3%{255}%*%{1000}%/%2.2X/"
@@ -212,12 +212,12 @@ void FTermcapQuirks::xterm()
   }
 
   // Fallback if "vi" is not found
-  if ( ! TCAP(fc::t_cursor_invisible) )
-    TCAP(fc::t_cursor_invisible) = CSI "?25l";
+  if ( ! TCAP(t_cursor_invisible) )
+    TCAP(t_cursor_invisible) = CSI "?25l";
 
   // Fallback if "ve" is not found
-  if ( ! TCAP(fc::t_cursor_normal) )
-    TCAP(fc::t_cursor_normal) = CSI "?12l" CSI "?25h";
+  if ( ! TCAP(t_cursor_normal) )
+    TCAP(t_cursor_normal) = CSI "?12l" CSI "?25h";
 }
 
 //----------------------------------------------------------------------
@@ -230,16 +230,16 @@ void FTermcapQuirks::rxvt()
 
   if ( std::strncmp(termtype, "rxvt-16color", 12) == 0 )
   {
-    TCAP(fc::t_enter_alt_charset_mode) = ESC "(0";
-    TCAP(fc::t_exit_alt_charset_mode)  = ESC "(B";
+    TCAP(t_enter_alt_charset_mode) = ESC "(0";
+    TCAP(t_exit_alt_charset_mode)  = ESC "(B";
   }
 
   // Set ansi foreground and background color
   if ( ! term_detection->isUrxvtTerminal() )
   {
-    TCAP(fc::t_set_a_foreground) = \
+    TCAP(t_set_a_foreground) = \
         CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm";
-    TCAP(fc::t_set_a_background) = \
+    TCAP(t_set_a_background) = \
         CSI "%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm";
   }
 }
@@ -253,24 +253,24 @@ void FTermcapQuirks::vte()
   FTermcap::attr_without_color = 0;
 
   // set exit underline for gnome terminal
-  TCAP(fc::t_exit_underline_mode) = CSI "24m";
+  TCAP(t_exit_underline_mode) = CSI "24m";
 
   if ( term_detection->getGnomeTerminalID() >= 5300 )  // vte >= 0.53.0
   {
-    if ( TCAP(fc::t_enter_ca_mode)
-      && ! std::strstr(TCAP(fc::t_enter_ca_mode), "\033[22;0;0t") )
+    if ( TCAP(t_enter_ca_mode)
+      && ! std::strstr(TCAP(t_enter_ca_mode), "\033[22;0;0t") )
     {
       // Save the cursor position, enter alternate screen buffer
       // and save xterm icon and window title on stack
-      TCAP(fc::t_enter_ca_mode) = CSI "?1049h" CSI "22;0;0t";
+      TCAP(t_enter_ca_mode) = CSI "?1049h" CSI "22;0;0t";
     }
 
-    if ( TCAP(fc::t_exit_ca_mode)
-      && ! std::strstr(TCAP(fc::t_exit_ca_mode), "\033[23;0;0t") )
+    if ( TCAP(t_exit_ca_mode)
+      && ! std::strstr(TCAP(t_exit_ca_mode), "\033[23;0;0t") )
     {
       // Use normal screen buffer, restore the cursor position
       // and restore xterm icon and window title from stack
-      TCAP(fc::t_exit_ca_mode) = CSI "?1049l" CSI "23;0;0t";
+      TCAP(t_exit_ca_mode) = CSI "?1049l" CSI "23;0;0t";
     }
   }
 }
@@ -286,21 +286,21 @@ void FTermcapQuirks::putty()
   FTermcap::attr_without_color = 0;
 
   // Set ansi foreground and background color
-  TCAP(fc::t_set_a_foreground) = \
+  TCAP(t_set_a_foreground) = \
       CSI "%?%p1%{8}%<"
           "%t3%p1%d"
           "%e%p1%{16}%<"
           "%t9%p1%{8}%-%d"
           "%e38;5;%p1%d%;m";
 
-  TCAP(fc::t_set_a_background) = \
+  TCAP(t_set_a_background) = \
       CSI "%?%p1%{8}%<"
           "%t4%p1%d"
           "%e%p1%{16}%<"
           "%t10%p1%{8}%-%d"
           "%e48;5;%p1%d%;m";
 
-  TCAP(fc::t_set_attributes) = \
+  TCAP(t_set_attributes) = \
       CSI "0"
           "%?%p1%p6%|%t;1%;"
           "%?%p5%t;2%;"  // since putty 0.71
@@ -309,49 +309,49 @@ void FTermcapQuirks::putty()
           "%?%p4%t;5%;m"
           "%?%p9%t\016%e\017%;";
   // PuTTY 0.71 or higher
-  TCAP(fc::t_enter_dim_mode) = CSI "2m";
+  TCAP(t_enter_dim_mode) = CSI "2m";
 
   // PuTTY 0.71 or higher
-  TCAP(fc::t_exit_dim_mode) = CSI "22m";
+  TCAP(t_exit_dim_mode) = CSI "22m";
 
-  if ( ! TCAP(fc::t_clr_bol) )
-    TCAP(fc::t_clr_bol) = CSI "1K";
+  if ( ! TCAP(t_clr_bol) )
+    TCAP(t_clr_bol) = CSI "1K";
 
-  if ( ! TCAP(fc::t_orig_pair) )
-    TCAP(fc::t_orig_pair) = CSI "39;49m";
+  if ( ! TCAP(t_orig_pair) )
+    TCAP(t_orig_pair) = CSI "39;49m";
 
-  if ( ! TCAP(fc::t_orig_colors) )
-    TCAP(fc::t_orig_colors) = OSC "R";
+  if ( ! TCAP(t_orig_colors) )
+    TCAP(t_orig_colors) = OSC "R";
 
-  if ( ! TCAP(fc::t_column_address) )
-    TCAP(fc::t_column_address) = CSI "%i%p1%dG";
+  if ( ! TCAP(t_column_address) )
+    TCAP(t_column_address) = CSI "%i%p1%dG";
 
-  if ( ! TCAP(fc::t_row_address) )
-    TCAP(fc::t_row_address) = CSI "%i%p1%dd";
+  if ( ! TCAP(t_row_address) )
+    TCAP(t_row_address) = CSI "%i%p1%dd";
 
-  if ( ! TCAP(fc::t_enable_acs) )
-    TCAP(fc::t_enable_acs) = ESC "(B" ESC ")0";
+  if ( ! TCAP(t_enable_acs) )
+    TCAP(t_enable_acs) = ESC "(B" ESC ")0";
 
-  if ( ! TCAP(fc::t_enter_am_mode) )
-    TCAP(fc::t_enter_am_mode) = CSI "?7h";
+  if ( ! TCAP(t_enter_am_mode) )
+    TCAP(t_enter_am_mode) = CSI "?7h";
 
-  if ( ! TCAP(fc::t_exit_am_mode) )
-    TCAP(fc::t_exit_am_mode) = CSI "?7l";
+  if ( ! TCAP(t_exit_am_mode) )
+    TCAP(t_exit_am_mode) = CSI "?7l";
 
-  if ( ! TCAP(fc::t_enter_pc_charset_mode) )
-    TCAP(fc::t_enter_pc_charset_mode) = CSI "11m";
+  if ( ! TCAP(t_enter_pc_charset_mode) )
+    TCAP(t_enter_pc_charset_mode) = CSI "11m";
 
-  if ( ! TCAP(fc::t_exit_pc_charset_mode) )
-    TCAP(fc::t_exit_pc_charset_mode) = CSI "10m";
+  if ( ! TCAP(t_exit_pc_charset_mode) )
+    TCAP(t_exit_pc_charset_mode) = CSI "10m";
 
-  if ( ! TCAP(fc::t_keypad_xmit) )
-    TCAP(fc::t_keypad_xmit) = CSI "?1h" ESC "=";
+  if ( ! TCAP(t_keypad_xmit) )
+    TCAP(t_keypad_xmit) = CSI "?1h" ESC "=";
 
-  if ( ! TCAP(fc::t_keypad_local) )
-    TCAP(fc::t_keypad_local) = CSI "?1l" ESC ">";
+  if ( ! TCAP(t_keypad_local) )
+    TCAP(t_keypad_local) = CSI "?1l" ESC ">";
 
-  if ( ! TCAP(fc::t_key_mouse) )
-    TCAP(fc::t_key_mouse) = CSI "M";
+  if ( ! TCAP(t_key_mouse) )
+    TCAP(t_key_mouse) = CSI "M";
 }
 
 //----------------------------------------------------------------------
@@ -361,10 +361,10 @@ void FTermcapQuirks::teraterm()
   FTermcap::eat_nl_glitch = true;
 
   // Tera Term color settings
-  TCAP(fc::t_set_a_foreground) = CSI "38;5;%p1%dm";
-  TCAP(fc::t_set_a_background) = CSI "48;5;%p1%dm";
-  TCAP(fc::t_exit_attribute_mode) = CSI "0m" SI;
-  TCAP(fc::t_orig_pair) = CSI "39;49m";
+  TCAP(t_set_a_foreground) = CSI "38;5;%p1%dm";
+  TCAP(t_set_a_background) = CSI "48;5;%p1%dm";
+  TCAP(t_exit_attribute_mode) = CSI "0m" SI;
+  TCAP(t_orig_pair) = CSI "39;49m";
 }
 
 //----------------------------------------------------------------------
@@ -374,77 +374,77 @@ void FTermcapQuirks::sunConsole()
   FTermcap::eat_nl_glitch = true;
 
   // Sun Microsystems workstation console parameter cursor control
-  TCAP(fc::t_parm_up_cursor) = CSI "%p1%dA";
-  TCAP(fc::t_parm_down_cursor) = CSI "%p1%dB";
-  TCAP(fc::t_parm_right_cursor) = CSI "%p1%dC";
-  TCAP(fc::t_parm_left_cursor) = CSI "%p1%dD";
+  TCAP(t_parm_up_cursor) = CSI "%p1%dA";
+  TCAP(t_parm_down_cursor) = CSI "%p1%dB";
+  TCAP(t_parm_right_cursor) = CSI "%p1%dC";
+  TCAP(t_parm_left_cursor) = CSI "%p1%dD";
 
   // Sun Microsystems workstation console keys
-  for (std::size_t i{0}; fc::fkey[i].tname[0] != 0; i++)
+  for (std::size_t i{0}; fc::fkey_cap_table[i].tname[0] != 0; i++)
   {
-    if ( std::strncmp(fc::fkey[i].tname, "K2", 2) == 0 )
-      fc::fkey[i].string = CSI "218z";  // center of keypad
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "K2", 2) == 0 )
+      fc::fkey_cap_table[i].string = CSI "218z";  // center of keypad
 
-    if ( std::strncmp(fc::fkey[i].tname, "kb", 2) == 0 )
-      fc::fkey[i].string = "\b";  // backspace key
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "kb", 2) == 0 )
+      fc::fkey_cap_table[i].string = "\b";  // backspace key
 
-    if ( std::strncmp(fc::fkey[i].tname, "kD", 2) == 0
-      && std::strlen(fc::fkey[i].tname) == 2 )
-      fc::fkey[i].string = "\177";  // delete-character key
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "kD", 2) == 0
+      && std::strlen(fc::fkey_cap_table[i].tname) == 2 )
+      fc::fkey_cap_table[i].string = "\177";  // delete-character key
 
-    if ( std::strncmp(fc::fkey[i].tname, "@7", 2) == 0 )
-      fc::fkey[i].string = CSI "220z";  // end key
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "@7", 2) == 0 )
+      fc::fkey_cap_table[i].string = CSI "220z";  // end key
 
-    if ( std::strncmp(fc::fkey[i].tname, "k;", 2) == 0 )
-      fc::fkey[i].string = CSI "233z";  // F10 function key
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "k;", 2) == 0 )
+      fc::fkey_cap_table[i].string = CSI "233z";  // F10 function key
 
-    if ( std::strncmp(fc::fkey[i].tname, "F1", 2) == 0 )
-      fc::fkey[i].string = CSI "234z";  // F11 function key
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "F1", 2) == 0 )
+      fc::fkey_cap_table[i].string = CSI "234z";  // F11 function key
 
-    if ( std::strncmp(fc::fkey[i].tname, "F2", 2) == 0 )
-      fc::fkey[i].string = CSI "235z";  // F12 function key
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "F2", 2) == 0 )
+      fc::fkey_cap_table[i].string = CSI "235z";  // F12 function key
 
-    if ( std::strncmp(fc::fkey[i].tname, "kh", 2) == 0 )
-      fc::fkey[i].string = CSI "214z";  // home key
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "kh", 2) == 0 )
+      fc::fkey_cap_table[i].string = CSI "214z";  // home key
 
-    if ( std::strncmp(fc::fkey[i].tname, "kI", 2) == 0 )
-      fc::fkey[i].string = CSI "247z";  // insert-character key
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "kI", 2) == 0 )
+      fc::fkey_cap_table[i].string = CSI "247z";  // insert-character key
 
-    if ( std::strncmp(fc::fkey[i].tname, "kN", 2) == 0 )
-      fc::fkey[i].string = CSI "222z";  // next-page key
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "kN", 2) == 0 )
+      fc::fkey_cap_table[i].string = CSI "222z";  // next-page key
 
-    if ( std::strncmp(fc::fkey[i].tname, "%7", 2) == 0 )
-      fc::fkey[i].string = CSI "194z";  // options key
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "%7", 2) == 0 )
+      fc::fkey_cap_table[i].string = CSI "194z";  // options key
 
-    if ( std::strncmp(fc::fkey[i].tname, "kP", 2) == 0 )
-      fc::fkey[i].string = CSI "216z";  // prev-page key
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "kP", 2) == 0 )
+      fc::fkey_cap_table[i].string = CSI "216z";  // prev-page key
 
-    if ( std::strncmp(fc::fkey[i].tname, "&5", 2) == 0 )
-      fc::fkey[i].string = CSI "193z";  // resume key
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "&5", 2) == 0 )
+      fc::fkey_cap_table[i].string = CSI "193z";  // resume key
 
-    if ( std::strncmp(fc::fkey[i].tname, "&8", 2) == 0 )
-      fc::fkey[i].string = CSI "195z";  // undo key
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "&8", 2) == 0 )
+      fc::fkey_cap_table[i].string = CSI "195z";  // undo key
 
-    if ( std::strncmp(fc::fkey[i].tname, "K2", 2) == 0 )
-      fc::fkey[i].string = CSI "218z";  // center of keypad
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "K2", 2) == 0 )
+      fc::fkey_cap_table[i].string = CSI "218z";  // center of keypad
 
-    if ( std::strncmp(fc::fkey[i].tname, "kDx", 3) == 0 )
-      fc::fkey[i].string = CSI "249z";  // keypad delete
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "kDx", 3) == 0 )
+      fc::fkey_cap_table[i].string = CSI "249z";  // keypad delete
 
-    if ( std::strncmp(fc::fkey[i].tname, "@8x", 3) == 0 )
-      fc::fkey[i].string = CSI "250z";  // enter/send key
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "@8x", 3) == 0 )
+      fc::fkey_cap_table[i].string = CSI "250z";  // enter/send key
 
-    if ( std::strncmp(fc::fkey[i].tname, "KP1", 3) == 0 )
-      fc::fkey[i].string = CSI "212z";  // keypad slash
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "KP1", 3) == 0 )
+      fc::fkey_cap_table[i].string = CSI "212z";  // keypad slash
 
-    if ( std::strncmp(fc::fkey[i].tname, "KP2", 3) == 0 )
-      fc::fkey[i].string = CSI "213z";  // keypad asterisk
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "KP2", 3) == 0 )
+      fc::fkey_cap_table[i].string = CSI "213z";  // keypad asterisk
 
-    if ( std::strncmp(fc::fkey[i].tname, "KP3", 3) == 0 )
-      fc::fkey[i].string = CSI "254z";  // keypad minus sign
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "KP3", 3) == 0 )
+      fc::fkey_cap_table[i].string = CSI "254z";  // keypad minus sign
 
-    if ( std::strncmp(fc::fkey[i].tname, "KP4", 3) == 0 )
-      fc::fkey[i].string = CSI "253z";  // keypad plus sign
+    if ( std::strncmp(fc::fkey_cap_table[i].tname, "KP4", 3) == 0 )
+      fc::fkey_cap_table[i].string = CSI "253z";  // keypad plus sign
   }
 }
 
@@ -454,13 +454,13 @@ void FTermcapQuirks::screen()
   const auto& term_detection = FTerm::getFTermDetection();
 
   // Fallback if "Ic" is not found
-  if ( ! TCAP(fc::t_initialize_color) )
+  if ( ! TCAP(t_initialize_color) )
   {
     FTermcap::can_change_color_palette = true;
 
     if ( term_detection->isTmuxTerm() )
     {
-      TCAP(fc::t_initialize_color) = \
+      TCAP(t_initialize_color) = \
           ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
           "%p2%{255}%*%{1000}%/%2.2X/"
           "%p3%{255}%*%{1000}%/%2.2X/"
@@ -468,7 +468,7 @@ void FTermcapQuirks::screen()
     }
     else
     {
-      TCAP(fc::t_initialize_color) = \
+      TCAP(t_initialize_color) = \
           ESC "P" OSC "4;%p1%d;rgb:"
           "%p2%{255}%*%{1000}%/%2.2X/"
           "%p3%{255}%*%{1000}%/%2.2X/"
@@ -489,18 +489,18 @@ void FTermcapQuirks::general()
     FTermcap::attr_without_color = 0;
 
   // Fallback if "AF" is not found
-  if ( ! TCAP(fc::t_set_a_foreground) )
-    TCAP(fc::t_set_a_foreground) = CSI "3%p1%dm";
+  if ( ! TCAP(t_set_a_foreground) )
+    TCAP(t_set_a_foreground) = CSI "3%p1%dm";
 
   // Fallback if "AB" is not found
-  if ( ! TCAP(fc::t_set_a_background) )
-    TCAP(fc::t_set_a_background) = CSI "4%p1%dm";
+  if ( ! TCAP(t_set_a_background) )
+    TCAP(t_set_a_background) = CSI "4%p1%dm";
 
   // Fallback if "Ic" is not found
-  if ( ! TCAP(fc::t_initialize_color) )
+  if ( ! TCAP(t_initialize_color) )
   {
     FTermcap::can_change_color_palette = true;
-    TCAP(fc::t_initialize_color) = \
+    TCAP(t_initialize_color) = \
         OSC "P%p1%x"
             "%p2%{255}%*%{1000}%/%02x"
             "%p3%{255}%*%{1000}%/%02x"
@@ -508,37 +508,37 @@ void FTermcapQuirks::general()
   }
 
   // Fallback if "ti" is not found
-  if ( ! TCAP(fc::t_enter_ca_mode) )
-    TCAP(fc::t_enter_ca_mode) = ESC "7" CSI "?47h";
+  if ( ! TCAP(t_enter_ca_mode) )
+    TCAP(t_enter_ca_mode) = ESC "7" CSI "?47h";
 
   // Fallback if "te" is not found
-  if ( ! TCAP(fc::t_exit_ca_mode) )
-    TCAP(fc::t_exit_ca_mode) = CSI "?47l" ESC "8" CSI "m";
+  if ( ! TCAP(t_exit_ca_mode) )
+    TCAP(t_exit_ca_mode) = CSI "?47l" ESC "8" CSI "m";
 
   // Set ansi move if "cm" is not found
-  if ( ! TCAP(fc::t_cursor_address) )
-    TCAP(fc::t_cursor_address) = CSI "%i%p1%d;%p2%dH";
+  if ( ! TCAP(t_cursor_address) )
+    TCAP(t_cursor_address) = CSI "%i%p1%d;%p2%dH";
 }
 
 //----------------------------------------------------------------------
 void FTermcapQuirks::ecma48()
 {
   // Test for standard ECMA-48 (ANSI X3.64) terminal
-  if ( ! TCAP(fc::t_exit_underline_mode)
-    || std::strncmp(TCAP(fc::t_exit_underline_mode), CSI "24m", 5) != 0 )
+  if ( ! TCAP(t_exit_underline_mode)
+    || std::strncmp(TCAP(t_exit_underline_mode), CSI "24m", 5) != 0 )
     return;
 
   // Seems to be a ECMA-48 (ANSI X3.64) compatible terminal
-  TCAP(fc::t_enter_dbl_underline_mode) = CSI "21m";  // Leaves single underlined too
-  TCAP(fc::t_exit_dbl_underline_mode) = CSI "24m";
-  TCAP(fc::t_exit_bold_mode) = CSI "22m";  // Exit dim, too
-  TCAP(fc::t_exit_dim_mode) = CSI "22m";
-  TCAP(fc::t_exit_underline_mode) = CSI "24m";
-  TCAP(fc::t_exit_blink_mode) = CSI "25m";
-  TCAP(fc::t_exit_reverse_mode) = CSI "27m";
-  TCAP(fc::t_exit_secure_mode) = CSI "28m";
-  TCAP(fc::t_enter_crossed_out_mode) = CSI "9m";
-  TCAP(fc::t_exit_crossed_out_mode) = CSI "29m";
+  TCAP(t_enter_dbl_underline_mode) = CSI "21m";  // Leaves single underlined too
+  TCAP(t_exit_dbl_underline_mode) = CSI "24m";
+  TCAP(t_exit_bold_mode) = CSI "22m";  // Exit dim, too
+  TCAP(t_exit_dim_mode) = CSI "22m";
+  TCAP(t_exit_underline_mode) = CSI "24m";
+  TCAP(t_exit_blink_mode) = CSI "25m";
+  TCAP(t_exit_reverse_mode) = CSI "27m";
+  TCAP(t_exit_secure_mode) = CSI "28m";
+  TCAP(t_enter_crossed_out_mode) = CSI "9m";
+  TCAP(t_exit_crossed_out_mode) = CSI "29m";
 }
 
 }  // namespace finalcut

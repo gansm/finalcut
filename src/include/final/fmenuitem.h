@@ -162,7 +162,7 @@ class FMenuItem : public FWidget
     void                processDeactivate() const;
     void                createDialogList (FMenu*) const;
     template <typename T>
-    void                passMouseEvent (T, const FMouseEvent*, fc::events) const;
+    void                passMouseEvent (T, const FMouseEvent*, Event) const;
 
     // Callback methods
     void                cb_switchToDialog (FDialog*) const;
@@ -177,8 +177,8 @@ class FMenuItem : public FWidget
     FDialog*     associated_window{nullptr};
     std::size_t  text_length{0};
     std::size_t  text_width{0};
-    FKey         accel_key{0};
-    FKey         hotkey{0};
+    FKey         accel_key{FKey::None};
+    FKey         hotkey{FKey::None};
     bool         selected{false};
     bool         separator{false};
     bool         checkable{false};
@@ -291,7 +291,7 @@ inline bool FMenuItem::isRadioButton() const
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::hasHotkey() const
-{ return bool(hotkey != 0); }
+{ return bool(hotkey != FKey::None); }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::hasMenu() const

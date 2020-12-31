@@ -58,7 +58,7 @@ class EventDialog final : public finalcut::FDialog
 
   private:
     // Methods
-    finalcut::FString getMouseButtonName (int) const;
+    finalcut::FString getMouseButtonName (const finalcut::MouseButton&) const;
     void logMouseEvent ( const finalcut::FString&
                        , const finalcut::FMouseEvent& );
 
@@ -93,7 +93,7 @@ EventDialog::EventDialog (finalcut::FWidget* parent)
   setShadow();
   label.setText("\n\nUse the keyboard or mouse\n"
                 "in this dialog to create events");
-  label.setAlignment(finalcut::fc::alignCenter);
+  label.setAlignment(finalcut::Align::Center);
   label.setGeometry (FPoint(1, 1), getClientSize(), false);
   addTimer(60000);  // Starts the timer every minute
 }
@@ -102,19 +102,25 @@ EventDialog::EventDialog (finalcut::FWidget* parent)
 EventDialog::~EventDialog() noexcept = default; // destructor
 
 //----------------------------------------------------------------------
-finalcut::FString EventDialog::getMouseButtonName (int btn_state) const
+finalcut::FString EventDialog::getMouseButtonName (const finalcut::MouseButton& btn_state) const
 {
-  switch ( btn_state )
-  {
-    case finalcut::fc::LeftButton:
-      return "left";
+  const auto& empty = finalcut::fc::emptyFString::get();
+  auto S = bool(btn_state & finalcut::MouseButton::Shift);
+  auto C = bool(btn_state & finalcut::MouseButton::Control);
+  auto M = bool(btn_state & finalcut::MouseButton::Meta);
+  auto l = bool(btn_state & finalcut::MouseButton::Left);
+  auto r = bool(btn_state & finalcut::MouseButton::Right);
+  auto m = bool(btn_state & finalcut::MouseButton::Middle); 
+  auto prefix = (S ? finalcut::FString("Shift+") : empty)
+              + (C ? finalcut::FString("Control+") : empty)
+              + (M ? finalcut::FString("Meta+") : empty);
 
-    case finalcut::fc::RightButton:
-      return "right";
-
-    case finalcut::fc::MiddleButton:
-      return "middle";
-  }
+  if  ( l )
+    return prefix + "left";
+  else if ( r )
+    return prefix + "right";
+  else if ( m )
+    return prefix + "middle";
 
   return "unknown";
 }
@@ -155,7 +161,7 @@ void EventDialog::onTimer (finalcut::FTimerEvent*)
 //----------------------------------------------------------------------
 void EventDialog::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  const FKey key_id = ev->key();
+  const finalcut::FKey key_id = ev->key();
   finalcut::FString key_name = finalcut::FTerm::getKeyName(key_id);
 
   if ( key_name.isEmpty() )
@@ -164,7 +170,7 @@ void EventDialog::onKeyPress (finalcut::FKeyEvent* ev)
   // std::clog redirects all stream data to FLogger
   std::clog << finalcut::FLog::LogLevel::Info
             << "Key " << key_name
-            << " (id " << key_id << ")" << std::flush;
+            << " (id " << uInt32(key_id) << ")" << std::flush;
 
   finalcut::FDialog::onKeyPress(ev);
 }

@@ -315,10 +315,10 @@ class FListView : public FWidget
     // Accessors
     FString               getClassName() const override;
     std::size_t           getCount() const;
-    fc::text_alignment    getColumnAlignment (int) const;
+    Align                 getColumnAlignment (int) const;
     FString               getColumnText (int) const;
-    fc::sorting_type      getColumnSortType (int) const;
-    fc::sorting_order     getSortOrder() const;
+    SortType              getColumnSortType (int) const;
+    SortOrder             getSortOrder() const;
     int                   getSortColumn() const;
     FListViewItem*        getCurrentItem();
 
@@ -326,12 +326,10 @@ class FListView : public FWidget
     void                  setSize (const FSize&, bool = true) override;
     void                  setGeometry ( const FPoint&, const FSize&
                                       , bool = true ) override;
-    void                  setColumnAlignment (int, fc::text_alignment);
+    void                  setColumnAlignment (int, Align);
     void                  setColumnText (int, const FString&);
-    void                  setColumnSortType (int, fc::sorting_type \
-                                                      = fc::by_name);
-    void                  setColumnSort (int, fc::sorting_order \
-                                                  = fc::ascending);
+    void                  setColumnSortType (int, SortType = SortType::Name);
+    void                  setColumnSort (int, SortOrder = SortOrder::Ascending);
     template <typename Compare>
     void                  setUserAscendingCompare (Compare);
     template <typename Compare>
@@ -407,10 +405,10 @@ class FListView : public FWidget
     struct Header;  // forward declaration
 
     // Using-declaration
-    using KeyMap = std::unordered_map<int, std::function<void()>>;
-    using KeyMapResult = std::unordered_map<int, std::function<bool()>>;
+    using KeyMap = std::unordered_map<FKey, std::function<void()>>;
+    using KeyMapResult = std::unordered_map<FKey, std::function<bool()>>;
     using HeaderItems = std::vector<Header>;
-    using SortTypes = std::vector<fc::sorting_type>;
+    using SortTypes = std::vector<SortType>;
 
     // Constants
     static constexpr std::size_t checkbox_space = 4;
@@ -434,7 +432,7 @@ class FListView : public FWidget
     void                  processKeyAction (FKeyEvent*);
     template <typename Compare>
     void                  sort (Compare);
-    std::size_t           getAlignOffset ( const fc::text_alignment
+    std::size_t           getAlignOffset ( const Align
                                          , const std::size_t
                                          , const std::size_t ) const;
     iterator              getListEnd (const FListViewItem*);
@@ -465,8 +463,8 @@ class FListView : public FWidget
     void                  wheelDown (int);
     bool                  dragScrollUp (int);
     bool                  dragScrollDown (int);
-    void                  dragUp (int);
-    void                  dragDown (int);
+    void                  dragUp (MouseButton);
+    void                  dragDown (MouseButton);
     void                  stopDragScroll();
     iterator              appendItem (FListViewItem*);
     void                  processClick() const;
@@ -514,13 +512,13 @@ class FListView : public FWidget
     const FListViewItem*  clicked_checkbox_item{nullptr};
     std::size_t           nf_offset{0};
     std::size_t           max_line_width{1};
-    fc::dragScroll        drag_scroll{fc::noScroll};
+    DragScrollMode        drag_scroll{DragScrollMode::None};
     int                   first_line_position_before{-1};
     int                   scroll_repeat{100};
     int                   scroll_distance{1};
     int                   xoffset{0};
     int                   sort_column{-1};
-    fc::sorting_order     sort_order{fc::unsorted};
+    SortOrder             sort_order{SortOrder::Unsorted};
     bool                  scroll_timer{false};
     bool                  tree_view{false};
     bool                  hide_sort_indicator{false};
@@ -545,7 +543,7 @@ struct FListView::Header
     Header () = default;
 
     FString name{};
-    fc::text_alignment alignment{fc::alignLeft};
+    Align alignment{Align::Left};
     int width{0};
     bool fixed_width{false};
 };
@@ -557,7 +555,7 @@ inline FString FListView::getClassName() const
 { return "FListView"; }
 
 //----------------------------------------------------------------------
-inline fc::sorting_order FListView::getSortOrder() const
+inline SortOrder FListView::getSortOrder() const
 { return sort_order; }
 
 //----------------------------------------------------------------------

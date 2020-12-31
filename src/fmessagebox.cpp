@@ -51,7 +51,7 @@ constexpr std::array<const char* const, 8> button_text =
 //----------------------------------------------------------------------
 FMessageBox::FMessageBox (FWidget* parent)
   : FDialog{parent}
-  , button_digit{ButtonType::Ok, ButtonType::Reject, ButtonType::Reject}
+  , button_digit{{ButtonType::Ok, ButtonType::Reject, ButtonType::Reject}}
 {
   setTitlebarText("Message for you");
   init();
@@ -66,7 +66,7 @@ FMessageBox::FMessageBox ( const FString& caption
                          , FWidget* parent )
   : FDialog{parent}
   , text{message}
-  , button_digit{button0, button1, button2}
+  , button_digit{{button0, button1, button2}}
 {
   setTitlebarText(caption);
   init();

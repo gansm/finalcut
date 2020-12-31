@@ -52,7 +52,7 @@ bool       FTermXTerminal::mouse_support{false};
 
 // public methods of FTermXTerminal
 //----------------------------------------------------------------------
-void FTermXTerminal::setCursorStyle (fc::xtermCursorStyle style)
+void FTermXTerminal::setCursorStyle (XTermCursorStyle style)
 {
   // Set the xterm cursor style
 
@@ -321,7 +321,7 @@ void FTermXTerminal::setXTermCursorStyle()
   if ( term_detection->isKdeTerminal() )
     return;
 
-  if ( TCAP(fc::t_cursor_style)
+  if ( TCAP(t_cursor_style)
     || term_detection->isXTerminal()
     || term_detection->isCygwinTerminal()
     || term_detection->isMinttyTerm()

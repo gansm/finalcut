@@ -164,6 +164,9 @@ class FDialog : public FWindow
       bool        mouse_over_menu;
     };
 
+    // Using-declaration
+    using KeyMap = std::unordered_map<FKey, std::function<void()>>;
+
     // Constant
     static constexpr std::size_t MENU_BTN = 3;
     static constexpr bool PRINT_WIN_NUMBER = false;  // Only for debug
@@ -174,6 +177,7 @@ class FDialog : public FWindow
     void                  initMoveSizeMenuItem (FMenu*);
     void                  initZoomMenuItem (FMenu*);
     void                  initCloseMenuItem (FMenu*);
+    void                  mapKeyFunctions();
     void                  drawBorder() override;
     void                  drawTitleBar();
     void                  drawBarButton();
@@ -231,6 +235,7 @@ class FDialog : public FWindow
     FMenuItem*            zoom_item{nullptr};
     FMenuItem*            close_item{nullptr};
     FToolTip*             tooltip{nullptr};
+    KeyMap                key_map{};
 
     // Friend function from FMenu
     friend void FMenu::hideSuperMenus() const;

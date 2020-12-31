@@ -34,11 +34,34 @@
 namespace finalcut
 {
 
+enum class FKey : uInt32;   // forward declaration
+
 namespace fc
 {
 
-extern std::array<FKeyMap, 188> fkey;
-extern const std::array<FMetakeyMap, 232> fmetakey;
+struct FKeyCapMap
+{
+  FKey  num;
+  const char* string;
+  char  tname[4];
+};
+
+extern std::array<FKeyCapMap, 188> fkey_cap_table;
+
+struct FKeyMap
+{
+  FKey num;
+  char string[8];
+};
+
+extern const std::array<FKeyMap, 232> fkey_table;
+
+struct FKeyName
+{
+  FKey num;
+  char string[26];
+};
+
 extern const std::array<FKeyName, 388> fkeyname;
 
 }  // namespace fc

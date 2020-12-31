@@ -28,6 +28,7 @@ namespace fc = finalcut::fc;
 using finalcut::FPoint;
 using finalcut::FSize;
 using finalcut::FColorPair;
+using finalcut::FColor;
 
 
 //----------------------------------------------------------------------
@@ -62,15 +63,12 @@ class AttribDlg final : public finalcut::FDialog
     void cb_back();
 
   private:
-    // Constants
-    static constexpr auto UNDEFINED = static_cast<FColor>(-2);
-
     // Method
     void adjustSize() override;
     void draw() override;
 
     // Data members
-    FColor bgcolor{UNDEFINED};
+    FColor bgcolor{FColor::Undefined};
     finalcut::FButton next_button{"&Next >", this};
     finalcut::FButton back_button{"< &Back", this};
 };
@@ -81,10 +79,10 @@ AttribDlg::AttribDlg (finalcut::FWidget* parent)
 {
   next_button.setGeometry ( FPoint{int(getWidth()) - 13, int(getHeight()) - 4}
                           , FSize{10, 1} );
-  next_button.addAccelerator (fc::Fkey_right);
+  next_button.addAccelerator (finalcut::FKey::Right);
   back_button.setGeometry ( FPoint{int(getWidth()) - 25, int(getHeight()) - 4}
                           , FSize{10, 1} );
-  back_button.addAccelerator (fc::Fkey_left);
+  back_button.addAccelerator (finalcut::FKey::Left);
 
   // Add function callbacks
   next_button.addCallback
@@ -112,7 +110,7 @@ void AttribDlg::onKeyPress (finalcut::FKeyEvent* ev)
   if ( ! ev )
     return;
 
-  if ( ev->key() == 'q' )
+  if ( ev->key() == finalcut::FKey('q') )
   {
     close();
     ev->accept();
@@ -124,11 +122,11 @@ void AttribDlg::onKeyPress (finalcut::FKeyEvent* ev)
 //----------------------------------------------------------------------
 void AttribDlg::onWheel (finalcut::FWheelEvent* ev)
 {
-  const int wheel = ev->getWheel();
+  const finalcut::MouseWheel wheel = ev->getWheel();
 
-  if ( wheel == fc::WheelUp )
+  if ( wheel == finalcut::MouseWheel::Up )
     cb_next();
-  else if ( wheel == fc::WheelDown )
+  else if ( wheel == finalcut::MouseWheel::Down )
     cb_back();
 }
 
@@ -145,9 +143,9 @@ void AttribDlg::cb_next()
     return;
 
   if ( bgcolor == FColor(finalcut::FTerm::getMaxColor() - 1) )
-    bgcolor = fc::Default;
-  else if ( bgcolor == fc::Default )
-    bgcolor = 0;
+    bgcolor = FColor::Default;
+  else if ( bgcolor == FColor::Default )
+    bgcolor = FColor::Black;
   else
     bgcolor++;
 
@@ -161,8 +159,8 @@ void AttribDlg::cb_back()
     return;
 
   if ( bgcolor == 0 )
-    bgcolor = fc::Default;
-  else if ( bgcolor == fc::Default )
+    bgcolor = FColor::Default;
+  else if ( bgcolor == FColor::Default )
     bgcolor = FColor(finalcut::FTerm::getMaxColor() - 1);
   else
     bgcolor--;
@@ -193,11 +191,11 @@ void AttribDlg::adjustSize()
 //----------------------------------------------------------------------
 void AttribDlg::draw()
 {
-  if ( bgcolor == UNDEFINED )
+  if ( bgcolor == FColor::Undefined )
   {
     // Get the color after initializing the color theme in show()
     if ( finalcut::FTerm::isMonochron() )
-      bgcolor = fc::Default;
+      bgcolor = FColor::Default;
     else
       bgcolor = getColorTheme()->label_bg;
 
@@ -253,7 +251,7 @@ class AttribDemo final : public finalcut::FWidget
     void draw() override;
 
     // Data member
-    FColor last_color{1};
+    FColor last_color{FColor::Blue};
 };
 
 //----------------------------------------------------------------------
@@ -268,7 +266,7 @@ void AttribDemo::printColorLine()
 {
   const auto& parent = static_cast<AttribDlg*>(getParent());
 
-  for (FColor color{0}; color < last_color; color++)
+  for (FColor color{FColor::Black}; color < last_color; color++)
   {
     print() << FColorPair{color, parent->getBGColor()} << " # ";
   }
@@ -285,9 +283,9 @@ void AttribDemo::printAltCharset()
 
   print() << FPoint{1, 1} << "alternate charset: ";
 
-  if ( parent->getBGColor() == fc::Default )
+  if ( parent->getBGColor() == FColor::Default )
   {
-    setColor (fc::Default, fc::Default);
+    setColor (FColor::Default, FColor::Default);
   }
   else
   {
@@ -295,9 +293,9 @@ void AttribDemo::printAltCharset()
       || (parent->getBGColor() >= 16 && parent->getBGColor() <= 231
         && (parent->getBGColor() - 16) % 36 <= 17)
       || (parent->getBGColor() >= 232 && parent->getBGColor() <= 243) )
-      setColor (fc::White, parent->getBGColor());
+      setColor (FColor::White, parent->getBGColor());
     else
-      setColor (fc::Black, parent->getBGColor());
+      setColor (FColor::Black, parent->getBGColor());
   }
 
   setAltCharset();
@@ -431,9 +429,9 @@ void AttribDemo::draw()
   last_color = FColor(finalcut::FTerm::getMaxColor());
 
   if ( finalcut::FTerm::isMonochron() )
-    last_color = 1;
+    last_color = FColor(1);
   else if ( last_color > 16 )
-    last_color = 16;
+    last_color = FColor(16);
 
   // test alternate character set
   printAltCharset();
@@ -472,7 +470,7 @@ void AttribDemo::draw()
   const FColor bg = static_cast<AttribDlg*>(getParent())->getBGColor();
   print (" Background color:");
 
-  if ( bg == fc::Default )
+  if ( bg == FColor::Default )
     print (" default");
   else
     printf ( " %d", bg);

@@ -54,7 +54,7 @@ class FTermData final
 {
   public:
     // Using-declaration
-    using EncodingMap = std::unordered_map<std::string, fc::encoding>;
+    using EncodingMap = std::unordered_map<std::string, Encoding>;
 
     // Constructors
     FTermData () = default;
@@ -72,7 +72,7 @@ class FTermData final
     FString           getClassName() const;
     EncodingMap&      getEncodingList();
     charSubstitution& getCharSubstitutionMap();
-    fc::encoding      getTermEncoding() const;
+    Encoding          getTermEncoding() const;
     FRect&            getTermGeometry();
     int               getTTYFileDescriptor() const;
     uInt              getBaudrate() const;
@@ -102,7 +102,7 @@ class FTermData final
     bool              hasTermResized() const;
 
     // Mutators
-    void              setTermEncoding(fc::encoding);
+    void              setTermEncoding (Encoding);
     void              setTTYFileDescriptor (int);
     void              setBaudrate (uInt);
     void              supportShadowCharacter (bool);
@@ -136,7 +136,7 @@ class FTermData final
     FString           xterm_font{};
     FString           xterm_title{};
     FString           exit_message{};
-    fc::encoding      term_encoding{fc::UNKNOWN};
+    Encoding          term_encoding{Encoding::Unknown};
     int               fd_tty{-1};  // Teletype (tty) file descriptor
                                    // is still undefined
 #if DEBUG
@@ -176,7 +176,7 @@ inline charSubstitution& FTermData::getCharSubstitutionMap()
 { return char_substitution_map; }
 
 //----------------------------------------------------------------------
-inline fc::encoding FTermData::getTermEncoding() const
+inline Encoding FTermData::getTermEncoding() const
 { return term_encoding; }
 
 //----------------------------------------------------------------------
@@ -274,7 +274,7 @@ inline bool FTermData::hasTermResized() const
 { return resize_term; }
 
 //----------------------------------------------------------------------
-inline void FTermData::setTermEncoding (fc::encoding enc)
+inline void FTermData::setTermEncoding (Encoding enc)
 { term_encoding = enc; }
 
 //----------------------------------------------------------------------

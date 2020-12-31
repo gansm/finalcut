@@ -74,6 +74,7 @@ class FTermBuffer
     // Overloaded operators
     template <typename typeT>
     FTermBuffer& operator << (const typeT&);
+    FTermBuffer& operator << (const UniChar&);
     FTermBuffer& operator << (const FCharVector&);
     FTermBuffer& operator << (const std::string&);
     FTermBuffer& operator << (const std::wstring&);
@@ -134,6 +135,13 @@ inline FTermBuffer& FTermBuffer::operator << (const typeT& s)
   if ( ! outstream.str().isEmpty() )
     write (outstream.str());
 
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FTermBuffer& FTermBuffer::operator << (const UniChar& c)
+{
+  write (static_cast<wchar_t>(c));
   return *this;
 }
 

@@ -63,6 +63,9 @@ class FTermcapQuirks final
     static void freebsd();
 #endif
     static void cygwin();
+#ifdef linux
+  #undef linux
+#endif
     static void linux();
     static void xterm();
     static void rxvt();

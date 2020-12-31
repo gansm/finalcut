@@ -82,19 +82,19 @@ class FLabel : public FWidget
     FLabel& operator = (const FString&);
     template <typename typeT>
     FLabel& operator << (const typeT&);
-    FLabel& operator << (fc::SpecialCharacter);
+    FLabel& operator << (UniChar);
     FLabel& operator << (const wchar_t);
     const FLabel& operator >> (FString&) const;
 
     // Accessors
     FString             getClassName() const override;
     FWidget*            getAccelWidget();
-    fc::text_alignment  getAlignment() const;
+    Align               getAlignment() const;
     FString&            getText();
 
     // Mutators
     void                setAccelWidget (FWidget* = nullptr);
-    void                setAlignment (fc::text_alignment);
+    void                setAlignment (Align);
     bool                setEmphasis (bool);
     bool                setEmphasis();
     bool                unsetEmphasis();
@@ -142,12 +142,12 @@ class FLabel : public FWidget
     FStringList         multiline_text{};
     FString             text{};
     FWidget*            accel_widget{nullptr};
-    fc::text_alignment  alignment{fc::alignLeft};
+    Align               alignment{Align::Left};
     std::size_t         align_offset{0};
     std::size_t         hotkeypos{NOT_SET};
     std::size_t         column_width{0};
-    FColor              emphasis_color{fc::Default};
-    FColor              ellipsis_color{fc::Default};
+    FColor              emphasis_color{FColor::Default};
+    FColor              ellipsis_color{FColor::Default};
     bool                multiline{false};
     bool                emphasis{false};
     bool                reverse_mode{false};
@@ -173,7 +173,7 @@ inline FWidget* FLabel::getAccelWidget ()
 { return accel_widget; }
 
 //----------------------------------------------------------------------
-inline fc::text_alignment FLabel::getAlignment() const
+inline Align FLabel::getAlignment() const
 { return alignment; }
 
 //----------------------------------------------------------------------

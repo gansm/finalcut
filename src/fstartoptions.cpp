@@ -69,7 +69,7 @@ void FStartOptions::setDefault()
   color_change = true;
   vgafont = false;
   newfont = false;
-  encoding = fc::UNKNOWN;
+  encoding = Encoding::Unknown;
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   meta_sends_escape = true;

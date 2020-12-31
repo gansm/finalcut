@@ -333,7 +333,7 @@ void FTextView::clear()
 //----------------------------------------------------------------------
 void FTextView::onKeyPress (FKeyEvent* ev)
 {
-  const auto idx = int(ev->key());
+  const auto idx = ev->key();
 
   if ( key_map.find(idx) != key_map.end() )
   {
@@ -345,7 +345,7 @@ void FTextView::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FTextView::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   if ( ! hasFocus() )
@@ -371,21 +371,13 @@ void FTextView::onMouseDown (FMouseEvent* ev)
     && dialog->isResizeable()
     && ! dialog->isZoomed() )
   {
-    const int b = ev->getButton();
+    const auto b = ev->getButton();
     const auto& tp = ev->getTermPos();
     const auto& p = parent->termToWidgetPos(tp);
     parent->setFocus();
-
-    try
-    {
-      const auto& _ev = \
-         std::make_shared<FMouseEvent>(fc::MouseDown_Event, p, tp, b);
-      FApplication::sendEvent (parent, _ev.get());
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("FMouseEvent");
-    }
+    const auto& _ev = \
+       std::make_shared<FMouseEvent>(Event::MouseDown, p, tp, b);
+    FApplication::sendEvent (parent, _ev.get());
   }
 }
 
@@ -400,21 +392,13 @@ void FTextView::onMouseUp (FMouseEvent* ev)
 
     if ( dialog->isResizeable() && ! dialog->isZoomed() )
     {
-      const int b = ev->getButton();
+      const auto b = ev->getButton();
       const auto& tp = ev->getTermPos();
       const auto& p = parent->termToWidgetPos(tp);
       parent->setFocus();
-
-      try
-      {
-        const auto& _ev = \
-            std::make_shared<FMouseEvent>(fc::MouseUp_Event, p, tp, b);
-        FApplication::sendEvent (parent, _ev.get());
-      }
-      catch (const std::bad_alloc&)
-      {
-        badAllocOutput ("FMouseEvent");
-      }
+      const auto& _ev = \
+          std::make_shared<FMouseEvent>(Event::MouseUp, p, tp, b);
+      FApplication::sendEvent (parent, _ev.get());
     }
   }
 
@@ -433,21 +417,13 @@ void FTextView::onMouseMove (FMouseEvent* ev)
 
     if ( dialog->isResizeable() && ! dialog->isZoomed() )
     {
-      const int b = ev->getButton();
+      const auto b = ev->getButton();
       const auto& tp = ev->getTermPos();
       const auto& p = parent->termToWidgetPos(tp);
       parent->setFocus();
-
-      try
-      {
-        const auto& _ev = \
-            std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, tp, b);
-        FApplication::sendEvent (parent, _ev.get());
-      }
-      catch (const std::bad_alloc&)
-      {
-        badAllocOutput ("FMouseEvent");
-      }
+      const auto& _ev = \
+          std::make_shared<FMouseEvent>(Event::MouseMove, p, tp, b);
+      FApplication::sendEvent (parent, _ev.get());
     }
   }
 }
@@ -456,20 +432,12 @@ void FTextView::onMouseMove (FMouseEvent* ev)
 void FTextView::onWheel (FWheelEvent* ev)
 {
   static constexpr int distance = 4;
+  const MouseWheel wheel = ev->getWheel();
 
-  switch ( ev->getWheel() )
-  {
-    case fc::WheelUp:
-      scrollBy (0, -distance);
-      break;
-
-    case fc::WheelDown:
-      scrollBy (0, distance);
-      break;
-
-    default:
-      break;
-  }
+  if ( wheel == MouseWheel::Up )
+    scrollBy (0, -distance);
+  else if ( wheel == MouseWheel::Down )
+    scrollBy (0, distance);
 
   if ( isShown() )
     drawText();
@@ -574,8 +542,8 @@ std::size_t FTextView::getTextWidth() const
 //----------------------------------------------------------------------
 void FTextView::init()
 {
-  initScrollbar (vbar, fc::vertical, this, &FTextView::cb_vbarChange);
-  initScrollbar (hbar, fc::horizontal, this, &FTextView::cb_hbarChange);
+  initScrollbar (vbar, Orientation::Vertical, this, &FTextView::cb_vbarChange);
+  initScrollbar (hbar, Orientation::Horizontal, this, &FTextView::cb_hbarChange);
   resetColors();
   nf_offset = FTerm::isNewFont() ? 1 : 0;
   setTopPadding(1);
@@ -588,14 +556,14 @@ void FTextView::init()
 //----------------------------------------------------------------------
 inline void FTextView::mapKeyFunctions()
 {
-  key_map[fc::Fkey_up]    = [this] { scrollBy (0, -1); };
-  key_map[fc::Fkey_down]  = [this] { scrollBy (0, 1); };
-  key_map[fc::Fkey_left]  = [this] { scrollBy (-1, 0); };
-  key_map[fc::Fkey_right] = [this] { scrollBy (1, 0); };
-  key_map[fc::Fkey_ppage] = [this] { scrollBy (0, -int(getTextHeight())); };
-  key_map[fc::Fkey_npage] = [this] { scrollBy (0, int(getTextHeight())); };
-  key_map[fc::Fkey_home]  = [this] { scrollToBegin(); };
-  key_map[fc::Fkey_end]   = [this] { scrollToEnd(); };
+  key_map[FKey::Up]        = [this] { scrollBy (0, -1); };
+  key_map[FKey::Down]      = [this] { scrollBy (0, 1); };
+  key_map[FKey::Left]      = [this] { scrollBy (-1, 0); };
+  key_map[FKey::Right]     = [this] { scrollBy (1, 0); };
+  key_map[FKey::Page_up]   = [this] { scrollBy (0, -int(getTextHeight())); };
+  key_map[FKey::Page_down] = [this] { scrollBy (0, int(getTextHeight())); };
+  key_map[FKey::Home]      = [this] { scrollToBegin(); };
+  key_map[FKey::End]       = [this] { scrollToEnd(); };
 }
 
 //----------------------------------------------------------------------
@@ -722,7 +690,7 @@ inline bool FTextView::isPrintable (wchar_t ch) const
 {
   // Check for printable characters
 
-  const bool utf8 = ( FTerm::getEncoding() == fc::UTF8 ) ? true : false;
+  const bool utf8 = ( FTerm::getEncoding() == Encoding::UTF8 ) ? true : false;
 
   if ( (utf8 && std::iswprint(std::wint_t(ch)))
     || (!utf8 && std::isprint(char(ch))) )
@@ -761,51 +729,51 @@ void FTextView::changeOnResize() const
 //----------------------------------------------------------------------
 void FTextView::cb_vbarChange (const FWidget*)
 {
-  const FScrollbar::SType scrollType = vbar->getScrollType();
+  const FScrollbar::ScrollType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
-  assert ( scrollType == FScrollbar::SType::noScroll
-        || scrollType == FScrollbar::SType::scrollJump
-        || scrollType == FScrollbar::SType::scrollStepBackward
-        || scrollType == FScrollbar::SType::scrollStepForward
-        || scrollType == FScrollbar::SType::scrollPageBackward
-        || scrollType == FScrollbar::SType::scrollPageForward
-        || scrollType == FScrollbar::SType::scrollWheelUp
-        || scrollType == FScrollbar::SType::scrollWheelDown );
+  assert ( scrollType == FScrollbar::ScrollType::None
+        || scrollType == FScrollbar::ScrollType::Jump
+        || scrollType == FScrollbar::ScrollType::StepBackward
+        || scrollType == FScrollbar::ScrollType::StepForward
+        || scrollType == FScrollbar::ScrollType::PageBackward
+        || scrollType == FScrollbar::ScrollType::PageForward
+        || scrollType == FScrollbar::ScrollType::WheelUp
+        || scrollType == FScrollbar::ScrollType::WheelDown );
 
-  if ( scrollType >= FScrollbar::SType::scrollStepBackward )
+  if ( scrollType >= FScrollbar::ScrollType::StepBackward )
     update_scrollbar = true;
   else
     update_scrollbar = false;
 
   switch ( scrollType )
   {
-    case FScrollbar::SType::noScroll:
+    case FScrollbar::ScrollType::None:
       break;
 
-    case FScrollbar::SType::scrollPageBackward:
+    case FScrollbar::ScrollType::PageBackward:
       distance = int(getClientHeight());
       // fall through
-    case FScrollbar::SType::scrollStepBackward:
+    case FScrollbar::ScrollType::StepBackward:
       scrollBy (0, -distance);
       break;
 
-    case FScrollbar::SType::scrollPageForward:
+    case FScrollbar::ScrollType::PageForward:
       distance = int(getClientHeight());
       // fall through
-    case FScrollbar::SType::scrollStepForward:
+    case FScrollbar::ScrollType::StepForward:
       scrollBy (0, distance);
       break;
 
-    case FScrollbar::SType::scrollJump:
+    case FScrollbar::ScrollType::Jump:
       scrollToY (vbar->getValue());
       break;
 
-    case FScrollbar::SType::scrollWheelUp:
+    case FScrollbar::ScrollType::WheelUp:
       scrollBy (0, -wheel_distance);
       break;
 
-    case FScrollbar::SType::scrollWheelDown:
+    case FScrollbar::ScrollType::WheelDown:
       scrollBy (0, wheel_distance);
       break;
   }
@@ -816,51 +784,51 @@ void FTextView::cb_vbarChange (const FWidget*)
 //----------------------------------------------------------------------
 void FTextView::cb_hbarChange (const FWidget*)
 {
-  const FScrollbar::SType scrollType = hbar->getScrollType();
+  const FScrollbar::ScrollType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
-  assert ( scrollType == FScrollbar::SType::noScroll
-        || scrollType == FScrollbar::SType::scrollJump
-        || scrollType == FScrollbar::SType::scrollStepBackward
-        || scrollType == FScrollbar::SType::scrollStepForward
-        || scrollType == FScrollbar::SType::scrollPageBackward
-        || scrollType == FScrollbar::SType::scrollPageForward
-        || scrollType == FScrollbar::SType::scrollWheelUp
-        || scrollType == FScrollbar::SType::scrollWheelDown );
+  assert ( scrollType == FScrollbar::ScrollType::None
+        || scrollType == FScrollbar::ScrollType::Jump
+        || scrollType == FScrollbar::ScrollType::StepBackward
+        || scrollType == FScrollbar::ScrollType::StepForward
+        || scrollType == FScrollbar::ScrollType::PageBackward
+        || scrollType == FScrollbar::ScrollType::PageForward
+        || scrollType == FScrollbar::ScrollType::WheelUp
+        || scrollType == FScrollbar::ScrollType::WheelDown );
 
-  if ( scrollType >= FScrollbar::SType::scrollStepBackward )
+  if ( scrollType >= FScrollbar::ScrollType::StepBackward )
     update_scrollbar = true;
   else
     update_scrollbar = false;
 
   switch ( scrollType )
   {
-    case FScrollbar::SType::noScroll:
+    case FScrollbar::ScrollType::None:
       break;
 
-    case FScrollbar::SType::scrollPageBackward:
+    case FScrollbar::ScrollType::PageBackward:
       distance = int(getClientWidth());
       // fall through
-    case FScrollbar::SType::scrollStepBackward:
+    case FScrollbar::ScrollType::StepBackward:
       scrollBy (-distance, 0);
       break;
 
-    case FScrollbar::SType::scrollPageForward:
+    case FScrollbar::ScrollType::PageForward:
       distance = int(getClientWidth());
       // fall through
-    case FScrollbar::SType::scrollStepForward:
+    case FScrollbar::ScrollType::StepForward:
       scrollBy (distance, 0);
       break;
 
-    case FScrollbar::SType::scrollJump:
+    case FScrollbar::ScrollType::Jump:
       scrollToX (hbar->getValue());
       break;
 
-    case FScrollbar::SType::scrollWheelUp:
+    case FScrollbar::ScrollType::WheelUp:
       scrollBy (-wheel_distance, 0);
       break;
 
-    case FScrollbar::SType::scrollWheelDown:
+    case FScrollbar::ScrollType::WheelDown:
       scrollBy (wheel_distance, 0);
       break;
   }

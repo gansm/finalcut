@@ -351,13 +351,13 @@ void ftermopenbsdTest::netbsdConsoleTest()
   const auto& data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
-  encoding_list["UTF-8"] = finalcut::fc::UTF8;
-  encoding_list["UTF8"]  = finalcut::fc::UTF8;
-  encoding_list["VT100"] = finalcut::fc::VT100;
-  encoding_list["PC"]    = finalcut::fc::PC;
-  encoding_list["ASCII"] = finalcut::fc::ASCII;
+  encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
+  encoding_list["UTF8"]  = finalcut::Encoding::UTF8;
+  encoding_list["VT100"] = finalcut::Encoding::VT100;
+  encoding_list["PC"]    = finalcut::Encoding::PC;
+  encoding_list["ASCII"] = finalcut::Encoding::ASCII;
 
-  data->setTermEncoding(finalcut::fc::VT100);
+  data->setTermEncoding(finalcut::Encoding::VT100);
   data->setBaudrate(9600);
   data->setTermType("wsvt25");
   data->setTermFileName("/dev/ttyE1");
@@ -455,13 +455,13 @@ void ftermopenbsdTest::openbsdConsoleTest()
   const auto& data = finalcut::FTerm::getFTermData();
 
   auto& encoding_list = data->getEncodingList();
-  encoding_list["UTF-8"] = finalcut::fc::UTF8;
-  encoding_list["UTF8"]  = finalcut::fc::UTF8;
-  encoding_list["VT100"] = finalcut::fc::VT100;
-  encoding_list["PC"]    = finalcut::fc::PC;
-  encoding_list["ASCII"] = finalcut::fc::ASCII;
+  encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
+  encoding_list["UTF8"]  = finalcut::Encoding::UTF8;
+  encoding_list["VT100"] = finalcut::Encoding::VT100;
+  encoding_list["PC"]    = finalcut::Encoding::PC;
+  encoding_list["ASCII"] = finalcut::Encoding::ASCII;
 
-  data->setTermEncoding(finalcut::fc::VT100);
+  data->setTermEncoding(finalcut::Encoding::VT100);
   data->setBaudrate(9600);
   data->setTermType("vt220");
   data->setTermFileName("/dev/ttyC0");

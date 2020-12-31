@@ -274,7 +274,7 @@ class FTerm final
     static void              detectTermSize();
     static void              setTermSize (const FSize&);
     static void              setTermTitle (const FString&);
-    static void              setKDECursor (fc::kdeKonsoleCursorShape);
+    static void              setKDECursor (KdeKonsoleCursorShape);
     static void              saveColorMap();
     static void              resetColorMap();
     static void              setPalette (FColor, int, int, int);
@@ -284,12 +284,12 @@ class FTerm final
     static void              resetBeep();
     static void              beep();
 
-    static void              setEncoding (fc::encoding);
-    static fc::encoding      getEncoding();
+    static void              setEncoding (Encoding);
+    static Encoding          getEncoding();
     static std::string       getEncodingString();
     static bool              charEncodable (wchar_t);
     static wchar_t           charEncode (wchar_t);
-    static wchar_t           charEncode (wchar_t, fc::encoding);
+    static wchar_t           charEncode (wchar_t, Encoding);
 
     static bool              scrollTermForward();
     static bool              scrollTermReverse();
@@ -443,15 +443,13 @@ inline void FTerm::initTerminal()
 }  // namespace finalcut
 
 //----------------------------------------------------------------------
-inline std::ostream& operator << ( std::ostream& os
-                                 , finalcut::fc::SpecialCharacter c )
+inline std::ostream& operator << (std::ostream& os, finalcut::UniChar c)
 {
   return os << static_cast<char>(c);
 }
 
 //----------------------------------------------------------------------
-inline std::wostream& operator << ( std::wostream& os
-                                  , finalcut::fc::SpecialCharacter c )
+inline std::wostream& operator << (std::wostream& os, finalcut::UniChar c)
 {
   return os << static_cast<wchar_t>(c);
 }

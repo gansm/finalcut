@@ -69,7 +69,7 @@ FLabel& FLabel::operator = (const FString& s)
 }
 
 //----------------------------------------------------------------------
-FLabel& FLabel::operator << (fc::SpecialCharacter c)
+FLabel& FLabel::operator << (UniChar c)
 {
   setText(text + static_cast<wchar_t>(c));
   return *this;
@@ -105,12 +105,12 @@ void FLabel::setAccelWidget (FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-void FLabel::setAlignment (fc::text_alignment align)
+void FLabel::setAlignment (Align align)
 {
-  if ( align != fc::alignLeft
-    && align != fc::alignCenter
-    && align != fc::alignRight )
-    alignment = fc::alignLeft;
+  if ( align != Align::Left
+    && align != Align::Center
+    && align != Align::Right )
+    alignment = Align::Left;
   else
     alignment = align;
 }
@@ -165,7 +165,7 @@ void FLabel::hide()
 //----------------------------------------------------------------------
 void FLabel::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   if ( ! (isEnabled() && accel_widget) )
@@ -173,21 +173,12 @@ void FLabel::onMouseDown (FMouseEvent* ev)
     // send click to the parent widget
     if ( auto parent = getParentWidget() )
     {
-      const int b = ev->getButton();
+      const auto b = ev->getButton();
       const auto& tp = ev->getTermPos();
       const auto& p = parent->termToWidgetPos(tp);
-
-      try
-      {
-        const auto& _ev = \
-            std::make_shared<FMouseEvent>(fc::MouseDown_Event, p, tp, b);
-        FApplication::sendEvent (parent, _ev.get());
-      }
-      catch (const std::bad_alloc&)
-      {
-        badAllocOutput ("FMouseEvent");
-        return;
-      }
+      const auto& _ev = \
+          std::make_shared<FMouseEvent>(Event::MouseDown, p, tp, b);
+      FApplication::sendEvent (parent, _ev.get());
     }
 
     return;
@@ -224,7 +215,7 @@ void FLabel::onAccel (FAccelEvent* ev)
       accel_widget->setFocus();
       focused_widget->redraw();
       accel_widget->redraw();
-      FFocusEvent in (fc::FocusIn_Event);
+      FFocusEvent in (Event::FocusIn);
       FApplication::sendEvent(accel_widget, &in);
 
       if ( getStatusBar() )
@@ -261,22 +252,22 @@ void FLabel::setHotkeyAccelerator()
 std::size_t FLabel::getAlignOffset (const std::size_t length) const
 {
   const std::size_t width(getWidth());
-  assert ( alignment == fc::alignLeft
-        || alignment == fc::alignCenter
-        || alignment == fc::alignRight );
+  assert ( alignment == Align::Left
+        || alignment == Align::Center
+        || alignment == Align::Right );
 
   switch ( alignment )
   {
-    case fc::alignLeft:
+    case Align::Left:
       return 0;
 
-    case fc::alignCenter:
+    case Align::Center:
       if ( length < width )
         return (width - length) / 2;
       else
         return 0;
 
-    case fc::alignRight:
+    case Align::Right:
       if ( length < width )
         return width - length;
       else
@@ -397,8 +388,8 @@ void FLabel::printLine (FString& line)
   {
     if ( ! std::iswprint(std::wint_t(line[z]))
       && ! FTerm::isNewFont()
-      && ( line[z] < fc::NF_rev_left_arrow2
-        || line[z] > fc::NF_check_mark ) )
+      && ( line[z] < UniChar::NF_rev_left_arrow2
+        || line[z] > UniChar::NF_check_mark ) )
     {
       line[z] = L' ';
     }

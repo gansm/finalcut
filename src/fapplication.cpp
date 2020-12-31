@@ -443,13 +443,13 @@ void FApplication::setTerminalEncoding (const FString& enc_str)
   const FString& enc = enc_str.toLower();
 
   if ( enc.includes("utf8") )
-    getStartOptions().encoding = fc::UTF8;
+    getStartOptions().encoding = Encoding::UTF8;
   else if ( enc.includes("vt100") )
-    getStartOptions().encoding = fc::VT100;
+    getStartOptions().encoding = Encoding::VT100;
   else if ( enc.includes("pc") )
-    getStartOptions().encoding = fc::PC;
+    getStartOptions().encoding = Encoding::PC;
   else if ( enc.includes("ascii") )
-    getStartOptions().encoding = fc::ASCII;
+    getStartOptions().encoding = Encoding::ASCII;
   else if ( enc.includes("help") )
     showParameterUsage();
   else
@@ -694,7 +694,7 @@ inline void FApplication::performKeyboardAction()
 {
   const auto& keyboard = FTerm::getFKeyboard();
 
-  if ( keyboard->getKey() == fc::Fckey_l )  // Ctrl-L (redraw the screen)
+  if ( keyboard->getKey() == FKey::Ctrl_l )  // Ctrl-L (redraw the screen)
   {
     redraw();
   }
@@ -713,24 +713,20 @@ inline void FApplication::performMouseAction() const
 {
   const auto& mouse = FTerm::getFMouseControl();
   const auto& keyboard = FTerm::getFKeyboard();
+  const auto key = keyboard->getKey();
   auto& buffer = keyboard->getKeyBuffer();
 
-  switch ( keyboard->getKey() )
+  if ( key == FKey::X11mouse )
   {
-    case fc::Fkey_mouse:
-      mouse->setRawData (FMouse::MouseType::x11, buffer);
-      break;
-
-    case fc::Fkey_extended_mouse:
-      mouse->setRawData (FMouse::MouseType::sgr, buffer);
-      break;
-
-    case fc::Fkey_urxvt_mouse:
-      mouse->setRawData (FMouse::MouseType::urxvt, buffer);
-      break;
-
-    default:
-      return;
+    mouse->setRawData (FMouse::MouseType::X11, buffer);
+  }
+  else if ( key == FKey::Extended_mouse )
+  {
+    mouse->setRawData (FMouse::MouseType::Sgr, buffer);
+  }
+  else if ( key == FKey::Urxvt_mouse )
+  {
+    mouse->setRawData (FMouse::MouseType::Urxvt, buffer);
   }
 
   keyboard->hasUnprocessedInput() = mouse->hasUnprocessedInput();
@@ -755,7 +751,7 @@ void FApplication::mouseEvent (const FMouseData& md)
 inline void FApplication::sendEscapeKeyPressEvent() const
 {
   // Send an escape key press event
-  FKeyEvent k_press_ev (fc::KeyPress_Event, fc::Fkey_escape);
+  FKeyEvent k_press_ev (Event::KeyPress, FKey::Escape);
   sendEvent (keyboard_widget, &k_press_ev);
 }
 
@@ -764,7 +760,7 @@ inline bool FApplication::sendKeyDownEvent (FWidget* widget) const
 {
   // Send key down event
   const auto& keyboard = FTerm::getFKeyboard();
-  FKeyEvent k_down_ev (fc::KeyDown_Event, keyboard->getKey());
+  FKeyEvent k_down_ev (Event::KeyDown, keyboard->getKey());
   sendEvent (widget, &k_down_ev);
   return k_down_ev.isAccepted();
 }
@@ -774,7 +770,7 @@ inline bool FApplication::sendKeyPressEvent (FWidget* widget) const
 {
   // Send key press event
   const auto& keyboard = FTerm::getFKeyboard();
-  FKeyEvent k_press_ev (fc::KeyPress_Event, keyboard->getKey());
+  FKeyEvent k_press_ev (Event::KeyPress, keyboard->getKey());
   sendEvent (widget, &k_press_ev);
   return k_press_ev.isAccepted();
 }
@@ -784,7 +780,7 @@ inline bool FApplication::sendKeyUpEvent (FWidget* widget) const
 {
   // Send key up event
   const auto& keyboard = FTerm::getFKeyboard();
-  FKeyEvent k_up_ev (fc::KeyUp_Event, keyboard->getKey());
+  FKeyEvent k_up_ev (Event::KeyUp, keyboard->getKey());
   sendEvent (widget, &k_up_ev);
   return k_up_ev.isAccepted();
 }
@@ -885,11 +881,11 @@ bool FApplication::processDialogSwitchAccelerator() const
 {
   const auto& keyboard = FTerm::getFKeyboard();
 
-  if ( keyboard->getKey() >= fc::Fmkey_1
-    && keyboard->getKey() <= fc::Fmkey_9 )
+  if ( keyboard->getKey() >= FKey::Meta_1
+    && keyboard->getKey() <= FKey::Meta_9 )
   {
     const FKey key = keyboard->getKey();
-    const std::size_t n = key - fc::Fmkey_0;
+    const auto n = std::size_t(key - FKey::Meta_0);
     const std::size_t s = getDialogList()->size();
 
     if ( s > 0 && s >= n )
@@ -904,7 +900,7 @@ bool FApplication::processDialogSwitchAccelerator() const
         w->redraw();
       }
 
-      FAccelEvent a_ev (fc::Accelerator_Event, getFocusWidget());
+      FAccelEvent a_ev (Event::Accelerator, getFocusWidget());
       sendEvent (getDialogList()->at(n - 1), &a_ev);
       return true;
     }
@@ -932,7 +928,7 @@ bool FApplication::processAccelerator (const FWidget& widget) const
         move_size->redraw();
       }
 
-      FAccelEvent a_ev (fc::Accelerator_Event, getFocusWidget());
+      FAccelEvent a_ev (Event::Accelerator, getFocusWidget());
       sendEvent (item.object, &a_ev);
       return a_ev.isAccepted();
     }
@@ -1038,16 +1034,16 @@ void FApplication::unselectMenubarItems (const FMouseData& md) const
 void FApplication::sendMouseEvent (const FMouseData& md) const
 {
   const auto& mouse_position = md.getPos();
-  int key_state{0};
+  MouseButton key_state{MouseButton::None};
 
   if ( md.isShiftKeyPressed() )
-    key_state |= fc::ShiftButton;
+    key_state |= MouseButton::Shift;
 
   if ( md.isControlKeyPressed() )
-    key_state |= fc::ControlButton;
+    key_state |= MouseButton::Control;
 
   if ( md.isMetaKeyPressed() )
-    key_state |= fc::MetaButton;
+    key_state |= MouseButton::Meta;
 
   const auto& widgetMousePos = clicked_widget->termToWidgetPos(mouse_position);
 
@@ -1069,32 +1065,32 @@ void FApplication::sendMouseEvent (const FMouseData& md) const
 void FApplication::sendMouseMoveEvent ( const FMouseData& md
                                       , const FPoint& widgetMousePos
                                       , const FPoint& mouse_position
-                                      , int key_state ) const
+                                      , MouseButton key_state ) const
 {
   if ( md.isLeftButtonPressed() )
   {
-    FMouseEvent m_down_ev ( fc::MouseMove_Event
+    FMouseEvent m_down_ev ( Event::MouseMove
                           , widgetMousePos
                           , mouse_position
-                          , fc::LeftButton | key_state );
+                          , MouseButton::Left | key_state );
     sendEvent (clicked_widget, &m_down_ev);
   }
 
   if ( md.isRightButtonPressed() )
   {
-    FMouseEvent m_down_ev ( fc::MouseMove_Event
+    FMouseEvent m_down_ev ( Event::MouseMove
                           , widgetMousePos
                           , mouse_position
-                          , fc::RightButton | key_state );
+                          , MouseButton::Right | key_state );
     sendEvent (clicked_widget, &m_down_ev);
   }
 
   if ( md.isMiddleButtonPressed() )
   {
-    FMouseEvent m_down_ev ( fc::MouseMove_Event
+    FMouseEvent m_down_ev ( Event::MouseMove
                           , widgetMousePos
                           , mouse_position
-                          , fc::MiddleButton | key_state );
+                          , MouseButton::Middle | key_state );
     sendEvent (clicked_widget, &m_down_ev);
   }
 }
@@ -1103,30 +1099,30 @@ void FApplication::sendMouseMoveEvent ( const FMouseData& md
 void FApplication::sendMouseLeftClickEvent ( const FMouseData& md
                                            , const FPoint& widgetMousePos
                                            , const FPoint& mouse_position
-                                           , int key_state ) const
+                                           , MouseButton key_state ) const
 {
   if ( md.isLeftButtonDoubleClick() )
   {
-    FMouseEvent m_dblclick_ev ( fc::MouseDoubleClick_Event
+    FMouseEvent m_dblclick_ev ( Event::MouseDoubleClick
                               , widgetMousePos
                               , mouse_position
-                              , fc::LeftButton | key_state );
+                              , MouseButton::Left | key_state );
     sendEvent (clicked_widget, &m_dblclick_ev);
   }
   else if ( md.isLeftButtonPressed() )
   {
-    FMouseEvent m_down_ev ( fc::MouseDown_Event
+    FMouseEvent m_down_ev ( Event::MouseDown
                           , widgetMousePos
                           , mouse_position
-                          , fc::LeftButton | key_state );
+                          , MouseButton::Left | key_state );
     sendEvent (clicked_widget, &m_down_ev);
   }
   else if ( md.isLeftButtonReleased() )
   {
-    FMouseEvent m_up_ev ( fc::MouseUp_Event
+    FMouseEvent m_up_ev ( Event::MouseUp
                         , widgetMousePos
                         , mouse_position
-                        , fc::LeftButton | key_state );
+                        , MouseButton::Left | key_state );
     auto released_widget = clicked_widget;
 
     if ( ! md.isRightButtonPressed()
@@ -1141,22 +1137,22 @@ void FApplication::sendMouseLeftClickEvent ( const FMouseData& md
 void FApplication::sendMouseRightClickEvent ( const FMouseData& md
                                             , const FPoint& widgetMousePos
                                             , const FPoint& mouse_position
-                                            , int key_state ) const
+                                            , MouseButton key_state ) const
 {
   if ( md.isRightButtonPressed() )
   {
-    FMouseEvent m_down_ev ( fc::MouseDown_Event
+    FMouseEvent m_down_ev ( Event::MouseDown
                           , widgetMousePos
                           , mouse_position
-                          , fc::RightButton | key_state );
+                          , MouseButton::Right | key_state );
     sendEvent (clicked_widget, &m_down_ev);
   }
   else if ( md.isRightButtonReleased() )
   {
-    FMouseEvent m_up_ev ( fc::MouseUp_Event
+    FMouseEvent m_up_ev ( Event::MouseUp
                         , widgetMousePos
                         , mouse_position
-                        , fc::RightButton | key_state );
+                        , MouseButton::Right | key_state );
     auto released_widget = clicked_widget;
 
     if ( ! md.isLeftButtonPressed()
@@ -1171,14 +1167,14 @@ void FApplication::sendMouseRightClickEvent ( const FMouseData& md
 void FApplication::sendMouseMiddleClickEvent ( const FMouseData& md
                                              , const FPoint& widgetMousePos
                                              , const FPoint& mouse_position
-                                             , int key_state ) const
+                                             , MouseButton key_state ) const
 {
   if ( md.isMiddleButtonPressed() )
   {
-    FMouseEvent m_down_ev ( fc::MouseDown_Event
+    FMouseEvent m_down_ev ( Event::MouseDown
                           , widgetMousePos
                           , mouse_position
-                          , fc::MiddleButton | key_state );
+                          , MouseButton::Middle | key_state );
     sendEvent (clicked_widget, &m_down_ev);
 
     // gnome-terminal sends no released on middle click
@@ -1187,10 +1183,10 @@ void FApplication::sendMouseMiddleClickEvent ( const FMouseData& md
   }
   else if ( md.isMiddleButtonReleased() )
   {
-    FMouseEvent m_up_ev ( fc::MouseUp_Event
+    FMouseEvent m_up_ev ( Event::MouseUp
                         , widgetMousePos
                         , mouse_position
-                        , fc::MiddleButton | key_state );
+                        , MouseButton::Middle | key_state );
     auto released_widget = clicked_widget;
 
     if ( ! md.isLeftButtonPressed()
@@ -1210,10 +1206,10 @@ void FApplication::sendWheelEvent ( const FMouseData& md
 {
   if ( md.isWheelUp() )
   {
-    FWheelEvent wheel_ev ( fc::MouseWheel_Event
+    FWheelEvent wheel_ev ( Event::MouseWheel
                          , widgetMousePos
                          , mouse_position
-                         , fc::WheelUp );
+                         , MouseWheel::Up );
     auto scroll_over_widget = clicked_widget;
     setClickedWidget(nullptr);
     sendEvent(scroll_over_widget, &wheel_ev);
@@ -1221,10 +1217,10 @@ void FApplication::sendWheelEvent ( const FMouseData& md
 
   if ( md.isWheelDown() )
   {
-    FWheelEvent wheel_ev ( fc::MouseWheel_Event
+    FWheelEvent wheel_ev ( Event::MouseWheel
                          , widgetMousePos
                          , mouse_position
-                         , fc::WheelDown );
+                         , MouseWheel::Down );
     auto scroll_over_widget = clicked_widget;
     setClickedWidget(nullptr);
     sendEvent (scroll_over_widget, &wheel_ev);
@@ -1254,7 +1250,7 @@ void FApplication::processResizeEvent() const
   const auto& mouse = FTerm::getFMouseControl();
   mouse->setMaxWidth (uInt16(getDesktopWidth()));
   mouse->setMaxHeight (uInt16(getDesktopHeight()));
-  FResizeEvent r_ev(fc::Resize_Event);
+  FResizeEvent r_ev(Event::Resize);
   sendEvent(internal::var::app_object, &r_ev);
 
   if ( r_ev.isAccepted() )
@@ -1353,32 +1349,38 @@ bool FApplication::isEventProcessable ( FObject* receiver
       && ! window->getFlags().modal
       && ! window->isMenuWidget() )
     {
-      switch ( uInt(event->getType()) )
-      {
-        case fc::KeyPress_Event:
-        case fc::KeyUp_Event:
-        case fc::KeyDown_Event:
-        case fc::MouseDown_Event:
-        case fc::MouseUp_Event:
-        case fc::MouseDoubleClick_Event:
-        case fc::MouseWheel_Event:
-        case fc::MouseMove_Event:
-        case fc::FocusIn_Event:
-        case fc::FocusOut_Event:
-        case fc::ChildFocusIn_Event:
-        case fc::ChildFocusOut_Event:
-        case fc::Accelerator_Event:
-          return false;
+      constexpr std::array<const Event, 13> blocked_events
+      {{
+        Event::KeyPress,
+        Event::KeyUp,
+        Event::KeyDown,
+        Event::MouseDown,
+        Event::MouseUp,
+        Event::MouseDoubleClick,
+        Event::MouseWheel,
+        Event::MouseMove,
+        Event::FocusIn,
+        Event::FocusOut,
+        Event::ChildFocusIn,
+        Event::ChildFocusOut,
+        Event::Accelerator
+      }};
 
-        default:
-          break;
+      if ( std::any_of( blocked_events.cbegin()
+                      , blocked_events.cend()
+                      , [&event](const Event& ev)
+                        {
+                          return ev == event->getType();
+                        } ) )
+      {
+        return false;
       }
     }
   }
 
   // Throw away mouse events for disabled widgets
-  if ( event->getType() >= fc::MouseDown_Event
-    && event->getType() <= fc::MouseMove_Event
+  if ( event->getType() >= Event::MouseDown
+    && event->getType() <= Event::MouseMove
     && ! widget->isEnabled() )
     return false;
 

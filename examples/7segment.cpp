@@ -28,10 +28,10 @@
 
 namespace fc = finalcut::fc;
 using finalcut::FColorPair;
+using finalcut::FColor;
 using finalcut::FRect;
 using finalcut::FPoint;
 using finalcut::FSize;
-
 
 //----------------------------------------------------------------------
 // class SegmentView
@@ -85,7 +85,7 @@ SegmentView::SegmentView (finalcut::FWidget* parent)
   input.setGeometry (FPoint(2, 2), FSize{12, 1});
   input.setLabelText (L"&Hex value");
   input.setLabelText (L"&Hex-digits or (.) (:) (H) (L) (P) (U)");
-  input.setLabelOrientation(finalcut::FLineEdit::LabelOrientation::above);
+  input.setLabelOrientation(finalcut::FLineEdit::LabelOrientation::Above);
   input.setMaxLength(9);
   input.setInputFilter("[:.hHlLpPuU[:xdigit:]]");
 
@@ -199,12 +199,12 @@ void SegmentView::draw()
   finalcut::FTermBuffer left_space{};
 
   FDialog::draw();
-  setColor(fc::LightGray, fc::Black);
+  setColor(FColor::LightGray, FColor::Black);
   finalcut::drawBorder(this, FRect(FPoint{3, 6}, FPoint{40, 11}));
 
   for (auto&& ch : input.getText().toUpper())
   {
-    const FColorPair color{fc::LightRed, fc::Black};
+    const FColorPair color{FColor::LightRed, FColor::Black};
     get7Segment(ch);
 
     for (std::size_t i{0}; i < 3; i++)

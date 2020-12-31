@@ -82,19 +82,19 @@ Listview::Listview (finalcut::FWidget* parent)
   listview.addColumn ("Pressure", 10);
 
   // Set right alignment for the third, fourth, and fifth column
-  listview.setColumnAlignment (3, fc::alignRight);
-  listview.setColumnAlignment (4, fc::alignRight);
-  listview.setColumnAlignment (5, fc::alignRight);
+  listview.setColumnAlignment (3, finalcut::Align::Right);
+  listview.setColumnAlignment (4, finalcut::Align::Right);
+  listview.setColumnAlignment (5, finalcut::Align::Right);
 
   // Set the type of sorting
-  listview.setColumnSortType (1, fc::by_name);
-  listview.setColumnSortType (2, fc::by_name);
-  listview.setColumnSortType (3, fc::by_number);
-  listview.setColumnSortType (4, fc::by_number);
-  listview.setColumnSortType (5, fc::by_number);
+  listview.setColumnSortType (1, finalcut::SortType::Name);
+  listview.setColumnSortType (2, finalcut::SortType::Name);
+  listview.setColumnSortType (3, finalcut::SortType::Number);
+  listview.setColumnSortType (4, finalcut::SortType::Number);
+  listview.setColumnSortType (5, finalcut::SortType::Number);
 
   // Sort in ascending order by the 1st column
-  listview.setColumnSort (1, fc::ascending);
+  listview.setColumnSort (1, finalcut::SortOrder::Ascending);
   // Sorting follows later automatically on insert().
   // Otherwise you could start the sorting directly with sort()
 

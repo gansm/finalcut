@@ -99,6 +99,9 @@ class FMouseData
     // Destructor
     virtual ~FMouseData() noexcept;
 
+    // copy assignment operator (=)
+    FMouseData& operator = (const FMouseData&) = default;
+
     // Accessors
     virtual FString       getClassName() const;
     const FPoint&         getPos() const;
@@ -132,7 +135,7 @@ class FMouseData
     };
 
     struct FMouseButton
-    {     
+    {
       State left_button{};
       State right_button{};
       State middle_button{};
@@ -168,11 +171,11 @@ class FMouse : public FMouseData
     // Enumeration
     enum class MouseType
     {
-      none  = 0,
-      gpm   = 1,
-      x11   = 2,
-      sgr   = 3,
-      urxvt = 4
+      None  = 0,
+      Gpm   = 1,
+      X11   = 2,
+      Sgr   = 3,
+      Urxvt = 4
     };
 
     // Constructor
@@ -270,15 +273,15 @@ class FMouseGPM final : public FMouse
 
   private:
     // Enumeration
-    enum gpmEventType
+    enum class gpmEventType
     {
-      no_event       = 0,
-      keyboard_event = 1,
-      mouse_event    = 2
+      None     = 0,
+      Keyboard = 1,
+      Mouse    = 2
     };
 
     // Method
-    int                gpmEvent (bool = true) const;
+    gpmEventType       gpmEvent (bool = true) const;
 
     // Data member
     Gpm_Event          gpm_ev{};

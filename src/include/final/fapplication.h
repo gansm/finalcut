@@ -205,19 +205,19 @@ class FApplication : public FWidget
     void                  sendMouseMoveEvent ( const FMouseData&
                                              , const FPoint&
                                              , const FPoint&
-                                             , int ) const;
+                                             , MouseButton ) const;
     void                  sendMouseLeftClickEvent ( const FMouseData&
                                                   , const FPoint&
                                                   , const FPoint&
-                                                  , int ) const;
+                                                  , MouseButton ) const;
     void                  sendMouseRightClickEvent ( const FMouseData&
                                                    , const FPoint&
                                                    , const FPoint&
-                                                   , int ) const;
+                                                   , MouseButton ) const;
     void                  sendMouseMiddleClickEvent ( const FMouseData&
                                                     , const FPoint&
                                                     , const FPoint&
-                                                    , int ) const;
+                                                    , MouseButton ) const;
     void                  sendWheelEvent ( const FMouseData&
                                          , const FPoint&
                                          , const FPoint& ) const;

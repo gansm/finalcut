@@ -22,7 +22,7 @@
 
 #include <final/final.h>
 
-namespace fc = finalcut::fc;
+using FKey = finalcut::FKey;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -64,7 +64,7 @@ class Menu final : public finalcut::FDialog
     void cb_message (const finalcut::FMenuItem*);
 
     // Data members
-    finalcut::FString        line{13, fc::BoxDrawingsHorizontal};
+    finalcut::FString        line{13, finalcut::UniChar::BoxDrawingsHorizontal};
     finalcut::FMenuBar       Menubar{this};
     finalcut::FMenu          File{"&File", &Menubar};
     finalcut::FMenu          Edit{"&Edit", &Menubar};
@@ -80,17 +80,17 @@ class Menu final : public finalcut::FDialog
     finalcut::FMenuItem      Print{"&Print", &File};
     finalcut::FMenuItem      Line2{&File};
     finalcut::FMenuItem      Quit{"&Quit", &File};
-    finalcut::FMenuItem      Undo{fc::Fckey_z, "&Undo", &Edit};
-    finalcut::FMenuItem      Redo{fc::Fckey_y, "&Redo", &Edit};
+    finalcut::FMenuItem      Undo{FKey::Ctrl_z, "&Undo", &Edit};
+    finalcut::FMenuItem      Redo{FKey::Ctrl_y, "&Redo", &Edit};
     finalcut::FMenuItem      Line3{&Edit};
-    finalcut::FMenuItem      Cut{fc::Fckey_x, "Cu&t", &Edit};
-    finalcut::FMenuItem      Copy{fc::Fckey_c, "&Copy", &Edit};
-    finalcut::FMenuItem      Paste{fc::Fckey_v, "&Paste", &Edit};
+    finalcut::FMenuItem      Cut{FKey::Ctrl_x, "Cu&t", &Edit};
+    finalcut::FMenuItem      Copy{FKey::Ctrl_c, "&Copy", &Edit};
+    finalcut::FMenuItem      Paste{FKey::Ctrl_v, "&Paste", &Edit};
     finalcut::FMenuItem      Line4{&Edit};
-    finalcut::FMenuItem      Search{fc::Fckey_f, "&Search", &Edit};
-    finalcut::FMenuItem      Next{fc::Fkey_f3, "Search &next", &Edit};
+    finalcut::FMenuItem      Search{FKey::Ctrl_f, "&Search", &Edit};
+    finalcut::FMenuItem      Next{FKey::F3, "Search &next", &Edit};
     finalcut::FMenuItem      Line5{&Edit};
-    finalcut::FMenuItem      SelectAll{fc::Fckey_a, "Select &all", &Edit};
+    finalcut::FMenuItem      SelectAll{FKey::Ctrl_a, "Select &all", &Edit};
     finalcut::FMenu          Color{"&Color", &Choice};
     finalcut::FMenu          Style{"&Style", &Choice};
     finalcut::FMenu          Border{"&Border", &Choice};
@@ -161,20 +161,20 @@ Menu::Menu (finalcut::FWidget* parent)
 void Menu::configureFileMenuItems()
 {
   // "File" menu items
-  New.addAccelerator (fc::Fckey_n);  // Ctrl + N
+  New.addAccelerator (FKey::Ctrl_n);  // Ctrl + N
   New.setStatusbarMessage ("Create a new file");
-  Open.addAccelerator (fc::Fckey_o);  // Ctrl + O
+  Open.addAccelerator (FKey::Ctrl_o);  // Ctrl + O
   Open.setStatusbarMessage ("Locate and open a text file");
-  Save.addAccelerator (fc::Fckey_s);  // Ctrl + S
+  Save.addAccelerator (FKey::Ctrl_s);  // Ctrl + S
   Save.setStatusbarMessage ("Save the file");
   SaveAs.setStatusbarMessage ("Save the current file under a different name");
-  Close.addAccelerator (fc::Fckey_w);  // Ctrl + W
+  Close.addAccelerator (FKey::Ctrl_w);  // Ctrl + W
   Close.setStatusbarMessage ("Close the current file");
   Line1.setSeparator();
-  Print.addAccelerator (fc::Fckey_p);  // Ctrl + P
+  Print.addAccelerator (FKey::Ctrl_p);  // Ctrl + P
   Print.setStatusbarMessage ("Print the current file");
   Line2.setSeparator();
-  Quit.addAccelerator (fc::Fmkey_x);  // Meta/Alt + X
+  Quit.addAccelerator (FKey::Meta_x);  // Meta/Alt + X
   Quit.setStatusbarMessage ("Exit the program");
 
   // Add quit menu item callback

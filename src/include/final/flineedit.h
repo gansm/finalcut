@@ -71,14 +71,14 @@ class FLineEdit : public FWidget
     // Enumerations
     enum class LabelOrientation
     {
-      above = 0,
-      left  = 1
+      Above = 0,
+      Left  = 1
     };
 
     enum class InputType
     {
-      textfield = 0,
-      password  = 1
+      Textfield = 0,
+      Password  = 1
     };
 
     // Constructor
@@ -98,7 +98,7 @@ class FLineEdit : public FWidget
     FLineEdit& operator = (const FString&);
     template <typename typeT>
     FLineEdit& operator << (const typeT&);
-    FLineEdit& operator << (fc::SpecialCharacter);
+    FLineEdit& operator << (UniChar);
     FLineEdit& operator << (const wchar_t);
     const FLineEdit& operator >> (FString&) const;
 
@@ -165,20 +165,14 @@ class FLineEdit : public FWidget
   private:
     // Using-declaration
     using offsetPair = std::pair<std::size_t, std::size_t>;
-
-    // Enumeration
-    enum dragScroll
-    {
-      noScroll    = 0,
-      scrollLeft  = 1,
-      scrollRight = 2
-    };
+    using KeyMap = std::unordered_map<FKey, std::function<void()>>;
 
     // Constants
     static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Methods
     void                init();
+    void                mapKeyFunctions();
     bool                hasHotkey() const;
     void                draw() override;
     void                drawInputField();
@@ -210,9 +204,10 @@ class FLineEdit : public FWidget
     FLabel*          label{};
     FWidget*         label_associated_widget{this};
     std::wstring     input_filter{};
-    dragScroll       drag_scroll{FLineEdit::noScroll};
-    LabelOrientation label_orientation{LabelOrientation::left};
-    InputType        input_type{InputType::textfield};
+    KeyMap           key_map{};
+    DragScrollMode   drag_scroll{DragScrollMode::None};
+    LabelOrientation label_orientation{LabelOrientation::Left};
+    InputType        input_type{InputType::Textfield};
     int              scroll_repeat{100};
     bool             scroll_timer{false};
     bool             insert_mode{true};

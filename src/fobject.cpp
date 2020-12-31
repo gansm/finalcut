@@ -164,11 +164,11 @@ bool FObject::event (FEvent* ev)
 {
   // Receives events on this object
 
-  if ( ev->getType() == fc::Timer_Event )
+  if ( ev->getType() == Event::Timer )
   {
     onTimer ( static_cast<FTimerEvent*>(ev) );
   }
-  else if ( ev->getType() == fc::User_Event )
+  else if ( ev->getType() == Event::User )
   {
     onUserEvent ( static_cast<FUserEvent*>(ev) );
   }
@@ -405,7 +405,7 @@ uInt FObject::processTimerEvent()
     if ( timer.interval.tv_usec > 0 || timer.interval.tv_sec > 0 )
       activated++;
 
-    FTimerEvent t_ev(fc::Timer_Event, timer.id);
+    FTimerEvent t_ev(Event::Timer, timer.id);
     performTimerAction (timer.object, &t_ev);
   }
 

@@ -29,7 +29,8 @@
 
 #include <final/final.h>
 
-namespace fc = finalcut::fc;
+using FKey = finalcut::FKey;
+using finalcut::FColor;
 using finalcut::FPoint;
 using finalcut::FRect;
 using finalcut::FSize;
@@ -324,13 +325,13 @@ class MyDialog final : public finalcut::FDialog
     finalcut::FMenuItem       File2{"/etc/fstab", &Recent};
     finalcut::FMenuItem       File3{"/etc/passwd", &Recent};
     // "Edit" menu items
-    finalcut::FMenuItem       Undo{fc::Fckey_z, "Undo", &Edit};
-    finalcut::FMenuItem       Redo{fc::Fckey_y, "Redo", &Edit};
+    finalcut::FMenuItem       Undo{FKey::Ctrl_z, "Undo", &Edit};
+    finalcut::FMenuItem       Redo{FKey::Ctrl_y, "Redo", &Edit};
     finalcut::FMenuItem       Line2{&Edit};
-    finalcut::FMenuItem       Cut{fc::Fckey_x, "Cu&t", &Edit};
-    finalcut::FMenuItem       Copy{fc::Fckey_c, "&Copy", &Edit};
-    finalcut::FMenuItem       Paste{fc::Fckey_v, "&Paste", &Edit};
-    finalcut::FMenuItem       Clear{fc::Fkey_dc, "C&lear", &Edit};
+    finalcut::FMenuItem       Cut{FKey::Ctrl_x, "Cu&t", &Edit};
+    finalcut::FMenuItem       Copy{FKey::Ctrl_c, "&Copy", &Edit};
+    finalcut::FMenuItem       Paste{FKey::Ctrl_v, "&Paste", &Edit};
+    finalcut::FMenuItem       Clear{FKey::Del_char, "C&lear", &Edit};
     // "View" menu items
     finalcut::FMenuItem       Env{"&Terminal...", &View};
     finalcut::FMenuItem       Drive{"&Drive symbols...", &View};
@@ -338,9 +339,9 @@ class MyDialog final : public finalcut::FDialog
     finalcut::FCheckMenuItem  Theme{"Dark &mode", &View};
     // Statusbar
     finalcut::FStatusBar      Statusbar{this};
-    finalcut::FStatusKey      key_F1{fc::Fkey_f1, "About", &Statusbar};
-    finalcut::FStatusKey      key_F2{fc::Fkey_f2, "View", &Statusbar};
-    finalcut::FStatusKey      key_F3{fc::Fkey_f3, "Quit", &Statusbar};
+    finalcut::FStatusKey      key_F1{FKey::F1, "About", &Statusbar};
+    finalcut::FStatusKey      key_F2{FKey::F2, "View", &Statusbar};
+    finalcut::FStatusKey      key_F3{FKey::F3, "Quit", &Statusbar};
     // Dialog widgets
     finalcut::FButton         MyButton1{this};
     finalcut::FButton         MyButton2{this};
@@ -395,11 +396,11 @@ void MyDialog::initMenu()
   Help.setStatusbarMessage ("Show version and copyright information");
 
   // "File" menu items
-  Open.addAccelerator (fc::Fckey_o);  // Ctrl + O
+  Open.addAccelerator (FKey::Ctrl_o);  // Ctrl + O
   Open.setStatusbarMessage ("Locate and open a text file");
   Recent.setStatusbarMessage ("View text file");
   Line1.setSeparator();
-  Quit.addAccelerator (fc::Fmkey_x);  // Meta/Alt + X
+  Quit.addAccelerator (FKey::Meta_x);  // Meta/Alt + X
   Quit.setStatusbarMessage ("Exit the program");
 
   // "Edit" menu items
@@ -605,14 +606,14 @@ void MyDialog::initFlatButtons()
   MyButton1.setStatusbarMessage ("Sine function");
   MyButton1.setNoUnderline();
   MyButton1.setFlat();
-  MyButton1.setDoubleFlatLine (fc::bottom);
+  MyButton1.setDoubleFlatLine (finalcut::Side::Bottom);
 
   MyButton2.setGeometry(FPoint{3, 5}, FSize{5, 1});
   MyButton2.setText (L"&COS");
   MyButton2.setStatusbarMessage ("Cosine function");
   MyButton2.setNoUnderline();
   MyButton2.setFlat();
-  MyButton2.setDoubleFlatLine (fc::top);
+  MyButton2.setDoubleFlatLine (finalcut::Side::Top);
 
   MyButton3.setGeometry(FPoint{10, 3}, FSize{5, 3});
   MyButton3.setText (L"&=");
@@ -687,7 +688,7 @@ void MyDialog::initButtons()
   MyButton6.setGeometry(FPoint{20, 14}, FSize{12, 1});
   MyButton6.setText (L"&Quit");
   MyButton6.setStatusbarMessage ("Exit the program");
-  MyButton6.addAccelerator('x');
+  MyButton6.addAccelerator(FKey('x'));
 
   // Add button callback functions
   MyButton4.addCallback
@@ -718,7 +719,7 @@ void MyDialog::initLabels()
   // Text labels
   headline.setGeometry(FPoint{21, 3}, FSize{10, 1});
   headline.setEmphasis();
-  headline.setAlignment (fc::alignCenter);
+  headline.setAlignment (finalcut::Align::Center);
   headline = L"List items";
 
   tagged.setGeometry(FPoint{21, 4}, FSize{7, 1});
@@ -727,7 +728,7 @@ void MyDialog::initLabels()
   tagged_count << 0;
 
   sum.setGeometry(FPoint{21, 5}, FSize{7, 3});
-  sum.setAlignment (fc::alignRight);
+  sum.setAlignment (finalcut::Align::Right);
 
   sum_count.setGeometry(FPoint{29, 5}, FSize{5, 3});
   sum_count << myList.getCount();
@@ -769,7 +770,11 @@ void MyDialog::initWidgetsCallbacks()
 //----------------------------------------------------------------------
 void MyDialog::adjustSize()
 {
-  const auto h = getDesktopHeight() - 4;
+  auto h = getDesktopHeight();
+
+  if ( h > 4 )
+    h -= 4;
+
   setHeight (h, false);
   finalcut::FDialog::adjustSize();  // with new client area size
   auto x = int((getDesktopWidth() - getWidth()) / 2);
@@ -779,7 +784,7 @@ void MyDialog::adjustSize()
 
   setPos (FPoint{x, 2}, false);
 
-  if ( initialized )
+  if ( initialized && h > 3 )
     myList.setHeight (h - 3, true);
 }
 
@@ -803,7 +808,7 @@ void MyDialog::cb_noFunctionMsg (const finalcut::FButton& button)
 void MyDialog::cb_about()
 {
   constexpr char libver[] = F_VERSION;
-  const finalcut::FString line(2, fc::BoxDrawingsHorizontal);
+  const finalcut::FString line(2, finalcut::UniChar::BoxDrawingsHorizontal);
 
   finalcut::FMessageBox info ( "About"
                              , line + L" FINAL CUT " + line + L"\n\n"
@@ -829,7 +834,7 @@ void MyDialog::cb_terminfo()
       << "  Type: " << finalcut::FTerm::getTermType() << "\n"
       << "  Name: " << finalcut::FTerm::getTermFileName() << "\n"
       << "  Mode: " << finalcut::FTerm::getEncodingString() << "\n"
-      << "  Size: " << x << fc::Times
+      << "  Size: " << x << finalcut::UniChar::Times
                     << y << "\n"
       << "Colors: " << finalcut::FTerm::getMaxColor()
     , finalcut::FMessageBox::ButtonType::Ok
@@ -883,12 +888,12 @@ void MyDialog::cb_drives()
     }
     else
     {
-      net.setForegroundColor (fc::White);
-      net.setBackgroundColor (fc::DarkGray);
-      drive.setForegroundColor (fc::White);
-      drive.setBackgroundColor (fc::DarkGray);
-      cd.setForegroundColor (fc::White);
-      cd.setBackgroundColor (fc::DarkGray);
+      net.setForegroundColor (FColor::White);
+      net.setBackgroundColor (FColor::DarkGray);
+      drive.setForegroundColor (FColor::White);
+      drive.setBackgroundColor (FColor::DarkGray);
+      cd.setForegroundColor (FColor::White);
+      cd.setBackgroundColor (FColor::DarkGray);
     }
 
     info2.exec();

@@ -219,11 +219,11 @@ void FObjectTest::noArgumentTest()
   CPPUNIT_ASSERT ( ! o1.isTimerInUpdating() );
 
   test::FObject_protected t;
-  auto ev = new finalcut::FEvent(finalcut::fc::None_Event);
+  auto ev = new finalcut::FEvent(finalcut::Event::None);
   CPPUNIT_ASSERT ( ! t.event(ev) );
   delete ev;
 
-  ev = new finalcut::FEvent(finalcut::fc::Timer_Event);
+  ev = new finalcut::FEvent(finalcut::Event::Timer);
   CPPUNIT_ASSERT ( t.event(ev) );
   delete ev;
 
@@ -693,7 +693,7 @@ void FObjectTest::performTimerActionTest()
 
   test::FObject_timer t2;
   CPPUNIT_ASSERT ( t2.getValue() == 0 );
-  finalcut::FTimerEvent timer_ev (finalcut::fc::Timer_Event, 1);
+  finalcut::FTimerEvent timer_ev (finalcut::Event::Timer, 1);
 
   for (auto x = 0; x < 10; x++)
     finalcut::FApplication::sendEvent (&t2, &timer_ev);
@@ -708,7 +708,7 @@ void FObjectTest::userEventTest()
   CPPUNIT_ASSERT ( user.getValue() == 0 );
 
   int n = 9;
-  finalcut::FUserEvent user_ev (finalcut::fc::User_Event, 42);
+  finalcut::FUserEvent user_ev (finalcut::Event::User, 42);
   user_ev.setData(n);
   finalcut::FApplication::sendEvent (&user, &user_ev);
   CPPUNIT_ASSERT ( user.getValue() == 9 );

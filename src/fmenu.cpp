@@ -137,50 +137,33 @@ void FMenu::onKeyPress (FKeyEvent* ev)
   if ( menu_bar && menu_bar->hotkeyMenu(ev) )
     return;
 
-  switch ( ev->key() )
-  {
-    case fc::Fkey_up:
-      selectPrevItem();
-      break;
+  const auto key = ev->key();
+  // Ignore these keys:
+  //   Dialog Switch Accelerator Handling in FApplication
+  std::array<FKey, 9> ignore_list =  //  Meta-1..9
+  {{
+    FKey::Meta_1, FKey::Meta_2, FKey::Meta_3,
+    FKey::Meta_4, FKey::Meta_5, FKey::Meta_6,
+    FKey::Meta_7, FKey::Meta_8, FKey::Meta_9
+  }};
 
-    case fc::Fkey_down:
-      selectNextItem();
-      break;
+  if ( std::any_of( std::begin(ignore_list)
+                  , std::end(ignore_list)
+                  , [&key] (FKey k) { return key == k; } ) )
+    return;
 
-    case fc::Fkey_left:
-      selectPrevMenu(ev);
-      break;
-
-    case fc::Fkey_right:
-      selectNextMenu(ev);
-      break;
-
-    case fc::Fkey_return:
-    case fc::Fkey_enter:
-      acceptSelection();
-      break;
-
-    case fc::Fkey_escape:
-    case fc::Fkey_escape_mintty:
-      closeMenu();
-      break;
-
-    case fc::Fmkey_1:
-    case fc::Fmkey_2:
-    case fc::Fmkey_3:
-    case fc::Fmkey_4:
-    case fc::Fmkey_5:
-    case fc::Fmkey_6:
-    case fc::Fmkey_7:
-    case fc::Fmkey_8:
-    case fc::Fmkey_9:
-      // do nothing:
-      //   handle the dialog switch accelerator in FApplication
-      return;
-
-    default:
-      break;
-  }
+  if ( key == FKey::Up )
+    selectPrevItem();
+  else if ( key == FKey::Down )
+    selectNextItem();
+  else if ( key == FKey::Left )
+    selectPrevMenu(ev);
+  else if ( key == FKey::Right )
+    selectNextMenu(ev);
+  else if ( key == FKey::Return || key == FKey::Enter )
+    acceptSelection();
+  else if ( key == FKey::Escape || key == FKey::Escape_mintty )
+    closeMenu();
 
   // always accept key event -> no forwarding to the parent widget
   ev->accept();
@@ -191,7 +174,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
 {
   shown_sub_menu = nullptr;
 
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
   {
     if ( opened_sub_menu )
     {
@@ -231,7 +214,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenu::onMouseUp (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   if ( mouse_down )
@@ -253,7 +236,7 @@ void FMenu::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenu::onMouseMove (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   if ( ! isWindowActive() )
@@ -507,7 +490,7 @@ void FMenu::calculateDimensions()
     {
       item_width += 3;
     }
-    else if ( accel_key )
+    else if ( accel_key != FKey::None )
     {
       const std::size_t accel_len = FTerm::getKeyName(accel_key).getLength();
       item_width += accel_len + 2;
@@ -914,20 +897,12 @@ void FMenu::passEventToSubMenu (const FMouseEvent& ev)
 
   const auto& t = ev.getTermPos();
   const auto& p = opened_sub_menu->termToWidgetPos(t);
-  const int b = ev.getButton();
-
-  try
-  {
-    const auto& _ev = \
-        std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
-    opened_sub_menu->mouse_down = true;
-    setClickedWidget(opened_sub_menu);
-    opened_sub_menu->onMouseMove(_ev.get());
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FMouseEvent");
-  }
+  const MouseButton b = ev.getButton();
+  const auto& _ev = \
+      std::make_shared<FMouseEvent>(Event::MouseMove, p, t, b);
+  opened_sub_menu->mouse_down = true;
+  setClickedWidget(opened_sub_menu);
+  opened_sub_menu->onMouseMove(_ev.get());
 }
 
 //----------------------------------------------------------------------
@@ -938,20 +913,12 @@ void FMenu::passEventToSuperMenu (const FMouseEvent& ev)
   auto smenu = superMenuAt (ev.getTermPos());
   const auto& t = ev.getTermPos();
   const auto& p = smenu->termToWidgetPos(t);
-  const int b = ev.getButton();
-
-  try
-  {
-    const auto& _ev = \
-        std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
-    smenu->mouse_down = true;
-    setClickedWidget(smenu);
-    smenu->onMouseMove(_ev.get());
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FMouseEvent");
-  }
+  const MouseButton b = ev.getButton();
+  const auto& _ev = \
+      std::make_shared<FMouseEvent>(Event::MouseMove, p, t, b);
+  smenu->mouse_down = true;
+  setClickedWidget(smenu);
+  smenu->onMouseMove(_ev.get());
 }
 
 //----------------------------------------------------------------------
@@ -962,20 +929,12 @@ void FMenu::passEventToMenuBar (const FMouseEvent& ev) const
   auto menu_bar = getMenuBar();
   const auto& t = ev.getTermPos();
   const auto& p = menu_bar->termToWidgetPos(t);
-  const int b = ev.getButton();
-
-  try
-  {
-    const auto& _ev = \
-        std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
-    setClickedWidget(menu_bar);
-    menu_bar->mouse_down = true;
-    menu_bar->onMouseMove(_ev.get());
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FMouseEvent");
-  }
+  const MouseButton b = ev.getButton();
+  const auto& _ev = \
+      std::make_shared<FMouseEvent>(Event::MouseMove, p, t, b);
+  setClickedWidget(menu_bar);
+  menu_bar->mouse_down = true;
+  menu_bar->onMouseMove(_ev.get());
 }
 
 //----------------------------------------------------------------------
@@ -1229,19 +1188,19 @@ inline void FMenu::drawSeparator (int y)
 
   if ( FTerm::isNewFont() )
   {
-    print (fc::NF_border_line_vertical_right);
+    print (UniChar::NF_border_line_vertical_right);
     FString line { std::size_t(getWidth()) - 2
-                 , fc::BoxDrawingsHorizontal };
+                 , UniChar::BoxDrawingsHorizontal };
     print (line);
-    print (fc::NF_rev_border_line_vertical_left);
+    print (UniChar::NF_rev_border_line_vertical_left);
   }
   else
   {
-    print (fc::BoxDrawingsVerticalAndRight);
+    print (UniChar::BoxDrawingsVerticalAndRight);
     FString line { std::size_t(getWidth()) - 2
-                 , fc::BoxDrawingsHorizontal};
+                 , UniChar::BoxDrawingsHorizontal};
     print (line);
-    print (fc::BoxDrawingsVerticalAndLeft);
+    print (UniChar::BoxDrawingsVerticalAndLeft);
   }
 
   if ( FTerm::isMonochron() )
@@ -1284,7 +1243,7 @@ inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
 
   if ( m_item->hasMenu() )
     drawSubMenuIndicator (column_width);
-  else if ( accel_key )
+  else if ( accel_key != FKey::None )
     drawAcceleratorKey (column_width, accel_key);
 
   // Draw the trailing spaces of the selected line
@@ -1312,16 +1271,16 @@ inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
       if ( is_radio_btn )
       {
         if ( FTerm::isNewFont() )
-          print (fc::NF_Bullet);  // NF_Bullet ●
+          print (UniChar::NF_Bullet);  // NF_Bullet ●
         else
-          print (fc::BlackCircle);     // BlackCircle ●
+          print (UniChar::BlackCircle);     // BlackCircle ●
       }
       else
       {
         if ( FTerm::isNewFont() )
-          print (fc::NF_check_mark);  // NF_check_mark ✓
+          print (UniChar::NF_check_mark);  // NF_check_mark ✓
         else
-          print (fc::SquareRoot);     // SquareRoot √
+          print (UniChar::SquareRoot);     // SquareRoot √
       }
     }
     else
@@ -1329,10 +1288,10 @@ inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
       const auto& wc = getColorTheme();
       setColor (wc->menu_inactive_fg, getBackgroundColor());
 
-      if ( FTerm::getEncoding() == fc::ASCII )
+      if ( FTerm::getEncoding() == Encoding::ASCII )
         print ('-');
       else
-        print (fc::SmallBullet);  // ·
+        print (UniChar::SmallBullet);  // ·
 
       setColor();
     }
@@ -1350,8 +1309,8 @@ inline void FMenu::drawMenuText (MenuText& data)
   {
     if ( ! std::iswprint(std::wint_t(data.text[z]))
       && ! FTerm::isNewFont()
-      && ( data.text[z] < fc::NF_rev_left_arrow2
-        || data.text[z] > fc::NF_check_mark )
+      && ( data.text[z] < UniChar::NF_rev_left_arrow2
+        || data.text[z] > UniChar::NF_check_mark )
       && ! FTerm::charEncodable(wchar_t(data.text[z])) )
     {
       data.text[z] = L' ';
@@ -1388,7 +1347,7 @@ inline void FMenu::drawSubMenuIndicator (std::size_t& startpos)
     // Print filling blank spaces
     print (FString{len, L' '});
     // Print BlackRightPointingPointer ►
-    print (fc::BlackRightPointingPointer);
+    print (UniChar::BlackRightPointingPointer);
     startpos = max_item_width - (c + 2);
   }
 }

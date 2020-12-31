@@ -103,9 +103,9 @@ class FVTerm
     // Enumerations
     enum class CoveredState
     {
-      non_covered,
-      half_covered,
-      fully_covered
+      None,
+      Half,
+      Full
     };
 
     enum class TerminalUpdate
@@ -130,7 +130,7 @@ class FVTerm
     // Overloaded operators
     template <typename typeT>
     FVTerm& operator << (const typeT&);
-    FVTerm& operator << (fc::SpecialCharacter);
+    FVTerm& operator << (const UniChar&);
     FVTerm& operator << (const std::string&);
     FVTerm& operator << (const FTermBuffer&);
     FVTerm& operator << (const std::vector<FChar>&);
@@ -247,7 +247,7 @@ class FVTerm
     static bool           isInheritBackground();
 
     // Methods
-    virtual void          clearArea (int = ' ');
+    virtual void          clearArea (wchar_t = L' ');
     void                  createVTerm (const FSize&);
     void                  resizeVTerm (const FSize&) const;
     void                  putVTerm() const;
@@ -313,7 +313,7 @@ class FVTerm
     static void           putArea (const FPoint&, const FTermArea*);
     void                  scrollAreaForward (FTermArea*) const;
     void                  scrollAreaReverse (FTermArea*) const;
-    void                  clearArea (FTermArea*, int = ' ') const;
+    void                  clearArea (FTermArea*, wchar_t = L' ') const;
     void                  forceTerminalUpdate() const;
     bool                  processTerminalUpdate() const;
     static void           startDrawing();
@@ -322,17 +322,18 @@ class FVTerm
 
   private:
     // Enumerations
-    enum character_type
+    enum class CharacterType
     {
-      overlapped_character,
-      covered_character
+      Overlapped,
+      Covered
     };
 
-    enum exit_state
+    enum class PrintState
     {
-      not_used,
-      used,
-      line_completely_printed
+      NothingPrinted,
+      RepeatCharacterPrinted,
+      WhitespacesPrinted,
+      LineCompletelyPrinted
     };
 
     // Constants
@@ -362,7 +363,7 @@ class FVTerm
     void                  clearChildAreaChanges (const FTermArea*) const;
     static bool           isInsideArea (const FPoint&, const FTermArea*);
     static FChar          generateCharacter (const FPoint&);
-    static FChar          getCharacter ( character_type
+    static FChar          getCharacter ( CharacterType
                                        , const FPoint&
                                        , const FTermArea* );
     static FChar          getCoveredCharacter (const FPoint&, const FTermArea*);
@@ -389,8 +390,8 @@ class FVTerm
     void                  printFullWidthPaddingCharacter (uInt&, uInt, FChar&) const;
     void                  printHalfCovertFullWidthCharacter (uInt&, uInt, FChar&) const;
     void                  skipPaddingCharacter (uInt&, uInt, const FChar&) const;
-    exit_state            eraseCharacters (uInt&, uInt, uInt, bool) const;
-    exit_state            repeatCharacter (uInt&, uInt, uInt) const;
+    PrintState            eraseCharacters (uInt&, uInt, uInt, bool) const;
+    PrintState            repeatCharacter (uInt&, uInt, uInt) const;
     bool                  isFullWidthChar (const FChar&) const;
     bool                  isFullWidthPaddingChar (const FChar&) const;
     static void           cursorWrap();
@@ -534,7 +535,7 @@ inline FVTerm& FVTerm::operator << (const typeT& s)
 }
 
 //----------------------------------------------------------------------
-inline FVTerm& FVTerm::operator << (fc::SpecialCharacter c)
+inline FVTerm& FVTerm::operator << (const UniChar& c)
 {
   print (static_cast<wchar_t>(c));  // Required under Solaris
   return *this;
@@ -627,8 +628,8 @@ inline void FVTerm::setNormal()
   next_attribute.attr.byte[0] = 0;
   next_attribute.attr.byte[1] = 0;
   next_attribute.attr.bit.no_changes = false;
-  next_attribute.fg_color = fc::Default;
-  next_attribute.bg_color = fc::Default;
+  next_attribute.fg_color = FColor::Default;
+  next_attribute.bg_color = FColor::Default;
 }
 
 //----------------------------------------------------------------------

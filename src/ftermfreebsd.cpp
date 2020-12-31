@@ -36,7 +36,7 @@ namespace finalcut
 
 // static class attributes
 uInt                      FTermFreeBSD::bsd_alt_keymap{0};
-FTermFreeBSD::CursorStyle FTermFreeBSD::cursor_style{fc::normal_cursor};
+FTermFreeBSD::CursorStyle FTermFreeBSD::cursor_style{FreeBSDConsoleCursorStyle::Normal};
 bool                      FTermFreeBSD::change_cursorstyle{true};
 bool                      FTermFreeBSD::meta_sends_escape{true};
 
@@ -136,7 +136,7 @@ void FTermFreeBSD::init()
   if ( change_cursorstyle )
   {
     // Initialize FreeBSD console cursor
-    setCursorStyle (fc::destructive_cursor);
+    setCursorStyle (FreeBSDConsoleCursorStyle::Destructive);
   }
 }
 
@@ -149,8 +149,8 @@ void FTermFreeBSD::initCharMap()
     return;
 
   for (auto&& entry : fc::character)
-    if ( entry[fc::PC] < 0x1c )
-      entry[fc::PC] = entry[fc::ASCII];
+    if ( entry.pc < 0x1c )
+      entry.pc = entry.ascii;
 }
 
 //----------------------------------------------------------------------
@@ -164,7 +164,7 @@ void FTermFreeBSD::finish()
   if ( meta_sends_escape )
     resetFreeBSDAlt2Meta();
 
-  setFreeBSDCursorStyle (fc::normal_cursor);
+  setFreeBSDCursorStyle (FreeBSDConsoleCursorStyle::Normal);
 }
 
 

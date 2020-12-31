@@ -86,7 +86,7 @@ class FTextView : public FWidget
     FTextView& operator = (const FString&);
     template <typename typeT>
     FTextView& operator << (const typeT&);
-    FTextView& operator << (fc::SpecialCharacter);
+    FTextView& operator << (const UniChar&);
     FTextView& operator << (const std::string&);
 
     // Accessors
@@ -138,7 +138,7 @@ class FTextView : public FWidget
 
   private:
     // Using-declaration
-    using KeyMap = std::unordered_map<int, std::function<void()>>;
+    using KeyMap = std::unordered_map<FKey, std::function<void()>>;
 
     // Accessors
     std::size_t         getTextHeight() const;
@@ -198,7 +198,7 @@ inline FTextView& FTextView::operator << (const typeT& s)
 }
 
 //----------------------------------------------------------------------
-inline FTextView& FTextView::operator << (fc::SpecialCharacter c)
+inline FTextView& FTextView::operator << (const UniChar& c)
 {
   append (static_cast<wchar_t>(c));  // Required under Solaris
   return *this;

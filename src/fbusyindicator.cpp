@@ -73,7 +73,7 @@ void FBusyIndicator::createIndicatorText()
 {
   std::array<FString, 4> line{};
 
-  if ( FTerm::getEncoding() == fc::UTF8 )
+  if ( FTerm::getEncoding() == Encoding::UTF8 )
   {
     const auto& p = uni_pattern;
     line[0] << "   " << p[7] << " " << p[0] << "   \n";
@@ -98,7 +98,7 @@ void FBusyIndicator::createIndicatorText()
 void FBusyIndicator::onTimer (finalcut::FTimerEvent*)
 {
   // Rotate pattern
-  if ( FTerm::getEncoding() == fc::UTF8 )
+  if ( FTerm::getEncoding() == Encoding::UTF8 )
   {
     const wchar_t last = uni_pattern[7];
     std::memmove(uni_pattern + 1, uni_pattern , sizeof(wchar_t) * 7);

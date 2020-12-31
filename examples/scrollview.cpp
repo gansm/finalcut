@@ -60,10 +60,10 @@ class Scrollview final : public finalcut::FScrollView
     void cb_goNorth();
 
     // Data members
-    wchar_t pointer_right{fc::BlackRightPointingPointer};
-    wchar_t pointer_down{fc::BlackDownPointingTriangle};
-    wchar_t pointer_left{fc::BlackLeftPointingPointer};
-    wchar_t pointer_up{fc::BlackUpPointingTriangle};
+    finalcut::UniChar pointer_right{finalcut::UniChar::BlackRightPointingPointer};
+    finalcut::UniChar pointer_down{finalcut::UniChar::BlackDownPointingTriangle};
+    finalcut::UniChar pointer_left{finalcut::UniChar::BlackLeftPointingPointer};
+    finalcut::UniChar pointer_up{finalcut::UniChar::BlackUpPointingTriangle};
     finalcut::FButton go_east{pointer_right, this};
     finalcut::FButton go_south{pointer_down, this};
     finalcut::FButton go_west{pointer_left, this};

@@ -34,6 +34,7 @@
 #include "final/fmouse.h"
 #include "final/fobject.h"
 #include "final/fterm.h"
+#include "final/ftermlinux.h"
 #include "final/ftermxterminal.h"
 #include "final/ftypes.h"
 
@@ -144,12 +145,12 @@ void FMouseData::clearButtonState()
   b_state.left_button    = State::Undefined;
   b_state.right_button   = State::Undefined;
   b_state.middle_button  = State::Undefined;
-  b_state.shift_button   = 0;
-  b_state.control_button = 0;
-  b_state.meta_button    = 0;
-  b_state.wheel_up       = 0;
-  b_state.wheel_down     = 0;
-  b_state.mouse_moved    = 0;
+  b_state.shift_button   = false;
+  b_state.control_button = false;
+  b_state.meta_button    = false;
+  b_state.wheel_up       = false;
+  b_state.wheel_down     = false;
+  b_state.mouse_moved    = false;
 }
 
 
@@ -380,7 +381,7 @@ void FMouseGPM::processEvent (struct timeval*)
     setPos (FPoint{ std::max(gpm_ev.x, sInt16(1))
                   , std::max(gpm_ev.y, sInt16(1)) });
 
-    if ( gpmEvent(false) == mouse_event )
+    if ( gpmEvent(false) == gpmEventType::Mouse )
       setPending(true);
     else
       setPending(false);
@@ -486,20 +487,12 @@ bool FMouseGPM::getGpmKeyPressed (bool is_pending)
 {
   setPending(is_pending);
   has_gpm_mouse_data = false;
-  const int type = gpmEvent();
+  const auto type = gpmEvent();
 
-  switch ( type )
-  {
-    case mouse_event:
-      has_gpm_mouse_data = true;
-      break;
-
-    case keyboard_event:
-      return true;
-
-    default:
-      return false;
-  }
+  if ( type == gpmEventType::Mouse )
+    has_gpm_mouse_data = true;
+  else if ( type == gpmEventType::Keyboard )
+    return true;
 
   return false;
 }
@@ -512,7 +505,7 @@ void FMouseGPM::drawPointer() const
 }
 
 //----------------------------------------------------------------------
-int FMouseGPM::gpmEvent (bool clear) const
+FMouseGPM::gpmEventType FMouseGPM::gpmEvent (bool clear) const
 {
   const int max = ( gpm_fd > stdin_no ) ? gpm_fd : stdin_no;
   fd_set ifds{};
@@ -530,16 +523,16 @@ int FMouseGPM::gpmEvent (bool clear) const
     if ( clear )
       FD_CLR (stdin_no, &ifds);
 
-    return keyboard_event;
+    return gpmEventType::Keyboard;
   }
 
   if ( clear && result > 0 && FD_ISSET(gpm_fd, &ifds) )
     FD_CLR (gpm_fd, &ifds);
 
   if ( result > 0 )
-    return mouse_event;
+    return gpmEventType::Mouse;
   else
-    return no_event;
+    return gpmEventType::None;
 }
 #endif  // F_HAVE_LIBGPM
 
@@ -1212,13 +1205,13 @@ void FMouseUrxvt::setButtonState (const int btn, const struct timeval* time)
 FMouseControl::FMouseControl()
 {
 #ifdef F_HAVE_LIBGPM
-  if ( FTerm::isLinuxTerm() )
-    mouse_protocol[FMouse::MouseType::gpm].reset(FMouse::createMouseObject<FMouseGPM>());
+  if ( FTermLinux::isLinuxConsole() )
+    mouse_protocol[FMouse::MouseType::Gpm].reset(FMouse::createMouseObject<FMouseGPM>());
 #endif
 
-  mouse_protocol[FMouse::MouseType::x11].reset(FMouse::createMouseObject<FMouseX11>());
-  mouse_protocol[FMouse::MouseType::sgr].reset(FMouse::createMouseObject<FMouseSGR>());
-  mouse_protocol[FMouse::MouseType::urxvt].reset(FMouse::createMouseObject<FMouseUrxvt>());
+  mouse_protocol[FMouse::MouseType::X11].reset(FMouse::createMouseObject<FMouseX11>());
+  mouse_protocol[FMouse::MouseType::Sgr].reset(FMouse::createMouseObject<FMouseSGR>());
+  mouse_protocol[FMouse::MouseType::Urxvt].reset(FMouse::createMouseObject<FMouseUrxvt>());
 }
 
 //----------------------------------------------------------------------
@@ -1250,14 +1243,14 @@ void FMouseControl::clearEvent()
     if ( mouse_protocol[mtype] )
       mouse_protocol[mtype]->clearEvent();
   }
-  while ( mtype != FMouse::MouseType::none );
+  while ( mtype != FMouse::MouseType::None );
 }
 
 //----------------------------------------------------------------------
 #ifdef F_HAVE_LIBGPM
 void FMouseControl::setStdinNo (int file_descriptor)
 {
-  auto mouse = mouse_protocol[FMouse::MouseType::gpm].get();
+  auto mouse = mouse_protocol[FMouse::MouseType::Gpm].get();
   auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
@@ -1271,13 +1264,13 @@ void FMouseControl::setStdinNo (int)
 //----------------------------------------------------------------------
 void FMouseControl::setMaxWidth (uInt16 x_max)
 {
-  mouse_protocol[FMouse::MouseType::urxvt]->setMaxWidth(x_max);
+  mouse_protocol[FMouse::MouseType::Urxvt]->setMaxWidth(x_max);
 }
 
 //----------------------------------------------------------------------
 void FMouseControl::setMaxHeight (uInt16 y_max)
 {
-  mouse_protocol[FMouse::MouseType::urxvt]->setMaxHeight(y_max);
+  mouse_protocol[FMouse::MouseType::Urxvt]->setMaxHeight(y_max);
 }
 
 //----------------------------------------------------------------------
@@ -1486,7 +1479,7 @@ bool FMouseControl::isGpmMouseEnabled()
   if ( mouse_protocol.empty() )
     return false;
 
-  const auto& mouse = mouse_protocol[FMouse::MouseType::gpm].get();
+  const auto& mouse = mouse_protocol[FMouse::MouseType::Gpm].get();
   const auto& gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
@@ -1507,7 +1500,7 @@ void FMouseControl::enable()
 #ifdef F_HAVE_LIBGPM
   if ( use_gpm_mouse )
   {
-    auto mouse = mouse_protocol[FMouse::MouseType::gpm].get();
+    auto mouse = mouse_protocol[FMouse::MouseType::Gpm].get();
     auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
     if ( gpm_mouse )
@@ -1525,7 +1518,7 @@ void FMouseControl::disable()
 #ifdef F_HAVE_LIBGPM
   if ( use_gpm_mouse )
   {
-    auto mouse = mouse_protocol[FMouse::MouseType::gpm].get();
+    auto mouse = mouse_protocol[FMouse::MouseType::Gpm].get();
     auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
     if ( gpm_mouse )
@@ -1590,7 +1583,7 @@ bool FMouseControl::getGpmKeyPressed (bool pending)
   if ( mouse_protocol.empty() )
     return false;
 
-  auto mouse = mouse_protocol[FMouse::MouseType::gpm].get();
+  auto mouse = mouse_protocol[FMouse::MouseType::Gpm].get();
   auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
@@ -1612,7 +1605,7 @@ void FMouseControl::drawPointer()
   if ( mouse_protocol.empty() )
     return;
 
-  auto mouse = mouse_protocol[FMouse::MouseType::gpm].get();
+  auto mouse = mouse_protocol[FMouse::MouseType::Gpm].get();
   auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
@@ -1638,7 +1631,7 @@ FMouse::MouseType FMouseControl::getMouseWithData()
                      }
                    );
 
-  return ( iter != mouse_protocol.end() ) ? iter->first : FMouse::MouseType::none;
+  return ( iter != mouse_protocol.end() ) ? iter->first : FMouse::MouseType::None;
 }
 
 //----------------------------------------------------------------------
@@ -1654,7 +1647,7 @@ FMouse::MouseType FMouseControl::getMouseWithEvent()
                      }
                    );
 
-  return ( iter != mouse_protocol.end() ) ? iter->first : FMouse::MouseType::none;
+  return ( iter != mouse_protocol.end() ) ? iter->first : FMouse::MouseType::None;
 }
 
 //----------------------------------------------------------------------

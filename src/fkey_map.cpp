@@ -31,829 +31,829 @@ namespace finalcut
 namespace fc
 {
 
-std::array<FKeyMap, 188> fkey
+std::array<FKeyCapMap, 188> fkey_cap_table
 {{
-  { fc::Fkey_backspace , nullptr,   "kb" },  // backspace key
-  { fc::Fkey_catab     , nullptr,   "ka" },  // clear-all-tabs key
-  { fc::Fkey_clear     , nullptr,   "kC" },  // clear-screen or erase key
-  { fc::Fkey_ctab      , nullptr,   "kt" },  // clear-tab key
-  { fc::Fkey_dc        , nullptr,   "kD" },  // delete-character key
-  { fc::Fkey_dl        , nullptr,   "kL" },  // delete-line key
-  { fc::Fkey_down      , nullptr,   "kd" },  // down-arrow key
-  { fc::Fkey_eic       , nullptr,   "kM" },  // sent by rmir or smir in insert mode
-  { fc::Fkey_eol       , nullptr,   "kE" },  // clear-to-end-of-line key
-  { fc::Fkey_eos       , nullptr,   "kS" },  // clear-to-end-of-screen key
-  { fc::Fkey_f0        , nullptr,   "k0" },  // F0 function key
-  { fc::Fkey_f1        , nullptr,   "k1" },  // F1 function key
-  { fc::Fkey_f2        , nullptr,   "k2" },  // F2 function key
-  { fc::Fkey_f3        , nullptr,   "k3" },  // F3 function key
-  { fc::Fkey_f4        , nullptr,   "k4" },  // F4 function key
-  { fc::Fkey_f5        , nullptr,   "k5" },  // F5 function key
-  { fc::Fkey_f6        , nullptr,   "k6" },  // F6 function key
-  { fc::Fkey_f7        , nullptr,   "k7" },  // F7 function key
-  { fc::Fkey_f8        , nullptr,   "k8" },  // F8 fucntion key
-  { fc::Fkey_f9        , nullptr,   "k9" },  // F9 function key
-  { fc::Fkey_f10       , nullptr,   "k;" },  // F10 function key
-  { fc::Fkey_home      , nullptr,   "kh" },  // home key
-  { fc::Fkey_ic        , nullptr,   "kI" },  // insert-character key
-  { fc::Fkey_il        , nullptr,   "kA" },  // insert-line key
-  { fc::Fkey_left      , nullptr,   "kl" },  // left-arrow key
-  { fc::Fkey_ll        , nullptr,   "kH" },  // last-line key
-  { fc::Fkey_npage     , nullptr,   "kN" },  // next-page key
-  { fc::Fkey_ppage     , nullptr,   "kP" },  // prev-page key
-  { fc::Fkey_right     , nullptr,   "kr" },  // right-arrow key
-  { fc::Fkey_sf        , nullptr,   "kF" },  // scroll-forward key (shift-up)
-  { fc::Fkey_sr        , nullptr,   "kR" },  // scroll-backward key (shift-down)
-  { fc::Fkey_stab      , nullptr,   "kT" },  // set-tab key
-  { fc::Fkey_up        , nullptr,   "ku" },  // up-arrow key
-  { fc::Fkey_a1        , nullptr,   "K1" },  // upper left of keypad
-  { fc::Fkey_a3        , nullptr,   "K3" },  // upper right of keypad
-  { fc::Fkey_b2        , nullptr,   "K2" },  // center of keypad
-  { fc::Fkey_c1        , nullptr,   "K4" },  // lower left of keypad
-  { fc::Fkey_c3        , nullptr,   "K5" },  // lower right of keypad
-  { fc::Fkey_btab      , nullptr,   "kB" },  // back-tab key
-  { fc::Fkey_beg       , nullptr,   "@1" },  // begin key
-  { fc::Fkey_cancel    , nullptr,   "@2" },  // cancel key
-  { fc::Fkey_close     , nullptr,   "@3" },  // close key
-  { fc::Fkey_command   , nullptr,   "@4" },  // command key
-  { fc::Fkey_copy      , nullptr,   "@5" },  // copy key
-  { fc::Fkey_create    , nullptr,   "@6" },  // create key
-  { fc::Fkey_end       , nullptr,   "@7" },  // end key
-  { fc::Fkey_enter     , nullptr,   "@8" },  // enter/send key
-  { fc::Fkey_exit      , nullptr,   "@9" },  // exit key
-  { fc::Fkey_find      , nullptr,   "@0" },  // find key
-  { fc::Fkey_help      , nullptr,   "%1" },  // help key
-  { fc::Fkey_mark      , nullptr,   "%2" },  // mark key
-  { fc::Fkey_message   , nullptr,   "%3" },  // message key
-  { fc::Fkey_move      , nullptr,   "%4" },  // move key
-  { fc::Fkey_next      , nullptr,   "%5" },  // next key
-  { fc::Fkey_open      , nullptr,   "%6" },  // open key
-  { fc::Fkey_options   , nullptr,   "%7" },  // options key
-  { fc::Fkey_previous  , nullptr,   "%8" },  // previous key
-  { fc::Fkey_print     , nullptr,   "%9" },  // print key
-  { fc::Fkey_redo      , nullptr,   "%0" },  // redo key
-  { fc::Fkey_reference , nullptr,   "&1" },  // reference key
-  { fc::Fkey_refresh   , nullptr,   "&2" },  // refresh key
-  { fc::Fkey_replace   , nullptr,   "&3" },  // replace key
-  { fc::Fkey_restart   , nullptr,   "&4" },  // restart key
-  { fc::Fkey_resume    , nullptr,   "&5" },  // resume key
-  { fc::Fkey_save      , nullptr,   "&6" },  // save key
-  { fc::Fkey_suspend   , nullptr,   "&7" },  // suspend key
-  { fc::Fkey_undo      , nullptr,   "&8" },  // undo key
-  { fc::Fkey_sbeg      , nullptr,   "&9" },  // shifted begin key
-  { fc::Fkey_scancel   , nullptr,   "&0" },  // shifted cancel key
-  { fc::Fkey_scommand  , nullptr,   "*1" },  // shifted command key
-  { fc::Fkey_scopy     , nullptr,   "*2" },  // shifted copy key
-  { fc::Fkey_screate   , nullptr,   "*3" },  // shifted create key
-  { fc::Fkey_sdc       , nullptr,   "*4" },  // shifted delete-character key
-  { fc::Fkey_sdl       , nullptr,   "*5" },  // shifted delete-line key
-  { fc::Fkey_select    , nullptr,   "*6" },  // select key
-  { fc::Fkey_send      , nullptr,   "*7" },  // shifted end key
-  { fc::Fkey_seol      , nullptr,   "*8" },  // shifted clear-to-end-of-line key
-  { fc::Fkey_sexit     , nullptr,   "*9" },  // shifted exit key
-  { fc::Fkey_sfind     , nullptr,   "*0" },  // shifted find key
-  { fc::Fkey_shelp     , nullptr,   "#1" },  // shifted help key
-  { fc::Fkey_shome     , nullptr,   "#2" },  // shifted home key
-  { fc::Fkey_sic       , nullptr,   "#3" },  // shifted insert-character key
-  { fc::Fkey_sleft     , nullptr,   "#4" },  // shifted left-arrow key
-  { fc::Fkey_smessage  , nullptr,   "%a" },  // shifted message key
-  { fc::Fkey_smove     , nullptr,   "%b" },  // shifted move key
-  { fc::Fkey_snext     , nullptr,   "%c" },  // shifted next key
-  { fc::Fkey_soptions  , nullptr,   "%d" },  // shifted options key
-  { fc::Fkey_sprevious , nullptr,   "%e" },  // shifted previous key
-  { fc::Fkey_sprint    , nullptr,   "%f" },  // shifted print key
-  { fc::Fkey_sredo     , nullptr,   "%g" },  // shifted redo key
-  { fc::Fkey_sreplace  , nullptr,   "%h" },  // shifted replace key
-  { fc::Fkey_sright    , nullptr,   "%i" },  // shifted right-arrow key
-  { fc::Fkey_srsume    , nullptr,   "%j" },  // shifted resume key
-  { fc::Fkey_ssave     , nullptr,   "!1" },  // shifted save key
-  { fc::Fkey_ssuspend  , nullptr,   "!2" },  // shifted suspend key
-  { fc::Fkey_sundo     , nullptr,   "!3" },  // shifted undo key
-  { fc::Fkey_f11       , nullptr,   "F1" },  // F11 function key
-  { fc::Fkey_f12       , nullptr,   "F2" },  // F12 function key
-  { fc::Fkey_f13       , nullptr,   "F3" },  // F13 function key
-  { fc::Fkey_f14       , nullptr,   "F4" },  // F14 function key
-  { fc::Fkey_f15       , nullptr,   "F5" },  // F15 function key
-  { fc::Fkey_f16       , nullptr,   "F6" },  // F16 function key
-  { fc::Fkey_f17       , nullptr,   "F7" },  // F17 function key
-  { fc::Fkey_f18       , nullptr,   "F8" },  // F18 function key
-  { fc::Fkey_f19       , nullptr,   "F9" },  // F19 function key
-  { fc::Fkey_f20       , nullptr,   "FA" },  // F20 function key
-  { fc::Fkey_f21       , nullptr,   "FB" },  // F21 function key
-  { fc::Fkey_f22       , nullptr,   "FC" },  // F22 function key
-  { fc::Fkey_f23       , nullptr,   "FD" },  // F23 function key
-  { fc::Fkey_f24       , nullptr,   "FE" },  // F24 function key
-  { fc::Fkey_f25       , nullptr,   "FF" },  // F25 function key
-  { fc::Fkey_f26       , nullptr,   "FG" },  // F26 function key
-  { fc::Fkey_f27       , nullptr,   "FH" },  // F27 function key
-  { fc::Fkey_f28       , nullptr,   "FI" },  // F28 function key
-  { fc::Fkey_f29       , nullptr,   "FJ" },  // F29 function key
-  { fc::Fkey_f30       , nullptr,   "FK" },  // F30 function key
-  { fc::Fkey_f31       , nullptr,   "FL" },  // F31 function key
-  { fc::Fkey_f32       , nullptr,   "FM" },  // F32 function key
-  { fc::Fkey_f33       , nullptr,   "FN" },  // F33 function key
-  { fc::Fkey_f34       , nullptr,   "FO" },  // F34 function key
-  { fc::Fkey_f35       , nullptr,   "FP" },  // F35 function key
-  { fc::Fkey_f36       , nullptr,   "FQ" },  // F36 function key
-  { fc::Fkey_f37       , nullptr,   "FR" },  // F37 function key
-  { fc::Fkey_f38       , nullptr,   "FS" },  // F38 function key
-  { fc::Fkey_f39       , nullptr,   "FT" },  // F39 function key
-  { fc::Fkey_f40       , nullptr,   "FU" },  // F40 function key
-  { fc::Fkey_f41       , nullptr,   "FV" },  // F41 function key
-  { fc::Fkey_f42       , nullptr,   "FW" },  // F42 function key
-  { fc::Fkey_f43       , nullptr,   "FX" },  // F43 function key
-  { fc::Fkey_f44       , nullptr,   "FY" },  // F44 function key
-  { fc::Fkey_f45       , nullptr,   "FZ" },  // F45 function key
-  { fc::Fkey_f46       , nullptr,   "Fa" },  // F46 function key
-  { fc::Fkey_f47       , nullptr,   "Fb" },  // F47 function key
-  { fc::Fkey_f48       , nullptr,   "Fc" },  // F48 function key
-  { fc::Fkey_f49       , nullptr,   "Fd" },  // F49 function key
-  { fc::Fkey_f50       , nullptr,   "Fe" },  // F50 function key
-  { fc::Fkey_f51       , nullptr,   "Ff" },  // F51 function key
-  { fc::Fkey_f52       , nullptr,   "Fg" },  // F52 function key
-  { fc::Fkey_f53       , nullptr,   "Fh" },  // F53 function key
-  { fc::Fkey_f54       , nullptr,   "Fi" },  // F54 function key
-  { fc::Fkey_f55       , nullptr,   "Fj" },  // F55 function key
-  { fc::Fkey_f56       , nullptr,   "Fk" },  // F56 function key
-  { fc::Fkey_f57       , nullptr,   "Fl" },  // F57 function key
-  { fc::Fkey_f58       , nullptr,   "Fm" },  // F58 function key
-  { fc::Fkey_f59       , nullptr,   "Fn" },  // F59 function key
-  { fc::Fkey_f60       , nullptr,   "Fo" },  // F60 function key
-  { fc::Fkey_f61       , nullptr,   "Fp" },  // F61 function key
-  { fc::Fkey_f62       , nullptr,   "Fq" },  // F62 function key
-  { fc::Fkey_f63       , nullptr,   "Fr" },  // F63 function key
+  { FKey::Backspace       , nullptr,   "kb" },  // Backspace key
+  { FKey::Clear_all_tabs  , nullptr,   "ka" },  // Clear-all-tabs key
+  { FKey::Clear           , nullptr,   "kC" },  // Clear-screen or erase key
+  { FKey::Clear_tab       , nullptr,   "kt" },  // Clear-tab key
+  { FKey::Del_char        , nullptr,   "kD" },  // Delete-character key
+  { FKey::Del_line        , nullptr,   "kL" },  // Delete-line key
+  { FKey::Down            , nullptr,   "kd" },  // Down-arrow key
+  { FKey::Exit_insert     , nullptr,   "kM" },  // Sent by rmir or smir in insert mode
+  { FKey::Clear_eol       , nullptr,   "kE" },  // Clear-to-end-of-line key
+  { FKey::Clear_eos       , nullptr,   "kS" },  // Clear-to-end-of-screen key
+  { FKey::F0              , nullptr,   "k0" },  // F0 function key
+  { FKey::F1              , nullptr,   "k1" },  // F1 function key
+  { FKey::F2              , nullptr,   "k2" },  // F2 function key
+  { FKey::F3              , nullptr,   "k3" },  // F3 function key
+  { FKey::F4              , nullptr,   "k4" },  // F4 function key
+  { FKey::F5              , nullptr,   "k5" },  // F5 function key
+  { FKey::F6              , nullptr,   "k6" },  // F6 function key
+  { FKey::F7              , nullptr,   "k7" },  // F7 function key
+  { FKey::F8              , nullptr,   "k8" },  // F8 fucntion key
+  { FKey::F9              , nullptr,   "k9" },  // F9 function key
+  { FKey::F10             , nullptr,   "k;" },  // F10 function key
+  { FKey::Home            , nullptr,   "kh" },  // Home key
+  { FKey::Insert          , nullptr,   "kI" },  // Insert-character key
+  { FKey::Insert_line     , nullptr,   "kA" },  // Insert-line key
+  { FKey::Left            , nullptr,   "kl" },  // Left-arrow key
+  { FKey::Home_down       , nullptr,   "kH" },  // Last-line key
+  { FKey::Page_down       , nullptr,   "kN" },  // Page-down key
+  { FKey::Page_up         , nullptr,   "kP" },  // Page-up key
+  { FKey::Right           , nullptr,   "kr" },  // Right-arrow key
+  { FKey::Scroll_forward  , nullptr,   "kF" },  // Scroll-forward key (shift-up)
+  { FKey::Scroll_backward , nullptr,   "kR" },  // Scroll-backward key (shift-down)
+  { FKey::Set_tab         , nullptr,   "kT" },  // Set-tab key
+  { FKey::Up              , nullptr,   "ku" },  // Up-arrow key
+  { FKey::Upper_left      , nullptr,   "K1" },  // Upper left of keypad
+  { FKey::Upper_right     , nullptr,   "K3" },  // Upper right of keypad
+  { FKey::Center          , nullptr,   "K2" },  // Center of keypad
+  { FKey::Lower_left      , nullptr,   "K4" },  // Lower left of keypad
+  { FKey::Lower_right     , nullptr,   "K5" },  // Lower right of keypad
+  { FKey::Back_tab        , nullptr,   "kB" },  // Back-tab key
+  { FKey::Begin           , nullptr,   "@1" },  // Begin key
+  { FKey::Cancel          , nullptr,   "@2" },  // Cancel key
+  { FKey::Close           , nullptr,   "@3" },  // Close key
+  { FKey::Command         , nullptr,   "@4" },  // Command key
+  { FKey::Copy            , nullptr,   "@5" },  // Copy key
+  { FKey::Create          , nullptr,   "@6" },  // Create key
+  { FKey::End             , nullptr,   "@7" },  // End key
+  { FKey::Enter           , nullptr,   "@8" },  // Enter/send key
+  { FKey::Exit            , nullptr,   "@9" },  // Exit key
+  { FKey::Find            , nullptr,   "@0" },  // Find key
+  { FKey::Help            , nullptr,   "%1" },  // Help key
+  { FKey::Mark            , nullptr,   "%2" },  // Mark key
+  { FKey::Message         , nullptr,   "%3" },  // Message key
+  { FKey::Move            , nullptr,   "%4" },  // Move key
+  { FKey::Next            , nullptr,   "%5" },  // Next key
+  { FKey::Open            , nullptr,   "%6" },  // Open key
+  { FKey::Options         , nullptr,   "%7" },  // Options key
+  { FKey::Previous        , nullptr,   "%8" },  // Previous key
+  { FKey::Print           , nullptr,   "%9" },  // Print key
+  { FKey::Redo            , nullptr,   "%0" },  // Redo key
+  { FKey::Reference       , nullptr,   "&1" },  // Reference key
+  { FKey::Refresh         , nullptr,   "&2" },  // Refresh key
+  { FKey::Replace         , nullptr,   "&3" },  // Replace key
+  { FKey::Restart         , nullptr,   "&4" },  // Restart key
+  { FKey::Resume          , nullptr,   "&5" },  // Resume key
+  { FKey::Save            , nullptr,   "&6" },  // Save key
+  { FKey::Suspend         , nullptr,   "&7" },  // Suspend key
+  { FKey::Undo            , nullptr,   "&8" },  // Undo key
+  { FKey::Shift_begin     , nullptr,   "&9" },  // Shifted begin key
+  { FKey::Shift_cancel    , nullptr,   "&0" },  // Shifted cancel key
+  { FKey::Shift_command   , nullptr,   "*1" },  // Shifted command key
+  { FKey::Shift_copy      , nullptr,   "*2" },  // Shifted copy key
+  { FKey::Shift_create    , nullptr,   "*3" },  // Shifted create key
+  { FKey::Shift_del_char  , nullptr,   "*4" },  // Shifted delete-character key
+  { FKey::Shift_dl        , nullptr,   "*5" },  // Shifted delete-line key
+  { FKey::Select          , nullptr,   "*6" },  // Select key
+  { FKey::Shift_end       , nullptr,   "*7" },  // Shifted End key
+  { FKey::Shift_clear_eol , nullptr,   "*8" },  // Shifted Clear-to-end-of-line key
+  { FKey::Shift_exit      , nullptr,   "*9" },  // Shifted Exit key
+  { FKey::Shift_find      , nullptr,   "*0" },  // Shifted Find key
+  { FKey::Shift_help      , nullptr,   "#1" },  // Shifted Help key
+  { FKey::Shift_home      , nullptr,   "#2" },  // Shifted Home key
+  { FKey::Shift_insert    , nullptr,   "#3" },  // Shifted Insert-character key
+  { FKey::Shift_left      , nullptr,   "#4" },  // Shifted Left-arrow key
+  { FKey::Shift_message   , nullptr,   "%a" },  // Shifted Message key
+  { FKey::Shift_move      , nullptr,   "%b" },  // Shifted Move key
+  { FKey::Shift_page_down , nullptr,   "%c" },  // Shifted Page-down key
+  { FKey::Shift_options   , nullptr,   "%d" },  // Shifted Options key
+  { FKey::Shift_page_up   , nullptr,   "%e" },  // Shifted Page-up key
+  { FKey::Shift_print     , nullptr,   "%f" },  // Shifted Print key
+  { FKey::Shift_redo      , nullptr,   "%g" },  // Shifted Redo key
+  { FKey::Shift_replace   , nullptr,   "%h" },  // Shifted Replace key
+  { FKey::Shift_right     , nullptr,   "%i" },  // Shifted Right-arrow key
+  { FKey::Shift_rsume     , nullptr,   "%j" },  // Shifted Resume key
+  { FKey::Shift_save      , nullptr,   "!1" },  // Shifted Save key
+  { FKey::Shift_suspend   , nullptr,   "!2" },  // Shifted Suspend key
+  { FKey::Shift_undo      , nullptr,   "!3" },  // Shifted Undo key
+  { FKey::F11             , nullptr,   "F1" },  // F11 function key
+  { FKey::F12             , nullptr,   "F2" },  // F12 function key
+  { FKey::F13             , nullptr,   "F3" },  // F13 function key
+  { FKey::F14             , nullptr,   "F4" },  // F14 function key
+  { FKey::F15             , nullptr,   "F5" },  // F15 function key
+  { FKey::F16             , nullptr,   "F6" },  // F16 function key
+  { FKey::F17             , nullptr,   "F7" },  // F17 function key
+  { FKey::F18             , nullptr,   "F8" },  // F18 function key
+  { FKey::F19             , nullptr,   "F9" },  // F19 function key
+  { FKey::F20             , nullptr,   "FA" },  // F20 function key
+  { FKey::F21             , nullptr,   "FB" },  // F21 function key
+  { FKey::F22             , nullptr,   "FC" },  // F22 function key
+  { FKey::F23             , nullptr,   "FD" },  // F23 function key
+  { FKey::F24             , nullptr,   "FE" },  // F24 function key
+  { FKey::F25             , nullptr,   "FF" },  // F25 function key
+  { FKey::F26             , nullptr,   "FG" },  // F26 function key
+  { FKey::F27             , nullptr,   "FH" },  // F27 function key
+  { FKey::F28             , nullptr,   "FI" },  // F28 function key
+  { FKey::F29             , nullptr,   "FJ" },  // F29 function key
+  { FKey::F30             , nullptr,   "FK" },  // F30 function key
+  { FKey::F31             , nullptr,   "FL" },  // F31 function key
+  { FKey::F32             , nullptr,   "FM" },  // F32 function key
+  { FKey::F33             , nullptr,   "FN" },  // F33 function key
+  { FKey::F34             , nullptr,   "FO" },  // F34 function key
+  { FKey::F35             , nullptr,   "FP" },  // F35 function key
+  { FKey::F36             , nullptr,   "FQ" },  // F36 function key
+  { FKey::F37             , nullptr,   "FR" },  // F37 function key
+  { FKey::F38             , nullptr,   "FS" },  // F38 function key
+  { FKey::F39             , nullptr,   "FT" },  // F39 function key
+  { FKey::F40             , nullptr,   "FU" },  // F40 function key
+  { FKey::F41             , nullptr,   "FV" },  // F41 function key
+  { FKey::F42             , nullptr,   "FW" },  // F42 function key
+  { FKey::F43             , nullptr,   "FX" },  // F43 function key
+  { FKey::F44             , nullptr,   "FY" },  // F44 function key
+  { FKey::F45             , nullptr,   "FZ" },  // F45 function key
+  { FKey::F46             , nullptr,   "Fa" },  // F46 function key
+  { FKey::F47             , nullptr,   "Fb" },  // F47 function key
+  { FKey::F48             , nullptr,   "Fc" },  // F48 function key
+  { FKey::F49             , nullptr,   "Fd" },  // F49 function key
+  { FKey::F50             , nullptr,   "Fe" },  // F50 function key
+  { FKey::F51             , nullptr,   "Ff" },  // F51 function key
+  { FKey::F52             , nullptr,   "Fg" },  // F52 function key
+  { FKey::F53             , nullptr,   "Fh" },  // F53 function key
+  { FKey::F54             , nullptr,   "Fi" },  // F54 function key
+  { FKey::F55             , nullptr,   "Fj" },  // F55 function key
+  { FKey::F56             , nullptr,   "Fk" },  // F56 function key
+  { FKey::F57             , nullptr,   "Fl" },  // F57 function key
+  { FKey::F58             , nullptr,   "Fm" },  // F58 function key
+  { FKey::F59             , nullptr,   "Fn" },  // F59 function key
+  { FKey::F60             , nullptr,   "Fo" },  // F60 function key
+  { FKey::F61             , nullptr,   "Fp" },  // F61 function key
+  { FKey::F62             , nullptr,   "Fq" },  // F62 function key
+  { FKey::F63             , nullptr,   "Fr" },  // F63 function key
   // Some terminals (e.g. PuTTY) send vt100 key codes
   // when the arrow and function keys are pressed
-  { fc::Fkey_f1        , ESC "OP",  "k1x"},  // PF1 (application mode)
-  { fc::Fkey_f2        , ESC "OQ",  "k2x"},  // PF2 (application mode)
-  { fc::Fkey_f3        , ESC "OR",  "k3x"},  // PF3 (application mode)
-  { fc::Fkey_f4        , ESC "OS",  "k4x"},  // PF4 (application mode)
-  { fc::Fkey_left      , CSI "D",   "klx"},  // left-arrow key (standard mode)
-  { fc::Fkey_left      , ESC "OD",  "klX"},  // left-arrow key (application mode)
-  { fc::Fkey_right     , CSI "C",   "krx"},  // right-arrow key (standard mode)
-  { fc::Fkey_right     , ESC "OC",  "krX"},  // right-arrow key (application mode)
-  { fc::Fkey_up        , CSI "A",   "kux"},  // up-arrow key (standard mode)
-  { fc::Fkey_up        , ESC "OA",  "kuX"},  // up-arrow key (application mode)
-  { fc::Fkey_down      , CSI "B",   "kdx"},  // down-arrow key (standard mode)
-  { fc::Fkey_down      , ESC "OB",  "kdX"},  // down-arrow key (application mode)
-  { fc::Fkey_sf        , CSI "a",   "kFx"},  // scroll-forward key (shift-up)
-  { fc::Fkey_sr        , CSI "b",   "kRx"},  // scroll-backward key (shift-down)
+  { FKey::F1              , ESC "OP",  "k1x"},  // PF1 (application mode)
+  { FKey::F2              , ESC "OQ",  "k2x"},  // PF2 (application mode)
+  { FKey::F3              , ESC "OR",  "k3x"},  // PF3 (application mode)
+  { FKey::F4              , ESC "OS",  "k4x"},  // PF4 (application mode)
+  { FKey::Left            , CSI "D",   "klx"},  // Left-arrow key (standard mode)
+  { FKey::Left            , ESC "OD",  "klX"},  // Left-arrow key (application mode)
+  { FKey::Right           , CSI "C",   "krx"},  // Right-arrow key (standard mode)
+  { FKey::Right           , ESC "OC",  "krX"},  // Right-arrow key (application mode)
+  { FKey::Up              , CSI "A",   "kux"},  // Up-arrow key (standard mode)
+  { FKey::Up              , ESC "OA",  "kuX"},  // Up-arrow key (application mode)
+  { FKey::Down            , CSI "B",   "kdx"},  // Down-arrow key (standard mode)
+  { FKey::Down            , ESC "OB",  "kdX"},  // Down-arrow key (application mode)
+  { FKey::Scroll_forward  , CSI "a",   "kFx"},  // Scroll-forward key (shift-up)
+  { FKey::Scroll_backward , CSI "b",   "kRx"},  // Scroll-backward key (shift-down)
   // Fallback for rxvt with TERM=xterm
-  { fc::Fkey_home      , CSI "7~",  "khx"},  // home key
-  { fc::Fkey_end       , CSI "8~",  "@7x"},  // end key
-  { fc::Fkey_f1        , CSI "11~", "k1X"},  // F1 function key
-  { fc::Fkey_f2        , CSI "12~", "k2X"},  // F2 function key
-  { fc::Fkey_f3        , CSI "13~", "k3X"},  // F3 function key
-  { fc::Fkey_f4        , CSI "14~", "k4X"},  // F4 function key
+  { FKey::Home            , CSI "7~",  "khx"},  // Home key
+  { FKey::End             , CSI "8~",  "@7x"},  // End key
+  { FKey::F1              , CSI "11~", "k1X"},  // F1 function key
+  { FKey::F2              , CSI "12~", "k2X"},  // F2 function key
+  { FKey::F3              , CSI "13~", "k3X"},  // F3 function key
+  { FKey::F4              , CSI "14~", "k4X"},  // F4 function key
   // Fallback for TERM=ansi
-  { fc::Fkey_home      , CSI "H",   "khX"},  // home key
-  { fc::Fkey_end       , CSI "F",   "@7X"},  // end key
-  { fc::Fkey_end       , CSI "K",   "@7y"},  // end key (Microsoft HyperTerminal)
+  { FKey::Home            , CSI "H",   "khX"},  // Home key
+  { FKey::End             , CSI "F",   "@7X"},  // End key
+  { FKey::End             , CSI "K",   "@7y"},  // End key (Microsoft HyperTerminal)
   // Keypad keys
-  { fc::Fkey_enter     , ESC "OM",  "@8x"},  // enter key
-  { fc::Fkey_slash     , ESC "Oo",  "KP1"},  // keypad slash
-  { fc::Fkey_asterisk  , ESC "Oj",  "KP2"},  // keypad asterisk
-  { fc::Fkey_minus_sign, ESC "Om",  "KP3"},  // keypad minus sign
-  { fc::Fkey_plus_sign , ESC "Ok",  "KP4"},  // keypad plus sign
-  { fc::Fkey_ic        , ESC "Op",  "kIx"},  // keypad insert
-  { fc::Fkey_dc        , ESC "On",  "kDx"},  // keypad delete
-  { fc::Fkey_left      , ESC "Ot",  "kly"},  // keypad left-arrow
-  { fc::Fkey_right     , ESC "Ov",  "kry"},  // keypad right-arrow
-  { fc::Fkey_up        , ESC "Ox",  "kuy"},  // keypad up-arrow
-  { fc::Fkey_down      , ESC "Or",  "kdy"},  // keypad down-arrow
-  { fc::Fkey_a1        , ESC "Ow",  "K1x"},  // keypad upper left
-  { fc::Fkey_a3        , ESC "Oy",  "K3x"},  // keypad upper right
-  { fc::Fkey_b2        , ESC "Ou",  "K2x"},  // keypad center
-  { fc::Fkey_c1        , ESC "Oq",  "K4x"},  // keypad lower left
-  { fc::Fkey_c3        , ESC "Os",  "K5x"}   // keypad lower right
+  { FKey::Enter           , ESC "OM",  "@8x"},  // Enter key
+  { FKey::Slash           , ESC "Oo",  "KP1"},  // Keypad Slash
+  { FKey::Asterisk        , ESC "Oj",  "KP2"},  // Keypad Asterisk
+  { FKey::Minus_sign      , ESC "Om",  "KP3"},  // Keypad Minus sign
+  { FKey::Plus_sign       , ESC "Ok",  "KP4"},  // Keypad Plus sign
+  { FKey::Insert          , ESC "Op",  "kIx"},  // Keypad Insert
+  { FKey::Del_char        , ESC "On",  "kDx"},  // Keypad Delete
+  { FKey::Left            , ESC "Ot",  "kly"},  // Keypad Left-arrow
+  { FKey::Right           , ESC "Ov",  "kry"},  // Keypad Right-arrow
+  { FKey::Up              , ESC "Ox",  "kuy"},  // Keypad Up-arrow
+  { FKey::Down            , ESC "Or",  "kdy"},  // Keypad Down-arrow
+  { FKey::Upper_left      , ESC "Ow",  "K1x"},  // Keypad Upper left
+  { FKey::Upper_right     , ESC "Oy",  "K3x"},  // Keypad Upper right
+  { FKey::Center          , ESC "Ou",  "K2x"},  // Keypad Center
+  { FKey::Lower_left      , ESC "Oq",  "K4x"},  // Keypad Lower left
+  { FKey::Lower_right     , ESC "Os",  "K5x"}   // Keypad Lower right
 }};
 
-constexpr std::array<FMetakeyMap, 232> fmetakey =
+constexpr std::array<FKeyMap, 232> fkey_table =
 {{
-  { fc::Fmkey_ic                   , "\033[2;3~"   },  // M-insert
-  { fc::Fmkey_ic                   , "\033\033[2~" },  // M-insert
-  { fc::Fmkey_dc                   , "\033[3;3~"   },  // M-delete
-  { fc::Fmkey_dc                   , "\033\033[3~" },  // M-delete
-  { fc::Fmkey_home                 , "\033[1;3H"   },  // M-home
-  { fc::Fmkey_home                 , "\033\033[1~" },  // M-home
-  { fc::Fmkey_end                  , "\033[1;3F"   },  // M-end
-  { fc::Fmkey_end                  , "\033\033[4~" },  // M-end
-  { fc::Fmkey_ppage                , "\033[5;3~"   },  // M-prev-page
-  { fc::Fmkey_ppage                , "\033\033[5~" },  // M-prev-page
-  { fc::Fmkey_npage                , "\033[6;3~"   },  // M-next-page
-  { fc::Fmkey_npage                , "\033\033[6~" },  // M-next-page
-  { fc::Fmkey_f1                   , "\033[1;3P"   },  // M-f1
-  { fc::Fmkey_f1                   , "\033\033[11~"},  // M-f1
-  { fc::Fmkey_f2                   , "\033[1;3Q"   },  // M-f2
-  { fc::Fmkey_f2                   , "\033\033[12~"},  // M-f2
-  { fc::Fmkey_f3                   , "\033[1;3R"   },  // M-f3
-  { fc::Fmkey_f3                   , "\033\033[13~"},  // M-f3
-  { fc::Fmkey_f4                   , "\033[1;3S"   },  // M-f4
-  { fc::Fmkey_f4                   , "\033\033[14~"},  // M-f4
-  { fc::Fmkey_f5                   , "\033[15;3~"  },  // M-f5
-  { fc::Fmkey_f5                   , "\033\033[15~"},  // M-f5
-  { fc::Fmkey_f6                   , "\033[17;3~"  },  // M-f6
-  { fc::Fmkey_f6                   , "\033\033[17~"},  // M-f6
-  { fc::Fmkey_f7                   , "\033[18;3~"  },  // M-f7
-  { fc::Fmkey_f7                   , "\033\033[18~"},  // M-f7
-  { fc::Fmkey_f8                   , "\033[19;3~"  },  // M-f8
-  { fc::Fmkey_f8                   , "\033\033[19~"},  // M-f8
-  { fc::Fmkey_f9                   , "\033[20;3~"  },  // M-f9
-  { fc::Fmkey_f9                   , "\033\033[20~"},  // M-f9
-  { fc::Fmkey_f10                  , "\033[21;3~"  },  // M-f10
-  { fc::Fmkey_f10                  , "\033\033[21~"},  // M-f10
-  { fc::Fmkey_f11                  , "\033[23;3~"  },  // M-f11
-  { fc::Fmkey_f11                  , "\033\033[23~"},  // M-f11
-  { fc::Fmkey_f12                  , "\033[24;3~"  },  // M-f12
-  { fc::Fmkey_f12                  , "\033\033[24~"},  // M-f12
-  { fc::Fmkey_up                   , "\033[1;3A"   },  // M-up
-  { fc::Fmkey_up                   , "\033\033[A"  },  // M-up
-  { fc::Fmkey_down                 , "\033[1;3B"   },  // M-down
-  { fc::Fmkey_down                 , "\033\033[B"  },  // M-down
-  { fc::Fmkey_right                , "\033[1;3C"   },  // M-right
-  { fc::Fmkey_right                , "\033\033[C"  },  // M-right
-  { fc::Fmkey_left                 , "\033[1;3D"   },  // M-left
-  { fc::Fmkey_left                 , "\033\033[D"  },  // M-left
-  { fc::Fmkey_sic                  , "\033[2;4~"   },  // shift-M-insert
-  { fc::Fmkey_sdc                  , "\033[3;4~"   },  // shift-M-delete
-  { fc::Fmkey_shome                , "\033[1;4H"   },  // shift-M-home
-  { fc::Fmkey_send                 , "\033[1;4F"   },  // shift-M-end
-  { fc::Fmkey_sppage               , "\033[5;4~"   },  // shift-M-prev-page
-  { fc::Fmkey_snpage               , "\033[6;4~"   },  // shift-M-next-page
-  { fc::Fmkey_sf1                  , "\033[1;4P"   },  // shift-M-f1
-  { fc::Fmkey_sf2                  , "\033[1;4Q"   },  // shift-M-f2
-  { fc::Fmkey_sf3                  , "\033[1;4R"   },  // shift-M-f3
-  { fc::Fmkey_sf4                  , "\033[1;4S"   },  // shift-M-f4
-  { fc::Fmkey_sf5                  , "\033[15;4~"  },  // shift-M-f5
-  { fc::Fmkey_sf6                  , "\033[17;4~"  },  // shift-M-f6
-  { fc::Fmkey_sf7                  , "\033[18;4~"  },  // shift-M-f7
-  { fc::Fmkey_sf8                  , "\033[19;4~"  },  // shift-M-f8
-  { fc::Fmkey_sf9                  , "\033[20;4~"  },  // shift-M-f9
-  { fc::Fmkey_sf10                 , "\033[21;4~"  },  // shift-M-f10
-  { fc::Fmkey_sf11                 , "\033[23;4~"  },  // shift-M-f11
-  { fc::Fmkey_sf12                 , "\033[24;4~"  },  // shift-M-f12
-  { fc::Fmkey_sup                  , "\033[1;4A"   },  // shift-M-up
-  { fc::Fmkey_sdown                , "\033[1;4B"   },  // shift-M-down
-  { fc::Fmkey_sright               , "\033[1;4C"   },  // shift-M-right
-  { fc::Fmkey_sleft                , "\033[1;4D"   },  // shift-M-left
-  { fc::Fckey_ic                   , "\033[2;5~"   },  // ctrl-insert
-  { fc::Fckey_dc                   , "\033[3;5~"   },  // ctrl-delete
-  { fc::Fckey_home                 , "\033[1;5H"   },  // ctrl-home
-  { fc::Fckey_end                  , "\033[1;5F"   },  // ctrl-end
-  { fc::Fckey_ppage                , "\033[5;5~"   },  // ctrl-prev-page
-  { fc::Fckey_npage                , "\033[6;5~"   },  // ctrl-next-page
-  { fc::Fckey_up                   , "\033[1;5A"   },  // ctrl-up
-  { fc::Fckey_up                   , "\033Oa"      },  // ctrl-up
-  { fc::Fckey_down                 , "\033[1;5B"   },  // ctrl-down
-  { fc::Fckey_down                 , "\033Ob"      },  // ctrl-down
-  { fc::Fckey_right                , "\033[1;5C"   },  // ctrl-right
-  { fc::Fckey_right                , "\033Oc"      },  // ctrl-right
-  { fc::Fckey_left                 , "\033[1;5D"   },  // ctrl-left
-  { fc::Fckey_left                 , "\033Od"      },  // ctrl-left
-  { fc::Fckey_sic                  , "\033[2;6~"   },  // shift-ctrl-M-insert
-  { fc::Fckey_sdc                  , "\033[3;6~"   },  // shift-ctrl-M-delete
-  { fc::Fckey_shome                , "\033[1;6H"   },  // shift-ctrl-M-home
-  { fc::Fckey_send                 , "\033[1;6F"   },  // shift-ctrl-M-end
-  { fc::Fckey_sppage               , "\033[5;6~"   },  // shift-ctrl-M-prev-page
-  { fc::Fckey_snpage               , "\033[6;6~"   },  // shift-ctrl-M-next-page
-  { fc::Fckey_sup                  , "\033[1;6A"   },  // shift-ctrl-M-up
-  { fc::Fckey_sdown                , "\033[1;6B"   },  // shift-ctrl-M-down
-  { fc::Fckey_sright               , "\033[1;6C"   },  // shift-ctrl-M-right
-  { fc::Fckey_sleft                , "\033[1;6D"   },  // shift-ctrl-M-left
-  { fc::Fcmkey_ic                  , "\033[2;7~"   },  // ctrl-M-insert
-  { fc::Fcmkey_dc                  , "\033[3;7~"   },  // ctrl-M-delete
-  { fc::Fcmkey_home                , "\033[1;7H"   },  // ctrl-M-home
-  { fc::Fcmkey_end                 , "\033[1;7F"   },  // ctrl-M-end
-  { fc::Fcmkey_ppage               , "\033[5;7~"   },  // ctrl-M-prev-page
-  { fc::Fcmkey_npage               , "\033[6;7~"   },  // ctrl-M-next-page
-  { fc::Fcmkey_up                  , "\033[1;7A"   },  // ctrl-M-up
-  { fc::Fcmkey_down                , "\033[1;7B"   },  // ctrl-M-down
-  { fc::Fcmkey_right               , "\033[1;7C"   },  // ctrl-M-right
-  { fc::Fcmkey_left                , "\033[1;7D"   },  // ctrl-M-left
-  { fc::Fcmkey_sic                 , "\033[2;8~"   },  // shift-ctrl-M-insert
-  { fc::Fcmkey_sdc                 , "\033[3;8~"   },  // shift-ctrl-M-delete
-  { fc::Fcmkey_shome               , "\033[1;8H"   },  // shift-ctrl-M-home
-  { fc::Fcmkey_send                , "\033[1;8F"   },  // shift-ctrl-M-end
-  { fc::Fcmkey_sppage              , "\033[5;8~"   },  // shift-ctrl-M-prev-page
-  { fc::Fcmkey_snpage              , "\033[6;8~"   },  // shift-ctrl-M-next-page
-  { fc::Fcmkey_sf1                 , "\033[1;8P"   },  // shift-ctrl-M-f1
-  { fc::Fcmkey_sf2                 , "\033[1;8Q"   },  // shift-ctrl-M-f2
-  { fc::Fcmkey_sf3                 , "\033[1;8R"   },  // shift-ctrl-M-f3
-  { fc::Fcmkey_sf4                 , "\033[1;8S"   },  // shift-ctrl-M-f4
-  { fc::Fcmkey_sf5                 , "\033[15;8~"  },  // shift-ctrl-M-f5
-  { fc::Fcmkey_sf6                 , "\033[17;8~"  },  // shift-ctrl-M-f6
-  { fc::Fcmkey_sf7                 , "\033[18;8~"  },  // shift-ctrl-M-f7
-  { fc::Fcmkey_sf8                 , "\033[19;8~"  },  // shift-ctrl-M-f8
-  { fc::Fcmkey_sf9                 , "\033[20;8~"  },  // shift-ctrl-M-f9
-  { fc::Fcmkey_sf10                , "\033[21;8~"  },  // shift-ctrl-M-f10
-  { fc::Fcmkey_sf11                , "\033[23;8~"  },  // shift-ctrl-M-f11
-  { fc::Fcmkey_sf12                , "\033[24;8~"  },  // shift-ctrl-M-f12
-  { fc::Fcmkey_sup                 , "\033[1;8A"   },  // shift-ctrl-M-up
-  { fc::Fcmkey_sdown               , "\033[1;8B"   },  // shift-ctrl-M-down
-  { fc::Fcmkey_sright              , "\033[1;8C"   },  // shift-ctrl-M-right
-  { fc::Fcmkey_sleft               , "\033[1;8D"   },  // shift-ctrl-M-left
-  { fc::Fkey_menu                  , "\033[29~"    },  // menu
-  { fc::Fkey_smenu                 , "\033[29$"    },  // shift-menu
-  { fc::Fkey_smenu                 , "\033[29;2~"  },  // shift-menu
-  { fc::Fckey_menu                 , "\033[29^"    },  // ctrl-menu
-  { fc::Fckey_menu                 , "\033[29;5~"  },  // ctrl-menu
-  { fc::Fckey_smenu                , "\033[29@"    },  // shift-ctrl-menu
-  { fc::Fckey_smenu                , "\033[29;6~"  },  // shift-ctrl-menu
-  { fc::Fmkey_menu                 , "\033[29;3~"  },  // M-menu
-  { fc::Fmkey_smenu                , "\033[29;4~"  },  // shift-M-menu
-  { fc::Fcmkey_menu                , "\033[29;7~"  },  // ctrl-M-menu
-  { fc::Fcmkey_smenu               , "\033[29;8~"  },  // shift-ctrl-M-menu
-  { fc::Fkey_escape_mintty         , "\033O["},  // mintty Esc
-  { fc::Fmkey_tab                  , "\033\t"},  // M-tab
-  { fc::Fmkey_enter                , "\033\n"},  // M-enter
-  { fc::Fmkey_enter                , "\033\r"},  // M-enter
-  { fc::Fmkey_space                , "\033 " },  // M-' '
-  { fc::Fmkey_bang                 , "\033!" },  // M-!
-  { fc::Fmkey_quotes               , "\033\""},  // M-"
-  { fc::Fmkey_hash                 , "\033#" },  // M-#
-  { fc::Fmkey_dollar               , "\033$" },  // M-$
-  { fc::Fmkey_percent              , "\033%" },  // M-%
-  { fc::Fmkey_ampersand            , "\033&" },  // M-&
-  { fc::Fmkey_apostrophe           , "\033'" },  // M-'
-  { fc::Fmkey_left_parenthesis     , "\033(" },  // M-(
-  { fc::Fmkey_right_parenthesis    , "\033)" },  // M-)
-  { fc::Fmkey_asterisk             , "\033*" },  // M-*
-  { fc::Fmkey_plus                 , "\033+" },  // M-+
-  { fc::Fmkey_comma                , "\033," },  // M-,
-  { fc::Fmkey_minus                , "\033-" },  // M-'-'
-  { fc::Fmkey_full_stop            , "\033." },  // M-.
-  { fc::Fmkey_slash                , "\033/" },  // M-/
-  { fc::Fmkey_0                    , "\0330" },  // M-0
-  { fc::Fmkey_1                    , "\0331" },  // M-1
-  { fc::Fmkey_2                    , "\0332" },  // M-2
-  { fc::Fmkey_3                    , "\0333" },  // M-3
-  { fc::Fmkey_4                    , "\0334" },  // M-4
-  { fc::Fmkey_5                    , "\0335" },  // M-5
-  { fc::Fmkey_6                    , "\0336" },  // M-6
-  { fc::Fmkey_7                    , "\0337" },  // M-7
-  { fc::Fmkey_8                    , "\0338" },  // M-8
-  { fc::Fmkey_9                    , "\0339" },  // M-9
-  { fc::Fmkey_colon                , "\033:" },  // M-:
-  { fc::Fmkey_semicolon            , "\033;" },  // M-;
-  { fc::Fmkey_less_than            , "\033<" },  // M-<
-  { fc::Fmkey_equals               , "\033=" },  // M-=
-  { fc::Fmkey_greater_than         , "\033>" },  // M->
-  { fc::Fmkey_question_mark        , "\033?" },  // M-?
-  { fc::Fmkey_at                   , "\033@" },  // M-@
-  { fc::Fmkey_A                    , "\033A" },  // shift-M-A
-  { fc::Fmkey_B                    , "\033B" },  // shift-M-B
-  { fc::Fmkey_C                    , "\033C" },  // shift-M-C
-  { fc::Fmkey_D                    , "\033D" },  // shift-M-D
-  { fc::Fmkey_E                    , "\033E" },  // shift-M-E
-  { fc::Fmkey_F                    , "\033F" },  // shift-M-F
-  { fc::Fmkey_G                    , "\033G" },  // shift-M-G
-  { fc::Fmkey_H                    , "\033H" },  // shift-M-H
-  { fc::Fmkey_I                    , "\033I" },  // shift-M-I
-  { fc::Fmkey_J                    , "\033J" },  // shift-M-J
-  { fc::Fmkey_K                    , "\033K" },  // shift-M-K
-  { fc::Fmkey_L                    , "\033L" },  // shift-M-L
-  { fc::Fmkey_M                    , "\033M" },  // shift-M-M
-  { fc::Fmkey_N                    , "\033N" },  // shift-M-N
-  { fc::Fmkey_O                    , "\033O" },  // shift-M-O
-  { fc::Fmkey_P                    , "\033P" },  // shift-M-P
-  { fc::Fmkey_Q                    , "\033Q" },  // shift-M-Q
-  { fc::Fmkey_R                    , "\033R" },  // shift-M-R
-  { fc::Fmkey_S                    , "\033S" },  // shift-M-S
-  { fc::Fmkey_T                    , "\033T" },  // shift-M-T
-  { fc::Fmkey_U                    , "\033U" },  // shift-M-U
-  { fc::Fmkey_V                    , "\033V" },  // shift-M-V
-  { fc::Fmkey_W                    , "\033W" },  // shift-M-W
-  { fc::Fmkey_X                    , "\033X" },  // shift-M-X
-  { fc::Fmkey_Y                    , "\033Y" },  // shift-M-Y
-  { fc::Fmkey_Z                    , "\033Z" },  // shift-M-Z
-  { fc::Fmkey_left_square_bracket  , "\033[" },  // M-[
-  { fc::Fmkey_backslash            , "\033\\"},  // M-'\'
-  { fc::Fmkey_right_square_bracket , "\033]" },  // M-]
-  { fc::Fmkey_caret                , "\033^" },  // M-^
-  { fc::Fmkey_underscore           , "\033_" },  // M-_
-  { fc::Fmkey_grave_accent         , "\033`" },  // M-`
-  { fc::Fmkey_a                    , "\033a" },  // M-a
-  { fc::Fmkey_b                    , "\033b" },  // M-b
-  { fc::Fmkey_c                    , "\033c" },  // M-c
-  { fc::Fmkey_d                    , "\033d" },  // M-d
-  { fc::Fmkey_e                    , "\033e" },  // M-e
-  { fc::Fmkey_f                    , "\033f" },  // M-f
-  { fc::Fmkey_g                    , "\033g" },  // M-g
-  { fc::Fmkey_h                    , "\033h" },  // M-h
-  { fc::Fmkey_i                    , "\033i" },  // M-i
-  { fc::Fmkey_j                    , "\033j" },  // M-j
-  { fc::Fmkey_k                    , "\033k" },  // M-k
-  { fc::Fmkey_l                    , "\033l" },  // M-l
-  { fc::Fmkey_m                    , "\033m" },  // M-m
-  { fc::Fmkey_n                    , "\033n" },  // M-n
-  { fc::Fmkey_o                    , "\033o" },  // M-o
-  { fc::Fmkey_p                    , "\033p" },  // M-p
-  { fc::Fmkey_q                    , "\033q" },  // M-q
-  { fc::Fmkey_r                    , "\033r" },  // M-r
-  { fc::Fmkey_s                    , "\033s" },  // M-s
-  { fc::Fmkey_t                    , "\033t" },  // M-t
-  { fc::Fmkey_u                    , "\033u" },  // M-u
-  { fc::Fmkey_v                    , "\033v" },  // M-v
-  { fc::Fmkey_w                    , "\033w" },  // M-w
-  { fc::Fmkey_x                    , "\033x" },  // M-x
-  { fc::Fmkey_y                    , "\033y" },  // M-y
-  { fc::Fmkey_z                    , "\033z" },  // M-z
-  { fc::Fmkey_left_curly_bracket   , "\033{" },  // M-{
-  { fc::Fmkey_vertical_bar         , "\033|" },  // M-|
-  { fc::Fmkey_right_curly_bracket  , "\033}" },  // M-}
-  { fc::Fmkey_tilde                , "\033~" }   // M-~
+  { FKey::Meta_insert               , "\033[2;3~"   },  // M-Insert
+  { FKey::Meta_insert               , "\033\033[2~" },  // M-Insert
+  { FKey::Meta_del_char             , "\033[3;3~"   },  // M-Delete
+  { FKey::Meta_del_char             , "\033\033[3~" },  // M-Delete
+  { FKey::Meta_home                 , "\033[1;3H"   },  // M-Home
+  { FKey::Meta_home                 , "\033\033[1~" },  // M-Home
+  { FKey::Meta_end                  , "\033[1;3F"   },  // M-End
+  { FKey::Meta_end                  , "\033\033[4~" },  // M-End
+  { FKey::Meta_page_up              , "\033[5;3~"   },  // M-Page-up
+  { FKey::Meta_page_up              , "\033\033[5~" },  // M-Page-up
+  { FKey::Meta_page_down            , "\033[6;3~"   },  // M-Page-down
+  { FKey::Meta_page_down            , "\033\033[6~" },  // M-Page-down
+  { FKey::Meta_f1                   , "\033[1;3P"   },  // M-F1
+  { FKey::Meta_f1                   , "\033\033[11~"},  // M-F1
+  { FKey::Meta_f2                   , "\033[1;3Q"   },  // M-F2
+  { FKey::Meta_f2                   , "\033\033[12~"},  // M-F2
+  { FKey::Meta_f3                   , "\033[1;3R"   },  // M-F3
+  { FKey::Meta_f3                   , "\033\033[13~"},  // M-F3
+  { FKey::Meta_f4                   , "\033[1;3S"   },  // M-F4
+  { FKey::Meta_f4                   , "\033\033[14~"},  // M-F4
+  { FKey::Meta_f5                   , "\033[15;3~"  },  // M-F5
+  { FKey::Meta_f5                   , "\033\033[15~"},  // M-F5
+  { FKey::Meta_f6                   , "\033[17;3~"  },  // M-F6
+  { FKey::Meta_f6                   , "\033\033[17~"},  // M-F6
+  { FKey::Meta_f7                   , "\033[18;3~"  },  // M-F7
+  { FKey::Meta_f7                   , "\033\033[18~"},  // M-F7
+  { FKey::Meta_f8                   , "\033[19;3~"  },  // M-F8
+  { FKey::Meta_f8                   , "\033\033[19~"},  // M-F8
+  { FKey::Meta_f9                   , "\033[20;3~"  },  // M-F9
+  { FKey::Meta_f9                   , "\033\033[20~"},  // M-F9
+  { FKey::Meta_f10                  , "\033[21;3~"  },  // M-F10
+  { FKey::Meta_f10                  , "\033\033[21~"},  // M-F10
+  { FKey::Meta_f11                  , "\033[23;3~"  },  // M-F11
+  { FKey::Meta_f11                  , "\033\033[23~"},  // M-F11
+  { FKey::Meta_f12                  , "\033[24;3~"  },  // M-F12
+  { FKey::Meta_f12                  , "\033\033[24~"},  // M-F12
+  { FKey::Meta_up                   , "\033[1;3A"   },  // M-Up
+  { FKey::Meta_up                   , "\033\033[A"  },  // M-Up
+  { FKey::Meta_down                 , "\033[1;3B"   },  // M-Down
+  { FKey::Meta_down                 , "\033\033[B"  },  // M-Down
+  { FKey::Meta_right                , "\033[1;3C"   },  // M-Right
+  { FKey::Meta_right                , "\033\033[C"  },  // M-Right
+  { FKey::Meta_left                 , "\033[1;3D"   },  // M-Left
+  { FKey::Meta_left                 , "\033\033[D"  },  // M-Left
+  { FKey::Shift_Meta_insert         , "\033[2;4~"   },  // Shift-M-Insert
+  { FKey::Shift_Meta_del_char       , "\033[3;4~"   },  // Shift-M-Delete
+  { FKey::Shift_Meta_home           , "\033[1;4H"   },  // Shift-M-Home
+  { FKey::Shift_Meta_end            , "\033[1;4F"   },  // Shift-M-End
+  { FKey::Shift_Meta_page_up        , "\033[5;4~"   },  // Shift-M-Page-up
+  { FKey::Shift_Meta_page_down      , "\033[6;4~"   },  // Shift-M-Page-down
+  { FKey::Shift_Meta_f1             , "\033[1;4P"   },  // Shift-M-F1
+  { FKey::Shift_Meta_f2             , "\033[1;4Q"   },  // Shift-M-F2
+  { FKey::Shift_Meta_f3             , "\033[1;4R"   },  // Shift-M-F3
+  { FKey::Shift_Meta_f4             , "\033[1;4S"   },  // Shift-M-F4
+  { FKey::Shift_Meta_f5             , "\033[15;4~"  },  // Shift-M-F5
+  { FKey::Shift_Meta_f6             , "\033[17;4~"  },  // Shift-M-F6
+  { FKey::Shift_Meta_f7             , "\033[18;4~"  },  // Shift-M-F7
+  { FKey::Shift_Meta_f8             , "\033[19;4~"  },  // Shift-M-F8
+  { FKey::Shift_Meta_f9             , "\033[20;4~"  },  // Shift-M-F9
+  { FKey::Shift_Meta_f10            , "\033[21;4~"  },  // Shift-M-F10
+  { FKey::Shift_Meta_f11            , "\033[23;4~"  },  // Shift-M-F11
+  { FKey::Shift_Meta_f12            , "\033[24;4~"  },  // Shift-M-F12
+  { FKey::Shift_Meta_up             , "\033[1;4A"   },  // Shift-M-Up
+  { FKey::Shift_Meta_down           , "\033[1;4B"   },  // Shift-M-Down
+  { FKey::Shift_Meta_right          , "\033[1;4C"   },  // Shift-M-Right
+  { FKey::Shift_Meta_left           , "\033[1;4D"   },  // Shift-M-Left
+  { FKey::Ctrl_insert               , "\033[2;5~"   },  // Ctrl-Insert
+  { FKey::Ctrl_del_char             , "\033[3;5~"   },  // Ctrl-Delete
+  { FKey::Ctrl_home                 , "\033[1;5H"   },  // Ctrl-Home
+  { FKey::Ctrl_end                  , "\033[1;5F"   },  // Ctrl-End
+  { FKey::Ctrl_page_up              , "\033[5;5~"   },  // Ctrl-Page-up
+  { FKey::Ctrl_page_down            , "\033[6;5~"   },  // Ctrl-Page-down
+  { FKey::Ctrl_up                   , "\033[1;5A"   },  // Ctrl-Up
+  { FKey::Ctrl_up                   , "\033Oa"      },  // Ctrl-Up
+  { FKey::Ctrl_down                 , "\033[1;5B"   },  // Ctrl-Down
+  { FKey::Ctrl_down                 , "\033Ob"      },  // Ctrl-Down
+  { FKey::Ctrl_right                , "\033[1;5C"   },  // Ctrl-Right
+  { FKey::Ctrl_right                , "\033Oc"      },  // Ctrl-Right
+  { FKey::Ctrl_left                 , "\033[1;5D"   },  // Ctrl-Left
+  { FKey::Ctrl_left                 , "\033Od"      },  // Ctrl-Left
+  { FKey::Shift_Ctrl_insert         , "\033[2;6~"   },  // Shift-Ctrl-Insert
+  { FKey::Shift_Ctrl_del_char       , "\033[3;6~"   },  // Shift-Ctrl-Delete
+  { FKey::Shift_Ctrl_home           , "\033[1;6H"   },  // Shift-Ctrl-Home
+  { FKey::Shift_Ctrl_end            , "\033[1;6F"   },  // Shift-Ctrl-End
+  { FKey::Shift_Ctrl_page_up        , "\033[5;6~"   },  // Shift-Ctrl-Page-up
+  { FKey::Shift_Ctrl_page_down      , "\033[6;6~"   },  // Shift-Ctrl-Page-down
+  { FKey::Shift_Ctrl_up             , "\033[1;6A"   },  // Shift-Ctrl-Up
+  { FKey::Shift_Ctrl_down           , "\033[1;6B"   },  // Shift-Ctrl-Down
+  { FKey::Shift_Ctrl_right          , "\033[1;6C"   },  // Shift-Ctrl-Right
+  { FKey::Shift_Ctrl_left           , "\033[1;6D"   },  // Shift-Ctrl-Left
+  { FKey::Ctrl_Meta_insert          , "\033[2;7~"   },  // Ctrl-M-Insert
+  { FKey::Ctrl_Meta_del_char        , "\033[3;7~"   },  // Ctrl-M-Delete
+  { FKey::Ctrl_Meta_home            , "\033[1;7H"   },  // Ctrl-M-Home
+  { FKey::Ctrl_Meta_end             , "\033[1;7F"   },  // Ctrl-M-End
+  { FKey::Ctrl_Meta_page_up         , "\033[5;7~"   },  // Ctrl-M-Page-up
+  { FKey::Ctrl_Meta_page_down       , "\033[6;7~"   },  // Ctrl-M-Page-down
+  { FKey::Ctrl_Meta_up              , "\033[1;7A"   },  // Ctrl-M-Up
+  { FKey::Ctrl_Meta_down            , "\033[1;7B"   },  // Ctrl-M-Down
+  { FKey::Ctrl_Meta_right           , "\033[1;7C"   },  // Ctrl-M-Right
+  { FKey::Ctrl_Meta_left            , "\033[1;7D"   },  // Ctrl-M-Left
+  { FKey::Shift_Ctrl_Meta_insert    , "\033[2;8~"   },  // Shift-Ctrl-M-Insert
+  { FKey::Shift_Ctrl_Meta_del_char  , "\033[3;8~"   },  // Shift-Ctrl-M-Delete
+  { FKey::Shift_Ctrl_Meta_home      , "\033[1;8H"   },  // Shift-Ctrl-M-Home
+  { FKey::Shift_Ctrl_Meta_end       , "\033[1;8F"   },  // Shift-Ctrl-M-End
+  { FKey::Shift_Ctrl_Meta_page_up   , "\033[5;8~"   },  // Shift-Ctrl-M-Page-up
+  { FKey::Shift_Ctrl_Meta_page_down , "\033[6;8~"   },  // Shift-Ctrl-M-Page-down
+  { FKey::Shift_Ctrl_Meta_f1        , "\033[1;8P"   },  // Shift-Ctrl-M-F1
+  { FKey::Shift_Ctrl_Meta_f2        , "\033[1;8Q"   },  // Shift-Ctrl-M-F2
+  { FKey::Shift_Ctrl_Meta_f3        , "\033[1;8R"   },  // Shift-Ctrl-M-F3
+  { FKey::Shift_Ctrl_Meta_f4        , "\033[1;8S"   },  // Shift-Ctrl-M-F4
+  { FKey::Shift_Ctrl_Meta_f5        , "\033[15;8~"  },  // Shift-Ctrl-M-F5
+  { FKey::Shift_Ctrl_Meta_f6        , "\033[17;8~"  },  // Shift-Ctrl-M-F6
+  { FKey::Shift_Ctrl_Meta_f7        , "\033[18;8~"  },  // Shift-Ctrl-M-F7
+  { FKey::Shift_Ctrl_Meta_f8        , "\033[19;8~"  },  // Shift-Ctrl-M-F8
+  { FKey::Shift_Ctrl_Meta_f9        , "\033[20;8~"  },  // Shift-Ctrl-M-F9
+  { FKey::Shift_Ctrl_Meta_f10       , "\033[21;8~"  },  // Shift-Ctrl-M-F10
+  { FKey::Shift_Ctrl_Meta_f11       , "\033[23;8~"  },  // Shift-Ctrl-M-F11
+  { FKey::Shift_Ctrl_Meta_f12       , "\033[24;8~"  },  // Shift-Ctrl-M-F12
+  { FKey::Shift_Ctrl_Meta_up        , "\033[1;8A"   },  // Shift-Ctrl-M-Up
+  { FKey::Shift_Ctrl_Meta_down      , "\033[1;8B"   },  // Shift-Ctrl-M-Down
+  { FKey::Shift_Ctrl_Meta_right     , "\033[1;8C"   },  // Shift-Ctrl-M-Right
+  { FKey::Shift_Ctrl_Meta_left      , "\033[1;8D"   },  // Shift-Ctrl-M-Left
+  { FKey::Menu                      , "\033[29~"    },  // Menu
+  { FKey::Shift_menu                , "\033[29$"    },  // Shift-Menu
+  { FKey::Shift_menu                , "\033[29;2~"  },  // Shift-Menu
+  { FKey::Ctrl_menu                 , "\033[29^"    },  // Ctrl-Menu
+  { FKey::Ctrl_menu                 , "\033[29;5~"  },  // Ctrl-Menu
+  { FKey::Shift_Ctrl_menu           , "\033[29@"    },  // Shift-Ctrl-Menu
+  { FKey::Shift_Ctrl_menu           , "\033[29;6~"  },  // Shift-Ctrl-Menu
+  { FKey::Meta_menu                 , "\033[29;3~"  },  // M-Menu
+  { FKey::Shift_Meta_menu           , "\033[29;4~"  },  // Shift-M-Menu
+  { FKey::Ctrl_Meta_menu            , "\033[29;7~"  },  // Ctrl-M-Menu
+  { FKey::Shift_Ctrl_Meta_menu      , "\033[29;8~"  },  // Shift-Ctrl-M-Menu
+  { FKey::Escape_mintty             , "\033O["},  // Mintty Esc
+  { FKey::Meta_tab                  , "\033\t"},  // M-Tab
+  { FKey::Meta_enter                , "\033\n"},  // M-Enter
+  { FKey::Meta_enter                , "\033\r"},  // M-Enter
+  { FKey::Meta_space                , "\033 " },  // M-' '
+  { FKey::Meta_bang                 , "\033!" },  // M-!
+  { FKey::Meta_quotes               , "\033\""},  // M-"
+  { FKey::Meta_hash                 , "\033#" },  // M-#
+  { FKey::Meta_dollar               , "\033$" },  // M-$
+  { FKey::Meta_percent              , "\033%" },  // M-%
+  { FKey::Meta_ampersand            , "\033&" },  // M-&
+  { FKey::Meta_apostrophe           , "\033'" },  // M-'
+  { FKey::Meta_left_parenthesis     , "\033(" },  // M-(
+  { FKey::Meta_right_parenthesis    , "\033)" },  // M-)
+  { FKey::Meta_asterisk             , "\033*" },  // M-*
+  { FKey::Meta_plus                 , "\033+" },  // M-+
+  { FKey::Meta_comma                , "\033," },  // M-,
+  { FKey::Meta_minus                , "\033-" },  // M-'-'
+  { FKey::Meta_full_stop            , "\033." },  // M-.
+  { FKey::Meta_slash                , "\033/" },  // M-/
+  { FKey::Meta_0                    , "\0330" },  // M-0
+  { FKey::Meta_1                    , "\0331" },  // M-1
+  { FKey::Meta_2                    , "\0332" },  // M-2
+  { FKey::Meta_3                    , "\0333" },  // M-3
+  { FKey::Meta_4                    , "\0334" },  // M-4
+  { FKey::Meta_5                    , "\0335" },  // M-5
+  { FKey::Meta_6                    , "\0336" },  // M-6
+  { FKey::Meta_7                    , "\0337" },  // M-7
+  { FKey::Meta_8                    , "\0338" },  // M-8
+  { FKey::Meta_9                    , "\0339" },  // M-9
+  { FKey::Meta_colon                , "\033:" },  // M-:
+  { FKey::Meta_semicolon            , "\033;" },  // M-;
+  { FKey::Meta_less_than            , "\033<" },  // M-<
+  { FKey::Meta_equals               , "\033=" },  // M-=
+  { FKey::Meta_greater_than         , "\033>" },  // M->
+  { FKey::Meta_question_mark        , "\033?" },  // M-?
+  { FKey::Meta_at                   , "\033@" },  // M-@
+  { FKey::Meta_A                    , "\033A" },  // Shift-M-A
+  { FKey::Meta_B                    , "\033B" },  // Shift-M-B
+  { FKey::Meta_C                    , "\033C" },  // Shift-M-C
+  { FKey::Meta_D                    , "\033D" },  // Shift-M-D
+  { FKey::Meta_E                    , "\033E" },  // Shift-M-E
+  { FKey::Meta_F                    , "\033F" },  // Shift-M-F
+  { FKey::Meta_G                    , "\033G" },  // Shift-M-G
+  { FKey::Meta_H                    , "\033H" },  // Shift-M-H
+  { FKey::Meta_I                    , "\033I" },  // Shift-M-I
+  { FKey::Meta_J                    , "\033J" },  // Shift-M-J
+  { FKey::Meta_K                    , "\033K" },  // Shift-M-K
+  { FKey::Meta_L                    , "\033L" },  // Shift-M-L
+  { FKey::Meta_M                    , "\033M" },  // Shift-M-M
+  { FKey::Meta_N                    , "\033N" },  // Shift-M-N
+  { FKey::Meta_O                    , "\033O" },  // Shift-M-O
+  { FKey::Meta_P                    , "\033P" },  // Shift-M-P
+  { FKey::Meta_Q                    , "\033Q" },  // Shift-M-Q
+  { FKey::Meta_R                    , "\033R" },  // Shift-M-R
+  { FKey::Meta_S                    , "\033S" },  // Shift-M-S
+  { FKey::Meta_T                    , "\033T" },  // Shift-M-T
+  { FKey::Meta_U                    , "\033U" },  // Shift-M-U
+  { FKey::Meta_V                    , "\033V" },  // Shift-M-V
+  { FKey::Meta_W                    , "\033W" },  // Shift-M-W
+  { FKey::Meta_X                    , "\033X" },  // Shift-M-X
+  { FKey::Meta_Y                    , "\033Y" },  // Shift-M-Y
+  { FKey::Meta_Z                    , "\033Z" },  // Shift-M-Z
+  { FKey::Meta_left_square_bracket  , "\033[" },  // M-[
+  { FKey::Meta_backslash            , "\033\\"},  // M-'\'
+  { FKey::Meta_right_square_bracket , "\033]" },  // M-]
+  { FKey::Meta_caret                , "\033^" },  // M-^
+  { FKey::Meta_underscore           , "\033_" },  // M-_
+  { FKey::Meta_grave_accent         , "\033`" },  // M-`
+  { FKey::Meta_a                    , "\033a" },  // M-a
+  { FKey::Meta_b                    , "\033b" },  // M-b
+  { FKey::Meta_c                    , "\033c" },  // M-c
+  { FKey::Meta_d                    , "\033d" },  // M-d
+  { FKey::Meta_e                    , "\033e" },  // M-e
+  { FKey::Meta_f                    , "\033f" },  // M-f
+  { FKey::Meta_g                    , "\033g" },  // M-g
+  { FKey::Meta_h                    , "\033h" },  // M-h
+  { FKey::Meta_i                    , "\033i" },  // M-i
+  { FKey::Meta_j                    , "\033j" },  // M-j
+  { FKey::Meta_k                    , "\033k" },  // M-k
+  { FKey::Meta_l                    , "\033l" },  // M-l
+  { FKey::Meta_m                    , "\033m" },  // M-m
+  { FKey::Meta_n                    , "\033n" },  // M-n
+  { FKey::Meta_o                    , "\033o" },  // M-o
+  { FKey::Meta_p                    , "\033p" },  // M-p
+  { FKey::Meta_q                    , "\033q" },  // M-q
+  { FKey::Meta_r                    , "\033r" },  // M-r
+  { FKey::Meta_s                    , "\033s" },  // M-s
+  { FKey::Meta_t                    , "\033t" },  // M-t
+  { FKey::Meta_u                    , "\033u" },  // M-u
+  { FKey::Meta_v                    , "\033v" },  // M-v
+  { FKey::Meta_w                    , "\033w" },  // M-w
+  { FKey::Meta_x                    , "\033x" },  // M-x
+  { FKey::Meta_y                    , "\033y" },  // M-y
+  { FKey::Meta_z                    , "\033z" },  // M-z
+  { FKey::Meta_left_curly_bracket   , "\033{" },  // M-{
+  { FKey::Meta_vertical_bar         , "\033|" },  // M-|
+  { FKey::Meta_right_curly_bracket  , "\033}" },  // M-}
+  { FKey::Meta_tilde                , "\033~" }   // M-~
 }};
 
 constexpr std::array<FKeyName, 388> fkeyname =
 {{
-  { fc::Fckey_a                   , "Ctrl+A" },
-  { fc::Fckey_b                   , "Ctrl+B" },
-  { fc::Fckey_c                   , "Ctrl+C" },
-  { fc::Fckey_d                   , "Ctrl+D" },
-  { fc::Fckey_e                   , "Ctrl+E" },
-  { fc::Fckey_f                   , "Ctrl+F" },
-  { fc::Fckey_g                   , "Ctrl+G" },
-  { fc::Fkey_erase                , "Backspace" },  // Ctrl+H
-  { fc::Fkey_tab                  , "Tab" },        // Ctrl+I
-  { fc::Fckey_j                   , "Ctrl+J" },
-  { fc::Fckey_h                   , "Ctrl+K" },
-  { fc::Fckey_l                   , "Ctrl+L" },
-  { fc::Fkey_return               , "Return" },     // Ctrl+M
-  { fc::Fckey_n                   , "Ctrl+N" },
-  { fc::Fckey_o                   , "Ctrl+O" },
-  { fc::Fckey_p                   , "Ctrl+P" },
-  { fc::Fckey_q                   , "Ctrl+Q" },
-  { fc::Fckey_r                   , "Ctrl+R" },
-  { fc::Fckey_s                   , "Ctrl+S" },
-  { fc::Fckey_t                   , "Ctrl+T" },
-  { fc::Fckey_u                   , "Ctrl+U" },
-  { fc::Fckey_v                   , "Ctrl+V" },
-  { fc::Fckey_w                   , "Ctrl+W" },
-  { fc::Fckey_x                   , "Ctrl+X" },
-  { fc::Fckey_y                   , "Ctrl+Y" },
-  { fc::Fckey_z                   , "Ctrl+Z" },
-  { fc::Fkey_escape               , "Esc" },        // Ctrl+[
-  { fc::Fkey_escape_mintty        , "Esc" },
-  { fc::Fckey_backslash           , "Ctrl+\\" },
-  { fc::Fckey_right_square_bracket, "Ctrl+]" },
-  { fc::Fckey_caret               , "Ctrl+^" },
-  { fc::Fckey_underscore          , "Ctrl+_" },
-  { fc::Fkey_space                , "Space" },
-  { fc::Fckey_space               , "Ctrl+Space" },  // Ctrl+(Space or @)
-  { fc::Fkey_backspace            , "Backspace" },
-  { fc::Fkey_catab                , "Clear-All-Tabs" },
-  { fc::Fkey_clear                , "Clear-Screen" },
-  { fc::Fkey_ctab                 , "Clear-Tab" },
-  { fc::Fkey_dc                   , "Del" },
-  { fc::Fkey_dl                   , "Del-line" },
-  { fc::Fkey_down                 , "Down" },
-  { fc::Fkey_eic                  , "Exit-Ins" },
-  { fc::Fkey_eol                  , "Clear-End-of-Line" },
-  { fc::Fkey_eos                  , "Clear-End-of-Screen" },
-  { fc::Fkey_f0                   , "F0" },
-  { fc::Fkey_f1                   , "F1" },
-  { fc::Fkey_f2                   , "F2" },
-  { fc::Fkey_f3                   , "F3" },
-  { fc::Fkey_f4                   , "F4" },
-  { fc::Fkey_f5                   , "F5" },
-  { fc::Fkey_f6                   , "F6" },
-  { fc::Fkey_f7                   , "F7" },
-  { fc::Fkey_f8                   , "F8" },
-  { fc::Fkey_f9                   , "F9" },
-  { fc::Fkey_f10                  , "F10" },
-  { fc::Fkey_home                 , "Home" },
-  { fc::Fkey_ic                   , "Ins" },
-  { fc::Fkey_il                   , "Ins-Line" },
-  { fc::Fkey_left                 , "Left" },
-  { fc::Fkey_ll                   , "Lower-Left" },
-  { fc::Fkey_npage                , "PgDn" },
-  { fc::Fkey_ppage                , "PgUp" },
-  { fc::Fkey_right                , "Right" },
-  { fc::Fkey_sf                   , "Scroll-Forward" },
-  { fc::Fkey_sr                   , "Scroll-Backward" },
-  { fc::Fkey_stab                 , "Set-Tab" },
-  { fc::Fkey_up                   , "Up" },
-  { fc::Fkey_a1                   , "Upper-Left" },
-  { fc::Fkey_a3                   , "Upper-Right" },
-  { fc::Fkey_b2                   , "Center" },
-  { fc::Fkey_c1                   , "Lower-Left" },
-  { fc::Fkey_c3                   , "Lower-Right" },
-  { fc::Fkey_btab                 , "Shift+Tab" },
-  { fc::Fkey_beg                  , "Begin" },
-  { fc::Fkey_cancel               , "Cancel" },
-  { fc::Fkey_close                , "Close" },
-  { fc::Fkey_command              , "Command" },
-  { fc::Fkey_copy                 , "Copy" },
-  { fc::Fkey_create               , "Create" },
-  { fc::Fkey_end                  , "End" },
-  { fc::Fkey_enter                , "Enter" },
-  { fc::Fkey_exit                 , "Exit" },
-  { fc::Fkey_find                 , "Find" },
-  { fc::Fkey_help                 , "Help" },
-  { fc::Fkey_mark                 , "Mark" },
-  { fc::Fkey_message              , "Message" },
-  { fc::Fkey_move                 , "Move" },
-  { fc::Fkey_next                 , "Next" },
-  { fc::Fkey_open                 , "Open" },
-  { fc::Fkey_options              , "Options" },
-  { fc::Fkey_previous             , "Previous" },
-  { fc::Fkey_print                , "Print" },
-  { fc::Fkey_redo                 , "Redo" },
-  { fc::Fkey_reference            , "Reference" },
-  { fc::Fkey_refresh              , "Refresh" },
-  { fc::Fkey_replace              , "Replace" },
-  { fc::Fkey_restart              , "Restart" },
-  { fc::Fkey_resume               , "Resume" },
-  { fc::Fkey_save                 , "Save" },
-  { fc::Fkey_suspend              , "Suspend" },
-  { fc::Fkey_undo                 , "Undo" },
-  { fc::Fkey_sbeg                 , "Shift+Begin" },
-  { fc::Fkey_scancel              , "Shift+Cancel" },
-  { fc::Fkey_scommand             , "Shift+Command" },
-  { fc::Fkey_scopy                , "Shift+Copy" },
-  { fc::Fkey_screate              , "Shift+Create" },
-  { fc::Fkey_sdc                  , "Shift+Del" },
-  { fc::Fkey_sdl                  , "Shift+Del-line" },
-  { fc::Fkey_select               , "Select" },
-  { fc::Fkey_send                 , "Shift+End" },
-  { fc::Fkey_seol                 , "Shift+Clear-End-of-Line" },
-  { fc::Fkey_sexit                , "Shift+Exit" },
-  { fc::Fkey_sfind                , "Shift+Find" },
-  { fc::Fkey_shelp                , "Shift+Help" },
-  { fc::Fkey_shome                , "Shift+Home" },
-  { fc::Fkey_sic                  , "Shift+Ins" },
-  { fc::Fkey_sleft                , "Shift+Left" },
-  { fc::Fkey_smessage             , "Shift+Message" },
-  { fc::Fkey_smove                , "Shift+Move" },
-  { fc::Fkey_snext                , "Shift+Next" },
-  { fc::Fkey_soptions             , "Shift+Options" },
-  { fc::Fkey_sprevious            , "Shift+Previous" },
-  { fc::Fkey_sprint               , "Shift+Print" },
-  { fc::Fkey_sredo                , "Shift+Redo" },
-  { fc::Fkey_sreplace             , "Shift+Replace" },
-  { fc::Fkey_sright               , "Shift+Right" },
-  { fc::Fkey_srsume               , "Shift+Resume" },
-  { fc::Fkey_ssave                , "Shift+Save" },
-  { fc::Fkey_ssuspend             , "Shift+Suspend" },
-  { fc::Fkey_sundo                , "Shift+Undo" },
-  { fc::Fkey_f11                  , "F11" },
-  { fc::Fkey_f12                  , "F12" },
-  { fc::Fkey_f13                  , "Shift+F1" },
-  { fc::Fkey_f14                  , "Shift+F2" },
-  { fc::Fkey_f15                  , "Shift+F3" },
-  { fc::Fkey_f16                  , "Shift+F4" },
-  { fc::Fkey_f17                  , "Shift+F5" },
-  { fc::Fkey_f18                  , "Shift+F6" },
-  { fc::Fkey_f19                  , "Shift+F7" },
-  { fc::Fkey_f20                  , "Shift+F8" },
-  { fc::Fkey_f21                  , "Shift+F9" },
-  { fc::Fkey_f22                  , "Shift+F10" },
-  { fc::Fkey_f23                  , "Shift+F11" },
-  { fc::Fkey_f24                  , "Shift+F12" },
-  { fc::Fkey_f25                  , "Ctrl+F1" },
-  { fc::Fkey_f26                  , "Ctrl+F2" },
-  { fc::Fkey_f27                  , "Ctrl+F3" },
-  { fc::Fkey_f28                  , "Ctrl+F4" },
-  { fc::Fkey_f29                  , "Ctrl+F5" },
-  { fc::Fkey_f30                  , "Ctrl+F6" },
-  { fc::Fkey_f31                  , "Ctrl+F7" },
-  { fc::Fkey_f32                  , "Ctrl+F8" },
-  { fc::Fkey_f33                  , "Ctrl+F9" },
-  { fc::Fkey_f34                  , "Ctrl+F10" },
-  { fc::Fkey_f35                  , "Ctrl+F11" },
-  { fc::Fkey_f36                  , "Ctrl+F12" },
-  { fc::Fkey_f37                  , "Shift+Ctrl+F1" },
-  { fc::Fkey_f38                  , "Shift+Ctrl+F2" },
-  { fc::Fkey_f39                  , "Shift+Ctrl+F3" },
-  { fc::Fkey_f40                  , "Shift+Ctrl+F4" },
-  { fc::Fkey_f41                  , "Shift+Ctrl+F5" },
-  { fc::Fkey_f42                  , "Shift+Ctrl+F6" },
-  { fc::Fkey_f43                  , "Shift+Ctrl+F7" },
-  { fc::Fkey_f44                  , "Shift+Ctrl+F8" },
-  { fc::Fkey_f45                  , "Shift+Ctrl+F9" },
-  { fc::Fkey_f46                  , "Shift+Ctrl+F10" },
-  { fc::Fkey_f47                  , "Shift+Ctrl+F11" },
-  { fc::Fkey_f48                  , "Shift+Ctrl+F12" },
-  { fc::Fkey_f49                  , "Meta+F1" },
-  { fc::Fkey_f50                  , "Meta+F2" },
-  { fc::Fkey_f51                  , "Meta+F3" },
-  { fc::Fkey_f52                  , "Meta+F4" },
-  { fc::Fkey_f53                  , "Meta+F5" },
-  { fc::Fkey_f54                  , "Meta+F6" },
-  { fc::Fkey_f55                  , "Meta+F7" },
-  { fc::Fkey_f56                  , "Meta+F8" },
-  { fc::Fkey_f57                  , "Meta+F9" },
-  { fc::Fkey_f58                  , "Meta+F10" },
-  { fc::Fkey_f59                  , "Meta+F11" },
-  { fc::Fkey_f60                  , "Meta+F12" },
-  { fc::Fkey_f61                  , "Shift+Meta+F1" },
-  { fc::Fkey_f62                  , "Shift+Meta+F2" },
-  { fc::Fkey_f63                  , "Shift+Meta+F3" },
-  { fc::Fmkey_ic                  , "Meta+Ins" },
-  { fc::Fmkey_dc                  , "Meta+Del" },
-  { fc::Fmkey_home                , "Meta+Home" },
-  { fc::Fmkey_end                 , "Meta+End" },
-  { fc::Fmkey_ppage               , "Meta+PgUp" },
-  { fc::Fmkey_npage               , "Meta+PgDn" },
-  { fc::Fmkey_f1                  , "Meta+F1" },
-  { fc::Fmkey_f2                  , "Meta+F2" },
-  { fc::Fmkey_f3                  , "Meta+F3" },
-  { fc::Fmkey_f4                  , "Meta+F4" },
-  { fc::Fmkey_f5                  , "Meta+F5" },
-  { fc::Fmkey_f6                  , "Meta+F6" },
-  { fc::Fmkey_f7                  , "Meta+F7" },
-  { fc::Fmkey_f8                  , "Meta+F8" },
-  { fc::Fmkey_f9                  , "Meta+F9" },
-  { fc::Fmkey_f10                 , "Meta+F10" },
-  { fc::Fmkey_f11                 , "Meta+F11" },
-  { fc::Fmkey_f12                 , "Meta+F12" },
-  { fc::Fmkey_up                  , "Meta+Up" },
-  { fc::Fmkey_down                , "Meta+Down" },
-  { fc::Fmkey_right               , "Meta+Right" },
-  { fc::Fmkey_left                , "Meta+Left" },
-  { fc::Fmkey_sic                 , "Shift+Meta+Ins" },
-  { fc::Fmkey_sdc                 , "Shift+Meta+Del" },
-  { fc::Fmkey_shome               , "Shift+Meta+Home" },
-  { fc::Fmkey_send                , "Shift+Meta+End" },
-  { fc::Fmkey_sppage              , "Shift+Meta+PgUp" },
-  { fc::Fmkey_snpage              , "Shift+Meta+PgDn" },
-  { fc::Fmkey_sf1                 , "Shift+Meta+F1" },
-  { fc::Fmkey_sf2                 , "Shift+Meta+F2" },
-  { fc::Fmkey_sf3                 , "Shift+Meta+F3" },
-  { fc::Fmkey_sf4                 , "Shift+Meta+F4" },
-  { fc::Fmkey_sf5                 , "Shift+Meta+F5" },
-  { fc::Fmkey_sf6                 , "Shift+Meta+F6" },
-  { fc::Fmkey_sf7                 , "Shift+Meta+F7" },
-  { fc::Fmkey_sf8                 , "Shift+Meta+F8" },
-  { fc::Fmkey_sf9                 , "Shift+Meta+F9" },
-  { fc::Fmkey_sf10                , "Shift+Meta+F10" },
-  { fc::Fmkey_sf11                , "Shift+Meta+F11" },
-  { fc::Fmkey_sf12                , "Shift+Meta+F12" },
-  { fc::Fmkey_sup                 , "Shift+Meta+Up" },
-  { fc::Fmkey_sdown               , "Shift+Meta+Down" },
-  { fc::Fmkey_sright              , "Shift+Meta+Right" },
-  { fc::Fmkey_sleft               , "Shift+Meta+Left" },
-  { fc::Fckey_ic                  , "Ctrl+Ins" },
-  { fc::Fckey_dc                  , "Ctrl+Del" },
-  { fc::Fckey_home                , "Ctrl+Home" },
-  { fc::Fckey_end                 , "Ctrl+End" },
-  { fc::Fckey_ppage               , "Ctrl+PgUp" },
-  { fc::Fckey_npage               , "Ctrl+PgDn" },
-  { fc::Fckey_up                  , "Ctrl+Up" },
-  { fc::Fckey_down                , "Ctrl+Down" },
-  { fc::Fckey_right               , "Ctrl+Right" },
-  { fc::Fckey_left                , "Ctrl+Left" },
-  { fc::Fckey_sic                 , "Shift+Ctrl+Ins" },
-  { fc::Fckey_sdc                 , "Shift+Ctrl+Del" },
-  { fc::Fckey_shome               , "Shift+Ctrl+Home" },
-  { fc::Fckey_send                , "Shift+Ctrl+End" },
-  { fc::Fckey_sppage              , "Shift+Ctrl+PgUp" },
-  { fc::Fckey_snpage              , "Shift+Ctrl+PgDn" },
-  { fc::Fckey_sup                 , "Shift+Ctrl+Up" },
-  { fc::Fckey_sdown               , "Shift+Ctrl+Down" },
-  { fc::Fckey_sright              , "Shift+Ctrl+Right" },
-  { fc::Fckey_sleft               , "Shift+Ctrl+Left" },
-  { fc::Fcmkey_ic                 , "Ctrl+Meta+Ins" },
-  { fc::Fcmkey_dc                 , "Ctrl+Meta+Del" },
-  { fc::Fcmkey_home               , "Ctrl+Meta+Home" },
-  { fc::Fcmkey_end                , "Ctrl+Meta+End" },
-  { fc::Fcmkey_ppage              , "Ctrl+Meta+PgUp" },
-  { fc::Fcmkey_npage              , "Ctrl+Meta+PgDn" },
-  { fc::Fcmkey_up                 , "Ctrl+Meta+Up" },
-  { fc::Fcmkey_down               , "Ctrl+Meta+Down" },
-  { fc::Fcmkey_right              , "Ctrl+Meta+Right" },
-  { fc::Fcmkey_left               , "Ctrl+Meta+Left" },
-  { fc::Fcmkey_sic                , "Shift+Ctrl+Meta+Ins" },
-  { fc::Fcmkey_sdc                , "Shift+Ctrl+Meta+Del" },
-  { fc::Fcmkey_shome              , "Shift+Ctrl+Meta+Home" },
-  { fc::Fcmkey_send               , "Shift+Ctrl+Meta+End" },
-  { fc::Fcmkey_sppage             , "Shift+Ctrl+Meta+PgUp" },
-  { fc::Fcmkey_snpage             , "Shift+Ctrl+Meta+PgDn" },
-  { fc::Fcmkey_sf1                , "Shift+Ctrl+Meta+F1" },
-  { fc::Fcmkey_sf2                , "Shift+Ctrl+Meta+F2" },
-  { fc::Fcmkey_sf3                , "Shift+Ctrl+Meta+F3" },
-  { fc::Fcmkey_sf4                , "Shift+Ctrl+Meta+F4" },
-  { fc::Fcmkey_sf5                , "Shift+Ctrl+Meta+F5" },
-  { fc::Fcmkey_sf6                , "Shift+Ctrl+Meta+F6" },
-  { fc::Fcmkey_sf7                , "Shift+Ctrl+Meta+F7" },
-  { fc::Fcmkey_sf8                , "Shift+Ctrl+Meta+F8" },
-  { fc::Fcmkey_sf9                , "Shift+Ctrl+Meta+F9" },
-  { fc::Fcmkey_sf10               , "Shift+Ctrl+Meta+F10" },
-  { fc::Fcmkey_sf11               , "Shift+Ctrl+Meta+F11" },
-  { fc::Fcmkey_sf12               , "Shift+Ctrl+Meta+F12" },
-  { fc::Fcmkey_sup                , "Shift+Ctrl+Meta+Up" },
-  { fc::Fcmkey_sdown              , "Shift+Ctrl+Meta+Down" },
-  { fc::Fcmkey_sright             , "Shift+Ctrl+Meta+Right" },
-  { fc::Fcmkey_sleft              , "Shift+Ctrl+Meta+Left" },
-  { fc::Fkey_menu                 , "Menu" },
-  { fc::Fkey_smenu                , "Shift+Menu" },
-  { fc::Fckey_menu                , "Ctrl+Menu" },
-  { fc::Fckey_smenu               , "Shift+Ctrl+Menu" },
-  { fc::Fmkey_menu                , "Meta+Menu" },
-  { fc::Fmkey_smenu               , "Shift+Meta+Menu" },
-  { fc::Fcmkey_menu               , "Ctrl+Meta+Menu" },
-  { fc::Fcmkey_smenu              , "Shift+Ctrl+Meta+Menu" },
-  { fc::Fmkey_tab                 , "Meta+Tab" },
-  { fc::Fmkey_enter               , "Meta+Enter" },
-  { fc::Fmkey_space               , "Meta+Space" },
-  { fc::Fmkey_bang                , "Meta+!" },
-  { fc::Fmkey_quotes              , "Meta+\"" },
-  { fc::Fmkey_hash                , "Meta+#" },
-  { fc::Fmkey_dollar              , "Meta+$" },
-  { fc::Fmkey_percent             , "Meta+%" },
-  { fc::Fmkey_ampersand           , "Meta+&" },
-  { fc::Fmkey_apostrophe          , "Meta+'" },
-  { fc::Fmkey_left_parenthesis    , "Meta+(" },
-  { fc::Fmkey_right_parenthesis   , "Meta+)" },
-  { fc::Fmkey_asterisk            , "Meta+*" },
-  { fc::Fmkey_plus                , "Meta++" },
-  { fc::Fmkey_comma               , "Meta+," },
-  { fc::Fmkey_minus               , "Meta+-" },
-  { fc::Fmkey_full_stop           , "Meta+." },
-  { fc::Fmkey_slash               , "Meta+/" },
-  { fc::Fmkey_0                   , "Meta+0" },
-  { fc::Fmkey_1                   , "Meta+1" },
-  { fc::Fmkey_2                   , "Meta+2" },
-  { fc::Fmkey_3                   , "Meta+3" },
-  { fc::Fmkey_4                   , "Meta+4" },
-  { fc::Fmkey_5                   , "Meta+5" },
-  { fc::Fmkey_6                   , "Meta+6" },
-  { fc::Fmkey_7                   , "Meta+7" },
-  { fc::Fmkey_8                   , "Meta+8" },
-  { fc::Fmkey_9                   , "Meta+9" },
-  { fc::Fmkey_colon               , "Meta+:" },
-  { fc::Fmkey_semicolon           , "Meta+;" },
-  { fc::Fmkey_less_than           , "Meta+<" },
-  { fc::Fmkey_equals              , "Meta+=" },
-  { fc::Fmkey_greater_than        , "Meta+>" },
-  { fc::Fmkey_question_mark       , "Meta+?" },
-  { fc::Fmkey_at                  , "Meta+@" },
-  { fc::Fmkey_A                   , "Shift+Meta+A" },
-  { fc::Fmkey_B                   , "Shift+Meta+B" },
-  { fc::Fmkey_C                   , "Shift+Meta+C" },
-  { fc::Fmkey_D                   , "Shift+Meta+D" },
-  { fc::Fmkey_E                   , "Shift+Meta+E" },
-  { fc::Fmkey_F                   , "Shift+Meta+F" },
-  { fc::Fmkey_G                   , "Shift+Meta+G" },
-  { fc::Fmkey_H                   , "Shift+Meta+H" },
-  { fc::Fmkey_I                   , "Shift+Meta+I" },
-  { fc::Fmkey_J                   , "Shift+Meta+J" },
-  { fc::Fmkey_K                   , "Shift+Meta+K" },
-  { fc::Fmkey_L                   , "Shift+Meta+L" },
-  { fc::Fmkey_M                   , "Shift+Meta+M" },
-  { fc::Fmkey_N                   , "Shift+Meta+N" },
-  { fc::Fmkey_O                   , "Shift+Meta+O" },
-  { fc::Fmkey_P                   , "Shift+Meta+P" },
-  { fc::Fmkey_Q                   , "Shift+Meta+Q" },
-  { fc::Fmkey_R                   , "Shift+Meta+R" },
-  { fc::Fmkey_S                   , "Shift+Meta+S" },
-  { fc::Fmkey_T                   , "Shift+Meta+T" },
-  { fc::Fmkey_U                   , "Shift+Meta+U" },
-  { fc::Fmkey_V                   , "Shift+Meta+V" },
-  { fc::Fmkey_W                   , "Shift+Meta+W" },
-  { fc::Fmkey_X                   , "Shift+Meta+X" },
-  { fc::Fmkey_Y                   , "Shift+Meta+Y" },
-  { fc::Fmkey_Z                   , "Shift+Meta+Z" },
-  { fc::Fmkey_left_square_bracket , "Meta+[" },
-  { fc::Fmkey_backslash           , "Meta+\\" },
-  { fc::Fmkey_right_square_bracket, "Meta+]" },
-  { fc::Fmkey_caret               , "Meta+^" },
-  { fc::Fmkey_underscore          , "Meta+_" },
-  { fc::Fmkey_grave_accent        , "Meta+`" },
-  { fc::Fmkey_a                   , "Meta+A" },
-  { fc::Fmkey_b                   , "Meta+B" },
-  { fc::Fmkey_c                   , "Meta+C" },
-  { fc::Fmkey_d                   , "Meta+D" },
-  { fc::Fmkey_e                   , "Meta+E" },
-  { fc::Fmkey_f                   , "Meta+F" },
-  { fc::Fmkey_g                   , "Meta+G" },
-  { fc::Fmkey_h                   , "Meta+H" },
-  { fc::Fmkey_i                   , "Meta+I" },
-  { fc::Fmkey_j                   , "Meta+J" },
-  { fc::Fmkey_k                   , "Meta+K" },
-  { fc::Fmkey_l                   , "Meta+L" },
-  { fc::Fmkey_m                   , "Meta+M" },
-  { fc::Fmkey_n                   , "Meta+N" },
-  { fc::Fmkey_o                   , "Meta+O" },
-  { fc::Fmkey_p                   , "Meta+P" },
-  { fc::Fmkey_q                   , "Meta+Q" },
-  { fc::Fmkey_r                   , "Meta+R" },
-  { fc::Fmkey_s                   , "Meta+S" },
-  { fc::Fmkey_t                   , "Meta+T" },
-  { fc::Fmkey_u                   , "Meta+U" },
-  { fc::Fmkey_v                   , "Meta+V" },
-  { fc::Fmkey_w                   , "Meta+W" },
-  { fc::Fmkey_x                   , "Meta+X" },
-  { fc::Fmkey_y                   , "Meta+Y" },
-  { fc::Fmkey_z                   , "Meta+Z" },
-  { fc::Fmkey_left_curly_bracket  , "Meta+{" },
-  { fc::Fmkey_vertical_bar        , "Meta+|" },
-  { fc::Fmkey_right_curly_bracket , "Meta+}" },
-  { fc::Fmkey_tilde               , "Meta+~" },
-  { fc::Fkey_mouse                , "xterm mouse" },
-  { fc::Fkey_extended_mouse       , "SGR extended mouse" },
-  { fc::Fkey_urxvt_mouse          , "urxvt mouse extension" },
-  { fc::Fkey_incomplete           , "incomplete key string" }
+  { FKey::Ctrl_a                    , "Ctrl+A" },
+  { FKey::Ctrl_b                    , "Ctrl+B" },
+  { FKey::Ctrl_c                    , "Ctrl+C" },
+  { FKey::Ctrl_d                    , "Ctrl+D" },
+  { FKey::Ctrl_e                    , "Ctrl+E" },
+  { FKey::Ctrl_f                    , "Ctrl+F" },
+  { FKey::Ctrl_g                    , "Ctrl+G" },
+  { FKey::Erase                     , "Backspace" },  // Ctrl+H
+  { FKey::Tab                       , "Tab" },        // Ctrl+I
+  { FKey::Ctrl_j                    , "Ctrl+J" },
+  { FKey::Ctrl_h                    , "Ctrl+K" },
+  { FKey::Ctrl_l                    , "Ctrl+L" },
+  { FKey::Return                    , "Return" },     // Ctrl+M
+  { FKey::Ctrl_n                    , "Ctrl+N" },
+  { FKey::Ctrl_o                    , "Ctrl+O" },
+  { FKey::Ctrl_p                    , "Ctrl+P" },
+  { FKey::Ctrl_q                    , "Ctrl+Q" },
+  { FKey::Ctrl_r                    , "Ctrl+R" },
+  { FKey::Ctrl_s                    , "Ctrl+S" },
+  { FKey::Ctrl_t                    , "Ctrl+T" },
+  { FKey::Ctrl_u                    , "Ctrl+U" },
+  { FKey::Ctrl_v                    , "Ctrl+V" },
+  { FKey::Ctrl_w                    , "Ctrl+W" },
+  { FKey::Ctrl_x                    , "Ctrl+X" },
+  { FKey::Ctrl_y                    , "Ctrl+Y" },
+  { FKey::Ctrl_z                    , "Ctrl+Z" },
+  { FKey::Escape                    , "Esc" },        // Ctrl+[
+  { FKey::Escape_mintty             , "Esc" },
+  { FKey::Ctrl_backslash            , "Ctrl+\\" },
+  { FKey::Ctrl_right_square_bracket , "Ctrl+]" },
+  { FKey::Ctrl_caret                , "Ctrl+^" },
+  { FKey::Ctrl_underscore           , "Ctrl+_" },
+  { FKey::Space                     , "Space" },
+  { FKey::Ctrl_space                , "Ctrl+Space" },  // Ctrl+(Space or @)
+  { FKey::Backspace                 , "Backspace" },
+  { FKey::Clear_all_tabs            , "Clear-All-Tabs" },
+  { FKey::Clear                     , "Clear-Screen" },
+  { FKey::Clear_tab                 , "Clear-Tab" },
+  { FKey::Del_char                  , "Del" },
+  { FKey::Del_line                  , "Del-line" },
+  { FKey::Down                      , "Down" },
+  { FKey::Exit_insert               , "Exit-Ins" },
+  { FKey::Clear_eol                 , "Clear-End-of-Line" },
+  { FKey::Clear_eos                 , "Clear-End-of-Screen" },
+  { FKey::F0                        , "F0" },
+  { FKey::F1                        , "F1" },
+  { FKey::F2                        , "F2" },
+  { FKey::F3                        , "F3" },
+  { FKey::F4                        , "F4" },
+  { FKey::F5                        , "F5" },
+  { FKey::F6                        , "F6" },
+  { FKey::F7                        , "F7" },
+  { FKey::F8                        , "F8" },
+  { FKey::F9                        , "F9" },
+  { FKey::F10                       , "F10" },
+  { FKey::Home                      , "Home" },
+  { FKey::Insert                    , "Ins" },
+  { FKey::Insert_line               , "Ins-Line" },
+  { FKey::Left                      , "Left" },
+  { FKey::Home_down                 , "Home-Down" },
+  { FKey::Page_down                 , "Page-Down" },
+  { FKey::Page_up                   , "Page-Up" },
+  { FKey::Right                     , "Right" },
+  { FKey::Scroll_forward            , "Scroll-Forward" },
+  { FKey::Scroll_backward           , "Scroll-Backward" },
+  { FKey::Set_tab                   , "Set-Tab" },
+  { FKey::Up                        , "Up" },
+  { FKey::Upper_left                , "Upper-Left" },
+  { FKey::Upper_right               , "Upper-Right" },
+  { FKey::Center                    , "Center" },
+  { FKey::Lower_left                , "Lower-Left" },
+  { FKey::Lower_right               , "Lower-Right" },
+  { FKey::Back_tab                  , "Shift+Tab" },
+  { FKey::Begin                     , "Begin" },
+  { FKey::Cancel                    , "Cancel" },
+  { FKey::Close                     , "Close" },
+  { FKey::Command                   , "Command" },
+  { FKey::Copy                      , "Copy" },
+  { FKey::Create                    , "Create" },
+  { FKey::End                       , "End" },
+  { FKey::Enter                     , "Enter" },
+  { FKey::Exit                      , "Exit" },
+  { FKey::Find                      , "Find" },
+  { FKey::Help                      , "Help" },
+  { FKey::Mark                      , "Mark" },
+  { FKey::Message                   , "Message" },
+  { FKey::Move                      , "Move" },
+  { FKey::Next                      , "Next" },
+  { FKey::Open                      , "Open" },
+  { FKey::Options                   , "Options" },
+  { FKey::Previous                  , "Previous" },
+  { FKey::Print                     , "Print" },
+  { FKey::Redo                      , "Redo" },
+  { FKey::Reference                 , "Reference" },
+  { FKey::Refresh                   , "Refresh" },
+  { FKey::Replace                   , "Replace" },
+  { FKey::Restart                   , "Restart" },
+  { FKey::Resume                    , "Resume" },
+  { FKey::Save                      , "Save" },
+  { FKey::Suspend                   , "Suspend" },
+  { FKey::Undo                      , "Undo" },
+  { FKey::Shift_begin               , "Shift+Begin" },
+  { FKey::Shift_cancel              , "Shift+Cancel" },
+  { FKey::Shift_command             , "Shift+Command" },
+  { FKey::Shift_copy                , "Shift+Copy" },
+  { FKey::Shift_create              , "Shift+Create" },
+  { FKey::Shift_del_char            , "Shift+Del" },
+  { FKey::Shift_dl                  , "Shift+Del-line" },
+  { FKey::Select                    , "Select" },
+  { FKey::Shift_end                 , "Shift+End" },
+  { FKey::Shift_clear_eol           , "Shift+Clear-End-of-Line" },
+  { FKey::Shift_exit                , "Shift+Exit" },
+  { FKey::Shift_find                , "Shift+Find" },
+  { FKey::Shift_help                , "Shift+Help" },
+  { FKey::Shift_home                , "Shift+Home" },
+  { FKey::Shift_insert              , "Shift+Ins" },
+  { FKey::Shift_left                , "Shift+Left" },
+  { FKey::Shift_message             , "Shift+Message" },
+  { FKey::Shift_move                , "Shift+Move" },
+  { FKey::Shift_page_down           , "Shift+Page-Down" },
+  { FKey::Shift_options             , "Shift+Options" },
+  { FKey::Shift_page_up             , "Shift+Page-Up" },
+  { FKey::Shift_print               , "Shift+Print" },
+  { FKey::Shift_redo                , "Shift+Redo" },
+  { FKey::Shift_replace             , "Shift+Replace" },
+  { FKey::Shift_right               , "Shift+Right" },
+  { FKey::Shift_rsume               , "Shift+Resume" },
+  { FKey::Shift_save                , "Shift+Save" },
+  { FKey::Shift_suspend             , "Shift+Suspend" },
+  { FKey::Shift_undo                , "Shift+Undo" },
+  { FKey::F11                       , "F11" },
+  { FKey::F12                       , "F12" },
+  { FKey::F13                       , "Shift+F1" },
+  { FKey::F14                       , "Shift+F2" },
+  { FKey::F15                       , "Shift+F3" },
+  { FKey::F16                       , "Shift+F4" },
+  { FKey::F17                       , "Shift+F5" },
+  { FKey::F18                       , "Shift+F6" },
+  { FKey::F19                       , "Shift+F7" },
+  { FKey::F20                       , "Shift+F8" },
+  { FKey::F21                       , "Shift+F9" },
+  { FKey::F22                       , "Shift+F10" },
+  { FKey::F23                       , "Shift+F11" },
+  { FKey::F24                       , "Shift+F12" },
+  { FKey::F25                       , "Ctrl+F1" },
+  { FKey::F26                       , "Ctrl+F2" },
+  { FKey::F27                       , "Ctrl+F3" },
+  { FKey::F28                       , "Ctrl+F4" },
+  { FKey::F29                       , "Ctrl+F5" },
+  { FKey::F30                       , "Ctrl+F6" },
+  { FKey::F31                       , "Ctrl+F7" },
+  { FKey::F32                       , "Ctrl+F8" },
+  { FKey::F33                       , "Ctrl+F9" },
+  { FKey::F34                       , "Ctrl+F10" },
+  { FKey::F35                       , "Ctrl+F11" },
+  { FKey::F36                       , "Ctrl+F12" },
+  { FKey::F37                       , "Shift+Ctrl+F1" },
+  { FKey::F38                       , "Shift+Ctrl+F2" },
+  { FKey::F39                       , "Shift+Ctrl+F3" },
+  { FKey::F40                       , "Shift+Ctrl+F4" },
+  { FKey::F41                       , "Shift+Ctrl+F5" },
+  { FKey::F42                       , "Shift+Ctrl+F6" },
+  { FKey::F43                       , "Shift+Ctrl+F7" },
+  { FKey::F44                       , "Shift+Ctrl+F8" },
+  { FKey::F45                       , "Shift+Ctrl+F9" },
+  { FKey::F46                       , "Shift+Ctrl+F10" },
+  { FKey::F47                       , "Shift+Ctrl+F11" },
+  { FKey::F48                       , "Shift+Ctrl+F12" },
+  { FKey::F49                       , "Meta+F1" },
+  { FKey::F50                       , "Meta+F2" },
+  { FKey::F51                       , "Meta+F3" },
+  { FKey::F52                       , "Meta+F4" },
+  { FKey::F53                       , "Meta+F5" },
+  { FKey::F54                       , "Meta+F6" },
+  { FKey::F55                       , "Meta+F7" },
+  { FKey::F56                       , "Meta+F8" },
+  { FKey::F57                       , "Meta+F9" },
+  { FKey::F58                       , "Meta+F10" },
+  { FKey::F59                       , "Meta+F11" },
+  { FKey::F60                       , "Meta+F12" },
+  { FKey::F61                       , "Shift+Meta+F1" },
+  { FKey::F62                       , "Shift+Meta+F2" },
+  { FKey::F63                       , "Shift+Meta+F3" },
+  { FKey::Meta_insert               , "Meta+Ins" },
+  { FKey::Meta_del_char             , "Meta+Del" },
+  { FKey::Meta_home                 , "Meta+Home" },
+  { FKey::Meta_end                  , "Meta+End" },
+  { FKey::Meta_page_up              , "Meta+Page-Up" },
+  { FKey::Meta_page_down            , "Meta+Page-Down" },
+  { FKey::Meta_f1                   , "Meta+F1" },
+  { FKey::Meta_f2                   , "Meta+F2" },
+  { FKey::Meta_f3                   , "Meta+F3" },
+  { FKey::Meta_f4                   , "Meta+F4" },
+  { FKey::Meta_f5                   , "Meta+F5" },
+  { FKey::Meta_f6                   , "Meta+F6" },
+  { FKey::Meta_f7                   , "Meta+F7" },
+  { FKey::Meta_f8                   , "Meta+F8" },
+  { FKey::Meta_f9                   , "Meta+F9" },
+  { FKey::Meta_f10                  , "Meta+F10" },
+  { FKey::Meta_f11                  , "Meta+F11" },
+  { FKey::Meta_f12                  , "Meta+F12" },
+  { FKey::Meta_up                   , "Meta+Up" },
+  { FKey::Meta_down                 , "Meta+Down" },
+  { FKey::Meta_right                , "Meta+Right" },
+  { FKey::Meta_left                 , "Meta+Left" },
+  { FKey::Shift_Meta_insert         , "Shift+Meta+Ins" },
+  { FKey::Shift_Meta_del_char       , "Shift+Meta+Del" },
+  { FKey::Shift_Meta_home           , "Shift+Meta+Home" },
+  { FKey::Shift_Meta_end            , "Shift+Meta+End" },
+  { FKey::Shift_Meta_page_up        , "Shift+Meta+Page-Up" },
+  { FKey::Shift_Meta_page_down      , "Shift+Meta+Page-Down" },
+  { FKey::Shift_Meta_f1             , "Shift+Meta+F1" },
+  { FKey::Shift_Meta_f2             , "Shift+Meta+F2" },
+  { FKey::Shift_Meta_f3             , "Shift+Meta+F3" },
+  { FKey::Shift_Meta_f4             , "Shift+Meta+F4" },
+  { FKey::Shift_Meta_f5             , "Shift+Meta+F5" },
+  { FKey::Shift_Meta_f6             , "Shift+Meta+F6" },
+  { FKey::Shift_Meta_f7             , "Shift+Meta+F7" },
+  { FKey::Shift_Meta_f8             , "Shift+Meta+F8" },
+  { FKey::Shift_Meta_f9             , "Shift+Meta+F9" },
+  { FKey::Shift_Meta_f10            , "Shift+Meta+F10" },
+  { FKey::Shift_Meta_f11            , "Shift+Meta+F11" },
+  { FKey::Shift_Meta_f12            , "Shift+Meta+F12" },
+  { FKey::Shift_Meta_up             , "Shift+Meta+Up" },
+  { FKey::Shift_Meta_down           , "Shift+Meta+Down" },
+  { FKey::Shift_Meta_right          , "Shift+Meta+Right" },
+  { FKey::Shift_Meta_left           , "Shift+Meta+Left" },
+  { FKey::Ctrl_insert               , "Ctrl+Ins" },
+  { FKey::Ctrl_del_char             , "Ctrl+Del" },
+  { FKey::Ctrl_home                 , "Ctrl+Home" },
+  { FKey::Ctrl_end                  , "Ctrl+End" },
+  { FKey::Ctrl_page_up              , "Ctrl+PgUp" },
+  { FKey::Ctrl_page_down            , "Ctrl+PgDn" },
+  { FKey::Ctrl_up                   , "Ctrl+Up" },
+  { FKey::Ctrl_down                 , "Ctrl+Down" },
+  { FKey::Ctrl_right                , "Ctrl+Right" },
+  { FKey::Ctrl_left                 , "Ctrl+Left" },
+  { FKey::Shift_Ctrl_insert         , "Shift+Ctrl+Ins" },
+  { FKey::Shift_Ctrl_del_char       , "Shift+Ctrl+Del" },
+  { FKey::Shift_Ctrl_home           , "Shift+Ctrl+Home" },
+  { FKey::Shift_Ctrl_end            , "Shift+Ctrl+End" },
+  { FKey::Shift_Ctrl_page_up        , "Shift+Ctrl+Page-Up" },
+  { FKey::Shift_Ctrl_page_down      , "Shift+Ctrl+Page-Down" },
+  { FKey::Shift_Ctrl_up             , "Shift+Ctrl+Up" },
+  { FKey::Shift_Ctrl_down           , "Shift+Ctrl+Down" },
+  { FKey::Shift_Ctrl_right          , "Shift+Ctrl+Right" },
+  { FKey::Shift_Ctrl_left           , "Shift+Ctrl+Left" },
+  { FKey::Ctrl_Meta_insert          , "Ctrl+Meta+Ins" },
+  { FKey::Ctrl_Meta_del_char        , "Ctrl+Meta+Del" },
+  { FKey::Ctrl_Meta_home            , "Ctrl+Meta+Home" },
+  { FKey::Ctrl_Meta_end             , "Ctrl+Meta+End" },
+  { FKey::Ctrl_Meta_page_up         , "Ctrl+Meta+Page-Up" },
+  { FKey::Ctrl_Meta_page_down       , "Ctrl+Meta+Page-Down" },
+  { FKey::Ctrl_Meta_up              , "Ctrl+Meta+Up" },
+  { FKey::Ctrl_Meta_down            , "Ctrl+Meta+Down" },
+  { FKey::Ctrl_Meta_right           , "Ctrl+Meta+Right" },
+  { FKey::Ctrl_Meta_left            , "Ctrl+Meta+Left" },
+  { FKey::Shift_Ctrl_Meta_insert    , "Shift+Ctrl+Meta+Ins" },
+  { FKey::Shift_Ctrl_Meta_del_char  , "Shift+Ctrl+Meta+Del" },
+  { FKey::Shift_Ctrl_Meta_home      , "Shift+Ctrl+Meta+Home" },
+  { FKey::Shift_Ctrl_Meta_end       , "Shift+Ctrl+Meta+End" },
+  { FKey::Shift_Ctrl_Meta_page_up   , "Shift+Ctrl+Meta+Page-Up" },
+  { FKey::Shift_Ctrl_Meta_page_down , "Shift+Ctrl+Meta+Page-Down" },
+  { FKey::Shift_Ctrl_Meta_f1        , "Shift+Ctrl+Meta+F1" },
+  { FKey::Shift_Ctrl_Meta_f2        , "Shift+Ctrl+Meta+F2" },
+  { FKey::Shift_Ctrl_Meta_f3        , "Shift+Ctrl+Meta+F3" },
+  { FKey::Shift_Ctrl_Meta_f4        , "Shift+Ctrl+Meta+F4" },
+  { FKey::Shift_Ctrl_Meta_f5        , "Shift+Ctrl+Meta+F5" },
+  { FKey::Shift_Ctrl_Meta_f6        , "Shift+Ctrl+Meta+F6" },
+  { FKey::Shift_Ctrl_Meta_f7        , "Shift+Ctrl+Meta+F7" },
+  { FKey::Shift_Ctrl_Meta_f8        , "Shift+Ctrl+Meta+F8" },
+  { FKey::Shift_Ctrl_Meta_f9        , "Shift+Ctrl+Meta+F9" },
+  { FKey::Shift_Ctrl_Meta_f10       , "Shift+Ctrl+Meta+F10" },
+  { FKey::Shift_Ctrl_Meta_f11       , "Shift+Ctrl+Meta+F11" },
+  { FKey::Shift_Ctrl_Meta_f12       , "Shift+Ctrl+Meta+F12" },
+  { FKey::Shift_Ctrl_Meta_up        , "Shift+Ctrl+Meta+Up" },
+  { FKey::Shift_Ctrl_Meta_down      , "Shift+Ctrl+Meta+Down" },
+  { FKey::Shift_Ctrl_Meta_right     , "Shift+Ctrl+Meta+Right" },
+  { FKey::Shift_Ctrl_Meta_left      , "Shift+Ctrl+Meta+Left" },
+  { FKey::Menu                      , "Menu" },
+  { FKey::Shift_menu                , "Shift+Menu" },
+  { FKey::Ctrl_menu                 , "Ctrl+Menu" },
+  { FKey::Shift_Ctrl_menu           , "Shift+Ctrl+Menu" },
+  { FKey::Meta_menu                 , "Meta+Menu" },
+  { FKey::Shift_Meta_menu           , "Shift+Meta+Menu" },
+  { FKey::Ctrl_Meta_menu            , "Ctrl+Meta+Menu" },
+  { FKey::Shift_Ctrl_Meta_menu      , "Shift+Ctrl+Meta+Menu" },
+  { FKey::Meta_tab                  , "Meta+Tab" },
+  { FKey::Meta_enter                , "Meta+Enter" },
+  { FKey::Meta_space                , "Meta+Space" },
+  { FKey::Meta_bang                 , "Meta+!" },
+  { FKey::Meta_quotes               , "Meta+\"" },
+  { FKey::Meta_hash                 , "Meta+#" },
+  { FKey::Meta_dollar               , "Meta+$" },
+  { FKey::Meta_percent              , "Meta+%" },
+  { FKey::Meta_ampersand            , "Meta+&" },
+  { FKey::Meta_apostrophe           , "Meta+'" },
+  { FKey::Meta_left_parenthesis     , "Meta+(" },
+  { FKey::Meta_right_parenthesis    , "Meta+)" },
+  { FKey::Meta_asterisk             , "Meta+*" },
+  { FKey::Meta_plus                 , "Meta++" },
+  { FKey::Meta_comma                , "Meta+," },
+  { FKey::Meta_minus                , "Meta+-" },
+  { FKey::Meta_full_stop            , "Meta+." },
+  { FKey::Meta_slash                , "Meta+/" },
+  { FKey::Meta_0                    , "Meta+0" },
+  { FKey::Meta_1                    , "Meta+1" },
+  { FKey::Meta_2                    , "Meta+2" },
+  { FKey::Meta_3                    , "Meta+3" },
+  { FKey::Meta_4                    , "Meta+4" },
+  { FKey::Meta_5                    , "Meta+5" },
+  { FKey::Meta_6                    , "Meta+6" },
+  { FKey::Meta_7                    , "Meta+7" },
+  { FKey::Meta_8                    , "Meta+8" },
+  { FKey::Meta_9                    , "Meta+9" },
+  { FKey::Meta_colon                , "Meta+:" },
+  { FKey::Meta_semicolon            , "Meta+;" },
+  { FKey::Meta_less_than            , "Meta+<" },
+  { FKey::Meta_equals               , "Meta+=" },
+  { FKey::Meta_greater_than         , "Meta+>" },
+  { FKey::Meta_question_mark        , "Meta+?" },
+  { FKey::Meta_at                   , "Meta+@" },
+  { FKey::Meta_A                    , "Shift+Meta+A" },
+  { FKey::Meta_B                    , "Shift+Meta+B" },
+  { FKey::Meta_C                    , "Shift+Meta+C" },
+  { FKey::Meta_D                    , "Shift+Meta+D" },
+  { FKey::Meta_E                    , "Shift+Meta+E" },
+  { FKey::Meta_F                    , "Shift+Meta+F" },
+  { FKey::Meta_G                    , "Shift+Meta+G" },
+  { FKey::Meta_H                    , "Shift+Meta+H" },
+  { FKey::Meta_I                    , "Shift+Meta+I" },
+  { FKey::Meta_J                    , "Shift+Meta+J" },
+  { FKey::Meta_K                    , "Shift+Meta+K" },
+  { FKey::Meta_L                    , "Shift+Meta+L" },
+  { FKey::Meta_M                    , "Shift+Meta+M" },
+  { FKey::Meta_N                    , "Shift+Meta+N" },
+  { FKey::Meta_O                    , "Shift+Meta+O" },
+  { FKey::Meta_P                    , "Shift+Meta+P" },
+  { FKey::Meta_Q                    , "Shift+Meta+Q" },
+  { FKey::Meta_R                    , "Shift+Meta+R" },
+  { FKey::Meta_S                    , "Shift+Meta+S" },
+  { FKey::Meta_T                    , "Shift+Meta+T" },
+  { FKey::Meta_U                    , "Shift+Meta+U" },
+  { FKey::Meta_V                    , "Shift+Meta+V" },
+  { FKey::Meta_W                    , "Shift+Meta+W" },
+  { FKey::Meta_X                    , "Shift+Meta+X" },
+  { FKey::Meta_Y                    , "Shift+Meta+Y" },
+  { FKey::Meta_Z                    , "Shift+Meta+Z" },
+  { FKey::Meta_left_square_bracket  , "Meta+[" },
+  { FKey::Meta_backslash            , "Meta+\\" },
+  { FKey::Meta_right_square_bracket , "Meta+]" },
+  { FKey::Meta_caret                , "Meta+^" },
+  { FKey::Meta_underscore           , "Meta+_" },
+  { FKey::Meta_grave_accent         , "Meta+`" },
+  { FKey::Meta_a                    , "Meta+A" },
+  { FKey::Meta_b                    , "Meta+B" },
+  { FKey::Meta_c                    , "Meta+C" },
+  { FKey::Meta_d                    , "Meta+D" },
+  { FKey::Meta_e                    , "Meta+E" },
+  { FKey::Meta_f                    , "Meta+F" },
+  { FKey::Meta_g                    , "Meta+G" },
+  { FKey::Meta_h                    , "Meta+H" },
+  { FKey::Meta_i                    , "Meta+I" },
+  { FKey::Meta_j                    , "Meta+J" },
+  { FKey::Meta_k                    , "Meta+K" },
+  { FKey::Meta_l                    , "Meta+L" },
+  { FKey::Meta_m                    , "Meta+M" },
+  { FKey::Meta_n                    , "Meta+N" },
+  { FKey::Meta_o                    , "Meta+O" },
+  { FKey::Meta_p                    , "Meta+P" },
+  { FKey::Meta_q                    , "Meta+Q" },
+  { FKey::Meta_r                    , "Meta+R" },
+  { FKey::Meta_s                    , "Meta+S" },
+  { FKey::Meta_t                    , "Meta+T" },
+  { FKey::Meta_u                    , "Meta+U" },
+  { FKey::Meta_v                    , "Meta+V" },
+  { FKey::Meta_w                    , "Meta+W" },
+  { FKey::Meta_x                    , "Meta+X" },
+  { FKey::Meta_y                    , "Meta+Y" },
+  { FKey::Meta_z                    , "Meta+Z" },
+  { FKey::Meta_left_curly_bracket   , "Meta+{" },
+  { FKey::Meta_vertical_bar         , "Meta+|" },
+  { FKey::Meta_right_curly_bracket  , "Meta+}" },
+  { FKey::Meta_tilde                , "Meta+~" },
+  { FKey::X11mouse                  , "xterm mouse" },
+  { FKey::Extended_mouse            , "SGR extended mouse" },
+  { FKey::Urxvt_mouse               , "urxvt mouse extension" },
+  { FKey::Incomplete                , "incomplete key string" }
 }};
 
 }  // namespace fc

@@ -79,7 +79,7 @@ class FTermFreeBSD final
 {
   public:
     // Using-declaration
-    using CursorStyle = fc::freebsdConsoleCursorStyle;
+    using CursorStyle = FreeBSDConsoleCursorStyle;
 
     // Constructors
     FTermFreeBSD() = default;

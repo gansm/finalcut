@@ -89,7 +89,7 @@ void FTermDataTest::defaultDataTest()
 {
   finalcut::FTermData data;
   CPPUNIT_ASSERT ( data.getEncodingList().size() == 0 );
-  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::fc::UNKNOWN );
+  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::Encoding::Unknown );
   CPPUNIT_ASSERT ( data.getTermGeometry() == finalcut::FRect() );
   CPPUNIT_ASSERT ( data.getTTYFileDescriptor() ==  -1 );
   CPPUNIT_ASSERT ( data.getBaudrate() == 0 );
@@ -126,44 +126,44 @@ void FTermDataTest::dataTest()
 
   CPPUNIT_ASSERT ( data.getEncodingList().size() == 0 );
   auto& encoding_list = data.getEncodingList();
-  encoding_list["UTF8"]  = finalcut::fc::UTF8;
-  encoding_list["UTF-8"] = finalcut::fc::UTF8;
-  encoding_list["VT100"] = finalcut::fc::VT100;
-  encoding_list["PC"]    = finalcut::fc::PC;
-  encoding_list["ASCII"] = finalcut::fc::ASCII;
+  encoding_list["UTF8"]  = finalcut::Encoding::UTF8;
+  encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
+  encoding_list["VT100"] = finalcut::Encoding::VT100;
+  encoding_list["PC"]    = finalcut::Encoding::PC;
+  encoding_list["ASCII"] = finalcut::Encoding::ASCII;
   auto& enc_list = data.getEncodingList();
   CPPUNIT_ASSERT ( enc_list.size() == 5 );
-  CPPUNIT_ASSERT ( enc_list["UTF8"] == finalcut::fc::UTF8 );
-  CPPUNIT_ASSERT ( enc_list["UTF-8"] == finalcut::fc::UTF8 );
-  CPPUNIT_ASSERT ( enc_list["VT100"] == finalcut::fc::VT100 );
-  CPPUNIT_ASSERT ( enc_list["PC"] == finalcut::fc::PC );
-  CPPUNIT_ASSERT ( enc_list["ASCII"] == finalcut::fc::ASCII );
+  CPPUNIT_ASSERT ( enc_list["UTF8"] == finalcut::Encoding::UTF8 );
+  CPPUNIT_ASSERT ( enc_list["UTF-8"] == finalcut::Encoding::UTF8 );
+  CPPUNIT_ASSERT ( enc_list["VT100"] == finalcut::Encoding::VT100 );
+  CPPUNIT_ASSERT ( enc_list["PC"] == finalcut::Encoding::PC );
+  CPPUNIT_ASSERT ( enc_list["ASCII"] == finalcut::Encoding::ASCII );
 
-  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::fc::UNKNOWN );
-  data.setTermEncoding(finalcut::fc::UTF8);
-  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::fc::UTF8 );
-  data.setTermEncoding(finalcut::fc::VT100);
-  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::fc::VT100 );
-  data.setTermEncoding(finalcut::fc::PC);
-  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::fc::PC );
-  data.setTermEncoding(finalcut::fc::ASCII);
-  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::fc::ASCII );
-  data.setTermEncoding(finalcut::fc::UNKNOWN);
-  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::fc::UNKNOWN );
+  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::Encoding::Unknown );
+  data.setTermEncoding(finalcut::Encoding::UTF8);
+  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::Encoding::UTF8 );
+  data.setTermEncoding(finalcut::Encoding::VT100);
+  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::Encoding::VT100 );
+  data.setTermEncoding(finalcut::Encoding::PC);
+  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::Encoding::PC );
+  data.setTermEncoding(finalcut::Encoding::ASCII);
+  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::Encoding::ASCII );
+  data.setTermEncoding(finalcut::Encoding::Unknown);
+  CPPUNIT_ASSERT ( data.getTermEncoding() == finalcut::Encoding::Unknown );
 
   CPPUNIT_ASSERT ( data.getCharSubstitutionMap().size() == 0 );
   auto& character_map = data.getCharSubstitutionMap();
   character_map[L'€'] = 'E';
   character_map[L'µ'] = L'u';
-  character_map[finalcut::fc::Bullet] = '*';
-  character_map[finalcut::fc::FullBlock] = finalcut::fc::MediumShade;
+  character_map[wchar_t(finalcut::UniChar::Bullet)] = '*';
+  character_map[wchar_t(finalcut::UniChar::FullBlock)] = wchar_t(finalcut::UniChar::MediumShade);
   auto& char_map = data.getCharSubstitutionMap();
   CPPUNIT_ASSERT ( char_map.size() == 4 );
   CPPUNIT_ASSERT ( char_map[L'€'] == 'E' );
   CPPUNIT_ASSERT ( char_map[L'µ'] == L'u' );
-  CPPUNIT_ASSERT ( char_map[finalcut::fc::Bullet] == '*' );
-  CPPUNIT_ASSERT ( char_map[finalcut::fc::FullBlock]
-                   == finalcut::fc::MediumShade );
+  CPPUNIT_ASSERT ( char_map[wchar_t(finalcut::UniChar::Bullet)] == '*' );
+  CPPUNIT_ASSERT ( char_map[wchar_t(finalcut::UniChar::FullBlock)]
+                   == wchar_t(finalcut::UniChar::MediumShade) );
 
   CPPUNIT_ASSERT ( data.getTermGeometry() == finalcut::FRect() );
   data.getTermGeometry().setSize(10, 10);

@@ -29,6 +29,7 @@
 using finalcut::FPoint;
 using finalcut::FRect;
 using finalcut::FSize;
+using finalcut::FColor;
 
 
 //----------------------------------------------------------------------
@@ -99,7 +100,7 @@ Background::Background (finalcut::FWidget* parent)
 
   // Combobox
   color_choice.setGeometry (FPoint{2, 2}, FSize{18, 1});
-  color_choice.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::above);
+  color_choice.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::Above);
   color_choice.setLabelText ("Color choice");
   color_choice.unsetEditable();
 
@@ -111,19 +112,19 @@ Background::Background (finalcut::FWidget* parent)
 
   // Spin boxes
   red.setGeometry (FPoint{2, 5}, FSize{7, 1});
-  red.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::above);
+  red.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::Above);
   red.setLabelText ("Red");
   red.setRange (0, 255);
   red.setValue (0x80);
 
   green.setGeometry (FPoint{12, 5}, FSize{7, 1});
-  green.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::above);
+  green.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::Above);
   green.setLabelText ("Green");
   green.setRange (0, 255);
   green.setValue (0xa4);
 
   blue.setGeometry (FPoint{22, 5}, FSize{7, 1});
-  blue.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::above);
+  blue.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::Above);
   blue.setLabelText ("Blue");
   blue.setRange (0, 255);
   blue.setValue (0xec);
@@ -131,7 +132,7 @@ Background::Background (finalcut::FWidget* parent)
   // Set the initial palette values
   if ( finalcut::FTerm::canChangeColorPalette() )
   {
-    finalcut::FTerm::setPalette ( finalcut::fc::LightMagenta
+    finalcut::FTerm::setPalette ( FColor::LightMagenta
                                 , int(red.getValue())
                                 , int(green.getValue())
                                 , int(blue.getValue()) );
@@ -177,7 +178,7 @@ void Background::cb_changed()
   if ( ! finalcut::FTerm::canChangeColorPalette() )
     return;
 
-  finalcut::FTerm::setPalette ( finalcut::fc::LightMagenta
+  finalcut::FTerm::setPalette ( FColor::LightMagenta
                               , int(red.getValue())
                               , int(green.getValue())
                               , int(blue.getValue()) );
@@ -198,7 +199,7 @@ void Background::cb_choice()
   red.setValue(r);
   green.setValue(g);
   blue.setValue(b);
-  finalcut::FTerm::setPalette ( finalcut::fc::LightMagenta
+  finalcut::FTerm::setPalette ( FColor::LightMagenta
                               , int(red.getValue())
                               , int(green.getValue())
                               , int(blue.getValue()) );
@@ -219,7 +220,7 @@ int main (int argc, char* argv[])
 
   // The following lines require an initialized terminal
   if ( finalcut::FTerm::canChangeColorPalette() )
-    app.setBackgroundColor(finalcut::fc::LightMagenta);
+    app.setBackgroundColor(FColor::LightMagenta);
 
   Background dialog(&app);
   finalcut::FWidget::setMainWidget(&dialog);

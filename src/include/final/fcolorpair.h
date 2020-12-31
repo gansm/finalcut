@@ -50,7 +50,7 @@ class FColorPair
 {
   public:
     // Constructors
-    explicit FColorPair (FColor fg = fc::Default, FColor bg = fc::Default)
+    explicit FColorPair (FColor fg = FColor::Default, FColor bg = FColor::Default)
       : fg_color{fg}
       , bg_color{bg}
     { }
@@ -62,7 +62,7 @@ class FColorPair
     ~FColorPair() = default;
 
     // copy assignment operator (=)
-    FColorPair& operator = (const FColorPair& pair) = default;
+    FColorPair& operator = (const FColorPair&) = default;
 
     // Accessor
     FString getClassName() const

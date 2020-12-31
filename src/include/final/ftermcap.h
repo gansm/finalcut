@@ -63,7 +63,7 @@
 #include "final/ftermcap.h"
 
 // FTermcap string macro
-#define TCAP(...)  FTermcap::strings[__VA_ARGS__].string
+#define TCAP(...)  FTermcap::strings[int(Termcap::__VA_ARGS__)].string
 
 namespace finalcut
 {

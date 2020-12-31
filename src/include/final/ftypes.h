@@ -50,28 +50,25 @@
               << " in "                          \
               << __func__ << std::endl;
 
-using uChar      = unsigned char;
-using uShort     = unsigned short;
-using uInt       = unsigned int;
-using uLong      = unsigned long;
-using uInt8      = std::uint8_t;
-using uInt16     = std::uint16_t;
-using uInt32     = std::uint32_t;
-using uInt64     = std::uint64_t;
+using uChar   = unsigned char;
+using uShort  = unsigned short;
+using uInt    = unsigned int;
+using uLong   = unsigned long;
+using uInt8   = std::uint8_t;
+using uInt16  = std::uint16_t;
+using uInt32  = std::uint32_t;
+using uInt64  = std::uint64_t;
 
-using sInt       = signed int;
-using sLong      = signed long;
-using sInt8      = std::int8_t;
-using sInt16     = std::int16_t;
-using sInt32     = std::int32_t;
-using sInt64     = std::int64_t;
+using sInt    = signed int;
+using sLong   = signed long;
+using sInt8   = std::int8_t;
+using sInt16  = std::int16_t;
+using sInt32  = std::int32_t;
+using sInt64  = std::int64_t;
 
-using lDouble    = long double;
+using lDouble = long double;
 
-using FColor     = uInt16;
-using FAttribute = uInt16;
-using FKey       = uInt32;
-using FCall      = std::function<void()>;
+using FCall   = std::function<void()>;
 
 namespace finalcut
 {
@@ -163,6 +160,8 @@ static constexpr uInt UNICODE_MAX = 5;
 
 using FUnicode = std::array<wchar_t, UNICODE_MAX>;
 
+enum class FColor : uInt16;   // forward declaration
+
 struct FChar
 {
   FUnicode  ch{};            // Character code
@@ -171,31 +170,6 @@ struct FChar
   FColor    bg_color{};      // Background color
   attribute attr{};          // Attributes
 };
-
-
-namespace fc
-{
-
-struct FKeyMap
-{
-  FKey  num;
-  const char* string;
-  char  tname[4];
-};
-
-struct FMetakeyMap
-{
-  FKey num;
-  char string[8];
-};
-
-struct FKeyName
-{
-  FKey num;
-  char string[25];
-};
-
-}  // namespace fc
 
 // FChar operator functions
 //----------------------------------------------------------------------

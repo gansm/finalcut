@@ -293,7 +293,7 @@ void FButtonGroup::checkScrollSize (const FRect& r)
 //----------------------------------------------------------------------
 void FButtonGroup::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   directFocus();
@@ -316,9 +316,9 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
     in_ev->accept();
     auto prev_element = getFocusWidget();
 
-    if ( in_ev->getFocusType() == fc::FocusNextWidget )
+    if ( in_ev->getFocusType() == FocusTypes::NextWidget )
       focusFirstChild();
-    else if ( in_ev->getFocusType() == fc::FocusPreviousWidget )
+    else if ( in_ev->getFocusType() == FocusTypes::PreviousWidget )
       focusLastChild();
 
     if ( prev_element )
@@ -516,10 +516,10 @@ void FButtonGroup::focusCheckedRadioButton ( FToggleButton* toggle_button
 
   toggle_button->setFocus();
 
-  FFocusEvent cfi (fc::ChildFocusIn_Event);
+  FFocusEvent cfi (Event::ChildFocusIn);
   FApplication::sendEvent(this, &cfi);
 
-  FFocusEvent in (fc::FocusIn_Event);
+  FFocusEvent in (Event::FocusIn);
   FApplication::sendEvent(toggle_button, &in);
 
   if ( in.isAccepted() )

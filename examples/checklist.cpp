@@ -93,12 +93,12 @@ CheckList::CheckList (finalcut::FWidget* parent)
   listview.addColumn ("Priority", 9);
 
   // Set the type of sorting
-  listview.setColumnSortType (1, fc::by_name);
-  listview.setColumnSortType (2, fc::by_name);
+  listview.setColumnSortType (1, finalcut::SortType::Name);
+  listview.setColumnSortType (2, finalcut::SortType::Name);
 
   // Statusbar at the bottom
   finalcut::FString separator{};
-  separator << ' ' << fc::BoxDrawingsVertical << ' ';
+  separator << ' ' << finalcut::UniChar::BoxDrawingsVertical << ' ';
   listview.setStatusbarMessage ( finalcut::FString{}
                                  << "<Q> exit" << separator
                                  << "<Space> select an item" << separator
@@ -154,9 +154,9 @@ void CheckList::onKeyPress (finalcut::FKeyEvent* ev)
   if ( ! ev )
     return;
 
-  if ( ev->key() == 'q'
-    || ev->key() == fc::Fkey_escape
-    || ev->key() == fc::Fkey_escape_mintty )
+  if ( ev->key() == finalcut::FKey('q')
+    || ev->key() == finalcut::FKey::Escape
+    || ev->key() == finalcut::FKey::Escape_mintty )
   {
     close();
     ev->accept();
@@ -179,7 +179,7 @@ void CheckList::cb_showList()
   for (auto item : listview.getData())
   {
     if ( item->isChecked() )
-      shopping_list << fc::Bullet << ' ' << item->getText(1) << '\n';
+      shopping_list << finalcut::UniChar::Bullet << ' ' << item->getText(1) << '\n';
   }
 
   if ( shopping_list.isEmpty() )

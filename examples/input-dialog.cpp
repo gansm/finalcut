@@ -76,7 +76,7 @@ int main (int argc, char* argv[])
   finalcut::FLineEdit c_field {&dgl};
 
   // Set input type to password
-  pw_field.setInputType (finalcut::FLineEdit::InputType::password);
+  pw_field.setInputType (finalcut::FLineEdit::InputType::Password);
 
   name_field.setLabelText (L"&Name");
   pw_field.setLabelText (L"&Password");

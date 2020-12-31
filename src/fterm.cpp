@@ -580,7 +580,7 @@ bool FTerm::setVGAFont()
     data->setVGAFont(true);
     // Set font in xterm to vga
     getFTermXTerminal()->setFont("vga");
-    data->setTermEncoding (fc::PC);
+    data->setTermEncoding (Encoding::PC);
     data->setNewFont(false);
   }
 #if defined(__linux__)
@@ -755,7 +755,7 @@ const char* FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
     return opti_move->moveCursor (xold, yold, xnew, ynew);
   }
   else
-    return FTermcap::encodeMotionParameter(TCAP(fc::t_cursor_address), xnew, ynew);
+    return FTermcap::encodeMotionParameter(TCAP(t_cursor_address), xnew, ynew);
 }
 
 //----------------------------------------------------------------------
@@ -842,7 +842,7 @@ void FTerm::setTermTitle (const FString& title)
 }
 
 //----------------------------------------------------------------------
-void FTerm::setKDECursor (fc::kdeKonsoleCursorShape style)
+void FTerm::setKDECursor (KdeKonsoleCursorShape style)
 {
   // Set cursor style in KDE konsole
 
@@ -866,8 +866,8 @@ void FTerm::saveColorMap()
 //----------------------------------------------------------------------
 void FTerm::resetColorMap()
 {
-  const auto& oc = TCAP(fc::t_orig_colors);
-  const auto& op = TCAP(fc::t_orig_pair);
+  const auto& oc = TCAP(t_orig_colors);
+  const auto& op = TCAP(t_orig_pair);
 
   if ( oc )
     putstring (oc);
@@ -888,8 +888,8 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
 {
   // Redefine RGB color value for a palette entry
 
-  const auto& Ic = TCAP(fc::t_initialize_color);
-  const auto& Ip = TCAP(fc::t_initialize_pair);
+  const auto& Ic = TCAP(t_initialize_color);
+  const auto& Ip = TCAP(t_initialize_pair);
   bool state{false};
 
   index = FOptiAttr::vga2ansi(index);
@@ -970,44 +970,44 @@ void FTerm::resetBeep()
 //----------------------------------------------------------------------
 void FTerm::beep()
 {
-  if ( TCAP(fc::t_bell) )
+  if ( TCAP(t_bell) )
   {
-    putstring (TCAP(fc::t_bell));
+    putstring (TCAP(t_bell));
     std::fflush(stdout);
   }
 }
 
 //----------------------------------------------------------------------
-void FTerm::setEncoding (fc::encoding enc)
+void FTerm::setEncoding (Encoding enc)
 {
   const auto& data = FTerm::getFTermData();
   data->setTermEncoding (enc);
 
-  assert ( enc == fc::UTF8
-        || enc == fc::VT100  // VT100 line drawing
-        || enc == fc::PC     // CP-437
-        || enc == fc::ASCII
-        || enc == fc::UNKNOWN
-        || enc == fc::NUM_OF_ENCODINGS );
+  assert ( enc == Encoding::UTF8
+        || enc == Encoding::VT100  // VT100 line drawing
+        || enc == Encoding::PC     // CP-437
+        || enc == Encoding::ASCII
+        || enc == Encoding::Unknown
+        || enc == Encoding::NUM_OF_ENCODINGS );
 
   // Set the new putchar() function pointer
   switch ( enc )
   {
-    case fc::UTF8:
+    case Encoding::UTF8:
       putchar() = &FTerm::putchar_UTF8;
       break;
 
-    case fc::VT100:
-    case fc::PC:
+    case Encoding::VT100:
+    case Encoding::PC:
       if ( isXTerminal() && data->hasUTF8Console() )
         putchar() = &FTerm::putchar_UTF8;
       else
         putchar() = &FTerm::putchar_ASCII;
       break;
 
-    case fc::ASCII:
-    case fc::UNKNOWN:
-    case fc::NUM_OF_ENCODINGS:
+    case Encoding::ASCII:
+    case Encoding::Unknown:
+    case Encoding::NUM_OF_ENCODINGS:
       putchar() = &FTerm::putchar_ASCII;
   }
 
@@ -1015,18 +1015,18 @@ void FTerm::setEncoding (fc::encoding enc)
   {
     const auto& opti_move = FTerm::getFOptiMove();
 
-    if ( enc == fc::VT100 || enc == fc::PC )
+    if ( enc == Encoding::VT100 || enc == Encoding::PC )
     {
       const char* empty{nullptr};
       opti_move->set_tabular (empty);
     }
     else
-      opti_move->set_tabular (TCAP(fc::t_tab));
+      opti_move->set_tabular (TCAP(t_tab));
   }
 }
 
 //----------------------------------------------------------------------
-fc::encoding FTerm::getEncoding()
+Encoding FTerm::getEncoding()
 {
   const auto& data = FTerm::getFTermData();
   return data->getTermEncoding();
@@ -1062,20 +1062,20 @@ wchar_t FTerm::charEncode (wchar_t c)
 }
 
 //----------------------------------------------------------------------
-wchar_t FTerm::charEncode (wchar_t c, fc::encoding enc)
+wchar_t FTerm::charEncode (wchar_t c, Encoding enc)
 {
   wchar_t ch_enc = c;
 
   for (auto&& entry : fc::character)
   {
-    if ( entry[fc::UTF8] == uInt(c) )
+    if ( entry.unicode == c )
     {
-      ch_enc = wchar_t(entry[enc]);
+      ch_enc = getCharacter(entry, enc);
       break;
     }
   }
 
-  if ( enc == fc::PC && ch_enc == c )
+  if ( enc == Encoding::PC && ch_enc == c )
     ch_enc = finalcut::unicode_to_cp437(c);
 
   return ch_enc;
@@ -1084,9 +1084,9 @@ wchar_t FTerm::charEncode (wchar_t c, fc::encoding enc)
 //----------------------------------------------------------------------
 bool FTerm::scrollTermForward()
 {
-  if ( TCAP(fc::t_scroll_forward) )
+  if ( TCAP(t_scroll_forward) )
   {
-    putstring (TCAP(fc::t_scroll_forward));
+    putstring (TCAP(t_scroll_forward));
     std::fflush(stdout);
     return true;
   }
@@ -1097,9 +1097,9 @@ bool FTerm::scrollTermForward()
 //----------------------------------------------------------------------
 bool FTerm::scrollTermReverse()
 {
-  if ( TCAP(fc::t_scroll_reverse) )
+  if ( TCAP(t_scroll_reverse) )
   {
-    putstring (TCAP(fc::t_scroll_reverse));
+    putstring (TCAP(t_scroll_reverse));
     std::fflush(stdout);
     return true;
   }
@@ -1186,7 +1186,7 @@ void FTerm::initScreenSettings()
 #endif
 
   // set xterm underline cursor
-  getFTermXTerminal()->setCursorStyle (fc::blinking_underline);
+  getFTermXTerminal()->setCursorStyle (XTermCursorStyle::BlinkingUnderline);
 
   // set xterm color settings to defaults
   getFTermXTerminal()->setDefaults();
@@ -1276,13 +1276,13 @@ void FTerm::init_alt_charset()
 
   std::unordered_map<uChar, uChar> vt100_alt_char;
 
-  if ( TCAP(fc::t_acs_chars) )
+  if ( TCAP(t_acs_chars) )
   {
-    for (std::size_t n{0}; TCAP(fc::t_acs_chars)[n]; n += 2)
+    for (std::size_t n{0}; TCAP(t_acs_chars)[n]; n += 2)
     {
       // insert the VT100 key/value pairs into a map
-      const auto p1 = uChar(TCAP(fc::t_acs_chars)[n]);
-      const auto p2 = uChar(TCAP(fc::t_acs_chars)[n + 1]);
+      const auto p1 = uChar(TCAP(t_acs_chars)[n]);
+      const auto p2 = uChar(TCAP(t_acs_chars)[n + 1]);
       vt100_alt_char[p1] = p2;
     }
   }
@@ -1290,23 +1290,21 @@ void FTerm::init_alt_charset()
   // Update array 'character' with discovered VT100 pairs
   for (auto&& pair : fc::dec_special_graphics)
   {
-    const auto vt100 = std::size_t(fc::DECSpecialGraphics::vt100);
-    const auto utf8 = std::size_t(fc::DECSpecialGraphics::utf8);
-    const auto keyChar = uChar(pair[vt100]);
-    const auto altChar = uChar(vt100_alt_char[keyChar]);
-    const auto utf8char = uInt(pair[utf8]);
+    const auto keyChar = uChar(pair.key);
+    const auto altChar = wchar_t(vt100_alt_char[keyChar]);
+    const auto utf8char = wchar_t(pair.unicode);
     const auto p = std::find_if ( fc::character.begin()
                                 , fc::character.end()
-                                , [&utf8char] (std::array<uInt, 4> entry)
-                                  { return entry[0] == utf8char; } );
+                                , [&utf8char] (fc::CharEncodeMap entry)
+                                  { return entry.unicode == utf8char; } );
     if ( p != fc::character.end() )  // found in character
     {
       const auto item = std::size_t(std::distance(fc::character.begin(), p));
 
       if ( altChar )                 // update alternate character set
-        fc::character[item][fc::VT100] = altChar;
+        getCharacter(fc::character[item], Encoding::VT100) = altChar;
       else                           // delete VT100 char in character
-        fc::character[item][fc::VT100] = 0;
+        getCharacter(fc::character[item], Encoding::VT100) = L'\0';
     }
   }
 }
@@ -1326,40 +1324,40 @@ void FTerm::init_pc_charset()
     const auto& data = FTerm::getFTermData();
 
     // Fallback if tcap "S2" is not found
-    if ( ! TCAP(fc::t_enter_pc_charset_mode) )
+    if ( ! TCAP(t_enter_pc_charset_mode) )
     {
       if ( data->hasUTF8Console() )
       {
         // Select iso8859-1 + null mapping
-        TCAP(fc::t_enter_pc_charset_mode) = ESC "%@" ESC "(U";
+        TCAP(t_enter_pc_charset_mode) = ESC "%@" ESC "(U";
       }
       else
       {
         // Select null mapping
-        TCAP(fc::t_enter_pc_charset_mode) = ESC "(U";
+        TCAP(t_enter_pc_charset_mode) = ESC "(U";
       }
 
       opti_attr->set_enter_pc_charset_mode \
-        (TCAP(fc::t_enter_pc_charset_mode));
+        (TCAP(t_enter_pc_charset_mode));
       reinit = true;
     }
 
     // Fallback if tcap "S3" is not found
-    if ( ! TCAP(fc::t_exit_pc_charset_mode) )
+    if ( ! TCAP(t_exit_pc_charset_mode) )
     {
       if ( data->hasUTF8Console() )
       {
         // Select ascii mapping + utf8
-        TCAP(fc::t_exit_pc_charset_mode) = ESC "(B" ESC "%G";
+        TCAP(t_exit_pc_charset_mode) = ESC "(B" ESC "%G";
       }
       else
       {
         // Select ascii mapping
-        TCAP(fc::t_enter_pc_charset_mode) = ESC "(B";
+        TCAP(t_enter_pc_charset_mode) = ESC "(B";
       }
 
       opti_attr->set_exit_pc_charset_mode \
-          (TCAP(fc::t_exit_pc_charset_mode));
+          (TCAP(t_exit_pc_charset_mode));
       reinit = true;
     }
   }
@@ -1379,22 +1377,22 @@ void FTerm::init_cygwin_charmap()
   // PC encoding changes
   for (auto&& entry : fc::character)
   {
-    if ( entry[fc::UTF8] == fc::BlackUpPointingTriangle )  // ▲
-      entry[fc::PC] = 0x18;
+    if ( entry.unicode == UniChar::BlackUpPointingTriangle )  // ▲
+      entry.pc = 0x18;
 
-    if ( entry[fc::UTF8] == fc::BlackDownPointingTriangle )  // ▼
-      entry[fc::PC] = 0x19;
+    if ( entry.unicode == UniChar::BlackDownPointingTriangle )  // ▼
+      entry.pc = 0x19;
 
-    if ( entry[fc::UTF8] == fc::InverseBullet  // ◘
-      || entry[fc::UTF8] == fc::InverseWhiteCircle  // ◙
-      || entry[fc::UTF8] == fc::UpDownArrow  // ↕
-      || entry[fc::UTF8] == fc::LeftRightArrow  // ↔
-      || entry[fc::UTF8] == fc::DoubleExclamationMark  // ‼
-      || entry[fc::UTF8] == fc::BlackRectangle  // ▬
-      || entry[fc::UTF8] == fc::RightwardsArrow  // →
-      || entry[fc::UTF8] == fc::Section  // §
-      || entry[fc::UTF8] == fc::SquareRoot )  // SquareRoot √
-      entry[fc::PC] = entry[fc::ASCII];
+    if ( entry.unicode == UniChar::InverseBullet  // ◘
+      || entry.unicode == UniChar::InverseWhiteCircle  // ◙
+      || entry.unicode == UniChar::UpDownArrow  // ↕
+      || entry.unicode == UniChar::LeftRightArrow  // ↔
+      || entry.unicode == UniChar::DoubleExclamationMark  // ‼
+      || entry.unicode == UniChar::BlackRectangle  // ▬
+      || entry.unicode == UniChar::RightwardsArrow  // →
+      || entry.unicode == UniChar::Section  // §
+      || entry.unicode == UniChar::SquareRoot )  // SquareRoot √
+      entry.pc = entry.ascii;
   }
 
   // General encoding changes
@@ -1433,8 +1431,8 @@ void FTerm::init_teraterm_charmap()
     return;
 
   for (auto&& entry : fc::character)
-    if ( entry[fc::PC] < 0x20 )
-      entry[fc::PC] = entry[fc::ASCII];
+    if ( entry.pc < 0x20 )
+      entry.pc = entry.ascii;
 }
 
 //----------------------------------------------------------------------
@@ -1460,26 +1458,26 @@ void FTerm::init_optiMove()
 
   FOptiMove::TermEnv optimove_env =
   {
-    TCAP(fc::t_cursor_home),
-    TCAP(fc::t_carriage_return),
-    TCAP(fc::t_cursor_to_ll),
-    TCAP(fc::t_tab),
-    TCAP(fc::t_back_tab),
-    TCAP(fc::t_cursor_up),
-    TCAP(fc::t_cursor_down),
-    TCAP(fc::t_cursor_left),
-    TCAP(fc::t_cursor_right),
-    TCAP(fc::t_cursor_address),
-    TCAP(fc::t_column_address),
-    TCAP(fc::t_row_address),
-    TCAP(fc::t_parm_up_cursor),
-    TCAP(fc::t_parm_down_cursor),
-    TCAP(fc::t_parm_left_cursor),
-    TCAP(fc::t_parm_right_cursor),
-    TCAP(fc::t_erase_chars),
-    TCAP(fc::t_repeat_char),
-    TCAP(fc::t_clr_bol),
-    TCAP(fc::t_clr_eol),
+    TCAP(t_cursor_home),
+    TCAP(t_carriage_return),
+    TCAP(t_cursor_to_ll),
+    TCAP(t_tab),
+    TCAP(t_back_tab),
+    TCAP(t_cursor_up),
+    TCAP(t_cursor_down),
+    TCAP(t_cursor_left),
+    TCAP(t_cursor_right),
+    TCAP(t_cursor_address),
+    TCAP(t_column_address),
+    TCAP(t_row_address),
+    TCAP(t_parm_up_cursor),
+    TCAP(t_parm_down_cursor),
+    TCAP(t_parm_left_cursor),
+    TCAP(t_parm_right_cursor),
+    TCAP(t_erase_chars),
+    TCAP(t_repeat_char),
+    TCAP(t_clr_bol),
+    TCAP(t_clr_eol),
     FTermcap::tabstop,
     FTermcap::automatic_left_margin,
     FTermcap::eat_nl_glitch
@@ -1496,41 +1494,41 @@ void FTerm::init_optiAttr()
 
   FOptiAttr::TermEnv optiattr_env =
   {
-    TCAP(fc::t_enter_bold_mode),
-    TCAP(fc::t_exit_bold_mode),
-    TCAP(fc::t_enter_dim_mode),
-    TCAP(fc::t_exit_dim_mode),
-    TCAP(fc::t_enter_italics_mode),
-    TCAP(fc::t_exit_italics_mode),
-    TCAP(fc::t_enter_underline_mode),
-    TCAP(fc::t_exit_underline_mode),
-    TCAP(fc::t_enter_blink_mode),
-    TCAP(fc::t_exit_blink_mode),
-    TCAP(fc::t_enter_reverse_mode),
-    TCAP(fc::t_exit_reverse_mode),
-    TCAP(fc::t_enter_standout_mode),
-    TCAP(fc::t_exit_standout_mode),
-    TCAP(fc::t_enter_secure_mode),
-    TCAP(fc::t_exit_secure_mode),
-    TCAP(fc::t_enter_protected_mode),
-    TCAP(fc::t_exit_protected_mode),
-    TCAP(fc::t_enter_crossed_out_mode),
-    TCAP(fc::t_exit_crossed_out_mode),
-    TCAP(fc::t_enter_dbl_underline_mode),
-    TCAP(fc::t_exit_dbl_underline_mode),
-    TCAP(fc::t_set_attributes),
-    TCAP(fc::t_exit_attribute_mode),
-    TCAP(fc::t_enter_alt_charset_mode),
-    TCAP(fc::t_exit_alt_charset_mode),
-    TCAP(fc::t_enter_pc_charset_mode),
-    TCAP(fc::t_exit_pc_charset_mode),
-    TCAP(fc::t_set_a_foreground),
-    TCAP(fc::t_set_a_background),
-    TCAP(fc::t_set_foreground),
-    TCAP(fc::t_set_background),
-    TCAP(fc::t_orig_pair),
-    TCAP(fc::t_orig_pair),
-    TCAP(fc::t_orig_colors),
+    TCAP(t_enter_bold_mode),
+    TCAP(t_exit_bold_mode),
+    TCAP(t_enter_dim_mode),
+    TCAP(t_exit_dim_mode),
+    TCAP(t_enter_italics_mode),
+    TCAP(t_exit_italics_mode),
+    TCAP(t_enter_underline_mode),
+    TCAP(t_exit_underline_mode),
+    TCAP(t_enter_blink_mode),
+    TCAP(t_exit_blink_mode),
+    TCAP(t_enter_reverse_mode),
+    TCAP(t_exit_reverse_mode),
+    TCAP(t_enter_standout_mode),
+    TCAP(t_exit_standout_mode),
+    TCAP(t_enter_secure_mode),
+    TCAP(t_exit_secure_mode),
+    TCAP(t_enter_protected_mode),
+    TCAP(t_exit_protected_mode),
+    TCAP(t_enter_crossed_out_mode),
+    TCAP(t_exit_crossed_out_mode),
+    TCAP(t_enter_dbl_underline_mode),
+    TCAP(t_exit_dbl_underline_mode),
+    TCAP(t_set_attributes),
+    TCAP(t_exit_attribute_mode),
+    TCAP(t_enter_alt_charset_mode),
+    TCAP(t_exit_alt_charset_mode),
+    TCAP(t_enter_pc_charset_mode),
+    TCAP(t_exit_pc_charset_mode),
+    TCAP(t_set_a_foreground),
+    TCAP(t_set_a_background),
+    TCAP(t_set_foreground),
+    TCAP(t_set_background),
+    TCAP(t_orig_pair),
+    TCAP(t_orig_pair),
+    TCAP(t_orig_colors),
     FTermcap::max_color,
     FTermcap::attr_without_color,
     FTermcap::ansi_default_color
@@ -1633,7 +1631,7 @@ void FTerm::init_encoding()
 
   init_tab_quirks();
 
-  if ( getStartOptions().encoding != fc::UNKNOWN )
+  if ( getStartOptions().encoding != Encoding::Unknown )
   {
     setEncoding(getStartOptions().encoding);
   }
@@ -1646,11 +1644,11 @@ inline void FTerm::init_encoding_set()
 
   const auto& data = FTerm::getFTermData();
   auto& encoding_list = data->getEncodingList();
-  encoding_list["UTF8"]  = fc::UTF8;
-  encoding_list["UTF-8"] = fc::UTF8;
-  encoding_list["VT100"] = fc::VT100;  // VT100 line drawing
-  encoding_list["PC"]    = fc::PC;     // CP-437
-  encoding_list["ASCII"] = fc::ASCII;
+  encoding_list["UTF8"]  = Encoding::UTF8;
+  encoding_list["UTF-8"] = Encoding::UTF8;
+  encoding_list["VT100"] = Encoding::VT100;  // VT100 line drawing
+  encoding_list["PC"]    = Encoding::PC;     // CP-437
+  encoding_list["ASCII"] = Encoding::ASCII;
 }
 
 //----------------------------------------------------------------------
@@ -1665,7 +1663,7 @@ void FTerm::init_term_encoding()
     && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
   {
     data->setUTF8Console(true);
-    data->setTermEncoding (fc::UTF8);
+    data->setTermEncoding (Encoding::UTF8);
     putchar() = &FTerm::putchar_UTF8;  // function pointer
     data->setUTF8(true);
     setUTF8(true);
@@ -1674,16 +1672,16 @@ void FTerm::init_term_encoding()
   }
   else if ( fsys->isTTY(stdout_no)
          && (std::strlen(termtype) > 0)
-         && (TCAP(fc::t_exit_alt_charset_mode) != nullptr) )
+         && (TCAP(t_exit_alt_charset_mode) != nullptr) )
   {
     data->setVT100Console (true);
-    data->setTermEncoding (fc::VT100);
+    data->setTermEncoding (Encoding::VT100);
     putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
   else
   {
     data->setASCIIConsole (true);
-    data->setTermEncoding (fc::ASCII);
+    data->setTermEncoding (Encoding::ASCII);
     putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
 }
@@ -1697,11 +1695,11 @@ void FTerm::init_individual_term_encoding()
     || (isPuttyTerminal() && ! data->isUTF8())
     || (isTeraTerm() && ! data->isUTF8()) )
   {
-    data->setTermEncoding (fc::PC);
+    data->setTermEncoding (Encoding::PC);
     putchar() = &FTerm::putchar_ASCII;  // function pointer
 
     if ( hasUTF8()
-      && getStartOptions().encoding == fc::UNKNOWN
+      && getStartOptions().encoding == Encoding::Unknown
       && isXTerminal() )
       putchar() = &FTerm::putchar_UTF8;  // function pointer
   }
@@ -1712,7 +1710,7 @@ void FTerm::init_force_vt100_encoding()
 {
   const auto& data = FTerm::getFTermData();
   data->setVT100Console(true);
-  data->setTermEncoding (fc::VT100);
+  data->setTermEncoding (Encoding::VT100);
   putchar() = &FTerm::putchar_ASCII;  // function pointer
 }
 
@@ -1725,10 +1723,10 @@ void FTerm::init_utf8_without_alt_charset()
   const auto& data = FTerm::getFTermData();
 
   if ( FTermcap::no_utf8_acs_chars && data->isUTF8()
-    && data->getTermEncoding() == fc::VT100 )
+    && data->getTermEncoding() == Encoding::VT100 )
   {
     data->setASCIIConsole(true);
-    data->setTermEncoding (fc::ASCII);
+    data->setTermEncoding (Encoding::ASCII);
     putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
 }
@@ -1743,7 +1741,7 @@ void FTerm::init_tab_quirks()
   const auto& data = FTerm::getFTermData();
   const auto& enc = data->getTermEncoding();
 
-  if ( enc == fc::VT100 || enc == fc::PC )
+  if ( enc == Encoding::VT100 || enc == Encoding::PC )
   {
     const char* empty{nullptr};
     const auto& opti_move = FTerm::getFOptiMove();
@@ -1851,15 +1849,15 @@ void FTerm::restoreColorPalette()
 //----------------------------------------------------------------------
 void FTerm::setInsertCursorStyle()
 {
-  getFTermXTerminal()->setCursorStyle (fc::blinking_underline);
-  setKDECursor(fc::UnderlineCursor);
+  getFTermXTerminal()->setCursorStyle (XTermCursorStyle::BlinkingUnderline);
+  setKDECursor(KdeKonsoleCursorShape::Underline);
 
 #if defined(__linux__)
   const auto& linux_console = FTerm::getFTermLinux();
-  linux_console->setCursorStyle (fc::underscore_cursor);
+  linux_console->setCursorStyle (LinuxConsoleCursorStyle::Underscore);
 #elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   const auto& freebsd_console = FTerm::getFTermFreeBSD();
-  freebsd_console->setCursorStyle (fc::destructive_cursor);
+  freebsd_console->setCursorStyle (FreeBSDConsoleCursorStyle::Destructive);
 #endif
 
   if ( isUrxvtTerminal() )
@@ -1869,15 +1867,15 @@ void FTerm::setInsertCursorStyle()
 //----------------------------------------------------------------------
 void FTerm::setOverwriteCursorStyle()
 {
-  getFTermXTerminal()->setCursorStyle (fc::steady_block);
-  setKDECursor(fc::BlockCursor);
+  getFTermXTerminal()->setCursorStyle (XTermCursorStyle::SteadyBlock);
+  setKDECursor(KdeKonsoleCursorShape::Block);
 
 #if defined(__linux__)
   const auto& linux_console = FTerm::getFTermLinux();
-  linux_console->setCursorStyle (fc::full_block_cursor);
+  linux_console->setCursorStyle (LinuxConsoleCursorStyle::FullBlock);
 #elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   const auto& freebsd_console = FTerm::getFTermFreeBSD();
-  freebsd_console->setCursorStyle (fc::normal_cursor);
+  freebsd_console->setCursorStyle (FreeBSDConsoleCursorStyle::Normal);
 #endif
 
   if ( isUrxvtTerminal() )
@@ -1891,8 +1889,8 @@ const char* FTerm::enableCursorString()
 
   static constexpr std::size_t SIZE = 32;
   static std::array<char, SIZE> enable_str{};
-  const auto& vs = TCAP(fc::t_cursor_visible);
-  const auto& ve = TCAP(fc::t_cursor_normal);
+  const auto& vs = TCAP(t_cursor_visible);
+  const auto& ve = TCAP(t_cursor_normal);
 
   if ( ve )
     std::strncpy (enable_str.data(), ve, SIZE - 1);
@@ -1929,7 +1927,7 @@ const char* FTerm::disableCursorString()
 {
   // Returns the cursor disable string
 
-  const auto& vi = TCAP(fc::t_cursor_invisible);
+  const auto& vi = TCAP(t_cursor_invisible);
 
   if ( vi )
     return vi;
@@ -1958,7 +1956,7 @@ void FTerm::enableMouse()
   }
 #endif  // defined(__linux__)
 
-  if ( TCAP(fc::t_key_mouse) && ! isLinuxTerm() )
+  if ( TCAP(t_key_mouse) && ! isLinuxTerm() )
     xterm_mouse = true;
 
   const auto& keyboard = FTerm::getFKeyboard();
@@ -1987,9 +1985,9 @@ inline void FTerm::enableKeypad()
 {
   // Enter 'keyboard_transmit' mode
 
-  if ( TCAP(fc::t_keypad_xmit) )
+  if ( TCAP(t_keypad_xmit) )
   {
-    putstring (TCAP(fc::t_keypad_xmit));
+    putstring (TCAP(t_keypad_xmit));
     std::fflush(stdout);
   }
 }
@@ -1999,9 +1997,9 @@ inline void FTerm::disableKeypad()
 {
   // Leave 'keyboard_transmit' mode
 
-  if ( TCAP(fc::t_keypad_local) )
+  if ( TCAP(t_keypad_local) )
   {
-    putstring (TCAP(fc::t_keypad_local));
+    putstring (TCAP(t_keypad_local));
     std::fflush(stdout);
   }
 }
@@ -2011,9 +2009,9 @@ inline void FTerm::enableAlternateCharset()
 {
   // Enable alternate charset
 
-  if ( TCAP(fc::t_enable_acs) )
+  if ( TCAP(t_enable_acs) )
   {
-    putstring (TCAP(fc::t_enable_acs));
+    putstring (TCAP(t_enable_acs));
     std::fflush(stdout);
   }
 }
@@ -2045,16 +2043,16 @@ void FTerm::useAlternateScreenBuffer()
     return;
 
   // Save current cursor position
-  if ( TCAP(fc::t_save_cursor) )
+  if ( TCAP(t_save_cursor) )
   {
-    putstring (TCAP(fc::t_save_cursor));
+    putstring (TCAP(t_save_cursor));
     std::fflush(stdout);
   }
 
   // Saves the screen and the cursor position
-  if ( TCAP(fc::t_enter_ca_mode) )
+  if ( TCAP(t_enter_ca_mode) )
   {
-    putstring (TCAP(fc::t_enter_ca_mode));
+    putstring (TCAP(t_enter_ca_mode));
     std::fflush(stdout);
     getFTermData()->setAlternateScreenInUse(true);
   }
@@ -2069,17 +2067,17 @@ void FTerm::useNormalScreenBuffer()
     return;
 
   // restores the screen and the cursor position
-  if ( TCAP(fc::t_exit_ca_mode) )
+  if ( TCAP(t_exit_ca_mode) )
   {
-    putstring (TCAP(fc::t_exit_ca_mode));
+    putstring (TCAP(t_exit_ca_mode));
     std::fflush(stdout);
     getFTermData()->setAlternateScreenInUse(false);
   }
 
   // restore cursor to position of last save_cursor
-  if ( TCAP(fc::t_restore_cursor) )
+  if ( TCAP(t_restore_cursor) )
   {
-    putstring (TCAP(fc::t_restore_cursor));
+    putstring (TCAP(t_restore_cursor));
     std::fflush(stdout);
   }
 }
@@ -2115,8 +2113,7 @@ void FTerm::init()
   init_alt_charset();
 
   // Pass the terminal capabilities to the keyboard object
-  const auto& keyboard = FTerm::getFKeyboard();
-  keyboard->setTermcapMap (fc::fkey);
+  FTerm::getFKeyboard()->setTermcapMap();
 
   // Initializes locale information
   init_locale();
@@ -2267,7 +2264,7 @@ void FTerm::initOSspecifics() const
 void FTerm::initTermspecifics() const
 {
   if ( isKdeTerminal() )
-    setKDECursor(fc::UnderlineCursor);
+    setKDECursor(KdeKonsoleCursorShape::Underline);
 
   if ( isCygwinTerminal() )
     init_cygwin_charmap();
@@ -2304,16 +2301,16 @@ void FTerm::finish() const
   FTermios::restoreTTYsettings();
 
   // Turn off all attributes
-  if ( TCAP(fc::t_exit_attribute_mode) )
+  if ( TCAP(t_exit_attribute_mode) )
   {
-    putstring (TCAP(fc::t_exit_attribute_mode));
+    putstring (TCAP(t_exit_attribute_mode));
     std::fflush(stdout);
   }
 
   // Turn off pc charset mode
-  if ( TCAP(fc::t_exit_pc_charset_mode) )
+  if ( TCAP(t_exit_pc_charset_mode) )
   {
-    putstring (TCAP(fc::t_exit_pc_charset_mode));
+    putstring (TCAP(t_exit_pc_charset_mode));
     std::fflush(stdout);
   }
 
@@ -2321,7 +2318,7 @@ void FTerm::finish() const
   getFTermXTerminal()->resetDefaults();
 
   // Set xterm full block cursor
-  getFTermXTerminal()->setCursorStyle (fc::steady_block);
+  getFTermXTerminal()->setCursorStyle (XTermCursorStyle::SteadyBlock);
 
   // Restore the color palette
   restoreColorPalette();
@@ -2332,7 +2329,7 @@ void FTerm::finish() const
   finishOSspecifics();
 
   if ( isKdeTerminal() )
-    setKDECursor(fc::BlockCursor);
+    setKDECursor(KdeKonsoleCursorShape::Block);
 
   resetBeep();
 

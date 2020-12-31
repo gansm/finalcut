@@ -381,7 +381,7 @@ class dialogWidget : public FDialog
       setText ("Dialog");
       setGeometry (FPoint{25, 5}, FSize{23, 4});
       label.setGeometry (FPoint{1, 1}, FSize{10, 1});
-      label.setAlignment (fc::alignRight);
+      label.setAlignment (Align::Right);
       value.setGeometry (FPoint{11, 1}, FSize{10, 1});
       id = addTimer(100);
     }
@@ -475,7 +475,7 @@ class extendedApplication : public FApplication
           || last_avg[1] != load_avg[1]
           || last_avg[2] != load_avg[2] )
         {
-          FUserEvent user_event(fc::User_Event, 0);
+          FUserEvent user_event(Event::User, 0);
           user_event.setData (load_avg);
           FApplication::sendEvent (getMainWidget(), &user_event);
         }
@@ -958,8 +958,8 @@ class dialogWidget : public FDialog
       setText ("Emit signal");
       const FSize size{5, 1};
       label.setGeometry (FPoint{8, 1}, size);
-      label.setAlignment (fc::alignRight);
-      label.setForegroundColor (fc::Black);
+      label.setAlignment (Align::Right);
+      label.setForegroundColor (FColor::Black);
       plus.setGeometry (FPoint{3, 3}, size);
       minus.setGeometry (FPoint{3, 3} + FPoint{10, 0}, size);
       plus.setNoUnderline();
@@ -1004,17 +1004,17 @@ class dialogWidget : public FDialog
 
     void cb_set_blue()
     {
-      label.setForegroundColor (fc::Blue);
+      label.setForegroundColor (FColor::Blue);
     }
 
     void cb_set_black()
     {
-      label.setForegroundColor (fc::Black);
+      label.setForegroundColor (FColor::Black);
     }
 
     void cb_set_red()
     {
-      label.setForegroundColor (fc::Red);
+      label.setForegroundColor (FColor::Red);
     }
 
     void setTemperature()
@@ -1291,9 +1291,9 @@ class dialogWidget : public FDialog
       FDialog::draw();
 
       print() << FPoint{3, 3}
-              << FColorPair{fc::Black, fc::White}
+              << FColorPair{FColor::Black, FColor::White}
               << "Text on "
-              << FColorPair{fc::Blue, fc::Yellow}
+              << FColorPair{FColor::Blue, FColor::Yellow}
               << "top";
     }
 
@@ -1383,9 +1383,9 @@ class dialogWidget : public FDialog
       const auto& wc = getColorTheme();
       setColor (wc->label_inactive_fg, wc->dialog_bg);
       scrollview.clearArea();
-      FColorPair red (fc::LightRed, wc->dialog_bg);
-      FColorPair black (fc::Black, wc->dialog_bg);
-      FColorPair cyan (fc::Cyan, wc->dialog_bg);
+      FColorPair red (FColor::LightRed, wc->dialog_bg);
+      FColorPair black (FColor::Black, wc->dialog_bg);
+      FColorPair cyan (FColor::Cyan, wc->dialog_bg);
 
       static std::vector<direction> d
       {

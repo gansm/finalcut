@@ -102,14 +102,14 @@ class FEvent  // event base class
 {
   public:
     FEvent() = default;
-    explicit FEvent(fc::events);
-    fc::events getType() const;
+    explicit FEvent(Event);
+    Event getType() const;
     bool isQueued() const;
     bool wasSent() const;
 
   private:
     // Data members
-    fc::events t{fc::None_Event};
+    Event t{Event::None};
     bool queued{false};
     bool send{false};
 
@@ -126,7 +126,7 @@ class FKeyEvent : public FEvent  // keyboard event
 {
   public:
     FKeyEvent() = default;
-    FKeyEvent (fc::events, FKey);
+    FKeyEvent (Event, FKey);
     ~FKeyEvent() = default;
 
     FKey     key() const;
@@ -135,7 +135,7 @@ class FKeyEvent : public FEvent  // keyboard event
     void     ignore();
 
   private:
-    FKey     k{0};
+    FKey     k{FKey::None};
     bool     accpt{false};
 };
 
@@ -148,8 +148,8 @@ class FMouseEvent : public FEvent  // mouse event
 {
   public:
     FMouseEvent() = default;
-    FMouseEvent (fc::events, const FPoint&, const FPoint&, int);
-    FMouseEvent (fc::events, const FPoint&, int);
+    FMouseEvent (Event, const FPoint&, const FPoint&, MouseButton);
+    FMouseEvent (Event, const FPoint&, MouseButton);
     ~FMouseEvent() = default;
 
     const FPoint& getPos() const;
@@ -158,12 +158,12 @@ class FMouseEvent : public FEvent  // mouse event
     int           getY() const;
     int           getTermX() const;
     int           getTermY() const;
-    int           getButton() const;
+    MouseButton   getButton() const;
 
   private:
-    FPoint  p{};
-    FPoint  tp{};
-    int     b{};
+    FPoint        p{};
+    FPoint        tp{};
+    MouseButton   b{};
 };
 
 
@@ -175,8 +175,8 @@ class FWheelEvent : public FEvent  // wheel event
 {
   public:
     FWheelEvent() = default;
-    FWheelEvent (fc::events, const FPoint&, int);
-    FWheelEvent (fc::events, const FPoint&, const FPoint&, int);
+    FWheelEvent (Event, const FPoint&, MouseWheel);
+    FWheelEvent (Event, const FPoint&, const FPoint&, MouseWheel);
     ~FWheelEvent() = default;
 
     const FPoint& getPos() const;
@@ -185,12 +185,12 @@ class FWheelEvent : public FEvent  // wheel event
     int           getY() const;
     int           getTermX() const;
     int           getTermY() const;
-    int           getWheel() const;
+    MouseWheel    getWheel() const;
 
   private:
-    FPoint  p{};
-    FPoint  tp{};
-    int     w{};
+    FPoint        p{};
+    FPoint        tp{};
+    MouseWheel    w{MouseWheel::None};
 };
 
 
@@ -202,20 +202,20 @@ class FFocusEvent : public FEvent  // focus event
 {
   public:
     FFocusEvent() = default;
-    explicit FFocusEvent (fc::events);
+    explicit FFocusEvent (Event);
     ~FFocusEvent() = default;
 
     bool           gotFocus()  const;
     bool           lostFocus() const;
-    fc::FocusTypes getFocusType() const;
-    void           setFocusType(fc::FocusTypes);
+    FocusTypes     getFocusType() const;
+    void           setFocusType (FocusTypes);
     bool           isAccepted() const;
     void           accept();
     void           ignore();
 
   private:
     bool           accpt{true};
-    fc::FocusTypes focus_type{fc::FocusDefiniteWidget};
+    FocusTypes     focus_type{FocusTypes::DefiniteWidget};
 };
 
 
@@ -228,7 +228,7 @@ class FAccelEvent : public FEvent  // focus event
 {
   public:
     FAccelEvent() = default;
-    FAccelEvent (fc::events, FWidget*);
+    FAccelEvent (Event, FWidget*);
     FAccelEvent (const FAccelEvent&) = delete;
     ~FAccelEvent() = default;
     FAccelEvent& operator = (const FAccelEvent&) = delete;
@@ -252,7 +252,7 @@ class FResizeEvent : public FEvent  // resize event
 {
   public:
     FResizeEvent() = default;
-    explicit FResizeEvent (fc::events);
+    explicit FResizeEvent (Event);
     ~FResizeEvent() = default;
 
     bool     isAccepted() const;
@@ -272,7 +272,7 @@ class FShowEvent : public FEvent  // show event
 {
   public:
     FShowEvent() = default;
-    explicit FShowEvent (fc::events);
+    explicit FShowEvent (Event);
     ~FShowEvent() = default;
 };
 
@@ -285,7 +285,7 @@ class FHideEvent : public FEvent  // hide event
 {
   public:
     FHideEvent() = default;
-    explicit FHideEvent (fc::events);
+    explicit FHideEvent (Event);
     ~FHideEvent() = default;
 };
 
@@ -298,7 +298,7 @@ class FCloseEvent : public FEvent  // close event
 {
   public:
     FCloseEvent() = default;
-    explicit FCloseEvent(fc::events);
+    explicit FCloseEvent(Event);
     ~FCloseEvent() = default;
 
     bool     isAccepted() const;
@@ -318,7 +318,7 @@ class FTimerEvent : public FEvent  // timer event
 {
   public:
     FTimerEvent() = default;
-    FTimerEvent (fc::events, int);
+    FTimerEvent (Event, int);
     ~FTimerEvent() = default;
 
     int      getTimerId() const;
@@ -339,7 +339,7 @@ class FUserEvent : public FEvent  // user event
 
     // Disable copy constructor
     FUserEvent (const FUserEvent&) = delete;
-    FUserEvent (fc::events, int);
+    FUserEvent (Event, int);
 
     ~FUserEvent() = default;
 

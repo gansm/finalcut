@@ -77,26 +77,26 @@ void FStyleTest::classNameTest()
 void FStyleTest::noArgumentTest()
 {
   const finalcut::FStyle style{};
-  CPPUNIT_ASSERT ( style.getStyle() == finalcut::fc::Reset );
+  CPPUNIT_ASSERT ( style.getStyle() == finalcut::Style::None );
 }
 
 //----------------------------------------------------------------------
 void FStyleTest::copyConstructorTest()
 {
   const finalcut::FStyle style1a;
-  CPPUNIT_ASSERT ( style1a.getStyle() == finalcut::fc::Reset );
+  CPPUNIT_ASSERT ( style1a.getStyle() == finalcut::Style::None );
   finalcut::FStyle style1b (style1a);
-  CPPUNIT_ASSERT ( style1b.getStyle() == finalcut::fc::Reset );
+  CPPUNIT_ASSERT ( style1b.getStyle() == finalcut::Style::None );
 
-  const finalcut::FStyle style2a (finalcut::fc::Bold );
-  CPPUNIT_ASSERT ( style2a.getStyle() == finalcut::fc::Bold );
+  const finalcut::FStyle style2a (finalcut::Style::Bold );
+  CPPUNIT_ASSERT ( style2a.getStyle() == finalcut::Style::Bold );
   const finalcut::FStyle style2b (style2a);
-  CPPUNIT_ASSERT ( style2b.getStyle() == finalcut::fc::Bold );
+  CPPUNIT_ASSERT ( style2b.getStyle() == finalcut::Style::Bold );
 
-  const finalcut::FStyle style3a (finalcut::fc::Bold + finalcut::fc::Dim);
-  CPPUNIT_ASSERT ( style3a.getStyle() == (finalcut::fc::Bold | finalcut::fc::Dim) );
+  const finalcut::FStyle style3a (finalcut::Style::Bold + finalcut::Style::Dim);
+  CPPUNIT_ASSERT ( style3a.getStyle() == (finalcut::Style::Bold | finalcut::Style::Dim) );
   const finalcut::FStyle style3b (style3a);
-  CPPUNIT_ASSERT ( style3b.getStyle() == (finalcut::fc::Bold | finalcut::fc::Dim) );
+  CPPUNIT_ASSERT ( style3b.getStyle() == (finalcut::Style::Bold | finalcut::Style::Dim) );
 }
 
 //----------------------------------------------------------------------
@@ -104,50 +104,50 @@ void FStyleTest::assignmentTest()
 {
   const finalcut::FStyle style1a;
   const finalcut::FStyle style1b = style1a;
-  CPPUNIT_ASSERT ( style1b.getStyle() == finalcut::fc::Reset );
+  CPPUNIT_ASSERT ( style1b.getStyle() == finalcut::Style::None );
 
-  const finalcut::FStyle style2a (finalcut::fc::Italic );
+  const finalcut::FStyle style2a (finalcut::Style::Italic );
   const finalcut::FStyle style2b = style2a;
-  CPPUNIT_ASSERT ( style2b.getStyle() == finalcut::fc::Italic );
+  CPPUNIT_ASSERT ( style2b.getStyle() == finalcut::Style::Italic );
 
-  const finalcut::FStyle style3a (finalcut::fc::Underline | finalcut::fc::Blink);
+  const finalcut::FStyle style3a (finalcut::Style::Underline | finalcut::Style::Blink);
   const finalcut::FStyle style3b = style3a;
-  CPPUNIT_ASSERT ( style3b.getStyle() == (finalcut::fc::Underline + finalcut::fc::Blink) );
+  CPPUNIT_ASSERT ( style3b.getStyle() == (finalcut::Style::Underline + finalcut::Style::Blink) );
 
   finalcut::FStyle style4 = finalcut::FStyle();
-  CPPUNIT_ASSERT ( style4.getStyle() == finalcut::fc::Reset );
-  style4 = finalcut::FStyle(finalcut::fc::Bold | finalcut::fc::Dim);
-  CPPUNIT_ASSERT ( style4.getStyle() == (finalcut::fc::Bold | finalcut::fc::Dim) );
+  CPPUNIT_ASSERT ( style4.getStyle() == finalcut::Style::None );
+  style4 = finalcut::FStyle(finalcut::Style::Bold | finalcut::Style::Dim);
+  CPPUNIT_ASSERT ( style4.getStyle() == (finalcut::Style::Bold | finalcut::Style::Dim) );
 }
 
 //----------------------------------------------------------------------
 void FStyleTest::setStyleTest()
 {
   finalcut::FStyle style1;
-  style1.setStyle (finalcut::fc::Reverse);
-  CPPUNIT_ASSERT ( style1.getStyle() == finalcut::fc::Reverse );
+  style1.setStyle (finalcut::Style::Reverse);
+  CPPUNIT_ASSERT ( style1.getStyle() == finalcut::Style::Reverse );
 
-  finalcut::FStyle style2 (finalcut::fc::Reverse);
-  style2.setStyle (finalcut::fc::Standout);
-  CPPUNIT_ASSERT ( style2.getStyle() == finalcut::fc::Standout );
+  finalcut::FStyle style2 (finalcut::Style::Reverse);
+  style2.setStyle (finalcut::Style::Standout);
+  CPPUNIT_ASSERT ( style2.getStyle() == finalcut::Style::Standout );
 
-  finalcut::FStyle style3 (finalcut::fc::Protected | finalcut::fc::CrossedOut);
-  style3.setStyle (finalcut::fc::Invisible);
-  CPPUNIT_ASSERT ( style3.getStyle() == finalcut::fc::Invisible );
-  finalcut::FStyle style4 (finalcut::fc::DoubleUnderline);
+  finalcut::FStyle style3 (finalcut::Style::Protected | finalcut::Style::CrossedOut);
+  style3.setStyle (finalcut::Style::Invisible);
+  CPPUNIT_ASSERT ( style3.getStyle() == finalcut::Style::Invisible );
+  finalcut::FStyle style4 (finalcut::Style::DoubleUnderline);
   style3.setStyle (style4);
-  CPPUNIT_ASSERT ( style3.getStyle() == finalcut::fc::DoubleUnderline );
+  CPPUNIT_ASSERT ( style3.getStyle() == finalcut::Style::DoubleUnderline );
 
-  finalcut::FStyle style5 (finalcut::fc::Transparent);
-  CPPUNIT_ASSERT ( style5.getStyle() == finalcut::fc::Transparent );
-  style5.setStyle (finalcut::fc::Reset);
-  CPPUNIT_ASSERT ( style5.getStyle() == finalcut::fc::Reset );
-  style5.setStyle (finalcut::fc::ColorOverlay);
-  CPPUNIT_ASSERT ( style5.getStyle() == finalcut::fc::ColorOverlay );
-  style5.setStyle (finalcut::fc::InheritBackground);
-  CPPUNIT_ASSERT ( style5.getStyle() == finalcut::fc::InheritBackground );
-  style5.setStyle (finalcut::fc::Reset + finalcut::fc::Dim);
-  CPPUNIT_ASSERT ( style5.getStyle() == finalcut::fc::Dim );
+  finalcut::FStyle style5 (finalcut::Style::Transparent);
+  CPPUNIT_ASSERT ( style5.getStyle() == finalcut::Style::Transparent );
+  style5.setStyle (finalcut::Style::None);
+  CPPUNIT_ASSERT ( style5.getStyle() == finalcut::Style::None );
+  style5.setStyle (finalcut::Style::ColorOverlay);
+  CPPUNIT_ASSERT ( style5.getStyle() == finalcut::Style::ColorOverlay );
+  style5.setStyle (finalcut::Style::InheritBackground);
+  CPPUNIT_ASSERT ( style5.getStyle() == finalcut::Style::InheritBackground );
+  style5.setStyle (finalcut::Style::None + finalcut::Style::Dim);
+  CPPUNIT_ASSERT ( style5.getStyle() == finalcut::Style::Dim );
 }
 
 // Put the test suite in the registry

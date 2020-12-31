@@ -57,7 +57,6 @@ FTermDetection::secondaryDA   FTermDetection::secondary_da{};
 char                          FTermDetection::termtype[256]{};
 char                          FTermDetection::ttytypename[256]{};
 bool                          FTermDetection::decscusr_support{};
-
 bool                          FTermDetection::terminal_detection{};
 bool                          FTermDetection::color256{};
 const FString*                FTermDetection::answer_back{nullptr};
@@ -546,9 +545,9 @@ const char* FTermDetection::determineMaxColor (const char current_termtype[])
     && ! isTeraTerm()
     && ! isLinuxTerm()
     && ! isNetBSDTerm()
-    && ! getXTermColorName(0).isEmpty() )
+    && ! getXTermColorName(FColor(0)).isEmpty() )
   {
-    if ( ! getXTermColorName(255).isEmpty() )
+    if ( ! getXTermColorName(FColor(255)).isEmpty() )
     {
       color256 = true;
 
@@ -557,11 +556,11 @@ const char* FTermDetection::determineMaxColor (const char current_termtype[])
       else
         new_termtype = "xterm-256color";
     }
-    else if ( ! getXTermColorName(87).isEmpty() )
+    else if ( ! getXTermColorName(FColor(87)).isEmpty() )
     {
       new_termtype = "xterm-88color";
     }
-    else if ( ! getXTermColorName(15).isEmpty() )
+    else if ( ! getXTermColorName(FColor(15)).isEmpty() )
     {
       new_termtype = "xterm-16color";
     }
@@ -581,7 +580,8 @@ FString FTermDetection::getXTermColorName (FColor color)
   const int stdin_no = FTermios::getStdIn();
 
   // get color
-  std::fprintf (stdout, OSC "4;%hu;?" BEL, color);
+  auto index = uInt16(color);
+  std::fprintf (stdout, OSC "4;%hu;?" BEL, index);
   std::fflush (stdout);
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
@@ -608,7 +608,7 @@ FString FTermDetection::getXTermColorName (FColor color)
   }
   while ( pos < temp.size() );
 
-  if ( pos > 4 && std::sscanf(temp.data(), parse, &color, buf.data()) == 2 )
+  if ( pos > 4 && std::sscanf(temp.data(), parse, &index, buf.data()) == 2 )
   {
     std::size_t n = std::strlen(buf.data());
 

@@ -26,10 +26,10 @@
 #include "final/ftermdetection.h"
 #include "final/ftermdebugdata.h"
 
+#if DEBUG
+
 namespace finalcut
 {
-
-#if DEBUG
 
 //----------------------------------------------------------------------
 // class FTermDebugData
@@ -80,7 +80,6 @@ int FTermDebugData::getFramebufferBpp()
 }
 #endif  // defined(__linux__)
 
-#endif  // DEBUG
-
 }  // namespace finalcut
 
+#endif  // DEBUG

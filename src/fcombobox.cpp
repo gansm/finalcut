@@ -145,7 +145,7 @@ void FDropDownListBox::drawShadow()
   const auto& wc = getColorTheme();
   finalcut::drawShadow(this);
   setColor (wc->shadow_fg, wc->shadow_bg);
-  print() << FPoint{int(getWidth()) + 1, 1} << fc::FullBlock;  // █
+  print() << FPoint{int(getWidth()) + 1, 1} << UniChar::FullBlock;  // █
 }
 
 //----------------------------------------------------------------------
@@ -219,8 +219,8 @@ bool FComboBox::setFocus (bool enable)
 bool FComboBox::setShadow (bool enable)
 {
   if ( enable
-    && FTerm::getEncoding() != fc::VT100
-    && FTerm::getEncoding() != fc::ASCII )
+    && FTerm::getEncoding() != Encoding::VT100
+    && FTerm::getEncoding() != Encoding::ASCII )
   {
     setFlags().shadow = true;
     setShadowSize(FSize{1, 1});
@@ -353,50 +353,47 @@ void FComboBox::onKeyPress (FKeyEvent* ev)
   if ( ! isEnabled() )
     return;
 
-  switch ( ev->key() )
+  const auto key = ev->key();
+
+  if ( key == FKey::Tab )
   {
-    case fc::Fkey_tab:
-      focusNextChild();
-      break;
-
-    case fc::Fkey_btab:
-      focusPrevChild();
-      break;
-
-    case fc::Fkey_up:
-      onePosUp();
-      ev->accept();
-      break;
-
-    case fc::Fkey_down:
-      onePosDown();
-      ev->accept();
-      break;
-
-    case fc::Fmkey_up:
-    case fc::Fckey_up:
-    case fc::Fkey_escape:
-    case fc::Fkey_escape_mintty:
-      hideDropDown();
-      ev->accept();
-      break;
-
-    case fc::Fkey_f4:
-    case fc::Fmkey_down:
-    case fc::Fckey_down:
-      showDropDown();
-      ev->accept();
-      break;
-
-    default:
-      break;
+    focusNextChild();
+  }
+  else if ( key == FKey::Back_tab )
+  {
+    focusPrevChild();
+  }
+  else if ( key == FKey::Up )
+  {
+    onePosUp();
+    ev->accept();
+  }
+  else if ( key == FKey::Down )
+  {
+    onePosDown();
+    ev->accept();
+  }
+  else if ( key == FKey::Meta_up
+         || key == FKey::Ctrl_up
+         || key == FKey::Escape
+         || key == FKey::Escape_mintty )
+  {
+    hideDropDown();
+    ev->accept();
+  }
+  else if ( key == FKey::F4
+         || key == FKey::Meta_down
+         || key == FKey::Ctrl_down )
+  {
+    showDropDown();
+    ev->accept();
   }
 }
 
 //----------------------------------------------------------------------
 void FComboBox::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   if ( ! hasFocus() )
@@ -429,7 +426,7 @@ void FComboBox::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FComboBox::onMouseMove (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   if ( isMouseOverListWindow(ev->getTermPos()) )
@@ -442,19 +439,10 @@ void FComboBox::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FComboBox::onWheel (FWheelEvent* ev)
 {
-  switch ( ev->getWheel() )
-  {
-    case fc::WheelUp:
-      onePosUp();
-      break;
-
-    case fc::WheelDown:
-      onePosDown();
-      break;
-
-    default:
-      break;
-  }
+  if ( ev->getWheel() == MouseWheel::Up )
+    onePosUp();
+  else if ( ev->getWheel() == MouseWheel::Down )
+    onePosDown();
 }
 
 //----------------------------------------------------------------------
@@ -549,7 +537,7 @@ void FComboBox::draw()
   if ( FTerm::isNewFont() )
     print() << NF_button_arrow_down;
   else
-    print() << fc::BlackDownPointingTriangle;  // ▼
+    print() << UniChar::BlackDownPointingTriangle;  // ▼
 
   if ( getFlags().shadow )
     drawShadow(this);
@@ -594,20 +582,12 @@ void FComboBox::passEventToListWindow (const FMouseEvent& ev)
 
   const auto& t = ev.getTermPos();
   const auto& p = list_window.list.termToWidgetPos(t);
-  const int b = ev.getButton();
-
-  try
-  {
-    const auto& _ev = \
-        std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
-    setClickedWidget(&list_window.list);
-    list_window.list.setFocus();
-    list_window.list.onMouseMove(_ev.get());
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FMouseEvent");
-  }
+  const auto b = ev.getButton();
+  const auto& _ev = \
+      std::make_shared<FMouseEvent>(Event::MouseMove, p, t, b);
+  setClickedWidget(&list_window.list);
+  list_window.list.setFocus();
+  list_window.list.onMouseMove(_ev.get());
 }
 
 //----------------------------------------------------------------------
@@ -681,20 +661,12 @@ void FComboBox::cb_inputFieldHandOver()
 
   const auto& t = mouse->getPos();
   const auto& p = list_window.list.termToWidgetPos(t);
-  const int b = ( mouse->isLeftButtonPressed() ) ? fc::LeftButton : 0;
-
-  try
-  {
-    const auto& _ev = \
-        std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
-    setClickedWidget(&list_window.list);
-    list_window.list.setFocus();
-    list_window.list.onMouseMove(_ev.get());
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FMouseEvent");
-  }
+  const auto b = ( mouse->isLeftButtonPressed() ) ? MouseButton::Left : MouseButton::None;
+  const auto& _ev = \
+      std::make_shared<FMouseEvent>(Event::MouseMove, p, t, b);
+  setClickedWidget(&list_window.list);
+  list_window.list.setFocus();
+  list_window.list.onMouseMove(_ev.get());
 }
 
 // non-member functions

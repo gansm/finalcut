@@ -85,7 +85,7 @@ int main (int argc, char* argv[])
 
   // Create the status bar
   finalcut::FStatusBar sbar {&dgl};
-  finalcut::FStatusKey key_F1 (finalcut::fc::Fkey_f1, "Info", &sbar);
+  finalcut::FStatusKey key_F1 (finalcut::FKey::F1, "Info", &sbar);
 
   // Create the menu bar
   finalcut::FMenuBar Menubar {&dgl};
@@ -101,7 +101,7 @@ int main (int argc, char* argv[])
   finalcut::FMenuItem Line{&File};
   Line.setSeparator();
   finalcut::FMenuItem Quit{"&Ｑｕｉｔ", &File};
-  Quit.addAccelerator (finalcut::fc::Fckey_q);  // Ctrl + Q
+  Quit.addAccelerator (finalcut::FKey::Ctrl_q);  // Ctrl + Q
 
   // Callback lambda expressions
   auto cb_exit = \

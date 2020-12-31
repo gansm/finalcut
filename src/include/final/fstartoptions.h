@@ -93,7 +93,7 @@ class FStartOptions final
     uInt16 dark_theme           : 1;
     uInt16                      : 15;  // padding bits
 
-    fc::encoding                encoding{fc::UNKNOWN};
+    Encoding                    encoding{Encoding::Unknown};
     std::ofstream               logfile_stream{};
 };
 

@@ -115,6 +115,7 @@ class FKeyboard final
     // Mutators
     template <typename T>
     void                  setTermcapMap (const T&);
+    void                  setTermcapMap();
     static void           setKeypressTimeout (const uInt64);
     static void           setReadBlockingTime (const uInt64);
     static void           setNonBlockingInputSupport (bool);
@@ -145,7 +146,7 @@ class FKeyboard final
 
   private:
     // Using-declaration
-    using FKeyMapPtr = std::shared_ptr<decltype(fc::fkey)>;
+    using FKeyMapPtr = std::shared_ptr<decltype(fc::fkey_cap_table)>;
 
     // Constants
     static constexpr FKey NOT_SET = static_cast<FKey>(-1);
@@ -154,7 +155,7 @@ class FKeyboard final
     // Accessors
     FKey                  getMouseProtocolKey() const;
     FKey                  getTermcapKey();
-    FKey                  getMetaKey();
+    FKey                  getKnownKey();
     FKey                  getSingleKey();
 
     // Inquiry
@@ -186,8 +187,8 @@ class FKeyboard final
     static bool           non_blocking_input_support;
     FKeyMapPtr            key_map{};
     std::queue<FKey>      fkey_queue{};
-    FKey                  fkey{0};
-    FKey                  key{0};
+    FKey                  fkey{FKey::None};
+    FKey                  key{FKey::None};
     char                  read_character{};
     char                  fifo_buf[FIFO_BUF_SIZE]{'\0'};
     int                   fifo_offset{0};
@@ -229,6 +230,13 @@ inline uInt64 FKeyboard::getReadBlockingTime()
 template <typename T>
 inline void FKeyboard::setTermcapMap (const T& keymap)
 { key_map = std::make_shared<T>(keymap); }
+
+//----------------------------------------------------------------------
+inline void FKeyboard::setTermcapMap ()
+{
+  using type = decltype(fc::fkey_cap_table);
+  key_map = std::make_shared<type>(fc::fkey_cap_table);
+}
 
 //----------------------------------------------------------------------
 inline void FKeyboard::setKeypressTimeout (const uInt64 timeout)

@@ -92,71 +92,66 @@ void FMenuBar::adjustSize()
 //----------------------------------------------------------------------
 void FMenuBar::onKeyPress (FKeyEvent* ev)
 {
-  switch ( ev->key() )
+  const auto key = ev->key();
+
+  if ( key == FKey::Return
+    || key == FKey::Enter
+    || key == FKey::Up
+    || key == FKey::Down )
   {
-    case fc::Fkey_return:
-    case fc::Fkey_enter:
-    case fc::Fkey_up:
-    case fc::Fkey_down:
-      if ( hasSelectedItem() )
+    if ( hasSelectedItem() )
+    {
+      auto sel_item = getSelectedItem();
+
+      if ( sel_item->hasMenu() )
       {
-        auto sel_item = getSelectedItem();
+        auto menu = sel_item->getMenu();
+        sel_item->openMenu();
+        menu->selectFirstItem();
+        auto first_item = menu->getSelectedItem();
 
-        if ( sel_item->hasMenu() )
-        {
-          auto menu = sel_item->getMenu();
-          sel_item->openMenu();
-          menu->selectFirstItem();
-          auto first_item = menu->getSelectedItem();
+        if ( first_item )
+          first_item->setFocus();
 
-          if ( first_item )
-            first_item->setFocus();
+        menu->redraw();
 
-          menu->redraw();
+        if ( getStatusBar() )
+          getStatusBar()->drawMessage();
 
-          if ( getStatusBar() )
-            getStatusBar()->drawMessage();
-
-          redraw();
-          drop_down = true;
-        }
-        else if ( ev->key() == fc::Fkey_return
-               || ev->key() == fc::Fkey_enter )
-        {
-          unselectItem();
-          redraw();
-          sel_item->processClicked();
-        }
+        redraw();
+        drop_down = true;
       }
+      else if ( key == FKey::Return || key == FKey::Enter )
+      {
+        unselectItem();
+        redraw();
+        sel_item->processClicked();
+      }
+    }
 
-      ev->accept();
-      break;
-
-    case fc::Fkey_left:
-      selectPrevItem();
-      ev->accept();
-      break;
-
-    case fc::Fkey_right:
-      selectNextItem();
-      ev->accept();
-      break;
-
-    case fc::Fkey_escape:
-    case fc::Fkey_escape_mintty:
-      leaveMenuBar();
-      ev->accept();
-      break;
-
-    default:
-      break;
+    ev->accept();
+  }
+  else if ( key == FKey::Left )
+  {
+    selectPrevItem();
+    ev->accept();
+  }
+  else if ( key == FKey::Right )
+  {
+    selectNextItem();
+    ev->accept();
+  }
+  else if ( key == FKey::Escape || key == FKey::Escape_mintty )
+  {
+    leaveMenuBar();
+    ev->accept();
   }
 }
 
 //----------------------------------------------------------------------
 void FMenuBar::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
   {
     mouse_down = false;
 
@@ -186,7 +181,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::onMouseUp (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   if ( mouse_down )
@@ -201,7 +196,7 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::onMouseMove (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   if ( ! isWindowActive() )
@@ -254,9 +249,9 @@ void FMenuBar::init()
   if ( getRootWidget() )
     getRootWidget()->setTopPadding(1, true);
 
-  addAccelerator (fc::Fkey_f10);
-  addAccelerator (fc::Fckey_space);
-  addAccelerator (fc::Fkey_menu);
+  addAccelerator (FKey::F10);
+  addAccelerator (FKey::Ctrl_space);
+  addAccelerator (FKey::Menu);
   resetColors();
   unsetFocusable();
 }
@@ -423,7 +418,7 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
       if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
         hotkey -= 0xfee0;
 
-      if ( fc::Fmkey_meta + FKey(std::tolower(int(hotkey))) == key )
+      if ( FKey::Meta_offset + FKey(std::tolower(int(hotkey))) == key )
       {
         auto sel_item = getSelectedItem();
 
@@ -607,8 +602,8 @@ inline void FMenuBar::drawMenuText (menuText& data)
 
     if ( ! std::iswprint(std::wint_t(data.text[z]))
       && ! FTerm::isNewFont()
-      && ( data.text[z] < fc::NF_rev_left_arrow2
-        || data.text[z] > fc::NF_check_mark ) )
+      && ( data.text[z] < UniChar::NF_rev_left_arrow2
+        || data.text[z] > UniChar::NF_check_mark ) )
     {
       data.text[z] = L' ';
     }
@@ -940,20 +935,12 @@ void FMenuBar::passEventToMenu (const FMouseEvent& ev) const
   {
     const auto& t = ev.getTermPos();
     const auto& p = menu->termToWidgetPos(t);
-    const int b = ev.getButton();
-
-    try
-    {
-      const auto& _ev = \
-          std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
-      menu->mouse_down = true;
-      setClickedWidget(menu);
-      menu->onMouseMove(_ev.get());
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("FMouseEvent");
-    }
+    const MouseButton b = ev.getButton();
+    const auto& _ev = \
+        std::make_shared<FMouseEvent>(Event::MouseMove, p, t, b);
+    menu->mouse_down = true;
+    setClickedWidget(menu);
+    menu->onMouseMove(_ev.get());
   }
 }
 

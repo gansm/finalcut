@@ -117,7 +117,7 @@ void FWindow::setActiveWindow (FWindow* window)
       if ( ! window->isWindowActive() )
       {
         window->activateWindow();
-        FEvent ev(fc::WindowActive_Event);
+        FEvent ev(Event::WindowActive);
         FApplication::sendEvent(window, &ev);
       }
     }
@@ -128,7 +128,7 @@ void FWindow::setActiveWindow (FWindow* window)
       if ( w->isWindowActive() )
       {
         w->deactivateWindow();
-        FEvent ev(fc::WindowInactive_Event);
+        FEvent ev(Event::WindowInactive);
         FApplication::sendEvent(win, &ev);
       }
     }
@@ -243,22 +243,22 @@ void FWindow::drawBorder()
   {
     const FRect r{FPoint{1, 1}, getSize()};
     print() << r.getUpperLeftPos()
-            << fc::NF_border_corner_upper_left                      // ⎡
-            << FString{r.getWidth() - 2, fc::NF_border_line_upper}  // ¯
-            << fc::NF_rev_border_corner_upper_right;                // ⎤
+            << UniChar::NF_border_corner_upper_left                      // ⎡
+            << FString{r.getWidth() - 2, UniChar::NF_border_line_upper}  // ¯
+            << UniChar::NF_rev_border_corner_upper_right;                // ⎤
 
     for (auto y = r.getY1() + 1; y < r.getY2(); y++)
     {
       print() << FPoint{r.getX1(), y}
-              << fc::NF_border_line_left        // border left ⎸
+              << UniChar::NF_border_line_left        // border left ⎸
               << FPoint{r.getX2(), y}
-              << fc::NF_rev_border_line_right;  // border right⎹
+              << UniChar::NF_rev_border_line_right;  // border right⎹
     }
 
     print() << r.getLowerLeftPos()
-            << fc::NF_border_corner_lower_left                       // ⎣
-            << FString{r.getWidth() - 2, fc::NF_border_line_bottom}  // _
-            << fc::NF_rev_border_corner_lower_right;                 // ⎦
+            << UniChar::NF_border_corner_lower_left                       // ⎣
+            << FString{r.getWidth() - 2, UniChar::NF_border_line_bottom}  // _
+            << UniChar::NF_rev_border_corner_lower_right;                 // ⎦
   }
   else
   {
@@ -597,7 +597,7 @@ bool FWindow::raiseWindow (FWidget* obj)
     {
       getWindowList()->erase (iter);
       getWindowList()->push_back (obj);
-      FEvent ev(fc::WindowRaised_Event);
+      FEvent ev(Event::WindowRaised);
       FApplication::sendEvent(obj, &ev);
       processAlwaysOnTop();
       return true;
@@ -637,7 +637,7 @@ bool FWindow::lowerWindow (FWidget* obj)
     {
       getWindowList()->erase (iter);
       getWindowList()->insert (getWindowList()->begin(), obj);
-      FEvent ev(fc::WindowLowered_Event);
+      FEvent ev(Event::WindowLowered);
       FApplication::sendEvent(obj, &ev);
       return true;
     }
@@ -792,27 +792,24 @@ void FWindow::adjustSize()
 //----------------------------------------------------------------------
 bool FWindow::event (FEvent* ev)
 {
-  switch ( uInt(ev->getType()) )
+  if ( ev->getType() == Event::WindowActive )
   {
-    case fc::WindowActive_Event:
-      onWindowActive (ev);
-      break;
-
-    case fc::WindowInactive_Event:
-      onWindowInactive (ev);
-      break;
-
-    case fc::WindowRaised_Event:
-      onWindowRaised (ev);
-      break;
-
-    case fc::WindowLowered_Event:
-      onWindowLowered (ev);
-      break;
-
-    default:
-      return FWidget::event(ev);
+    onWindowActive (ev);
   }
+  else if ( ev->getType() == Event::WindowInactive )
+  {
+    onWindowInactive (ev);
+  }
+  else if ( ev->getType() == Event::WindowRaised )
+  {
+    onWindowRaised (ev);
+  }
+  else if ( ev->getType() == Event::WindowLowered )
+  {
+    onWindowLowered (ev);
+  }
+  else
+    return FWidget::event(ev);
 
   return true;
 }

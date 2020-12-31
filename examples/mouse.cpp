@@ -24,6 +24,7 @@
 
 namespace fc = finalcut::fc;
 using finalcut::FColorPair;
+using finalcut::FColor;
 using finalcut::FRect;
 using finalcut::FPoint;
 using finalcut::FSize;
@@ -64,8 +65,8 @@ class ColorChooser final : public finalcut::FWidget
     void onMouseDown (finalcut::FMouseEvent*) override;
 
     // Data members
-    FColor fg_color{fc::White};
-    FColor bg_color{fc::Black};
+    FColor fg_color{FColor::White};
+    FColor bg_color{FColor::Black};
     finalcut::FLabel headline{this};
 };
 
@@ -81,7 +82,7 @@ ColorChooser::ColorChooser (finalcut::FWidget* parent)
   // Text label
   headline.setGeometry (FPoint{1, 1}, FSize{8, 1});
   headline.setEmphasis();
-  headline.setAlignment (fc::alignCenter);
+  headline.setAlignment (finalcut::Align::Center);
   headline << "Color";
 }
 
@@ -113,20 +114,20 @@ void ColorChooser::draw()
   setColor();
   drawBorder();
 
-  for (FColor c{0}; c < 16; c++)
+  for (FColor c{FColor::Black}; c < 16; c++)
   {
-    print() << FPoint{2 + (c / 8) * 3, 3 + c % 8};
+    print() << FPoint{2 + (int(c) / 8) * 3, 3 + int(c) % 8};
 
     if ( c < 6 )
-      setColor (fc::LightGray, c);
+      setColor (FColor::LightGray, c);
     else if ( c > 8 )
-      setColor (fc::DarkGray, c);
+      setColor (FColor::DarkGray, c);
     else
-      setColor (fc::White, c);
+      setColor (FColor::White, c);
 
     if ( c == bg_color )
     {
-      print() << L' ' << wchar_t(fc::Times) << L' ';
+      print() << L' ' << wchar_t(finalcut::UniChar::Times) << L' ';
     }
     else
       print ("   ");
@@ -145,7 +146,7 @@ void ColorChooser::onMouseDown (finalcut::FMouseEvent* ev)
   const int mouse_x = ev->getX();
   const int mouse_y = ev->getY();
 
-  if ( ev->getButton() == fc::MiddleButton )
+  if ( ev->getButton() == finalcut::MouseButton::Middle )
     return;
 
   for (auto c{0}; c < 16; c++)
@@ -156,9 +157,9 @@ void ColorChooser::onMouseDown (finalcut::FMouseEvent* ev)
 
     if ( mouse_x >= xmin && mouse_x <= xmax && mouse_y == y )
     {
-      if ( ev->getButton() == fc::LeftButton )
+      if ( ev->getButton() == finalcut::MouseButton::Left )
         bg_color = FColor(c);
-      else if ( ev->getButton() == fc::RightButton )
+      else if ( ev->getButton() == finalcut::MouseButton::Right )
         fg_color = FColor(c);
 
       redraw();
@@ -207,8 +208,8 @@ class Brushes final : public finalcut::FWidget
 
     // Data members
     wchar_t brush{L' '};
-    FColor  fg_color{fc::White};
-    FColor  bg_color{fc::Black};
+    FColor  fg_color{FColor::White};
+    FColor  bg_color{FColor::Black};
     finalcut::FLabel headline{this};
 };
 
@@ -223,7 +224,7 @@ Brushes::Brushes (finalcut::FWidget* parent)
   // Text label
   headline.setGeometry(FPoint{1, 1}, FSize{8, 1});
   headline.setEmphasis();
-  headline.setAlignment (fc::alignCenter);
+  headline.setAlignment (finalcut::Align::Center);
   headline << "Brush";
 }
 
@@ -245,16 +246,16 @@ void Brushes::draw()
   drawBorder();
   print() << FPoint{2, 3}
           << FColorPair{fg_color, bg_color} << "   "
-          << finalcut::FString{3, fc::MediumShade};
+          << finalcut::FString{3, finalcut::UniChar::MediumShade};
 
   if ( brush != L' ' )
     pos = 3;
 
   setColor();
   print() << FPoint{3 + pos, 2}
-          << fc::BlackDownPointingTriangle
+          << finalcut::UniChar::BlackDownPointingTriangle
           << FPoint{3 + pos, 4}
-          << fc::BlackUpPointingTriangle;
+          << finalcut::UniChar::BlackUpPointingTriangle;
 }
 
 //----------------------------------------------------------------------
@@ -269,7 +270,7 @@ void Brushes::onMouseDown (finalcut::FMouseEvent* ev)
   const int mouse_x = ev->getX();
   const int mouse_y = ev->getY();
 
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != finalcut::MouseButton::Left )
     return;
 
   if ( mouse_x >= 2 && mouse_x <= 4 && mouse_y == 3 )
@@ -279,7 +280,7 @@ void Brushes::onMouseDown (finalcut::FMouseEvent* ev)
   }
   else if ( mouse_x >= 5 && mouse_x <= 7 && mouse_y == 3 )
   {
-    brush = fc::MediumShade;
+    brush = wchar_t(finalcut::UniChar::MediumShade);
     redraw();
   }
 }
@@ -398,7 +399,7 @@ void MouseDraw::onKeyPress (finalcut::FKeyEvent* ev)
   if ( ! ev )
     return;
 
-  if ( ev->key() == 'q' )
+  if ( ev->key() == finalcut::FKey('q') )
   {
     close();
     ev->accept();
@@ -425,24 +426,24 @@ void MouseDraw::draw()
     for (auto y{2}; y < y_max; y++)
     {
       print() << FPoint{10, y}
-              << fc::NF_rev_border_line_right;
+              << finalcut::UniChar::NF_rev_border_line_right;
     }
 
     print() << FPoint{10, y_max}
-            << fc::NF_rev_border_corner_lower_right;
+            << finalcut::UniChar::NF_rev_border_corner_lower_right;
   }
   else
   {
     print() << FPoint{10, 2}
-            << fc::BoxDrawingsDownAndHorizontal;
+            << finalcut::UniChar::BoxDrawingsDownAndHorizontal;
 
     for (auto y{3}; y < y_max; y++)
     {
-      print() << FPoint{10, y} << fc::BoxDrawingsVertical;
+      print() << FPoint{10, y} << finalcut::UniChar::BoxDrawingsVertical;
     }
 
     print() << FPoint{10, y_max}
-            << fc::BoxDrawingsUpAndHorizontal;
+            << finalcut::UniChar::BoxDrawingsUpAndHorizontal;
   }
 
   drawCanvas();
@@ -539,13 +540,13 @@ void MouseDraw::onMouseDown (finalcut::FMouseEvent* ev)
 {
   finalcut::FDialog::onMouseDown(ev);
 
-  if ( ev->getButton() != fc::LeftButton
-    && ev->getButton() != fc::RightButton )
+  if ( ev->getButton() != finalcut::MouseButton::Left
+    && ev->getButton() != finalcut::MouseButton::Right )
     return;
 
   drawBrush ( ev->getX()
             , ev->getY()
-            , ev->getButton() == fc::RightButton );
+            , ev->getButton() == finalcut::MouseButton::Right );
 }
 
 //----------------------------------------------------------------------
@@ -553,13 +554,13 @@ void MouseDraw::onMouseMove (finalcut::FMouseEvent* ev)
 {
   FDialog::onMouseMove(ev);
 
-  if ( ev->getButton() != fc::LeftButton
-    && ev->getButton() != fc::RightButton )
+  if ( ev->getButton() != finalcut::MouseButton::Left
+    && ev->getButton() != finalcut::MouseButton::Right )
     return;
 
   drawBrush ( ev->getX()
             , ev->getY()
-            , ev->getButton() == fc::RightButton);
+            , ev->getButton() == finalcut::MouseButton::Right );
 }
 
 //----------------------------------------------------------------------

@@ -45,13 +45,13 @@ namespace finalcut
 // Enumeration
 enum class FullWidthSupport
 {
-  unknown = -1,
-  no = 0,
-  yes = 1
+  Unknown = -1,
+  No = 0,
+  Yes = 1
 };
 
 // global state
-static FullWidthSupport has_fullwidth_support = FullWidthSupport::unknown;
+static FullWidthSupport has_fullwidth_support = FullWidthSupport::Unknown;
 
 // Function prototypes
 bool hasAmbiguousWidth (wchar_t);
@@ -169,29 +169,29 @@ const wchar_t ambiguous_width_list[] =
 #endif
 };
 
-const wchar_t reverse_newfont_list[] =
-{
-  fc::NF_rev_left_arrow2,
-  fc::NF_rev_right_arrow2,
-  fc::NF_rev_border_corner_upper_right,
-  fc::NF_rev_border_line_right,
-  fc::NF_rev_border_line_vertical_left,
-  fc::NF_rev_border_corner_lower_right,
-  fc::NF_rev_up_arrow2,
-  fc::NF_rev_down_arrow2,
-  fc::NF_rev_up_arrow1,
-  fc::NF_rev_down_arrow1,
-  fc::NF_rev_left_arrow1,
-  fc::NF_rev_right_arrow1,
-  fc::NF_rev_menu_button1,
-  fc::NF_rev_menu_button2,
-  fc::NF_rev_up_pointing_triangle1,
-  fc::NF_rev_down_pointing_triangle1,
-  fc::NF_rev_up_pointing_triangle2,
-  fc::NF_rev_down_pointing_triangle2,
-  fc::NF_rev_menu_button3,
-  fc::NF_rev_border_line_right_and_left
-};
+constexpr std::array<UniChar, 20> reverse_newfont_list =
+{{
+  UniChar::NF_rev_left_arrow2,
+  UniChar::NF_rev_right_arrow2,
+  UniChar::NF_rev_border_corner_upper_right,
+  UniChar::NF_rev_border_line_right,
+  UniChar::NF_rev_border_line_vertical_left,
+  UniChar::NF_rev_border_corner_lower_right,
+  UniChar::NF_rev_up_arrow2,
+  UniChar::NF_rev_down_arrow2,
+  UniChar::NF_rev_up_arrow1,
+  UniChar::NF_rev_down_arrow1,
+  UniChar::NF_rev_left_arrow1,
+  UniChar::NF_rev_right_arrow1,
+  UniChar::NF_rev_menu_button1,
+  UniChar::NF_rev_menu_button2,
+  UniChar::NF_rev_up_pointing_triangle1,
+  UniChar::NF_rev_down_pointing_triangle1,
+  UniChar::NF_rev_up_pointing_triangle2,
+  UniChar::NF_rev_down_pointing_triangle2,
+  UniChar::NF_rev_menu_button3,
+  UniChar::NF_rev_border_line_right_and_left
+}};
 
 
 // FTerm non-member functions
@@ -227,8 +227,11 @@ inline bool hasAmbiguousWidth (wchar_t wchar)
   const auto& begin = std::begin(ambiguous_width_list);
   const auto& end = std::end(ambiguous_width_list);
 
-  if ( std::find(begin, end, wchar) != end )  // found
+  if ( std::any_of(begin, end, [&wchar] (const wchar_t c)
+                               { return c == wchar; }) )
+  {
     return true;
+  }
 
   return false;
 }
@@ -239,8 +242,11 @@ bool isReverseNewFontchar (wchar_t wchar)
   const auto& begin = std::begin(reverse_newfont_list);
   const auto& end = std::end(reverse_newfont_list);
 
-  if ( std::find(begin, end, wchar) != end )  // found
+  if ( std::any_of(begin, end, [&wchar] (const UniChar& c)
+                               { return wchar_t(c) == wchar; }) )
+  {
     return true;
+  }
 
   return false;
 }
@@ -250,7 +256,7 @@ bool hasFullWidthSupports()
 {
   // Checks if the terminal has full-width character support
 
-  if ( has_fullwidth_support == FullWidthSupport::unknown )
+  if ( has_fullwidth_support == FullWidthSupport::Unknown )
   {
     if ( ! FTerm::isInitialized() )
       return true;  // Assume that it is a modern terminal with full-width support
@@ -262,12 +268,12 @@ bool hasFullWidthSupports()
       || FTerm::isOpenBSDTerm()
       || FTerm::isSunTerminal()
       || FTerm::isAnsiTerminal() )
-      has_fullwidth_support = FullWidthSupport::no;
+      has_fullwidth_support = FullWidthSupport::No;
     else
-      has_fullwidth_support = FullWidthSupport::yes;
+      has_fullwidth_support = FullWidthSupport::Yes;
   }
 
-  return ( has_fullwidth_support == FullWidthSupport::yes) ? true : false;
+  return ( has_fullwidth_support == FullWidthSupport::Yes) ? true : false;
 }
 
 //----------------------------------------------------------------------
@@ -394,7 +400,7 @@ FString getColumnSubString ( const FString& str
       }
       else
       {
-        ch = fc::SingleLeftAngleQuotationMark;  // ‹
+        ch = wchar_t(UniChar::SingleLeftAngleQuotationMark);  // ‹
         num = col_num = 1;
         col_pos = col_first;
       }
@@ -408,7 +414,7 @@ FString getColumnSubString ( const FString& str
       }
       else if ( col_num < col_len )
       {
-        ch = fc::SingleRightAngleQuotationMark;  // ›
+        ch = wchar_t(UniChar::SingleRightAngleQuotationMark);  // ›
         num++;
         break;
       }
@@ -495,7 +501,7 @@ std::size_t getColumnWidth (const wchar_t wchar)
   else
 #endif
 
-  if ( (wchar >= fc::NF_rev_left_arrow2 && wchar <= fc::NF_check_mark)
+  if ( (wchar >= UniChar::NF_rev_left_arrow2 && wchar <= UniChar::NF_check_mark)
     || ! hasFullWidthSupports() )
     column_width = 1;
   else
@@ -509,7 +515,7 @@ std::size_t getColumnWidth (FChar& term_char)
 {
   const std::size_t char_width = getColumnWidth(term_char.ch[0]);
 
-  if ( char_width == 2 && FTerm::getEncoding() != fc::UTF8 )
+  if ( char_width == 2 && FTerm::getEncoding() != Encoding::UTF8 )
   {
     term_char.ch[0] = '.';
     term_char.attr.bit.char_width = 1;

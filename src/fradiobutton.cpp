@@ -100,7 +100,7 @@ inline void FRadioButton::drawChecked()
   else
   {
     print ('(');
-    print (fc::Bullet);  // Bullet ●
+    print (UniChar::Bullet);  // Bullet ●
     print (')');
   }
 }

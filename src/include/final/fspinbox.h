@@ -125,19 +125,19 @@ class FSpinBox : public FWidget
 
   private:
     // Enumeration
-    enum spiningState
+    enum class SpiningState
     {
-      noSpin   = 0,
-      spinUp   = 1,
-      spinDown = 2
+      None = 0,
+      Up   = 1,
+      Down = 2
     };
 
     // Methods
     void                init();
     void                draw() override;
     void                updateInputField();
-    void                increaseValue();
-    void                decreaseValue();
+    void                increaseValue (sInt64 = 1);
+    void                decreaseValue (sInt64 = 1);
     void                processActivate() const;
     void                processChanged() const;
     void                forceFocus();
@@ -153,7 +153,7 @@ class FSpinBox : public FWidget
     sInt64              max{std::numeric_limits<sInt64>::max()};
     FString             pfix{};
     FString             sfix{};
-    spiningState        spining_state{FSpinBox::noSpin};
+    SpiningState        spining_state{SpiningState::None};
     bool                threshold_reached{false};
     int                 threshold_time{500};
     int                 repeat_time{80};

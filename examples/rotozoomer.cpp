@@ -35,6 +35,7 @@ using std::chrono::system_clock;
 using std::chrono::time_point;
 using finalcut::FPoint;
 using finalcut::FSize;
+using finalcut::FColor;
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // This rotozoomer demo is based on the code of Robert Dörfler
@@ -164,11 +165,11 @@ void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
       auto ch = data[((Cy >> 14) & 0xf) + ((Cx >> 10) & 0xf0)];
 
       if ( ch == '+' )
-        print() << finalcut::FColorPair{fc::Black, fc::Red};
+        print() << finalcut::FColorPair{FColor::Black, FColor::Red};
       else if ( ch == 'x' )
-        print() << finalcut::FColorPair{fc::Black, fc::Cyan};
+        print() << finalcut::FColorPair{FColor::Black, FColor::Cyan};
       else
-        print() << finalcut::FColorPair{fc::Black, fc::White};
+        print() << finalcut::FColorPair{FColor::Black, FColor::White};
 
       print() << ch;
       Cx += dxdx;
@@ -249,7 +250,7 @@ void RotoZoomer::onKeyPress (finalcut::FKeyEvent* ev)
   if ( ! ev )
     return;
 
-  if ( ev->key() == 'q' )
+  if ( ev->key() == finalcut::FKey('q') )
   {
     close();
     ev->accept();

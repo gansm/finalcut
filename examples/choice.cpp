@@ -128,7 +128,7 @@ int main (int argc, char* argv[])
     preset(os);
 
     // Scroll to the focused child element
-    finalcut::FFocusEvent cfi (finalcut::fc::ChildFocusIn_Event);
+    finalcut::FFocusEvent cfi (finalcut::Event::ChildFocusIn);
     app.queueEvent(&checkButtonGroup, &cfi);
 
     // Create a OK button

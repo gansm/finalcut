@@ -1,13 +1,16 @@
-2019-11-18  Markus Gans  <guru.mail@muenster.de>
+2020-12-31  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring to scaled enumerations
+
+2020-11-18  Markus Gans  <guru.mail@muenster.de>
 	* The terminal update rate is now limited to 60 Hz
 
-2019-11-14  Markus Gans  <guru.mail@muenster.de>
+2020-11-14  Markus Gans  <guru.mail@muenster.de>
 	* Version 0.7.1
 	* Bugfix: The cursor position was not changed anymore 
 	  if there was no change to the content
 	* Forcing a direct update for faster terminal output
 
-2019-11-07  Markus Gans  <guru.mail@muenster.de>
+2020-11-07  Markus Gans  <guru.mail@muenster.de>
 	* Version 0.7.0
 
 2020-11-04  Markus Gans  <guru.mail@muenster.de>

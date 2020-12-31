@@ -117,7 +117,7 @@ class FStatusKey : public FWidget
     // Data members
     FString     text{};
     FStatusBar* bar{nullptr};
-    FKey        key{0};
+    FKey        key{};
     bool        active{false};
     bool        mouse_focus{false};
 

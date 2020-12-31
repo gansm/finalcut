@@ -219,13 +219,13 @@ Treeview::Treeview (finalcut::FWidget* parent)
   listview.addColumn ("Density/km²");
 
   // Set right alignment for the second and third column
-  listview.setColumnAlignment (2, fc::alignRight);
-  listview.setColumnAlignment (3, fc::alignRight);
+  listview.setColumnAlignment (2, finalcut::Align::Right);
+  listview.setColumnAlignment (3, finalcut::Align::Right);
 
   // Set the type of sorting
-  listview.setColumnSortType (1, fc::by_name);
-  listview.setColumnSortType (2, fc::user_defined);
-  listview.setColumnSortType (3, fc::user_defined);
+  listview.setColumnSortType (1, finalcut::SortType::Name);
+  listview.setColumnSortType (2, finalcut::SortType::UserDefined);
+  listview.setColumnSortType (3, finalcut::SortType::UserDefined);
   listview.setUserAscendingCompare(sortAscending);
   listview.setUserDescendingCompare(sortDescending);
 

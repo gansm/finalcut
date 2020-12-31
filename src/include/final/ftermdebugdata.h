@@ -35,13 +35,14 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#if DEBUG
+
 namespace finalcut
 {
 
 // class forward declaration
 class FTerm;
 
-#if DEBUG
 //----------------------------------------------------------------------
 // class FTermDebugData
 //----------------------------------------------------------------------
@@ -71,8 +72,9 @@ class FTermDebugData final
     int            getFramebufferBpp();
 #endif
 };
-#endif  // DEBUG
 
 }  // namespace finalcut
+
+#endif  // DEBUG
 
 #endif  // FTERMDEBUGDATA_H

@@ -206,16 +206,10 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
 
   const FKey key = ev->key();
 
-  switch ( key )
+  if ( key == FKey::Erase || key == FKey::Backspace )
   {
-    case fc::Fkey_erase:
-    case fc::Fkey_backspace:
-      changeDir("..");
-      ev->accept();
-      break;
-
-    default:
-      break;
+    changeDir("..");
+    ev->accept();
   }
 }
 
@@ -590,7 +584,7 @@ void FFileDialog::dirEntriesToList()
   for (auto&& entry : dir_entries)
   {
     if ( entry.directory )
-      filebrowser.insert(FString{entry.name}, fc::SquareBrackets);
+      filebrowser.insert(FString{entry.name}, BracketType::Brackets);
     else
       filebrowser.insert(FString{entry.name});
   }

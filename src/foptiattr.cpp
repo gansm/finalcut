@@ -524,17 +524,19 @@ FColor FOptiAttr::vga2ansi (FColor color)
   // 1 1 1 0 | 1 0 1 1
   // 1 1 1 1 | 1 1 1 1
 
-  if ( color == fc::Default )
-    color = 0;
+  if ( color == FColor::Default )
+    color = FColor::Black;
   else if ( color < 16 )
   {
     constexpr std::array<FColor, 16> lookup_table =
     {{
-      0,  4,  2,  6,  1,  5,  3,  7,
-      8, 12, 10, 14,  9, 13, 11, 15
+      FColor(0), FColor(4),  FColor(2),  FColor(6),
+      FColor(1), FColor(5),  FColor(3),  FColor(7),
+      FColor(8), FColor(12), FColor(10), FColor(14),
+      FColor(9), FColor(13), FColor(11), FColor(15)
     }};
 
-    color = lookup_table[color];
+    color = lookup_table[uInt16(color)];
   }
 
   return color;
@@ -986,8 +988,8 @@ inline bool FOptiAttr::unsetTermPCcharset (FChar& term)
 //----------------------------------------------------------------------
 bool FOptiAttr::setTermDefaultColor (FChar& term)
 {
-  term.fg_color = fc::Default;
-  term.bg_color = fc::Default;
+  term.fg_color = FColor::Default;
+  term.bg_color = FColor::Default;
 
   if ( append_sequence(F_orig_pair.cap) )
     return true;
@@ -1092,8 +1094,8 @@ void FOptiAttr::setAttributesOff (FChar& term)
 //----------------------------------------------------------------------
 bool FOptiAttr::hasColor (const FChar& attr)
 {
-  if ( attr.fg_color == fc::Default
-    && attr.bg_color == fc::Default )
+  if ( attr.fg_color == FColor::Default
+    && attr.bg_color == FColor::Default )
     return false;
   else
     return true;
@@ -1139,8 +1141,8 @@ inline bool FOptiAttr::hasColorChanged ( const FChar& term
 //----------------------------------------------------------------------
 inline void FOptiAttr::resetColor (FChar& attr) const
 {
-  attr.fg_color = fc::Default;
-  attr.bg_color = fc::Default;
+  attr.fg_color = FColor::Default;
+  attr.bg_color = FColor::Default;
 }
 
 //----------------------------------------------------------------------
@@ -1288,24 +1290,24 @@ void FOptiAttr::change_color (FChar& term, FChar& next)
 {
   if ( monochron )
   {
-    next.fg_color = fc::Default;
-    next.bg_color = fc::Default;
+    next.fg_color = FColor::Default;
+    next.bg_color = FColor::Default;
     return;
   }
 
-  if ( next.fg_color != fc::Default )
-    next.fg_color %= max_color;
+  if ( next.fg_color != FColor::Default )
+    next.fg_color %= uInt16(max_color);
 
-  if ( next.bg_color != fc::Default )
-    next.bg_color %= max_color;
+  if ( next.bg_color != FColor::Default )
+    next.bg_color %= uInt16(max_color);
 
   FColor fg = next.fg_color;
   FColor bg = next.bg_color;
 
-  if ( fg == fc::Default || bg == fc::Default )
+  if ( fg == FColor::Default || bg == FColor::Default )
     change_to_default_color (term, next, fg, bg);
 
-  if ( fake_reverse && fg == fc::Default && bg == fc::Default )
+  if ( fake_reverse && fg == FColor::Default && bg == FColor::Default )
     return;
 
   if ( fake_reverse
@@ -1313,7 +1315,7 @@ void FOptiAttr::change_color (FChar& term, FChar& next)
   {
     std::swap (fg, bg);
 
-    if ( fg == fc::Default || bg == fc::Default )
+    if ( fg == FColor::Default || bg == FColor::Default )
       setTermDefaultColor(term);
   }
 
@@ -1329,18 +1331,18 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
 {
   if ( ansi_default_color )
   {
-    if ( fg == fc::Default && term.fg_color != fc::Default
-      && bg == fc::Default && term.bg_color != fc::Default )
+    if ( fg == FColor::Default && term.fg_color != FColor::Default
+      && bg == FColor::Default && term.bg_color != FColor::Default )
     {
       setTermDefaultColor(term);
     }
-    else if ( fg == fc::Default && term.fg_color != fc::Default )
+    else if ( fg == FColor::Default && term.fg_color != FColor::Default )
     {
       std::string sgr_39{CSI "39m"};
       append_sequence (sgr_39.c_str());
-      term.fg_color = fc::Default;
+      term.fg_color = FColor::Default;
     }
-    else if ( bg == fc::Default && term.bg_color != fc::Default )
+    else if ( bg == FColor::Default && term.bg_color != FColor::Default )
     {
       const char* sgr_49;
       const auto& op = F_orig_pair.cap;
@@ -1351,14 +1353,14 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
         sgr_49 = CSI "49m";
 
       append_sequence (sgr_49);
-      term.bg_color = fc::Default;
+      term.bg_color = FColor::Default;
     }
   }
   else if ( ! setTermDefaultColor(term) )
   {
     // Fallback to gray on black
-    fg = next.fg_color = fc::LightGray;
-    bg = next.bg_color = fc::Black;
+    fg = next.fg_color = FColor::LightGray;
+    bg = next.bg_color = FColor::Black;
   }
 }
 

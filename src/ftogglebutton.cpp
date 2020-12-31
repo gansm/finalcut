@@ -186,7 +186,7 @@ bool FToggleButton::setChecked (bool enable)
 void FToggleButton::setText (const FString& txt)
 {
   text.setString(txt);
-  std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
+  std::size_t hotkey_mark = ( getHotkey(text) != FKey::None ) ? 1 : 0;
   std::size_t column_width = getColumnWidth(text);
   setWidth(button_width + column_width - hotkey_mark);
 
@@ -207,7 +207,7 @@ void FToggleButton::hide()
 //----------------------------------------------------------------------
 void FToggleButton::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   if ( hasFocus() )
@@ -228,7 +228,7 @@ void FToggleButton::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FToggleButton::onMouseUp (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   if ( ! getTermGeometry().contains(ev->getTermPos()) )
@@ -325,23 +325,23 @@ void FToggleButton::onFocusOut (FFocusEvent* out_ev)
     focus_inside_group = true;
     out_ev->ignore();
 
-    if ( out_ev->getFocusType() == fc::FocusNextWidget )
+    if ( out_ev->getFocusType() == FocusTypes::NextWidget )
       getGroup()->focusNextChild();
 
-    if ( out_ev->getFocusType() == fc::FocusPreviousWidget )
+    if ( out_ev->getFocusType() == FocusTypes::PreviousWidget )
       getGroup()->focusPrevChild();
 
     redraw();
   }
   else if ( this == getGroup()->getLastButton()
-         && out_ev->getFocusType() == fc::FocusNextWidget )
+         && out_ev->getFocusType() == FocusTypes::NextWidget )
   {
     out_ev->ignore();
     getGroup()->focusNextChild();
     redraw();
   }
   else if ( this == getGroup()->getFirstButton()
-         && out_ev->getFocusType() == fc::FocusPreviousWidget )
+         && out_ev->getFocusType() == FocusTypes::PreviousWidget )
   {
     out_ev->ignore();
     getGroup()->focusPrevChild();
@@ -423,46 +423,40 @@ void FToggleButton::onKeyPress (FKeyEvent* ev)
   if ( ! isEnabled() )
     return;
 
-  const FKey key = ev->key();
+  const auto key = ev->key();
 
-  switch ( key )
+  if ( key == FKey::Return
+    || key == FKey::Enter
+    || key == FKey::Space )
   {
-    case fc::Fkey_return:
-    case fc::Fkey_enter:
-    case fc::Fkey_space:
-      if ( isRadioButton() )
+    if ( isRadioButton() )
+    {
+      if ( ! checked )
       {
-        if ( ! checked )
-        {
-          checked = true;
-          processToggle();
-        }
-      }
-      else
-      {
-        checked = ! checked;
+        checked = true;
         processToggle();
       }
-      processClick();
-      ev->accept();
-      break;
+    }
+    else
+    {
+      checked = ! checked;
+      processToggle();
+    }
 
-    case fc::Fkey_down:
-    case fc::Fkey_right:
-      focus_inside_group = true;
-      focusNextChild();
-      ev->accept();
-      break;
-
-    case fc::Fkey_up:
-    case fc::Fkey_left:
-      focus_inside_group = true;
-      focusPrevChild();
-      ev->accept();
-      break;
-
-    default:
-      break;
+    processClick();
+    ev->accept();
+  }
+  else if ( key == FKey::Down || key == FKey::Right )
+  {
+    focus_inside_group = true;
+    focusNextChild();
+    ev->accept();
+  }
+  else if ( key == FKey::Up || key == FKey::Left )
+  {
+    focus_inside_group = true;
+    focusPrevChild();
+    ev->accept();
   }
 
   if ( ev->isAccepted() )
@@ -524,7 +518,7 @@ void FToggleButton::drawText (const FString& label_text, std::size_t hotkeypos)
 //----------------------------------------------------------------------
 void FToggleButton::correctSize (FSize& size) const
 {
-  const std::size_t hotkey_mark = ( getHotkey(text) ) ? 1 : 0;
+  const std::size_t hotkey_mark = ( getHotkey(text) != FKey::None ) ? 1 : 0;
   const std::size_t column_width = getColumnWidth(text);
   const std::size_t min_width = button_width + column_width - hotkey_mark;
 

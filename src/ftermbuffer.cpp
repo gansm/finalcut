@@ -92,37 +92,37 @@ int FTermBuffer::write (wchar_t ch)
 //----------------------------------------------------------------------
 void FTermBuffer::write (const FStyle& style) const
 {
-  FAttribute attr = style.getStyle();
+  Style attr = style.getStyle();
 
-  if ( attr == 0 )
+  if ( attr == Style::None )
     FVTerm::setNormal();
-  else if ( (attr & fc::Bold) != 0 )
+  else if ( (attr & Style::Bold) != Style::None )
     FVTerm::setBold();
-  else if ( (attr & fc::Dim) != 0 )
+  else if ( (attr & Style::Dim) != Style::None )
     FVTerm::setDim();
-  else if ( (attr & fc::Italic) != 0 )
+  else if ( (attr & Style::Italic) != Style::None )
     FVTerm::setItalic();
-  else if ( (attr & fc::Underline) != 0 )
+  else if ( (attr & Style::Underline) != Style::None )
     FVTerm::setUnderline();
-  else if ( (attr & fc::Blink) != 0 )
+  else if ( (attr & Style::Blink) != Style::None )
     FVTerm::setBlink();
-  else if ( (attr & fc::Reverse) != 0 )
+  else if ( (attr & Style::Reverse) != Style::None )
     FVTerm::setReverse();
-  else if ( (attr & fc::Standout) != 0 )
+  else if ( (attr & Style::Standout) != Style::None )
     FVTerm::setStandout();
-  else if ( (attr & fc::Invisible) != 0 )
+  else if ( (attr & Style::Invisible) != Style::None )
     FVTerm::setInvisible();
-  else if ( (attr & fc::Protected) != 0 )
+  else if ( (attr & Style::Protected) != Style::None )
     FVTerm::setProtected();
-  else if ( (attr & fc::CrossedOut) != 0 )
+  else if ( (attr & Style::CrossedOut) != Style::None )
     FVTerm::setCrossedOut();
-  else if ( (attr & fc::DoubleUnderline) != 0 )
+  else if ( (attr & Style::DoubleUnderline) != Style::None )
     FVTerm::setDoubleUnderline();
-  else if ( (attr & fc::Transparent) != 0 )
+  else if ( (attr & Style::Transparent) != Style::None )
     FVTerm::setTransparent();
-  else if ( (attr & fc::ColorOverlay) != 0 )
+  else if ( (attr & Style::ColorOverlay) != Style::None )
     FVTerm::setColorOverlay();
-  else if ( (attr & fc::InheritBackground) != 0 )
+  else if ( (attr & Style::InheritBackground) != Style::None )
     FVTerm::setInheritBackground();
 }
 

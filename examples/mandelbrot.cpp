@@ -23,6 +23,7 @@
 #include <final/final.h>
 
 namespace fc = finalcut::fc;
+using finalcut::FColor;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -103,9 +104,9 @@ void Mandelbrot::draw()
       }
 
       if ( iter < max_iter )
-        setColor(fc::Black, iter % 16);
+        setColor(FColor::Black, FColor(iter % 16));
       else
-        setColor(fc::Black, 0);
+        setColor(FColor::Black, FColor::Black);
 
       print(' ');
       x0 += dX;
@@ -121,7 +122,7 @@ void Mandelbrot::onKeyPress (finalcut::FKeyEvent* ev)
   if ( ! ev )
     return;
 
-  if ( ev->key() == 'q' )
+  if ( ev->key() == finalcut::FKey('q') )
   {
     close();
     ev->accept();

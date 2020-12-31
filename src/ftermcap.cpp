@@ -231,7 +231,7 @@ void FTermcap::termcapStrings()
   for (auto&& entry : strings)
     entry.string = getString(entry.tname);
 
-  const auto& ho = TCAP(fc::t_cursor_home);
+  const auto& ho = TCAP(t_cursor_home);
 
   if ( std::strncmp(ho, "\033[H", 3) == 0 )
     has_ansi_escape_sequences = true;
@@ -243,7 +243,7 @@ void FTermcap::termcapKeys()
   // Get termcap keys
 
   // Read termcap key sequences up to the self-defined values
-  for (auto&& entry : fc::fkey)
+  for (auto&& entry : fc::fkey_cap_table)
   {
     if ( entry.string != nullptr )
       break;

@@ -90,13 +90,14 @@ class FString
     explicit FString (int);
     explicit FString (std::size_t);
     FString (std::size_t, wchar_t);
+    FString (std::size_t, const UniChar&);
     FString (const FString&);        // copy constructor
     FString (FString&&) noexcept;    // move constructor
     FString (const std::wstring&);   // implicit conversion constructor
     FString (const wchar_t[]);       // implicit conversion constructor
     FString (const std::string&);    // implicit conversion constructor
     FString (const char[]);          // implicit conversion constructor
-    FString (fc::SpecialCharacter);  // implicit conversion constructor
+    FString (const UniChar&);        // implicit conversion constructor
     FString (const wchar_t);         // implicit conversion constructor
     FString (const char);            // implicit conversion constructor
 
@@ -110,7 +111,7 @@ class FString
     const FString& operator += (const FString&);
 
     FString& operator << (const FString&);
-    FString& operator << (fc::SpecialCharacter);
+    FString& operator << (const UniChar&);
     FString& operator << (const wchar_t);
     FString& operator << (const char);
     template <typename NumT
@@ -258,11 +259,11 @@ class FString
     const wchar_t* _extractToken (wchar_t*[], const wchar_t[], const wchar_t[]) const;
 
     // Data members
-    wchar_t*      string{nullptr};
-    std::size_t   length{0};
-    std::size_t   bufsize{0};
-    mutable char* c_string{nullptr};
-    static wchar_t null_char;
+    wchar_t*             string{nullptr};
+    std::size_t          length{0};
+    std::size_t          bufsize{0};
+    mutable char*        c_string{nullptr};
+    static wchar_t       null_char;
     static const wchar_t const_null_char;
 
     // Friend Non-member operator functions

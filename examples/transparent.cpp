@@ -24,6 +24,7 @@
 
 namespace fc = finalcut::fc;
 using finalcut::FColorPair;
+using finalcut::FColor;
 using finalcut::FPoint;
 using finalcut::FSize;
 using finalcut::FStyle;
@@ -39,14 +40,14 @@ class Transparent final : public finalcut::FDialog
     // Enumeration
     enum class Type
     {
-      transparent        = 0,
-      shadow             = 1,
-      inherit_background = 2
+      Transparent       = 0,
+      Shadow            = 1,
+      InheritBackground = 2
     };
 
     // Constructor
     explicit Transparent ( finalcut::FWidget* = nullptr
-                         , Type = Type::transparent );
+                         , Type = Type::Transparent );
 
     // Disable copy constructor
     Transparent (const Transparent&) = delete;
@@ -88,23 +89,23 @@ void Transparent::draw()
   if ( finalcut::FTerm::isMonochron() )
     setReverse(true);
 
-  if ( type == Type::shadow )
+  if ( type == Type::Shadow )
   {
     const auto& wc = getColorTheme();
     print() << FColorPair {wc->shadow_bg, wc->shadow_fg}
-            << FStyle {fc::ColorOverlay};
+            << FStyle {finalcut::Style::ColorOverlay};
   }
-  else if ( type == Type::inherit_background )
+  else if ( type == Type::InheritBackground )
   {
     if ( finalcut::FTerm::getMaxColor() > 8 )
-      print() << FColorPair {fc::Blue, fc::Black};
+      print() << FColorPair {FColor::Blue, FColor::Black};
     else
-      print() << FColorPair {fc::Green, fc::Black};
+      print() << FColorPair {FColor::Green, FColor::Black};
 
-    print() << FStyle {fc::InheritBackground};
+    print() << FStyle {finalcut::Style::InheritBackground};
   }
   else
-    print() << FStyle {fc::Transparent};
+    print() << FStyle {finalcut::Style::Transparent};
 
   const finalcut::FString line{getClientWidth(), '.'};
 
@@ -115,7 +116,7 @@ void Transparent::draw()
             << line;
   }
 
-  print() <<  FStyle{fc::Reset};
+  print() <<  FStyle{finalcut::Style::None};
 }
 
 //----------------------------------------------------------------------
@@ -124,7 +125,7 @@ void Transparent::onKeyPress (finalcut::FKeyEvent* ev)
   if ( ! ev )
     return;
 
-  if ( ev->key() == 'q' && getParentWidget() )
+  if ( ev->key() == finalcut::FKey('q') && getParentWidget() )
   {
     getParentWidget()->close();
     ev->accept();
@@ -166,7 +167,7 @@ class MainWindow final : public finalcut::FDialog
       if ( ! ev )
         return;
 
-      if ( ev->key() == 'q' )
+      if ( ev->key() == finalcut::FKey('q') )
       {
         close();
         ev->accept();
@@ -198,12 +199,12 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   transpwin->setGeometry (FPoint{6, 3}, FSize{29, 12});
   transpwin->unsetTransparentShadow();
 
-  shadowwin = new Transparent(this, Transparent::Type::shadow);
+  shadowwin = new Transparent(this, Transparent::Type::Shadow);
   shadowwin->setText("shadow");
   shadowwin->setGeometry (FPoint{46, 11}, FSize{29, 12});
   shadowwin->unsetTransparentShadow();
 
-  ibg = new Transparent(this, Transparent::Type::inherit_background);
+  ibg = new Transparent(this, Transparent::Type::InheritBackground);
   ibg->setText("inherit background");
   ibg->setGeometry (FPoint{42, 3}, FSize{29, 7});
   ibg->unsetTransparentShadow();
