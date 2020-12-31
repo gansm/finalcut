@@ -50,6 +50,7 @@
 
 #include <sys/time.h>  // need for timeval (cygwin)
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>

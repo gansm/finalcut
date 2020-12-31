@@ -48,6 +48,7 @@
 #endif
 
 #include <limits>
+#include <unordered_map>
 #include <utility>
 
 #include "final/fwidget.h"

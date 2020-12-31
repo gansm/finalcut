@@ -36,6 +36,7 @@
 #endif
 
 #include <iostream>
+#include <memory>
 
 #include "final/flog.h"
 #include "final/fstring.h"

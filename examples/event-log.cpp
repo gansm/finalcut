@@ -110,7 +110,7 @@ finalcut::FString EventDialog::getMouseButtonName (const finalcut::MouseButton& 
   auto M = bool(btn_state & finalcut::MouseButton::Meta);
   auto l = bool(btn_state & finalcut::MouseButton::Left);
   auto r = bool(btn_state & finalcut::MouseButton::Right);
-  auto m = bool(btn_state & finalcut::MouseButton::Middle); 
+  auto m = bool(btn_state & finalcut::MouseButton::Middle);
   auto prefix = (S ? finalcut::FString("Shift+") : empty)
               + (C ? finalcut::FString("Control+") : empty)
               + (M ? finalcut::FString("Meta+") : empty);

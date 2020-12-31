@@ -68,7 +68,9 @@
 #include <cstddef>
 #include <functional>
 #include <map>
+#include <memory>
 #include <queue>
+#include <utility>
 
 #include "final/fkeyboard.h"
 #include "final/fpoint.h"

@@ -200,7 +200,7 @@ void FTermLinux::init()
     std::abort();
   }
 }
-  
+
 //----------------------------------------------------------------------
 void FTermLinux::initCharMap() const
 {

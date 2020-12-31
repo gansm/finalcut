@@ -147,7 +147,7 @@ class FTermLinux final
       ModifierKey modifier;
       FKey key;
     };
-    
+
     struct PairHash
     {
       std::size_t operator () (const Pair& pair) const
@@ -162,7 +162,7 @@ class FTermLinux final
         return seed;
       }
     };
- 
+
     struct PairEqual
     {
       bool operator () (const Pair& lhs, const Pair& rhs) const

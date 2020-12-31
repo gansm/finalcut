@@ -51,6 +51,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <unordered_map>
+
 #include "final/fmenu.h"
 #include "final/fwindow.h"
 
