@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -166,7 +166,7 @@ class FLineEdit : public FWidget
   private:
     // Using-declaration
     using offsetPair = std::pair<std::size_t, std::size_t>;
-    using KeyMap = std::unordered_map<FKey, std::function<void()>>;
+    using KeyMap = std::unordered_map<FKey, std::function<void()>, FKeyHash>;
 
     // Constants
     static constexpr auto NOT_SET = static_cast<std::size_t>(-1);

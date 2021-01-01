@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -130,6 +130,16 @@ class FTermLinux final
       uChar        : 4;  // padding bits
     };
 
+    struct ModifierKeyHash
+    {
+      std::size_t operator () (const ModifierKey& m_key) const
+      {
+        uChar m{};
+        std::memcpy(&m, &m_key, sizeof(uChar));
+        return std::hash<uChar>()(m);
+      }
+    };
+
     struct RGB
     {
       uChar red;
@@ -152,13 +162,11 @@ class FTermLinux final
     {
       std::size_t operator () (const Pair& pair) const
       {
-        uChar m{};
-        std::memcpy(&m, &pair.modifier, sizeof(uChar));
         size_t seed = 0;
-        const auto h1 = std::hash<uChar>()(m);
-        const auto h2 = std::hash<FKey>()(pair.key);
-        seed ^= h1 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        seed ^= h2 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        const auto hash1 = ModifierKeyHash()(pair.modifier);
+        const auto hash2 = FKeyHash()(pair.key);
+        seed ^= hash1 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        seed ^= hash2 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         return seed;
       }
     };
