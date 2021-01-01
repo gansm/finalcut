@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -406,8 +406,8 @@ class FListView : public FWidget
     struct Header;  // forward declaration
 
     // Using-declaration
-    using KeyMap = std::unordered_map<FKey, std::function<void()>>;
-    using KeyMapResult = std::unordered_map<FKey, std::function<bool()>>;
+    using KeyMap = std::unordered_map<FKey, std::function<void()>, FKeyHash>;
+    using KeyMapResult = std::unordered_map<FKey, std::function<bool()>, FKeyHash>;
     using HeaderItems = std::vector<Header>;
     using SortTypes = std::vector<SortType>;
 

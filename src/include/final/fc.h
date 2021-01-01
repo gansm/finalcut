@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -797,6 +797,14 @@ enum class FKey : uInt32
   Meta_right_curly_bracket   = 0x0200015d,  // M-}
   Meta_tilde                 = 0x0200015e,  // M-~
   Incomplete                 = UINT32_MAX
+};
+
+struct FKeyHash
+{
+  std::size_t operator () (const FKey& p) const
+  {
+    return std::hash<uInt32>()(uInt32(p));
+  }
 };
 
 constexpr FKey operator >> (const FKey& k, const uInt32 n) noexcept

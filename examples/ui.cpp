@@ -813,7 +813,7 @@ void MyDialog::cb_about()
   finalcut::FMessageBox info ( "About"
                              , line + L" FINAL CUT " + line + L"\n\n"
                                L"Version " + libver + L"\n\n"
-                               L"(c) 2020 by Markus Gans"
+                               L"(c) 2021 by Markus Gans"
                              , finalcut::FMessageBox::ButtonType::Ok
                              , finalcut::FMessageBox::ButtonType::Reject
                              , finalcut::FMessageBox::ButtonType::Reject
@@ -1046,7 +1046,7 @@ int main (int argc, char* argv[])
 {
   const finalcut::FString ver{F_VERSION};  // Library version
   const finalcut::FString title { "FINAL CUT " + ver
-                                + " (C) 2020 by Markus Gans" };
+                                + " (C) 2021 by Markus Gans" };
 
   // Create the application object app
   finalcut::FApplication app{argc, argv};
