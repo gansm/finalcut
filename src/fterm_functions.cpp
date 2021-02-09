@@ -50,6 +50,9 @@ enum class FullWidthSupport
   Yes = 1
 };
 
+// Constant
+constexpr std::size_t NOT_FOUND = static_cast<std::size_t>(-1);
+
 // global state
 static FullWidthSupport has_fullwidth_support = FullWidthSupport::Unknown;
 
@@ -407,7 +410,11 @@ FString getColumnSubString ( const FString& str
     }
     else
     {
-      if ( col_num + width <= col_len )
+      if ( col_first == col_pos && width == 0 && num == 0 )
+      {
+        first++;
+      }
+      else if ( col_num + width <= col_len )
       {
         col_num += width;
         num++;
@@ -418,6 +425,8 @@ FString getColumnSubString ( const FString& str
         num++;
         break;
       }
+      else
+        break;
     }
   }
 
@@ -447,7 +456,7 @@ std::size_t getLengthFromColumnWidth ( const FString& str
 }
 
 //----------------------------------------------------------------------
-std::size_t getColumnWidth (const FString& s, std::size_t pos)
+std::size_t getColumnWidth (const FString& s, std::size_t end_pos)
 {
   if ( s.isEmpty() )
     return 0;
@@ -455,10 +464,10 @@ std::size_t getColumnWidth (const FString& s, std::size_t pos)
   std::size_t column_width{0};
   const auto length = s.getLength();
 
-  if ( pos > length )
-    pos = length;
+  if ( end_pos > length )
+    end_pos = length;
 
-  for (std::size_t i{0}; i < pos; i++)
+  for (std::size_t i{0}; i < end_pos; i++)
   {
     try
     {
@@ -501,17 +510,40 @@ std::size_t getColumnWidth (const wchar_t wchar)
   else
 #endif
 
+  column_width = wcwidth(wchar);
+
   if ( (wchar >= UniChar::NF_rev_left_arrow2 && wchar <= UniChar::NF_check_mark)
     || ! hasFullWidthSupports() )
-    column_width = 1;
-  else
-    column_width = wcwidth(wchar);
+  {
+    column_width = std::min(column_width, 1);
+  }
 
   return ( column_width == -1 ) ? 0 : std::size_t(column_width);
 }
 
 //----------------------------------------------------------------------
-std::size_t getColumnWidth (FChar& term_char)
+std::size_t getColumnWidth (const FChar& term_char)
+{
+  return std::size_t(term_char.attr.bit.char_width);
+}
+
+//----------------------------------------------------------------------
+std::size_t getColumnWidth (const FTermBuffer& tbuf)
+{
+  return ( tbuf.isEmpty() )
+         ? 0
+         : std::accumulate ( std::next(tbuf.begin())
+                           , tbuf.end()
+                           , tbuf.front().attr.bit.char_width
+                           , [] (std::size_t s, const FChar& c)
+                             {
+                               return s + c.attr.bit.char_width;
+                             }
+                           );
+}
+
+//----------------------------------------------------------------------
+void addColumnWidth (FChar& term_char)
 {
   const std::size_t char_width = getColumnWidth(term_char.ch[0]);
 
@@ -522,21 +554,117 @@ std::size_t getColumnWidth (FChar& term_char)
   }
   else
     term_char.attr.bit.char_width = char_width & 0x03;
-
-  return char_width;
 }
 
 //----------------------------------------------------------------------
-std::size_t getColumnWidth (const FTermBuffer& tb)
+inline int isWhitespace (const wchar_t ch) noexcept
 {
-  return std::accumulate ( std::next(tb.begin())
-                         , tb.end()
-                         , tb.front().attr.bit.char_width
-                         , [] (std::size_t s, const FChar& c)
-                           {
-                             return s + c.attr.bit.char_width;
-                           }
-                         );
+  return std::iswspace(static_cast<wint_t>(ch));
+}
+
+//----------------------------------------------------------------------
+int getCharLength (const FString& string, std::size_t pos)
+{
+  // Gets the number of characters of the combined character
+  // at string position pos
+
+  const std::size_t len = string.getLength();
+  std::size_t n = pos;
+  const auto& ch = string[n];
+  std::size_t char_width = getColumnWidth(ch);
+
+  if ( isWhitespace(ch) )
+    return 1;
+
+  if ( char_width == 0 || n >= len )
+    return -1;
+
+  do
+  {
+    n++;
+    char_width = getColumnWidth(string[n]);
+  }
+  while ( n < len && char_width == 0 && ! isWhitespace(string[n]) );
+
+  return int(n - pos);
+}
+
+//----------------------------------------------------------------------
+int getPrevCharLength (const FString& string, std::size_t pos)
+{
+  // Gets the number of characters of the previous combined character
+  // at string position pos
+
+  const std::size_t len = string.getLength();
+  std::size_t n = pos;
+  const auto& ch = string[n];
+  std::size_t char_width = getColumnWidth(ch);
+
+  if ( (char_width == 0 || n == 0 || n >= len) && ! isWhitespace(ch) )
+    return -1;
+
+  do
+  {
+    n--;
+    char_width = getColumnWidth(string[n]);
+  }
+  while ( n > 0 && char_width == 0 && ! isWhitespace(string[n]) );
+
+  if ( char_width == 0 )
+    return -1;
+
+  return int(pos - n);
+}
+
+//----------------------------------------------------------------------
+std::size_t searchLeftCharBegin (const FString& string, std::size_t pos)
+{
+  // Search for the next character position to the left of string position pos
+
+  std::size_t n = pos;
+
+  if ( n == 0 )
+    return NOT_FOUND;
+
+  std::size_t char_width{0};
+
+  do
+  {
+    n--;
+    char_width = getColumnWidth(string[n]);
+  }
+  while ( n > 0 && char_width == 0 && ! isWhitespace(string[n]) );
+
+  if ( n == 0 && char_width == 0 )
+    return NOT_FOUND;
+
+  return n;
+}
+
+//----------------------------------------------------------------------
+std::size_t searchRightCharBegin (const FString& string, std::size_t pos)
+{
+  // Search for the next character position to the right of string position pos
+
+  const std::size_t len = string.getLength();
+  std::size_t n = pos;
+
+  if ( n >= len )
+    return NOT_FOUND;
+
+  std::size_t char_width{0};
+
+  do
+  {
+    n++;
+    char_width = getColumnWidth(string[n]);
+  }
+  while ( n < len && char_width == 0 && ! isWhitespace(string[n]) );
+
+  if ( n == len && char_width == 0 )
+    return NOT_FOUND;
+
+  return n;
 }
 
 //----------------------------------------------------------------------
@@ -581,7 +709,7 @@ FPoint readCursorPos()
   if ( pos > 4 )
   {
     constexpr auto parse = "\033[%4d;%4dR";
-    std::sscanf(temp.data(), parse, &x, &y);
+    std::sscanf(temp.data(), parse, &y, &x );
   }
 
   return FPoint{x, y};

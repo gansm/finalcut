@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -745,7 +745,7 @@ FStringList FString::split (const FString& delimiter) const
 
   while ( token )
   {
-    string_list.push_back (FString{token});
+    string_list.emplace_back(token);
     token = _extractToken (&rest, nullptr, delimiter.wc_str());
   }
 

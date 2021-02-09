@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -938,21 +938,52 @@ void FLineEdit::adjustTextOffset()
 //----------------------------------------------------------------------
 inline void FLineEdit::cursorLeft()
 {
-  if ( cursor_pos > 0 )
-    cursor_pos--;
+  auto prev_char_len = getPrevCharLength(text, cursor_pos);
 
-  adjustTextOffset();
+  if ( prev_char_len < 0 )
+  {
+    const auto pos = searchLeftCharBegin(text, cursor_pos);
+
+    if ( pos != NOT_FOUND )
+    {
+      cursor_pos = pos;
+      adjustTextOffset();
+    }
+
+    return;
+  }
+
+  if ( cursor_pos >= std::size_t(prev_char_len) )
+  {
+    cursor_pos -= std::size_t(prev_char_len);
+    adjustTextOffset();
+  }
 }
 
 //----------------------------------------------------------------------
 inline void FLineEdit::cursorRight()
 {
-  const auto& len = text.getLength();
+  const auto len = text.getLength();
+  const auto char_len = getCharLength(text, cursor_pos);
 
-  if ( cursor_pos < len )
-    cursor_pos++;
+  if ( char_len < 0 )
+  {
+    const auto pos = searchRightCharBegin(text, cursor_pos);
 
-  adjustTextOffset();
+    if ( pos != NOT_FOUND )
+    {
+      cursor_pos = pos;
+      adjustTextOffset();
+    }
+
+    return;
+  }
+
+  if ( cursor_pos + std::size_t(char_len) <= len )
+  {
+    cursor_pos += std::size_t(char_len);
+    adjustTextOffset();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -981,10 +1012,15 @@ inline void FLineEdit::deleteCurrentCharacter()
   // Delete key functionality
 
   const auto& len = text.getLength();
+  const auto char_len = getCharLength(text, cursor_pos);
 
-  if ( len > 0 && cursor_pos < len )
+  if ( char_len < 0 )
+    return;
+
+  if ( len >= std::size_t(char_len)
+    && cursor_pos <= len - std::size_t(char_len) )
   {
-    text.remove(cursor_pos, 1);
+    text.remove(cursor_pos, std::size_t(char_len));
     print_text = ( isPasswordField() ) ? getPasswordText() : text;
     processChanged();
   }

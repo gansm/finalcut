@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -903,9 +903,9 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
     const int bb = (b * 1001) / 256;
 
     if ( Ic )
-      color_str = FTermcap::encodeParameter(Ic, index, rr, gg, bb, 0, 0, 0, 0, 0);
+      color_str = FTermcap::encodeParameter(Ic, uInt16(index), rr, gg, bb, 0, 0, 0, 0, 0);
     else if ( Ip )
-      color_str = FTermcap::encodeParameter(Ip, index, 0, 0, 0, rr, gg, bb, 0, 0);
+      color_str = FTermcap::encodeParameter(Ip, uInt16(index), 0, 0, 0, rr, gg, bb, 0, 0);
 
     if ( color_str )
     {
@@ -1949,7 +1949,7 @@ void FTerm::enableMouse()
 #if defined(__linux__)
   if ( isLinuxTerm() && openConsole() == 0 )
   {
-    if ( FTerm::getFTermLinux()->isLinuxConsole() )
+    if ( FTermLinux::isLinuxConsole() )
       gpm_mouse = true;
 
     closeConsole();
@@ -2364,6 +2364,7 @@ void FTerm::finishOSspecifics() const
   const auto& freebsd_console = FTerm::getFTermFreeBSD();
   freebsd_console->finish();
 #elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
+  const auto& openbsd_console = FTerm::getFTermOpenBSD();
   openbsd_console->finish();
 #endif
 }

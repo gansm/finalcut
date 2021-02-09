@@ -170,6 +170,7 @@ class FLineEdit : public FWidget
 
     // Constants
     static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr auto NOT_FOUND = static_cast<std::size_t>(-1);
 
     // Methods
     void                init();

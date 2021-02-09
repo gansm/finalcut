@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -110,6 +110,9 @@ class FTermBuffer
 
   private:
     FCharVector            data{};
+    void                   add ( FString::const_iterator&
+                               , FString::const_iterator&
+                               , int& );
 
     // Non-member operators
     friend FCharVector& operator << ( FCharVector&

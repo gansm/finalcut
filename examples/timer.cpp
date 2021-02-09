@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -21,8 +21,6 @@
 ***********************************************************************/
 
 #include <final/final.h>
-
-namespace fc = finalcut::fc;
 
 
 //----------------------------------------------------------------------

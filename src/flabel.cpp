@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -252,26 +252,16 @@ void FLabel::setHotkeyAccelerator()
 std::size_t FLabel::getAlignOffset (const std::size_t length) const
 {
   const std::size_t width(getWidth());
-  assert ( alignment == Align::Left
-        || alignment == Align::Center
-        || alignment == Align::Right );
 
-  switch ( alignment )
+  if ( alignment == Align::Center )
   {
-    case Align::Left:
-      return 0;
-
-    case Align::Center:
-      if ( length < width )
-        return (width - length) / 2;
-      else
-        return 0;
-
-    case Align::Right:
-      if ( length < width )
-        return width - length;
-      else
-        return 0;
+    if ( length < width )
+      return (width - length) / 2;
+  }
+  else if ( alignment == Align::Right )
+  {
+    if ( length < width )
+      return width - length;
   }
 
   return 0;

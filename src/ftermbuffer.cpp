@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -47,14 +47,19 @@ FString FTermBuffer::toString() const
 {
   std::wstring wide_string{};
   wide_string.reserve(data.size());
-  std::transform ( data.begin()
-                 , data.end()
-                 , std::back_inserter(wide_string)
-                 , [] (const FChar& fchar)
-                   {
-                     return fchar.ch[0];
-                   }
-                 );
+  std::for_each ( data.begin()
+                , data.end()
+                , [&wide_string] (const FChar& fchar)
+                  {
+                    for (auto&& ch : fchar.ch)
+                    {
+                      if ( ch == L'\0' )
+                        return;
+                      else
+                        wide_string.push_back(ch);
+                    }
+                  }
+                );
   return wide_string;
 }
 
@@ -62,19 +67,41 @@ FString FTermBuffer::toString() const
 int FTermBuffer::write (const FString& string)
 {
   assert ( ! string.isNull() );
-  const auto len = int(string.getLength());
+  data.reserve(data.size() + string.getLength());
+  const auto last = string.end();
+  auto begin = string.begin();
+  auto iter = begin;
+  int char_width{0};
 
-  for (auto&& c : string)
+  for (auto&& ch : string)
   {
-    FChar nc{FVTerm::getAttribute()};  // next character
-    nc.ch[0] = c;
-    nc.attr.byte[2] = 0;
-    nc.attr.byte[3] = 0;
-    getColumnWidth(nc);  // add column width
-    data.emplace_back(nc);
+    auto width = getColumnWidth(ch);
+    auto wspace = std::iswspace(wint_t(ch));
+
+    if ( width == 0 && ! wspace )  // zero-width character
+    {
+      if ( iter == begin)
+        ++begin;
+
+      ++iter;
+    }
+    else if ( iter != begin )
+      add(begin, iter, char_width);
+
+    if ( iter == begin && (width > 0 || is7bit(ch)) )  // 1st char
+      ++iter;
+
+    if ( width > 0 )
+      char_width += width;
+
+    if ( wspace )
+      add(begin, iter, char_width);
   }
 
-  return len;
+  if ( iter == last )
+    add(begin, iter, char_width);
+
+  return int(string.getLength());
 }
 
 //----------------------------------------------------------------------
@@ -82,7 +109,7 @@ int FTermBuffer::write (wchar_t ch)
 {
   FChar nc{FVTerm::getAttribute()};  // next character
   nc.ch[0] = ch;
-  getColumnWidth(nc);  // add column width
+  addColumnWidth(nc);  // add column width
   nc.attr.bit.no_changes = false;
   nc.attr.bit.printed = false;
   data.emplace_back(nc);
@@ -96,40 +123,57 @@ void FTermBuffer::write (const FStyle& style) const
 
   if ( attr == Style::None )
     FVTerm::setNormal();
-  else if ( (attr & Style::Bold) != Style::None )
-    FVTerm::setBold();
-  else if ( (attr & Style::Dim) != Style::None )
-    FVTerm::setDim();
-  else if ( (attr & Style::Italic) != Style::None )
-    FVTerm::setItalic();
-  else if ( (attr & Style::Underline) != Style::None )
-    FVTerm::setUnderline();
-  else if ( (attr & Style::Blink) != Style::None )
-    FVTerm::setBlink();
-  else if ( (attr & Style::Reverse) != Style::None )
-    FVTerm::setReverse();
-  else if ( (attr & Style::Standout) != Style::None )
-    FVTerm::setStandout();
-  else if ( (attr & Style::Invisible) != Style::None )
-    FVTerm::setInvisible();
-  else if ( (attr & Style::Protected) != Style::None )
-    FVTerm::setProtected();
-  else if ( (attr & Style::CrossedOut) != Style::None )
-    FVTerm::setCrossedOut();
-  else if ( (attr & Style::DoubleUnderline) != Style::None )
-    FVTerm::setDoubleUnderline();
-  else if ( (attr & Style::Transparent) != Style::None )
-    FVTerm::setTransparent();
-  else if ( (attr & Style::ColorOverlay) != Style::None )
-    FVTerm::setColorOverlay();
-  else if ( (attr & Style::InheritBackground) != Style::None )
-    FVTerm::setInheritBackground();
+  else
+  {
+    if ( (attr & Style::Bold) != Style::None ) FVTerm::setBold();
+    if ( (attr & Style::Dim) != Style::None ) FVTerm::setDim();
+    if ( (attr & Style::Italic) != Style::None ) FVTerm::setItalic();
+    if ( (attr & Style::Underline) != Style::None ) FVTerm::setUnderline();
+    if ( (attr & Style::Blink) != Style::None ) FVTerm::setBlink();
+    if ( (attr & Style::Reverse) != Style::None ) FVTerm::setReverse();
+    if ( (attr & Style::Standout) != Style::None ) FVTerm::setStandout();
+    if ( (attr & Style::Invisible) != Style::None ) FVTerm::setInvisible();
+    if ( (attr & Style::Protected) != Style::None ) FVTerm::setProtected();
+    if ( (attr & Style::CrossedOut) != Style::None ) FVTerm::setCrossedOut();
+    if ( (attr & Style::DoubleUnderline) != Style::None ) FVTerm::setDoubleUnderline();
+    if ( (attr & Style::Transparent) != Style::None ) FVTerm::setTransparent();
+    if ( (attr & Style::ColorOverlay) != Style::None ) FVTerm::setColorOverlay();
+    if ( (attr & Style::InheritBackground) != Style::None ) FVTerm::setInheritBackground();
+  }
 }
 
 //----------------------------------------------------------------------
 void FTermBuffer::write (const FColorPair& pair) const
 {
   FVTerm::setColor(pair.getForegroundColor(), pair.getBackgroundColor());
+}
+
+
+// private methods of FTermBuffer
+//----------------------------------------------------------------------
+void FTermBuffer::add ( FString::const_iterator& begin
+                      , FString::const_iterator& end
+                      , int& char_width )
+{
+  if ( begin == end )
+    return;
+
+  FChar nc{FVTerm::getAttribute()};  // next character
+  nc.attr.byte[2] = 0;
+  nc.attr.byte[3] = 0;
+
+  if ( char_width == 2 && FTerm::getEncoding() != Encoding::UTF8 )
+  {
+    nc.ch[0] = '.';
+    nc.attr.bit.char_width = 1;
+  }
+  else
+    nc.attr.bit.char_width = char_width & 0x03;
+
+  std::copy(begin, std::min(end, begin + UNICODE_MAX), nc.ch.begin());
+  data.emplace_back(nc);
+  begin = end;
+  char_width = 0;
 }
 
 

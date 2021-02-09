@@ -154,3 +154,18 @@ jobs:
       - autoreconf -v --install --force
       - ./configure --prefix=/usr
       - make -j10
+
+  #
+  # FreeBSD
+  #
+  - os: freebsd
+    env:
+      - TEST="FreeBSD"
+    before_install:
+      - uname -a
+      - g++ --version
+    script:
+      - autoreconf -v --install --force
+      - ./configure --prefix=/usr
+      - make -j10
+

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -29,6 +29,7 @@
 #include "final/fstring.h"
 #include "final/fscrollbar.h"
 #include "final/fstatusbar.h"
+#include "final/ftermbuffer.h"
 #include "final/ftextview.h"
 #include "final/fwidgetcolors.h"
 
@@ -223,7 +224,6 @@ void FTextView::insert (const FString& str, int pos)
     s = "\n";
   else
     s = FString{str}.rtrim().expandTabs(FTerm::getTabstop());
-
 
   auto text_split = s.split("\r\n");
 
@@ -641,19 +641,17 @@ void FTextView::drawText()
     const std::size_t pos = std::size_t(xoffset) + 1;
     const auto text_width = getTextWidth();
     const FString line(getColumnSubString(data[n], pos, text_width));
-    const auto column_width = getColumnWidth(line);
     std::size_t trailing_whitespace{0};
     print() << FPoint{2, 2 - nf_offset + int(y)};
+    FTermBuffer line_buffer{};
+    line_buffer.write(line);
 
-    for (auto&& ch : line)  // Column loop
-    {
-      if ( getColumnWidth(ch) == 0 )
-        continue;
-      else if ( isPrintable(ch) )
-        print (ch);
-      else
-        print ('.');
-    }
+    for (auto&& fchar : line_buffer)  // Column loop
+      if ( ! isPrintable(fchar.ch[0]) )
+        fchar.ch[0] = L'.';
+
+    print(line_buffer);
+    const auto column_width = getColumnWidth(line);
 
     if ( column_width <= text_width )
       trailing_whitespace = text_width - column_width;
@@ -693,7 +691,7 @@ inline bool FTextView::isPrintable (wchar_t ch) const
   const bool utf8 = ( FTerm::getEncoding() == Encoding::UTF8 ) ? true : false;
 
   if ( (utf8 && std::iswprint(std::wint_t(ch)))
-    || (!utf8 && std::isprint(char(ch))) )
+    || (! utf8 && std::isprint(char(ch))) )
     return true;
 
   return false;

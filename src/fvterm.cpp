@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2020 Markus Gans                                      *
+* Copyright 2016-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -40,8 +40,10 @@
 #include "final/fstyle.h"
 #include "final/fsystem.h"
 #include "final/fterm.h"
-#include "final/ftermdata.h"
 #include "final/ftermbuffer.h"
+#include "final/ftermdata.h"
+#include "final/ftermdetection.h"
+#include "final/ftermfreebsd.h"
 #include "final/ftermcap.h"
 #include "final/ftypes.h"
 #include "final/fvterm.h"
@@ -53,6 +55,7 @@ namespace finalcut
 
 // static class attributes
 bool                 FVTerm::draw_completed{false};
+bool                 FVTerm::combined_char_support{false};
 bool                 FVTerm::no_terminal_updates{false};
 bool                 FVTerm::cursor_hideable{false};
 bool                 FVTerm::force_terminal_update{false};
@@ -490,10 +493,11 @@ int FVTerm::print (FTermArea* area, FChar& term_char)
 
   const int ax = area->cursor_x - 1;
   const int ay = area->cursor_y - 1;
-  std::size_t char_width = term_char.attr.bit.char_width;
 
-  if ( char_width == 0 )
-    char_width = getColumnWidth(term_char);  // add column width
+  if ( term_char.attr.bit.char_width == 0 )
+    addColumnWidth(term_char);  // add column width
+
+  auto char_width = term_char.attr.bit.char_width;
 
   if ( char_width == 0 && ! term_char.attr.bit.fullwidth_padding )
     return 0;
@@ -535,34 +539,23 @@ void FVTerm::print (const FStyle& style)
 
   if ( attr == Style::None )
     setNormal();
-  else if ( (attr & Style::Bold) != Style::None )
-    setBold();
-  else if ( (attr & Style::Dim) != Style::None )
-    setDim();
-  else if ( (attr & Style::Italic) != Style::None )
-    setItalic();
-  else if ( (attr & Style::Underline) != Style::None )
-    setUnderline();
-  else if ( (attr & Style::Blink) != Style::None )
-    setBlink();
-  else if ( (attr & Style::Reverse) != Style::None )
-    setReverse();
-  else if ( (attr & Style::Standout) != Style::None )
-    setStandout();
-  else if ( (attr & Style::Invisible) != Style::None )
-    setInvisible();
-  else if ( (attr & Style::Protected) != Style::None )
-    setProtected();
-  else if ( (attr & Style::CrossedOut) != Style::None )
-    setCrossedOut();
-  else if ( (attr & Style::DoubleUnderline) != Style::None )
-    setDoubleUnderline();
-  else if ( (attr & Style::Transparent) != Style::None )
-    setTransparent();
-  else if ( (attr & Style::ColorOverlay) != Style::None )
-    setColorOverlay();
-  else if ( (attr & Style::InheritBackground) != Style::None )
-    setInheritBackground();
+  else
+  {
+    if ( (attr & Style::Bold) != Style::None ) setBold();
+    if ( (attr & Style::Dim) != Style::None ) setDim();
+    if ( (attr & Style::Italic) != Style::None ) setItalic();
+    if ( (attr & Style::Underline) != Style::None ) setUnderline();
+    if ( (attr & Style::Blink) != Style::None ) setBlink();
+    if ( (attr & Style::Reverse) != Style::None ) setReverse();
+    if ( (attr & Style::Standout) != Style::None ) setStandout();
+    if ( (attr & Style::Invisible) != Style::None ) setInvisible();
+    if ( (attr & Style::Protected) != Style::None ) setProtected();
+    if ( (attr & Style::CrossedOut) != Style::None ) setCrossedOut();
+    if ( (attr & Style::DoubleUnderline) != Style::None ) setDoubleUnderline();
+    if ( (attr & Style::Transparent) != Style::None ) setTransparent();
+    if ( (attr & Style::ColorOverlay) != Style::None ) setColorOverlay();
+    if ( (attr & Style::InheritBackground) != Style::None ) setInheritBackground();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1285,6 +1278,9 @@ void FVTerm::initTerminal()
 
   // Initialize character lengths
   init_characterLengths();
+
+  // Check for support for combined characters
+  init_combined_character();
 }
 
 
@@ -1884,6 +1880,31 @@ void FVTerm::init_characterLengths()
   if ( clr_eol_length == 0 )
     clr_eol_length = INT_MAX;
 }
+#include <unistd.h>
+//----------------------------------------------------------------------
+void FVTerm::init_combined_character()
+{
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
+  if ( FTermFreeBSD::isFreeBSDConsole() )
+    return;
+#endif
+
+  if ( FTerm::getEncoding() != Encoding::UTF8 )
+    return;
+
+  const auto& term_detection = FTerm::getFTermDetection();
+
+  if ( term_detection->isCygwinTerminal() )
+    return;
+
+  if ( term_detection->isXTerminal()
+    || term_detection->isUrxvtTerminal()
+    || term_detection->isMinttyTerm()
+    || term_detection->isPuttyTerminal() )
+  {
+    combined_char_support = true;
+  }
+}
 
 //----------------------------------------------------------------------
 void FVTerm::finish()
@@ -2006,7 +2027,7 @@ void FVTerm::getAreaCharacter ( const FPoint& pos, const FTermArea* area
 }
 
 //----------------------------------------------------------------------
-bool FVTerm::clearTerm (int fillchar) const
+bool FVTerm::clearTerm (wchar_t fillchar) const
 {
   // Clear the real terminal and put cursor at home
 
@@ -2018,7 +2039,7 @@ bool FVTerm::clearTerm (int fillchar) const
   appendAttributes (next_attribute);
 
   if ( ! ( (cl || cd || cb) && (normal || ut) )
-    || fillchar != ' ' )
+    || fillchar != L' ' )
   {
     return false;
   }
@@ -2570,7 +2591,7 @@ FVTerm::PrintState FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y) const
     const uInt start_pos = x;
 
     if ( repetitions > repeat_char_length
-      && print_char.ch[0] < 128 )
+      && is7bit(print_char.ch[0]) && print_char.ch[1] == L'\0' )
     {
       newFontChanges (print_char);
       charsetChanges (print_char);
@@ -2917,7 +2938,9 @@ inline void FVTerm::newFontChanges (FChar& next_char)
 inline void FVTerm::charsetChanges (FChar& next_char)
 {
   const wchar_t& ch = next_char.ch[0];
-  next_char.encoded_char[0] = ch;
+  std::copy( next_char.ch.begin()
+           , next_char.ch.end()
+           , next_char.encoded_char.begin() );
 
   if ( FTerm::getEncoding() == Encoding::UTF8 )
     return;
@@ -2979,7 +3002,15 @@ inline void FVTerm::appendChar (FChar& next_char) const
   charsetChanges (next_char);
   appendAttributes (next_char);
   characterFilter (next_char);
-  appendOutputBuffer (next_char.encoded_char[0]);
+
+  for (auto&& ch : next_char.encoded_char)
+  {
+    if ( ch != L'\0')
+      appendOutputBuffer(ch);
+
+    if ( ! combined_char_support )
+      return;
+  }
 }
 
 //----------------------------------------------------------------------

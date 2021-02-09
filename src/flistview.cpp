@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1479,26 +1479,15 @@ std::size_t FListView::getAlignOffset ( const Align align
                                       , const std::size_t column_width
                                       , const std::size_t width ) const
 {
-  assert ( align == Align::Left
-        || align == Align::Center
-        || align == Align::Right );
-
-  switch ( align )
+  if ( align == Align::Center )
   {
-    case Align::Left:
-      return 0;
-
-    case Align::Center:
-      if ( column_width < width )
-        return (width - column_width) / 2;
-      else
-        return 0;
-
-    case Align::Right:
-      if ( column_width < width )
-        return width - column_width;
-      else
-        return 0;
+    if ( column_width < width )
+      return (width - column_width) / 2;
+  }
+  else if ( align == Align::Right )
+  {
+    if ( column_width < width )
+      return width - column_width;
   }
 
   return 0;
@@ -1603,15 +1592,9 @@ void FListView::drawHeadlines()
 
   while ( iter != header.end() )
   {
-    const auto& text = iter->name;
+    if ( ! iter->name.isEmpty() )
+      drawHeadlineLabel(iter);  // Draw into FTermBuffer object
 
-    if ( text.isNull() || text.isEmpty() )
-    {
-      ++iter;
-      continue;
-    }
-
-    drawHeadlineLabel(iter);  // Draw into FTermBuffer object
     ++iter;
   }
 

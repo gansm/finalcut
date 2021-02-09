@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2020 Markus Gans                                      *
+* Copyright 2016-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -339,7 +339,7 @@ class FVTerm
 
     // Constants
     //   Buffer size for character output on the terminal
-    static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 131072;
+    static constexpr std::size_t TERMINAL_OUTPUT_BUFFER_SIZE = 131072;
 
     // Methods
     void                  resetTextAreaToDefault ( const FTermArea*
@@ -371,13 +371,14 @@ class FVTerm
     static FChar          getOverlappedCharacter (const FPoint&, const FTermArea*);
     void                  init();
     static void           init_characterLengths();
+    static void           init_combined_character();
     void                  finish();
     static void           putAreaLine (const FChar&, FChar&, std::size_t);
     static void           putAreaCharacter ( const FPoint&, const FTermArea*
                                            , const FChar&, FChar& );
     static void           getAreaCharacter ( const FPoint&, const FTermArea*
                                            , FChar*& );
-    bool                  clearTerm (int = ' ') const;
+    bool                  clearTerm (wchar_t = L' ') const;
     bool                  clearFullArea (const FTermArea*, FChar&) const;
     static void           clearAreaWithShadow (const FTermArea*, const FChar&);
     static bool           canClearToEOL (uInt, uInt);
@@ -439,6 +440,7 @@ class FVTerm
     static timeval           time_last_flush;
     static timeval           last_term_size_check;
     static bool              draw_completed;
+    static bool              combined_char_support;
     static bool              no_terminal_updates;
     static bool              force_terminal_update;
     static uInt64            flush_wait;

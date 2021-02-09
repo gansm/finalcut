@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2020 Markus Gans                                      *
+* Copyright 2016-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1386,13 +1386,13 @@ inline void FOptiAttr::change_current_color ( const FChar& term
 
     if ( term.fg_color != fg || frev )
     {
-      color_str = FTermcap::encodeParameter(AF, ansi_fg, 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = FTermcap::encodeParameter(AF, uInt16(ansi_fg), 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
     }
 
     if ( term.bg_color != bg || frev )
     {
-      color_str = FTermcap::encodeParameter(AB, ansi_bg, 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = FTermcap::encodeParameter(AB, uInt16(ansi_bg), 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
     }
   }
@@ -1400,13 +1400,13 @@ inline void FOptiAttr::change_current_color ( const FChar& term
   {
     if ( term.fg_color != fg || frev )
     {
-      color_str = FTermcap::encodeParameter(Sf, fg, 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = FTermcap::encodeParameter(Sf, uInt16(fg), 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
     }
 
     if ( term.bg_color != bg || frev )
     {
-      color_str = FTermcap::encodeParameter(Sb, bg, 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = FTermcap::encodeParameter(Sb, uInt16(bg), 0, 0, 0, 0, 0, 0, 0, 0);
       append_sequence (color_str);
     }
   }
@@ -1414,7 +1414,7 @@ inline void FOptiAttr::change_current_color ( const FChar& term
   {
     fg = vga2ansi(fg);
     bg = vga2ansi(bg);
-    color_str = FTermcap::encodeParameter(sp, fg, bg, 0, 0, 0, 0, 0, 0, 0);
+    color_str = FTermcap::encodeParameter(sp, uInt16(fg), uInt16(bg), 0, 0, 0, 0, 0, 0, 0);
     append_sequence (color_str);
   }
 }

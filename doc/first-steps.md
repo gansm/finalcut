@@ -330,32 +330,32 @@ types and send them to other objects and widgets.
 
 ### Available event types ###
 ```cpp
-enum events
+enum class Event
 {
-  None_Event,               // invalid event
-  KeyPress_Event,           // key pressed
-  KeyUp_Event,              // key released
-  KeyDown_Event,            // key pressed
-  MouseDown_Event,          // mouse button pressed
-  MouseUp_Event,            // mouse button released
-  MouseDoubleClick_Event,   // mouse button double click
-  MouseWheel_Event,         // mouse wheel rolled
-  MouseMove_Event,          // mouse move
-  FocusIn_Event,            // focus in
-  FocusOut_Event,           // focus out
-  ChildFocusIn_Event,       // child focus in
-  ChildFocusOut_Event,      // child focus out
-  WindowActive_Event,       // activate window
-  WindowInactive_Event,     // deactivate window
-  WindowRaised_Event,       // raise window
-  WindowLowered_Event,      // lower window
-  Accelerator_Event,        // keyboard accelerator
-  Resize_Event,             // terminal resize
-  Show_Event,               // widget is shown
-  Hide_Event,               // widget is hidden
-  Close_Event,              // widget close
-  Timer_Event,              // timer event occur
-  User_Event                // user defined event
+  None,              // invalid event
+  KeyPress,          // key pressed
+  KeyUp,             // key released
+  KeyDown,           // key pressed
+  MouseDown,         // mouse button pressed
+  MouseUp,           // mouse button released
+  MouseDoubleClick,  // mouse button double click
+  MouseWheel,        // mouse wheel rolled
+  MouseMove,         // mouse move
+  FocusIn,           // focus in
+  FocusOut,          // focus out
+  ChildFocusIn,      // child focus in
+  ChildFocusOut,     // child focus out
+  WindowActive,      // activate window
+  WindowInactive,    // deactivate window
+  WindowRaised,      // raise window
+  WindowLowered,     // lower window
+  Accelerator,       // keyboard accelerator
+  Resize,            // terminal resize
+  Show,              // widget is shown
+  Hide,              // widget is hidden
+  Close,             // widget close
+  Timer,             // timer event occur
+  User               // user defined event
 };
 ```
 
@@ -1337,15 +1337,15 @@ requires it. You can controll this behavior by the two methods
 `setHorizontalScrollBarMode()` and `setVerticalScrollBarMode()`.
 
 ```cpp
-setHorizontalScrollBarMode (fc::scrollBarMode);
-setVerticalScrollBarMode (fc::scrollBarMode);
+setHorizontalScrollBarMode (finalcut::ScrollBarMode);
+setVerticalScrollBarMode (finalcut::ScrollBarMode);
 ```
 
 You pass the scroll bar visibility mode as a value of the enum type 
-`fc::scrollBarMode`.
+`finalcut::ScrollBarMode`.
 
 ```cpp
-enum scrollBarMode
+enum class ScrollBarMode
 {
   Auto   = 0,  // Shows a scroll bar when area is larger than viewport
   Hidden = 1,  // Never shows a scroll bar

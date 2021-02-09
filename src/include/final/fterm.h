@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -381,9 +381,22 @@ std::size_t getLengthFromColumnWidth (const FString&, std::size_t);
 std::size_t getColumnWidth (const FString&, std::size_t);
 std::size_t getColumnWidth (const FString&);
 std::size_t getColumnWidth (const wchar_t);
-std::size_t getColumnWidth (FChar&);
+std::size_t getColumnWidth (const FChar&);
 std::size_t getColumnWidth (const FTermBuffer&);
+void addColumnWidth (FChar&);
+int getCharLength (const FString&, std::size_t);
+int getPrevCharLength (const FString&, std::size_t);
+std::size_t searchLeftCharBegin (const FString&, std::size_t);
+std::size_t searchRightCharBegin (const FString&, std::size_t);
 FPoint readCursorPos();
+
+// Check for 7-bit ASCII
+template<typename CharT>
+inline bool is7bit (CharT ch)
+{
+  using char_type = typename std::make_unsigned<CharT>::type;
+  return static_cast<char_type>(ch) < 128;
+}
 
 // FTerm inline functions
 //----------------------------------------------------------------------

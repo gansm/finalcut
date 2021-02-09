@@ -1,5 +1,10 @@
+2021-02-09 Markus Gans  <guru.mail@muenster.de>
+	* Added support for combined unicode characters
+	* Added a unit test for the FTermBuffera class
+	* Added a unit test for the FTterm functions
+
 2020-12-31  Markus Gans  <guru.mail@muenster.de>
-	* Refactoring to scaled enumerations
+	* Refactoring to scoped enumerations
 
 2020-11-18  Markus Gans  <guru.mail@muenster.de>
 	* The terminal update rate is now limited to 60 Hz

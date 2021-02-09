@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -167,21 +167,21 @@ class FString
     virtual FString getClassName() const;
 
     // inquiries
-    bool isNull() const;
-    bool isEmpty() const;
+    bool isNull() const noexcept;
+    bool isEmpty() const noexcept;
 
     // Methods
-    std::size_t getLength() const;
-    std::size_t capacity() const;
+    std::size_t getLength() const noexcept;
+    std::size_t capacity() const noexcept;
 
-    iterator begin();
-    iterator end();
-    const_iterator begin() const;
-    const_iterator end() const;
-    reference front();
-    reference back() ;
-    const_reference front() const;
-    const_reference back() const;
+    iterator begin() noexcept;
+    iterator end() noexcept;
+    const_iterator begin() const noexcept;
+    const_iterator end() const noexcept;
+    reference front() noexcept;
+    reference back() noexcept;
+    const_reference front() const noexcept;
+    const_reference back() const noexcept;
 
     template <typename... Args>
     FString& sprintf (const FString&, Args&&...);
@@ -371,60 +371,60 @@ inline FString FString::getClassName() const
 { return "FString"; }
 
 //----------------------------------------------------------------------
-inline bool FString::isNull() const
+inline bool FString::isNull() const noexcept
 { return ( bufsize == 0 || (bufsize > 0 && ! string) ); }
 
 //----------------------------------------------------------------------
-inline bool FString::isEmpty() const
+inline bool FString::isEmpty() const noexcept
 { return ( length == 0 || (length > 0 && string[0] == L'\0') ); }
 
 //----------------------------------------------------------------------
-inline std::size_t FString::getLength() const
+inline std::size_t FString::getLength() const noexcept
 { return length; }
 
 //----------------------------------------------------------------------
-inline std::size_t FString::capacity() const
+inline std::size_t FString::capacity() const noexcept
 { return ( length > 0 ) ? bufsize - 1 : 0; }
 
 //----------------------------------------------------------------------
-inline FString::iterator FString::begin()
+inline FString::iterator FString::begin() noexcept
 { return string; }
 
 //----------------------------------------------------------------------
-inline FString::iterator FString::end()
+inline FString::iterator FString::end() noexcept
 { return string + length; }
 
 //----------------------------------------------------------------------
-inline FString::const_iterator FString::begin() const
+inline FString::const_iterator FString::begin() const noexcept
 { return string; }
 
 //----------------------------------------------------------------------
-inline FString::const_iterator FString::end() const
+inline FString::const_iterator FString::end() const noexcept
 { return string + length; }
 
 //----------------------------------------------------------------------
-inline FString::reference FString::front()
+inline FString::reference FString::front() noexcept
 {
   assert ( ! isEmpty() );
   return (*this)[0];
 }
 
 //----------------------------------------------------------------------
-inline FString::reference FString::back()
+inline FString::reference FString::back() noexcept
 {
   assert( ! isEmpty() );
   return (*this)[length - 1];
 }
 
 //----------------------------------------------------------------------
-inline FString::const_reference FString::front() const
+inline FString::const_reference FString::front() const noexcept
 {
   assert ( ! isEmpty() );
   return (*this)[0];
 }
 
 //----------------------------------------------------------------------
-inline FString::const_reference FString::back() const
+inline FString::const_reference FString::back() const noexcept
 {
   assert( ! isEmpty() );
   return (*this)[length - 1];

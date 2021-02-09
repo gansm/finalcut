@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -92,14 +92,14 @@ void FTermcap::termcap()
 #else
   const char* termtype = fterm_data->getTermType();
 #endif
-  terminals.push_back(termtype);            // available terminal type
+  terminals.emplace_back(termtype);         // available terminal type
 
   if ( color256 )                           // 1st fallback if not found
-    terminals.push_back("xterm-256color");
+    terminals.emplace_back("xterm-256color");
 
-  terminals.push_back("xterm");             // 2nd fallback if not found
-  terminals.push_back("ansi");              // 3rd fallback if not found
-  terminals.push_back("vt100");             // 4th fallback if not found
+  terminals.emplace_back("xterm");          // 2nd fallback if not found
+  terminals.emplace_back("ansi");           // 3rd fallback if not found
+  terminals.emplace_back("vt100");          // 4th fallback if not found
   auto iter = terminals.begin();
 
   while ( iter != terminals.end() )

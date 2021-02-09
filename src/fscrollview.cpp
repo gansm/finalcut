@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -799,52 +799,40 @@ void FScrollView::calculateScrollbarPos() const
 //----------------------------------------------------------------------
 void FScrollView::setHorizontalScrollBarVisibility() const
 {
-  assert ( h_mode == ScrollBarMode::Auto
-        || h_mode == ScrollBarMode::Hidden
-        || h_mode == ScrollBarMode::Scroll );
-
-  switch ( h_mode )
+  if ( h_mode == ScrollBarMode::Auto )
   {
-    case ScrollBarMode::Auto:
-      if ( getScrollWidth() > getViewportWidth() )
-        hbar->show();
-      else
-        hbar->hide();
-      break;
-
-    case ScrollBarMode::Hidden:
-      hbar->hide();
-      break;
-
-    case ScrollBarMode::Scroll:
+    if ( getScrollWidth() > getViewportWidth() )
       hbar->show();
-      break;
+    else
+      hbar->hide();
+  }
+  else if ( h_mode == ScrollBarMode::Hidden )
+  {
+    hbar->hide();
+  }
+  else if ( h_mode == ScrollBarMode::Scroll )
+  {
+    hbar->show();
   }
 }
 
 //----------------------------------------------------------------------
 void FScrollView::setVerticalScrollBarVisibility() const
 {
-  assert ( v_mode == ScrollBarMode::Auto
-        || v_mode == ScrollBarMode::Hidden
-        || v_mode == ScrollBarMode::Scroll );
-
-  switch ( v_mode )
+  if ( v_mode == ScrollBarMode::Auto )
   {
-    case ScrollBarMode::Auto:
-      if ( getScrollHeight() > getViewportHeight() )
-        vbar->show();
-      else
-        vbar->hide();
-      break;
-
-    case ScrollBarMode::Hidden:
-      vbar->hide();
-      break;
-
-    case ScrollBarMode::Scroll:
+    if ( getScrollHeight() > getViewportHeight() )
       vbar->show();
-      break;
+    else
+      vbar->hide();
+  }
+  else if ( v_mode == ScrollBarMode::Hidden )
+  {
+    vbar->hide();
+  }
+  else if ( v_mode == ScrollBarMode::Scroll )
+  {
+    vbar->show();
   }
 }
 

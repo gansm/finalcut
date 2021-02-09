@@ -109,7 +109,7 @@ class FTermLinux final
     // Methods
     void                 init();
     void                 initCharMap() const;
-    void                 finish();
+    void                 finish() const;
     bool                 loadVGAFont();
     bool                 loadNewFont();
     bool                 loadOldFont();
