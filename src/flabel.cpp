@@ -258,10 +258,9 @@ std::size_t FLabel::getAlignOffset (const std::size_t length) const
     if ( length < width )
       return (width - length) / 2;
   }
-  else if ( alignment == Align::Right )
+  else if ( alignment == Align::Right && length < width )
   {
-    if ( length < width )
-      return width - length;
+    return width - length;
   }
 
   return 0;

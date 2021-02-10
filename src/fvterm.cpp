@@ -1880,7 +1880,7 @@ void FVTerm::init_characterLengths()
   if ( clr_eol_length == 0 )
     clr_eol_length = INT_MAX;
 }
-#include <unistd.h>
+
 //----------------------------------------------------------------------
 void FVTerm::init_combined_character()
 {

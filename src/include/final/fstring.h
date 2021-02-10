@@ -178,10 +178,10 @@ class FString
     iterator end() noexcept;
     const_iterator begin() const noexcept;
     const_iterator end() const noexcept;
-    reference front() noexcept;
-    reference back() noexcept;
-    const_reference front() const noexcept;
-    const_reference back() const noexcept;
+    reference front();
+    reference back();
+    const_reference front() const;
+    const_reference back() const;
 
     template <typename... Args>
     FString& sprintf (const FString&, Args&&...);
@@ -403,28 +403,28 @@ inline FString::const_iterator FString::end() const noexcept
 { return string + length; }
 
 //----------------------------------------------------------------------
-inline FString::reference FString::front() noexcept
+inline FString::reference FString::front()
 {
   assert ( ! isEmpty() );
   return (*this)[0];
 }
 
 //----------------------------------------------------------------------
-inline FString::reference FString::back() noexcept
+inline FString::reference FString::back()
 {
   assert( ! isEmpty() );
   return (*this)[length - 1];
 }
 
 //----------------------------------------------------------------------
-inline FString::const_reference FString::front() const noexcept
+inline FString::const_reference FString::front() const
 {
   assert ( ! isEmpty() );
   return (*this)[0];
 }
 
 //----------------------------------------------------------------------
-inline FString::const_reference FString::back() const noexcept
+inline FString::const_reference FString::back() const
 {
   assert( ! isEmpty() );
   return (*this)[length - 1];

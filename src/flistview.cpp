@@ -1484,10 +1484,9 @@ std::size_t FListView::getAlignOffset ( const Align align
     if ( column_width < width )
       return (width - column_width) / 2;
   }
-  else if ( align == Align::Right )
+  else if ( align == Align::Right && column_width < width )
   {
-    if ( column_width < width )
-      return width - column_width;
+    return width - column_width;
   }
 
   return 0;

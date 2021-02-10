@@ -164,6 +164,7 @@ jobs:
     before_install:
       - uname -a
       - g++ --version
+      - sudo pkg install -y autoconf-archive
     script:
       - autoreconf -v --install --force
       - ./configure --prefix=/usr

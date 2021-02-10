@@ -287,6 +287,7 @@ void FTermBufferTest::writeTest()
   }
 
   // Write with style
+  auto multi_color_emojis = bool( wcswidth(L"☕⛄🧸🦡", 4) == 8 );
   term_buf.clear();
   auto style = finalcut::FStyle(finalcut::Style::Italic | finalcut::Style::Reverse);
   term_buf.write (style);
@@ -339,20 +340,25 @@ void FTermBufferTest::writeTest()
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].encoded_char[2] == L'\0' );
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].encoded_char[3] == L'\0' );
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].encoded_char[4] == L'\0' );
-    CPPUNIT_ASSERT ( term_buf.getBuffer()[i].attr.byte[2] != 0 );
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].attr.byte[3] == 0 );
-    CPPUNIT_ASSERT ( term_buf.getBuffer()[i].attr.bit.char_width == 2 );
+
+    if ( multi_color_emojis )
+    {
+      CPPUNIT_ASSERT ( term_buf.getBuffer()[i].attr.byte[2] != 0 );
+      CPPUNIT_ASSERT ( term_buf.getBuffer()[i].attr.bit.char_width == 2 );
+    }
   }
 }
 
 //----------------------------------------------------------------------
 void FTermBufferTest::streamTest()
 {
+  auto multi_color_emojis = bool( wcswidth(L"🚧🚀🚴", 3) == 6 );
   const auto& data = finalcut::FTerm::getFTermData();
   data->setTermEncoding (finalcut::Encoding::UTF8);
   finalcut::FTermBuffer::FCharVector fchar_vec = { finalcut::FChar{} };
   CPPUNIT_ASSERT ( fchar_vec.size() == 1 );
-  fchar_vec.front().ch[0] = L'🥨';
+  fchar_vec.front().ch[0] = L'🚧';
   fchar_vec.front().fg_color = finalcut::FColor::White;
   fchar_vec.front().bg_color = finalcut::FColor::Cyan;
   finalcut::addColumnWidth(fchar_vec.front());
@@ -365,7 +371,7 @@ void FTermBufferTest::streamTest()
                    << finalcut::UniChar::NF_Bullet
                    << finalcut::FStyle(finalcut::Style::Blink)
                    << fchar_vec
-                   << std::string("🧭")
+                   << std::string("🚀")
                    << finalcut::FStyle(finalcut::Style::None)
                    << finalcut::FStyle(finalcut::Style::DoubleUnderline)
                    << finalcut::FColorPair{finalcut::FColor::Black, finalcut::FColor::White}
@@ -394,28 +400,37 @@ void FTermBufferTest::streamTest()
   CPPUNIT_ASSERT ( term_buf.getBuffer()[2].attr.byte[0] != 0 );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[2].attr.byte[1] == 0 );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[2].attr.bit.char_width == 1 );
-  CPPUNIT_ASSERT ( term_buf.getBuffer()[3].ch[0] == L'🥨' );
+  CPPUNIT_ASSERT ( term_buf.getBuffer()[3].ch[0] == L'🚧' );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[3].fg_color == finalcut::FColor::White );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[3].bg_color == finalcut::FColor::Cyan );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[3].attr.byte[0] == 0 );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[3].attr.byte[1] == 0 );
-  CPPUNIT_ASSERT ( term_buf.getBuffer()[3].attr.bit.char_width == 2 );
-  CPPUNIT_ASSERT ( term_buf.getBuffer()[4].ch[0] == L'🧭' );
+
+  if ( multi_color_emojis )
+    CPPUNIT_ASSERT ( term_buf.getBuffer()[3].attr.bit.char_width == 2 );
+
+  CPPUNIT_ASSERT ( term_buf.getBuffer()[4].ch[0] == L'🚀' );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[4].fg_color == finalcut::FColor::Cyan );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[4].bg_color == finalcut::FColor::White );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[4].attr.bit.dim == 1 );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[4].attr.bit.blink == 1 );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[4].attr.byte[0] != 0 );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[4].attr.byte[1] == 0 );
-  CPPUNIT_ASSERT ( term_buf.getBuffer()[4].attr.bit.char_width == 2 );
+
+  if ( multi_color_emojis )
+    CPPUNIT_ASSERT ( term_buf.getBuffer()[4].attr.bit.char_width == 2 );
+
   CPPUNIT_ASSERT ( term_buf.getBuffer()[5].ch[0] == L'🚴' );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[5].fg_color == finalcut::FColor::Black );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[5].bg_color == finalcut::FColor::White );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[5].attr.bit.dbl_underline == 1 );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[5].attr.byte[0] == 0 );
   CPPUNIT_ASSERT ( term_buf.getBuffer()[5].attr.byte[1] != 0 );
-  CPPUNIT_ASSERT ( term_buf.getBuffer()[5].attr.bit.char_width == 2 );
-  CPPUNIT_ASSERT ( term_buf.toString() == "a1\U0000e1f9🥨🧭🚴" );
+
+  if ( multi_color_emojis )
+    CPPUNIT_ASSERT ( term_buf.getBuffer()[5].attr.bit.char_width == 2 );
+
+  CPPUNIT_ASSERT ( term_buf.toString() == "a1\U0000e1f9🚧🚀🚴" );
 
   for (std::size_t i{0}; i < 6; i++)
   {
