@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -96,14 +96,12 @@ class FMenu : public FWindow, public FMenuList
     FMenuItem*          getItem();
 
     // Mutators
-    bool                setEnable (bool) override;
-    bool                setEnable() override;
+    bool                setEnable (bool = true) override;
     bool                unsetEnable() override;
     bool                setDisable() override;
     void                setSelected();
     void                unsetSelected();
-    bool                setMenuWidget (bool);
-    bool                setMenuWidget();
+    bool                setMenuWidget (bool = true);
     bool                unsetMenuWidget();
     void                setStatusbarMessage (const FString&) override;
     void                setMenu (FMenu*);
@@ -263,10 +261,6 @@ inline bool FMenu::setEnable (bool enable)
 { return menuitem.setEnable(enable); }
 
 //----------------------------------------------------------------------
-inline bool FMenu::setEnable()
-{ return menuitem.setEnable(); }
-
-//----------------------------------------------------------------------
 inline bool FMenu::unsetEnable()
 { return menuitem.unsetEnable(); }
 
@@ -281,10 +275,6 @@ inline void FMenu::setSelected()
 //----------------------------------------------------------------------
 inline void FMenu::unsetSelected()
 { menuitem.unsetSelected(); }
-
-//----------------------------------------------------------------------
-inline bool FMenu::setMenuWidget()
-{ return setMenuWidget(true); }
 
 //----------------------------------------------------------------------
 inline bool FMenu::unsetMenuWidget()

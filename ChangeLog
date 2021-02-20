@@ -1,3 +1,7 @@
+2021-02-20 Markus Gans  <guru.mail@muenster.de>
+	* Optimize terminal output buffer queue with differencing
+	  for strings, and control characters and control sequences
+
 2021-02-09 Markus Gans  <guru.mail@muenster.de>
 	* Added support for combined unicode characters
 	* Added a unit test for the FTermBuffera class

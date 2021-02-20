@@ -214,8 +214,7 @@ class FListBox : public FWidget
     void                 setSize (const FSize&, bool = true) override;
     void                 setGeometry ( const FPoint&, const FSize&
                                      , bool = true ) override;
-    void                 setMultiSelection (bool);
-    void                 setMultiSelection ();
+    void                 setMultiSelection (bool = true);
     void                 unsetMultiSelection ();
     bool                 setDisable() override;
     void                 setText (const FString&);
@@ -500,10 +499,6 @@ inline void FListBox::showNoBrackets (FListBoxItems::iterator iter) const
 //----------------------------------------------------------------------
 inline void FListBox::setMultiSelection (bool enable)
 { multi_select = enable; }
-
-//----------------------------------------------------------------------
-inline void FListBox::setMultiSelection()
-{ setMultiSelection(true); }
 
 //----------------------------------------------------------------------
 inline void FListBox::unsetMultiSelection()

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -91,15 +91,12 @@ class FSpinBox : public FWidget
     void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
-    bool                setEnable (bool) override;
-    bool                setEnable() override;
+    bool                setEnable (bool = true) override;
     bool                unsetEnable() override;
     bool                setDisable() override;
-    bool                setFocus (bool) override;
-    bool                setFocus() override;
+    bool                setFocus (bool = true) override;
     bool                unsetFocus() override;
-    bool                setShadow (bool);
-    bool                setShadow();
+    bool                setShadow (bool = true);
     bool                unsetShadow();
     void                setValue (sInt64);
     void                setMinValue (sInt64);
@@ -182,10 +179,6 @@ inline FLineEdit::LabelOrientation FSpinBox::getLabelOrientation() const
 { return input_field.getLabelOrientation(); }
 
 //----------------------------------------------------------------------
-inline bool FSpinBox::setEnable()
-{ return setEnable(true); }
-
-//----------------------------------------------------------------------
 inline bool FSpinBox::unsetEnable()
 { return setEnable(false); }
 
@@ -194,16 +187,8 @@ inline bool FSpinBox::setDisable()
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FSpinBox::setFocus()
-{ return setFocus(true); }
-
-//----------------------------------------------------------------------
 inline bool FSpinBox::unsetFocus()
 { return setFocus(false); }
-
-//----------------------------------------------------------------------
-inline bool FSpinBox::setShadow()
-{ return setShadow(true); }
 
 //----------------------------------------------------------------------
 inline bool FSpinBox::unsetShadow()

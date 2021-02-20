@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -130,27 +130,27 @@ class FTermDetection final
     static bool           hasSetCursorStyleSupport();
 
     // Mutators
-    static void           setAnsiTerminal (bool);
-    static void           setXTerminal (bool);
-    static void           setRxvtTerminal (bool);
-    static void           setUrxvtTerminal (bool);
-    static void           setKdeTerminal (bool);
-    static void           setGnomeTerminal (bool);
-    static void           setPuttyTerminal (bool);
-    static void           setWindowsTerminal (bool);
-    static void           setTeraTerm (bool);
-    static void           setCygwinTerminal (bool);
-    static void           setMinttyTerm (bool);
-    static void           setLinuxTerm (bool);
-    static void           setFreeBSDTerm (bool);
-    static void           setNetBSDTerm (bool);
-    static void           setOpenBSDTerm (bool);
-    static void           setSunTerminal (bool);
-    static void           setScreenTerm (bool);
-    static void           setTmuxTerm (bool);
-    static void           setKtermTerminal (bool);
-    static void           setMltermTerminal (bool);
-    static void           setTerminalDetection (bool);
+    static void           setAnsiTerminal (bool = true);
+    static void           setXTerminal (bool = true);
+    static void           setRxvtTerminal (bool = true);
+    static void           setUrxvtTerminal (bool = true);
+    static void           setKdeTerminal (bool = true);
+    static void           setGnomeTerminal (bool = true);
+    static void           setPuttyTerminal (bool = true);
+    static void           setWindowsTerminal (bool = true);
+    static void           setTeraTerm (bool = true);
+    static void           setCygwinTerminal (bool = true);
+    static void           setMinttyTerm (bool = true);
+    static void           setLinuxTerm (bool = true);
+    static void           setFreeBSDTerm (bool = true);
+    static void           setNetBSDTerm (bool = true);
+    static void           setOpenBSDTerm (bool = true);
+    static void           setSunTerminal (bool = true);
+    static void           setScreenTerm (bool = true);
+    static void           setTmuxTerm (bool = true);
+    static void           setKtermTerminal (bool = true);
+    static void           setMltermTerminal (bool = true);
+    static void           setTerminalDetection (bool = true);
     static void           setTtyTypeFileName (const char[]);
 
     // Methods

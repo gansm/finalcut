@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -235,24 +235,19 @@ class FWidget : public FVTerm, public FObject
     static void              setColorTheme();
     FAcceleratorList&        setAcceleratorList();
     virtual void             setStatusbarMessage (const FString&);
-    bool                     setVisible (bool);
-    bool                     setVisible();
+    bool                     setVisible (bool = true);
     bool                     unsetVisible();
-    virtual bool             setEnable (bool);
-    virtual bool             setEnable();
+    virtual bool             setEnable (bool = true);
     virtual bool             unsetEnable();
     virtual bool             setDisable();
-    virtual bool             setVisibleCursor (bool);  // input cursor visibility
-    virtual bool             setVisibleCursor();       // for the widget
-    virtual bool             unsetVisibleCursor();
-    virtual bool             setFocus (bool);
-    virtual bool             setFocus();
+    virtual bool             setVisibleCursor (bool = true);  // input cursor visibility
+    virtual bool             unsetVisibleCursor();            // for the widget
+    virtual bool             setFocus (bool = true);
     virtual bool             unsetFocus();
-    void                     setFocusable();
+    void                     setFocusable (bool = true);
     void                     unsetFocusable();
-    bool                     ignorePadding (bool);    // ignore padding from
-    bool                     ignorePadding();         // the parent widget
-    bool                     acceptPadding();
+    bool                     ignorePadding (bool = true);    // ignore padding from
+    bool                     acceptPadding();                // the parent widget
     virtual void             setForegroundColor (FColor);
     virtual void             setBackgroundColor (FColor);
     virtual void             resetColors();
@@ -434,7 +429,7 @@ class FWidget : public FVTerm, public FObject
     void                     KeyPressEvent (FKeyEvent*);
     void                     KeyDownEvent (FKeyEvent*);
     void                     emitWheelCallback (const FWheelEvent*) const;
-    void                     setWindowFocus (bool);
+    void                     setWindowFocus (bool = true);
     bool                     changeFocus (FWidget*, FWidget*, FocusTypes);
     void                     processDestroy() const;
     virtual void             draw();
@@ -443,7 +438,7 @@ class FWidget : public FVTerm, public FObject
     static bool              isDefaultTheme();
     static void              initColorTheme();
     void                     removeQueuedEvent() const;
-    void                     setStatusbarText (bool) const;
+    void                     setStatusbarText (bool = true) const;
 
     // Data members
     struct FWidgetFlags      flags{};
@@ -776,16 +771,8 @@ inline void FWidget::setStatusbarMessage (const FString& msg)
 { statusbar_message = msg; }
 
 //----------------------------------------------------------------------
-inline bool FWidget::setVisible()
-{ return setVisible(true); }
-
-//----------------------------------------------------------------------
 inline bool FWidget::unsetVisible()
 { return setVisible(false); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::setEnable()
-{ return setEnable(true); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::unsetEnable()
@@ -800,24 +787,16 @@ inline bool FWidget::setVisibleCursor (bool enable)
 { return (flags.visible_cursor = enable); }
 
 //----------------------------------------------------------------------
-inline bool FWidget::setVisibleCursor()
-{ return setVisibleCursor(true); }
-
-//----------------------------------------------------------------------
 inline bool FWidget::unsetVisibleCursor()
 { return setVisibleCursor(false); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::setFocus()
-{ return setFocus(true); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::unsetFocus()
 { return setFocus(false); }
 
 //----------------------------------------------------------------------
-inline void FWidget::setFocusable()
-{ flags.focusable = true; }
+inline void FWidget::setFocusable (bool enable)
+{ flags.focusable = enable; }
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetFocusable()
@@ -826,10 +805,6 @@ inline void FWidget::unsetFocusable()
 //----------------------------------------------------------------------
 inline bool FWidget::ignorePadding (bool enable)
 { return (ignore_padding = enable); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::ignorePadding()
-{ return (ignore_padding = true); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::acceptPadding()

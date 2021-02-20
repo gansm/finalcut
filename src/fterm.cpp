@@ -151,14 +151,14 @@ int FTerm::getTTYFileDescriptor()
 }
 
 //----------------------------------------------------------------------
-const char* FTerm::getTermType()
+std::string FTerm::getTermType()
 {
   const auto& data = FTerm::getFTermData();
   return data->getTermType();
 }
 
 //----------------------------------------------------------------------
-const char* FTerm::getTermFileName()
+std::string FTerm::getTermFileName()
 {
   const auto& data = FTerm::getFTermData();
   return data->getTermFileName();
@@ -504,7 +504,7 @@ bool FTerm::canChangeColorPalette()
 }
 
 //----------------------------------------------------------------------
-void FTerm::setTermType (const char term_name[])
+void FTerm::setTermType (const std::string& term_name)
 {
   const auto& data = FTerm::getFTermData();
   data->setTermType(term_name);
@@ -691,7 +691,13 @@ int FTerm::openConsole()
 {
   const auto& data = FTerm::getFTermData();
   int fd = data->getTTYFileDescriptor();
-  const char* termfilename = data->getTermFileName();
+  const auto& termfilename = data->getTermFileName();
+
+  if ( ! termfilename.empty() )
+    return 0;
+
+  if ( fd >= 0 )  // console is already opened
+    return 0;
 
   constexpr std::array<const char*, 6> terminal_devices =
   {{
@@ -702,12 +708,6 @@ int FTerm::openConsole()
     "/dev/systty",
     "/dev/console"
   }};
-
-  if ( fd >= 0 )  // console is already opened
-    return 0;
-
-  if ( ! *termfilename )
-    return 0;
 
   for (auto&& entry : terminal_devices)
   {
@@ -755,7 +755,7 @@ const char* FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
     return opti_move->moveCursor (xold, yold, xnew, ynew);
   }
   else
-    return FTermcap::encodeMotionParameter(TCAP(t_cursor_address), xnew, ynew);
+    return FTermcap::encodeMotionParameter(TCAP(t_cursor_address), xnew, ynew).data();
 }
 
 //----------------------------------------------------------------------
@@ -896,7 +896,7 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
 
   if ( Ic || Ip )
   {
-    const char* color_str{};
+    std::string color_str{};
 
     const int rr = (r * 1001) / 256;
     const int gg = (g * 1001) / 256;
@@ -907,7 +907,7 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
     else if ( Ip )
       color_str = FTermcap::encodeParameter(Ip, uInt16(index), 0, 0, 0, rr, gg, bb, 0, 0);
 
-    if ( color_str )
+    if ( ! color_str.empty() )
     {
       putstring (color_str);
       state = true;
@@ -1115,7 +1115,7 @@ FTerm::defaultPutChar& FTerm::putchar()
 }
 
 //----------------------------------------------------------------------
-void FTerm::putstring (const char str[], int affcnt)
+void FTerm::putstring (const std::string& str, int affcnt)
 {
   FTermcap::paddingPrint (str, affcnt, FTerm::putchar_ASCII);
 }
@@ -1564,7 +1564,7 @@ void FTerm::init_locale()
   // Init current locale
 
   const auto& data = FTerm::getFTermData();
-  const char* termtype = data->getTermType();
+  const auto& termtype = data->getTermType();
   const char* locale_name = std::setlocale (LC_ALL, "");
   std::setlocale (LC_NUMERIC, "");
 
@@ -1584,7 +1584,7 @@ void FTerm::init_locale()
     locale_name = std::setlocale (LC_ALL, "C");
 
   // Sun (color) workstation console can't show UTF-8 character
-  if ( std::strncmp(termtype, "sun", 3) == 0
+  if ( termtype.substr(0,3) == "sun"
     && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
     locale_name = std::setlocale (LC_ALL, "C");
 
@@ -1656,7 +1656,7 @@ void FTerm::init_term_encoding()
 {
   const int stdout_no = FTermios::getStdOut();
   const auto& data = FTerm::getFTermData();
-  const char* termtype = data->getTermType();
+  const auto& termtype = data->getTermType();
   const auto& fsys = FTerm::getFSystem();
 
   if ( fsys->isTTY(stdout_no)
@@ -1671,7 +1671,7 @@ void FTerm::init_term_encoding()
     keyboard->enableUTF8();
   }
   else if ( fsys->isTTY(stdout_no)
-         && (std::strlen(termtype) > 0)
+         && (termtype.length() > 0)
          && (TCAP(t_exit_alt_charset_mode) != nullptr) )
   {
     data->setVT100Console (true);

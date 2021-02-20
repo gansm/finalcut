@@ -125,18 +125,14 @@ class FLineEdit : public FWidget
     void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
-    bool                setEnable (bool) override;
-    bool                setEnable() override;
+    bool                setEnable (bool = true) override;
     bool                unsetEnable() override;
     bool                setDisable() override;
-    bool                setFocus (bool) override;
-    bool                setFocus() override;
+    bool                setFocus (bool = true) override;
     bool                unsetFocus() override;
-    bool                setShadow (bool);
-    bool                setShadow();
+    bool                setShadow (bool = true);
     bool                unsetShadow();
-    bool                setReadOnly (bool);
-    bool                setReadOnly();
+    bool                setReadOnly (bool = true);
     bool                unsetReadOnly();
 
     // Inquiry
@@ -274,10 +270,6 @@ inline void FLineEdit::setLabelAssociatedWidget (FWidget* w)
 { label_associated_widget = w; }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::setEnable()
-{ return setEnable(true); }
-
-//----------------------------------------------------------------------
 inline bool FLineEdit::unsetEnable()
 { return setEnable(false); }
 
@@ -286,24 +278,12 @@ inline bool FLineEdit::setDisable()
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::setFocus()
-{ return setFocus(true); }
-
-//----------------------------------------------------------------------
 inline bool FLineEdit::unsetFocus()
 { return setFocus(false); }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::setShadow()
-{ return setShadow(true); }
-
-//----------------------------------------------------------------------
 inline bool FLineEdit::unsetShadow()
 { return setShadow(false); }
-
-//----------------------------------------------------------------------
-inline bool FLineEdit::setReadOnly()
-{ return setReadOnly(true); }
 
 //----------------------------------------------------------------------
 inline bool FLineEdit::unsetReadOnly()

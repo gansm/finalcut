@@ -446,6 +446,47 @@ void FTermBufferTest::streamTest()
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].attr.byte[2] != 0 );
     CPPUNIT_ASSERT ( term_buf.getBuffer()[i].attr.byte[3] == 0 );
   }
+
+  // Stream into FCharVector
+  fchar_vec.clear();
+  CPPUNIT_ASSERT ( fchar_vec.empty() );
+  CPPUNIT_ASSERT ( fchar_vec.size() == 0 );
+  CPPUNIT_ASSERT ( fchar_vec.begin() == fchar_vec.end() );
+
+  fchar_vec << term_buf;
+  CPPUNIT_ASSERT ( ! fchar_vec.empty() );
+  CPPUNIT_ASSERT ( fchar_vec.size() == 6 );
+  CPPUNIT_ASSERT ( fchar_vec.begin() + 6 == fchar_vec.end() );
+  CPPUNIT_ASSERT ( fchar_vec[0].ch[0] == L'a' );
+  CPPUNIT_ASSERT ( fchar_vec[1].ch[0] == L'1' );
+  CPPUNIT_ASSERT ( fchar_vec[2].ch[0] == L'\U0000e1f9' );
+  CPPUNIT_ASSERT ( fchar_vec[3].ch[0] == L'🚧' );
+  CPPUNIT_ASSERT ( fchar_vec[4].ch[0] == L'🚀' );
+  CPPUNIT_ASSERT ( fchar_vec[5].ch[0] == L'🚴' );
+  CPPUNIT_ASSERT ( fchar_vec[0].fg_color == finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( fchar_vec[0].bg_color == finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( fchar_vec[1].fg_color == finalcut::FColor::Yellow );
+  CPPUNIT_ASSERT ( fchar_vec[1].bg_color == finalcut::FColor::Blue );
+  CPPUNIT_ASSERT ( fchar_vec[2].fg_color == finalcut::FColor::Cyan );
+  CPPUNIT_ASSERT ( fchar_vec[2].bg_color == finalcut::FColor::White );
+  CPPUNIT_ASSERT ( fchar_vec[3].fg_color == finalcut::FColor::White );
+  CPPUNIT_ASSERT ( fchar_vec[3].bg_color == finalcut::FColor::Cyan );
+  CPPUNIT_ASSERT ( fchar_vec[4].fg_color == finalcut::FColor::Cyan );
+  CPPUNIT_ASSERT ( fchar_vec[4].bg_color == finalcut::FColor::White );
+  CPPUNIT_ASSERT ( fchar_vec[5].fg_color == finalcut::FColor::Black );
+  CPPUNIT_ASSERT ( fchar_vec[5].bg_color == finalcut::FColor::White );
+  CPPUNIT_ASSERT ( fchar_vec[0].attr.byte[0] == 0 );
+  CPPUNIT_ASSERT ( fchar_vec[0].attr.byte[1] == 0 );
+  CPPUNIT_ASSERT ( fchar_vec[1].attr.byte[0] == 0 );
+  CPPUNIT_ASSERT ( fchar_vec[1].attr.byte[1] == 0 );
+  CPPUNIT_ASSERT ( fchar_vec[2].attr.byte[0] != 0 );
+  CPPUNIT_ASSERT ( fchar_vec[2].attr.byte[1] == 0 );
+  CPPUNIT_ASSERT ( fchar_vec[3].attr.byte[0] == 0 );
+  CPPUNIT_ASSERT ( fchar_vec[3].attr.byte[1] == 0 );
+  CPPUNIT_ASSERT ( fchar_vec[4].attr.byte[0] != 0 );
+  CPPUNIT_ASSERT ( fchar_vec[4].attr.byte[1] == 0 );
+  CPPUNIT_ASSERT ( fchar_vec[5].attr.byte[0] == 0 );
+  CPPUNIT_ASSERT ( fchar_vec[5].attr.byte[1] != 0 );
 }
 
 //----------------------------------------------------------------------

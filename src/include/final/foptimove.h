@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -138,8 +138,8 @@ class FOptiMove final
     void          set_repeat_char (const char[]);
     void          set_clr_bol (const char[]);
     void          set_clr_eol (const char[]);
-    void          set_auto_left_margin (bool);
-    void          set_eat_newline_glitch (bool);
+    void          set_auto_left_margin (bool = true);
+    void          set_eat_newline_glitch (bool = true);
 
     // Methods
     void          check_boundaries (int&, int&, int&, int&) const;

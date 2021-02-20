@@ -87,11 +87,7 @@ void FTermcap::termcap()
   const bool color256 = term_detection->canDisplay256Colors();
 
   // Open termcap file
-#if defined(__sun) && defined(__SVR4)
-  char* termtype = const_cast<char*>(fterm_data->getTermType());
-#else
-  const char* termtype = fterm_data->getTermType();
-#endif
+  const auto& termtype = fterm_data->getTermType();
   terminals.emplace_back(termtype);         // available terminal type
 
   if ( color256 )                           // 1st fallback if not found
@@ -104,10 +100,15 @@ void FTermcap::termcap()
 
   while ( iter != terminals.end() )
   {
-    fterm_data->setTermType(iter->c_str());
+    fterm_data->setTermType(*iter);
 
     // Open the termcap file + load entry for termtype
-    status = tgetent(term_buffer, termtype);
+#if defined(__sun) && defined(__SVR4)
+    status = tgetent(term_buffer, const_cast<char*>(termtype.data()));
+#else
+    status = tgetent(term_buffer, termtype.data());
+#endif
+
 
     if ( status == success )
       initialized = true;
@@ -132,9 +133,9 @@ void FTermcap::termcapError (int status)
   if ( status == no_entry || status == uninitialized )
   {
     const auto& fterm_data = FTerm::getFTermData();
-    const char* termtype = fterm_data->getTermType();
+    const auto& termtype = fterm_data->getTermType();
     std::clog << FLog::LogLevel::Error
-              << "Unknown terminal: \""  << termtype << "\". "
+              << "Unknown terminal: \"" << termtype << "\". "
               << "Check the TERM environment variable. "
               << "Also make sure that the terminal "
               << "is defined in the termcap/terminfo database."

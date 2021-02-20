@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -266,9 +266,9 @@ void FOptiMove::set_cursor_address (const char cap[])
 {
   if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeMotionParameter(cap, 23, 23);
+    const auto temp = FTermcap::encodeMotionParameter(cap, 23, 23);
     F_cursor_address.cap = cap;
-    F_cursor_address.duration = capDuration (temp, 1);
+    F_cursor_address.duration = capDuration (temp.data(), 1);
     F_cursor_address.length = capDurationToLength (F_cursor_address.duration);
   }
   else
@@ -284,9 +284,9 @@ void FOptiMove::set_column_address (const char cap[])
 {
   if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0);
+    const auto temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0);
     F_column_address.cap = cap;
-    F_column_address.duration = capDuration (temp, 1);
+    F_column_address.duration = capDuration (temp.data(), 1);
     F_column_address.length = capDurationToLength (F_column_address.duration);
   }
   else
@@ -302,7 +302,7 @@ void FOptiMove::set_row_address (const char cap[])
 {
   if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0);
+    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0).data();
     F_row_address.cap = cap;
     F_row_address.duration = capDuration (temp, 1);
     F_row_address.length = capDurationToLength (F_row_address.duration);
@@ -320,7 +320,7 @@ void FOptiMove::set_parm_up_cursor (const char cap[])
 {
   if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0);
+    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0).data();
     F_parm_up_cursor.cap = cap;
     F_parm_up_cursor.duration = capDuration (temp, 1);
     F_parm_up_cursor.length = capDurationToLength (F_parm_up_cursor.duration);
@@ -338,7 +338,7 @@ void FOptiMove::set_parm_down_cursor (const char cap[])
 {
   if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0);
+    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0).data();
     F_parm_down_cursor.cap = cap;
     F_parm_down_cursor.duration = capDuration (temp, 1);
     F_parm_down_cursor.length = capDurationToLength (F_parm_down_cursor.duration);
@@ -356,7 +356,7 @@ void FOptiMove::set_parm_left_cursor (const char cap[])
 {
   if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0);
+    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0).data();
     F_parm_left_cursor.cap = cap;
     F_parm_left_cursor.duration = capDuration (temp, 1);
     F_parm_left_cursor.length = capDurationToLength (F_parm_left_cursor.duration);
@@ -374,7 +374,7 @@ void FOptiMove::set_parm_right_cursor (const char cap[])
 {
   if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0);
+    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0).data();
     F_parm_right_cursor.cap = cap;
     F_parm_right_cursor.duration = capDuration (temp, 1);
     F_parm_right_cursor.length = capDurationToLength (F_parm_right_cursor.duration);
@@ -392,7 +392,7 @@ void FOptiMove::set_erase_chars (const char cap[])
 {
   if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0);
+    const char* temp = FTermcap::encodeParameter(cap, 23, 0, 0, 0, 0, 0, 0, 0, 0).data();
     F_erase_chars.cap = cap;
     F_erase_chars.duration = capDuration (temp, 1);
     F_erase_chars.length = capDurationToLength (F_erase_chars.duration);
@@ -410,7 +410,7 @@ void FOptiMove::set_repeat_char (const char cap[])
 {
   if ( cap && FTermcap::isInitialized() )
   {
-    const char* temp = FTermcap::encodeParameter(cap, ' ', 23, 0, 0, 0, 0, 0, 0, 0);
+    const char* temp = FTermcap::encodeParameter(cap, ' ', 23, 0, 0, 0, 0, 0, 0, 0).data();
     F_repeat_char.cap = cap;
     F_repeat_char.duration = capDuration (temp, 1);
     F_repeat_char.length = capDurationToLength (F_repeat_char.duration);
@@ -686,7 +686,7 @@ inline int FOptiMove::verticalMove (char move[], int from_y, int to_y) const
     if ( move )
     {
       std::strncpy ( move
-                   , FTermcap::encodeParameter(F_row_address.cap, to_y, 0, 0, 0, 0, 0, 0, 0, 0)
+                   , FTermcap::encodeParameter(F_row_address.cap, to_y, 0, 0, 0, 0, 0, 0, 0, 0).data()
                    , BUF_SIZE );
       move[BUF_SIZE - 1] = '\0';
     }
@@ -713,7 +713,7 @@ inline void FOptiMove::downMove ( char move[], int& vtime
     if ( move )
     {
       std::strncpy ( move
-                   , FTermcap::encodeParameter(F_parm_down_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
+                   , FTermcap::encodeParameter(F_parm_down_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0).data()
                    , BUF_SIZE );
       move[BUF_SIZE - 1] = '\0';
     }
@@ -741,7 +741,7 @@ inline void FOptiMove::upMove ( char move[], int& vtime
     if ( move )
     {
       std::strncpy ( move
-                   , FTermcap::encodeParameter(F_parm_up_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
+                   , FTermcap::encodeParameter(F_parm_up_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0).data()
                    , BUF_SIZE );
       move[BUF_SIZE - 1] = '\0';
     }
@@ -767,7 +767,7 @@ inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x) const
   {
     // Move to fixed column position1
     std::strncat ( hmove
-                 , FTermcap::encodeParameter(F_column_address.cap, to_x, 0, 0, 0, 0, 0, 0, 0, 0)
+                 , FTermcap::encodeParameter(F_column_address.cap, to_x, 0, 0, 0, 0, 0, 0, 0, 0).data()
                  , BUF_SIZE - std::strlen(hmove) - 1 );
     hmove[BUF_SIZE - 1] = '\0';
     htime = F_column_address.duration;
@@ -790,7 +790,7 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
   if ( F_parm_right_cursor.cap && F_parm_right_cursor.duration < htime )
   {
     std::strncpy ( hmove
-                 , FTermcap::encodeParameter(F_parm_right_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
+                 , FTermcap::encodeParameter(F_parm_right_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0).data()
                  , BUF_SIZE - 1);
     hmove[BUF_SIZE - 1] = '\0';
     htime = F_parm_right_cursor.duration;
@@ -845,7 +845,7 @@ inline void FOptiMove::leftMove ( char hmove[], int& htime
   if ( F_parm_left_cursor.cap && F_parm_left_cursor.duration < htime )
   {
     std::strncpy ( hmove
-                 , FTermcap::encodeParameter(F_parm_left_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
+                 , FTermcap::encodeParameter(F_parm_left_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0).data()
                  , BUF_SIZE - 1);
     hmove[BUF_SIZE - 1] = '\0';
     htime = F_parm_left_cursor.duration;
@@ -906,13 +906,17 @@ inline bool FOptiMove::isMethod0Faster ( int& move_time
                                        , int xnew, int ynew )
 {
   // Test method 0: direct cursor addressing
-  const char* move_xy = \
+
+  if ( ! F_cursor_address.cap )
+    return false;
+
+  const auto move_xy = \
     FTermcap::encodeMotionParameter(F_cursor_address.cap, xnew, ynew);
 
-  if ( move_xy )
+  if ( ! move_xy.empty() )
   {
     std::strncpy ( reinterpret_cast<char*>(move_buf)
-                 , move_xy, BUF_SIZE - 1 );
+                 , move_xy.data(), BUF_SIZE - 1 );
     move_buf[BUF_SIZE - 1] = '\0';
     move_time = F_cursor_address.duration;
     return true;

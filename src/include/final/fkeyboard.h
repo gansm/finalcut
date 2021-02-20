@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -118,9 +118,8 @@ class FKeyboard final
     void                  setTermcapMap();
     static void           setKeypressTimeout (const uInt64);
     static void           setReadBlockingTime (const uInt64);
-    static void           setNonBlockingInputSupport (bool);
-    bool                  setNonBlockingInput (bool);
-    bool                  setNonBlockingInput();
+    static void           setNonBlockingInputSupport (bool = true);
+    bool                  setNonBlockingInput (bool = true);
     bool                  unsetNonBlockingInput();
     void                  enableUTF8();
     void                  disableUTF8();
@@ -249,10 +248,6 @@ inline void FKeyboard::setReadBlockingTime (const uInt64 blocking_time)
 //----------------------------------------------------------------------
 inline void FKeyboard::setNonBlockingInputSupport (bool enable)
 { non_blocking_input_support = enable; }
-
-//----------------------------------------------------------------------
-inline bool FKeyboard::setNonBlockingInput()
-{ return setNonBlockingInput(true); }
 
 //----------------------------------------------------------------------
 inline bool FKeyboard::unsetNonBlockingInput()

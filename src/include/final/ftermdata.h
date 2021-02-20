@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -69,97 +69,97 @@ class FTermData final
     FTermData& operator = (const FTermData&) = delete;
 
     // Accessors
-    FString           getClassName() const;
-    EncodingMap&      getEncodingList();
-    charSubstitution& getCharSubstitutionMap();
-    Encoding          getTermEncoding() const;
-    FRect&            getTermGeometry();
-    int               getTTYFileDescriptor() const;
-    uInt              getBaudrate() const;
-    const char*       getTermType() const;
-    const char*       getTermFileName() const;
-    const FString&    getXtermFont() const;
-    const FString&    getXtermTitle() const;
-    const FString&    getExitMessage() const;
+    FString            getClassName() const;
+    EncodingMap&       getEncodingList();
+    charSubstitution&  getCharSubstitutionMap();
+    Encoding           getTermEncoding() const;
+    FRect&             getTermGeometry();
+    int                getTTYFileDescriptor() const;
+    uInt               getBaudrate() const;
+    const std::string& getTermType() const;
+    const std::string& getTermFileName() const;
+    const FString&     getXtermFont() const;
+    const FString&     getXtermTitle() const;
+    const FString&     getExitMessage() const;
 #if DEBUG
-    int               getFramebufferBpp() const;
+    int                getFramebufferBpp() const;
 #endif
 
     // Inquiries
-    bool              hasShadowCharacter() const;
-    bool              hasHalfBlockCharacter() const;
-    bool              hasCursorOptimisation() const;
-    bool              isCursorHidden() const;
-    bool              hasAlternateScreen() const;
-    bool              isInAlternateScreen() const;
-    bool              hasASCIIConsole() const;
-    bool              hasVT100Console() const;
-    bool              hasUTF8Console() const;
-    bool              isUTF8() const;
-    bool              isNewFont() const;
-    bool              isVGAFont() const;
-    bool              isMonochron() const;
-    bool              hasTermResized() const;
+    bool               hasShadowCharacter() const;
+    bool               hasHalfBlockCharacter() const;
+    bool               hasCursorOptimisation() const;
+    bool               isCursorHidden() const;
+    bool               hasAlternateScreen() const;
+    bool               isInAlternateScreen() const;
+    bool               hasASCIIConsole() const;
+    bool               hasVT100Console() const;
+    bool               hasUTF8Console() const;
+    bool               isUTF8() const;
+    bool               isNewFont() const;
+    bool               isVGAFont() const;
+    bool               isMonochron() const;
+    bool               hasTermResized() const;
 
     // Mutators
-    void              setTermEncoding (Encoding);
-    void              setTTYFileDescriptor (int);
-    void              setBaudrate (uInt);
-    void              supportShadowCharacter (bool);
-    void              supportHalfBlockCharacter (bool);
-    void              supportCursorOptimisation (bool);
-    void              setCursorHidden (bool);
-    void              useAlternateScreen (bool);
-    void              setAlternateScreenInUse (bool);
-    void              setASCIIConsole (bool);
-    void              setVT100Console (bool);
-    void              setUTF8Console (bool);
-    void              setUTF8 (bool);
-    void              setNewFont (bool);
-    void              setVGAFont (bool);
-    void              setMonochron (bool);
-    void              setTermResized (bool);
-    void              setTermType (const char[]);
-    void              setTermFileName (const char[]);
-    void              setXtermFont (const FString&);
-    void              setXtermTitle (const FString&);
-    void              setExitMessage (const FString&);
+    void               setTermEncoding (Encoding);
+    void               setTTYFileDescriptor (int);
+    void               setBaudrate (uInt);
+    void               supportShadowCharacter (bool = true);
+    void               supportHalfBlockCharacter (bool = true);
+    void               supportCursorOptimisation (bool = true);
+    void               setCursorHidden (bool = true);
+    void               useAlternateScreen (bool = true);
+    void               setAlternateScreenInUse (bool = true);
+    void               setASCIIConsole (bool = true);
+    void               setVT100Console (bool = true);
+    void               setUTF8Console (bool = true);
+    void               setUTF8 (bool = true);
+    void               setNewFont (bool = true);
+    void               setVGAFont (bool = true);
+    void               setMonochron (bool = true);
+    void               setTermResized (bool = true);
+    void               setTermType (const std::string&);
+    void               setTermFileName (const std::string&);
+    void               setXtermFont (const FString&);
+    void               setXtermTitle (const FString&);
+    void               setExitMessage (const FString&);
 #if DEBUG
-    void              setFramebufferBpp (int);
+    void               setFramebufferBpp (int);
 #endif
 
   private:
     // Data members
-    EncodingMap       encoding_list{};
-    charSubstitution  char_substitution_map{};
-    FRect             term_geometry{};  // current terminal geometry
-    FString           xterm_font{};
-    FString           xterm_title{};
-    FString           exit_message{};
-    Encoding          term_encoding{Encoding::Unknown};
-    int               fd_tty{-1};  // Teletype (tty) file descriptor
+    EncodingMap        encoding_list{};
+    charSubstitution   char_substitution_map{};
+    FRect              term_geometry{};  // current terminal geometry
+    FString            xterm_font{};
+    FString            xterm_title{};
+    FString            exit_message{};
+    Encoding           term_encoding{Encoding::Unknown};
+    int                fd_tty{-1};  // Teletype (tty) file descriptor
                                    // is still undefined
 #if DEBUG
-    int               framebuffer_bpp{-1};
+    int                framebuffer_bpp{-1};
 #endif
 
-    uInt              baudrate{0};
-    char              termtype[256]{'\0'};
-    char              termfilename[256]{'\0'};
-    bool              shadow_character{true};
-    bool              half_block_character{true};
-    bool              cursor_optimisation{true};
-    bool              hidden_cursor{false};  // Global cursor hidden state
-    bool              use_alternate_screen{true};
-    bool              alternate_screen{false};
-    bool              ascii_console{false};
-    bool              vt100_console{false};
-    bool              utf8_console{false};
-    bool              utf8_state{false};
-    bool              new_font{false};
-    bool              vga_font{false};
-    bool              monochron{false};
-    bool              resize_term{false};
+    uInt               baudrate{0};
+    std::string        termtype{};
+    std::string        termfilename{};
+    bool               shadow_character{true};
+    bool               half_block_character{true};
+    bool               cursor_optimisation{true};
+    bool               hidden_cursor{false};  // Global cursor hidden state
+    bool               use_alternate_screen{true};
+    bool               alternate_screen{false};
+    bool               ascii_console{false};
+    bool               vt100_console{false};
+    bool               utf8_console{false};
+    bool               utf8_state{false};
+    bool               new_font{false};
+    bool               vga_font{false};
+    bool               monochron{false};
+    bool               resize_term{false};
 };
 
 // FTermData inline functions
@@ -192,11 +192,11 @@ inline uInt FTermData::getBaudrate() const
 { return baudrate; }
 
 //----------------------------------------------------------------------
-inline const char* FTermData::getTermType() const
+inline const std::string& FTermData::getTermType() const
 { return termtype; }
 
 //----------------------------------------------------------------------
-inline const char* FTermData::getTermFileName() const
+inline const std::string& FTermData::getTermFileName() const
 { return termfilename; }
 
 //----------------------------------------------------------------------
@@ -342,23 +342,17 @@ inline void FTermData::setTermResized (bool resize)
 { resize_term = resize; }
 
 //----------------------------------------------------------------------
-inline void FTermData::setTermType (const char name[])
+inline void FTermData::setTermType (const std::string& name)
 {
-  if ( ! name )
-    return;
-
-  std::strncpy (termtype, name, sizeof(termtype) - 1);
-  termtype[sizeof(termtype) - 1] = '\0';
+  if ( ! name.empty() )
+    termtype = name;
 }
 
 //----------------------------------------------------------------------
-inline void FTermData::setTermFileName (const char file_name[])
+inline void FTermData::setTermFileName (const std::string& file_name)
 {
-  if ( ! file_name )
-    return;
-
-  std::strncpy (termfilename, file_name, sizeof(termfilename) - 1);
-  termfilename[sizeof(termfilename) - 1] = '\0';
+  if ( ! file_name.empty() )
+    termfilename = file_name;
 }
 
 //----------------------------------------------------------------------

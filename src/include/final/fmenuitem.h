@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -96,9 +96,8 @@ class FMenuItem : public FWidget
     FString             getText() const;
 
     // Mutators
-    bool                setEnable (bool) override;
-    bool                setFocus (bool) override;
-    bool                setFocus() override;
+    bool                setEnable (bool = true) override;
+    bool                setFocus (bool = true) override;
     bool                unsetFocus() override;
     void                setSelected();
     void                unsetSelected();
@@ -218,10 +217,6 @@ inline std::size_t FMenuItem::getTextWidth() const
 //----------------------------------------------------------------------
 inline FString FMenuItem::getText() const
 { return text; }
-
-//----------------------------------------------------------------------
-inline bool FMenuItem::setFocus()
-{ return setFocus(true); }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::unsetFocus()

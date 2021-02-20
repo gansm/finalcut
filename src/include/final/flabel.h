@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -95,14 +95,12 @@ class FLabel : public FWidget
     // Mutators
     void                setAccelWidget (FWidget* = nullptr);
     void                setAlignment (Align);
-    bool                setEmphasis (bool);
-    bool                setEmphasis();
+    bool                setEmphasis (bool = true);
     bool                unsetEmphasis();
     void                resetColors() override;
-    bool                setReverseMode (bool);
-    bool                setReverseMode();
+    bool                setReverseMode (bool = true);
     bool                unsetReverseMode();
-    bool                setEnable (bool) override;
+    bool                setEnable (bool = true) override;
     void                setNumber (uLong);
     void                setNumber (long);
     void                setNumber (float, int = FLT_DIG);
@@ -185,20 +183,12 @@ inline bool FLabel::setEmphasis (bool enable)
 { return (emphasis = enable); }
 
 //----------------------------------------------------------------------
-inline bool FLabel::setEmphasis()
-{ return setEmphasis(true); }
-
-//----------------------------------------------------------------------
 inline bool FLabel::unsetEmphasis()
 { return setEmphasis(false); }
 
 //----------------------------------------------------------------------
 inline bool FLabel::setReverseMode (bool enable)
 { return (reverse_mode = enable); }
-
-//----------------------------------------------------------------------
-inline bool FLabel::setReverseMode()
-{ return setReverseMode(true); }
 
 //----------------------------------------------------------------------
 inline bool FLabel::unsetReverseMode()

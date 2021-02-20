@@ -179,13 +179,13 @@ void FTermBuffer::add ( FString::const_iterator& begin
 
 // FTermBuffer non-member operators
 //----------------------------------------------------------------------
-FTermBuffer::FCharVector& operator << ( FTermBuffer::FCharVector& termString
+FTermBuffer::FCharVector& operator << ( FTermBuffer::FCharVector& term_string
                                       , const FTermBuffer& buf )
 {
   if ( ! buf.data.empty() )
-    termString.assign(buf.data.begin(), buf.data.end());
+    term_string.assign(buf.data.begin(), buf.data.end());
 
-  return termString;
+  return term_string;
 }
 
 }  // namespace finalcut

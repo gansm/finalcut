@@ -184,8 +184,8 @@ class FTerm final
     static FString           getKeyName (FKey);
     charSubstitution&        getCharSubstitutionMap();
     static int               getTTYFileDescriptor();
-    static const char*       getTermType();
-    static const char*       getTermFileName();
+    static std::string       getTermType();
+    static std::string       getTermFileName();
     static int               getTabstop();
     static int               getMaxColor();
     static auto              getColorPaletteTheme() -> std::shared_ptr<FColorPalette>&;
@@ -252,15 +252,13 @@ class FTerm final
 
     // Mutators
     static void              setFSystem (std::unique_ptr<FSystem>&);
-    static void              setTermType (const char[]);
-    static void              setInsertCursor (bool);
-    static void              setInsertCursor();
+    static void              setTermType (const std::string&);
+    static void              setInsertCursor (bool = true);
     static void              unsetInsertCursor();
-    static void              redefineDefaultColors (bool);
+    static void              redefineDefaultColors (bool = true);
     static void              setDblclickInterval (const uInt64);
-    static void              useAlternateScreen (bool);
-    static bool              setUTF8 (bool);
-    static bool              setUTF8();
+    static void              useAlternateScreen (bool = true);
+    static bool              setUTF8 (bool = true);
     static bool              unsetUTF8();
 
     // Methods
@@ -270,7 +268,7 @@ class FTerm final
     static int               openConsole();
     static int               closeConsole();
     static const char*       moveCursorString (int, int, int, int);
-    static const char*       cursorsVisibilityString (bool);
+    static const char*       cursorsVisibilityString (bool = true);
     static void              detectTermSize();
     static void              setTermSize (const FSize&);
     static void              setTermTitle (const FString&);
@@ -296,8 +294,8 @@ class FTerm final
 
     static defaultPutChar&   putchar();  // function pointer
     template <typename... Args>
-    static void              putstringf (const char[], Args&&...);
-    static void              putstring (const char[], int = 1);
+    static void              putstringf (const std::string&, Args&&...);
+    static void              putstring (const std::string&, int = 1);
     static int               putchar_ASCII (int);
     static int               putchar_UTF8  (int);
 
@@ -410,16 +408,8 @@ inline void FTerm::setFSystem (std::unique_ptr<FSystem>& fsystem)
 }
 
 //----------------------------------------------------------------------
-inline void FTerm::setInsertCursor()
-{ return setInsertCursor(true); }
-
-//----------------------------------------------------------------------
 inline void FTerm::unsetInsertCursor()
 { return setInsertCursor(false); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::setUTF8()
-{ return setUTF8(true); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::unsetUTF8()
@@ -435,18 +425,17 @@ inline void FTerm::setColorPaletteTheme (const FSetPalette& f)
 
 //----------------------------------------------------------------------
 template <typename... Args>
-inline void FTerm::putstringf (const char format[], Args&&... args)
+inline void FTerm::putstringf (const std::string& format, Args&&... args)
 {
-  const int size = std::snprintf (nullptr, 0, format, args...) + 1;
+  const int size = std::snprintf (nullptr, 0, format.data(), args...) + 1;
 
   if ( size == -1 )
     return;
 
   const auto count = std::size_t(size);
   std::vector<char> buf(count);
-  std::snprintf (&buf[0], count, format, std::forward<Args>(args)...);
-  const auto& fsys = FTerm::getFSystem();
-  fsys->tputs (&buf[0], 1, FTerm::putchar_ASCII);
+  std::snprintf (&buf[0], count, format.data(), std::forward<Args>(args)...);
+  putstring (std::string(&buf[0]), 1);
 }
 
 //----------------------------------------------------------------------

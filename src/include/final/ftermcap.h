@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2020 Markus Gans                                      *
+* Copyright 2016-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -60,8 +60,6 @@
 #include <utility>
 #include <vector>
 
-#include "final/ftermcap.h"
-
 // FTermcap string macro
 #define TCAP(...)  FTermcap::strings[int(Termcap::__VA_ARGS__)].string
 
@@ -93,19 +91,13 @@ class FTermcap final
 
     // Accessors
     FString              getClassName() const;
-    template <typename CharT>
-    static bool          getFlag (const CharT&);
-    template <typename CharT>
-    static int           getNumber (const CharT&);
-    template <typename CharT>
-    static char*         getString (const CharT&);
-    template <typename CharT>
-    static char*         encodeMotionParameter (const CharT&, int, int);
-    template <typename CharT
-            , typename... Args>
-    static char*         encodeParameter (const CharT&, Args&&...);
-    template <typename CharT>
-    static int           paddingPrint (const CharT&, int, fn_putc);
+    static bool          getFlag (const std::string&);
+    static int           getNumber (const std::string&);
+    static char*         getString (const std::string&);
+    static std::string   encodeMotionParameter (const std::string&, int, int);
+    template <typename... Args>
+    static std::string   encodeParameter (const std::string&, Args&&...);
+    static int           paddingPrint (const std::string&, int, fn_putc);
 
     // Inquiry
     static bool          isInitialized();
@@ -154,46 +146,42 @@ inline FString FTermcap::getClassName() const
 { return "FTermcap"; }
 
 //----------------------------------------------------------------------
-template <typename CharT>
-bool FTermcap::getFlag (const CharT& cap)
+inline bool FTermcap::getFlag (const std::string& cap)
 {
-  return ::tgetflag(C_STR(cap));
+  return ::tgetflag(C_STR(cap.data()));
 }
 
 //----------------------------------------------------------------------
-template <typename CharT>
-int FTermcap::getNumber (const CharT& cap)
+inline int FTermcap::getNumber (const std::string& cap)
 {
-  return ::tgetnum(C_STR(cap));
+  return ::tgetnum(C_STR(cap.data()));
 }
 
 //----------------------------------------------------------------------
-template <typename CharT>
-char* FTermcap::getString (const CharT& cap)
+inline char* FTermcap::getString (const std::string& cap)
 {
-  return ::tgetstr(C_STR(cap), reinterpret_cast<char**>(&string_buf));
+  return ::tgetstr(C_STR(cap.data()), reinterpret_cast<char**>(&string_buf));
 }
 
 //----------------------------------------------------------------------
-template <typename CharT>
-char* FTermcap::encodeMotionParameter (const CharT& cap, int col, int row)
+inline std::string FTermcap::encodeMotionParameter (const std::string& cap, int col, int row)
 {
-  return ::tgoto(C_STR(cap), col, row);
+  auto str = ::tgoto(C_STR(cap.data()), col, row);
+  return ( str ) ? str : std::string();
 }
 
 //----------------------------------------------------------------------
-template <typename CharT
-        , typename... Args>
-inline char* FTermcap::encodeParameter (const CharT& cap, Args&&... args)
+template <typename... Args>
+inline std::string FTermcap::encodeParameter (const std::string& cap, Args&&... args)
 {
-  return ::tparm (C_STR(cap), std::forward<Args>(args)...);
+  auto str = ::tparm (C_STR(cap.data()), std::forward<Args>(args)...);
+  return ( str ) ? str : std::string();
 }
 
 //----------------------------------------------------------------------
-template <typename CharT>
-int FTermcap::paddingPrint (const CharT& str, int affcnt, fn_putc putc)
+inline int FTermcap::paddingPrint (const std::string& str, int affcnt, fn_putc putc)
 {
-  return _tputs (C_STR(str), affcnt, putc);
+  return _tputs (C_STR(str.data()), affcnt, putc);
 }
 
 //----------------------------------------------------------------------

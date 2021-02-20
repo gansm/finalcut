@@ -886,17 +886,17 @@ bool FOptiAttr::setTermAttributes ( FChar& term
 {
   if ( F_set_attributes.cap )
   {
-    const char* sgr = FTermcap::encodeParameter ( F_set_attributes.cap
-                                                , p1 && ! fake_reverse
-                                                , p2
-                                                , p3 && ! fake_reverse
-                                                , p4
-                                                , p5
-                                                , p6
-                                                , p7
-                                                , p8
-                                                , p9 );
-    append_sequence (sgr);
+    const auto sgr = FTermcap::encodeParameter ( F_set_attributes.cap
+                                               , p1 && ! fake_reverse
+                                               , p2
+                                               , p3 && ! fake_reverse
+                                               , p4
+                                               , p5
+                                               , p6
+                                               , p7
+                                               , p8
+                                               , p9 );
+    append_sequence (sgr.data());
     resetColor(term);
     term.attr.bit.standout      = p1;
     term.attr.bit.underline     = p2;
@@ -1386,13 +1386,13 @@ inline void FOptiAttr::change_current_color ( const FChar& term
 
     if ( term.fg_color != fg || frev )
     {
-      color_str = FTermcap::encodeParameter(AF, uInt16(ansi_fg), 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = FTermcap::encodeParameter(AF, uInt16(ansi_fg), 0, 0, 0, 0, 0, 0, 0, 0).data();
       append_sequence (color_str);
     }
 
     if ( term.bg_color != bg || frev )
     {
-      color_str = FTermcap::encodeParameter(AB, uInt16(ansi_bg), 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = FTermcap::encodeParameter(AB, uInt16(ansi_bg), 0, 0, 0, 0, 0, 0, 0, 0).data();
       append_sequence (color_str);
     }
   }
@@ -1400,13 +1400,13 @@ inline void FOptiAttr::change_current_color ( const FChar& term
   {
     if ( term.fg_color != fg || frev )
     {
-      color_str = FTermcap::encodeParameter(Sf, uInt16(fg), 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = FTermcap::encodeParameter(Sf, uInt16(fg), 0, 0, 0, 0, 0, 0, 0, 0).data();
       append_sequence (color_str);
     }
 
     if ( term.bg_color != bg || frev )
     {
-      color_str = FTermcap::encodeParameter(Sb, uInt16(bg), 0, 0, 0, 0, 0, 0, 0, 0);
+      color_str = FTermcap::encodeParameter(Sb, uInt16(bg), 0, 0, 0, 0, 0, 0, 0, 0).data();
       append_sequence (color_str);
     }
   }
@@ -1414,7 +1414,7 @@ inline void FOptiAttr::change_current_color ( const FChar& term
   {
     fg = vga2ansi(fg);
     bg = vga2ansi(bg);
-    color_str = FTermcap::encodeParameter(sp, uInt16(fg), uInt16(bg), 0, 0, 0, 0, 0, 0, 0);
+    color_str = FTermcap::encodeParameter(sp, uInt16(fg), uInt16(bg), 0, 0, 0, 0, 0, 0, 0).data();
     append_sequence (color_str);
   }
 }

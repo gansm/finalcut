@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -89,27 +89,20 @@ class FButton : public FWidget
     void                setInactiveForegroundColor (FColor);
     void                setInactiveBackgroundColor (FColor);
     void                resetColors() override;
-    bool                setNoUnderline(bool);
-    bool                setNoUnderline();
+    bool                setNoUnderline (bool = true);
     bool                unsetNoUnderline();
-    bool                setEnable(bool) override;
-    bool                setEnable() override;
+    bool                setEnable (bool = true) override;
     bool                unsetEnable() override;
     bool                setDisable() override;
-    bool                setFocus(bool) override;
-    bool                setFocus() override;
+    bool                setFocus (bool = true) override;
     bool                unsetFocus() override;
-    bool                setFlat(bool);
-    bool                setFlat();
+    bool                setFlat (bool = true);
     bool                unsetFlat();
-    bool                setShadow(bool);
-    bool                setShadow();
+    bool                setShadow (bool = true);
     bool                unsetShadow();
-    bool                setDown(bool);
-    bool                setDown();
+    bool                setDown (bool = true);
     bool                setUp();
-    bool                setClickAnimation(bool);
-    bool                setClickAnimation();
+    bool                setClickAnimation (bool = true);
     bool                unsetClickAnimation();
     void                setText (const FString&);
 
@@ -182,16 +175,8 @@ inline FString FButton::getText() const
 { return text; }
 
 //----------------------------------------------------------------------
-inline bool FButton::setNoUnderline()
-{ return setNoUnderline(true); }
-
-//----------------------------------------------------------------------
 inline bool FButton::unsetNoUnderline()
 { return setNoUnderline(false); }
-
-//----------------------------------------------------------------------
-inline bool FButton::setEnable()
-{ return setEnable(true); }
 
 //----------------------------------------------------------------------
 inline bool FButton::unsetEnable()
@@ -202,32 +187,16 @@ inline bool FButton::setDisable()
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FButton::setFocus()
-{ return setFocus(true); }
-
-//----------------------------------------------------------------------
 inline bool FButton::unsetFocus()
 { return setFocus(false); }
-
-//----------------------------------------------------------------------
-inline bool FButton::setFlat()
-{ return setFlat(true); }
 
 //----------------------------------------------------------------------
 inline bool FButton::unsetFlat()
 { return setFlat(false); }
 
 //----------------------------------------------------------------------
-inline bool FButton::setShadow()
-{ return setShadow(true); }
-
-//----------------------------------------------------------------------
 inline bool FButton::unsetShadow()
 { return setShadow(false); }
-
-//----------------------------------------------------------------------
-inline bool FButton::setDown()
-{ return setDown(true); }
 
 //----------------------------------------------------------------------
 inline bool FButton::setUp()
@@ -236,10 +205,6 @@ inline bool FButton::setUp()
 //----------------------------------------------------------------------
 inline bool FButton::setClickAnimation(bool enable)
 { return (click_animation = enable); }
-
-//----------------------------------------------------------------------
-inline bool FButton::setClickAnimation()
-{ return setClickAnimation(true); }
 
 //----------------------------------------------------------------------
 inline bool FButton::unsetClickAnimation()

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -225,10 +225,10 @@ void FTermcapQuirks::rxvt()
 {
   // Set enter/exit alternative charset mode for rxvt terminal
   const auto& fterm_data = FTerm::getFTermData();
-  const char* termtype = fterm_data->getTermType();
+  const auto& termtype = fterm_data->getTermType();
   const auto& term_detection = FTerm::getFTermDetection();
 
-  if ( std::strncmp(termtype, "rxvt-16color", 12) == 0 )
+  if ( termtype.substr(0,12) == "rxvt-16color" )
   {
     TCAP(t_enter_alt_charset_mode) = ESC "(0";
     TCAP(t_exit_alt_charset_mode)  = ESC "(B";

@@ -101,8 +101,8 @@ class FListViewItem : public FObject
     void                setText (int, const FString&);
     template <typename DT>
     void                setData (DT&&);
-    void                setCheckable (bool);
-    void                setChecked (bool);
+    void                setCheckable (bool = true);
+    void                setChecked (bool = true);
 
     // Inquiry
     bool                isChecked() const;
@@ -335,9 +335,8 @@ class FListView : public FWidget
     void                  setUserAscendingCompare (Compare);
     template <typename Compare>
     void                  setUserDescendingCompare (Compare);
-    void                  hideSortIndicator (bool);
-    bool                  setTreeView (bool);
-    bool                  setTreeView();
+    void                  hideSortIndicator (bool = true);
+    bool                  setTreeView (bool = true);
     bool                  unsetTreeView();
 
     // Methods
@@ -584,10 +583,6 @@ inline void FListView::hideSortIndicator (bool hide)
 //----------------------------------------------------------------------
 inline bool FListView::setTreeView (bool enable)
 { return (tree_view = enable); }
-
-//----------------------------------------------------------------------
-inline bool FListView::setTreeView()
-{ return setTreeView(true); }
 
 //----------------------------------------------------------------------
 inline bool FListView::unsetTreeView()

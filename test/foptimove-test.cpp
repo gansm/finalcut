@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -142,7 +142,7 @@ void FOptiMoveTest::noArgumentTest()
   om.set_parm_right_cursor (0);
   om.set_parm_left_cursor (0);
 
-  CPPUNIT_ASSERT (om.moveCursor (1, 1, 5, 5) == 0);
+  CPPUNIT_ASSERT (om.moveCursor (1, 1, 5, 5) == nullptr);
 }
 
 //----------------------------------------------------------------------

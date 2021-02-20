@@ -97,18 +97,14 @@ class FDialog : public FWindow
     virtual FString       getText() const;
 
     // Mutators
-    bool                  setDialogWidget (bool);
-    bool                  setDialogWidget();
+    bool                  setDialogWidget (bool = true);
     bool                  unsetDialogWidget();
-    bool                  setModal (bool);
-    bool                  setModal();
+    bool                  setModal (bool = true);
     bool                  unsetModal();
-    bool                  setResizeable (bool) override;
-    bool                  setScrollable (bool);
-    bool                  setScrollable();
+    bool                  setResizeable (bool = true) override;
+    bool                  setScrollable (bool = true);
     bool                  unsetScrollable();
-    bool                  setBorder (bool);
-    bool                  setBorder();
+    bool                  setBorder (bool = true);
     bool                  unsetBorder();
     void                  resetColors() override;
     virtual void          setText (const FString&);
@@ -253,32 +249,16 @@ inline FString FDialog::getText() const
 { return tb_text; }
 
 //----------------------------------------------------------------------
-inline bool FDialog::setDialogWidget()
-{ return setDialogWidget(true); }
-
-//----------------------------------------------------------------------
 inline bool FDialog::unsetDialogWidget()
 { return setDialogWidget(false); }
-
-//----------------------------------------------------------------------
-inline bool FDialog::setModal()
-{ return setModal(true); }
 
 //----------------------------------------------------------------------
 inline bool FDialog::unsetModal()
 { return setModal(false); }
 
 //----------------------------------------------------------------------
-inline bool FDialog::setScrollable()
-{ return setScrollable(true); }
-
-//----------------------------------------------------------------------
 inline bool FDialog::unsetScrollable()
 { return setScrollable(false); }
-
-//----------------------------------------------------------------------
-inline bool FDialog::setBorder()
-{ return setBorder(true); }
 
 //----------------------------------------------------------------------
 inline bool FDialog::unsetBorder()

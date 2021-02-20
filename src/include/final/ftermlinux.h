@@ -99,7 +99,7 @@ class FTermLinux final
     // Mutators
     bool                 setCursorStyle (CursorStyle);
     bool                 setPalette (FColor, int, int, int);
-    void                 setUTF8 (bool) const;
+    void                 setUTF8 (bool = true) const;
 
     // Inquiries
     static bool          isLinuxConsole();
@@ -202,7 +202,7 @@ class FTermLinux final
     void                 writeAttributeController (uChar, uChar) const;
     uChar                getAttributeMode() const;
     void                 setAttributeMode (uChar) const;
-    int                  setBlinkAsIntensity (bool) const;
+    int                  setBlinkAsIntensity (bool = true) const;
     bool                 has9BitCharacters() const;
     void                 getVGAPalette();
     void                 setVGADefaultPalette();

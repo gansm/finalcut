@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -93,8 +93,8 @@ void FTermDataTest::defaultDataTest()
   CPPUNIT_ASSERT ( data.getTermGeometry() == finalcut::FRect() );
   CPPUNIT_ASSERT ( data.getTTYFileDescriptor() ==  -1 );
   CPPUNIT_ASSERT ( data.getBaudrate() == 0 );
-  CPPUNIT_ASSERT_CSTRING ( data.getTermType(), "" );
-  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), "" );
+  CPPUNIT_ASSERT_CSTRING ( data.getTermType().data(), "" );
+  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName().data(), "" );
   CPPUNIT_ASSERT ( data.getXtermFont() == finalcut::FString() );
   CPPUNIT_ASSERT ( data.getXtermTitle() == finalcut::FString() );
   CPPUNIT_ASSERT ( data.getExitMessage() == finalcut::FString() );
@@ -178,13 +178,13 @@ void FTermDataTest::dataTest()
   CPPUNIT_ASSERT ( data.getBaudrate() != 9600 );
   CPPUNIT_ASSERT ( data.getBaudrate() == 38400 );
 
-  CPPUNIT_ASSERT_CSTRING ( data.getTermType(), "" );
+  CPPUNIT_ASSERT ( data.getTermType() == "" );
   data.setTermType("linux");
-  CPPUNIT_ASSERT_CSTRING ( data.getTermType(), "linux" );
+  CPPUNIT_ASSERT ( data.getTermType() == "linux" );
 
-  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), "" );
+  CPPUNIT_ASSERT ( data.getTermFileName() == "" );
   data.setTermFileName("/dev/pts/2");
-  CPPUNIT_ASSERT_CSTRING ( data.getTermFileName(), "/dev/pts/2" );
+  CPPUNIT_ASSERT ( data.getTermFileName() == "/dev/pts/2" );
 
   CPPUNIT_ASSERT ( data.getXtermFont() == finalcut::FString() );
   data.setXtermFont("terminus-20");

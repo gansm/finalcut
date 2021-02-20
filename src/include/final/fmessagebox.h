@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -117,8 +117,7 @@ class FMessageBox : public FDialog
     // Mutator
     void                setTitlebarText (const FString&);
     void                setHeadline (const FString&);
-    bool                setCenterText(bool);
-    bool                setCenterText();
+    bool                setCenterText (bool = true);
     bool                unsetCenterText();
     void                setText (const FString&) override;
 
@@ -205,10 +204,6 @@ inline void FMessageBox::setTitlebarText (const FString& txt)
 //----------------------------------------------------------------------
 inline bool FMessageBox::setCenterText(bool enable)
 { return (center_text = enable); }
-
-//----------------------------------------------------------------------
-inline bool FMessageBox::setCenterText()
-{ return setCenterText(true); }
 
 //----------------------------------------------------------------------
 inline bool FMessageBox::unsetCenterText()

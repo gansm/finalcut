@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -162,18 +162,14 @@ class FComboBox : public FWidget
     void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
-    bool                setEnable (bool) override;
-    bool                setEnable() override;
+    bool                setEnable (bool = true) override;
     bool                unsetEnable() override;
     bool                setDisable() override;
-    bool                setFocus (bool) override;
-    bool                setFocus() override;
+    bool                setFocus (bool = true) override;
     bool                unsetFocus() override;
-    bool                setShadow (bool);
-    bool                setShadow();
+    bool                setShadow (bool = true);
     bool                unsetShadow();
-    bool                setEditable (bool);
-    bool                setEditable();
+    bool                setEditable (bool = true);
     bool                unsetEditable();
     void                setCurrentItem (std::size_t);
     void                setMaxVisibleItems (std::size_t);
@@ -266,10 +262,6 @@ inline FLineEdit::LabelOrientation FComboBox::getLabelOrientation() const
 { return input_field.getLabelOrientation(); }
 
 //----------------------------------------------------------------------
-inline bool FComboBox::setEnable()
-{ return setEnable(true); }
-
-//----------------------------------------------------------------------
 inline bool FComboBox::unsetEnable()
 { return setEnable(false); }
 
@@ -278,24 +270,12 @@ inline bool FComboBox::setDisable()
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FComboBox::setFocus()
-{ return setFocus(true); }
-
-//----------------------------------------------------------------------
 inline bool FComboBox::unsetFocus()
 { return setFocus(false); }
 
 //----------------------------------------------------------------------
-inline bool FComboBox::setShadow()
-{ return setShadow(true); }
-
-//----------------------------------------------------------------------
 inline bool FComboBox::unsetShadow()
 { return setShadow(false); }
-
-//----------------------------------------------------------------------
-inline bool FComboBox::setEditable()
-{ return setEditable(true); }
 
 //----------------------------------------------------------------------
 inline bool FComboBox::unsetEditable()

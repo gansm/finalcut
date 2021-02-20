@@ -24,6 +24,7 @@
   #include <unistd.h>  // need for ttyname_r
 #endif
 
+#include <numeric>
 #include <queue>
 #include <string>
 #include <vector>
@@ -68,10 +69,7 @@ uInt                 FVTerm::clr_eol_length{};
 uInt                 FVTerm::cursor_address_length{};
 struct timeval       FVTerm::time_last_flush{};
 struct timeval       FVTerm::last_term_size_check{};
-std::vector<int>*    FVTerm::output_buffer{nullptr};
-FPoint*              FVTerm::term_pos{nullptr};
 const FVTerm*        FVTerm::init_object{nullptr};
-FTerm*               FVTerm::fterm{nullptr};
 FVTerm::FTermArea*   FVTerm::vterm{nullptr};
 FVTerm::FTermArea*   FVTerm::vdesktop{nullptr};
 FVTerm::FTermArea*   FVTerm::active_area{nullptr};
@@ -91,6 +89,12 @@ FVTerm::FVTerm()
 {
   if ( ! init_object )
     init();
+  else
+  {
+    fterm = std::shared_ptr<FTerm>(init_object->fterm);
+    term_pos = std::shared_ptr<FPoint>(init_object->term_pos);
+    output_buffer = std::shared_ptr<OutputBuffer>(init_object->output_buffer);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -150,7 +154,7 @@ void FVTerm::setTermXY (int x, int y) const
   const char* move_str = FTerm::moveCursorString (term_x, term_y, x, y);
 
   if ( move_str )
-    appendOutputBuffer(move_str);
+    appendOutputBuffer(FTermControl{move_str});
 
   term_pos->setPoint(x, y);
 }
@@ -185,7 +189,7 @@ void FVTerm::hideCursor (bool enable) const
   if ( ! visibility_str )  // Exit the function if the string is empty
     return;
 
-  appendOutputBuffer(visibility_str);
+  appendOutputBuffer(FTermControl{visibility_str});
   flush();
 }
 
@@ -565,7 +569,7 @@ void FVTerm::print (const FColorPair& pair)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::flush()
+void FVTerm::flush() const
 {
   // Flush the output buffer
 
@@ -573,15 +577,28 @@ void FVTerm::flush()
     || ! (isFlushTimeout() || force_terminal_update) )
     return;
 
-  static const FTerm::defaultPutChar& FTermPutchar = FTerm::putchar();
+  while ( ! output_buffer->empty() )
+  {
+    const auto& first = output_buffer->front();
+    const auto& type = std::get<0>(first);
+    const auto& wstring = std::get<1>(first);
 
-  if ( ! FTermPutchar )
-    return;
+    if ( type == OutputType::String )
+    {
+      static const FTerm::defaultPutChar& FTermPutchar = FTerm::putchar();
 
-  for (auto&& ch : *output_buffer)
-    FTermPutchar(ch);
+      if ( ! FTermPutchar )
+        return;
 
-  output_buffer->clear();
+      for (auto&& ch : wstring)
+        FTermPutchar(int(ch));
+    }
+    else if ( type == OutputType::Control )
+      FTerm::putstring (std::string(wstring.begin(), wstring.end()));
+
+    output_buffer->pop();
+  }
+
   std::fflush(stdout);
   const auto& mouse = FTerm::getFMouseControl();
   mouse->drawPointer();
@@ -1809,9 +1826,9 @@ void FVTerm::init()
 
   try
   {
-    fterm         = new FTerm();
-    term_pos      = new FPoint(-1, -1);
-    output_buffer = new std::vector<int>;
+    fterm         = std::make_shared<FTerm>();
+    term_pos      = std::make_shared<FPoint>(-1, -1);
+    output_buffer = std::make_shared<OutputBuffer>();
   }
   catch (const std::bad_alloc&)
   {
@@ -1822,9 +1839,6 @@ void FVTerm::init()
   // Presetting of the current locale for full-width character support.
   // The final setting is made later in FTerm::init_locale().
   std::setlocale (LC_ALL, "");
-
-  // Reserve memory on the terminal output buffer
-  output_buffer->reserve(TERMINAL_OUTPUT_BUFFER_SIZE + 256);
 
   // term_attribute stores the current state of the terminal
   term_attribute.ch           = {{ L'\0' }};
@@ -1921,18 +1935,9 @@ void FVTerm::finish()
 
   forceTerminalUpdate();
 
-  if ( output_buffer )
-    delete output_buffer;
-
   // remove virtual terminal + virtual desktop area
   removeArea (vdesktop);
   removeArea (vterm);
-
-  if ( term_pos )
-    delete term_pos;
-
-  if ( fterm )
-    delete fterm;
 
   init_object = nullptr;
 }
@@ -2046,13 +2051,13 @@ bool FVTerm::clearTerm (wchar_t fillchar) const
 
   if ( cl )  // Clear screen
   {
-    appendOutputBuffer (cl);
+    appendOutputBuffer (FTermControl{cl});
     term_pos->setPoint(0, 0);
   }
   else if ( cd )  // Clear to end of screen
   {
     setTermXY (0, 0);
-    appendOutputBuffer (cd);
+    appendOutputBuffer (FTermControl{cd});
     term_pos->setPoint(-1, -1);
   }
   else if ( cb )  // Clear to end of line
@@ -2062,7 +2067,7 @@ bool FVTerm::clearTerm (wchar_t fillchar) const
     for (auto i{0}; i < int(FTerm::getLineNumber()); i++)
     {
       setTermXY (0, i);
-      appendOutputBuffer (cb);
+      appendOutputBuffer (FTermControl{cb});
     }
 
     setTermXY (0, 0);
@@ -2382,7 +2387,7 @@ void FVTerm::printFullWidthCharacter ( uInt& x, uInt y
   {
     // Print ellipses for the 1st full-width character column
     appendAttributes (print_char);
-    appendOutputBuffer (int(UniChar::HorizontalEllipsis));
+    appendOutputBuffer (FTermChar{wchar_t(UniChar::HorizontalEllipsis)});
     term_pos->x_ref()++;
     markAsPrinted (x, y);
 
@@ -2391,7 +2396,7 @@ void FVTerm::printFullWidthCharacter ( uInt& x, uInt y
       // Print ellipses for the 2nd full-width character column
       x++;
       appendAttributes (next_char);
-      appendOutputBuffer (int(UniChar::HorizontalEllipsis));
+      appendOutputBuffer (FTermChar{wchar_t(UniChar::HorizontalEllipsis)});
       term_pos->x_ref()++;
       markAsPrinted (x, y);
     }
@@ -2417,9 +2422,9 @@ void FVTerm::printFullWidthPaddingCharacter ( uInt& x, uInt y
     const auto& LE = TCAP(t_parm_left_cursor);
 
     if ( le )
-      appendOutputBuffer (le);
+      appendOutputBuffer (FTermControl{le});
     else if ( LE )
-      appendOutputBuffer (FTermcap::encodeParameter(LE, 1, 0, 0, 0, 0, 0, 0, 0, 0));
+      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(LE, 1, 0, 0, 0, 0, 0, 0, 0, 0)});
     else
     {
       skipPaddingCharacter (x, y, prev_char);
@@ -2437,7 +2442,7 @@ void FVTerm::printFullWidthPaddingCharacter ( uInt& x, uInt y
   {
     // Print ellipses for the 1st full-width character column
     appendAttributes (print_char);
-    appendOutputBuffer (int(UniChar::HorizontalEllipsis));
+    appendOutputBuffer (FTermChar{wchar_t(UniChar::HorizontalEllipsis)});
     term_pos->x_ref()++;
     markAsPrinted (x, y);
   }
@@ -2457,9 +2462,9 @@ void FVTerm::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
     const auto& LE = TCAP(t_parm_left_cursor);
 
     if ( le )
-      appendOutputBuffer (le);
+      appendOutputBuffer (FTermControl{le});
     else if ( LE )
-      appendOutputBuffer (FTermcap::encodeParameter(LE, 1, 0, 0, 0, 0, 0, 0, 0, 0));
+      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(LE, 1, 0, 0, 0, 0, 0, 0, 0, 0)});
 
     if ( le || LE )
     {
@@ -2467,7 +2472,7 @@ void FVTerm::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
       x--;
       term_pos->x_ref()--;
       appendAttributes (prev_char);
-      appendOutputBuffer (int(UniChar::HorizontalEllipsis));
+      appendOutputBuffer (FTermChar{wchar_t(UniChar::HorizontalEllipsis)});
       term_pos->x_ref()++;
       markAsPrinted (x, y);
       x++;
@@ -2531,7 +2536,7 @@ FVTerm::PrintState FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
       && (ut || normal) )
     {
       appendAttributes (print_char);
-      appendOutputBuffer (FTermcap::encodeParameter(ec, whitespace, 0, 0, 0, 0, 0, 0, 0, 0));
+      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(ec, whitespace, 0, 0, 0, 0, 0, 0, 0, 0)});
 
       if ( x + whitespace - 1 < xmax || draw_trailing_ws )
         setTermXY (int(x + whitespace), int(y));
@@ -2596,7 +2601,7 @@ FVTerm::PrintState FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y) const
       newFontChanges (print_char);
       charsetChanges (print_char);
       appendAttributes (print_char);
-      appendOutputBuffer (FTermcap::encodeParameter(rp, print_char.ch[0], repetitions, 0, 0, 0, 0, 0, 0, 0));
+      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char.ch[0], repetitions, 0, 0, 0, 0, 0, 0, 0)});
       term_pos->x_ref() += int(repetitions);
       x = x + repetitions - 1;
     }
@@ -2630,7 +2635,7 @@ inline bool FVTerm::isFullWidthPaddingChar (const FChar& ch) const
 }
 
 //----------------------------------------------------------------------
-void FVTerm::cursorWrap()
+void FVTerm::cursorWrap() const
 {
   // Wrap the cursor
   const auto& vt = vterm;
@@ -2790,7 +2795,7 @@ bool FVTerm::updateTerminalLine (uInt y) const
     {
       auto& min_char = vt->data[y * uInt(vt->width) + xmin];
       appendAttributes (min_char);
-      appendOutputBuffer (ce);
+      appendOutputBuffer (FTermControl{ce});
       markAsPrinted (xmin, uInt(vt->width - 1), y);
     }
     else
@@ -2800,7 +2805,7 @@ bool FVTerm::updateTerminalLine (uInt y) const
         const auto& cb = TCAP(t_clr_bol);
         auto& first_char = vt->data[y * uInt(vt->width)];
         appendAttributes (first_char);
-        appendOutputBuffer (cb);
+        appendOutputBuffer (FTermControl{cb});
         markAsPrinted (0, xmin, y);
       }
 
@@ -2810,7 +2815,7 @@ bool FVTerm::updateTerminalLine (uInt y) const
       {
         auto& last_char = vt->data[(y + 1) * uInt(vt->width) - 1];
         appendAttributes (last_char);
-        appendOutputBuffer (ce);
+        appendOutputBuffer (FTermControl{ce});
         markAsPrinted (xmax + 1, uInt(vt->width - 1), y);
       }
     }
@@ -3006,7 +3011,7 @@ inline void FVTerm::appendChar (FChar& next_char) const
   for (auto&& ch : next_char.encoded_char)
   {
     if ( ch != L'\0')
-      appendOutputBuffer(ch);
+      appendOutputBuffer (FTermChar{ch});
 
     if ( ! combined_char_support )
       return;
@@ -3020,7 +3025,7 @@ inline void FVTerm::appendAttributes (FChar& next_attr) const
   const auto& attr_str = FTerm::changeAttribute (term_attribute, next_attr);
 
   if ( attr_str )
-    appendOutputBuffer (attr_str);
+    appendOutputBuffer (FTermControl{attr_str});
 }
 
 //----------------------------------------------------------------------
@@ -3035,9 +3040,9 @@ void FVTerm::appendLowerRight (FChar& last_char) const
   }
   else if ( SA && RA )
   {
-    appendOutputBuffer (RA);
+    appendOutputBuffer (FTermControl{RA});
     appendChar (last_char);
-    appendOutputBuffer (SA);
+    appendOutputBuffer (FTermControl{SA});
   }
   else
   {
@@ -3058,32 +3063,32 @@ void FVTerm::appendLowerRight (FChar& last_char) const
 
     if ( IC )
     {
-      appendOutputBuffer (FTermcap::encodeParameter(IC, 1, 0, 0, 0, 0, 0, 0, 0, 0));
+      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(IC, 1, 0, 0, 0, 0, 0, 0, 0, 0)});
       appendChar (second_last);
     }
     else if ( im && ei )
     {
-      appendOutputBuffer (im);
+      appendOutputBuffer (FTermControl{im});
       appendChar (second_last);
 
       if ( ip )
-        appendOutputBuffer (ip);
+        appendOutputBuffer (FTermControl{ip});
 
-      appendOutputBuffer (ei);
+      appendOutputBuffer (FTermControl{ei});
     }
     else if ( ic )
     {
-      appendOutputBuffer (ic);
+      appendOutputBuffer (FTermControl{ic});
       appendChar (second_last);
 
       if ( ip )
-        appendOutputBuffer (ip);
+        appendOutputBuffer (FTermControl{ip});
     }
   }
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::characterFilter (FChar& next_char)
+inline void FVTerm::characterFilter (FChar& next_char) const
 {
   charSubstitution& sub_map = fterm->getCharSubstitutionMap();
 
@@ -3092,22 +3097,50 @@ inline void FVTerm::characterFilter (FChar& next_char)
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::appendOutputBuffer (const std::string& str)
+inline bool FVTerm::isOutputBufferLimitReached() const
 {
-  for (auto&& ch : str)
-    FVTerm::appendOutputBuffer(int(ch));
+  return output_buffer->size() >= TERMINAL_OUTPUT_BUFFER_LIMIT;
 }
 
 //----------------------------------------------------------------------
-int FVTerm::appendOutputBuffer (int ch)
+inline void FVTerm::appendOutputBuffer (const FTermControl& ctrl) const
 {
-  // append method for unicode character
-  output_buffer->push_back(ch);
+  const auto& wstring = std::wstring{ctrl.string.begin(), ctrl.string.end()};
+  output_buffer->emplace(std::make_tuple(OutputType::Control, wstring));
 
-  if ( output_buffer->size() >= TERMINAL_OUTPUT_BUFFER_SIZE )
+  if ( isOutputBufferLimitReached() )
     flush();
+}
 
-  return ch;
+//----------------------------------------------------------------------
+inline void FVTerm::appendOutputBuffer (const FTermChar& c) const
+{
+  if ( c.ch != L'\0' )
+    appendOutputBuffer(FTermString{std::wstring(1, c.ch)});
+}
+
+//----------------------------------------------------------------------
+void FVTerm::appendOutputBuffer (const FTermString& str) const
+{
+  if ( ! output_buffer->empty()
+    && std::get<0>(output_buffer->back()) == OutputType::String )
+  {
+    // Append string data to the back element
+    auto& string_buf = std::get<1>(output_buffer->back());
+    std::transform ( str.string.begin()
+                   , str.string.end()
+                   , std::back_inserter(string_buf)
+                   , [] (wchar_t ch)
+                     {
+                       return ch;
+                     }
+                   );
+  }
+  else
+    output_buffer->emplace(std::make_tuple(OutputType::String, str.string));
+
+  if ( isOutputBufferLimitReached() )
+    flush();
 }
 
 }  // namespace finalcut

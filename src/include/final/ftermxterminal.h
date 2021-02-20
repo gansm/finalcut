@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -61,7 +61,7 @@ class FTermXTerminal final
     FTermXTerminal& operator = (const FTermXTerminal&) = delete;
 
     // Mutators
-    void                  redefineDefaultColors (bool);
+    void                  redefineDefaultColors (bool = true);
     void                  setCursorStyle (XTermCursorStyle);
     void                  setFont (const FString&);
     void                  setTitle (const FString&);
@@ -72,10 +72,9 @@ class FTermXTerminal final
     void                  setMouseForeground (const FString&);
     void                  setMouseBackground (const FString&);
     void                  setHighlightBackground (const FString&);
-    static void           setMouseSupport (bool);
-    static void           setMouseSupport();
+    static void           setMouseSupport (bool = true);
     static void           unsetMouseSupport();
-    void                  metaSendsESC (bool);
+    void                  metaSendsESC (bool = true);
 
     // Accessors
     FString               getClassName() const;
@@ -211,10 +210,6 @@ inline bool FTermXTerminal::hasFont() const
 //----------------------------------------------------------------------
 inline bool FTermXTerminal::hasTitle() const
 { return bool(xterm_title.getLength() > 0); }
-
-//----------------------------------------------------------------------
-inline void FTermXTerminal::setMouseSupport()
-{ setMouseSupport (true); }
 
 //----------------------------------------------------------------------
 inline void FTermXTerminal::unsetMouseSupport()

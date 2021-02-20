@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -213,7 +213,7 @@ class FMouse : public FMouseData
 
     // Mutator
     void                   setNewPos (int, int);
-    void                   setPending (bool);
+    void                   setPending (bool = true);
     void                   setEvent();
     void                   setMousePressedTime (const timeval*);
     void                   resetMousePressedTime();
@@ -264,13 +264,13 @@ class FMouseGPM final : public FMouse
     // Methods
     void                 setRawData (FKeyboard::keybuffer&) override;
     void                 processEvent (struct timeval*) override;
-    bool                 gpmMouse (bool);
+    bool                 gpmMouse (bool = true);
     bool                 enableGpmMouse();
     bool                 disableGpmMouse();
     bool                 hasSignificantEvents() const;
     void                 interpretKeyDown();
     void                 interpretKeyUp();
-    bool                 getGpmKeyPressed(bool);
+    bool                 getGpmKeyPressed (bool = true);
     void                 drawPointer() const;
 
   private:
@@ -545,7 +545,7 @@ class FMouseControl
                                          , FKeyboard::keybuffer& );
     virtual void              processEvent (struct timeval* time);
     void                      processQueuedInput();
-    bool                      getGpmKeyPressed (bool);
+    bool                      getGpmKeyPressed (bool = true);
     void                      drawPointer();
 
   private:
@@ -557,7 +557,7 @@ class FMouseControl
     // Accessor
     FMouse::MouseType         getMouseWithData();
     FMouse::MouseType         getMouseWithEvent();
-    void                      xtermMouse (bool) const;
+    void                      xtermMouse (bool = true) const;
     void                      enableXTermMouse() const;
     void                      disableXTermMouse() const;
 

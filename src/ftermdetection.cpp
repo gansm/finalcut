@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -168,7 +168,7 @@ void FTermDetection::getSystemTermType()
     termtype[sizeof(termtype) - 1] = '\0';
     return;
   }
-  else if ( *termfilename )  // 1st fallback: use the teminal file name
+  else if ( ! termfilename.empty() )  // 1st fallback: use the teminal file name
   {
     if ( getTTYtype() )  // Look into /etc/ttytype
       return;
@@ -198,11 +198,11 @@ bool FTermDetection::getTTYtype()
 
   // Get term basename
   const auto& fterm_data = FTerm::getFTermData();
-  const char* termfilename = fterm_data->getTermFileName();
-  const char* term_basename = std::strrchr(termfilename, '/');
+  const auto& termfilename = fterm_data->getTermFileName();
+  const char* term_basename = std::strrchr(termfilename.data(), '/');
 
   if ( term_basename == nullptr )
-    term_basename = termfilename;
+    term_basename = termfilename.data();
   else
     term_basename++;
 
@@ -254,11 +254,11 @@ bool FTermDetection::getTTYSFileEntry()
 
   // get term basename
   const auto& fterm_data = FTerm::getFTermData();
-  const char* termfilename = fterm_data->getTermFileName();
-  const char* term_basename = std::strrchr(termfilename, '/');
+  const auto& termfilename = fterm_data->getTermFileName();
+  const char* term_basename = std::strrchr(termfilename.data(), '/');
 
   if ( term_basename == nullptr )
-    term_basename = termfilename;
+    term_basename = termfilename.data();
   else
     term_basename++;
 

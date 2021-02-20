@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -89,26 +89,20 @@ class FWindow : public FWidget
     FWidget*            getWindowFocusWidget() const;
 
     // Mutators
-    bool                setWindowWidget (bool);
-    bool                setWindowWidget();
+    bool                setWindowWidget (bool = true);
     bool                unsetWindowWidget();
     static void         setActiveWindow (FWindow*);
     void                setWindowFocusWidget (FWidget*);
-    bool                activateWindow (bool);
-    bool                activateWindow();
+    bool                activateWindow (bool = true);
     void                unsetActiveWindow() const;
     bool                deactivateWindow();
-    virtual bool        setResizeable (bool);
-    virtual bool        setResizeable();
+    virtual bool        setResizeable (bool = true);
     bool                unsetResizeable();
-    bool                setTransparentShadow (bool);
-    bool                setTransparentShadow();
+    bool                setTransparentShadow (bool = true);
     bool                unsetTransparentShadow();
-    bool                setShadow (bool);
-    bool                setShadow();
+    bool                setShadow (bool = true);
     bool                unsetShadow();
-    bool                setAlwaysOnTop (bool);
-    bool                setAlwaysOnTop();
+    bool                setAlwaysOnTop (bool = true);
     bool                unsetAlwaysOnTop();
 
     // Inquiries
@@ -185,48 +179,24 @@ inline FString FWindow::getClassName() const
 { return "FWindow"; }
 
 //----------------------------------------------------------------------
-inline bool FWindow::setWindowWidget()
-{ return setWindowWidget(true); }
-
-//----------------------------------------------------------------------
 inline bool FWindow::unsetWindowWidget()
 { return setWindowWidget(false); }
-
-//----------------------------------------------------------------------
-inline bool FWindow::activateWindow()
-{ return activateWindow(true); }
 
 //----------------------------------------------------------------------
 inline bool FWindow::deactivateWindow()
 { return activateWindow(false); }
 
 //----------------------------------------------------------------------
-inline bool FWindow::setResizeable()
-{ return setResizeable(true); }
-
-//----------------------------------------------------------------------
 inline bool FWindow::unsetResizeable()
 { return setResizeable(false); }
-
-//----------------------------------------------------------------------
-inline bool FWindow::setTransparentShadow()
-{ return setTransparentShadow(true); }
 
 //----------------------------------------------------------------------
 inline bool FWindow::unsetTransparentShadow()
 { return setTransparentShadow(false); }
 
 //----------------------------------------------------------------------
-inline bool FWindow::setShadow()
-{ return setShadow(true); }
-
-//----------------------------------------------------------------------
 inline bool FWindow::unsetShadow()
 { return setShadow(false); }
-
-//----------------------------------------------------------------------
-inline bool FWindow::setAlwaysOnTop()
-{ return setAlwaysOnTop(true); }
 
 //----------------------------------------------------------------------
 inline bool FWindow::unsetAlwaysOnTop()
