@@ -743,7 +743,7 @@ int FTerm::closeConsole()
 }
 
 //----------------------------------------------------------------------
-const char* FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
+std::string FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
 {
   // Returns the cursor move string
 
@@ -755,7 +755,10 @@ const char* FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
     return opti_move->moveCursor (xold, yold, xnew, ynew);
   }
   else
-    return FTermcap::encodeMotionParameter(TCAP(t_cursor_address), xnew, ynew).data();
+  {
+    const auto& cursor_addr = FTermcap::encodeMotionParameter(TCAP(t_cursor_address), xnew, ynew);
+    return cursor_addr;
+  }
 }
 
 //----------------------------------------------------------------------

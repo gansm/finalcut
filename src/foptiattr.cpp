@@ -1368,7 +1368,6 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
 inline void FOptiAttr::change_current_color ( const FChar& term
                                             , FColor fg, FColor bg )
 {
-  const char* color_str{};
   const auto& AF = F_set_a_foreground.cap;
   const auto& AB = F_set_a_background.cap;
   const auto& Sf = F_set_foreground.cap;
@@ -1386,36 +1385,36 @@ inline void FOptiAttr::change_current_color ( const FChar& term
 
     if ( term.fg_color != fg || frev )
     {
-      color_str = FTermcap::encodeParameter(AF, uInt16(ansi_fg), 0, 0, 0, 0, 0, 0, 0, 0).data();
-      append_sequence (color_str);
+      const auto& color_str = FTermcap::encodeParameter(AF, uInt16(ansi_fg), 0, 0, 0, 0, 0, 0, 0, 0);
+      append_sequence (color_str.data());
     }
 
     if ( term.bg_color != bg || frev )
     {
-      color_str = FTermcap::encodeParameter(AB, uInt16(ansi_bg), 0, 0, 0, 0, 0, 0, 0, 0).data();
-      append_sequence (color_str);
+      const auto& color_str = FTermcap::encodeParameter(AB, uInt16(ansi_bg), 0, 0, 0, 0, 0, 0, 0, 0);
+      append_sequence (color_str.data());
     }
   }
   else if ( Sf && Sb )
   {
     if ( term.fg_color != fg || frev )
     {
-      color_str = FTermcap::encodeParameter(Sf, uInt16(fg), 0, 0, 0, 0, 0, 0, 0, 0).data();
-      append_sequence (color_str);
+      const auto& color_str = FTermcap::encodeParameter(Sf, uInt16(fg), 0, 0, 0, 0, 0, 0, 0, 0);
+      append_sequence (color_str.data());
     }
 
     if ( term.bg_color != bg || frev )
     {
-      color_str = FTermcap::encodeParameter(Sb, uInt16(bg), 0, 0, 0, 0, 0, 0, 0, 0).data();
-      append_sequence (color_str);
+      const auto& color_str = FTermcap::encodeParameter(Sb, uInt16(bg), 0, 0, 0, 0, 0, 0, 0, 0);
+      append_sequence (color_str.data());
     }
   }
   else if ( sp )
   {
     fg = vga2ansi(fg);
     bg = vga2ansi(bg);
-    color_str = FTermcap::encodeParameter(sp, uInt16(fg), uInt16(bg), 0, 0, 0, 0, 0, 0, 0).data();
-    append_sequence (color_str);
+    const auto& color_str = FTermcap::encodeParameter(sp, uInt16(fg), uInt16(bg), 0, 0, 0, 0, 0, 0, 0);
+    append_sequence (color_str.data());
   }
 }
 

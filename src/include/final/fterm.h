@@ -267,7 +267,7 @@ class FTerm final
     static bool              resetFont();
     static int               openConsole();
     static int               closeConsole();
-    static const char*       moveCursorString (int, int, int, int);
+    static std::string       moveCursorString (int, int, int, int);
     static const char*       cursorsVisibilityString (bool = true);
     static void              detectTermSize();
     static void              setTermSize (const FSize&);

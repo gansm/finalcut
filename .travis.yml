@@ -170,3 +170,18 @@ jobs:
       - ./configure --prefix=/usr
       - make -j10
 
+  #
+  # Linux ARM64 build
+  #
+  - arch: arm64
+    os: linux
+    env:
+      - TEST="ARM64"
+    before_install:
+      - uname -a
+      - g++ --version
+    script:
+      - autoreconf -v --install --force
+      - ./configure --prefix=/usr
+      - make -j10
+

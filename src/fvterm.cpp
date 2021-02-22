@@ -151,9 +151,9 @@ void FVTerm::setTermXY (int x, int y) const
 
   const int term_x = term_pos->getX();
   const int term_y = term_pos->getY();
-  const char* move_str = FTerm::moveCursorString (term_x, term_y, x, y);
+  const auto& move_str = FTerm::moveCursorString (term_x, term_y, x, y);
 
-  if ( move_str )
+  if ( ! move_str.empty() )
     appendOutputBuffer(FTermControl{move_str});
 
   term_pos->setPoint(x, y);
