@@ -513,7 +513,11 @@ std::size_t getColumnWidth (const wchar_t wchar)
   column_width = wcwidth(wchar);
 
   if ( (wchar >= UniChar::NF_rev_left_arrow2 && wchar <= UniChar::NF_check_mark)
-    || ! hasFullWidthSupports() )
+     || FTerm::getEncoding() != Encoding::UTF8 )
+  {
+    column_width = 1;
+  }
+  else if ( ! hasFullWidthSupports() )
   {
     column_width = std::min(column_width, 1);
   }

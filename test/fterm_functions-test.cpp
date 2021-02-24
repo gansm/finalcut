@@ -484,6 +484,8 @@ void FTermFunctionsTest::FullWidthHalfWidthTest()
   CPPUNIT_ASSERT ( finalcut::getHalfWidth(L"ㄴ") == L"ﾤ" );
 
   // Column width (wchar_t)
+  const auto& data = finalcut::FTerm::getFTermData();
+  data->setTermEncoding (finalcut::Encoding::UTF8);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L"\t") == 0 );
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L"\r") == 0 );
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L"\n") == 0 );
@@ -501,6 +503,21 @@ void FTermFunctionsTest::FullWidthHalfWidthTest()
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L"\U00000348") == 0 );
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L"\U0000094d") == 0 );
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L"\U00000e37") == 0 );
+
+  // Column width (wchar_t) in latin-1
+  std::setlocale (LC_CTYPE, "C");
+  data->setTermEncoding (finalcut::Encoding::VT100);
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(L'─') == 1 );  // wcwidth(L'─') == -1 (for LC_CTYPE = C)
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(L'│') == 1 );  // wcwidth(L'│') == -1 (for LC_CTYPE = C)
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(L'├') == 1 );  // wcwidth(L'├') == -1 (for LC_CTYPE = C)
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(L'┤') == 1 );  // wcwidth(L'┤') == -1 (for LC_CTYPE = C)
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(L'┼') == 1 );  // wcwidth(L'┼') == -1 (for LC_CTYPE = C)
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(L'┐') == 1 );  // wcwidth(L'┐') == -1 (for LC_CTYPE = C)
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(L'└') == 1 );  // wcwidth(L'└') == -1 (for LC_CTYPE = C)
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(L'┌') == 1 );  // wcwidth(L'┌') == -1 (for LC_CTYPE = C)
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(L'┘') == 1 );  // wcwidth(L'┘') == -1 (for LC_CTYPE = C)
+  std::setlocale (LC_CTYPE, "en_US.UTF-8");
+  data->setTermEncoding (finalcut::Encoding::UTF8);
 
   // Column width (FString)
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L"\v\t 100") == 4 );
@@ -733,25 +750,25 @@ void FTermFunctionsTest::FullWidthHalfWidthTest()
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
   finalcut::addColumnWidth(fchar);
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 1 );
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 2 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"１";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
   finalcut::addColumnWidth(fchar);
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 1 );
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 2 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"２";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
   finalcut::addColumnWidth(fchar);
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 1 );
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 2 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"３";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 0 );
   finalcut::addColumnWidth(fchar);
-  CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 1 );
+  CPPUNIT_ASSERT ( finalcut::getColumnWidth(fchar) == 2 );
   fchar.attr.bit.char_width = 0x00 & 0x03;
   s = L"\U00000300";
   std::copy(std::begin(s), std::end(s), std::begin(fchar.ch));
@@ -779,8 +796,6 @@ void FTermFunctionsTest::FullWidthHalfWidthTest()
   fchar.attr.bit.char_width = 0x00 & 0x03;
 
   // Column width (FTermBuffer)
-  const auto& data = finalcut::FTerm::getFTermData();
-  data->setTermEncoding (finalcut::Encoding::UTF8);
   finalcut::FTermBuffer term_buf{};
   term_buf << L"\v\t 100";
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 4 );
