@@ -35,26 +35,6 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#if defined(__sun) && defined(__SVR4)
-  #include <termio.h>
-  typedef struct termio SGTTY;
-  typedef struct termios SGTTYS;
-
-  #ifdef _LP64
-    typedef unsigned int chtype;
-  #else
-    typedef unsigned long chtype;
-  #endif  // _LP64
-
-  #include <term.h>  // termcap
-#else
-  #include <term.h>  // termcap
-#endif  // defined(__sun) && defined(__SVR4)
-
-#ifdef F_HAVE_LIBGPM
-  #undef buttons  // from term.h
-#endif
-
 #include <array>
 #include <string>
 #include <utility>
@@ -132,6 +112,8 @@ class FTermcap final
     static void          termcapNumerics();
     static void          termcapStrings();
     static void          termcapKeys();
+    static std::string   encodeParams ( const std::string&
+                                      , const std::vector<int>& );
     static int           _tputs (const char*, int, fn_putc);
 
     // Data member
@@ -139,43 +121,16 @@ class FTermcap final
     static bool          initialized;
 };
 
-
 // FTermcap inline functions
 //----------------------------------------------------------------------
 inline FString FTermcap::getClassName() const
 { return "FTermcap"; }
 
 //----------------------------------------------------------------------
-inline bool FTermcap::getFlag (const std::string& cap)
-{
-  return ::tgetflag(C_STR(cap.data()));
-}
-
-//----------------------------------------------------------------------
-inline int FTermcap::getNumber (const std::string& cap)
-{
-  return ::tgetnum(C_STR(cap.data()));
-}
-
-//----------------------------------------------------------------------
-inline char* FTermcap::getString (const std::string& cap)
-{
-  return ::tgetstr(C_STR(cap.data()), reinterpret_cast<char**>(&string_buf));
-}
-
-//----------------------------------------------------------------------
-inline std::string FTermcap::encodeMotionParameter (const std::string& cap, int col, int row)
-{
-  auto str = ::tgoto(C_STR(cap.data()), col, row);
-  return ( str ) ? str : std::string();
-}
-
-//----------------------------------------------------------------------
 template <typename... Args>
-inline std::string FTermcap::encodeParameter (const std::string& cap, Args&&... args)
+std::string FTermcap::encodeParameter (const std::string& cap, Args&&... args)
 {
-  auto str = ::tparm (C_STR(cap.data()), std::forward<Args>(args)...);
-  return ( str ) ? str : std::string();
+  return encodeParams(cap, {static_cast<int>(args)...});
 }
 
 //----------------------------------------------------------------------

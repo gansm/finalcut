@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -19,6 +19,9 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
+
+#include <term.h>
+#undef buttons  // from term.h
 
 #include <limits>
 #include <string>
@@ -79,7 +82,6 @@ class FSystemTest : public finalcut::FSystem
     FILE*            fopen (const char*, const char*) override;
     int              fclose (FILE*) override;
     int              putchar (int) override;
-    int              tputs (const char*, int, int (*)(int)) override;
     uid_t            getuid() override;
     uid_t            geteuid() override;
     int              getpwuid_r (uid_t, struct passwd*, char*
@@ -260,12 +262,6 @@ int FSystemTest::putchar (int c)
 #else
       return std::putchar(c);
 #endif
-}
-
-//----------------------------------------------------------------------
-int FSystemTest::tputs (const char* str, int affcnt, int (*putc)(int))
-{
-  return ::tputs (str, affcnt, putc);
 }
 
 //----------------------------------------------------------------------

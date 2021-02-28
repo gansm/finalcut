@@ -2424,7 +2424,7 @@ void FVTerm::printFullWidthPaddingCharacter ( uInt& x, uInt y
     if ( le )
       appendOutputBuffer (FTermControl{le});
     else if ( LE )
-      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(LE, 1, 0, 0, 0, 0, 0, 0, 0, 0)});
+      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(LE, 1)});
     else
     {
       skipPaddingCharacter (x, y, prev_char);
@@ -2464,7 +2464,7 @@ void FVTerm::printHalfCovertFullWidthCharacter ( uInt& x, uInt y
     if ( le )
       appendOutputBuffer (FTermControl{le});
     else if ( LE )
-      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(LE, 1, 0, 0, 0, 0, 0, 0, 0, 0)});
+      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(LE, 1)});
 
     if ( le || LE )
     {
@@ -2536,7 +2536,7 @@ FVTerm::PrintState FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
       && (ut || normal) )
     {
       appendAttributes (print_char);
-      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(ec, whitespace, 0, 0, 0, 0, 0, 0, 0, 0)});
+      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(ec, whitespace)});
 
       if ( x + whitespace - 1 < xmax || draw_trailing_ws )
         setTermXY (int(x + whitespace), int(y));
@@ -2601,7 +2601,7 @@ FVTerm::PrintState FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y) const
       newFontChanges (print_char);
       charsetChanges (print_char);
       appendAttributes (print_char);
-      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char.ch[0], repetitions, 0, 0, 0, 0, 0, 0, 0)});
+      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(rp, print_char.ch[0], repetitions)});
       term_pos->x_ref() += int(repetitions);
       x = x + repetitions - 1;
     }
@@ -3063,7 +3063,7 @@ void FVTerm::appendLowerRight (FChar& last_char) const
 
     if ( IC )
     {
-      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(IC, 1, 0, 0, 0, 0, 0, 0, 0, 0)});
+      appendOutputBuffer (FTermControl{FTermcap::encodeParameter(IC, 1)});
       appendChar (second_last);
     }
     else if ( im && ei )

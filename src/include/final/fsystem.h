@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -67,7 +67,6 @@ class FSystem
     virtual FILE* fopen (const char*, const char*) = 0;
     virtual int   fclose (FILE*) = 0;
     virtual int   putchar (int) = 0;
-    virtual int   tputs (const char*, int, fn_putc) = 0;
     virtual uid_t getuid() = 0;
     virtual uid_t geteuid() = 0;
     virtual int   getpwuid_r ( uid_t, struct passwd*, char*

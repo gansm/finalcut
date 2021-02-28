@@ -906,9 +906,9 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
     const int bb = (b * 1001) / 256;
 
     if ( Ic )
-      color_str = FTermcap::encodeParameter(Ic, uInt16(index), rr, gg, bb, 0, 0, 0, 0, 0);
+      color_str = FTermcap::encodeParameter(Ic, uInt16(index), rr, gg, bb);
     else if ( Ip )
-      color_str = FTermcap::encodeParameter(Ip, uInt16(index), 0, 0, 0, rr, gg, bb, 0, 0);
+      color_str = FTermcap::encodeParameter(Ip, uInt16(index), 0, 0, 0, rr, gg, bb);
 
     if ( ! color_str.empty() )
     {

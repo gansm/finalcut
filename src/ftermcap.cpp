@@ -20,6 +20,26 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__sun) && defined(__SVR4)
+  #include <termio.h>
+  typedef struct termio SGTTY;
+  typedef struct termios SGTTYS;
+
+  #ifdef _LP64
+    typedef unsigned int chtype;
+  #else
+    typedef unsigned long chtype;
+  #endif  // _LP64
+
+  #include <term.h>  // termcap
+#else
+  #include <term.h>  // termcap
+#endif  // defined(__sun) && defined(__SVR4)
+
+#ifdef F_HAVE_LIBGPM
+  #undef buttons  // from term.h
+#endif
+
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -67,6 +87,31 @@ char             FTermcap::string_buf[2048]         {};
  */
 
 // public methods of FTermcap
+//----------------------------------------------------------------------
+bool FTermcap::getFlag (const std::string& cap)
+{
+  return ::tgetflag(C_STR(cap.data()));
+}
+
+//----------------------------------------------------------------------
+int FTermcap::getNumber (const std::string& cap)
+{
+  return ::tgetnum(C_STR(cap.data()));
+}
+
+//----------------------------------------------------------------------
+char* FTermcap::getString (const std::string& cap)
+{
+  return ::tgetstr(C_STR(cap.data()), reinterpret_cast<char**>(&string_buf));
+}
+
+//----------------------------------------------------------------------
+std::string FTermcap::encodeMotionParameter (const std::string& cap, int col, int row)
+{
+  auto str = ::tgoto(C_STR(cap.data()), col, row);
+  return ( str ) ? str : std::string();
+}
+
 //----------------------------------------------------------------------
 void FTermcap::init()
 {
@@ -254,10 +299,26 @@ void FTermcap::termcapKeys()
 }
 
 //----------------------------------------------------------------------
+std::string FTermcap::encodeParams ( const std::string& cap
+                                   , const std::vector<int>& param_vec )
+{
+  std::array<int, 9> params{{ 0, 0, 0, 0, 0, 0, 0, 0, 0 }};
+  std::copy (param_vec.begin(), param_vec.end(), params.begin());
+  auto str = ::tparm ( C_STR(cap.data()), params[0], params[1]
+                     , params[2], params[3], params[4], params[5]
+                     , params[6], params[7], params[8] );
+  return ( str ) ? str : std::string();
+}
+
+//----------------------------------------------------------------------
 int FTermcap::_tputs (const char* str, int affcnt, fn_putc putc)
 {
-  const auto& fsystem = FTerm::getFSystem();
-  return fsystem->tputs (str, affcnt, putc);
+#if defined(__sun) && defined(__SVR4)
+  return ::tputs ( C_STR(str)
+                 , affcnt, reinterpret_cast<int (*)(char)>(putc) );
+#else
+  return ::tputs (str, affcnt, putc);
+#endif
 }
 
 

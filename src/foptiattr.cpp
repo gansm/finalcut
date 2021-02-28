@@ -1385,13 +1385,13 @@ inline void FOptiAttr::change_current_color ( const FChar& term
 
     if ( term.fg_color != fg || frev )
     {
-      const auto& color_str = FTermcap::encodeParameter(AF, uInt16(ansi_fg), 0, 0, 0, 0, 0, 0, 0, 0);
+      const auto& color_str = FTermcap::encodeParameter(AF, uInt16(ansi_fg));
       append_sequence (color_str.data());
     }
 
     if ( term.bg_color != bg || frev )
     {
-      const auto& color_str = FTermcap::encodeParameter(AB, uInt16(ansi_bg), 0, 0, 0, 0, 0, 0, 0, 0);
+      const auto& color_str = FTermcap::encodeParameter(AB, uInt16(ansi_bg));
       append_sequence (color_str.data());
     }
   }
@@ -1399,13 +1399,13 @@ inline void FOptiAttr::change_current_color ( const FChar& term
   {
     if ( term.fg_color != fg || frev )
     {
-      const auto& color_str = FTermcap::encodeParameter(Sf, uInt16(fg), 0, 0, 0, 0, 0, 0, 0, 0);
+      const auto& color_str = FTermcap::encodeParameter(Sf, uInt16(fg));
       append_sequence (color_str.data());
     }
 
     if ( term.bg_color != bg || frev )
     {
-      const auto& color_str = FTermcap::encodeParameter(Sb, uInt16(bg), 0, 0, 0, 0, 0, 0, 0, 0);
+      const auto& color_str = FTermcap::encodeParameter(Sb, uInt16(bg));
       append_sequence (color_str.data());
     }
   }
@@ -1413,7 +1413,7 @@ inline void FOptiAttr::change_current_color ( const FChar& term
   {
     fg = vga2ansi(fg);
     bg = vga2ansi(bg);
-    const auto& color_str = FTermcap::encodeParameter(sp, uInt16(fg), uInt16(bg), 0, 0, 0, 0, 0, 0, 0);
+    const auto& color_str = FTermcap::encodeParameter(sp, uInt16(fg), uInt16(bg));
     append_sequence (color_str.data());
   }
 }
