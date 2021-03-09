@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -63,7 +63,7 @@ std::string FLogger::getTimeString() const
   struct tm time{};
   localtime_r (&t, &time);
   std::strftime (str.data(), str.size(), "%a, %d %b %Y %T %z", &time);
-  return std::string(str.data());
+  return {str.data()};
 }
 
 //----------------------------------------------------------------------

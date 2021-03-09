@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2020 Markus Gans                                      *
+* Copyright 2016-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1183,13 +1183,13 @@ void Calc::mapKeyFunctions()
 //----------------------------------------------------------------------
 inline bool operator < (const Calc::ButtonName& c, const int n) noexcept
 {
-  return bool( int(c) < n );
+  return int(c) < n;
 }
 
 //----------------------------------------------------------------------
 inline bool operator <= (const Calc::ButtonName& c, const int n) noexcept
 {
-  return bool( int(c) <= n );
+  return int(c) <= n;
 }
 
 //----------------------------------------------------------------------

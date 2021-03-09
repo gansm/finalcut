@@ -1129,13 +1129,13 @@ bool FOptiAttr::hasNoAttribute (const FChar& attr)
 inline bool FOptiAttr::hasColorChanged ( const FChar& term
                                        , const FChar& next ) const
 {
-  bool frev ( ( on.attr.bit.reverse
+  bool frev { ( on.attr.bit.reverse
              || on.attr.bit.standout
              || off.attr.bit.reverse
-             || off.attr.bit.standout ) && fake_reverse );
-  return bool ( frev
-             || term.fg_color != next.fg_color
-             || term.bg_color != next.bg_color );
+             || off.attr.bit.standout ) && fake_reverse };
+  return frev
+      || term.fg_color != next.fg_color
+      || term.bg_color != next.bg_color;
 }
 
 //----------------------------------------------------------------------

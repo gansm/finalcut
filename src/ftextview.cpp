@@ -57,7 +57,7 @@ FTextView::~FTextView() noexcept = default;  // destructor
 FString FTextView::getText() const
 {
   if ( data.empty() )
-    return FString{""};
+    return {""};
 
   std::size_t len{0};
 

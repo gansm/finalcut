@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -41,7 +41,7 @@ bool sortByName ( const FFileDialog::FDirEntry& lhs
                 , const FFileDialog::FDirEntry& rhs )
 {
   // lhs < rhs
-  return bool( strcasecmp(lhs.name.c_str(), rhs.name.c_str()) < 0 );
+  return strcasecmp(lhs.name.c_str(), rhs.name.c_str()) < 0;
 }
 
 //----------------------------------------------------------------------
@@ -131,9 +131,9 @@ FString FFileDialog::getSelectedFile() const
   const auto n = uLong(filebrowser.currentItem() - 1);
 
   if ( dir_entries[n].directory )
-    return FString{""};
+    return {""};
   else
-    return FString{dir_entries[n].name};
+    return {dir_entries[n].name};
 }
 
 //----------------------------------------------------------------------
@@ -695,9 +695,9 @@ FString FFileDialog::getHomeDir()
   const uid_t euid = fsystem->geteuid();
 
   if ( fsystem->getpwuid_r(euid, &pwd, buf.data(), buf.size(), &pwd_ptr) )
-    return FString{""};
+    return {""};
   else
-    return FString{pwd.pw_dir};
+    return {pwd.pw_dir};
 }
 
 //----------------------------------------------------------------------

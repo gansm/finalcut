@@ -482,7 +482,7 @@ int FTermLinux::getFramebuffer_bpp() const
     && fsystem->ioctl(fd, FBIOGET_FSCREENINFO, &fb_fix) == 0 )
   {
     fsystem->close(fd);
-    return int(fb_var.bits_per_pixel);
+    return static_cast<int>(fb_var.bits_per_pixel);
   }
   else
   {
@@ -1159,7 +1159,7 @@ sInt16 FTermLinux::getFontPos (wchar_t ucs) const
   for (std::size_t n{0}; n < screen_unicode_map.entry_ct; n++)
   {
     if ( screen_unicode_map.entries[n].unicode == ucs )
-      return sInt16(screen_unicode_map.entries[n].fontpos);
+      return static_cast<sInt16>(screen_unicode_map.entries[n].fontpos);
   }
 
   return NOT_FOUND;

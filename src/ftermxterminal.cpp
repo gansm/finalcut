@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -741,7 +741,7 @@ FString FTermXTerminal::captureXTermFont() const
     && ! term_detection->isScreenTerm()
     && ! FTermcap::osc_support )
   {
-    return FString{};
+    return {};
   }
 
   fd_set ifds{};
@@ -760,7 +760,7 @@ FString FTermXTerminal::captureXTermFont() const
 
   // Read the terminal answer
   if ( select(stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
-    return FString{};
+    return {};
 
   std::array<char, 150> temp{};
   std::size_t pos{0};
@@ -788,10 +788,10 @@ FString FTermXTerminal::captureXTermFont() const
     if ( n >= 5 && str[n - 1] == BEL[0] && str[n] == '\0' )
       str[n - 1] = '\0';
 
-    return FString{str};
+    return {str};
   }
 
-  return FString{};
+  return {};
 }
 
 //----------------------------------------------------------------------
@@ -800,7 +800,7 @@ FString FTermXTerminal::captureXTermTitle() const
   const auto& term_detection = FTerm::getFTermDetection();
 
   if ( term_detection->isKdeTerminal() )
-    return FString{};
+    return {};
 
   fd_set ifds{};
   struct timeval tv{};
@@ -816,7 +816,7 @@ FString FTermXTerminal::captureXTermTitle() const
 
   // read the terminal answer
   if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) < 1 )
-    return FString{};
+    return {};
 
   std::array<char, 512> temp{};
   std::size_t pos{0};
@@ -843,14 +843,14 @@ FString FTermXTerminal::captureXTermTitle() const
     if ( n >= 2 && str[n - 2] == ESC[0] && str[n - 1] == '\\' )
     {
       if ( n < 4 )
-        return FString{};
+        return {};
 
       str[n - 2] = '\0';
-      return FString{str};
+      return {str};
     }
   }
 
-  return FString{};
+  return {};
 }
 
 //----------------------------------------------------------------------

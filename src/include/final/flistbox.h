@@ -522,11 +522,11 @@ inline bool FListBox::isMultiSelection() const
 
 //----------------------------------------------------------------------
 inline bool FListBox::hasBrackets(std::size_t index) const
-{ return bool(index2iterator(index - 1)->brackets != BracketType::None); }
+{ return index2iterator(index - 1)->brackets != BracketType::None; }
 
 //----------------------------------------------------------------------
 inline bool FListBox::hasBrackets(FListBoxItems::iterator iter) const
-{ return bool(iter->brackets != BracketType::None); }
+{ return iter->brackets != BracketType::None; }
 
 //----------------------------------------------------------------------
 inline void FListBox::reserve (std::size_t new_cap)
@@ -605,11 +605,11 @@ void FListBox::insert ( const ItemT& item
 
 //----------------------------------------------------------------------
 inline bool FListBox::isHorizontallyScrollable() const
-{ return bool( max_line_width + 1 >= getClientWidth() ); }
+{ return max_line_width + 1 >= getClientWidth(); }
 
 //----------------------------------------------------------------------
 inline bool FListBox::isVerticallyScrollable() const
-{ return bool( getCount() > getClientHeight() ); }
+{ return getCount() > getClientHeight(); }
 
 //----------------------------------------------------------------------
 inline FListBox::FListBoxItems::iterator \

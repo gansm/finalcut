@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -478,7 +478,7 @@ bool FMenuItem::isMenu (const FWidget* w) const
 
   const bool m1 = w->isInstanceOf("FMenu");
   const bool m2 = w->isInstanceOf("FDialogListMenu");
-  return bool( m1 || m2 );
+  return m1 || m2;
 }
 
 

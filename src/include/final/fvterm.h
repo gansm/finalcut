@@ -324,8 +324,22 @@ class FVTerm
       Control
     };
 
+    struct TermString
+    {
+      TermString (const std::wstring& wstr)
+        : wstring{wstr}
+      { }
+
+      TermString (const std::string& str)
+        : string{str}
+      { }
+
+      std::wstring wstring{};
+      std::string string{};
+    };
+
     // Using-declaration
-    using OutputData = std::tuple<OutputType, std::wstring>;
+    using OutputData = std::tuple<OutputType, TermString>;
     using OutputBuffer = std::queue<OutputData>;
 
     // Constants
@@ -863,7 +877,7 @@ inline void FVTerm::setActiveArea (FTermArea* area) const
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isActive (const FTermArea* area) const
-{ return bool( area == active_area ); }
+{ return area == active_area; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::hasPrintArea() const

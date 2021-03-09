@@ -276,7 +276,7 @@ bool hasFullWidthSupports()
       has_fullwidth_support = FullWidthSupport::Yes;
   }
 
-  return ( has_fullwidth_support == FullWidthSupport::Yes) ? true : false;
+  return ( has_fullwidth_support == FullWidthSupport::Yes ) ? true : false;
 }
 
 //----------------------------------------------------------------------
@@ -385,7 +385,7 @@ FString getColumnSubString ( const FString& str
   std::size_t num{0};
 
   if ( col_len == 0 || s.isEmpty() )
-    return FString{L""};
+    return {L""};
 
   if ( col_pos == 0 )
     col_pos = 1;
@@ -431,7 +431,7 @@ FString getColumnSubString ( const FString& str
   }
 
   if ( col_first < col_pos )  // String length < col_pos
-    return FString{L""};
+    return {L""};
 
   return s.mid(first, num);
 }
@@ -590,7 +590,7 @@ int getCharLength (const FString& string, std::size_t pos)
   }
   while ( n < len && char_width == 0 && ! isWhitespace(string[n]) );
 
-  return int(n - pos);
+  return static_cast<int>(n - pos);
 }
 
 //----------------------------------------------------------------------
@@ -684,7 +684,7 @@ FPoint readCursorPos()
 
   // Report Cursor Position (DECXCPR)
   if ( write(stdout_no, DECXCPR, std::strlen(DECXCPR)) < 1 )
-    return FPoint{x, y};
+    return {x, y};
 
   std::fflush(stdout);
   FD_ZERO(&ifds);
@@ -696,7 +696,7 @@ FPoint readCursorPos()
 
   // Read the answer
   if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) != 1 )
-    return FPoint{x, y};
+    return {x, y};
 
   do
   {
@@ -716,7 +716,7 @@ FPoint readCursorPos()
     std::sscanf(temp.data(), parse, &y, &x );
   }
 
-  return FPoint{x, y};
+  return {x, y};
 }
 
 }  // namespace finalcut

@@ -763,13 +763,13 @@ inline std::size_t FLineEdit::getCursorColumnPos() const
 //----------------------------------------------------------------------
 inline FString FLineEdit::getPasswordText() const
 {
-  return FString{text.getLength(), UniChar::Bullet};  // •
+  return {text.getLength(), UniChar::Bullet};  // •
 }
 
 //----------------------------------------------------------------------
 inline bool FLineEdit::isPasswordField() const
 {
-  return bool( input_type == InputType::Password );
+  return input_type == InputType::Password;
 }
 
 //----------------------------------------------------------------------

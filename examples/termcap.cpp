@@ -51,15 +51,16 @@ struct Data
     const Termcap cap;
   };
 
-  static std::array<TermcapString, 83> strings;
+  static std::array<TermcapString, 85> strings;
 };
 
 //----------------------------------------------------------------------
 // struct data - string data array
 //----------------------------------------------------------------------
-std::array<Data::TermcapString, 83> Data::strings =
+std::array<Data::TermcapString, 85> Data::strings =
 {{
   { "t_bell", Termcap::t_bell },
+  { "t_flash_screen", Termcap::t_flash_screen },
   { "t_erase_chars", Termcap::t_erase_chars },
   { "t_clear_screen", Termcap::t_clear_screen },
   { "t_clr_eos", Termcap::t_clr_eos },
@@ -70,6 +71,7 @@ std::array<Data::TermcapString, 83> Data::strings =
   { "t_carriage_return", Termcap::t_carriage_return },
   { "t_tab", Termcap::t_tab },
   { "t_back_tab", Termcap::t_back_tab },
+  { "t_pad_char", Termcap::t_pad_char },
   { "t_insert_padding", Termcap::t_insert_padding },
   { "t_insert_character", Termcap::t_insert_character },
   { "t_parm_ich", Termcap::t_parm_ich },
@@ -266,6 +268,10 @@ void booleans()
               , finalcut::FTermcap::osc_support );
   tcapBoolean ( "no_utf8_acs_chars"
               , finalcut::FTermcap::no_utf8_acs_chars );
+  tcapBoolean ( "no_padding_char"
+              , finalcut::FTermcap::no_padding_char );
+  tcapBoolean ( "xon_xoff_flow_control"
+              , finalcut::FTermcap::xon_xoff_flow_control );
 }
 
 //----------------------------------------------------------------------
@@ -276,6 +282,8 @@ void numeric()
               , finalcut::FTermcap::max_color);
   tcapNumeric ("tabstop"
               , finalcut::FTermcap::tabstop);
+  tcapNumeric ("padding_baudrate"
+              , finalcut::FTermcap::padding_baudrate);
   tcapNumeric ("attr_without_color"
               , finalcut::FTermcap::attr_without_color);
 }

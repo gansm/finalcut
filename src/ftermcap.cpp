@@ -42,6 +42,7 @@
 
 #include <algorithm>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "final/emptyfstring.h"
@@ -68,9 +69,14 @@ bool             FTermcap::has_ansi_escape_sequences{false};
 bool             FTermcap::ansi_default_color       {false};
 bool             FTermcap::osc_support              {false};
 bool             FTermcap::no_utf8_acs_chars        {false};
+bool             FTermcap::no_padding_char          {false};
+bool             FTermcap::xon_xoff_flow_control    {false};
 int              FTermcap::max_color                {1};
 int              FTermcap::tabstop                  {8};
+int              FTermcap::padding_baudrate         {0};
 int              FTermcap::attr_without_color       {0};
+int              FTermcap::baudrate                 {9600};
+char             FTermcap::PC                       {'\0'};
 char             FTermcap::string_buf[2048]         {};
 
 //----------------------------------------------------------------------
@@ -90,13 +96,14 @@ char             FTermcap::string_buf[2048]         {};
 //----------------------------------------------------------------------
 bool FTermcap::getFlag (const std::string& cap)
 {
-  return ::tgetflag(C_STR(cap.data()));
+  return ::tgetflag(C_STR(cap.data())) == 1;
 }
 
 //----------------------------------------------------------------------
 int FTermcap::getNumber (const std::string& cap)
 {
-  return ::tgetnum(C_STR(cap.data()));
+  auto num = ::tgetnum(C_STR(cap.data()));
+  return ( num > 0) ? num : 0;
 }
 
 //----------------------------------------------------------------------
@@ -110,6 +117,110 @@ std::string FTermcap::encodeMotionParameter (const std::string& cap, int col, in
 {
   auto str = ::tgoto(C_STR(cap.data()), col, row);
   return ( str ) ? str : std::string();
+}
+
+//----------------------------------------------------------------------
+FTermcap::Status FTermcap::paddingPrint ( const std::string& string
+                                        , int affcnt
+                                        , const defaultPutChar& outc )
+{
+  if ( string.empty() )
+    return Status::Error;
+
+  bool has_delay = (TCAP(t_bell) && string == std::string(TCAP(t_bell)))
+                || (TCAP(t_flash_screen) && string == std::string(TCAP(t_flash_screen)))
+                || ( ! xon_xoff_flow_control && padding_baudrate
+                  && (baudrate >= padding_baudrate) );
+  auto iter = string.begin();
+
+  while ( iter != string.end() )
+  {
+    if ( *iter != '$' )
+      outc(int(*iter));
+    else
+    {
+      ++iter;
+
+      if ( *iter != '<' )
+      {
+        outc(int('$'));
+
+        if ( iter != string.end() )
+          outc(int(*iter));
+      }
+      else
+      {
+        ++iter;
+        const auto first_digit = iter;
+
+        if ( (! std::isdigit(int(*iter)) && *iter != '.') )
+        {
+          outc(int('$'));
+          outc(int('<'));
+          continue;
+        }
+
+        int number = 0;
+
+        while ( std::isdigit(int(*iter)) && number < 1000 )
+        {
+          number = number * 10 + (*iter - '0');
+          ++iter;
+        }
+
+        number *= 10;
+
+        if ( *iter == '.' )
+        {
+          ++iter;
+
+          if ( std::isdigit(int(*iter)) )
+          {
+            number += (*iter - '0');  // Position after decimal point
+            ++iter;
+          }
+
+          while ( std::isdigit(int(*iter)) )
+            ++iter;
+        }
+
+        while ( *iter == '*' || *iter == '/' )
+        {
+          if ( *iter == '*' )
+          {
+            // Padding is proportional to the number of affected lines (suffix '*')
+            number *= affcnt;
+            ++iter;
+          }
+          else
+          {
+            // Padding is mandatory (suffix '/')
+            has_delay = true;
+            ++iter;
+          }
+        }
+
+        if ( *iter != '>' )
+        {
+          outc(int('$'));
+          outc(int('<'));
+          iter = first_digit;
+          continue;
+        }
+        else if ( has_delay && number > 0 )
+        {
+          delay_output(number / 10, outc);
+        }
+      }  // end of else (*iter == '<')
+    }  // end of else (*iter == '$')
+
+    if ( iter == string.end() )
+      break;
+
+    ++iter;
+  }
+
+  return Status::OK;
 }
 
 //----------------------------------------------------------------------
@@ -130,6 +241,7 @@ void FTermcap::termcap()
   int status = uninitialized;
   const auto& term_detection = FTerm::getFTermDetection();
   const bool color256 = term_detection->canDisplay256Colors();
+  baudrate = int(FTerm::getFTermData()->getBaudrate());
 
   // Open termcap file
   const auto& termtype = fterm_data->getTermType();
@@ -153,7 +265,6 @@ void FTermcap::termcap()
 #else
     status = tgetent(term_buffer, termtype.data());
 #endif
-
 
     if ( status == success )
       initialized = true;
@@ -240,6 +351,12 @@ void FTermcap::termcapBoleans()
 
   // U8 is nonzero for terminals with no VT100 line-drawing in UTF-8 mode
   no_utf8_acs_chars = bool(getNumber("U8") != 0);
+
+  // No padding character available
+  no_padding_char = getFlag("NP");
+
+  // Terminal uses software flow control (XON/XOFF) with (Ctrl-Q/Ctrl-S)
+  xon_xoff_flow_control = getFlag("xo");
 }
 
 //----------------------------------------------------------------------
@@ -263,6 +380,9 @@ void FTermcap::termcapNumerics()
   // Get initial spacing for hardware tab stop
   tabstop = getNumber("it");
 
+  // Get the smallest baud rate where padding is required
+  padding_baudrate = getNumber("pb");
+
   // Get video attributes that cannot be used with colors
   attr_without_color = getNumber("NC");
 }
@@ -279,8 +399,13 @@ void FTermcap::termcapStrings()
 
   const auto& ho = TCAP(t_cursor_home);
 
-  if ( std::strncmp(ho, "\033[H", 3) == 0 )
+  if ( ho && std::strncmp(ho, "\033[H", 3) == 0 )
     has_ansi_escape_sequences = true;
+
+  const auto& pc = TCAP(t_pad_char);
+
+  if ( pc )
+    PC = pc[0];
 }
 
 //----------------------------------------------------------------------
@@ -311,14 +436,26 @@ std::string FTermcap::encodeParams ( const std::string& cap
 }
 
 //----------------------------------------------------------------------
-int FTermcap::_tputs (const char* str, int affcnt, fn_putc putc)
+void FTermcap::delay_output (int ms, const defaultPutChar& outc)
 {
-#if defined(__sun) && defined(__SVR4)
-  return ::tputs ( C_STR(str)
-                 , affcnt, reinterpret_cast<int (*)(char)>(putc) );
-#else
-  return ::tputs (str, affcnt, putc);
-#endif
+
+  if ( no_padding_char )
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+  }
+  else
+  {
+    static constexpr int baudbyte = 9;  // = 7 bit + 1 parity + 1 stop
+
+    for ( int pad_char_count = (ms * baudrate) / (baudbyte * 1000);
+          pad_char_count > 0;
+          pad_char_count-- )
+    {
+      outc(int(PC));
+    }
+
+    std::fflush(stdout);
+  }
 }
 
 
@@ -331,6 +468,7 @@ FTermcap::TCapMapType FTermcap::strings =
 //  |    |      // variable name                -> description
 //------------------------------------------------------------------------------
   { nullptr, "bl" },  // bell                   -> audible signal (bell) (P)
+  { nullptr, "vb" },  // flash_screen           -> visible bell (may not move cursor)
   { nullptr, "ec" },  // erase_chars            -> erase #1 characters (P)
   { nullptr, "cl" },  // clear_screen           -> clear screen and home cursor (P*)
   { nullptr, "cd" },  // clr_eos                -> clear to end of screen (P*)
@@ -341,6 +479,7 @@ FTermcap::TCapMapType FTermcap::strings =
   { nullptr, "cr" },  // carriage_return        -> carriage return (P*)
   { nullptr, "ta" },  // tab                    -> tab to next 8-space hardware tab stop
   { nullptr, "bt" },  // back_tab               -> back tab (P)
+  { nullptr, "pc" },  // pad_char               -> padding char (instead of null)
   { nullptr, "ip" },  // insert_padding         -> insert padding after inserted character
   { nullptr, "ic" },  // insert_character       -> insert character (P)
   { nullptr, "IC" },  // parm_ich               -> insert #1 characters (P*)

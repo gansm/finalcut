@@ -53,6 +53,13 @@ namespace finalcut
 class FTermcap final
 {
   public:
+    // Enumeration
+    enum class Status
+    {
+      Error = -1,
+      OK = 0
+    };
+
     struct TCapMap
     {
       const char* string;
@@ -60,8 +67,8 @@ class FTermcap final
     };
 
     // Using-declaration
-    using fn_putc = int (*)(int);
-    using TCapMapType = std::array<TCapMap, 83>;
+    using TCapMapType = std::array<TCapMap, 85>;
+    using defaultPutChar = std::function<int(int)>;
 
     // Constructors
     FTermcap() = default;
@@ -77,13 +84,18 @@ class FTermcap final
     static std::string   encodeMotionParameter (const std::string&, int, int);
     template <typename... Args>
     static std::string   encodeParameter (const std::string&, Args&&...);
-    static int           paddingPrint (const std::string&, int, fn_putc);
+    static Status        paddingPrint ( const std::string&
+                                      , int
+                                      , const defaultPutChar&);
 
     // Inquiry
     static bool          isInitialized();
 
+    // Mutator
+    static void          setBaudrate (int);
+
     // Methods
-    static void init();
+    static void          init();
 
     // Data members
     static bool          background_color_erase;
@@ -95,8 +107,11 @@ class FTermcap final
     static bool          ansi_default_color;
     static bool          osc_support;
     static bool          no_utf8_acs_chars;
+    static bool          no_padding_char;
+    static bool          xon_xoff_flow_control;
     static int           max_color;
     static int           tabstop;
+    static int           padding_baudrate;
     static int           attr_without_color;
     static TCapMapType   strings;
 
@@ -114,11 +129,13 @@ class FTermcap final
     static void          termcapKeys();
     static std::string   encodeParams ( const std::string&
                                       , const std::vector<int>& );
-    static int           _tputs (const char*, int, fn_putc);
+    static void          delay_output (int, const defaultPutChar&);
 
     // Data member
-    static char          string_buf[BUF_SIZE];
     static bool          initialized;
+    static int           baudrate;
+    static char          PC;
+    static char          string_buf[BUF_SIZE];
 };
 
 // FTermcap inline functions
@@ -134,15 +151,15 @@ std::string FTermcap::encodeParameter (const std::string& cap, Args&&... args)
 }
 
 //----------------------------------------------------------------------
-inline int FTermcap::paddingPrint (const std::string& str, int affcnt, fn_putc putc)
-{
-  return _tputs (C_STR(str.data()), affcnt, putc);
-}
-
-//----------------------------------------------------------------------
 inline bool FTermcap::isInitialized()
 {
   return initialized;
+}
+
+//----------------------------------------------------------------------
+inline void FTermcap::setBaudrate (int baud)
+{
+  baudrate = baud;
 }
 
 }  // namespace finalcut

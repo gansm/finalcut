@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -112,7 +112,7 @@ bool FDialog::setModal (bool enable)
 //----------------------------------------------------------------------
 bool FDialog::setScrollable (bool enable)
 {
-  return (setFlags().scrollable = enable);
+  return ( setFlags().scrollable = enable );
 }
 
 
@@ -134,7 +134,7 @@ bool FDialog::setBorder (bool enable)
     setRightPadding(0);
   }
 
-  return (setFlags().no_border = ! enable);
+  return ( setFlags().no_border = ! enable );
 }
 
 //----------------------------------------------------------------------

@@ -170,7 +170,7 @@ inline FString FListViewItem::getClassName() const
 
 //----------------------------------------------------------------------
 inline uInt FListViewItem::getColumnCount() const
-{ return uInt(column_list.size()); }
+{ return static_cast<uInt>(column_list.size()); }
 
 //----------------------------------------------------------------------
 template <typename DT>
@@ -718,11 +718,11 @@ inline const FListView::FListViewItems& FListView::getData() const
 
 //----------------------------------------------------------------------
 inline bool FListView::isHorizontallyScrollable() const
-{ return bool( max_line_width > getClientWidth() ); }
+{ return max_line_width > getClientWidth(); }
 
 //----------------------------------------------------------------------
 inline bool FListView::isVerticallyScrollable() const
-{ return bool( getCount() > getClientHeight() ); }
+{ return getCount() > getClientHeight(); }
 
 //----------------------------------------------------------------------
 inline void FListView::scrollTo (const FPoint& pos)

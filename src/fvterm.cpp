@@ -581,7 +581,7 @@ void FVTerm::flush() const
   {
     const auto& first = output_buffer->front();
     const auto& type = std::get<0>(first);
-    const auto& wstring = std::get<1>(first);
+    const auto& str = std::get<1>(first);
 
     if ( type == OutputType::String )
     {
@@ -590,11 +590,11 @@ void FVTerm::flush() const
       if ( ! FTermPutchar )
         return;
 
-      for (auto&& ch : wstring)
+      for (auto&& ch : str.wstring)
         FTermPutchar(int(ch));
     }
     else if ( type == OutputType::Control )
-      FTerm::putstring (std::string(wstring.begin(), wstring.end()));
+      FTerm::putstring (str.string);
 
     output_buffer->pop();
   }
@@ -2625,7 +2625,7 @@ FVTerm::PrintState FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y) const
 //----------------------------------------------------------------------
 inline bool FVTerm::isFullWidthChar (const FChar& ch) const
 {
-  return bool(ch.attr.bit.char_width == 2);
+  return ch.attr.bit.char_width == 2;
 }
 
 //----------------------------------------------------------------------
@@ -3105,8 +3105,7 @@ inline bool FVTerm::isOutputBufferLimitReached() const
 //----------------------------------------------------------------------
 inline void FVTerm::appendOutputBuffer (const FTermControl& ctrl) const
 {
-  const auto& wstring = std::wstring{ctrl.string.begin(), ctrl.string.end()};
-  output_buffer->emplace(std::make_tuple(OutputType::Control, wstring));
+  output_buffer->emplace(std::make_tuple(OutputType::Control, TermString(ctrl.string)));
 
   if ( isOutputBufferLimitReached() )
     flush();
@@ -3129,7 +3128,7 @@ void FVTerm::appendOutputBuffer (const FTermString& str) const
     auto& string_buf = std::get<1>(output_buffer->back());
     std::transform ( str.string.begin()
                    , str.string.end()
-                   , std::back_inserter(string_buf)
+                   , std::back_inserter(string_buf.wstring)
                    , [] (wchar_t ch)
                      {
                        return ch;
@@ -3137,7 +3136,7 @@ void FVTerm::appendOutputBuffer (const FTermString& str) const
                    );
   }
   else
-    output_buffer->emplace(std::make_tuple(OutputType::String, str.string));
+    output_buffer->emplace(std::make_tuple(OutputType::String, TermString(str.string)));
 
   if ( isOutputBufferLimitReached() )
     flush();

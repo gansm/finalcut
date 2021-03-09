@@ -260,11 +260,11 @@ inline void FTextView::deleteLine (int pos)
 
 //----------------------------------------------------------------------
 inline bool FTextView::isHorizontallyScrollable() const
-{ return bool( max_line_width > getTextWidth() ); }
+{ return max_line_width > getTextWidth(); }
 
 //----------------------------------------------------------------------
 inline bool FTextView::isVerticallyScrollable() const
-{ return bool( getRows() > getTextHeight() ); }
+{ return getRows() > getTextHeight(); }
 
 }  // namespace finalcut
 

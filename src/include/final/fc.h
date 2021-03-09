@@ -257,51 +257,51 @@ enum class UniChar : wchar_t
 
 constexpr bool operator < (const UniChar& c1, const wchar_t c2) noexcept
 {
-  return bool( wchar_t(c1) < c2 );
+  return wchar_t(c1) < c2;
 }
 
 constexpr bool operator > (const UniChar& c1, const wchar_t c2) noexcept
 {
-  return bool( wchar_t(c1) > c2 );
+  return wchar_t(c1) > c2;
 }
 
 constexpr bool operator < (const wchar_t c1, const UniChar& c2) noexcept
 {
-  return bool( c1 < wchar_t(c2) );
+  return c1 < wchar_t(c2);
 }
 
 constexpr bool operator > (const wchar_t c1, const UniChar& c2) noexcept
 {
-  return bool( c1 > wchar_t(c2) );
+  return c1 > wchar_t(c2);
 }
 constexpr bool operator <= (const UniChar& c1, const wchar_t c2) noexcept
 {
-  return bool( wchar_t(c1) <= c2 );
+  return wchar_t(c1) <= c2;
 }
 
 constexpr bool operator >= (const UniChar& c1, const wchar_t c2) noexcept
 {
-  return bool( wchar_t(c1) >= c2 );
+  return wchar_t(c1) >= c2;
 }
 
 constexpr bool operator <= (const wchar_t c1, const UniChar& c2) noexcept
 {
-  return bool( c1 <= wchar_t(c2) );
+  return c1 <= wchar_t(c2);
 }
 
 constexpr bool operator >= (const wchar_t c1, const UniChar& c2) noexcept
 {
-  return bool( c1 >= wchar_t(c2) );
+  return c1 >= wchar_t(c2);
 }
 
 constexpr bool operator == (const wchar_t c1, const UniChar& c2) noexcept
 {
-  return bool( c1 == wchar_t(c2) );
+  return c1 == wchar_t(c2);
 }
 
 constexpr bool operator == (const UniChar& c1, const wchar_t c2) noexcept
 {
-  return bool( wchar_t(c1) == c2 );
+  return wchar_t(c1) == c2;
 }
 
 
@@ -819,22 +819,22 @@ constexpr FKey operator << (const FKey& k, const uInt32 n) noexcept
 
 constexpr bool operator < (const FKey& k1, const uInt32 k2) noexcept
 {
-  return bool( uInt32(k1) < k2 );
+  return uInt32(k1) < k2;
 }
 
 constexpr bool operator > (const FKey& k1, const uInt32 k2) noexcept
 {
-  return bool( uInt32(k1) > k2 );
+  return uInt32(k1) > k2;
 }
 
 constexpr bool operator <= (const FKey& k1, const uInt32 k2) noexcept
 {
-  return bool( uInt32(k1) <= k2 );
+  return uInt32(k1) <= k2;
 }
 
 constexpr bool operator >= (const FKey& k1, const uInt32 k2) noexcept
 {
-  return bool( uInt32(k1) >= k2 );
+  return uInt32(k1) >= k2;
 }
 
 constexpr FKey operator | (const FKey& k1, const FKey& k2) noexcept
@@ -1156,27 +1156,27 @@ constexpr FColor operator << (const FColor& c, const uInt16 n) noexcept
 
 constexpr bool operator < (const FColor& c, const uInt16 n) noexcept
 {
-  return bool( uInt16(c) < n );
+  return uInt16(c) < n;
 }
 
 constexpr bool operator > (const FColor& c, const uInt16 n) noexcept
 {
-  return bool( uInt16(c) > n );
+  return uInt16(c) > n;
 }
 
 constexpr bool operator == (const FColor& c, const uInt16 n) noexcept
 {
-  return bool( uInt16(c) == n );
+  return uInt16(c) == n;
 }
 
 constexpr bool operator <= (const FColor& c, const uInt16 n) noexcept
 {
-  return bool( uInt16(c) <= n );
+  return uInt16(c) <= n;
 }
 
 constexpr bool operator >= (const FColor& c, const uInt16 n) noexcept
 {
-  return bool( uInt16(c) >= n );
+  return uInt16(c) >= n;
 }
 
 constexpr FColor operator + (const FColor& c, const uInt16 n) noexcept
@@ -1433,6 +1433,7 @@ enum class BracketType
 enum class Termcap
 {
   t_bell,
+  t_flash_screen,
   t_erase_chars,
   t_clear_screen,
   t_clr_eos,
@@ -1443,6 +1444,7 @@ enum class Termcap
   t_carriage_return,
   t_tab,
   t_back_tab,
+  t_pad_char,
   t_insert_padding,
   t_insert_character,
   t_parm_ich,

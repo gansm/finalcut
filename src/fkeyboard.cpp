@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -91,17 +91,17 @@ FString FKeyboard::getKeyName (const FKey keynum) const
     fc::fkeyname.cend(),
     [&keynum] (const fc::FKeyName& kn)
     {
-      return (kn.num != FKey::None && kn.num == keynum);
+      return ( kn.num != FKey::None && kn.num == keynum );
     }
   );
 
   if ( found_key != fc::fkeyname.end() )
-    return FString{found_key->string};
+    return {found_key->string};
 
   if ( keynum > 32 && keynum < 127 )
-    return FString{char(keynum)};
+    return {char(keynum)};
 
-  return FString{""};
+  return {""};
 }
 
 //----------------------------------------------------------------------

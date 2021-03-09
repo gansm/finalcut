@@ -67,6 +67,7 @@
 
 #include "final/fc.h"
 #include "final/fsystem.h"
+
 namespace finalcut
 {
 

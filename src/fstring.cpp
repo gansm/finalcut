@@ -333,7 +333,7 @@ const FString& FString::operator >> (float& num) const
 //----------------------------------------------------------------------
 FString::operator bool () const
 {
-  return bool(string);
+  return string;
 }
 
 //----------------------------------------------------------------------
@@ -404,7 +404,7 @@ char* FString::c_str()
 //----------------------------------------------------------------------
 std::string FString::toString() const
 {
-  return std::string(c_str(), length);
+  return {c_str(), length};
 }
 
 //----------------------------------------------------------------------
@@ -442,7 +442,7 @@ sInt16 FString::toShort() const
   if ( num < SHRT_MIN )
     throw std::underflow_error ("underflow");
 
-  return sInt16(num);
+  return static_cast<sInt16>(num);
 }
 
 //----------------------------------------------------------------------
@@ -453,7 +453,7 @@ uInt16 FString::toUShort() const
   if ( num > USHRT_MAX )
     throw std::overflow_error ("overflow");
 
-  return uInt16(num);
+  return static_cast<uInt16>(num);
 }
 
 //----------------------------------------------------------------------
@@ -467,7 +467,7 @@ int FString::toInt() const
   if ( num < INT_MIN )
     throw std::underflow_error ("underflow");
 
-  return int(num);
+  return static_cast<int>(num);
 }
 
 //----------------------------------------------------------------------
@@ -478,7 +478,7 @@ uInt FString::toUInt() const
   if ( num > UINT_MAX )
     throw std::overflow_error ("overflow");
 
-  return uInt(num);
+  return static_cast<uInt>(num);
 }
 
 //----------------------------------------------------------------------
@@ -532,7 +532,7 @@ long FString::toLong() const
   if ( neg )
     num = (~num) + 1;
 
-  return num;
+  return static_cast<long>(num);
 }
 
 //----------------------------------------------------------------------
@@ -576,7 +576,7 @@ uLong FString::toULong() const
   if ( *p != L'\0' && ! std::iswdigit(std::wint_t(*p)) )
     throw std::invalid_argument ("no valid number");
 
-  return num;
+  return static_cast<uLong>(num);
 }
 
 //----------------------------------------------------------------------
@@ -590,7 +590,7 @@ float FString::toFloat() const
   if ( std::fabs(num) < double(FLT_EPSILON) )  // num == 0.0f
     throw std::underflow_error ("underflow");
 
-  return float(num);
+  return static_cast<float>(num);
 }
 
 //----------------------------------------------------------------------
@@ -722,7 +722,7 @@ FString FString::mid (std::size_t pos, std::size_t len) const
     len = length - pos + 1;
 
   if ( pos > length || pos + len - 1 > length || len == 0 )
-    return FString{L""};
+    return {L""};
 
   wchar_t* p = s.string;
   wchar_t* first = p + pos - 1;
@@ -907,7 +907,7 @@ bool FString::operator < (const FString& s) const
   if ( ! (string || s.string) )
     return false;
 
-  return ( std::wcscmp(string, s.string) < 0 );
+  return std::wcscmp(string, s.string) < 0;
 }
 
 //----------------------------------------------------------------------
@@ -922,7 +922,7 @@ bool FString::operator <= (const FString& s) const
   if ( ! string && s.string )
     return true;
 
-  return ( std::wcscmp(string, s.string) <= 0 );
+  return std::wcscmp(string, s.string) <= 0;
 }
 
 //----------------------------------------------------------------------
@@ -934,7 +934,7 @@ bool FString::operator == (const FString& s) const
   if ( bool(string) != bool(s.string) || length != s.length )
     return false;
 
-  return ( std::wcscmp(string, s.string) == 0 );
+  return std::wcscmp(string, s.string) == 0;
 }
 
 //----------------------------------------------------------------------
@@ -955,7 +955,7 @@ bool FString::operator >= (const FString& s) const
   if ( ! (string || s.string) )
     return true;
 
-  return ( std::wcscmp(string, s.string) >= 0 );
+  return std::wcscmp(string, s.string) >= 0;
 }
 
 //----------------------------------------------------------------------
@@ -970,7 +970,7 @@ bool FString::operator > (const FString& s) const
   if ( ! string && s.string )
     return false;
 
-  return ( std::wcscmp(string, s.string) > 0 );
+  return std::wcscmp(string, s.string) > 0;
 }
 
 //----------------------------------------------------------------------
@@ -1189,7 +1189,7 @@ bool FString::includes (const FString& s) const
   if ( ! (string && s.string) )
     return false;
 
-  return ( std::wcsstr(string, s.string) != nullptr );
+  return std::wcsstr(string, s.string) != nullptr;
 }
 
 

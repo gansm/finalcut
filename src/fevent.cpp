@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -184,13 +184,13 @@ FFocusEvent::FFocusEvent (Event ev_type)  // constructor
 //----------------------------------------------------------------------
 bool FFocusEvent::gotFocus() const
 {
-  return ( getType() == Event::FocusIn );
+  return getType() == Event::FocusIn;
 }
 
 //----------------------------------------------------------------------
 bool FFocusEvent::lostFocus() const
 {
-  return ( getType() == Event::FocusOut );
+  return getType() == Event::FocusOut;
 }
 
 //----------------------------------------------------------------------

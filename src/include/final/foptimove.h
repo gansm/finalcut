@@ -227,83 +227,83 @@ inline FString FOptiMove::getClassName() const
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getCursorHomeLength() const
-{ return uInt(F_cursor_home.length); }
+{ return static_cast<uInt>(F_cursor_home.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getCarriageReturnLength() const
-{ return uInt(F_carriage_return.length); }
+{ return static_cast<uInt>(F_carriage_return.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getCursorToLLLength() const
-{ return uInt(F_cursor_to_ll.length); }
+{ return static_cast<uInt>(F_cursor_to_ll.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getTabLength() const
-{ return uInt(F_tab.length); }
+{ return static_cast<uInt>(F_tab.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getBackTabLength() const
-{ return uInt(F_back_tab.length); }
+{ return static_cast<uInt>(F_back_tab.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getCursorUpLength() const
-{ return uInt(F_cursor_up.length); }
+{ return static_cast<uInt>(F_cursor_up.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getCursorDownLength() const
-{ return uInt(F_cursor_down.length); }
+{ return static_cast<uInt>(F_cursor_down.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getCursorLeftLength() const
-{ return uInt(F_cursor_left.length); }
+{ return static_cast<uInt>(F_cursor_left.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getCursorRightLength() const
-{ return uInt(F_cursor_right.length); }
+{ return static_cast<uInt>(F_cursor_right.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getCursorAddressLength() const
-{ return uInt(F_cursor_address.length); }
+{ return static_cast<uInt>(F_cursor_address.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getColumnAddressLength() const
-{ return uInt(F_column_address.length); }
+{ return static_cast<uInt>(F_column_address.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getRowAddressLength() const
-{ return uInt(F_row_address.length); }
+{ return static_cast<uInt>(F_row_address.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getParmUpCursorLength() const
-{ return uInt(F_parm_up_cursor.length); }
+{ return static_cast<uInt>(F_parm_up_cursor.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getParmDownCursorLength() const
-{ return uInt(F_parm_down_cursor.length); }
+{ return static_cast<uInt>(F_parm_down_cursor.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getParmLeftCursorLength() const
-{ return uInt(F_parm_left_cursor.length); }
+{ return static_cast<uInt>(F_parm_left_cursor.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getParmRightCursorLength() const
-{ return uInt(F_parm_right_cursor.length); }
+{ return static_cast<uInt>(F_parm_right_cursor.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getEraseCharsLength() const
-{ return uInt(F_erase_chars.length); }
+{ return static_cast<uInt>(F_erase_chars.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getRepeatCharLength() const
-{ return uInt(F_repeat_char.length); }
+{ return static_cast<uInt>(F_repeat_char.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getClrBolLength() const
-{ return uInt(F_clr_bol.length); }
+{ return static_cast<uInt>(F_clr_bol.length); }
 
 //----------------------------------------------------------------------
 inline uInt FOptiMove::getClrEolLength() const
-{ return uInt(F_clr_eol.length); }
+{ return static_cast<uInt>(F_clr_eol.length); }
 
 //----------------------------------------------------------------------
 inline void FOptiMove::set_auto_left_margin (bool bcap)

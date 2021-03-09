@@ -20,10 +20,10 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include <array>
 #include <algorithm>
-#include <unordered_map>
+#include <array>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "final/fapplication.h"
@@ -974,10 +974,7 @@ void FTerm::resetBeep()
 void FTerm::beep()
 {
   if ( TCAP(t_bell) )
-  {
     putstring (TCAP(t_bell));
-    std::fflush(stdout);
-  }
 }
 
 //----------------------------------------------------------------------
@@ -1054,7 +1051,7 @@ std::string FTerm::getEncodingString()
 bool FTerm::charEncodable (wchar_t c)
 {
   const wchar_t ch = charEncode(c);
-  return bool(ch > 0 && ch != c);
+  return ch > 0 && ch != c;
 }
 
 //----------------------------------------------------------------------
@@ -1558,7 +1555,7 @@ bool FTerm::init_font()
     FApplication::exit(EXIT_FAILURE);
   }
 
-  return ( ! FApplication::isQuit() );
+  return ! FApplication::isQuit();
 }
 
 //----------------------------------------------------------------------

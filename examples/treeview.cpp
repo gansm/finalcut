@@ -59,7 +59,7 @@ inline bool isLessThanInteger ( const finalcut::FString& lhs
 {
   const sInt64 l_number = stringToNumber(lhs);
   const sInt64 r_number = stringToNumber(rhs);
-  return bool( l_number < r_number );  // lhs < rhs
+  return l_number < r_number;  // lhs < rhs
 }
 
 //----------------------------------------------------------------------
@@ -69,7 +69,7 @@ inline bool isLessThanDouble ( const finalcut::FString& lhs
   std::setlocale(LC_NUMERIC, "C");
   const double l_number = lhs.toDouble();
   const double r_number = rhs.toDouble();
-  return bool( l_number < r_number );  // lhs < rhs
+  return l_number < r_number;  // lhs < rhs
 }
 
 //----------------------------------------------------------------------
@@ -78,7 +78,7 @@ inline bool isGreaterThanInteger ( const finalcut::FString& lhs
 {
   const sInt64 l_number = stringToNumber(lhs);
   const sInt64 r_number = stringToNumber(rhs);
-  return bool( l_number > r_number );  // lhs > rhs
+  return l_number > r_number;  // lhs > rhs
 }
 
 //----------------------------------------------------------------------
@@ -88,7 +88,7 @@ inline bool isGreaterThanDouble ( const finalcut::FString& lhs
   std::setlocale(LC_NUMERIC, "C");
   const double l_number = lhs.toDouble();
   const double r_number = rhs.toDouble();
-  return bool( l_number > r_number );  // lhs > rhs
+  return l_number > r_number;  // lhs > rhs
 }
 
 //----------------------------------------------------------------------

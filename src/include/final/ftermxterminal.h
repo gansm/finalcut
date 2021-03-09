@@ -205,11 +205,11 @@ inline FString FTermXTerminal::getHighlightBackground() const
 
 //----------------------------------------------------------------------
 inline bool FTermXTerminal::hasFont() const
-{ return bool(xterm_font.getLength() > 2); }
+{ return xterm_font.getLength() > 2; }
 
 //----------------------------------------------------------------------
 inline bool FTermXTerminal::hasTitle() const
-{ return bool(xterm_title.getLength() > 0); }
+{ return xterm_title.getLength() > 0; }
 
 //----------------------------------------------------------------------
 inline void FTermXTerminal::unsetMouseSupport()

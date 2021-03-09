@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -62,81 +62,82 @@ const FPoint& FMouseData::getPos() const
 {
   return mouse;
 }
+
 //----------------------------------------------------------------------
 bool FMouseData::isLeftButtonPressed() const
 {
-  return bool(getButtonState().left_button == State::Pressed);
+  return getButtonState().left_button == State::Pressed;
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isLeftButtonReleased() const
 {
-  return bool(getButtonState().left_button == State::Released);
+  return getButtonState().left_button == State::Released;
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isLeftButtonDoubleClick() const
 {
-  return bool(getButtonState().left_button == State::DoubleClick);
+  return getButtonState().left_button == State::DoubleClick;
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isRightButtonPressed() const
 {
-  return bool(getButtonState().right_button == State::Pressed);
+  return getButtonState().right_button == State::Pressed;
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isRightButtonReleased() const
 {
-  return bool(getButtonState().right_button == State::Released);
+  return getButtonState().right_button == State::Released;
 }
 //----------------------------------------------------------------------
 bool FMouseData::isMiddleButtonPressed() const
 {
-  return bool(getButtonState().middle_button == State::Pressed);
+  return getButtonState().middle_button == State::Pressed;
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isMiddleButtonReleased() const
 {
-  return bool(getButtonState().middle_button == State::Released);
+  return getButtonState().middle_button == State::Released;
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isShiftKeyPressed() const
 {
-  return bool(getButtonState().shift_button);
+  return getButtonState().shift_button;
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isControlKeyPressed() const
 {
-  return bool(getButtonState().control_button);
+  return getButtonState().control_button;
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isMetaKeyPressed() const
 {
-  return bool(getButtonState().meta_button);
+  return getButtonState().meta_button;
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isWheelUp() const
 {
-  return bool(getButtonState().wheel_up);
+  return getButtonState().wheel_up;
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isWheelDown() const
 {
-  return bool(getButtonState().wheel_down);
+  return getButtonState().wheel_down;
 }
 
 //----------------------------------------------------------------------
 bool FMouseData::isMoved() const
 {
-  return bool(getButtonState().mouse_moved);
+  return getButtonState().mouse_moved;
 }
 
 //----------------------------------------------------------------------
@@ -551,7 +552,7 @@ FString FMouseX11::getClassName() const
 //----------------------------------------------------------------------
 bool FMouseX11::hasData()
 {
-  return bool(x11_mouse[0]);
+  return ( x11_mouse[0] );
 }
 
 //----------------------------------------------------------------------
@@ -729,7 +730,7 @@ FString FMouseSGR::getClassName() const
 //----------------------------------------------------------------------
 bool FMouseSGR::hasData()
 {
-  return bool(sgr_mouse[0]);
+  return ( sgr_mouse[0] );
 }
 
 //----------------------------------------------------------------------
@@ -959,7 +960,7 @@ FString FMouseUrxvt::getClassName() const
 //----------------------------------------------------------------------
 bool FMouseUrxvt::hasData()
 {
-  return bool(urxvt_mouse[0]);
+  return ( urxvt_mouse[0] );
 }
 
 //----------------------------------------------------------------------

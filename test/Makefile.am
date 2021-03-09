@@ -13,6 +13,7 @@ noinst_PROGRAMS = \
 	fmouse_test \
 	fkeyboard_test \
         fterm_functions_test \
+	ftermcap_test \
 	ftermdata_test \
 	ftermbuffer_test \
 	ftermdetection_test \
@@ -37,6 +38,7 @@ fdata_test_SOURCES = fdata-test.cpp
 fmouse_test_SOURCES = fmouse-test.cpp
 fkeyboard_test_SOURCES = fkeyboard-test.cpp
 fterm_functions_test_SOURCES = fterm_functions-test.cpp
+ftermcap_test_SOURCES = ftermcap-test.cpp
 ftermdata_test_SOURCES = ftermdata-test.cpp
 ftermbuffer_test_SOURCES = ftermbuffer-test.cpp
 ftermdetection_test_SOURCES = ftermdetection-test.cpp
@@ -61,6 +63,7 @@ TESTS = fobject_test \
 	fmouse_test \
 	fkeyboard_test \
 	fterm_functions_test \
+	ftermcap_test \
 	ftermdata_test \
 	ftermbuffer_test \
 	ftermdetection_test \

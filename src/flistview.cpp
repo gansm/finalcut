@@ -122,7 +122,7 @@ bool sortAscendingByName (const FObject* lhs, const FObject* rhs)
   const auto& r_string = r_item->getText(column);
 
   // lhs < rhs
-  return bool( strcasecmp(l_string.c_str(), r_string.c_str()) < 0 );
+  return strcasecmp(l_string.c_str(), r_string.c_str()) < 0;
 }
 
 //----------------------------------------------------------------------
@@ -135,7 +135,7 @@ bool sortDescendingByName (const FObject* lhs, const FObject* rhs)
   const auto& r_string = r_item->getText(column);
 
   // lhs > rhs
-  return bool( strcasecmp(l_string.c_str(), r_string.c_str()) > 0 );
+  return strcasecmp(l_string.c_str(), r_string.c_str()) > 0;
 }
 
 //----------------------------------------------------------------------
@@ -148,7 +148,7 @@ bool sortAscendingByNumber (const FObject* lhs, const FObject* rhs)
   const auto& r_number = firstNumberFromString(r_item->getText(column));
 
   // lhs < rhs
-  return bool( l_number < r_number );
+  return l_number < r_number;
 }
 
 //----------------------------------------------------------------------
@@ -161,7 +161,7 @@ bool sortDescendingByNumber (const FObject* lhs, const FObject* rhs)
   const auto& r_number = firstNumberFromString(r_item->getText(column));
 
   // lhs > rhs
-  return bool( l_number > r_number );
+  return l_number > r_number;
 }
 
 

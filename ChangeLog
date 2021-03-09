@@ -1,3 +1,7 @@
+2021-02-09 Markus Gans  <guru.mail@muenster.de>
+	* Implementation of an own padding print method for sending 
+	  control codes to the terminal
+
 2021-02-28 Markus Gans  <guru.mail@muenster.de>
 	* Removing the termcap library from the header files so 
 	  that FINAL CUT programs are not affected by the preprocessor 

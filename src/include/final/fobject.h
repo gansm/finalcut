@@ -248,11 +248,11 @@ inline bool FObject::hasParent() const
 
 //----------------------------------------------------------------------
 inline bool FObject::hasChildren() const
-{ return bool( ! children_list.empty() ); }
+{ return ! children_list.empty(); }
 
 //----------------------------------------------------------------------
 inline bool FObject::isDirectChild (const FObject* obj) const
-{ return bool( obj->getParent() == this ); }
+{ return obj->getParent() == this; }
 
 //----------------------------------------------------------------------
 inline bool FObject::isWidget() const
@@ -260,7 +260,7 @@ inline bool FObject::isWidget() const
 
 //----------------------------------------------------------------------
 inline bool FObject::isInstanceOf (const FString& classname) const
-{ return bool( classname == getClassName() ); }
+{ return classname == getClassName(); }
 
 //----------------------------------------------------------------------
 inline bool FObject::isTimerInUpdating() const

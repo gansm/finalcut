@@ -122,7 +122,7 @@ inline FString FDropDownListBox::getClassName() const
 
 //----------------------------------------------------------------------
 inline bool FDropDownListBox::isEmpty() const
-{ return bool( list.getCount() == 0 ); }
+{ return list.getCount() == 0; }
 
 
 //----------------------------------------------------------------------

@@ -286,11 +286,11 @@ inline bool FMenuItem::isRadioButton() const
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::hasHotkey() const
-{ return bool(hotkey != FKey::None); }
+{ return hotkey != FKey::None; }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::hasMenu() const
-{ return bool(menu != nullptr); }
+{ return menu != nullptr; }
 
 //----------------------------------------------------------------------
 inline FWidget* FMenuItem::getSuperMenu() const
