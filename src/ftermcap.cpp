@@ -153,7 +153,7 @@ FTermcap::Status FTermcap::paddingPrint ( const std::string& string
         ++iter;
         const auto first_digit = iter;
 
-        if ( (! std::isdigit(int(*iter)) && *iter != '.') )
+        if ( ! std::isdigit(int(*iter)) && *iter != '.' )
         {
           outc(int('$'));
           outc(int('<'));

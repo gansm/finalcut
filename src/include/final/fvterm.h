@@ -326,11 +326,11 @@ class FVTerm
 
     struct TermString
     {
-      TermString (const std::wstring& wstr)
+      explicit TermString (const std::wstring& wstr)
         : wstring{wstr}
       { }
 
-      TermString (const std::string& str)
+      explicit TermString (const std::string& str)
         : string{str}
       { }
 

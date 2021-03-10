@@ -1050,7 +1050,7 @@ int main (int argc, char* argv[])
 
   // Create the application object app
   finalcut::FApplication app{argc, argv};
-  app.setNonBlockingRead();
+  finalcut::FVTerm::setNonBlockingRead();
 
   // Create main dialog object d
   MyDialog d{&app};

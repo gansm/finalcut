@@ -532,7 +532,7 @@ long FString::toLong() const
   if ( neg )
     num = (~num) + 1;
 
-  return static_cast<long>(num);
+  return num;
 }
 
 //----------------------------------------------------------------------
@@ -576,7 +576,7 @@ uLong FString::toULong() const
   if ( *p != L'\0' && ! std::iswdigit(std::wint_t(*p)) )
     throw std::invalid_argument ("no valid number");
 
-  return static_cast<uLong>(num);
+  return num;
 }
 
 //----------------------------------------------------------------------

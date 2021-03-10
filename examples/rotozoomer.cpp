@@ -314,7 +314,7 @@ int main (int argc, char* argv[])
 
   {  // Create the application object in this scope
     finalcut::FApplication app{argc, argv};
-    app.setNonBlockingRead();
+    finalcut::FVTerm::setNonBlockingRead();
 
     // Create a simple dialog box
     constexpr int iterations = 314;
