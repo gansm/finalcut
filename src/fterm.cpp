@@ -1117,7 +1117,12 @@ FTerm::defaultPutChar& FTerm::putchar()
 //----------------------------------------------------------------------
 void FTerm::putstring (const std::string& str, int affcnt)
 {
-  FTermcap::paddingPrint (str, affcnt, FTerm::putchar_ASCII);
+  auto status = FTermcap::paddingPrint (str, affcnt, FTerm::putchar_ASCII);
+
+  if ( status == FTermcap::Status::Error )
+  {
+    // Possible error handling
+  }
 }
 
 //----------------------------------------------------------------------
