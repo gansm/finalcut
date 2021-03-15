@@ -407,7 +407,7 @@ void FTermDetection::detectTerminal()
   const auto& termfilename = fterm_data->getTermFileName();
 
   // Fixes problem with mouse input
-  if ( std::strncmp(termfilename, "/dev/cons", 9) == 0 )
+  if ( termfilename.substr(0, 9) == "/dev/cons" )
     FKeyboard::setNonBlockingInputSupport(false);
 #endif
 }
