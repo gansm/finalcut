@@ -60,7 +60,9 @@ bool                 FVTerm::combined_char_support{false};
 bool                 FVTerm::no_terminal_updates{false};
 bool                 FVTerm::cursor_hideable{false};
 bool                 FVTerm::force_terminal_update{false};
-uInt64               FVTerm::flush_wait{16667};  // 16.6 ms  (60 Hz)
+uInt64               FVTerm::flush_wait{MIN_FLUSH_WAIT};
+uInt64               FVTerm::flush_average{MIN_FLUSH_WAIT};
+uInt64               FVTerm::flush_median{MIN_FLUSH_WAIT};
 uInt64               FVTerm::term_size_check_timeout{500000};  // 500 ms
 uInt                 FVTerm::erase_char_length{};
 uInt                 FVTerm::repeat_char_length{};
@@ -572,6 +574,8 @@ void FVTerm::print (const FColorPair& pair)
 void FVTerm::flush() const
 {
   // Flush the output buffer
+
+  flushTimeAdjustment();
 
   if ( ! output_buffer || output_buffer->empty()
     || ! (isFlushTimeout() || force_terminal_update) )
@@ -2886,6 +2890,52 @@ inline bool FVTerm::isTermSizeChanged() const
     return true;
 
   return false;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::flushTimeAdjustment() const
+{
+  timeval now;
+  FObject::getCurrentTime(&now);
+  timeval diff = now - time_last_flush;
+
+  if ( diff.tv_sec > 0 || diff.tv_usec > 400000 )
+  {
+    flush_wait = MIN_FLUSH_WAIT;  // Reset to minimum values after 400 ms
+    flush_average = MIN_FLUSH_WAIT;
+    flush_median = MIN_FLUSH_WAIT;
+  }
+  else
+  {
+    uInt64 usec = diff.tv_usec;
+
+    if ( usec < MIN_FLUSH_WAIT )
+      usec = MIN_FLUSH_WAIT;
+    else if ( usec > MAX_FLUSH_WAIT )
+      usec = MAX_FLUSH_WAIT;
+
+    if ( usec >= flush_average )
+      flush_average += (usec - flush_average) / 10;
+    else
+    {
+      uInt64 delta = (flush_average - usec) / 10;
+
+      if ( flush_average >= delta )  // Avoid uInt64 underflow
+        flush_average -= delta;
+    }
+
+    if ( usec >= flush_median )
+      flush_median += flush_average / 5;
+    else
+    {
+      uInt64 delta = flush_average / 5;
+
+      if ( flush_median >= delta )  // Avoid uInt64 underflow
+        flush_median -= delta;
+    }
+
+    flush_wait = flush_median;
+  }
 }
 
 //----------------------------------------------------------------------

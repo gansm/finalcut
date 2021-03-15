@@ -276,6 +276,13 @@ void FTermcapTest::paddingPrintTest()
   CPPUNIT_ASSERT ( ! output.empty() );
   CPPUNIT_ASSERT ( output == "12$3$<4567" );
 
+  // Without a digit
+  output.clear();
+  status = tcap.paddingPrint ("12$3$<x>4567", 1, FTermcapTest::putchar_test);
+  CPPUNIT_ASSERT ( status == finalcut::FTermcap::Status::OK );
+  CPPUNIT_ASSERT ( ! output.empty() );
+  CPPUNIT_ASSERT ( output == "12$3$<x>4567" );
+
   // With 2 ms print delay
   output.clear();
   auto start = high_resolution_clock::now();

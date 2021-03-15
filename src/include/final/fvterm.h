@@ -345,6 +345,9 @@ class FVTerm
     // Constants
     //   Buffer limit for character output on the terminal
     static constexpr std::size_t TERMINAL_OUTPUT_BUFFER_LIMIT = 1024;
+    //   Upper and lower flush limit
+    static constexpr uInt64 MIN_FLUSH_WAIT = 16667;   //   16.6 ms = 60 Hz
+    static constexpr uInt64 MAX_FLUSH_WAIT = 200000;  //  200.0 ms = 5 Hz
 
     // Methods
     void                  resetTextAreaToDefault ( const FTermArea*
@@ -412,6 +415,7 @@ class FVTerm
     bool                  updateTerminalCursor() const;
     bool                  isInsideTerminal (const FPoint&) const;
     bool                  isTermSizeChanged() const;
+    void                  flushTimeAdjustment() const;
     static bool           isFlushTimeout();
     static bool           isTermSizeCheckTimeout();
     static bool           hasPendingUpdates (const FTermArea*);
@@ -451,6 +455,8 @@ class FVTerm
     static bool                   no_terminal_updates;
     static bool                   force_terminal_update;
     static uInt64                 flush_wait;
+    static uInt64                 flush_average;
+    static uInt64                 flush_median;
     static uInt64                 term_size_check_timeout;
     static uInt                   erase_char_length;
     static uInt                   repeat_char_length;

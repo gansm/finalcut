@@ -1,4 +1,8 @@
-2021-02-09 Markus Gans  <guru.mail@muenster.de>
+2021-03-15 Markus Gans  <guru.mail@muenster.de>
+	* Dynamic adjustment of the terminal refresh rate between 
+	  5 and 60 Hz
+
+2021-03-09 Markus Gans  <guru.mail@muenster.de>
 	* Implementation of an own padding print method for sending 
 	  control codes to the terminal
 

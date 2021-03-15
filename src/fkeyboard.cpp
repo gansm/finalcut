@@ -149,13 +149,11 @@ bool FKeyboard::isKeyPressed (uInt64 blocking_time)
   tv.tv_sec = tv.tv_usec = 0;  // Non-blocking input
 
   if ( blocking_time > 0
-     && non_blocking_input_support
-     && select(stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0
-     && FD_ISSET(stdin_no, &ifds) )
+    && non_blocking_input_support
+    && select(stdin_no + 1, &ifds, nullptr, nullptr, &tv) > 0
+    && FD_ISSET(stdin_no, &ifds) )
   {
-    has_pending_input = true;
-    FD_CLR (stdin_no, &ifds);
-    tv.tv_sec = 0;
+    return (has_pending_input = true);
   }
 
   if ( isKeypressTimeout() || ! non_blocking_input_support )

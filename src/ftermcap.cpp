@@ -438,7 +438,6 @@ std::string FTermcap::encodeParams ( const std::string& cap
 //----------------------------------------------------------------------
 void FTermcap::delay_output (int ms, const defaultPutChar& outc)
 {
-
   if ( no_padding_char )
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
