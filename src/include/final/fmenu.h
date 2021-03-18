@@ -199,6 +199,7 @@ class FMenu : public FWindow, public FMenuList
     bool         selectNextItem();
     bool         selectPrevItem();
     void         keypressMenuBar (FKeyEvent*) const;
+    bool         hotkeyFound (FKey, const FKeyEvent&) const;
     bool         hotkeyMenu (FKeyEvent*);
     void         draw() override;
     void         drawItems();

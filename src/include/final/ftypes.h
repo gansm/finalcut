@@ -49,7 +49,7 @@
               << ": Not enough memory to alloc " \
               << (object_name)                   \
               << " in "                          \
-              << __func__ << std::endl;
+              << __func__ << std::endl  // ;
 
 using uChar   = unsigned char;
 using uShort  = unsigned short;

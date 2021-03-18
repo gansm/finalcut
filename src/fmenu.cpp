@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1085,56 +1085,61 @@ void FMenu::keypressMenuBar (FKeyEvent* ev) const
 }
 
 //----------------------------------------------------------------------
+inline bool FMenu::hotkeyFound (FKey hotkey, const FKeyEvent& ev) const
+{
+  bool found{false};
+  const FKey key = ev.key();
+
+  if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
+    hotkey -= 0xfee0;
+
+  if ( std::isalpha(int(hotkey)) || std::isdigit(int(hotkey)) )
+  {
+    if ( FKey(std::tolower(int(hotkey))) == key
+      || FKey(std::toupper(int(hotkey))) == key )
+      found = true;
+  }
+  else if ( hotkey == key )
+    found = true;
+
+  return found;
+}
+
+//----------------------------------------------------------------------
 bool FMenu::hotkeyMenu (FKeyEvent* ev)
 {
+  auto try_to_open_submenu = [this] (FMenu* sub_menu)
+  {
+    if ( ! sub_menu->isShown() )
+      openSubMenu (sub_menu, SELECT_ITEM);
+
+    sub_menu->redraw();
+  };
+
   for (auto&& item : getItemList())
   {
-    if ( item->hasHotkey() )
+    if ( item->hasHotkey() && hotkeyFound(item->getHotkey(), *ev) )
     {
-      bool found{false};
-      FKey hotkey = item->getHotkey();
-      const FKey key = ev->key();
-
-      if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
-        hotkey -= 0xfee0;
-
-      if ( std::isalpha(int(hotkey)) || std::isdigit(int(hotkey)) )
+      if ( item->hasMenu() )
       {
-        if ( FKey(std::tolower(int(hotkey))) == key
-          || FKey(std::toupper(int(hotkey))) == key )
-          found = true;
+        unselectItem();
+        item->setSelected();
+        setSelectedItem (item);
+        redraw();
+        try_to_open_submenu (item->getMenu());
       }
-      else if ( hotkey == key )
-        found = true;
-
-      if ( found )
+      else
       {
-        if ( item->hasMenu() )
-        {
-          auto sub_menu = item->getMenu();
-          unselectItem();
-          item->setSelected();
-          setSelectedItem (item);
-          redraw();
-
-          if ( ! sub_menu->isShown() )
-            openSubMenu (sub_menu, SELECT_ITEM);
-
-          sub_menu->redraw();
-        }
-        else
-        {
-          unselectItem();
-          hideSubMenus();
-          hide();
-          hideSuperMenus();
-          ev->accept();
-          item->processClicked();
-        }
-
+        unselectItem();
+        hideSubMenus();
+        hide();
+        hideSuperMenus();
         ev->accept();
-        return true;
+        item->processClicked();
       }
+
+      ev->accept();
+      return true;
     }
   }
 
@@ -1264,24 +1269,30 @@ inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
   if ( ! has_checkable_items )
     return;
 
+  auto print_bullet = [this] ()
+  {
+    if ( FTerm::isNewFont() )
+      print (UniChar::NF_Bullet);      // NF_Bullet ●
+    else
+      print (UniChar::BlackCircle);    // BlackCircle ●
+  };
+
+  auto print_check_mark = [this] ()
+  {
+    if ( FTerm::isNewFont() )
+      print (UniChar::NF_check_mark);  // NF_check_mark ✓
+    else
+      print (UniChar::SquareRoot);     // SquareRoot √
+  };
+
   if ( is_checkable )
   {
     if ( is_checked )
     {
       if ( is_radio_btn )
-      {
-        if ( FTerm::isNewFont() )
-          print (UniChar::NF_Bullet);  // NF_Bullet ●
-        else
-          print (UniChar::BlackCircle);     // BlackCircle ●
-      }
+        print_bullet();
       else
-      {
-        if ( FTerm::isNewFont() )
-          print (UniChar::NF_check_mark);  // NF_check_mark ✓
-        else
-          print (UniChar::SquareRoot);     // SquareRoot √
-      }
+        print_check_mark();
     }
     else
     {

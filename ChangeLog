@@ -22,7 +22,7 @@
 
 2021-02-09 Markus Gans  <guru.mail@muenster.de>
 	* Added support for combined unicode characters
-	* Added a unit test for the FTermBuffera class
+	* Added a unit test for the FTermBuffer class
 	* Added a unit test for the FTterm functions
 
 2020-12-31  Markus Gans  <guru.mail@muenster.de>

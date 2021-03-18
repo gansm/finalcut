@@ -323,23 +323,24 @@ FString getFullWidth (const FString& str)
   // Converts half-width to full-width characters
 
   FString s{str};
-  constexpr std::size_t HALF = 0;
-  constexpr std::size_t FULL = 1;
+  auto table_search = [] (wchar_t& c)
+  {
+    constexpr std::size_t HALF = 0;
+    constexpr std::size_t FULL = 1;
+
+    for (auto&& entry : fc::halfwidth_fullwidth)
+    {
+      if ( entry[HALF] == c )  // found
+        c = entry[FULL];
+    }
+  };
 
   for (auto&& c : s)
   {
     if ( c > L'\x20' && c < L'\x7f' )  // half-width ASCII
-    {
       c += 0xfee0;
-    }
     else
-    {
-      for (auto&& entry : fc::halfwidth_fullwidth)
-      {
-        if ( entry[HALF] == c )  // found
-          c = entry[FULL];
-      }
-    }
+      table_search(c);
   }
 
   return s;
@@ -351,23 +352,24 @@ FString getHalfWidth (const FString& str)
   // Converts full-width to half-width characters
 
   FString s{str};
-  constexpr std::size_t HALF = 0;
-  constexpr std::size_t FULL = 1;
+  auto table_search = [] (wchar_t& c)
+  {
+    constexpr std::size_t HALF = 0;
+    constexpr std::size_t FULL = 1;
+
+    for (auto&& entry : fc::halfwidth_fullwidth)
+    {
+      if ( entry[FULL] == c )  // found
+        c = entry[HALF];
+    }
+  };
 
   for (auto&& c : s)
   {
     if ( c > L'\xff00' && c < L'\xff5f' )  // full-width ASCII
-    {
       c -= 0xfee0;
-    }
     else
-    {
-      for (auto&& entry : fc::halfwidth_fullwidth)
-      {
-        if ( entry[FULL] == c )  // found
-          c = entry[HALF];
-      }
-    }
+      table_search(c);
   }
 
   return s;

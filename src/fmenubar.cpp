@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -105,21 +105,7 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
 
       if ( sel_item->hasMenu() )
       {
-        auto menu = sel_item->getMenu();
-        sel_item->openMenu();
-        menu->selectFirstItem();
-        auto first_item = menu->getSelectedItem();
-
-        if ( first_item )
-          first_item->setFocus();
-
-        menu->redraw();
-
-        if ( getStatusBar() )
-          getStatusBar()->drawMessage();
-
-        redraw();
-        drop_down = true;
+        openMenu (sel_item);
       }
       else if ( key == FKey::Return || key == FKey::Enter )
       {
@@ -725,6 +711,26 @@ void FMenuBar::selectMenuItem (FMenuItem* item)
       drop_down = true;
     }
   }
+}
+
+//----------------------------------------------------------------------
+void FMenuBar::openMenu (const FMenuItem* sel_item)
+{
+  auto menu = sel_item->getMenu();
+  sel_item->openMenu();
+  menu->selectFirstItem();
+  auto first_item = menu->getSelectedItem();
+
+  if ( first_item )
+    first_item->setFocus();
+
+  menu->redraw();
+
+  if ( getStatusBar() )
+    getStatusBar()->drawMessage();
+
+  redraw();
+  drop_down = true;
 }
 
 //----------------------------------------------------------------------

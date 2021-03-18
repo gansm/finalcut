@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -1726,10 +1726,13 @@ void FWidget::determineDesktopSize()
   // Determine width and height of the terminal
 
   detectTermSize();
-  wsize.setRect(1, 1, getDesktopWidth(), getDesktopHeight());
+  auto width = getDesktopWidth();
+  auto height = getDesktopHeight();
+  wsize.setRect(1, 1, width, height);
   adjust_wsize = wsize;
-  woffset.setRect(0, 0, getDesktopWidth(), getDesktopHeight());
-  wclient_offset = woffset;
+  woffset.setRect(0, 0, width, height);
+  auto r = internal::var::root_widget;
+  wclient_offset.setRect(r->padding.left, r->padding.top, width, height);
 }
 
 //----------------------------------------------------------------------
@@ -1846,29 +1849,24 @@ inline void FWidget::insufficientSpaceAdjust()
 //----------------------------------------------------------------------
 void FWidget::KeyPressEvent (FKeyEvent* kev)
 {
+  auto change_focus = [this] (const FKey key)
+  {
+    if ( isFocusNextKey(key) )
+      return focusNextChild();
+    else if ( isFocusPrevKey(key) )
+      return focusPrevChild();
+
+    return false;
+  };
+
   FWidget* widget(this);
 
   while ( widget )
   {
     widget->onKeyPress(kev);
 
-    if ( ! kev->isAccepted() )
-    {
-      const FKey key = kev->key();
-
-      if ( [this, &key] ()
-           {
-             if ( isFocusNextKey(key) )
-               return focusNextChild();
-             else if ( isFocusPrevKey(key) )
-               return focusPrevChild();
-
-             return false;
-           }() )
-      {
-        return;
-      }
-    }
+    if ( ! kev->isAccepted() && change_focus(kev->key()) )
+      return;
 
     if ( kev->isAccepted()
       || widget->isRootWidget()
