@@ -166,6 +166,7 @@ class Treeview final : public finalcut::FDialog
     auto initNorthAmerica() const -> std::initializer_list<TreeItem>;
     auto initSouthAmerica() const -> std::initializer_list<TreeItem>;
     auto initOceania() const -> std::initializer_list<TreeItem>;
+    void initLayout() override;
     void adjustSize() override;
 
     // Event handler
@@ -209,9 +210,6 @@ struct Treeview::TreeItem
 Treeview::Treeview (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  // Set FListView geometry
-  listview.setGeometry(FPoint{2, 1}, FSize{53, 14});
-
   // Add columns to the view
   listview.addColumn ("Name", 23);
   listview.addColumn ("Population");
@@ -257,8 +255,7 @@ Treeview::Treeview (finalcut::FWidget* parent)
     }
   }
 
-  // quit button
-  quit.setGeometry(FPoint{24, 16}, FSize{10, 1});
+  // Quit button text
   quit.setText (L"&Quit");
 
   // Callback function
@@ -416,6 +413,16 @@ auto Treeview::initOceania() const -> std::initializer_list<Treeview::TreeItem>
     { "Kiribati", "110,136", "152.0", {} }
   };
   return list;
+}
+
+//----------------------------------------------------------------------
+void Treeview::initLayout()
+{
+  // Set FListView geometry
+  listview.setGeometry(FPoint{2, 1}, FSize{53, 14});
+  // Set quit button geometry
+  quit.setGeometry(FPoint{24, 16}, FSize{10, 1});
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------

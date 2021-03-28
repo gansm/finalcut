@@ -58,7 +58,8 @@ class Transparent final : public finalcut::FDialog
     Transparent& operator = (const Transparent&) = delete;
 
   private:
-    // Method
+    // Methods
+    void initLayout() override;
     void draw() override;
 
     // Event handlers
@@ -73,11 +74,16 @@ Transparent::Transparent ( finalcut::FWidget* parent
                          , Transparent::Type tt )
   : finalcut::FDialog{parent}
   , type{tt}
+{ }
+
+//----------------------------------------------------------------------
+void Transparent::initLayout()
 {
   // Set statusbar text for this window
   // Avoids calling a virtual function from the constructor
   // (CERT, OOP50-CPP)
   FWidget::setStatusbarMessage("Press Q to quit");
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------

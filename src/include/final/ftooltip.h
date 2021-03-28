@@ -103,6 +103,7 @@ class FToolTip : public FWindow
     void                init();
     void                draw() override;
     void                calculateDimensions();
+    void                initLayout() override;
     void                adjustSize() override;
 
     // Data members

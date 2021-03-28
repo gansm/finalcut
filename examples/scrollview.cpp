@@ -49,7 +49,8 @@ class Scrollview final : public finalcut::FScrollView
     void setScrollSize (const FSize&) override;
 
   private:
-    // Method
+    // Methods
+    void initLayout() override;
     void draw() override;
 
     // Callback methods
@@ -73,16 +74,6 @@ class Scrollview final : public finalcut::FScrollView
 Scrollview::Scrollview (finalcut::FWidget* parent)
   : finalcut::FScrollView{parent}
 {
-  // Sets the navigation button geometry
-  go_east.setGeometry (FPoint{1, 1}, FSize{5, 1});
-  go_south.setGeometry ( FPoint{int(getScrollWidth()) - 5, 1}
-                       , FSize{5, 1} );
-  go_west.setGeometry ( FPoint{ int(getScrollWidth()) - 5
-                              , int(getScrollHeight()) - 2 }
-                      , FSize{5, 1} );
-  go_north.setGeometry ( FPoint{1, int(getScrollHeight()) - 2}
-                       , FSize{5, 1} );
-
   // Add scroll function callbacks to the buttons
   go_east.addCallback
   (
@@ -109,6 +100,20 @@ Scrollview::Scrollview (finalcut::FWidget* parent)
   );
 }
 
+//----------------------------------------------------------------------
+void Scrollview::initLayout()
+{
+  // Sets the navigation button geometry
+  go_east.setGeometry (FPoint{1, 1}, FSize{5, 1});
+  go_south.setGeometry ( FPoint{int(getScrollWidth()) - 5, 1}
+                       , FSize{5, 1} );
+  go_west.setGeometry ( FPoint{ int(getScrollWidth()) - 5
+                              , int(getScrollHeight()) - 2 }
+                      , FSize{5, 1} );
+  go_north.setGeometry ( FPoint{1, int(getScrollHeight()) - 2}
+                       , FSize{5, 1} );
+  FScrollView::initLayout();
+}
 //----------------------------------------------------------------------
 void Scrollview::setScrollSize (const FSize& size)
 {
@@ -194,6 +199,10 @@ class Scrollviewdemo final : public finalcut::FDialog
     // Destructor
     ~Scrollviewdemo() override = default;
 
+  private:
+    // Method
+    void initLayout() override;
+
     // Event handler
     void onClose (finalcut::FCloseEvent*) override;
 
@@ -211,13 +220,6 @@ class Scrollviewdemo final : public finalcut::FDialog
 Scrollviewdemo::Scrollviewdemo (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  FDialog::setGeometry (FPoint{16, 3}, FSize{50, 19});
-  FDialog::setText ("Scrolling viewport example");
-
-  // The scrolling viewport widget
-  sview.setGeometry(FPoint{3, 2}, FSize{44, 12});
-  sview.setScrollSize(FSize{188, 124});
-
   // Quit button
   quit_btn.setGeometry(FPoint{37, 15}, FSize{10, 1});
 
@@ -236,15 +238,27 @@ Scrollviewdemo::Scrollviewdemo (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-void Scrollviewdemo::cb_quit()
+void Scrollviewdemo::initLayout()
 {
-  close();
+  FDialog::setGeometry (FPoint{16, 3}, FSize{50, 19});
+  FDialog::setText ("Scrolling viewport example");
+
+  // The scrolling viewport widget
+  sview.setGeometry(FPoint{3, 2}, FSize{44, 12});
+  sview.setScrollSize(FSize{188, 124});
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------
 void Scrollviewdemo::onClose (finalcut::FCloseEvent* ev)
 {
   finalcut::FApplication::closeConfirmationDialog (this, ev);
+}
+
+//----------------------------------------------------------------------
+void Scrollviewdemo::cb_quit()
+{
+  close();
 }
 
 

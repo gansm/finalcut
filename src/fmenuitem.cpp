@@ -171,17 +171,7 @@ void FMenuItem::unsetSelected()
 void FMenuItem::setText (const FString& txt)
 {
   text.setString(txt);
-  text_length = text.getLength();
-  text_width = getColumnWidth(txt);
-  hotkey = finalcut::getHotkey(text);
-
-  if ( hotkey != FKey::None )
-  {
-    text_length--;
-    text_width--;
-  }
-
-  updateSuperMenuDimensions();
+  calculateTextDimensions();
 }
 
 //----------------------------------------------------------------------
@@ -481,6 +471,11 @@ bool FMenuItem::isMenu (const FWidget* w) const
   return m1 || m2;
 }
 
+//----------------------------------------------------------------------
+void FMenuItem::initLayout()
+{
+  calculateTextDimensions();
+}
 
 // private methods of FMenuItem
 //----------------------------------------------------------------------
@@ -558,6 +553,23 @@ void FMenuItem::init()
 }
 
 //----------------------------------------------------------------------
+void FMenuItem::calculateTextDimensions()
+{
+  text_length = text.getLength();
+  text_width = getColumnWidth(text);
+  hotkey = finalcut::getHotkey(text);
+
+  if ( hotkey != FKey::None )
+  {
+    text_length--;
+    text_width--;
+  }
+
+  updateMenubarDimensions();
+  updateSuperMenuDimensions();
+}
+
+//----------------------------------------------------------------------
 void FMenuItem::updateSuperMenuDimensions()
 {
   if ( ! super_menu || ! isMenu(super_menu) )
@@ -565,6 +577,18 @@ void FMenuItem::updateSuperMenuDimensions()
 
   auto menu_ptr = static_cast<FMenu*>(super_menu);
   menu_ptr->calculateDimensions();
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::updateMenubarDimensions()
+{
+  FWidget* parent = getParentWidget();
+
+  if ( ! parent || ! isMenuBar(parent) )
+    return;
+
+  auto menubar_ptr = static_cast<FMenuBar*>(parent);
+  menubar_ptr->calculateDimensions();
 }
 
 //----------------------------------------------------------------------

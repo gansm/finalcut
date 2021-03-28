@@ -40,9 +40,6 @@ using finalcut::FSize;
 class CheckList final : public finalcut::FDialog
 {
   public:
-    // Using-declaration
-    using FDialog::setGeometry;
-
     // Constructor
     explicit CheckList (finalcut::FWidget* = nullptr);
 
@@ -58,6 +55,7 @@ class CheckList final : public finalcut::FDialog
   private:
     // Method
     void populate();
+    void initLayout() override;
     void adjustSize() override;
 
     // Event handlers
@@ -76,16 +74,8 @@ class CheckList final : public finalcut::FDialog
 CheckList::CheckList (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  // Dialog settings
-  //   Avoids calling a virtual function from the constructor
-  //   (CERT, OOP50-CPP)
-  FDialog::setText (L"Shopping list");
-  const std::size_t nf_offset = ( finalcut::FTerm::isNewFont() ) ? 1 : 0;
-  FDialog::setSize (FSize{28 + nf_offset, 13} );
   setShadow();  // Instead of the transparent window shadow
   listview.ignorePadding();
-  listview.setGeometry ( FPoint{1 + int(nf_offset), 2}
-                       , FSize{getWidth() - nf_offset, getHeight() - 1} );
 
   // Add columns to the view
   listview.addColumn ("Item");
@@ -138,6 +128,17 @@ void CheckList::populate()
     auto item = static_cast<finalcut::FListViewItem*>(*iter);
     item->setCheckable(true);
   }
+}
+
+//----------------------------------------------------------------------
+void CheckList::initLayout()
+{
+  FDialog::setText (L"Shopping list");
+  const std::size_t nf_offset = ( finalcut::FTerm::isNewFont() ) ? 1 : 0;
+  FDialog::setSize (FSize{28 + nf_offset, 13} );
+  listview.setGeometry ( FPoint{1 + int(nf_offset), 2}
+                       , FSize{getWidth() - nf_offset, getHeight() - 1} );
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------

@@ -349,6 +349,7 @@ class FWidget : public FVTerm, public FObject
     // Methods
     void                     initTerminal() override;
     void                     initDesktop();
+    virtual void             initLayout();
     virtual void             adjustSize();
     void                     adjustSizeGlobal();
     void                     hideArea (const FSize&);
@@ -424,6 +425,7 @@ class FWidget : public FVTerm, public FObject
     // Methods
     void                     determineDesktopSize();
     void                     initRootWidget();
+    void                     initWidgetLayout();
     void                     finish();
     void                     insufficientSpaceAdjust();
     void                     KeyPressEvent (FKeyEvent*);

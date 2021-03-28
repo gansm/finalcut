@@ -50,6 +50,7 @@ class SmallWindow final : public finalcut::FDialog
 
   private:
     // Method
+    void initLayout() override;
     void adjustSize() override;
 
     // Event handlers
@@ -77,24 +78,20 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   left_arrow.setForegroundColor (wc->label_inactive_fg);
   left_arrow.setEmphasis();
   left_arrow.ignorePadding();
-  left_arrow.setGeometry (FPoint{2, 2}, FSize{1, 1});
 
   right_arrow = arrow_up;
   right_arrow.setForegroundColor (wc->label_inactive_fg);
   right_arrow.setEmphasis();
   right_arrow.ignorePadding();
-  right_arrow.setGeometry (FPoint{int(getWidth()) - 1, 2}, FSize{1, 1});
 
   top_left_label.setText("menu");
   top_left_label.setForegroundColor (wc->label_inactive_fg);
   top_left_label.setEmphasis();
-  top_left_label.setGeometry (FPoint{1, 1}, FSize{6, 1});
 
   top_right_label.setText("zoom");
   top_right_label.setAlignment (finalcut::Align::Right);
   top_right_label.setForegroundColor (wc->label_inactive_fg);
   top_right_label.setEmphasis();
-  top_right_label.setGeometry (FPoint{int(getClientWidth()) - 5, 1}, FSize{6, 1});
 
   finalcut::FString bottom_label_text { "resize\n"
                                         "corner\n" };
@@ -103,7 +100,17 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   bottom_label.setAlignment (finalcut::Align::Right);
   bottom_label.setForegroundColor (wc->label_inactive_fg);
   bottom_label.setEmphasis();
+}
+
+//----------------------------------------------------------------------
+void SmallWindow::initLayout()
+{
+  left_arrow.setGeometry (FPoint{2, 2}, FSize{1, 1});
+  right_arrow.setGeometry (FPoint{int(getWidth()) - 1, 2}, FSize{1, 1});
+  top_left_label.setGeometry (FPoint{1, 1}, FSize{6, 1});
+  top_right_label.setGeometry (FPoint{int(getClientWidth()) - 5, 1}, FSize{6, 1});
   bottom_label.setGeometry (FPoint{13, 3}, FSize{6, 3});
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------
@@ -199,6 +206,8 @@ class Window final : public finalcut::FDialog
     void configureFileMenuItems();
     void configureDialogButtons();
     void activateWindow (finalcut::FDialog*) const;
+
+    void initLayout() override;
     void adjustSize() override;
     template <typename InstanceT
             , typename CallbackT
@@ -317,11 +326,8 @@ void Window::configureFileMenuItems()
 void Window::configureDialogButtons()
 {
   // Dialog buttons
-  CreateButton.setGeometry (FPoint{2, 2}, FSize{9, 1});
   CreateButton.setText (L"&Create");
-  CloseButton.setGeometry (FPoint{15, 2}, FSize{9, 1});
   CloseButton.setText (L"C&lose");
-  QuitButton.setGeometry (FPoint{28, 2}, FSize{9, 1});
   QuitButton.setText (L"&Quit");
 
   // Add button callback
@@ -344,6 +350,15 @@ void Window::activateWindow (finalcut::FDialog* win) const
 
   if ( has_raised )
     win->redraw();
+}
+
+//----------------------------------------------------------------------
+void Window::initLayout()
+{
+  CreateButton.setGeometry (FPoint{2, 2}, FSize{9, 1});
+  CloseButton.setGeometry (FPoint{15, 2}, FSize{9, 1});
+  QuitButton.setGeometry (FPoint{28, 2}, FSize{9, 1});
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------

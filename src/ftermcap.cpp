@@ -42,7 +42,6 @@
 
 #include <algorithm>
 #include <string>
-#include <thread>
 #include <vector>
 
 #include "final/emptyfstring.h"
@@ -132,6 +131,54 @@ FTermcap::Status FTermcap::paddingPrint ( const std::string& string
                 || ( ! xon_xoff_flow_control && padding_baudrate
                   && (baudrate >= padding_baudrate) );
   auto iter = string.begin();
+  using iter_type = decltype(iter);
+
+  auto read_digits = [] (iter_type& iter, int& number)
+  {
+    while ( std::isdigit(int(*iter)) && number < 1000 )
+    {
+      number = number * 10 + (*iter - '0');
+      ++iter;
+    }
+
+    number *= 10;
+  };
+
+  auto decimal_point = [] (iter_type& iter, int& number)
+  {
+    if ( *iter == '.' )
+    {
+      ++iter;
+
+      if ( std::isdigit(int(*iter)) )
+      {
+        number += (*iter - '0');  // Position after decimal point
+        ++iter;
+      }
+
+      while ( std::isdigit(int(*iter)) )
+        ++iter;
+    }
+  };
+
+  auto asterisk_slash = [&affcnt, &has_delay] (iter_type& iter, int& number)
+  {
+    while ( *iter == '*' || *iter == '/' )
+    {
+      if ( *iter == '*' )
+      {
+        // Padding is proportional to the number of affected lines (suffix '*')
+        number *= affcnt;
+        ++iter;
+      }
+      else
+      {
+        // Padding is mandatory (suffix '/')
+        has_delay = true;
+        ++iter;
+      }
+    }
+  };
 
   while ( iter != string.end() )
   {
@@ -161,44 +208,9 @@ FTermcap::Status FTermcap::paddingPrint ( const std::string& string
         }
 
         int number = 0;
-
-        while ( std::isdigit(int(*iter)) && number < 1000 )
-        {
-          number = number * 10 + (*iter - '0');
-          ++iter;
-        }
-
-        number *= 10;
-
-        if ( *iter == '.' )
-        {
-          ++iter;
-
-          if ( std::isdigit(int(*iter)) )
-          {
-            number += (*iter - '0');  // Position after decimal point
-            ++iter;
-          }
-
-          while ( std::isdigit(int(*iter)) )
-            ++iter;
-        }
-
-        while ( *iter == '*' || *iter == '/' )
-        {
-          if ( *iter == '*' )
-          {
-            // Padding is proportional to the number of affected lines (suffix '*')
-            number *= affcnt;
-            ++iter;
-          }
-          else
-          {
-            // Padding is mandatory (suffix '/')
-            has_delay = true;
-            ++iter;
-          }
-        }
+        read_digits (iter, number);
+        decimal_point (iter, number);
+        asterisk_slash (iter, number);
 
         if ( *iter != '>' )
         {
@@ -433,28 +445,6 @@ std::string FTermcap::encodeParams ( const std::string& cap
                      , params[2], params[3], params[4], params[5]
                      , params[6], params[7], params[8] );
   return ( str ) ? str : std::string();
-}
-
-//----------------------------------------------------------------------
-void FTermcap::delay_output (int ms, const defaultPutChar& outc)
-{
-  if ( no_padding_char )
-  {
-    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-  }
-  else
-  {
-    static constexpr int baudbyte = 9;  // = 7 bit + 1 parity + 1 stop
-
-    for ( int pad_char_count = (ms * baudrate) / (baudbyte * 1000);
-          pad_char_count > 0;
-          pad_char_count-- )
-    {
-      outc(int(PC));
-    }
-
-    std::fflush(stdout);
-  }
 }
 
 

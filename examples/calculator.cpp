@@ -112,9 +112,6 @@ void Button::onKeyPress (finalcut::FKeyEvent* ev)
 class Calc final : public finalcut::FDialog
 {
   public:
-    // Using-declaration
-    using FDialog::setGeometry;
-
     // Constructor
     explicit Calc (finalcut::FWidget* parent = nullptr);
 
@@ -209,6 +206,7 @@ class Calc final : public finalcut::FDialog
     void           setInfixOperator (char);
     void           clearInfixOperator();
     void           calcInfixOperator();
+    void           initLayout() override;
     void           adjustSize() override;
     const wchar_t* getButtonText (const ButtonName&) const;
     void           mapKeyFunctions();
@@ -257,12 +255,6 @@ class Calc final : public finalcut::FDialog
 Calc::Calc (FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  // Dialog settings
-  //   Avoids calling a virtual function from the constructor
-  //   (CERT, OOP50-CPP)
-  FDialog::setText ("Calculator");
-  FDialog::setGeometry (FPoint{19, 6}, FSize{37, 18});
-
   mapKeyFunctions();
   clearInfixOperator();
 
@@ -271,17 +263,6 @@ Calc::Calc (FWidget* parent)
     auto btn = std::make_shared<Button>(this);
     auto index = std::size_t(key);
     button_no[index] = key;
-
-    if ( key == ButtonName::Equals )
-      btn->setGeometry(FPoint{30, 15}, FSize{5, 3});
-    else
-    {
-      const int n = ( key <= ButtonName::Three ) ? 0 : 1;
-      const int x = (int(key) + n) % 5 * 7 + 2;
-      const int y = (int(key) + n) / 5 * 2 + 3;
-      btn->setGeometry(FPoint{x, y}, FSize{5, 1});
-    }
-
     btn->setFlat();
     btn->setNoUnderline();
     btn->setText(getButtonText(key));
@@ -1082,6 +1063,31 @@ void Calc::calcInfixOperator()
   }
 
   clearInfixOperator();
+}
+
+//----------------------------------------------------------------------
+void Calc::initLayout()
+{
+  // Dialog settings
+  FDialog::setText ("Calculator");
+  FDialog::setGeometry (FPoint{19, 6}, FSize{37, 18});
+
+  for (ButtonName key{ButtonName::Sine}; key < ButtonName::NUM_OF_BUTTONS; key++)
+  {
+    auto btn = calculator_buttons[ButtonName(key)];
+
+    if ( key == ButtonName::Equals )
+      btn->setGeometry(FPoint{30, 15}, FSize{5, 3});
+    else
+    {
+      const int n = ( key <= ButtonName::Three ) ? 0 : 1;
+      const int x = (int(key) + n) % 5 * 7 + 2;
+      const int y = (int(key) + n) / 5 * 2 + 3;
+      btn->setGeometry(FPoint{x, y}, FSize{5, 1});
+    }
+  }
+
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------

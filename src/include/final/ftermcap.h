@@ -37,6 +37,7 @@
 
 #include <array>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -129,7 +130,8 @@ class FTermcap final
     static void          termcapKeys();
     static std::string   encodeParams ( const std::string&
                                       , const std::vector<int>& );
-    static void          delay_output (int, const defaultPutChar&);
+    template<typename PutChar>
+    static void          delay_output (int, const PutChar&);
 
     // Data member
     static bool          initialized;
@@ -160,6 +162,29 @@ inline bool FTermcap::isInitialized()
 inline void FTermcap::setBaudrate (int baud)
 {
   baudrate = baud;
+}
+
+//----------------------------------------------------------------------
+template<typename PutChar>
+inline void FTermcap::delay_output (int ms, const PutChar& outc)
+{
+  if ( no_padding_char )
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+  }
+  else
+  {
+    static constexpr int baudbyte = 9;  // = 7 bit + 1 parity + 1 stop
+
+    for ( int pad_char_count = (ms * baudrate) / (baudbyte * 1000);
+          pad_char_count > 0;
+          pad_char_count-- )
+    {
+      outc(int(PC));
+    }
+
+    std::fflush(stdout);
+  }
 }
 
 }  // namespace finalcut

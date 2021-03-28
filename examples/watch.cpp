@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -59,6 +59,7 @@ class Watch final : public finalcut::FDialog
 
   protected:
     // Method
+    void initLayout() override;
     void adjustSize() override;
 
   private:
@@ -75,24 +76,11 @@ class Watch final : public finalcut::FDialog
 Watch::Watch (FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  // Dialog settings
-  //   Avoids calling a virtual function from the constructor
-  //   (CERT, OOP50-CPP)
-  FDialog::setText ("Watch");
-  FDialog::setSize ({22, 13});
-
   // Labels
-  time_label.setGeometry(FPoint{5, 2}, FSize{5, 1});
   time_label.setEmphasis();
-  time_str.setGeometry(FPoint{10, 2}, FSize{8, 1});
 
-  // Checkbox buttons
-  clock_sw.setGeometry(FPoint{4, 4}, FSize{9, 1});
-  seconds_sw.setGeometry(FPoint{2, 6}, FSize{11, 1});
+  // Switch
   sec = seconds_sw.setChecked();
-
-  // Quit button
-  quit_btn.setGeometry(FPoint{6, 9}, FSize{9, 1});
 
   // Connect switch signal "toggled" with a callback member function
   clock_sw.addCallback
@@ -183,6 +171,27 @@ void Watch::cb_seconds()
 
     time_str.redraw();
   }
+}
+
+//----------------------------------------------------------------------
+void Watch::initLayout()
+{
+  // Dialog settings
+  FDialog::setText ("Watch");
+  FDialog::setSize ({22, 13}, false);
+
+  // Labels
+  time_label.setGeometry(FPoint{5, 2}, FSize{5, 1});
+  time_str.setGeometry(FPoint{10, 2}, FSize{8, 1});
+
+  // Switches
+  clock_sw.setGeometry(FPoint{4, 4}, FSize{9, 1});
+  seconds_sw.setGeometry(FPoint{2, 6}, FSize{11, 1});
+
+  // Quit button
+  quit_btn.setGeometry(FPoint{6, 9}, FSize{9, 1});
+
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------

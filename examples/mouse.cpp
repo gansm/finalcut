@@ -54,6 +54,7 @@ class ColorChooser final : public finalcut::FWidget
 
   private:
     // Mutator
+    void initLayout() override;
     void setSize (const FSize&, bool = true) override;
 
     // Method
@@ -74,12 +75,9 @@ class ColorChooser final : public finalcut::FWidget
 ColorChooser::ColorChooser (finalcut::FWidget* parent)
   : FWidget{parent}
 {
-  FWidget::setSize (FSize{8, 12});
-  setFixedSize (FSize{8, 12});
   unsetFocusable();
 
   // Text label
-  headline.setGeometry (FPoint{1, 1}, FSize{8, 1});
   headline.setEmphasis();
   headline.setAlignment (finalcut::Align::Center);
   headline << "Color";
@@ -95,6 +93,15 @@ inline FColor ColorChooser::getForeground() const
 inline FColor ColorChooser::getBackground() const
 {
   return bg_color;
+}
+
+//----------------------------------------------------------------------
+void ColorChooser::initLayout()
+{
+  FWidget::setSize (FSize{8, 12});
+  setFixedSize (FSize{8, 12});
+  headline.setGeometry (FPoint{1, 1}, FSize{8, 1});
+  FWidget::initLayout();
 }
 
 //----------------------------------------------------------------------
@@ -196,6 +203,7 @@ class Brushes final : public finalcut::FWidget
 
   private:
     // Mutator
+    void initLayout() override;
     void setSize (const FSize&, bool = true) override;
 
     // Method
@@ -216,15 +224,21 @@ class Brushes final : public finalcut::FWidget
 Brushes::Brushes (finalcut::FWidget* parent)
   : FWidget{parent}
 {
-  FWidget::setSize (FSize{8, 4});
-  setFixedSize (FSize{8, 4});
   unsetFocusable();
 
   // Text label
-  headline.setGeometry(FPoint{1, 1}, FSize{8, 1});
   headline.setEmphasis();
   headline.setAlignment (finalcut::Align::Center);
   headline << "Brush";
+}
+
+//----------------------------------------------------------------------
+void Brushes::initLayout()
+{
+  FWidget::setSize (FSize{8, 4});
+  setFixedSize (FSize{8, 4});
+  headline.setGeometry(FPoint{1, 1}, FSize{8, 1});
+  FWidget::initLayout();
 }
 
 //----------------------------------------------------------------------
@@ -310,9 +324,6 @@ inline void Brushes::setBackground (FColor color)
 class MouseDraw final : public finalcut::FDialog
 {
   public:
-    // Using-declaration
-    using FWidget::setGeometry;
-
     // Constructor
     explicit MouseDraw (finalcut::FWidget* = nullptr);
 
@@ -338,6 +349,7 @@ class MouseDraw final : public finalcut::FDialog
     void drawBrush (int, int, bool = false);
     void drawCanvas();
     void createCanvas();
+    void initLayout() override;
     void adjustSize() override;
 
     // Event handler
@@ -359,14 +371,12 @@ MouseDraw::MouseDraw (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
   FDialog::setText ("Drawing with the mouse");
-  c_chooser.setPos (FPoint{1, 1});
+
   c_chooser.addCallback
   (
     "clicked",
     this, &MouseDraw::cb_colorChanged
   );
-
-  brush.setPos (FPoint{1, 12});
 }
 
 //----------------------------------------------------------------------
@@ -521,6 +531,14 @@ void MouseDraw::createCanvas()
   finalcut::FRect scroll_geometry{0, 0, 1, 1};
   createArea (scroll_geometry, no_shadow, canvas);
   adjustSize();
+}
+
+//----------------------------------------------------------------------
+void MouseDraw::initLayout()
+{
+  c_chooser.setPos (FPoint{1, 1});
+  brush.setPos (FPoint{1, 12});
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------

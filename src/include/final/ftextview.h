@@ -134,6 +134,7 @@ class FTextView : public FWidget
 
   protected:
     // Method
+    void                initLayout() override;
     void                adjustSize() override;
 
   private:

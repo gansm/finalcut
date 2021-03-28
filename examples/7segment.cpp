@@ -59,6 +59,7 @@ class SegmentView final : public finalcut::FDialog
     void hexEncoding();
     void get7Segment (const wchar_t);
     void draw() override;
+    void initLayout() override;
 
     // Data members
     std::map<wchar_t, sevenSegment> code{};
@@ -71,25 +72,15 @@ class SegmentView final : public finalcut::FDialog
 SegmentView::SegmentView (finalcut::FWidget* parent)
   : FDialog{parent}
 {
-  // Dialog settings
-  //   Avoids calling a virtual function from the constructor
-  //   (CERT, OOP50-CPP)
-  FDialog::setText ("Seven-segment display");
-  FDialog::setGeometry (FPoint{25, 5}, FSize{42, 15});
-
   // Set encoding
   hexEncoding();
 
   // Input field
-  input.setGeometry (FPoint(2, 2), FSize{12, 1});
   input.setLabelText (L"&Hex value");
   input.setLabelText (L"&Hex-digits or (.) (:) (H) (L) (P) (U)");
   input.setLabelOrientation(finalcut::FLineEdit::LabelOrientation::Above);
   input.setMaxLength(9);
   input.setInputFilter("[:.hHlLpPuU[:xdigit:]]");
-
-  // Exit button
-  exit.setGeometry(FPoint{28, 11}, FSize{10, 1});
 
   // Add some function callbacks
   input.addCallback
@@ -219,6 +210,19 @@ void SegmentView::draw()
           << FPoint {4, 8} << left_space << tbuffer[1]
           << FPoint {4, 9} << left_space << tbuffer[2]
           << FPoint {4, 10} << finalcut::FString{36, ' '};
+}
+
+//----------------------------------------------------------------------
+void SegmentView::initLayout()
+{
+  // Dialog settings
+  FDialog::setText ("Seven-segment display");
+  FDialog::setGeometry (FPoint{25, 5}, FSize{42, 15});
+  // Input field
+  input.setGeometry (FPoint(2, 2), FSize{12, 1});
+  // Exit button
+  exit.setGeometry(FPoint{28, 11}, FSize{10, 1});
+  FDialog::initLayout();
 }
 
 

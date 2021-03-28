@@ -139,6 +139,7 @@ class FMessageBox : public FDialog
                               , ButtonType = ButtonType::Reject );
    protected:
     // Method
+    void                initLayout() override;
     void                adjustSize() override;
     void                done (ButtonType);
 

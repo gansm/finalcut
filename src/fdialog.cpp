@@ -1172,10 +1172,11 @@ void FDialog::drawTextBar()
 
   const auto width = getWidth();
   const auto zoom_btn = getZoomButtonWidth();
+  const auto tb_width = width - MENU_BTN - zoom_btn;
   const auto length = getColumnWidth(tb_text);
 
   if ( width > length + MENU_BTN + zoom_btn )
-    center_offset = (width - length - MENU_BTN - zoom_btn) / 2;
+    center_offset = (tb_width - length) / 2;
 
   for ( ; x <= center_offset; x++)
     print (' ');
@@ -1183,12 +1184,13 @@ void FDialog::drawTextBar()
   // Print title bar text
   if ( ! tb_text.isEmpty() )
   {
-    if ( length <= width - MENU_BTN - zoom_btn )
+    if ( length <= tb_width )
       print (tb_text);
     else
     {
       // Print ellipsis
-      print (tb_text.left(width - MENU_BTN - zoom_btn - 2));
+      const auto len = getLengthFromColumnWidth (tb_text, tb_width - 2);
+      print (tb_text.left(len));
       print ("..");
     }
   }

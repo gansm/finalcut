@@ -1,3 +1,10 @@
+2021-03-28 Markus Gans  <guru.mail@muenster.de>
+	* Widget now have the virtual method initLayout() to set 
+	  the widget layouts automatically before the first drawing 
+	  on the terminal is done. Also texts in full-width characters, 
+	  whose character width is determined automatically, should be 
+	  calculated here.
+
 2021-03-15 Markus Gans  <guru.mail@muenster.de>
 	* Dynamic adjustment of the terminal refresh rate between 
 	  5 and 60 Hz

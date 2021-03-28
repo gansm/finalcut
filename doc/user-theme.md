@@ -361,20 +361,15 @@ class dialogWidget final : public FDialog
     explicit dialogWidget (FWidget* parent = nullptr)
       : FDialog{"Theming test application", parent}
     {
-      FDialog::setGeometry (FPoint{15, 5}, FSize{50, 9});
-      Input.setGeometry (FPoint{2, 2}, FSize{39, 1});
       Input.setLabelText("File name:");
       Input.setLabelOrientation(FLineEdit::LabelOrientation::Above);
       Input.setStatusbarMessage("Enter a file name");
-      Browse.setGeometry (FPoint{43, 2}, FSize{4, 1});
       Browse.addCallback
       (
         "clicked",
         this, &dialogWidget::cb_FileBrowse
       );
-      Apply.setGeometry (FPoint{24, 5}, FSize{10, 1});
       Apply.setStatusbarMessage("Apply settings");
-      Quit.setGeometry (FPoint{37, 5}, FSize{10, 1});
       Quit.setStatusbarMessage("Exit the program");
       Quit.addCallback
       (
@@ -391,6 +386,16 @@ class dialogWidget final : public FDialog
     }
 
   private:
+    void initLayout()
+    {
+      setGeometry (FPoint{15, 5}, FSize{50, 9});
+      Input.setGeometry (FPoint{2, 2}, FSize{39, 1});
+      Browse.setGeometry (FPoint{43, 2}, FSize{4, 1});
+      Apply.setGeometry (FPoint{24, 5}, FSize{10, 1});
+      Quit.setGeometry (FPoint{37, 5}, FSize{10, 1});
+      FDialog::initLayout();
+    }
+
     void cb_FileBrowse()
     {
       auto filename = FFileDialog::fileOpenChooser(this);

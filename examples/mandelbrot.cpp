@@ -46,6 +46,7 @@ class Mandelbrot final : public finalcut::FDialog
 
   private:
     // Methods
+    void initLayout() override;
     void draw() override;
     void adjustSize() override;
 };
@@ -54,8 +55,14 @@ class Mandelbrot final : public finalcut::FDialog
 //----------------------------------------------------------------------
 Mandelbrot::Mandelbrot (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
+{ }
+
+//----------------------------------------------------------------------
+void Mandelbrot::initLayout()
 {
   FDialog::setText ("Mandelbrot set");
+  FDialog::setGeometry (FPoint{6, 1}, FSize{70, 23});
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------
@@ -162,7 +169,6 @@ int main (int argc, char* argv[])
 
   // Create a simple dialog box
   Mandelbrot mb{&app};
-  mb.setGeometry (FPoint{6, 1}, FSize{70, 23});
   mb.setShadow();  // Instead of the transparent window shadow
 
   // Set the mandelbrot object as main widget

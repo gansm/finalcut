@@ -465,6 +465,21 @@ void FTextView::onFocusOut (FFocusEvent*)
 
 // protected methods of FTextView
 //----------------------------------------------------------------------
+void FTextView::initLayout()
+{
+  if ( data.empty() )
+    return;
+
+  for (auto&& line : data)
+  {
+    const auto column_width = getColumnWidth(line);
+
+    if ( column_width > max_line_width )
+      max_line_width = column_width;
+  }
+}
+
+//----------------------------------------------------------------------
 void FTextView::adjustSize()
 {
   FWidget::adjustSize();

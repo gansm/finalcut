@@ -54,6 +54,7 @@ class Listview final : public finalcut::FDialog
   private:
     // Method
     void populate();
+    void initLayout() override;
 
     // Event handlers
     void onClose (finalcut::FCloseEvent*) override;
@@ -70,9 +71,6 @@ class Listview final : public finalcut::FDialog
 Listview::Listview (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  // Set FListView geometry
-  listview.setGeometry(FPoint{2, 1}, FSize{33, 14});
-
   // Add columns to the view
   listview.addColumn ("City");
   listview.addColumn ("Condition");
@@ -104,7 +102,6 @@ Listview::Listview (finalcut::FWidget* parent)
   populate();
 
   // Quit button
-  quit.setGeometry(FPoint{24, 16}, FSize{10, 1});
   quit.setText (L"&Quit");
 
   // Add some function callbacks
@@ -176,6 +173,16 @@ void Listview::populate()
     const finalcut::FStringList line (place.begin(), place.end());
     listview.insert (line);
   }
+}
+
+//----------------------------------------------------------------------
+void Listview::initLayout()
+{
+  // Set FListView geometry
+  listview.setGeometry(FPoint{2, 1}, FSize{33, 14});
+  // Set quit button geometry
+  quit.setGeometry(FPoint{24, 16}, FSize{10, 1});
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------

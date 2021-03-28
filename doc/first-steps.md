@@ -378,15 +378,20 @@ class dialogWidget : public FDialog
     explicit dialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
     {
-      setText ("Dialog");
-      setGeometry (FPoint{25, 5}, FSize{23, 4});
-      label.setGeometry (FPoint{1, 1}, FSize{10, 1});
       label.setAlignment (Align::Right);
-      value.setGeometry (FPoint{11, 1}, FSize{10, 1});
       id = addTimer(100);
     }
 
   private:
+    void initLayout()
+    {
+      setText ("Dialog");
+      setGeometry (FPoint{25, 5}, FSize{23, 4});
+      label.setGeometry (FPoint{1, 1}, FSize{10, 1});
+      value.setGeometry (FPoint{11, 1}, FSize{10, 1});
+      FDialog::initLayout();
+    }
+
     void onTimer (FTimerEvent* ev) override
     {
       if ( id == ev->getTimerId() && n < 9999999999 )
@@ -495,12 +500,16 @@ class dialogWidget final : public FDialog
   public:
     explicit dialogWidget (FWidget* parent = nullptr)
       : FDialog{"User event", parent}
+    { }
+
+  private:
+    void initLayout()
     {
       FDialog::setGeometry (FPoint{25, 5}, FSize{40, 6});
       loadavg_label.setGeometry (FPoint{2, 2}, FSize{36, 1});
+      FDialog::initLayout();
     }
 
-  private:
     void onUserEvent (FUserEvent* ev) override
     {
       const auto& lavg = ev->getData<LoadAvg>();
@@ -891,10 +900,6 @@ class dialogWidget : public FDialog
     explicit dialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
     {
-      setText ("Callback method");
-      setGeometry (FPoint{25, 5}, FSize{25, 7});
-      button.setGeometry (FPoint{7, 3}, FSize{10, 1});
-
       // Connect the button signal "clicked" with the callback method
       button.addCallback
       (
@@ -906,6 +911,14 @@ class dialogWidget : public FDialog
     }
 
   private:
+    void initLayout()
+    {
+      setText ("Callback method");
+      setGeometry (FPoint{25, 5}, FSize{25, 7});
+      button.setGeometry (FPoint{7, 3}, FSize{10, 1});
+      FDialog::initLayout();
+    }
+
     FButton button{"&Quit", this};
 };
 
@@ -954,14 +967,8 @@ class dialogWidget : public FDialog
     explicit dialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
     {
-      setGeometry (FPoint{25, 5}, FSize{22, 7});
-      setText ("Emit signal");
-      const FSize size{5, 1};
-      label.setGeometry (FPoint{8, 1}, size);
       label.setAlignment (Align::Right);
       label.setForegroundColor (FColor::Black);
-      plus.setGeometry (FPoint{3, 3}, size);
-      minus.setGeometry (FPoint{3, 3} + FPoint{10, 0}, size);
       plus.setNoUnderline();
       minus.setNoUnderline();
 
@@ -976,6 +983,17 @@ class dialogWidget : public FDialog
     }
 
   private:
+    void initLayout()
+    {
+      setGeometry (FPoint{25, 5}, FSize{22, 7});
+      setText ("Emit signal");
+      const FSize size{5, 1};
+      label.setGeometry (FPoint{8, 1}, size);
+      plus.setGeometry (FPoint{3, 3}, size);
+      minus.setGeometry (FPoint{3, 3} + FPoint{10, 0}, size);
+      FDialog::initLayout();
+    }
+
     void cb_plus()
     {
       if ( t < 100 )
@@ -1375,8 +1393,6 @@ class dialogWidget : public FDialog
     explicit dialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
     {
-      setText ("Dialog");
-      setGeometry (FPoint{28, 2}, FSize{24, 21});
       scrollview.setGeometry(FPoint{1, 1}, FSize{22, 11});
       scrollview.setScrollSize(FSize{60, 27});
       // Attention: getColorTheme() requires an initialized terminal
@@ -1419,6 +1435,13 @@ class dialogWidget : public FDialog
 
   private:
     typedef std::tuple<FString, FPoint, FPoint, FColorPair> direction;
+
+    void initLayout()
+    {
+      setText ("Dialog");
+      setGeometry (FPoint{28, 2}, FSize{24, 21});
+      FDialog::initLayout();
+    }
 
     void cb_button (const FPoint& p)
     {

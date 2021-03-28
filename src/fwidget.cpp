@@ -972,8 +972,9 @@ void FWidget::show()
     show_root_widget = this;
   }
 
-  adjustSize();  // Alignment before drawing
-  draw();        // Draw the widget
+  initWidgetLayout();  // Makes initial layout settings
+  adjustSize();        // Alignment before drawing
+  draw();              // Draw the widget
   flags.hidden = false;
   flags.shown = true;
 
@@ -1282,6 +1283,13 @@ void FWidget::initDesktop()
 
   // Destop is now initialized
   init_desktop = true;
+}
+
+//----------------------------------------------------------------------
+void FWidget::initLayout()
+{
+  // This method must be reimplemented in a subclass to automatically
+  // set the widget layouts, before the initial drawing on the terminal
 }
 
 //----------------------------------------------------------------------
@@ -1765,6 +1773,24 @@ void FWidget::initRootWidget()
 
   // Determine width and height of the terminal
   determineDesktopSize();
+}
+
+//----------------------------------------------------------------------
+void FWidget::initWidgetLayout()
+{
+  initLayout();
+
+  if ( ! hasChildren() )
+    return;
+
+  for (auto&& child : getChildren())
+  {
+    if ( child->isWidget() )
+    {
+      auto widget = static_cast<FWidget*>(child);
+      widget->initWidgetLayout();
+    }
+  }
 }
 
 //----------------------------------------------------------------------

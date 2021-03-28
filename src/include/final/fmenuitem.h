@@ -148,13 +148,18 @@ class FMenuItem : public FWidget
     bool                isMenuBar (const FWidget*) const;
     bool                isMenu (const FWidget*) const;
 
+    // Method
+    void                initLayout() override;
+
   private:
     // Accessor
     FMenuList*          getFMenuList (FWidget&);
 
     // Methods
     void                init();
+    void                calculateTextDimensions();
     void                updateSuperMenuDimensions();
+    void                updateMenubarDimensions();
     void                processEnable() const;
     void                processDisable() const;
     void                processActivate() const;

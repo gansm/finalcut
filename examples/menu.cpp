@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -55,6 +55,7 @@ class Menu final : public finalcut::FDialog
     void configureStyleMenuItems();
     void configureBorderMenuItems();
     void defaultCallback (const finalcut::FMenuList*);
+    void initLayout() override;
     void adjustSize() override;
 
     // Event handler
@@ -140,12 +141,10 @@ Menu::Menu (finalcut::FWidget* parent)
   // Headline labels
   Headline1 << " Key ";
   Headline1.ignorePadding();
-  Headline1.setGeometry(FPoint{3, 2}, FSize{5, 1});
   Headline1.setEmphasis();
 
   Headline2 << " Function ";
   Headline2.ignorePadding();
-  Headline2.setGeometry(FPoint{19, 2}, FSize{10, 1});
   Headline2.setEmphasis();
 
   // Info label
@@ -154,7 +153,6 @@ Menu::Menu (finalcut::FWidget* parent)
        << "<Menu>           Activate menu bar\n"
        << "<Shift>+<Menu>   Open dialog menu\n"
        << "<Meta>+<X>       Exit";
-  Info.setGeometry(FPoint{2, 1}, FSize{36, 5});
 }
 
 //----------------------------------------------------------------------
@@ -194,8 +192,8 @@ void Menu::configureEditMenuItems()
   Undo.setStatusbarMessage ("Undo the previous operation");
   Redo.setDisable();
   Line3.setSeparator();
-  Cut.setStatusbarMessage ( "Remove the input text "
-                            "and put it in the clipboard" );
+  Cut.setStatusbarMessage ("Remove the input text "
+                           "and put it in the clipboard");
   Copy.setStatusbarMessage ("Copy the input text into the clipboad");
   Paste.setStatusbarMessage ("Insert text form clipboard");
   Line4.setSeparator();
@@ -284,6 +282,15 @@ void Menu::defaultCallback (const finalcut::FMenuList* mb)
         defaultCallback (item->getMenu());
     }
   }
+}
+
+//----------------------------------------------------------------------
+void Menu::initLayout()
+{
+  Headline1.setGeometry (FPoint{3, 2}, FSize{5, 1});
+  Headline2.setGeometry (FPoint{19, 2}, FSize{10, 1});
+  Info.setGeometry(FPoint{2, 1}, FSize{36, 5});
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------

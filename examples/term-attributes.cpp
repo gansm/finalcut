@@ -63,6 +63,7 @@ class AttribDlg final : public finalcut::FDialog
 
   private:
     // Method
+    void initLayout() override;
     void adjustSize() override;
     void draw() override;
 
@@ -76,11 +77,7 @@ class AttribDlg final : public finalcut::FDialog
 AttribDlg::AttribDlg (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  next_button.setGeometry ( FPoint{int(getWidth()) - 13, int(getHeight()) - 4}
-                          , FSize{10, 1} );
   next_button.addAccelerator (finalcut::FKey::Right);
-  back_button.setGeometry ( FPoint{int(getWidth()) - 25, int(getHeight()) - 4}
-                          , FSize{10, 1} );
   back_button.addAccelerator (finalcut::FKey::Left);
 
   // Add function callbacks
@@ -165,6 +162,16 @@ void AttribDlg::cb_back()
     bgcolor--;
 
   redraw();
+}
+
+//----------------------------------------------------------------------
+void AttribDlg::initLayout()
+{
+  next_button.setGeometry ( FPoint{int(getWidth()) - 13, int(getHeight()) - 4}
+                          , FSize{10, 1} );
+  back_button.setGeometry ( FPoint{int(getWidth()) - 25, int(getHeight()) - 4}
+                          , FSize{10, 1} );
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------

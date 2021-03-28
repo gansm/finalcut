@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -41,9 +41,6 @@ class EventLog;  // class forward declaration
 class EventDialog final : public finalcut::FDialog
 {
   public:
-    // Using-declaration
-    using FDialog::setGeometry;
-
     // Constructor
     explicit EventDialog (finalcut::FWidget* = nullptr);
 
@@ -58,6 +55,7 @@ class EventDialog final : public finalcut::FDialog
 
   private:
     // Methods
+    void initLayout() override;
     finalcut::FString getMouseButtonName (const finalcut::MouseButton&) const;
     void logMouseEvent ( const finalcut::FString&
                        , const finalcut::FMouseEvent& );
@@ -85,21 +83,24 @@ class EventDialog final : public finalcut::FDialog
 EventDialog::EventDialog (finalcut::FWidget* parent)
   : FDialog{parent}
 {
-  // Dialog settings
-  //   Avoids calling a virtual function from the constructor
-  //   (CERT, OOP50-CPP)
-  FDialog::setText ("Event dialog");
-  FDialog::setGeometry (FPoint{15, 2}, FSize{53, 12});
   setShadow();
   label.setText("\n\nUse the keyboard or mouse\n"
                 "in this dialog to create events");
   label.setAlignment(finalcut::Align::Center);
-  label.setGeometry (FPoint(1, 1), getClientSize(), false);
   addTimer(60000);  // Starts the timer every minute
 }
 
 //----------------------------------------------------------------------
 EventDialog::~EventDialog() noexcept = default; // destructor
+
+//----------------------------------------------------------------------
+void EventDialog::initLayout()
+{
+  FDialog::setText ("Event dialog");
+  FDialog::setGeometry (FPoint{15, 2}, FSize{53, 12});
+  label.setGeometry (FPoint(1, 1), getClientSize(), false);
+  FDialog::initLayout();
+}
 
 //----------------------------------------------------------------------
 finalcut::FString EventDialog::getMouseButtonName (const finalcut::MouseButton& btn_state) const
@@ -240,9 +241,6 @@ void EventDialog::onWindowLowered (finalcut::FEvent* ev)
 class EventLog final : public finalcut::FDialog, public std::ostringstream
 {
   public:
-    // Using-declaration
-    using FDialog::setGeometry;
-
     // Constructor
     explicit EventLog (finalcut::FWidget* = nullptr);
 
@@ -261,6 +259,7 @@ class EventLog final : public finalcut::FDialog, public std::ostringstream
 
   private:
     // Method
+    void initLayout() override;
     void adjustSize() override;
 
     // Data members
@@ -272,16 +271,9 @@ class EventLog final : public finalcut::FDialog, public std::ostringstream
 EventLog::EventLog (finalcut::FWidget* parent)
   : FDialog{parent}
 {
-  // Dialog settings
-  //   Avoids calling a virtual function from the constructor
-  //   (CERT, OOP50-CPP)
-  FDialog::setText ("Event log");
-  FDialog::setGeometry (FPoint{4, 16}, FSize{75, 8});
-  FDialog::setResizeable();
   setMinimumSize (FSize{75, 5});
   setShadow();
   scrolltext.ignorePadding();
-  scrolltext.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});
   event_dialog->setFocus();
   addTimer(250);  // Starts the timer every 250 milliseconds
 }
@@ -305,6 +297,16 @@ void EventLog::onTimer (finalcut::FTimerEvent*)
 void EventLog::onClose (finalcut::FCloseEvent* ev)
 {
   finalcut::FApplication::closeConfirmationDialog (this, ev);
+}
+
+//----------------------------------------------------------------------
+void EventLog::initLayout()
+{
+  FDialog::setText ("Event log");
+  FDialog::setGeometry (FPoint{4, 16}, FSize{75, 8});
+  FDialog::setResizeable();
+  scrolltext.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------
