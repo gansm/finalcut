@@ -233,7 +233,7 @@ void FVTerm::setNonBlockingRead (bool enable)
   }
 #endif
 
-  uInt64 blocking_time = (enable) ? 5000 : 100000;  // 5 or 100 ms
+  uInt64 blocking_time = enable ? 5000 : 100000;  // 5 or 100 ms
   FKeyboard::setReadBlockingTime (blocking_time);
 }
 
@@ -1925,7 +1925,7 @@ void FVTerm::init_combined_character()
 }
 
 //----------------------------------------------------------------------
-void FVTerm::finish()
+void FVTerm::finish() const
 {
   // Show the input cursor
   showCursor();
@@ -2907,7 +2907,7 @@ inline void FVTerm::flushTimeAdjustment() const
   }
   else
   {
-    uInt64 usec = diff.tv_usec;
+    auto usec = uInt64(diff.tv_usec);
 
     if ( usec < MIN_FLUSH_WAIT )
       usec = MIN_FLUSH_WAIT;

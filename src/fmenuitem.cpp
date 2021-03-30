@@ -451,13 +451,13 @@ void FMenuItem::onFocusOut (FFocusEvent*)
 //----------------------------------------------------------------------
 bool FMenuItem::isDialog (const FWidget* w) const
 {
-  return ( w ) ? w->isDialogWidget() : false;
+  return w ? w->isDialogWidget() : false;
 }
 
 //----------------------------------------------------------------------
 bool FMenuItem::isMenuBar (const FWidget* w) const
 {
-  return ( w ) ? w->isInstanceOf("FMenuBar") : false;
+  return w ? w->isInstanceOf("FMenuBar") : false;
 }
 
 //----------------------------------------------------------------------
@@ -580,7 +580,7 @@ void FMenuItem::updateSuperMenuDimensions()
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::updateMenubarDimensions()
+void FMenuItem::updateMenubarDimensions() const
 {
   FWidget* parent = getParentWidget();
 

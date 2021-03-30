@@ -282,7 +282,7 @@ inline FKey FKeyboard::getTermcapKey()
   for (auto&& entry : *key_map)
   {
     const char* kstr = entry.string;
-    const std::size_t len = ( kstr ) ? std::strlen(kstr) : 0;
+    const std::size_t len = kstr ? std::strlen(kstr) : 0;
 
     if ( kstr && std::strncmp(kstr, fifo_buf, len) == 0 )  // found
     {

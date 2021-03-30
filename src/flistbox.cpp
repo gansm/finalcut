@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -996,7 +996,7 @@ inline void FListBox::setLineAttributes ( int y
       {
         setColor ( wc->current_element_focus_fg
                  , wc->current_element_focus_bg );
-        const int b = ( lineHasBrackets ) ? 1: 0;
+        const int b = lineHasBrackets ? 1 : 0;
 
         if ( inc_len > 0 )  // incremental search
         {

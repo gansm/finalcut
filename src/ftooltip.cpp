@@ -124,8 +124,8 @@ void FToolTip::init()
 void FToolTip::draw()
 {
   bool border = hasBorder();
-  int y{( border ) ? 2 : 1};
-  int x{( border ) ? 3 : 2};
+  int y{border ? 2 : 1};
+  int x{border ? 3 : 2};
   setColor();
   clearArea();
 
@@ -160,8 +160,8 @@ void FToolTip::calculateDimensions()
   int x{};
   int y{};
   bool border = hasBorder();
-  const std::size_t h = ( border ) ? text_num_lines + 2 : text_num_lines;
-  const std::size_t w = ( border ) ? max_line_width + 4 : max_line_width + 2;
+  const std::size_t h = border ? text_num_lines + 2 : text_num_lines;
+  const std::size_t w = border ? max_line_width + 4 : max_line_width + 2;
   const auto& r = getRootWidget();
 
   if ( r )

@@ -1618,7 +1618,7 @@ void FListView::drawList()
     const bool is_current_line( iter == current_iter );
     const auto& item = static_cast<FListViewItem*>(*iter);
     const int tree_offset = ( tree_view ) ? int(item->getDepth() << 1) + 1 : 0;
-    const int checkbox_offset = ( item->isCheckable() ) ? 1 : 0;
+    const int checkbox_offset = item->isCheckable() ? 1 : 0;
     path_end = getListEnd(item);
     print() << FPoint{2, 2 + int(y)};
 

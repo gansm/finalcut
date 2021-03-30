@@ -403,7 +403,7 @@ void FMessageBox::adjustButtons()
     std::size_t max_width;
     const auto& root_widget = getRootWidget();
     setWidth(btn_width + 5);
-    max_width = ( root_widget ) ? root_widget->getClientWidth() : 80;
+    max_width = root_widget ? root_widget->getClientWidth() : 80;
     setX (int((max_width - getWidth()) / 2));
   }
 

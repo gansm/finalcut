@@ -195,7 +195,7 @@ struct Treeview::TreeItem
   { return &name; }
 
   const char* const* end() const
-  { return reinterpret_cast<const char* const*>(&child_element); }
+  { return &density + 1; }
 
   // Data members
   const char* name;

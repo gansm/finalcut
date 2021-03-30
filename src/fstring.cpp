@@ -159,10 +159,10 @@ FString::FString (const char c)
 FString::~FString()  // destructor
 {
   if ( string )
-    delete[](string);
+    delete[] string;
 
   if ( c_string )
-    delete[](c_string);
+    delete[] c_string;
 }
 
 
@@ -182,10 +182,10 @@ FString& FString::operator = (FString&& s) noexcept
   if ( &s != this )
   {
     if ( string )
-      delete[](string);
+      delete[] string;
 
     if ( c_string )
-      delete[](c_string);
+      delete[] c_string;
 
     string = s.string;
     length = s.length;
@@ -348,7 +348,7 @@ const FString& FString::operator () () const
 FString FString::clear()
 {
   if ( string )
-    delete[](string);
+    delete[] string;
 
   length  = 0;
   bufsize = 0;
@@ -1231,7 +1231,7 @@ void FString::_assign (const wchar_t s[])
   if ( ! string || new_length > capacity() )
   {
     if ( string )
-      delete[](string);
+      delete[] string;
 
     bufsize = FWDBUFFER + new_length + 1;
 
@@ -1258,7 +1258,7 @@ void FString::_insert (std::size_t len, const wchar_t s[])
     return;
 
   if ( string )
-    delete[](string);
+    delete[] string;
 
   length = len;
   bufsize = FWDBUFFER + length + 1;
@@ -1312,7 +1312,7 @@ void FString::_insert ( std::size_t pos
 
       try
       {
-        sptr = new wchar_t[bufsize];  // generate new string
+        sptr = new wchar_t[bufsize];      // generate new string
       }
       catch (const std::bad_alloc&)
       {
@@ -1332,7 +1332,7 @@ void FString::_insert ( std::size_t pos
         sptr[y++] = string[x];
 
       length += len;
-      delete[](string);                   // delete old string
+      delete[] string;                    // delete old string
       string = sptr;
     }
   }
@@ -1356,7 +1356,7 @@ void FString::_remove (std::size_t pos, std::size_t len)
 
     try
     {
-      sptr = new wchar_t[bufsize];    // generate new string
+      sptr = new wchar_t[bufsize];            // generate new string
     }
     catch (const std::bad_alloc&)
     {
@@ -1367,13 +1367,13 @@ void FString::_remove (std::size_t pos, std::size_t len)
     std::size_t x{};
     std::size_t y{};
 
-    for (x = 0; x < pos; x++)             // left side
+    for (x = 0; x < pos; x++)                 // left side
       sptr[y++] = string[x];
 
     for (x = pos + len; x < length + 1; x++)  // right side + '\0'
       sptr[y++] = string[x];
 
-    delete[](string);                   // delete old string
+    delete[] string;                          // delete old string
     string = sptr;
     length -= len;
   }
@@ -1425,7 +1425,7 @@ inline const char* FString::_to_cstring (const wchar_t s[]) const
 
   if ( mblength == static_cast<std::size_t>(-1) && errno != EILSEQ )
   {
-    delete[](c_string);
+    delete[] c_string;
     c_string = nullptr;
     return "";
   }
@@ -1503,7 +1503,7 @@ inline const wchar_t* FString::_extractToken ( wchar_t* rest[]
                                              , const wchar_t s[]
                                              , const wchar_t delim[] ) const
 {
-  wchar_t* token = ( s ) ? const_cast<wchar_t*>(s) : *rest;
+  wchar_t* token = s ? const_cast<wchar_t*>(s) : *rest;
 
   if ( ! token )
     return nullptr;

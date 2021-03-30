@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2020 Markus Gans                                      *
+* Copyright 2013-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -168,7 +168,7 @@ void FApplication::setLog (const FLogPtr& log)
 //----------------------------------------------------------------------
 bool FApplication::isQuit()
 {
-  return ( internal::var::app_object ) ? quit_now : true;
+  return internal::var::app_object ? quit_now : true;
 }
 
 //----------------------------------------------------------------------

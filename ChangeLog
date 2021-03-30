@@ -1,3 +1,7 @@
+2021-03-30 Markus Gans  <guru.mail@muenster.de>
+	* Stops terminal refresh during dialog resizing until all 
+	  child widgets have been redrawn
+
 2021-03-28 Markus Gans  <guru.mail@muenster.de>
 	* Widget now have the virtual method initLayout() to set 
 	  the widget layouts automatically before the first drawing 

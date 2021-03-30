@@ -380,7 +380,7 @@ class FVTerm
     void                  init();
     static void           init_characterLengths();
     static void           init_combined_character();
-    void                  finish();
+    void                  finish() const;
     static void           putAreaLine (const FChar&, FChar&, std::size_t);
     static void           putAreaCharacter ( const FPoint&, const FTermArea*
                                            , const FChar&, FChar& );

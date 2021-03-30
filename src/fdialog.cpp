@@ -359,6 +359,7 @@ void FDialog::setSize (const FSize& size, bool adjust)
 
   const auto d_width = std::size_t(dw);
   const auto d_height = std::size_t(dh);
+  setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
 
   // restoring the non-covered terminal areas
   if ( dw > 0 )
@@ -377,6 +378,8 @@ void FDialog::setSize (const FSize& size, bool adjust)
 
   // set the cursor to the focus widget
   setCursorToFocusWidget();
+
+  setTerminalUpdates (FVTerm::TerminalUpdate::Start);
 }
 
 //----------------------------------------------------------------------

@@ -373,7 +373,7 @@ bool FMenu::isSubMenu() const
 bool FMenu::isDialogMenu() const
 {
   const auto& super = getSuperMenu();
-  return ( super ) ? super->isDialogWidget() : false;
+  return super ? super->isDialogWidget() : false;
 }
 
 //----------------------------------------------------------------------
@@ -1350,7 +1350,7 @@ inline void FMenu::drawMenuText (MenuText& data)
 //----------------------------------------------------------------------
 inline void FMenu::drawSubMenuIndicator (std::size_t& startpos)
 {
-  const std::size_t c = ( has_checkable_items ) ? 1 : 0;
+  const std::size_t c = has_checkable_items ? 1 : 0;
   const std::size_t len = max_item_width - (startpos + c + 3);
 
   if ( len > 0 )
@@ -1367,7 +1367,7 @@ inline void FMenu::drawSubMenuIndicator (std::size_t& startpos)
 inline void FMenu::drawAcceleratorKey (std::size_t& startpos, FKey accel_key)
 {
   const FString accel_name {FTerm::getKeyName(accel_key)};
-  const std::size_t c = ( has_checkable_items ) ? 1 : 0;
+  const std::size_t c = has_checkable_items ? 1 : 0;
   const std::size_t accel_len = accel_name.getLength();
   const std::size_t plain_text_length = startpos + accel_len + c + 2;
 
@@ -1384,7 +1384,7 @@ inline void FMenu::drawAcceleratorKey (std::size_t& startpos, FKey accel_key)
 //----------------------------------------------------------------------
 inline void FMenu::drawTrailingSpaces (std::size_t startpos)
 {
-  const std::size_t c = ( has_checkable_items ) ? 1 : 0;
+  const std::size_t c = has_checkable_items ? 1 : 0;
 
   // Print trailing blank space
   for (std::size_t i = startpos + c; i < max_item_width - 1; i++)

@@ -133,49 +133,49 @@ FTermcap::Status FTermcap::paddingPrint ( const std::string& string
   auto iter = string.begin();
   using iter_type = decltype(iter);
 
-  auto read_digits = [] (iter_type& iter, int& number)
+  auto read_digits = [] (iter_type& it, int& number)
   {
-    while ( std::isdigit(int(*iter)) && number < 1000 )
+    while ( std::isdigit(int(*it)) && number < 1000 )
     {
-      number = number * 10 + (*iter - '0');
-      ++iter;
+      number = number * 10 + (*it - '0');
+      ++it;
     }
 
     number *= 10;
   };
 
-  auto decimal_point = [] (iter_type& iter, int& number)
+  auto decimal_point = [] (iter_type& it, int& number)
   {
-    if ( *iter == '.' )
+    if ( *it == '.' )
     {
-      ++iter;
+      ++it;
 
-      if ( std::isdigit(int(*iter)) )
+      if ( std::isdigit(int(*it)) )
       {
-        number += (*iter - '0');  // Position after decimal point
-        ++iter;
+        number += (*it - '0');  // Position after decimal point
+        ++it;
       }
 
-      while ( std::isdigit(int(*iter)) )
-        ++iter;
+      while ( std::isdigit(int(*it)) )
+        ++it;
     }
   };
 
-  auto asterisk_slash = [&affcnt, &has_delay] (iter_type& iter, int& number)
+  auto asterisk_slash = [&affcnt, &has_delay] (iter_type& it, int& number)
   {
-    while ( *iter == '*' || *iter == '/' )
+    while ( *it == '*' || *it == '/' )
     {
-      if ( *iter == '*' )
+      if ( *it == '*' )
       {
         // Padding is proportional to the number of affected lines (suffix '*')
         number *= affcnt;
-        ++iter;
+        ++it;
       }
       else
       {
         // Padding is mandatory (suffix '/')
         has_delay = true;
-        ++iter;
+        ++it;
       }
     }
   };
@@ -444,7 +444,7 @@ std::string FTermcap::encodeParams ( const std::string& cap
   auto str = ::tparm ( C_STR(cap.data()), params[0], params[1]
                      , params[2], params[3], params[4], params[5]
                      , params[6], params[7], params[8] );
-  return ( str ) ? str : std::string();
+  return str ? str : std::string();
 }
 
 

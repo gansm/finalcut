@@ -914,7 +914,7 @@ inline bool FOptiMove::isMethod0Faster ( int& move_time
 
   if ( ! move_xy.empty() )
   {
-    std::strncpy ( reinterpret_cast<char*>(move_buf)
+    std::strncpy ( static_cast<char*>(move_buf)
                  , move_xy.data(), BUF_SIZE - 1 );
     move_buf[BUF_SIZE - 1] = '\0';
     move_time = F_cursor_address.duration;

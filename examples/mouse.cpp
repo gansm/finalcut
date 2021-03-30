@@ -324,6 +324,9 @@ inline void Brushes::setBackground (FColor color)
 class MouseDraw final : public finalcut::FDialog
 {
   public:
+    // Using-declaration
+    using FWidget::setGeometry;
+
     // Constructor
     explicit MouseDraw (finalcut::FWidget* = nullptr);
 
