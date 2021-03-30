@@ -173,9 +173,9 @@ class Treeview final : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*) override;
 
     // Data members
-    bool                initialized{false};
-    finalcut::FListView listview{this};
-    finalcut::FButton   quit{this};
+    bool                  initialized{false};
+    finalcut::FListView   listview{this};
+    finalcut::FButton     quit{this};
     std::vector<TreeItem> africa{initAfrica()};
     std::vector<TreeItem> asia{initAsia()};
     std::vector<TreeItem> europe{initEurope()};
@@ -191,11 +191,13 @@ class Treeview final : public finalcut::FDialog
 
 struct Treeview::TreeItem
 {
-  const char* const* begin() const
+  using const_iterator = const char* const*;
+
+  const_iterator begin() const noexcept
   { return &name; }
 
-  const char* const* end() const
-  { return &density + 1; }
+  const_iterator end() const noexcept
+  { return std::next(&density); }
 
   // Data members
   const char* name;
