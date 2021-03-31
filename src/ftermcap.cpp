@@ -115,7 +115,7 @@ char* FTermcap::getString (const std::string& cap)
 std::string FTermcap::encodeMotionParameter (const std::string& cap, int col, int row)
 {
   auto str = ::tgoto(C_STR(cap.data()), col, row);
-  return ( str ) ? str : std::string();
+  return str ? str : std::string();
 }
 
 //----------------------------------------------------------------------

@@ -1402,7 +1402,7 @@ inline const char* FString::_to_cstring (const wchar_t s[]) const
   }
 
   if ( c_string )
-    delete[](c_string);
+    delete[] c_string;
 
   const wchar_t* src = s;
   auto state = std::mbstate_t();

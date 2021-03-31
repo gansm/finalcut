@@ -877,7 +877,7 @@ void FTermLinux::getVGAPalette()
 {
   const auto& fsystem = FTerm::getFSystem();
 
-  if ( fsystem->ioctl(0, GIO_CMAP, &cmap) != 0 )
+  if ( fsystem->ioctl(0, GIO_CMAP, cmap.color.data()) != 0 )
     setVGADefaultPalette();  // Fallback, if GIO_CMAP does not work
 }
 
@@ -920,7 +920,7 @@ bool FTermLinux::setVGAPalette (FColor index, int r, int g, int b)
 
   const auto& fsystem = FTerm::getFSystem();
 
-  if ( fsystem->ioctl(0, PIO_CMAP, &cmap) == 0 )
+  if ( fsystem->ioctl(0, PIO_CMAP, cmap.color.data()) == 0 )
     return true;
   else
     return false;
@@ -933,7 +933,7 @@ bool FTermLinux::saveVGAPalette()
 
   const auto& fsystem = FTerm::getFSystem();
 
-  if ( fsystem->ioctl(0, GIO_CMAP, &saved_color_map) == 0 )
+  if ( fsystem->ioctl(0, GIO_CMAP, saved_color_map.color.data()) == 0 )
     has_saved_palette = true;
   else
     has_saved_palette = false;
@@ -950,14 +950,14 @@ bool FTermLinux::resetVGAPalette()
 
   if ( has_saved_palette )
   {
-    if ( fsystem->ioctl (0, PIO_CMAP, &saved_color_map) )
+    if ( fsystem->ioctl (0, PIO_CMAP, saved_color_map.color.data()) )
       return false;
   }
   else
   {
     setVGADefaultPalette();
 
-    if ( fsystem->ioctl(0, PIO_CMAP, &cmap) != 0 )
+    if ( fsystem->ioctl(0, PIO_CMAP, cmap.color.data()) != 0 )
       return false;
   }
 

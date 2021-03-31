@@ -149,7 +149,7 @@ class FTermLinux final
 
     struct ColorMap
     {
-      RGB color[16];
+      std::array<RGB, 16> color;
     };
 
     struct Pair
