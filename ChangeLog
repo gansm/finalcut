@@ -1,3 +1,6 @@
+2021-03-31 Markus Gans  <guru.mail@muenster.de>
+	* argv is now stored internally as a std::vector container
+
 2021-03-30 Markus Gans  <guru.mail@muenster.de>
 	* Stops terminal refresh during dialog resizing until all 
 	  child widgets have been redrawn

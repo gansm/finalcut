@@ -81,10 +81,9 @@ struct timeval FApplication::time_last_event {};
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FApplication::FApplication (const int& _argc, char* _argv[])
-  : FWidget{processParameters(_argc, _argv)}
-  , app_argc{_argc}
-  , app_argv{_argv}
+FApplication::FApplication (const int& arg_c, char* arg_v[])
+  : FWidget{processParameters(Args(arg_v, arg_v + arg_c))}
+  , app_args{arg_v, arg_v + arg_c}
 {
   if ( quit_now )
     return;
@@ -100,14 +99,6 @@ FApplication::FApplication (const int& _argc, char* _argv[])
 
   // First define the application object
   internal::var::app_object = this;
-
-  if ( ! (_argc && _argv) )
-  {
-    using CString = char*;
-    static std::array<CString, 1> empty{{CString("")}};
-    app_argc = 0;
-    app_argv = empty.data();
-  }
 
   init();
 }
@@ -532,12 +523,22 @@ inline void FApplication::setCmdOptionsMap (CmdMap& cmd_map)
 }
 
 //----------------------------------------------------------------------
-void FApplication::cmdOptions (const int& argc, char* argv[])
+void FApplication::cmdOptions (const Args& args)
 {
   // Interpret the command line options
 
   CmdMap cmd_map{};
   setCmdOptionsMap(cmd_map);
+  auto argc = int(args.size());
+  std::vector<const char*> argv(argc);
+  std::transform ( args.begin()
+                 , args.end()
+                 , argv.begin()
+                 , [] (const std::string& str)
+                   {
+                     return str.data();
+                   }
+                 );
 
   while ( true )
   {
@@ -546,7 +547,8 @@ void FApplication::cmdOptions (const int& argc, char* argv[])
     std::vector<CmdOption> long_options{};
     setLongOptions(long_options);
     auto p = reinterpret_cast<const struct option*>(long_options.data());
-    const int opt = getopt_long (argc, argv, "", p, &idx);
+    auto argv_data = const_cast<char**>(argv.data());
+    const int opt = getopt_long (argc, argv_data, "", p, &idx);
 
     if ( opt == -1 )
       break;
@@ -1228,16 +1230,15 @@ void FApplication::sendWheelEvent ( const FMouseData& md
 }
 
 //----------------------------------------------------------------------
-FWidget* FApplication::processParameters (const int& argc, char* argv[])
+FWidget* FApplication::processParameters (const Args& args)
 {
-  if ( argc > 0 && argv[1] && ( std::strcmp(argv[1], "--help") == 0
-                             || std::strcmp(argv[1], "-h") == 0 ) )
+  if ( args.size() > 1 && (args[1] == "--help" || args[1] == "-h") )
   {
     showParameterUsage();
     FApplication::exit(EXIT_SUCCESS);
   }
 
-  cmdOptions (argc, argv);
+  cmdOptions (args);
   return nullptr;
 }
 
