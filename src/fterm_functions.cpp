@@ -285,15 +285,15 @@ wchar_t cp437_to_unicode (uChar c)
   constexpr std::size_t CP437 = 0;
   constexpr std::size_t UNICODE = 1;
   wchar_t ucs = c;
+  auto found = std::find_if ( fc::cp437_ucs.begin()
+                            , fc::cp437_ucs.end()
+                            , [&c] (const std::array<wchar_t, 2>& entry)
+                              {
+                                return entry[CP437] == c;
+                              } );
 
-  for (auto&& entry : fc::cp437_ucs)
-  {
-    if ( entry[CP437] == c )  // found
-    {
-      ucs = entry[UNICODE];
-      break;
-    }
-  }
+  if ( found != fc::cp437_ucs.end() )
+    ucs = (*found)[UNICODE];
 
   return ucs;
 }
@@ -305,14 +305,15 @@ uChar unicode_to_cp437 (wchar_t ucs)
   constexpr std::size_t UNICODE = 1;
   uChar c{'?'};
 
-  for (auto&& entry : fc::cp437_ucs)
-  {
-    if ( entry[UNICODE] == ucs )  // found
-    {
-      c = uChar(entry[CP437]);
-      break;
-    }
-  }
+  auto found = std::find_if ( fc::cp437_ucs.begin()
+                            , fc::cp437_ucs.end()
+                            , [&ucs] (const std::array<wchar_t, 2>& entry)
+                              {
+                                return entry[UNICODE] == ucs;
+                              } );
+
+  if ( found != fc::cp437_ucs.end() )
+    c = static_cast<uChar>((*found)[CP437]);
 
   return c;
 }
@@ -327,12 +328,15 @@ FString getFullWidth (const FString& str)
   {
     constexpr std::size_t HALF = 0;
     constexpr std::size_t FULL = 1;
+    auto found = std::find_if ( fc::halfwidth_fullwidth.begin()
+                              , fc::halfwidth_fullwidth.end()
+                              , [&c] (const std::array<wchar_t, 2>& entry)
+                                {
+                                  return entry[HALF] == c;
+                                } );
 
-    for (auto&& entry : fc::halfwidth_fullwidth)
-    {
-      if ( entry[HALF] == c )  // found
-        c = entry[FULL];
-    }
+    if ( found != fc::halfwidth_fullwidth.end() )
+      c = (*found)[FULL];
   };
 
   for (auto&& c : s)
@@ -356,12 +360,15 @@ FString getHalfWidth (const FString& str)
   {
     constexpr std::size_t HALF = 0;
     constexpr std::size_t FULL = 1;
+    auto found = std::find_if ( fc::halfwidth_fullwidth.begin()
+                              , fc::halfwidth_fullwidth.end()
+                              , [&c] (const std::array<wchar_t, 2>& entry)
+                                {
+                                  return entry[FULL] == c;
+                                } );
 
-    for (auto&& entry : fc::halfwidth_fullwidth)
-    {
-      if ( entry[FULL] == c )  // found
-        c = entry[HALF];
-    }
+    if ( found != fc::halfwidth_fullwidth.end() )
+      c = (*found)[HALF];
   };
 
   for (auto&& c : s)

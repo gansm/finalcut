@@ -660,20 +660,26 @@ inline void FListBox::mapKeyFunctions()
 void FListBox::processKeyAction (FKeyEvent* ev)
 {
   const auto idx = ev->key();
+  const auto& entry = key_map[idx];
 
-  if ( key_map.find(idx) != key_map.end() )
+  if ( entry )
   {
-    key_map[idx]();
+    entry();
     ev->accept();
   }
-  else if ( key_map_result.find(idx) != key_map_result.end() )
+  else
   {
-    if ( key_map_result[idx]() )
+    const auto& entry_result = key_map_result[idx];
+
+    if ( entry_result )
+    {
+      if ( entry_result() )
+        ev->accept();
+    }
+    else if ( keyIncSearchInput(idx) )
+    {
       ev->accept();
-  }
-  else if ( keyIncSearchInput(ev->key()) )
-  {
-    ev->accept();
+    }
   }
 }
 

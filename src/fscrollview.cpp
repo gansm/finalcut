@@ -473,11 +473,11 @@ void FScrollView::drawBorder()
 //----------------------------------------------------------------------
 void FScrollView::onKeyPress (FKeyEvent* ev)
 {
-  const auto idx = ev->key();
+  const auto& entry = key_map[ev->key()];
 
-  if ( key_map.find(idx) != key_map.end() )
+  if ( entry )
   {
-    key_map[idx]();
+    entry();
     ev->accept();
   }
 }

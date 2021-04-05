@@ -1065,15 +1065,15 @@ wchar_t FTerm::charEncode (wchar_t c)
 wchar_t FTerm::charEncode (wchar_t c, Encoding enc)
 {
   wchar_t ch_enc = c;
+  auto found = std::find_if ( fc::character.begin()
+                            , fc::character.end()
+                            , [&c] (const fc::CharEncodeMap& entry)
+                              {
+                                return entry.unicode == c;
+                              } );
 
-  for (auto&& entry : fc::character)
-  {
-    if ( entry.unicode == c )
-    {
-      ch_enc = getCharacter(entry, enc);
-      break;
-    }
-  }
+  if ( found != fc::character.end() )
+    ch_enc = getCharacter(*found, enc);
 
   if ( enc == Encoding::PC && ch_enc == c )
     ch_enc = finalcut::unicode_to_cp437(c);

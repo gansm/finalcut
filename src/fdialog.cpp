@@ -1417,10 +1417,10 @@ inline void FDialog::passEventToSubMenu ( const MouseStates& ms
 //----------------------------------------------------------------------
 inline void FDialog::moveSizeKey (FKeyEvent* ev)
 {
-  const auto key = ev->key();
+  const auto& entry = key_map[ev->key()];
 
-  if ( key_map.find(key) != key_map.end() )
-    key_map[key]();
+  if ( entry )
+    entry();
 
   // Accept for all, so that parent widgets will not receive keystrokes
   ev->accept();

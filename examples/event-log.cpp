@@ -284,13 +284,13 @@ EventLog::~EventLog() noexcept = default;  // destructor
 //----------------------------------------------------------------------
 void EventLog::onTimer (finalcut::FTimerEvent*)
 {
-  if ( ! str().empty() )
-  {
-    scrolltext.append(str());
-    str("");
-    scrolltext.scrollToEnd();
-    redraw();
-  }
+  if ( str().empty() )
+    return;
+
+  scrolltext.append(str());
+  str("");
+  scrolltext.scrollToEnd();
+  redraw();
 }
 
 //----------------------------------------------------------------------

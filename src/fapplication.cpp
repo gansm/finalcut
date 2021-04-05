@@ -529,7 +529,7 @@ void FApplication::cmdOptions (const Args& args)
 
   CmdMap cmd_map{};
   setCmdOptionsMap(cmd_map);
-  auto argc = int(args.size());
+  auto argc = args.size();
   std::vector<const char*> argv(argc);
   std::transform ( args.begin()
                  , args.end()
@@ -547,14 +547,16 @@ void FApplication::cmdOptions (const Args& args)
     std::vector<CmdOption> long_options{};
     setLongOptions(long_options);
     auto p = reinterpret_cast<const struct option*>(long_options.data());
-    auto argv_data = const_cast<char**>(argv.data());
-    const int opt = getopt_long (argc, argv_data, "", p, &idx);
+    auto argv_data = const_cast<char* const*>(argv.data());
+    const int opt = getopt_long (int(argc), argv_data, "", p, &idx);
 
     if ( opt == -1 )
       break;
 
-    if ( cmd_map.find(opt) != cmd_map.end() )
-      cmd_map[opt](optarg);
+    const auto& entry = cmd_map[opt];
+
+    if ( entry )
+      entry(optarg);
   }
 
   cmd_map.clear();

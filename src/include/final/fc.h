@@ -801,9 +801,9 @@ enum class FKey : uInt32
 
 struct FKeyHash
 {
-  std::size_t operator () (const FKey& p) const noexcept
+  std::size_t operator () (const FKey& k) const noexcept
   {
-    return std::hash<uInt32>()(uInt32(p));
+    return std::hash<uInt32>()(uInt32(k));
   }
 };
 

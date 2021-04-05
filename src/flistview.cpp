@@ -1445,20 +1445,26 @@ inline void FListView::mapKeyFunctions()
 void FListView::processKeyAction (FKeyEvent* ev)
 {
   const auto idx = ev->key();
+  const auto& entry = key_map[idx];
 
-  if ( key_map.find(idx) != key_map.end() )
+  if ( entry )
   {
-    key_map[idx]();
+    entry();
     ev->accept();
-  }
-  else if ( key_map_result.find(idx) != key_map_result.end() )
-  {
-    if ( key_map_result[idx]() )
-      ev->accept();
   }
   else
   {
-    ev->ignore();
+    const auto& entry_result = key_map_result[idx];
+
+    if ( entry_result )
+    {
+      if ( entry_result() )
+        ev->accept();
+    }
+    else
+    {
+      ev->ignore();
+    }
   }
 }
 

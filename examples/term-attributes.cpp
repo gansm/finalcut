@@ -143,7 +143,7 @@ void AttribDlg::cb_next()
   else if ( bgcolor == FColor::Default )
     bgcolor = FColor::Black;
   else
-    bgcolor++;
+    ++bgcolor;
 
   redraw();
 }
@@ -159,7 +159,7 @@ void AttribDlg::cb_back()
   else if ( bgcolor == FColor::Default )
     bgcolor = FColor(finalcut::FTerm::getMaxColor() - 1);
   else
-    bgcolor--;
+    --bgcolor;
 
   redraw();
 }
@@ -272,7 +272,7 @@ void AttribDemo::printColorLine()
 {
   const auto& parent = static_cast<AttribDlg*>(getParent());
 
-  for (FColor color{FColor::Black}; color < last_color; color++)
+  for (FColor color{FColor::Black}; color < last_color; ++color)
   {
     print() << FColorPair{color, parent->getBGColor()} << " # ";
   }
@@ -479,7 +479,7 @@ void AttribDemo::draw()
   if ( bg == FColor::Default )
     print (" default");
   else
-    printf ( " %d", bg);
+    printf ( " %u", bg);
 
   print() << FPoint{16, 17} << "Change background color ->";
 }

@@ -465,8 +465,7 @@ int FVTerm::print (FTermArea* area, wchar_t c)
   if ( ! area )
     return -1;
 
-  FChar nc{};  // next character
-  nc = FVTerm::getAttribute();
+  FChar nc = FVTerm::getAttribute();  // next character
   nc.ch[0] = c;
   nc.attr.byte[2] = 0;
   nc.attr.byte[3] = 0;
@@ -1114,7 +1113,7 @@ void FVTerm::scrollAreaForward (FTermArea* area) const
   auto bottom_right = std::size_t((y_max * total_width) - area->right_shadow - 1);
   const auto& lc = area->data[bottom_right];  // last character
   std::memcpy (&nc, &lc, sizeof(nc));
-  nc.ch[0] = ' ';
+  nc.ch[0] = L' ';
   auto& dc = area->data[y_max * total_width];  // destination character
   std::fill_n (&dc, area->width, nc);
   area->changes[y_max].xmin = 0;
@@ -1166,7 +1165,7 @@ void FVTerm::scrollAreaReverse (FTermArea* area) const
   FChar nc{};  // next character
   const auto& lc = area->data[total_width];  // last character
   std::memcpy (&nc, &lc, sizeof(nc));
-  nc.ch[0] = ' ';
+  nc.ch[0] = L' ';
   auto& dc = area->data[0];  // destination character
   std::fill_n (&dc, area->width, nc);
   area->changes[0].xmin = 0;
@@ -1313,7 +1312,7 @@ inline void FVTerm::resetTextAreaToDefault ( const FTermArea* area
   FChar default_char;
   FLineChanges unchanged;
 
-  default_char.ch[0]        = ' ';
+  default_char.ch[0]        = L' ';
   default_char.fg_color     = FColor::Default;
   default_char.bg_color     = FColor::Default;
   default_char.attr.byte[0] = 0;
@@ -1454,7 +1453,7 @@ inline void FVTerm::updateOverlappedColor ( const FChar& area_char
     || nc.ch[0] == UniChar::RightHalfBlock
     || nc.ch[0] == UniChar::MediumShade
     || nc.ch[0] == UniChar::FullBlock )
-    nc.ch[0] = ' ';
+    nc.ch[0] = L' ';
 
   nc.attr.bit.no_changes = bool(vterm_char.attr.bit.printed && vterm_char == nc);
   std::memcpy (&vterm_char, &nc, sizeof(vterm_char));
@@ -1489,7 +1488,7 @@ inline void FVTerm::updateShadedCharacter ( const FChar& area_char
     || cover_char.ch[0] == UniChar::RightHalfBlock
     || cover_char.ch[0] == UniChar::MediumShade
     || cover_char.ch[0] == UniChar::FullBlock )
-    cover_char.ch[0] = ' ';
+    cover_char.ch[0] = L' ';
 
   cover_char.attr.bit.no_changes = \
       bool(vterm_char.attr.bit.printed && vterm_char == cover_char);
@@ -1728,7 +1727,7 @@ FChar FVTerm::generateCharacter (const FPoint& pos)
             || s_ch.ch[0] == UniChar::RightHalfBlock
             || s_ch.ch[0] == UniChar::MediumShade
             || s_ch.ch[0] == UniChar::FullBlock )
-            s_ch.ch[0] = ' ';
+            s_ch.ch[0] = L' ';
 
           sc = &s_ch;
         }
@@ -1981,7 +1980,7 @@ void FVTerm::putAreaCharacter ( const FPoint& pos, const FTermArea* area
         || ch.ch[0] == UniChar::RightHalfBlock
         || ch.ch[0] == UniChar::MediumShade
         || ch.ch[0] == UniChar::FullBlock )
-        ch.ch[0] = ' ';
+        ch.ch[0] = L' ';
 
       std::memcpy (&vterm_char, &ch, sizeof(vterm_char));
     }
@@ -2146,7 +2145,7 @@ bool FVTerm::canClearToEOL (uInt xmin, uInt y)
   const auto& ce = TCAP(t_clr_eol);
   const auto& min_char = vt->data[y * uInt(vt->width) + xmin];
 
-  if ( ce && min_char.ch[0] == ' ' )
+  if ( ce && min_char.ch[0] == L' ' )
   {
     uInt beginning_whitespace = 1;
     const bool normal = FTerm::isNormal(min_char);
@@ -2181,7 +2180,7 @@ bool FVTerm::canClearLeadingWS (uInt& xmin, uInt y)
   const auto& cb = TCAP(t_clr_bol);
   const auto& first_char = vt->data[y * uInt(vt->width)];
 
-  if ( cb && first_char.ch[0] == ' ' )
+  if ( cb && first_char.ch[0] == L' ' )
   {
     uInt leading_whitespace = 1;
     const bool normal = FTerm::isNormal(first_char);
@@ -2219,7 +2218,7 @@ bool FVTerm::canClearTrailingWS (uInt& xmax, uInt y)
   const auto& ce = TCAP(t_clr_eol);
   const auto& last_char = vt->data[(y + 1) * uInt(vt->width) - 1];
 
-  if ( ce && last_char.ch[0] == ' ' )
+  if ( ce && last_char.ch[0] == L' ' )
   {
     uInt trailing_whitespace = 1;
     const bool normal = FTerm::isNormal(last_char);
@@ -2299,7 +2298,7 @@ void FVTerm::printRange ( uInt xmin, uInt xmax, uInt y
       continue;
 
     // Erase character
-    if ( ec && print_char.ch[0] == ' ' )
+    if ( ec && print_char.ch[0] == L' ' )
     {
       PrintState erase_state = \
           eraseCharacters(x, xmax, y, draw_trailing_ws);
@@ -2510,7 +2509,7 @@ FVTerm::PrintState FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
   const auto& ec = TCAP(t_erase_chars);
   auto& print_char = vt->data[y * uInt(vt->width) + x];
 
-  if ( ! ec || print_char.ch[0] != ' ' )
+  if ( ! ec || print_char.ch[0] != L' ' )
     return PrintState::NothingPrinted;
 
   uInt whitespace{1};
@@ -3140,10 +3139,11 @@ void FVTerm::appendLowerRight (FChar& last_char) const
 //----------------------------------------------------------------------
 inline void FVTerm::characterFilter (FChar& next_char) const
 {
-  charSubstitution& sub_map = fterm->getCharSubstitutionMap();
+  auto& sub_map = fterm->getCharSubstitutionMap();
+  const auto& entry = sub_map[next_char.encoded_char[0]];
 
-  if ( sub_map.find(next_char.encoded_char[0]) != sub_map.end() )
-    next_char.encoded_char[0] = sub_map[next_char.encoded_char[0]];
+  if ( entry )
+    next_char.encoded_char[0] = entry;
 }
 
 //----------------------------------------------------------------------

@@ -448,11 +448,11 @@ FKey FTermLinux::modifierKeyCorrection (const FKey& key_id)
   // Get the current modifier key state
 
   const Pair pair{getModifierKey(), key_id};
-  const auto iter = key_map.find(pair);
+  const auto& key = key_map[pair];
 
-  if ( iter == key_map.cend() )  // Not found
+  if ( key == FKey(0) )    // Not found
     return key_id;
-  else                          // Found
+  else                     // Found
     return key_map[pair];
 }
 
@@ -896,12 +896,14 @@ void FTermLinux::setVGADefaultPalette()
     {0x55, 0xff, 0xff}, {0xff, 0xff, 0xff}
   }};
 
-  for (std::size_t index{0}; index < 16; index++)
-  {
-    cmap.color[index].red   = defaultColor[index].red;
-    cmap.color[index].green = defaultColor[index].green;
-    cmap.color[index].blue  = defaultColor[index].blue;
-  }
+  std::transform ( defaultColor.begin()
+                 , defaultColor.end()
+                 , cmap.color.begin()
+                 , [] (const RGB& rgb)
+                   {
+                     return rgb;
+                   }
+                 );
 }
 
 //----------------------------------------------------------------------

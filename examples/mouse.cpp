@@ -120,7 +120,7 @@ void ColorChooser::draw()
   setColor();
   drawBorder();
 
-  for (FColor c{FColor::Black}; c < 16; c++)
+  for (FColor c{FColor::Black}; c < 16; ++c)
   {
     print() << FPoint{2 + (int(c) / 8) * 3, 3 + int(c) % 8};
 
