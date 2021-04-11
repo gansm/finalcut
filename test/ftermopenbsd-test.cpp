@@ -435,7 +435,7 @@ void ftermopenbsdTest::netbsdConsoleTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::netbsd_con);
+    startConEmuTerminal (ConEmu::console::netbsd_con);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -571,7 +571,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::openbsd_con);
+    startConEmuTerminal (ConEmu::console::openbsd_con);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -172,6 +172,7 @@ class FTermcapQuirksTest : public CPPUNIT_NS::TestFixture
     void linuxTest();
     void rxvtTest();
     void vteTest();
+    void kittyTest();
     void puttyTest();
     void teratermTest();
     void sunTest();
@@ -194,6 +195,7 @@ class FTermcapQuirksTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (linuxTest);
     CPPUNIT_TEST (rxvtTest);
     CPPUNIT_TEST (vteTest);
+    CPPUNIT_TEST (kittyTest);
     CPPUNIT_TEST (puttyTest);
     CPPUNIT_TEST (teratermTest);
     CPPUNIT_TEST (sunTest);
@@ -512,6 +514,31 @@ void FTermcapQuirksTest::vteTest()
                          , CSI "24m" );
 
   detect.setGnomeTerminal (false);
+}
+//----------------------------------------------------------------------
+void FTermcapQuirksTest::kittyTest()
+{
+  auto& caps = finalcut::FTermcap::strings;
+  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+
+  for (std::size_t i = 0; i < last_item; i++)
+    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+
+  caps[int(finalcut::Termcap::t_enter_ca_mode)].string = CSI "?1049h";
+  caps[int(finalcut::Termcap::t_exit_ca_mode)].string = CSI "?1049l";
+  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
+  finalcut::FTermcapQuirks quirks;
+  detect.setKittyTerminal (true);
+  data.setTermType ("xterm-kitty");
+  quirks.terminalFixup();
+
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_ca_mode)].string
+                         , CSI "?1049h" CSI "22;0;0t" );
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_ca_mode)].string
+                         , CSI "?1049l" CSI "23;0;0t" );
+
+  detect.setKittyTerminal (false);
 }
 
 //----------------------------------------------------------------------

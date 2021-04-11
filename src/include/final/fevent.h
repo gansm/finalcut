@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -101,7 +101,6 @@ class FPoint;
 class FEvent  // event base class
 {
   public:
-    FEvent() = default;
     explicit FEvent(Event);
     Event getType() const;
     bool isQueued() const;
@@ -125,9 +124,7 @@ class FEvent  // event base class
 class FKeyEvent : public FEvent  // keyboard event
 {
   public:
-    FKeyEvent() = default;
     FKeyEvent (Event, FKey);
-    ~FKeyEvent() = default;
 
     FKey     key() const;
     bool     isAccepted() const;
@@ -147,10 +144,8 @@ class FKeyEvent : public FEvent  // keyboard event
 class FMouseEvent : public FEvent  // mouse event
 {
   public:
-    FMouseEvent() = default;
     FMouseEvent (Event, const FPoint&, const FPoint&, MouseButton);
     FMouseEvent (Event, const FPoint&, MouseButton);
-    ~FMouseEvent() = default;
 
     const FPoint& getPos() const;
     const FPoint& getTermPos() const;
@@ -174,10 +169,8 @@ class FMouseEvent : public FEvent  // mouse event
 class FWheelEvent : public FEvent  // wheel event
 {
   public:
-    FWheelEvent() = default;
     FWheelEvent (Event, const FPoint&, MouseWheel);
     FWheelEvent (Event, const FPoint&, const FPoint&, MouseWheel);
-    ~FWheelEvent() = default;
 
     const FPoint& getPos() const;
     const FPoint& getTermPos() const;
@@ -201,9 +194,7 @@ class FWheelEvent : public FEvent  // wheel event
 class FFocusEvent : public FEvent  // focus event
 {
   public:
-    FFocusEvent() = default;
     explicit FFocusEvent (Event);
-    ~FFocusEvent() = default;
 
     bool           gotFocus()  const;
     bool           lostFocus() const;
@@ -227,10 +218,8 @@ class FWidget;  // class forward declaration
 class FAccelEvent : public FEvent  // focus event
 {
   public:
-    FAccelEvent() = default;
     FAccelEvent (Event, FWidget*);
     FAccelEvent (const FAccelEvent&) = delete;
-    ~FAccelEvent() = default;
     FAccelEvent& operator = (const FAccelEvent&) = delete;
 
     FWidget* focusedWidget() const;
@@ -251,9 +240,7 @@ class FAccelEvent : public FEvent  // focus event
 class FResizeEvent : public FEvent  // resize event
 {
   public:
-    FResizeEvent() = default;
     explicit FResizeEvent (Event);
-    ~FResizeEvent() = default;
 
     bool     isAccepted() const;
     void     accept();
@@ -271,9 +258,7 @@ class FResizeEvent : public FEvent  // resize event
 class FShowEvent : public FEvent  // show event
 {
   public:
-    FShowEvent() = default;
     explicit FShowEvent (Event);
-    ~FShowEvent() = default;
 };
 
 
@@ -284,9 +269,7 @@ class FShowEvent : public FEvent  // show event
 class FHideEvent : public FEvent  // hide event
 {
   public:
-    FHideEvent() = default;
     explicit FHideEvent (Event);
-    ~FHideEvent() = default;
 };
 
 
@@ -297,9 +280,7 @@ class FHideEvent : public FEvent  // hide event
 class FCloseEvent : public FEvent  // close event
 {
   public:
-    FCloseEvent() = default;
     explicit FCloseEvent(Event);
-    ~FCloseEvent() = default;
 
     bool     isAccepted() const;
     void     accept();
@@ -317,9 +298,7 @@ class FCloseEvent : public FEvent  // close event
 class FTimerEvent : public FEvent  // timer event
 {
   public:
-    FTimerEvent() = default;
     FTimerEvent (Event, int);
-    ~FTimerEvent() = default;
 
     int      getTimerId() const;
 
@@ -335,13 +314,9 @@ class FTimerEvent : public FEvent  // timer event
 class FUserEvent : public FEvent  // user event
 {
   public:
-    FUserEvent() = default;
-
     // Disable copy constructor
     FUserEvent (const FUserEvent&) = delete;
     FUserEvent (Event, int);
-
-    ~FUserEvent() = default;
 
     // Disable copy assignment operator (=)
     FUserEvent& operator = (const FUserEvent&) = delete;

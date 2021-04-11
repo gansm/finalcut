@@ -809,7 +809,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::freebsd_con);
+    startConEmuTerminal (ConEmu::console::freebsd_con);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;

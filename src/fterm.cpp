@@ -436,6 +436,13 @@ bool FTerm::isMltermTerminal()
 }
 
 //----------------------------------------------------------------------
+bool FTerm::isKittyTerminal()
+{
+  const auto& term_detection = FTerm::getFTermDetection();
+  return term_detection->isKittyTerminal();
+}
+
+//----------------------------------------------------------------------
 bool FTerm::isNewFont()
 {
   const auto& data = FTerm::getFTermData();

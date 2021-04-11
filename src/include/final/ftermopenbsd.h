@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -71,18 +71,6 @@ namespace finalcut
 class FTermOpenBSD final
 {
   public:
-    // Constructors
-    FTermOpenBSD() = default;
-
-    // Disable copy constructor
-    FTermOpenBSD (const FTermOpenBSD&) = delete;
-
-    // Destructor
-    ~FTermOpenBSD() noexcept = default;
-
-    // Disable copy assignment operator (=)
-    FTermOpenBSD& operator = (const FTermOpenBSD&) = delete;
-
     // Accessor
     FString            getClassName() const;
 

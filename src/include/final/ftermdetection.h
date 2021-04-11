@@ -75,8 +75,11 @@ class FTermDetection final
       uInt8 tmux           : 1;
       uInt8 kterm          : 1;
       uInt8 mlterm         : 1;
-      uInt8                : 4;  // padding bits
+      uInt8 kitty          : 1;
+      uInt8                : 3;  // padding bits
     };
+
+    struct kittyVersion;  // forward declaration
 
     // Constructors
     FTermDetection();
@@ -94,6 +97,7 @@ class FTermDetection final
     static FString        getClassName();
     static const char*    getTermType();
     static int            getGnomeTerminalID();
+    static kittyVersion   getKittyVersion();
     FTerminalType&        getTermTypeStruct();
 
 #if DEBUG
@@ -125,6 +129,7 @@ class FTermDetection final
     static bool           isTmuxTerm();
     static bool           isKtermTerminal();
     static bool           isMltermTerminal();
+    static bool           isKittyTerminal();
     static bool           canDisplay256Colors();
     static bool           hasTerminalDetection();
     static bool           hasSetCursorStyleSupport();
@@ -150,6 +155,7 @@ class FTermDetection final
     static void           setTmuxTerm (bool = true);
     static void           setKtermTerminal (bool = true);
     static void           setMltermTerminal (bool = true);
+    static void           setKittyTerminal (bool = true);
     static void           setTerminalDetection (bool = true);
     static void           setTtyTypeFileName (const char[]);
 
@@ -192,6 +198,7 @@ class FTermDetection final
     static const char*    secDA_Analysis_84 (const char[]);
     static const char*    secDA_Analysis_85 ();
     static const char*    secDA_Analysis_vte (const char[]);
+    static const char*    secDA_Analysis_kitty (const char[]);
 
     // Data members
 #if DEBUG
@@ -209,6 +216,7 @@ class FTermDetection final
     static const FString* sec_da;
     static FTerminalType  terminal_type;
     static colorEnv       color_env;
+    static kittyVersion   kitty_version;
     static secondaryDA    secondary_da;
 };
 
@@ -225,6 +233,16 @@ struct FTermDetection::colorEnv
   char* string5{nullptr};
   char* string6{nullptr};
   char* string7{nullptr};
+  char* string8{nullptr};
+};
+
+//----------------------------------------------------------------------
+// struct FTermDetection::KittyVersion
+//----------------------------------------------------------------------
+struct FTermDetection::kittyVersion
+{
+  int primary{0};
+  int secondary{0};
 };
 
 //----------------------------------------------------------------------
@@ -250,6 +268,10 @@ inline const char* FTermDetection::getTermType()
 //----------------------------------------------------------------------
 inline int FTermDetection::getGnomeTerminalID()
 { return gnome_terminal_id; }
+
+//----------------------------------------------------------------------
+inline FTermDetection::kittyVersion FTermDetection::getKittyVersion()
+{ return kitty_version; }
 
 //----------------------------------------------------------------------
 inline FTermDetection::FTerminalType& FTermDetection::getTermTypeStruct()
@@ -296,6 +318,10 @@ inline bool FTermDetection::isUrxvtTerminal()
 //----------------------------------------------------------------------
 inline bool FTermDetection::isMltermTerminal()
 { return terminal_type.mlterm; }
+
+//----------------------------------------------------------------------
+inline bool FTermDetection::isKittyTerminal()
+{ return terminal_type.kitty; }
 
 //----------------------------------------------------------------------
 inline bool FTermDetection::isPuttyTerminal()
@@ -380,6 +406,10 @@ inline void FTermDetection::setUrxvtTerminal (bool enable)
 //----------------------------------------------------------------------
 inline void FTermDetection::setMltermTerminal (bool enable)
 { terminal_type.mlterm = enable; }
+
+//----------------------------------------------------------------------
+inline void FTermDetection::setKittyTerminal (bool enable)
+{ terminal_type.kitty = enable; }
 
 //----------------------------------------------------------------------
 inline void FTermDetection::setPuttyTerminal (bool enable)

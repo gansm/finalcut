@@ -1,3 +1,6 @@
+2021-04-11 Markus Gans  <guru.mail@muenster.de>
+	* Better support for kitty terminals
+
 2021-03-31 Markus Gans  <guru.mail@muenster.de>
 	* argv is now stored internally as a std::vector container
 

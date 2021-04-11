@@ -48,18 +48,6 @@ class FString;
 class FTermXTerminal final
 {
   public:
-    // Constructors
-    FTermXTerminal() = default;
-
-    // Disable copy constructor
-    FTermXTerminal (const FTermXTerminal&) = delete;
-
-    // Destructor
-    ~FTermXTerminal() noexcept = default;
-
-    // Disable copy assignment operator (=)
-    FTermXTerminal& operator = (const FTermXTerminal&) = delete;
-
     // Mutators
     void                  redefineDefaultColors (bool = true);
     void                  setCursorStyle (XTermCursorStyle);

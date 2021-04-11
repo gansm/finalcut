@@ -53,6 +53,7 @@ namespace finalcut
 // static class attributes
 FTermDetection::FTerminalType FTermDetection::terminal_type{};
 FTermDetection::colorEnv      FTermDetection::color_env{};
+FTermDetection::kittyVersion  FTermDetection::kitty_version{};
 FTermDetection::secondaryDA   FTermDetection::secondary_da{};
 char                          FTermDetection::termtype[256]{};
 char                          FTermDetection::ttytypename[256]{};
@@ -346,6 +347,10 @@ void FTermDetection::termtypeAnalysis()
   // NetBSD workstation console
   if ( std::strncmp(termtype, "wsvt25", 6) == 0 )
     terminal_type.netbsd_con = true;
+
+  // kitty
+  if ( std::strncmp(termtype, "xterm-kitty", 11) == 0 )
+    terminal_type.kitty = true;
 }
 
 //----------------------------------------------------------------------
@@ -450,6 +455,7 @@ bool FTermDetection::get256colorEnvString()
   color_env.string5 = std::getenv("KONSOLE_DBUS_SESSION");
   color_env.string6 = std::getenv("KONSOLE_DCOP");
   color_env.string7 = std::getenv("COLORFGBG");
+  color_env.string7 = std::getenv("KITTY_WINDOW_ID");
 
   if ( color_env.string1 != nullptr )
     return true;
@@ -470,6 +476,9 @@ bool FTermDetection::get256colorEnvString()
     return true;
 
   if ( color_env.string7 != nullptr )
+    return true;
+
+  if ( color_env.string8 != nullptr )
     return true;
 
   return false;
@@ -964,7 +973,12 @@ inline const char* FTermDetection::secDA_Analysis_1 (const char current_termtype
   // Terminal ID 1 - DEC VT220
 
   const char* new_termtype = current_termtype;
-  new_termtype = secDA_Analysis_vte(new_termtype);
+
+  if ( isKittyTerminal() )
+    new_termtype = secDA_Analysis_kitty(new_termtype);
+  else
+    new_termtype = secDA_Analysis_vte(new_termtype);
+
   return new_termtype;
 }
 
@@ -1114,6 +1128,25 @@ inline const char* FTermDetection::secDA_Analysis_vte (const char current_termty
     // VTE 0.40.0 or higher and gnome-terminal 3.16 or higher
     if ( gnome_terminal_id >= 4000 )
       decscusr_support = true;
+  }
+
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline const char* FTermDetection::secDA_Analysis_kitty (const char current_termtype[])
+{
+  // kitty
+
+  const char* new_termtype = current_termtype;
+
+  if ( secondary_da.terminal_id_version > 3999 )
+  {
+    // All kitty terminals can use 256 colors
+    color256 = true;
+    new_termtype = "xterm-kitty";
+    kitty_version.primary = secondary_da.terminal_id_version - 4000;
+    kitty_version.secondary = secondary_da.terminal_id_hardware;
   }
 
   return new_termtype;

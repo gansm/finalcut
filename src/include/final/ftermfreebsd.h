@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -80,18 +80,6 @@ class FTermFreeBSD final
   public:
     // Using-declaration
     using CursorStyle = FreeBSDConsoleCursorStyle;
-
-    // Constructors
-    FTermFreeBSD() = default;
-
-    // Disable copy constructor
-    FTermFreeBSD (const FTermFreeBSD&) = delete;
-
-    // Destructor
-    ~FTermFreeBSD() = default;
-
-    // Disable copy assignment operator (=)
-    FTermFreeBSD& operator = (const FTermFreeBSD&) = delete;
 
     // Accessors
     FString            getClassName() const;

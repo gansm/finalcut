@@ -60,6 +60,10 @@ void FTermcapQuirks::terminalFixup()
   {
     vte();
   }
+  else if ( td->isKittyTerminal() )
+  {
+    kitty();
+  }
   else if ( td->isTeraTerm() )
   {
     teraterm();
@@ -256,23 +260,13 @@ void FTermcapQuirks::vte()
   TCAP(t_exit_underline_mode) = CSI "24m";
 
   if ( term_detection->getGnomeTerminalID() >= 5300 )  // vte >= 0.53.0
-  {
-    if ( TCAP(t_enter_ca_mode)
-      && ! std::strstr(TCAP(t_enter_ca_mode), "\033[22;0;0t") )
-    {
-      // Save the cursor position, enter alternate screen buffer
-      // and save xterm icon and window title on stack
-      TCAP(t_enter_ca_mode) = CSI "?1049h" CSI "22;0;0t";
-    }
+    caModeExtension();
+}
 
-    if ( TCAP(t_exit_ca_mode)
-      && ! std::strstr(TCAP(t_exit_ca_mode), "\033[23;0;0t") )
-    {
-      // Use normal screen buffer, restore the cursor position
-      // and restore xterm icon and window title from stack
-      TCAP(t_exit_ca_mode) = CSI "?1049l" CSI "23;0;0t";
-    }
-  }
+//----------------------------------------------------------------------
+void FTermcapQuirks::kitty()
+{
+  caModeExtension();
 }
 
 //----------------------------------------------------------------------
@@ -518,6 +512,26 @@ void FTermcapQuirks::general()
   // Set ansi move if "cm" is not found
   if ( ! TCAP(t_cursor_address) )
     TCAP(t_cursor_address) = CSI "%i%p1%d;%p2%dH";
+}
+
+//----------------------------------------------------------------------
+inline void FTermcapQuirks::caModeExtension()
+{
+  if ( TCAP(t_enter_ca_mode)
+    && ! std::strstr(TCAP(t_enter_ca_mode), "\033[22;0;0t") )
+  {
+    // Save the cursor position, enter alternate screen buffer
+    // and save xterm icon and window title on stack
+    TCAP(t_enter_ca_mode) = CSI "?1049h" CSI "22;0;0t";
+  }
+
+  if ( TCAP(t_exit_ca_mode)
+    && ! std::strstr(TCAP(t_exit_ca_mode), "\033[23;0;0t") )
+  {
+    // Use normal screen buffer, restore the cursor position
+    // and restore xterm icon and window title from stack
+    TCAP(t_exit_ca_mode) = CSI "?1049l" CSI "23;0;0t";
+  }
 }
 
 //----------------------------------------------------------------------

@@ -240,6 +240,7 @@ class FTerm final
     static bool              isTmuxTerm();
     static bool              isKtermTerminal();
     static bool              isMltermTerminal();
+    static bool              isKittyTerminal();
     static bool              isNewFont();
     static bool              isInitialized();
     static bool              isCursorHideable();

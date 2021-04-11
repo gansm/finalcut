@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -54,15 +54,6 @@ class FColorPair
       : fg_color{fg}
       , bg_color{bg}
     { }
-
-    // Copy constructor
-    FColorPair (const FColorPair& pair) = default;
-
-    // Destructor
-    ~FColorPair() = default;
-
-    // copy assignment operator (=)
-    FColorPair& operator = (const FColorPair&) = default;
 
     // Accessor
     FString getClassName() const

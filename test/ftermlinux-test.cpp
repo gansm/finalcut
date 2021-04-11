@@ -1669,7 +1669,7 @@ void FTermLinuxTest::linuxConsoleTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::linux_con);
+    startConEmuTerminal (ConEmu::console::linux_con);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -1858,7 +1858,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::linux_con);
+    startConEmuTerminal (ConEmu::console::linux_con);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -2133,7 +2133,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::linux_con);
+    startConEmuTerminal (ConEmu::console::linux_con);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -2276,7 +2276,7 @@ void FTermLinuxTest::linuxFontTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::linux_con);
+    startConEmuTerminal (ConEmu::console::linux_con);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;

@@ -102,13 +102,14 @@ bool FTermcap::getFlag (const std::string& cap)
 int FTermcap::getNumber (const std::string& cap)
 {
   auto num = ::tgetnum(C_STR(cap.data()));
-  return ( num > 0) ? num : 0;
+  return num > 0 ? num : 0;
 }
 
 //----------------------------------------------------------------------
 char* FTermcap::getString (const std::string& cap)
 {
-  return ::tgetstr(C_STR(cap.data()), reinterpret_cast<char**>(&string_buf));
+  auto string = ::tgetstr(C_STR(cap.data()), reinterpret_cast<char**>(&string_buf));
+  return ( string && string[0] != '\0' ) ? string : nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -428,7 +429,7 @@ void FTermcap::termcapKeys()
   // Read termcap key sequences up to the self-defined values
   for (auto&& entry : fc::fkey_cap_table)
   {
-    if ( entry.string != nullptr )
+    if ( entry.string != nullptr )  // String is already set
       break;
 
     entry.string = getString(entry.tname);

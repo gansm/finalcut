@@ -43,7 +43,7 @@ namespace finalcut
 {
 
 // static class attributes
-bool       FTermXTerminal::mouse_support{false};
+bool FTermXTerminal::mouse_support{false};
 
 
 //----------------------------------------------------------------------

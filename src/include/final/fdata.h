@@ -165,9 +165,6 @@ class FData : public FDataAccess
       , value_ref{value}
     { }
 
-    // Destructor
-    ~FData() noexcept override = default;
-
     FData (const FData& d)  // Copy constructor
       : value{d.value}
       , value_ref{d.isInitializedCopy() ? std::ref(value) : d.value_ref}
