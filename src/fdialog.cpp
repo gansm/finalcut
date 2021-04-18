@@ -766,8 +766,11 @@ void FDialog::onWindowLowered (FEvent*)
   if ( getWindowList()->empty() )
     return;
 
-  for (auto&& win : *getWindowList())
+  for (auto&& window : *getWindowList())
+  {
+    const auto win = static_cast<FWidget*>(window);
     putArea (win->getTermPos(), win->getVWin());
+  }
 }
 
 
@@ -1216,8 +1219,10 @@ void FDialog::restoreOverlaidWindows()
 
   bool overlaid{false};
 
-  for (auto&& win : *getWindowList())
+  for (auto&& window : *getWindowList())
   {
+    const auto win = static_cast<FWidget*>(window);
+
     if ( overlaid )
       putArea (win->getTermPos(), win->getVWin());
 

@@ -54,7 +54,6 @@ FStatusBar*           FWidget::statusbar{nullptr};
 FMenuBar*             FWidget::menubar{nullptr};
 FWidget*              FWidget::show_root_widget{nullptr};
 FWidget*              FWidget::redraw_root_widget{nullptr};
-FWidget::FWidgetList* FWidget::window_list{nullptr};
 FWidget::FWidgetList* FWidget::dialog_list{nullptr};
 FWidget::FWidgetList* FWidget::always_on_top_list{nullptr};
 FWidget::FWidgetList* FWidget::close_widget{nullptr};
@@ -665,15 +664,16 @@ bool FWidget::setCursorPos (const FPoint& pos)
 
   const auto& area = getPrintArea();
 
-  if ( area->widget )
+  if ( area->hasOwner() )
   {
-    int woffsetX = getTermX() - area->widget->getTermX();
-    int woffsetY = getTermY() - area->widget->getTermY();
+    const auto object = area->getOwner<FWidget*>();
+    int woffsetX = getTermX() - object->getTermX();
+    int woffsetY = getTermY() - object->getTermY();
 
     if ( isChildPrintArea() )
     {
-      woffsetX += (1 - area->widget->getLeftPadding());
-      woffsetY += (1 - area->widget->getTopPadding());
+      woffsetX += (1 - object->getLeftPadding());
+      woffsetY += (1 - object->getTopPadding());
     }
 
     bool visible = ! isCursorHideable() || flags.visible_cursor;
@@ -959,7 +959,7 @@ void FWidget::show()
 {
   // Make the widget visible and draw it
 
-  if ( ! isVisible() || FApplication::isQuit() )
+  if ( ! isVisible() || isShown() || FApplication::isQuit() )
     return;
 
   // Initialize desktop on first call
@@ -1352,10 +1352,12 @@ void FWidget::adjustSizeGlobal()
     return;
   }
 
-  if ( window_list && ! window_list->empty() )
+  adjustSize();  // Root widget / FApplication object
+
+  if ( getWindowList() && ! getWindowList()->empty() )
   {
-    for (auto&& window : *window_list)
-      window->adjustSize();
+    for (auto&& window : *getWindowList())
+      static_cast<FWidget*>(window)->adjustSize();
   }
 }
 
@@ -1749,7 +1751,6 @@ void FWidget::initRootWidget()
   try
   {
     // Initialize widget lists
-    window_list        = new FWidgetList();
     dialog_list        = new FWidgetList();
     always_on_top_list = new FWidgetList();
     close_widget       = new FWidgetList();
@@ -1812,12 +1813,6 @@ void FWidget::finish()
   {
     delete always_on_top_list;
     always_on_top_list = nullptr;
-  }
-
-  if ( window_list )
-  {
-    delete window_list;
-    window_list = nullptr;
   }
 }
 
@@ -1946,7 +1941,7 @@ void FWidget::setWindowFocus (bool enable)
   if ( ! window->isWindowActive() )
   {
     bool has_raised = window->raiseWindow();
-    FWindow::setActiveWindow(window);
+    window->setActiveWindow(window);
 
     if ( has_raised && window->isVisible() && window->isShown() )
       window->redraw();
@@ -2012,18 +2007,20 @@ void FWidget::drawWindows() const
   default_char.attr.byte[0] = 0;
   default_char.attr.byte[1] = 0;
 
-  if ( ! window_list || window_list->empty() )
+  if ( ! getWindowList() || getWindowList()->empty() )
     return;
 
-  for (auto&& window : *window_list)
+  for (auto&& window : *getWindowList())
   {
-    if ( window->isShown() )
+    const auto win = static_cast<FWidget*>(window);
+
+    if ( win->isShown() )
     {
-      auto v_win = window->getVWin();
+      auto v_win = win->getVWin();
       const int w = v_win->width  + v_win->right_shadow;
       const int h = v_win->height + v_win->bottom_shadow;
       std::fill_n (v_win->data, w * h, default_char);
-      window->redraw();
+      win->redraw();
     }
   }
 }

@@ -457,28 +457,14 @@ bool FTermDetection::get256colorEnvString()
   color_env.string7 = std::getenv("COLORFGBG");
   color_env.string7 = std::getenv("KITTY_WINDOW_ID");
 
-  if ( color_env.string1 != nullptr )
-    return true;
-
-  if ( color_env.string2 != nullptr )
-    return true;
-
-  if ( color_env.string3 != nullptr )
-    return true;
-
-  if ( color_env.string4 != nullptr )
-    return true;
-
-  if ( color_env.string5 != nullptr )
-    return true;
-
-  if ( color_env.string6 != nullptr )
-    return true;
-
-  if ( color_env.string7 != nullptr )
-    return true;
-
-  if ( color_env.string8 != nullptr )
+  if ( color_env.string1 != nullptr
+    || color_env.string2 != nullptr
+    || color_env.string3 != nullptr
+    || color_env.string4 != nullptr
+    || color_env.string5 != nullptr
+    || color_env.string6 != nullptr
+    || color_env.string7 != nullptr
+    || color_env.string8 != nullptr )
     return true;
 
   return false;

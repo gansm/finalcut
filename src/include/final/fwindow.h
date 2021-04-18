@@ -84,8 +84,10 @@ class FWindow : public FWidget
 
     // Accessors
     FString             getClassName() const override;
-    static FWindow*     getWindowWidget (FWidget*);
-    static int          getWindowLayer (FWidget*);
+    template<typename WidgetT>
+    static FWindow*     getWindowWidget (WidgetT*);
+    template<typename WidgetT>
+    static int          getWindowLayer (WidgetT*);
     FWidget*            getWindowFocusWidget() const;
 
     // Mutators
@@ -159,6 +161,8 @@ class FWindow : public FWidget
     // Methods
     static void         deleteFromAlwaysOnTopList (const FWidget*);
     static void         processAlwaysOnTop();
+    static FWindow*     getWindowWidgetImpl (FWidget*);
+    static int          getWindowLayerImpl (FWidget*);
 
     // Data members
     FWidget*            win_focus_widget{nullptr};
@@ -177,6 +181,21 @@ void closeDropDown (const FWidget*, const FPoint&);
 //----------------------------------------------------------------------
 inline FString FWindow::getClassName() const
 { return "FWindow"; }
+
+//----------------------------------------------------------------------
+
+template<typename WidgetT>
+inline FWindow* FWindow::getWindowWidget (WidgetT* obj)
+{
+  return getWindowWidgetImpl (static_cast<FWidget*>(obj));
+}
+
+//----------------------------------------------------------------------
+template<typename WidgetT>
+inline int FWindow::getWindowLayer (WidgetT* obj)
+{
+  return getWindowLayerImpl (static_cast<FWidget*>(obj));
+}
 
 //----------------------------------------------------------------------
 inline bool FWindow::unsetWindowWidget()

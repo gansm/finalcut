@@ -58,6 +58,7 @@
 #include <vector>
 
 #include "final/fc.h"
+#include "final/fdata.h"
 #include "final/fstringstream.h"
 #include "final/fterm.h"
 
@@ -79,7 +80,7 @@ class FTerm;
 class FTermBuffer;
 class FTermDebugData;
 class FStyle;
-class FWidget;
+
 
 //----------------------------------------------------------------------
 // class FVTerm
@@ -102,6 +103,7 @@ class FVTerm
     using FPreprocessingHandler = void (FVTerm::*)();
     using FPreprocessingFunction = std::function<void()>;
     using FPreprocessing = std::vector<std::unique_ptr<FVTermPreprocessing>>;
+    using FVTermList = std::vector<FVTerm*>;
 
     // Enumerations
     enum class CoveredState
@@ -149,6 +151,7 @@ class FVTerm
     const FTermArea*      getVWin() const;
     FPoint                getPrintCursor();
     static FChar          getAttribute();
+    static FVTermList*    getWindowList();
     FTerm&                getFTerm() const;
 
     // Mutators
@@ -278,6 +281,7 @@ class FVTerm
     static void           getArea (const FRect&, const FTermArea*);
     void                  putArea (const FTermArea*) const;
     static void           putArea (const FPoint&, const FTermArea*);
+    static int            getLayer (FVTerm*);
     void                  scrollAreaForward (FTermArea*) const;
     void                  scrollAreaReverse (FTermArea*) const;
     void                  clearArea (FTermArea*, wchar_t = L' ') const;
@@ -438,16 +442,17 @@ class FVTerm
     FTermArea*                    child_print_area{nullptr};  // print area for children
     FTermArea*                    vwin{nullptr};              // virtual window
     std::shared_ptr<FTerm>        fterm{};
-    std::shared_ptr<FPoint>       term_pos{};  // terminal cursor position
+    std::shared_ptr<FPoint>       term_pos{};     // terminal cursor position
     std::shared_ptr<OutputBuffer> output_buffer{};
-    static const FVTerm*          init_object;  // Global FVTerm object
-    static FTermArea*             vterm;        // virtual terminal
-    static FTermArea*             vdesktop;     // virtual desktop
-    static FTermArea*             active_area;  // active area
+    std::shared_ptr<FVTermList>   window_list{};  // List of all window owner
+    static const FVTerm*          init_object;    // Global FVTerm object
+    static FTermArea*             vterm;          // virtual terminal
+    static FTermArea*             vdesktop;       // virtual desktop
+    static FTermArea*             active_area;    // active area
     static FChar                  term_attribute;
     static FChar                  next_attribute;
-    static FChar                  s_ch;      // shadow character
-    static FChar                  i_ch;      // inherit background character
+    static FChar                  s_ch;  // shadow character
+    static FChar                  i_ch;  // inherit background character
     static timeval                time_last_flush;
     static timeval                last_term_size_check;
     static bool                   draw_completed;
@@ -473,6 +478,9 @@ class FVTerm
 
 struct FVTerm::FTermArea  // define virtual terminal character properties
 {
+  // Using-declaration
+  using FDataAccessPtr = std::shared_ptr<FDataAccess>;
+
   // Constructor
   FTermArea() = default;
 
@@ -485,18 +493,35 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   // Disable copy assignment operator (=)
   FTermArea& operator = (const FTermArea&) = delete;
 
+  template <typename T>
+  clean_fdata_t<T>& getOwner() const
+  {
+    return static_cast<FData<clean_fdata_t<T>>&>(*owner).get();
+  }
+
+  template <typename T>
+  void setOwner (T&& obj)
+  {
+    owner.reset(makeFData(std::forward<T>(obj)));
+  }
+
+  bool hasOwner() const
+  {
+    return owner.get() != nullptr;
+  }
+
   // Data members
-  int offset_left{0};        // Distance from left terminal side
-  int offset_top{0};         // Distance from top of the terminal
-  int width{-1};             // Window width
-  int height{-1};            // Window height
-  int right_shadow{0};       // Right window shadow
-  int bottom_shadow{0};      // Bottom window shadow
-  int cursor_x{0};           // X-position for the next write operation
-  int cursor_y{0};           // Y-position for the next write operation
-  int input_cursor_x{-1};    // X-position input cursor
-  int input_cursor_y{-1};    // Y-position input cursor
-  FWidget* widget{nullptr};  // Widget that owns this FTermArea
+  int offset_left{0};             // Distance from left terminal side
+  int offset_top{0};              // Distance from top of the terminal
+  int width{-1};                  // Window width
+  int height{-1};                 // Window height
+  int right_shadow{0};            // Right window shadow
+  int bottom_shadow{0};           // Bottom window shadow
+  int cursor_x{0};                // X-position for the next write operation
+  int cursor_y{0};                // Y-position for the next write operation
+  int input_cursor_x{-1};         // X-position input cursor
+  int input_cursor_y{-1};         // Y-position input cursor
+  FDataAccessPtr owner{nullptr};  // Object that owns this FTermArea
   FPreprocessing preproc_list{};
   FLineChanges* changes{nullptr};
   FChar* data{nullptr};      // FChar data of the drawing area
@@ -616,6 +641,14 @@ inline const FVTerm::FTermArea* FVTerm::getVWin() const
 //----------------------------------------------------------------------
 inline FChar FVTerm::getAttribute()
 { return next_attribute; }
+
+//----------------------------------------------------------------------
+inline FVTerm::FVTermList* FVTerm::getWindowList()
+{
+  return (init_object && init_object->window_list)
+        ? init_object->window_list.get()
+        : nullptr;
+}
 
 //----------------------------------------------------------------------
 inline FTerm& FVTerm::getFTerm() const

@@ -1,3 +1,8 @@
+2021-04-18 Markus Gans  <guru.mail@muenster.de>
+	* Decoupling the FWidget and FWindow classes from FVTerm
+	* Avoid redrawing widgets when show() is called multiple times
+	* Readjustment of the root widget when the terminal size is changed
+
 2021-04-11 Markus Gans  <guru.mail@muenster.de>
 	* Better support for kitty terminals
 

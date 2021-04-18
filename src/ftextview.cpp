@@ -526,18 +526,15 @@ void FTextView::adjustSize()
   hbar->setValue (xoffset);
   hbar->resize();
 
-  if ( isShown() )
-  {
-    if ( isHorizontallyScrollable() )
-      hbar->show();
-    else
-      hbar->hide();
+  if ( isHorizontallyScrollable() )
+    hbar->show();
+  else
+    hbar->hide();
 
-    if ( isVerticallyScrollable() )
-      vbar->show();
-    else
-      vbar->hide();
-  }
+  if ( isVerticallyScrollable() )
+    vbar->show();
+  else
+    vbar->hide();
 }
 
 

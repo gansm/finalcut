@@ -638,11 +638,8 @@ void FScrollView::adjustSize()
   vbar->setValue (yoffset);
   vbar->resize();
 
-  if ( isShown() )
-  {
-    setHorizontalScrollBarVisibility();
-    setVerticalScrollBarVisibility();
-  }
+  setHorizontalScrollBarVisibility();
+  setVerticalScrollBarVisibility();
 }
 
 //----------------------------------------------------------------------

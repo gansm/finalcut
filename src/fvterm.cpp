@@ -48,8 +48,6 @@
 #include "final/ftermcap.h"
 #include "final/ftypes.h"
 #include "final/fvterm.h"
-#include "final/fwidget.h"
-#include "final/fwindow.h"
 
 namespace finalcut
 {
@@ -96,6 +94,7 @@ FVTerm::FVTerm()
     fterm = std::shared_ptr<FTerm>(init_object->fterm);
     term_pos = std::shared_ptr<FPoint>(init_object->term_pos);
     output_buffer = std::shared_ptr<OutputBuffer>(init_object->output_buffer);
+    window_list = std::shared_ptr<FVTermList>(init_object->window_list);
   }
 }
 
@@ -651,7 +650,7 @@ void FVTerm::createArea ( const FRect& box
     return;
   }
 
-  area->widget = reinterpret_cast<FWidget*>(this);
+  area->setOwner<FVTerm*>(this);
   resizeArea (box, shadow, area);
 }
 
@@ -1083,6 +1082,28 @@ void FVTerm::putArea (const FPoint& pos, const FTermArea* area)
 }
 
 //----------------------------------------------------------------------
+int FVTerm::getLayer (FVTerm* obj)
+{
+  // returns the layer from the FVTerm object
+
+  if ( ! getWindowList() || getWindowList()->empty() )
+    return -1;
+
+  auto iter = getWindowList()->begin();
+  const auto end = getWindowList()->end();
+
+  while ( iter != end )
+  {
+    if ( *iter == obj )
+      break;
+
+    ++iter;
+  }
+
+  return int(std::distance(getWindowList()->begin(), iter) + 1);
+}
+
+//----------------------------------------------------------------------
 void FVTerm::scrollAreaForward (FTermArea* area) const
 {
   // Scrolls the entire area up line down
@@ -1389,11 +1410,11 @@ FVTerm::CoveredState FVTerm::isCovered ( const FPoint& pos
 
   auto is_covered = CoveredState::None;
 
-  if ( FWidget::getWindowList() && ! FWidget::getWindowList()->empty() )
+  if ( getWindowList() && ! getWindowList()->empty() )
   {
     bool found{ area == vdesktop };
 
-    for (auto& win_obj : *FWidget::getWindowList())
+    for (auto& win_obj : *getWindowList())
     {
       const auto& win = win_obj->getVWin();
 
@@ -1590,13 +1611,10 @@ void FVTerm::updateVTerm() const
     vdesktop->has_changes = false;
   }
 
-  const FWidget* widget = vterm->widget;
-
-  if ( ! widget || ! widget->getWindowList()
-    || widget->getWindowList()->empty() )
+  if ( ! getWindowList() || getWindowList()->empty() )
     return;
 
-  for (auto&& window : *(widget->getWindowList()))
+  for (auto&& window : *getWindowList())
   {
     auto v_win = window->getVWin();
 
@@ -1686,10 +1704,10 @@ FChar FVTerm::generateCharacter (const FPoint& pos)
   const int y = pos.getY();
   auto sc = &vdesktop->data[y * vdesktop->width + x];  // shown character
 
-  if ( ! FWidget::getWindowList() || FWidget::getWindowList()->empty() )
+  if ( ! getWindowList() || getWindowList()->empty() )
     return *sc;
 
-  for (auto& win_obj : *FWidget::getWindowList())
+  for (auto& win_obj : *getWindowList())
   {
     const auto& win = win_obj->getVWin();
 
@@ -1767,24 +1785,26 @@ FChar FVTerm::getCharacter ( CharacterType char_type
 
   auto cc = &vdesktop->data[yy * vdesktop->width + xx];  // covered character
 
-  if ( ! area || ! FWidget::getWindowList() || FWidget::getWindowList()->empty() )
+  if ( ! area || ! getWindowList() || getWindowList()->empty() )
     return *cc;
 
   // Get the window layer of this widget object
-  const int layer = FWindow::getWindowLayer(area->widget);
+  const auto has_an_owner = area->hasOwner();
+  const auto area_owner = area->getOwner<FVTerm*>();
+  const int layer = has_an_owner ? getLayer(area_owner) : 0;
 
-  for (auto&& win_obj : *FWidget::getWindowList())
+  for (auto&& win_obj : *getWindowList())
   {
     bool significant_char{false};
 
     // char_type can be "overlapped_character"
     // or "covered_character"
     if ( char_type == CharacterType::Covered )
-      significant_char = bool(layer >= FWindow::getWindowLayer(win_obj));
+      significant_char = bool(layer >= getLayer(win_obj));
     else
-      significant_char = bool(layer < FWindow::getWindowLayer(win_obj));
+      significant_char = bool(layer < getLayer(win_obj));
 
-    if ( area->widget && area->widget != win_obj && significant_char )
+    if ( has_an_owner && area_owner != win_obj && significant_char )
     {
       const auto& win = win_obj->getVWin();
 
@@ -1832,6 +1852,7 @@ void FVTerm::init()
     fterm         = std::make_shared<FTerm>();
     term_pos      = std::make_shared<FPoint>(-1, -1);
     output_buffer = std::make_shared<OutputBuffer>();
+    window_list   = std::make_shared<FVTermList>();
   }
   catch (const std::bad_alloc&)
   {

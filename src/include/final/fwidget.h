@@ -183,7 +183,6 @@ class FWidget : public FVTerm, public FObject
     static FWidget*&         getClickedWidget();
     static FWidget*&         getOpenMenu();
     static FWidget*&         getMoveSizeWidget();
-    static FWidgetList*&     getWindowList();
     static FMenuBar*         getMenuBar();
     static FStatusBar*       getStatusBar();
     static auto              getColorTheme() -> std::shared_ptr<FWidgetColors>&;
@@ -480,7 +479,6 @@ class FWidget : public FVTerm, public FObject
     static FWidget*          move_size_widget;
     static FWidget*          show_root_widget;
     static FWidget*          redraw_root_widget;
-    static FWidgetList*      window_list;
     static FWidgetList*      dialog_list;
     static FWidgetList*      always_on_top_list;
     static FWidgetList*      close_widget;
@@ -554,10 +552,6 @@ inline FWidget*& FWidget::getOpenMenu()
 //----------------------------------------------------------------------
 inline FWidget*& FWidget::getMoveSizeWidget()
 { return move_size_widget; }
-
-//----------------------------------------------------------------------
-inline FWidget::FWidgetList*& FWidget::getWindowList()
-{ return window_list; }
 
 //----------------------------------------------------------------------
 inline FMenuBar* FWidget::getMenuBar()
