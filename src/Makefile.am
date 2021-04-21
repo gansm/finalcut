@@ -2,7 +2,7 @@
 # Makefile.am  -  FINAL CUT library
 #----------------------------------------------------------------------
 
-AM_CPPFLAGS = -Iinclude -Wall -Werror -DCOMPILE_FINAL_CUT -std=c++11
+AM_CPPFLAGS = -I$(top_srcdir)/src/include -Wall -Werror -DCOMPILE_FINAL_CUT -std=c++11
 
 SUBDIRS = . 
 
@@ -79,7 +79,7 @@ libfinal_la_SOURCES = \
 	fwidget_functions.cpp \
 	fobject.cpp
 
-libfinal_la_LDFLAGS = -version-info @SO_VERSION@
+libfinal_la_LDFLAGS = -no-undefined -version-info @SO_VERSION@
 
 finalcutincludedir = $(includedir)/final
 

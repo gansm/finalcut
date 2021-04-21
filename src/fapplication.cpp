@@ -1247,9 +1247,10 @@ FWidget* FApplication::processParameters (const Args& args)
 //----------------------------------------------------------------------
 void FApplication::processResizeEvent() const
 {
-  if ( ! FTerm::hasChangedTermSize() )
+  if ( ! FTerm::hasChangedTermSize() )  // A SIGWINCH signal was received
     return;
 
+  FTerm::detectTermSize();  // Detect and save the current terminal size
   const auto& mouse = FTerm::getFMouseControl();
   mouse->setMaxWidth (uInt16(getDesktopWidth()));
   mouse->setMaxHeight (uInt16(getDesktopHeight()));

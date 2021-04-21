@@ -666,14 +666,14 @@ bool FWidget::setCursorPos (const FPoint& pos)
 
   if ( area->hasOwner() )
   {
-    const auto object = area->getOwner<FWidget*>();
-    int woffsetX = getTermX() - object->getTermX();
-    int woffsetY = getTermY() - object->getTermY();
+    const auto area_owner = area->getOwner<FWidget*>();
+    int woffsetX = getTermX() - area_owner->getTermX();
+    int woffsetY = getTermY() - area_owner->getTermY();
 
     if ( isChildPrintArea() )
     {
-      woffsetX += (1 - object->getLeftPadding());
-      woffsetY += (1 - object->getTopPadding());
+      woffsetX += (1 - area_owner->getLeftPadding());
+      woffsetY += (1 - area_owner->getTopPadding());
     }
 
     bool visible = ! isCursorHideable() || flags.visible_cursor;
@@ -1941,7 +1941,7 @@ void FWidget::setWindowFocus (bool enable)
   if ( ! window->isWindowActive() )
   {
     bool has_raised = window->raiseWindow();
-    window->setActiveWindow(window);
+    FWindow::setActiveWindow(window);
 
     if ( has_raised && window->isVisible() && window->isShown() )
       window->redraw();

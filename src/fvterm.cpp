@@ -290,7 +290,6 @@ bool FVTerm::updateTerminal() const
 
   std::size_t changedlines = 0;
 
-
   for (uInt y{0}; y < uInt(vterm->height); y++)
   {
     if ( updateTerminalLine(y) )
@@ -1082,7 +1081,7 @@ void FVTerm::putArea (const FPoint& pos, const FTermArea* area)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::getLayer (FVTerm* obj)
+int FVTerm::getLayer (const FVTerm* obj)
 {
   // returns the layer from the FVTerm object
 
@@ -2895,7 +2894,6 @@ inline bool FVTerm::isTermSizeChanged() const
     return false;
 
   FObject::getCurrentTime (&last_term_size_check);
-
   const auto& data = FTerm::getFTermData();
 
   if ( ! data )

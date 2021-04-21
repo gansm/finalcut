@@ -857,7 +857,7 @@ int FWindow::getWindowLayerImpl (FWidget* obj)
 {
   // returns the window layer from the widget obj
 
-  FWidget* window;
+  const FWidget* window;
 
   if ( ! obj->isWindowWidget() )
   {

@@ -103,7 +103,7 @@
 #include <fcntl.h>
 #include <langinfo.h>
 
-#if F_HAVE_GETTTYNAM && F_HAVE_TTYENT_H
+#if defined(F_HAVE_GETTTYNAM) && defined(F_HAVE_TTYENT_H)
   #include <ttyent.h>
 #endif
 

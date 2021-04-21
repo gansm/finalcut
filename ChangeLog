@@ -1,3 +1,6 @@
+2021-04-21 Markus Gans  <guru.mail@muenster.de>
+	* Fixes the detection of the terminal size after a SIGWINCH signal
+
 2021-04-18 Markus Gans  <guru.mail@muenster.de>
 	* Decoupling the FWidget and FWindow classes from FVTerm
 	* Avoid redrawing widgets when show() is called multiple times

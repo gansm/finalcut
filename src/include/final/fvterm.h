@@ -281,7 +281,7 @@ class FVTerm
     static void           getArea (const FRect&, const FTermArea*);
     void                  putArea (const FTermArea*) const;
     static void           putArea (const FPoint&, const FTermArea*);
-    static int            getLayer (FVTerm*);
+    static int            getLayer (const FVTerm*);
     void                  scrollAreaForward (FTermArea*) const;
     void                  scrollAreaReverse (FTermArea*) const;
     void                  clearArea (FTermArea*, wchar_t = L' ') const;

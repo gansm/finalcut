@@ -471,9 +471,7 @@ void FKeyboard::parseKeyBuffer()
     }
 
     // Read the rest from the fifo buffer
-    while ( ! isKeypressTimeout()
-         && fifo_offset > 0
-         && fkey != FKey::Incomplete )
+    while ( fifo_offset > 0 && fkey != FKey::Incomplete )
     {
       fkey = parseKeyString();
       fkey = keyCorrection(fkey);
