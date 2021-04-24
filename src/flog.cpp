@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -43,7 +43,7 @@ FLog& FLog::operator << (LogLevel l)
 {
   using std::placeholders::_1;
   sync();
-  std::lock_guard<std::mutex> lock_guard(mut);
+  std::lock_guard<std::mutex> lock_guard(current_log_mutex);
 
   switch ( l )
   {
@@ -74,7 +74,6 @@ int FLog::sync()
 {
   if ( ! str().empty() )
   {
-    std::lock_guard<std::mutex> lock_guard(mut);
     current_log (str());
     str("");
   }

@@ -562,13 +562,6 @@ inline FStatusBar* FWidget::getStatusBar()
 { return statusbar; }
 
 //----------------------------------------------------------------------
-inline auto FWidget::getColorTheme() -> std::shared_ptr<FWidgetColors>&
-{
-  static const auto& color_theme = make_unique<std::shared_ptr<FWidgetColors>>();
-  return *color_theme;
-}
-
-//----------------------------------------------------------------------
 inline const FWidget::FAcceleratorList& FWidget::getAcceleratorList() const
 { return accelerator_list; }
 

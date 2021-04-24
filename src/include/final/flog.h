@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -102,14 +102,14 @@ class FLog : public std::stringbuf
     LogLevel&         setLevel();
     const LineEnding& getEnding();
     LineEnding&       setEnding();
-    std::mutex&       getMutex();
 
   private:
     // Data member
     LogLevel     level{LogLevel::Info};
     LineEnding   end_of_line{LineEnding::CRLF};
-    std::mutex   mut{};
     FLogPrint    current_log{std::bind(&FLog::info, this, std::placeholders::_1)};
+    std::mutex   current_log_mutex{};
+    std::mutex   stream_mutex{};
     std::ostream stream{this};
 
     // Friend Non-member operator functions
@@ -121,7 +121,7 @@ class FLog : public std::stringbuf
 template <typename T>
 inline FLog& FLog::operator << (const T& s)
 {
-  std::lock_guard<std::mutex> lock_guard(mut);
+  std::lock_guard<std::mutex> lock_guard(stream_mutex);
   stream << s;
   return *this;
 }
@@ -129,7 +129,7 @@ inline FLog& FLog::operator << (const T& s)
 //----------------------------------------------------------------------
 inline FLog& FLog::operator << (IOManip pf)
 {
-  std::lock_guard<std::mutex> lock_guard(mut);
+  std::lock_guard<std::mutex> lock_guard(stream_mutex);
   pf(stream);
   return *this;
 }
@@ -153,7 +153,6 @@ inline FLog::LogLevel& FLog::setLevel()
 //----------------------------------------------------------------------
 inline const FLog::LineEnding& FLog::getEnding()
 {
-  std::lock_guard<std::mutex> lock_guard(mut);
   return end_of_line;
 }
 
@@ -162,10 +161,6 @@ inline FLog::LineEnding& FLog::setEnding()
 {
   return end_of_line;
 }
-
-//----------------------------------------------------------------------
-inline std::mutex& FLog::getMutex()
-{ return mut; }
 
 }  // namespace finalcut
 

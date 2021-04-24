@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -92,6 +92,8 @@ class FLogger : public FLog
 
     // Data member
     bool         timestamp{false};
+    std::mutex   print_mutex{};
+    std::mutex   output_mutex{};
     std::ostream output{std::cerr.rdbuf()};
 };
 
@@ -103,7 +105,7 @@ inline FString FLogger::getClassName() const
 //----------------------------------------------------------------------
 inline void FLogger::info (const std::string& msg)
 {
-  std::lock_guard<std::mutex> lock_guard(getMutex());
+  std::lock_guard<std::mutex> lock_guard(print_mutex);
   setLevel() = LogLevel::Info;
   printLogLine (msg);
 }
@@ -111,7 +113,7 @@ inline void FLogger::info (const std::string& msg)
 //----------------------------------------------------------------------
 inline void FLogger::warn (const std::string& msg)
 {
-  std::lock_guard<std::mutex> lock_guard(getMutex());
+  std::lock_guard<std::mutex> lock_guard(print_mutex);
   setLevel() = LogLevel::Warn;
   printLogLine (msg);
 }
@@ -119,7 +121,7 @@ inline void FLogger::warn (const std::string& msg)
 //----------------------------------------------------------------------
 inline void FLogger::error (const std::string& msg)
 {
-  std::lock_guard<std::mutex> lock_guard(getMutex());
+  std::lock_guard<std::mutex> lock_guard(print_mutex);
   setLevel() = LogLevel::Error;
   printLogLine (msg);
 }
@@ -127,7 +129,7 @@ inline void FLogger::error (const std::string& msg)
 //----------------------------------------------------------------------
 inline void FLogger::debug (const std::string& msg)
 {
-  std::lock_guard<std::mutex> lock_guard(getMutex());
+  std::lock_guard<std::mutex> lock_guard(print_mutex);
   setLevel() = LogLevel::Debug;
   printLogLine (msg);
 }
@@ -135,35 +137,35 @@ inline void FLogger::debug (const std::string& msg)
 //----------------------------------------------------------------------
 inline void FLogger::flush()
 {
-  std::lock_guard<std::mutex> lock_guard(getMutex());
+  std::lock_guard<std::mutex> lock_guard(output_mutex);
   output.flush();
 }
 
 //----------------------------------------------------------------------
 inline void FLogger::setOutputStream (const std::ostream& os)
 {
-  std::lock_guard<std::mutex> lock_guard(getMutex());
+  std::lock_guard<std::mutex> lock_guard(output_mutex);
   output.rdbuf(os.rdbuf());
 }
 
 //----------------------------------------------------------------------
 inline void FLogger::setLineEnding (LineEnding eol)
 {
-  std::lock_guard<std::mutex> lock_guard(getMutex());
+  std::lock_guard<std::mutex> lock_guard(print_mutex);
   setEnding() = eol;
 }
 
 //----------------------------------------------------------------------
 inline void FLogger::enableTimestamp()
 {
-  std::lock_guard<std::mutex> lock_guard(getMutex());
+  std::lock_guard<std::mutex> lock_guard(print_mutex);
   timestamp = true;
 }
 
 //----------------------------------------------------------------------
 inline void FLogger::disableTimestamp()
 {
-  std::lock_guard<std::mutex> lock_guard(getMutex());
+  std::lock_guard<std::mutex> lock_guard(print_mutex);
   timestamp = false;
 }
 

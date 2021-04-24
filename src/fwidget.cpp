@@ -175,6 +175,13 @@ FWidget* FWidget::getParentWidget() const
 }
 
 //----------------------------------------------------------------------
+auto FWidget::getColorTheme() -> std::shared_ptr<FWidgetColors>&
+{
+  static const auto& color_theme = make_unique<std::shared_ptr<FWidgetColors>>();
+  return *color_theme;
+}
+
+//----------------------------------------------------------------------
 FWidget* FWidget::getFirstFocusableWidget (FObjectList list)
 {
   if ( list.empty() )
@@ -982,10 +989,10 @@ void FWidget::show()
   {
     for (auto&& child : getChildren())
     {
-      auto widget = static_cast<FWidget*>(child);
+      auto child_widget = static_cast<FWidget*>(child);
 
-      if ( child->isWidget() && ! widget->flags.hidden )
-        widget->show();
+      if ( child->isWidget() && ! child_widget->flags.hidden )
+        child_widget->show();
     }
   }
 

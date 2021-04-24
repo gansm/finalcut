@@ -69,8 +69,6 @@ std::string FLogger::getTimeString() const
 //----------------------------------------------------------------------
 std::string FLogger::getEOL()
 {
-  std::lock_guard<std::mutex> lock_guard(getMutex());
-
   if ( getEnding() == LineEnding::LF )
     return "\n";
   else if ( getEnding() == LineEnding::CR )
@@ -86,8 +84,6 @@ void FLogger::printLogLine (const std::string& msg)
 {
   const std::string& log_level = [this] ()
   {
-    std::lock_guard<std::mutex> lock_guard(getMutex());
-
     switch ( getLevel() )
     {
       case LogLevel::Info:
@@ -118,6 +114,7 @@ void FLogger::printLogLine (const std::string& msg)
   const std::string& eol = getEOL();
   const std::string replace_str = eol + prefix;
   newlineReplace (message, replace_str);
+  std::lock_guard<std::mutex> lock_guard(output_mutex);
   output << prefix << message << eol;
 }
 

@@ -1,3 +1,6 @@
+2021-04-24 Markus Gans  <guru.mail@muenster.de>
+	* Fixed mutex deadlock in FLogger
+
 2021-04-21 Markus Gans  <guru.mail@muenster.de>
 	* Fixes the detection of the terminal size after a SIGWINCH signal
 
