@@ -1006,18 +1006,7 @@ void FListView::onMouseDown (FMouseEvent* ev)
     return;
   }
 
-  if ( ! hasFocus() )
-  {
-    auto focused_widget = getFocusWidget();
-    setFocus();
-
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
-  }
-
+  setWidgetFocus(this);
   const int mouse_x = ev->getX();
   const int mouse_y = ev->getY();
   first_line_position_before = first_visible_line.getPosition();

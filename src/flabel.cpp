@@ -184,20 +184,7 @@ void FLabel::onMouseDown (FMouseEvent* ev)
     return;
   }
 
-  if ( ! accel_widget->hasFocus() )
-  {
-    // focus the accelerator widget
-    auto focused_widget = getFocusWidget();
-    accel_widget->setFocus();
-
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    accel_widget->redraw();
-
-    if ( getStatusBar() )
-      accel_widget->getStatusBar()->drawMessage();
-  }
+  setWidgetFocus(accel_widget);  // focus the accelerator widget
 }
 
 //----------------------------------------------------------------------
@@ -208,19 +195,9 @@ void FLabel::onAccel (FAccelEvent* ev)
 
   if ( ! accel_widget->hasFocus() )
   {
-    auto focused_widget = ev->focusedWidget();
-
-    if ( focused_widget && focused_widget->isWidget() )
-    {
-      accel_widget->setFocus();
-      focused_widget->redraw();
-      accel_widget->redraw();
-      FFocusEvent in (Event::FocusIn);
-      FApplication::sendEvent(accel_widget, &in);
-
-      if ( getStatusBar() )
-        accel_widget->getStatusBar()->drawMessage();
-    }
+    setWidgetFocus(accel_widget);
+    FFocusEvent in (Event::FocusIn);
+    FApplication::sendEvent(accel_widget, &in);
   }
 
   ev->accept();

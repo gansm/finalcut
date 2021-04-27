@@ -313,8 +313,7 @@ void FListBox::onMouseDown (FMouseEvent* ev)
   if ( ev->getButton() == MouseButton::Right && ! isMultiSelection() )
     return;
 
-  getWidgetFocus();
-
+  setWidgetFocus(this);
   const int yoffset_before = yoffset;
   const std::size_t current_before = current;
   const int mouse_x = ev->getX();
@@ -1102,22 +1101,6 @@ void FListBox::recalculateVerticalBar (std::size_t element_count) const
     else
       vbar->hide();
   }
-}
-
-//----------------------------------------------------------------------
-inline void FListBox::getWidgetFocus()
-{
-  if ( hasFocus() )
-    return;
-
-  auto focused_widget = getFocusWidget();
-  setFocus();
-
-  if ( focused_widget )
-    focused_widget->redraw();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
 }
 
 //----------------------------------------------------------------------

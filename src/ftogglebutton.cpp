@@ -210,19 +210,7 @@ void FToggleButton::onMouseDown (FMouseEvent* ev)
   if ( ev->getButton() != MouseButton::Left )
     return;
 
-  if ( hasFocus() )
-    return;
-
-  auto focused_widget = getFocusWidget();
-  setFocus();
-
-  if ( focused_widget )
-    focused_widget->redraw();
-
-  redraw();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  setWidgetFocus(this);
 }
 
 //----------------------------------------------------------------------

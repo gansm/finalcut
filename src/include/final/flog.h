@@ -100,7 +100,7 @@ class FLog : public std::stringbuf
     int               sync() override;
     const LogLevel&   getLevel() const;
     LogLevel&         setLevel();
-    const LineEnding& getEnding();
+    const LineEnding& getEnding() const;
     LineEnding&       setEnding();
 
   private:
@@ -151,7 +151,7 @@ inline FLog::LogLevel& FLog::setLevel()
 }
 
 //----------------------------------------------------------------------
-inline const FLog::LineEnding& FLog::getEnding()
+inline const FLog::LineEnding& FLog::getEnding() const
 {
   return end_of_line;
 }

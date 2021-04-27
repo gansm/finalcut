@@ -311,7 +311,6 @@ class FListBox : public FWidget
     void                 updateDrawing (bool, bool);
     void                 recalculateHorizontalBar (std::size_t, bool);
     void                 recalculateVerticalBar (std::size_t) const;
-    void                 getWidgetFocus();
     void                 multiSelection (std::size_t);
     void                 multiSelectionUpTo (std::size_t);
     void                 wheelUp (int);

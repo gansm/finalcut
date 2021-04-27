@@ -396,26 +396,15 @@ void FComboBox::onMouseDown (FMouseEvent* ev)
   if ( ev->getButton() != MouseButton::Left )
     return;
 
-  if ( ! hasFocus() )
-  {
-    auto focused_widget = getFocusWidget();
-    setFocus();
-
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    redraw();
-
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
-  }
-
+  setWidgetFocus(this);
   const int mouse_x = ev->getX();
   const int mouse_y = ev->getY();
 
   if ( mouse_x >= int(getWidth()) - nf
     && mouse_x <= int(getWidth()) && mouse_y == 1 )
   {
+    redraw();
+
     if ( list_window.isHidden() )
       showDropDown();
     else
@@ -633,20 +622,7 @@ void FComboBox::cb_inputFieldSwitch()
   }
   else if ( ! is_editable )
   {
-    if ( ! hasFocus() )
-    {
-      auto focused_widget = getFocusWidget();
-      setFocus();
-
-      if ( focused_widget )
-        focused_widget->redraw();
-
-      redraw();
-
-      if ( getStatusBar() )
-        getStatusBar()->drawMessage();
-    }
-
+    setWidgetFocus(this);
     showDropDown();
   }
 }

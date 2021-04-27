@@ -284,18 +284,7 @@ void FButton::onMouseDown (FMouseEvent* ev)
     return;
   }
 
-  if ( ! hasFocus() )
-  {
-    auto focused_widget = getFocusWidget();
-    setFocus();
-
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
-  }
-
+  setWidgetFocus(this);
   const FPoint tPos{ev->getTermPos()};
 
   if ( getTermGeometry().contains(tPos) )

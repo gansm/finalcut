@@ -348,18 +348,7 @@ void FTextView::onMouseDown (FMouseEvent* ev)
   if ( ev->getButton() != MouseButton::Left )
     return;
 
-  if ( ! hasFocus() )
-  {
-    FWidget* focused_widget = getFocusWidget();
-    setFocus();
-
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
-  }
-
+  setWidgetFocus(this);
   auto parent = getParentWidget();
 
   if ( ! parent )
@@ -374,7 +363,6 @@ void FTextView::onMouseDown (FMouseEvent* ev)
     const auto b = ev->getButton();
     const auto& tp = ev->getTermPos();
     const auto& p = parent->termToWidgetPos(tp);
-    parent->setFocus();
     const auto& _ev = \
        std::make_shared<FMouseEvent>(Event::MouseDown, p, tp, b);
     FApplication::sendEvent (parent, _ev.get());
@@ -395,7 +383,6 @@ void FTextView::onMouseUp (FMouseEvent* ev)
       const auto b = ev->getButton();
       const auto& tp = ev->getTermPos();
       const auto& p = parent->termToWidgetPos(tp);
-      parent->setFocus();
       const auto& _ev = \
           std::make_shared<FMouseEvent>(Event::MouseUp, p, tp, b);
       FApplication::sendEvent (parent, _ev.get());
@@ -420,7 +407,6 @@ void FTextView::onMouseMove (FMouseEvent* ev)
       const auto b = ev->getButton();
       const auto& tp = ev->getTermPos();
       const auto& p = parent->termToWidgetPos(tp);
-      parent->setFocus();
       const auto& _ev = \
           std::make_shared<FMouseEvent>(Event::MouseMove, p, tp, b);
       FApplication::sendEvent (parent, _ev.get());

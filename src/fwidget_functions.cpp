@@ -22,6 +22,7 @@
 
 #include "final/fapplication.h"
 #include "final/fcolorpair.h"
+#include "final/fstatusbar.h"
 #include "final/fstyle.h"
 #include "final/fwidget.h"
 #include "final/fwidgetcolors.h"
@@ -140,6 +141,24 @@ void setHotkeyViaString (FWidget* w, const FString& text)
   }
   else
     w->delAccelerator();
+}
+
+//----------------------------------------------------------------------
+void setWidgetFocus (FWidget* widget)
+{
+  if ( ! widget || widget->hasFocus() )
+    return;
+
+  auto focused_widget = FWidget::getFocusWidget();
+  widget->setFocus();
+
+  if ( focused_widget && focused_widget->isWidget() )  // old focused widget
+    focused_widget->redraw();
+
+  widget->redraw();
+
+  if ( FWidget::getStatusBar() )
+    FWidget::getStatusBar()->drawMessage();
 }
 
 //----------------------------------------------------------------------

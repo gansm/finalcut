@@ -419,19 +419,7 @@ void FSpinBox::processChanged() const
 //----------------------------------------------------------------------
 void FSpinBox::forceFocus()
 {
-  if ( hasFocus() )
-    return;
-
-  auto focused_widget = getFocusWidget();
-  setFocus();
-
-  if ( focused_widget )
-    focused_widget->redraw();
-
-  redraw();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  setWidgetFocus(this);
 }
 
 //----------------------------------------------------------------------

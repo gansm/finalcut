@@ -328,20 +328,7 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
   if ( ev->getButton() != MouseButton::Left || isReadOnly() )
     return;
 
-  if ( ! hasFocus() )
-  {
-    auto focused_widget = getFocusWidget();
-    setFocus();
-
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    redraw();
-
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
-  }
-
+  setWidgetFocus(this);
   const int mouse_x = ev->getX();
   const int mouse_y = ev->getY();
   const int xmin = 2 + int(char_width_offset);
@@ -494,21 +481,7 @@ void FLineEdit::onAccel (FAccelEvent* ev)
   if ( ! isEnabled() )
     return;
 
-  if ( ! hasFocus() )
-  {
-    auto focused_widget = ev->focusedWidget();
-
-    if ( focused_widget && focused_widget->isWidget() )
-    {
-      setFocus();
-      focused_widget->redraw();
-      redraw();
-
-      if ( getStatusBar() )
-        getStatusBar()->drawMessage();
-    }
-  }
-
+  setWidgetFocus(this);
   ev->accept();
 }
 
@@ -1116,12 +1089,7 @@ inline wchar_t FLineEdit::characterFilter (const wchar_t c) const
 //----------------------------------------------------------------------
 void FLineEdit::processActivate()
 {
-  if ( ! hasFocus() )
-  {
-    setFocus();
-    redraw();
-  }
-
+  setWidgetFocus(this);
   emitCallback("activate");
 }
 

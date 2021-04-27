@@ -25,6 +25,7 @@
 #include "final/fevent.h"
 #include "final/fscrollbar.h"
 #include "final/fsize.h"
+#include "final/fstatusbar.h"
 #include "final/fwidgetcolors.h"
 
 namespace finalcut
@@ -245,6 +246,8 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
   if ( ev->getButton() != MouseButton::Left
     && ev->getButton() != MouseButton::Middle )
     return;
+
+  setWidgetFocus(getParentWidget());
 
   if ( min == max )
     return;

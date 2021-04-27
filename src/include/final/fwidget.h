@@ -510,6 +510,7 @@ bool          isFocusPrevKey (const FKey);
 FKey          getHotkey (const FString&);
 std::size_t   getHotkeyPos (const FString& src, FString& dest);
 void          setHotkeyViaString (FWidget*, const FString&);
+void          setWidgetFocus (FWidget*);
 void          drawShadow (FWidget*);
 void          drawTransparentShadow (FWidget*);
 void          drawBlockShadow (FWidget*);
