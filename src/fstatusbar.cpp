@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -685,8 +685,14 @@ void FStatusBar::drawActiveKey (FKeyList::const_iterator iter)
   {
     print (item->getText());
     x++;
-    setColor (wc->statusbar_bg, wc->statusbar_active_hotkey_bg);
-    print (UniChar::RightHalfBlock);  // ▌
+
+    if ( FTerm::hasHalfBlockCharacter() )
+    {
+      setColor (wc->statusbar_bg, wc->statusbar_active_hotkey_bg);
+      print (UniChar::RightHalfBlock);  // ▌
+    }
+    else
+      print (' ');
   }
   else
   {

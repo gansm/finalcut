@@ -700,7 +700,7 @@ int FTerm::openConsole()
   int fd = data->getTTYFileDescriptor();
   const auto& termfilename = data->getTermFileName();
 
-  if ( ! termfilename.empty() )
+  if ( termfilename.empty() )
     return 0;
 
   if ( fd >= 0 )  // console is already opened

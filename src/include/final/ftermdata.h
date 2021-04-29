@@ -138,7 +138,7 @@ class FTermData final
     FString            exit_message{};
     Encoding           term_encoding{Encoding::Unknown};
     int                fd_tty{-1};  // Teletype (tty) file descriptor
-                                   // is still undefined
+                                    // is still undefined
 #if DEBUG
     int                framebuffer_bpp{-1};
 #endif

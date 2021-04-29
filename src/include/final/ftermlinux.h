@@ -221,7 +221,7 @@ class FTermLinux final
     void                 shiftCtrlAltKeyCorrection();
     void                 initSpecialCharacter() const;
     sInt16               getFontPos (wchar_t ucs) const;
-    void                 characterFallback (wchar_t, std::vector<wchar_t>) const;
+    void                 characterFallback (wchar_t, const std::vector<wchar_t>&) const;
 
     // Data members
 #if defined(__linux__)

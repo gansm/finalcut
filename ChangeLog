@@ -1,3 +1,6 @@
+2021-04-30 Markus Gans  <guru.mail@muenster.de>
+	* Fixes Linux console bug from February 20, 2021
+
 2021-04-27 Markus Gans  <guru.mail@muenster.de>
 	* Code optimization at widget focus
 

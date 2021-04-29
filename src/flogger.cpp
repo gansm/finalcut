@@ -67,7 +67,7 @@ std::string FLogger::getTimeString() const
 }
 
 //----------------------------------------------------------------------
-std::string FLogger::getEOL()
+std::string FLogger::getEOL() const
 {
   if ( getEnding() == LineEnding::LF )
     return "\n";

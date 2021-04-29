@@ -1132,15 +1132,15 @@ inline void FTermLinux::shiftCtrlAltKeyCorrection()
 inline void FTermLinux::initSpecialCharacter() const
 {
   const auto& fterm_data = FTerm::getFTermData();
-  const auto c1 = wchar_t(UniChar::UpperHalfBlock);
-  const auto c2 = wchar_t(UniChar::LowerHalfBlock);
-  const auto c3 = wchar_t(UniChar::FullBlock);
+  const auto c1 = wchar_t(UniChar::UpperHalfBlock);  // ▀
+  const auto c2 = wchar_t(UniChar::LowerHalfBlock);  // ▄
+  const auto c3 = wchar_t(UniChar::FullBlock);  // █
 
   if ( FTerm::charEncode(c1, Encoding::PC) == FTerm::charEncode(c1, Encoding::ASCII)
     || FTerm::charEncode(c2, Encoding::PC) == FTerm::charEncode(c2, Encoding::ASCII)
     || FTerm::charEncode(c3, Encoding::PC) == FTerm::charEncode(c3, Encoding::ASCII) )
   {
-    fterm_data->supportShadowCharacter (false);
+    fterm_data->supportShadowCharacter (false);  // disable support
   }
 
   const auto c4 = wchar_t(UniChar::RightHalfBlock);
@@ -1149,7 +1149,7 @@ inline void FTermLinux::initSpecialCharacter() const
   if ( FTerm::charEncode(c4, Encoding::PC) == FTerm::charEncode(c4, Encoding::ASCII)
     || FTerm::charEncode(c5, Encoding::PC) == FTerm::charEncode(c5, Encoding::ASCII) )
   {
-    fterm_data->supportHalfBlockCharacter (false);
+    fterm_data->supportHalfBlockCharacter (false);  // disable support
   }
 }
 
@@ -1169,7 +1169,7 @@ sInt16 FTermLinux::getFontPos (wchar_t ucs) const
 
 //----------------------------------------------------------------------
 void FTermLinux::characterFallback ( wchar_t ucs
-                                   , std::vector<wchar_t> fallback ) const
+                                   , const std::vector<wchar_t>& fallback ) const
 {
   constexpr sInt16 NOT_FOUND = -1;
   const auto& fterm_data = FTerm::getFTermData();
