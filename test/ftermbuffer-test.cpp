@@ -42,7 +42,11 @@ class FTermBufferTest : public CPPUNIT_NS::TestFixture
   public:
     FTermBufferTest()
     {
-      std::setlocale (LC_CTYPE, "en_US.UTF-8");
+      auto ret = std::setlocale (LC_CTYPE, "en_US.UTF-8");
+
+      if ( ! ret )
+        ret = std::setlocale (LC_CTYPE, "C.UTF-8");
+
       fwide(stdout, 1);  // Makes stream wide-character oriented
     }
 

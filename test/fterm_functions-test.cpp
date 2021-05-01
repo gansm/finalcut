@@ -43,7 +43,11 @@ class FTermFunctionsTest : public CPPUNIT_NS::TestFixture, test::ConEmu
   public:
     FTermFunctionsTest()
     {
-      std::setlocale (LC_CTYPE, "en_US.UTF-8");
+      auto ret = std::setlocale (LC_CTYPE, "en_US.UTF-8");
+
+      if ( ! ret )
+        ret = std::setlocale (LC_CTYPE, "C.UTF-8");
+
       fwide(stdout, 1);  // Makes stream wide-character oriented
     }
 
@@ -516,7 +520,12 @@ void FTermFunctionsTest::FullWidthHalfWidthTest()
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L'└') == 1 );  // wcwidth(L'└') == -1 (for LC_CTYPE = C)
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L'┌') == 1 );  // wcwidth(L'┌') == -1 (for LC_CTYPE = C)
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L'┘') == 1 );  // wcwidth(L'┘') == -1 (for LC_CTYPE = C)
-  std::setlocale (LC_CTYPE, "en_US.UTF-8");
+
+  auto ret = std::setlocale (LC_CTYPE, "en_US.UTF-8");
+
+  if ( ! ret )
+    ret = std::setlocale (LC_CTYPE, "C.UTF-8");
+
   data->setTermEncoding (finalcut::Encoding::UTF8);
 
   // Column width (FString)

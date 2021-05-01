@@ -397,10 +397,10 @@ void FApplication::init()
 
   // Initialize keyboard
   const auto& keyboard = FTerm::getFKeyboard();
-  auto cmd1 = std::bind(&FApplication::keyPressed, this);
-  auto cmd2 = std::bind(&FApplication::keyReleased, this);
-  auto cmd3 = std::bind(&FApplication::escapeKeyPressed, this);
-  auto cmd4 = std::bind(&FApplication::mouseTracking, this);
+  auto cmd1 = [this] () { this->keyPressed(); };
+  auto cmd2 = [this] () { this->keyReleased(); };
+  auto cmd3 = [this] () { this->escapeKeyPressed(); };
+  auto cmd4 = [this] () { this->mouseTracking(); };
   FKeyboardCommand key_cmd1 (cmd1);
   FKeyboardCommand key_cmd2 (cmd2);
   FKeyboardCommand key_cmd3 (cmd3);
@@ -414,8 +414,7 @@ void FApplication::init()
 
   // Initialize mouse control
   const auto& mouse = FTerm::getFMouseControl();
-  using namespace std::placeholders;
-  auto cmd = std::bind(&FApplication::mouseEvent, this, _1);
+  auto cmd = [this] (const FMouseData& md) { this->mouseEvent(md); };
   FMouseCommand mouse_cmd (cmd);
   mouse->setEventCommand (mouse_cmd);
   // Set stdin number for a gpm-mouse
@@ -484,9 +483,8 @@ inline void FApplication::setLongOptions (std::vector<CmdOption>& long_options)
 //----------------------------------------------------------------------
 inline void FApplication::setCmdOptionsMap (CmdMap& cmd_map)
 {
-  using std::placeholders::_1;
-  auto enc = std::bind(&FApplication::setTerminalEncoding, _1);
-  auto log = std::bind(&FApplication::setLogFile, _1);
+  auto enc = [] (const FString& s) { FApplication::setTerminalEncoding(s); };
+  auto log = [] (const FString& s) { FApplication::setLogFile(s); };
   auto opt = &FApplication::getStartOptions;
 
   // --encoding

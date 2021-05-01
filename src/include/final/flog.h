@@ -107,7 +107,7 @@ class FLog : public std::stringbuf
     // Data member
     LogLevel     level{LogLevel::Info};
     LineEnding   end_of_line{LineEnding::CRLF};
-    FLogPrint    current_log{std::bind(&FLog::info, this, std::placeholders::_1)};
+    FLogPrint    current_log{ [this] (const std::string& s) { info(s); } };
     std::mutex   current_log_mutex{};
     std::mutex   stream_mutex{};
     std::ostream stream{this};
