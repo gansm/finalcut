@@ -35,6 +35,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <atomic>
+#include <mutex>
 #include <unordered_map>
 #include <string>
 
@@ -99,7 +101,7 @@ class FTermData final
     bool               isNewFont() const;
     bool               isVGAFont() const;
     bool               isMonochron() const;
-    bool               hasTermResized() const;
+    bool               hasTermResized();
 
     // Mutators
     void               setTermEncoding (Encoding);
@@ -146,6 +148,8 @@ class FTermData final
     uInt               baudrate{0};
     std::string        termtype{};
     std::string        termfilename{};
+    std::mutex         resize_mutex{};
+    std::atomic<int>   resize_count{0};
     bool               shadow_character{true};
     bool               half_block_character{true};
     bool               cursor_optimisation{true};
@@ -159,7 +163,6 @@ class FTermData final
     bool               new_font{false};
     bool               vga_font{false};
     bool               monochron{false};
-    bool               resize_term{false};
 };
 
 // FTermData inline functions
@@ -270,8 +273,11 @@ inline bool FTermData::isMonochron() const
 { return monochron; }
 
 //----------------------------------------------------------------------
-inline bool FTermData::hasTermResized() const
-{ return resize_term; }
+inline bool FTermData::hasTermResized()
+{
+  std::lock_guard<std::mutex> resize_lock_guard(resize_mutex);
+  return resize_count.load() > 0;
+}
 
 //----------------------------------------------------------------------
 inline void FTermData::setTermEncoding (Encoding enc)
@@ -339,7 +345,14 @@ inline void FTermData::setMonochron (bool mono)
 
 //----------------------------------------------------------------------
 inline void FTermData::setTermResized (bool resize)
-{ resize_term = resize; }
+{
+  std::lock_guard<std::mutex> resize_lock_guard(resize_mutex);
+
+  if ( resize )
+    ++resize_count;
+  else if ( resize_count.load() > 0 )
+    --resize_count;
+}
 
 //----------------------------------------------------------------------
 inline void FTermData::setTermType (const std::string& name)

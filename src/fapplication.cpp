@@ -821,9 +821,9 @@ inline bool FApplication::hasDataInQueue() const
   const auto& keyboard = FTerm::getFKeyboard();
   const auto& mouse = FTerm::getFMouseControl();
 
-  if ( keyboard->hasDataInQueue() )
-    return true;
-  else if ( mouse->hasDataInQueue() )
+  if ( keyboard->hasDataInQueue()
+    || mouse->hasDataInQueue()
+    || FTerm::hasChangedTermSize() )
     return true;
 
   return false;
@@ -832,7 +832,9 @@ inline bool FApplication::hasDataInQueue() const
 //----------------------------------------------------------------------
 void FApplication::queuingKeyboardInput() const
 {
-  if ( quit_now || internal::var::exit_loop )
+  if ( quit_now
+    || internal::var::exit_loop
+    || FTerm::hasChangedTermSize() )
     return;
 
   findKeyboardWidget();
@@ -849,7 +851,10 @@ void FApplication::queuingMouseInput() const
 {
   const auto& mouse = FTerm::getFMouseControl();
 
-  if ( quit_now || internal::var::exit_loop || ! mouse->hasData() )
+  if ( quit_now
+    || internal::var::exit_loop
+    || ! mouse->hasData()
+    || FTerm::hasChangedTermSize() )
     return;
 
   const auto& keyboard = FTerm::getFKeyboard();
@@ -862,7 +867,9 @@ void FApplication::queuingMouseInput() const
 //----------------------------------------------------------------------
 void FApplication::processKeyboardEvent() const
 {
-  if ( quit_now || internal::var::exit_loop )
+  if ( quit_now
+    || internal::var::exit_loop
+    || FTerm::hasChangedTermSize() )
     return;
 
   const auto& keyboard = FTerm::getFKeyboard();
@@ -872,7 +879,9 @@ void FApplication::processKeyboardEvent() const
 //----------------------------------------------------------------------
 void FApplication::processMouseEvent() const
 {
-  if ( quit_now || internal::var::exit_loop )
+  if ( quit_now
+    || internal::var::exit_loop
+    || FTerm::hasChangedTermSize() )
     return;
 
   FTerm::getFMouseControl()->processQueuedInput();

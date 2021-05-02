@@ -1272,18 +1272,9 @@ void FVTerm::forceTerminalUpdate() const
 //----------------------------------------------------------------------
 bool FVTerm::processTerminalUpdate() const
 {
-  const auto& data = FTerm::getFTermData();
-
   // Checks if the resizing of the terminal is not finished
-  if ( data && data->hasTermResized() )
+  if ( FTerm::hasChangedTermSize()  )
     return false;
-
-  // Monitor whether the terminal size has changed
-  if ( isTermSizeChanged() )
-  {
-    raise (SIGWINCH);  // Send SIGWINCH
-    return false;
-  }
 
   // Update data on VTerm
   updateVTerm();

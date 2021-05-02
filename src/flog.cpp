@@ -41,7 +41,6 @@ FLog::~FLog()  // destructor
 //----------------------------------------------------------------------
 FLog& FLog::operator << (LogLevel l)
 {
-  using std::placeholders::_1;
   sync();
   std::lock_guard<std::mutex> lock_guard(current_log_mutex);
 

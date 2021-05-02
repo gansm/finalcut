@@ -123,7 +123,6 @@ else
   AM_CONDITIONAL(CPPUNIT_TEST, [test "1" = "0"])
 fi
 
-
 # code coverage
 AC_ARG_WITH([gcov],
             [AS_HELP_STRING([--with-gcov], [build for code coverage testing])],

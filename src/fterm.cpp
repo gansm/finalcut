@@ -2406,9 +2406,6 @@ void FTerm::terminalSizeChange()
 {
   const auto& data = FTerm::getFTermData();
 
-  if ( data->hasTermResized() )
-    return;
-
   // Initialize a resize event to the root element
   data->setTermResized(true);
 }
