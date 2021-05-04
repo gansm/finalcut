@@ -2058,7 +2058,8 @@ bool FVTerm::clearTerm (wchar_t fillchar) const
   appendAttributes (next_attribute);
 
   if ( ! ( (cl || cd || cb) && (normal || ut) )
-    || fillchar != L' ' )
+    || fillchar != L' '
+    || ! draw_completed )
   {
     return false;
   }

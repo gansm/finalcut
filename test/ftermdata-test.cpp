@@ -258,8 +258,14 @@ void FTermDataTest::dataTest()
   CPPUNIT_ASSERT ( data.isMonochron() == true );
 
   CPPUNIT_ASSERT ( data.hasTermResized() == false );
-  data.setTermResized (true);
+  data.setTermResized (true);  // one signal
   CPPUNIT_ASSERT ( data.hasTermResized() == true );
+  data.setTermResized (true);  // two signals
+  CPPUNIT_ASSERT ( data.hasTermResized() == true );
+  data.setTermResized (false);  // one signal
+  CPPUNIT_ASSERT ( data.hasTermResized() == true );
+  data.setTermResized (false);  // no signal
+  CPPUNIT_ASSERT ( data.hasTermResized() == false );
 }
 
 

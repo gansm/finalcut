@@ -949,7 +949,9 @@ void FWidget::resize()
 
     resizeVTerm (term_geometry.getSize());
     resizeArea (term_geometry, getShadow(), getVirtualDesktop());
+    startDrawing();  // Avoid flickering - no update during adjustment
     adjustSizeGlobal();
+    finishDrawing();
   }
   else
     adjustSize();
