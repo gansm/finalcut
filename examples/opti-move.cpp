@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2020 Markus Gans                                      *
+* Copyright 2016-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -265,7 +265,7 @@ int main (int argc, char* argv[])
   std::cout << "\r" << line << std::flush;
   // Generation of a logger in a shared_ptr via a pointer
   finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
-  const finalcut::FOptiMove& opti_move = *finalcut::FTerm::getFOptiMove();
+  const auto& opti_move = finalcut::FTerm::getFOptiMove();
   finalcut::printDurations(opti_move);
 
   // Waiting for keypress

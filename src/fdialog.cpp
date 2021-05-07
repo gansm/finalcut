@@ -100,7 +100,7 @@ bool FDialog::setModal (bool enable)
   if ( enable )
   {
     setModalDialogCounter()++;
-    FTerm::getFKeyboard()->clearKeyBuffer();
+    FTerm::getFKeyboard().clearKeyBuffer();
   }
   else
     setModalDialogCounter()--;

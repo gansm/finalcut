@@ -246,18 +246,18 @@ void FTermcap::init()
 //----------------------------------------------------------------------
 void FTermcap::termcap()
 {
-  const auto& fterm_data = FTerm::getFTermData();
-  std::vector<std::string> terminals{};
   static constexpr int success = 1;
   static constexpr int uninitialized = -2;
   static char term_buffer[BUF_SIZE]{};
+  std::vector<std::string> terminals{};
   int status = uninitialized;
-  const auto& term_detection = FTerm::getFTermDetection();
-  const bool color256 = term_detection->canDisplay256Colors();
-  baudrate = int(FTerm::getFTermData()->getBaudrate());
+  auto& fterm_data = FTerm::getFTermData();
+  auto& term_detection = FTerm::getFTermDetection();
+  const bool color256 = term_detection.canDisplay256Colors();
+  baudrate = int(fterm_data.getBaudrate());
 
   // Open termcap file
-  const auto& termtype = fterm_data->getTermType();
+  const auto& termtype = fterm_data.getTermType();
   terminals.emplace_back(termtype);         // available terminal type
 
   if ( color256 )                           // 1st fallback if not found
@@ -270,7 +270,7 @@ void FTermcap::termcap()
 
   while ( iter != terminals.end() )
   {
-    fterm_data->setTermType(*iter);
+    fterm_data.setTermType(*iter);
 
     // Open the termcap file + load entry for termtype
 #if defined(__sun) && defined(__SVR4)
@@ -282,7 +282,7 @@ void FTermcap::termcap()
     if ( status == success )
       initialized = true;
 
-    if ( status == success || ! term_detection->hasTerminalDetection() )
+    if ( status == success || ! term_detection.hasTerminalDetection() )
       break;
 
     ++iter;
@@ -301,8 +301,8 @@ void FTermcap::termcapError (int status)
 
   if ( status == no_entry || status == uninitialized )
   {
-    const auto& fterm_data = FTerm::getFTermData();
-    const auto& termtype = fterm_data->getTermType();
+    auto& fterm_data = FTerm::getFTermData();
+    const auto& termtype = fterm_data.getTermType();
     std::clog << FLog::LogLevel::Error
               << "Unknown terminal: \"" << termtype << "\". "
               << "Check the TERM environment variable. "
@@ -377,7 +377,7 @@ void FTermcap::termcapNumerics()
 {
   // Get termcap numerics
 
-  const auto& fterm_data = FTerm::getFTermData();
+  auto& fterm_data = FTerm::getFTermData();
 
   // Maximum number of colors on screen
   max_color = std::max(max_color, getNumber("Co"));
@@ -386,9 +386,9 @@ void FTermcap::termcapNumerics()
     max_color = 1;
 
   if ( max_color < 8 )
-    fterm_data->setMonochron(true);
+    fterm_data.setMonochron(true);
   else
-    fterm_data->setMonochron(false);
+    fterm_data.setMonochron(false);
 
   // Get initial spacing for hardware tab stop
   tabstop = getNumber("it");

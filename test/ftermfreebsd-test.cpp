@@ -622,37 +622,37 @@ void ftermfreebsdTest::freebsdConsoleTest()
   std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  const auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
 
-  auto& encoding_list = data->getEncodingList();
+  auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
   encoding_list["UTF8"]  = finalcut::Encoding::UTF8;
   encoding_list["VT100"] = finalcut::Encoding::VT100;
   encoding_list["PC"]    = finalcut::Encoding::PC;
   encoding_list["ASCII"] = finalcut::Encoding::ASCII;
 
-  data->setTermEncoding(finalcut::Encoding::VT100);
-  data->setBaudrate(9600);
-  data->setTermType("xterm");
-  data->setTermFileName("/dev/ttyv0");
-  data->setTTYFileDescriptor(0);
-  data->supportShadowCharacter (false);
-  data->supportHalfBlockCharacter (false);
-  data->supportCursorOptimisation (true);
-  data->setCursorHidden (true);
-  data->useAlternateScreen (false);
-  data->setASCIIConsole (true);
-  data->setVT100Console (false);
-  data->setUTF8Console (false);
-  data->setUTF8 (false);
-  data->setNewFont (false);
-  data->setVGAFont (false);
-  data->setMonochron (false);
-  data->setTermResized (false);
+  data.setTermEncoding(finalcut::Encoding::VT100);
+  data.setBaudrate(9600);
+  data.setTermType("xterm");
+  data.setTermFileName("/dev/ttyv0");
+  data.setTTYFileDescriptor(0);
+  data.supportShadowCharacter (false);
+  data.supportHalfBlockCharacter (false);
+  data.supportCursorOptimisation (true);
+  data.setCursorHidden (true);
+  data.useAlternateScreen (false);
+  data.setASCIIConsole (true);
+  data.setVT100Console (false);
+  data.setUTF8Console (false);
+  data.setUTF8 (false);
+  data.setNewFont (false);
+  data.setVGAFont (false);
+  data.setMonochron (false);
+  data.setTermResized (false);
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  const auto& term_detection = finalcut::FTerm::getFTermDetection();
-  term_detection->setTerminalDetection(true);
+  auto& term_detection = finalcut::FTerm::getFTermDetection();
+  term_detection.setTerminalDetection(true);
   pid_t pid = forkConEmu();
 
   if ( isConEmuChildProcess(pid) )
@@ -754,22 +754,22 @@ void ftermfreebsdTest::freebsdConsoleTest()
     CPPUNIT_ASSERT ( charEncode(c16) == 62 );  // >
     CPPUNIT_ASSERT ( charEncode(c17) == 60 );  // <
 
-    term_detection->detect();
+    term_detection.detect();
 
 #if DEBUG
     const finalcut::FString& sec_da = \
-        finalcut::FTerm::getFTermDebugData()->getSecDAString();
+        finalcut::FTerm::getFTermDebugData().getSecDAString();
     CPPUNIT_ASSERT ( sec_da == "\033[>0;10;0c" );
 #endif
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
-    CPPUNIT_ASSERT ( term_detection->isFreeBSDTerm() );
-    CPPUNIT_ASSERT ( data->getTermGeometry().getWidth() == 80 );
-    CPPUNIT_ASSERT ( data->getTermGeometry().getHeight() == 25 );
-    CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
-    CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
+    CPPUNIT_ASSERT ( term_detection.isFreeBSDTerm() );
+    CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 80 );
+    CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 25 );
+    CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );
+    CPPUNIT_ASSERT ( ! data.hasHalfBlockCharacter() );
 
-    data->setCursorHidden (false);
+    data.setCursorHidden (false);
     freebsd.setCursorStyle (finalcut::FreeBSDConsoleCursorStyle::Normal);
 
     CPPUNIT_ASSERT ( fsystest->getCursorType()

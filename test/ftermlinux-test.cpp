@@ -2066,44 +2066,44 @@ void FTermLinuxTest::linuxConsoleTest()
   std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  const auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
 
-  auto& encoding_list = data->getEncodingList();
+  auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
   encoding_list["UTF8"]  = finalcut::Encoding::UTF8;
   encoding_list["VT100"] = finalcut::Encoding::VT100;
   encoding_list["PC"]    = finalcut::Encoding::PC;
   encoding_list["ASCII"] = finalcut::Encoding::ASCII;
 
-  data->setTermEncoding(finalcut::Encoding::PC);
-  data->setBaudrate(38400);
-  data->setTermType("linux");
-  data->setTermFileName("/dev/tty2");
+  data.setTermEncoding(finalcut::Encoding::PC);
+  data.setBaudrate(38400);
+  data.setTermType("linux");
+  data.setTermFileName("/dev/tty2");
 
 #if DEBUG
-  data->setFramebufferBpp(32);
+  data.setFramebufferBpp(32);
 #endif
 
-  data->supportShadowCharacter (false);
-  data->supportHalfBlockCharacter (false);
-  data->supportCursorOptimisation (true);
-  data->setCursorHidden (true);
-  data->useAlternateScreen (false);
-  data->setASCIIConsole (true);
-  data->setVT100Console (false);
-  data->setUTF8Console (false);
-  data->setUTF8 (false);
-  data->setNewFont (false);
-  data->setVGAFont (false);
-  data->setMonochron (false);
-  data->setTermResized (false);
+  data.supportShadowCharacter (false);
+  data.supportHalfBlockCharacter (false);
+  data.supportCursorOptimisation (true);
+  data.setCursorHidden (true);
+  data.useAlternateScreen (false);
+  data.setASCIIConsole (true);
+  data.setVT100Console (false);
+  data.setUTF8Console (false);
+  data.setUTF8 (false);
+  data.setNewFont (false);
+  data.setVGAFont (false);
+  data.setMonochron (false);
+  data.setTermResized (false);
 
-  const auto& term_detection = finalcut::FTerm::getFTermDetection();
+  auto& term_detection = finalcut::FTerm::getFTermDetection();
   finalcut::FTermLinux linux;
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  term_detection->setLinuxTerm(true);
+  term_detection.setLinuxTerm(true);
 
   pid_t pid = forkConEmu();
 
@@ -2122,15 +2122,15 @@ void FTermLinuxTest::linuxConsoleTest()
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
 
-    term_detection->detect();
+    term_detection.detect();
     linux.init();
 
     CPPUNIT_ASSERT ( isatty(3) == 0 );
-    CPPUNIT_ASSERT ( term_detection->isLinuxTerm() );
-    CPPUNIT_ASSERT ( data->getTermGeometry().getWidth() == 96 );
-    CPPUNIT_ASSERT ( data->getTermGeometry().getHeight() == 36 );
-    CPPUNIT_ASSERT ( data->hasShadowCharacter() );
-    CPPUNIT_ASSERT ( data->hasHalfBlockCharacter() );
+    CPPUNIT_ASSERT ( term_detection.isLinuxTerm() );
+    CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 96 );
+    CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 36 );
+    CPPUNIT_ASSERT ( data.hasShadowCharacter() );
+    CPPUNIT_ASSERT ( data.hasHalfBlockCharacter() );
     CPPUNIT_ASSERT ( linux.getFramebufferBpp() == 32 );
 
     const auto& fsystem = finalcut::FTerm::getFSystem();
@@ -2161,7 +2161,7 @@ void FTermLinuxTest::linuxConsoleTest()
     characters.clear();
 
     linux.initCharMap();
-    auto& character_map = data->getCharSubstitutionMap();
+    auto& character_map = data.getCharSubstitutionMap();
     CPPUNIT_ASSERT ( character_map.size() == 3 );
     CPPUNIT_ASSERT ( character_map[wchar_t(finalcut::UniChar::BlackCircle)] == L'*' );
     CPPUNIT_ASSERT ( character_map[wchar_t(finalcut::UniChar::Times)] == L'x' );
@@ -2189,45 +2189,45 @@ void FTermLinuxTest::linuxConsoleLat15Test()
   fsystest->setCodeset(test::FSystemTest::Codeset::lat15);
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  const auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
 
-  auto& encoding_list = data->getEncodingList();
+  auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
   encoding_list["UTF8"]  = finalcut::Encoding::UTF8;
   encoding_list["VT100"] = finalcut::Encoding::VT100;
   encoding_list["PC"]    = finalcut::Encoding::PC;
   encoding_list["ASCII"] = finalcut::Encoding::ASCII;
 
-  data->setTermEncoding(finalcut::Encoding::PC);
-  data->setBaudrate(38400);
-  data->setTermType("linux");
-  data->setTermFileName("/dev/tty3");
-  data->setTTYFileDescriptor(0);
+  data.setTermEncoding(finalcut::Encoding::PC);
+  data.setBaudrate(38400);
+  data.setTermType("linux");
+  data.setTermFileName("/dev/tty3");
+  data.setTTYFileDescriptor(0);
 
 #if DEBUG
-  data->setFramebufferBpp(32);
+  data.setFramebufferBpp(32);
 #endif
 
-  data->supportShadowCharacter (true);
-  data->supportHalfBlockCharacter (true);
-  data->supportCursorOptimisation (true);
-  data->setCursorHidden (true);
-  data->useAlternateScreen (false);
-  data->setASCIIConsole (true);
-  data->setVT100Console (false);
-  data->setUTF8Console (false);
-  data->setUTF8 (false);
-  data->setNewFont (false);
-  data->setVGAFont (false);
-  data->setMonochron (false);
-  data->setTermResized (false);
+  data.supportShadowCharacter (true);
+  data.supportHalfBlockCharacter (true);
+  data.supportCursorOptimisation (true);
+  data.setCursorHidden (true);
+  data.useAlternateScreen (false);
+  data.setASCIIConsole (true);
+  data.setVT100Console (false);
+  data.setUTF8Console (false);
+  data.setUTF8 (false);
+  data.setNewFont (false);
+  data.setVGAFont (false);
+  data.setMonochron (false);
+  data.setTermResized (false);
 
-  const auto& term_detection = finalcut::FTerm::getFTermDetection();
+  auto& term_detection = finalcut::FTerm::getFTermDetection();
   finalcut::FTermLinux linux;
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  term_detection->setLinuxTerm(true);
+  term_detection.setLinuxTerm(true);
 
   pid_t pid = forkConEmu();
 
@@ -2246,14 +2246,14 @@ void FTermLinuxTest::linuxConsoleLat15Test()
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
 
-    term_detection->detect();
+    term_detection.detect();
 
     linux.init();
     linux.initCharMap();
     CPPUNIT_ASSERT ( finalcut::FTerm::isLinuxTerm() );
-    CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
-    CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
-    auto& character_map = data->getCharSubstitutionMap();
+    CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );
+    CPPUNIT_ASSERT ( ! data.hasHalfBlockCharacter() );
+    auto& character_map = data.getCharSubstitutionMap();
     CPPUNIT_ASSERT ( character_map.size() == 4 );
     CPPUNIT_ASSERT ( character_map[wchar_t(finalcut::UniChar::SquareRoot)] == L'x' );
     CPPUNIT_ASSERT ( character_map[wchar_t(finalcut::UniChar::BlackLeftPointingPointer)] == L'◀' );
@@ -2280,37 +2280,37 @@ void FTermLinuxTest::linuxCursorStyleTest()
   std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  const auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
 
-  auto& encoding_list = data->getEncodingList();
+  auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
   encoding_list["UTF8"]  = finalcut::Encoding::UTF8;
   encoding_list["VT100"] = finalcut::Encoding::VT100;
   encoding_list["PC"]    = finalcut::Encoding::PC;
   encoding_list["ASCII"] = finalcut::Encoding::ASCII;
 
-  data->setTermEncoding(finalcut::Encoding::PC);
-  data->setBaudrate(38400);
-  data->setTermType("linux");
-  data->setTermFileName("/dev/tty2");
+  data.setTermEncoding(finalcut::Encoding::PC);
+  data.setBaudrate(38400);
+  data.setTermType("linux");
+  data.setTermFileName("/dev/tty2");
 
 #if DEBUG
-  data->setFramebufferBpp(32);
+  data.setFramebufferBpp(32);
 #endif
 
-  data->supportShadowCharacter (false);
-  data->supportHalfBlockCharacter (false);
-  data->supportCursorOptimisation (true);
-  data->setCursorHidden (false);
-  data->useAlternateScreen (false);
-  data->setASCIIConsole (true);
-  data->setVT100Console (false);
-  data->setUTF8Console (false);
-  data->setUTF8 (false);
-  data->setNewFont (false);
-  data->setVGAFont (false);
-  data->setMonochron (false);
-  data->setTermResized (false);
+  data.supportShadowCharacter (false);
+  data.supportHalfBlockCharacter (false);
+  data.supportCursorOptimisation (true);
+  data.setCursorHidden (false);
+  data.useAlternateScreen (false);
+  data.setASCIIConsole (true);
+  data.setVT100Console (false);
+  data.setUTF8Console (false);
+  data.setUTF8 (false);
+  data.setNewFont (false);
+  data.setVGAFont (false);
+  data.setMonochron (false);
+  data.setTermResized (false);
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
@@ -2334,7 +2334,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
 
-    term_detection->detect();
+    term_detection.detect();
     linux.init();
 
     const auto& fsystem = finalcut::FTerm::getFSystem();
@@ -2387,9 +2387,9 @@ void FTermLinuxTest::linuxCursorStyleTest()
     CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?0c" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::LinuxConsoleCursorStyle::Default );
     characters.clear();
-    data->setCursorHidden (true);
+    data.setCursorHidden (true);
     linux.setCursorStyle (finalcut::LinuxConsoleCursorStyle::Invisible);
-    data->setCursorHidden (false);
+    data.setCursorHidden (false);
     CPPUNIT_ASSERT ( characters == "" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::LinuxConsoleCursorStyle::Invisible );
     characters.clear();
@@ -2397,9 +2397,9 @@ void FTermLinuxTest::linuxCursorStyleTest()
     CPPUNIT_ASSERT ( characters == CSI "?1c" );
     CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?1c" );
     characters.clear();
-    data->setCursorHidden (true);
+    data.setCursorHidden (true);
     linux.setCursorStyle (finalcut::LinuxConsoleCursorStyle::Underscore);
-    data->setCursorHidden (false);
+    data.setCursorHidden (false);
     CPPUNIT_ASSERT ( characters == "" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::LinuxConsoleCursorStyle::Underscore );
     characters.clear();
@@ -2407,9 +2407,9 @@ void FTermLinuxTest::linuxCursorStyleTest()
     CPPUNIT_ASSERT ( characters == CSI "?2c" );
     CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?2c" );
     characters.clear();
-    data->setCursorHidden (true);
+    data.setCursorHidden (true);
     linux.setCursorStyle (finalcut::LinuxConsoleCursorStyle::LowerThird);
-    data->setCursorHidden (false);
+    data.setCursorHidden (false);
     CPPUNIT_ASSERT ( characters == "" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::LinuxConsoleCursorStyle::LowerThird );
     characters.clear();
@@ -2417,9 +2417,9 @@ void FTermLinuxTest::linuxCursorStyleTest()
     CPPUNIT_ASSERT ( characters == CSI "?3c" );
     CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?3c" );
     characters.clear();
-    data->setCursorHidden (true);
+    data.setCursorHidden (true);
     linux.setCursorStyle (finalcut::LinuxConsoleCursorStyle::LowerHalf);
-    data->setCursorHidden (false);
+    data.setCursorHidden (false);
     CPPUNIT_ASSERT ( characters == "" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::LinuxConsoleCursorStyle::LowerHalf );
     characters.clear();
@@ -2427,9 +2427,9 @@ void FTermLinuxTest::linuxCursorStyleTest()
     CPPUNIT_ASSERT ( characters == CSI "?4c" );
     CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?4c" );
     characters.clear();
-    data->setCursorHidden (true);
+    data.setCursorHidden (true);
     linux.setCursorStyle (finalcut::LinuxConsoleCursorStyle::TwoThirds);
-    data->setCursorHidden (false);
+    data.setCursorHidden (false);
     CPPUNIT_ASSERT ( characters == "" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::LinuxConsoleCursorStyle::TwoThirds );
     characters.clear();
@@ -2437,9 +2437,9 @@ void FTermLinuxTest::linuxCursorStyleTest()
     CPPUNIT_ASSERT ( characters == CSI "?5c" );
     CPPUNIT_ASSERT_CSTRING ( linux.getCursorStyleString(), CSI "?5c" );
     characters.clear();
-    data->setCursorHidden (true);
+    data.setCursorHidden (true);
     linux.setCursorStyle (finalcut::LinuxConsoleCursorStyle::FullBlock);
-    data->setCursorHidden (false);
+    data.setCursorHidden (false);
     CPPUNIT_ASSERT ( characters == "" );
     CPPUNIT_ASSERT ( linux.getCursorStyle() == finalcut::LinuxConsoleCursorStyle::FullBlock );
     characters.clear();
@@ -2469,43 +2469,43 @@ void FTermLinuxTest::linuxColorPaletteTest()
   std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  const auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
 
-  auto& encoding_list = data->getEncodingList();
+  auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
   encoding_list["UTF8"]  = finalcut::Encoding::UTF8;
   encoding_list["VT100"] = finalcut::Encoding::VT100;
   encoding_list["PC"]    = finalcut::Encoding::PC;
   encoding_list["ASCII"] = finalcut::Encoding::ASCII;
 
-  data->setTermEncoding(finalcut::Encoding::PC);
-  data->setBaudrate(38400);
-  data->setTermType("linux");
-  data->setTermFileName("/dev/tty2");
+  data.setTermEncoding(finalcut::Encoding::PC);
+  data.setBaudrate(38400);
+  data.setTermType("linux");
+  data.setTermFileName("/dev/tty2");
 
 #if DEBUG
-  data->setFramebufferBpp(32);
+  data.setFramebufferBpp(32);
 #endif
 
-  data->supportShadowCharacter (false);
-  data->supportHalfBlockCharacter (false);
-  data->supportCursorOptimisation (true);
-  data->setCursorHidden (true);
-  data->useAlternateScreen (false);
-  data->setASCIIConsole (true);
-  data->setVT100Console (false);
-  data->setUTF8Console (false);
-  data->setUTF8 (false);
-  data->setNewFont (false);
-  data->setVGAFont (false);
-  data->setMonochron (false);
-  data->setTermResized (false);
+  data.supportShadowCharacter (false);
+  data.supportHalfBlockCharacter (false);
+  data.supportCursorOptimisation (true);
+  data.setCursorHidden (true);
+  data.useAlternateScreen (false);
+  data.setASCIIConsole (true);
+  data.setVT100Console (false);
+  data.setUTF8Console (false);
+  data.setUTF8 (false);
+  data.setNewFont (false);
+  data.setVGAFont (false);
+  data.setMonochron (false);
+  data.setTermResized (false);
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  const auto& term_detection = finalcut::FTerm::getFTermDetection();
+  auto& term_detection = finalcut::FTerm::getFTermDetection();
   finalcut::FTermLinux linux;
-  term_detection->setLinuxTerm(true);
+  term_detection.setLinuxTerm(true);
 
   pid_t pid = forkConEmu();
 
@@ -2524,7 +2524,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
 
-    term_detection->detect();
+    term_detection.detect();
     linux.init();
     const auto& fsystem = finalcut::FTerm::getFSystem();
     auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
@@ -2744,37 +2744,37 @@ void FTermLinuxTest::linuxFontTest()
   std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  const auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
 
-  auto& encoding_list = data->getEncodingList();
+  auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
   encoding_list["UTF8"]  = finalcut::Encoding::UTF8;
   encoding_list["VT100"] = finalcut::Encoding::VT100;
   encoding_list["PC"]    = finalcut::Encoding::PC;
   encoding_list["ASCII"] = finalcut::Encoding::ASCII;
 
-  data->setTermEncoding(finalcut::Encoding::PC);
-  data->setBaudrate(38400);
-  data->setTermType("linux");
-  data->setTermFileName("/dev/tty2");
+  data.setTermEncoding(finalcut::Encoding::PC);
+  data.setBaudrate(38400);
+  data.setTermType("linux");
+  data.setTermFileName("/dev/tty2");
 
 #if DEBUG
-  data->setFramebufferBpp(32);
+  data.setFramebufferBpp(32);
 #endif
 
-  data->supportShadowCharacter (false);
-  data->supportHalfBlockCharacter (false);
-  data->supportCursorOptimisation (true);
-  data->setCursorHidden (true);
-  data->useAlternateScreen (false);
-  data->setASCIIConsole (true);
-  data->setVT100Console (false);
-  data->setUTF8Console (false);
-  data->setUTF8 (false);
-  data->setNewFont (false);
-  data->setVGAFont (false);
-  data->setMonochron (false);
-  data->setTermResized (false);
+  data.supportShadowCharacter (false);
+  data.supportHalfBlockCharacter (false);
+  data.supportCursorOptimisation (true);
+  data.setCursorHidden (true);
+  data.useAlternateScreen (false);
+  data.setASCIIConsole (true);
+  data.setVT100Console (false);
+  data.setUTF8Console (false);
+  data.setUTF8 (false);
+  data.setNewFont (false);
+  data.setVGAFont (false);
+  data.setMonochron (false);
+  data.setTermResized (false);
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
@@ -2798,7 +2798,7 @@ void FTermLinuxTest::linuxFontTest()
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
 
-    term_detection->detect();
+    term_detection.detect();
     linux.init();
     const auto& fsystem = finalcut::FTerm::getFSystem();
     auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
@@ -2807,8 +2807,8 @@ void FTermLinuxTest::linuxFontTest()
     CPPUNIT_ASSERT ( ! linux.isVGAFontUsed() );
     CPPUNIT_ASSERT ( ! linux.isNewFontUsed() );
     linux.loadVGAFont();
-    CPPUNIT_ASSERT ( data->hasShadowCharacter() );
-    CPPUNIT_ASSERT ( data->hasHalfBlockCharacter() );
+    CPPUNIT_ASSERT ( data.hasShadowCharacter() );
+    CPPUNIT_ASSERT ( data.hasHalfBlockCharacter() );
     CPPUNIT_ASSERT ( font.op == KD_FONT_OP_SET );
     CPPUNIT_ASSERT ( linux.isVGAFontUsed() );
     CPPUNIT_ASSERT ( ! linux.isNewFontUsed() );

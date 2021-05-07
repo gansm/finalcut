@@ -90,9 +90,9 @@ FApplication::FApplication (const int& arg_c, char* arg_v[])
 
   if ( internal::var::app_object )
   {
-    const auto& fterm_data = FTerm::getFTermData();
-    fterm_data->setExitMessage("FApplication: There should be "
-                               "only one application object");
+    auto& fterm_data = FTerm::getFTermData();
+    fterm_data.setExitMessage("FApplication: There should be "
+                              "only one application object");
     FApplication::exit(EXIT_FAILURE);
     return;
   }
@@ -339,9 +339,9 @@ void FApplication::setLogFile (const FString& filename)
   }
   else
   {
-    const auto& fterm_data = FTerm::getFTermData();
-    fterm_data->setExitMessage ( "Could not open log file \""
-                               + filename + "\"" );
+    auto& fterm_data = FTerm::getFTermData();
+    fterm_data.setExitMessage ( "Could not open log file \""
+                              + filename + "\"" );
     exit(EXIT_FAILURE);
   }
 }
@@ -396,7 +396,7 @@ void FApplication::init()
   time_last_event.tv_usec = 0;
 
   // Initialize keyboard
-  const auto& keyboard = FTerm::getFKeyboard();
+  auto& keyboard = FTerm::getFKeyboard();
   auto cmd1 = [this] () { this->keyPressed(); };
   auto cmd2 = [this] () { this->keyReleased(); };
   auto cmd3 = [this] () { this->escapeKeyPressed(); };
@@ -405,22 +405,22 @@ void FApplication::init()
   FKeyboardCommand key_cmd2 (cmd2);
   FKeyboardCommand key_cmd3 (cmd3);
   FKeyboardCommand key_cmd4 (cmd4);
-  keyboard->setPressCommand (key_cmd1);
-  keyboard->setReleaseCommand (key_cmd2);
-  keyboard->setEscPressedCommand (key_cmd3);
-  keyboard->setMouseTrackingCommand (key_cmd4);
+  keyboard.setPressCommand (key_cmd1);
+  keyboard.setReleaseCommand (key_cmd2);
+  keyboard.setEscPressedCommand (key_cmd3);
+  keyboard.setMouseTrackingCommand (key_cmd4);
   // Set the keyboard keypress timeout
-  keyboard->setKeypressTimeout (key_timeout);
+  keyboard.setKeypressTimeout (key_timeout);
 
   // Initialize mouse control
-  const auto& mouse = FTerm::getFMouseControl();
+  auto& mouse = FTerm::getFMouseControl();
   auto cmd = [this] (const FMouseData& md) { this->mouseEvent(md); };
   FMouseCommand mouse_cmd (cmd);
-  mouse->setEventCommand (mouse_cmd);
+  mouse.setEventCommand (mouse_cmd);
   // Set stdin number for a gpm-mouse
-  mouse->setStdinNo (FTermios::getStdIn());
+  mouse.setStdinNo (FTermios::getStdIn());
   // Set the default double click interval
-  mouse->setDblclickInterval (dblclick_interval);
+  mouse.setDblclickInterval (dblclick_interval);
 
   // Initialize logging
   if ( ! getStartOptions().logfile_stream.is_open() )
@@ -444,10 +444,10 @@ void FApplication::setTerminalEncoding (const FString& enc_str)
     showParameterUsage();
   else
   {
-    const auto& fterm_data = FTerm::getFTermData();
-    fterm_data->setExitMessage ( "Unknown encoding \"" + enc_str
-                               + "\"\n(Valid encodings are utf8, "
-                               + "vt100, pc and ascii)" );
+    auto& fterm_data = FTerm::getFTermData();
+    fterm_data.setExitMessage ( "Unknown encoding \"" + enc_str
+                              + "\"\n(Valid encodings are utf8, "
+                              + "vt100, pc and ascii)" );
     exit(EXIT_FAILURE);
   }
 }
@@ -658,13 +658,13 @@ inline void FApplication::findKeyboardWidget() const
 //----------------------------------------------------------------------
 inline bool FApplication::isKeyPressed() const
 {
-  const auto& mouse = FTerm::getFMouseControl();
-  const auto& keyboard = FTerm::getFKeyboard();
+  auto& mouse = FTerm::getFMouseControl();
+  auto& keyboard = FTerm::getFKeyboard();
 
-  if ( mouse->isGpmMouseEnabled() )
-    return mouse->getGpmKeyPressed(keyboard->hasUnprocessedInput());
+  if ( mouse.isGpmMouseEnabled() )
+    return mouse.getGpmKeyPressed(keyboard.hasUnprocessedInput());
 
-  return (keyboard->isKeyPressed() || keyboard->hasPendingInput());
+  return (keyboard.isKeyPressed() || keyboard.hasPendingInput());
 }
 
 //----------------------------------------------------------------------
@@ -694,9 +694,9 @@ void FApplication::mouseTracking() const
 //----------------------------------------------------------------------
 inline void FApplication::performKeyboardAction()
 {
-  const auto& keyboard = FTerm::getFKeyboard();
+  auto& keyboard = FTerm::getFKeyboard();
 
-  if ( keyboard->getKey() == FKey::Ctrl_l )  // Ctrl-L (redraw the screen)
+  if ( keyboard.getKey() == FKey::Ctrl_l )  // Ctrl-L (redraw the screen)
   {
     redraw();
   }
@@ -713,25 +713,25 @@ inline void FApplication::performKeyboardAction()
 //----------------------------------------------------------------------
 inline void FApplication::performMouseAction() const
 {
-  const auto& mouse = FTerm::getFMouseControl();
-  const auto& keyboard = FTerm::getFKeyboard();
-  const auto key = keyboard->getKey();
-  auto& buffer = keyboard->getKeyBuffer();
+  auto& mouse = FTerm::getFMouseControl();
+  auto& keyboard = FTerm::getFKeyboard();
+  const auto key = keyboard.getKey();
+  auto& buffer = keyboard.getKeyBuffer();
 
   if ( key == FKey::X11mouse )
   {
-    mouse->setRawData (FMouse::MouseType::X11, buffer);
+    mouse.setRawData (FMouse::MouseType::X11, buffer);
   }
   else if ( key == FKey::Extended_mouse )
   {
-    mouse->setRawData (FMouse::MouseType::Sgr, buffer);
+    mouse.setRawData (FMouse::MouseType::Sgr, buffer);
   }
   else if ( key == FKey::Urxvt_mouse )
   {
-    mouse->setRawData (FMouse::MouseType::Urxvt, buffer);
+    mouse.setRawData (FMouse::MouseType::Urxvt, buffer);
   }
 
-  keyboard->hasUnprocessedInput() = mouse->hasUnprocessedInput();
+  keyboard.hasUnprocessedInput() = mouse.hasUnprocessedInput();
   queuingMouseInput();
 }
 
@@ -761,8 +761,8 @@ inline void FApplication::sendEscapeKeyPressEvent() const
 inline bool FApplication::sendKeyDownEvent (FWidget* widget) const
 {
   // Send key down event
-  const auto& keyboard = FTerm::getFKeyboard();
-  FKeyEvent k_down_ev (Event::KeyDown, keyboard->getKey());
+  auto& keyboard = FTerm::getFKeyboard();
+  FKeyEvent k_down_ev (Event::KeyDown, keyboard.getKey());
   sendEvent (widget, &k_down_ev);
   return k_down_ev.isAccepted();
 }
@@ -771,8 +771,8 @@ inline bool FApplication::sendKeyDownEvent (FWidget* widget) const
 inline bool FApplication::sendKeyPressEvent (FWidget* widget) const
 {
   // Send key press event
-  const auto& keyboard = FTerm::getFKeyboard();
-  FKeyEvent k_press_ev (Event::KeyPress, keyboard->getKey());
+  auto& keyboard = FTerm::getFKeyboard();
+  FKeyEvent k_press_ev (Event::KeyPress, keyboard.getKey());
   sendEvent (widget, &k_press_ev);
   return k_press_ev.isAccepted();
 }
@@ -781,8 +781,8 @@ inline bool FApplication::sendKeyPressEvent (FWidget* widget) const
 inline bool FApplication::sendKeyUpEvent (FWidget* widget) const
 {
   // Send key up event
-  const auto& keyboard = FTerm::getFKeyboard();
-  FKeyEvent k_up_ev (Event::KeyUp, keyboard->getKey());
+  auto& keyboard = FTerm::getFKeyboard();
+  FKeyEvent k_up_ev (Event::KeyUp, keyboard.getKey());
   sendEvent (widget, &k_up_ev);
   return k_up_ev.isAccepted();
 }
@@ -818,11 +818,11 @@ inline void FApplication::sendKeyboardAccelerator()
 //----------------------------------------------------------------------
 inline bool FApplication::hasDataInQueue() const
 {
-  const auto& keyboard = FTerm::getFKeyboard();
-  const auto& mouse = FTerm::getFMouseControl();
+  auto& keyboard = FTerm::getFKeyboard();
+  auto& mouse = FTerm::getFMouseControl();
 
-  if ( keyboard->hasDataInQueue()
-    || mouse->hasDataInQueue()
+  if ( keyboard.hasDataInQueue()
+    || mouse.hasDataInQueue()
     || FTerm::hasChangedTermSize() )
     return true;
 
@@ -838,30 +838,30 @@ void FApplication::queuingKeyboardInput() const
     return;
 
   findKeyboardWidget();
-  const auto& keyboard = FTerm::getFKeyboard();
-  keyboard->escapeKeyHandling();  // special case: Esc key
-  keyboard->clearKeyBufferOnTimeout();
+  auto& keyboard = FTerm::getFKeyboard();
+  keyboard.escapeKeyHandling();  // special case: Esc key
+  keyboard.clearKeyBufferOnTimeout();
 
   if ( isKeyPressed() )
-    keyboard->fetchKeyCode();
+    keyboard.fetchKeyCode();
 }
 
 //----------------------------------------------------------------------
 void FApplication::queuingMouseInput() const
 {
-  const auto& mouse = FTerm::getFMouseControl();
+  auto& mouse = FTerm::getFMouseControl();
 
   if ( quit_now
     || internal::var::exit_loop
-    || ! mouse->hasData()
+    || ! mouse.hasData()
     || FTerm::hasChangedTermSize() )
     return;
 
-  const auto& keyboard = FTerm::getFKeyboard();
-  struct timeval* time_keypressed = keyboard->getKeyPressedTime();
-  mouse->processEvent (time_keypressed);
-  keyboard->hasUnprocessedInput() = mouse->hasUnprocessedInput();
-  mouse->clearEvent();
+  auto& keyboard = FTerm::getFKeyboard();
+  struct timeval* time_keypressed = keyboard.getKeyPressedTime();
+  mouse.processEvent (time_keypressed);
+  keyboard.hasUnprocessedInput() = mouse.hasUnprocessedInput();
+  mouse.clearEvent();
 }
 
 //----------------------------------------------------------------------
@@ -872,8 +872,8 @@ void FApplication::processKeyboardEvent() const
     || FTerm::hasChangedTermSize() )
     return;
 
-  const auto& keyboard = FTerm::getFKeyboard();
-  keyboard->processQueuedInput();
+  auto& keyboard = FTerm::getFKeyboard();
+  keyboard.processQueuedInput();
 }
 
 //----------------------------------------------------------------------
@@ -884,18 +884,18 @@ void FApplication::processMouseEvent() const
     || FTerm::hasChangedTermSize() )
     return;
 
-  FTerm::getFMouseControl()->processQueuedInput();
+  FTerm::getFMouseControl().processQueuedInput();
 }
 
 //----------------------------------------------------------------------
 bool FApplication::processDialogSwitchAccelerator() const
 {
-  const auto& keyboard = FTerm::getFKeyboard();
+  auto& keyboard = FTerm::getFKeyboard();
 
-  if ( keyboard->getKey() >= FKey::Meta_1
-    && keyboard->getKey() <= FKey::Meta_9 )
+  if ( keyboard.getKey() >= FKey::Meta_1
+    && keyboard.getKey() <= FKey::Meta_9 )
   {
-    const FKey key = keyboard->getKey();
+    const FKey key = keyboard.getKey();
     const auto n = std::size_t(key - FKey::Meta_0);
     const std::size_t s = getDialogList()->size();
 
@@ -928,7 +928,7 @@ bool FApplication::processAccelerator (const FWidget& widget) const
 
   for (auto&& item : widget.getAcceleratorList())
   {
-    if ( item.key == FTerm::getFKeyboard()->getKey() )
+    if ( item.key == FTerm::getFKeyboard().getKey() )
     {
       // unset the move/size mode
       auto move_size = getMoveSizeWidget();
@@ -1258,9 +1258,9 @@ void FApplication::processResizeEvent() const
     return;
 
   FTerm::detectTermSize();  // Detect and save the current terminal size
-  const auto& mouse = FTerm::getFMouseControl();
-  mouse->setMaxWidth (uInt16(getDesktopWidth()));
-  mouse->setMaxHeight (uInt16(getDesktopHeight()));
+  auto& mouse = FTerm::getFMouseControl();
+  mouse.setMaxWidth (uInt16(getDesktopWidth()));
+  mouse.setMaxHeight (uInt16(getDesktopHeight()));
   FResizeEvent r_ev(Event::Resize);
   sendEvent(internal::var::app_object, &r_ev);
 

@@ -214,22 +214,22 @@ void tcapString (const std::string& name, const char cap_str[])
 void debug (const finalcut::FApplication& TermApp)
 {
   const auto& fterm = TermApp.getFTerm();
-  const auto& debug_data = fterm.getFTermDebugData();
-  const finalcut::FString& ab_s = debug_data->getAnswerbackString();
-  const finalcut::FString& sec_da = debug_data->getSecDAString();
+  auto& debug_data = fterm.getFTermDebugData();
+  const auto& ab_s = debug_data.getAnswerbackString();
+  const auto& sec_da = debug_data.getSecDAString();
   std::cout << "\n.------------------- debug -------------------\r\n";
 
 #if defined(__linux__)
   std::cout << "|               Framebuffer bpp: "
-            << debug_data->getFramebufferBpp() << "\r\n";
+            << debug_data.getFramebufferBpp() << "\r\n";
 #endif
 
   std::cout << "| after init_256colorTerminal(): "
-            << debug_data->getTermType_256color() << "\r\n";
+            << debug_data.getTermType_256color() << "\r\n";
   std::cout << "|    after parseAnswerbackMsg(): "
-            << debug_data->getTermType_Answerback() << "\r\n";
+            << debug_data.getTermType_Answerback() << "\r\n";
   std::cout << "|            after parseSecDA(): "
-            << debug_data->getTermType_SecDA() << "\r\n";
+            << debug_data.getTermType_SecDA() << "\r\n";
 
   if ( ! ab_s.isEmpty() )
     tcapString ("|         The answerback String", ab_s.c_str());

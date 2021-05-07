@@ -488,8 +488,8 @@ void FTermFunctionsTest::FullWidthHalfWidthTest()
   CPPUNIT_ASSERT ( finalcut::getHalfWidth(L"ㄴ") == L"ﾤ" );
 
   // Column width (wchar_t)
-  const auto& data = finalcut::FTerm::getFTermData();
-  data->setTermEncoding (finalcut::Encoding::UTF8);
+  auto& fterm_data = finalcut::FTerm::getFTermData();
+  fterm_data.setTermEncoding (finalcut::Encoding::UTF8);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L"\t") == 0 );
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L"\r") == 0 );
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L"\n") == 0 );
@@ -510,7 +510,7 @@ void FTermFunctionsTest::FullWidthHalfWidthTest()
 
   // Column width (wchar_t) in latin-1
   std::setlocale (LC_CTYPE, "C");
-  data->setTermEncoding (finalcut::Encoding::VT100);
+  fterm_data.setTermEncoding (finalcut::Encoding::VT100);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L'─') == 1 );  // wcwidth(L'─') == -1 (for LC_CTYPE = C)
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L'│') == 1 );  // wcwidth(L'│') == -1 (for LC_CTYPE = C)
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L'├') == 1 );  // wcwidth(L'├') == -1 (for LC_CTYPE = C)
@@ -526,7 +526,7 @@ void FTermFunctionsTest::FullWidthHalfWidthTest()
   if ( ! ret )
     ret = std::setlocale (LC_CTYPE, "C.UTF-8");
 
-  data->setTermEncoding (finalcut::Encoding::UTF8);
+  fterm_data.setTermEncoding (finalcut::Encoding::UTF8);
 
   // Column width (FString)
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L"\v\t 100") == 4 );
@@ -815,11 +815,11 @@ void FTermFunctionsTest::FullWidthHalfWidthTest()
   term_buf << L"０１２３４５６７８９";
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 20 );  // UTF-8
   term_buf.clear();
-  data->setTermEncoding (finalcut::Encoding::PC);
+  fterm_data.setTermEncoding (finalcut::Encoding::PC);
   term_buf << L"０１２３４５６７８９";
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 10 );  // CP-437
   term_buf.clear();
-  data->setTermEncoding (finalcut::Encoding::UTF8);
+  fterm_data.setTermEncoding (finalcut::Encoding::UTF8);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 0 );  // after clear
   term_buf << L"abc";
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(term_buf) == 3 );
@@ -2551,9 +2551,9 @@ void FTermFunctionsTest::combiningCharacterTest()
 //----------------------------------------------------------------------
 void FTermFunctionsTest::readCursorPosTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& fterm_data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
-  data.setTermType("xterm");
+  fterm_data.setTermType("xterm");
   detect.setTerminalDetection(true);
 
   pid_t pid = forkConEmu();

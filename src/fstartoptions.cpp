@@ -57,7 +57,7 @@ FStartOptions::FStartOptions()
 FStartOptions& FStartOptions::getFStartOptions()
 {
   static const auto& start_options = make_unique<FStartOptions>();
-  return *start_options.get();
+  return *start_options;
 }
 
 //----------------------------------------------------------------------

@@ -188,29 +188,29 @@ class FTerm final
     static int               getTabstop();
     static int               getMaxColor();
     static auto              getColorPaletteTheme() -> std::shared_ptr<FColorPalette>&;
-    static auto              getFTermData() -> const std::unique_ptr<FTermData>&;
     static auto              getFSystem() -> std::unique_ptr<FSystem>&;
-    static auto              getFOptiMove() -> const std::unique_ptr<FOptiMove>&;
-    static auto              getFOptiAttr() -> const std::unique_ptr<FOptiAttr>&;
-    static auto              getFTermDetection() -> const std::unique_ptr<FTermDetection>&;
-    static auto              getFTermXTerminal() -> const std::unique_ptr<FTermXTerminal>&;
-    static auto              getFKeyboard() -> const std::unique_ptr<FKeyboard>&;
-    static auto              getFMouseControl() -> const std::unique_ptr<FMouseControl>&;
+    static auto              getFTermData() -> FTermData&;
+    static auto              getFOptiMove() -> FOptiMove&;
+    static auto              getFOptiAttr() -> FOptiAttr&;
+    static auto              getFTermDetection() -> FTermDetection&;
+    static auto              getFTermXTerminal() -> FTermXTerminal&;
+    static auto              getFKeyboard() -> FKeyboard&;
+    static auto              getFMouseControl() -> FMouseControl&;
 
 #if defined(__linux__) || defined(UNIT_TEST)
-    static auto              getFTermLinux() -> const std::unique_ptr<FTermLinux>&;
+    static auto              getFTermLinux() -> FTermLinux&;
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-    static auto              getFTermFreeBSD() -> const std::unique_ptr<FTermFreeBSD>&;
+    static auto              getFTermFreeBSD() -> FTermFreeBSD&;
 #endif
 
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
-    static auto              getFTermOpenBSD() -> const std::unique_ptr<FTermOpenBSD>&;
+    static auto              getFTermOpenBSD() -> FTermOpenBSD&;
 #endif
 
 #if DEBUG
-    static auto              getFTermDebugData() -> const std::unique_ptr<FTermDebugData>&;
+    static auto              getFTermDebugData() -> FTermDebugData&;
 #endif
 
     // Inquiries

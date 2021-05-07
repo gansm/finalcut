@@ -108,8 +108,8 @@ FTerm::~FTerm()  // destructor
 //----------------------------------------------------------------------
 std::size_t FTerm::getLineNumber()
 {
-  const auto& data = FTerm::getFTermData();
-  const auto& term_geometry = data->getTermGeometry();
+  auto& data = FTerm::getFTermData();
+  const auto& term_geometry = data.getTermGeometry();
 
   if ( term_geometry.getHeight() == 0 )
     detectTermSize();
@@ -120,8 +120,8 @@ std::size_t FTerm::getLineNumber()
 //----------------------------------------------------------------------
 std::size_t FTerm::getColumnNumber()
 {
-  const auto& data = FTerm::getFTermData();
-  const auto& term_geometry = data->getTermGeometry();
+  auto& data = FTerm::getFTermData();
+  const auto& term_geometry = data.getTermGeometry();
 
   if ( term_geometry.getWidth() == 0 )
     detectTermSize();
@@ -133,35 +133,35 @@ std::size_t FTerm::getColumnNumber()
 FString FTerm::getKeyName (FKey keynum)
 {
   const auto& keyboard = FTerm::getFKeyboard();
-  return keyboard->getKeyName (keynum);
+  return keyboard.getKeyName (keynum);
 }
 
 //----------------------------------------------------------------------
 charSubstitution& FTerm::getCharSubstitutionMap()
 {
-  const auto& data = FTerm::getFTermData();
-  return data->getCharSubstitutionMap();
+  auto& data = FTerm::getFTermData();
+  return data.getCharSubstitutionMap();
 }
 
 //----------------------------------------------------------------------
 int FTerm::getTTYFileDescriptor()
 {
-  const auto& data = FTerm::getFTermData();
-  return data->getTTYFileDescriptor();
+  auto& data = FTerm::getFTermData();
+  return data.getTTYFileDescriptor();
 }
 
 //----------------------------------------------------------------------
 std::string FTerm::getTermType()
 {
-  const auto& data = FTerm::getFTermData();
-  return data->getTermType();
+  auto& data = FTerm::getFTermData();
+  return data.getTermType();
 }
 
 //----------------------------------------------------------------------
 std::string FTerm::getTermFileName()
 {
-  const auto& data = FTerm::getFTermData();
-  return data->getTermFileName();
+  auto& data = FTerm::getFTermData();
+  return data.getTermFileName();
 }
 
 //----------------------------------------------------------------------
@@ -184,13 +184,6 @@ auto FTerm::getColorPaletteTheme() -> std::shared_ptr<FColorPalette>&
 }
 
 //----------------------------------------------------------------------
-auto FTerm::getFTermData() -> const std::unique_ptr<FTermData>&
-{
-  static const auto& data = make_unique<FTermData>();
-  return data;
-}
-
-//----------------------------------------------------------------------
 auto FTerm::getFSystem() -> std::unique_ptr<FSystem>&
 {
   static const auto& fsys = make_unique<std::unique_ptr<FSystem>>(make_unique<FSystemImpl>());
@@ -198,80 +191,87 @@ auto FTerm::getFSystem() -> std::unique_ptr<FSystem>&
 }
 
 //----------------------------------------------------------------------
-auto FTerm::getFOptiMove() -> const std::unique_ptr<FOptiMove>&
+auto FTerm::getFTermData() -> FTermData&
+{
+  static const auto& data = make_unique<FTermData>();
+  return *data;
+}
+
+//----------------------------------------------------------------------
+auto FTerm::getFOptiMove() -> FOptiMove&
 {
   static const auto& opti_move = make_unique<FOptiMove>();
-  return opti_move;
+  return *opti_move;
 }
 
 //----------------------------------------------------------------------
-auto FTerm::getFOptiAttr() -> const std::unique_ptr<FOptiAttr>&
+auto FTerm::getFOptiAttr() -> FOptiAttr&
 {
   static const auto& opti_attr = make_unique<FOptiAttr>();
-  return opti_attr;
+  return *opti_attr;
 }
 
 //----------------------------------------------------------------------
-auto FTerm::getFTermDetection() -> const std::unique_ptr<FTermDetection>&
+auto FTerm::getFTermDetection() -> FTermDetection&
 {
   static const auto& term_detection = make_unique<FTermDetection>();
-  return term_detection;
+  return *term_detection;
 }
 
 //----------------------------------------------------------------------
-auto FTerm::getFTermXTerminal() -> const std::unique_ptr<FTermXTerminal>&
+auto FTerm::getFTermXTerminal() -> FTermXTerminal&
 {
   static const auto& xterm = make_unique<FTermXTerminal>();
-  return xterm;
+  return *xterm;
 }
 
 //----------------------------------------------------------------------
-auto FTerm::getFKeyboard() -> const std::unique_ptr<FKeyboard>&
+auto FTerm::getFKeyboard() -> FKeyboard&
 {
   static const auto& keyboard = make_unique<FKeyboard>();
-  return keyboard;
+  return *keyboard;
 }
 
 //----------------------------------------------------------------------
-auto FTerm::getFMouseControl() -> const std::unique_ptr<FMouseControl>&
+auto FTerm::getFMouseControl() -> FMouseControl&
 {
   static const auto& mouse = make_unique<FMouseControl>();
-  return mouse;
+  return *mouse;
 }
 
 #if defined(__linux__) || defined(UNIT_TEST)
 //----------------------------------------------------------------------
-auto FTerm::getFTermLinux() -> const std::unique_ptr<FTermLinux>&
+auto FTerm::getFTermLinux() -> FTermLinux&
 {
   static const auto& linux_console = make_unique<FTermLinux>();
-  return linux_console;
+  return *linux_console;
 }
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 //----------------------------------------------------------------------
-auto FTerm::getFTermFreeBSD() -> const std::unique_ptr<FTermFreeBSD>&
+auto FTerm::getFTermFreeBSD() -> FTermFreeBSD&
 {
   static const auto& freebsd_console = make_unique<FTermFreeBSD>();
-  return freebsd_console;
+  return *freebsd_console;
 }
 #endif
 
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 //----------------------------------------------------------------------
-auto FTerm::getFTermOpenBSD() -> const std::unique_ptr<FTermOpenBSD>&
+auto FTerm::getFTermOpenBSD() -> FTermOpenBSD&
 {
   static const auto& openbsd_console = make_unique<FTermOpenBSD>();
-  return openbsd_console;
+  return *openbsd_console;
 }
 #endif
 
 #if DEBUG
 //----------------------------------------------------------------------
-auto FTerm::getFTermDebugData() -> const std::unique_ptr<FTermDebugData>&
+auto FTerm::getFTermDebugData() -> FTermDebugData&
 {
   static const auto& debug_data = make_unique<FTermDebugData>();
-  return debug_data;
+  return *debug_data;
 }
 #endif  // DEBUG
 
@@ -284,169 +284,169 @@ bool FTerm::isNormal (const FChar& ch)
 //----------------------------------------------------------------------
 bool FTerm::hasUTF8()
 {
-  const auto& data = FTerm::getFTermData();
-  return data->hasUTF8Console();
+  auto& data = FTerm::getFTermData();
+  return data.hasUTF8Console();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isMonochron()
 {
-  const auto& data = FTerm::getFTermData();
-  return data->isMonochron();
+  auto& data = FTerm::getFTermData();
+  return data.isMonochron();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isAnsiTerminal()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isAnsiTerminal();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isAnsiTerminal();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isXTerminal()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isXTerminal();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isXTerminal();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isRxvtTerminal()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isRxvtTerminal();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isRxvtTerminal();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isUrxvtTerminal()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isUrxvtTerminal();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isUrxvtTerminal();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isKdeTerminal()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isKdeTerminal();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isKdeTerminal();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isGnomeTerminal()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isGnomeTerminal();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isGnomeTerminal();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isPuttyTerminal()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isPuttyTerminal();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isPuttyTerminal();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isWindowsTerminal()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isWindowsTerminal();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isWindowsTerminal();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isTeraTerm()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isTeraTerm();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isTeraTerm();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isCygwinTerminal()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isCygwinTerminal();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isCygwinTerminal();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isMinttyTerm()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isMinttyTerm();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isMinttyTerm();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isLinuxTerm()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isLinuxTerm();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isLinuxTerm();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isFreeBSDTerm()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isFreeBSDTerm();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isFreeBSDTerm();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isNetBSDTerm()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isNetBSDTerm();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isNetBSDTerm();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isOpenBSDTerm()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isOpenBSDTerm();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isOpenBSDTerm();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isSunTerminal()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isSunTerminal();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isSunTerminal();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isScreenTerm()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isScreenTerm();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isScreenTerm();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isTmuxTerm()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isTmuxTerm();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isTmuxTerm();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isKtermTerminal()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isKtermTerminal();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isKtermTerminal();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isMltermTerminal()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isMltermTerminal();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isMltermTerminal();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isKittyTerminal()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
-  return term_detection->isKittyTerminal();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.isKittyTerminal();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::isNewFont()
 {
-  const auto& data = FTerm::getFTermData();
-  return data->isNewFont();
+  auto& data = FTerm::getFTermData();
+  return data.isNewFont();
 }
 
 //----------------------------------------------------------------------
@@ -469,29 +469,29 @@ bool FTerm::isCursorHideable()
 //----------------------------------------------------------------------
 bool FTerm::hasChangedTermSize()
 {
-  const auto& data = FTerm::getFTermData();
-  return data->hasTermResized();
+  auto& data = FTerm::getFTermData();
+  return data.hasTermResized();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::hasShadowCharacter()
 {
-  const auto& data = FTerm::getFTermData();
-  return data->hasShadowCharacter();
+  auto& data = FTerm::getFTermData();
+  return data.hasShadowCharacter();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::hasHalfBlockCharacter()
 {
-  const auto& data = FTerm::getFTermData();
-  return data->hasHalfBlockCharacter();
+  auto& data = FTerm::getFTermData();
+  return data.hasHalfBlockCharacter();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::hasAlternateScreen()
 {
-  const auto& data = FTerm::getFTermData();
-  return data->hasAlternateScreen();
+  auto& data = FTerm::getFTermData();
+  return data.hasAlternateScreen();
 }
 
 //----------------------------------------------------------------------
@@ -513,8 +513,8 @@ bool FTerm::canChangeColorPalette()
 //----------------------------------------------------------------------
 void FTerm::setTermType (const std::string& term_name)
 {
-  const auto& data = FTerm::getFTermData();
-  data->setTermType(term_name);
+  auto& data = FTerm::getFTermData();
+  data.setTermType(term_name);
 }
 
 //----------------------------------------------------------------------
@@ -532,14 +532,14 @@ void FTerm::redefineDefaultColors (bool enable)
   if ( isNewFont() )  // NewFont need the reverse-video attribute
     return;
 
-  getFTermXTerminal()->redefineDefaultColors (enable);
+  getFTermXTerminal().redefineDefaultColors (enable);
 }
 
 //----------------------------------------------------------------------
 void FTerm::setDblclickInterval (const uInt64 timeout)
 {
   const auto& mouse = FTerm::getFMouseControl();
-  mouse->setDblclickInterval(timeout);
+  mouse.setDblclickInterval(timeout);
 }
 
 //----------------------------------------------------------------------
@@ -547,36 +547,36 @@ void FTerm::useAlternateScreen (bool enable)
 {
   // Sets alternate screen usage
 
-  getFTermData()->useAlternateScreen(enable);
+  FTerm::getFTermData().useAlternateScreen(enable);
 }
 
 //----------------------------------------------------------------------
 bool FTerm::setUTF8 (bool enable)  // UTF-8 (Unicode)
 {
-  const auto& data = FTerm::getFTermData();
+  auto& data = FTerm::getFTermData();
 
-  if ( data->isUTF8() == enable )
+  if ( data.isUTF8() == enable )
     return enable;
 
   if ( enable )
-    data->setUTF8(true);
+    data.setUTF8(true);
   else
-    data->setUTF8(false);
+    data.setUTF8(false);
 
 #if defined(__linux__)
-  FTerm::getFTermLinux()->setUTF8 (enable);
+  FTerm::getFTermLinux().setUTF8 (enable);
 #endif
 
-  return data->isUTF8();
+  return data.isUTF8();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::setVGAFont()
 {
-  const auto& data = FTerm::getFTermData();
+  auto& data = FTerm::getFTermData();
 
-  if ( data->isVGAFont() )
-    return data->isVGAFont();
+  if ( data.isVGAFont() )
+    return data.isVGAFont();
 
   if ( hasNoFontSettingOption() )
     return false;
@@ -584,35 +584,35 @@ bool FTerm::setVGAFont()
   if ( isXTerminal() || isScreenTerm()
     || isUrxvtTerminal() || FTermcap::osc_support )
   {
-    data->setVGAFont(true);
+    data.setVGAFont(true);
     // Set font in xterm to vga
-    getFTermXTerminal()->setFont("vga");
-    data->setTermEncoding (Encoding::PC);
-    data->setNewFont(false);
+    getFTermXTerminal().setFont("vga");
+    data.setTermEncoding (Encoding::PC);
+    data.setNewFont(false);
   }
 #if defined(__linux__)
   else if ( isLinuxTerm() )
   {
-    const auto& linux_console = FTerm::getFTermLinux();
-    data->setVGAFont(linux_console->loadVGAFont());
+    auto& linux_console = FTerm::getFTermLinux();
+    data.setVGAFont(linux_console.loadVGAFont());
   }
 #endif  // defined(__linux__)
   else
-    data->setVGAFont(false);
+    data.setVGAFont(false);
 
-  if ( data->isVGAFont() )
+  if ( data.isVGAFont() )
   {
-    data->supportShadowCharacter (true);
-    data->supportHalfBlockCharacter (true);
+    data.supportShadowCharacter (true);
+    data.supportHalfBlockCharacter (true);
   }
 
-  return data->isVGAFont();
+  return data.isVGAFont();
 }
 
 //----------------------------------------------------------------------
 bool FTerm::setNewFont()
 {
-  const auto& data = FTerm::getFTermData();
+  auto& data = FTerm::getFTermData();
 
   if ( isNewFont() )
     return true;
@@ -623,24 +623,24 @@ bool FTerm::setNewFont()
   if ( isXTerminal() || isScreenTerm()
     || isUrxvtTerminal() || FTermcap::osc_support )
   {
-    data->setNewFont(true);
+    data.setNewFont(true);
     // Set font in xterm to 8x16graph
-    getFTermXTerminal()->setFont("8x16graph");
+    getFTermXTerminal().setFont("8x16graph");
   }
 #if defined(__linux__)
   else if ( isLinuxTerm() )
   {
-    const auto& linux_console = FTerm::getFTermLinux();
-    data->setNewFont(linux_console->loadNewFont());
+    auto& linux_console = FTerm::getFTermLinux();
+    data.setNewFont(linux_console.loadNewFont());
   }
 #endif  // defined(__linux__)
   else
-    data->setNewFont(false);
+    data.setNewFont(false);
 
   if ( isNewFont() )
   {
-    data->supportShadowCharacter (true);
-    data->supportHalfBlockCharacter (true);
+    data.supportShadowCharacter (true);
+    data.supportHalfBlockCharacter (true);
   }
 
   return isNewFont();
@@ -650,28 +650,28 @@ bool FTerm::setNewFont()
 bool FTerm::resetFont()
 {
   bool retval{false};
-  const auto& data = FTerm::getFTermData();
+  auto& data = FTerm::getFTermData();
 
-  if ( ! (data->isNewFont() || data->isVGAFont()) )
+  if ( ! (data.isNewFont() || data.isVGAFont()) )
     return false;
 
-  data->setNewFont(false);
-  data->setVGAFont(false);
+  data.setNewFont(false);
+  data.setVGAFont(false);
 
   if ( isXTerminal() || isScreenTerm()
     || isUrxvtTerminal() || FTermcap::osc_support )
   {
-    const auto& font = data->getXtermFont();
+    const auto& font = data.getXtermFont();
 
     if ( font.getLength() > 2 )
     {
       // restore saved xterm font
-      getFTermXTerminal()->setFont(font);
+      getFTermXTerminal().setFont(font);
     }
     else
     {
       // Set font in xterm to vga
-      getFTermXTerminal()->setFont("vga");
+      getFTermXTerminal().setFont("vga");
     }
 
     retval = true;
@@ -679,15 +679,15 @@ bool FTerm::resetFont()
 #if defined(__linux__)
   else if ( isLinuxTerm() )
   {
-    const auto& linux_console = FTerm::getFTermLinux();
-    retval = linux_console->loadOldFont();
+    auto& linux_console = FTerm::getFTermLinux();
+    retval = linux_console.loadOldFont();
   }
 #endif  // defined(__linux__)
 
   if ( retval )
   {
-    data->setVGAFont(false);
-    data->setNewFont(false);
+    data.setVGAFont(false);
+    data.setNewFont(false);
   }
 
   return retval;
@@ -696,9 +696,9 @@ bool FTerm::resetFont()
 //----------------------------------------------------------------------
 int FTerm::openConsole()
 {
-  const auto& data = FTerm::getFTermData();
-  int fd = data->getTTYFileDescriptor();
-  const auto& termfilename = data->getTermFileName();
+  auto& data = FTerm::getFTermData();
+  int fd = data.getTTYFileDescriptor();
+  const auto& termfilename = data.getTermFileName();
 
   if ( termfilename.empty() )
     return 0;
@@ -720,7 +720,7 @@ int FTerm::openConsole()
   {
     const auto& fsys = FTerm::getFSystem();
     fd = fsys->open(entry, O_RDWR, 0);
-    data->setTTYFileDescriptor(fd);
+    data.setTTYFileDescriptor(fd);
 
     if ( fd >= 0 )
       return 0;
@@ -732,8 +732,8 @@ int FTerm::openConsole()
 //----------------------------------------------------------------------
 int FTerm::closeConsole()
 {
-  const auto& data = FTerm::getFTermData();
-  const int fd = data->getTTYFileDescriptor();
+  auto& data = FTerm::getFTermData();
+  const int fd = data.getTTYFileDescriptor();
   int ret{-1};
 
   if ( fd < 0 )  // console is already closed
@@ -741,7 +741,7 @@ int FTerm::closeConsole()
 
   const auto& fsys = FTerm::getFSystem();
   ret = fsys->close(fd);  // close console
-  data->setTTYFileDescriptor(-1);
+  data.setTTYFileDescriptor(-1);
 
   if ( ret == 0 )
     return 0;
@@ -754,12 +754,12 @@ std::string FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
 {
   // Returns the cursor move string
 
-  const auto& data = FTerm::getFTermData();
+  auto& data = FTerm::getFTermData();
 
-  if ( data->hasCursorOptimisation() )
+  if ( data.hasCursorOptimisation() )
   {
-    const auto& opti_move = FTerm::getFOptiMove();
-    return opti_move->moveCursor (xold, yold, xnew, ynew);
+    auto& opti_move = FTerm::getFOptiMove();
+    return opti_move.moveCursor (xold, yold, xnew, ynew);
   }
   else
   {
@@ -774,9 +774,9 @@ const char* FTerm::cursorsVisibilityString (bool enable)
   // Hides or shows the input cursor on the terminal
 
   const char* visibility_str{nullptr};
-  const auto& data = FTerm::getFTermData();
+  auto& data = FTerm::getFTermData();
 
-  if ( data->isCursorHidden() == enable )
+  if ( data.isCursorHidden() == enable )
     return nullptr;
 
   if ( enable )
@@ -784,14 +784,14 @@ const char* FTerm::cursorsVisibilityString (bool enable)
     visibility_str = disableCursorString();
 
     if ( visibility_str )
-      data->setCursorHidden (true);  // Global state
+      data.setCursorHidden (true);  // Global state
   }
   else
   {
     visibility_str = enableCursorString();
 
     if ( visibility_str )
-      data->setCursorHidden (false);  // Global state
+      data.setCursorHidden (false);  // Global state
   }
 
   return visibility_str;
@@ -802,9 +802,9 @@ void FTerm::detectTermSize()
 {
   // Detect the terminal width and height
 
-  const auto& data = FTerm::getFTermData();
+  auto& data = FTerm::getFTermData();
   struct winsize win_size{};
-  auto& term_geometry = data->getTermGeometry();
+  auto& term_geometry = data.getTermGeometry();
   int ret{};
   errno = 0;
 
@@ -830,9 +830,9 @@ void FTerm::detectTermSize()
     term_geometry.setRect(1, 1, win_size.ws_col, win_size.ws_row);
   }
 
-  const auto& opti_move = FTerm::getFOptiMove();
-  opti_move->setTermSize ( term_geometry.getWidth()
-                         , term_geometry.getHeight() );
+  auto& opti_move = FTerm::getFOptiMove();
+  opti_move.setTermSize ( term_geometry.getWidth()
+                        , term_geometry.getHeight() );
 }
 
 //----------------------------------------------------------------------
@@ -840,7 +840,7 @@ void FTerm::setTermSize (const FSize& size)
 {
   // Set xterm size
 
-  getFTermXTerminal()->setTermSize (size);
+  getFTermXTerminal().setTermSize (size);
 }
 
 //----------------------------------------------------------------------
@@ -848,7 +848,7 @@ void FTerm::setTermTitle (const FString& title)
 {
   // Set the xterm window title
 
-  getFTermXTerminal()->setTitle (title);
+  getFTermXTerminal().setTitle (title);
 }
 
 //----------------------------------------------------------------------
@@ -869,7 +869,7 @@ void FTerm::setKDECursor (KdeKonsoleCursorShape style)
 void FTerm::saveColorMap()
 {
 #if defined(__linux__)
-  FTerm::getFTermLinux()->saveColorMap();
+  FTerm::getFTermLinux().saveColorMap();
 #endif
 }
 
@@ -884,7 +884,7 @@ void FTerm::resetColorMap()
 
 #if defined(__linux__)
   else
-    FTerm::getFTermLinux()->resetColorMap();
+    FTerm::getFTermLinux().resetColorMap();
 #endif
 
   if ( op )
@@ -926,7 +926,7 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
 #if defined(__linux__)
   else
   {
-    state = FTerm::getFTermLinux()->setPalette(index, r, g, b);
+    state = FTerm::getFTermLinux().setPalette(index, r, g, b);
   }
 #endif
 
@@ -938,20 +938,20 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
 #if defined(__linux__) || defined(UNIT_TEST)
 void FTerm::setBeep (int Hz, int ms)
 {
-  const auto& linux_console = FTerm::getFTermLinux();
-  linux_console->setBeep (Hz, ms);
+  auto& linux_console = FTerm::getFTermLinux();
+  linux_console.setBeep (Hz, ms);
 }
 #elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 void FTerm::setBeep (int Hz, int ms)
 {
-  const auto& freebsd_console = FTerm::getFTermFreeBSD();
-  freebsd_console->setBeep (Hz, ms);
+  auto& freebsd_console = FTerm::getFTermFreeBSD();
+  freebsd_console.setBeep (Hz, ms);
 }
 #elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 void FTerm::setBeep (int Hz, int ms)
 {
-  const auto& openbsd_console = FTerm::getFTermOpenBSD();
-  openbsd_console->setBeep (Hz, ms);
+  auto& openbsd_console = FTerm::getFTermOpenBSD();
+  openbsd_console.setBeep (Hz, ms);
 }
 #else
 void FTerm::setBeep (int, int)
@@ -962,18 +962,18 @@ void FTerm::setBeep (int, int)
 void FTerm::resetBeep()
 {
 #if defined(__linux__) || defined(UNIT_TEST)
-  const auto& linux_console = FTerm::getFTermLinux();
-  linux_console->resetBeep();
+  auto& linux_console = FTerm::getFTermLinux();
+  linux_console.resetBeep();
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  const auto& freebsd_console = FTerm::getFTermFreeBSD();
-  freebsd_console->resetBeep();
+  auto& freebsd_console = FTerm::getFTermFreeBSD();
+  freebsd_console.resetBeep();
 #endif
 
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
-  const auto& openbsd_console = FTerm::getFTermOpenBSD();
-  openbsd_console->resetBeep();
+  auto& openbsd_console = FTerm::getFTermOpenBSD();
+  openbsd_console.resetBeep();
 #endif
 }
 
@@ -987,8 +987,8 @@ void FTerm::beep()
 //----------------------------------------------------------------------
 void FTerm::setEncoding (Encoding enc)
 {
-  const auto& data = FTerm::getFTermData();
-  data->setTermEncoding (enc);
+  auto& data = FTerm::getFTermData();
+  data.setTermEncoding (enc);
 
   assert ( enc == Encoding::UTF8
         || enc == Encoding::VT100  // VT100 line drawing
@@ -1006,7 +1006,7 @@ void FTerm::setEncoding (Encoding enc)
 
     case Encoding::VT100:
     case Encoding::PC:
-      if ( isXTerminal() && data->hasUTF8Console() )
+      if ( isXTerminal() && data.hasUTF8Console() )
         putchar() = &FTerm::putchar_UTF8;
       else
         putchar() = &FTerm::putchar_ASCII;
@@ -1020,31 +1020,31 @@ void FTerm::setEncoding (Encoding enc)
 
   if ( isLinuxTerm() )
   {
-    const auto& opti_move = FTerm::getFOptiMove();
+    auto& opti_move = FTerm::getFOptiMove();
 
     if ( enc == Encoding::VT100 || enc == Encoding::PC )
     {
       const char* empty{nullptr};
-      opti_move->set_tabular (empty);
+      opti_move.set_tabular (empty);
     }
     else
-      opti_move->set_tabular (TCAP(t_tab));
+      opti_move.set_tabular (TCAP(t_tab));
   }
 }
 
 //----------------------------------------------------------------------
 Encoding FTerm::getEncoding()
 {
-  const auto& data = FTerm::getFTermData();
-  return data->getTermEncoding();
+  auto& data = FTerm::getFTermData();
+  return data.getTermEncoding();
 }
 
 //----------------------------------------------------------------------
 std::string FTerm::getEncodingString()
 {
-  const auto& data = FTerm::getFTermData();
-  const auto& term_encoding = data->getTermEncoding();
-  const auto& encoding_list = data->getEncodingList();
+  auto& data = FTerm::getFTermData();
+  const auto& term_encoding = data.getTermEncoding();
+  const auto& encoding_list = data.getEncodingList();
   const auto& end = encoding_list.end();
 
   for (auto it = encoding_list.begin(); it != end; ++it )
@@ -1064,8 +1064,8 @@ bool FTerm::charEncodable (wchar_t c)
 //----------------------------------------------------------------------
 wchar_t FTerm::charEncode (wchar_t c)
 {
-  const auto& data = FTerm::getFTermData();
-  return charEncode (c, data->getTermEncoding());
+  auto& data = FTerm::getFTermData();
+  return charEncode (c, data.getTermEncoding());
 }
 
 //----------------------------------------------------------------------
@@ -1190,32 +1190,32 @@ void FTerm::initScreenSettings()
 #if defined(__linux__)
   // Important: Do not use setNewFont() or setVGAFont() after
   //            the console character mapping has been initialized
-  const auto& linux_console = FTerm::getFTermLinux();
-  linux_console->initCharMap();
+  auto& linux_console = FTerm::getFTermLinux();
+  linux_console.initCharMap();
 #elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  const auto& freebsd_console = FTerm::getFTermFreeBSD();
-  freebsd_console->initCharMap();
+  auto& freebsd_console = FTerm::getFTermFreeBSD();
+  freebsd_console.initCharMap();
 #endif
 
   // set xterm underline cursor
-  getFTermXTerminal()->setCursorStyle (XTermCursorStyle::BlinkingUnderline);
+  getFTermXTerminal().setCursorStyle (XTermCursorStyle::BlinkingUnderline);
 
   // set xterm color settings to defaults
-  getFTermXTerminal()->setDefaults();
+  getFTermXTerminal().setDefaults();
 }
 
 //----------------------------------------------------------------------
 const char* FTerm::changeAttribute (FChar& term_attr, FChar& next_attr)
 {
-  const auto& opti_attr = FTerm::getFOptiAttr();
-  return opti_attr->changeAttribute (term_attr, next_attr);
+  auto& opti_attr = FTerm::getFOptiAttr();
+  return opti_attr.changeAttribute (term_attr, next_attr);
 }
 
 //----------------------------------------------------------------------
 void FTerm::changeTermSizeFinished()
 {
-  const auto& data = FTerm::getFTermData();
-  data->setTermResized(false);
+  auto& data = FTerm::getFTermData();
+  data.setTermResized(false);
 }
 
 
@@ -1231,15 +1231,15 @@ void FTerm::init_global_values()
 {
   // Initialize global values
 
-  const auto& data = FTerm::getFTermData();
+  auto& data = FTerm::getFTermData();
 
   // Preset to false
-  data->setNewFont(false);
+  data.setNewFont(false);
 
   if ( ! getStartOptions().terminal_detection )
   {
-    const auto& term_detection = FTerm::getFTermDetection();
-    term_detection->setTerminalDetection (false);
+    auto& term_detection = FTerm::getFTermDetection();
+    term_detection.setTerminalDetection (false);
   }
 }
 
@@ -1252,8 +1252,8 @@ void FTerm::init_terminal_device_path()
   if ( ttyname_r(stdout_no, termfilename.data(), termfilename.size()) )
     termfilename[0] = '\0';
 
-  const auto& data = FTerm::getFTermData();
-  data->setTermFileName(termfilename.data());
+  auto& data = FTerm::getFTermData();
+  data.setTermFileName(termfilename.data());
 }
 
 //----------------------------------------------------------------------
@@ -1325,7 +1325,7 @@ void FTerm::init_alt_charset()
 void FTerm::init_pc_charset()
 {
   bool reinit{false};
-  const auto& opti_attr = FTerm::getFOptiAttr();
+  auto& opti_attr = FTerm::getFOptiAttr();
 
   // rxvt does not support pc charset
   if ( isRxvtTerminal() || isUrxvtTerminal() )
@@ -1333,12 +1333,12 @@ void FTerm::init_pc_charset()
 
   if ( isGnomeTerminal() || isLinuxTerm() )
   {
-    const auto& data = FTerm::getFTermData();
+    auto& data = FTerm::getFTermData();
 
     // Fallback if tcap "S2" is not found
     if ( ! TCAP(t_enter_pc_charset_mode) )
     {
-      if ( data->hasUTF8Console() )
+      if ( data.hasUTF8Console() )
       {
         // Select iso8859-1 + null mapping
         TCAP(t_enter_pc_charset_mode) = ESC "%@" ESC "(U";
@@ -1349,7 +1349,7 @@ void FTerm::init_pc_charset()
         TCAP(t_enter_pc_charset_mode) = ESC "(U";
       }
 
-      opti_attr->set_enter_pc_charset_mode \
+      opti_attr.set_enter_pc_charset_mode \
         (TCAP(t_enter_pc_charset_mode));
       reinit = true;
     }
@@ -1357,7 +1357,7 @@ void FTerm::init_pc_charset()
     // Fallback if tcap "S3" is not found
     if ( ! TCAP(t_exit_pc_charset_mode) )
     {
-      if ( data->hasUTF8Console() )
+      if ( data.hasUTF8Console() )
       {
         // Select ascii mapping + utf8
         TCAP(t_exit_pc_charset_mode) = ESC "(B" ESC "%G";
@@ -1368,14 +1368,14 @@ void FTerm::init_pc_charset()
         TCAP(t_enter_pc_charset_mode) = ESC "(B";
       }
 
-      opti_attr->set_exit_pc_charset_mode \
+      opti_attr.set_exit_pc_charset_mode \
           (TCAP(t_exit_pc_charset_mode));
       reinit = true;
     }
   }
 
   if ( reinit )
-    opti_attr->initialize();
+    opti_attr.initialize();
 }
 
 //----------------------------------------------------------------------
@@ -1408,8 +1408,8 @@ void FTerm::init_cygwin_charmap()
   }
 
   // General encoding changes
-  const auto& data = FTerm::getFTermData();
-  charSubstitution& sub_map = data->getCharSubstitutionMap();
+  auto& data = FTerm::getFTermData();
+  charSubstitution& sub_map = data.getCharSubstitutionMap();
   sub_map[L'•'] = L'*';
   sub_map[L'●'] = L'*';
   sub_map[L'◘'] = L'*';
@@ -1495,8 +1495,8 @@ void FTerm::init_optiMove()
     FTermcap::eat_nl_glitch
   };
 
-  const auto& opti_move = FTerm::getFOptiMove();
-  opti_move->setTermEnvironment(optimove_env);
+  auto& opti_move = FTerm::getFOptiMove();
+  opti_move.setTermEnvironment(optimove_env);
 }
 
 //----------------------------------------------------------------------
@@ -1546,24 +1546,24 @@ void FTerm::init_optiAttr()
     FTermcap::ansi_default_color
   };
 
-  const auto& opti_attr = FTerm::getFOptiAttr();
-  opti_attr->setTermEnvironment(optiattr_env);
+  auto& opti_attr = FTerm::getFOptiAttr();
+  opti_attr.setTermEnvironment(optiattr_env);
 }
 
 //----------------------------------------------------------------------
 bool FTerm::init_font()
 {
-  const auto& data = FTerm::getFTermData();
+  auto& data = FTerm::getFTermData();
 
   if ( getStartOptions().vgafont && ! setVGAFont() )
   {
-    data->setExitMessage("VGAfont is not supported by this terminal");
+    data.setExitMessage("VGAfont is not supported by this terminal");
     FApplication::exit(EXIT_FAILURE);
   }
 
   if ( getStartOptions().newfont && ! setNewFont() )
   {
-    data->setExitMessage("Newfont is not supported by this terminal");
+    data.setExitMessage("Newfont is not supported by this terminal");
     FApplication::exit(EXIT_FAILURE);
   }
 
@@ -1575,8 +1575,8 @@ void FTerm::init_locale()
 {
   // Init current locale
 
-  const auto& data = FTerm::getFTermData();
-  const auto& termtype = data->getTermType();
+  auto& data = FTerm::getFTermData();
+  const auto& termtype = data.getTermType();
   const char* locale_name = std::setlocale (LC_ALL, "");
   std::setlocale (LC_NUMERIC, "");
 
@@ -1654,8 +1654,8 @@ inline void FTerm::init_encoding_set()
 {
   // Define the encoding set
 
-  const auto& data = FTerm::getFTermData();
-  auto& encoding_list = data->getEncodingList();
+  auto& data = FTerm::getFTermData();
+  auto& encoding_list = data.getEncodingList();
   encoding_list["UTF8"]  = Encoding::UTF8;
   encoding_list["UTF-8"] = Encoding::UTF8;
   encoding_list["VT100"] = Encoding::VT100;  // VT100 line drawing
@@ -1667,33 +1667,33 @@ inline void FTerm::init_encoding_set()
 void FTerm::init_term_encoding()
 {
   const int stdout_no = FTermios::getStdOut();
-  const auto& data = FTerm::getFTermData();
-  const auto& termtype = data->getTermType();
+  auto& data = FTerm::getFTermData();
+  const auto& termtype = data.getTermType();
   const auto& fsys = FTerm::getFSystem();
 
   if ( fsys->isTTY(stdout_no)
     && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
   {
-    data->setUTF8Console(true);
-    data->setTermEncoding (Encoding::UTF8);
+    data.setUTF8Console(true);
+    data.setTermEncoding (Encoding::UTF8);
     putchar() = &FTerm::putchar_UTF8;  // function pointer
-    data->setUTF8(true);
+    data.setUTF8(true);
     setUTF8(true);
-    const auto& keyboard = FTerm::getFKeyboard();
-    keyboard->enableUTF8();
+    auto& keyboard = FTerm::getFKeyboard();
+    keyboard.enableUTF8();
   }
   else if ( fsys->isTTY(stdout_no)
          && (termtype.length() > 0)
          && (TCAP(t_exit_alt_charset_mode) != nullptr) )
   {
-    data->setVT100Console (true);
-    data->setTermEncoding (Encoding::VT100);
+    data.setVT100Console (true);
+    data.setTermEncoding (Encoding::VT100);
     putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
   else
   {
-    data->setASCIIConsole (true);
-    data->setTermEncoding (Encoding::ASCII);
+    data.setASCIIConsole (true);
+    data.setTermEncoding (Encoding::ASCII);
     putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
 }
@@ -1701,13 +1701,13 @@ void FTerm::init_term_encoding()
 //----------------------------------------------------------------------
 void FTerm::init_individual_term_encoding()
 {
-  const auto& data = FTerm::getFTermData();
+  auto& data = FTerm::getFTermData();
 
   if ( isNewFont()
-    || (isPuttyTerminal() && ! data->isUTF8())
-    || (isTeraTerm() && ! data->isUTF8()) )
+    || (isPuttyTerminal() && ! data.isUTF8())
+    || (isTeraTerm() && ! data.isUTF8()) )
   {
-    data->setTermEncoding (Encoding::PC);
+    data.setTermEncoding (Encoding::PC);
     putchar() = &FTerm::putchar_ASCII;  // function pointer
 
     if ( hasUTF8()
@@ -1720,9 +1720,9 @@ void FTerm::init_individual_term_encoding()
 //----------------------------------------------------------------------
 void FTerm::init_force_vt100_encoding()
 {
-  const auto& data = FTerm::getFTermData();
-  data->setVT100Console(true);
-  data->setTermEncoding (Encoding::VT100);
+  auto& data = FTerm::getFTermData();
+  data.setVT100Console(true);
+  data.setTermEncoding (Encoding::VT100);
   putchar() = &FTerm::putchar_ASCII;  // function pointer
 }
 
@@ -1732,13 +1732,13 @@ void FTerm::init_utf8_without_alt_charset()
   // Fall back to ascii for utf-8 terminals that
   // do not support VT100 line drawings
 
-  const auto& data = FTerm::getFTermData();
+  auto& data = FTerm::getFTermData();
 
-  if ( FTermcap::no_utf8_acs_chars && data->isUTF8()
-    && data->getTermEncoding() == Encoding::VT100 )
+  if ( FTermcap::no_utf8_acs_chars && data.isUTF8()
+    && data.getTermEncoding() == Encoding::VT100 )
   {
-    data->setASCIIConsole(true);
-    data->setTermEncoding (Encoding::ASCII);
+    data.setASCIIConsole(true);
+    data.setTermEncoding (Encoding::ASCII);
     putchar() = &FTerm::putchar_ASCII;  // function pointer
   }
 }
@@ -1750,14 +1750,14 @@ void FTerm::init_tab_quirks()
   // on the terminal and does not move the cursor to the next tab stop
   // position
 
-  const auto& data = FTerm::getFTermData();
-  const auto& enc = data->getTermEncoding();
+  auto& data = FTerm::getFTermData();
+  const auto& enc = data.getTermEncoding();
 
   if ( enc == Encoding::VT100 || enc == Encoding::PC )
   {
     const char* empty{nullptr};
-    const auto& opti_move = FTerm::getFOptiMove();
-    opti_move->set_tabular (empty);
+    auto& opti_move = FTerm::getFOptiMove();
+    opti_move.set_tabular (empty);
   }
 }
 
@@ -1769,16 +1769,16 @@ void FTerm::init_captureFontAndTitle()
   if ( ! FStartOptions::getFStartOptions().terminal_data_request )
     return;
 
-  getFTermXTerminal()->captureFontAndTitle();
-  const auto& font = getFTermXTerminal()->getFont();
-  const auto& title = getFTermXTerminal()->getTitle();
-  const auto& data = FTerm::getFTermData();
+  getFTermXTerminal().captureFontAndTitle();
+  const auto& font = getFTermXTerminal().getFont();
+  const auto& title = getFTermXTerminal().getTitle();
+  auto& data = FTerm::getFTermData();
 
   if ( ! font.isEmpty() )
-    data->setXtermFont(font);
+    data.setXtermFont(font);
 
   if ( ! title.isEmpty() )
-    data->setXtermTitle(title);
+    data.setXtermTitle(title);
 }
 
 //----------------------------------------------------------------------
@@ -1854,44 +1854,44 @@ void FTerm::restoreColorPalette()
 
   // Reset screen settings
   getColorPaletteTheme()->resetColorPalette();
-  getFTermXTerminal()->resetColorMap();
+  getFTermXTerminal().resetColorMap();
   resetColorMap();
 }
 
 //----------------------------------------------------------------------
 void FTerm::setInsertCursorStyle()
 {
-  getFTermXTerminal()->setCursorStyle (XTermCursorStyle::BlinkingUnderline);
+  getFTermXTerminal().setCursorStyle (XTermCursorStyle::BlinkingUnderline);
   setKDECursor(KdeKonsoleCursorShape::Underline);
 
 #if defined(__linux__)
-  const auto& linux_console = FTerm::getFTermLinux();
-  linux_console->setCursorStyle (LinuxConsoleCursorStyle::Underscore);
+  auto& linux_console = FTerm::getFTermLinux();
+  linux_console.setCursorStyle (LinuxConsoleCursorStyle::Underscore);
 #elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  const auto& freebsd_console = FTerm::getFTermFreeBSD();
-  freebsd_console->setCursorStyle (FreeBSDConsoleCursorStyle::Destructive);
+  auto& freebsd_console = FTerm::getFTermFreeBSD();
+  freebsd_console.setCursorStyle (FreeBSDConsoleCursorStyle::Destructive);
 #endif
 
   if ( isUrxvtTerminal() )
-    getFTermXTerminal()->setCursorColor ("rgb:ffff/ffff/ffff");
+    getFTermXTerminal().setCursorColor ("rgb:ffff/ffff/ffff");
 }
 
 //----------------------------------------------------------------------
 void FTerm::setOverwriteCursorStyle()
 {
-  getFTermXTerminal()->setCursorStyle (XTermCursorStyle::SteadyBlock);
+  getFTermXTerminal().setCursorStyle (XTermCursorStyle::SteadyBlock);
   setKDECursor(KdeKonsoleCursorShape::Block);
 
 #if defined(__linux__)
-  const auto& linux_console = FTerm::getFTermLinux();
-  linux_console->setCursorStyle (LinuxConsoleCursorStyle::FullBlock);
+  auto& linux_console = FTerm::getFTermLinux();
+  linux_console.setCursorStyle (LinuxConsoleCursorStyle::FullBlock);
 #elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  const auto& freebsd_console = FTerm::getFTermFreeBSD();
-  freebsd_console->setCursorStyle (FreeBSDConsoleCursorStyle::Normal);
+  auto& freebsd_console = FTerm::getFTermFreeBSD();
+  freebsd_console.setCursorStyle (FreeBSDConsoleCursorStyle::Normal);
 #endif
 
   if ( isUrxvtTerminal() )
-    getFTermXTerminal()->setCursorColor ("rgb:eeee/0000/0000");
+    getFTermXTerminal().setCursorColor ("rgb:eeee/0000/0000");
 }
 
 //----------------------------------------------------------------------
@@ -1913,8 +1913,8 @@ const char* FTerm::enableCursorString()
   if ( isLinuxTerm() )
   {
     // Restore the last used Linux console cursor style
-    const auto& linux_console = FTerm::getFTermLinux();
-    const char* cstyle = linux_console->getCursorStyleString();
+    auto& linux_console = FTerm::getFTermLinux();
+    const char* cstyle = linux_console.getCursorStyleString();
     std::size_t length = std::strlen(enable_str.data());
     std::strncat (enable_str.data(), cstyle, SIZE - length - 1);
   }
@@ -1926,8 +1926,8 @@ const char* FTerm::enableCursorString()
   if ( isFreeBSDTerm() )
   {
     // Restore the last used FreeBSD console cursor style
-    const auto& freebsd_console = FTerm::getFTermFreeBSD();
-    freebsd_console->setCursorStyle (freebsd_console->getCursorStyle());
+    auto& freebsd_console = FTerm::getFTermFreeBSD();
+    freebsd_console.setCursorStyle (freebsd_console.getCursorStyle());
   }
 #endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 
@@ -1971,16 +1971,16 @@ void FTerm::enableMouse()
   if ( TCAP(t_key_mouse) && ! isLinuxTerm() )
     xterm_mouse = true;
 
-  const auto& keyboard = FTerm::getFKeyboard();
-  keyboard->enableMouseSequences();
-  const auto& mouse = FTerm::getFMouseControl();
-  mouse->setMaxWidth (uInt16(getColumnNumber()));
-  mouse->setMaxHeight (uInt16(getLineNumber()));
+  auto& keyboard = FTerm::getFKeyboard();
+  keyboard.enableMouseSequences();
+  auto& mouse = FTerm::getFMouseControl();
+  mouse.setMaxWidth (uInt16(getColumnNumber()));
+  mouse.setMaxHeight (uInt16(getLineNumber()));
   // Enable the linux general purpose mouse (gpm) server
-  mouse->useGpmMouse (gpm_mouse);
+  mouse.useGpmMouse (gpm_mouse);
   // Enable xterm mouse support
-  mouse->useXtermMouse (xterm_mouse);
-  mouse->enable();
+  mouse.useXtermMouse (xterm_mouse);
+  mouse.enable();
 }
 
 //----------------------------------------------------------------------
@@ -1988,8 +1988,8 @@ inline void FTerm::disableMouse()
 {
   // Disable the terminal mouse support
 
-  FTerm::getFKeyboard()->disableMouseSequences();
-  FTerm::getFMouseControl()->disable();
+  FTerm::getFKeyboard().disableMouseSequences();
+  FTerm::getFMouseControl().disable();
 }
 
 //----------------------------------------------------------------------
@@ -2066,7 +2066,7 @@ void FTerm::useAlternateScreenBuffer()
   {
     putstring (TCAP(t_enter_ca_mode));
     std::fflush(stdout);
-    getFTermData()->setAlternateScreenInUse(true);
+    FTerm::getFTermData().setAlternateScreenInUse(true);
   }
 }
 
@@ -2083,7 +2083,7 @@ void FTerm::useNormalScreenBuffer()
   {
     putstring (TCAP(t_exit_ca_mode));
     std::fflush(stdout);
-    getFTermData()->setAlternateScreenInUse(false);
+    FTerm::getFTermData().setAlternateScreenInUse(false);
   }
 
   // restore cursor to position of last save_cursor
@@ -2125,7 +2125,7 @@ void FTerm::init()
   init_alt_charset();
 
   // Pass the terminal capabilities to the keyboard object
-  FTerm::getFKeyboard()->setTermcapMap();
+  FTerm::getFKeyboard().setTermcapMap();
 
   // Initializes locale information
   init_locale();
@@ -2138,7 +2138,7 @@ void FTerm::init()
 
   // Activate meta key sends escape
   if ( isXTerminal() )
-    getFTermXTerminal()->metaSendsESC(true);
+    getFTermXTerminal().metaSendsESC(true);
 
   // switch to application escape key mode
   enableApplicationEscKey();
@@ -2169,7 +2169,7 @@ void FTerm::init()
 
   if ( ! getStartOptions().cursor_optimisation )
   {
-    FTerm::getFTermData()->supportCursorOptimisation(false);
+    FTerm::getFTermData().supportCursorOptimisation(false);
   }
 
   // Activate the VGA or the new graphic font
@@ -2192,13 +2192,13 @@ bool FTerm::init_terminal() const
 {
   // Initialize termios
   FTermios::init();
-  const auto& data = FTerm::getFTermData();
+  auto& data = FTerm::getFTermData();
   const auto& fsys = FTerm::getFSystem();
 
   // Check if stdin is a tty
   if ( ! fsys->isTTY(FTermios::getStdIn()) )
   {
-    data->setExitMessage("FTerm: Standard input is not a TTY.");
+    data.setExitMessage("FTerm: Standard input is not a TTY.");
     FApplication::exit(EXIT_FAILURE);
     return false;
   }
@@ -2217,7 +2217,7 @@ bool FTerm::init_terminal() const
   catch (const std::system_error& ex)
   {
     FString msg = "FTerm: " + FString{ex.what()};
-    data->setExitMessage(msg);
+    data.setExitMessage(msg);
     FApplication::exit(EXIT_FAILURE);
     return false;
   }
@@ -2227,8 +2227,8 @@ bool FTerm::init_terminal() const
 
   // Terminal detection
   FTermDetection::detect();
-  const auto& term_detection = FTerm::getFTermDetection();
-  setTermType (term_detection->getTermType());
+  auto& term_detection = FTerm::getFTermDetection();
+  setTermType (term_detection.getTermType());
   return true;
 }
 
@@ -2236,39 +2236,39 @@ bool FTerm::init_terminal() const
 void FTerm::initOSspecifics() const
 {
 #if defined(__linux__)
-  const auto& linux_console = FTerm::getFTermLinux();
-  linux_console->init();    // Initialize Linux console
+  auto& linux_console = FTerm::getFTermLinux();
+  linux_console.init();    // Initialize Linux console
 
 #if DEBUG
-  const auto& data = FTerm::getFTermData();
-  data->setFramebufferBpp (linux_console->getFramebufferBpp());
+  auto& data = FTerm::getFTermData();
+  data.setFramebufferBpp (linux_console.getFramebufferBpp());
 #endif
 
 #endif  // defined(__linux__)
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  const auto& freebsd_console = FTerm::getFTermFreeBSD();
+  auto& freebsd_console = FTerm::getFTermFreeBSD();
 
   if ( getStartOptions().meta_sends_escape )
-    freebsd_console->enableMetaSendsEscape();
+    freebsd_console.enableMetaSendsEscape();
   else
-    freebsd_console->disableMetaSendsEscape();
+    freebsd_console.disableMetaSendsEscape();
 
   if ( getStartOptions().change_cursorstyle )
-    freebsd_console->enableChangeCursorStyle();
+    freebsd_console.enableChangeCursorStyle();
   else
-    freebsd_console->disableChangeCursorStyle();
+    freebsd_console.disableChangeCursorStyle();
 
-  freebsd_console->init();  // Initialize BSD console
+  freebsd_console.init();  // Initialize BSD console
 #elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
-  const auto& openbsd_console = FTerm::getFTermOpenBSD();
+  auto& openbsd_console = FTerm::getFTermOpenBSD();
 
   if ( getStartOptions().meta_sends_escape )
-    openbsd_console->enableMetaSendsEscape();
+    openbsd_console.enableMetaSendsEscape();
   else
-    openbsd_console->disableMetaSendsEscape();
+    openbsd_console.disableMetaSendsEscape();
 
-  openbsd_console->init();  // Initialize wscons console
+  openbsd_console.init();  // Initialize wscons console
 #endif
 }
 
@@ -2290,13 +2290,13 @@ void FTerm::initBaudRate() const
 {
   const int stdout_no = FTermios::getStdOut();
   const uInt baud = FTermios::getBaudRate();
-  FTerm::getFTermData()->setBaudrate(baud);
+  FTerm::getFTermData().setBaudrate(baud);
   const auto& fsys = FTerm::getFSystem();
 
   if ( fsys->isTTY(stdout_no) )
   {
-    const auto& opti_move = FTerm::getFOptiMove();
-    opti_move->setBaudRate(int(baud));
+    auto& opti_move = FTerm::getFOptiMove();
+    opti_move.setBaudRate(int(baud));
   }
 }
 
@@ -2307,7 +2307,7 @@ void FTerm::finish() const
   resetSignalHandler();
 
   if ( isXTerminal() && ! isRxvtTerminal() )
-    getFTermXTerminal()->resetTitle();
+    getFTermXTerminal().resetTitle();
 
   // Restore the saved termios settings
   FTermios::restoreTTYsettings();
@@ -2327,10 +2327,10 @@ void FTerm::finish() const
   }
 
   // Reset xterm color settings to default values
-  getFTermXTerminal()->resetDefaults();
+  getFTermXTerminal().resetDefaults();
 
   // Set xterm full block cursor
-  getFTermXTerminal()->setCursorStyle (XTermCursorStyle::SteadyBlock);
+  getFTermXTerminal().setCursorStyle (XTermCursorStyle::SteadyBlock);
 
   // Restore the color palette
   restoreColorPalette();
@@ -2351,7 +2351,7 @@ void FTerm::finish() const
 
   // Deactivate meta key sends escape
   if ( isXTerminal() )
-    getFTermXTerminal()->metaSendsESC(false);
+    getFTermXTerminal().metaSendsESC(false);
 
   // Switch to the normal screen
   useNormalScreenBuffer();
@@ -2360,9 +2360,9 @@ void FTerm::finish() const
   disableKeypad();
 
   finish_encoding();
-  const auto& data = FTerm::getFTermData();
+  auto& data = FTerm::getFTermData();
 
-  if ( data->isNewFont() || data->isVGAFont() )
+  if ( data.isNewFont() || data.isVGAFont() )
     resetFont();
 }
 
@@ -2370,14 +2370,14 @@ void FTerm::finish() const
 void FTerm::finishOSspecifics() const
 {
 #if defined(__linux__)
-  const auto& linux_console = FTerm::getFTermLinux();
-  linux_console->finish();
+  auto& linux_console = FTerm::getFTermLinux();
+  linux_console.finish();
 #elif defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  const auto& freebsd_console = FTerm::getFTermFreeBSD();
-  freebsd_console->finish();
+  auto& freebsd_console = FTerm::getFTermFreeBSD();
+  freebsd_console.finish();
 #elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
-  const auto& openbsd_console = FTerm::getFTermOpenBSD();
-  openbsd_console->finish();
+  auto& openbsd_console = FTerm::getFTermOpenBSD();
+  openbsd_console.finish();
 #endif
 }
 
@@ -2385,7 +2385,7 @@ void FTerm::finishOSspecifics() const
 void FTerm::finish_encoding() const
 {
 #if defined(__linux__)
-  if ( isLinuxTerm() && FTerm::getFTermData()->hasUTF8Console() )
+  if ( isLinuxTerm() && FTerm::getFTermData().hasUTF8Console() )
     setUTF8(true);
 #endif
 }
@@ -2394,8 +2394,8 @@ void FTerm::finish_encoding() const
 void FTerm::printExitMessage()
 {
   // Print exit message
-  const auto& data = FTerm::getFTermData();
-  const auto& exit_message = data->getExitMessage();
+  auto& data = FTerm::getFTermData();
+  const auto& exit_message = data.getExitMessage();
 
   if ( ! exit_message.isEmpty() )
     std::cerr << "Exit: " << exit_message << std::endl;
@@ -2404,10 +2404,10 @@ void FTerm::printExitMessage()
 //----------------------------------------------------------------------
 void FTerm::terminalSizeChange()
 {
-  const auto& data = FTerm::getFTermData();
+  auto& data = FTerm::getFTermData();
 
   // Initialize a resize event to the root element
-  data->setTermResized(true);
+  data.setTermResized(true);
 }
 
 //----------------------------------------------------------------------
@@ -2418,11 +2418,11 @@ void FTerm::processTermination (int signum)
 
   std::fflush (stderr);
   std::fflush (stdout);
-  const auto& data = FTerm::getFTermData();
+  auto& data = FTerm::getFTermData();
   FStringStream msg{};
   msg << "Program stopped: signal " << signum
       << " (" << strsignal(signum) << ")";
-  data->setExitMessage(msg.str());
+  data.setExitMessage(msg.str());
   printExitMessage();
   std::terminate();
 }

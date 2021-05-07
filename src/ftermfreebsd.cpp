@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -61,9 +61,9 @@ bool FTermFreeBSD::setCursorStyle (CursorStyle style)
     return false;
 
   cursor_style = style;
-  const auto& fterm_data = FTerm::getFTermData();
+  auto& fterm_data = FTerm::getFTermData();
 
-  if ( fterm_data->isCursorHidden() )
+  if ( fterm_data.isCursorHidden() )
     return false;
 
   return setFreeBSDCursorStyle(style);

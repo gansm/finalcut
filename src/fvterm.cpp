@@ -601,8 +601,8 @@ void FVTerm::flush() const
   }
 
   std::fflush(stdout);
-  const auto& mouse = FTerm::getFMouseControl();
-  mouse->drawPointer();
+  auto& mouse = FTerm::getFMouseControl();
+  mouse.drawPointer();
   FObject::getCurrentTime (&time_last_flush);
 }
 
@@ -1886,12 +1886,12 @@ void FVTerm::init()
 //----------------------------------------------------------------------
 void FVTerm::init_characterLengths()
 {
-  const auto& opti_move = FTerm::getFOptiMove();
-  cursor_address_length = opti_move->getCursorAddressLength();
-  erase_char_length     = opti_move->getEraseCharsLength();
-  repeat_char_length    = opti_move->getRepeatCharLength();
-  clr_bol_length        = opti_move->getClrBolLength();
-  clr_eol_length        = opti_move->getClrEolLength();
+  auto& opti_move = FTerm::getFOptiMove();
+  cursor_address_length = opti_move.getCursorAddressLength();
+  erase_char_length     = opti_move.getEraseCharsLength();
+  repeat_char_length    = opti_move.getRepeatCharLength();
+  clr_bol_length        = opti_move.getClrBolLength();
+  clr_eol_length        = opti_move.getClrEolLength();
 
   if ( cursor_address_length == 0 )
     cursor_address_length = INT_MAX;
@@ -1920,15 +1920,15 @@ void FVTerm::init_combined_character()
   if ( FTerm::getEncoding() != Encoding::UTF8 )
     return;
 
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isCygwinTerminal() )
+  if ( term_detection.isCygwinTerminal() )
     return;
 
-  if ( term_detection->isXTerminal()
-    || term_detection->isUrxvtTerminal()
-    || term_detection->isMinttyTerm()
-    || term_detection->isPuttyTerminal() )
+  if ( term_detection.isXTerminal()
+    || term_detection.isUrxvtTerminal()
+    || term_detection.isMinttyTerm()
+    || term_detection.isPuttyTerminal() )
   {
     combined_char_support = true;
   }
@@ -1944,7 +1944,7 @@ void FVTerm::finish() const
   setNormal();
 
   if ( FTerm::hasAlternateScreen()
-    && FTerm::getFTermData()->isInAlternateScreen() )
+    && FTerm::getFTermData().isInAlternateScreen() )
     clearTerm();
 
   forceTerminalUpdate();
@@ -2886,14 +2886,10 @@ inline bool FVTerm::isTermSizeChanged() const
     return false;
 
   FObject::getCurrentTime (&last_term_size_check);
-  const auto& data = FTerm::getFTermData();
-
-  if ( ! data )
-    return false;
-
-  const auto& old_term_geometry = data->getTermGeometry();
+  auto& fterm_data = FTerm::getFTermData();
+  const auto& old_term_geometry = fterm_data.getTermGeometry();
   FTerm::detectTermSize();
-  auto term_geometry = data->getTermGeometry();
+  auto term_geometry = fterm_data.getTermGeometry();
   term_geometry.move (-1, -1);
 
   if ( old_term_geometry.getSize() != term_geometry.getSize() )

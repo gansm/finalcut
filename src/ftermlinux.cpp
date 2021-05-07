@@ -85,14 +85,14 @@ bool FTermLinux::setCursorStyle (CursorStyle style)
 {
   // Set cursor style in linux console
 
-  const auto& fterm_data = FTerm::getFTermData();
+  auto& fterm_data = FTerm::getFTermData();
 
   if ( ! FTerm::isLinuxTerm() )
     return false;
 
   linux_console_cursor_style = style;
 
-  if ( fterm_data->isCursorHidden() )
+  if ( fterm_data.isCursorHidden() )
     return false;
 
   setLinuxCursorStyle(style);
@@ -152,12 +152,12 @@ void FTermLinux::init()
 {
   // Initialize Linux console
 
-  const auto& fterm_data = FTerm::getFTermData();
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& fterm_data = FTerm::getFTermData();
+  auto& term_detection = FTerm::getFTermDetection();
   screen_unicode_map.entries = nullptr;
   screen_font.data = nullptr;
-  fterm_data->supportShadowCharacter (true);
-  fterm_data->supportHalfBlockCharacter (true);
+  fterm_data.supportShadowCharacter (true);
+  fterm_data.supportHalfBlockCharacter (true);
   initKeyMap();
 
 #if defined(ISA_SYSCTL_SUPPORT)
@@ -166,7 +166,7 @@ void FTermLinux::init()
 
   if ( FTerm::openConsole() == 0 )
   {
-    term_detection->setLinuxTerm (isLinuxConsole());
+    term_detection.setLinuxTerm (isLinuxConsole());
 
     if ( FTerm::isLinuxTerm() )
     {
@@ -285,9 +285,9 @@ bool FTermLinux::loadVGAFont()
 
   if ( vga_font )
   {
-    const auto& fterm_data = FTerm::getFTermData();
-    fterm_data->supportShadowCharacter (true);
-    fterm_data->supportHalfBlockCharacter (true);
+    auto& fterm_data = FTerm::getFTermData();
+    fterm_data.supportShadowCharacter (true);
+    fterm_data.supportHalfBlockCharacter (true);
   }
 
   return vga_font;
@@ -333,9 +333,9 @@ bool FTermLinux::loadNewFont()
 
   if ( new_font )
   {
-    const auto& fterm_data = FTerm::getFTermData();
-    fterm_data->supportShadowCharacter (true);
-    fterm_data->supportHalfBlockCharacter (true);
+    auto& fterm_data = FTerm::getFTermData();
+    fterm_data.supportShadowCharacter (true);
+    fterm_data.supportHalfBlockCharacter (true);
   }
 
   return new_font;
@@ -1131,7 +1131,7 @@ inline void FTermLinux::shiftCtrlAltKeyCorrection()
 //----------------------------------------------------------------------
 inline void FTermLinux::initSpecialCharacter() const
 {
-  const auto& fterm_data = FTerm::getFTermData();
+  auto& fterm_data = FTerm::getFTermData();
   const auto c1 = wchar_t(UniChar::UpperHalfBlock);  // ▀
   const auto c2 = wchar_t(UniChar::LowerHalfBlock);  // ▄
   const auto c3 = wchar_t(UniChar::FullBlock);  // █
@@ -1140,7 +1140,7 @@ inline void FTermLinux::initSpecialCharacter() const
     || FTerm::charEncode(c2, Encoding::PC) == FTerm::charEncode(c2, Encoding::ASCII)
     || FTerm::charEncode(c3, Encoding::PC) == FTerm::charEncode(c3, Encoding::ASCII) )
   {
-    fterm_data->supportShadowCharacter (false);  // disable support
+    fterm_data.supportShadowCharacter (false);  // disable support
   }
 
   const auto c4 = wchar_t(UniChar::RightHalfBlock);
@@ -1149,7 +1149,7 @@ inline void FTermLinux::initSpecialCharacter() const
   if ( FTerm::charEncode(c4, Encoding::PC) == FTerm::charEncode(c4, Encoding::ASCII)
     || FTerm::charEncode(c5, Encoding::PC) == FTerm::charEncode(c5, Encoding::ASCII) )
   {
-    fterm_data->supportHalfBlockCharacter (false);  // disable support
+    fterm_data.supportHalfBlockCharacter (false);  // disable support
   }
 }
 
@@ -1172,8 +1172,8 @@ void FTermLinux::characterFallback ( wchar_t ucs
                                    , const std::vector<wchar_t>& fallback ) const
 {
   constexpr sInt16 NOT_FOUND = -1;
-  const auto& fterm_data = FTerm::getFTermData();
-  charSubstitution& sub_map = fterm_data->getCharSubstitutionMap();
+  auto& fterm_data = FTerm::getFTermData();
+  charSubstitution& sub_map = fterm_data.getCharSubstitutionMap();
 
   if ( fallback.size() < 2 || ucs != fallback[0] )
     return;

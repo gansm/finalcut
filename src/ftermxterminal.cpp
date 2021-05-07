@@ -241,9 +241,9 @@ void FTermXTerminal::resetHighlightBackground()
 //----------------------------------------------------------------------
 void FTermXTerminal::resetDefaults()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isPuttyTerminal() )
+  if ( term_detection.isPuttyTerminal() )
     return;
 
   // Redefines the cursor color if resetCursorColor() doesn't work
@@ -274,18 +274,18 @@ void FTermXTerminal::resetTitle()
 //----------------------------------------------------------------------
 void FTermXTerminal::captureFontAndTitle()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( ( term_detection->isXTerminal()
-    || term_detection->isUrxvtTerminal() )
-    && ! term_detection->isRxvtTerminal() )
+  if ( ( term_detection.isXTerminal()
+    || term_detection.isUrxvtTerminal() )
+    && ! term_detection.isRxvtTerminal() )
   {
     FTermios::setCaptureSendCharacters();
-    const auto& keyboard = FTerm::getFKeyboard();
-    keyboard->setNonBlockingInput();
+    auto& keyboard = FTerm::getFKeyboard();
+    keyboard.setNonBlockingInput();
     xterm_font  = captureXTermFont();
     xterm_title = captureXTermTitle();
-    keyboard->unsetNonBlockingInput();
+    keyboard.unsetNonBlockingInput();
     FTermios::unsetCaptureSendCharacters();
   }
 }
@@ -312,20 +312,20 @@ void FTermXTerminal::setXTermCursorStyle()
     return;
 #endif
 
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isGnomeTerminal()
-    && ! term_detection->hasSetCursorStyleSupport() )
+  if ( term_detection.isGnomeTerminal()
+    && ! term_detection.hasSetCursorStyleSupport() )
     return;
 
-  if ( term_detection->isKdeTerminal() )
+  if ( term_detection.isKdeTerminal() )
     return;
 
   if ( TCAP(t_cursor_style)
-    || term_detection->isXTerminal()
-    || term_detection->isCygwinTerminal()
-    || term_detection->isMinttyTerm()
-    || term_detection->hasSetCursorStyleSupport() )
+    || term_detection.isXTerminal()
+    || term_detection.isCygwinTerminal()
+    || term_detection.isMinttyTerm()
+    || term_detection.hasSetCursorStyleSupport() )
   {
     FTerm::putstringf (CSI "%d q", cursor_style);
     std::fflush(stdout);
@@ -336,14 +336,14 @@ void FTermXTerminal::setXTermCursorStyle()
 void FTermXTerminal::setXTermTitle()
 {
   // Set the xterm title
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
-    || term_detection->isUrxvtTerminal()
-    || term_detection->isCygwinTerminal()
-    || term_detection->isMinttyTerm()
-    || term_detection->isPuttyTerminal()
+  if ( term_detection.isXTerminal()
+    || term_detection.isScreenTerm()
+    || term_detection.isUrxvtTerminal()
+    || term_detection.isCygwinTerminal()
+    || term_detection.isMinttyTerm()
+    || term_detection.isPuttyTerminal()
     || FTermcap::osc_support )
   {
     oscPrefix();
@@ -361,9 +361,9 @@ void FTermXTerminal::setXTermTitle()
 //----------------------------------------------------------------------
 void FTermXTerminal::setXTermSize() const
 {
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isXTerminal() )
+  if ( term_detection.isXTerminal() )
   {
     FTerm::putstringf ( CSI "8;%lu;%lut"
                       , uLong(term_height)
@@ -377,11 +377,11 @@ void FTermXTerminal::setXTermFont()
 {
   // Change the XTerm font (needs the allowFontOps resource)
 
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
-    || term_detection->isUrxvtTerminal()
+  if ( term_detection.isXTerminal()
+    || term_detection.isScreenTerm()
+    || term_detection.isUrxvtTerminal()
     || FTermcap::osc_support )
   {
     oscPrefix();
@@ -395,12 +395,12 @@ void FTermXTerminal::setXTermForeground()
 {
   // Set the XTerm text foreground color
 
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
-    || term_detection->isMinttyTerm()
-    || term_detection->isMltermTerminal()
+  if ( term_detection.isXTerminal()
+    || term_detection.isScreenTerm()
+    || term_detection.isMinttyTerm()
+    || term_detection.isMltermTerminal()
     || FTermcap::osc_support )
   {
     oscPrefix();
@@ -415,12 +415,12 @@ void FTermXTerminal::setXTermBackground()
 {
   // Set the XTerm text background color
 
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
-    || term_detection->isMinttyTerm()
-    || term_detection->isMltermTerminal()
+  if ( term_detection.isXTerminal()
+    || term_detection.isScreenTerm()
+    || term_detection.isMinttyTerm()
+    || term_detection.isMltermTerminal()
     || FTermcap::osc_support )
   {
     oscPrefix();
@@ -435,12 +435,12 @@ void FTermXTerminal::setXTermCursorColor()
 {
   // Set the text cursor color
 
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
-    || term_detection->isMinttyTerm()
-    || term_detection->isUrxvtTerminal()
+  if ( term_detection.isXTerminal()
+    || term_detection.isScreenTerm()
+    || term_detection.isMinttyTerm()
+    || term_detection.isUrxvtTerminal()
     || FTermcap::osc_support )
   {
     oscPrefix();
@@ -455,11 +455,11 @@ void FTermXTerminal::setXTermMouseForeground()
 {
   // Set the mouse foreground color
 
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
-    || term_detection->isUrxvtTerminal()
+  if ( term_detection.isXTerminal()
+    || term_detection.isScreenTerm()
+    || term_detection.isUrxvtTerminal()
     || FTermcap::osc_support )
   {
     oscPrefix();
@@ -474,10 +474,10 @@ void FTermXTerminal::setXTermMouseBackground()
 {
   // Set the mouse background color
 
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
+  if ( term_detection.isXTerminal()
+    || term_detection.isScreenTerm()
     || FTermcap::osc_support )
   {
     oscPrefix();
@@ -492,11 +492,11 @@ void FTermXTerminal::setXTermHighlightBackground()
 {
   // Set the highlight background color
 
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
-    || term_detection->isUrxvtTerminal()
+  if ( term_detection.isXTerminal()
+    || term_detection.isScreenTerm()
+    || term_detection.isUrxvtTerminal()
     || FTermcap::osc_support )
   {
     oscPrefix();
@@ -512,9 +512,9 @@ void FTermXTerminal::setXTerm8ColorDefaults()
   // Redefinition of the XTerm default colors
   // for the final cut 8 color theme
 
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isPuttyTerminal() )
+  if ( term_detection.isPuttyTerminal() )
     return;
 
   setXTermDefaultsMouseCursor();
@@ -534,9 +534,9 @@ void FTermXTerminal::setXTerm16ColorDefaults()
   // Redefinition of the XTerm default colors
   // for the final cut 16 color theme
 
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isPuttyTerminal() )
+  if ( term_detection.isPuttyTerminal() )
     return;
 
   setXTermDefaultsMouseCursor();
@@ -556,22 +556,22 @@ inline void FTermXTerminal::setXTermDefaultsMouseCursor()
   setMouseBackground("rgb:ffff/ffff/ffff");        // white
   setMouseForeground ("rgb:0000/0000/0000");       // black
 
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( ! term_detection->isGnomeTerminal() )
+  if ( ! term_detection.isGnomeTerminal() )
     setCursorColor("rgb:ffff/ffff/ffff");          // white
 }
 
 //----------------------------------------------------------------------
 inline bool FTermXTerminal::canSetXTermBackground() const
 {
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
   if ( xterm_default_colors
-    && ! (term_detection->isMinttyTerm()
-       || term_detection->isMltermTerminal()
-       || term_detection->isRxvtTerminal()
-       || term_detection->isScreenTerm()) )
+    && ! (term_detection.isMinttyTerm()
+       || term_detection.isMltermTerminal()
+       || term_detection.isRxvtTerminal()
+       || term_detection.isScreenTerm()) )
     return true;
   else
     return false;
@@ -582,9 +582,9 @@ void FTermXTerminal::resetXTermColorMap() const
 {
   // Reset the entire color table
 
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isMinttyTerm() )
+  if ( term_detection.isMinttyTerm() )
   {
     FTerm::putstring (ESC "c");  // Full Reset (RIS)
   }
@@ -684,18 +684,18 @@ void FTermXTerminal::resetXTermHighlightBackground() const
 //----------------------------------------------------------------------
 bool FTermXTerminal::canResetColor() const
 {
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isGnomeTerminal()
-    && term_detection->getGnomeTerminalID() < 3502 )
+  if ( term_detection.isGnomeTerminal()
+    && term_detection.getGnomeTerminalID() < 3502 )
     return false;
 
-  if ( term_detection->isPuttyTerminal()
-    || term_detection->isMltermTerminal() )
+  if ( term_detection.isPuttyTerminal()
+    || term_detection.isMltermTerminal() )
     return false;
 
-  if ( term_detection->isXTerminal()
-    || term_detection->isScreenTerm()
+  if ( term_detection.isXTerminal()
+    || term_detection.isScreenTerm()
     || FTermcap::osc_support )
     return true;
 
@@ -705,14 +705,14 @@ bool FTermXTerminal::canResetColor() const
 //----------------------------------------------------------------------
 void FTermXTerminal::oscPrefix() const
 {
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isTmuxTerm() )
+  if ( term_detection.isTmuxTerm() )
   {
     // tmux device control string
     FTerm::putstring (ESC "Ptmux;" ESC);
   }
-  else if ( term_detection->isScreenTerm() )
+  else if ( term_detection.isScreenTerm() )
   {
     // GNU Screen device control string
     FTerm::putstring (ESC "P");
@@ -722,10 +722,10 @@ void FTermXTerminal::oscPrefix() const
 //----------------------------------------------------------------------
 void FTermXTerminal::oscPostfix() const
 {
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isScreenTerm()
-    || term_detection->isTmuxTerm() )
+  if ( term_detection.isScreenTerm()
+    || term_detection.isTmuxTerm() )
   {
     // GNU Screen/tmux string terminator
     FTerm::putstring (ESC "\\");
@@ -735,10 +735,10 @@ void FTermXTerminal::oscPostfix() const
 //----------------------------------------------------------------------
 FString FTermXTerminal::captureXTermFont() const
 {
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( ! term_detection->isXTerminal()
-    && ! term_detection->isScreenTerm()
+  if ( ! term_detection.isXTerminal()
+    && ! term_detection.isScreenTerm()
     && ! FTermcap::osc_support )
   {
     return {};
@@ -797,9 +797,9 @@ FString FTermXTerminal::captureXTermFont() const
 //----------------------------------------------------------------------
 FString FTermXTerminal::captureXTermTitle() const
 {
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
 
-  if ( term_detection->isKdeTerminal() )
+  if ( term_detection.isKdeTerminal() )
     return {};
 
   fd_set ifds{};

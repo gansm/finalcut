@@ -122,46 +122,46 @@ void FTermcapTest::classNameTest()
 void FTermcapTest::initTest()
 {
   // Without a terminal type
-  const auto& fterm_data = finalcut::FTerm::getFTermData();
-  CPPUNIT_ASSERT ( fterm_data->getTermType().empty() );
+  auto& fterm_data = finalcut::FTerm::getFTermData();
+  CPPUNIT_ASSERT ( fterm_data.getTermType().empty() );
   finalcut::FTermcap tcap;
   CPPUNIT_ASSERT ( ! tcap.isInitialized() );
   tcap.init();
   CPPUNIT_ASSERT ( tcap.isInitialized() );
-  CPPUNIT_ASSERT ( ! fterm_data->getTermType().empty() );
-  CPPUNIT_ASSERT ( fterm_data->getTermType() == "xterm" );
+  CPPUNIT_ASSERT ( ! fterm_data.getTermType().empty() );
+  CPPUNIT_ASSERT ( fterm_data.getTermType() == "xterm" );
 
   // With terminal type ansi
-  fterm_data->setTermType("ansi");
+  fterm_data.setTermType("ansi");
   tcap.init();
-  CPPUNIT_ASSERT ( fterm_data->getTermType() == "ansi" );
+  CPPUNIT_ASSERT ( fterm_data.getTermType() == "ansi" );
 
   // With a non-existent terminal type
-  fterm_data->setTermType("bang!");
+  fterm_data.setTermType("bang!");
   tcap.init();
-  CPPUNIT_ASSERT ( fterm_data->getTermType() == "xterm" );
+  CPPUNIT_ASSERT ( fterm_data.getTermType() == "xterm" );
   setenv ("TERM", "xterm-256color", 1);  // 256 color terminal
-  const auto& term_detection = finalcut::FTerm::getFTermDetection();
-  CPPUNIT_ASSERT ( ! term_detection->canDisplay256Colors() );
-  term_detection->detect();
-  CPPUNIT_ASSERT ( term_detection->canDisplay256Colors() );
-  fterm_data->setTermType("bang!");
+  auto& term_detection = finalcut::FTerm::getFTermDetection();
+  CPPUNIT_ASSERT ( ! term_detection.canDisplay256Colors() );
+  term_detection.detect();
+  CPPUNIT_ASSERT ( term_detection.canDisplay256Colors() );
+  fterm_data.setTermType("bang!");
   tcap.init();
-  CPPUNIT_ASSERT ( fterm_data->getTermType() == "xterm-256color" );
-  fterm_data->setTermType("dumb");
+  CPPUNIT_ASSERT ( fterm_data.getTermType() == "xterm-256color" );
+  fterm_data.setTermType("dumb");
   tcap.init();
-  CPPUNIT_ASSERT ( fterm_data->getTermType() == "dumb" );
+  CPPUNIT_ASSERT ( fterm_data.getTermType() == "dumb" );
 }
 
 //----------------------------------------------------------------------
 void FTermcapTest::getFlagTest()
 {
-  const auto& fterm_data = finalcut::FTerm::getFTermData();
-  fterm_data->setTermType("ansi");
+  auto& fterm_data = finalcut::FTerm::getFTermData();
+  fterm_data.setTermType("ansi");
   finalcut::FTermcap tcap;
   tcap.init();
   CPPUNIT_ASSERT ( tcap.isInitialized() );
-  CPPUNIT_ASSERT ( fterm_data->getTermType() == "ansi" );
+  CPPUNIT_ASSERT ( fterm_data.getTermType() == "ansi" );
 
   CPPUNIT_ASSERT ( tcap.getFlag("am") );    // Automatic right margin
   CPPUNIT_ASSERT ( ! tcap.getFlag("cc") );  // Can change color palette
@@ -171,12 +171,12 @@ void FTermcapTest::getFlagTest()
 //----------------------------------------------------------------------
 void FTermcapTest::getNumberTest()
 {
-  const auto& fterm_data = finalcut::FTerm::getFTermData();
-  fterm_data->setTermType("xterm");
+  auto& fterm_data = finalcut::FTerm::getFTermData();
+  fterm_data.setTermType("xterm");
   finalcut::FTermcap tcap;
   tcap.init();
   CPPUNIT_ASSERT ( tcap.isInitialized() );
-  CPPUNIT_ASSERT ( fterm_data->getTermType() == "xterm" );
+  CPPUNIT_ASSERT ( fterm_data.getTermType() == "xterm" );
 
   CPPUNIT_ASSERT ( tcap.getNumber("Co") == 8 );   // Colors
   CPPUNIT_ASSERT ( tcap.getNumber("it") == 8 );   // Tab stop
@@ -188,12 +188,12 @@ void FTermcapTest::getNumberTest()
 //----------------------------------------------------------------------
 void FTermcapTest::getStringTest()
 {
-  const auto& fterm_data = finalcut::FTerm::getFTermData();
-  fterm_data->setTermType("ansi");
+  auto& fterm_data = finalcut::FTerm::getFTermData();
+  fterm_data.setTermType("ansi");
   finalcut::FTermcap tcap;
   tcap.init();
   CPPUNIT_ASSERT ( tcap.isInitialized() );
-  CPPUNIT_ASSERT ( fterm_data->getTermType() == "ansi" );
+  CPPUNIT_ASSERT ( fterm_data.getTermType() == "ansi" );
 
   CPPUNIT_ASSERT_CSTRING ( tcap.getString("me"), CSI "0m" );  // Exit attribute mode
   CPPUNIT_ASSERT_CSTRING ( tcap.getString("mr"), CSI "7m" );  // Enter reverse mode
@@ -206,12 +206,12 @@ void FTermcapTest::getStringTest()
 //----------------------------------------------------------------------
 void FTermcapTest::encodeMotionParameterTest()
 {
-  const auto& fterm_data = finalcut::FTerm::getFTermData();
-  fterm_data->setTermType("ansi");
+  auto& fterm_data = finalcut::FTerm::getFTermData();
+  fterm_data.setTermType("ansi");
   finalcut::FTermcap tcap;
   tcap.init();
   CPPUNIT_ASSERT ( tcap.isInitialized() );
-  CPPUNIT_ASSERT ( fterm_data->getTermType() == "ansi" );
+  CPPUNIT_ASSERT ( fterm_data.getTermType() == "ansi" );
   const auto& cursor_address = tcap.getString("cm");
   CPPUNIT_ASSERT ( tcap.encodeMotionParameter(cursor_address, 10, 15) == CSI "16;11H" );
   CPPUNIT_ASSERT ( tcap.encodeMotionParameter(cursor_address, 25, 1) == CSI "2;26H" );
@@ -222,12 +222,12 @@ void FTermcapTest::encodeMotionParameterTest()
 //----------------------------------------------------------------------
 void FTermcapTest::encodeParameterTest()
 {
-  const auto& fterm_data = finalcut::FTerm::getFTermData();
-  fterm_data->setTermType("ansi");
+  auto& fterm_data = finalcut::FTerm::getFTermData();
+  fterm_data.setTermType("ansi");
   finalcut::FTermcap tcap;
   tcap.init();
   CPPUNIT_ASSERT ( tcap.isInitialized() );
-  CPPUNIT_ASSERT ( fterm_data->getTermType() == "ansi" );
+  CPPUNIT_ASSERT ( fterm_data.getTermType() == "ansi" );
   const auto& parm_insert_line = tcap.getString("AL");
   CPPUNIT_ASSERT ( tcap.encodeParameter(parm_insert_line, 7) == CSI "7L" );
   const auto& parm_left_cursor = tcap.getString("LE");
@@ -249,7 +249,7 @@ void FTermcapTest::paddingPrintTest()
   setenv ("TERM", "xterm", 1);  // xterm has no padding character
   unsetenv("TERMCAP");
   auto& fterm_data = finalcut::FTerm::getFTermData();
-  fterm_data->setTermType("xterm");
+  fterm_data.setTermType("xterm");
   CPPUNIT_ASSERT ( ! tcap.xon_xoff_flow_control );
   tcap.init();
   CPPUNIT_ASSERT ( tcap.isInitialized() );
@@ -347,7 +347,7 @@ void FTermcapTest::paddingPrintTest()
 
   // With 5 ms prints 21 padding chars ('\0')
   setenv ("TERM", "ansi", 1);  // ansi terminals used for delay padding character
-  fterm_data->setTermType("ansi");
+  fterm_data.setTermType("ansi");
   tcap.init();
   CPPUNIT_ASSERT ( ! tcap.no_padding_char );
   CPPUNIT_ASSERT ( ! tcap.xon_xoff_flow_control );

@@ -344,38 +344,38 @@ void ftermopenbsdTest::netbsdConsoleTest()
   std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  const auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
 
-  auto& encoding_list = data->getEncodingList();
+  auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
   encoding_list["UTF8"]  = finalcut::Encoding::UTF8;
   encoding_list["VT100"] = finalcut::Encoding::VT100;
   encoding_list["PC"]    = finalcut::Encoding::PC;
   encoding_list["ASCII"] = finalcut::Encoding::ASCII;
 
-  data->setTermEncoding(finalcut::Encoding::VT100);
-  data->setBaudrate(9600);
-  data->setTermType("wsvt25");
-  data->setTermFileName("/dev/ttyE1");
-  data->setTTYFileDescriptor(0);
-  data->supportShadowCharacter (false);
-  data->supportHalfBlockCharacter (false);
-  data->supportCursorOptimisation (true);
-  data->setCursorHidden (true);
-  data->useAlternateScreen (false);
-  data->setASCIIConsole (true);
-  data->setVT100Console (false);
-  data->setUTF8Console (false);
-  data->setUTF8 (false);
-  data->setNewFont (false);
-  data->setVGAFont (false);
-  data->setMonochron (false);
-  data->setTermResized (false);
+  data.setTermEncoding(finalcut::Encoding::VT100);
+  data.setBaudrate(9600);
+  data.setTermType("wsvt25");
+  data.setTermFileName("/dev/ttyE1");
+  data.setTTYFileDescriptor(0);
+  data.supportShadowCharacter (false);
+  data.supportHalfBlockCharacter (false);
+  data.supportCursorOptimisation (true);
+  data.setCursorHidden (true);
+  data.useAlternateScreen (false);
+  data.setASCIIConsole (true);
+  data.setVT100Console (false);
+  data.setUTF8Console (false);
+  data.setUTF8 (false);
+  data.setNewFont (false);
+  data.setVGAFont (false);
+  data.setMonochron (false);
+  data.setTermResized (false);
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  const auto& term_detection = finalcut::FTerm::getFTermDetection();
-  term_detection->setTerminalDetection(true);
+  auto& term_detection = finalcut::FTerm::getFTermDetection();
+  term_detection.setTerminalDetection(true);
   pid_t pid = forkConEmu();
 
   if ( isConEmuChildProcess(pid) )
@@ -397,22 +397,22 @@ void ftermopenbsdTest::netbsdConsoleTest()
 
     netbsd.disableMetaSendsEscape();
     netbsd.init();
-    term_detection->detect();
+    term_detection.detect();
     finalcut::FTerm::detectTermSize();
 
 #if DEBUG
     const finalcut::FString& sec_da = \
-        finalcut::FTerm::getFTermDebugData()->getSecDAString();
+        finalcut::FTerm::getFTermDebugData().getSecDAString();
     CPPUNIT_ASSERT ( sec_da == "\033[>24;20;0c" );
 #endif
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
-    CPPUNIT_ASSERT ( ! term_detection->isOpenBSDTerm() );
-    CPPUNIT_ASSERT ( term_detection->isNetBSDTerm() );
-    CPPUNIT_ASSERT ( data->getTermGeometry().getWidth() == 80 );
-    CPPUNIT_ASSERT ( data->getTermGeometry().getHeight() == 25 );
-    CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
-    CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
+    CPPUNIT_ASSERT ( ! term_detection.isOpenBSDTerm() );
+    CPPUNIT_ASSERT ( term_detection.isNetBSDTerm() );
+    CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 80 );
+    CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 25 );
+    CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );
+    CPPUNIT_ASSERT ( ! data.hasHalfBlockCharacter() );
 
     netbsd.finish();
 
@@ -420,12 +420,12 @@ void ftermopenbsdTest::netbsdConsoleTest()
     netbsd.init();
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
-    CPPUNIT_ASSERT ( ! term_detection->isOpenBSDTerm() );
-    CPPUNIT_ASSERT ( term_detection->isNetBSDTerm() );
-    CPPUNIT_ASSERT ( data->getTermGeometry().getWidth() == 80 );
-    CPPUNIT_ASSERT ( data->getTermGeometry().getHeight() == 25 );
-    CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
-    CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
+    CPPUNIT_ASSERT ( ! term_detection.isOpenBSDTerm() );
+    CPPUNIT_ASSERT ( term_detection.isNetBSDTerm() );
+    CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 80 );
+    CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 25 );
+    CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );
+    CPPUNIT_ASSERT ( ! data.hasHalfBlockCharacter() );
 
     netbsd.finish();
 
@@ -448,38 +448,38 @@ void ftermopenbsdTest::openbsdConsoleTest()
   std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  const auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
 
-  auto& encoding_list = data->getEncodingList();
+  auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
   encoding_list["UTF8"]  = finalcut::Encoding::UTF8;
   encoding_list["VT100"] = finalcut::Encoding::VT100;
   encoding_list["PC"]    = finalcut::Encoding::PC;
   encoding_list["ASCII"] = finalcut::Encoding::ASCII;
 
-  data->setTermEncoding(finalcut::Encoding::VT100);
-  data->setBaudrate(9600);
-  data->setTermType("vt220");
-  data->setTermFileName("/dev/ttyC0");
-  data->setTTYFileDescriptor(0);
-  data->supportShadowCharacter (false);
-  data->supportHalfBlockCharacter (false);
-  data->supportCursorOptimisation (true);
-  data->setCursorHidden (true);
-  data->useAlternateScreen (false);
-  data->setASCIIConsole (true);
-  data->setVT100Console (false);
-  data->setUTF8Console (false);
-  data->setUTF8 (false);
-  data->setNewFont (false);
-  data->setVGAFont (false);
-  data->setMonochron (false);
-  data->setTermResized (false);
+  data.setTermEncoding(finalcut::Encoding::VT100);
+  data.setBaudrate(9600);
+  data.setTermType("vt220");
+  data.setTermFileName("/dev/ttyC0");
+  data.setTTYFileDescriptor(0);
+  data.supportShadowCharacter (false);
+  data.supportHalfBlockCharacter (false);
+  data.supportCursorOptimisation (true);
+  data.setCursorHidden (true);
+  data.useAlternateScreen (false);
+  data.setASCIIConsole (true);
+  data.setVT100Console (false);
+  data.setUTF8Console (false);
+  data.setUTF8 (false);
+  data.setNewFont (false);
+  data.setVGAFont (false);
+  data.setMonochron (false);
+  data.setTermResized (false);
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  const auto& term_detection = finalcut::FTerm::getFTermDetection();
-  term_detection->setTerminalDetection(true);
+  auto& term_detection = finalcut::FTerm::getFTermDetection();
+  term_detection.setTerminalDetection(true);
   pid_t pid = forkConEmu();
 
   if ( isConEmuChildProcess(pid) )
@@ -504,23 +504,23 @@ void ftermopenbsdTest::openbsdConsoleTest()
     wskbd_bell_data& speaker = fsystest->getBell();
     openbsd.disableMetaSendsEscape();
     openbsd.init();
-    term_detection->detect();
+    term_detection.detect();
     finalcut::FTerm::detectTermSize();
 
 #if DEBUG
     const finalcut::FString& sec_da = \
-        finalcut::FTerm::getFTermDebugData()->getSecDAString();
+        finalcut::FTerm::getFTermDebugData().getSecDAString();
     CPPUNIT_ASSERT ( sec_da == "\033[>24;20;0c" );
 #endif
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
-    CPPUNIT_ASSERT ( term_detection->isOpenBSDTerm() );
-    CPPUNIT_ASSERT ( ! term_detection->isNetBSDTerm() );
-    CPPUNIT_ASSERT ( data->getTermGeometry().getWidth() == 80 );
-    CPPUNIT_ASSERT ( data->getTermGeometry().getHeight() == 25 );
-    CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
-    CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
-    CPPUNIT_ASSERT_CSTRING ( term_detection->getTermType(), "pccon" );
+    CPPUNIT_ASSERT ( term_detection.isOpenBSDTerm() );
+    CPPUNIT_ASSERT ( ! term_detection.isNetBSDTerm() );
+    CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 80 );
+    CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 25 );
+    CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );
+    CPPUNIT_ASSERT ( ! data.hasHalfBlockCharacter() );
+    CPPUNIT_ASSERT_CSTRING ( term_detection.getTermType(), "pccon" );
 
     openbsd.finish();
 
@@ -528,12 +528,12 @@ void ftermopenbsdTest::openbsdConsoleTest()
     openbsd.init();
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
-    CPPUNIT_ASSERT ( term_detection->isOpenBSDTerm() );
-    CPPUNIT_ASSERT ( ! term_detection->isNetBSDTerm() );
-    CPPUNIT_ASSERT ( data->getTermGeometry().getWidth() == 80 );
-    CPPUNIT_ASSERT ( data->getTermGeometry().getHeight() == 25 );
-    CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
-    CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
+    CPPUNIT_ASSERT ( term_detection.isOpenBSDTerm() );
+    CPPUNIT_ASSERT ( ! term_detection.isNetBSDTerm() );
+    CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 80 );
+    CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 25 );
+    CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );
+    CPPUNIT_ASSERT ( ! data.hasHalfBlockCharacter() );
 
     CPPUNIT_ASSERT ( speaker.pitch  == 1500 );
     CPPUNIT_ASSERT ( speaker.period == 100 );

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -611,9 +611,9 @@ void FComboBox::cb_closeComboBox()
 //----------------------------------------------------------------------
 void FComboBox::cb_inputFieldSwitch()
 {
-  const auto& mouse = FTerm::getFMouseControl();
+  auto& mouse = FTerm::getFMouseControl();
 
-  if ( mouse && ! mouse->isLeftButtonPressed() )
+  if ( ! mouse.isLeftButtonPressed() )
     return;
 
   if ( list_window.isShown() )
@@ -630,14 +630,14 @@ void FComboBox::cb_inputFieldSwitch()
 //----------------------------------------------------------------------
 void FComboBox::cb_inputFieldHandOver()
 {
-  const auto& mouse = FTerm::getFMouseControl();
+  auto& mouse = FTerm::getFMouseControl();
 
-  if ( ! mouse || list_window.isHidden() )
+  if ( list_window.isHidden() )
     return;
 
-  const auto& t = mouse->getPos();
+  const auto& t = mouse.getPos();
   const auto& p = list_window.list.termToWidgetPos(t);
-  const auto b = ( mouse->isLeftButtonPressed() ) ? MouseButton::Left : MouseButton::None;
+  const auto b = ( mouse.isLeftButtonPressed() ) ? MouseButton::Left : MouseButton::None;
   const auto& _ev = \
       std::make_shared<FMouseEvent>(Event::MouseMove, p, t, b);
   setClickedWidget(&list_window.list);

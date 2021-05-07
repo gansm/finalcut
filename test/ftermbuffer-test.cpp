@@ -42,10 +42,13 @@ class FTermBufferTest : public CPPUNIT_NS::TestFixture
   public:
     FTermBufferTest()
     {
-      auto ret = std::setlocale (LC_CTYPE, "en_US.UTF-8");
+      auto ret = std::setlocale(LC_CTYPE, "en_US.UTF-8");
 
       if ( ! ret )
-        ret = std::setlocale (LC_CTYPE, "C.UTF-8");
+      {
+        if ( ! std::setlocale(LC_CTYPE, "C.UTF-8") )
+          std::cerr << "No UTF-8 character set found!";
+      }
 
       fwide(stdout, 1);  // Makes stream wide-character oriented
     }
@@ -97,8 +100,8 @@ void FTermBufferTest::noArgumentTest()
 //----------------------------------------------------------------------
 void FTermBufferTest::writeTest()
 {
-  const auto& data = finalcut::FTerm::getFTermData();
-  data->setTermEncoding (finalcut::Encoding::UTF8);
+  auto& fterm_data = finalcut::FTerm::getFTermData();
+  fterm_data.setTermEncoding (finalcut::Encoding::UTF8);
   finalcut::FTermBuffer term_buf{};
 
   // Write wchar_t
@@ -358,8 +361,8 @@ void FTermBufferTest::writeTest()
 void FTermBufferTest::streamTest()
 {
   auto multi_color_emojis = bool( wcswidth(L"🚧🚀🚴", 3) == 6 );
-  const auto& data = finalcut::FTerm::getFTermData();
-  data->setTermEncoding (finalcut::Encoding::UTF8);
+  auto& fterm_data = finalcut::FTerm::getFTermData();
+  fterm_data.setTermEncoding (finalcut::Encoding::UTF8);
   finalcut::FTermBuffer::FCharVector fchar_vec = { finalcut::FChar{} };
   CPPUNIT_ASSERT ( fchar_vec.size() == 1 );
   fchar_vec.front().ch[0] = L'🚧';
@@ -496,8 +499,8 @@ void FTermBufferTest::streamTest()
 //----------------------------------------------------------------------
 void FTermBufferTest::combiningCharacterTest()
 {
-  const auto& data = finalcut::FTerm::getFTermData();
-  data->setTermEncoding (finalcut::Encoding::UTF8);
+  auto& fterm_data = finalcut::FTerm::getFTermData();
+  fterm_data.setTermEncoding (finalcut::Encoding::UTF8);
   finalcut::FTermBuffer term_buf{};
   // Skip leading zero-width characters
   std::wstring combining = L"\U00000323\U00000300\U0000ff2f\n";  // [] [] Ｏ [NL]
