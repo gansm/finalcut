@@ -1886,7 +1886,7 @@ void FVTerm::init()
 //----------------------------------------------------------------------
 void FVTerm::init_characterLengths()
 {
-  auto& opti_move = FTerm::getFOptiMove();
+  const auto& opti_move = FTerm::getFOptiMove();
   cursor_address_length = opti_move.getCursorAddressLength();
   erase_char_length     = opti_move.getEraseCharsLength();
   repeat_char_length    = opti_move.getRepeatCharLength();
@@ -1920,7 +1920,7 @@ void FVTerm::init_combined_character()
   if ( FTerm::getEncoding() != Encoding::UTF8 )
     return;
 
-  auto& term_detection = FTerm::getFTermDetection();
+  const auto& term_detection = FTerm::getFTermDetection();
 
   if ( term_detection.isCygwinTerminal() )
     return;

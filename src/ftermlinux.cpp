@@ -85,14 +85,12 @@ bool FTermLinux::setCursorStyle (CursorStyle style)
 {
   // Set cursor style in linux console
 
-  auto& fterm_data = FTerm::getFTermData();
-
   if ( ! FTerm::isLinuxTerm() )
     return false;
 
   linux_console_cursor_style = style;
 
-  if ( fterm_data.isCursorHidden() )
+  if ( FTerm::getFTermData().isCursorHidden() )
     return false;
 
   setLinuxCursorStyle(style);
@@ -153,7 +151,6 @@ void FTermLinux::init()
   // Initialize Linux console
 
   auto& fterm_data = FTerm::getFTermData();
-  auto& term_detection = FTerm::getFTermDetection();
   screen_unicode_map.entries = nullptr;
   screen_font.data = nullptr;
   fterm_data.supportShadowCharacter (true);
@@ -166,7 +163,7 @@ void FTermLinux::init()
 
   if ( FTerm::openConsole() == 0 )
   {
-    term_detection.setLinuxTerm (isLinuxConsole());
+    FTerm::getFTermDetection().setLinuxTerm (isLinuxConsole());
 
     if ( FTerm::isLinuxTerm() )
     {

@@ -159,8 +159,7 @@ void FTermDetection::getSystemTermType()
 {
   // Import the untrusted environment variable TERM
   const auto& term_env = std::getenv("TERM");
-  auto& fterm_data = FTerm::getFTermData();
-  const auto& termfilename = fterm_data.getTermFileName();
+  const auto& termfilename = FTerm::getFTermData().getTermFileName();
 
   if ( term_env )
   {
@@ -198,8 +197,7 @@ bool FTermDetection::getTTYtype()
   // vt100  ttys0
 
   // Get term basename
-  auto& fterm_data = FTerm::getFTermData();
-  const auto& termfilename = fterm_data.getTermFileName();
+  const auto& termfilename = FTerm::getFTermData().getTermFileName();
   const char* term_basename = std::strrchr(termfilename.data(), '/');
 
   if ( term_basename == nullptr )
@@ -254,8 +252,7 @@ bool FTermDetection::getTTYSFileEntry()
   // Analyse /etc/ttys and get the term name
 
   // get term basename
-  auto& fterm_data = FTerm::getFTermData();
-  const auto& termfilename = fterm_data.getTermFileName();
+  const auto& termfilename = FTerm::getFTermData().getTermFileName();
   const char* term_basename = std::strrchr(termfilename.data(), '/');
 
   if ( term_basename == nullptr )

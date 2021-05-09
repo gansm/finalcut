@@ -252,7 +252,7 @@ void FTermcap::termcap()
   std::vector<std::string> terminals{};
   int status = uninitialized;
   auto& fterm_data = FTerm::getFTermData();
-  auto& term_detection = FTerm::getFTermDetection();
+  const auto& term_detection = FTerm::getFTermDetection();
   const bool color256 = term_detection.canDisplay256Colors();
   baudrate = int(fterm_data.getBaudrate());
 
@@ -301,8 +301,7 @@ void FTermcap::termcapError (int status)
 
   if ( status == no_entry || status == uninitialized )
   {
-    auto& fterm_data = FTerm::getFTermData();
-    const auto& termtype = fterm_data.getTermType();
+    const auto& termtype = FTerm::getFTermData().getTermType();
     std::clog << FLog::LogLevel::Error
               << "Unknown terminal: \"" << termtype << "\". "
               << "Check the TERM environment variable. "

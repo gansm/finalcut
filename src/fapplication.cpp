@@ -694,7 +694,7 @@ void FApplication::mouseTracking() const
 //----------------------------------------------------------------------
 inline void FApplication::performKeyboardAction()
 {
-  auto& keyboard = FTerm::getFKeyboard();
+  const auto& keyboard = FTerm::getFKeyboard();
 
   if ( keyboard.getKey() == FKey::Ctrl_l )  // Ctrl-L (redraw the screen)
   {
@@ -761,7 +761,7 @@ inline void FApplication::sendEscapeKeyPressEvent() const
 inline bool FApplication::sendKeyDownEvent (FWidget* widget) const
 {
   // Send key down event
-  auto& keyboard = FTerm::getFKeyboard();
+  const auto& keyboard = FTerm::getFKeyboard();
   FKeyEvent k_down_ev (Event::KeyDown, keyboard.getKey());
   sendEvent (widget, &k_down_ev);
   return k_down_ev.isAccepted();
@@ -771,7 +771,7 @@ inline bool FApplication::sendKeyDownEvent (FWidget* widget) const
 inline bool FApplication::sendKeyPressEvent (FWidget* widget) const
 {
   // Send key press event
-  auto& keyboard = FTerm::getFKeyboard();
+  const auto& keyboard = FTerm::getFKeyboard();
   FKeyEvent k_press_ev (Event::KeyPress, keyboard.getKey());
   sendEvent (widget, &k_press_ev);
   return k_press_ev.isAccepted();
@@ -781,7 +781,7 @@ inline bool FApplication::sendKeyPressEvent (FWidget* widget) const
 inline bool FApplication::sendKeyUpEvent (FWidget* widget) const
 {
   // Send key up event
-  auto& keyboard = FTerm::getFKeyboard();
+  const auto& keyboard = FTerm::getFKeyboard();
   FKeyEvent k_up_ev (Event::KeyUp, keyboard.getKey());
   sendEvent (widget, &k_up_ev);
   return k_up_ev.isAccepted();
@@ -818,8 +818,8 @@ inline void FApplication::sendKeyboardAccelerator()
 //----------------------------------------------------------------------
 inline bool FApplication::hasDataInQueue() const
 {
-  auto& keyboard = FTerm::getFKeyboard();
-  auto& mouse = FTerm::getFMouseControl();
+  const auto& keyboard = FTerm::getFKeyboard();
+  const auto& mouse = FTerm::getFMouseControl();
 
   if ( keyboard.hasDataInQueue()
     || mouse.hasDataInQueue()
@@ -890,7 +890,7 @@ void FApplication::processMouseEvent() const
 //----------------------------------------------------------------------
 bool FApplication::processDialogSwitchAccelerator() const
 {
-  auto& keyboard = FTerm::getFKeyboard();
+  const auto& keyboard = FTerm::getFKeyboard();
 
   if ( keyboard.getKey() >= FKey::Meta_1
     && keyboard.getKey() <= FKey::Meta_9 )
