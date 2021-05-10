@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -172,6 +172,7 @@ class FTermcapQuirksTest : public CPPUNIT_NS::TestFixture
     void linuxTest();
     void rxvtTest();
     void vteTest();
+    void kittyTest();
     void puttyTest();
     void teratermTest();
     void sunTest();
@@ -194,6 +195,7 @@ class FTermcapQuirksTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (linuxTest);
     CPPUNIT_TEST (rxvtTest);
     CPPUNIT_TEST (vteTest);
+    CPPUNIT_TEST (kittyTest);
     CPPUNIT_TEST (puttyTest);
     CPPUNIT_TEST (teratermTest);
     CPPUNIT_TEST (sunTest);
@@ -237,48 +239,48 @@ void FTermcapQuirksTest::generalTest()
   CPPUNIT_ASSERT ( finalcut::FTermcap::tabstop == 8 );
   CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 0 );
   CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_foreground].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string
                          , CSI "3%p1%dm" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_background].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string
                          , CSI "4%p1%dm" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_initialize_color].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string
                          , OSC "P%p1%x"
                                "%p2%{255}%*%{1000}%/%02x"
                                "%p3%{255}%*%{1000}%/%02x"
                                "%p4%{255}%*%{1000}%/%02x" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_enter_ca_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_ca_mode)].string
                          , ESC "7" CSI "?47h"  );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_ca_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_ca_mode)].string
                          , CSI "?47l" ESC "8" CSI "m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_cursor_address].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_address)].string
                          , CSI "%i%p1%d;%p2%dH" );
   // Non standard ECMA-48 (ANSI X3.64) terminal
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_enter_dbl_underline_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_dbl_underline_mode)].string
                          , 0 );
-  caps[finalcut::fc::t_exit_underline_mode].string = CSI "24m";
+  caps[int(finalcut::Termcap::t_exit_underline_mode)].string = CSI "24m";
   quirks.terminalFixup();
   // Standard ECMA-48 (ANSI X3.64) terminal
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_enter_dbl_underline_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_dbl_underline_mode)].string
                          , CSI "21m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_dbl_underline_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_dbl_underline_mode)].string
                          , CSI "24m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_bold_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_bold_mode)].string
                          , CSI "22m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_dim_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_dim_mode)].string
                          , CSI "22m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_underline_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_underline_mode)].string
                          , CSI "24m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_blink_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_blink_mode)].string
                          , CSI "25m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_reverse_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_reverse_mode)].string
                          , CSI "27m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_secure_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_secure_mode)].string
                          , CSI "28m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_enter_crossed_out_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_crossed_out_mode)].string
                          , CSI "9m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_crossed_out_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_crossed_out_mode)].string
                          , CSI "29m" );
-  CPPUNIT_ASSERT_CSTRING ( printSequence(caps[finalcut::fc::t_enter_ca_mode].string).c_str()
+  CPPUNIT_ASSERT_CSTRING ( printSequence(caps[int(finalcut::Termcap::t_enter_ca_mode)].string).c_str()
                          , "Esc 7 Esc [ ? 4 7 h " );
 }
 
@@ -291,8 +293,8 @@ void FTermcapQuirksTest::xtermTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
-  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTerm::getFTermData();
+  auto& detect = finalcut::FTerm::getFTermDetection();
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermcap::can_change_color_palette = false;
   detect.setXTerminal (true);
@@ -300,14 +302,14 @@ void FTermcapQuirksTest::xtermTest()
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_initialize_color].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string
                          , OSC "4;%p1%d;rgb:"
                                "%p2%{255}%*%{1000}%/%2.2X/"
                                "%p3%{255}%*%{1000}%/%2.2X/"
                                "%p4%{255}%*%{1000}%/%2.2X" ESC "\\");
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_cursor_invisible].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_invisible)].string
                          , CSI "?25l" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_cursor_normal].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_normal)].string
                          , CSI "?12l" CSI "?25h" );
   detect.setXTerminal (false);
 }
@@ -322,8 +324,8 @@ void FTermcapQuirksTest::freebsdTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
-  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTerm::getFTermData();
+  auto& detect = finalcut::FTerm::getFTermDetection();
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
   detect.setFreeBSDTerm (true);
@@ -333,7 +335,7 @@ void FTermcapQuirksTest::freebsdTest()
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 18 );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_acs_chars].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_acs_chars)].string
                          , "-\036.\0370\333"
                            "a\260f\370g\361"
                            "h\261j\331k\277"
@@ -341,7 +343,7 @@ void FTermcapQuirksTest::freebsdTest()
                            "q\304t\303u\264"
                            "v\301w\302x\263"
                            "y\363z\362~\371" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_attributes].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_attributes)].string
                          , CSI "0"
                                "%?%p1%p6%|%t;1%;"
                                "%?%p2%t;4%;"
@@ -361,8 +363,8 @@ void FTermcapQuirksTest::cygwinTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
-  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTerm::getFTermData();
+  auto& detect = finalcut::FTerm::getFTermDetection();
   finalcut::FTermcap::background_color_erase = false;
   finalcut::FTermcapQuirks quirks;
   detect.setCygwinTerminal (true);
@@ -370,9 +372,9 @@ void FTermcapQuirksTest::cygwinTest()
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::background_color_erase == true );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_cursor_invisible].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_invisible)].string
                          , CSI "?25l" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_cursor_visible].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_cursor_visible)].string
                          , CSI "?25h" );
   detect.setCygwinTerminal (false);
 }
@@ -386,8 +388,8 @@ void FTermcapQuirksTest::linuxTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
-  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTerm::getFTermData();
+  auto& detect = finalcut::FTerm::getFTermDetection();
   finalcut::FTermcap::max_color = 8;
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
@@ -396,9 +398,9 @@ void FTermcapQuirksTest::linuxTest()
   quirks.terminalFixup();
 
   // 8 colors
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_foreground].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string
                          , CSI "3%p1%dm" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_background].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string
                          , CSI "4%p1%dm" );
   CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 18 );
 
@@ -406,45 +408,45 @@ void FTermcapQuirksTest::linuxTest()
   finalcut::FTermcap::max_color = 16;
   quirks.terminalFixup();
 
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_foreground].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string
                          , CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;22%;m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_background].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string
                          , CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m" );
   CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 30 );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_attributes].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_attributes)].string
                          , CSI "0"
                                "%?%p6%t;1%;"
                                "%?%p1%p3%|%t;7%;"
                                "%?%p4%t;5%;m"
                                "%?%p9%t\016%e\017%;" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_enter_alt_charset_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_alt_charset_mode)].string
                          , "\016" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_alt_charset_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_alt_charset_mode)].string
                          , "\017" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_attribute_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_attribute_mode)].string
                          , CSI "0m\017" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_bold_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_bold_mode)].string
                          , CSI "22m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_blink_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_blink_mode)].string
                          , CSI "25m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_reverse_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_reverse_mode)].string
                          , CSI "27m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_secure_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_secure_mode)].string
                          , 0 );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_protected_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_protected_mode)].string
                          , 0 );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_crossed_out_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_crossed_out_mode)].string
                          , 0 );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_orig_pair].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_orig_pair)].string
                          , CSI "39;49;25m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_enter_dim_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_dim_mode)].string
                          , 0 );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_dim_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_dim_mode)].string
                          , 0 );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_enter_underline_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_underline_mode)].string
                          , 0 );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_underline_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_underline_mode)].string
                          , 0 );
   detect.setLinuxTerm (false);
 }
@@ -458,32 +460,32 @@ void FTermcapQuirksTest::rxvtTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
-  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTerm::getFTermData();
+  auto& detect = finalcut::FTerm::getFTermDetection();
   finalcut::FTermcapQuirks quirks;
   detect.setRxvtTerminal (true);
   data.setTermType ("rxvt");
   quirks.terminalFixup();
 
   // rxvt
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_enter_alt_charset_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_alt_charset_mode)].string
                          , 0 );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_alt_charset_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_alt_charset_mode)].string
                          , 0 );
   // rxvt-16color
   data.setTermType ("rxvt-16color");
   quirks.terminalFixup();
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_enter_alt_charset_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_alt_charset_mode)].string
                          , ESC "(0" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_alt_charset_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_alt_charset_mode)].string
                          , ESC "(B" );
 
   // urxvt
   detect.setUrxvtTerminal (true);
   quirks.terminalFixup();
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_foreground].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string
                          , CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_background].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string
                          , CSI "%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm" );
 
   detect.setUrxvtTerminal (false);
@@ -499,8 +501,8 @@ void FTermcapQuirksTest::vteTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
-  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTerm::getFTermData();
+  auto& detect = finalcut::FTerm::getFTermDetection();
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
   detect.setGnomeTerminal (true);
@@ -508,10 +510,36 @@ void FTermcapQuirksTest::vteTest()
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 0 );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_underline_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_underline_mode)].string
                          , CSI "24m" );
 
   detect.setGnomeTerminal (false);
+}
+
+//----------------------------------------------------------------------
+void FTermcapQuirksTest::kittyTest()
+{
+  auto& caps = finalcut::FTermcap::strings;
+  constexpr int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
+
+  for (std::size_t i = 0; i < last_item; i++)
+    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
+
+  caps[int(finalcut::Termcap::t_enter_ca_mode)].string = CSI "?1049h";
+  caps[int(finalcut::Termcap::t_exit_ca_mode)].string = CSI "?1049l";
+  auto& data = finalcut::FTerm::getFTermData();
+  auto& detect = finalcut::FTerm::getFTermDetection();
+  finalcut::FTermcapQuirks quirks;
+  detect.setKittyTerminal (true);
+  data.setTermType ("xterm-kitty");
+  quirks.terminalFixup();
+
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_ca_mode)].string
+                         , CSI "?1049h" CSI "22;0;0t" );
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_ca_mode)].string
+                         , CSI "?1049l" CSI "23;0;0t" );
+
+  detect.setKittyTerminal (false);
 }
 
 //----------------------------------------------------------------------
@@ -523,8 +551,8 @@ void FTermcapQuirksTest::puttyTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
-  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTerm::getFTermData();
+  auto& detect = finalcut::FTerm::getFTermDetection();
   finalcut::FTermcap::background_color_erase = false;
   finalcut::FTermcap::can_change_color_palette = false;
   finalcut::FTermcap::osc_support = false;
@@ -538,24 +566,24 @@ void FTermcapQuirksTest::puttyTest()
   CPPUNIT_ASSERT ( finalcut::FTermcap::osc_support == true );
   CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 0 );
   CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_initialize_color].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string
                          , OSC "P%p1%x"
                                "%p2%{255}%*%{1000}%/%02x"
                                "%p3%{255}%*%{1000}%/%02x"
                                "%p4%{255}%*%{1000}%/%02x" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_foreground].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string
                          , CSI "%?%p1%{8}%<"
                                "%t3%p1%d"
                                "%e%p1%{16}%<"
                                "%t9%p1%{8}%-%d"
                                "%e38;5;%p1%d%;m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_background].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string
                          , CSI "%?%p1%{8}%<"
                                "%t4%p1%d"
                                "%e%p1%{16}%<"
                                "%t10%p1%{8}%-%d"
                                "%e48;5;%p1%d%;m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_attributes].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_attributes)].string
                          , CSI "0"
                                "%?%p1%p6%|%t;1%;"
                                "%?%p5%t;2%;"
@@ -563,42 +591,42 @@ void FTermcapQuirksTest::puttyTest()
                                "%?%p1%p3%|%t;7%;"
                                "%?%p4%t;5%;m"
                                "%?%p9%t\016%e\017%;" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_enter_dim_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_dim_mode)].string
                          , CSI "2m" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_dim_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_dim_mode)].string
                          , CSI "22m" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_clr_bol].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_clr_bol)].string
                          , CSI "1K" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_orig_pair].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_orig_pair)].string
                          , CSI "39;49m" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_orig_colors].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_orig_colors)].string
                          , OSC "R" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_column_address].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_column_address)].string
                          , CSI "%i%p1%dG" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_row_address].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_row_address)].string
                          , CSI "%i%p1%dd" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_enable_acs].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enable_acs)].string
                          , ESC "(B" ESC ")0" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_enter_am_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_am_mode)].string
                          , CSI "?7h" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_am_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_am_mode)].string
                          , CSI "?7l" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_enter_pc_charset_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_enter_pc_charset_mode)].string
                          , CSI "11m" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_pc_charset_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_pc_charset_mode)].string
                          , CSI "10m" );
 
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_key_mouse].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_key_mouse)].string
                         , CSI "M" );
 
   detect.setPuttyTerminal (false);
@@ -613,8 +641,8 @@ void FTermcapQuirksTest::teratermTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
-  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTerm::getFTermData();
+  auto& detect = finalcut::FTerm::getFTermDetection();
   finalcut::FTermcap::eat_nl_glitch = false;
   finalcut::FTermcapQuirks quirks;
   detect.setTeraTerm (true);
@@ -622,13 +650,13 @@ void FTermcapQuirksTest::teratermTest()
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::eat_nl_glitch == true );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_foreground].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_foreground)].string
                          , CSI "38;5;%p1%dm" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_background].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_set_a_background)].string
                          , CSI "48;5;%p1%dm" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_attribute_mode].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_exit_attribute_mode)].string
                          , CSI "0m" SI );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_orig_pair].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_orig_pair)].string
                          , CSI "39;49m" );
 
   detect.setTeraTerm (false);
@@ -643,8 +671,8 @@ void FTermcapQuirksTest::sunTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
-  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTerm::getFTermData();
+  auto& detect = finalcut::FTerm::getFTermDetection();
   finalcut::FTermcap::eat_nl_glitch = false;
   finalcut::FTermcapQuirks quirks;
   detect.setSunTerminal (true);
@@ -652,100 +680,100 @@ void FTermcapQuirksTest::sunTest()
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::eat_nl_glitch == true );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_parm_up_cursor].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_parm_up_cursor)].string
                          , CSI "%p1%dA" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_parm_down_cursor].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_parm_down_cursor)].string
                          , CSI "%p1%dB" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_parm_right_cursor].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_parm_right_cursor)].string
                          , CSI "%p1%dC" );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_parm_left_cursor].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_parm_left_cursor)].string
                          , CSI "%p1%dD" );
 
-  for (std::size_t i = 0; finalcut::fc::fkey[i].tname[0] != 0; i++)
+  for (std::size_t i = 0; finalcut::fc::fkey_cap_table[i].tname[0] != 0; i++)
   {
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "K2", 2) == 0 )  // center of keypad
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "K2", 2) == 0 )  // center of keypad
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "218z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "kb", 2) == 0 )  // backspace key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "kb", 2) == 0 )  // backspace key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , "\b" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "kD", 2) == 0
-      && std::strlen(finalcut::fc::fkey[i].tname) == 2 )  // delete-character key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "kD", 2) == 0
+      && std::strlen(finalcut::fc::fkey_cap_table[i].tname) == 2 )  // delete-character key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , "\177" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "@7", 2) == 0 )  // end key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "@7", 2) == 0 )  // end key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "220z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "k;", 2) == 0 )  // F10 function key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "k;", 2) == 0 )  // F10 function key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "233z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "F1", 2) == 0 )  // F11 function key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "F1", 2) == 0 )  // F11 function key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "234z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "F2", 2) == 0 )  // F12 function key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "F2", 2) == 0 )  // F12 function key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "235z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "kh", 2) == 0 )  // home key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "kh", 2) == 0 )  // home key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "214z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "kI", 2) == 0 )  // insert-character key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "kI", 2) == 0 )  // insert-character key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "247z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "kN", 2) == 0 )  // next-page key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "kN", 2) == 0 )  // next-page key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "222z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "%7", 2) == 0 )  // options key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "%7", 2) == 0 )  // options key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "194z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "kP", 2) == 0 )  // prev-page key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "kP", 2) == 0 )  // prev-page key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "216z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "&5", 2) == 0 )  // resume key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "&5", 2) == 0 )  // resume key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "193z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "&8", 2) == 0 )  // undo key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "&8", 2) == 0 )  // undo key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "195z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "K2", 2) == 0 )  // center of keypad
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "K2", 2) == 0 )  // center of keypad
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "218z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "kDx", 3) == 0 )  // keypad delete
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "kDx", 3) == 0 )  // keypad delete
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "249z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "@8x", 3) == 0 )  // enter/send key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "@8x", 3) == 0 )  // enter/send key
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "250z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "KP1", 3) == 0 )  // keypad slash
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "KP1", 3) == 0 )  // keypad slash
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "212z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "KP2", 3) == 0 )  // keypad asterisk
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "KP2", 3) == 0 )  // keypad asterisk
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "213z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "KP3", 3) == 0 )  // keypad minus sign
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "KP3", 3) == 0 )  // keypad minus sign
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "254z" );
 
-    if ( std::strncmp(finalcut::fc::fkey[i].tname, "KP4", 3) == 0 )  // keypad plus sign
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey[i].string
+    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "KP4", 3) == 0 )  // keypad plus sign
+      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
                              , CSI "253z" );
   }
 
@@ -761,8 +789,8 @@ void FTermcapQuirksTest::screenTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
-  finalcut::FTermDetection& detect = *finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTerm::getFTermData();
+  auto& detect = finalcut::FTerm::getFTermDetection();
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermcap::can_change_color_palette = false;
   detect.setScreenTerm (true);
@@ -770,19 +798,19 @@ void FTermcapQuirksTest::screenTest()
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_initialize_color].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string
                          , ESC "P" OSC "4;%p1%d;rgb:"
                            "%p2%{255}%*%{1000}%/%2.2X/"
                            "%p3%{255}%*%{1000}%/%2.2X/"
                            "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\" );
 
   detect.setTmuxTerm (true);
-  caps[finalcut::fc::t_initialize_color].string = 0;
+  caps[int(finalcut::Termcap::t_initialize_color)].string = 0;
   finalcut::FTermcap::can_change_color_palette = false;
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
-  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_initialize_color].string
+  CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_initialize_color)].string
                          , ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
                            "%p2%{255}%*%{1000}%/%2.2X/"
                            "%p3%{255}%*%{1000}%/%2.2X/"

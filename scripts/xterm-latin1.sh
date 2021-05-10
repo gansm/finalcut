@@ -1,3 +1,3 @@
 #!/bin/sh
-luit -encoding POSIX ../examples/ui
+luit -encoding C ../examples/ui $@
 

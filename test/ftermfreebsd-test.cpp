@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <term.h>
+#undef buttons  // from term.h
 #include <unistd.h>
 
 #include <limits>
@@ -62,7 +64,6 @@ class FSystemTest : public finalcut::FSystem
     FILE*            fopen (const char*, const char*) override;
     int              fclose (FILE*) override;
     int              putchar (int) override;
-    int              tputs (const char*, int, int (*)(int)) override;
     uid_t            getuid() override;
     uid_t            geteuid() override;
     int              getpwuid_r (uid_t, struct passwd*, char*
@@ -525,12 +526,6 @@ int FSystemTest::putchar (int c)
 }
 
 //----------------------------------------------------------------------
-int FSystemTest::tputs (const char* str, int affcnt, int (*putc)(int))
-{
-  return ::tputs (str, affcnt, putc);
-}
-
-//----------------------------------------------------------------------
 uid_t FSystemTest::getuid()
 {
   return 0;
@@ -573,7 +568,6 @@ struct keymap_t& FSystemTest::getTerminalKeymap()
   return terminal_keymap;
 }
 
-
 }  // namespace test
 
 
@@ -601,6 +595,7 @@ class ftermfreebsdTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
+    wchar_t charEncode (finalcut::UniChar);
     wchar_t charEncode (wchar_t);
 };
 
@@ -624,49 +619,48 @@ void ftermfreebsdTest::freebsdConsoleTest()
   setenv ("COLUMNS", "80", 1);
   setenv ("LINES", "25", 1);
 
-  finalcut::FSystem* fsys = new test::FSystemTest();
-  finalcut::FTermDetection* term_detection{};
+  std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  finalcut::FTermData* data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
 
-  auto& encoding_list = data->getEncodingList();
-  encoding_list["UTF-8"] = finalcut::fc::UTF8;
-  encoding_list["UTF8"]  = finalcut::fc::UTF8;
-  encoding_list["VT100"] = finalcut::fc::VT100;
-  encoding_list["PC"]    = finalcut::fc::PC;
-  encoding_list["ASCII"] = finalcut::fc::ASCII;
+  auto& encoding_list = data.getEncodingList();
+  encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
+  encoding_list["UTF8"]  = finalcut::Encoding::UTF8;
+  encoding_list["VT100"] = finalcut::Encoding::VT100;
+  encoding_list["PC"]    = finalcut::Encoding::PC;
+  encoding_list["ASCII"] = finalcut::Encoding::ASCII;
 
-  data->setTermEncoding(finalcut::fc::VT100);
-  data->setBaudrate(9600);
-  data->setTermType("xterm");
-  data->setTermFileName("/dev/ttyv0");
-  data->setTTYFileDescriptor(0);
-  data->supportShadowCharacter (false);
-  data->supportHalfBlockCharacter (false);
-  data->supportCursorOptimisation (true);
-  data->setCursorHidden (true);
-  data->useAlternateScreen (false);
-  data->setASCIIConsole (true);
-  data->setVT100Console (false);
-  data->setUTF8Console (false);
-  data->setUTF8 (false);
-  data->setNewFont (false);
-  data->setVGAFont (false);
-  data->setMonochron (false);
-  data->setTermResized (false);
-
+  data.setTermEncoding(finalcut::Encoding::VT100);
+  data.setBaudrate(9600);
+  data.setTermType("xterm");
+  data.setTermFileName("/dev/ttyv0");
+  data.setTTYFileDescriptor(0);
+  data.supportShadowCharacter (false);
+  data.supportHalfBlockCharacter (false);
+  data.supportCursorOptimisation (true);
+  data.setCursorHidden (true);
+  data.useAlternateScreen (false);
+  data.setASCIIConsole (true);
+  data.setVT100Console (false);
+  data.setUTF8Console (false);
+  data.setUTF8 (false);
+  data.setNewFont (false);
+  data.setVGAFont (false);
+  data.setMonochron (false);
+  data.setTermResized (false);
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  term_detection = finalcut::FTerm::getFTermDetection();
-  term_detection->setTerminalDetection(true);
+  auto& term_detection = finalcut::FTerm::getFTermDetection();
+  term_detection.setTerminalDetection(true);
   pid_t pid = forkConEmu();
 
   if ( isConEmuChildProcess(pid) )
   {
     static constexpr int left_alt = 0x38;
     finalcut::FTermFreeBSD freebsd;
-    test::FSystemTest* fsystest = static_cast<test::FSystemTest*>(fsys);
+    const auto& fsystem = finalcut::FTerm::getFSystem();
+    auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
     struct keymap_t& keymap = fsystest->getTerminalKeymap();
 
     setenv ("TERM", "xterm", 1);
@@ -686,38 +680,42 @@ void ftermfreebsdTest::freebsdConsoleTest()
     CPPUNIT_ASSERT ( keymap.key[left_alt].map[0] == 0 );
     CPPUNIT_ASSERT ( freebsd.isFreeBSDConsole() );
     CPPUNIT_ASSERT ( keymap.key[left_alt].map[0] == 7 );
-    CPPUNIT_ASSERT ( freebsd.getCursorStyle() == finalcut::fc::normal_cursor );
+    CPPUNIT_ASSERT ( freebsd.getCursorStyle()
+                     == finalcut::FreeBSDConsoleCursorStyle::Normal );
     freebsd.disableMetaSendsEscape();
     freebsd.disableChangeCursorStyle();
     freebsd.init();
     CPPUNIT_ASSERT ( keymap.key[left_alt].map[0] == 7 );
-    CPPUNIT_ASSERT ( freebsd.getCursorStyle() == finalcut::fc::normal_cursor );
+    CPPUNIT_ASSERT ( freebsd.getCursorStyle()
+                     == finalcut::FreeBSDConsoleCursorStyle::Normal );
     freebsd.enableMetaSendsEscape();
     freebsd.enableChangeCursorStyle();
     freebsd.init();
     CPPUNIT_ASSERT ( keymap.key[left_alt].map[0] == META );
-    CPPUNIT_ASSERT ( freebsd.getCursorStyle() == finalcut::fc::destructive_cursor );
-    freebsd.setCursorStyle(finalcut::fc::blink_cursor);
+    CPPUNIT_ASSERT ( freebsd.getCursorStyle()
+                     == finalcut::FreeBSDConsoleCursorStyle::Destructive );
+    freebsd.setCursorStyle(finalcut::FreeBSDConsoleCursorStyle::Blink);
     freebsd.setCursorStyle(freebsd.getCursorStyle());
-    CPPUNIT_ASSERT ( freebsd.getCursorStyle() == finalcut::fc::blink_cursor );
+    CPPUNIT_ASSERT ( freebsd.getCursorStyle()
+                     == finalcut::FreeBSDConsoleCursorStyle::Blink );
 
-    const auto c1 = finalcut::fc::Section;                      // §
-    const auto c2 = finalcut::fc::InverseBullet;                // ◘
-    const auto c3 = finalcut::fc::InverseWhiteCircle;           // ◙
-    const auto c4 = finalcut::fc::DoubleExclamationMark;        // ‼
-    const auto c5 = finalcut::fc::UpDownArrow;                  // ↕
-    const auto c6 = finalcut::fc::BlackRectangle;               // ▬
-    const auto c7 = finalcut::fc::UpwardsArrow;                 // ↑
-    const auto c8 = finalcut::fc::DownwardsArrow;               // ↓
-    const auto c9 = finalcut::fc::RightwardsArrow;              // →
-    const auto c10 = finalcut::fc::LeftwardsArrow;              // ←
-    const auto c11 = finalcut::fc::Bullet;                      // •
-    const auto c12 = finalcut::fc::BlackCircle;                 // ●
-    const auto c13 = finalcut::fc::BlackDiamondSuit;            // ◆
-    const auto c14 = finalcut::fc::BlackRightPointingTriangle;  // ▶
-    const auto c15 = finalcut::fc::BlackLeftPointingTriangle;   // ◀
-    const auto c16 = finalcut::fc::BlackRightPointingPointer;   // ►
-    const auto c17 = finalcut::fc::BlackLeftPointingPointer;    // ◄
+    const auto c1 = finalcut::UniChar::Section;                      // §
+    const auto c2 = finalcut::UniChar::InverseBullet;                // ◘
+    const auto c3 = finalcut::UniChar::InverseWhiteCircle;           // ◙
+    const auto c4 = finalcut::UniChar::DoubleExclamationMark;        // ‼
+    const auto c5 = finalcut::UniChar::UpDownArrow;                  // ↕
+    const auto c6 = finalcut::UniChar::BlackRectangle;               // ▬
+    const auto c7 = finalcut::UniChar::UpwardsArrow;                 // ↑
+    const auto c8 = finalcut::UniChar::DownwardsArrow;               // ↓
+    const auto c9 = finalcut::UniChar::RightwardsArrow;              // →
+    const auto c10 = finalcut::UniChar::LeftwardsArrow;              // ←
+    const auto c11 = finalcut::UniChar::Bullet;                      // •
+    const auto c12 = finalcut::UniChar::BlackCircle;                 // ●
+    const auto c13 = finalcut::UniChar::BlackDiamondSuit;            // ◆
+    const auto c14 = finalcut::UniChar::BlackRightPointingTriangle;  // ▶
+    const auto c15 = finalcut::UniChar::BlackLeftPointingTriangle;   // ◀
+    const auto c16 = finalcut::UniChar::BlackRightPointingPointer;   // ►
+    const auto c17 = finalcut::UniChar::BlackLeftPointingPointer;    // ◄
     CPPUNIT_ASSERT ( charEncode(c1) == 21 );   // §
     CPPUNIT_ASSERT ( charEncode(c2) == 8 );    // ◘
     CPPUNIT_ASSERT ( charEncode(c3) == 10 );   // ◙
@@ -756,7 +754,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
     CPPUNIT_ASSERT ( charEncode(c16) == 62 );  // >
     CPPUNIT_ASSERT ( charEncode(c17) == 60 );  // <
 
-    term_detection->detect();
+    term_detection.detect();
 
 #if DEBUG
     const finalcut::FString& sec_da = \
@@ -765,21 +763,25 @@ void ftermfreebsdTest::freebsdConsoleTest()
 #endif
 
     CPPUNIT_ASSERT ( isatty(0) == 1 );
-    CPPUNIT_ASSERT ( term_detection->isFreeBSDTerm() );
-    CPPUNIT_ASSERT ( data->getTermGeometry().getWidth() == 80 );
-    CPPUNIT_ASSERT ( data->getTermGeometry().getHeight() == 25 );
-    CPPUNIT_ASSERT ( ! data->hasShadowCharacter() );
-    CPPUNIT_ASSERT ( ! data->hasHalfBlockCharacter() );
+    CPPUNIT_ASSERT ( term_detection.isFreeBSDTerm() );
+    CPPUNIT_ASSERT ( data.getTermGeometry().getWidth() == 80 );
+    CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 25 );
+    CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );
+    CPPUNIT_ASSERT ( ! data.hasHalfBlockCharacter() );
 
-    data->setCursorHidden (false);
-    freebsd.setCursorStyle (finalcut::fc::normal_cursor);
-    CPPUNIT_ASSERT ( fsystest->getCursorType() == finalcut::fc::normal_cursor );
+    data.setCursorHidden (false);
+    freebsd.setCursorStyle (finalcut::FreeBSDConsoleCursorStyle::Normal);
 
-    freebsd.setCursorStyle (finalcut::fc::blink_cursor);
-    CPPUNIT_ASSERT ( fsystest->getCursorType() == finalcut::fc::blink_cursor );
+    CPPUNIT_ASSERT ( fsystest->getCursorType()
+                     == int(finalcut::FreeBSDConsoleCursorStyle::Normal) );
 
-    freebsd.setCursorStyle (finalcut::fc::destructive_cursor);
-    CPPUNIT_ASSERT ( fsystest->getCursorType() == finalcut::fc::destructive_cursor );
+    freebsd.setCursorStyle (finalcut::FreeBSDConsoleCursorStyle::Blink);
+    CPPUNIT_ASSERT ( fsystest->getCursorType()
+                     == int(finalcut::FreeBSDConsoleCursorStyle::Blink) );
+
+    freebsd.setCursorStyle (finalcut::FreeBSDConsoleCursorStyle::Destructive);
+    CPPUNIT_ASSERT ( fsystest->getCursorType()
+                     == int(finalcut::FreeBSDConsoleCursorStyle::Destructive) );
 
     std::string& characters = fsystest->getCharacters();
     characters.clear();
@@ -807,13 +809,17 @@ void ftermfreebsdTest::freebsdConsoleTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::freebsd_con);
+    startConEmuTerminal (ConEmu::console::freebsd_con);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
+}
 
-  delete fsys;
+//----------------------------------------------------------------------
+wchar_t ftermfreebsdTest::charEncode (finalcut::UniChar c)
+{
+  return charEncode(static_cast<wchar_t>(c));
 }
 
 //----------------------------------------------------------------------
@@ -823,9 +829,9 @@ wchar_t ftermfreebsdTest::charEncode (wchar_t c)
 
   for (auto&& entry : finalcut::fc::character)
   {
-    if ( entry[finalcut::fc::UTF8] == uInt(c) )
+    if ( entry.unicode == c )
     {
-      ch_enc = wchar_t(entry[finalcut::fc::PC]);
+      ch_enc = entry.pc;
       break;
     }
   }

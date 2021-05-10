@@ -51,8 +51,8 @@ class SGRoptimizer final
     // Constants
     static constexpr std::size_t ATTR_BUF_SIZE{8192};
 
-    // Typedefs
-    typedef std::array<char, ATTR_BUF_SIZE> AttributeBuffer;
+    // Using-declaration
+    using AttributeBuffer = std::array<char, ATTR_BUF_SIZE>;
 
     // Constructors
     explicit SGRoptimizer (AttributeBuffer&);
@@ -61,7 +61,7 @@ class SGRoptimizer final
     SGRoptimizer (const SGRoptimizer&) = delete;
 
     // Destructor
-    ~SGRoptimizer();
+    ~SGRoptimizer() noexcept = default;
 
     // Disable copy assignment operator (=)
     SGRoptimizer& operator = (const SGRoptimizer&) = delete;

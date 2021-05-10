@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -66,7 +66,7 @@ class FProgressbar : public FWidget
     explicit FProgressbar(FWidget* = nullptr);
 
     // Destructor
-    ~FProgressbar() override;
+    ~FProgressbar() noexcept override;
 
     // Accessors
     FString             getClassName() const override;
@@ -77,8 +77,7 @@ class FProgressbar : public FWidget
     void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
-    bool                setShadow (bool);
-    bool                setShadow();
+    bool                setShadow (bool = true);
     bool                unsetShadow();
 
     // Inquiries
@@ -114,10 +113,6 @@ inline FString FProgressbar::getClassName() const
 //----------------------------------------------------------------------
 inline std::size_t FProgressbar::getPercentage() const
 { return percentage; }
-
-//----------------------------------------------------------------------
-inline bool FProgressbar::setShadow()
-{ return setShadow(true); }
 
 //----------------------------------------------------------------------
 inline bool FProgressbar::unsetShadow()

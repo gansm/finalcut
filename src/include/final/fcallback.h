@@ -55,8 +55,7 @@ class FWidget;
 struct FCallbackData
 {
   // Constructor
-  FCallbackData()
-  { }
+  FCallbackData() = default;
 
   template <typename FuncPtr>
   FCallbackData (const FString& s, FWidget* i, FuncPtr m, const FCall& c)
@@ -135,13 +134,13 @@ class FCallback
                               , std::nullptr_t >;
 
     // Constructors
-    FCallback();
+    FCallback() = default;
 
     // Disable copy constructor
     FCallback (const FCallback&) = delete;
 
     // Destructor
-    ~FCallback();
+    ~FCallback() noexcept = default;
 
     // Disable copy assignment operator (=)
     FCallback& operator = (const FCallback&) = delete;
@@ -211,8 +210,8 @@ class FCallback
     void emitCallback (const FString& emit_signal) const;
 
   private:
-    // Typedefs
-    typedef std::vector<FCallbackData>  FCallbackObjects;
+    // Using-declaration
+    using FCallbackObjects = std::vector<FCallbackData>;
 
     // Data members
     FCallbackObjects  callback_objects{};

@@ -49,8 +49,7 @@ FRadioMenuItem::FRadioMenuItem (const FString& txt, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FRadioMenuItem::~FRadioMenuItem()  // destructor
-{ }
+FRadioMenuItem::~FRadioMenuItem() noexcept = default;  // destructor
 
 
 // private methods of FRadioMenuItem

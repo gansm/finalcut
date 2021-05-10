@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -117,7 +117,7 @@ void FWindow::setActiveWindow (FWindow* window)
       if ( ! window->isWindowActive() )
       {
         window->activateWindow();
-        FEvent ev(fc::WindowActive_Event);
+        FEvent ev(Event::WindowActive);
         FApplication::sendEvent(window, &ev);
       }
     }
@@ -128,8 +128,8 @@ void FWindow::setActiveWindow (FWindow* window)
       if ( w->isWindowActive() )
       {
         w->deactivateWindow();
-        FEvent ev(fc::WindowInactive_Event);
-        FApplication::sendEvent(win, &ev);
+        FEvent ev(Event::WindowInactive);
+        FApplication::sendEvent(static_cast<FWidget*>(win), &ev);
       }
     }
   }
@@ -243,22 +243,22 @@ void FWindow::drawBorder()
   {
     const FRect r{FPoint{1, 1}, getSize()};
     print() << r.getUpperLeftPos()
-            << fc::NF_border_corner_upper_left                      // ⎡
-            << FString{r.getWidth() - 2, fc::NF_border_line_upper}  // ¯
-            << fc::NF_rev_border_corner_upper_right;                // ⎤
+            << UniChar::NF_border_corner_upper_left                      // ⎡
+            << FString{r.getWidth() - 2, UniChar::NF_border_line_upper}  // ¯
+            << UniChar::NF_rev_border_corner_upper_right;                // ⎤
 
     for (auto y = r.getY1() + 1; y < r.getY2(); y++)
     {
       print() << FPoint{r.getX1(), y}
-              << fc::NF_border_line_left        // border left ⎸
+              << UniChar::NF_border_line_left        // border left ⎸
               << FPoint{r.getX2(), y}
-              << fc::NF_rev_border_line_right;  // border right⎹
+              << UniChar::NF_rev_border_line_right;  // border right⎹
     }
 
     print() << r.getLowerLeftPos()
-            << fc::NF_border_corner_lower_left                       // ⎣
-            << FString{r.getWidth() - 2, fc::NF_border_line_bottom}  // _
-            << fc::NF_rev_border_corner_lower_right;                 // ⎦
+            << UniChar::NF_border_corner_lower_left                       // ⎣
+            << FString{r.getWidth() - 2, UniChar::NF_border_line_bottom}  // _
+            << UniChar::NF_rev_border_corner_lower_right;                 // ⎦
   }
   else
   {
@@ -365,12 +365,10 @@ void FWindow::setHeight (std::size_t h, bool adjust)
 //----------------------------------------------------------------------
 void FWindow::setSize (const FSize& size, bool adjust)
 {
-  const std::size_t old_width = getWidth();
-  const std::size_t old_height = getHeight();
+  const FSize old_size{getSize()};
   FWidget::setSize (size, adjust);
 
-  if ( isVirtualWindow()
-    && (getWidth() != old_width || getHeight() != old_height) )
+  if ( isVirtualWindow() && getSize() != old_size )
   {
     FRect geometry {getTermGeometry()};
     geometry.move(-1, -1);
@@ -429,6 +427,7 @@ void FWindow::move (const FPoint& pos)
 FWindow* FWindow::getWindowWidgetAt (int x, int y)
 {
   // returns the window object to the corresponding coordinates
+
   if ( getWindowList() && ! getWindowList()->empty() )
   {
     auto iter = getWindowList()->end();
@@ -483,56 +482,6 @@ void FWindow::delWindow (const FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-FWindow* FWindow::getWindowWidget (FWidget* obj)
-{
-  // returns the window object to the given widget obj
-  auto p_obj = obj->getParentWidget();
-
-  while ( ! obj->isWindowWidget() && p_obj )
-  {
-    obj = p_obj;
-    p_obj = p_obj->getParentWidget();
-  }
-
-  if ( obj->isWindowWidget() )
-    return static_cast<FWindow*>(obj);
-  else
-    return nullptr;
-}
-
-//----------------------------------------------------------------------
-int FWindow::getWindowLayer (FWidget* obj)
-{
-  // returns the window layer from the widget obj
-
-  const FWidget* window;
-
-  if ( ! getWindowList() || getWindowList()->empty() )
-    return -1;
-
-  if ( ! obj->isWindowWidget() )
-  {
-    if ( (window = getWindowWidget(obj)) == nullptr )
-      return -1;
-  }
-  else
-    window = obj;
-
-  auto iter = getWindowList()->begin();
-  const auto end  = getWindowList()->end();
-
-  while ( iter != end )
-  {
-    if ( *iter == window )
-      break;
-
-    ++iter;
-  }
-
-  return int(std::distance(getWindowList()->begin(), iter) + 1);
-}
-
-//----------------------------------------------------------------------
 void FWindow::swapWindow (const FWidget* obj1, const FWidget* obj2)
 {
   // swaps the window layer between obj1 and obj2
@@ -582,22 +531,23 @@ bool FWindow::raiseWindow (FWidget* obj)
   if ( ! obj->isWindowWidget() )
     return false;
 
-  if ( getWindowList()->back() == obj )
+  const auto last = static_cast<FWidget*>(getWindowList()->back());
+
+  if ( last == obj )
     return false;
 
-  if ( getWindowList()->back()->getFlags().modal
-    && ! obj->isMenuWidget() )
+  if ( last->getFlags().modal && ! obj->isMenuWidget() )
     return false;
 
   auto iter = getWindowList()->begin();
 
   while ( iter != getWindowList()->end() )
   {
-    if ( *iter == obj )
+    if ( static_cast<FWidget*>(*iter) == obj )
     {
       getWindowList()->erase (iter);
       getWindowList()->push_back (obj);
-      FEvent ev(fc::WindowRaised_Event);
+      FEvent ev(Event::WindowRaised);
       FApplication::sendEvent(obj, &ev);
       processAlwaysOnTop();
       return true;
@@ -637,7 +587,7 @@ bool FWindow::lowerWindow (FWidget* obj)
     {
       getWindowList()->erase (iter);
       getWindowList()->insert (getWindowList()->begin(), obj);
-      FEvent ev(fc::WindowLowered_Event);
+      FEvent ev(Event::WindowLowered);
       FApplication::sendEvent(obj, &ev);
       return true;
     }
@@ -681,13 +631,12 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
   // Disable terminal updates to avoid flickering
   // when redrawing the focused widget
   if ( widget )
-    widget->setTerminalUpdates (FVTerm::stop_terminal_updates);
+    widget->setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
 
   const bool is_activated = activatePrevWindow();
   auto active_win = static_cast<FWindow*>(getActiveWindow());
 
-  if ( ! is_activated
-    && getWindowList() && getWindowList()->size() > 1 )
+  if ( ! is_activated && getWindowList() && getWindowList()->size() > 1 )
   {
     // no previous window -> looking for another window
     auto iter = getWindowList()->end();
@@ -716,7 +665,7 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
     auto focus = active_win->getWindowFocusWidget();
 
     if ( ! active_win->isWindowActive() )
-      setActiveWindow(active_win);
+      active_win->setActiveWindow(active_win);
 
     if ( focus )
     {
@@ -729,7 +678,7 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
 
   // Enable terminal updates again
   if ( widget )
-    widget->setTerminalUpdates (FVTerm::continue_terminal_updates);
+    widget->setTerminalUpdates (FVTerm::TerminalUpdate::Continue);
 }
 
 //----------------------------------------------------------------------
@@ -745,7 +694,7 @@ bool FWindow::activatePrevWindow()
 
     if ( ! w->isWindowHidden() )
     {
-      setActiveWindow(w);
+      w->setActiveWindow(w);
       return true;
     }
   }
@@ -792,27 +741,24 @@ void FWindow::adjustSize()
 //----------------------------------------------------------------------
 bool FWindow::event (FEvent* ev)
 {
-  switch ( uInt(ev->getType()) )
+  if ( ev->getType() == Event::WindowActive )
   {
-    case fc::WindowActive_Event:
-      onWindowActive (ev);
-      break;
-
-    case fc::WindowInactive_Event:
-      onWindowInactive (ev);
-      break;
-
-    case fc::WindowRaised_Event:
-      onWindowRaised (ev);
-      break;
-
-    case fc::WindowLowered_Event:
-      onWindowLowered (ev);
-      break;
-
-    default:
-      return FWidget::event(ev);
+    onWindowActive (ev);
   }
+  else if ( ev->getType() == Event::WindowInactive )
+  {
+    onWindowInactive (ev);
+  }
+  else if ( ev->getType() == Event::WindowRaised )
+  {
+    onWindowRaised (ev);
+  }
+  else if ( ev->getType() == Event::WindowLowered )
+  {
+    onWindowLowered (ev);
+  }
+  else
+    return FWidget::event(ev);
 
   return true;
 }
@@ -886,6 +832,42 @@ void FWindow::processAlwaysOnTop()
 
     ++iter;
   }
+}
+
+//----------------------------------------------------------------------
+FWindow* FWindow::getWindowWidgetImpl (FWidget* obj)
+{
+  // returns the window object to the given widget obj
+  auto p_obj = obj->getParentWidget();
+
+  while ( ! obj->isWindowWidget() && p_obj )
+  {
+    obj = p_obj;
+    p_obj = p_obj->getParentWidget();
+  }
+
+  if ( obj->isWindowWidget() )
+    return static_cast<FWindow*>(obj);
+  else
+    return nullptr;
+}
+
+//----------------------------------------------------------------------
+int FWindow::getWindowLayerImpl (FWidget* obj)
+{
+  // returns the window layer from the widget obj
+
+  const FWidget* window;
+
+  if ( ! obj->isWindowWidget() )
+  {
+    if ( (window = getWindowWidget(obj)) == nullptr )
+      return -1;
+  }
+  else
+    window = obj;
+
+  return FVTerm::getLayer(window);
 }
 
 // non-member functions

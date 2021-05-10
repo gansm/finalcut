@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -77,7 +77,7 @@ class FTextView : public FWidget
     FTextView (const FTextView&) = delete;
 
     // Destructor
-    ~FTextView() override;
+    ~FTextView() noexcept override;
 
     // Disable copy assignment operator (=)
     FTextView& operator = (const FTextView&) = delete;
@@ -86,7 +86,7 @@ class FTextView : public FWidget
     FTextView& operator = (const FString&);
     template <typename typeT>
     FTextView& operator << (const typeT&);
-    FTextView& operator << (fc::SpecialCharacter);
+    FTextView& operator << (const UniChar&);
     FTextView& operator << (const std::string&);
 
     // Accessors
@@ -134,11 +134,12 @@ class FTextView : public FWidget
 
   protected:
     // Method
+    void                initLayout() override;
     void                adjustSize() override;
 
   private:
-    // Typedefs
-    typedef std::unordered_map<int, std::function<void()>> KeyMap;
+    // Using-declaration
+    using KeyMap = std::unordered_map<FKey, std::function<void()>, FKeyHash>;
 
     // Accessors
     std::size_t         getTextHeight() const;
@@ -198,7 +199,7 @@ inline FTextView& FTextView::operator << (const typeT& s)
 }
 
 //----------------------------------------------------------------------
-inline FTextView& FTextView::operator << (fc::SpecialCharacter c)
+inline FTextView& FTextView::operator << (const UniChar& c)
 {
   append (static_cast<wchar_t>(c));  // Required under Solaris
   return *this;
@@ -260,11 +261,11 @@ inline void FTextView::deleteLine (int pos)
 
 //----------------------------------------------------------------------
 inline bool FTextView::isHorizontallyScrollable() const
-{ return bool( max_line_width > getTextWidth() ); }
+{ return max_line_width > getTextWidth(); }
 
 //----------------------------------------------------------------------
 inline bool FTextView::isVerticallyScrollable() const
-{ return bool( getRows() > getTextHeight() ); }
+{ return getRows() > getTextHeight(); }
 
 }  // namespace finalcut
 

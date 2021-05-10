@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -35,6 +35,7 @@ class Dialog final : public finalcut::FDialog
     explicit Dialog (FWidget* parent = nullptr);
 
   private:
+    void initLayout() override;
     void adjustSize() override;
 
     // Event handler
@@ -54,14 +55,9 @@ class Dialog final : public finalcut::FDialog
 Dialog::Dialog (FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  FDialog::setText ("Dialog");
-  finalcut::FDialog::setGeometry (FPoint{26, 5}, FSize{28, 10});
-  seconds.setGeometry (FPoint{10, 2}, FSize{10, 1});
   seconds.setLabelText ("Seconds");
   seconds.setRange (0, 60);
   seconds.setValue (3);
-  start.setGeometry (FPoint{2, 6}, FSize{10, 1});
-  quit.setGeometry (FPoint{15, 6}, FSize{10, 1});
 
   // Add button callbacks
   seconds.addCallback
@@ -83,6 +79,17 @@ Dialog::Dialog (FWidget* parent)
     &finalcut::FApplication::cb_exitApp,
     this
   );
+}
+
+//----------------------------------------------------------------------
+void Dialog::initLayout()
+{
+  FDialog::setText ("Dialog");
+  FDialog::setGeometry (FPoint{26, 5}, FSize{28, 10});
+  seconds.setGeometry (FPoint{10, 2}, FSize{10, 1});
+  start.setGeometry (FPoint{2, 6}, FSize{10, 1});
+  quit.setGeometry (FPoint{15, 6}, FSize{10, 1});
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------

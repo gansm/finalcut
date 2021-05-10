@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -102,17 +102,16 @@ class FMenuBar : public FWindow, public FMenuList
     void          cb_itemDeactivated (const FMenuItem*) const;
 
   private:
-    // Constants
-    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
-
-    // Typedef
-    typedef struct
+    struct menuText
     {
       FString text;
       std::size_t startpos;
       std::size_t hotkeypos;
       bool no_underline;
-    } menuText;
+    };
+
+    // Constants
+    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
 
     // Inquiry
     bool          isMenu (const FMenuItem*) const;
@@ -133,14 +132,15 @@ class FMenuBar : public FWindow, public FMenuList
     void          drawLeadingSpace (std::size_t&);
     void          drawTrailingSpace (std::size_t&);
     void          adjustItems() const;
+    void          openMenu (const FMenuItem*);
     bool          activateMenu (const FMenuItem*);
     bool          clickItem (FMenuItem*);
     void          unselectMenuItem (FMenuItem*);
     void          selectMenuItem (FMenuItem*);
     void          mouseDownOverList (const FMouseEvent*);
     void          mouseUpOverList (const FMouseEvent*);
-    void          mouseMoveOverList (const FMouseEvent&&);
-    void          passEventToMenu (const FMouseEvent&&) const;
+    void          mouseMoveOverList (const FMouseEvent&);
+    void          passEventToMenu (const FMouseEvent&) const;
     void          leaveMenuBar();
 
     // Data members

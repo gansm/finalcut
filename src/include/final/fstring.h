@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -68,8 +68,8 @@ namespace finalcut
 // class forward declaration
 class FString;
 
-// Global typedef
-typedef std::vector<FString> FStringList;
+// Global using-declaration
+using FStringList = std::vector<FString>;
 
 
 //----------------------------------------------------------------------
@@ -90,13 +90,14 @@ class FString
     explicit FString (int);
     explicit FString (std::size_t);
     FString (std::size_t, wchar_t);
+    FString (std::size_t, const UniChar&);
     FString (const FString&);        // copy constructor
     FString (FString&&) noexcept;    // move constructor
     FString (const std::wstring&);   // implicit conversion constructor
     FString (const wchar_t[]);       // implicit conversion constructor
     FString (const std::string&);    // implicit conversion constructor
     FString (const char[]);          // implicit conversion constructor
-    FString (fc::SpecialCharacter);  // implicit conversion constructor
+    FString (const UniChar&);        // implicit conversion constructor
     FString (const wchar_t);         // implicit conversion constructor
     FString (const char);            // implicit conversion constructor
 
@@ -110,7 +111,7 @@ class FString
     const FString& operator += (const FString&);
 
     FString& operator << (const FString&);
-    FString& operator << (fc::SpecialCharacter);
+    FString& operator << (const UniChar&);
     FString& operator << (const wchar_t);
     FString& operator << (const char);
     template <typename NumT
@@ -166,19 +167,19 @@ class FString
     virtual FString getClassName() const;
 
     // inquiries
-    bool isNull() const;
-    bool isEmpty() const;
+    bool isNull() const noexcept;
+    bool isEmpty() const noexcept;
 
     // Methods
-    std::size_t getLength() const;
-    std::size_t capacity() const;
+    std::size_t getLength() const noexcept;
+    std::size_t capacity() const noexcept;
 
-    iterator begin();
-    iterator end();
-    const_iterator begin() const;
-    const_iterator end() const;
+    iterator begin() noexcept;
+    iterator end() noexcept;
+    const_iterator begin() const noexcept;
+    const_iterator end() const noexcept;
     reference front();
-    reference back() ;
+    reference back();
     const_reference front() const;
     const_reference back() const;
 
@@ -258,11 +259,11 @@ class FString
     const wchar_t* _extractToken (wchar_t*[], const wchar_t[], const wchar_t[]) const;
 
     // Data members
-    wchar_t*      string{nullptr};
-    std::size_t   length{0};
-    std::size_t   bufsize{0};
-    mutable char* c_string{nullptr};
-    static wchar_t null_char;
+    wchar_t*             string{nullptr};
+    std::size_t          length{0};
+    std::size_t          bufsize{0};
+    mutable char*        c_string{nullptr};
+    static wchar_t       null_char;
     static const wchar_t const_null_char;
 
     // Friend Non-member operator functions
@@ -370,35 +371,35 @@ inline FString FString::getClassName() const
 { return "FString"; }
 
 //----------------------------------------------------------------------
-inline bool FString::isNull() const
+inline bool FString::isNull() const noexcept
 { return ( bufsize == 0 || (bufsize > 0 && ! string) ); }
 
 //----------------------------------------------------------------------
-inline bool FString::isEmpty() const
+inline bool FString::isEmpty() const noexcept
 { return ( length == 0 || (length > 0 && string[0] == L'\0') ); }
 
 //----------------------------------------------------------------------
-inline std::size_t FString::getLength() const
+inline std::size_t FString::getLength() const noexcept
 { return length; }
 
 //----------------------------------------------------------------------
-inline std::size_t FString::capacity() const
+inline std::size_t FString::capacity() const noexcept
 { return ( length > 0 ) ? bufsize - 1 : 0; }
 
 //----------------------------------------------------------------------
-inline FString::iterator FString::begin()
+inline FString::iterator FString::begin() noexcept
 { return string; }
 
 //----------------------------------------------------------------------
-inline FString::iterator FString::end()
+inline FString::iterator FString::end() noexcept
 { return string + length; }
 
 //----------------------------------------------------------------------
-inline FString::const_iterator FString::begin() const
+inline FString::const_iterator FString::begin() const noexcept
 { return string; }
 
 //----------------------------------------------------------------------
-inline FString::const_iterator FString::end() const
+inline FString::const_iterator FString::end() const noexcept
 { return string + length; }
 
 //----------------------------------------------------------------------

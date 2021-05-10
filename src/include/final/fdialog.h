@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -51,6 +51,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <unordered_map>
+
 #include "final/fmenu.h"
 #include "final/fwindow.h"
 
@@ -71,7 +73,7 @@ class FDialog : public FWindow
     using FWindow::setResizeable;
 
     // Enumeration
-    enum DialogCode
+    enum class ResultCode : int
     {
       Reject = 0,
       Accept = 1
@@ -95,18 +97,14 @@ class FDialog : public FWindow
     virtual FString       getText() const;
 
     // Mutators
-    bool                  setDialogWidget (bool);
-    bool                  setDialogWidget();
+    bool                  setDialogWidget (bool = true);
     bool                  unsetDialogWidget();
-    bool                  setModal (bool);
-    bool                  setModal();
+    bool                  setModal (bool = true);
     bool                  unsetModal();
-    bool                  setResizeable (bool) override;
-    bool                  setScrollable (bool);
-    bool                  setScrollable();
+    bool                  setResizeable (bool = true) override;
+    bool                  setScrollable (bool = true);
     bool                  unsetScrollable();
-    bool                  setBorder (bool);
-    bool                  setBorder();
+    bool                  setBorder (bool = true);
     bool                  unsetBorder();
     void                  resetColors() override;
     virtual void          setText (const FString&);
@@ -119,7 +117,7 @@ class FDialog : public FWindow
     // Methods
     void                  show() override;
     void                  hide() override;
-    int                   exec();
+    ResultCode            exec();
     void                  setPos (const FPoint&, bool = true) override;
     void                  move (const FPoint&) override;
     bool                  moveUp (int);
@@ -147,7 +145,7 @@ class FDialog : public FWindow
 
   protected:
     // Methods
-    virtual void          done (int);
+    void                  done (ResultCode);
     void                  draw() override;
     void                  drawDialogShadow();
 
@@ -155,15 +153,17 @@ class FDialog : public FWindow
     void                  onClose (FCloseEvent*) override;
 
   private:
-    // Typedef
-    typedef struct
+    struct MouseStates
     {
       int         mouse_x;
       int         mouse_y;
       FPoint      termPos;
       std::size_t zoom_btn;
       bool        mouse_over_menu;
-    } MouseStates;
+    };
+
+    // Using-declaration
+    using KeyMap = std::unordered_map<FKey, std::function<void()>, FKeyHash>;
 
     // Constant
     static constexpr std::size_t MENU_BTN = 3;
@@ -175,6 +175,7 @@ class FDialog : public FWindow
     void                  initMoveSizeMenuItem (FMenu*);
     void                  initZoomMenuItem (FMenu*);
     void                  initCloseMenuItem (FMenu*);
+    void                  mapKeyFunctions();
     void                  drawBorder() override;
     void                  drawTitleBar();
     void                  drawBarButton();
@@ -195,7 +196,7 @@ class FDialog : public FWindow
     void                  pressZoomButton (const MouseStates&);
     bool                  isMouseOverMenu (const FPoint&) const;
     void                  passEventToSubMenu ( const MouseStates&
-                                             , const FMouseEvent&& );
+                                             , const FMouseEvent& );
     void                  moveSizeKey (FKeyEvent*);
     void                  raiseActivateDialog();
     void                  lowerActivateDialog();
@@ -218,7 +219,7 @@ class FDialog : public FWindow
 
     // Data members
     FString               tb_text{};  // title bar text
-    int                   result_code{FDialog::Reject};
+    ResultCode            result_code{ResultCode::Reject};
     bool                  zoom_button_pressed{false};
     bool                  zoom_button_active{false};
     bool                  setPos_error{false};
@@ -232,6 +233,7 @@ class FDialog : public FWindow
     FMenuItem*            zoom_item{nullptr};
     FMenuItem*            close_item{nullptr};
     FToolTip*             tooltip{nullptr};
+    KeyMap                key_map{};
 
     // Friend function from FMenu
     friend void FMenu::hideSuperMenus() const;
@@ -247,32 +249,16 @@ inline FString FDialog::getText() const
 { return tb_text; }
 
 //----------------------------------------------------------------------
-inline bool FDialog::setDialogWidget()
-{ return setDialogWidget(true); }
-
-//----------------------------------------------------------------------
 inline bool FDialog::unsetDialogWidget()
 { return setDialogWidget(false); }
-
-//----------------------------------------------------------------------
-inline bool FDialog::setModal()
-{ return setModal(true); }
 
 //----------------------------------------------------------------------
 inline bool FDialog::unsetModal()
 { return setModal(false); }
 
 //----------------------------------------------------------------------
-inline bool FDialog::setScrollable()
-{ return setScrollable(true); }
-
-//----------------------------------------------------------------------
 inline bool FDialog::unsetScrollable()
 { return setScrollable(false); }
-
-//----------------------------------------------------------------------
-inline bool FDialog::setBorder()
-{ return setBorder(true); }
 
 //----------------------------------------------------------------------
 inline bool FDialog::unsetBorder()

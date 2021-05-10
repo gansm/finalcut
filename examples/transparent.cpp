@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2020 Markus Gans                                      *
+* Copyright 2016-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -22,8 +22,8 @@
 
 #include <final/final.h>
 
-namespace fc = finalcut::fc;
 using finalcut::FColorPair;
+using finalcut::FColor;
 using finalcut::FPoint;
 using finalcut::FSize;
 using finalcut::FStyle;
@@ -36,53 +36,55 @@ using finalcut::FStyle;
 class Transparent final : public finalcut::FDialog
 {
   public:
-    // Typedef and Enumeration
-    typedef enum ttype
+    // Enumeration
+    enum class Type
     {
-      transparent        = 0,
-      shadow             = 1,
-      inherit_background = 2
-    } trans_type;
+      Transparent       = 0,
+      Shadow            = 1,
+      InheritBackground = 2
+    };
 
     // Constructor
     explicit Transparent ( finalcut::FWidget* = nullptr
-                         , trans_type = transparent );
+                         , Type = Type::Transparent );
 
     // Disable copy constructor
     Transparent (const Transparent&) = delete;
 
     // Destructor
-    ~Transparent() override;
+    ~Transparent() override = default;
 
     // Disable copy assignment operator (=)
     Transparent& operator = (const Transparent&) = delete;
 
   private:
-    // Method
+    // Methods
+    void initLayout() override;
     void draw() override;
 
     // Event handlers
     void onKeyPress (finalcut::FKeyEvent* ev) override;
 
     // Data members
-    trans_type type;
+    Type type;
 };
 
 //----------------------------------------------------------------------
 Transparent::Transparent ( finalcut::FWidget* parent
-                         , Transparent::trans_type tt )
+                         , Transparent::Type tt )
   : finalcut::FDialog{parent}
   , type{tt}
+{ }
+
+//----------------------------------------------------------------------
+void Transparent::initLayout()
 {
   // Set statusbar text for this window
   // Avoids calling a virtual function from the constructor
   // (CERT, OOP50-CPP)
   FWidget::setStatusbarMessage("Press Q to quit");
+  FDialog::initLayout();
 }
-
-//----------------------------------------------------------------------
-Transparent::~Transparent()
-{ }
 
 //----------------------------------------------------------------------
 void Transparent::draw()
@@ -92,23 +94,23 @@ void Transparent::draw()
   if ( finalcut::FTerm::isMonochron() )
     setReverse(true);
 
-  if ( type == shadow )
+  if ( type == Type::Shadow )
   {
     const auto& wc = getColorTheme();
     print() << FColorPair {wc->shadow_bg, wc->shadow_fg}
-            << FStyle {fc::ColorOverlay};
+            << FStyle {finalcut::Style::ColorOverlay};
   }
-  else if ( type == inherit_background )
+  else if ( type == Type::InheritBackground )
   {
     if ( finalcut::FTerm::getMaxColor() > 8 )
-      print() << FColorPair {fc::Blue, fc::Black};
+      print() << FColorPair {FColor::Blue, FColor::Black};
     else
-      print() << FColorPair {fc::Green, fc::Black};
+      print() << FColorPair {FColor::Green, FColor::Black};
 
-    print() << FStyle {fc::InheritBackground};
+    print() << FStyle {finalcut::Style::InheritBackground};
   }
   else
-    print() << FStyle {fc::Transparent};
+    print() << FStyle {finalcut::Style::Transparent};
 
   const finalcut::FString line{getClientWidth(), '.'};
 
@@ -119,7 +121,7 @@ void Transparent::draw()
             << line;
   }
 
-  print() <<  FStyle{fc::Reset};
+  print() <<  FStyle{finalcut::Style::None};
 }
 
 //----------------------------------------------------------------------
@@ -128,7 +130,7 @@ void Transparent::onKeyPress (finalcut::FKeyEvent* ev)
   if ( ! ev )
     return;
 
-  if ( ev->key() == 'q' && getParentWidget() )
+  if ( ev->key() == finalcut::FKey('q') && getParentWidget() )
   {
     getParentWidget()->close();
     ev->accept();
@@ -152,7 +154,7 @@ class MainWindow final : public finalcut::FDialog
     MainWindow (const MainWindow&) = delete;
 
     // Destructor
-    ~MainWindow() override;
+    ~MainWindow() override = default;
 
     // Disable copy assignment operator (=)
     MainWindow& operator = (const MainWindow&) = delete;
@@ -170,7 +172,7 @@ class MainWindow final : public finalcut::FDialog
       if ( ! ev )
         return;
 
-      if ( ev->key() == 'q' )
+      if ( ev->key() == finalcut::FKey('q') )
       {
         close();
         ev->accept();
@@ -202,12 +204,12 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   transpwin->setGeometry (FPoint{6, 3}, FSize{29, 12});
   transpwin->unsetTransparentShadow();
 
-  shadowwin = new Transparent(this, Transparent::shadow);
+  shadowwin = new Transparent(this, Transparent::Type::Shadow);
   shadowwin->setText("shadow");
   shadowwin->setGeometry (FPoint{46, 11}, FSize{29, 12});
   shadowwin->unsetTransparentShadow();
 
-  ibg = new Transparent(this, Transparent::inherit_background);
+  ibg = new Transparent(this, Transparent::Type::InheritBackground);
   ibg->setText("inherit background");
   ibg->setGeometry (FPoint{42, 3}, FSize{29, 7});
   ibg->unsetTransparentShadow();
@@ -218,10 +220,6 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   unsetTransparentShadow();
   activateDialog();
 }
-
-//----------------------------------------------------------------------
-MainWindow::~MainWindow()
-{ }
 
 //----------------------------------------------------------------------
 void MainWindow::draw()
@@ -248,7 +246,7 @@ void MainWindow::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void MainWindow::onShow (finalcut::FShowEvent*)
 {
-  addTimer(100);  // Call onTimer() every 100 ms
+  addTimer(90);  // Call onTimer() every 90 ms
 }
 
 //----------------------------------------------------------------------
@@ -271,7 +269,7 @@ int main (int argc, char* argv[])
 {
   // Create the application object
   finalcut::FApplication app {argc, argv};
-  app.setNonBlockingRead();
+  finalcut::FVTerm::setNonBlockingRead();
 
   // Create main dialog object
   MainWindow main_dlg {&app};

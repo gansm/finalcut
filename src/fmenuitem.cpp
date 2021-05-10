@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -96,7 +96,7 @@ bool FMenuItem::setEnable (bool enable)
     if ( super && isMenuBar(super) )
     {
       // Meta + hotkey
-      super->addAccelerator ( fc::Fmkey_meta + FKey(std::tolower(int(hotkey)))
+      super->addAccelerator ( FKey::Meta_offset + FKey(std::tolower(int(hotkey)))
                             , this );
     }
   }
@@ -171,17 +171,7 @@ void FMenuItem::unsetSelected()
 void FMenuItem::setText (const FString& txt)
 {
   text.setString(txt);
-  text_length = text.getLength();
-  text_width = getColumnWidth(txt);
-  hotkey = finalcut::getHotkey(text);
-
-  if ( hotkey )
-  {
-    text_length--;
-    text_width--;
-  }
-
-  updateSuperMenuDimensions();
+  calculateTextDimensions();
 }
 
 //----------------------------------------------------------------------
@@ -213,7 +203,7 @@ void FMenuItem::delAccelerator (FWidget* obj)
     {
       if ( iter->object == obj )
       {
-        accel_key = 0;
+        accel_key = FKey::None;
         iter = list.erase(iter);
       }
       else
@@ -287,19 +277,19 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
   if ( isMenu(super_menu) )
   {
     auto smenu = static_cast<FMenu*>(super_menu);
-    passMouseEvent (smenu, ev, fc::MouseDoubleClick_Event);
+    passMouseEvent (smenu, ev, Event::MouseDoubleClick);
   }
 
   if ( isMenuBar(super_menu) )
   {
     auto mbar = static_cast<FMenuBar*>(super_menu);
-    passMouseEvent (mbar, ev, fc::MouseDoubleClick_Event);
+    passMouseEvent (mbar, ev, Event::MouseDoubleClick);
   }
 
   if ( isDialog(super_menu) )
   {
     auto dgl = static_cast<FDialog*>(super_menu);
-    passMouseEvent (dgl, ev, fc::MouseDoubleClick_Event);
+    passMouseEvent (dgl, ev, Event::MouseDoubleClick);
   }
 }
 
@@ -312,19 +302,19 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
   if ( isMenu(super_menu) )
   {
     auto smenu = static_cast<FMenu*>(super_menu);
-    passMouseEvent (smenu, ev, fc::MouseDown_Event);
+    passMouseEvent (smenu, ev, Event::MouseDown);
   }
 
   if ( isMenuBar(super_menu) )
   {
     auto mbar = static_cast<FMenuBar*>(super_menu);
-    passMouseEvent (mbar, ev, fc::MouseDown_Event);
+    passMouseEvent (mbar, ev, Event::MouseDown);
   }
 
   if ( isDialog(super_menu) )
   {
     auto dgl = static_cast<FDialog*>(super_menu);
-    passMouseEvent (dgl, ev, fc::MouseDown_Event);
+    passMouseEvent (dgl, ev, Event::MouseDown);
   }
 }
 
@@ -337,19 +327,19 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
   if ( isMenu(super_menu) )
   {
     auto smenu = static_cast<FMenu*>(super_menu);
-    passMouseEvent (smenu, ev, fc::MouseUp_Event);
+    passMouseEvent (smenu, ev, Event::MouseUp);
   }
 
   if ( isMenuBar(super_menu) )
   {
     auto mbar = static_cast<FMenuBar*>(super_menu);
-    passMouseEvent (mbar, ev, fc::MouseUp_Event);
+    passMouseEvent (mbar, ev, Event::MouseUp);
   }
 
   if ( isDialog(super_menu) )
   {
     auto dgl = static_cast<FDialog*>(super_menu);
-    passMouseEvent (dgl, ev, fc::MouseUp_Event);
+    passMouseEvent (dgl, ev, Event::MouseUp);
   }
 }
 
@@ -362,19 +352,19 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
   if ( isMenu(super_menu) )
   {
     auto smenu = static_cast<FMenu*>(super_menu);
-    passMouseEvent (smenu, ev, fc::MouseMove_Event);
+    passMouseEvent (smenu, ev, Event::MouseMove);
   }
 
   if ( isMenuBar(super_menu) )
   {
     auto mbar = static_cast<FMenuBar*>(super_menu);
-    passMouseEvent (mbar, ev, fc::MouseMove_Event);
+    passMouseEvent (mbar, ev, Event::MouseMove);
   }
 
   if ( isDialog(super_menu) )
   {
     auto dgl = static_cast<FDialog*>(super_menu);
-    passMouseEvent (dgl, ev, fc::MouseMove_Event);
+    passMouseEvent (dgl, ev, Event::MouseMove);
   }
 }
 
@@ -461,13 +451,13 @@ void FMenuItem::onFocusOut (FFocusEvent*)
 //----------------------------------------------------------------------
 bool FMenuItem::isDialog (const FWidget* w) const
 {
-  return ( w ) ? w->isDialogWidget() : false;
+  return w ? w->isDialogWidget() : false;
 }
 
 //----------------------------------------------------------------------
 bool FMenuItem::isMenuBar (const FWidget* w) const
 {
-  return ( w ) ? w->isInstanceOf("FMenuBar") : false;
+  return w ? w->isInstanceOf("FMenuBar") : false;
 }
 
 //----------------------------------------------------------------------
@@ -478,9 +468,14 @@ bool FMenuItem::isMenu (const FWidget* w) const
 
   const bool m1 = w->isInstanceOf("FMenu");
   const bool m2 = w->isInstanceOf("FDialogListMenu");
-  return bool( m1 || m2 );
+  return m1 || m2;
 }
 
+//----------------------------------------------------------------------
+void FMenuItem::initLayout()
+{
+  calculateTextDimensions();
+}
 
 // private methods of FMenuItem
 //----------------------------------------------------------------------
@@ -512,7 +507,7 @@ void FMenuItem::init()
   if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
     hotkey -= 0xfee0;
 
-  if ( hotkey )
+  if ( hotkey != FKey::None )
   {
     text_length--;
     text_width--;
@@ -526,7 +521,7 @@ void FMenuItem::init()
 
   setSuperMenu (parent);
 
-  if ( accel_key )
+  if ( accel_key != FKey::None )
     addAccelerator (accel_key);
 
   auto menu_list = getFMenuList(*parent);
@@ -539,8 +534,8 @@ void FMenuItem::init()
     auto menubar_ptr = static_cast<FMenuBar*>(parent);
     menubar_ptr->calculateDimensions();
 
-    if ( hotkey )  // Meta + hotkey
-      menubar_ptr->addAccelerator ( fc::Fmkey_meta + FKey(std::tolower(int(hotkey)))
+    if ( hotkey != FKey::None )  // Meta + hotkey
+      menubar_ptr->addAccelerator ( FKey::Meta_offset + FKey(std::tolower(int(hotkey)))
                                   , this );
 
     addCallback  // for this element
@@ -558,6 +553,23 @@ void FMenuItem::init()
 }
 
 //----------------------------------------------------------------------
+void FMenuItem::calculateTextDimensions()
+{
+  text_length = text.getLength();
+  text_width = getColumnWidth(text);
+  hotkey = finalcut::getHotkey(text);
+
+  if ( hotkey != FKey::None )
+  {
+    text_length--;
+    text_width--;
+  }
+
+  updateMenubarDimensions();
+  updateSuperMenuDimensions();
+}
+
+//----------------------------------------------------------------------
 void FMenuItem::updateSuperMenuDimensions()
 {
   if ( ! super_menu || ! isMenu(super_menu) )
@@ -565,6 +577,18 @@ void FMenuItem::updateSuperMenuDimensions()
 
   auto menu_ptr = static_cast<FMenu*>(super_menu);
   menu_ptr->calculateDimensions();
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::updateMenubarDimensions() const
+{
+  FWidget* parent = getParentWidget();
+
+  if ( ! parent || ! isMenuBar(parent) )
+    return;
+
+  auto menubar_ptr = static_cast<FMenuBar*>(parent);
+  menubar_ptr->calculateDimensions();
 }
 
 //----------------------------------------------------------------------
@@ -621,7 +645,7 @@ void FMenuItem::createDialogList (FMenu* winmenu) const
       }
 
       if ( n < 9 )
-        win_item->addAccelerator (fc::Fmkey_1 + n);  // Meta + 1..9
+        win_item->addAccelerator (FKey::Meta_1 + n);  // Meta + 1..9
 
       win_item->addCallback
       (
@@ -650,46 +674,31 @@ void FMenuItem::createDialogList (FMenu* winmenu) const
 //----------------------------------------------------------------------
 template <typename T>
 void FMenuItem::passMouseEvent ( T widget, const FMouseEvent* ev
-                               , fc::events ev_type ) const
+                               , Event ev_type ) const
 {
   if ( ! widget )
     return;
 
   const auto& t = ev->getTermPos();
   const auto& p2 = widget->termToWidgetPos(t);
-  const int b = ev->getButton();
-  std::shared_ptr<FMouseEvent> _ev;
+  const auto b = ev->getButton();
+  auto _ev = std::make_shared<FMouseEvent>(ev_type, p2, t, b);
 
-  try
+  if ( ev_type == Event::MouseDoubleClick )
   {
-    _ev = std::make_shared<FMouseEvent>(ev_type, p2, t, b);
+    widget->onMouseDoubleClick(_ev.get());
   }
-  catch (const std::bad_alloc&)
+  else if ( ev_type == Event::MouseDown )
   {
-    badAllocOutput ("FMouseEvent");
-    return;
+    widget->onMouseDown(_ev.get());
   }
-
-  switch ( int(ev_type) )
+  else if ( ev_type == Event::MouseUp )
   {
-    case fc::MouseDoubleClick_Event:
-      widget->onMouseDoubleClick(_ev.get());
-      break;
-
-    case fc::MouseDown_Event:
-      widget->onMouseDown(_ev.get());
-      break;
-
-    case fc::MouseUp_Event:
-      widget->onMouseUp(_ev.get());
-      break;
-
-    case fc::MouseMove_Event:
-      widget->onMouseMove(_ev.get());
-      break;
-
-    default:
-      break;
+    widget->onMouseUp(_ev.get());
+  }
+  else if ( ev_type == Event::MouseMove )
+  {
+    widget->onMouseMove(_ev.get());
   }
 }
 
@@ -700,7 +709,7 @@ void FMenuItem::cb_switchToDialog (FDialog* win) const
     return;
 
   auto focus = getFocusWidget();
-  FAccelEvent a_ev (fc::Accelerator_Event, focus);
+  FAccelEvent a_ev (Event::Accelerator, focus);
   FApplication::sendEvent (win, &a_ev);
 }
 

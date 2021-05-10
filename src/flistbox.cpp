@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -40,10 +40,6 @@ namespace finalcut
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FListBoxItem::FListBoxItem()
-{ }
-
-//----------------------------------------------------------------------
 FListBoxItem::FListBoxItem (const FListBoxItem& item)
   : text{item.text}
   , data_pointer{item.data_pointer}
@@ -52,8 +48,8 @@ FListBoxItem::FListBoxItem (const FListBoxItem& item)
 { }
 
 //----------------------------------------------------------------------
-FListBoxItem::~FListBoxItem()  // destructor
-{ }
+FListBoxItem::~FListBoxItem() noexcept = default;  // destructor
+
 
 // public methods of FListBoxItem
 //----------------------------------------------------------------------
@@ -128,12 +124,12 @@ void FListBox::setCurrentItem (FListBoxItems::iterator iter)
 
 //----------------------------------------------------------------------
 void FListBox::showInsideBrackets ( const std::size_t index
-                                  , fc::brackets_type b )
+                                  , BracketType b )
 {
   auto iter = index2iterator(index - 1);
   iter->brackets = b;
 
-  if ( b == fc::NoBrackets )
+  if ( b == BracketType::None )
     return;
 
   const auto column_width = getColumnWidth(iter->getText()) + 2;
@@ -189,7 +185,7 @@ void FListBox::hide()
 void FListBox::insert (const FListBoxItem& listItem)
 {
   const std::size_t column_width = getColumnWidth(listItem.text);
-  const bool has_brackets(listItem.brackets);
+  const bool has_brackets(listItem.brackets != BracketType::None);
   recalculateHorizontalBar (column_width, has_brackets);
 
   itemlist.push_back (listItem);
@@ -308,17 +304,16 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton
-    && ev->getButton() != fc::RightButton )
+  if ( ev->getButton() != MouseButton::Left
+    && ev->getButton() != MouseButton::Right )
   {
     return;
   }
 
-  if ( ev->getButton() == fc::RightButton && ! isMultiSelection() )
+  if ( ev->getButton() == MouseButton::Right && ! isMultiSelection() )
     return;
 
-  getWidgetFocus();
-
+  setWidgetFocus(this);
   const int yoffset_before = yoffset;
   const std::size_t current_before = current;
   const int mouse_x = ev->getX();
@@ -336,7 +331,7 @@ void FListBox::onMouseDown (FMouseEvent* ev)
 
     inc_search.clear();
 
-    if ( ev->getButton() == fc::RightButton )
+    if ( ev->getButton() == MouseButton::Right )
       multiSelection(current);
 
     if ( current_before != current )
@@ -361,10 +356,10 @@ void FListBox::onMouseUp (FMouseEvent* ev)
 {
   click_on_list = false;
 
-  if ( drag_scroll != fc::noScroll )
+  if ( drag_scroll != DragScrollMode::None )
     stopDragScroll();
 
-  if ( ev->getButton() == fc::LeftButton )
+  if ( ev->getButton() == MouseButton::Left )
   {
     const int mouse_x = ev->getX();
     const int mouse_y = ev->getY();
@@ -381,11 +376,11 @@ void FListBox::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onMouseMove (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton
-    && ev->getButton() != fc::RightButton )
+  if ( ev->getButton() != MouseButton::Left
+    && ev->getButton() != MouseButton::Right )
     return;
 
-  if ( ev->getButton() == fc::RightButton && ! isMultiSelection() )
+  if ( ev->getButton() == MouseButton::Right && ! isMultiSelection() )
     return;
 
   const std::size_t current_before = current;
@@ -408,12 +403,12 @@ void FListBox::onMouseMove (FMouseEvent* ev)
     if ( current_before != current )
     {
       // Handle multiple selections + changes
-      if ( ev->getButton() == fc::RightButton)
+      if ( ev->getButton() == MouseButton::Right )
       {
         processChanged();
         multiSelectionUpTo(current);
       }
-      else if ( ev->getButton() == fc::LeftButton)
+      else if ( ev->getButton() == MouseButton::Left )
         processChanged();
     }
 
@@ -440,7 +435,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onMouseDoubleClick (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   const int mouse_x = ev->getX();
@@ -462,25 +457,17 @@ void FListBox::onTimer (FTimerEvent*)
   const std::size_t current_before = current;
   const int yoffset_before = yoffset;
 
-  switch ( int(drag_scroll) )
+  if ( ( drag_scroll == DragScrollMode::Upward
+      || drag_scroll == DragScrollMode::SelectUpward )
+      && ! dragScrollUp() )
   {
-    case fc::noScroll:
-      return;
-
-    case fc::scrollUp:
-    case fc::scrollUpSelect:
-      if ( ! dragScrollUp() )
-        return;
-      break;
-
-    case fc::scrollDown:
-    case fc::scrollDownSelect:
-      if ( ! dragScrollDown() )
-        return;
-      break;
-
-    default:
-      break;
+    return;
+  }
+  else if ( ( drag_scroll == DragScrollMode::Downward
+           || drag_scroll == DragScrollMode::SelectDownward )
+           && ! dragScrollDown() )
+  {
+    return;
   }
 
   if ( current_before != current )
@@ -489,8 +476,8 @@ void FListBox::onTimer (FTimerEvent*)
     processChanged();
 
     // Handle multiple selections
-    if ( drag_scroll == fc::scrollUpSelect
-      || drag_scroll == fc::scrollDownSelect )
+    if ( drag_scroll == DragScrollMode::SelectUpward
+      || drag_scroll == DragScrollMode::SelectDownward )
       multiSelectionUpTo(current);
   }
 
@@ -511,24 +498,15 @@ void FListBox::onWheel (FWheelEvent* ev)
   const std::size_t current_before = current;
   const int yoffset_before = yoffset;
   static constexpr int wheel_distance = 4;
-  const int wheel = ev->getWheel();
+  const MouseWheel wheel = ev->getWheel();
 
-  if ( drag_scroll != fc::noScroll )
+  if ( drag_scroll != DragScrollMode::None )
     stopDragScroll();
 
-  switch ( wheel )
-  {
-    case fc::WheelUp:
-      wheelUp (wheel_distance);
-      break;
-
-    case fc::WheelDown:
-      wheelDown (wheel_distance);
-      break;
-
-    default:
-      break;
-  }
+  if ( wheel == MouseWheel::Up )
+    wheelUp (wheel_distance);
+  else if ( wheel == MouseWheel::Down )
+    wheelDown (wheel_distance);
 
   if ( current_before != current )
   {
@@ -620,18 +598,15 @@ void FListBox::adjustSize()
   hbar->setWidth (width, false);
   hbar->resize();
 
-  if ( isShown() )
-  {
-    if ( isHorizontallyScrollable() )
-      hbar->show();
-    else
-      hbar->hide();
+  if ( isHorizontallyScrollable() )
+    hbar->show();
+  else
+    hbar->hide();
 
-    if ( isVerticallyScrollable() )
-      vbar->show();
-    else
-      vbar->hide();
-  }
+  if ( isVerticallyScrollable() )
+    vbar->show();
+  else
+    vbar->hide();
 }
 
 
@@ -645,8 +620,8 @@ inline FString FListBox::getString (FListBoxItems::iterator iter)
 //----------------------------------------------------------------------
 void FListBox::init()
 {
-  initScrollbar (vbar, fc::vertical, this, &FListBox::cb_vbarChange);
-  initScrollbar (hbar, fc::horizontal, this, &FListBox::cb_hbarChange);
+  initScrollbar (vbar, Orientation::Vertical, this, &FListBox::cb_vbarChange);
+  initScrollbar (hbar, Orientation::Horizontal, this, &FListBox::cb_hbarChange);
   setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
   nf_offset = FTerm::isNewFont() ? 1 : 0;
   setTopPadding(1);
@@ -659,50 +634,48 @@ void FListBox::init()
 //----------------------------------------------------------------------
 inline void FListBox::mapKeyFunctions()
 {
-  key_map[fc::Fkey_return] = std::bind(&FListBox::acceptSelection, this);
-  key_map[fc::Fkey_enter]  = std::bind(&FListBox::acceptSelection, this);
-  key_map[fc::Fkey_up]     = std::bind(&FListBox::onePosUp, this);
-  key_map[fc::Fkey_down]   = std::bind(&FListBox::onePosDown, this);
-  auto left = static_cast<void(FListBox::*)()>(&FListBox::scrollLeft);
-  key_map[fc::Fkey_left]   = std::bind(left, this);
-  auto right = static_cast<void(FListBox::*)()>(&FListBox::scrollRight);
-  key_map[fc::Fkey_right]  = std::bind(right, this);
-  key_map[fc::Fkey_ppage]  = std::bind(&FListBox::onePageUp, this);
-  key_map[fc::Fkey_npage]  = std::bind(&FListBox::onePageDown, this);
-  key_map[fc::Fkey_home]   = std::bind(&FListBox::firstPos, this);
-  key_map[fc::Fkey_end]    = std::bind(&FListBox::lastPos, this);
-  key_map_result[fc::Fkey_ic] = \
-      std::bind(&FListBox::changeSelectionAndPosition, this);
-  key_map_result[fc::Fkey_space] = \
-      std::bind(&FListBox::spacebarProcessing, this);
-  key_map_result[fc::Fkey_erase] = \
-      std::bind(&FListBox::deletePreviousCharacter, this);
-  key_map_result[fc::Fkey_backspace] = \
-      std::bind(&FListBox::deletePreviousCharacter, this);
-  key_map_result[fc::Fkey_escape] = \
-      std::bind(&FListBox::skipIncrementalSearch, this);
-  key_map_result[fc::Fkey_escape_mintty] = \
-      std::bind(&FListBox::skipIncrementalSearch, this);
+  key_map[FKey::Return]    = [this] { acceptSelection(); };
+  key_map[FKey::Enter]     = [this] { acceptSelection(); };
+  key_map[FKey::Up]        = [this] { onePosUp(); };
+  key_map[FKey::Down]      = [this] { onePosDown(); };
+  key_map[FKey::Left]      = [this] { scrollLeft(); };
+  key_map[FKey::Right]     = [this] { scrollRight(); };
+  key_map[FKey::Page_up]   = [this] { onePageUp(); };
+  key_map[FKey::Page_down] = [this] { onePageDown(); };
+  key_map[FKey::Home]      = [this] { firstPos(); };
+  key_map[FKey::End]       = [this] { lastPos(); };
+  key_map_result[FKey::Insert]        = [this] { return changeSelectionAndPosition(); };
+  key_map_result[FKey::Space]         = [this] { return spacebarProcessing(); };
+  key_map_result[FKey::Erase]         = [this] { return deletePreviousCharacter(); };
+  key_map_result[FKey::Backspace]     = [this] { return deletePreviousCharacter(); };
+  key_map_result[FKey::Escape]        = [this] { return skipIncrementalSearch(); };
+  key_map_result[FKey::Escape_mintty] = [this] { return skipIncrementalSearch(); };
 }
 
 //----------------------------------------------------------------------
 void FListBox::processKeyAction (FKeyEvent* ev)
 {
-  const auto idx = int(ev->key());
+  const auto idx = ev->key();
+  const auto& entry = key_map[idx];
 
-  if ( key_map.find(idx) != key_map.end() )
+  if ( entry )
   {
-    key_map[idx]();
+    entry();
     ev->accept();
   }
-  else if ( key_map_result.find(idx) != key_map_result.end() )
+  else
   {
-    if ( key_map_result[idx]() )
+    const auto& entry_result = key_map_result[idx];
+
+    if ( entry_result )
+    {
+      if ( entry_result() )
+        ev->accept();
+    }
+    else if ( keyIncSearchInput(idx) )
+    {
       ev->accept();
-  }
-  else if ( keyIncSearchInput(ev->key()) )
-  {
-    ev->accept();
+    }
   }
 }
 
@@ -868,7 +841,7 @@ inline void FListBox::drawListLine ( int y
   std::size_t column_width = getColumnWidth(element);
 
   if ( FTerm::isMonochron() && isCurrentLine && getFlags().focus )
-    print (fc::BlackRightPointingPointer);  // ►
+    print (UniChar::BlackRightPointingPointer);  // ►
   else
     print (' ');
 
@@ -887,7 +860,7 @@ inline void FListBox::drawListLine ( int y
 
   if ( FTerm::isMonochron() && isCurrentLine  && getFlags().focus )
   {
-    print (fc::BlackLeftPointingPointer);  // ◄
+    print (UniChar::BlackLeftPointingPointer);  // ◄
     column_width++;
   }
 
@@ -896,17 +869,17 @@ inline void FListBox::drawListLine ( int y
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::printLeftBracket (fc::brackets_type bracket_type)
+inline void FListBox::printLeftBracket (BracketType bracket_type)
 {
-  if ( bracket_type != fc::NoBrackets )
-    print ("\0[({<"[bracket_type]);
+  if ( bracket_type != BracketType::None )
+    print ("\0[({<"[std::size_t(bracket_type)]);
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::printRightBracket (fc::brackets_type bracket_type)
+inline void FListBox::printRightBracket (BracketType bracket_type)
 {
-  if ( bracket_type != fc::NoBrackets )
-    print ("\0])}>"[bracket_type]);
+  if ( bracket_type != BracketType::None )
+    print ("\0])}>"[std::size_t(bracket_type)]);
 }
 
 //----------------------------------------------------------------------
@@ -919,7 +892,7 @@ inline void FListBox::drawListBracketsLine ( int y
   const bool isCurrentLine( y + yoffset + 1 == int(current) );
 
   if ( FTerm::isMonochron() && isCurrentLine && getFlags().focus )
-    print (fc::BlackRightPointingPointer);  // ►
+    print (UniChar::BlackRightPointingPointer);  // ►
   else
     print (' ');
 
@@ -963,7 +936,7 @@ inline void FListBox::drawListBracketsLine ( int y
 
   if ( FTerm::isMonochron() && isCurrentLine && getFlags().focus )
   {
-    print (fc::BlackLeftPointingPointer);   // ◄
+    print (UniChar::BlackLeftPointingPointer);   // ◄
     column_width++;
   }
 
@@ -1025,7 +998,7 @@ inline void FListBox::setLineAttributes ( int y
       {
         setColor ( wc->current_element_focus_fg
                  , wc->current_element_focus_bg );
-        const int b = ( lineHasBrackets ) ? 1: 0;
+        const int b = lineHasBrackets ? 1 : 0;
 
         if ( inc_len > 0 )  // incremental search
         {
@@ -1128,22 +1101,6 @@ void FListBox::recalculateVerticalBar (std::size_t element_count) const
     else
       vbar->hide();
   }
-}
-
-//----------------------------------------------------------------------
-inline void FListBox::getWidgetFocus()
-{
-  if ( hasFocus() )
-    return;
-
-  auto focused_widget = getFocusWidget();
-  setFocus();
-
-  if ( focused_widget )
-    focused_widget->redraw();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
 }
 
 //----------------------------------------------------------------------
@@ -1255,7 +1212,7 @@ bool FListBox::dragScrollUp()
 {
   if ( current == 1 )
   {
-    drag_scroll = fc::noScroll;
+    drag_scroll = DragScrollMode::None;
     return false;
   }
 
@@ -1270,7 +1227,7 @@ bool FListBox::dragScrollDown()
 
   if ( current == element_count )
   {
-    drag_scroll = fc::noScroll;
+    drag_scroll = DragScrollMode::None;
     return false;
   }
 
@@ -1279,9 +1236,9 @@ bool FListBox::dragScrollDown()
 }
 
 //----------------------------------------------------------------------
-void FListBox::dragUp (int mouse_button)
+void FListBox::dragUp (MouseButton mouse_button)
 {
-  if ( drag_scroll != fc::noScroll
+  if ( drag_scroll != DragScrollMode::None
     && scroll_distance < int(getClientHeight()) )
     scroll_distance++;
 
@@ -1290,23 +1247,23 @@ void FListBox::dragUp (int mouse_button)
     scroll_timer = true;
     addTimer(scroll_repeat);
 
-    if ( mouse_button == fc::RightButton )
-      drag_scroll = fc::scrollUpSelect;
+    if ( mouse_button == MouseButton::Right )
+      drag_scroll = DragScrollMode::SelectUpward;
     else
-      drag_scroll = fc::scrollUp;
+      drag_scroll = DragScrollMode::Upward;
   }
 
   if ( current == 1 )
   {
     delOwnTimers();
-    drag_scroll = fc::noScroll;
+    drag_scroll = DragScrollMode::None;
   }
 }
 
 //----------------------------------------------------------------------
-void FListBox::dragDown (int mouse_button)
+void FListBox::dragDown (MouseButton mouse_button)
 {
-  if ( drag_scroll != fc::noScroll
+  if ( drag_scroll != DragScrollMode::None
     && scroll_distance < int(getClientHeight()) )
     scroll_distance++;
 
@@ -1315,16 +1272,16 @@ void FListBox::dragDown (int mouse_button)
     scroll_timer = true;
     addTimer(scroll_repeat);
 
-    if ( mouse_button == fc::RightButton )
-      drag_scroll = fc::scrollDownSelect;
+    if ( mouse_button == MouseButton::Right )
+      drag_scroll = DragScrollMode::SelectDownward;
     else
-      drag_scroll = fc::scrollDown;
+      drag_scroll = DragScrollMode::Downward;
   }
 
   if ( current == getCount() )
   {
     delOwnTimers();
-    drag_scroll = fc::noScroll;
+    drag_scroll = DragScrollMode::None;
   }
 }
 
@@ -1332,7 +1289,7 @@ void FListBox::dragDown (int mouse_button)
 void FListBox::stopDragScroll()
 {
   delOwnTimers();
-  drag_scroll = fc::noScroll;
+  drag_scroll = DragScrollMode::None;
   scroll_distance = 1;
   scroll_timer = false;
 }
@@ -1721,7 +1678,7 @@ void FListBox::changeOnResize() const
 //----------------------------------------------------------------------
 void FListBox::lazyConvert(FListBoxItems::iterator iter, std::size_t y)
 {
-  if ( conv_type != lazy_convert || ! iter->getText().isNull() )
+  if ( conv_type != ConvertType::Lazy || ! iter->getText().isNull() )
     return;
 
   lazy_inserter (*iter, source_container, y + std::size_t(yoffset));
@@ -1735,49 +1692,48 @@ void FListBox::lazyConvert(FListBoxItems::iterator iter, std::size_t y)
 //----------------------------------------------------------------------
 void FListBox::cb_vbarChange (const FWidget*)
 {
-  FScrollbar::sType scrollType;
-  const std::size_t current_before = current;
+  const FScrollbar::ScrollType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
+  const std::size_t current_before = current;
   int distance{1};
   const int yoffset_before = yoffset;
-  scrollType = vbar->getScrollType();
-  assert ( scrollType == FScrollbar::noScroll
-        || scrollType == FScrollbar::scrollJump
-        || scrollType == FScrollbar::scrollStepBackward
-        || scrollType == FScrollbar::scrollStepForward
-        || scrollType == FScrollbar::scrollPageBackward
-        || scrollType == FScrollbar::scrollPageForward
-        || scrollType == FScrollbar::scrollWheelUp
-        || scrollType == FScrollbar::scrollWheelDown );
+  assert ( scrollType == FScrollbar::ScrollType::None
+        || scrollType == FScrollbar::ScrollType::Jump
+        || scrollType == FScrollbar::ScrollType::StepBackward
+        || scrollType == FScrollbar::ScrollType::StepForward
+        || scrollType == FScrollbar::ScrollType::PageBackward
+        || scrollType == FScrollbar::ScrollType::PageForward
+        || scrollType == FScrollbar::ScrollType::WheelUp
+        || scrollType == FScrollbar::ScrollType::WheelDown );
 
   switch ( scrollType )
   {
-    case FScrollbar::noScroll:
+    case FScrollbar::ScrollType::None:
       break;
 
-    case FScrollbar::scrollPageBackward:
+    case FScrollbar::ScrollType::PageBackward:
       distance = int(getClientHeight());
       // fall through
-    case FScrollbar::scrollStepBackward:
+    case FScrollbar::ScrollType::StepBackward:
       prevListItem (distance);
       break;
 
-    case FScrollbar::scrollPageForward:
+    case FScrollbar::ScrollType::PageForward:
       distance = int(getClientHeight());
       // fall through
-    case FScrollbar::scrollStepForward:
+    case FScrollbar::ScrollType::StepForward:
       nextListItem (distance);
       break;
 
-    case FScrollbar::scrollJump:
+    case FScrollbar::ScrollType::Jump:
       scrollToY (vbar->getValue());
       break;
 
-    case FScrollbar::scrollWheelUp:
+    case FScrollbar::ScrollType::WheelUp:
       wheelUp (wheel_distance);
       break;
 
-    case FScrollbar::scrollWheelDown:
+    case FScrollbar::ScrollType::WheelDown:
       wheelDown (wheel_distance);
       break;
   }
@@ -1791,7 +1747,7 @@ void FListBox::cb_vbarChange (const FWidget*)
   if ( isShown() )
     drawList();
 
-  if ( scrollType >= FScrollbar::scrollStepBackward )
+  if ( scrollType >= FScrollbar::ScrollType::StepBackward )
   {
     vbar->setValue (yoffset);
 
@@ -1805,49 +1761,49 @@ void FListBox::cb_vbarChange (const FWidget*)
 //----------------------------------------------------------------------
 void FListBox::cb_hbarChange (const FWidget*)
 {
-  static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
+  const FScrollbar::ScrollType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
-  FScrollbar::sType scrollType;
+  static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
   int distance{1};
   const int xoffset_before = xoffset;
-  scrollType = hbar->getScrollType();
-  assert ( scrollType == FScrollbar::noScroll
-        || scrollType == FScrollbar::scrollJump
-        || scrollType == FScrollbar::scrollStepBackward
-        || scrollType == FScrollbar::scrollStepForward
-        || scrollType == FScrollbar::scrollPageBackward
-        || scrollType == FScrollbar::scrollPageForward
-        || scrollType == FScrollbar::scrollWheelUp
-        || scrollType == FScrollbar::scrollWheelDown );
+
+  assert ( scrollType == FScrollbar::ScrollType::None
+        || scrollType == FScrollbar::ScrollType::Jump
+        || scrollType == FScrollbar::ScrollType::StepBackward
+        || scrollType == FScrollbar::ScrollType::StepForward
+        || scrollType == FScrollbar::ScrollType::PageBackward
+        || scrollType == FScrollbar::ScrollType::PageForward
+        || scrollType == FScrollbar::ScrollType::WheelUp
+        || scrollType == FScrollbar::ScrollType::WheelDown );
 
   switch ( scrollType )
   {
-    case FScrollbar::noScroll:
+    case FScrollbar::ScrollType::None:
       break;
 
-    case FScrollbar::scrollPageBackward:
+    case FScrollbar::ScrollType::PageBackward:
       distance = int(getClientWidth()) - padding_space;
       // fall through
-    case FScrollbar::scrollStepBackward:
+    case FScrollbar::ScrollType::StepBackward:
       scrollLeft (distance);
       break;
 
-    case FScrollbar::scrollPageForward:
+    case FScrollbar::ScrollType::PageForward:
       distance = int(getClientWidth()) - padding_space;
       // fall through
-    case FScrollbar::scrollStepForward:
+    case FScrollbar::ScrollType::StepForward:
       scrollRight (distance);
       break;
 
-    case FScrollbar::scrollJump:
+    case FScrollbar::ScrollType::Jump:
       scrollToX (hbar->getValue());
       break;
 
-    case FScrollbar::scrollWheelUp:
+    case FScrollbar::ScrollType::WheelUp:
       scrollLeft (wheel_distance);
       break;
 
-    case FScrollbar::scrollWheelDown:
+    case FScrollbar::ScrollType::WheelDown:
       scrollRight (wheel_distance);
       break;
   }
@@ -1859,7 +1815,7 @@ void FListBox::cb_hbarChange (const FWidget*)
     drawList();
 
 
-  if ( scrollType >= FScrollbar::scrollStepBackward )
+  if ( scrollType >= FScrollbar::ScrollType::StepBackward )
   {
     hbar->setValue (xoffset);
 

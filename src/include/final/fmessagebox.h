@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -59,6 +59,10 @@
 
 #include <cstring>
 
+#include <array>
+#include <memory>
+
+#include "final/fbutton.h"
 #include "final/fdialog.h"
 #include "final/fwidgetcolors.h"
 
@@ -76,7 +80,7 @@ class FMessageBox : public FDialog
 {
   public:
     // Enumeration
-    enum ButtonType
+    enum class ButtonType : std::size_t
     {
       Reject = 0,
       Ok     = 1,
@@ -90,15 +94,19 @@ class FMessageBox : public FDialog
 
     // Constructors
     explicit FMessageBox (FWidget* = nullptr);
-    FMessageBox (const FMessageBox&);  // copy constructor
+
+    // Disable copy constructor
+    FMessageBox (const FMessageBox&) = delete;
+
     FMessageBox ( const FString&, const FString&
                 , ButtonType, ButtonType, ButtonType
                 , FWidget* = nullptr );
-    // Destructor
-    ~FMessageBox() override;
 
-    // copy assignment operator (=)
-    FMessageBox& operator = (const FMessageBox&);
+    // Destructor
+    ~FMessageBox() noexcept override;
+
+    // Disable copy assignment operator (=)
+    FMessageBox& operator = (const FMessageBox&) = delete;
 
     // Accessor
     FString             getClassName() const override;
@@ -109,29 +117,31 @@ class FMessageBox : public FDialog
     // Mutator
     void                setTitlebarText (const FString&);
     void                setHeadline (const FString&);
-    bool                setCenterText(bool);
-    bool                setCenterText();
+    bool                setCenterText (bool = true);
     bool                unsetCenterText();
     void                setText (const FString&) override;
 
     // Methods
+    ButtonType          exec();
     template <typename messageType>
-    static int          info ( FWidget*
+    static ButtonType   info ( FWidget*
                              , const FString&
                              , const messageType&
-                             , ButtonType = FMessageBox::Ok
-                             , ButtonType = FMessageBox::Reject
-                             , ButtonType = FMessageBox::Reject );
+                             , ButtonType = ButtonType::Ok
+                             , ButtonType = ButtonType::Reject
+                             , ButtonType = ButtonType::Reject );
 
     template <typename messageType>
-    static int          error ( FWidget*
+    static ButtonType   error ( FWidget*
                               , const messageType&
-                              , ButtonType = FMessageBox::Ok
-                              , ButtonType = FMessageBox::Reject
-                              , ButtonType = FMessageBox::Reject );
+                              , ButtonType = ButtonType::Ok
+                              , ButtonType = ButtonType::Reject
+                              , ButtonType = ButtonType::Reject );
    protected:
     // Method
+    void                initLayout() override;
     void                adjustSize() override;
+    void                done (ButtonType);
 
     // Callback method
     void                cb_processClick (ButtonType);
@@ -140,10 +150,13 @@ class FMessageBox : public FDialog
     // Constants
     static constexpr std::size_t MAX_BUTTONS = 3;
 
+    // Using-declaration
+    using FButtons = std::array<std::unique_ptr<FButton>, MAX_BUTTONS>;
+    using FButtonsDigit = std::array<ButtonType, MAX_BUTTONS>;
+
     // Methods
     void                init();
     void                allocation();
-    void                deallocation();
     void                initCallbacks();
     void                calculateDimensions();
     void                draw() override;
@@ -154,10 +167,11 @@ class FMessageBox : public FDialog
     FString       headline_text{};
     FString       text{};
     FStringList   text_components{};
-    FButton*      button[MAX_BUTTONS]{nullptr};
+    FButtons      button{};
     std::size_t   max_line_width{0};
     FColor        emphasis_color{getColorTheme()->dialog_emphasis_fg};
-    ButtonType    button_digit[MAX_BUTTONS]{FMessageBox::Reject};
+    ButtonType    result_code{ButtonType::Reject};
+    FButtonsDigit button_digit{};
     std::size_t   num_buttons{0};
     std::size_t   text_num_lines{0};
     bool          center_text{false};
@@ -193,37 +207,33 @@ inline bool FMessageBox::setCenterText(bool enable)
 { return (center_text = enable); }
 
 //----------------------------------------------------------------------
-inline bool FMessageBox::setCenterText()
-{ return setCenterText(true); }
-
-//----------------------------------------------------------------------
 inline bool FMessageBox::unsetCenterText()
 { return setCenterText(false); }
 
 //----------------------------------------------------------------------
 template <typename messageType>
-int FMessageBox::info ( FWidget* parent
-                      , const FString& caption
-                      , const messageType& message
-                      , ButtonType button0
-                      , ButtonType button1
-                      , ButtonType button2 )
+FMessageBox::ButtonType FMessageBox::info ( FWidget* parent
+                                          , const FString& caption
+                                          , const messageType& message
+                                          , ButtonType button0
+                                          , ButtonType button1
+                                          , ButtonType button2 )
 {
   FMessageBox mbox ( caption
                    , FString() << message
                    , button0, button1, button2
                    , parent );
-  const int reply = mbox.exec();
+  const ButtonType reply = mbox.exec();
   return reply;
 }
 
 //----------------------------------------------------------------------
 template <typename messageType>
-int FMessageBox::error ( FWidget* parent
-                       , const messageType& message
-                       , ButtonType button0
-                       , ButtonType button1
-                       , ButtonType button2 )
+FMessageBox::ButtonType FMessageBox::error ( FWidget* parent
+                                           , const messageType& message
+                                           , ButtonType button0
+                                           , ButtonType button1
+                                           , ButtonType button2 )
 {
   const FString caption{"Error message"};
 
@@ -238,7 +248,7 @@ int FMessageBox::error ( FWidget* parent
   mbox.setForegroundColor(wc->error_box_fg);
   mbox.setBackgroundColor(wc->error_box_bg);
   mbox.emphasis_color = wc->error_box_emphasis_fg;
-  const int reply = mbox.exec();
+  const ButtonType reply = mbox.exec();
   return reply;
 }
 

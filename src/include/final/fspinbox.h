@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -66,6 +66,7 @@ class FSpinBox : public FWidget
   public:
     // Using-declaration
     using FWidget::setGeometry;
+    using LabelOrientation = FLineEdit::LabelOrientation;
 
     // Constructors
     explicit FSpinBox (FWidget* = nullptr);
@@ -74,7 +75,7 @@ class FSpinBox : public FWidget
     FSpinBox (const FSpinBox&) = delete;
 
     // Destructor
-    ~FSpinBox() override;
+    ~FSpinBox() noexcept override;
 
     // Disable copy assignment operator (=)
     FSpinBox& operator = (const FSpinBox&) = delete;
@@ -84,21 +85,18 @@ class FSpinBox : public FWidget
     sInt64              getValue() const;
     FString             getPrefix() const;
     FString             getSuffix() const;
-    FLineEdit::label_o  getLabelOrientation() const;
+    LabelOrientation    getLabelOrientation() const;
 
     // Mutators
     void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
-    bool                setEnable (bool) override;
-    bool                setEnable() override;
+    bool                setEnable (bool = true) override;
     bool                unsetEnable() override;
     bool                setDisable() override;
-    bool                setFocus (bool) override;
-    bool                setFocus() override;
+    bool                setFocus (bool = true) override;
     bool                unsetFocus() override;
-    bool                setShadow (bool);
-    bool                setShadow();
+    bool                setShadow (bool = true);
     bool                unsetShadow();
     void                setValue (sInt64);
     void                setMinValue (sInt64);
@@ -107,7 +105,7 @@ class FSpinBox : public FWidget
     void                setPrefix (const FString&);
     void                setSuffix (const FString&);
     void                setLabelText (const FString&);
-    void                setLabelOrientation (const FLineEdit::label_o);
+    void                setLabelOrientation (const LabelOrientation);
 
     // Inquiries
     bool                hasShadow() const;
@@ -124,19 +122,19 @@ class FSpinBox : public FWidget
 
   private:
     // Enumeration
-    enum spiningState
+    enum class SpiningState
     {
-      noSpin   = 0,
-      spinUp   = 1,
-      spinDown = 2
+      None = 0,
+      Up   = 1,
+      Down = 2
     };
 
     // Methods
     void                init();
     void                draw() override;
     void                updateInputField();
-    void                increaseValue();
-    void                decreaseValue();
+    void                increaseValue (sInt64 = 1);
+    void                decreaseValue (sInt64 = 1);
     void                processActivate() const;
     void                processChanged() const;
     void                forceFocus();
@@ -152,7 +150,7 @@ class FSpinBox : public FWidget
     sInt64              max{std::numeric_limits<sInt64>::max()};
     FString             pfix{};
     FString             sfix{};
-    spiningState        spining_state{FSpinBox::noSpin};
+    SpiningState        spining_state{SpiningState::None};
     bool                threshold_reached{false};
     int                 threshold_time{500};
     int                 repeat_time{80};
@@ -177,12 +175,8 @@ inline FString FSpinBox::getSuffix() const
 { return sfix; }
 
 //----------------------------------------------------------------------
-inline FLineEdit::label_o FSpinBox::getLabelOrientation() const
+inline FLineEdit::LabelOrientation FSpinBox::getLabelOrientation() const
 { return input_field.getLabelOrientation(); }
-
-//----------------------------------------------------------------------
-inline bool FSpinBox::setEnable()
-{ return setEnable(true); }
 
 //----------------------------------------------------------------------
 inline bool FSpinBox::unsetEnable()
@@ -193,16 +187,8 @@ inline bool FSpinBox::setDisable()
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FSpinBox::setFocus()
-{ return setFocus(true); }
-
-//----------------------------------------------------------------------
 inline bool FSpinBox::unsetFocus()
 { return setFocus(false); }
-
-//----------------------------------------------------------------------
-inline bool FSpinBox::setShadow()
-{ return setShadow(true); }
 
 //----------------------------------------------------------------------
 inline bool FSpinBox::unsetShadow()
@@ -217,7 +203,7 @@ inline void FSpinBox::setLabelText (const FString& s)
 { input_field.setLabelText(s); }
 
 //----------------------------------------------------------------------
-inline void FSpinBox::setLabelOrientation (const FLineEdit::label_o o)
+inline void FSpinBox::setLabelOrientation (const LabelOrientation o)
 { input_field.setLabelOrientation(o); }
 
 }  // namespace finalcut

@@ -60,8 +60,8 @@ namespace finalcut
 // class forward declaration
 class FScrollbar;
 
-// Global typedef
-typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
+// Global using-declaration
+using FScrollbarPtr = std::shared_ptr<FScrollbar>;
 
 //----------------------------------------------------------------------
 // class FScrollbar
@@ -70,25 +70,25 @@ typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
 class FScrollbar : public FWidget
 {
   public:
-    // Using-declarations
+    // Using-declaration
     using FWidget::setGeometry;
 
     // Enumeration
-    enum sType
+    enum class ScrollType
     {
-      noScroll           = 0,
-      scrollJump         = 1,
-      scrollStepBackward = 2,
-      scrollStepForward  = 3,
-      scrollPageBackward = 4,
-      scrollPageForward  = 5,
-      scrollWheelUp      = 6,
-      scrollWheelDown    = 7
+      None         = 0,
+      Jump         = 1,
+      StepBackward = 2,
+      StepForward  = 3,
+      PageBackward = 4,
+      PageForward  = 5,
+      WheelUp      = 6,
+      WheelDown    = 7
     };
 
     // Constructors
     explicit FScrollbar (FWidget* = nullptr);
-    explicit FScrollbar (fc::orientation = fc::vertical, FWidget* = nullptr);
+    explicit FScrollbar (Orientation = Orientation::Vertical, FWidget* = nullptr);
 
     // Disable copy constructor
     FScrollbar (const FScrollbar&) = delete;
@@ -102,7 +102,7 @@ class FScrollbar : public FWidget
     // Accessors
     FString             getClassName() const override;
     int                 getValue() const;
-    sType               getScrollType() const;
+    ScrollType          getScrollType() const;
 
     // Mutators
     void                setMinimum (int);
@@ -111,7 +111,7 @@ class FScrollbar : public FWidget
     void                setValue (int);
     void                setSteps (double);
     void                setPageSize (int, int);
-    void                setOrientation (fc::orientation);
+    void                setOrientation (Orientation);
     void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
@@ -138,9 +138,9 @@ class FScrollbar : public FWidget
     void                drawHorizontalBar();
     void                drawHorizontalBackgroundColumn();
     void                drawButtons();
-    sType               getClickedScrollType (int, int) const;
-    sType               getVerticalClickedScrollType (int) const;
-    sType               getHorizontalClickedScrollType (int) const;
+    ScrollType          getClickedScrollType (int, int) const;
+    ScrollType          getVerticalClickedScrollType (int) const;
+    ScrollType          getHorizontalClickedScrollType (int) const;
     int                 getSliderClickPos (int, int) const;
     void                jumpToClickPos (int, int);
     void                jumpToClickPos (int);
@@ -149,7 +149,7 @@ class FScrollbar : public FWidget
     void                changeOnResize();
 
     // Data members
-    sType               scroll_type{FScrollbar::noScroll};
+    ScrollType          scroll_type{ScrollType::None};
     bool                threshold_reached{false};
     int                 threshold_time{500};
     int                 repeat_time{80};
@@ -165,7 +165,7 @@ class FScrollbar : public FWidget
     int                 pagesize{0};
     double              steps{1};
     std::size_t         length{20};
-    fc::orientation     bar_orientation{fc::vertical};
+    Orientation         bar_orientation{Orientation::Vertical};
     int                 max_color{FTerm::getMaxColor()};
 };
 
@@ -175,24 +175,14 @@ class FScrollbar : public FWidget
 template <typename Instance
         , typename Callback>
 void initScrollbar ( FScrollbarPtr& bar
-                   , fc::orientation o
+                   , Orientation o
                    , Instance cb_instance
                    , const Callback& cb_handler )
 {
-  try
-  {
-    bar = std::make_shared<FScrollbar>(o, cb_instance);
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FScrollbar");
-    return;
-  }
-
+  bar = std::make_shared<FScrollbar>(o, cb_instance);
   bar->setMinimum(0);
   bar->setValue(0);
   bar->hide();
-
   bar->addCallback
   (
     "change-value",
@@ -211,7 +201,7 @@ inline int FScrollbar::getValue() const
 { return val; }
 
 //----------------------------------------------------------------------
-inline FScrollbar::sType FScrollbar::getScrollType() const
+inline FScrollbar::ScrollType FScrollbar::getScrollType() const
 { return scroll_type; }
 
 }  // namespace finalcut

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -122,7 +122,7 @@ bool sortAscendingByName (const FObject* lhs, const FObject* rhs)
   const auto& r_string = r_item->getText(column);
 
   // lhs < rhs
-  return bool( strcasecmp(l_string.c_str(), r_string.c_str()) < 0 );
+  return strcasecmp(l_string.c_str(), r_string.c_str()) < 0;
 }
 
 //----------------------------------------------------------------------
@@ -135,7 +135,7 @@ bool sortDescendingByName (const FObject* lhs, const FObject* rhs)
   const auto& r_string = r_item->getText(column);
 
   // lhs > rhs
-  return bool( strcasecmp(l_string.c_str(), r_string.c_str()) > 0 );
+  return strcasecmp(l_string.c_str(), r_string.c_str()) > 0;
 }
 
 //----------------------------------------------------------------------
@@ -148,7 +148,7 @@ bool sortAscendingByNumber (const FObject* lhs, const FObject* rhs)
   const auto& r_number = firstNumberFromString(r_item->getText(column));
 
   // lhs < rhs
-  return bool( l_number < r_number );
+  return l_number < r_number;
 }
 
 //----------------------------------------------------------------------
@@ -161,7 +161,7 @@ bool sortDescendingByNumber (const FObject* lhs, const FObject* rhs)
   const auto& r_number = firstNumberFromString(r_item->getText(column));
 
   // lhs > rhs
-  return bool( l_number > r_number );
+  return l_number > r_number;
 }
 
 
@@ -478,51 +478,11 @@ void FListViewItem::resetVisibleLineCounter()
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FListViewIterator::FListViewIterator()
-{ }
-
-//----------------------------------------------------------------------
-FListViewIterator::FListViewIterator (iterator iter)
+FListViewIterator::FListViewIterator (Iterator iter)
   : node{iter}
 { }
 
-//----------------------------------------------------------------------
-FListViewIterator::~FListViewIterator()  // destructor
-{ }
-
-//----------------------------------------------------------------------
-FListViewIterator::FListViewIterator (const FListViewIterator& i)
-  : iter_path{i.iter_path}  // copy constructor
-  , node{i.node}
-  , position{i.position}
-{ }
-
-//----------------------------------------------------------------------
-FListViewIterator::FListViewIterator (FListViewIterator&& i) noexcept
-  : iter_path{std::move(i.iter_path)}  // move constructor
-  , node{std::move(i.node)}
-  , position{std::move(i.position)}
-{ }
-
 // FListViewIterator operators
-//----------------------------------------------------------------------
-FListViewIterator& FListViewIterator::operator = (const FListViewIterator& i)
-{
-  iter_path = i.iter_path;
-  node = i.node;
-  position = i.position;
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FListViewIterator& FListViewIterator::operator = (FListViewIterator&& i) noexcept
-{
-  iter_path = std::move(i.iter_path);
-  node = std::move(i.node);
-  position = std::move(i.position);
-  return *this;
-}
-
 //----------------------------------------------------------------------
 FListViewIterator& FListViewIterator::operator ++ ()  // prefix
 {
@@ -554,32 +514,26 @@ FListViewIterator FListViewIterator::operator -- (int)  // postfix
 }
 
 //----------------------------------------------------------------------
-FListViewIterator& FListViewIterator::operator += (volatile int n)
+FListViewIterator& FListViewIterator::operator += (int n)
 {
-  while ( n > 0 )
-  {
+  for (int i = n; i > 0 ; i--)
     nextElement(node);
-    n--;
-  }
 
   return *this;
 }
 
 //----------------------------------------------------------------------
-FListViewIterator& FListViewIterator::operator -= (volatile int n)
+FListViewIterator& FListViewIterator::operator -= (int n)
 {
-  while ( n > 0 )
-  {
+  for (int i = n; i > 0 ; i--)
     prevElement(node);
-    n--;
-  }
 
   return *this;
 }
 
 // private methods of FListViewIterator
 //----------------------------------------------------------------------
-void FListViewIterator::nextElement (iterator& iter)
+void FListViewIterator::nextElement (Iterator& iter)
 {
   const auto& item = static_cast<FListViewItem*>(*iter);
 
@@ -616,7 +570,7 @@ void FListViewIterator::nextElement (iterator& iter)
 }
 
 //----------------------------------------------------------------------
-void FListViewIterator::prevElement (iterator& iter)
+void FListViewIterator::prevElement (Iterator& iter)
 {
   auto start_iter = iter;
 
@@ -697,12 +651,12 @@ std::size_t FListView::getCount() const
 }
 
 //----------------------------------------------------------------------
-fc::text_alignment FListView::getColumnAlignment (int column) const
+Align FListView::getColumnAlignment (int column) const
 {
   // Get the alignment for a column
 
   if ( column < 1 || header.empty() || column > int(header.size()) )
-    return fc::alignLeft;
+    return Align::Left;
 
   // Convert column position to address offset (index)
   const auto index = std::size_t(column - 1);
@@ -723,21 +677,21 @@ FString FListView::getColumnText (int column) const
 }
 
 //----------------------------------------------------------------------
-fc::sorting_type FListView::getColumnSortType (int column) const
+SortType FListView::getColumnSortType (int column) const
 {
-  fc::sorting_type type;
+  SortType s_type;
   const auto col = std::size_t(column);
 
   try
   {
-    type = sort_type.at(col);
+    s_type = sort_type.at(col);
   }
   catch (const std::out_of_range&)
   {
-    type = fc::unknown;
+    s_type = SortType::Unknown;
   }
 
-  return type;
+  return s_type;
 }
 
 //----------------------------------------------------------------------
@@ -756,7 +710,7 @@ void FListView::setGeometry ( const FPoint& pos, const FSize& size
 }
 
 //----------------------------------------------------------------------
-void FListView::setColumnAlignment (int column, fc::text_alignment align)
+void FListView::setColumnAlignment (int column, Align align)
 {
   // Set the alignment for a column
 
@@ -791,7 +745,7 @@ void FListView::setColumnText (int column, const FString& label)
 }
 
 //----------------------------------------------------------------------
-void FListView::setColumnSortType (int column, fc::sorting_type type)
+void FListView::setColumnSortType (int column, SortType type)
 {
   // Sets the sort type by which the list is to be sorted
 
@@ -807,7 +761,7 @@ void FListView::setColumnSortType (int column, fc::sorting_type type)
 }
 
 //----------------------------------------------------------------------
-void FListView::setColumnSort (int column, fc::sorting_order order)
+void FListView::setColumnSort (int column, SortOrder order)
 {
   // Sets the column to sort by + the sorting order
 
@@ -975,43 +929,43 @@ void FListView::sort()
   if ( sort_column < 1 && sort_column > int(header.size()) )
     return;
 
-  fc::sorting_type column_sort_type = getColumnSortType(sort_column);
-  assert ( column_sort_type == fc::by_name
-        || column_sort_type == fc::by_number
-        || column_sort_type == fc::user_defined
-        || column_sort_type == fc::unknown );
+  SortType column_sort_type = getColumnSortType(sort_column);
+  assert ( column_sort_type == SortType::Name
+        || column_sort_type == SortType::Number
+        || column_sort_type == SortType::UserDefined
+        || column_sort_type == SortType::Unknown );
 
   switch ( column_sort_type )
   {
-    case fc::unknown:
-    case fc::by_name:
-      if ( sort_order == fc::ascending )
+    case SortType::Unknown:
+    case SortType::Name:
+      if ( sort_order == SortOrder::Ascending )
       {
         sort (sortAscendingByName);
       }
-      else if ( sort_order == fc::descending )
+      else if ( sort_order == SortOrder::Descending )
       {
         sort (sortDescendingByName);
       }
       break;
 
-    case fc::by_number:
-      if ( sort_order == fc::ascending )
+    case SortType::Number:
+      if ( sort_order == SortOrder::Ascending )
       {
         sort (sortAscendingByNumber);
       }
-      else if ( sort_order == fc::descending )
+      else if ( sort_order == SortOrder::Descending )
       {
         sort (sortDescendingByNumber);
       }
       break;
 
-    case fc::user_defined:
-      if ( sort_order == fc::ascending && user_defined_ascending )
+    case SortType::UserDefined:
+      if ( sort_order == SortOrder::Ascending && user_defined_ascending )
       {
         sort (user_defined_ascending);
       }
-      else if ( sort_order == fc::descending && user_defined_descending )
+      else if ( sort_order == SortOrder::Descending && user_defined_descending )
       {
         sort (user_defined_descending);
       }
@@ -1046,24 +1000,13 @@ void FListView::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FListView::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
   {
     clicked_expander_pos.setPoint(-1, -1);
     return;
   }
 
-  if ( ! hasFocus() )
-  {
-    auto focused_widget = getFocusWidget();
-    setFocus();
-
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
-  }
-
+  setWidgetFocus(this);
   const int mouse_x = ev->getX();
   const int mouse_y = ev->getY();
   first_line_position_before = first_visible_line.getPosition();
@@ -1124,10 +1067,10 @@ void FListView::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListView::onMouseUp (FMouseEvent* ev)
 {
-  if ( drag_scroll != fc::noScroll )
+  if ( drag_scroll != DragScrollMode::None )
     stopDragScroll();
 
-  if ( ev->getButton() == fc::LeftButton )
+  if ( ev->getButton() == MouseButton::Left )
   {
     const int mouse_x = ev->getX();
     const int mouse_y = ev->getY();
@@ -1194,7 +1137,7 @@ void FListView::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListView::onMouseMove (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
   {
     clicked_expander_pos.setPoint(-1, -1);
     return;
@@ -1235,7 +1178,7 @@ void FListView::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListView::onMouseDoubleClick (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   const int mouse_x = ev->getX();
@@ -1277,25 +1220,17 @@ void FListView::onTimer (FTimerEvent*)
   const int position_before = current_iter.getPosition();
   first_line_position_before = first_visible_line.getPosition();
 
-  switch ( int(drag_scroll) )
+  if ( ( drag_scroll == DragScrollMode::Upward
+      || drag_scroll == DragScrollMode::SelectUpward )
+      && ! dragScrollUp(position_before) )
   {
-    case fc::noScroll:
-      return;
-
-    case fc::scrollUp:
-    case fc::scrollUpSelect:
-      if ( ! dragScrollUp(position_before) )
-        return;
-      break;
-
-    case fc::scrollDown:
-    case fc::scrollDownSelect:
-      if ( ! dragScrollDown(position_before) )
-        return;
-      break;
-
-    default:
-      break;
+    return;
+  }
+  else if ( ( drag_scroll == DragScrollMode::Downward
+           || drag_scroll == DragScrollMode::SelectDownward )
+           && ! dragScrollDown(position_before) )
+  {
+    return;
   }
 
   if ( isShown() )
@@ -1316,22 +1251,13 @@ void FListView::onWheel (FWheelEvent* ev)
   static constexpr int wheel_distance = 4;
   first_line_position_before = first_visible_line.getPosition();
 
-  if ( drag_scroll != fc::noScroll )
+  if ( drag_scroll != DragScrollMode::None )
     stopDragScroll();
 
-  switch ( ev->getWheel() )
-  {
-    case fc::WheelUp:
-      wheelUp (wheel_distance);
-      break;
-
-    case fc::WheelDown:
-      wheelDown (wheel_distance);
-      break;
-
-    default:
-      break;
-  }
+  if ( ev->getWheel() == MouseWheel::Up )
+    wheelUp (wheel_distance);
+  else if ( ev->getWheel() == MouseWheel::Down )
+    wheelDown (wheel_distance);
 
   if ( position_before != current_iter.getPosition() )
     processChanged();
@@ -1431,18 +1357,15 @@ void FListView::adjustScrollbars (const std::size_t element_count) const
   hbar->setWidth (width, false);
   hbar->resize();
 
-  if ( isShown() )
-  {
-    if ( isHorizontallyScrollable() )
-      hbar->show();
-    else
-      hbar->hide();
+  if ( isHorizontallyScrollable() )
+    hbar->show();
+  else
+    hbar->hide();
 
-    if ( isVerticallyScrollable() )
-      vbar->show();
-    else
-      vbar->hide();
-  }
+  if ( isVerticallyScrollable() )
+    vbar->show();
+  else
+    vbar->hide();
 }
 
 //----------------------------------------------------------------------
@@ -1472,8 +1395,8 @@ void FListView::setNullIterator (const iterator& null_iter)
 //----------------------------------------------------------------------
 void FListView::init()
 {
-  initScrollbar (vbar, fc::vertical, this, &FListView::cb_vbarChange);
-  initScrollbar (hbar, fc::horizontal, this, &FListView::cb_hbarChange);
+  initScrollbar (vbar, Orientation::Vertical, this, &FListView::cb_vbarChange);
+  initScrollbar (hbar, Orientation::Horizontal, this, &FListView::cb_hbarChange);
   selflist.push_back(this);
   root = selflist.begin();
   getNullIterator() = selflist.end();
@@ -1489,39 +1412,45 @@ void FListView::init()
 //----------------------------------------------------------------------
 inline void FListView::mapKeyFunctions()
 {
-  key_map[fc::Fkey_return]  = std::bind(&FListView::processClick, this);
-  key_map[fc::Fkey_enter]   = std::bind(&FListView::processClick, this);
-  key_map[fc::Fkey_space]   = std::bind(&FListView::toggleCheckbox, this);
-  key_map[fc::Fkey_up]      = [this] { stepBackward(); };
-  key_map[fc::Fkey_down]    = [this] { stepForward(); };
-  key_map[fc::Fkey_left]    = std::bind(&FListView::collapseAndScrollLeft, this);
-  key_map[fc::Fkey_right]   = std::bind(&FListView::expandAndScrollRight, this);
-  key_map[fc::Fkey_ppage]   = [this] { stepBackward(int(getClientHeight()) - 1); };
-  key_map[fc::Fkey_npage]   = [this] { stepForward(int(getClientHeight()) - 1); };
-  key_map[fc::Fkey_home]    = std::bind(&FListView::firstPos, this);
-  key_map[fc::Fkey_end]     = std::bind(&FListView::lastPos, this);
-  key_map_result[FKey('+')] = std::bind(&FListView::expandSubtree, this);
-  key_map_result[FKey('-')] = std::bind(&FListView::collapseSubtree, this);
+  key_map[FKey::Return]     = [this] { processClick(); };
+  key_map[FKey::Enter]      = [this] { processClick(); };
+  key_map[FKey::Space]      = [this] { toggleCheckbox(); };
+  key_map[FKey::Up]         = [this] { stepBackward(); };
+  key_map[FKey::Down]       = [this] { stepForward(); };
+  key_map[FKey::Left]       = [this] { collapseAndScrollLeft(); };
+  key_map[FKey::Right]      = [this] { expandAndScrollRight(); };
+  key_map[FKey::Page_up]    = [this] { stepBackward(int(getClientHeight()) - 1); };
+  key_map[FKey::Page_down]  = [this] { stepForward(int(getClientHeight()) - 1); };
+  key_map[FKey::Home]       = [this] { firstPos(); };
+  key_map[FKey::End]        = [this] { lastPos(); };
+  key_map_result[FKey('+')] = [this] { return expandSubtree(); };
+  key_map_result[FKey('-')] = [this] { return collapseSubtree(); };
 }
 
 //----------------------------------------------------------------------
 void FListView::processKeyAction (FKeyEvent* ev)
 {
-  const auto idx = int(ev->key());
+  const auto idx = ev->key();
+  const auto& entry = key_map[idx];
 
-  if ( key_map.find(idx) != key_map.end() )
+  if ( entry )
   {
-    key_map[idx]();
+    entry();
     ev->accept();
-  }
-  else if ( key_map_result.find(idx) != key_map_result.end() )
-  {
-    if ( key_map_result[idx]() )
-      ev->accept();
   }
   else
   {
-    ev->ignore();
+    const auto& entry_result = key_map_result[idx];
+
+    if ( entry_result )
+    {
+      if ( entry_result() )
+        ev->accept();
+    }
+    else
+    {
+      ev->ignore();
+    }
   }
 }
 
@@ -1538,30 +1467,18 @@ void FListView::sort (Compare cmp)
 }
 
 //----------------------------------------------------------------------
-std::size_t FListView::getAlignOffset ( const fc::text_alignment align
+std::size_t FListView::getAlignOffset ( const Align align
                                       , const std::size_t column_width
                                       , const std::size_t width ) const
 {
-  assert ( align == fc::alignLeft
-        || align == fc::alignCenter
-        || align == fc::alignRight );
-
-  switch ( align )
+  if ( align == Align::Center )
   {
-    case fc::alignLeft:
-      return 0;
-
-    case fc::alignCenter:
-      if ( column_width < width )
-        return (width - column_width) / 2;
-      else
-        return 0;
-
-    case fc::alignRight:
-      if ( column_width < width )
-        return width - column_width;
-      else
-        return 0;
+    if ( column_width < width )
+      return (width - column_width) / 2;
+  }
+  else if ( align == Align::Right && column_width < width )
+  {
+    return width - column_width;
   }
 
   return 0;
@@ -1666,15 +1583,9 @@ void FListView::drawHeadlines()
 
   while ( iter != header.end() )
   {
-    const auto& text = iter->name;
+    if ( ! iter->name.isEmpty() )
+      drawHeadlineLabel(iter);  // Draw into FTermBuffer object
 
-    if ( text.isNull() || text.isEmpty() )
-    {
-      ++iter;
-      continue;
-    }
-
-    drawHeadlineLabel(iter);  // Draw into FTermBuffer object
     ++iter;
   }
 
@@ -1698,8 +1609,8 @@ void FListView::drawList()
   {
     const bool is_current_line( iter == current_iter );
     const auto& item = static_cast<FListViewItem*>(*iter);
-    const int tree_offset = ( tree_view ) ? int(item->getDepth() << 1) + 1 : 0;
-    const int checkbox_offset = ( item->isCheckable() ) ? 1 : 0;
+    const int tree_offset = tree_view ? int(item->getDepth() << 1) + 1 : 0;
+    const int checkbox_offset = item->isCheckable() ? 1 : 0;
     path_end = getListEnd(item);
     print() << FPoint{2, 2 + int(y)};
 
@@ -1761,7 +1672,7 @@ void FListView::drawListLine ( const FListViewItem* item
       // Increment the value of col for the column position
       // and the next iteration
       col++;
-      const fc::text_alignment align = getColumnAlignment(int(col));
+      const Align align = getColumnAlignment(int(col));
       const std::size_t align_offset = getAlignOffset (align, column_width, width);
 
       if ( tree_view && col == 1 )
@@ -1784,7 +1695,7 @@ void FListView::drawListLine ( const FListViewItem* item
         line += FString { leading_space + width
                         - align_offset - column_width, L' '};
       }
-      else if ( align == fc::alignRight )
+      else if ( align == Align::Right )
       {
         // Ellipse right align text
         const std::size_t first = getColumnWidth(text) + 1 - width;
@@ -1899,7 +1810,7 @@ inline FString FListView::getCheckBox (const FListViewItem* item) const
     {
       try
       {
-        checkbox[1] = fc::Times;  // Times ×
+        checkbox[1] = wchar_t(UniChar::Times);  // Times ×
       }
       catch (const std::out_of_range&)
       {
@@ -1926,12 +1837,12 @@ inline FString FListView::getLinePrefix ( const FListViewItem* item
     {
       if ( item->isExpand() )
       {
-        line += fc::BlackDownPointingTriangle;  // ▼
+        line += UniChar::BlackDownPointingTriangle;  // ▼
         line += L' ';
       }
       else
       {
-        line += fc::BlackRightPointingPointer;  // ►
+        line += UniChar::BlackRightPointingPointer;  // ►
         line += L' ';
       }
     }
@@ -1957,10 +1868,10 @@ inline void FListView::drawSortIndicator ( std::size_t& length
   setColor();
   length++;
 
-  if ( sort_order == fc::ascending )
-    headerline << fc::BlackUpPointingTriangle;    // ▲
-  else if ( sort_order == fc::descending )
-    headerline << fc::BlackDownPointingTriangle;  // ▼
+  if ( sort_order == SortOrder::Ascending )
+    headerline << UniChar::BlackUpPointingTriangle;    // ▲
+  else if ( sort_order == SortOrder::Descending )
+    headerline << UniChar::BlackDownPointingTriangle;  // ▼
 
   if ( length < column_max  )
   {
@@ -1973,7 +1884,7 @@ inline void FListView::drawSortIndicator ( std::size_t& length
 inline void FListView::drawHeaderBorder (std::size_t length)
 {
   setColor();
-  const FString line {length, fc::BoxDrawingsHorizontal};
+  const FString line {length, UniChar::BoxDrawingsHorizontal};
   headerline << line;  // horizontal line
 }
 
@@ -2099,17 +2010,17 @@ void FListView::drawBufferedHeadline()
   print() << FPoint{2, 1};
 
   if ( left_truncated_fullwidth )
-    print (fc::SingleLeftAngleQuotationMark);  // ‹
+    print (UniChar::SingleLeftAngleQuotationMark);  // ‹
 
   print() << FTermBuffer(first, last);
 
   if ( right_truncated_fullwidth )
-    print (fc::SingleRightAngleQuotationMark);  // ›
+    print (UniChar::SingleRightAngleQuotationMark);  // ›
 
   while ( column_width < getClientWidth() )
   {
     setColor();
-    print(fc::BoxDrawingsHorizontal);
+    print(UniChar::BoxDrawingsHorizontal);
     column_width++;
   }
 }
@@ -2282,10 +2193,10 @@ void FListView::mouseHeaderClicked()
     if ( header_pos > header_start
       && header_pos <= header_start + click_width )
     {
-      if ( has_sort_indicator && sort_order == fc::ascending )
-        setColumnSort (column, fc::descending);
+      if ( has_sort_indicator && sort_order == SortOrder::Ascending )
+        setColumnSort (column, SortOrder::Descending);
       else
-        setColumnSort (column, fc::ascending);
+        setColumnSort (column, SortOrder::Ascending);
 
       sort();
 
@@ -2358,7 +2269,7 @@ bool FListView::dragScrollUp (int position_before)
 {
   if ( position_before == 0 )
   {
-    drag_scroll = fc::noScroll;
+    drag_scroll = DragScrollMode::None;
     return false;
   }
 
@@ -2373,7 +2284,7 @@ bool FListView::dragScrollDown (int position_before)
 
   if ( position_before + 1 == element_count )
   {
-    drag_scroll = fc::noScroll;
+    drag_scroll = DragScrollMode::None;
     return false;
   }
 
@@ -2382,9 +2293,9 @@ bool FListView::dragScrollDown (int position_before)
 }
 
 //----------------------------------------------------------------------
-void FListView::dragUp (int mouse_button)
+void FListView::dragUp (MouseButton mouse_button)
 {
-  if ( drag_scroll != fc::noScroll
+  if ( drag_scroll != DragScrollMode::None
     && scroll_distance < int(getClientHeight()) )
     scroll_distance++;
 
@@ -2393,23 +2304,23 @@ void FListView::dragUp (int mouse_button)
     scroll_timer = true;
     addTimer(scroll_repeat);
 
-    if ( mouse_button == fc::RightButton )
-      drag_scroll = fc::scrollUpSelect;
+    if ( mouse_button == MouseButton::Right )
+      drag_scroll = DragScrollMode::SelectUpward;
     else
-      drag_scroll = fc::scrollUp;
+      drag_scroll = DragScrollMode::Upward;
   }
 
   if ( current_iter.getPosition() == 0 )
   {
     delOwnTimers();
-    drag_scroll = fc::noScroll;
+    drag_scroll = DragScrollMode::None;
   }
 }
 
 //----------------------------------------------------------------------
-void FListView::dragDown (int mouse_button)
+void FListView::dragDown (MouseButton mouse_button)
 {
-  if ( drag_scroll != fc::noScroll
+  if ( drag_scroll != DragScrollMode::None
     && scroll_distance < int(getClientHeight()) )
     scroll_distance++;
 
@@ -2418,16 +2329,16 @@ void FListView::dragDown (int mouse_button)
     scroll_timer = true;
     addTimer(scroll_repeat);
 
-    if ( mouse_button == fc::RightButton )
-      drag_scroll = fc::scrollDownSelect;
+    if ( mouse_button == MouseButton::Right )
+      drag_scroll = DragScrollMode::SelectDownward;
     else
-      drag_scroll = fc::scrollDown;
+      drag_scroll = DragScrollMode::Downward;
   }
 
   if ( current_iter.getPosition() - 1 == int(getCount()) )
   {
     delOwnTimers();
-    drag_scroll = fc::noScroll;
+    drag_scroll = DragScrollMode::None;
   }
 }
 
@@ -2437,7 +2348,7 @@ void FListView::stopDragScroll()
   delOwnTimers();
   scroll_timer = false;
   scroll_distance = 1;
-  drag_scroll = fc::noScroll;
+  drag_scroll = DragScrollMode::None;
 }
 
 //----------------------------------------------------------------------
@@ -2811,47 +2722,47 @@ void FListView::scrollBy (int dx, int dy)
 //----------------------------------------------------------------------
 void FListView::cb_vbarChange (const FWidget*)
 {
-  FScrollbar::sType scrollType = vbar->getScrollType();
+  const FScrollbar::ScrollType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
   first_line_position_before = first_visible_line.getPosition();
-  assert ( scrollType == FScrollbar::noScroll
-        || scrollType == FScrollbar::scrollJump
-        || scrollType == FScrollbar::scrollStepBackward
-        || scrollType == FScrollbar::scrollStepForward
-        || scrollType == FScrollbar::scrollPageBackward
-        || scrollType == FScrollbar::scrollPageForward
-        || scrollType == FScrollbar::scrollWheelUp
-        || scrollType == FScrollbar::scrollWheelDown );
+  assert ( scrollType == FScrollbar::ScrollType::None
+        || scrollType == FScrollbar::ScrollType::Jump
+        || scrollType == FScrollbar::ScrollType::StepBackward
+        || scrollType == FScrollbar::ScrollType::StepForward
+        || scrollType == FScrollbar::ScrollType::PageBackward
+        || scrollType == FScrollbar::ScrollType::PageForward
+        || scrollType == FScrollbar::ScrollType::WheelUp
+        || scrollType == FScrollbar::ScrollType::WheelDown );
 
   switch ( scrollType )
   {
-    case FScrollbar::noScroll:
+    case FScrollbar::ScrollType::None:
       break;
 
-    case FScrollbar::scrollPageBackward:
+    case FScrollbar::ScrollType::PageBackward:
       distance = int(getClientHeight());
       // fall through
-    case FScrollbar::scrollStepBackward:
+    case FScrollbar::ScrollType::StepBackward:
       stepBackward(distance);
       break;
 
-    case FScrollbar::scrollPageForward:
+    case FScrollbar::ScrollType::PageForward:
       distance = int(getClientHeight());
       // fall through
-    case FScrollbar::scrollStepForward:
+    case FScrollbar::ScrollType::StepForward:
       stepForward(distance);
       break;
 
-    case FScrollbar::scrollJump:
+    case FScrollbar::ScrollType::Jump:
       scrollToY (vbar->getValue());
       break;
 
-    case FScrollbar::scrollWheelUp:
+    case FScrollbar::ScrollType::WheelUp:
       wheelUp (wheel_distance);
       break;
 
-    case FScrollbar::scrollWheelDown:
+    case FScrollbar::ScrollType::WheelDown:
       wheelDown (wheel_distance);
       break;
   }
@@ -2859,8 +2770,8 @@ void FListView::cb_vbarChange (const FWidget*)
   if ( isShown() )
     drawList();
 
-  if ( scrollType >= FScrollbar::scrollStepBackward
-    && scrollType <= FScrollbar::scrollPageForward )
+  if ( scrollType >= FScrollbar::ScrollType::StepBackward
+    && scrollType <= FScrollbar::ScrollType::PageForward )
   {
     vbar->setValue (first_visible_line.getPosition());
 
@@ -2874,47 +2785,47 @@ void FListView::cb_vbarChange (const FWidget*)
 //----------------------------------------------------------------------
 void FListView::cb_hbarChange (const FWidget*)
 {
-  FScrollbar::sType scrollType = hbar->getScrollType();
+  const FScrollbar::ScrollType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
   const int xoffset_before = xoffset;
-  assert ( scrollType == FScrollbar::noScroll
-        || scrollType == FScrollbar::scrollJump
-        || scrollType == FScrollbar::scrollStepBackward
-        || scrollType == FScrollbar::scrollStepForward
-        || scrollType == FScrollbar::scrollPageBackward
-        || scrollType == FScrollbar::scrollPageForward
-        || scrollType == FScrollbar::scrollWheelUp
-        || scrollType == FScrollbar::scrollWheelDown );
+  assert ( scrollType == FScrollbar::ScrollType::None
+        || scrollType == FScrollbar::ScrollType::Jump
+        || scrollType == FScrollbar::ScrollType::StepBackward
+        || scrollType == FScrollbar::ScrollType::StepForward
+        || scrollType == FScrollbar::ScrollType::PageBackward
+        || scrollType == FScrollbar::ScrollType::PageForward
+        || scrollType == FScrollbar::ScrollType::WheelUp
+        || scrollType == FScrollbar::ScrollType::WheelDown );
 
   switch ( scrollType )
   {
-    case FScrollbar::noScroll:
+    case FScrollbar::ScrollType::None:
       break;
 
-    case FScrollbar::scrollPageBackward:
+    case FScrollbar::ScrollType::PageBackward:
       distance = int(getClientWidth());
       // fall through
-    case FScrollbar::scrollStepBackward:
+    case FScrollbar::ScrollType::StepBackward:
       scrollBy (-distance, 0);
       break;
 
-    case FScrollbar::scrollPageForward:
+    case FScrollbar::ScrollType::PageForward:
       distance = int(getClientWidth());
       // fall through
-    case FScrollbar::scrollStepForward:
+    case FScrollbar::ScrollType::StepForward:
       scrollBy (distance, 0);
       break;
 
-    case FScrollbar::scrollJump:
+    case FScrollbar::ScrollType::Jump:
       scrollToX (hbar->getValue());
       break;
 
-    case FScrollbar::scrollWheelUp:
+    case FScrollbar::ScrollType::WheelUp:
       scrollBy (-wheel_distance, 0);
       break;
 
-    case FScrollbar::scrollWheelDown:
+    case FScrollbar::ScrollType::WheelDown:
       scrollBy (wheel_distance, 0);
       break;
   }
@@ -2925,7 +2836,7 @@ void FListView::cb_hbarChange (const FWidget*)
     drawList();
   }
 
-  if ( scrollType >= FScrollbar::scrollStepBackward )
+  if ( scrollType >= FScrollbar::ScrollType::StepBackward )
   {
     hbar->setValue (xoffset);
 

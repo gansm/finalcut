@@ -46,14 +46,14 @@ class Keyboard final : public finalcut::FWidget
 Keyboard::Keyboard (finalcut::FWidget* parent)
   : finalcut::FWidget{parent}
 {
-  getColorTheme()->term_fg = finalcut::fc::Default;
-  getColorTheme()->term_bg = finalcut::fc::Default;
+  getColorTheme()->term_fg = finalcut::FColor::Default;
+  getColorTheme()->term_bg = finalcut::FColor::Default;
 }
 
 //----------------------------------------------------------------------
 void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  const FKey key_id = ev->key();
+  const finalcut::FKey key_id = ev->key();
   finalcut::FString key_name = finalcut::FTerm::getKeyName(key_id);
   bool is_last_line{false};
 
@@ -63,7 +63,7 @@ void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
   if ( getPrintPos().getY() == int(getDesktopHeight()) )
     is_last_line = true;
 
-  print() << "Key " << key_name << " (id " << key_id << ")\n";
+  print() << "Key " << key_name << " (id " << uInt32(key_id) << ")\n";
 
   if ( is_last_line )
     scrollAreaForward (getVirtualDesktop());
@@ -98,12 +98,12 @@ int main (int argc, char* argv[])
 
   // Force terminal initialization without calling show()
   app.initTerminal();
-  app.setForegroundColor(finalcut::fc::Default);
-  app.setBackgroundColor(finalcut::fc::Default);
+  app.setForegroundColor(finalcut::FColor::Default);
+  app.setBackgroundColor(finalcut::FColor::Default);
 
   // Create a keyboard object
   Keyboard key{&app};
-  key.addAccelerator('q');
+  key.addAccelerator(finalcut::FKey('q'));
 
   // Set the keyboard object as main widget
   finalcut::FWidget::setMainWidget(&key);

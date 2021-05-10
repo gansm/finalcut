@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -103,7 +103,7 @@
 #include <fcntl.h>
 #include <langinfo.h>
 
-#if F_HAVE_GETTTYNAM && F_HAVE_TTYENT_H
+#if defined(F_HAVE_GETTTYNAM) && defined(F_HAVE_TTYENT_H)
   #include <ttyent.h>
 #endif
 
@@ -111,7 +111,6 @@
 #include <cmath>
 #include <csignal>
 #include <functional>
-#include <map>
 #include <memory>
 #include <queue>
 #include <utility>
@@ -142,15 +141,15 @@ class FTermDebugData;
 class FTermDetection;
 class FTermXTerminal;
 
-#if defined(UNIT_TEST)
+#if defined(__linux__) || defined(UNIT_TEST)
   class FTermLinux;
+#endif
+
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   class FTermFreeBSD;
-  class FTermOpenBSD;
-#elif defined(__linux__)
-  class FTermLinux;
-#elif defined(__FreeBSD__) || defined(__DragonFly__)
-  class FTermFreeBSD;
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
+#endif
+
+#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
   class FTermOpenBSD;
 #endif
 
@@ -161,10 +160,9 @@ class FTermXTerminal;
 class FTerm final
 {
   public:
-    // Typedef
-    typedef std::function<int(int)> defaultPutChar;
-    typedef std::shared_ptr<FColorPalette> FColorPalettePtr;
-    typedef FColorPalette::FSetPalette FSetPalette;
+    // Using-declarations
+    using defaultPutChar = std::function<int(int)>;
+    using FSetPalette = FColorPalette::FSetPalette;
 
     // Constructor
     FTerm();
@@ -183,36 +181,36 @@ class FTerm final
     static std::size_t       getLineNumber();
     static std::size_t       getColumnNumber();
     static FString           getKeyName (FKey);
+    charSubstitution&        getCharSubstitutionMap();
     static int               getTTYFileDescriptor();
-    static const char*       getTermType();
-    static const char*       getTermFileName();
+    static std::string       getTermType();
+    static std::string       getTermFileName();
     static int               getTabstop();
     static int               getMaxColor();
-    static FColorPalettePtr& getColorPaletteTheme();
-    charSubstitution&        getCharSubstitutionMap();
-    static FTermData*        getFTermData();
-    static FSystem*          getFSystem();
-    static FOptiMove*        getFOptiMove();
-    static FOptiAttr*        getFOptiAttr();
-    static FTermDetection*   getFTermDetection();
-    static FTermXTerminal*   getFTermXTerminal();
-    static FKeyboard*        getFKeyboard();
-    static FMouseControl*    getFMouseControl();
+    static auto              getColorPaletteTheme() -> std::shared_ptr<FColorPalette>&;
+    static auto              getFSystem() -> std::unique_ptr<FSystem>&;
+    static auto              getFTermData() -> FTermData&;
+    static auto              getFOptiMove() -> FOptiMove&;
+    static auto              getFOptiAttr() -> FOptiAttr&;
+    static auto              getFTermDetection() -> FTermDetection&;
+    static auto              getFTermXTerminal() -> FTermXTerminal&;
+    static auto              getFKeyboard() -> FKeyboard&;
+    static auto              getFMouseControl() -> FMouseControl&;
 
-#if defined(UNIT_TEST)
-    static FTermLinux*       getFTermLinux();
-    static FTermFreeBSD*     getFTermFreeBSD();
-    static FTermOpenBSD*     getFTermOpenBSD();
-#elif defined(__linux__)
-    static FTermLinux*       getFTermLinux();
-#elif defined(__FreeBSD__) || defined(__DragonFly__)
-    static FTermFreeBSD*     getFTermFreeBSD();
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
-    static FTermOpenBSD*     getFTermOpenBSD();
+#if defined(__linux__) || defined(UNIT_TEST)
+    static auto              getFTermLinux() -> FTermLinux&;
+#endif
+
+#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
+    static auto              getFTermFreeBSD() -> FTermFreeBSD&;
+#endif
+
+#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
+    static auto              getFTermOpenBSD() -> FTermOpenBSD&;
 #endif
 
 #if DEBUG
-    static FTermDebugData&   getFTermDebugData();
+    static auto              getFTermDebugData() -> FTermDebugData&;
 #endif
 
     // Inquiries
@@ -242,6 +240,7 @@ class FTerm final
     static bool              isTmuxTerm();
     static bool              isKtermTerminal();
     static bool              isMltermTerminal();
+    static bool              isKittyTerminal();
     static bool              isNewFont();
     static bool              isInitialized();
     static bool              isCursorHideable();
@@ -252,16 +251,14 @@ class FTerm final
     static bool              canChangeColorPalette();
 
     // Mutators
-    static void              setFSystem (FSystem*);
-    static void              setTermType (const char[]);
-    static void              setInsertCursor (bool);
-    static void              setInsertCursor();
+    static void              setFSystem (std::unique_ptr<FSystem>&);
+    static void              setTermType (const std::string&);
+    static void              setInsertCursor (bool = true);
     static void              unsetInsertCursor();
-    static void              redefineDefaultColors (bool);
+    static void              redefineDefaultColors (bool = true);
     static void              setDblclickInterval (const uInt64);
-    static void              useAlternateScreen (bool);
-    static bool              setUTF8 (bool);
-    static bool              setUTF8();
+    static void              useAlternateScreen (bool = true);
+    static bool              setUTF8 (bool = true);
     static bool              unsetUTF8();
 
     // Methods
@@ -270,12 +267,12 @@ class FTerm final
     static bool              resetFont();
     static int               openConsole();
     static int               closeConsole();
-    static const char*       moveCursorString (int, int, int, int);
-    static const char*       cursorsVisibilityString (bool);
+    static std::string       moveCursorString (int, int, int, int);
+    static const char*       cursorsVisibilityString (bool = true);
     static void              detectTermSize();
     static void              setTermSize (const FSize&);
     static void              setTermTitle (const FString&);
-    static void              setKDECursor (fc::kdeKonsoleCursorShape);
+    static void              setKDECursor (KdeKonsoleCursorShape);
     static void              saveColorMap();
     static void              resetColorMap();
     static void              setPalette (FColor, int, int, int);
@@ -285,20 +282,20 @@ class FTerm final
     static void              resetBeep();
     static void              beep();
 
-    static void              setEncoding (fc::encoding);
-    static fc::encoding      getEncoding();
+    static void              setEncoding (Encoding);
+    static Encoding          getEncoding();
     static std::string       getEncodingString();
     static bool              charEncodable (wchar_t);
     static wchar_t           charEncode (wchar_t);
-    static wchar_t           charEncode (wchar_t, fc::encoding);
+    static wchar_t           charEncode (wchar_t, Encoding);
 
     static bool              scrollTermForward();
     static bool              scrollTermReverse();
 
     static defaultPutChar&   putchar();  // function pointer
     template <typename... Args>
-    static void              putstringf (const char[], Args&&...);
-    static void              putstring (const char[], int = 1);
+    static void              putstringf (const std::string&, Args&&...);
+    static void              putstring (const std::string&, int = 1);
     static int               putchar_ASCII (int);
     static int               putchar_UTF8  (int);
 
@@ -319,7 +316,6 @@ class FTerm final
     static void              init_cygwin_charmap();
     static void              init_teraterm_charmap();
     static void              init_fixed_max_color();
-    static void              init_keyboard();
     static void              init_termcap();
     static void              init_quirks();
     static void              init_optiMove();
@@ -351,8 +347,6 @@ class FTerm final
     static void              enableAlternateCharset();
     static void              useAlternateScreenBuffer();
     static void              useNormalScreenBuffer();
-    void                     allocationValues() const;
-    void                     deallocationValues();
     void                     init();
     bool                     init_terminal() const;
     void                     initOSspecifics() const;
@@ -361,41 +355,12 @@ class FTerm final
     void                     finish() const;
     void                     finishOSspecifics() const;
     void                     finish_encoding() const;
-    void                     destroyColorPaletteTheme();
     static void              printExitMessage();
     static void              terminalSizeChange();
     [[noreturn]] static void processTermination (int);
     static void              setSignalHandler();
     static void              resetSignalHandler();
     static void              signal_handler (int);
-
-    // Data members
-    static FTermData*        data;
-    static FSystem*          fsys;
-    static FOptiMove*        opti_move;
-    static FOptiAttr*        opti_attr;
-    static FTermDetection*   term_detection;
-    static FTermXTerminal*   xterm;
-    static FKeyboard*        keyboard;
-    static FMouseControl*    mouse;
-
-#if defined(UNIT_TEST)
-    #undef linux
-    static FTermLinux*       linux;
-    static FTermFreeBSD*     freebsd;
-    static FTermOpenBSD*     openbsd;
-#elif defined(__linux__)
-    #undef linux
-    static FTermLinux*       linux;
-#elif defined(__FreeBSD__) || defined(__DragonFly__)
-    static FTermFreeBSD*     freebsd;
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
-    static FTermOpenBSD*     openbsd;
-#endif
-
-#if DEBUG
-    static FTermDebugData*   debug_data;
-#endif
 };
 
 
@@ -414,9 +379,22 @@ std::size_t getLengthFromColumnWidth (const FString&, std::size_t);
 std::size_t getColumnWidth (const FString&, std::size_t);
 std::size_t getColumnWidth (const FString&);
 std::size_t getColumnWidth (const wchar_t);
-std::size_t getColumnWidth (FChar&);
+std::size_t getColumnWidth (const FChar&);
 std::size_t getColumnWidth (const FTermBuffer&);
+void addColumnWidth (FChar&);
+int getCharLength (const FString&, std::size_t);
+int getPrevCharLength (const FString&, std::size_t);
+std::size_t searchLeftCharBegin (const FString&, std::size_t);
+std::size_t searchRightCharBegin (const FString&, std::size_t);
 FPoint readCursorPos();
+
+// Check for 7-bit ASCII
+template<typename CharT>
+inline bool is7bit (CharT ch)
+{
+  using char_type = typename std::make_unsigned<CharT>::type;
+  return static_cast<char_type>(ch) < 128;
+}
 
 // FTerm inline functions
 //----------------------------------------------------------------------
@@ -424,20 +402,14 @@ inline FString FTerm::getClassName()
 { return "FTerm"; }
 
 //----------------------------------------------------------------------
-inline void FTerm::setFSystem (FSystem* fsystem)
-{ fsys = fsystem; }
-
-//----------------------------------------------------------------------
-inline void FTerm::setInsertCursor()
-{ return setInsertCursor(true); }
+inline void FTerm::setFSystem (std::unique_ptr<FSystem>& fsystem)
+{
+  getFSystem().swap(fsystem);
+}
 
 //----------------------------------------------------------------------
 inline void FTerm::unsetInsertCursor()
 { return setInsertCursor(false); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::setUTF8()
-{ return setUTF8(true); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::unsetUTF8()
@@ -453,22 +425,17 @@ inline void FTerm::setColorPaletteTheme (const FSetPalette& f)
 
 //----------------------------------------------------------------------
 template <typename... Args>
-inline void FTerm::putstringf (const char format[], Args&&... args)
+inline void FTerm::putstringf (const std::string& format, Args&&... args)
 {
-  const int size = std::snprintf (nullptr, 0, format, args...) + 1;
+  const int size = std::snprintf (nullptr, 0, format.data(), args...) + 1;
 
   if ( size == -1 )
     return;
 
-  if ( ! fsys )
-    getFSystem();  // Trying to set fsys
-
   const auto count = std::size_t(size);
   std::vector<char> buf(count);
-  std::snprintf (&buf[0], count, format, std::forward<Args>(args)...);
-
-  if ( fsys )
-    fsys->tputs (&buf[0], 1, FTerm::putchar_ASCII);
+  std::snprintf (&buf[0], count, format.data(), std::forward<Args>(args)...);
+  putstring (std::string(&buf[0]), 1);
 }
 
 //----------------------------------------------------------------------
@@ -478,15 +445,13 @@ inline void FTerm::initTerminal()
 }  // namespace finalcut
 
 //----------------------------------------------------------------------
-inline std::ostream& operator << ( std::ostream& os
-                                 , finalcut::fc::SpecialCharacter c )
+inline std::ostream& operator << (std::ostream& os, finalcut::UniChar c)
 {
   return os << static_cast<char>(c);
 }
 
 //----------------------------------------------------------------------
-inline std::wostream& operator << ( std::wostream& os
-                                  , finalcut::fc::SpecialCharacter c )
+inline std::wostream& operator << (std::wostream& os, finalcut::UniChar c)
 {
   return os << static_cast<wchar_t>(c);
 }

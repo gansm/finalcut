@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -87,18 +87,14 @@ class FToggleButton : public FWidget
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
     void                resetColors() override;
-    bool                setNoUnderline (bool);
-    bool                setNoUnderline();
+    bool                setNoUnderline (bool = true);
     bool                unsetNoUnderline();
-    bool                setEnable (bool) override;
-    bool                setEnable() override;
+    bool                setEnable (bool = true) override;
     bool                unsetEnable() override;
     bool                setDisable() override;
-    bool                setFocus (bool) override;
-    bool                setFocus() override;
+    bool                setFocus (bool = true) override;
     bool                unsetFocus() override;
-    bool                setChecked (bool);
-    bool                setChecked();
+    bool                setChecked (bool = true);
     bool                unsetChecked();
     virtual void        setText (const FString&);
 
@@ -173,17 +169,8 @@ inline FString& FToggleButton::getText()
 { return text; }
 
 //----------------------------------------------------------------------
-inline bool FToggleButton::setNoUnderline()
-{ return setNoUnderline(true); }
-
-//----------------------------------------------------------------------
 inline bool FToggleButton::unsetNoUnderline()
 { return setNoUnderline(false); }
-
-//----------------------------------------------------------------------
-inline bool FToggleButton::setEnable()
-{ return setEnable(true); }
-
 //----------------------------------------------------------------------
 inline bool FToggleButton::unsetEnable()
 { return setEnable(false); }
@@ -193,16 +180,8 @@ inline bool FToggleButton::setDisable()
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FToggleButton::setFocus()
-{ return setFocus(true); }
-
-//----------------------------------------------------------------------
 inline bool FToggleButton::unsetFocus()
 { return setFocus(false); }
-
-//----------------------------------------------------------------------
-inline bool FToggleButton::setChecked()
-{ return setChecked(true); }
 
 //----------------------------------------------------------------------
 inline bool FToggleButton::unsetChecked()

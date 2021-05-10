@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -53,14 +53,11 @@ namespace finalcut
 // static class attributes
 FTermDetection::FTerminalType FTermDetection::terminal_type{};
 FTermDetection::colorEnv      FTermDetection::color_env{};
+FTermDetection::kittyVersion  FTermDetection::kitty_version{};
 FTermDetection::secondaryDA   FTermDetection::secondary_da{};
-FTermData*                    FTermDetection::fterm_data{nullptr};
-FSystem*                      FTermDetection::fsystem{nullptr};
-FKeyboard*                    FTermDetection::keyboard{nullptr};
 char                          FTermDetection::termtype[256]{};
 char                          FTermDetection::ttytypename[256]{};
 bool                          FTermDetection::decscusr_support{};
-
 bool                          FTermDetection::terminal_detection{};
 bool                          FTermDetection::color256{};
 const FString*                FTermDetection::answer_back{nullptr};
@@ -133,9 +130,6 @@ void FTermDetection::setTtyTypeFileName (const char ttytype_filename[])
 //----------------------------------------------------------------------
 void FTermDetection::detect()
 {
-  fterm_data = FTerm::getFTermData();
-  fsystem = FTerm::getFSystem();
-  keyboard = FTerm::getFKeyboard();
   deallocation();
 
   // Set the variable 'termtype' to the predefined type of the terminal
@@ -165,7 +159,7 @@ void FTermDetection::getSystemTermType()
 {
   // Import the untrusted environment variable TERM
   const auto& term_env = std::getenv("TERM");
-  const auto& termfilename = fterm_data->getTermFileName();
+  const auto& termfilename = FTerm::getFTermData().getTermFileName();
 
   if ( term_env )
   {
@@ -174,7 +168,7 @@ void FTermDetection::getSystemTermType()
     termtype[sizeof(termtype) - 1] = '\0';
     return;
   }
-  else if ( *termfilename )  // 1st fallback: use the teminal file name
+  else if ( ! termfilename.empty() )  // 1st fallback: use the teminal file name
   {
     if ( getTTYtype() )  // Look into /etc/ttytype
       return;
@@ -203,19 +197,17 @@ bool FTermDetection::getTTYtype()
   // vt100  ttys0
 
   // Get term basename
-  const char* termfilename = fterm_data->getTermFileName();
-  const char* term_basename = std::strrchr(termfilename, '/');
+  const auto& termfilename = FTerm::getFTermData().getTermFileName();
+  const char* term_basename = std::strrchr(termfilename.data(), '/');
 
   if ( term_basename == nullptr )
-    term_basename = termfilename;
+    term_basename = termfilename.data();
   else
     term_basename++;
 
   std::FILE* fp{};
   std::array<char, BUFSIZ> str{};
-
-  if ( ! fsystem )
-    return false;
+  const auto& fsystem = FTerm::getFSystem();
 
   if ( (fp = fsystem->fopen(ttytypename, "r")) == nullptr )
     return false;
@@ -260,11 +252,11 @@ bool FTermDetection::getTTYSFileEntry()
   // Analyse /etc/ttys and get the term name
 
   // get term basename
-  const char* termfilename = fterm_data->getTermFileName();
-  const char* term_basename = std::strrchr(termfilename, '/');
+  const auto& termfilename = FTerm::getFTermData().getTermFileName();
+  const char* term_basename = std::strrchr(termfilename.data(), '/');
 
   if ( term_basename == nullptr )
-    term_basename = termfilename;
+    term_basename = termfilename.data();
   else
     term_basename++;
 
@@ -352,6 +344,10 @@ void FTermDetection::termtypeAnalysis()
   // NetBSD workstation console
   if ( std::strncmp(termtype, "wsvt25", 6) == 0 )
     terminal_type.netbsd_con = true;
+
+  // kitty
+  if ( std::strncmp(termtype, "xterm-kitty", 11) == 0 )
+    terminal_type.kitty = true;
 }
 
 //----------------------------------------------------------------------
@@ -364,7 +360,8 @@ void FTermDetection::detectTerminal()
   if ( terminal_detection )
   {
     FTermios::setCaptureSendCharacters();
-    keyboard->setNonBlockingInput();
+    auto& keyboard = FTerm::getFKeyboard();
+    keyboard.setNonBlockingInput();
 
     // Initialize 256 colors terminals
     new_termtype = init_256colorTerminal();
@@ -378,7 +375,7 @@ void FTermDetection::detectTerminal()
     // Determines the maximum number of colors
     new_termtype = determineMaxColor(new_termtype);
 
-    keyboard->unsetNonBlockingInput();
+    keyboard.unsetNonBlockingInput();
     FTermios::unsetCaptureSendCharacters();
   }
 
@@ -408,10 +405,11 @@ void FTermDetection::detectTerminal()
   }
 
 #if defined(__CYGWIN__)
-  const auto& termfilename = fterm_data->getTermFileName();
+  auto& fterm_data = FTerm::getFTermData();
+  const auto& termfilename = fterm_data.getTermFileName();
 
   // Fixes problem with mouse input
-  if ( std::strncmp(termfilename, "/dev/cons", 9) == 0 )
+  if ( termfilename.substr(0, 9) == "/dev/cons" )
     FKeyboard::setNonBlockingInputSupport(false);
 #endif
 }
@@ -454,26 +452,16 @@ bool FTermDetection::get256colorEnvString()
   color_env.string5 = std::getenv("KONSOLE_DBUS_SESSION");
   color_env.string6 = std::getenv("KONSOLE_DCOP");
   color_env.string7 = std::getenv("COLORFGBG");
+  color_env.string7 = std::getenv("KITTY_WINDOW_ID");
 
-  if ( color_env.string1 != nullptr )
-    return true;
-
-  if ( color_env.string2 != nullptr )
-    return true;
-
-  if ( color_env.string3 != nullptr )
-    return true;
-
-  if ( color_env.string4 != nullptr )
-    return true;
-
-  if ( color_env.string5 != nullptr )
-    return true;
-
-  if ( color_env.string6 != nullptr )
-    return true;
-
-  if ( color_env.string7 != nullptr )
+  if ( color_env.string1 != nullptr
+    || color_env.string2 != nullptr
+    || color_env.string3 != nullptr
+    || color_env.string4 != nullptr
+    || color_env.string5 != nullptr
+    || color_env.string6 != nullptr
+    || color_env.string7 != nullptr
+    || color_env.string8 != nullptr )
     return true;
 
   return false;
@@ -541,16 +529,17 @@ const char* FTermDetection::determineMaxColor (const char current_termtype[])
   // Determine xterm maximum number of colors via OSC 4
 
   const char* new_termtype = current_termtype;
-  keyboard->setNonBlockingInput();
+  auto& keyboard = FTerm::getFKeyboard();
+  keyboard.setNonBlockingInput();
 
   if ( ! color256
     && ! isCygwinTerminal()
     && ! isTeraTerm()
     && ! isLinuxTerm()
     && ! isNetBSDTerm()
-    && ! getXTermColorName(0).isEmpty() )
+    && ! getXTermColorName(FColor(0)).isEmpty() )
   {
-    if ( ! getXTermColorName(255).isEmpty() )
+    if ( ! getXTermColorName(FColor(255)).isEmpty() )
     {
       color256 = true;
 
@@ -559,17 +548,17 @@ const char* FTermDetection::determineMaxColor (const char current_termtype[])
       else
         new_termtype = "xterm-256color";
     }
-    else if ( ! getXTermColorName(87).isEmpty() )
+    else if ( ! getXTermColorName(FColor(87)).isEmpty() )
     {
       new_termtype = "xterm-88color";
     }
-    else if ( ! getXTermColorName(15).isEmpty() )
+    else if ( ! getXTermColorName(FColor(15)).isEmpty() )
     {
       new_termtype = "xterm-16color";
     }
   }
 
-  keyboard->unsetNonBlockingInput();
+  keyboard.unsetNonBlockingInput();
   return new_termtype;
 }
 
@@ -583,7 +572,8 @@ FString FTermDetection::getXTermColorName (FColor color)
   const int stdin_no = FTermios::getStdIn();
 
   // get color
-  std::fprintf (stdout, OSC "4;%hu;?" BEL, color);
+  auto index = uInt16(color);
+  std::fprintf (stdout, OSC "4;%hu;?" BEL, index);
   std::fflush (stdout);
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
@@ -610,7 +600,7 @@ FString FTermDetection::getXTermColorName (FColor color)
   }
   while ( pos < temp.size() );
 
-  if ( pos > 4 && std::sscanf(temp.data(), parse, &color, buf.data()) == 2 )
+  if ( pos > 4 && std::sscanf(temp.data(), parse, &index, buf.data()) == 2 )
   {
     std::size_t n = std::strlen(buf.data());
 
@@ -632,10 +622,11 @@ FString FTermDetection::getXTermColorName (FColor color)
 const char* FTermDetection::parseAnswerbackMsg (const char current_termtype[])
 {
   const char* new_termtype = current_termtype;
-  keyboard->setNonBlockingInput();
+  auto& keyboard = FTerm::getFKeyboard();
+  keyboard.setNonBlockingInput();
   // send ENQ and read the answerback message
   const auto& ans = getAnswerbackMsg();
-  keyboard->unsetNonBlockingInput();
+  keyboard.unsetNonBlockingInput();
 
   try
   {
@@ -965,7 +956,12 @@ inline const char* FTermDetection::secDA_Analysis_1 (const char current_termtype
   // Terminal ID 1 - DEC VT220
 
   const char* new_termtype = current_termtype;
-  new_termtype = secDA_Analysis_vte(new_termtype);
+
+  if ( isKittyTerminal() )
+    new_termtype = secDA_Analysis_kitty(new_termtype);
+  else
+    new_termtype = secDA_Analysis_vte(new_termtype);
+
   return new_termtype;
 }
 
@@ -1115,6 +1111,25 @@ inline const char* FTermDetection::secDA_Analysis_vte (const char current_termty
     // VTE 0.40.0 or higher and gnome-terminal 3.16 or higher
     if ( gnome_terminal_id >= 4000 )
       decscusr_support = true;
+  }
+
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline const char* FTermDetection::secDA_Analysis_kitty (const char current_termtype[])
+{
+  // kitty
+
+  const char* new_termtype = current_termtype;
+
+  if ( secondary_da.terminal_id_version > 3999 )
+  {
+    // All kitty terminals can use 256 colors
+    color256 = true;
+    new_termtype = "xterm-kitty";
+    kitty_version.primary = secondary_da.terminal_id_version - 4000;
+    kitty_version.secondary = secondary_da.terminal_id_hardware;
   }
 
   return new_termtype;

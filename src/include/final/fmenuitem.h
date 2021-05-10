@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -96,9 +96,8 @@ class FMenuItem : public FWidget
     FString             getText() const;
 
     // Mutators
-    bool                setEnable (bool) override;
-    bool                setFocus (bool) override;
-    bool                setFocus() override;
+    bool                setEnable (bool = true) override;
+    bool                setFocus (bool = true) override;
     bool                unsetFocus() override;
     void                setSelected();
     void                unsetSelected();
@@ -149,20 +148,25 @@ class FMenuItem : public FWidget
     bool                isMenuBar (const FWidget*) const;
     bool                isMenu (const FWidget*) const;
 
+    // Method
+    void                initLayout() override;
+
   private:
     // Accessor
     FMenuList*          getFMenuList (FWidget&);
 
     // Methods
     void                init();
+    void                calculateTextDimensions();
     void                updateSuperMenuDimensions();
+    void                updateMenubarDimensions() const;
     void                processEnable() const;
     void                processDisable() const;
     void                processActivate() const;
     void                processDeactivate() const;
     void                createDialogList (FMenu*) const;
     template <typename T>
-    void                passMouseEvent (T, const FMouseEvent*, fc::events) const;
+    void                passMouseEvent (T, const FMouseEvent*, Event) const;
 
     // Callback methods
     void                cb_switchToDialog (FDialog*) const;
@@ -177,8 +181,8 @@ class FMenuItem : public FWidget
     FDialog*     associated_window{nullptr};
     std::size_t  text_length{0};
     std::size_t  text_width{0};
-    FKey         accel_key{0};
-    FKey         hotkey{0};
+    FKey         accel_key{FKey::None};
+    FKey         hotkey{FKey::None};
     bool         selected{false};
     bool         separator{false};
     bool         checkable{false};
@@ -218,10 +222,6 @@ inline std::size_t FMenuItem::getTextWidth() const
 //----------------------------------------------------------------------
 inline FString FMenuItem::getText() const
 { return text; }
-
-//----------------------------------------------------------------------
-inline bool FMenuItem::setFocus()
-{ return setFocus(true); }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::unsetFocus()
@@ -291,11 +291,11 @@ inline bool FMenuItem::isRadioButton() const
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::hasHotkey() const
-{ return bool(hotkey != 0); }
+{ return hotkey != FKey::None; }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::hasMenu() const
-{ return bool(menu != nullptr); }
+{ return menu != nullptr; }
 
 //----------------------------------------------------------------------
 inline FWidget* FMenuItem::getSuperMenu() const

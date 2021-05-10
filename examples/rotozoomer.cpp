@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -28,13 +28,13 @@
 
 #include <final/final.h>
 
-namespace fc = finalcut::fc;
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
 using std::chrono::system_clock;
 using std::chrono::time_point;
 using finalcut::FPoint;
 using finalcut::FSize;
+using finalcut::FColor;
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // This rotozoomer demo is based on the code of Robert Dörfler
@@ -53,7 +53,7 @@ class RotoZoomer final : public finalcut::FDialog
     explicit RotoZoomer (finalcut::FWidget* = nullptr, bool = false, int = 314);
 
     // Destructor
-    ~RotoZoomer() override;
+    ~RotoZoomer() override = default;
 
     // Accessors
     finalcut::FString getReport() const;
@@ -124,10 +124,6 @@ RotoZoomer::RotoZoomer (finalcut::FWidget* parent, bool b, int l)
 }
 
 //----------------------------------------------------------------------
-RotoZoomer::~RotoZoomer()
-{ }
-
-//----------------------------------------------------------------------
 void RotoZoomer::draw()
 {
   if ( benchmark && start == time_point<system_clock>() )
@@ -168,11 +164,11 @@ void RotoZoomer::rotozoomer (double cx, double cy, double r, double a)
       auto ch = data[((Cy >> 14) & 0xf) + ((Cx >> 10) & 0xf0)];
 
       if ( ch == '+' )
-        print() << finalcut::FColorPair{fc::Black, fc::Red};
+        print() << finalcut::FColorPair{FColor::Black, FColor::Red};
       else if ( ch == 'x' )
-        print() << finalcut::FColorPair{fc::Black, fc::Cyan};
+        print() << finalcut::FColorPair{FColor::Black, FColor::Cyan};
       else
-        print() << finalcut::FColorPair{fc::Black, fc::White};
+        print() << finalcut::FColorPair{FColor::Black, FColor::White};
 
       print() << ch;
       Cx += dxdx;
@@ -253,7 +249,7 @@ void RotoZoomer::onKeyPress (finalcut::FKeyEvent* ev)
   if ( ! ev )
     return;
 
-  if ( ev->key() == 'q' )
+  if ( ev->key() == finalcut::FKey('q') )
   {
     close();
     ev->accept();
@@ -318,7 +314,7 @@ int main (int argc, char* argv[])
 
   {  // Create the application object in this scope
     finalcut::FApplication app{argc, argv};
-    app.setNonBlockingRead();
+    finalcut::FVTerm::setNonBlockingRead();
 
     // Create a simple dialog box
     constexpr int iterations = 314;

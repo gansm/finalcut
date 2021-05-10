@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -143,12 +143,12 @@ FStatusBar::~FStatusBar()  // destructor
     while ( iter != key_list.end() )
     {
       (*iter)->setConnectedStatusbar(nullptr);
-      delAccelerator (*iter);
+      FWidget::delAccelerator (*iter);
       iter = key_list.erase(iter);
     }
   }
 
-  setStatusBar(nullptr);
+  FWidget::setStatusBar(nullptr);
 }
 
 
@@ -237,7 +237,7 @@ void FStatusBar::drawMessage()
     if ( hasKeys )
     {
       x += 2;
-      print (fc::BoxDrawingsVertical);  // │
+      print (UniChar::BoxDrawingsVertical);  // │
       print (' ');
     }
 
@@ -331,7 +331,7 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
   if ( hasActivatedKey() )
     return;
 
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
   {
     mouse_down = false;
 
@@ -392,7 +392,7 @@ void FStatusBar::onMouseUp (FMouseEvent* ev)
   if ( hasActivatedKey() )
     return;
 
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   if ( mouse_down )
@@ -439,7 +439,7 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
   if ( hasActivatedKey() )
     return;
 
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   if ( mouse_down && ! key_list.empty() )
@@ -639,7 +639,7 @@ void FStatusBar::drawKey (FKeyList::const_iterator iter)
     if ( FTerm::hasHalfBlockCharacter() )
     {
       setColor (wc->statusbar_bg, wc->statusbar_active_hotkey_bg);
-      print (fc::LeftHalfBlock);  // ▐
+      print (UniChar::LeftHalfBlock);  // ▐
     }
     else
       print (' ');
@@ -654,7 +654,7 @@ void FStatusBar::drawKey (FKeyList::const_iterator iter)
     // Not the last element
     setColor (wc->statusbar_separator_fg, wc->statusbar_bg);
     x++;
-    print (fc::BoxDrawingsVertical);  // │
+    print (UniChar::BoxDrawingsVertical);  // │
   }
 }
 
@@ -685,8 +685,14 @@ void FStatusBar::drawActiveKey (FKeyList::const_iterator iter)
   {
     print (item->getText());
     x++;
-    setColor (wc->statusbar_bg, wc->statusbar_active_hotkey_bg);
-    print (fc::RightHalfBlock);  // ▌
+
+    if ( FTerm::hasHalfBlockCharacter() )
+    {
+      setColor (wc->statusbar_bg, wc->statusbar_active_hotkey_bg);
+      print (UniChar::RightHalfBlock);  // ▌
+    }
+    else
+      print (' ');
   }
   else
   {

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -28,7 +28,6 @@
 
 #include <final/final.h>
 
-namespace fc = finalcut::fc;
 using finalcut::FPoint;
 using finalcut::FRect;
 using finalcut::FSize;
@@ -41,9 +40,6 @@ using finalcut::FSize;
 class CheckList final : public finalcut::FDialog
 {
   public:
-    // Using-declaration
-    using FDialog::setGeometry;
-
     // Constructor
     explicit CheckList (finalcut::FWidget* = nullptr);
 
@@ -51,7 +47,7 @@ class CheckList final : public finalcut::FDialog
     CheckList (const CheckList&) = delete;
 
     // Destructor
-    ~CheckList() override;
+    ~CheckList() override = default;
 
     // Disable copy assignment operator (=)
     CheckList& operator = (const CheckList&) = delete;
@@ -59,6 +55,7 @@ class CheckList final : public finalcut::FDialog
   private:
     // Method
     void populate();
+    void initLayout() override;
     void adjustSize() override;
 
     // Event handlers
@@ -77,28 +74,20 @@ class CheckList final : public finalcut::FDialog
 CheckList::CheckList (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  // Dialog settings
-  //   Avoids calling a virtual function from the constructor
-  //   (CERT, OOP50-CPP)
-  FDialog::setText (L"Shopping list");
-  const std::size_t nf_offset = ( finalcut::FTerm::isNewFont() ) ? 1 : 0;
-  FDialog::setSize (FSize{28 + nf_offset, 13} );
   setShadow();  // Instead of the transparent window shadow
   listview.ignorePadding();
-  listview.setGeometry ( FPoint{1 + int(nf_offset), 2}
-                       , FSize{getWidth() - nf_offset, getHeight() - 1} );
 
   // Add columns to the view
   listview.addColumn ("Item");
   listview.addColumn ("Priority", 9);
 
   // Set the type of sorting
-  listview.setColumnSortType (1, fc::by_name);
-  listview.setColumnSortType (2, fc::by_name);
+  listview.setColumnSortType (1, finalcut::SortType::Name);
+  listview.setColumnSortType (2, finalcut::SortType::Name);
 
   // Statusbar at the bottom
   finalcut::FString separator{};
-  separator << ' ' << fc::BoxDrawingsVertical << ' ';
+  separator << ' ' << finalcut::UniChar::BoxDrawingsVertical << ' ';
   listview.setStatusbarMessage ( finalcut::FString{}
                                  << "<Q> exit" << separator
                                  << "<Space> select an item" << separator
@@ -114,10 +103,6 @@ CheckList::CheckList (finalcut::FWidget* parent)
     this, &CheckList::cb_showList
   );
 }
-
-//----------------------------------------------------------------------
-CheckList::~CheckList()  // destructor
-{ }
 
 //----------------------------------------------------------------------
 void CheckList::populate()
@@ -146,6 +131,17 @@ void CheckList::populate()
 }
 
 //----------------------------------------------------------------------
+void CheckList::initLayout()
+{
+  FDialog::setText (L"Shopping list");
+  const std::size_t nf_offset = ( finalcut::FTerm::isNewFont() ) ? 1 : 0;
+  FDialog::setSize (FSize{28 + nf_offset, 13} );
+  listview.setGeometry ( FPoint{1 + int(nf_offset), 2}
+                       , FSize{getWidth() - nf_offset, getHeight() - 1} );
+  FDialog::initLayout();
+}
+
+//----------------------------------------------------------------------
 void CheckList::adjustSize()
 {
   finalcut::FDialog::adjustSize();
@@ -158,9 +154,9 @@ void CheckList::onKeyPress (finalcut::FKeyEvent* ev)
   if ( ! ev )
     return;
 
-  if ( ev->key() == 'q'
-    || ev->key() == fc::Fkey_escape
-    || ev->key() == fc::Fkey_escape_mintty )
+  if ( ev->key() == finalcut::FKey('q')
+    || ev->key() == finalcut::FKey::Escape
+    || ev->key() == finalcut::FKey::Escape_mintty )
   {
     close();
     ev->accept();
@@ -183,7 +179,7 @@ void CheckList::cb_showList()
   for (auto item : listview.getData())
   {
     if ( item->isChecked() )
-      shopping_list << fc::Bullet << ' ' << item->getText(1) << '\n';
+      shopping_list << finalcut::UniChar::Bullet << ' ' << item->getText(1) << '\n';
   }
 
   if ( shopping_list.isEmpty() )

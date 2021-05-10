@@ -79,8 +79,8 @@ void FColorPairTest::classNameTest()
 void FColorPairTest::noArgumentTest()
 {
   const finalcut::FColorPair pair{};
-  CPPUNIT_ASSERT ( pair.getForegroundColor() == finalcut::fc::Default );
-  CPPUNIT_ASSERT ( pair.getBackgroundColor() == finalcut::fc::Default );
+  CPPUNIT_ASSERT ( pair.getForegroundColor() == finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( pair.getBackgroundColor() == finalcut::FColor::Default );
 }
 
 //----------------------------------------------------------------------
@@ -88,18 +88,18 @@ void FColorPairTest::copyConstructorTest()
 {
   const finalcut::FColorPair p1a;
   finalcut::FColorPair p1b (p1a);
-  CPPUNIT_ASSERT ( p1b.getForegroundColor() == finalcut::fc::Default );
-  CPPUNIT_ASSERT ( p1b.getBackgroundColor() == finalcut::fc::Default );
+  CPPUNIT_ASSERT ( p1b.getForegroundColor() == finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( p1b.getBackgroundColor() == finalcut::FColor::Default );
 
-  const finalcut::FColorPair p2a (finalcut::fc::Yellow );
+  const finalcut::FColorPair p2a (finalcut::FColor::Yellow );
   const finalcut::FColorPair p2b (p2a);
-  CPPUNIT_ASSERT ( p2b.getForegroundColor() == finalcut::fc::Yellow );
-  CPPUNIT_ASSERT ( p2b.getBackgroundColor() == finalcut::fc::Default );
+  CPPUNIT_ASSERT ( p2b.getForegroundColor() == finalcut::FColor::Yellow );
+  CPPUNIT_ASSERT ( p2b.getBackgroundColor() == finalcut::FColor::Default );
 
-  const finalcut::FColorPair p3a (finalcut::fc::Red, finalcut::fc::Black);
+  const finalcut::FColorPair p3a (finalcut::FColor::Red, finalcut::FColor::Black);
   const finalcut::FColorPair p3b (p3a);
-  CPPUNIT_ASSERT ( p3b.getForegroundColor() == finalcut::fc::Red );
-  CPPUNIT_ASSERT ( p3b.getBackgroundColor() == finalcut::fc::Black );
+  CPPUNIT_ASSERT ( p3b.getForegroundColor() == finalcut::FColor::Red );
+  CPPUNIT_ASSERT ( p3b.getBackgroundColor() == finalcut::FColor::Black );
 }
 
 //----------------------------------------------------------------------
@@ -107,41 +107,41 @@ void FColorPairTest::assignmentTest()
 {
   const finalcut::FColorPair p1a;
   const finalcut::FColorPair p1b = p1a;
-  CPPUNIT_ASSERT ( p1b.getForegroundColor() == finalcut::fc::Default );
-  CPPUNIT_ASSERT ( p1b.getBackgroundColor() == finalcut::fc::Default );
+  CPPUNIT_ASSERT ( p1b.getForegroundColor() == finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( p1b.getBackgroundColor() == finalcut::FColor::Default );
 
-  const finalcut::FColorPair p2a (finalcut::fc::Yellow );
+  const finalcut::FColorPair p2a (finalcut::FColor::Yellow );
   const finalcut::FColorPair p2b = p2a;
-  CPPUNIT_ASSERT ( p2b.getForegroundColor() == finalcut::fc::Yellow );
-  CPPUNIT_ASSERT ( p2b.getBackgroundColor() == finalcut::fc::Default );
+  CPPUNIT_ASSERT ( p2b.getForegroundColor() == finalcut::FColor::Yellow );
+  CPPUNIT_ASSERT ( p2b.getBackgroundColor() == finalcut::FColor::Default );
 
-  const finalcut::FColorPair p3a (finalcut::fc::Red, finalcut::fc::Black);
+  const finalcut::FColorPair p3a (finalcut::FColor::Red, finalcut::FColor::Black);
   const finalcut::FColorPair p3b = p3a;
-  CPPUNIT_ASSERT ( p3b.getForegroundColor() == finalcut::fc::Red );
-  CPPUNIT_ASSERT ( p3b.getBackgroundColor() == finalcut::fc::Black );
+  CPPUNIT_ASSERT ( p3b.getForegroundColor() == finalcut::FColor::Red );
+  CPPUNIT_ASSERT ( p3b.getBackgroundColor() == finalcut::FColor::Black );
 }
 
 //----------------------------------------------------------------------
 void FColorPairTest::setColorTest()
 {
   finalcut::FColorPair p1;
-  p1.setForegroundColor (finalcut::fc::DarkGreen);
-  CPPUNIT_ASSERT ( p1.getForegroundColor() == finalcut::fc::DarkGreen );
-  CPPUNIT_ASSERT ( p1.getBackgroundColor() == finalcut::fc::Default );
+  p1.setForegroundColor (finalcut::FColor::DarkGreen);
+  CPPUNIT_ASSERT ( p1.getForegroundColor() == finalcut::FColor::DarkGreen );
+  CPPUNIT_ASSERT ( p1.getBackgroundColor() == finalcut::FColor::Default );
 
-  finalcut::FColorPair p2 (finalcut::fc::Yellow);
-  p2.setBackgroundColor (finalcut::fc::DeepSkyBlue1);
-  CPPUNIT_ASSERT ( p2.getForegroundColor() == finalcut::fc::Yellow );
-  CPPUNIT_ASSERT ( p2.getBackgroundColor() == finalcut::fc::DeepSkyBlue1 );
+  finalcut::FColorPair p2 (finalcut::FColor::Yellow);
+  p2.setBackgroundColor (finalcut::FColor::DeepSkyBlue1);
+  CPPUNIT_ASSERT ( p2.getForegroundColor() == finalcut::FColor::Yellow );
+  CPPUNIT_ASSERT ( p2.getBackgroundColor() == finalcut::FColor::DeepSkyBlue1 );
 
-  finalcut::FColorPair p3 (finalcut::fc::Red, finalcut::fc::Black);
-  p3.setColorPair (finalcut::fc::NavyBlue, finalcut::fc::SandyBrown);
-  CPPUNIT_ASSERT ( p3.getForegroundColor() == finalcut::fc::NavyBlue );
-  CPPUNIT_ASSERT ( p3.getBackgroundColor() == finalcut::fc::SandyBrown );
-  finalcut::FColorPair p4 (finalcut::fc::DarkBlue, finalcut::fc::Grey66);
+  finalcut::FColorPair p3 (finalcut::FColor::Red, finalcut::FColor::Black);
+  p3.setColorPair (finalcut::FColor::NavyBlue, finalcut::FColor::SandyBrown);
+  CPPUNIT_ASSERT ( p3.getForegroundColor() == finalcut::FColor::NavyBlue );
+  CPPUNIT_ASSERT ( p3.getBackgroundColor() == finalcut::FColor::SandyBrown );
+  finalcut::FColorPair p4 (finalcut::FColor::DarkBlue, finalcut::FColor::Grey66);
   p3.setColorPair (p4);
-  CPPUNIT_ASSERT ( p3.getForegroundColor() == finalcut::fc::DarkBlue );
-  CPPUNIT_ASSERT ( p3.getBackgroundColor() == finalcut::fc::Grey66 );
+  CPPUNIT_ASSERT ( p3.getForegroundColor() == finalcut::FColor::DarkBlue );
+  CPPUNIT_ASSERT ( p3.getBackgroundColor() == finalcut::FColor::Grey66 );
 }
 
 //----------------------------------------------------------------------
@@ -149,18 +149,18 @@ void FColorPairTest::swapTest()
 {
   finalcut::FColorPair p1;
   p1.swap();
-  CPPUNIT_ASSERT ( p1.getForegroundColor() == finalcut::fc::Default );
-  CPPUNIT_ASSERT ( p1.getBackgroundColor() == finalcut::fc::Default );
+  CPPUNIT_ASSERT ( p1.getForegroundColor() == finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( p1.getBackgroundColor() == finalcut::FColor::Default );
 
-  finalcut::FColorPair p2 (finalcut::fc::LightBlue );
+  finalcut::FColorPair p2 (finalcut::FColor::LightBlue );
   p2.swap();
-  CPPUNIT_ASSERT ( p2.getForegroundColor() == finalcut::fc::Default );
-  CPPUNIT_ASSERT ( p2.getBackgroundColor() == finalcut::fc::LightBlue );
+  CPPUNIT_ASSERT ( p2.getForegroundColor() == finalcut::FColor::Default );
+  CPPUNIT_ASSERT ( p2.getBackgroundColor() == finalcut::FColor::LightBlue );
 
-  finalcut::FColorPair p3 (finalcut::fc::Cyan, finalcut::fc::White);
+  finalcut::FColorPair p3 (finalcut::FColor::Cyan, finalcut::FColor::White);
   p3.swap();
-  CPPUNIT_ASSERT ( p3.getForegroundColor() == finalcut::fc::White );
-  CPPUNIT_ASSERT ( p3.getBackgroundColor() == finalcut::fc::Cyan );
+  CPPUNIT_ASSERT ( p3.getForegroundColor() == finalcut::FColor::White );
+  CPPUNIT_ASSERT ( p3.getBackgroundColor() == finalcut::FColor::Cyan );
 }
 
 // Put the test suite in the registry

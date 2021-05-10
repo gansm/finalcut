@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -105,22 +105,20 @@ class FScrollView : public FWidget
                                     , bool = true ) override;
     bool                setCursorPos (const FPoint&) override;
     void                setPrintPos (const FPoint&) override;
-    bool                setViewportPrint (bool);
-    bool                setViewportPrint();
+    bool                setViewportPrint (bool = true);
     bool                unsetViewportPrint();
     void                resetColors() override;
-    bool                setBorder (bool);
-    bool                setBorder();
+    bool                setBorder (bool = true);
     bool                unsetBorder();
-    void                setHorizontalScrollBarMode (fc::scrollBarMode);
-    void                setVerticalScrollBarMode (fc::scrollBarMode);
+    void                setHorizontalScrollBarMode (ScrollBarMode);
+    void                setVerticalScrollBarMode (ScrollBarMode);
 
     // Inquiries
     bool                hasBorder() const;
     bool                isViewportPrint() const;
 
     // Methods
-    void                clearArea (int = ' ') override;
+    void                clearArea (wchar_t = L' ') override;
     void                scrollToX (int);
     void                scrollToY (int);
     void                scrollTo (const FPoint&);
@@ -149,12 +147,12 @@ class FScrollView : public FWidget
     void                copy2area();
 
   private:
-    // Typedefs
-    typedef std::unordered_map<int, std::function<void()>> KeyMap;
+    // Using-declaration
+    using KeyMap = std::unordered_map<FKey, std::function<void()>, FKeyHash>;
 
     // Constants
-    static constexpr int vertical_border_spacing = 2;
-    static constexpr int horizontal_border_spacing = 2;
+    static constexpr std::size_t vertical_border_spacing = 2;
+    static constexpr std::size_t horizontal_border_spacing = 2;
 
     // Accessors
     FPoint              getViewportCursorPos();
@@ -165,7 +163,7 @@ class FScrollView : public FWidget
     void                calculateScrollbarPos() const;
     template <typename Callback>
     void                initScrollbar ( FScrollbarPtr&
-                                      , fc::orientation
+                                      , Orientation
                                       , Callback );
     void                setHorizontalScrollBarVisibility() const;
     void                setVerticalScrollBarVisibility() const;
@@ -185,8 +183,8 @@ class FScrollView : public FWidget
     uInt8              nf_offset{0};
     bool               use_own_print_area{false};
     bool               update_scrollbar{true};
-    fc::scrollBarMode  v_mode{fc::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
-    fc::scrollBarMode  h_mode{fc::Auto};
+    ScrollBarMode      v_mode{ScrollBarMode::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
+    ScrollBarMode      h_mode{ScrollBarMode::Auto};
 };
 
 // FScrollView inline functions
@@ -231,16 +229,8 @@ inline int FScrollView::getScrollY() const
 { return viewport_geometry.getY(); }
 
 //----------------------------------------------------------------------
-inline bool FScrollView::setViewportPrint()
-{ return setViewportPrint(true); }
-
-//----------------------------------------------------------------------
 inline bool FScrollView::unsetViewportPrint()
 { return setViewportPrint(false); }
-
-//----------------------------------------------------------------------
-inline bool FScrollView::setBorder()
-{ return setBorder(true); }
 
 //----------------------------------------------------------------------
 inline bool FScrollView::unsetBorder()
@@ -270,7 +260,7 @@ inline void FScrollView::print (const FPoint& pos)
 //----------------------------------------------------------------------
 template <typename Callback>
 inline void FScrollView::initScrollbar ( FScrollbarPtr& bar
-                                       , fc::orientation o
+                                       , Orientation o
                                        , Callback cb_handler )
 {
   finalcut::initScrollbar (bar, o, this, cb_handler);

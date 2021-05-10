@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -27,6 +27,7 @@
 #include "final/fdialog.h"
 #include "final/fevent.h"
 #include "final/fkeyboard.h"
+#include "final/fmenubar.h"
 #include "final/fmenuitem.h"
 #include "final/fstatusbar.h"
 #include "final/ftooltip.h"
@@ -99,7 +100,7 @@ bool FDialog::setModal (bool enable)
   if ( enable )
   {
     setModalDialogCounter()++;
-    FTerm::getFKeyboard()->clearKeyBuffer();
+    FTerm::getFKeyboard().clearKeyBuffer();
   }
   else
     setModalDialogCounter()--;
@@ -111,7 +112,7 @@ bool FDialog::setModal (bool enable)
 //----------------------------------------------------------------------
 bool FDialog::setScrollable (bool enable)
 {
-  return (setFlags().scrollable = enable);
+  return ( setFlags().scrollable = enable );
 }
 
 
@@ -133,7 +134,7 @@ bool FDialog::setBorder (bool enable)
     setRightPadding(0);
   }
 
-  return (setFlags().no_border = ! enable);
+  return ( setFlags().no_border = ! enable );
 }
 
 //----------------------------------------------------------------------
@@ -189,9 +190,9 @@ void FDialog::hide()
 }
 
 //----------------------------------------------------------------------
-int FDialog::exec()
+FDialog::ResultCode FDialog::exec()
 {
-  result_code = FDialog::Reject;
+  result_code = ResultCode::Reject;
   show();
   return result_code;
 }
@@ -358,6 +359,7 @@ void FDialog::setSize (const FSize& size, bool adjust)
 
   const auto d_width = std::size_t(dw);
   const auto d_height = std::size_t(dh);
+  setTerminalUpdates (FVTerm::TerminalUpdate::Stop);
 
   // restoring the non-covered terminal areas
   if ( dw > 0 )
@@ -376,6 +378,8 @@ void FDialog::setSize (const FSize& size, bool adjust)
 
   // set the cursor to the focus widget
   setCursorToFocusWidget();
+
+  setTerminalUpdates (FVTerm::TerminalUpdate::Start);
 }
 
 //----------------------------------------------------------------------
@@ -459,9 +463,9 @@ void FDialog::onKeyPress (FKeyEvent* ev)
 
   cancelMouseResize();
 
-  if ( ev->key() == fc::Fckey_caret   // Ctrl+^ (Ctrl+6)
-    || ev->key() == fc::Fkey_f22      // Shift+F10
-    || ev->key() == fc::Fkey_smenu )  // Shift+Menu
+  if ( ev->key() == FKey::Ctrl_caret    // Ctrl+^ (Ctrl+6)
+    || ev->key() == FKey::F22           // Shift+F10
+    || ev->key() == FKey::Shift_menu )  // Shift+Menu
   {
     ev->accept();
     // open the titlebar menu
@@ -478,13 +482,13 @@ void FDialog::onKeyPress (FKeyEvent* ev)
     return;
 
   if ( ! ev->isAccepted()
-    && ( ev->key() == fc::Fkey_escape
-      || ev->key() == fc::Fkey_escape_mintty) )
+    && ( ev->key() == FKey::Escape
+      || ev->key() == FKey::Escape_mintty) )
   {
     ev->accept();
 
     if ( isModal() )
-      done (FDialog::Reject);
+      done (ResultCode::Reject);
     else
       close();
   }
@@ -506,7 +510,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 
   deactivateZoomButton();
 
-  if ( ev->getButton() == fc::LeftButton )
+  if ( ev->getButton() == MouseButton::Left )
   {
     // Click on titlebar or window: raise + activate
     raiseActivateDialog();
@@ -527,7 +531,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
     // Click on the lower right resize corner
     resizeMouseDown(ms);
   }
-  else  // ev->getButton() != fc::LeftButton
+  else  // ev->getButton() != MouseButton::Left
   {
     // Click on titlebar menu button
     if ( ms.mouse_x < 4 && ms.mouse_y == 1 && dialog_menu->isShown() )
@@ -537,14 +541,14 @@ void FDialog::onMouseDown (FMouseEvent* ev)
   }
 
   // Click on titlebar: just activate
-  if ( ev->getButton() == fc::RightButton
+  if ( ev->getButton() == MouseButton::Right
     && ms.mouse_x >= 4
     && ms.mouse_x <= width
     && ms.mouse_y == 1 )
       activateDialog();
 
   // Click on titlebar: lower + activate
-  if ( ev->getButton() == fc::MiddleButton
+  if ( ev->getButton() == MouseButton::Middle
     && ms.mouse_x >= 4 && ms.mouse_x <= width
     && ms.mouse_y == 1 )
       lowerActivateDialog();
@@ -562,7 +566,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
     false  // mouse_over_menu
   };
 
-  if ( ev->getButton() == fc::LeftButton )
+  if ( ev->getButton() == MouseButton::Left )
   {
     const int titlebar_x = titlebar_click_pos.getX();
     const int titlebar_y = titlebar_click_pos.getY();
@@ -611,7 +615,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
     isMouseOverMenu(ev->getTermPos())
   };
 
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   if ( ! titlebar_click_pos.isOrigin() )
@@ -623,7 +627,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 
   // Mouse event handover to the menu
   if ( ms.mouse_over_menu )
-    passEventToSubMenu (ms, std::move(*ev));
+    passEventToSubMenu (ms, *ev);
 
   leaveZoomButton(ms);    // Check zoom button pressed
   resizeMouseUpMove(ms);  // Resize the dialog
@@ -641,7 +645,7 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
     false  // mouse_over_menu
   };
 
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   const int x = getTermX();
@@ -664,7 +668,7 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
     setClickedWidget(nullptr);
 
     if ( isModal() )
-      done (FDialog::Reject);
+      done (ResultCode::Reject);
     else
       close();
   }
@@ -684,6 +688,14 @@ void FDialog::onAccel (FAccelEvent*)
 {
   if ( ! (isWindowHidden() || isWindowActive()) )
   {
+    const auto menu_bar = getMenuBar();
+
+    if ( menu_bar )
+    {
+      menu_bar->resetMenu();
+      menu_bar->redraw();
+    }
+
     const bool has_raised = raiseWindow();
     activateDialog();
 
@@ -754,14 +766,17 @@ void FDialog::onWindowLowered (FEvent*)
   if ( getWindowList()->empty() )
     return;
 
-  for (auto&& win : *getWindowList())
+  for (auto&& window : *getWindowList())
+  {
+    const auto win = static_cast<FWidget*>(window);
     putArea (win->getTermPos(), win->getVWin());
+  }
 }
 
 
 // protected methods of FDialog
 //----------------------------------------------------------------------
-void FDialog::done(int result)
+void FDialog::done (ResultCode result)
 {
   hide();
   result_code = result;
@@ -807,7 +822,7 @@ void FDialog::drawDialogShadow()
 void FDialog::onClose (FCloseEvent* ev)
 {
   ev->accept();
-  result_code = FDialog::Reject;
+  result_code = ResultCode::Reject;
 }
 
 
@@ -824,6 +839,7 @@ void FDialog::init()
   // Initialize geometry values
   setGeometry (FPoint{1, 1}, FSize{10, 10}, false);
   setMinimumSize (FSize{15, 4});
+  mapKeyFunctions();
   addDialog(this);
   setActiveWindow(this);
   setTransparentShadow();
@@ -944,6 +960,27 @@ void FDialog::initCloseMenuItem (FMenu* menu)
 }
 
 //----------------------------------------------------------------------
+inline void FDialog::mapKeyFunctions()
+{
+  key_map[FKey::Up]            = [this] () { moveUp(1); };
+  key_map[FKey::Down]          = [this] () { moveDown(1); };
+  key_map[FKey::Left]          = [this] () { moveLeft(1); };
+  key_map[FKey::Right]         = [this] () { moveRight(1); };
+  key_map[FKey::Meta_up]       = [this] () { reduceHeight(1); };
+  key_map[FKey::Shift_up]      = [this] () { reduceHeight(1); };
+  key_map[FKey::Meta_down]     = [this] () { expandHeight(1); };
+  key_map[FKey::Shift_down]    = [this] () { expandHeight(1); };
+  key_map[FKey::Meta_left]     = [this] () { reduceWidth(1); };
+  key_map[FKey::Shift_left]    = [this] () { reduceWidth(1); };
+  key_map[FKey::Meta_right]    = [this] () { expandWidth(1); };
+  key_map[FKey::Shift_right]   = [this] () { expandWidth(1); };
+  key_map[FKey::Return]        = [this] () { acceptMoveSize(); };
+  key_map[FKey::Enter]         = [this] () { acceptMoveSize(); };
+  key_map[FKey::Escape]        = [this] () { cancelMoveSize(); };
+  key_map[FKey::Escape_mintty] = [this] () { cancelMoveSize(); };
+}
+
+//----------------------------------------------------------------------
 void FDialog::drawBorder()
 {
   if ( ! hasBorder() )
@@ -965,15 +1002,15 @@ void FDialog::drawBorder()
     for (auto y = r.getY1() + 1; y < r.getY2(); y++)
     {
       print() << FPoint{r.getX1(), y}
-              << fc::NF_border_line_left        // border left ⎸
+              << UniChar::NF_border_line_left        // border left ⎸
               << FPoint{r.getX2(), y}
-              << fc::NF_rev_border_line_right;  // border right⎹
+              << UniChar::NF_rev_border_line_right;  // border right⎹
     }
 
     print() << r.getLowerLeftPos()
-            << fc::NF_border_corner_lower_left        // ⎣
-            << FString{r.getWidth() - 2, fc::NF_border_line_bottom}  // _
-            << fc::NF_rev_border_corner_lower_right;  // ⎦
+            << UniChar::NF_border_corner_lower_left        // ⎣
+            << FString{r.getWidth() - 2, UniChar::NF_border_line_bottom}  // _
+            << UniChar::NF_rev_border_corner_lower_right;  // ⎦
   }
   else
   {
@@ -1087,13 +1124,13 @@ inline void FDialog::drawRestoreSizeButton()
     if ( FTerm::isMonochron() )
     {
       print ('[');
-      print (fc::BlackDiamondSuit);  // ◆
+      print (UniChar::BlackDiamondSuit);  // ◆
       print (']');
     }
     else
     {
       print (' ');
-      print (fc::BlackDiamondSuit);  // ◆
+      print (UniChar::BlackDiamondSuit);  // ◆
       print (' ');
     }
   }
@@ -1111,13 +1148,13 @@ inline void FDialog::drawZoomedButton()
     if ( FTerm::isMonochron() )
     {
       print ('[');
-      print (fc::BlackUpPointingTriangle);  // ▲
+      print (UniChar::BlackUpPointingTriangle);  // ▲
       print (']');
     }
     else
     {
       print (' ');
-      print (fc::BlackUpPointingTriangle);  // ▲
+      print (UniChar::BlackUpPointingTriangle);  // ▲
       print (' ');
     }
   }
@@ -1141,10 +1178,11 @@ void FDialog::drawTextBar()
 
   const auto width = getWidth();
   const auto zoom_btn = getZoomButtonWidth();
+  const auto tb_width = width - MENU_BTN - zoom_btn;
   const auto length = getColumnWidth(tb_text);
 
   if ( width > length + MENU_BTN + zoom_btn )
-    center_offset = (width - length - MENU_BTN - zoom_btn) / 2;
+    center_offset = (tb_width - length) / 2;
 
   for ( ; x <= center_offset; x++)
     print (' ');
@@ -1152,12 +1190,13 @@ void FDialog::drawTextBar()
   // Print title bar text
   if ( ! tb_text.isEmpty() )
   {
-    if ( length <= width - MENU_BTN - zoom_btn )
+    if ( length <= tb_width )
       print (tb_text);
     else
     {
       // Print ellipsis
-      print (tb_text.left(width - MENU_BTN - zoom_btn - 2));
+      const auto len = getLengthFromColumnWidth (tb_text, tb_width - 2);
+      print (tb_text.left(len));
       print ("..");
     }
   }
@@ -1180,8 +1219,10 @@ void FDialog::restoreOverlaidWindows()
 
   bool overlaid{false};
 
-  for (auto&& win : *getWindowList())
+  for (auto&& window : *getWindowList())
   {
+    const auto win = static_cast<FWidget*>(window);
+
     if ( overlaid )
       putArea (win->getTermPos(), win->getVWin());
 
@@ -1361,7 +1402,7 @@ inline bool FDialog::isMouseOverMenu (const FPoint& termpos) const
 
 //----------------------------------------------------------------------
 inline void FDialog::passEventToSubMenu ( const MouseStates& ms
-                                        , const FMouseEvent&& ev )
+                                        , const FMouseEvent& ev )
 {
   // Mouse event handover to the dialog menu
   if ( ! ms.mouse_over_menu
@@ -1370,87 +1411,21 @@ inline void FDialog::passEventToSubMenu ( const MouseStates& ms
 
   const auto& g = ms.termPos;
   const auto& p = dialog_menu->termToWidgetPos(g);
-  const int b = ev.getButton();
-
-  try
-  {
-    const auto& _ev = \
-        std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, g, b);
-    dialog_menu->mouse_down = true;
-    setClickedWidget(dialog_menu);
-    dialog_menu->onMouseMove(_ev.get());
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FMouseEvent");
-    return;
-  }
+  const auto b = ev.getButton();
+  const auto& _ev = \
+      std::make_shared<FMouseEvent>(Event::MouseMove, p, g, b);
+  dialog_menu->mouse_down = true;
+  setClickedWidget(dialog_menu);
+  dialog_menu->onMouseMove(_ev.get());
 }
 
 //----------------------------------------------------------------------
 inline void FDialog::moveSizeKey (FKeyEvent* ev)
 {
-  switch ( ev->key() )
-  {
-    case fc::Fkey_up:
-      moveUp(1);
-      ev->accept();
-      break;
+  const auto& entry = key_map[ev->key()];
 
-    case fc::Fkey_down:
-      moveDown(1);
-      ev->accept();
-      break;
-
-    case fc::Fkey_left:
-      moveLeft(1);
-      ev->accept();
-      break;
-
-    case fc::Fkey_right:
-      moveRight(1);
-      ev->accept();
-      break;
-
-    case fc::Fmkey_up:
-    case fc::Fkey_sr:
-      reduceHeight(1);
-      ev->accept();
-      break;
-
-    case fc::Fmkey_down:
-    case fc::Fkey_sf:
-      expandHeight(1);
-      ev->accept();
-      break;
-
-    case fc::Fmkey_left:
-    case fc::Fkey_sleft:
-      reduceWidth(1);
-      ev->accept();
-      break;
-
-    case fc::Fmkey_right:
-    case fc::Fkey_sright:
-      expandWidth(1);
-      ev->accept();
-      break;
-
-    case fc::Fkey_return:
-    case fc::Fkey_enter:
-      acceptMoveSize();
-      ev->accept();
-      break;
-
-    case fc::Fkey_escape:
-    case fc::Fkey_escape_mintty:
-      cancelMoveSize();
-      ev->accept();
-      return;
-
-    default:
-      break;
-  }
+  if ( entry )
+    entry();
 
   // Accept for all, so that parent widgets will not receive keystrokes
   ev->accept();

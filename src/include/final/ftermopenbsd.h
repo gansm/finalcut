@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -47,7 +47,7 @@
   #define WSKBD_BELL_DOVOLUME 0x4  // get/set volume
   #define WSKBD_BELL_DOALL    0x7  // all of the above
 
-  typedef uInt32 kbd_t;
+  using kbd_t = uInt32;
 
   struct wskbd_bell_data
   {
@@ -64,9 +64,6 @@
 namespace finalcut
 {
 
-// class forward declaration
-class FSystem;
-
 //----------------------------------------------------------------------
 // class FTermOpenBSD
 //----------------------------------------------------------------------
@@ -74,18 +71,6 @@ class FSystem;
 class FTermOpenBSD final
 {
   public:
-    // Constructors
-    FTermOpenBSD() = default;
-
-    // Disable copy constructor
-    FTermOpenBSD (const FTermOpenBSD&) = delete;
-
-    // Destructor
-    ~FTermOpenBSD();
-
-    // Disable copy assignment operator (=)
-    FTermOpenBSD& operator = (const FTermOpenBSD&) = delete;
-
     // Accessor
     FString            getClassName() const;
 
@@ -110,12 +95,10 @@ class FTermOpenBSD final
     static bool        setBSDConsoleEncoding (kbd_t);
     static bool        setBSDConsoleMetaEsc();
     static bool        resetBSDConsoleEncoding();
-    static bool        isInitialized();
 
     // Data members
     static kbd_t       bsd_keyboard_encoding;
     static bool        meta_sends_escape;
-    static FSystem*    fsystem;
 #endif  // defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 };
 
@@ -134,9 +117,6 @@ inline void FTermOpenBSD::enableMetaSendsEscape()
 inline void FTermOpenBSD::disableMetaSendsEscape()
 { meta_sends_escape = false; }
 
-//----------------------------------------------------------------------
-inline bool FTermOpenBSD::isInitialized()
-{ return bool(fsystem); }
 #endif  // defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 
 }  // namespace finalcut

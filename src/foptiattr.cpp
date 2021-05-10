@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2020 Markus Gans                                      *
+* Copyright 2016-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -46,10 +46,6 @@ FOptiAttr::FOptiAttr()
   reset_byte_mask.attr.bit.no_changes = true;
   reset_byte_mask.attr.bit.printed = true;
 }
-
-//----------------------------------------------------------------------
-FOptiAttr::~FOptiAttr()  // destructor
-{ }
 
 
 // public methods of FOptiAttr
@@ -528,17 +524,19 @@ FColor FOptiAttr::vga2ansi (FColor color)
   // 1 1 1 0 | 1 0 1 1
   // 1 1 1 1 | 1 1 1 1
 
-  if ( color == fc::Default )
-    color = 0;
+  if ( color == FColor::Default )
+    color = FColor::Black;
   else if ( color < 16 )
   {
     constexpr std::array<FColor, 16> lookup_table =
     {{
-      0,  4,  2,  6,  1,  5,  3,  7,
-      8, 12, 10, 14,  9, 13, 11, 15
+      FColor(0), FColor(4),  FColor(2),  FColor(6),
+      FColor(1), FColor(5),  FColor(3),  FColor(7),
+      FColor(8), FColor(12), FColor(10), FColor(14),
+      FColor(9), FColor(13), FColor(11), FColor(15)
     }};
 
-    color = lookup_table[color];
+    color = lookup_table[uInt16(color)];
   }
 
   return color;
@@ -888,17 +886,17 @@ bool FOptiAttr::setTermAttributes ( FChar& term
 {
   if ( F_set_attributes.cap )
   {
-    const char* sgr = FTermcap::encodeParameter ( F_set_attributes.cap
-                                                , p1 && ! fake_reverse
-                                                , p2
-                                                , p3 && ! fake_reverse
-                                                , p4
-                                                , p5
-                                                , p6
-                                                , p7
-                                                , p8
-                                                , p9 );
-    append_sequence (sgr);
+    const auto sgr = FTermcap::encodeParameter ( F_set_attributes.cap
+                                               , p1 && ! fake_reverse
+                                               , p2
+                                               , p3 && ! fake_reverse
+                                               , p4
+                                               , p5
+                                               , p6
+                                               , p7
+                                               , p8
+                                               , p9 );
+    append_sequence (sgr.data());
     resetColor(term);
     term.attr.bit.standout      = p1;
     term.attr.bit.underline     = p2;
@@ -990,8 +988,8 @@ inline bool FOptiAttr::unsetTermPCcharset (FChar& term)
 //----------------------------------------------------------------------
 bool FOptiAttr::setTermDefaultColor (FChar& term)
 {
-  term.fg_color = fc::Default;
-  term.bg_color = fc::Default;
+  term.fg_color = FColor::Default;
+  term.bg_color = FColor::Default;
 
   if ( append_sequence(F_orig_pair.cap) )
     return true;
@@ -1096,8 +1094,8 @@ void FOptiAttr::setAttributesOff (FChar& term)
 //----------------------------------------------------------------------
 bool FOptiAttr::hasColor (const FChar& attr)
 {
-  if ( attr.fg_color == fc::Default
-    && attr.bg_color == fc::Default )
+  if ( attr.fg_color == FColor::Default
+    && attr.bg_color == FColor::Default )
     return false;
   else
     return true;
@@ -1131,20 +1129,20 @@ bool FOptiAttr::hasNoAttribute (const FChar& attr)
 inline bool FOptiAttr::hasColorChanged ( const FChar& term
                                        , const FChar& next ) const
 {
-  bool frev ( ( on.attr.bit.reverse
+  bool frev { ( on.attr.bit.reverse
              || on.attr.bit.standout
              || off.attr.bit.reverse
-             || off.attr.bit.standout ) && fake_reverse );
-  return bool ( frev
-             || term.fg_color != next.fg_color
-             || term.bg_color != next.bg_color );
+             || off.attr.bit.standout ) && fake_reverse };
+  return frev
+      || term.fg_color != next.fg_color
+      || term.bg_color != next.bg_color;
 }
 
 //----------------------------------------------------------------------
 inline void FOptiAttr::resetColor (FChar& attr) const
 {
-  attr.fg_color = fc::Default;
-  attr.bg_color = fc::Default;
+  attr.fg_color = FColor::Default;
+  attr.bg_color = FColor::Default;
 }
 
 //----------------------------------------------------------------------
@@ -1292,24 +1290,24 @@ void FOptiAttr::change_color (FChar& term, FChar& next)
 {
   if ( monochron )
   {
-    next.fg_color = fc::Default;
-    next.bg_color = fc::Default;
+    next.fg_color = FColor::Default;
+    next.bg_color = FColor::Default;
     return;
   }
 
-  if ( next.fg_color != fc::Default )
-    next.fg_color %= max_color;
+  if ( next.fg_color != FColor::Default )
+    next.fg_color %= uInt16(max_color);
 
-  if ( next.bg_color != fc::Default )
-    next.bg_color %= max_color;
+  if ( next.bg_color != FColor::Default )
+    next.bg_color %= uInt16(max_color);
 
   FColor fg = next.fg_color;
   FColor bg = next.bg_color;
 
-  if ( fg == fc::Default || bg == fc::Default )
+  if ( fg == FColor::Default || bg == FColor::Default )
     change_to_default_color (term, next, fg, bg);
 
-  if ( fake_reverse && fg == fc::Default && bg == fc::Default )
+  if ( fake_reverse && fg == FColor::Default && bg == FColor::Default )
     return;
 
   if ( fake_reverse
@@ -1317,7 +1315,7 @@ void FOptiAttr::change_color (FChar& term, FChar& next)
   {
     std::swap (fg, bg);
 
-    if ( fg == fc::Default || bg == fc::Default )
+    if ( fg == FColor::Default || bg == FColor::Default )
       setTermDefaultColor(term);
   }
 
@@ -1333,18 +1331,18 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
 {
   if ( ansi_default_color )
   {
-    if ( fg == fc::Default && term.fg_color != fc::Default
-      && bg == fc::Default && term.bg_color != fc::Default )
+    if ( fg == FColor::Default && term.fg_color != FColor::Default
+      && bg == FColor::Default && term.bg_color != FColor::Default )
     {
       setTermDefaultColor(term);
     }
-    else if ( fg == fc::Default && term.fg_color != fc::Default )
+    else if ( fg == FColor::Default && term.fg_color != FColor::Default )
     {
       std::string sgr_39{CSI "39m"};
       append_sequence (sgr_39.c_str());
-      term.fg_color = fc::Default;
+      term.fg_color = FColor::Default;
     }
-    else if ( bg == fc::Default && term.bg_color != fc::Default )
+    else if ( bg == FColor::Default && term.bg_color != FColor::Default )
     {
       const char* sgr_49;
       const auto& op = F_orig_pair.cap;
@@ -1355,14 +1353,14 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
         sgr_49 = CSI "49m";
 
       append_sequence (sgr_49);
-      term.bg_color = fc::Default;
+      term.bg_color = FColor::Default;
     }
   }
   else if ( ! setTermDefaultColor(term) )
   {
     // Fallback to gray on black
-    fg = next.fg_color = fc::LightGray;
-    bg = next.bg_color = fc::Black;
+    fg = next.fg_color = FColor::LightGray;
+    bg = next.bg_color = FColor::Black;
   }
 }
 
@@ -1370,7 +1368,6 @@ inline void FOptiAttr::change_to_default_color ( FChar& term, FChar& next
 inline void FOptiAttr::change_current_color ( const FChar& term
                                             , FColor fg, FColor bg )
 {
-  const char* color_str{};
   const auto& AF = F_set_a_foreground.cap;
   const auto& AB = F_set_a_background.cap;
   const auto& Sf = F_set_foreground.cap;
@@ -1388,36 +1385,36 @@ inline void FOptiAttr::change_current_color ( const FChar& term
 
     if ( term.fg_color != fg || frev )
     {
-      color_str = FTermcap::encodeParameter(AF, ansi_fg, 0, 0, 0, 0, 0, 0, 0, 0);
-      append_sequence (color_str);
+      const auto& color_str = FTermcap::encodeParameter(AF, uInt16(ansi_fg));
+      append_sequence (color_str.data());
     }
 
     if ( term.bg_color != bg || frev )
     {
-      color_str = FTermcap::encodeParameter(AB, ansi_bg, 0, 0, 0, 0, 0, 0, 0, 0);
-      append_sequence (color_str);
+      const auto& color_str = FTermcap::encodeParameter(AB, uInt16(ansi_bg));
+      append_sequence (color_str.data());
     }
   }
   else if ( Sf && Sb )
   {
     if ( term.fg_color != fg || frev )
     {
-      color_str = FTermcap::encodeParameter(Sf, fg, 0, 0, 0, 0, 0, 0, 0, 0);
-      append_sequence (color_str);
+      const auto& color_str = FTermcap::encodeParameter(Sf, uInt16(fg));
+      append_sequence (color_str.data());
     }
 
     if ( term.bg_color != bg || frev )
     {
-      color_str = FTermcap::encodeParameter(Sb, bg, 0, 0, 0, 0, 0, 0, 0, 0);
-      append_sequence (color_str);
+      const auto& color_str = FTermcap::encodeParameter(Sb, uInt16(bg));
+      append_sequence (color_str.data());
     }
   }
   else if ( sp )
   {
     fg = vga2ansi(fg);
     bg = vga2ansi(bg);
-    color_str = FTermcap::encodeParameter(sp, fg, bg, 0, 0, 0, 0, 0, 0, 0);
-    append_sequence (color_str);
+    const auto& color_str = FTermcap::encodeParameter(sp, uInt16(fg), uInt16(bg));
+    append_sequence (color_str.data());
   }
 }
 

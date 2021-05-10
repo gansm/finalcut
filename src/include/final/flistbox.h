@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -73,13 +73,13 @@ class FListBoxItem
 {
   public:
     // Constructors
-    FListBoxItem ();
+    FListBoxItem() = default;
     FListBoxItem (const FListBoxItem&);  // copy constructor
     template <typename DT = std::nullptr_t>
     explicit FListBoxItem (const FString&, DT&& = DT() );
 
     // Destructor
-    virtual ~FListBoxItem();
+    virtual ~FListBoxItem() noexcept;
 
     // copy copy assignment operator (=)
     FListBoxItem& operator = (const FListBoxItem&);
@@ -108,7 +108,7 @@ class FListBoxItem
     // Data members
     FString               text{};
     FDataAccessPtr        data_pointer{};
-    fc::brackets_type     brackets{fc::NoBrackets};
+    BracketType           brackets{BracketType::None};
     bool                  selected{false};
 
     // Friend classes
@@ -169,9 +169,7 @@ class FListBox : public FWidget
   public:
     // Using-declaration
     using FWidget::setGeometry;
-
-    // Typedef
-    typedef std::vector<FListBoxItem> FListBoxItems;
+    using FListBoxItems = std::vector<FListBoxItem>;
 
     // Constructor
     explicit FListBox (FWidget* = nullptr);
@@ -210,14 +208,13 @@ class FListBox : public FWidget
     void                 selectItem (FListBoxItems::iterator) const;
     void                 unselectItem (std::size_t);
     void                 unselectItem (FListBoxItems::iterator) const;
-    void                 showInsideBrackets (const std::size_t, fc::brackets_type);
+    void                 showInsideBrackets (const std::size_t, BracketType);
     void                 showNoBrackets (std::size_t);
     void                 showNoBrackets (FListBoxItems::iterator) const;
     void                 setSize (const FSize&, bool = true) override;
     void                 setGeometry ( const FPoint&, const FSize&
                                      , bool = true ) override;
-    void                 setMultiSelection (bool);
-    void                 setMultiSelection ();
+    void                 setMultiSelection (bool = true);
     void                 unsetMultiSelection ();
     bool                 setDisable() override;
     void                 setText (const FString&);
@@ -246,13 +243,13 @@ class FListBox : public FWidget
     template <typename T
             , typename DT = std::nullptr_t>
     void                 insert ( const std::initializer_list<T>& list
-                                , fc::brackets_type = fc::NoBrackets
+                                , BracketType = BracketType::None
                                 , bool = false
                                 , DT&& = DT() );
     template <typename ItemT
             , typename DT = std::nullptr_t>
     void                 insert ( const ItemT&
-                                , fc::brackets_type = fc::NoBrackets
+                                , BracketType = BracketType::None
                                 , bool = false
                                 , DT&& = DT() );
     void                 remove (std::size_t);
@@ -276,17 +273,17 @@ class FListBox : public FWidget
     void                 adjustSize() override;
 
   private:
-    // Typedefs
-    typedef std::unordered_map<int, std::function<void()>> KeyMap;
-    typedef std::unordered_map<int, std::function<bool()>> KeyMapResult;
-    typedef std::function<void(FListBoxItem&, FDataAccess*, std::size_t)> LazyInsert;
+    // Using-declaration
+    using KeyMap = std::unordered_map<FKey, std::function<void()>, FKeyHash>;
+    using KeyMapResult = std::unordered_map<FKey, std::function<bool()>, FKeyHash>;
+    using LazyInsert = std::function<void(FListBoxItem&, FDataAccess*, std::size_t)>;
 
     // Enumeration
-    enum convert_type
+    enum class ConvertType
     {
-      no_convert     = 0,
-      direct_convert = 1,
-      lazy_convert   = 2
+      None   = 0,
+      Direct = 1,
+      Lazy   = 2
     };
 
     // Accessors
@@ -306,23 +303,22 @@ class FListBox : public FWidget
     void                 drawHeadline();
     void                 drawList();
     void                 drawListLine (int, FListBoxItems::iterator, bool);
-    void                 printLeftBracket (fc::brackets_type);
-    void                 printRightBracket (fc::brackets_type);
+    void                 printLeftBracket (BracketType);
+    void                 printRightBracket (BracketType);
     void                 drawListBracketsLine (int, FListBoxItems::iterator, bool);
     void                 setLineAttributes (int, bool, bool, bool&);
     void                 unsetAttributes() const;
     void                 updateDrawing (bool, bool);
     void                 recalculateHorizontalBar (std::size_t, bool);
     void                 recalculateVerticalBar (std::size_t) const;
-    void                 getWidgetFocus();
     void                 multiSelection (std::size_t);
     void                 multiSelectionUpTo (std::size_t);
     void                 wheelUp (int);
     void                 wheelDown (int);
     bool                 dragScrollUp();
     bool                 dragScrollDown();
-    void                 dragUp (int);
-    void                 dragDown (int);
+    void                 dragUp (MouseButton);
+    void                 dragDown (MouseButton);
     void                 stopDragScroll();
     void                 prevListItem (int);
     void                 nextListItem (int);
@@ -367,8 +363,8 @@ class FListBox : public FWidget
     FString         inc_search{};
     KeyMap          key_map{};
     KeyMapResult    key_map_result{};
-    convert_type    conv_type{FListBox::no_convert};
-    fc::dragScroll  drag_scroll{fc::noScroll};
+    ConvertType     conv_type{ConvertType::None};
+    DragScrollMode  drag_scroll{DragScrollMode::None};
     int             scroll_repeat{100};
     int             scroll_distance{1};
     int             last_current{-1};
@@ -412,7 +408,7 @@ inline FListBox::FListBox ( Iterator first
 
   while ( first != last )
   {
-    insert(convert(first), fc::NoBrackets, false, &(*first));
+    insert(convert(first), BracketType::None, false, &(*first));
     ++first;
   }
 }
@@ -493,19 +489,15 @@ inline void FListBox::unselectItem (FListBoxItems::iterator iter) const
 
 //----------------------------------------------------------------------
 inline void FListBox::showNoBrackets (std::size_t index)
-{ index2iterator(index - 1)->brackets = fc::NoBrackets; }
+{ index2iterator(index - 1)->brackets = BracketType::None; }
 
 //----------------------------------------------------------------------
 inline void FListBox::showNoBrackets (FListBoxItems::iterator iter) const
-{ iter->brackets = fc::NoBrackets; }
+{ iter->brackets = BracketType::None; }
 
 //----------------------------------------------------------------------
 inline void FListBox::setMultiSelection (bool enable)
 { multi_select = enable; }
-
-//----------------------------------------------------------------------
-inline void FListBox::setMultiSelection()
-{ setMultiSelection(true); }
 
 //----------------------------------------------------------------------
 inline void FListBox::unsetMultiSelection()
@@ -529,11 +521,11 @@ inline bool FListBox::isMultiSelection() const
 
 //----------------------------------------------------------------------
 inline bool FListBox::hasBrackets(std::size_t index) const
-{ return bool(index2iterator(index - 1)->brackets > 0); }
+{ return index2iterator(index - 1)->brackets != BracketType::None; }
 
 //----------------------------------------------------------------------
 inline bool FListBox::hasBrackets(FListBoxItems::iterator iter) const
-{ return bool(iter->brackets > 0); }
+{ return iter->brackets != BracketType::None; }
 
 //----------------------------------------------------------------------
 inline void FListBox::reserve (std::size_t new_cap)
@@ -546,11 +538,11 @@ inline void FListBox::insert ( Iterator first
                              , Iterator last
                              , const InsertConverter& convert )
 {
-  conv_type = direct_convert;
+  conv_type = ConvertType::Direct;
 
   while ( first != last )
   {
-    insert (convert(first), fc::NoBrackets, false, &(*first));
+    insert (convert(first), BracketType::None, false, &(*first));
     ++first;
   }
 }
@@ -560,7 +552,7 @@ template <typename Container
         , typename LazyConverter>
 void FListBox::insert (const Container& container, const LazyConverter& converter)
 {
-  conv_type = lazy_convert;
+  conv_type = ConvertType::Lazy;
   source_container = makeFData(container);
   lazy_inserter = converter;
   const std::size_t size = container.size();
@@ -583,7 +575,7 @@ void FListBox::insert (Container* container, const LazyConverter& converter)
 template <typename T
         , typename DT>
 void FListBox::insert ( const std::initializer_list<T>& list
-                      , fc::brackets_type b
+                      , BracketType b
                       , bool s
                       , DT&& d )
 {
@@ -600,7 +592,7 @@ void FListBox::insert ( const std::initializer_list<T>& list
 template <typename ItemT
         , typename DT>
 void FListBox::insert ( const ItemT& item
-                      , fc::brackets_type b
+                      , BracketType b
                       , bool s
                       , DT&& d )
 {
@@ -612,11 +604,11 @@ void FListBox::insert ( const ItemT& item
 
 //----------------------------------------------------------------------
 inline bool FListBox::isHorizontallyScrollable() const
-{ return bool( max_line_width + 1 >= getClientWidth() ); }
+{ return max_line_width + 1 >= getClientWidth(); }
 
 //----------------------------------------------------------------------
 inline bool FListBox::isVerticallyScrollable() const
-{ return bool( getCount() > getClientHeight() ); }
+{ return getCount() > getClientHeight(); }
 
 //----------------------------------------------------------------------
 inline FListBox::FListBoxItems::iterator \

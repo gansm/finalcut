@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -28,7 +28,6 @@
 
 #include <final/final.h>
 
-namespace fc = finalcut::fc;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -47,7 +46,7 @@ class Listview final : public finalcut::FDialog
     Listview (const Listview&) = delete;
 
     // Destructor
-    ~Listview() override;
+    ~Listview() override = default;
 
     // Disable copy assignment operator (=)
     Listview& operator = (const Listview&) = delete;
@@ -55,6 +54,7 @@ class Listview final : public finalcut::FDialog
   private:
     // Method
     void populate();
+    void initLayout() override;
 
     // Event handlers
     void onClose (finalcut::FCloseEvent*) override;
@@ -71,9 +71,6 @@ class Listview final : public finalcut::FDialog
 Listview::Listview (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  // Set FListView geometry
-  listview.setGeometry(FPoint{2, 1}, FSize{33, 14});
-
   // Add columns to the view
   listview.addColumn ("City");
   listview.addColumn ("Condition");
@@ -82,19 +79,19 @@ Listview::Listview (finalcut::FWidget* parent)
   listview.addColumn ("Pressure", 10);
 
   // Set right alignment for the third, fourth, and fifth column
-  listview.setColumnAlignment (3, fc::alignRight);
-  listview.setColumnAlignment (4, fc::alignRight);
-  listview.setColumnAlignment (5, fc::alignRight);
+  listview.setColumnAlignment (3, finalcut::Align::Right);
+  listview.setColumnAlignment (4, finalcut::Align::Right);
+  listview.setColumnAlignment (5, finalcut::Align::Right);
 
   // Set the type of sorting
-  listview.setColumnSortType (1, fc::by_name);
-  listview.setColumnSortType (2, fc::by_name);
-  listview.setColumnSortType (3, fc::by_number);
-  listview.setColumnSortType (4, fc::by_number);
-  listview.setColumnSortType (5, fc::by_number);
+  listview.setColumnSortType (1, finalcut::SortType::Name);
+  listview.setColumnSortType (2, finalcut::SortType::Name);
+  listview.setColumnSortType (3, finalcut::SortType::Number);
+  listview.setColumnSortType (4, finalcut::SortType::Number);
+  listview.setColumnSortType (5, finalcut::SortType::Number);
 
   // Sort in ascending order by the 1st column
-  listview.setColumnSort (1, fc::ascending);
+  listview.setColumnSort (1, finalcut::SortOrder::Ascending);
   // Sorting follows later automatically on insert().
   // Otherwise you could start the sorting directly with sort()
 
@@ -105,7 +102,6 @@ Listview::Listview (finalcut::FWidget* parent)
   populate();
 
   // Quit button
-  quit.setGeometry(FPoint{24, 16}, FSize{10, 1});
   quit.setText (L"&Quit");
 
   // Add some function callbacks
@@ -123,10 +119,6 @@ Listview::Listview (finalcut::FWidget* parent)
     this, &Listview::cb_showInMessagebox
   );
 }
-
-//----------------------------------------------------------------------
-Listview::~Listview()  // destructor
-{ }
 
 //----------------------------------------------------------------------
 void Listview::populate()
@@ -184,6 +176,16 @@ void Listview::populate()
 }
 
 //----------------------------------------------------------------------
+void Listview::initLayout()
+{
+  // Set FListView geometry
+  listview.setGeometry(FPoint{2, 1}, FSize{33, 14});
+  // Set quit button geometry
+  quit.setGeometry(FPoint{24, 16}, FSize{10, 1});
+  FDialog::initLayout();
+}
+
+//----------------------------------------------------------------------
 void Listview::onClose (finalcut::FCloseEvent* ev)
 {
   finalcut::FApplication::closeConfirmationDialog (this, ev);
@@ -198,9 +200,9 @@ void Listview::cb_showInMessagebox()
                                "Temperature: " + item->getText(3) + "\n"
                                "   Humidity: " + item->getText(4) + "\n"
                                "   Pressure: " + item->getText(5)
-                             , finalcut::FMessageBox::Ok
-                             , finalcut::FMessageBox::Reject
-                             , finalcut::FMessageBox::Reject
+                             , finalcut::FMessageBox::ButtonType::Ok
+                             , finalcut::FMessageBox::ButtonType::Reject
+                             , finalcut::FMessageBox::ButtonType::Reject
                              , this );
   info.show();
 }

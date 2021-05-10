@@ -149,11 +149,11 @@ void FLoggerTest::defaultObjectTest()
   CPPUNIT_ASSERT ( buf.str() == "[INFO] Hello, World!\n\r\n" );
   buf.str("");  // Clear buffer
 
-  log << finalcut::FLog::Info << "Hello, World!" << std::flush;
+  log << finalcut::FLog::LogLevel::Info << "Hello, World!" << std::flush;
   CPPUNIT_ASSERT ( buf.str() == "[INFO] Hello, World!\r\n" );
   buf.str("");  // Clear buffer
 
-  log << finalcut::FLog::Warn << "Hello, World!" << std::flush;
+  log << finalcut::FLog::LogLevel::Warn << "Hello, World!" << std::flush;
   CPPUNIT_ASSERT ( buf.str() == "[WARNING] Hello, World!\r\n" );
   buf.str("");  // Clear buffer
 
@@ -161,7 +161,7 @@ void FLoggerTest::defaultObjectTest()
   CPPUNIT_ASSERT ( buf.str() == "[WARNING] Hello, World!\r\n" );
   buf.str("");  // Clear buffer
 
-  log << finalcut::FLog::Error << "Hello, World!" << std::flush;
+  log << finalcut::FLog::LogLevel::Error << "Hello, World!" << std::flush;
   CPPUNIT_ASSERT ( buf.str() == "[ERROR] Hello, World!\r\n" );
   buf.str("");  // Clear buffer
 
@@ -169,7 +169,7 @@ void FLoggerTest::defaultObjectTest()
   CPPUNIT_ASSERT ( buf.str() == "[ERROR] Hello, World!\r\n" );
   buf.str("");  // Clear buffer
 
-  log << finalcut::FLog::Debug << "Hello, World!" << std::flush;
+  log << finalcut::FLog::LogLevel::Debug << "Hello, World!" << std::flush;
   CPPUNIT_ASSERT ( buf.str() == "[DEBUG] Hello, World!\r\n" );
   buf.str("");  // Clear buffer
 
@@ -206,17 +206,17 @@ void FLoggerTest::lineEndingTest()
   CPPUNIT_ASSERT ( buf.str() == "[INFO] Line endings\r\n" );
   buf.str("");  // Clear buffer
 
-  log.setLineEnding(finalcut::FLog::LF);
+  log.setLineEnding(finalcut::FLog::LineEnding::LF);
   log.warn("Line endings");
   CPPUNIT_ASSERT ( buf.str() == "[WARNING] Line endings\n" );
   buf.str("");  // Clear buffer
 
-  log.setLineEnding(finalcut::FLog::CR);
+  log.setLineEnding(finalcut::FLog::LineEnding::CR);
   log.error("Line endings");
   CPPUNIT_ASSERT ( buf.str() == "[ERROR] Line endings\r" );
   buf.str("");  // Clear buffer
 
-  log.setLineEnding(finalcut::FLog::CRLF);
+  log.setLineEnding(finalcut::FLog::LineEnding::CRLF);
   log.debug("Line endings");
   CPPUNIT_ASSERT ( buf.str() == "[DEBUG] Line endings\r\n" );
   buf.str("");  // Clear buffer
@@ -258,17 +258,17 @@ void FLoggerTest::fileTest()
   {
     finalcut::FLogger log{};
     std::ofstream file_stream(filename, std::ofstream::out);
-    log.setLineEnding (finalcut::FLog::LF);
+    log.setLineEnding (finalcut::FLog::LineEnding::LF);
     log.setOutputStream(file_stream);
 
     log.info("test1");
     log.warn("test2");
     log.error("test3");
     log.debug("test4");
-    log << finalcut::FLog::Info << "streaming test1";
-    log << finalcut::FLog::Warn << "streaming test2";
-    log << finalcut::FLog::Error << "streaming test3";
-    log << finalcut::FLog::Debug << "streaming test4" << std::flush;
+    log << finalcut::FLog::LogLevel::Info << "streaming test1";
+    log << finalcut::FLog::LogLevel::Warn << "streaming test2";
+    log << finalcut::FLog::LogLevel::Error << "streaming test3";
+    log << finalcut::FLog::LogLevel::Debug << "streaming test4" << std::flush;
 
     if ( file_stream.is_open() )
       file_stream.close();
@@ -308,7 +308,7 @@ void FLoggerTest::fileTest()
   {
     finalcut::FLogger log{};
     log.setOutputStream(std::cerr);
-    log.setLineEnding (finalcut::FLog::LF);
+    log.setLineEnding (finalcut::FLog::LineEnding::LF);
     log.error("Cannot delete the test.log file");
   }
 }
@@ -347,16 +347,16 @@ void FLoggerTest::applicationObjectTest()
   CPPUNIT_ASSERT ( buf.str() == "[INFO] test5\r\n" );
   buf.str("");  // Clear buffer
 
-  *log << finalcut::FLog::Error << "test6" << std::flush;
+  *log << finalcut::FLog::LogLevel::Error << "test6" << std::flush;
   CPPUNIT_ASSERT ( buf.str() == "[ERROR] test6\r\n" );
   buf.str("");  // Clear buffer
 
   // Logging to std::clog
-  std::clog << finalcut::FLog::Info << "test7" << std::flush;
+  std::clog << finalcut::FLog::LogLevel::Info << "test7" << std::flush;
   CPPUNIT_ASSERT ( buf.str() == "[INFO] test7\r\n" );
   buf.str("");  // Clear buffer
 
-  std::clog << finalcut::FLog::Warn << "test8" << std::endl;
+  std::clog << finalcut::FLog::LogLevel::Warn << "test8" << std::endl;
   CPPUNIT_ASSERT ( buf.str() == "[WARNING] test8\n\r\n" );
   buf.str("");  // Clear buffer
 
@@ -382,11 +382,11 @@ void FLoggerTest::applicationObjectTest()
   buf.str("");  // Clear buffer
 
   // Logging to std::clog with the replaced logger
-  std::clog << finalcut::FLog::Info << "myLogger 5" << std::flush;
+  std::clog << finalcut::FLog::LogLevel::Info << "myLogger 5" << std::flush;
   CPPUNIT_ASSERT ( buf.str() == " Info: myLogger 5\n" );
   buf.str("");  // Clear buffer
 
-  std::clog << finalcut::FLog::Error << "myLogger 6" << std::endl;
+  std::clog << finalcut::FLog::LogLevel::Error << "myLogger 6" << std::endl;
   CPPUNIT_ASSERT ( buf.str() == "Error: myLogger 6\n\n" );
   buf.str("");  // Clear buffer
 

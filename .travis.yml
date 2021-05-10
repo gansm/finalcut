@@ -67,7 +67,7 @@ jobs:
         notification_email: guru.mail@muenster.de
         build_command_prepend: "autoreconf -v --install --force && ./configure --prefix=/usr CPPFLAGS='-DDEBUG' CXXFLAGS='-g -O0 -DDEBUG -DUNIT_TEST' --with-unit-test && make clean"
         build_command: "make V=1 -j10"
-        branch_pattern: master
+        branch_pattern: main
     before_install:
       - lsb_release -a
       - uname -a
@@ -154,3 +154,34 @@ jobs:
       - autoreconf -v --install --force
       - ./configure --prefix=/usr
       - make -j10
+
+  #
+  # FreeBSD
+  #
+  - os: freebsd
+    env:
+      - TEST="FreeBSD"
+    before_install:
+      - uname -a
+      - g++ --version
+      - sudo pkg install -y autoconf-archive
+    script:
+      - autoreconf -v --install --force
+      - ./configure --prefix=/usr
+      - make -j10
+
+  #
+  # Linux ARM64 build
+  #
+  - arch: arm64
+    os: linux
+    env:
+      - TEST="ARM64"
+    before_install:
+      - uname -a
+      - g++ --version
+    script:
+      - autoreconf -v --install --force
+      - ./configure --prefix=/usr
+      - make -j10
+

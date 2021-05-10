@@ -50,42 +50,27 @@ class FStyle
 {
   public:
     // Constructors
-    explicit FStyle (FAttribute attr = fc::Reset)
+    explicit FStyle (Style attr = Style::None)
       : attribute{attr}
     { }
-
-    // Copy constructor
-    FStyle (const FStyle& style)
-      : attribute{style.attribute}
-    { }
-
-    // Destructor
-    ~FStyle() = default;
-
-    // copy assignment operator (=)
-    FStyle& operator = (const FStyle& style)
-    {
-      attribute = style.attribute;
-      return *this;
-    }
 
     // Accessor
     FString getClassName() const
     { return "FStyle"; }
 
-    FColor getStyle() const
+    Style getStyle() const
     { return attribute; }
 
     // Mutators
     void setStyle (const FStyle& style)
     { attribute = style.attribute; }
 
-    void setStyle (FAttribute attr)
+    void setStyle (Style attr)
     { attribute = attr; }
 
   private:
     // Data members
-    FAttribute attribute;  // Save character attributes
+    Style attribute;  // Save character attributes
 };
 
 }  // namespace finalcut

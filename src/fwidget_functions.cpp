@@ -22,6 +22,7 @@
 
 #include "final/fapplication.h"
 #include "final/fcolorpair.h"
+#include "final/fstatusbar.h"
 #include "final/fstyle.h"
 #include "final/fwidget.h"
 #include "final/fwidgetcolors.h"
@@ -33,9 +34,9 @@ namespace finalcut
 //----------------------------------------------------------------------
 bool isFocusNextKey (const FKey key)
 {
-  if ( key == fc::Fkey_tab
-    || key == fc::Fkey_right
-    || key == fc::Fkey_down )
+  if ( key == FKey::Tab
+    || key == FKey::Right
+    || key == FKey::Down )
     return true;
 
   return false;
@@ -44,9 +45,9 @@ bool isFocusNextKey (const FKey key)
 //----------------------------------------------------------------------
 bool isFocusPrevKey (const FKey key)
 {
-  if ( key == fc::Fkey_btab
-    || key == fc::Fkey_left
-    || key == fc::Fkey_up )
+  if ( key == FKey::Back_tab
+    || key == FKey::Left
+    || key == FKey::Up )
     return true;
 
   return false;
@@ -65,7 +66,7 @@ FKey getHotkey (const FString& text)
   // e.g. "E&xit" returns 'x'
 
   if ( text.isEmpty() )
-    return 0;
+    return FKey::None;
 
   std::size_t i{0};
   const std::size_t length = text.getLength();
@@ -82,13 +83,13 @@ FKey getHotkey (const FString& text)
     }
     catch (const std::out_of_range&)
     {
-      return 0;
+      return FKey::None;
     }
 
     i++;
   }
 
-  return 0;
+  return FKey::None;
 }
 
 //----------------------------------------------------------------------
@@ -126,14 +127,14 @@ void setHotkeyViaString (FWidget* w, const FString& text)
   if ( hotkey > 0xff00 && hotkey < 0xff5f )  // full-width character
     hotkey -= 0xfee0;
 
-  if ( hotkey )
+  if ( hotkey != FKey::None )
   {
     if ( std::isalpha(int(hotkey)) || std::isdigit(int(hotkey)) )
     {
       w->addAccelerator (FKey(std::tolower(int(hotkey))));
       w->addAccelerator (FKey(std::toupper(int(hotkey))));
       // Meta + hotkey
-      w->addAccelerator (fc::Fmkey_meta + FKey(std::tolower(int(hotkey))));
+      w->addAccelerator (FKey::Meta_offset + FKey(std::tolower(int(hotkey))));
     }
     else
       w->addAccelerator (hotkey);
@@ -143,13 +144,31 @@ void setHotkeyViaString (FWidget* w, const FString& text)
 }
 
 //----------------------------------------------------------------------
+void setWidgetFocus (FWidget* widget)
+{
+  if ( ! widget || widget->hasFocus() )
+    return;
+
+  auto focused_widget = FWidget::getFocusWidget();
+  widget->setFocus();
+
+  if ( focused_widget && focused_widget->isWidget() )  // old focused widget
+    focused_widget->redraw();
+
+  widget->redraw();
+
+  if ( FWidget::getStatusBar() )
+    FWidget::getStatusBar()->drawMessage();
+}
+
+//----------------------------------------------------------------------
 void drawShadow (FWidget* w)
 {
   if ( FTerm::isMonochron() && ! w->flags.trans_shadow )
     return;
 
-  if ( (FTerm::getEncoding() == fc::VT100 && ! w->flags.trans_shadow)
-    || (FTerm::getEncoding() == fc::ASCII && ! w->flags.trans_shadow) )
+  if ( (FTerm::getEncoding() == Encoding::VT100 && ! w->flags.trans_shadow)
+    || (FTerm::getEncoding() == Encoding::ASCII && ! w->flags.trans_shadow) )
   {
     clearShadow(w);
     return;
@@ -169,26 +188,26 @@ void drawTransparentShadow (FWidget* w)
   const std::size_t width = w->getWidth();
   const std::size_t height = w->getHeight();
   const auto& wc = FWidget::getColorTheme();
-  w->print() << FStyle {fc::Transparent}
+  w->print() << FStyle {Style::Transparent}
              << FPoint {int(width) + 1, 1}
              << "  "
-             << FStyle {fc::Reset}
+             << FStyle {Style::None}
              << FColorPair {wc->shadow_bg, wc->shadow_fg}
-             << FStyle {fc::ColorOverlay};
+             << FStyle {Style::ColorOverlay};
 
   for (std::size_t y{1}; y < height; y++)
   {
     w->print() << FPoint{int(width) + 1, int(y) + 1} << "  ";
   }
 
-  w->print() << FStyle {fc::Reset} << FStyle {fc::Transparent}
+  w->print() << FStyle {Style::None} << FStyle {Style::Transparent}
              << FPoint {1, int(height) + 1}
              << "  "
-             << FStyle {fc::Reset}
+             << FStyle {Style::None}
              << FColorPair {wc->shadow_bg, wc->shadow_fg}
-             << FStyle {fc::ColorOverlay}
+             << FStyle {Style::ColorOverlay}
              << FString {width, L' '}
-             << FStyle {fc::Reset};
+             << FStyle {Style::None};
 
   if ( FTerm::isMonochron() )
     w->setReverse(false);
@@ -210,31 +229,31 @@ void drawBlockShadow (FWidget* w)
   if ( w->isWindowWidget() )
   {
     w->print() << FColorPair {wc->shadow_fg, wc->shadow_bg}
-               << FStyle {fc::InheritBackground};  // current background color will be ignored
+               << FStyle {Style::InheritBackground};  // current background color will be ignored
   }
   else if ( auto p = w->getParentWidget() )
     w->print() << FColorPair {wc->shadow_fg, p->getBackgroundColor()};
 
-  w->print (fc::LowerHalfBlock);  // ▄
+  w->print (UniChar::LowerHalfBlock);  // ▄
 
   if ( w->isWindowWidget() )
-    w->print() << FStyle {fc::InheritBackground};
+    w->print() << FStyle {Style::InheritBackground};
 
   for (std::size_t y{1}; y < height; y++)
   {
     w->print() << FPoint {int(width) + 1, int(y) + 1}
-               << fc::FullBlock;  // █
+               << UniChar::FullBlock;  // █
   }
 
   w->print() << FPoint {2, int(height) + 1};
 
   if ( w->isWindowWidget() )
-    w->print() << FStyle {fc::InheritBackground};
+    w->print() << FStyle {Style::InheritBackground};
 
-  w->print() << FString{width, fc::UpperHalfBlock};  // ▀
+  w->print() << FString{width, UniChar::UpperHalfBlock};  // ▀
 
   if ( w->isWindowWidget() )
-    w->print() << FStyle {fc::Reset};
+    w->print() << FStyle {Style::None};
 }
 
 //----------------------------------------------------------------------
@@ -250,7 +269,7 @@ void clearShadow (FWidget* w)
   if ( w->isWindowWidget() )
   {
     w->print() << FColorPair {wc->shadow_fg, wc->shadow_bg}
-               << FStyle {fc::InheritBackground};  // current background color will be ignored
+               << FStyle {Style::InheritBackground};  // current background color will be ignored
   }
   else if ( auto p = w->getParentWidget() )
     w->print() << FColorPair {wc->shadow_fg, p->getBackgroundColor()};
@@ -271,7 +290,7 @@ void clearShadow (FWidget* w)
   }
 
   if ( w->isWindowWidget() )
-    w->print() << FStyle {fc::Reset};
+    w->print() << FStyle {Style::None};
 }
 
 //----------------------------------------------------------------------
@@ -295,19 +314,19 @@ void drawFlatBorder (FWidget* w)
 
     if ( w->double_flatline_mask.left[uLong(y)] )
       // left+right line (on left side)
-      w->print (fc::NF_rev_border_line_right_and_left);
+      w->print (UniChar::NF_rev_border_line_right_and_left);
     else
       // right line (on left side)
-      w->print (fc::NF_rev_border_line_right);
+      w->print (UniChar::NF_rev_border_line_right);
 
     w->print() << FPoint {int(width) + 1, int(y) + 1};
 
     if ( w->double_flatline_mask.right[y] )
       // left+right line (on right side)
-      w->print (fc::NF_rev_border_line_right_and_left);
+      w->print (UniChar::NF_rev_border_line_right_and_left);
     else
       // left line (on right side)
-      w->print (fc::NF_border_line_left);
+      w->print (UniChar::NF_border_line_left);
   }
 
   w->print() << FPoint {1, 0};
@@ -316,10 +335,10 @@ void drawFlatBorder (FWidget* w)
   {
     if ( w->double_flatline_mask.top[x] )
       // top+bottom line (at top)
-      w->print (fc::NF_border_line_up_and_down);
+      w->print (UniChar::NF_border_line_up_and_down);
     else
       // bottom line (at top)
-      w->print (fc::NF_border_line_bottom);
+      w->print (UniChar::NF_border_line_bottom);
   }
 
   w->print() << FPoint {1, int(height) + 1};
@@ -328,10 +347,10 @@ void drawFlatBorder (FWidget* w)
   {
     if ( w->double_flatline_mask.bottom[x] )
       // top+bottom line (at bottom)
-      w->print (fc::NF_border_line_up_and_down);
+      w->print (UniChar::NF_border_line_up_and_down);
     else
       // top line (at bottom)
-      w->print (fc::NF_border_line_upper);
+      w->print (UniChar::NF_border_line_upper);
   }
 }
 
@@ -356,7 +375,7 @@ void clearFlatBorder (FWidget* w)
     w->print() << FPoint {0, int(y) + 1};
 
     if ( w->double_flatline_mask.left[y] )
-      w->print (fc::NF_border_line_left);
+      w->print (UniChar::NF_border_line_left);
     else
       w->print (' ');
 
@@ -364,7 +383,7 @@ void clearFlatBorder (FWidget* w)
     w->print() << FPoint {int(width) + 1, int(y) + 1};
 
     if ( w->double_flatline_mask.right[y] )
-      w->print (fc::NF_rev_border_line_right);
+      w->print (UniChar::NF_rev_border_line_right);
     else
       w->print (' ');
   }
@@ -375,7 +394,7 @@ void clearFlatBorder (FWidget* w)
   for (std::size_t x{0}; x < width; x++)
   {
     if ( w->double_flatline_mask.top[x] )
-      w->print (fc::NF_border_line_upper);
+      w->print (UniChar::NF_border_line_upper);
     else
       w->print (' ');
   }
@@ -386,7 +405,7 @@ void clearFlatBorder (FWidget* w)
   for (std::size_t x{0}; x < width; x++)
   {
     if ( w->double_flatline_mask.bottom[x] )
-      w->print (fc::NF_border_line_bottom);
+      w->print (UniChar::NF_border_line_bottom);
     else
       w->print (' ');
   }
@@ -447,22 +466,22 @@ inline void drawBox (FWidget* w, const FRect& r)
     return;
 
   w->print() << r.getUpperLeftPos()
-             << fc::BoxDrawingsDownAndRight   // ┌
-             << FString{r.getWidth() - 2, fc::BoxDrawingsHorizontal}  // ─
-             << fc::BoxDrawingsDownAndLeft;   // ┐
+             << UniChar::BoxDrawingsDownAndRight   // ┌
+             << FString{r.getWidth() - 2, UniChar::BoxDrawingsHorizontal}  // ─
+             << UniChar::BoxDrawingsDownAndLeft;   // ┐
 
   for (auto y = r.getY1() + 1; y < r.getY2(); y++)
   {
     w->print() << FPoint{r.getX1(), y}
-               << fc::BoxDrawingsVertical     // │
+               << UniChar::BoxDrawingsVertical     // │
                << FPoint{r.getX2(), y}
-               << fc::BoxDrawingsVertical;    // │
+               << UniChar::BoxDrawingsVertical;    // │
   }
 
   w->print() << r.getLowerLeftPos()
-             << fc::BoxDrawingsUpAndRight     // └
-             << FString{r.getWidth() - 2, fc::BoxDrawingsHorizontal}  // ─
-             << fc::BoxDrawingsUpAndLeft;     // ┘
+             << UniChar::BoxDrawingsUpAndRight     // └
+             << FString{r.getWidth() - 2, UniChar::BoxDrawingsHorizontal}  // ─
+             << UniChar::BoxDrawingsUpAndLeft;     // ┘
 }
 
 //----------------------------------------------------------------------
@@ -471,44 +490,44 @@ inline void drawNewFontBox (FWidget* w, const FRect& r)
   // Use new graphical font characters to draw a border
 
   w->print() << r.getUpperLeftPos()
-             << fc::NF_border_corner_middle_upper_left    // ┌
-             << FString{r.getWidth() - 2, fc::NF_border_line_horizontal}  // ─
-             << fc::NF_border_corner_middle_upper_right;  // ┐
+             << UniChar::NF_border_corner_middle_upper_left    // ┌
+             << FString{r.getWidth() - 2, UniChar::NF_border_line_horizontal}  // ─
+             << UniChar::NF_border_corner_middle_upper_right;  // ┐
 
   for (auto y = r.getY1() + 1; y < r.getY2(); y++)
   {
     w->print() << FPoint{r.getX1(), y}
-               << fc::NF_border_line_vertical   // │
+               << UniChar::NF_border_line_vertical   // │
                << FPoint{r.getX2(), y}
-               << fc::NF_border_line_vertical;  // │
+               << UniChar::NF_border_line_vertical;  // │
   }
 
   w->print() << r.getLowerLeftPos()
-             << fc::NF_border_corner_middle_lower_left    // └
-             << FString{r.getWidth() - 2, fc::NF_border_line_horizontal}  // ─
-             << fc::NF_border_corner_middle_lower_right;  // ┘
+             << UniChar::NF_border_corner_middle_lower_left    // └
+             << FString{r.getWidth() - 2, UniChar::NF_border_line_horizontal}  // ─
+             << UniChar::NF_border_corner_middle_lower_right;  // ┘
 }
 
 //----------------------------------------------------------------------
 inline void drawNewFontListBox (FWidget* w, const FRect& r)
 {
   w->print() << r.getUpperLeftPos()
-             << fc::NF_border_line_middle_left_down  // ┌
-             << FString{r.getWidth() - 2, fc::NF_border_line_horizontal}  // ─
-             << fc::NF_border_line_left_down;        // ╷
+             << UniChar::NF_border_line_middle_left_down  // ┌
+             << FString{r.getWidth() - 2, UniChar::NF_border_line_horizontal}  // ─
+             << UniChar::NF_border_line_left_down;        // ╷
 
   for (auto y = r.getY1() + 1; y < r.getY2(); y++)
   {
     w->print() << FPoint{r.getX1(), y}
-               << fc::NF_border_line_left   // border left ⎸
+               << UniChar::NF_border_line_left   // border left ⎸
                << FPoint{r.getX2(), y}
-               << fc::NF_border_line_left;  // border left ⎸
+               << UniChar::NF_border_line_left;  // border left ⎸
   }
 
   w->print() << r.getLowerLeftPos()
-             << fc::NF_border_line_middle_right_up  // └
-             << FString{r.getWidth() - 2, fc::NF_border_line_horizontal}  // ─
-             << fc::NF_border_line_left_up;         // ╵
+             << UniChar::NF_border_line_middle_right_up  // └
+             << FString{r.getWidth() - 2, UniChar::NF_border_line_horizontal}  // ─
+             << UniChar::NF_border_line_left_up;         // ╵
 }
 
 }  // namespace finalcut

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -54,7 +54,6 @@ FStatusBar*           FWidget::statusbar{nullptr};
 FMenuBar*             FWidget::menubar{nullptr};
 FWidget*              FWidget::show_root_widget{nullptr};
 FWidget*              FWidget::redraw_root_widget{nullptr};
-FWidget::FWidgetList* FWidget::window_list{nullptr};
 FWidget::FWidgetList* FWidget::dialog_list{nullptr};
 FWidget::FWidgetList* FWidget::always_on_top_list{nullptr};
 FWidget::FWidgetList* FWidget::close_widget{nullptr};
@@ -85,8 +84,8 @@ FWidget::FWidget (FWidget* parent)
   {
     if ( internal::var::root_widget )
     {
-      auto ftermdata = FTerm::getFTermData();
-      ftermdata->setExitMessage("FWidget: No parent defined! "
+      auto& fterm_data = FTerm::getFTermData();
+      fterm_data.setExitMessage("FWidget: No parent defined! "
                                 "There should be only one root object");
       FApplication::exit(EXIT_FAILURE);
       return;
@@ -176,6 +175,13 @@ FWidget* FWidget::getParentWidget() const
 }
 
 //----------------------------------------------------------------------
+auto FWidget::getColorTheme() -> std::shared_ptr<FWidgetColors>&
+{
+  static const auto& color_theme = make_unique<std::shared_ptr<FWidgetColors>>();
+  return *color_theme;
+}
+
+//----------------------------------------------------------------------
 FWidget* FWidget::getFirstFocusableWidget (FObjectList list)
 {
   if ( list.empty() )
@@ -225,25 +231,25 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList list)
 }
 
 //----------------------------------------------------------------------
-std::vector<bool>& FWidget::doubleFlatLine_ref (fc::sides side)
+std::vector<bool>& FWidget::doubleFlatLine_ref (Side side)
 {
-  assert ( side == fc::top
-        || side == fc::right
-        || side == fc::bottom
-        || side == fc::left );
+  assert ( side == Side::Top
+        || side == Side::Right
+        || side == Side::Bottom
+        || side == Side::Left );
 
   switch ( side )
   {
-    case fc::top:
+    case Side::Top:
       return double_flatline_mask.top;
 
-    case fc::right:
+    case Side::Right:
       return double_flatline_mask.right;
 
-    case fc::bottom:
+    case Side::Bottom:
       return double_flatline_mask.bottom;
 
-    case fc::left:
+    case Side::Left:
       return double_flatline_mask.left;
   }
 
@@ -548,7 +554,12 @@ void FWidget::setBottomPadding (int bottom, bool adjust)
     if ( isRootWidget() )
     {
       auto r = internal::var::root_widget;
-      r->wclient_offset.setY2 (int(r->getHeight()) - 1 - r->padding.bottom);
+      auto root_height = int(r->getHeight());
+      auto root_pb = r->padding.bottom;
+
+      if ( root_height > 1 + root_pb )
+        r->wclient_offset.setY2 (root_height - 1 - root_pb);
+
       adjustSizeGlobal();
     }
     else
@@ -569,7 +580,12 @@ void FWidget::setRightPadding (int right, bool adjust)
     if ( isRootWidget() )
     {
       auto r = internal::var::root_widget;
-      r->wclient_offset.setX2  (int(r->getWidth()) - 1 - r->padding.right);
+      auto root_width = int(r->getWidth());
+      auto root_pr = r->padding.right;
+
+      if ( root_width > 1 + root_pr )
+        r->wclient_offset.setX2  (root_width - 1 - root_pr);
+
       adjustSizeGlobal();
     }
     else
@@ -655,15 +671,16 @@ bool FWidget::setCursorPos (const FPoint& pos)
 
   const auto& area = getPrintArea();
 
-  if ( area->widget )
+  if ( area->hasOwner() )
   {
-    int woffsetX = getTermX() - area->widget->getTermX();
-    int woffsetY = getTermY() - area->widget->getTermY();
+    const auto area_owner = area->getOwner<FWidget*>();
+    int woffsetX = getTermX() - area_owner->getTermX();
+    int woffsetY = getTermY() - area_owner->getTermY();
 
     if ( isChildPrintArea() )
     {
-      woffsetX += (1 - area->widget->getLeftPadding());
-      woffsetY += (1 - area->widget->getTopPadding());
+      woffsetX += (1 - area_owner->getLeftPadding());
+      woffsetY += (1 - area_owner->getTopPadding());
     }
 
     bool visible = ! isCursorHideable() || flags.visible_cursor;
@@ -686,33 +703,33 @@ void FWidget::setPrintPos (const FPoint& pos)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setDoubleFlatLine (fc::sides side, bool bit)
+void FWidget::setDoubleFlatLine (Side side, bool bit)
 {
   uLong length{};
 
-  assert ( side == fc::top
-        || side == fc::right
-        || side == fc::bottom
-        || side == fc::left );
+  assert ( side == Side::Top
+        || side == Side::Right
+        || side == Side::Bottom
+        || side == Side::Left );
 
   switch ( side )
   {
-    case fc::top:
+    case Side::Top:
       length = double_flatline_mask.top.size();
       double_flatline_mask.top.assign(length, bit);
       break;
 
-    case fc::right:
+    case Side::Right:
       length = double_flatline_mask.right.size();
       double_flatline_mask.right.assign(length, bit);
       break;
 
-    case fc::bottom:
+    case Side::Bottom:
       length = double_flatline_mask.bottom.size();
       double_flatline_mask.bottom.assign(length, bit);
       break;
 
-    case fc::left:
+    case Side::Left:
       length = double_flatline_mask.left.size();
       double_flatline_mask.left.assign(length, bit);
       break;
@@ -720,12 +737,12 @@ void FWidget::setDoubleFlatLine (fc::sides side, bool bit)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setDoubleFlatLine (fc::sides side, int pos, bool bit)
+void FWidget::setDoubleFlatLine (Side side, int pos, bool bit)
 {
-  assert ( side == fc::top
-        || side == fc::right
-        || side == fc::bottom
-        || side == fc::left );
+  assert ( side == Side::Top
+        || side == Side::Right
+        || side == Side::Bottom
+        || side == Side::Left );
 
   assert ( pos >= 1 );
 
@@ -734,7 +751,7 @@ void FWidget::setDoubleFlatLine (fc::sides side, int pos, bool bit)
 
   switch ( side )
   {
-    case fc::top:
+    case Side::Top:
       length = double_flatline_mask.top.size();
 
       if ( index < length )
@@ -742,7 +759,7 @@ void FWidget::setDoubleFlatLine (fc::sides side, int pos, bool bit)
 
       break;
 
-    case fc::right:
+    case Side::Right:
       length = double_flatline_mask.right.size();
 
       if ( index < length )
@@ -750,7 +767,7 @@ void FWidget::setDoubleFlatLine (fc::sides side, int pos, bool bit)
 
       break;
 
-    case fc::bottom:
+    case Side::Bottom:
       length = double_flatline_mask.bottom.size();
 
       if ( index < length )
@@ -758,7 +775,7 @@ void FWidget::setDoubleFlatLine (fc::sides side, int pos, bool bit)
 
       break;
 
-    case fc::left:
+    case Side::Left:
       length = double_flatline_mask.left.size();
 
       if ( index < length )
@@ -823,7 +840,7 @@ bool FWidget::close()
 {
   // Sends a close event and quits the application on acceptance
 
-  FCloseEvent ev(fc::Close_Event);
+  FCloseEvent ev(Event::Close);
   FApplication::sendEvent(this, &ev);
 
   if ( ev.isAccepted() )
@@ -923,7 +940,7 @@ void FWidget::resize()
   if ( isRootWidget() )
   {
     const FRect old_term_geometry {getTermGeometry()};
-    detectTermSize();
+    determineDesktopSize();
     FRect term_geometry {getTermGeometry()};
     term_geometry.move (-1, -1);
 
@@ -932,7 +949,9 @@ void FWidget::resize()
 
     resizeVTerm (term_geometry.getSize());
     resizeArea (term_geometry, getShadow(), getVirtualDesktop());
+    startDrawing();  // Avoid flickering - no update during adjustment
     adjustSizeGlobal();
+    finishDrawing();
   }
   else
     adjustSize();
@@ -949,7 +968,7 @@ void FWidget::show()
 {
   // Make the widget visible and draw it
 
-  if ( ! isVisible() || FApplication::isQuit() )
+  if ( ! isVisible() || isShown() || FApplication::isQuit() )
     return;
 
   // Initialize desktop on first call
@@ -962,8 +981,9 @@ void FWidget::show()
     show_root_widget = this;
   }
 
-  adjustSize();  // Alignment before drawing
-  draw();        // Draw the widget
+  initWidgetLayout();  // Makes initial layout settings
+  adjustSize();        // Alignment before drawing
+  draw();              // Draw the widget
   flags.hidden = false;
   flags.shown = true;
 
@@ -971,10 +991,10 @@ void FWidget::show()
   {
     for (auto&& child : getChildren())
     {
-      auto widget = static_cast<FWidget*>(child);
+      auto child_widget = static_cast<FWidget*>(child);
 
-      if ( child->isWidget() && ! widget->flags.hidden )
-        widget->show();
+      if ( child->isWidget() && ! child_widget->flags.hidden )
+        child_widget->show();
     }
   }
 
@@ -985,7 +1005,7 @@ void FWidget::show()
     show_root_widget = nullptr;
   }
 
-  FShowEvent show_ev (fc::Show_Event);
+  FShowEvent show_ev (Event::Show);
   FApplication::sendEvent(this, &show_ev);
 }
 
@@ -1015,7 +1035,7 @@ void FWidget::hide()
       FWidget::setFocusWidget(getParentWidget());
     }
 
-    FHideEvent hide_ev (fc::Hide_Event);
+    FHideEvent hide_ev (Event::Hide);
     FApplication::sendEvent(this, &hide_ev);
   }
 }
@@ -1149,12 +1169,12 @@ FVTerm::FTermArea* FWidget::getPrintArea()
 
 //----------------------------------------------------------------------
 void FWidget::addPreprocessingHandler ( const FVTerm* instance
-                                      , const FPreprocessingFunction& function )
+                                      , FPreprocessingFunction&& function )
 {
   if ( ! getCurrentPrintArea() )
     FWidget::getPrintArea();
 
-  FVTerm::addPreprocessingHandler (instance, function);
+  FVTerm::addPreprocessingHandler (instance, std::move(function));
 }
 
 //----------------------------------------------------------------------
@@ -1275,6 +1295,13 @@ void FWidget::initDesktop()
 }
 
 //----------------------------------------------------------------------
+void FWidget::initLayout()
+{
+  // This method must be reimplemented in a subclass to automatically
+  // set the widget layouts, before the initial drawing on the terminal
+}
+
+//----------------------------------------------------------------------
 void FWidget::adjustSize()
 {
   if ( ! isRootWidget() )
@@ -1334,10 +1361,12 @@ void FWidget::adjustSizeGlobal()
     return;
   }
 
-  if ( window_list && ! window_list->empty() )
+  adjustSize();  // Root widget / FApplication object
+
+  if ( getWindowList() && ! getWindowList()->empty() )
   {
-    for (auto&& window : *window_list)
-      window->adjustSize();
+    for (auto&& window : *getWindowList())
+      static_cast<FWidget*>(window)->adjustSize();
   }
 }
 
@@ -1428,7 +1457,7 @@ bool FWidget::focusNextChild()
            || ! next->isShown()
            || next->isWindowWidget() );
 
-    bool accpt = changeFocus (next, parent, fc::FocusNextWidget);
+    bool accpt = changeFocus (next, parent, FocusTypes::NextWidget);
 
     if ( ! accpt )
       return false;
@@ -1489,7 +1518,7 @@ bool FWidget::focusPrevChild()
            || ! prev->isShown()
            || prev->isWindowWidget() );
 
-    const bool accpt = changeFocus (prev, parent, fc::FocusPreviousWidget);
+    const bool accpt = changeFocus (prev, parent, FocusTypes::PreviousWidget);
 
     if ( ! accpt )
       return false;
@@ -1504,84 +1533,83 @@ bool FWidget::focusPrevChild()
 //----------------------------------------------------------------------
 bool FWidget::event (FEvent* ev)
 {
-  switch ( uInt(ev->getType()) )
+  if ( ev->getType() == Event::KeyPress )
   {
-    case fc::KeyPress_Event:
-      KeyPressEvent (static_cast<FKeyEvent*>(ev));
-      break;
-
-    case fc::KeyUp_Event:
-      onKeyUp (static_cast<FKeyEvent*>(ev));
-      break;
-
-    case fc::KeyDown_Event:
-      KeyDownEvent (static_cast<FKeyEvent*>(ev));
-      break;
-
-    case fc::MouseDown_Event:
-      emitCallback("mouse-press");
-      onMouseDown (static_cast<FMouseEvent*>(ev));
-      break;
-
-    case fc::MouseUp_Event:
-      emitCallback("mouse-release");
-      onMouseUp (static_cast<FMouseEvent*>(ev));
-      break;
-
-    case fc::MouseDoubleClick_Event:
-      onMouseDoubleClick (static_cast<FMouseEvent*>(ev));
-      break;
-
-    case fc::MouseWheel_Event:
-      emitWheelCallback(static_cast<FWheelEvent*>(ev));
-      onWheel (static_cast<FWheelEvent*>(ev));
-      break;
-
-    case fc::MouseMove_Event:
-      emitCallback("mouse-move");
-      onMouseMove (static_cast<FMouseEvent*>(ev));
-      break;
-
-    case fc::FocusIn_Event:
-      emitCallback("focus-in");
-      onFocusIn (static_cast<FFocusEvent*>(ev));
-      break;
-
-    case fc::FocusOut_Event:
-      emitCallback("focus-out");
-      onFocusOut (static_cast<FFocusEvent*>(ev));
-      break;
-
-    case fc::ChildFocusIn_Event:
-      onChildFocusIn (static_cast<FFocusEvent*>(ev));
-      break;
-
-    case fc::ChildFocusOut_Event:
-      onChildFocusOut (static_cast<FFocusEvent*>(ev));
-      break;
-
-    case fc::Accelerator_Event:
-      onAccel (static_cast<FAccelEvent*>(ev));
-      break;
-
-    case fc::Resize_Event:
-      onResize (static_cast<FResizeEvent*>(ev));
-      break;
-
-    case fc::Show_Event:
-      onShow (static_cast<FShowEvent*>(ev));
-      break;
-
-    case fc::Hide_Event:
-      onHide (static_cast<FHideEvent*>(ev));
-      break;
-
-    case fc::Close_Event:
-      onClose (static_cast<FCloseEvent*>(ev));
-      break;
-
-    default:
-      return FObject::event(ev);
+    KeyPressEvent (static_cast<FKeyEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::KeyUp )
+  {
+    onKeyUp (static_cast<FKeyEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::KeyDown )
+  {
+    KeyDownEvent (static_cast<FKeyEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::MouseDown )
+  {
+    emitCallback("mouse-press");
+    onMouseDown (static_cast<FMouseEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::MouseUp )
+  {
+    emitCallback("mouse-release");
+    onMouseUp (static_cast<FMouseEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::MouseDoubleClick )
+  {
+    onMouseDoubleClick (static_cast<FMouseEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::MouseWheel )
+  {
+    emitWheelCallback(static_cast<FWheelEvent*>(ev));
+    onWheel (static_cast<FWheelEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::MouseMove )
+  {
+    emitCallback("mouse-move");
+    onMouseMove (static_cast<FMouseEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::FocusIn )
+  {
+    emitCallback("focus-in");
+    onFocusIn (static_cast<FFocusEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::FocusOut )
+  {
+    emitCallback("focus-out");
+    onFocusOut (static_cast<FFocusEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::ChildFocusIn )
+  {
+    onChildFocusIn (static_cast<FFocusEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::ChildFocusOut )
+  {
+    onChildFocusOut (static_cast<FFocusEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::Accelerator )
+  {
+    onAccel (static_cast<FAccelEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::Resize )
+  {
+    onResize (static_cast<FResizeEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::Show )
+  {
+    onShow (static_cast<FShowEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::Hide )
+  {
+    onHide (static_cast<FHideEvent*>(ev));
+  }
+  else if ( ev->getType() == Event::Close )
+  {
+    onClose (static_cast<FCloseEvent*>(ev));
+  }
+  else
+  {
+    return FObject::event(ev);
   }
 
   return true;
@@ -1717,10 +1745,13 @@ void FWidget::determineDesktopSize()
   // Determine width and height of the terminal
 
   detectTermSize();
-  wsize.setRect(1, 1, getDesktopWidth(), getDesktopHeight());
+  auto width = getDesktopWidth();
+  auto height = getDesktopHeight();
+  wsize.setRect(1, 1, width, height);
   adjust_wsize = wsize;
-  woffset.setRect(0, 0, getDesktopWidth(), getDesktopHeight());
-  wclient_offset = woffset;
+  woffset.setRect(0, 0, width, height);
+  auto r = internal::var::root_widget;
+  wclient_offset.setRect(r->padding.left, r->padding.top, width, height);
 }
 
 //----------------------------------------------------------------------
@@ -1729,7 +1760,6 @@ void FWidget::initRootWidget()
   try
   {
     // Initialize widget lists
-    window_list        = new FWidgetList();
     dialog_list        = new FWidgetList();
     always_on_top_list = new FWidgetList();
     close_widget       = new FWidgetList();
@@ -1756,6 +1786,24 @@ void FWidget::initRootWidget()
 }
 
 //----------------------------------------------------------------------
+void FWidget::initWidgetLayout()
+{
+  initLayout();
+
+  if ( ! hasChildren() )
+    return;
+
+  for (auto&& child : getChildren())
+  {
+    if ( child->isWidget() )
+    {
+      auto widget = static_cast<FWidget*>(child);
+      widget->initWidgetLayout();
+    }
+  }
+}
+
+//----------------------------------------------------------------------
 void FWidget::finish()
 {
   if ( close_widget )
@@ -1775,14 +1823,6 @@ void FWidget::finish()
     delete always_on_top_list;
     always_on_top_list = nullptr;
   }
-
-  if ( window_list )
-  {
-    delete window_list;
-    window_list = nullptr;
-  }
-
-  destroyColorTheme();
 }
 
 //----------------------------------------------------------------------
@@ -1839,29 +1879,24 @@ inline void FWidget::insufficientSpaceAdjust()
 //----------------------------------------------------------------------
 void FWidget::KeyPressEvent (FKeyEvent* kev)
 {
+  auto change_focus = [this] (const FKey key)
+  {
+    if ( isFocusNextKey(key) )
+      return focusNextChild();
+    else if ( isFocusPrevKey(key) )
+      return focusPrevChild();
+
+    return false;
+  };
+
   FWidget* widget(this);
 
   while ( widget )
   {
     widget->onKeyPress(kev);
 
-    if ( ! kev->isAccepted() )
-    {
-      const FKey key = kev->key();
-
-      if ( [this, &key] ()
-           {
-             if ( isFocusNextKey(key) )
-               return focusNextChild();
-             else if ( isFocusPrevKey(key) )
-               return focusPrevChild();
-
-             return false;
-           }() )
-      {
-        return;
-      }
-    }
+    if ( ! kev->isAccepted() && change_focus(kev->key()) )
+      return;
 
     if ( kev->isAccepted()
       || widget->isRootWidget()
@@ -1891,11 +1926,11 @@ void FWidget::KeyDownEvent (FKeyEvent* kev)
 //----------------------------------------------------------------------
 void FWidget::emitWheelCallback (const FWheelEvent* ev) const
 {
-  const int wheel = ev->getWheel();
+  const MouseWheel wheel = ev->getWheel();
 
-  if ( wheel == fc::WheelUp )
+  if ( wheel == MouseWheel::Up )
     emitCallback("mouse-wheel-up");
-  else if ( wheel == fc::WheelDown )
+  else if ( wheel == MouseWheel::Down )
     emitCallback("mouse-wheel-down");
 }
 
@@ -1926,13 +1961,13 @@ void FWidget::setWindowFocus (bool enable)
 
 //----------------------------------------------------------------------
 bool FWidget::changeFocus ( FWidget* follower, FWidget* parent
-                          , fc::FocusTypes ft )
+                          , FocusTypes ft )
 {
-  FFocusEvent out (fc::FocusOut_Event);
+  FFocusEvent out (Event::FocusOut);
   out.setFocusType(ft);
   FApplication::sendEvent(this, &out);
 
-  FFocusEvent cfo (fc::ChildFocusOut_Event);
+  FFocusEvent cfo (Event::ChildFocusOut);
   cfo.setFocusType(ft);
   cfo.ignore();
   FApplication::sendEvent(parent, &cfo);
@@ -1946,10 +1981,10 @@ bool FWidget::changeFocus ( FWidget* follower, FWidget* parent
       return false;
 
     follower->setFocus();
-    FFocusEvent cfi (fc::ChildFocusIn_Event);
+    FFocusEvent cfi (Event::ChildFocusIn);
     FApplication::sendEvent(parent, &cfi);
 
-    FFocusEvent in (fc::FocusIn_Event);
+    FFocusEvent in (Event::FocusIn);
     in.setFocusType(ft);
     FApplication::sendEvent(follower, &in);
 
@@ -1975,24 +2010,26 @@ void FWidget::drawWindows() const
 {
   // redraw windows
   FChar default_char{};
-  default_char.ch[0]        = ' ';
-  default_char.fg_color     = fc::Black;
-  default_char.bg_color     = fc::Black;
+  default_char.ch[0]        = L' ';
+  default_char.fg_color     = FColor::Black;
+  default_char.bg_color     = FColor::Black;
   default_char.attr.byte[0] = 0;
   default_char.attr.byte[1] = 0;
 
-  if ( ! window_list || window_list->empty() )
+  if ( ! getWindowList() || getWindowList()->empty() )
     return;
 
-  for (auto&& window : *window_list)
+  for (auto&& window : *getWindowList())
   {
-    if ( window->isShown() )
+    const auto win = static_cast<FWidget*>(window);
+
+    if ( win->isShown() )
     {
-      auto v_win = window->getVWin();
+      auto v_win = win->getVWin();
       const int w = v_win->width  + v_win->right_shadow;
       const int h = v_win->height + v_win->bottom_shadow;
       std::fill_n (v_win->data, w * h, default_char);
-      window->redraw();
+      win->redraw();
     }
   }
 }
@@ -2059,13 +2096,6 @@ void FWidget::initColorTheme()
     else
       setColorTheme<default16ColorTheme>();
   }
-}
-
-//----------------------------------------------------------------------
-void FWidget::destroyColorTheme()
-{
-  const FWidgetColorsPtr* theme = &(getColorTheme());
-  delete theme;
 }
 
 //----------------------------------------------------------------------

@@ -46,8 +46,7 @@ FRadioButton::FRadioButton (const FString& txt, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FRadioButton::~FRadioButton()  // destructor
-{ }
+FRadioButton::~FRadioButton() noexcept = default;  // destructor
 
 
 // private methods of FRadioButton
@@ -101,7 +100,7 @@ inline void FRadioButton::drawChecked()
   else
   {
     print ('(');
-    print (fc::Bullet);  // Bullet ●
+    print (UniChar::Bullet);  // Bullet ●
     print (')');
   }
 }

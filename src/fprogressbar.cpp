@@ -42,8 +42,7 @@ FProgressbar::FProgressbar(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FProgressbar::~FProgressbar()  // destructor
-{ }
+FProgressbar::~FProgressbar() noexcept = default;  // destructor
 
 
 // public methods of FProgressbar
@@ -89,8 +88,8 @@ void FProgressbar::setGeometry ( const FPoint& pos, const FSize& size
 bool FProgressbar::setShadow (bool enable)
 {
   if ( enable
-    && FTerm::getEncoding() != fc::VT100
-    && FTerm::getEncoding() != fc::ASCII )
+    && FTerm::getEncoding() != Encoding::VT100
+    && FTerm::getEncoding() != Encoding::ASCII )
   {
     setFlags().shadow = true;
     setShadowSize(FSize{1, 1});
@@ -192,7 +191,7 @@ std::size_t FProgressbar::drawProgressIndicator()
   const double length = double(bar_length * percentage) / 100;
   auto len = std::size_t(trunc(length));
   print() << FColorPair {wc->progressbar_fg, wc->progressbar_fg}
-          << FString {len, fc::FullBlock};  // █
+          << FString {len, UniChar::FullBlock};  // █
 
   if ( len >= bar_length )
     return len;
@@ -210,7 +209,7 @@ std::size_t FProgressbar::drawProgressIndicator()
   else
   {
     print() << FColorPair{wc->progressbar_fg, wc->progressbar_bg}
-            << fc::LeftHalfBlock;  // ▌
+            << UniChar::LeftHalfBlock;  // ▌
   }
 
   len++;
@@ -227,7 +226,7 @@ void FProgressbar::drawProgressBackground (std::size_t len)
   setColor (wc->progressbar_fg, wc->progressbar_bg);
 
   if ( FTerm::getMaxColor() < 16 )
-    print() << FString {bg_len, fc::MediumShade};  // ▒
+    print() << FString {bg_len, UniChar::MediumShade};  // ▒
   else
     print() << FString {bg_len, L' '};
 }

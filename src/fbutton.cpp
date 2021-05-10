@@ -83,7 +83,7 @@ void FButton::setBackgroundColor (FColor color)
 void FButton::setHotkeyForegroundColor (FColor color)
 {
   // valid colors -1..254
-  if ( color == fc::Default || color >> 8 == 0 )
+  if ( color == FColor::Default || (color >> 8) == FColor::Black )
     button_hotkey_fg = color;
 }
 
@@ -91,7 +91,7 @@ void FButton::setHotkeyForegroundColor (FColor color)
 void FButton::setFocusForegroundColor (FColor color)
 {
   // valid colors -1..254
-  if ( color == fc::Default || color >> 8 == 0 )
+  if ( color == FColor::Default || (color >> 8) == FColor::Black )
     button_focus_fg = color;
 
   updateButtonColor();
@@ -101,7 +101,7 @@ void FButton::setFocusForegroundColor (FColor color)
 void FButton::setFocusBackgroundColor (FColor color)
 {
   // valid colors -1..254
-  if ( color == fc::Default || color >> 8 == 0 )
+  if ( color == FColor::Default || (color >> 8) == FColor::Black )
     button_focus_bg = color;
 
   updateButtonColor();
@@ -111,7 +111,7 @@ void FButton::setFocusBackgroundColor (FColor color)
 void FButton::setInactiveForegroundColor (FColor color)
 {
   // valid colors -1..254
-  if ( color == fc::Default || color >> 8 == 0 )
+  if ( color == FColor::Default || (color >> 8) == FColor::Black )
     button_inactive_fg = color;
 
   updateButtonColor();
@@ -121,7 +121,7 @@ void FButton::setInactiveForegroundColor (FColor color)
 void FButton::setInactiveBackgroundColor (FColor color)
 {
   // valid colors -1..254
-  if ( color == fc::Default || color >> 8 == 0 )
+  if ( color == FColor::Default || (color >> 8) == FColor::Black )
     button_inactive_bg = color;
 
   updateButtonColor();
@@ -179,8 +179,8 @@ bool FButton::setFlat (bool enable)
 bool FButton::setShadow (bool enable)
 {
   if ( enable
-    && FTerm::getEncoding() != fc::VT100
-    && FTerm::getEncoding() != fc::ASCII )
+    && FTerm::getEncoding() != Encoding::VT100
+    && FTerm::getEncoding() != Encoding::ASCII )
   {
     setFlags().shadow = true;
     setShadowSize(FSize{1, 1});
@@ -260,46 +260,31 @@ void FButton::onKeyPress (FKeyEvent* ev)
 
   const FKey key = ev->key();
 
-  switch ( key )
+  if ( key == FKey::Return
+    || key == FKey::Enter
+    || key == FKey::Space )
   {
-    case fc::Fkey_return:
-    case fc::Fkey_enter:
-    case fc::Fkey_space:
-      if ( click_animation )
-      {
-        setDown();
-        addTimer(click_time);
-      }
-      processClick();
-      ev->accept();
-      break;
+    if ( click_animation )
+    {
+      setDown();
+      addTimer(click_time);
+    }
 
-    default:
-      break;
+    processClick();
+    ev->accept();
   }
 }
 
 //----------------------------------------------------------------------
 void FButton::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
   {
     setUp();
     return;
   }
 
-  if ( ! hasFocus() )
-  {
-    auto focused_widget = getFocusWidget();
-    setFocus();
-
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
-  }
-
+  setWidgetFocus(this);
   const FPoint tPos{ev->getTermPos()};
 
   if ( getTermGeometry().contains(tPos) )
@@ -309,7 +294,7 @@ void FButton::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FButton::onMouseUp (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   if ( button_down )
@@ -324,7 +309,7 @@ void FButton::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FButton::onMouseMove (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   const FPoint tPos{ev->getTermPos()};
@@ -486,7 +471,7 @@ inline void FButton::drawMarginLeft()
     print() << FPoint{1 + int(indent), 1 + int(y)};
 
     if ( FTerm::isMonochron() && active_focus && y == vcenter_offset )
-      print (fc::BlackRightPointingPointer);  // ►
+      print (UniChar::BlackRightPointingPointer);  // ►
     else
       print (space_char);  // full block █
   }
@@ -502,7 +487,7 @@ inline void FButton::drawMarginRight()
     print() << FPoint{int(getWidth() + indent), 1 + int(y)};
 
     if ( FTerm::isMonochron() && active_focus && y == vcenter_offset )
-      print (fc::BlackLeftPointingPointer);   // ◄
+      print (UniChar::BlackLeftPointingPointer);   // ◄
     else
       print (space_char);  // full block █
   }
@@ -616,7 +601,7 @@ void FButton::draw()
   FString button_text{};
   const auto& parent_widget = getParentWidget();
   column_width = getColumnWidth(text);
-  space_char = int(' ');
+  space_char = L' ';
   active_focus = getFlags().active && getFlags().focus;
 
   if ( FTerm::isMonochron() )
@@ -629,7 +614,7 @@ void FButton::draw()
   clearRightMargin (parent_widget);
 
   if ( ! getFlags().active && FTerm::isMonochron() )
-    space_char = fc::MediumShade;  // ▒ simulates greyed out at Monochron
+    space_char = wchar_t(UniChar::MediumShade);  // ▒ simulates greyed out at Monochron
 
   if ( FTerm::isMonochron() && (getFlags().active || getFlags().focus) )
     setReverse(false);  // Dark background

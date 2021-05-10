@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -27,7 +27,7 @@
 
 #include <final/final.h>
 
-namespace fc = finalcut::fc;
+using finalcut::Termcap;
 
 // Function prototype
 void tcapBoolean (const std::string&, bool);
@@ -48,100 +48,102 @@ struct Data
   struct alignas(alignof(std::string)) TermcapString
   {
     const std::string name;
-    const fc::termcaps cap;
+    const Termcap cap;
   };
 
-  static std::array<TermcapString, 83> strings;
+  static std::array<TermcapString, 85> strings;
 };
 
 //----------------------------------------------------------------------
 // struct data - string data array
 //----------------------------------------------------------------------
-std::array<Data::TermcapString, 83> Data::strings =
+std::array<Data::TermcapString, 85> Data::strings =
 {{
-  { "t_bell", fc::t_bell },
-  { "t_erase_chars", fc::t_erase_chars },
-  { "t_clear_screen", fc::t_clear_screen },
-  { "t_clr_eos", fc::t_clr_eos },
-  { "t_clr_eol", fc::t_clr_eol },
-  { "t_clr_bol", fc::t_clr_bol },
-  { "t_cursor_home", fc::t_cursor_home },
-  { "t_cursor_to_ll", fc::t_cursor_to_ll },
-  { "t_carriage_return", fc::t_carriage_return },
-  { "t_tab", fc::t_tab },
-  { "t_back_tab", fc::t_back_tab },
-  { "t_insert_padding", fc::t_insert_padding },
-  { "t_insert_character", fc::t_insert_character },
-  { "t_parm_ich", fc::t_parm_ich },
-  { "t_repeat_char", fc::t_repeat_char },
-  { "t_initialize_color", fc::t_initialize_color },
-  { "t_initialize_pair", fc::t_initialize_pair },
-  { "t_set_a_foreground", fc::t_set_a_foreground },
-  { "t_set_a_background", fc::t_set_a_background },
-  { "t_set_foreground", fc::t_set_foreground },
-  { "t_set_background", fc::t_set_background },
-  { "t_set_color_pair", fc::t_set_color_pair },
-  { "t_orig_pair", fc::t_orig_pair },
-  { "t_orig_colors", fc::t_orig_colors },
-  { "t_no_color_video", fc::t_no_color_video },
-  { "t_cursor_address", fc::t_cursor_address },
-  { "t_column_address", fc::t_column_address },
-  { "t_row_address", fc::t_row_address },
-  { "t_cursor_visible", fc::t_cursor_visible },
-  { "t_cursor_invisible", fc::t_cursor_invisible },
-  { "t_cursor_normal", fc::t_cursor_normal },
-  { "t_cursor_up", fc::t_cursor_up },
-  { "t_cursor_down", fc::t_cursor_down },
-  { "t_cursor_left", fc::t_cursor_left },
-  { "t_cursor_right", fc::t_cursor_right },
-  { "t_parm_up_cursor", fc::t_parm_up_cursor },
-  { "t_parm_down_cursor", fc::t_parm_down_cursor },
-  { "t_parm_left_cursor", fc::t_parm_left_cursor },
-  { "t_parm_right_cursor", fc::t_parm_right_cursor },
-  { "t_save_cursor", fc::t_save_cursor },
-  { "t_restore_cursor", fc::t_restore_cursor },
-  { "t_cursor_style", fc::t_cursor_style },
-  { "t_scroll_forward", fc::t_scroll_forward },
-  { "t_scroll_reverse", fc::t_scroll_reverse },
-  { "t_enter_ca_mode", fc::t_enter_ca_mode },
-  { "t_exit_ca_mode", fc::t_exit_ca_mode },
-  { "t_enable_acs", fc::t_enable_acs },
-  { "t_enter_bold_mode", fc::t_enter_bold_mode },
-  { "t_exit_bold_mode", fc::t_exit_bold_mode },
-  { "t_enter_dim_mode", fc::t_enter_dim_mode },
-  { "t_exit_dim_mode", fc::t_exit_dim_mode },
-  { "t_enter_italics_mode", fc::t_enter_italics_mode },
-  { "t_exit_italics_mode", fc::t_exit_italics_mode },
-  { "t_enter_underline_mode", fc::t_enter_underline_mode },
-  { "t_exit_underline_mode", fc::t_exit_underline_mode },
-  { "t_enter_blink_mode", fc::t_enter_blink_mode },
-  { "t_exit_blink_mode", fc::t_exit_blink_mode },
-  { "t_enter_reverse_mode", fc::t_enter_reverse_mode },
-  { "t_exit_reverse_mode", fc::t_exit_reverse_mode },
-  { "t_enter_standout_mode", fc::t_enter_standout_mode },
-  { "t_exit_standout_mode", fc::t_exit_standout_mode },
-  { "t_enter_secure_mode", fc::t_enter_secure_mode },
-  { "t_exit_secure_mode", fc::t_exit_secure_mode },
-  { "t_enter_protected_mode", fc::t_enter_protected_mode },
-  { "t_exit_protected_mode", fc::t_exit_protected_mode },
-  { "t_enter_crossed_out_mode", fc::t_enter_crossed_out_mode },
-  { "t_exit_crossed_out_mode", fc::t_exit_crossed_out_mode },
-  { "t_enter_dbl_underline_mode", fc::t_enter_dbl_underline_mode },
-  { "t_exit_dbl_underline_mode", fc::t_exit_dbl_underline_mode },
-  { "t_set_attributes", fc::t_set_attributes },
-  { "t_exit_attribute_mode", fc::t_exit_attribute_mode },
-  { "t_enter_alt_charset_mode", fc::t_enter_alt_charset_mode },
-  { "t_exit_alt_charset_mode", fc::t_exit_alt_charset_mode },
-  { "t_enter_pc_charset_mode", fc::t_enter_pc_charset_mode },
-  { "t_exit_pc_charset_mode", fc::t_exit_pc_charset_mode },
-  { "t_enter_insert_mode", fc::t_enter_insert_mode },
-  { "t_exit_insert_mode", fc::t_exit_insert_mode },
-  { "t_enter_am_mode", fc::t_enter_am_mode },
-  { "t_exit_am_mode", fc::t_exit_am_mode },
-  { "t_acs_chars", fc::t_acs_chars },
-  { "t_keypad_xmit", fc::t_keypad_xmit },
-  { "t_keypad_local", fc::t_keypad_local },
-  { "t_key_mouse", fc::t_key_mouse }
+  { "t_bell", Termcap::t_bell },
+  { "t_flash_screen", Termcap::t_flash_screen },
+  { "t_erase_chars", Termcap::t_erase_chars },
+  { "t_clear_screen", Termcap::t_clear_screen },
+  { "t_clr_eos", Termcap::t_clr_eos },
+  { "t_clr_eol", Termcap::t_clr_eol },
+  { "t_clr_bol", Termcap::t_clr_bol },
+  { "t_cursor_home", Termcap::t_cursor_home },
+  { "t_cursor_to_ll", Termcap::t_cursor_to_ll },
+  { "t_carriage_return", Termcap::t_carriage_return },
+  { "t_tab", Termcap::t_tab },
+  { "t_back_tab", Termcap::t_back_tab },
+  { "t_pad_char", Termcap::t_pad_char },
+  { "t_insert_padding", Termcap::t_insert_padding },
+  { "t_insert_character", Termcap::t_insert_character },
+  { "t_parm_ich", Termcap::t_parm_ich },
+  { "t_repeat_char", Termcap::t_repeat_char },
+  { "t_initialize_color", Termcap::t_initialize_color },
+  { "t_initialize_pair", Termcap::t_initialize_pair },
+  { "t_set_a_foreground", Termcap::t_set_a_foreground },
+  { "t_set_a_background", Termcap::t_set_a_background },
+  { "t_set_foreground", Termcap::t_set_foreground },
+  { "t_set_background", Termcap::t_set_background },
+  { "t_set_color_pair", Termcap::t_set_color_pair },
+  { "t_orig_pair", Termcap::t_orig_pair },
+  { "t_orig_colors", Termcap::t_orig_colors },
+  { "t_no_color_video", Termcap::t_no_color_video },
+  { "t_cursor_address", Termcap::t_cursor_address },
+  { "t_column_address", Termcap::t_column_address },
+  { "t_row_address", Termcap::t_row_address },
+  { "t_cursor_visible", Termcap::t_cursor_visible },
+  { "t_cursor_invisible", Termcap::t_cursor_invisible },
+  { "t_cursor_normal", Termcap::t_cursor_normal },
+  { "t_cursor_up", Termcap::t_cursor_up },
+  { "t_cursor_down", Termcap::t_cursor_down },
+  { "t_cursor_left", Termcap::t_cursor_left },
+  { "t_cursor_right", Termcap::t_cursor_right },
+  { "t_parm_up_cursor", Termcap::t_parm_up_cursor },
+  { "t_parm_down_cursor", Termcap::t_parm_down_cursor },
+  { "t_parm_left_cursor", Termcap::t_parm_left_cursor },
+  { "t_parm_right_cursor", Termcap::t_parm_right_cursor },
+  { "t_save_cursor", Termcap::t_save_cursor },
+  { "t_restore_cursor", Termcap::t_restore_cursor },
+  { "t_cursor_style", Termcap::t_cursor_style },
+  { "t_scroll_forward", Termcap::t_scroll_forward },
+  { "t_scroll_reverse", Termcap::t_scroll_reverse },
+  { "t_enter_ca_mode", Termcap::t_enter_ca_mode },
+  { "t_exit_ca_mode", Termcap::t_exit_ca_mode },
+  { "t_enable_acs", Termcap::t_enable_acs },
+  { "t_enter_bold_mode", Termcap::t_enter_bold_mode },
+  { "t_exit_bold_mode", Termcap::t_exit_bold_mode },
+  { "t_enter_dim_mode", Termcap::t_enter_dim_mode },
+  { "t_exit_dim_mode", Termcap::t_exit_dim_mode },
+  { "t_enter_italics_mode", Termcap::t_enter_italics_mode },
+  { "t_exit_italics_mode", Termcap::t_exit_italics_mode },
+  { "t_enter_underline_mode", Termcap::t_enter_underline_mode },
+  { "t_exit_underline_mode", Termcap::t_exit_underline_mode },
+  { "t_enter_blink_mode", Termcap::t_enter_blink_mode },
+  { "t_exit_blink_mode", Termcap::t_exit_blink_mode },
+  { "t_enter_reverse_mode", Termcap::t_enter_reverse_mode },
+  { "t_exit_reverse_mode", Termcap::t_exit_reverse_mode },
+  { "t_enter_standout_mode", Termcap::t_enter_standout_mode },
+  { "t_exit_standout_mode", Termcap::t_exit_standout_mode },
+  { "t_enter_secure_mode", Termcap::t_enter_secure_mode },
+  { "t_exit_secure_mode", Termcap::t_exit_secure_mode },
+  { "t_enter_protected_mode", Termcap::t_enter_protected_mode },
+  { "t_exit_protected_mode", Termcap::t_exit_protected_mode },
+  { "t_enter_crossed_out_mode", Termcap::t_enter_crossed_out_mode },
+  { "t_exit_crossed_out_mode", Termcap::t_exit_crossed_out_mode },
+  { "t_enter_dbl_underline_mode", Termcap::t_enter_dbl_underline_mode },
+  { "t_exit_dbl_underline_mode", Termcap::t_exit_dbl_underline_mode },
+  { "t_set_attributes", Termcap::t_set_attributes },
+  { "t_exit_attribute_mode", Termcap::t_exit_attribute_mode },
+  { "t_enter_alt_charset_mode", Termcap::t_enter_alt_charset_mode },
+  { "t_exit_alt_charset_mode", Termcap::t_exit_alt_charset_mode },
+  { "t_enter_pc_charset_mode", Termcap::t_enter_pc_charset_mode },
+  { "t_exit_pc_charset_mode", Termcap::t_exit_pc_charset_mode },
+  { "t_enter_insert_mode", Termcap::t_enter_insert_mode },
+  { "t_exit_insert_mode", Termcap::t_exit_insert_mode },
+  { "t_enter_am_mode", Termcap::t_enter_am_mode },
+  { "t_exit_am_mode", Termcap::t_exit_am_mode },
+  { "t_acs_chars", Termcap::t_acs_chars },
+  { "t_keypad_xmit", Termcap::t_keypad_xmit },
+  { "t_keypad_local", Termcap::t_keypad_local },
+  { "t_key_mouse", Termcap::t_key_mouse }
 }};
 
 
@@ -213,8 +215,8 @@ void debug (const finalcut::FApplication& TermApp)
 {
   const auto& fterm = TermApp.getFTerm();
   auto& debug_data = fterm.getFTermDebugData();
-  const finalcut::FString& ab_s = debug_data.getAnswerbackString();
-  const finalcut::FString& sec_da = debug_data.getSecDAString();
+  const auto& ab_s = debug_data.getAnswerbackString();
+  const auto& sec_da = debug_data.getSecDAString();
   std::cout << "\n.------------------- debug -------------------\r\n";
 
 #if defined(__linux__)
@@ -238,7 +240,7 @@ void debug (const finalcut::FApplication& TermApp)
   std::cout << "`------------------- debug -------------------\r\n";
 }
 #else
-void debug (finalcut::FApplication&)
+void debug (const finalcut::FApplication&)
 {
   // FINAL CUT was compiled without debug option
 }
@@ -266,6 +268,10 @@ void booleans()
               , finalcut::FTermcap::osc_support );
   tcapBoolean ( "no_utf8_acs_chars"
               , finalcut::FTermcap::no_utf8_acs_chars );
+  tcapBoolean ( "no_padding_char"
+              , finalcut::FTermcap::no_padding_char );
+  tcapBoolean ( "xon_xoff_flow_control"
+              , finalcut::FTermcap::xon_xoff_flow_control );
 }
 
 //----------------------------------------------------------------------
@@ -276,6 +282,8 @@ void numeric()
               , finalcut::FTermcap::max_color);
   tcapNumeric ("tabstop"
               , finalcut::FTermcap::tabstop);
+  tcapNumeric ("padding_baudrate"
+              , finalcut::FTermcap::padding_baudrate);
   tcapNumeric ("attr_without_color"
               , finalcut::FTermcap::attr_without_color);
 }
@@ -289,7 +297,7 @@ void string()
   for (const auto& entry : Data::strings)
   {
     const std::string name = entry.name;
-    const fc::termcaps cap = entry.cap;
+    const auto cap = std::size_t(entry.cap);
     tcapString (name, tcap_strings[cap].string);
   }
 }

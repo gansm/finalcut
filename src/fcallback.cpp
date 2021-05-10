@@ -29,16 +29,6 @@ namespace finalcut
 // class FCallback
 //----------------------------------------------------------------------
 
-// constructors and destructor
-//----------------------------------------------------------------------
-FCallback::FCallback()
-{ }
-
-//----------------------------------------------------------------------
-FCallback::~FCallback()  // destructor
-{ }
-
-
 // public methods of FCallback
 //----------------------------------------------------------------------
 void FCallback::delCallback (const FString& cb_signal)

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2020 Markus Gans                                      *
+* Copyright 2016-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -86,8 +86,7 @@ class FToolTip : public FWindow
     // Mutators
     void                setText (const FString&);
     void                resetColors() override;
-    bool                setBorder (bool);
-    bool                setBorder();
+    bool                setBorder (bool = true);
     bool                unsetBorder();
 
     // Inquiries
@@ -104,6 +103,7 @@ class FToolTip : public FWindow
     void                init();
     void                draw() override;
     void                calculateDimensions();
+    void                initLayout() override;
     void                adjustSize() override;
 
     // Data members
@@ -122,10 +122,6 @@ inline FString FToolTip::getClassName() const
 //----------------------------------------------------------------------
 inline FString FToolTip::getText() const
 { return text; }
-
-//----------------------------------------------------------------------
-inline bool FToolTip::setBorder()
-{ return setBorder(true); }
 
 //----------------------------------------------------------------------
 inline bool FToolTip::unsetBorder()

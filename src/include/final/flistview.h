@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -48,9 +48,11 @@
 #endif
 
 #include <list>
+#include <iterator>
 #include <memory>
 #include <stack>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "final/fdata.h"
@@ -99,8 +101,8 @@ class FListViewItem : public FObject
     void                setText (int, const FString&);
     template <typename DT>
     void                setData (DT&&);
-    void                setCheckable (bool);
-    void                setChecked (bool);
+    void                setCheckable (bool = true);
+    void                setChecked (bool = true);
 
     // Inquiry
     bool                isChecked() const;
@@ -168,7 +170,7 @@ inline FString FListViewItem::getClassName() const
 
 //----------------------------------------------------------------------
 inline uInt FListViewItem::getColumnCount() const
-{ return uInt(column_list.size()); }
+{ return static_cast<uInt>(column_list.size()); }
 
 //----------------------------------------------------------------------
 template <typename DT>
@@ -214,28 +216,30 @@ class FListViewIterator
 {
   public:
     // Using-declarations
-    using FObjectList    = std::list<FObject*>;
-    using iterator       = FObjectList::iterator;
-    using iterator_stack = std::stack<iterator>;
+    using FObjectList   = std::list<FObject*>;
+    using Iterator      = FObjectList::iterator;
+    using IteratorStack = std::stack<Iterator>;
 
     // Constructor
-    FListViewIterator ();
-    FListViewIterator (iterator);
-    FListViewIterator (const FListViewIterator&);  // copy constructor
-    FListViewIterator (FListViewIterator&&) noexcept;  // move constructor
-
-    // Destructor
-    ~FListViewIterator();
+    FListViewIterator () = default;
+    ~FListViewIterator () = default;
+    FListViewIterator (Iterator);
+    FListViewIterator (const FListViewIterator&) = default;
+    FListViewIterator (FListViewIterator&& i) noexcept
+      : iter_path{std::move(i.iter_path)}
+      , node{i.node}
+      , position{i.position}
+    { }
 
     // Overloaded operators
-    FListViewIterator& operator = (const FListViewIterator&);
-    FListViewIterator& operator = (FListViewIterator&&) noexcept;
+    FListViewIterator& operator = (const FListViewIterator&) = default;
+    FListViewIterator& operator = (FListViewIterator&&) noexcept = default;
     FListViewIterator& operator ++ ();     // prefix
     FListViewIterator  operator ++ (int);  // postfix
     FListViewIterator& operator -- ();     // prefix
     FListViewIterator  operator -- (int);  // postfix
-    FListViewIterator& operator += (volatile int);
-    FListViewIterator& operator -= (volatile int);
+    FListViewIterator& operator += (int);
+    FListViewIterator& operator -= (int);
     FObject*&          operator * () const;
     FObject*           operator -> () const;
     bool               operator == (const FListViewIterator&) const;
@@ -250,12 +254,12 @@ class FListViewIterator
 
   private:
     // Methods
-    void               nextElement (iterator&);
-    void               prevElement (iterator&);
+    void               nextElement (Iterator&);
+    void               prevElement (Iterator&);
 
     // Data members
-    iterator_stack     iter_path{};
-    iterator           node{};
+    IteratorStack      iter_path{};
+    Iterator           node{};
     int                position{0};
 };
 
@@ -295,9 +299,7 @@ class FListView : public FWidget
   public:
     // Using-declaration
     using FWidget::setGeometry;
-
-    // Typedef
-    typedef std::list<FListViewItem*>  FListViewItems;
+    using FListViewItems = std::list<FListViewItem*>;
 
     // Constructor
     explicit FListView (FWidget* = nullptr);
@@ -314,10 +316,10 @@ class FListView : public FWidget
     // Accessors
     FString               getClassName() const override;
     std::size_t           getCount() const;
-    fc::text_alignment    getColumnAlignment (int) const;
+    Align                 getColumnAlignment (int) const;
     FString               getColumnText (int) const;
-    fc::sorting_type      getColumnSortType (int) const;
-    fc::sorting_order     getSortOrder() const;
+    SortType              getColumnSortType (int) const;
+    SortOrder             getSortOrder() const;
     int                   getSortColumn() const;
     FListViewItem*        getCurrentItem();
 
@@ -325,19 +327,16 @@ class FListView : public FWidget
     void                  setSize (const FSize&, bool = true) override;
     void                  setGeometry ( const FPoint&, const FSize&
                                       , bool = true ) override;
-    void                  setColumnAlignment (int, fc::text_alignment);
+    void                  setColumnAlignment (int, Align);
     void                  setColumnText (int, const FString&);
-    void                  setColumnSortType (int, fc::sorting_type \
-                                                      = fc::by_name);
-    void                  setColumnSort (int, fc::sorting_order \
-                                                  = fc::ascending);
+    void                  setColumnSortType (int, SortType = SortType::Name);
+    void                  setColumnSort (int, SortOrder = SortOrder::Ascending);
     template <typename Compare>
     void                  setUserAscendingCompare (Compare);
     template <typename Compare>
     void                  setUserDescendingCompare (Compare);
-    void                  hideSortIndicator (bool);
-    bool                  setTreeView (bool);
-    bool                  setTreeView();
+    void                  hideSortIndicator (bool = true);
+    bool                  setTreeView (bool = true);
     bool                  unsetTreeView();
 
     // Methods
@@ -403,17 +402,16 @@ class FListView : public FWidget
     void                  adjustSize() override;
 
   private:
-    // Typedefs
-    typedef std::unordered_map<int, std::function<void()>> KeyMap;
-    typedef std::unordered_map<int, std::function<bool()>> KeyMapResult;
+    struct Header;  // forward declaration
+
+    // Using-declaration
+    using KeyMap = std::unordered_map<FKey, std::function<void()>, FKeyHash>;
+    using KeyMapResult = std::unordered_map<FKey, std::function<bool()>, FKeyHash>;
+    using HeaderItems = std::vector<Header>;
+    using SortTypes = std::vector<SortType>;
 
     // Constants
     static constexpr std::size_t checkbox_space = 4;
-
-    // Typedef
-    struct Header;  // forward declaration
-    typedef std::vector<Header> HeaderItems;
-    typedef std::vector<fc::sorting_type> SortTypes;
 
     // Constants
     static constexpr int USE_MAX_SIZE = -1;
@@ -434,7 +432,7 @@ class FListView : public FWidget
     void                  processKeyAction (FKeyEvent*);
     template <typename Compare>
     void                  sort (Compare);
-    std::size_t           getAlignOffset ( const fc::text_alignment
+    std::size_t           getAlignOffset ( const Align
                                          , const std::size_t
                                          , const std::size_t ) const;
     iterator              getListEnd (const FListViewItem*);
@@ -465,8 +463,8 @@ class FListView : public FWidget
     void                  wheelDown (int);
     bool                  dragScrollUp (int);
     bool                  dragScrollDown (int);
-    void                  dragUp (int);
-    void                  dragDown (int);
+    void                  dragUp (MouseButton);
+    void                  dragDown (MouseButton);
     void                  stopDragScroll();
     iterator              appendItem (FListViewItem*);
     void                  processClick() const;
@@ -514,13 +512,13 @@ class FListView : public FWidget
     const FListViewItem*  clicked_checkbox_item{nullptr};
     std::size_t           nf_offset{0};
     std::size_t           max_line_width{1};
-    fc::dragScroll        drag_scroll{fc::noScroll};
+    DragScrollMode        drag_scroll{DragScrollMode::None};
     int                   first_line_position_before{-1};
     int                   scroll_repeat{100};
     int                   scroll_distance{1};
     int                   xoffset{0};
     int                   sort_column{-1};
-    fc::sorting_order     sort_order{fc::unsorted};
+    SortOrder             sort_order{SortOrder::Unsorted};
     bool                  scroll_timer{false};
     bool                  tree_view{false};
     bool                  hide_sort_indicator{false};
@@ -542,11 +540,10 @@ class FListView : public FWidget
 struct FListView::Header
 {
   public:
-    Header()
-    { }
+    Header () = default;
 
     FString name{};
-    fc::text_alignment alignment{fc::alignLeft};
+    Align alignment{Align::Left};
     int width{0};
     bool fixed_width{false};
 };
@@ -558,7 +555,7 @@ inline FString FListView::getClassName() const
 { return "FListView"; }
 
 //----------------------------------------------------------------------
-inline fc::sorting_order FListView::getSortOrder() const
+inline SortOrder FListView::getSortOrder() const
 { return sort_order; }
 
 //----------------------------------------------------------------------
@@ -586,10 +583,6 @@ inline void FListView::hideSortIndicator (bool hide)
 //----------------------------------------------------------------------
 inline bool FListView::setTreeView (bool enable)
 { return (tree_view = enable); }
-
-//----------------------------------------------------------------------
-inline bool FListView::setTreeView()
-{ return setTreeView(true); }
 
 //----------------------------------------------------------------------
 inline bool FListView::unsetTreeView()
@@ -725,11 +718,11 @@ inline const FListView::FListViewItems& FListView::getData() const
 
 //----------------------------------------------------------------------
 inline bool FListView::isHorizontallyScrollable() const
-{ return bool( max_line_width > getClientWidth() ); }
+{ return max_line_width > getClientWidth(); }
 
 //----------------------------------------------------------------------
 inline bool FListView::isVerticallyScrollable() const
-{ return bool( getCount() > getClientHeight() ); }
+{ return getCount() > getClientHeight(); }
 
 //----------------------------------------------------------------------
 inline void FListView::scrollTo (const FPoint& pos)

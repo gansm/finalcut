@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -64,18 +64,18 @@ class FLog : public std::stringbuf
     using IOManip = std::ostream& (*)(std::ostream&);
 
     // Enumerations
-    enum LogLevel
+    enum class LogLevel
     {
       Info, Warn, Error, Debug
     };
 
-    enum LineEnding
+    enum class LineEnding
     {
       LF, CR, CRLF
     };
 
     // Constructor
-    FLog();
+    FLog() = default;
 
     // Destructor
     ~FLog() override;
@@ -100,16 +100,16 @@ class FLog : public std::stringbuf
     int               sync() override;
     const LogLevel&   getLevel() const;
     LogLevel&         setLevel();
-    const LineEnding& getEnding();
+    const LineEnding& getEnding() const;
     LineEnding&       setEnding();
-    std::mutex&       getMutex();
 
   private:
     // Data member
-    LogLevel     level{Info};
-    LineEnding   end_of_line{CRLF};
-    std::mutex   mut{};
-    FLogPrint    current_log{std::bind(&FLog::info, this, std::placeholders::_1)};
+    LogLevel     level{LogLevel::Info};
+    LineEnding   end_of_line{LineEnding::CRLF};
+    FLogPrint    current_log{ [this] (const std::string& s) { info(s); } };
+    std::mutex   current_log_mutex{};
+    std::mutex   stream_mutex{};
     std::ostream stream{this};
 
     // Friend Non-member operator functions
@@ -121,7 +121,7 @@ class FLog : public std::stringbuf
 template <typename T>
 inline FLog& FLog::operator << (const T& s)
 {
-  std::lock_guard<std::mutex> lock_guard(mut);
+  std::lock_guard<std::mutex> lock_guard(stream_mutex);
   stream << s;
   return *this;
 }
@@ -129,7 +129,7 @@ inline FLog& FLog::operator << (const T& s)
 //----------------------------------------------------------------------
 inline FLog& FLog::operator << (IOManip pf)
 {
-  std::lock_guard<std::mutex> lock_guard(mut);
+  std::lock_guard<std::mutex> lock_guard(stream_mutex);
   pf(stream);
   return *this;
 }
@@ -151,9 +151,8 @@ inline FLog::LogLevel& FLog::setLevel()
 }
 
 //----------------------------------------------------------------------
-inline const FLog::LineEnding& FLog::getEnding()
+inline const FLog::LineEnding& FLog::getEnding() const
 {
-  std::lock_guard<std::mutex> lock_guard(mut);
   return end_of_line;
 }
 
@@ -162,10 +161,6 @@ inline FLog::LineEnding& FLog::setEnding()
 {
   return end_of_line;
 }
-
-//----------------------------------------------------------------------
-inline std::mutex& FLog::getMutex()
-{ return mut; }
 
 }  // namespace finalcut
 

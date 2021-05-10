@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -50,8 +50,7 @@ namespace finalcut
 class FTermDetection final
 {
   public:
-    // Typedefs
-    typedef struct
+    struct FTerminalType
     {
       // byte #0
       uInt8 ansi           : 1;
@@ -76,8 +75,11 @@ class FTermDetection final
       uInt8 tmux           : 1;
       uInt8 kterm          : 1;
       uInt8 mlterm         : 1;
-      uInt8                : 4;  // padding bits
-    } FTerminalType;
+      uInt8 kitty          : 1;
+      uInt8                : 3;  // padding bits
+    };
+
+    struct kittyVersion;  // forward declaration
 
     // Constructors
     FTermDetection();
@@ -95,6 +97,7 @@ class FTermDetection final
     static FString        getClassName();
     static const char*    getTermType();
     static int            getGnomeTerminalID();
+    static kittyVersion   getKittyVersion();
     FTerminalType&        getTermTypeStruct();
 
 #if DEBUG
@@ -126,32 +129,34 @@ class FTermDetection final
     static bool           isTmuxTerm();
     static bool           isKtermTerminal();
     static bool           isMltermTerminal();
+    static bool           isKittyTerminal();
     static bool           canDisplay256Colors();
     static bool           hasTerminalDetection();
     static bool           hasSetCursorStyleSupport();
 
     // Mutators
-    static void           setAnsiTerminal (bool);
-    static void           setXTerminal (bool);
-    static void           setRxvtTerminal (bool);
-    static void           setUrxvtTerminal (bool);
-    static void           setKdeTerminal (bool);
-    static void           setGnomeTerminal (bool);
-    static void           setPuttyTerminal (bool);
-    static void           setWindowsTerminal (bool);
-    static void           setTeraTerm (bool);
-    static void           setCygwinTerminal (bool);
-    static void           setMinttyTerm (bool);
-    static void           setLinuxTerm (bool);
-    static void           setFreeBSDTerm (bool);
-    static void           setNetBSDTerm (bool);
-    static void           setOpenBSDTerm (bool);
-    static void           setSunTerminal (bool);
-    static void           setScreenTerm (bool);
-    static void           setTmuxTerm (bool);
-    static void           setKtermTerminal (bool);
-    static void           setMltermTerminal (bool);
-    static void           setTerminalDetection (bool);
+    static void           setAnsiTerminal (bool = true);
+    static void           setXTerminal (bool = true);
+    static void           setRxvtTerminal (bool = true);
+    static void           setUrxvtTerminal (bool = true);
+    static void           setKdeTerminal (bool = true);
+    static void           setGnomeTerminal (bool = true);
+    static void           setPuttyTerminal (bool = true);
+    static void           setWindowsTerminal (bool = true);
+    static void           setTeraTerm (bool = true);
+    static void           setCygwinTerminal (bool = true);
+    static void           setMinttyTerm (bool = true);
+    static void           setLinuxTerm (bool = true);
+    static void           setFreeBSDTerm (bool = true);
+    static void           setNetBSDTerm (bool = true);
+    static void           setOpenBSDTerm (bool = true);
+    static void           setSunTerminal (bool = true);
+    static void           setScreenTerm (bool = true);
+    static void           setTmuxTerm (bool = true);
+    static void           setKtermTerminal (bool = true);
+    static void           setMltermTerminal (bool = true);
+    static void           setKittyTerminal (bool = true);
+    static void           setTerminalDetection (bool = true);
     static void           setTtyTypeFileName (const char[]);
 
     // Methods
@@ -193,6 +198,7 @@ class FTermDetection final
     static const char*    secDA_Analysis_84 (const char[]);
     static const char*    secDA_Analysis_85 ();
     static const char*    secDA_Analysis_vte (const char[]);
+    static const char*    secDA_Analysis_kitty (const char[]);
 
     // Data members
 #if DEBUG
@@ -208,11 +214,9 @@ class FTermDetection final
     static int            gnome_terminal_id;
     static const FString* answer_back;
     static const FString* sec_da;
-    static FTermData*     fterm_data;
-    static FSystem*       fsystem;
-    static FKeyboard*     keyboard;
     static FTerminalType  terminal_type;
     static colorEnv       color_env;
+    static kittyVersion   kitty_version;
     static secondaryDA    secondary_da;
 };
 
@@ -229,6 +233,16 @@ struct FTermDetection::colorEnv
   char* string5{nullptr};
   char* string6{nullptr};
   char* string7{nullptr};
+  char* string8{nullptr};
+};
+
+//----------------------------------------------------------------------
+// struct FTermDetection::KittyVersion
+//----------------------------------------------------------------------
+struct FTermDetection::kittyVersion
+{
+  int primary{0};
+  int secondary{0};
 };
 
 //----------------------------------------------------------------------
@@ -254,6 +268,10 @@ inline const char* FTermDetection::getTermType()
 //----------------------------------------------------------------------
 inline int FTermDetection::getGnomeTerminalID()
 { return gnome_terminal_id; }
+
+//----------------------------------------------------------------------
+inline FTermDetection::kittyVersion FTermDetection::getKittyVersion()
+{ return kitty_version; }
 
 //----------------------------------------------------------------------
 inline FTermDetection::FTerminalType& FTermDetection::getTermTypeStruct()
@@ -300,6 +318,10 @@ inline bool FTermDetection::isUrxvtTerminal()
 //----------------------------------------------------------------------
 inline bool FTermDetection::isMltermTerminal()
 { return terminal_type.mlterm; }
+
+//----------------------------------------------------------------------
+inline bool FTermDetection::isKittyTerminal()
+{ return terminal_type.kitty; }
 
 //----------------------------------------------------------------------
 inline bool FTermDetection::isPuttyTerminal()
@@ -384,6 +406,10 @@ inline void FTermDetection::setUrxvtTerminal (bool enable)
 //----------------------------------------------------------------------
 inline void FTermDetection::setMltermTerminal (bool enable)
 { terminal_type.mlterm = enable; }
+
+//----------------------------------------------------------------------
+inline void FTermDetection::setKittyTerminal (bool enable)
+{ terminal_type.kitty = enable; }
 
 //----------------------------------------------------------------------
 inline void FTermDetection::setPuttyTerminal (bool enable)

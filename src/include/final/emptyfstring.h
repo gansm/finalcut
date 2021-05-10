@@ -36,6 +36,7 @@
 #endif
 
 #include <iostream>
+#include <memory>
 
 #include "final/flog.h"
 #include "final/fstring.h"
@@ -52,61 +53,27 @@ namespace fc
 
 class emptyFString final
 {
-public:
-  // Constructors
-  emptyFString() = delete;
+  public:
+    // Constructors
+    emptyFString() = delete;
 
-  // Disable copy constructor
-  emptyFString (const emptyFString&) = delete;
+    // Disable copy constructor
+    emptyFString (const emptyFString&) = delete;
 
-  // Disable copy assignment operator (=)
-  emptyFString& operator = (const emptyFString&) = delete;
+    // Disable copy assignment operator (=)
+    emptyFString& operator = (const emptyFString&) = delete;
 
-  static FString getClassName();
-  static bool isNull();
-  static const FString& get();
-  static void clear();
+    static FString getClassName()
+    {
+      return "emptyFString";
+    }
 
-private:
-  // Data member
-  static const FString* empty_string;
+    static const FString& get()
+    {
+      static const auto& empty_string = make_unique<FString>("");
+      return *empty_string.get();
+    }
 };
-
-// emptyFString inline functions
-//----------------------------------------------------------------------
-inline FString emptyFString::getClassName()
-{ return "emptyFString"; }
-
-//----------------------------------------------------------------------
-inline bool emptyFString::isNull()
-{
-  return ( empty_string ) ? false : true;
-}
-
-//----------------------------------------------------------------------
-inline const FString& emptyFString::get()
-{
-  if ( ! empty_string )
-  {
-    try
-    {
-      empty_string = new FString("");
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("FString");
-    }
-  }
-
-  return *empty_string;
-}
-
-//----------------------------------------------------------------------
-inline void emptyFString::clear()
-{
-  delete empty_string;
-  empty_string = nullptr;
-}
 
 }  // namespace fc
 

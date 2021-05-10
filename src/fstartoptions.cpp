@@ -27,9 +27,6 @@
 namespace finalcut
 {
 
-// static class attribute
-FStartOptions* FStartOptions::start_options{};
-
 //----------------------------------------------------------------------
 // class FStartOptions
 //----------------------------------------------------------------------
@@ -54,35 +51,13 @@ FStartOptions::FStartOptions()
   , dark_theme{false}
 { }
 
-//----------------------------------------------------------------------
-FStartOptions::~FStartOptions()  // destructor
-{ }
 
 // public methods of FStartOptions
 //----------------------------------------------------------------------
 FStartOptions& FStartOptions::getFStartOptions()
 {
-  if ( start_options == nullptr )
-  {
-    try
-    {
-      start_options = new FStartOptions;
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("FStartOptions");
-      std::abort();
-    }
-  }
-
+  static const auto& start_options = make_unique<FStartOptions>();
   return *start_options;
-}
-
-//----------------------------------------------------------------------
-void FStartOptions::destroyObject()
-{
-  if ( start_options )
-    delete start_options;
 }
 
 //----------------------------------------------------------------------
@@ -94,7 +69,7 @@ void FStartOptions::setDefault()
   color_change = true;
   vgafont = false;
   newfont = false;
-  encoding = fc::UNKNOWN;
+  encoding = Encoding::Unknown;
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   meta_sends_escape = true;

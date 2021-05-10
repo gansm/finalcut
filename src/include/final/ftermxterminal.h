@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -40,9 +40,6 @@ namespace finalcut
 
 // class forward declaration
 class FString;
-class FSystem;
-class FKeyboard;
-class FTermDetection;
 
 //----------------------------------------------------------------------
 // class FTermXTerminal
@@ -51,21 +48,9 @@ class FTermDetection;
 class FTermXTerminal final
 {
   public:
-    // Constructors
-    FTermXTerminal();
-
-    // Disable copy constructor
-    FTermXTerminal (const FTermXTerminal&) = delete;
-
-    // Destructor
-    ~FTermXTerminal();
-
-    // Disable copy assignment operator (=)
-    FTermXTerminal& operator = (const FTermXTerminal&) = delete;
-
     // Mutators
-    void                  redefineDefaultColors (bool);
-    void                  setCursorStyle (fc::xtermCursorStyle);
+    void                  redefineDefaultColors (bool = true);
+    void                  setCursorStyle (XTermCursorStyle);
     void                  setFont (const FString&);
     void                  setTitle (const FString&);
     void                  setTermSize (const FSize&);
@@ -75,14 +60,13 @@ class FTermXTerminal final
     void                  setMouseForeground (const FString&);
     void                  setMouseBackground (const FString&);
     void                  setHighlightBackground (const FString&);
-    static void           setMouseSupport (bool);
-    static void           setMouseSupport();
+    static void           setMouseSupport (bool = true);
     static void           unsetMouseSupport();
-    void                  metaSendsESC (bool);
+    void                  metaSendsESC (bool = true);
 
     // Accessors
     FString               getClassName() const;
-    fc::xtermCursorStyle  getCursorStyle() const;
+    XTermCursorStyle      getCursorStyle() const;
     FString               getFont() const;
     FString               getTitle() const;
     FString               getForeground() const;
@@ -97,7 +81,6 @@ class FTermXTerminal final
     bool                  hasTitle() const;
 
     // Methods
-    void                  init();
     void                  setDefaults();
     void                  resetColorMap() const;
     void                  resetForeground();
@@ -134,7 +117,6 @@ class FTermXTerminal final
     void                  resetXTermMouseForeground() const;
     void                  resetXTermMouseBackground() const;
     void                  resetXTermHighlightBackground() const;
-    bool                  isInitialized() const;
     bool                  canResetColor() const;
     void                  oscPrefix() const;
     void                  oscPostfix() const;
@@ -160,10 +142,7 @@ class FTermXTerminal final
     FString               mouse_foreground_color{};
     FString               mouse_background_color{};
     FString               highlight_background_color{};
-    static FSystem*       fsystem;
-    static FKeyboard*     keyboard;
-    FTermDetection*       term_detection{nullptr};
-    fc::xtermCursorStyle  cursor_style{fc::unknown_cursor_style};
+    XTermCursorStyle      cursor_style{XTermCursorStyle::UnknownCursorStyle};
 };
 
 
@@ -177,7 +156,7 @@ inline void FTermXTerminal::redefineDefaultColors (bool enable)
 { xterm_default_colors = enable; }
 
 //----------------------------------------------------------------------
-inline fc::xtermCursorStyle FTermXTerminal::getCursorStyle() const
+inline XTermCursorStyle FTermXTerminal::getCursorStyle() const
 { return cursor_style; }
 
 //----------------------------------------------------------------------
@@ -214,23 +193,15 @@ inline FString FTermXTerminal::getHighlightBackground() const
 
 //----------------------------------------------------------------------
 inline bool FTermXTerminal::hasFont() const
-{ return bool(xterm_font.getLength() > 2); }
+{ return xterm_font.getLength() > 2; }
 
 //----------------------------------------------------------------------
 inline bool FTermXTerminal::hasTitle() const
-{ return bool(xterm_title.getLength() > 0); }
-
-//----------------------------------------------------------------------
-inline void FTermXTerminal::setMouseSupport()
-{ setMouseSupport (true); }
+{ return xterm_title.getLength() > 0; }
 
 //----------------------------------------------------------------------
 inline void FTermXTerminal::unsetMouseSupport()
 { setMouseSupport (false); }
-
-//----------------------------------------------------------------------
-inline bool FTermXTerminal::isInitialized() const
-{ return bool(fsystem && term_detection); }
 
 }  // namespace finalcut
 

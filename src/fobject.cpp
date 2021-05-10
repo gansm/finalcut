@@ -22,7 +22,6 @@
 
 #include <memory>
 
-#include "final/emptyfstring.h"
 #include "final/fevent.h"
 #include "final/fc.h"
 #include "final/fobject.h"
@@ -32,8 +31,6 @@ namespace finalcut
 
 // static class attributes
 bool FObject::timer_modify_lock;
-FObject::FTimerList* FObject::timer_list{nullptr};
-const FString* fc::emptyFString::empty_string{nullptr};
 
 
 //----------------------------------------------------------------------
@@ -45,42 +42,16 @@ const FString* fc::emptyFString::empty_string{nullptr};
 FObject::FObject (FObject* parent)
   : parent_obj{parent}
 {
-  if ( parent )                // add object to parent
-  {
+  if ( parent )  // add object to parent
     parent->addChild(this);
-  }
   else
-  {
     timer_modify_lock = false;
-
-    if ( ! timer_list )
-    {
-      try
-      {
-        timer_list = new FTimerList;
-      }
-      catch (const std::bad_alloc&)
-      {
-        badAllocOutput ("FTimerList");
-        return;
-      }
-    }
-  }
 }
 
 //----------------------------------------------------------------------
 FObject::~FObject()  // destructor
 {
   delOwnTimers();  // Delete all timers of this object
-
-  if ( ! has_parent && timer_list )
-  {
-    delete timer_list;
-    timer_list = nullptr;
-  }
-
-  if ( ! has_parent && ! fc::emptyFString::isNull() )
-    fc::emptyFString::clear();
 
   // Delete children objects
   if ( hasChildren() )
@@ -193,11 +164,11 @@ bool FObject::event (FEvent* ev)
 {
   // Receives events on this object
 
-  if ( ev->getType() == fc::Timer_Event )
+  if ( ev->getType() == Event::Timer )
   {
     onTimer ( static_cast<FTimerEvent*>(ev) );
   }
-  else if ( ev->getType() == fc::User_Event )
+  else if ( ev->getType() == Event::User )
   {
     onUserEvent ( static_cast<FUserEvent*>(ev) );
   }
@@ -268,6 +239,7 @@ int FObject::addTimer (int interval)
   timeval currentTime{};
   int id{1};
   timer_modify_lock = true;
+  auto& timer_list = globalTimerList();
 
   // find an unused timer id
   if ( ! timer_list->empty() )
@@ -317,6 +289,7 @@ bool FObject::delTimer (int id) const
     return false;
 
   timer_modify_lock = true;
+  auto& timer_list = globalTimerList();
   auto iter = timer_list->begin();
   const auto& last = timer_list->end();
 
@@ -338,6 +311,8 @@ bool FObject::delTimer (int id) const
 bool FObject::delOwnTimers() const
 {
   // Deletes all timers of this object
+
+  auto& timer_list = globalTimerList();
 
   if ( ! timer_list )
     return false;
@@ -364,6 +339,8 @@ bool FObject::delOwnTimers() const
 bool FObject::delAllTimers() const
 {
   // Deletes all timers of all objects
+
+  auto& timer_list = globalTimerList();
 
   if ( ! timer_list )
     return false;
@@ -405,6 +382,8 @@ uInt FObject::processTimerEvent()
   if ( isTimerInUpdating() )
     return 0;
 
+  auto& timer_list = globalTimerList();
+
   if ( ! timer_list )
     return 0;
 
@@ -426,7 +405,7 @@ uInt FObject::processTimerEvent()
     if ( timer.interval.tv_usec > 0 || timer.interval.tv_sec > 0 )
       activated++;
 
-    FTimerEvent t_ev(fc::Timer_Event, timer.id);
+    FTimerEvent t_ev(Event::Timer, timer.id);
     performTimerAction (timer.object, &t_ev);
   }
 
@@ -438,6 +417,13 @@ void FObject::performTimerAction (FObject*, FEvent*)
 {
   // This method must be reimplemented in a subclass
   // to process the passed object and timer event
+}
+
+//----------------------------------------------------------------------
+auto FObject::globalTimerList() -> const FTimerListUniquePtr&
+{
+  static const auto& timer_list = make_unique<FTimerList>();
+  return timer_list;
 }
 
 }  // namespace finalcut

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -50,7 +50,7 @@ void doubleToItem ( FListBoxItem& item
                   , FDataAccess* container
                   , std::size_t index )
 {
-  typedef std::list<double> DblList;
+  using DblList = std::list<double>;
   DblList& dbl_list = flistboxhelper::getContainer<DblList>(container);
   std::list<double>::iterator iter = dbl_list.begin();
   std::advance (iter, index);
@@ -87,12 +87,15 @@ class Listbox final : public FDialog
     Listbox (const Listbox&) = delete;
 
     // Destructor
-    ~Listbox() override;
+    ~Listbox() override = default;
 
     // Disable copy assignment operator (=)
     Listbox& operator = (const Listbox&) = delete;
 
   private:
+    // Method
+    void initLayout() override;
+
     // Event handlers
     void onClose (FCloseEvent*) override;
 
@@ -113,7 +116,6 @@ Listbox::Listbox (FWidget* parent)
 
   // listbox 1
   //----------
-  list1.setGeometry(FPoint{2, 1}, FSize{18, 10});
   list1.setText ("FListBoxItem");
 
   for (auto i{1}; i < 30; i++)
@@ -124,7 +126,6 @@ Listbox::Listbox (FWidget* parent)
   for (auto i{1}; i <= 15; i++)
     double_list.push_back(2 * double(i) + (double(i) / 100));
 
-  list2.setGeometry(FPoint{21, 1}, FSize{10, 10});
   list2.setText ("double");
 
   //
@@ -147,11 +148,9 @@ Listbox::Listbox (FWidget* parent)
   TLD["gov"] = "Government";
 
   list3.insert (TLD.begin(), TLD.end(), mapToString);
-  list3.setGeometry(FPoint{32, 1}, FSize{21, 10});
   list3.setText ("key: value");
 
   // Quit button
-  quit.setGeometry(FPoint{42, 12}, FSize{10, 1});
   quit.setText (L"&Quit");
 
   // Add quit button function callback
@@ -165,8 +164,14 @@ Listbox::Listbox (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-Listbox::~Listbox()  // destructor
-{ }
+void Listbox::initLayout()
+{
+  list1.setGeometry(FPoint{2, 1}, FSize{18, 10});
+  list2.setGeometry(FPoint{21, 1}, FSize{10, 10});
+  list3.setGeometry(FPoint{32, 1}, FSize{21, 10});
+  quit.setGeometry(FPoint{42, 12}, FSize{10, 1});
+  FDialog::initLayout();
+}
 
 //----------------------------------------------------------------------
 void Listbox::onClose (FCloseEvent* ev)

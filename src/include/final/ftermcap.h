@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2020 Markus Gans                                      *
+* Copyright 2016-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -35,41 +35,17 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#if defined(__sun) && defined(__SVR4)
-  #include <termio.h>
-  typedef struct termio SGTTY;
-  typedef struct termios SGTTYS;
-
-  #ifdef _LP64
-    typedef unsigned int chtype;
-  #else
-    typedef unsigned long chtype;
-  #endif  // _LP64
-
-  #include <term.h>  // termcap
-#else
-  #include <term.h>  // termcap
-#endif  // defined(__sun) && defined(__SVR4)
-
-#ifdef F_HAVE_LIBGPM
-  #undef buttons  // from term.h
-#endif
-
 #include <array>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 
 // FTermcap string macro
-#define TCAP(...)  FTermcap::strings[__VA_ARGS__].string
+#define TCAP(...)  FTermcap::strings[int(Termcap::__VA_ARGS__)].string
 
 namespace finalcut
 {
-
-// class forward declaration
-class FSystem;
-class FTermData;
-class FTermDetection;
 
 //----------------------------------------------------------------------
 // class FTermcap
@@ -78,17 +54,22 @@ class FTermDetection;
 class FTermcap final
 {
   public:
-    // Typedef
-    typedef struct
+    // Enumeration
+    enum class Status
+    {
+      Error = -1,
+      OK = 0
+    };
+
+    struct TCapMap
     {
       const char* string;
       char  tname[alignof(char*)];
-    }
-    TCapMap;
+    };
 
     // Using-declaration
-    using fn_putc = int (*)(int);
-    using TCapMapType = std::array<TCapMap, 83>;
+    using TCapMapType = std::array<TCapMap, 85>;
+    using defaultPutChar = std::function<int(int)>;
 
     // Constructors
     FTermcap() = default;
@@ -98,25 +79,24 @@ class FTermcap final
 
     // Accessors
     FString              getClassName() const;
-    template <typename CharT>
-    static bool          getFlag (const CharT&);
-    template <typename CharT>
-    static int           getNumber (const CharT&);
-    template <typename CharT>
-    static char*         getString (const CharT&);
-    template <typename CharT>
-    static char*         encodeMotionParameter (const CharT&, int, int);
-    template <typename CharT
-            , typename... Args>
-    static char*         encodeParameter (const CharT&, Args&&...);
-    template <typename CharT>
-    static int           paddingPrint (const CharT&, int, fn_putc);
+    static bool          getFlag (const std::string&);
+    static int           getNumber (const std::string&);
+    static char*         getString (const std::string&);
+    static std::string   encodeMotionParameter (const std::string&, int, int);
+    template <typename... Args>
+    static std::string   encodeParameter (const std::string&, Args&&...);
+    static Status        paddingPrint ( const std::string&
+                                      , int
+                                      , const defaultPutChar&);
 
     // Inquiry
     static bool          isInitialized();
 
+    // Mutator
+    static void          setBaudrate (int);
+
     // Methods
-    static void init();
+    static void          init();
 
     // Data members
     static bool          background_color_erase;
@@ -128,8 +108,11 @@ class FTermcap final
     static bool          ansi_default_color;
     static bool          osc_support;
     static bool          no_utf8_acs_chars;
+    static bool          no_padding_char;
+    static bool          xon_xoff_flow_control;
     static int           max_color;
     static int           tabstop;
+    static int           padding_baudrate;
     static int           attr_without_color;
     static TCapMapType   strings;
 
@@ -145,15 +128,17 @@ class FTermcap final
     static void          termcapNumerics();
     static void          termcapStrings();
     static void          termcapKeys();
-    static int           _tputs (const char*, int, fn_putc);
+    static std::string   encodeParams ( const std::string&
+                                      , const std::vector<int>& );
+    template<typename PutChar>
+    static void          delay_output (int, const PutChar&);
 
     // Data member
-    static FSystem*        fsystem;
-    static FTermData*      fterm_data;
-    static FTermDetection* term_detection;
-    static char            string_buf[BUF_SIZE];
+    static bool          initialized;
+    static int           baudrate;
+    static char          PC;
+    static char          string_buf[BUF_SIZE];
 };
-
 
 // FTermcap inline functions
 //----------------------------------------------------------------------
@@ -161,52 +146,45 @@ inline FString FTermcap::getClassName() const
 { return "FTermcap"; }
 
 //----------------------------------------------------------------------
-template <typename CharT>
-bool FTermcap::getFlag (const CharT& cap)
+template <typename... Args>
+std::string FTermcap::encodeParameter (const std::string& cap, Args&&... args)
 {
-  return ::tgetflag(C_STR(cap));
-}
-
-//----------------------------------------------------------------------
-template <typename CharT>
-int FTermcap::getNumber (const CharT& cap)
-{
-  return ::tgetnum(C_STR(cap));
-}
-
-//----------------------------------------------------------------------
-template <typename CharT>
-char* FTermcap::getString (const CharT& cap)
-{
-  return ::tgetstr(C_STR(cap), reinterpret_cast<char**>(&string_buf));
-}
-
-//----------------------------------------------------------------------
-template <typename CharT>
-char* FTermcap::encodeMotionParameter (const CharT& cap, int col, int row)
-{
-  return ::tgoto(C_STR(cap), col, row);
-}
-
-//----------------------------------------------------------------------
-template <typename CharT
-        , typename... Args>
-inline char* FTermcap::encodeParameter (const CharT& cap, Args&&... args)
-{
-  return ::tparm (C_STR(cap), std::forward<Args>(args)...);
-}
-
-//----------------------------------------------------------------------
-template <typename CharT>
-int FTermcap::paddingPrint (const CharT& str, int affcnt, fn_putc putc)
-{
-  return _tputs (C_STR(str), affcnt, putc);
+  return encodeParams(cap, {static_cast<int>(args)...});
 }
 
 //----------------------------------------------------------------------
 inline bool FTermcap::isInitialized()
 {
-  return bool(fsystem && fterm_data && term_detection);
+  return initialized;
+}
+
+//----------------------------------------------------------------------
+inline void FTermcap::setBaudrate (int baud)
+{
+  baudrate = baud;
+}
+
+//----------------------------------------------------------------------
+template<typename PutChar>
+inline void FTermcap::delay_output (int ms, const PutChar& outc)
+{
+  if ( no_padding_char )
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+  }
+  else
+  {
+    static constexpr int baudbyte = 9;  // = 7 bit + 1 parity + 1 stop
+
+    for ( int pad_char_count = (ms * baudrate) / (baudbyte * 1000);
+          pad_char_count > 0;
+          pad_char_count-- )
+    {
+      outc(int(PC));
+    }
+
+    std::fflush(stdout);
+  }
 }
 
 }  // namespace finalcut

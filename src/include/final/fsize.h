@@ -56,22 +56,15 @@ class FSize
 {
   public:
     // Constructors
-    FSize () = default;
-    FSize (const FSize&);      // copy constructor
-    FSize (FSize&&) noexcept;  // move constructor
-    FSize (std::size_t, std::size_t);
-
-    // Destructor
-    virtual ~FSize();
+    FSize () noexcept = default;
+    FSize (std::size_t, std::size_t) noexcept;
 
     // Overloaded operators
-    FSize& operator =  (const FSize&);
-    FSize& operator =  (FSize&&) noexcept;
     FSize& operator += (const FSize&);
     FSize& operator -= (const FSize&);
 
     // Accessors
-    virtual FString       getClassName();
+    FString               getClassName() const;
     std::size_t           getWidth() const;
     std::size_t           getHeight() const;
     std::size_t           getArea() const;
@@ -112,25 +105,13 @@ class FSize
 
 // FSize inline functions
 //----------------------------------------------------------------------
-inline FSize::FSize (const FSize& s)  // copy constructor
-  : width{s.width}
-  , height{s.height}
-{ }
-
-//----------------------------------------------------------------------
-inline FSize::FSize (FSize&& s) noexcept  // move constructor
-  : width{std::move(s.width)}
-  , height{std::move(s.height)}
-{ }
-
-//----------------------------------------------------------------------
-inline FSize::FSize (std::size_t w, std::size_t h)
+inline FSize::FSize (std::size_t w, std::size_t h) noexcept
   : width{w}
   , height{h}
 { }
 
 //----------------------------------------------------------------------
-inline FString FSize::getClassName()
+inline FString FSize::getClassName() const
 { return "FSize"; }
 
 //----------------------------------------------------------------------

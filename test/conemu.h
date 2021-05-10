@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -47,7 +47,7 @@ class ConEmu
 {
   public:
     // Enumeration
-    enum console
+    enum class console
     {
       ansi,
       xterm,
@@ -69,7 +69,8 @@ class ConEmu
       screen,
       tmux,
       kterm,
-      mlterm
+      mlterm,
+      kitty
     };
 
     // Constructors
@@ -531,7 +532,7 @@ inline pid_t ConEmu::forkConEmu()
 
 #ifdef TIOCSWINSZ
     // Set slave tty window size
-    struct winsize size;
+    struct winsize size{};
     size.ws_row = 25;
     size.ws_col = 80;
 
@@ -651,10 +652,11 @@ inline const char* ConEmu::getAnswerback (console con)
     0,               // screen
     0,               // tmux
     0,               // kterm,
-    0                // mlterm - Multi Lingual TERMinal
+    0,               // mlterm - Multi Lingual TERMinal
+    0                // kitty
   };
 
-  return Answerback[con];
+  return Answerback[static_cast<std::size_t>(con)];
 }
 
 //----------------------------------------------------------------------
@@ -682,10 +684,11 @@ inline const char* ConEmu::getDSR (console con)
     C_STR("\033[0n"),  // screen
     C_STR("\033[0n"),  // tmux
     C_STR("\033[0n"),  // kterm
-    C_STR("\033[0n")   // mlterm - Multi Lingual TERMinal
+    C_STR("\033[0n"),  // mlterm - Multi Lingual TERMinal
+    C_STR("\033[0n")   // kitty
   };
 
-  return DSR[con];
+  return DSR[static_cast<std::size_t>(con)];
 }
 
 //----------------------------------------------------------------------
@@ -713,10 +716,11 @@ inline const char* ConEmu::getDECID (console con)
     C_STR("\033[?1;2c"),                   // screen
     0,                                     // tmux
     C_STR("\033[?1;2c"),                   // kterm
-    C_STR("\033[?63;1;2;3;4;7;29c")        // mlterm - Multi Lingual TERMinal
+    C_STR("\033[?63;1;2;3;4;7;29c"),       // mlterm - Multi Lingual TERMinal
+    0                                      // kitty
   };
 
-  return DECID[con];
+  return DECID[static_cast<std::size_t>(con)];
 }
 
 //----------------------------------------------------------------------
@@ -744,10 +748,11 @@ inline const char* ConEmu::getDA (console con)
     C_STR("\033[?1;2c"),                   // screen
     C_STR("\033[?1;2c"),                   // tmux
     C_STR("\033[?1;2c"),                   // kterm
-    C_STR("\033[?63;1;2;3;4;7;29c")        // mlterm - Multi Lingual TERMinal
+    C_STR("\033[?63;1;2;3;4;7;29c"),       // mlterm - Multi Lingual TERMinal
+    C_STR("\033[?62;c")                    // kitty
   };
 
-  return DA[con];
+  return DA[static_cast<std::size_t>(con)];
 }
 
 //----------------------------------------------------------------------
@@ -775,10 +780,11 @@ inline const char* ConEmu::getDA1 (console con)
     0,                                // screen
     0,                                // tmux
     0,                                // kterm
-    C_STR("\033[?63;1;2;3;4;7;29c")   // mlterm - Multi Lingual TERMinal
+    C_STR("\033[?63;1;2;3;4;7;29c"),  // mlterm - Multi Lingual TERMinal
+    0                                 // kitty
   };
 
-  return DA1[con];
+  return DA1[static_cast<std::size_t>(con)];
 }
 
 //----------------------------------------------------------------------
@@ -806,10 +812,11 @@ inline const char* ConEmu::getSEC_DA (console con)
     C_STR("\033[>83;40201;0c"),   // screen
     C_STR("\033[>84;0;0c"),       // tmux
     C_STR("\033[?1;2c"),          // kterm
-    C_STR("\033[>24;279;0c")      // mlterm - Multi Lingual TERMinal
+    C_STR("\033[>24;279;0c"),     // mlterm - Multi Lingual TERMinal
+    C_STR("\033[>1;4000;13c")     // kitty
   };
 
-  return SEC_DA[con];
+  return SEC_DA[static_cast<std::size_t>(con)];
 }
 
 //----------------------------------------------------------------------
@@ -967,26 +974,27 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
            && buffer[i + 3] == '1'
            && buffer[i + 4] == 't' )
     {
-      if ( con == urxvt )
+      if ( con == console::urxvt )
         write (fd_master, "\033]l", 3);
-      else if ( con == tera_term )
+      else if ( con == console::tera_term )
         write (fd_master, "\033]l\033\\", 5);
-      else if ( con == screen )
+      else if ( con == console::screen )
         write (fd_master, "\033]lbash\033\\", 9);
-      else if ( con != ansi
-             && con != rxvt
-             && con != kde_konsole
-             && con != cygwin
-             && con != win_terminal
-             && con != mintty
-             && con != linux_con
-             && con != freebsd_con
-             && con != netbsd_con
-             && con != openbsd_con
-             && con != sun_con
-             && con != tmux
-             && con != kterm
-             && con != mlterm )
+      else if ( con != console::ansi
+             && con != console::rxvt
+             && con != console::kde_konsole
+             && con != console::cygwin
+             && con != console::win_terminal
+             && con != console::mintty
+             && con != console::linux_con
+             && con != console::freebsd_con
+             && con != console::netbsd_con
+             && con != console::openbsd_con
+             && con != console::sun_con
+             && con != console::tmux
+             && con != console::kterm
+             && con != console::mlterm
+             && con != console::kitty )
         write (fd_master, "\033]lTITLE\033\\", 10);
 
       i += 5;
@@ -1001,20 +1009,20 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
            && buffer[i + 6] == '?'
            && buffer[i + 7] == '\a' )
     {
-      if ( con != ansi
-        && con != rxvt
-        && con != kde_konsole
-        && con != cygwin
-        && con != win_terminal
-        && con != mintty
-        && con != linux_con
-        && con != freebsd_con
-        && con != netbsd_con
-        && con != openbsd_con
-        && con != sun_con
-        && con != screen
-        && con != tmux
-        && con != kterm )
+      if ( con != console::ansi
+        && con != console::rxvt
+        && con != console::kde_konsole
+        && con != console::cygwin
+        && con != console::win_terminal
+        && con != console::mintty
+        && con != console::linux_con
+        && con != console::freebsd_con
+        && con != console::netbsd_con
+        && con != console::openbsd_con
+        && con != console::sun_con
+        && con != console::screen
+        && con != console::tmux
+        && con != console::kterm )
       {
         int n = buffer[i + 4] - '0';
         write (fd_master, "\033]4;", 4);
@@ -1037,20 +1045,20 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
            && buffer[i + 7] == '?'
            && buffer[i + 8] == '\a' )
     {
-      if ( con != ansi
-        && con != rxvt
-        && con != kde_konsole
-        && con != cygwin
-        && con != win_terminal
-        && con != mintty
-        && con != linux_con
-        && con != freebsd_con
-        && con != netbsd_con
-        && con != openbsd_con
-        && con != sun_con
-        && con != screen
-        && con != tmux
-        && con != kterm )
+      if ( con != console::ansi
+        && con != console::rxvt
+        && con != console::kde_konsole
+        && con != console::cygwin
+        && con != console::win_terminal
+        && con != console::mintty
+        && con != console::linux_con
+        && con != console::freebsd_con
+        && con != console::netbsd_con
+        && con != console::openbsd_con
+        && con != console::sun_con
+        && con != console::screen
+        && con != console::tmux
+        && con != console::kterm )
       {
         int n = (buffer[i + 4] - '0') * 10
               + (buffer[i + 5] - '0');
@@ -1076,20 +1084,20 @@ inline void ConEmu::parseTerminalBuffer (std::size_t length, console con)
            && buffer[i + 8] == '?'
            && buffer[i + 9] == '\a' )
     {
-      if ( con != ansi
-        && con != rxvt
-        && con != kde_konsole
-        && con != cygwin
-        && con != win_terminal
-        && con != mintty
-        && con != linux_con
-        && con != freebsd_con
-        && con != netbsd_con
-        && con != openbsd_con
-        && con != sun_con
-        && con != screen
-        && con != tmux
-        && con != kterm )
+      if ( con != console::ansi
+        && con != console::rxvt
+        && con != console::kde_konsole
+        && con != console::cygwin
+        && con != console::win_terminal
+        && con != console::mintty
+        && con != console::linux_con
+        && con != console::freebsd_con
+        && con != console::netbsd_con
+        && con != console::openbsd_con
+        && con != console::sun_con
+        && con != console::screen
+        && con != console::tmux
+        && con != console::kterm )
       {
         int n = (buffer[i + 4] - '0') * 100
               + (buffer[i + 5] - '0') * 10

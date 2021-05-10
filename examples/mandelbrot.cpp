@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -22,7 +22,7 @@
 
 #include <final/final.h>
 
-namespace fc = finalcut::fc;
+using finalcut::FColor;
 using finalcut::FPoint;
 using finalcut::FSize;
 
@@ -38,7 +38,7 @@ class Mandelbrot final : public finalcut::FDialog
     explicit Mandelbrot (finalcut::FWidget* = nullptr);
 
     // Destructor
-    ~Mandelbrot() override;
+    ~Mandelbrot() override = default;
 
     // Event handlers
     void onKeyPress (finalcut::FKeyEvent*) override;
@@ -46,6 +46,7 @@ class Mandelbrot final : public finalcut::FDialog
 
   private:
     // Methods
+    void initLayout() override;
     void draw() override;
     void adjustSize() override;
 };
@@ -54,13 +55,15 @@ class Mandelbrot final : public finalcut::FDialog
 //----------------------------------------------------------------------
 Mandelbrot::Mandelbrot (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
-{
-  FDialog::setText ("Mandelbrot set");
-}
+{ }
 
 //----------------------------------------------------------------------
-Mandelbrot::~Mandelbrot()
-{ }
+void Mandelbrot::initLayout()
+{
+  FDialog::setText ("Mandelbrot set");
+  FDialog::setGeometry (FPoint{6, 1}, FSize{70, 23});
+  FDialog::initLayout();
+}
 
 //----------------------------------------------------------------------
 void Mandelbrot::draw()
@@ -107,9 +110,9 @@ void Mandelbrot::draw()
       }
 
       if ( iter < max_iter )
-        setColor(fc::Black, iter % 16);
+        setColor(FColor::Black, FColor(iter % 16));
       else
-        setColor(fc::Black, 0);
+        setColor(FColor::Black, FColor::Black);
 
       print(' ');
       x0 += dX;
@@ -125,7 +128,7 @@ void Mandelbrot::onKeyPress (finalcut::FKeyEvent* ev)
   if ( ! ev )
     return;
 
-  if ( ev->key() == 'q' )
+  if ( ev->key() == finalcut::FKey('q') )
   {
     close();
     ev->accept();
@@ -166,7 +169,6 @@ int main (int argc, char* argv[])
 
   // Create a simple dialog box
   Mandelbrot mb{&app};
-  mb.setGeometry (FPoint{6, 1}, FSize{70, 23});
   mb.setShadow();  // Instead of the transparent window shadow
 
   // Set the mandelbrot object as main widget

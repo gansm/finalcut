@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -56,19 +56,17 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
+#include <bitset>
 #include <cstdio>  // need for sprintf
 #include <cstring>
+#include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "final/ftermdata.h"
 
 namespace finalcut
 {
-
-// class forward declaration
-class FSystem;
-class FTermData;
-class FTermDetection;
 
 //----------------------------------------------------------------------
 // class FTermLinux
@@ -77,8 +75,8 @@ class FTermDetection;
 class FTermLinux final
 {
   public:
-    // Typedef
-    typedef fc::linuxConsoleCursorStyle  CursorStyle;
+    // Using-declaration
+    using CursorStyle = LinuxConsoleCursorStyle;
 
     // Constructors
     FTermLinux() = default;
@@ -94,24 +92,24 @@ class FTermLinux final
 
     // Accessors
     FString              getClassName() const;
-    fc::linuxConsoleCursorStyle getCursorStyle() const;
+    CursorStyle          getCursorStyle() const;
     char*                getCursorStyleString();
     int                  getFramebufferBpp() const;
 
     // Mutators
     bool                 setCursorStyle (CursorStyle);
     bool                 setPalette (FColor, int, int, int);
-    void                 setUTF8 (bool) const;
+    void                 setUTF8 (bool = true) const;
 
     // Inquiries
-    bool                 isLinuxConsole();
+    static bool          isLinuxConsole();
     bool                 isVGAFontUsed() const;
     bool                 isNewFontUsed() const;
 
     // Methods
     void                 init();
-    void                 initCharMap();
-    void                 finish();
+    void                 initCharMap() const;
+    void                 finish() const;
     bool                 loadVGAFont();
     bool                 loadNewFont();
     bool                 loadOldFont();
@@ -123,7 +121,6 @@ class FTermLinux final
     FKey                 modifierKeyCorrection (const FKey&);
 
   private:
-    // Typedef
     struct ModifierKey  // bit field
     {
       uChar shift  : 1;  // 0..1
@@ -133,70 +130,111 @@ class FTermLinux final
       uChar        : 4;  // padding bits
     };
 
-    typedef struct
+    struct ModifierKeyHash
+    {
+      std::size_t operator () (const ModifierKey& m_key) const
+      {
+        uChar m{};
+        std::memcpy(&m, &m_key, sizeof(uChar));
+        return std::hash<uChar>()(m);
+      }
+    };
+
+    struct RGB
     {
       uChar red;
       uChar green;
       uChar blue;
-    } RGB;
+    };
 
-    typedef struct
+    struct ColorMap
     {
-      RGB color[16];
-    } ColorMap;
+      std::array<RGB, 16> color;
+    };
+
+    struct Pair
+    {
+      ModifierKey modifier;
+      FKey key;
+    };
+
+    struct PairHash
+    {
+      std::size_t operator () (const Pair& pair) const
+      {
+        size_t seed = 0;
+        const auto hash1 = ModifierKeyHash()(pair.modifier);
+        const auto hash2 = FKeyHash()(pair.key);
+        seed ^= hash1 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        seed ^= hash2 + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        return seed;
+      }
+    };
+
+    struct PairEqual
+    {
+      bool operator () (const Pair& lhs, const Pair& rhs) const
+      {
+        return std::memcmp(&lhs.modifier, &rhs.modifier, sizeof(ModifierKey)) == 0
+            && lhs.key == rhs.key;
+      }
+    };
+
+    // Using-declaration
+    using KeyMap = std::unordered_map<Pair, FKey, PairHash, PairEqual>;
 
     // Accessors
-    int                  getFramebuffer_bpp();
+    int                  getFramebuffer_bpp() const;
     bool                 getScreenFont();
     bool                 getUnicodeMap ();
-    ModifierKey&        getModifierKey();
+    ModifierKey&         getModifierKey();
 
     // Mutators
     int                  setScreenFont ( const uChar[], uInt, uInt, uInt
                                        , bool = false );
-    int                  setUnicodeMap (struct unimapdesc*);
-    void                 setLinuxCursorStyle (fc::linuxConsoleCursorStyle) const;
+    int                  setUnicodeMap (struct unimapdesc*) const;
+    void                 setLinuxCursorStyle (LinuxConsoleCursorStyle) const;
 
     // Methods
 #if defined(ISA_SYSCTL_SUPPORT)
-    uInt16               getInputStatusRegisterOne();
-    uChar                readAttributeController (uChar);
-    void                 writeAttributeController (uChar, uChar);
-    uChar                getAttributeMode();
-    void                 setAttributeMode (uChar);
-    int                  setBlinkAsIntensity (bool);
-    bool                 has9BitCharacters();
+    uInt16               getInputStatusRegisterOne() const;
+    uChar                readAttributeController (uChar) const;
+    void                 writeAttributeController (uChar, uChar) const;
+    uChar                getAttributeMode() const;
+    void                 setAttributeMode (uChar) const;
+    int                  setBlinkAsIntensity (bool = true) const;
+    bool                 has9BitCharacters() const;
     void                 getVGAPalette();
     void                 setVGADefaultPalette();
     bool                 setVGAPalette (FColor, int, int, int);
     bool                 saveVGAPalette();
     bool                 resetVGAPalette();
 #endif  // defined(ISA_SYSCTL_SUPPORT)
-    FKey                 shiftKeyCorrection (const FKey&) const;
-    FKey                 ctrlKeyCorrection (const FKey&) const;
-    FKey                 altKeyCorrection (const FKey&) const;
-    FKey                 shiftCtrlKeyCorrection (const FKey&) const;
-    FKey                 shiftAltKeyCorrection (const FKey&) const;
-    FKey                 ctrlAltKeyCorrection (const FKey&) const;
-    FKey                 shiftCtrlAltKeyCorrection (const FKey&) const;
+    void                 initKeyMap();
+    void                 keyCorrection();
+    void                 shiftKeyCorrection();
+    void                 ctrlKeyCorrection();
+    void                 altKeyCorrection();
+    void                 shiftCtrlKeyCorrection();
+    void                 shiftAltKeyCorrection();
+    void                 ctrlAltKeyCorrection();
+    void                 shiftCtrlAltKeyCorrection();
+    void                 initSpecialCharacter() const;
     sInt16               getFontPos (wchar_t ucs) const;
-    void                 initSpecialCharacter();
-    void                 characterFallback (wchar_t, std::vector<wchar_t>);
+    void                 characterFallback (wchar_t, const std::vector<wchar_t>&) const;
 
     // Data members
 #if defined(__linux__)
     bool                 vga_font{};
     bool                 new_font{};
     bool                 has_saved_palette{};
-    FTermData*           fterm_data{nullptr};
-    FSystem*             fsystem{nullptr};
-    FTermDetection*      term_detection{nullptr};
+    int                  framebuffer_bpp{-1};
     CursorStyle          linux_console_cursor_style{};
     console_font_op      screen_font{};
     unimapdesc           screen_unicode_map{};
     ColorMap             saved_color_map{};
     ColorMap             cmap{};
-    int                  framebuffer_bpp{-1};
+    KeyMap               key_map{};
     ModifierKey          mod_key{};
 #endif  // defined(__linux__)
 };

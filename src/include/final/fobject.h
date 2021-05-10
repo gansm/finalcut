@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -150,14 +150,15 @@ class FObject
       FObject*  object;
     };
 
-    // Typedefs
-    typedef std::vector<FTimerData> FTimerList;
+    // Using-declaration
+    using FTimerList = std::vector<FTimerData>;
+    using FTimerListUniquePtr = std::unique_ptr<FTimerList>;
 
     // Accessor
     FTimerList*           getTimerList() const;
 
     // Mutator
-    void                  setWidgetProperty (bool);
+    void                  setWidgetProperty (bool = true);
 
     // Method
     uInt                  processTimerEvent();
@@ -169,6 +170,7 @@ class FObject
   private:
     // Method
     virtual void          performTimerAction (FObject*, FEvent*);
+    static auto           globalTimerList() -> const FTimerListUniquePtr&;
 
     // Data members
     FObject*              parent_obj{nullptr};
@@ -177,7 +179,6 @@ class FObject
     bool                  has_parent{false};
     bool                  widget_object{false};
     static bool           timer_modify_lock;
-    static FTimerList*    timer_list;
 };
 
 
@@ -247,11 +248,11 @@ inline bool FObject::hasParent() const
 
 //----------------------------------------------------------------------
 inline bool FObject::hasChildren() const
-{ return bool( ! children_list.empty() ); }
+{ return ! children_list.empty(); }
 
 //----------------------------------------------------------------------
 inline bool FObject::isDirectChild (const FObject* obj) const
-{ return bool( obj->getParent() == this ); }
+{ return obj->getParent() == this; }
 
 //----------------------------------------------------------------------
 inline bool FObject::isWidget() const
@@ -259,7 +260,7 @@ inline bool FObject::isWidget() const
 
 //----------------------------------------------------------------------
 inline bool FObject::isInstanceOf (const FString& classname) const
-{ return bool( classname == getClassName() ); }
+{ return classname == getClassName(); }
 
 //----------------------------------------------------------------------
 inline bool FObject::isTimerInUpdating() const
@@ -267,7 +268,7 @@ inline bool FObject::isTimerInUpdating() const
 
 //----------------------------------------------------------------------
 inline FObject::FTimerList* FObject::getTimerList() const
-{ return timer_list; }
+{ return globalTimerList().get(); }
 
 //----------------------------------------------------------------------
 inline void FObject::setWidgetProperty (bool property)

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -80,9 +80,6 @@
 namespace finalcut
 {
 
-// class forward declaration
-class FSystem;
-
 //----------------------------------------------------------------------
 // class FFileDialog
 //----------------------------------------------------------------------
@@ -91,7 +88,7 @@ class FFileDialog : public FDialog
 {
   public:
     // Enumeration
-    enum DialogType
+    enum class DialogType
     {
       Open = 0,
       Save = 1
@@ -99,17 +96,20 @@ class FFileDialog : public FDialog
 
     // Constructors
     explicit FFileDialog (FWidget* = nullptr);
-    FFileDialog (const FFileDialog&);  // copy constructor
+
     FFileDialog ( const FString&
                 , const FString&
-                , DialogType = FFileDialog::Open
+                , DialogType = DialogType::Open
                 , FWidget* = nullptr );
+
+    // Disable copy constructor
+    FFileDialog (const FFileDialog&) = delete;
 
     // Destructor
     ~FFileDialog() override;
 
-    // copy assignment operator (=)
-    FFileDialog& operator = (const FFileDialog&);
+    // Disable copy assignment operator (=)
+    FFileDialog& operator = (const FFileDialog&) = delete;
 
     // Accessors
     FString              getClassName() const override;
@@ -121,8 +121,7 @@ class FFileDialog : public FDialog
     // Mutators
     void                 setPath (const FString&);
     void                 setFilter (const FString&);
-    bool                 setShowHiddenFiles(bool);
-    bool                 setShowHiddenFiles();
+    bool                 setShowHiddenFiles (bool = true);
     bool                 unsetShowHiddenFiles();
 
     // Event handler
@@ -141,7 +140,6 @@ class FFileDialog : public FDialog
     void                 adjustSize() override;
 
   private:
-    // Typedef
     struct FDirEntry
     {
       // Constructor
@@ -186,7 +184,7 @@ class FFileDialog : public FDialog
       uChar                  : 1;  // padding bits
     };
 
-    typedef std::vector<FDirEntry> DirEntries;
+    using DirEntries = std::vector<FDirEntry>;
 
     // Methods
     void                 init();
@@ -214,7 +212,6 @@ class FFileDialog : public FDialog
     void                 cb_processShowHidden();
 
     // Data members
-    static FSystem*  fsystem;
     DIR*             directory_stream{nullptr};
     DirEntries       dir_entries{};
     FString          directory{};
@@ -224,7 +221,7 @@ class FFileDialog : public FDialog
     FCheckBox        hidden_check{this};
     FButton          cancel_btn{this};
     FButton          open_btn{this};
-    DialogType       dlg_type{FFileDialog::Open};
+    DialogType       dlg_type{DialogType::Open};
     bool             show_hidden{false};
 
     // Friend functions
@@ -250,10 +247,6 @@ inline FString FFileDialog::getPath() const
 //----------------------------------------------------------------------
 inline FString FFileDialog::getFilter() const
 { return filter_pattern; }
-
-//----------------------------------------------------------------------
-inline bool FFileDialog::setShowHiddenFiles()
-{ return setShowHiddenFiles(true); }
 
 //----------------------------------------------------------------------
 inline bool FFileDialog::unsetShowHiddenFiles()

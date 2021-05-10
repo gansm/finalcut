@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -35,11 +35,12 @@
 #include "final/ftypes.h"
 
 #if defined(__linux__)
-  #include <linux/keyboard.h>  // need keyboard modifiers
-  #include "../fonts/newfont.h"
-  #include "../fonts/unicodemap.h"
-  #include "../fonts/vgafont.h"
-#endif
+
+#include <linux/keyboard.h>  // need keyboard modifiers
+#include "../fonts/newfont.h"
+#include "../fonts/unicodemap.h"
+#include "../fonts/vgafont.h"
+
 
 namespace finalcut
 {
@@ -52,19 +53,16 @@ namespace finalcut
 //----------------------------------------------------------------------
 FTermLinux::~FTermLinux()  // destructor
 {
-#if defined(__linux__)
   if ( screen_font.data )
     delete[] screen_font.data;
 
   if ( screen_unicode_map.entries )
     delete[] screen_unicode_map.entries;
-#endif  // defined(__linux__)
 }
 
 // public methods of FTermLinux
 //----------------------------------------------------------------------
-#if defined(__linux__)
-fc::linuxConsoleCursorStyle FTermLinux::getCursorStyle() const
+FTermLinux::CursorStyle FTermLinux::getCursorStyle() const
 {
   // Get the current set cursor style
 
@@ -78,24 +76,21 @@ char* FTermLinux::getCursorStyleString()
 
   static std::array<char, 16> buf{};
   std::fill (std::begin(buf), std::end(buf), '\0');
-  std::snprintf (buf.data(), buf.size(), CSI "?%dc", getCursorStyle());
+  std::snprintf (buf.data(), buf.size(), CSI "?%dc", int(getCursorStyle()));
   return buf.data();
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::setCursorStyle (fc::linuxConsoleCursorStyle style)
+bool FTermLinux::setCursorStyle (CursorStyle style)
 {
   // Set cursor style in linux console
-
-  if ( ! fterm_data )
-    fterm_data = FTerm::getFTermData();
 
   if ( ! FTerm::isLinuxTerm() )
     return false;
 
   linux_console_cursor_style = style;
 
-  if ( fterm_data->isCursorHidden() )
+  if ( FTerm::getFTermData().isCursorHidden() )
     return false;
 
   setLinuxCursorStyle(style);
@@ -137,11 +132,12 @@ bool FTermLinux::isLinuxConsole()
 {
   // Check if it's a Linux console
 
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
-
   char arg{0};
-  const int fd_tty = FTerm::getTTYFileDescriptor();
+  int fd_tty = FTerm::getTTYFileDescriptor();
+  const auto& fsystem = FTerm::getFSystem();
+
+  if ( fd_tty < 0 )  // Undefined tty file descriptor
+    fd_tty = 0;
 
   // Get keyboard type an compare
   return ( fsystem->isTTY(fd_tty)
@@ -154,18 +150,12 @@ void FTermLinux::init()
 {
   // Initialize Linux console
 
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
-
-  if ( ! fterm_data )
-    fterm_data = FTerm::getFTermData();
-
-  fsystem = FTerm::getFSystem();
-  term_detection = FTerm::getFTermDetection();
+  auto& fterm_data = FTerm::getFTermData();
   screen_unicode_map.entries = nullptr;
   screen_font.data = nullptr;
-  fterm_data->supportShadowCharacter (true);
-  fterm_data->supportHalfBlockCharacter (true);
+  fterm_data.supportShadowCharacter (true);
+  fterm_data.supportHalfBlockCharacter (true);
+  initKeyMap();
 
 #if defined(ISA_SYSCTL_SUPPORT)
   getVGAPalette();
@@ -173,7 +163,7 @@ void FTermLinux::init()
 
   if ( FTerm::openConsole() == 0 )
   {
-    term_detection->setLinuxTerm (isLinuxConsole());
+    FTerm::getFTermDetection().setLinuxTerm (isLinuxConsole());
 
     if ( FTerm::isLinuxTerm() )
     {
@@ -188,7 +178,7 @@ void FTermLinux::init()
         FTermcap::max_color = 8;
 #endif
       // Underline cursor
-      setCursorStyle (fc::underscore_cursor);
+      setCursorStyle (LinuxConsoleCursorStyle::Underscore);
 
       // Framebuffer color depth in bits per pixel
       framebuffer_bpp = getFramebuffer_bpp();
@@ -203,13 +193,13 @@ void FTermLinux::init()
   }
   else
   {
-    std::clog << FLog::Error << "Can not open the console." << std::endl;
+    std::clog << FLog::LogLevel::Error << "Can not open the console." << std::endl;
     std::abort();
   }
 }
 
 //----------------------------------------------------------------------
-void FTermLinux::initCharMap()
+void FTermLinux::initCharMap() const
 {
   constexpr sInt16 NOT_FOUND = -1;
 
@@ -220,12 +210,12 @@ void FTermLinux::initCharMap()
   {
     for (auto&& entry : fc::character)
     {
-      const auto ucs = wchar_t(entry[fc::UTF8]);
+      const auto ucs = entry.unicode;
       const sInt16 fontpos = getFontPos(ucs);
 
       // Fix for a non-cp437 Linux console with PC charset encoding
       if ( fontpos > 255 || fontpos == NOT_FOUND )
-        entry[fc::PC] = entry[fc::ASCII];
+        entry.pc = entry.ascii;
 
       // Character substitutions for missing characters
       if ( fontpos == NOT_FOUND )
@@ -248,14 +238,14 @@ void FTermLinux::initCharMap()
 }
 
 //----------------------------------------------------------------------
-void FTermLinux::finish()
+void FTermLinux::finish() const
 {
   if ( FTerm::isLinuxTerm() )
   {
 #if defined(ISA_SYSCTL_SUPPORT)
     setBlinkAsIntensity (false);
 #endif
-    setLinuxCursorStyle (fc::default_cursor);
+    setLinuxCursorStyle (LinuxConsoleCursorStyle::Default);
   }
 }
 
@@ -292,11 +282,9 @@ bool FTermLinux::loadVGAFont()
 
   if ( vga_font )
   {
-    if ( ! fterm_data )
-      fterm_data = FTerm::getFTermData();
-
-    fterm_data->supportShadowCharacter (true);
-    fterm_data->supportHalfBlockCharacter (true);
+    auto& fterm_data = FTerm::getFTermData();
+    fterm_data.supportShadowCharacter (true);
+    fterm_data.supportHalfBlockCharacter (true);
   }
 
   return vga_font;
@@ -342,11 +330,9 @@ bool FTermLinux::loadNewFont()
 
   if ( new_font )
   {
-    if ( ! fterm_data )
-      fterm_data = FTerm::getFTermData();
-
-    fterm_data->supportShadowCharacter (true);
-    fterm_data->supportHalfBlockCharacter (true);
+    auto& fterm_data = FTerm::getFTermData();
+    fterm_data.supportShadowCharacter (true);
+    fterm_data.supportHalfBlockCharacter (true);
   }
 
   return new_font;
@@ -458,59 +444,25 @@ FKey FTermLinux::modifierKeyCorrection (const FKey& key_id)
 {
   // Get the current modifier key state
 
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
+  const Pair pair{getModifierKey(), key_id};
+  const auto& key = key_map[pair];
 
-  const ModifierKey& m = getModifierKey();
-
-  if ( ! (m.shift || m.ctrl || m.alt) )
-  {
+  if ( key == FKey(0) )    // Not found
     return key_id;
-  }
-  else if ( m.shift && ! m.ctrl && ! m.alt )
-  {
-    return shiftKeyCorrection(key_id);
-  }
-  else if ( ! m.shift && m.ctrl && ! m.alt )
-  {
-    return ctrlKeyCorrection(key_id);
-  }
-  else if ( ! m.shift && ! m.ctrl && m.alt )
-  {
-    return altKeyCorrection(key_id);
-  }
-  else if ( m.shift && m.ctrl && ! m.alt )
-  {
-    return shiftCtrlKeyCorrection(key_id);
-  }
-  else if ( m.shift && ! m.ctrl && m.alt )
-  {
-    return shiftAltKeyCorrection(key_id);
-  }
-  else if ( ! m.shift && m.ctrl && m.alt )
-  {
-    return ctrlAltKeyCorrection(key_id);
-  }
-  else if ( m.shift &&  m.ctrl && m.alt )
-  {
-    return shiftCtrlAltKeyCorrection(key_id);
-  }
-
-  return key_id;
+  else                     // Found
+    return key_map[pair];
 }
 
 
 // private methods of FTermLinux
 //----------------------------------------------------------------------
-int FTermLinux::getFramebuffer_bpp()
+int FTermLinux::getFramebuffer_bpp() const
 {
   int fd{-1};
   const char* fb = "/dev/fb/0";
   struct fb_var_screeninfo fb_var{};
   struct fb_fix_screeninfo fb_fix{};
-
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
+  const auto& fsystem = FTerm::getFSystem();
 
   if ( (fd = fsystem->open(fb, O_RDWR)) < 0 )
   {
@@ -527,7 +479,7 @@ int FTermLinux::getFramebuffer_bpp()
     && fsystem->ioctl(fd, FBIOGET_FSCREENINFO, &fb_fix) == 0 )
   {
     fsystem->close(fd);
-    return int(fb_var.bits_per_pixel);
+    return static_cast<int>(fb_var.bits_per_pixel);
   }
   else
   {
@@ -569,8 +521,8 @@ bool FTermLinux::getScreenFont()
   }
 
   // Font operation
-  if ( fsystem )
-    ret = fsystem->ioctl (fd_tty, KDFONTOP, &font);
+  const auto& fsystem = FTerm::getFSystem();
+  ret = fsystem->ioctl (fd_tty, KDFONTOP, &font);
 
   if ( ret != 0 )
   {
@@ -600,8 +552,8 @@ bool FTermLinux::getUnicodeMap()
   screen_unicode_map.entries = nullptr;
 
   // Get count
-  if ( fsystem )
-    ret = fsystem->ioctl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
+  const auto& fsystem = FTerm::getFSystem();
+  ret = fsystem->ioctl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
 
   if ( ret != 0 )
   {
@@ -621,8 +573,7 @@ bool FTermLinux::getUnicodeMap()
     }
 
     // Get unicode-to-font mapping from kernel
-    if ( fsystem )
-      ret = fsystem->ioctl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
+    ret = fsystem->ioctl (fd_tty, GIO_UNIMAP, &screen_unicode_map);
 
     if ( ret != 0 )
       return false;
@@ -641,8 +592,10 @@ FTermLinux::ModifierKey& FTermLinux::getModifierKey()
   // Fill bit field with 0
   std::memset (&mod_key, 0x00, sizeof(mod_key));
 
+  const auto& fsystem = FTerm::getFSystem();
+
   // TIOCLINUX, subcode = 6 (TIOCL_GETSHIFTSTATE)
-  if ( fsystem && fsystem->ioctl(0, TIOCLINUX, &subcode) >= 0 )
+  if ( fsystem->ioctl(0, TIOCLINUX, &subcode) >= 0 )
   {
     if ( subcode & (1 << KG_SHIFT) )
       mod_key.shift = true;
@@ -705,8 +658,8 @@ int FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
   }
 
   // Font operation
-  if ( fsystem )
-    ret = fsystem->ioctl (fd_tty, KDFONTOP, &font);
+  const auto& fsystem = FTerm::getFSystem();
+  ret = fsystem->ioctl (fd_tty, KDFONTOP, &font);
 
   if ( ret != 0 && errno != ENOSYS && errno != EINVAL )
   {
@@ -726,7 +679,7 @@ int FTermLinux::setScreenFont ( const uChar fontdata[], uInt count
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::setUnicodeMap (struct unimapdesc* unimap)
+int FTermLinux::setUnicodeMap (struct unimapdesc* unimap) const
 {
   struct unimapinit advice;
   const int fd_tty = FTerm::getTTYFileDescriptor();
@@ -742,15 +695,14 @@ int FTermLinux::setUnicodeMap (struct unimapdesc* unimap)
   do
   {
     // Clear the unicode-to-font table
-    if ( fsystem )
-      ret = fsystem->ioctl (fd_tty, PIO_UNIMAPCLR, &advice);
+    const auto& fsystem = FTerm::getFSystem();
+    ret = fsystem->ioctl (fd_tty, PIO_UNIMAPCLR, &advice);
 
     if ( ret != 0 )
       return -1;
 
     // Put the new unicode-to-font mapping in kernel
-    if ( fsystem )
-      ret = fsystem->ioctl (fd_tty, PIO_UNIMAP, unimap);
+    ret = fsystem->ioctl (fd_tty, PIO_UNIMAP, unimap);
 
     if ( ret != 0 )
       advice.advised_hashlevel++;
@@ -771,12 +723,11 @@ void FTermLinux::setLinuxCursorStyle (CursorStyle style) const
 
 #if defined(ISA_SYSCTL_SUPPORT)
 //----------------------------------------------------------------------
-inline uInt16 FTermLinux::getInputStatusRegisterOne()
+inline uInt16 FTermLinux::getInputStatusRegisterOne() const
 {
   // Gets the VGA input-status-register-1
 
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
+  const auto& fsystem = FTerm::getFSystem();
 
   // Miscellaneous output (read port)
   static constexpr uInt16 misc_read = 0x3cc;
@@ -788,12 +739,11 @@ inline uInt16 FTermLinux::getInputStatusRegisterOne()
 }
 
 //----------------------------------------------------------------------
-uChar FTermLinux::readAttributeController (uChar index)
+uChar FTermLinux::readAttributeController (uChar index) const
 {
   // Reads a byte from the attribute controller from a given index
 
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
+  const auto& fsystem = FTerm::getFSystem();
 
   // Attribute controller (write port)
   static constexpr uInt16 attrib_cntlr_write = 0x3c0;
@@ -815,12 +765,11 @@ uChar FTermLinux::readAttributeController (uChar index)
 }
 
 //----------------------------------------------------------------------
-void FTermLinux::writeAttributeController (uChar index, uChar data)
+void FTermLinux::writeAttributeController (uChar index, uChar data) const
 {
   // Writes a byte from the attribute controller from a given index
 
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
+  const auto& fsystem = FTerm::getFSystem();
 
   // Attribute controller (write port)
   static constexpr uInt16 attrib_cntlr_write = 0x3c0;
@@ -838,7 +787,7 @@ void FTermLinux::writeAttributeController (uChar index, uChar data)
 }
 
 //----------------------------------------------------------------------
-inline uChar FTermLinux::getAttributeMode()
+inline uChar FTermLinux::getAttributeMode() const
 {
   // Gets the attribute mode value from the vga attribute controller
   static constexpr uChar attrib_mode = 0x10;
@@ -846,7 +795,7 @@ inline uChar FTermLinux::getAttributeMode()
 }
 
 //----------------------------------------------------------------------
-inline void FTermLinux::setAttributeMode (uChar data)
+inline void FTermLinux::setAttributeMode (uChar data) const
 {
   // Sets the attribute mode value from the vga attribute controller
   static constexpr uChar attrib_mode = 0x10;
@@ -854,13 +803,12 @@ inline void FTermLinux::setAttributeMode (uChar data)
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::setBlinkAsIntensity (bool enable)
+int FTermLinux::setBlinkAsIntensity (bool enable) const
 {
   // Uses blink-bit as background intensity.
   // That permits 16 colors for background
 
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
+  const auto& fsystem = FTerm::getFSystem();
 
   const int fd_tty = FTerm::getTTYFileDescriptor();
 
@@ -891,7 +839,7 @@ int FTermLinux::setBlinkAsIntensity (bool enable)
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::has9BitCharacters()
+bool FTermLinux::has9BitCharacters() const
 {
   // Are 9-bit wide characters used?
 
@@ -899,9 +847,7 @@ bool FTermLinux::has9BitCharacters()
   //  0xc0...0xdf - copying the eighth pixel into the ninth pixel
   //     The rest - the ninth pixel has the background color
 
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
-
+  const auto& fsystem = FTerm::getFSystem();
   const int fd_tty = FTerm::getTTYFileDescriptor();
 
   if ( fsystem->getuid() != 0 )  // Direct hardware access requires root privileges
@@ -926,7 +872,9 @@ bool FTermLinux::has9BitCharacters()
 //----------------------------------------------------------------------
 void FTermLinux::getVGAPalette()
 {
-  if ( fsystem && fsystem->ioctl(0, GIO_CMAP, &cmap) != 0 )
+  const auto& fsystem = FTerm::getFSystem();
+
+  if ( fsystem->ioctl(0, GIO_CMAP, cmap.color.data()) != 0 )
     setVGADefaultPalette();  // Fallback, if GIO_CMAP does not work
 }
 
@@ -945,12 +893,14 @@ void FTermLinux::setVGADefaultPalette()
     {0x55, 0xff, 0xff}, {0xff, 0xff, 0xff}
   }};
 
-  for (std::size_t index{0}; index < 16; index++)
-  {
-    cmap.color[index].red   = defaultColor[index].red;
-    cmap.color[index].green = defaultColor[index].green;
-    cmap.color[index].blue  = defaultColor[index].blue;
-  }
+  std::transform ( defaultColor.begin()
+                 , defaultColor.end()
+                 , cmap.color.begin()
+                 , [] (const RGB& rgb)
+                   {
+                     return rgb;
+                   }
+                 );
 }
 
 //----------------------------------------------------------------------
@@ -962,12 +912,14 @@ bool FTermLinux::setVGAPalette (FColor index, int r, int g, int b)
     && g >= 0 && g < 256
     && b >= 0 && b < 256 )
   {
-    cmap.color[index].red   = uChar(r);
-    cmap.color[index].green = uChar(g);
-    cmap.color[index].blue  = uChar(b);
+    cmap.color[uInt16(index)].red   = uChar(r);
+    cmap.color[uInt16(index)].green = uChar(g);
+    cmap.color[uInt16(index)].blue  = uChar(b);
   }
 
-  if ( fsystem && fsystem->ioctl(0, PIO_CMAP, &cmap) == 0 )
+  const auto& fsystem = FTerm::getFSystem();
+
+  if ( fsystem->ioctl(0, PIO_CMAP, cmap.color.data()) == 0 )
     return true;
   else
     return false;
@@ -978,7 +930,9 @@ bool FTermLinux::saveVGAPalette()
 {
   // Save the current vga color map
 
-  if ( fsystem && fsystem->ioctl(0, GIO_CMAP, &saved_color_map) == 0 )
+  const auto& fsystem = FTerm::getFSystem();
+
+  if ( fsystem->ioctl(0, GIO_CMAP, saved_color_map.color.data()) == 0 )
     has_saved_palette = true;
   else
     has_saved_palette = false;
@@ -991,16 +945,18 @@ bool FTermLinux::resetVGAPalette()
 {
   // Reset the vga color map
 
+  const auto& fsystem = FTerm::getFSystem();
+
   if ( has_saved_palette )
   {
-    if ( fsystem && fsystem->ioctl (0, PIO_CMAP, &saved_color_map) )
+    if ( fsystem->ioctl (0, PIO_CMAP, saved_color_map.color.data()) )
       return false;
   }
   else
   {
     setVGADefaultPalette();
 
-    if ( fsystem && fsystem->ioctl(0, PIO_CMAP, &cmap) != 0 )
+    if ( fsystem->ioctl(0, PIO_CMAP, cmap.color.data()) != 0 )
       return false;
   }
 
@@ -1009,309 +965,188 @@ bool FTermLinux::resetVGAPalette()
 #endif  // defined(ISA_SYSCTL_SUPPORT)
 
 //----------------------------------------------------------------------
-FKey FTermLinux::shiftKeyCorrection (const FKey& key_id) const
+void FTermLinux::initKeyMap()
 {
-  switch ( key_id )
-  {
-    case fc::Fkey_up:
-      return fc::Fkey_sr;         // Shift+Up
-
-    case fc::Fkey_down:
-      return fc::Fkey_sf;         // Shift+Down
-
-    case fc::Fkey_left:
-      return fc::Fkey_sleft;      // Shift+Left
-
-    case fc::Fkey_right:
-      return fc::Fkey_sright;     // Shift+Right
-
-    case fc::Fkey_ic:
-      return fc::Fkey_sic;        // Shift+Ins
-
-    case fc::Fkey_dc:
-      return fc::Fkey_sdc;        // Shift+Del
-
-    case fc::Fkey_home:
-      return fc::Fkey_shome;      // Shift+Home
-
-    case fc::Fkey_end:
-      return fc::Fkey_send;       // Shift+End
-
-    case fc::Fkey_ppage:
-      return fc::Fkey_sprevious;  // Shift+PgUp
-
-    case fc::Fkey_npage:
-      return fc::Fkey_snext;      // Shift+PgDn
-
-    default:
-      return key_id;
-  }
+  keyCorrection();
+  shiftKeyCorrection();
+  ctrlKeyCorrection();
+  altKeyCorrection();
+  shiftCtrlKeyCorrection();
+  shiftAltKeyCorrection();
+  ctrlAltKeyCorrection();
+  shiftCtrlAltKeyCorrection();
 }
 
 //----------------------------------------------------------------------
-FKey FTermLinux::ctrlKeyCorrection (const FKey& key_id) const
+inline void FTermLinux::keyCorrection()
 {
-  switch ( key_id )
-  {
-    case fc::Fkey_up:
-      return fc::Fckey_up;     // Ctrl+Up
-
-    case fc::Fkey_down:
-      return fc::Fckey_down;   // Ctrl+Down
-
-    case fc::Fkey_left:
-      return fc::Fckey_left;   // Ctrl+Left
-
-    case fc::Fkey_right:
-      return fc::Fckey_right;  // Ctrl+Right
-
-    case fc::Fkey_ic:
-      return fc::Fckey_ic;     // Ctrl+Ins
-
-    case fc::Fkey_dc:
-      return fc::Fckey_dc;     // Ctrl+Del
-
-    case fc::Fkey_home:
-      return fc::Fckey_home;   // Ctrl+Home
-
-    case fc::Fkey_end:
-      return fc::Fckey_end;    // Ctrl+End
-
-    case fc::Fkey_ppage:
-      return fc::Fckey_ppage;  // Ctrl+PgUp
-
-    case fc::Fkey_npage:
-      return fc::Fckey_npage;  // Ctrl+PgDn
-
-    default:
-      return key_id;
-  }
+  ModifierKey m{};
+  std::memset (&m, 0x00, sizeof(m));
+  key_map[{m, FKey::Up}]        = FKey::Up;         // Up
+  key_map[{m, FKey::Down}]      = FKey::Down;       // Down
+  key_map[{m, FKey::Left}]      = FKey::Left;       // Left
+  key_map[{m, FKey::Right}]     = FKey::Right;      // Right
+  key_map[{m, FKey::Insert}]    = FKey::Insert;     // Ins
+  key_map[{m, FKey::Del_char}]  = FKey::Del_char;   // Del
+  key_map[{m, FKey::Home}]      = FKey::Home;       // Home
+  key_map[{m, FKey::End}]       = FKey::End;        // End
+  key_map[{m, FKey::Page_up}]   = FKey::Page_up;    // PgUp
+  key_map[{m, FKey::Page_down}] = FKey::Page_down;  // PgDn
 }
 
 //----------------------------------------------------------------------
-FKey FTermLinux::altKeyCorrection (const FKey& key_id) const
+inline void FTermLinux::shiftKeyCorrection()
 {
-  switch ( key_id )
-  {
-    case fc::Fkey_up:
-      return fc::Fmkey_up;     // Meta+Up
-
-    case fc::Fkey_down:
-      return fc::Fmkey_down;   // Meta+Down
-
-    case fc::Fkey_left:
-      return fc::Fmkey_left;   // Meta+Left
-
-    case fc::Fkey_right:
-      return fc::Fmkey_right;  // Meta+Right
-
-    case fc::Fkey_ic:
-      return fc::Fmkey_ic;     // Meta+Ins
-
-    case fc::Fkey_dc:
-      return fc::Fmkey_dc;     // Meta+Del
-
-    case fc::Fkey_home:
-      return fc::Fmkey_home;   // Meta+Home
-
-    case fc::Fkey_end:
-      return fc::Fmkey_end;    // Meta+End
-
-    case fc::Fkey_ppage:
-      return fc::Fmkey_ppage;  // Meta+PgUp
-
-    case fc::Fkey_npage:
-      return fc::Fmkey_npage;  // Meta+PgDn
-
-    default:
-      return key_id;
-  }
+  ModifierKey m{};
+  std::memset (&m, 0x00, sizeof(m));
+  m.shift = 1;
+  key_map[{m, FKey::Up}]        = FKey::Shift_up;         // Shift+Up
+  key_map[{m, FKey::Down}]      = FKey::Shift_down;       // Shift+Down
+  key_map[{m, FKey::Left}]      = FKey::Shift_left;       // Shift+Left
+  key_map[{m, FKey::Right}]     = FKey::Shift_right;      // Shift+Right
+  key_map[{m, FKey::Insert}]    = FKey::Shift_insert;     // Shift+Ins
+  key_map[{m, FKey::Del_char}]  = FKey::Shift_del_char;   // Shift+Del
+  key_map[{m, FKey::Home}]      = FKey::Shift_home;       // Shift+Home
+  key_map[{m, FKey::End}]       = FKey::Shift_end;        // Shift+End
+  key_map[{m, FKey::Page_up}]   = FKey::Shift_page_up;    // Shift+PgUp
+  key_map[{m, FKey::Page_down}] = FKey::Shift_page_down;  // Shift+PgDn
 }
 
 //----------------------------------------------------------------------
-FKey FTermLinux::shiftCtrlKeyCorrection (const FKey& key_id) const
+inline void FTermLinux::ctrlKeyCorrection()
 {
-  switch ( key_id )
-  {
-    case fc::Fkey_up:
-      return fc::Fckey_sup;     // Shift+Ctrl+Up
-
-    case fc::Fkey_down:
-      return fc::Fckey_sdown;   // Shift+Ctrl+Down
-
-    case fc::Fkey_left:
-      return fc::Fckey_sleft;   // Shift+Ctrl+Left
-
-    case fc::Fkey_right:
-      return fc::Fckey_sright;  // Shift+Ctrl+Right
-
-    case fc::Fkey_ic:
-      return fc::Fckey_sic;     // Shift+Ctrl+Ins
-
-    case fc::Fkey_dc:
-      return fc::Fckey_sdc;     // Shift+Ctrl+Del
-
-    case fc::Fkey_home:
-      return fc::Fckey_shome;   // Shift+Ctrl+Home
-
-    case fc::Fkey_end:
-      return fc::Fckey_send;    // Shift+Ctrl+End
-
-    case fc::Fkey_ppage:
-      return fc::Fckey_sppage;  // Shift+Ctrl+PgUp
-
-    case fc::Fkey_npage:
-      return fc::Fckey_snpage;  // Shift+Ctrl+PgDn
-
-    default:
-      return key_id;
-  }
+  ModifierKey m{};
+  std::memset (&m, 0x00, sizeof(m));
+  m.ctrl = 1;
+  key_map[{m, FKey::Up}]        = FKey::Ctrl_up;         // Ctrl+Up
+  key_map[{m, FKey::Down}]      = FKey::Ctrl_down;       // Ctrl+Down
+  key_map[{m, FKey::Left}]      = FKey::Ctrl_left;       // Ctrl+Left
+  key_map[{m, FKey::Right}]     = FKey::Ctrl_right;      // Ctrl+Right
+  key_map[{m, FKey::Insert}]    = FKey::Ctrl_insert;     // Ctrl+Ins
+  key_map[{m, FKey::Del_char}]  = FKey::Ctrl_del_char;   // Ctrl+Del
+  key_map[{m, FKey::Home}]      = FKey::Ctrl_home;       // Ctrl+Home
+  key_map[{m, FKey::End}]       = FKey::Ctrl_end;        // Ctrl+End
+  key_map[{m, FKey::Page_up}]   = FKey::Ctrl_page_up;    // Ctrl+PgUp
+  key_map[{m, FKey::Page_down}] = FKey::Ctrl_page_down;  // Ctrl+PgDn
 }
 
 //----------------------------------------------------------------------
-FKey FTermLinux::shiftAltKeyCorrection (const FKey& key_id) const
+inline void FTermLinux::altKeyCorrection()
 {
-  switch ( key_id )
-  {
-    case fc::Fkey_up:
-      return fc::Fmkey_sup;     // Shift+Meta+Up
-
-    case fc::Fkey_down:
-      return fc::Fmkey_sdown;   // Shift+Meta+Down
-
-    case fc::Fkey_left:
-      return fc::Fmkey_sleft;  // Shift+Meta+Left
-
-    case fc::Fkey_right:
-      return fc::Fmkey_sright;   // Shift+Meta+Right
-
-    case fc::Fkey_ic:
-      return fc::Fmkey_sic;     // Shift+Meta+Ins
-
-    case fc::Fkey_dc:
-      return fc::Fmkey_sdc;     // Shift+Meta+Del
-
-    case fc::Fkey_home:
-      return fc::Fmkey_shome;   // Shift+Meta+Home
-
-    case fc::Fkey_end:
-      return fc::Fmkey_send;    // Shift+Meta+End
-
-    case fc::Fkey_ppage:
-      return fc::Fmkey_sppage;  // Shift+Meta+PgUp
-
-    case fc::Fkey_npage:
-      return fc::Fmkey_snpage;  // Shift+Meta+PgDn
-
-    default:
-      return key_id;
-  }
+  ModifierKey m{};
+  std::memset (&m, 0x00, sizeof(m));
+  m.alt = 1;
+  key_map[{m, FKey::Up}]        = FKey::Meta_up;         // Meta+Up
+  key_map[{m, FKey::Down}]      = FKey::Meta_down;       // Meta+Down
+  key_map[{m, FKey::Left}]      = FKey::Meta_left;       // Meta+Left
+  key_map[{m, FKey::Right}]     = FKey::Meta_right;      // Meta+Right
+  key_map[{m, FKey::Insert}]    = FKey::Meta_insert;     // Meta+Ins
+  key_map[{m, FKey::Del_char}]  = FKey::Meta_del_char;   // Meta+Del
+  key_map[{m, FKey::Home}]      = FKey::Meta_home;       // Meta+Home
+  key_map[{m, FKey::End}]       = FKey::Meta_end;        // Meta+End
+  key_map[{m, FKey::Page_up}]   = FKey::Meta_page_up;    // Meta+PgUp
+  key_map[{m, FKey::Page_down}] = FKey::Meta_page_down;  // Meta+PgDn
 }
 
 //----------------------------------------------------------------------
-FKey FTermLinux::ctrlAltKeyCorrection (const FKey& key_id) const
+inline void FTermLinux::shiftCtrlKeyCorrection()
 {
-  switch ( key_id )
-  {
-    case fc::Fkey_up:
-      return fc::Fcmkey_up;     // Ctrl+Meta+Up
-
-    case fc::Fkey_down:
-      return fc::Fcmkey_down;   // Ctrl+Meta+Down
-
-    case fc::Fkey_left:
-      return fc::Fcmkey_left;   // Ctrl+Meta+Left
-
-    case fc::Fkey_right:
-      return fc::Fcmkey_right;  // Ctrl+Meta+Right
-
-    case fc::Fkey_ic:
-      return fc::Fcmkey_ic;     // Ctrl+Meta+Ins
-
-    case fc::Fkey_dc:
-      return fc::Fcmkey_dc;     // Ctrl+Meta+Del
-
-    case fc::Fkey_home:
-      return fc::Fcmkey_home;   // Ctrl+Meta+Home
-
-    case fc::Fkey_end:
-      return fc::Fcmkey_end;    // Ctrl+Meta+End
-
-    case fc::Fkey_ppage:
-      return fc::Fcmkey_ppage;  // Ctrl+Meta+PgUp
-
-    case fc::Fkey_npage:
-      return fc::Fcmkey_npage;  // Ctrl+Meta+PgDn
-
-    default:
-      return key_id;
-  }
+  ModifierKey m{};
+  std::memset (&m, 0x00, sizeof(m));
+  m.shift = 1;
+  m.ctrl = 1;
+  key_map[{m, FKey::Up}]        = FKey::Shift_Ctrl_up;         // Shift+Ctrl+Up
+  key_map[{m, FKey::Down}]      = FKey::Shift_Ctrl_down;       // Shift+Ctrl+Down
+  key_map[{m, FKey::Left}]      = FKey::Shift_Ctrl_left;       // Shift+Ctrl+Left
+  key_map[{m, FKey::Right}]     = FKey::Shift_Ctrl_right;      // Shift+Ctrl+Right
+  key_map[{m, FKey::Insert}]    = FKey::Shift_Ctrl_insert;     // Shift+Ctrl+Ins
+  key_map[{m, FKey::Del_char}]  = FKey::Shift_Ctrl_del_char;   // Shift+Ctrl+Del
+  key_map[{m, FKey::Home}]      = FKey::Shift_Ctrl_home;       // Shift+Ctrl+Home
+  key_map[{m, FKey::End}]       = FKey::Shift_Ctrl_end;        // Shift+Ctrl+End
+  key_map[{m, FKey::Page_up}]   = FKey::Shift_Ctrl_page_up;    // Shift+Ctrl+PgUp
+  key_map[{m, FKey::Page_down}] = FKey::Shift_Ctrl_page_down;  // Shift+Ctrl+PgDn
 }
 
 //----------------------------------------------------------------------
-FKey FTermLinux::shiftCtrlAltKeyCorrection (const FKey& key_id) const
+inline void FTermLinux::shiftAltKeyCorrection()
 {
-  switch ( key_id )
-  {
-    case fc::Fkey_up:
-      return fc::Fcmkey_sup;     // Shift+Ctrl+Meta+Up
-
-    case fc::Fkey_down:
-      return fc::Fcmkey_sdown;   // Shift+Ctrl+Meta+Down
-
-    case fc::Fkey_left:
-      return fc::Fcmkey_sleft;   // Shift+Ctrl+Meta+Left
-
-    case fc::Fkey_right:
-      return fc::Fcmkey_sright;  // Shift+Ctrl+Meta+Right
-
-    case fc::Fkey_ic:
-      return fc::Fcmkey_sic;     // Shift+Ctrl+Meta+Ins
-
-    case fc::Fkey_dc:
-      return fc::Fcmkey_sdc;     // Shift+Ctrl+Meta+Del
-
-    case fc::Fkey_home:
-      return fc::Fcmkey_shome;   // Shift+Ctrl+Meta+Home
-
-    case fc::Fkey_end:
-      return fc::Fcmkey_send;    // Shift+Ctrl+Meta+End
-
-    case fc::Fkey_ppage:
-      return fc::Fcmkey_sppage;  // Shift+Ctrl+Meta+PgUp
-
-    case fc::Fkey_npage:
-      return fc::Fcmkey_snpage;  // Shift+Ctrl+Meta+PgDn
-
-    default:
-      return key_id;
-  }
+  ModifierKey m{};
+  std::memset (&m, 0x00, sizeof(m));
+  m.shift = 1;
+  m.alt = 1;
+  key_map[{m, FKey::Up}]        = FKey::Shift_Meta_up;         // Shift+Meta+Up
+  key_map[{m, FKey::Down}]      = FKey::Shift_Meta_down;       // Shift+Meta+Down
+  key_map[{m, FKey::Left}]      = FKey::Shift_Meta_left;       // Shift+Meta+Left
+  key_map[{m, FKey::Right}]     = FKey::Shift_Meta_right;      // Shift+Meta+Right
+  key_map[{m, FKey::Insert}]    = FKey::Shift_Meta_insert;     // Shift+Meta+Ins
+  key_map[{m, FKey::Del_char}]  = FKey::Shift_Meta_del_char;   // Shift+Meta+Del
+  key_map[{m, FKey::Home}]      = FKey::Shift_Meta_home;       // Shift+Meta+Home
+  key_map[{m, FKey::End}]       = FKey::Shift_Meta_end;        // Shift+Meta+End
+  key_map[{m, FKey::Page_up}]   = FKey::Shift_Meta_page_up;    // Shift+Meta+PgUp
+  key_map[{m, FKey::Page_down}] = FKey::Shift_Meta_page_down;  // Shift+Meta+PgDn
 }
 
 //----------------------------------------------------------------------
-inline void FTermLinux::initSpecialCharacter()
+inline void FTermLinux::ctrlAltKeyCorrection()
 {
-  const wchar_t c1 = fc::UpperHalfBlock;
-  const wchar_t c2 = fc::LowerHalfBlock;
-  const wchar_t c3 = fc::FullBlock;
+  ModifierKey m{};
+  std::memset (&m, 0x00, sizeof(m));
+  m.ctrl = 1;
+  m.alt = 1;
+  key_map[{m, FKey::Up}]        = FKey::Ctrl_Meta_up;         // Ctrl+Meta+Up
+  key_map[{m, FKey::Down}]      = FKey::Ctrl_Meta_down;       // Ctrl+Meta+Down
+  key_map[{m, FKey::Left}]      = FKey::Ctrl_Meta_left;       // Ctrl+Meta+Left
+  key_map[{m, FKey::Right}]     = FKey::Ctrl_Meta_right;      // Ctrl+Meta+Right
+  key_map[{m, FKey::Insert}]    = FKey::Ctrl_Meta_insert;     // Ctrl+Meta+Ins
+  key_map[{m, FKey::Del_char}]  = FKey::Ctrl_Meta_del_char;   // Ctrl+Meta+Del
+  key_map[{m, FKey::Home}]      = FKey::Ctrl_Meta_home;       // Ctrl+Meta+Home
+  key_map[{m, FKey::End}]       = FKey::Ctrl_Meta_end;        // Ctrl+Meta+End
+  key_map[{m, FKey::Page_up}]   = FKey::Ctrl_Meta_page_up;    // Ctrl+Meta+PgUp
+  key_map[{m, FKey::Page_down}] = FKey::Ctrl_Meta_page_down;  // Ctrl+Meta+PgDn
+}
 
-  if ( ! fterm_data )
-    fterm_data = FTerm::getFTermData();
+//----------------------------------------------------------------------
+inline void FTermLinux::shiftCtrlAltKeyCorrection()
+{
+  ModifierKey m{};
+  std::memset (&m, 0x00, sizeof(m));
+  m.shift = 1;
+  m.ctrl = 1;
+  m.alt = 1;
+  key_map[{m, FKey::Up}]        = FKey::Shift_Ctrl_Meta_up;         // Shift+Ctrl+Meta+Up
+  key_map[{m, FKey::Down}]      = FKey::Shift_Ctrl_Meta_down;       // Shift+Ctrl+Meta+Down
+  key_map[{m, FKey::Left}]      = FKey::Shift_Ctrl_Meta_left;       // Shift+Ctrl+Meta+Left
+  key_map[{m, FKey::Right}]     = FKey::Shift_Ctrl_Meta_right;      // Shift+Ctrl+Meta+Right
+  key_map[{m, FKey::Insert}]    = FKey::Shift_Ctrl_Meta_insert;     // Shift+Ctrl+Meta+Ins
+  key_map[{m, FKey::Del_char}]  = FKey::Shift_Ctrl_Meta_del_char;   // Shift+Ctrl+Meta+Del
+  key_map[{m, FKey::Home}]      = FKey::Shift_Ctrl_Meta_home;       // Shift+Ctrl+Meta+Home
+  key_map[{m, FKey::End}]       = FKey::Shift_Ctrl_Meta_end;        // Shift+Ctrl+Meta+End
+  key_map[{m, FKey::Page_up}]   = FKey::Shift_Ctrl_Meta_page_up;    // Shift+Ctrl+Meta+PgUp
+  key_map[{m, FKey::Page_down}] = FKey::Shift_Ctrl_Meta_page_down;  // Shift+Ctrl+Meta+PgDn
+}
 
-  if ( FTerm::charEncode(c1, fc::PC) == FTerm::charEncode(c1, fc::ASCII)
-    || FTerm::charEncode(c2, fc::PC) == FTerm::charEncode(c2, fc::ASCII)
-    || FTerm::charEncode(c3, fc::PC) == FTerm::charEncode(c3, fc::ASCII) )
+//----------------------------------------------------------------------
+inline void FTermLinux::initSpecialCharacter() const
+{
+  auto& fterm_data = FTerm::getFTermData();
+  const auto c1 = wchar_t(UniChar::UpperHalfBlock);  // ▀
+  const auto c2 = wchar_t(UniChar::LowerHalfBlock);  // ▄
+  const auto c3 = wchar_t(UniChar::FullBlock);  // █
+
+  if ( FTerm::charEncode(c1, Encoding::PC) == FTerm::charEncode(c1, Encoding::ASCII)
+    || FTerm::charEncode(c2, Encoding::PC) == FTerm::charEncode(c2, Encoding::ASCII)
+    || FTerm::charEncode(c3, Encoding::PC) == FTerm::charEncode(c3, Encoding::ASCII) )
   {
-    fterm_data->supportShadowCharacter (false);
+    fterm_data.supportShadowCharacter (false);  // disable support
   }
 
-  const wchar_t c4 = fc::RightHalfBlock;
-  const wchar_t c5 = fc::LeftHalfBlock;
+  const auto c4 = wchar_t(UniChar::RightHalfBlock);
+  const auto c5 = wchar_t(UniChar::LeftHalfBlock);
 
-  if ( FTerm::charEncode(c4, fc::PC) == FTerm::charEncode(c4, fc::ASCII)
-    || FTerm::charEncode(c5, fc::PC) == FTerm::charEncode(c5, fc::ASCII) )
+  if ( FTerm::charEncode(c4, Encoding::PC) == FTerm::charEncode(c4, Encoding::ASCII)
+    || FTerm::charEncode(c5, Encoding::PC) == FTerm::charEncode(c5, Encoding::ASCII) )
   {
-    fterm_data->supportHalfBlockCharacter (false);
+    fterm_data.supportHalfBlockCharacter (false);  // disable support
   }
 }
 
@@ -1323,7 +1158,7 @@ sInt16 FTermLinux::getFontPos (wchar_t ucs) const
   for (std::size_t n{0}; n < screen_unicode_map.entry_ct; n++)
   {
     if ( screen_unicode_map.entries[n].unicode == ucs )
-      return sInt16(screen_unicode_map.entries[n].fontpos);
+      return static_cast<sInt16>(screen_unicode_map.entries[n].fontpos);
   }
 
   return NOT_FOUND;
@@ -1331,14 +1166,11 @@ sInt16 FTermLinux::getFontPos (wchar_t ucs) const
 
 //----------------------------------------------------------------------
 void FTermLinux::characterFallback ( wchar_t ucs
-                                   , std::vector<wchar_t> fallback )
+                                   , const std::vector<wchar_t>& fallback ) const
 {
   constexpr sInt16 NOT_FOUND = -1;
-
-  if ( ! fterm_data )
-    fterm_data = FTerm::getFTermData();
-
-  charSubstitution& sub_map = fterm_data->getCharSubstitutionMap();
+  auto& fterm_data = FTerm::getFTermData();
+  charSubstitution& sub_map = fterm_data.getCharSubstitutionMap();
 
   if ( fallback.size() < 2 || ucs != fallback[0] )
     return;
@@ -1355,6 +1187,6 @@ void FTermLinux::characterFallback ( wchar_t ucs
   }
 }
 
-#endif  // defined(__linux__)
-
 }  // namespace finalcut
+
+#endif  // defined(__linux__)

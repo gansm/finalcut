@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -31,10 +31,6 @@ namespace finalcut
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FLog::FLog()
-{ }
-
-//----------------------------------------------------------------------
 FLog::~FLog()  // destructor
 {
   FLog::sync();
@@ -45,26 +41,25 @@ FLog::~FLog()  // destructor
 //----------------------------------------------------------------------
 FLog& FLog::operator << (LogLevel l)
 {
-  using std::placeholders::_1;
   sync();
-  std::lock_guard<std::mutex> lock_guard(mut);
+  std::lock_guard<std::mutex> lock_guard(current_log_mutex);
 
   switch ( l )
   {
-    case Info:
-      current_log = std::bind(&FLog::info, this, _1);
+    case LogLevel::Info:
+      current_log = [this] (const std::string& s) { info(s); };
       break;
 
-    case Warn:
-      current_log = std::bind(&FLog::warn, this, _1);
+    case LogLevel::Warn:
+      current_log = [this] (const std::string& s) { warn(s); };
       break;
 
-    case Error:
-      current_log = std::bind(&FLog::error, this, _1);
+    case LogLevel::Error:
+      current_log = [this] (const std::string& s) { error(s); };
       break;
 
-    case Debug:
-      current_log = std::bind(&FLog::debug, this, _1);
+    case LogLevel::Debug:
+      current_log = [this] (const std::string& s) { debug(s); };
       break;
   }
 
@@ -78,7 +73,6 @@ int FLog::sync()
 {
   if ( ! str().empty() )
   {
-    std::lock_guard<std::mutex> lock_guard(mut);
     current_log (str());
     str("");
   }

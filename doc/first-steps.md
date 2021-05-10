@@ -330,32 +330,32 @@ types and send them to other objects and widgets.
 
 ### Available event types ###
 ```cpp
-enum events
+enum class Event
 {
-  None_Event,               // invalid event
-  KeyPress_Event,           // key pressed
-  KeyUp_Event,              // key released
-  KeyDown_Event,            // key pressed
-  MouseDown_Event,          // mouse button pressed
-  MouseUp_Event,            // mouse button released
-  MouseDoubleClick_Event,   // mouse button double click
-  MouseWheel_Event,         // mouse wheel rolled
-  MouseMove_Event,          // mouse move
-  FocusIn_Event,            // focus in
-  FocusOut_Event,           // focus out
-  ChildFocusIn_Event,       // child focus in
-  ChildFocusOut_Event,      // child focus out
-  WindowActive_Event,       // activate window
-  WindowInactive_Event,     // deactivate window
-  WindowRaised_Event,       // raise window
-  WindowLowered_Event,      // lower window
-  Accelerator_Event,        // keyboard accelerator
-  Resize_Event,             // terminal resize
-  Show_Event,               // widget is shown
-  Hide_Event,               // widget is hidden
-  Close_Event,              // widget close
-  Timer_Event,              // timer event occur
-  User_Event                // user defined event
+  None,              // invalid event
+  KeyPress,          // key pressed
+  KeyUp,             // key released
+  KeyDown,           // key pressed
+  MouseDown,         // mouse button pressed
+  MouseUp,           // mouse button released
+  MouseDoubleClick,  // mouse button double click
+  MouseWheel,        // mouse wheel rolled
+  MouseMove,         // mouse move
+  FocusIn,           // focus in
+  FocusOut,          // focus out
+  ChildFocusIn,      // child focus in
+  ChildFocusOut,     // child focus out
+  WindowActive,      // activate window
+  WindowInactive,    // deactivate window
+  WindowRaised,      // raise window
+  WindowLowered,     // lower window
+  Accelerator,       // keyboard accelerator
+  Resize,            // terminal resize
+  Show,              // widget is shown
+  Hide,              // widget is hidden
+  Close,             // widget close
+  Timer,             // timer event occur
+  User               // user defined event
 };
 ```
 
@@ -378,15 +378,20 @@ class dialogWidget : public FDialog
     explicit dialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
     {
-      setText ("Dialog");
-      setGeometry (FPoint{25, 5}, FSize{23, 4});
-      label.setGeometry (FPoint{1, 1}, FSize{10, 1});
-      label.setAlignment (fc::alignRight);
-      value.setGeometry (FPoint{11, 1}, FSize{10, 1});
+      label.setAlignment (Align::Right);
       id = addTimer(100);
     }
 
   private:
+    void initLayout()
+    {
+      setText ("Dialog");
+      setGeometry (FPoint{25, 5}, FSize{23, 4});
+      label.setGeometry (FPoint{1, 1}, FSize{10, 1});
+      value.setGeometry (FPoint{11, 1}, FSize{10, 1});
+      FDialog::initLayout();
+    }
+
     void onTimer (FTimerEvent* ev) override
     {
       if ( id == ev->getTimerId() && n < 9999999999 )
@@ -475,7 +480,7 @@ class extendedApplication : public FApplication
           || last_avg[1] != load_avg[1]
           || last_avg[2] != load_avg[2] )
         {
-          FUserEvent user_event(fc::User_Event, 0);
+          FUserEvent user_event(Event::User, 0);
           user_event.setData (load_avg);
           FApplication::sendEvent (getMainWidget(), &user_event);
         }
@@ -495,12 +500,16 @@ class dialogWidget final : public FDialog
   public:
     explicit dialogWidget (FWidget* parent = nullptr)
       : FDialog{"User event", parent}
+    { }
+
+  private:
+    void initLayout()
     {
       FDialog::setGeometry (FPoint{25, 5}, FSize{40, 6});
       loadavg_label.setGeometry (FPoint{2, 2}, FSize{36, 1});
+      FDialog::initLayout();
     }
 
-  private:
     void onUserEvent (FUserEvent* ev) override
     {
       const auto& lavg = ev->getData<LoadAvg>();
@@ -891,10 +900,6 @@ class dialogWidget : public FDialog
     explicit dialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
     {
-      setText ("Callback method");
-      setGeometry (FPoint{25, 5}, FSize{25, 7});
-      button.setGeometry (FPoint{7, 3}, FSize{10, 1});
-
       // Connect the button signal "clicked" with the callback method
       button.addCallback
       (
@@ -906,6 +911,14 @@ class dialogWidget : public FDialog
     }
 
   private:
+    void initLayout()
+    {
+      setText ("Callback method");
+      setGeometry (FPoint{25, 5}, FSize{25, 7});
+      button.setGeometry (FPoint{7, 3}, FSize{10, 1});
+      FDialog::initLayout();
+    }
+
     FButton button{"&Quit", this};
 };
 
@@ -954,14 +967,8 @@ class dialogWidget : public FDialog
     explicit dialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
     {
-      setGeometry (FPoint{25, 5}, FSize{22, 7});
-      setText ("Emit signal");
-      const FSize size{5, 1};
-      label.setGeometry (FPoint{8, 1}, size);
-      label.setAlignment (fc::alignRight);
-      label.setForegroundColor (fc::Black);
-      plus.setGeometry (FPoint{3, 3}, size);
-      minus.setGeometry (FPoint{3, 3} + FPoint{10, 0}, size);
+      label.setAlignment (Align::Right);
+      label.setForegroundColor (FColor::Black);
       plus.setNoUnderline();
       minus.setNoUnderline();
 
@@ -976,6 +983,17 @@ class dialogWidget : public FDialog
     }
 
   private:
+    void initLayout()
+    {
+      setGeometry (FPoint{25, 5}, FSize{22, 7});
+      setText ("Emit signal");
+      const FSize size{5, 1};
+      label.setGeometry (FPoint{8, 1}, size);
+      plus.setGeometry (FPoint{3, 3}, size);
+      minus.setGeometry (FPoint{3, 3} + FPoint{10, 0}, size);
+      FDialog::initLayout();
+    }
+
     void cb_plus()
     {
       if ( t < 100 )
@@ -1004,17 +1022,17 @@ class dialogWidget : public FDialog
 
     void cb_set_blue()
     {
-      label.setForegroundColor (fc::Blue);
+      label.setForegroundColor (FColor::Blue);
     }
 
     void cb_set_black()
     {
-      label.setForegroundColor (fc::Black);
+      label.setForegroundColor (FColor::Black);
     }
 
     void cb_set_red()
     {
-      label.setForegroundColor (fc::Red);
+      label.setForegroundColor (FColor::Red);
     }
 
     void setTemperature()
@@ -1291,9 +1309,9 @@ class dialogWidget : public FDialog
       FDialog::draw();
 
       print() << FPoint{3, 3}
-              << FColorPair{fc::Black, fc::White}
+              << FColorPair{FColor::Black, FColor::White}
               << "Text on "
-              << FColorPair{fc::Blue, fc::Yellow}
+              << FColorPair{FColor::Blue, FColor::Yellow}
               << "top";
     }
 
@@ -1337,15 +1355,15 @@ requires it. You can controll this behavior by the two methods
 `setHorizontalScrollBarMode()` and `setVerticalScrollBarMode()`.
 
 ```cpp
-setHorizontalScrollBarMode (fc::scrollBarMode);
-setVerticalScrollBarMode (fc::scrollBarMode);
+setHorizontalScrollBarMode (finalcut::ScrollBarMode);
+setVerticalScrollBarMode (finalcut::ScrollBarMode);
 ```
 
 You pass the scroll bar visibility mode as a value of the enum type 
-`fc::scrollBarMode`.
+`finalcut::ScrollBarMode`.
 
 ```cpp
-enum scrollBarMode
+enum class ScrollBarMode
 {
   Auto   = 0,  // Shows a scroll bar when area is larger than viewport
   Hidden = 1,  // Never shows a scroll bar
@@ -1375,17 +1393,15 @@ class dialogWidget : public FDialog
     explicit dialogWidget (FWidget* parent = nullptr)
       : FDialog{parent}
     {
-      setText ("Dialog");
-      setGeometry (FPoint{28, 2}, FSize{24, 21});
       scrollview.setGeometry(FPoint{1, 1}, FSize{22, 11});
       scrollview.setScrollSize(FSize{60, 27});
       // Attention: getColorTheme() requires an initialized terminal
       const auto& wc = getColorTheme();
       setColor (wc->label_inactive_fg, wc->dialog_bg);
       scrollview.clearArea();
-      FColorPair red (fc::LightRed, wc->dialog_bg);
-      FColorPair black (fc::Black, wc->dialog_bg);
-      FColorPair cyan (fc::Cyan, wc->dialog_bg);
+      FColorPair red (FColor::LightRed, wc->dialog_bg);
+      FColorPair black (FColor::Black, wc->dialog_bg);
+      FColorPair cyan (FColor::Cyan, wc->dialog_bg);
 
       static std::vector<direction> d
       {
@@ -1419,6 +1435,13 @@ class dialogWidget : public FDialog
 
   private:
     typedef std::tuple<FString, FPoint, FPoint, FColorPair> direction;
+
+    void initLayout()
+    {
+      setText ("Dialog");
+      setGeometry (FPoint{28, 2}, FSize{24, 21});
+      FDialog::initLayout();
+    }
 
     void cb_button (const FPoint& p)
     {

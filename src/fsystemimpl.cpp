@@ -35,12 +35,8 @@ namespace finalcut
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FSystemImpl::FSystemImpl()
-{ }
+FSystemImpl::~FSystemImpl() noexcept = default;  // destructor
 
-//----------------------------------------------------------------------
-FSystemImpl::~FSystemImpl()  // destructor
-{ }
 
 // public methods of FSystemImpl
 //----------------------------------------------------------------------

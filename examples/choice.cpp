@@ -27,8 +27,8 @@
 using finalcut::FPoint;
 using finalcut::FSize;
 
-// Typedef
-typedef std::shared_ptr<finalcut::FRadioButton> FRadioButtonPtr;
+// Using-declaration
+using FRadioButtonPtr = std::shared_ptr<finalcut::FRadioButton>;
 
 // Function prototypes
 void cb_quit (finalcut::FDialog&);
@@ -128,7 +128,7 @@ int main (int argc, char* argv[])
     preset(os);
 
     // Scroll to the focused child element
-    finalcut::FFocusEvent cfi (finalcut::fc::ChildFocusIn_Event);
+    finalcut::FFocusEvent cfi (finalcut::Event::ChildFocusIn);
     app.queueEvent(&checkButtonGroup, &cfi);
 
     // Create a OK button

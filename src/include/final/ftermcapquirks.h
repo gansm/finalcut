@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -38,10 +38,6 @@
 namespace finalcut
 {
 
-// class forward declaration
-class FTermData;
-class FTermDetection;
-
 //----------------------------------------------------------------------
 // class FTermcapsQuirks
 //----------------------------------------------------------------------
@@ -50,10 +46,10 @@ class FTermcapQuirks final
 {
   public:
     // Constructors
-    FTermcapQuirks();
+    FTermcapQuirks() = default;
 
     // Destructor
-    ~FTermcapQuirks();
+    ~FTermcapQuirks() noexcept = default;
 
     // Accessor
     FString getClassName() const;
@@ -67,20 +63,21 @@ class FTermcapQuirks final
     static void freebsd();
 #endif
     static void cygwin();
+#ifdef linux
+  #undef linux
+#endif
     static void linux();
     static void xterm();
     static void rxvt();
     static void vte();
+    static void kitty();
     static void putty();
     static void teraterm();
     static void sunConsole();
     static void screen();
     static void general();
+    static void caModeExtension();
     static void ecma48();
-
-    // Data members
-    static FTermData*          fterm_data;
-    static FTermDetection*     term_detection;
 };
 
 // FTermcapQuirks inline functions

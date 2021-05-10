@@ -48,8 +48,7 @@ FSpinBox::FSpinBox (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FSpinBox::~FSpinBox()  // destructor
-{ }
+FSpinBox::~FSpinBox() noexcept = default;  // destructor
 
 
 // public methods of FSpinBox
@@ -92,8 +91,8 @@ bool FSpinBox::setFocus (bool enable)
 bool FSpinBox::setShadow (bool enable)
 {
   if ( enable
-    && FTerm::getEncoding() != fc::VT100
-    && FTerm::getEncoding() != fc::ASCII )
+    && FTerm::getEncoding() != Encoding::VT100
+    && FTerm::getEncoding() != Encoding::ASCII )
   {
     setFlags().shadow = true;
     setShadowSize(FSize{1, 1});
@@ -175,28 +174,33 @@ void FSpinBox::onKeyPress (FKeyEvent* ev)
 
   const FKey key = ev->key();
 
-  switch ( key )
+  if ( key == FKey::Tab )
   {
-    case fc::Fkey_tab:
-      focusNextChild();
-      break;
-
-    case fc::Fkey_btab:
-      focusPrevChild();
-      break;
-
-    case fc::Fkey_up:
-      increaseValue();
-      ev->accept();
-      break;
-
-    case fc::Fkey_down:
-      decreaseValue();
-      ev->accept();
-      break;
-
-    default:
-      break;
+    focusNextChild();
+  }
+  else if ( key == FKey::Back_tab )
+  {
+    focusPrevChild();
+  }
+  else if ( key == FKey::Up )
+  {
+    increaseValue();
+    ev->accept();
+  }
+  else if ( key == FKey::Down )
+  {
+    decreaseValue();
+    ev->accept();
+  }
+  else if ( key == FKey::Page_up )
+  {
+    increaseValue(10);
+    ev->accept();
+  }
+  else if ( key == FKey::Page_down )
+  {
+    decreaseValue(10);
+    ev->accept();
   }
 
   if ( ev->isAccepted() )
@@ -206,8 +210,8 @@ void FSpinBox::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FSpinBox::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton
-    && ev->getButton() != fc::MiddleButton )
+  if ( ev->getButton() != MouseButton::Left
+    && ev->getButton() != MouseButton::Middle )
     return;
 
   forceFocus();
@@ -220,7 +224,7 @@ void FSpinBox::onMouseDown (FMouseEvent* ev)
 
   if ( mouse_x == int(getWidth()) - 1 && mouse_y == 1 )
   {
-    spining_state = FSpinBox::spinDown;
+    spining_state = SpiningState::Down;
     decreaseValue();
     updateInputField();
     threshold_reached = false;
@@ -228,7 +232,7 @@ void FSpinBox::onMouseDown (FMouseEvent* ev)
   }
   else if ( mouse_x == int(getWidth()) && mouse_y == 1 )
   {
-    spining_state = FSpinBox::spinUp;
+    spining_state = SpiningState::Up;
     increaseValue();
     updateInputField();
     threshold_reached = false;
@@ -242,32 +246,27 @@ void FSpinBox::onMouseDown (FMouseEvent* ev)
 void FSpinBox::onMouseUp (FMouseEvent*)
 {
   delOwnTimers();
-  spining_state = FSpinBox::noSpin;
+  spining_state = SpiningState::None;
 }
 
 //----------------------------------------------------------------------
 void FSpinBox::onWheel (FWheelEvent* ev)
 {
-  const int wheel = ev->getWheel();
+  const MouseWheel wheel = ev->getWheel();
 
   delOwnTimers();
   forceFocus();
-  spining_state = FSpinBox::noSpin;
+  spining_state = SpiningState::None;
 
-  switch ( wheel )
+  if ( wheel == MouseWheel::Up )
   {
-    case fc::WheelUp:
-      increaseValue();
-      updateInputField();
-      break;
-
-    case fc::WheelDown:
-      decreaseValue();
-      updateInputField();
-      break;
-
-    default:
-      break;
+    increaseValue();
+    updateInputField();
+  }
+  else if ( wheel == MouseWheel::Down )
+  {
+    decreaseValue();
+    updateInputField();
   }
 }
 
@@ -281,21 +280,21 @@ void FSpinBox::onTimer (FTimerEvent*)
     addTimer(repeat_time);
   }
 
-  assert ( spining_state == FSpinBox::noSpin
-        || spining_state == FSpinBox::spinUp
-        || spining_state == FSpinBox::spinDown );
+  assert ( spining_state == SpiningState::None
+        || spining_state == SpiningState::Up
+        || spining_state == SpiningState::Down );
 
   switch ( spining_state )
   {
-    case FSpinBox::noSpin:
+    case SpiningState::None:
       break;
 
-    case FSpinBox::spinUp:
+    case SpiningState::Up:
       increaseValue();
       updateInputField();
       break;
 
-    case FSpinBox::spinDown:
+    case SpiningState::Down:
       decreaseValue();
       updateInputField();
       break;
@@ -356,9 +355,9 @@ void FSpinBox::draw()
 
   print() << FPoint{int(getWidth()) - 1, 1}
           << dec_button_color
-          << fc::BlackDownPointingTriangle  // ▼
+          << UniChar::BlackDownPointingTriangle  // ▼
           << inc_button_color
-          << fc::BlackUpPointingTriangle;   // ▲
+          << UniChar::BlackUpPointingTriangle;   // ▲
 
   if ( getFlags().shadow )
     drawShadow(this);
@@ -374,11 +373,15 @@ inline void FSpinBox::updateInputField()
 }
 
 //----------------------------------------------------------------------
-inline void FSpinBox::increaseValue()
+inline void FSpinBox::increaseValue (sInt64 n)
 {
   if ( value < max )
   {
-    value++;
+    if ( value < max - n )
+      value += n;
+    else
+      value = max;
+
     processChanged();
   }
   else
@@ -386,11 +389,15 @@ inline void FSpinBox::increaseValue()
 }
 
 //----------------------------------------------------------------------
-inline void FSpinBox::decreaseValue()
+inline void FSpinBox::decreaseValue (sInt64 n)
 {
   if ( value > min )
   {
-    value--;
+    if ( value > min + n )
+      value -= n;
+    else
+      value = min;
+
     processChanged();
   }
   else
@@ -412,19 +419,7 @@ void FSpinBox::processChanged() const
 //----------------------------------------------------------------------
 void FSpinBox::forceFocus()
 {
-  if ( hasFocus() )
-    return;
-
-  auto focused_widget = getFocusWidget();
-  setFocus();
-
-  if ( focused_widget )
-    focused_widget->redraw();
-
-  redraw();
-
-  if ( getStatusBar() )
-    getStatusBar()->drawMessage();
+  setWidgetFocus(this);
 }
 
 //----------------------------------------------------------------------

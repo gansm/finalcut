@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -21,8 +21,6 @@
 ***********************************************************************/
 
 #include <final/final.h>
-
-namespace fc = finalcut::fc;
 
 
 //----------------------------------------------------------------------
@@ -54,8 +52,8 @@ Timer::Timer (finalcut::FWidget* parent)
   delTimer (id);
   addTimer (250);                // 250-millisecond timer
 
-  getColorTheme()->term_fg = fc::Default;
-  getColorTheme()->term_bg = fc::Default;
+  getColorTheme()->term_fg = finalcut::FColor::Default;
+  getColorTheme()->term_bg = finalcut::FColor::Default;
 }
 
 //----------------------------------------------------------------------
@@ -77,7 +75,7 @@ void Timer::onTimer (finalcut::FTimerEvent* ev)
   if ( getPrintPos().getY() == int(getDesktopHeight()) )
     is_last_line = true;
 
-  print() << finalcut::FColorPair {FColor(1 + timer_id)}
+  print() << finalcut::FColorPair {finalcut::FColor(1 + timer_id)}
           << "Timer event, id " << timer_id << '\n';
 
   if ( is_last_line )
@@ -104,12 +102,12 @@ int main (int argc, char* argv[])
 
   // Force terminal initialization without calling show()
   app.initTerminal();
-  app.setForegroundColor(fc::Default);
-  app.setBackgroundColor(fc::Default);
+  app.setForegroundColor(finalcut::FColor::Default);
+  app.setBackgroundColor(finalcut::FColor::Default);
 
   // Create a timer object t
   Timer t{&app};
-  t.addAccelerator('q');
+  t.addAccelerator(finalcut::FKey('q'));
 
   // Set the timer object t as main widget
   finalcut::FWidget::setMainWidget(&t);

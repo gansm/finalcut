@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -82,27 +82,25 @@ class FLabel : public FWidget
     FLabel& operator = (const FString&);
     template <typename typeT>
     FLabel& operator << (const typeT&);
-    FLabel& operator << (fc::SpecialCharacter);
+    FLabel& operator << (UniChar);
     FLabel& operator << (const wchar_t);
     const FLabel& operator >> (FString&) const;
 
     // Accessors
     FString             getClassName() const override;
     FWidget*            getAccelWidget();
-    fc::text_alignment  getAlignment() const;
+    Align               getAlignment() const;
     FString&            getText();
 
     // Mutators
     void                setAccelWidget (FWidget* = nullptr);
-    void                setAlignment (fc::text_alignment);
-    bool                setEmphasis (bool);
-    bool                setEmphasis();
+    void                setAlignment (Align);
+    bool                setEmphasis (bool = true);
     bool                unsetEmphasis();
     void                resetColors() override;
-    bool                setReverseMode (bool);
-    bool                setReverseMode();
+    bool                setReverseMode (bool = true);
     bool                unsetReverseMode();
-    bool                setEnable (bool) override;
+    bool                setEnable (bool = true) override;
     void                setNumber (uLong);
     void                setNumber (long);
     void                setNumber (float, int = FLT_DIG);
@@ -142,12 +140,12 @@ class FLabel : public FWidget
     FStringList         multiline_text{};
     FString             text{};
     FWidget*            accel_widget{nullptr};
-    fc::text_alignment  alignment{fc::alignLeft};
+    Align               alignment{Align::Left};
     std::size_t         align_offset{0};
     std::size_t         hotkeypos{NOT_SET};
     std::size_t         column_width{0};
-    FColor              emphasis_color{fc::Default};
-    FColor              ellipsis_color{fc::Default};
+    FColor              emphasis_color{FColor::Default};
+    FColor              ellipsis_color{FColor::Default};
     bool                multiline{false};
     bool                emphasis{false};
     bool                reverse_mode{false};
@@ -173,7 +171,7 @@ inline FWidget* FLabel::getAccelWidget ()
 { return accel_widget; }
 
 //----------------------------------------------------------------------
-inline fc::text_alignment FLabel::getAlignment() const
+inline Align FLabel::getAlignment() const
 { return alignment; }
 
 //----------------------------------------------------------------------
@@ -185,20 +183,12 @@ inline bool FLabel::setEmphasis (bool enable)
 { return (emphasis = enable); }
 
 //----------------------------------------------------------------------
-inline bool FLabel::setEmphasis()
-{ return setEmphasis(true); }
-
-//----------------------------------------------------------------------
 inline bool FLabel::unsetEmphasis()
 { return setEmphasis(false); }
 
 //----------------------------------------------------------------------
 inline bool FLabel::setReverseMode (bool enable)
 { return (reverse_mode = enable); }
-
-//----------------------------------------------------------------------
-inline bool FLabel::setReverseMode()
-{ return setReverseMode(true); }
 
 //----------------------------------------------------------------------
 inline bool FLabel::unsetReverseMode()

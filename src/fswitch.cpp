@@ -49,8 +49,7 @@ FSwitch::FSwitch (const FString& txt, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FSwitch::~FSwitch()  // destructor
-{ }
+FSwitch::~FSwitch() noexcept = default;  // destructor
 
 
 // public methods of FSwitch
@@ -64,22 +63,17 @@ void FSwitch::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FSwitch::onKeyPress (FKeyEvent* ev)
 {
-  switch ( ev->key() )
+  const auto key = ev->key();
+
+  if ( key == FKey::Home || key == FKey::Left )
   {
-    case fc::Fkey_home:
-    case fc::Fkey_left:
-      setChecked();
-      ev->accept();
-      break;
-
-    case fc::Fkey_end:
-    case fc::Fkey_right:
-      unsetChecked();
-      ev->accept();
-      break;
-
-    default:
-      break;
+    setChecked();
+    ev->accept();
+  }
+  else if ( key == FKey::End || key == FKey::Right )
+  {
+    unsetChecked();
+    ev->accept();
   }
 
   if ( ev->isAccepted() )
@@ -93,7 +87,7 @@ void FSwitch::onMouseDown (FMouseEvent* ev)
 {
   FToggleButton::onMouseDown(ev);
 
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   button_pressed = true;
@@ -105,7 +99,7 @@ void FSwitch::onMouseUp (FMouseEvent* ev)
 {
   FToggleButton::onMouseUp(ev);
 
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != MouseButton::Left )
     return;
 
   button_pressed = false;

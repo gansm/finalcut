@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -19,6 +19,26 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
+
+#if defined(__sun) && defined(__SVR4)
+  #include <termio.h>
+  typedef struct termio SGTTY;
+  typedef struct termios SGTTYS;
+
+  #ifdef _LP64
+    typedef unsigned int chtype;
+  #else
+    typedef unsigned long chtype;
+  #endif  // _LP64
+
+  #include <term.h>  // termcap
+#else
+  #include <term.h>  // termcap
+#endif  // defined(__sun) && defined(__SVR4)
+
+#ifdef F_HAVE_LIBGPM
+  #undef buttons  // from term.h
+#endif
 
 #include <algorithm>
 #include <string>
@@ -38,6 +58,7 @@ namespace finalcut
 {
 
 // static class attributes
+bool             FTermcap::initialized              {false};
 bool             FTermcap::background_color_erase   {false};
 bool             FTermcap::can_change_color_palette {false};
 bool             FTermcap::automatic_left_margin    {false};
@@ -47,12 +68,14 @@ bool             FTermcap::has_ansi_escape_sequences{false};
 bool             FTermcap::ansi_default_color       {false};
 bool             FTermcap::osc_support              {false};
 bool             FTermcap::no_utf8_acs_chars        {false};
+bool             FTermcap::no_padding_char          {false};
+bool             FTermcap::xon_xoff_flow_control    {false};
 int              FTermcap::max_color                {1};
 int              FTermcap::tabstop                  {8};
+int              FTermcap::padding_baudrate         {0};
 int              FTermcap::attr_without_color       {0};
-FSystem*         FTermcap::fsystem                  {nullptr};
-FTermData*       FTermcap::fterm_data               {nullptr};
-FTermDetection*  FTermcap::term_detection           {nullptr};
+int              FTermcap::baudrate                 {9600};
+char             FTermcap::PC                       {'\0'};
 char             FTermcap::string_buf[2048]         {};
 
 //----------------------------------------------------------------------
@@ -70,11 +93,152 @@ char             FTermcap::string_buf[2048]         {};
 
 // public methods of FTermcap
 //----------------------------------------------------------------------
+bool FTermcap::getFlag (const std::string& cap)
+{
+  return ::tgetflag(C_STR(cap.data())) == 1;
+}
+
+//----------------------------------------------------------------------
+int FTermcap::getNumber (const std::string& cap)
+{
+  auto num = ::tgetnum(C_STR(cap.data()));
+  return num > 0 ? num : 0;
+}
+
+//----------------------------------------------------------------------
+char* FTermcap::getString (const std::string& cap)
+{
+  auto string = ::tgetstr(C_STR(cap.data()), reinterpret_cast<char**>(&string_buf));
+  return ( string && string[0] != '\0' ) ? string : nullptr;
+}
+
+//----------------------------------------------------------------------
+std::string FTermcap::encodeMotionParameter (const std::string& cap, int col, int row)
+{
+  auto str = ::tgoto(C_STR(cap.data()), col, row);
+  return str ? str : std::string();
+}
+
+//----------------------------------------------------------------------
+FTermcap::Status FTermcap::paddingPrint ( const std::string& string
+                                        , int affcnt
+                                        , const defaultPutChar& outc )
+{
+  if ( string.empty() )
+    return Status::Error;
+
+  bool has_delay = (TCAP(t_bell) && string == std::string(TCAP(t_bell)))
+                || (TCAP(t_flash_screen) && string == std::string(TCAP(t_flash_screen)))
+                || ( ! xon_xoff_flow_control && padding_baudrate
+                  && (baudrate >= padding_baudrate) );
+  auto iter = string.begin();
+  using iter_type = decltype(iter);
+
+  auto read_digits = [] (iter_type& it, int& number)
+  {
+    while ( std::isdigit(int(*it)) && number < 1000 )
+    {
+      number = number * 10 + (*it - '0');
+      ++it;
+    }
+
+    number *= 10;
+  };
+
+  auto decimal_point = [] (iter_type& it, int& number)
+  {
+    if ( *it == '.' )
+    {
+      ++it;
+
+      if ( std::isdigit(int(*it)) )
+      {
+        number += (*it - '0');  // Position after decimal point
+        ++it;
+      }
+
+      while ( std::isdigit(int(*it)) )
+        ++it;
+    }
+  };
+
+  auto asterisk_slash = [&affcnt, &has_delay] (iter_type& it, int& number)
+  {
+    while ( *it == '*' || *it == '/' )
+    {
+      if ( *it == '*' )
+      {
+        // Padding is proportional to the number of affected lines (suffix '*')
+        number *= affcnt;
+        ++it;
+      }
+      else
+      {
+        // Padding is mandatory (suffix '/')
+        has_delay = true;
+        ++it;
+      }
+    }
+  };
+
+  while ( iter != string.end() )
+  {
+    if ( *iter != '$' )
+      outc(int(*iter));
+    else
+    {
+      ++iter;
+
+      if ( *iter != '<' )
+      {
+        outc(int('$'));
+
+        if ( iter != string.end() )
+          outc(int(*iter));
+      }
+      else
+      {
+        ++iter;
+        const auto first_digit = iter;
+
+        if ( ! std::isdigit(int(*iter)) && *iter != '.' )
+        {
+          outc(int('$'));
+          outc(int('<'));
+          continue;
+        }
+
+        int number = 0;
+        read_digits (iter, number);
+        decimal_point (iter, number);
+        asterisk_slash (iter, number);
+
+        if ( *iter != '>' )
+        {
+          outc(int('$'));
+          outc(int('<'));
+          iter = first_digit;
+          continue;
+        }
+        else if ( has_delay && number > 0 )
+        {
+          delay_output(number / 10, outc);
+        }
+      }  // end of else (*iter == '<')
+    }  // end of else (*iter == '$')
+
+    if ( iter == string.end() )
+      break;
+
+    ++iter;
+  }
+
+  return Status::OK;
+}
+
+//----------------------------------------------------------------------
 void FTermcap::init()
 {
-  fsystem = FTerm::getFSystem();
-  fterm_data = FTerm::getFTermData();
-  term_detection = FTerm::getFTermDetection();
   termcap();
 }
 
@@ -82,37 +246,43 @@ void FTermcap::init()
 //----------------------------------------------------------------------
 void FTermcap::termcap()
 {
-  std::vector<std::string> terminals{};
   static constexpr int success = 1;
   static constexpr int uninitialized = -2;
   static char term_buffer[BUF_SIZE]{};
+  std::vector<std::string> terminals{};
   int status = uninitialized;
-  const bool color256 = term_detection->canDisplay256Colors();
+  auto& fterm_data = FTerm::getFTermData();
+  const auto& term_detection = FTerm::getFTermDetection();
+  const bool color256 = term_detection.canDisplay256Colors();
+  baudrate = int(fterm_data.getBaudrate());
 
   // Open termcap file
-#if defined(__sun) && defined(__SVR4)
-  char* termtype = const_cast<char*>(fterm_data->getTermType());
-#else
-  const char* termtype = fterm_data->getTermType();
-#endif
-  terminals.push_back(termtype);            // available terminal type
+  const auto& termtype = fterm_data.getTermType();
+  terminals.emplace_back(termtype);         // available terminal type
 
   if ( color256 )                           // 1st fallback if not found
-    terminals.push_back("xterm-256color");
+    terminals.emplace_back("xterm-256color");
 
-  terminals.push_back("xterm");             // 2nd fallback if not found
-  terminals.push_back("ansi");              // 3rd fallback if not found
-  terminals.push_back("vt100");             // 4th fallback if not found
+  terminals.emplace_back("xterm");          // 2nd fallback if not found
+  terminals.emplace_back("ansi");           // 3rd fallback if not found
+  terminals.emplace_back("vt100");          // 4th fallback if not found
   auto iter = terminals.begin();
 
   while ( iter != terminals.end() )
   {
-    fterm_data->setTermType(iter->c_str());
+    fterm_data.setTermType(*iter);
 
     // Open the termcap file + load entry for termtype
-    status = tgetent(term_buffer, termtype);
+#if defined(__sun) && defined(__SVR4)
+    status = tgetent(term_buffer, const_cast<char*>(termtype.data()));
+#else
+    status = tgetent(term_buffer, termtype.data());
+#endif
 
-    if ( status == success || ! term_detection->hasTerminalDetection() )
+    if ( status == success )
+      initialized = true;
+
+    if ( status == success || ! term_detection.hasTerminalDetection() )
       break;
 
     ++iter;
@@ -131,9 +301,9 @@ void FTermcap::termcapError (int status)
 
   if ( status == no_entry || status == uninitialized )
   {
-    const char* termtype = fterm_data->getTermType();
-    std::clog << FLog::Error
-              << "Unknown terminal: \""  << termtype << "\". "
+    const auto& termtype = FTerm::getFTermData().getTermType();
+    std::clog << FLog::LogLevel::Error
+              << "Unknown terminal: \"" << termtype << "\". "
               << "Check the TERM environment variable. "
               << "Also make sure that the terminal "
               << "is defined in the termcap/terminfo database."
@@ -193,12 +363,20 @@ void FTermcap::termcapBoleans()
 
   // U8 is nonzero for terminals with no VT100 line-drawing in UTF-8 mode
   no_utf8_acs_chars = bool(getNumber("U8") != 0);
+
+  // No padding character available
+  no_padding_char = getFlag("NP");
+
+  // Terminal uses software flow control (XON/XOFF) with (Ctrl-Q/Ctrl-S)
+  xon_xoff_flow_control = getFlag("xo");
 }
 
 //----------------------------------------------------------------------
 void FTermcap::termcapNumerics()
 {
   // Get termcap numerics
+
+  auto& fterm_data = FTerm::getFTermData();
 
   // Maximum number of colors on screen
   max_color = std::max(max_color, getNumber("Co"));
@@ -207,12 +385,15 @@ void FTermcap::termcapNumerics()
     max_color = 1;
 
   if ( max_color < 8 )
-    fterm_data->setMonochron(true);
+    fterm_data.setMonochron(true);
   else
-    fterm_data->setMonochron(false);
+    fterm_data.setMonochron(false);
 
   // Get initial spacing for hardware tab stop
   tabstop = getNumber("it");
+
+  // Get the smallest baud rate where padding is required
+  padding_baudrate = getNumber("pb");
 
   // Get video attributes that cannot be used with colors
   attr_without_color = getNumber("NC");
@@ -228,10 +409,15 @@ void FTermcap::termcapStrings()
   for (auto&& entry : strings)
     entry.string = getString(entry.tname);
 
-  const auto& ho = TCAP(fc::t_cursor_home);
+  const auto& ho = TCAP(t_cursor_home);
 
-  if ( std::strncmp(ho, "\033[H", 3) == 0 )
+  if ( ho && std::strncmp(ho, "\033[H", 3) == 0 )
     has_ansi_escape_sequences = true;
+
+  const auto& pc = TCAP(t_pad_char);
+
+  if ( pc )
+    PC = pc[0];
 }
 
 //----------------------------------------------------------------------
@@ -240,9 +426,9 @@ void FTermcap::termcapKeys()
   // Get termcap keys
 
   // Read termcap key sequences up to the self-defined values
-  for (auto&& entry : fc::fkey)
+  for (auto&& entry : fc::fkey_cap_table)
   {
-    if ( entry.string != nullptr )
+    if ( entry.string != nullptr )  // String is already set
       break;
 
     entry.string = getString(entry.tname);
@@ -250,12 +436,15 @@ void FTermcap::termcapKeys()
 }
 
 //----------------------------------------------------------------------
-int FTermcap::_tputs (const char* str, int affcnt, fn_putc putc)
+std::string FTermcap::encodeParams ( const std::string& cap
+                                   , const std::vector<int>& param_vec )
 {
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
-
-  return fsystem->tputs (str, affcnt, putc);
+  std::array<int, 9> params{{ 0, 0, 0, 0, 0, 0, 0, 0, 0 }};
+  std::copy (param_vec.begin(), param_vec.end(), params.begin());
+  auto str = ::tparm ( C_STR(cap.data()), params[0], params[1]
+                     , params[2], params[3], params[4], params[5]
+                     , params[6], params[7], params[8] );
+  return str ? str : std::string();
 }
 
 
@@ -268,6 +457,7 @@ FTermcap::TCapMapType FTermcap::strings =
 //  |    |      // variable name                -> description
 //------------------------------------------------------------------------------
   { nullptr, "bl" },  // bell                   -> audible signal (bell) (P)
+  { nullptr, "vb" },  // flash_screen           -> visible bell (may not move cursor)
   { nullptr, "ec" },  // erase_chars            -> erase #1 characters (P)
   { nullptr, "cl" },  // clear_screen           -> clear screen and home cursor (P*)
   { nullptr, "cd" },  // clr_eos                -> clear to end of screen (P*)
@@ -278,6 +468,7 @@ FTermcap::TCapMapType FTermcap::strings =
   { nullptr, "cr" },  // carriage_return        -> carriage return (P*)
   { nullptr, "ta" },  // tab                    -> tab to next 8-space hardware tab stop
   { nullptr, "bt" },  // back_tab               -> back tab (P)
+  { nullptr, "pc" },  // pad_char               -> padding char (instead of null)
   { nullptr, "ip" },  // insert_padding         -> insert padding after inserted character
   { nullptr, "ic" },  // insert_character       -> insert character (P)
   { nullptr, "IC" },  // parm_ich               -> insert #1 characters (P*)

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -38,8 +38,8 @@ namespace finalcut
 //----------------------------------------------------------------------
 // class FTermBuffer
 //----------------------------------------------------------------------
-FTermBuffer::~FTermBuffer()  // destructor
-{ }
+FTermBuffer::~FTermBuffer() noexcept = default;  // destructor
+
 
 // public methods of FTermBuffer
 //----------------------------------------------------------------------
@@ -47,14 +47,19 @@ FString FTermBuffer::toString() const
 {
   std::wstring wide_string{};
   wide_string.reserve(data.size());
-  std::transform ( data.begin()
-                 , data.end()
-                 , std::back_inserter(wide_string)
-                 , [] (const FChar& fchar)
-                   {
-                     return fchar.ch[0];
-                   }
-                 );
+  std::for_each ( data.begin()
+                , data.end()
+                , [&wide_string] (const FChar& fchar)
+                  {
+                    for (auto&& ch : fchar.ch)
+                    {
+                      if ( ch == L'\0' )
+                        return;
+                      else
+                        wide_string.push_back(ch);
+                    }
+                  }
+                );
   return wide_string;
 }
 
@@ -62,70 +67,79 @@ FString FTermBuffer::toString() const
 int FTermBuffer::write (const FString& string)
 {
   assert ( ! string.isNull() );
-  const auto len = int(string.getLength());
+  data.reserve(data.size() + string.getLength());
+  const auto last = string.end();
+  auto begin = string.begin();
+  auto iter = begin;
+  int char_width{0};
 
-  for (auto&& c : string)
+  for (auto&& ch : string)
   {
-    FChar nc;  // next character
-    nc = FVTerm::getAttribute();
-    nc.ch[0] = c;
-    nc.attr.byte[2] = 0;
-    nc.attr.byte[3] = 0;
-    getColumnWidth(nc);  // add column width
-    data.push_back(std::move(nc));
+    auto width = getColumnWidth(ch);
+    auto wspace = std::iswspace(wint_t(ch));
+
+    if ( width == 0 && ! wspace )  // zero-width character
+    {
+      if ( iter == begin)
+        ++begin;
+
+      ++iter;
+    }
+    else if ( iter != begin )
+      add(begin, iter, char_width);
+
+    if ( iter == begin && (width > 0 || is7bit(ch)) )  // 1st char
+      ++iter;
+
+    if ( width > 0 )
+      char_width += width;
+
+    if ( wspace )
+      add(begin, iter, char_width);
   }
 
-  return len;
+  if ( iter == last )
+    add(begin, iter, char_width);
+
+  return int(string.getLength());
 }
 
 //----------------------------------------------------------------------
 int FTermBuffer::write (wchar_t ch)
 {
-  FChar nc = FVTerm::getAttribute();  // next character
+  FChar nc{FVTerm::getAttribute()};  // next character
   nc.ch[0] = ch;
-  getColumnWidth(nc);  // add column width
+  addColumnWidth(nc);  // add column width
   nc.attr.bit.no_changes = false;
   nc.attr.bit.printed = false;
-
-  data.push_back(nc);
+  data.emplace_back(nc);
   return 1;
 }
 
 //----------------------------------------------------------------------
 void FTermBuffer::write (const FStyle& style) const
 {
-  FAttribute attr = style.getStyle();
+  Style attr = style.getStyle();
 
-  if ( attr == 0 )
+  if ( attr == Style::None )
     FVTerm::setNormal();
-  else if ( (attr & fc::Bold) != 0 )
-    FVTerm::setBold();
-  else if ( (attr & fc::Dim) != 0 )
-    FVTerm::setDim();
-  else if ( (attr & fc::Italic) != 0 )
-    FVTerm::setItalic();
-  else if ( (attr & fc::Underline) != 0 )
-    FVTerm::setUnderline();
-  else if ( (attr & fc::Blink) != 0 )
-    FVTerm::setBlink();
-  else if ( (attr & fc::Reverse) != 0 )
-    FVTerm::setReverse();
-  else if ( (attr & fc::Standout) != 0 )
-    FVTerm::setStandout();
-  else if ( (attr & fc::Invisible) != 0 )
-    FVTerm::setInvisible();
-  else if ( (attr & fc::Protected) != 0 )
-    FVTerm::setProtected();
-  else if ( (attr & fc::CrossedOut) != 0 )
-    FVTerm::setCrossedOut();
-  else if ( (attr & fc::DoubleUnderline) != 0 )
-    FVTerm::setDoubleUnderline();
-  else if ( (attr & fc::Transparent) != 0 )
-    FVTerm::setTransparent();
-  else if ( (attr & fc::ColorOverlay) != 0 )
-    FVTerm::setColorOverlay();
-  else if ( (attr & fc::InheritBackground) != 0 )
-    FVTerm::setInheritBackground();
+  else
+  {
+    if ( (attr & Style::Bold) != Style::None ) FVTerm::setBold();
+    if ( (attr & Style::Dim) != Style::None ) FVTerm::setDim();
+    if ( (attr & Style::Italic) != Style::None ) FVTerm::setItalic();
+    if ( (attr & Style::Underline) != Style::None ) FVTerm::setUnderline();
+    if ( (attr & Style::Blink) != Style::None ) FVTerm::setBlink();
+    if ( (attr & Style::Reverse) != Style::None ) FVTerm::setReverse();
+    if ( (attr & Style::Standout) != Style::None ) FVTerm::setStandout();
+    if ( (attr & Style::Invisible) != Style::None ) FVTerm::setInvisible();
+    if ( (attr & Style::Protected) != Style::None ) FVTerm::setProtected();
+    if ( (attr & Style::CrossedOut) != Style::None ) FVTerm::setCrossedOut();
+    if ( (attr & Style::DoubleUnderline) != Style::None ) FVTerm::setDoubleUnderline();
+    if ( (attr & Style::Transparent) != Style::None ) FVTerm::setTransparent();
+    if ( (attr & Style::ColorOverlay) != Style::None ) FVTerm::setColorOverlay();
+    if ( (attr & Style::InheritBackground) != Style::None ) FVTerm::setInheritBackground();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -135,15 +149,43 @@ void FTermBuffer::write (const FColorPair& pair) const
 }
 
 
+// private methods of FTermBuffer
+//----------------------------------------------------------------------
+void FTermBuffer::add ( FString::const_iterator& begin
+                      , FString::const_iterator& end
+                      , int& char_width )
+{
+  if ( begin == end )
+    return;
+
+  FChar nc{FVTerm::getAttribute()};  // next character
+  nc.attr.byte[2] = 0;
+  nc.attr.byte[3] = 0;
+
+  if ( char_width == 2 && FTerm::getEncoding() != Encoding::UTF8 )
+  {
+    nc.ch[0] = '.';
+    nc.attr.bit.char_width = 1;
+  }
+  else
+    nc.attr.bit.char_width = char_width & 0x03;
+
+  std::copy(begin, std::min(end, begin + UNICODE_MAX), nc.ch.begin());
+  data.emplace_back(nc);
+  begin = end;
+  char_width = 0;
+}
+
+
 // FTermBuffer non-member operators
 //----------------------------------------------------------------------
-FTermBuffer::FCharVector& operator << ( FTermBuffer::FCharVector& termString
+FTermBuffer::FCharVector& operator << ( FTermBuffer::FCharVector& term_string
                                       , const FTermBuffer& buf )
 {
   if ( ! buf.data.empty() )
-    termString.assign(buf.data.begin(), buf.data.end());
+    term_string.assign(buf.data.begin(), buf.data.end());
 
-  return termString;
+  return term_string;
 }
 
 }  // namespace finalcut

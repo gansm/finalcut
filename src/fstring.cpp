@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -68,6 +68,11 @@ FString::FString (std::size_t len, wchar_t c)
 }
 
 //----------------------------------------------------------------------
+FString::FString (std::size_t len, const UniChar& c)
+ : FString(len, wchar_t(c))
+{ }
+
+//----------------------------------------------------------------------
 FString::FString (const FString& s)  // copy constructor
 {
   if ( ! s.isNull() )
@@ -76,10 +81,10 @@ FString::FString (const FString& s)  // copy constructor
 
 //----------------------------------------------------------------------
 FString::FString (FString&& s) noexcept  // move constructor
-  : string{std::move(s.string)}
+  : string{s.string}
   , length{s.length}
   , bufsize{s.bufsize}
-  , c_string{std::move(s.c_string)}
+  , c_string{s.c_string}
 {
   s.string = nullptr;
   s.length = 0;
@@ -124,13 +129,10 @@ FString::FString (const char s[])
 }
 
 //----------------------------------------------------------------------
-FString::FString (fc::SpecialCharacter c)
+FString::FString (const UniChar& c)
 {
-  if ( c )
-  {
-    std::array<wchar_t, 2> s{{ static_cast<wchar_t>(c), L'\0' }};
-    _assign (s.data());
-  }
+  std::array<wchar_t, 2> s{{ static_cast<wchar_t>(c), L'\0' }};
+  _assign (s.data());
 }
 
 //----------------------------------------------------------------------
@@ -157,10 +159,10 @@ FString::FString (const char c)
 FString::~FString()  // destructor
 {
   if ( string )
-    delete[](string);
+    delete[] string;
 
   if ( c_string )
-    delete[](c_string);
+    delete[] c_string;
 }
 
 
@@ -180,15 +182,15 @@ FString& FString::operator = (FString&& s) noexcept
   if ( &s != this )
   {
     if ( string )
-      delete[](string);
+      delete[] string;
 
     if ( c_string )
-      delete[](c_string);
+      delete[] c_string;
 
-    string = std::move(s.string);
+    string = s.string;
     length = s.length;
     bufsize = s.bufsize;
-    c_string = std::move(s.c_string);
+    c_string = s.c_string;
 
     s.string = nullptr;
     s.length = 0;
@@ -214,7 +216,7 @@ FString& FString::operator << (const FString& s)
 }
 
 //----------------------------------------------------------------------
-FString& FString::operator << (fc::SpecialCharacter c)
+FString& FString::operator << (const UniChar& c)
 {
   FString s{static_cast<wchar_t>(c)};
   _insert (length, s.length, s.string);
@@ -331,7 +333,7 @@ const FString& FString::operator >> (float& num) const
 //----------------------------------------------------------------------
 FString::operator bool () const
 {
-  return bool(string);
+  return string;
 }
 
 //----------------------------------------------------------------------
@@ -346,7 +348,7 @@ const FString& FString::operator () () const
 FString FString::clear()
 {
   if ( string )
-    delete[](string);
+    delete[] string;
 
   length  = 0;
   bufsize = 0;
@@ -402,7 +404,7 @@ char* FString::c_str()
 //----------------------------------------------------------------------
 std::string FString::toString() const
 {
-  return std::string(c_str(), length);
+  return {c_str(), length};
 }
 
 //----------------------------------------------------------------------
@@ -440,7 +442,7 @@ sInt16 FString::toShort() const
   if ( num < SHRT_MIN )
     throw std::underflow_error ("underflow");
 
-  return sInt16(num);
+  return static_cast<sInt16>(num);
 }
 
 //----------------------------------------------------------------------
@@ -451,7 +453,7 @@ uInt16 FString::toUShort() const
   if ( num > USHRT_MAX )
     throw std::overflow_error ("overflow");
 
-  return uInt16(num);
+  return static_cast<uInt16>(num);
 }
 
 //----------------------------------------------------------------------
@@ -465,7 +467,7 @@ int FString::toInt() const
   if ( num < INT_MIN )
     throw std::underflow_error ("underflow");
 
-  return int(num);
+  return static_cast<int>(num);
 }
 
 //----------------------------------------------------------------------
@@ -476,7 +478,7 @@ uInt FString::toUInt() const
   if ( num > UINT_MAX )
     throw std::overflow_error ("overflow");
 
-  return uInt(num);
+  return static_cast<uInt>(num);
 }
 
 //----------------------------------------------------------------------
@@ -588,7 +590,7 @@ float FString::toFloat() const
   if ( std::fabs(num) < double(FLT_EPSILON) )  // num == 0.0f
     throw std::underflow_error ("underflow");
 
-  return float(num);
+  return static_cast<float>(num);
 }
 
 //----------------------------------------------------------------------
@@ -720,7 +722,7 @@ FString FString::mid (std::size_t pos, std::size_t len) const
     len = length - pos + 1;
 
   if ( pos > length || pos + len - 1 > length || len == 0 )
-    return FString{L""};
+    return {L""};
 
   wchar_t* p = s.string;
   wchar_t* first = p + pos - 1;
@@ -743,7 +745,7 @@ FStringList FString::split (const FString& delimiter) const
 
   while ( token )
   {
-    string_list.push_back (FString{token});
+    string_list.emplace_back(token);
     token = _extractToken (&rest, nullptr, delimiter.wc_str());
   }
 
@@ -905,7 +907,7 @@ bool FString::operator < (const FString& s) const
   if ( ! (string || s.string) )
     return false;
 
-  return ( std::wcscmp(string, s.string) < 0 );
+  return std::wcscmp(string, s.string) < 0;
 }
 
 //----------------------------------------------------------------------
@@ -920,7 +922,7 @@ bool FString::operator <= (const FString& s) const
   if ( ! string && s.string )
     return true;
 
-  return ( std::wcscmp(string, s.string) <= 0 );
+  return std::wcscmp(string, s.string) <= 0;
 }
 
 //----------------------------------------------------------------------
@@ -932,7 +934,7 @@ bool FString::operator == (const FString& s) const
   if ( bool(string) != bool(s.string) || length != s.length )
     return false;
 
-  return ( std::wcscmp(string, s.string) == 0 );
+  return std::wcscmp(string, s.string) == 0;
 }
 
 //----------------------------------------------------------------------
@@ -953,7 +955,7 @@ bool FString::operator >= (const FString& s) const
   if ( ! (string || s.string) )
     return true;
 
-  return ( std::wcscmp(string, s.string) >= 0 );
+  return std::wcscmp(string, s.string) >= 0;
 }
 
 //----------------------------------------------------------------------
@@ -968,7 +970,7 @@ bool FString::operator > (const FString& s) const
   if ( ! string && s.string )
     return false;
 
-  return ( std::wcscmp(string, s.string) > 0 );
+  return std::wcscmp(string, s.string) > 0;
 }
 
 //----------------------------------------------------------------------
@@ -1187,7 +1189,7 @@ bool FString::includes (const FString& s) const
   if ( ! (string && s.string) )
     return false;
 
-  return ( std::wcsstr(string, s.string) != nullptr );
+  return std::wcsstr(string, s.string) != nullptr;
 }
 
 
@@ -1229,7 +1231,7 @@ void FString::_assign (const wchar_t s[])
   if ( ! string || new_length > capacity() )
   {
     if ( string )
-      delete[](string);
+      delete[] string;
 
     bufsize = FWDBUFFER + new_length + 1;
 
@@ -1256,7 +1258,7 @@ void FString::_insert (std::size_t len, const wchar_t s[])
     return;
 
   if ( string )
-    delete[](string);
+    delete[] string;
 
   length = len;
   bufsize = FWDBUFFER + length + 1;
@@ -1310,7 +1312,7 @@ void FString::_insert ( std::size_t pos
 
       try
       {
-        sptr = new wchar_t[bufsize];  // generate new string
+        sptr = new wchar_t[bufsize];      // generate new string
       }
       catch (const std::bad_alloc&)
       {
@@ -1330,7 +1332,7 @@ void FString::_insert ( std::size_t pos
         sptr[y++] = string[x];
 
       length += len;
-      delete[](string);                   // delete old string
+      delete[] string;                    // delete old string
       string = sptr;
     }
   }
@@ -1354,7 +1356,7 @@ void FString::_remove (std::size_t pos, std::size_t len)
 
     try
     {
-      sptr = new wchar_t[bufsize];    // generate new string
+      sptr = new wchar_t[bufsize];            // generate new string
     }
     catch (const std::bad_alloc&)
     {
@@ -1365,13 +1367,13 @@ void FString::_remove (std::size_t pos, std::size_t len)
     std::size_t x{};
     std::size_t y{};
 
-    for (x = 0; x < pos; x++)             // left side
+    for (x = 0; x < pos; x++)                 // left side
       sptr[y++] = string[x];
 
     for (x = pos + len; x < length + 1; x++)  // right side + '\0'
       sptr[y++] = string[x];
 
-    delete[](string);                   // delete old string
+    delete[] string;                          // delete old string
     string = sptr;
     length -= len;
   }
@@ -1400,7 +1402,7 @@ inline const char* FString::_to_cstring (const wchar_t s[]) const
   }
 
   if ( c_string )
-    delete[](c_string);
+    delete[] c_string;
 
   const wchar_t* src = s;
   auto state = std::mbstate_t();
@@ -1423,7 +1425,7 @@ inline const char* FString::_to_cstring (const wchar_t s[]) const
 
   if ( mblength == static_cast<std::size_t>(-1) && errno != EILSEQ )
   {
-    delete[](c_string);
+    delete[] c_string;
     c_string = nullptr;
     return "";
   }
@@ -1455,6 +1457,9 @@ inline const wchar_t* FString::_to_wcstring (const char s[]) const
   wchar_t* dest{};
   auto state = std::mbstate_t();
   auto size = std::mbsrtowcs(nullptr, &src, 0, &state) + 1;
+
+  if ( size == 0 )  // ...malformed UTF-8 string
+    return nullptr;
 
   try
   {
@@ -1498,7 +1503,7 @@ inline const wchar_t* FString::_extractToken ( wchar_t* rest[]
                                              , const wchar_t s[]
                                              , const wchar_t delim[] ) const
 {
-  wchar_t* token = ( s ) ? const_cast<wchar_t*>(s) : *rest;
+  wchar_t* token = s ? const_cast<wchar_t*>(s) : *rest;
 
   if ( ! token )
     return nullptr;

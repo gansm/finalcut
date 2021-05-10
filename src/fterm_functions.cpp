@@ -43,15 +43,18 @@ namespace finalcut
 {
 
 // Enumeration
-enum fullWidthSupport
+enum class FullWidthSupport
 {
-  unknown_fullwidth_support = -1,
-  supports_fullwidth = 0,
-  no_fullwidth_support = 1
+  Unknown = -1,
+  No = 0,
+  Yes = 1
 };
 
+// Constant
+constexpr std::size_t NOT_FOUND = static_cast<std::size_t>(-1);
+
 // global state
-static fullWidthSupport has_fullwidth_support = unknown_fullwidth_support;
+static FullWidthSupport has_fullwidth_support = FullWidthSupport::Unknown;
 
 // Function prototypes
 bool hasAmbiguousWidth (wchar_t);
@@ -169,29 +172,29 @@ const wchar_t ambiguous_width_list[] =
 #endif
 };
 
-const wchar_t reverse_newfont_list[] =
-{
-  fc::NF_rev_left_arrow2,
-  fc::NF_rev_right_arrow2,
-  fc::NF_rev_border_corner_upper_right,
-  fc::NF_rev_border_line_right,
-  fc::NF_rev_border_line_vertical_left,
-  fc::NF_rev_border_corner_lower_right,
-  fc::NF_rev_up_arrow2,
-  fc::NF_rev_down_arrow2,
-  fc::NF_rev_up_arrow1,
-  fc::NF_rev_down_arrow1,
-  fc::NF_rev_left_arrow1,
-  fc::NF_rev_right_arrow1,
-  fc::NF_rev_menu_button1,
-  fc::NF_rev_menu_button2,
-  fc::NF_rev_up_pointing_triangle1,
-  fc::NF_rev_down_pointing_triangle1,
-  fc::NF_rev_up_pointing_triangle2,
-  fc::NF_rev_down_pointing_triangle2,
-  fc::NF_rev_menu_button3,
-  fc::NF_rev_border_line_right_and_left
-};
+constexpr std::array<UniChar, 20> reverse_newfont_list =
+{{
+  UniChar::NF_rev_left_arrow2,
+  UniChar::NF_rev_right_arrow2,
+  UniChar::NF_rev_border_corner_upper_right,
+  UniChar::NF_rev_border_line_right,
+  UniChar::NF_rev_border_line_vertical_left,
+  UniChar::NF_rev_border_corner_lower_right,
+  UniChar::NF_rev_up_arrow2,
+  UniChar::NF_rev_down_arrow2,
+  UniChar::NF_rev_up_arrow1,
+  UniChar::NF_rev_down_arrow1,
+  UniChar::NF_rev_left_arrow1,
+  UniChar::NF_rev_right_arrow1,
+  UniChar::NF_rev_menu_button1,
+  UniChar::NF_rev_menu_button2,
+  UniChar::NF_rev_up_pointing_triangle1,
+  UniChar::NF_rev_down_pointing_triangle1,
+  UniChar::NF_rev_up_pointing_triangle2,
+  UniChar::NF_rev_down_pointing_triangle2,
+  UniChar::NF_rev_menu_button3,
+  UniChar::NF_rev_border_line_right_and_left
+}};
 
 
 // FTerm non-member functions
@@ -227,8 +230,11 @@ inline bool hasAmbiguousWidth (wchar_t wchar)
   const auto& begin = std::begin(ambiguous_width_list);
   const auto& end = std::end(ambiguous_width_list);
 
-  if ( std::find(begin, end, wchar) != end )  // found
+  if ( std::any_of(begin, end, [&wchar] (const wchar_t c)
+                               { return c == wchar; }) )
+  {
     return true;
+  }
 
   return false;
 }
@@ -239,8 +245,11 @@ bool isReverseNewFontchar (wchar_t wchar)
   const auto& begin = std::begin(reverse_newfont_list);
   const auto& end = std::end(reverse_newfont_list);
 
-  if ( std::find(begin, end, wchar) != end )  // found
+  if ( std::any_of(begin, end, [&wchar] (const UniChar& c)
+                               { return wchar_t(c) == wchar; }) )
+  {
     return true;
+  }
 
   return false;
 }
@@ -250,7 +259,7 @@ bool hasFullWidthSupports()
 {
   // Checks if the terminal has full-width character support
 
-  if ( has_fullwidth_support == unknown_fullwidth_support )
+  if ( has_fullwidth_support == FullWidthSupport::Unknown )
   {
     if ( ! FTerm::isInitialized() )
       return true;  // Assume that it is a modern terminal with full-width support
@@ -262,12 +271,12 @@ bool hasFullWidthSupports()
       || FTerm::isOpenBSDTerm()
       || FTerm::isSunTerminal()
       || FTerm::isAnsiTerminal() )
-      has_fullwidth_support = no_fullwidth_support;
+      has_fullwidth_support = FullWidthSupport::No;
     else
-      has_fullwidth_support = supports_fullwidth;
+      has_fullwidth_support = FullWidthSupport::Yes;
   }
 
-  return ( has_fullwidth_support == supports_fullwidth) ? true : false;
+  return ( has_fullwidth_support == FullWidthSupport::Yes ) ? true : false;
 }
 
 //----------------------------------------------------------------------
@@ -276,15 +285,15 @@ wchar_t cp437_to_unicode (uChar c)
   constexpr std::size_t CP437 = 0;
   constexpr std::size_t UNICODE = 1;
   wchar_t ucs = c;
+  auto found = std::find_if ( fc::cp437_ucs.begin()
+                            , fc::cp437_ucs.end()
+                            , [&c] (const std::array<wchar_t, 2>& entry)
+                              {
+                                return entry[CP437] == c;
+                              } );
 
-  for (auto&& entry : fc::cp437_ucs)
-  {
-    if ( entry[CP437] == c )  // found
-    {
-      ucs = entry[UNICODE];
-      break;
-    }
-  }
+  if ( found != fc::cp437_ucs.end() )
+    ucs = (*found)[UNICODE];
 
   return ucs;
 }
@@ -296,14 +305,15 @@ uChar unicode_to_cp437 (wchar_t ucs)
   constexpr std::size_t UNICODE = 1;
   uChar c{'?'};
 
-  for (auto&& entry : fc::cp437_ucs)
-  {
-    if ( entry[UNICODE] == ucs )  // found
-    {
-      c = uChar(entry[CP437]);
-      break;
-    }
-  }
+  auto found = std::find_if ( fc::cp437_ucs.begin()
+                            , fc::cp437_ucs.end()
+                            , [&ucs] (const std::array<wchar_t, 2>& entry)
+                              {
+                                return entry[UNICODE] == ucs;
+                              } );
+
+  if ( found != fc::cp437_ucs.end() )
+    c = static_cast<uChar>((*found)[CP437]);
 
   return c;
 }
@@ -314,23 +324,27 @@ FString getFullWidth (const FString& str)
   // Converts half-width to full-width characters
 
   FString s{str};
-  constexpr std::size_t HALF = 0;
-  constexpr std::size_t FULL = 1;
+  auto table_search = [] (wchar_t& c)
+  {
+    constexpr std::size_t HALF = 0;
+    constexpr std::size_t FULL = 1;
+    auto found = std::find_if ( fc::halfwidth_fullwidth.begin()
+                              , fc::halfwidth_fullwidth.end()
+                              , [&c] (const std::array<wchar_t, 2>& entry)
+                                {
+                                  return entry[HALF] == c;
+                                } );
+
+    if ( found != fc::halfwidth_fullwidth.end() )
+      c = (*found)[FULL];
+  };
 
   for (auto&& c : s)
   {
     if ( c > L'\x20' && c < L'\x7f' )  // half-width ASCII
-    {
       c += 0xfee0;
-    }
     else
-    {
-      for (auto&& entry : fc::halfwidth_fullwidth)
-      {
-        if ( entry[HALF] == c )  // found
-          c = entry[FULL];
-      }
-    }
+      table_search(c);
   }
 
   return s;
@@ -342,23 +356,27 @@ FString getHalfWidth (const FString& str)
   // Converts full-width to half-width characters
 
   FString s{str};
-  constexpr std::size_t HALF = 0;
-  constexpr std::size_t FULL = 1;
+  auto table_search = [] (wchar_t& c)
+  {
+    constexpr std::size_t HALF = 0;
+    constexpr std::size_t FULL = 1;
+    auto found = std::find_if ( fc::halfwidth_fullwidth.begin()
+                              , fc::halfwidth_fullwidth.end()
+                              , [&c] (const std::array<wchar_t, 2>& entry)
+                                {
+                                  return entry[FULL] == c;
+                                } );
+
+    if ( found != fc::halfwidth_fullwidth.end() )
+      c = (*found)[HALF];
+  };
 
   for (auto&& c : s)
   {
     if ( c > L'\xff00' && c < L'\xff5f' )  // full-width ASCII
-    {
       c -= 0xfee0;
-    }
     else
-    {
-      for (auto&& entry : fc::halfwidth_fullwidth)
-      {
-        if ( entry[FULL] == c )  // found
-          c = entry[HALF];
-      }
-    }
+      table_search(c);
   }
 
   return s;
@@ -376,7 +394,7 @@ FString getColumnSubString ( const FString& str
   std::size_t num{0};
 
   if ( col_len == 0 || s.isEmpty() )
-    return FString{L""};
+    return {L""};
 
   if ( col_pos == 0 )
     col_pos = 1;
@@ -394,29 +412,35 @@ FString getColumnSubString ( const FString& str
       }
       else
       {
-        ch = fc::SingleLeftAngleQuotationMark;  // ‹
+        ch = wchar_t(UniChar::SingleLeftAngleQuotationMark);  // ‹
         num = col_num = 1;
         col_pos = col_first;
       }
     }
     else
     {
-      if ( col_num + width <= col_len )
+      if ( col_first == col_pos && width == 0 && num == 0 )
+      {
+        first++;
+      }
+      else if ( col_num + width <= col_len )
       {
         col_num += width;
         num++;
       }
       else if ( col_num < col_len )
       {
-        ch = fc::SingleRightAngleQuotationMark;  // ›
+        ch = wchar_t(UniChar::SingleRightAngleQuotationMark);  // ›
         num++;
         break;
       }
+      else
+        break;
     }
   }
 
   if ( col_first < col_pos )  // String length < col_pos
-    return FString{L""};
+    return {L""};
 
   return s.mid(first, num);
 }
@@ -441,7 +465,7 @@ std::size_t getLengthFromColumnWidth ( const FString& str
 }
 
 //----------------------------------------------------------------------
-std::size_t getColumnWidth (const FString& s, std::size_t pos)
+std::size_t getColumnWidth (const FString& s, std::size_t end_pos)
 {
   if ( s.isEmpty() )
     return 0;
@@ -449,10 +473,10 @@ std::size_t getColumnWidth (const FString& s, std::size_t pos)
   std::size_t column_width{0};
   const auto length = s.getLength();
 
-  if ( pos > length )
-    pos = length;
+  if ( end_pos > length )
+    end_pos = length;
 
-  for (std::size_t i{0}; i < pos; i++)
+  for (std::size_t i{0}; i < end_pos; i++)
   {
     try
     {
@@ -460,7 +484,7 @@ std::size_t getColumnWidth (const FString& s, std::size_t pos)
     }
     catch (const std::out_of_range& ex)
     {
-      std::clog << FLog::Error
+      std::clog << FLog::LogLevel::Error
                 << "Out of Range error: " << ex.what() << std::endl;
     }
   }
@@ -495,42 +519,165 @@ std::size_t getColumnWidth (const wchar_t wchar)
   else
 #endif
 
-  if ( (wchar >= fc::NF_rev_left_arrow2 && wchar <= fc::NF_check_mark)
-    || ! hasFullWidthSupports() )
+  column_width = wcwidth(wchar);
+
+  if ( (wchar >= UniChar::NF_rev_left_arrow2 && wchar <= UniChar::NF_check_mark)
+     || FTerm::getEncoding() != Encoding::UTF8 )
+  {
     column_width = 1;
-  else
-    column_width = wcwidth(wchar);
+  }
+  else if ( ! hasFullWidthSupports() )
+  {
+    column_width = std::min(column_width, 1);
+  }
 
   return ( column_width == -1 ) ? 0 : std::size_t(column_width);
 }
 
 //----------------------------------------------------------------------
-std::size_t getColumnWidth (FChar& term_char)
+std::size_t getColumnWidth (const FChar& term_char)
+{
+  return std::size_t(term_char.attr.bit.char_width);
+}
+
+//----------------------------------------------------------------------
+std::size_t getColumnWidth (const FTermBuffer& tbuf)
+{
+  return ( tbuf.isEmpty() )
+         ? 0
+         : std::accumulate ( std::next(tbuf.begin())
+                           , tbuf.end()
+                           , tbuf.front().attr.bit.char_width
+                           , [] (std::size_t s, const FChar& c)
+                             {
+                               return s + c.attr.bit.char_width;
+                             }
+                           );
+}
+
+//----------------------------------------------------------------------
+void addColumnWidth (FChar& term_char)
 {
   const std::size_t char_width = getColumnWidth(term_char.ch[0]);
 
-  if ( char_width == 2 && FTerm::getEncoding() != fc::UTF8 )
+  if ( char_width == 2 && FTerm::getEncoding() != Encoding::UTF8 )
   {
     term_char.ch[0] = '.';
     term_char.attr.bit.char_width = 1;
   }
   else
     term_char.attr.bit.char_width = char_width & 0x03;
-
-  return char_width;
 }
 
 //----------------------------------------------------------------------
-std::size_t getColumnWidth (const FTermBuffer& tb)
+inline int isWhitespace (const wchar_t ch) noexcept
 {
-  return std::accumulate ( std::next(tb.begin())
-                         , tb.end()
-                         , tb.front().attr.bit.char_width
-                         , [] (std::size_t s, const FChar& c)
-                           {
-                             return std::move(s) + c.attr.bit.char_width;
-                           }
-                         );
+  return std::iswspace(static_cast<wint_t>(ch));
+}
+
+//----------------------------------------------------------------------
+int getCharLength (const FString& string, std::size_t pos)
+{
+  // Gets the number of characters of the combined character
+  // at string position pos
+
+  const std::size_t len = string.getLength();
+  std::size_t n = pos;
+  const auto& ch = string[n];
+  std::size_t char_width = getColumnWidth(ch);
+
+  if ( isWhitespace(ch) )
+    return 1;
+
+  if ( char_width == 0 || n >= len )
+    return -1;
+
+  do
+  {
+    n++;
+    char_width = getColumnWidth(string[n]);
+  }
+  while ( n < len && char_width == 0 && ! isWhitespace(string[n]) );
+
+  return static_cast<int>(n - pos);
+}
+
+//----------------------------------------------------------------------
+int getPrevCharLength (const FString& string, std::size_t pos)
+{
+  // Gets the number of characters of the previous combined character
+  // at string position pos
+
+  const std::size_t len = string.getLength();
+  std::size_t n = pos;
+  const auto& ch = string[n];
+  std::size_t char_width = getColumnWidth(ch);
+
+  if ( (char_width == 0 || n == 0 || n >= len) && ! isWhitespace(ch) )
+    return -1;
+
+  do
+  {
+    n--;
+    char_width = getColumnWidth(string[n]);
+  }
+  while ( n > 0 && char_width == 0 && ! isWhitespace(string[n]) );
+
+  if ( char_width == 0 )
+    return -1;
+
+  return int(pos - n);
+}
+
+//----------------------------------------------------------------------
+std::size_t searchLeftCharBegin (const FString& string, std::size_t pos)
+{
+  // Search for the next character position to the left of string position pos
+
+  std::size_t n = pos;
+
+  if ( n == 0 )
+    return NOT_FOUND;
+
+  std::size_t char_width{0};
+
+  do
+  {
+    n--;
+    char_width = getColumnWidth(string[n]);
+  }
+  while ( n > 0 && char_width == 0 && ! isWhitespace(string[n]) );
+
+  if ( n == 0 && char_width == 0 )
+    return NOT_FOUND;
+
+  return n;
+}
+
+//----------------------------------------------------------------------
+std::size_t searchRightCharBegin (const FString& string, std::size_t pos)
+{
+  // Search for the next character position to the right of string position pos
+
+  const std::size_t len = string.getLength();
+  std::size_t n = pos;
+
+  if ( n >= len )
+    return NOT_FOUND;
+
+  std::size_t char_width{0};
+
+  do
+  {
+    n++;
+    char_width = getColumnWidth(string[n]);
+  }
+  while ( n < len && char_width == 0 && ! isWhitespace(string[n]) );
+
+  if ( n == len && char_width == 0 )
+    return NOT_FOUND;
+
+  return n;
 }
 
 //----------------------------------------------------------------------
@@ -546,7 +693,7 @@ FPoint readCursorPos()
 
   // Report Cursor Position (DECXCPR)
   if ( write(stdout_no, DECXCPR, std::strlen(DECXCPR)) < 1 )
-    return FPoint{x, y};
+    return {x, y};
 
   std::fflush(stdout);
   FD_ZERO(&ifds);
@@ -558,7 +705,7 @@ FPoint readCursorPos()
 
   // Read the answer
   if ( select (stdin_no + 1, &ifds, nullptr, nullptr, &tv) != 1 )
-    return FPoint{x, y};
+    return {x, y};
 
   do
   {
@@ -575,10 +722,10 @@ FPoint readCursorPos()
   if ( pos > 4 )
   {
     constexpr auto parse = "\033[%4d;%4dR";
-    std::sscanf(temp.data(), parse, &x, &y);
+    std::sscanf(temp.data(), parse, &y, &x );
   }
 
-  return FPoint{x, y};
+  return {x, y};
 }
 
 }  // namespace finalcut

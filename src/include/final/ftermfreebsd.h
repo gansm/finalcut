@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -69,7 +69,6 @@ namespace finalcut
 {
 
 // class forward declaration
-class FSystem;
 class FTermData;
 
 //----------------------------------------------------------------------
@@ -79,20 +78,8 @@ class FTermData;
 class FTermFreeBSD final
 {
   public:
-    // Typedef
-    typedef fc::freebsdConsoleCursorStyle  CursorStyle;
-
-    // Constructors
-    FTermFreeBSD() = default;
-
-    // Disable copy constructor
-    FTermFreeBSD (const FTermFreeBSD&) = delete;
-
-    // Destructor
-    ~FTermFreeBSD() = default;
-
-    // Disable copy assignment operator (=)
-    FTermFreeBSD& operator = (const FTermFreeBSD&) = delete;
+    // Using-declaration
+    using CursorStyle = FreeBSDConsoleCursorStyle;
 
     // Accessors
     FString            getClassName() const;
@@ -123,15 +110,12 @@ class FTermFreeBSD final
     static bool        setFreeBSDAlt2Meta();
     static bool        resetFreeBSDAlt2Meta();
     static bool        setFreeBSDCursorStyle (CursorStyle);
-    static bool        isInitialized();
 
     // Data members
     static uInt        bsd_alt_keymap;
     static CursorStyle cursor_style;
     static bool        change_cursorstyle;
     static bool        meta_sends_escape;
-    static FSystem*    fsystem;
-    static FTermData*  fterm_data;
 };
 
 
@@ -157,9 +141,6 @@ inline void FTermFreeBSD::enableMetaSendsEscape()
 inline void FTermFreeBSD::disableMetaSendsEscape()
 { meta_sends_escape = false; }
 
-//----------------------------------------------------------------------
-inline bool FTermFreeBSD::isInitialized()
-{ return bool(fsystem && fterm_data); }
 #endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 
 }  // namespace finalcut

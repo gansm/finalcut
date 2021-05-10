@@ -48,102 +48,102 @@ class FWidgetColors
 {
   public:
     // Constructor
-    FWidgetColors();
+    FWidgetColors() = default;
 
     // Destructor
-    virtual ~FWidgetColors();
+    virtual ~FWidgetColors() noexcept;
 
     // Method
     virtual FString getClassName() const;
     virtual void setColorTheme() = 0;
 
     // Data members
-    FColor term_fg{fc::Default};
-    FColor term_bg{fc::Default};
-    FColor list_fg{fc::Default};
-    FColor list_bg{fc::Default};
-    FColor selected_list_fg{fc::Default};
-    FColor selected_list_bg{fc::Default};
-    FColor current_element_focus_fg{fc::Default};
-    FColor current_element_focus_bg{fc::Default};
-    FColor current_element_fg{fc::Default};
-    FColor current_element_bg{fc::Default};
-    FColor current_inc_search_element_fg{fc::Default};
-    FColor selected_current_element_focus_fg{fc::Default};
-    FColor selected_current_element_focus_bg{fc::Default};
-    FColor selected_current_element_fg{fc::Default};
-    FColor selected_current_element_bg{fc::Default};
-    FColor label_fg{fc::Default};
-    FColor label_bg{fc::Default};
-    FColor label_inactive_fg{fc::Default};
-    FColor label_inactive_bg{fc::Default};
-    FColor label_hotkey_fg{fc::Default};
-    FColor label_hotkey_bg{fc::Default};
-    FColor label_emphasis_fg{fc::Default};
-    FColor label_ellipsis_fg{fc::Default};
-    FColor inputfield_active_focus_fg{fc::Default};
-    FColor inputfield_active_focus_bg{fc::Default};
-    FColor inputfield_active_fg{fc::Default};
-    FColor inputfield_active_bg{fc::Default};
-    FColor inputfield_inactive_fg{fc::Default};
-    FColor inputfield_inactive_bg{fc::Default};
-    FColor dialog_fg{fc::Default};
-    FColor dialog_resize_fg{fc::Default};
-    FColor dialog_emphasis_fg{fc::Default};
-    FColor dialog_bg{fc::Default};
-    FColor error_box_fg{fc::Default};
-    FColor error_box_emphasis_fg{fc::Default};
-    FColor error_box_bg{fc::Default};
-    FColor tooltip_fg{fc::Default};
-    FColor tooltip_bg{fc::Default};
-    FColor shadow_fg{fc::Default};
-    FColor shadow_bg{fc::Default};
-    FColor toggle_button_active_focus_fg{fc::Default};
-    FColor toggle_button_active_focus_bg{fc::Default};
-    FColor toggle_button_active_fg{fc::Default};
-    FColor toggle_button_active_bg{fc::Default};
-    FColor toggle_button_inactive_fg{fc::Default};
-    FColor toggle_button_inactive_bg{fc::Default};
-    FColor button_active_focus_fg{fc::Default};
-    FColor button_active_focus_bg{fc::Default};
-    FColor button_active_fg{fc::Default};
-    FColor button_active_bg{fc::Default};
-    FColor button_inactive_fg{fc::Default};
-    FColor button_inactive_bg{fc::Default};
-    FColor button_hotkey_fg{fc::Default};
-    FColor titlebar_active_fg{fc::Default};
-    FColor titlebar_active_bg{fc::Default};
-    FColor titlebar_inactive_fg{fc::Default};
-    FColor titlebar_inactive_bg{fc::Default};
-    FColor titlebar_button_fg{fc::Default};
-    FColor titlebar_button_bg{fc::Default};
-    FColor titlebar_button_focus_fg{fc::Default};
-    FColor titlebar_button_focus_bg{fc::Default};
-    FColor menu_active_focus_fg{fc::Default};
-    FColor menu_active_focus_bg{fc::Default};
-    FColor menu_active_fg{fc::Default};
-    FColor menu_active_bg{fc::Default};
-    FColor menu_inactive_fg{fc::Default};
-    FColor menu_inactive_bg{fc::Default};
-    FColor menu_hotkey_fg{fc::Default};
-    FColor menu_hotkey_bg{fc::Default};
-    FColor statusbar_fg{fc::Default};
-    FColor statusbar_bg{fc::Default};
-    FColor statusbar_hotkey_fg{fc::Default};
-    FColor statusbar_hotkey_bg{fc::Default};
-    FColor statusbar_separator_fg{fc::Default};
-    FColor statusbar_active_fg{fc::Default};
-    FColor statusbar_active_bg{fc::Default};
-    FColor statusbar_active_hotkey_fg{fc::Default};
-    FColor statusbar_active_hotkey_bg{fc::Default};
-    FColor scrollbar_fg{fc::Default};
-    FColor scrollbar_bg{fc::Default};
-    FColor scrollbar_button_fg{fc::Default};
-    FColor scrollbar_button_bg{fc::Default};
-    FColor scrollbar_button_inactive_fg{fc::Default};
-    FColor scrollbar_button_inactive_bg{fc::Default};
-    FColor progressbar_fg{fc::Default};
-    FColor progressbar_bg{fc::Default};
+    FColor term_fg{FColor::Default};
+    FColor term_bg{FColor::Default};
+    FColor list_fg{FColor::Default};
+    FColor list_bg{FColor::Default};
+    FColor selected_list_fg{FColor::Default};
+    FColor selected_list_bg{FColor::Default};
+    FColor current_element_focus_fg{FColor::Default};
+    FColor current_element_focus_bg{FColor::Default};
+    FColor current_element_fg{FColor::Default};
+    FColor current_element_bg{FColor::Default};
+    FColor current_inc_search_element_fg{FColor::Default};
+    FColor selected_current_element_focus_fg{FColor::Default};
+    FColor selected_current_element_focus_bg{FColor::Default};
+    FColor selected_current_element_fg{FColor::Default};
+    FColor selected_current_element_bg{FColor::Default};
+    FColor label_fg{FColor::Default};
+    FColor label_bg{FColor::Default};
+    FColor label_inactive_fg{FColor::Default};
+    FColor label_inactive_bg{FColor::Default};
+    FColor label_hotkey_fg{FColor::Default};
+    FColor label_hotkey_bg{FColor::Default};
+    FColor label_emphasis_fg{FColor::Default};
+    FColor label_ellipsis_fg{FColor::Default};
+    FColor inputfield_active_focus_fg{FColor::Default};
+    FColor inputfield_active_focus_bg{FColor::Default};
+    FColor inputfield_active_fg{FColor::Default};
+    FColor inputfield_active_bg{FColor::Default};
+    FColor inputfield_inactive_fg{FColor::Default};
+    FColor inputfield_inactive_bg{FColor::Default};
+    FColor dialog_fg{FColor::Default};
+    FColor dialog_resize_fg{FColor::Default};
+    FColor dialog_emphasis_fg{FColor::Default};
+    FColor dialog_bg{FColor::Default};
+    FColor error_box_fg{FColor::Default};
+    FColor error_box_emphasis_fg{FColor::Default};
+    FColor error_box_bg{FColor::Default};
+    FColor tooltip_fg{FColor::Default};
+    FColor tooltip_bg{FColor::Default};
+    FColor shadow_fg{FColor::Default};
+    FColor shadow_bg{FColor::Default};
+    FColor toggle_button_active_focus_fg{FColor::Default};
+    FColor toggle_button_active_focus_bg{FColor::Default};
+    FColor toggle_button_active_fg{FColor::Default};
+    FColor toggle_button_active_bg{FColor::Default};
+    FColor toggle_button_inactive_fg{FColor::Default};
+    FColor toggle_button_inactive_bg{FColor::Default};
+    FColor button_active_focus_fg{FColor::Default};
+    FColor button_active_focus_bg{FColor::Default};
+    FColor button_active_fg{FColor::Default};
+    FColor button_active_bg{FColor::Default};
+    FColor button_inactive_fg{FColor::Default};
+    FColor button_inactive_bg{FColor::Default};
+    FColor button_hotkey_fg{FColor::Default};
+    FColor titlebar_active_fg{FColor::Default};
+    FColor titlebar_active_bg{FColor::Default};
+    FColor titlebar_inactive_fg{FColor::Default};
+    FColor titlebar_inactive_bg{FColor::Default};
+    FColor titlebar_button_fg{FColor::Default};
+    FColor titlebar_button_bg{FColor::Default};
+    FColor titlebar_button_focus_fg{FColor::Default};
+    FColor titlebar_button_focus_bg{FColor::Default};
+    FColor menu_active_focus_fg{FColor::Default};
+    FColor menu_active_focus_bg{FColor::Default};
+    FColor menu_active_fg{FColor::Default};
+    FColor menu_active_bg{FColor::Default};
+    FColor menu_inactive_fg{FColor::Default};
+    FColor menu_inactive_bg{FColor::Default};
+    FColor menu_hotkey_fg{FColor::Default};
+    FColor menu_hotkey_bg{FColor::Default};
+    FColor statusbar_fg{FColor::Default};
+    FColor statusbar_bg{FColor::Default};
+    FColor statusbar_hotkey_fg{FColor::Default};
+    FColor statusbar_hotkey_bg{FColor::Default};
+    FColor statusbar_separator_fg{FColor::Default};
+    FColor statusbar_active_fg{FColor::Default};
+    FColor statusbar_active_bg{FColor::Default};
+    FColor statusbar_active_hotkey_fg{FColor::Default};
+    FColor statusbar_active_hotkey_bg{FColor::Default};
+    FColor scrollbar_fg{FColor::Default};
+    FColor scrollbar_bg{FColor::Default};
+    FColor scrollbar_button_fg{FColor::Default};
+    FColor scrollbar_button_bg{FColor::Default};
+    FColor scrollbar_button_inactive_fg{FColor::Default};
+    FColor scrollbar_button_inactive_bg{FColor::Default};
+    FColor progressbar_fg{FColor::Default};
+    FColor progressbar_bg{FColor::Default};
 };
 
 // FWidgetColors inline functions
@@ -176,7 +176,7 @@ class default8ColorTheme final : public FWidgetColors
     default8ColorTheme();
 
     // Destructor
-    ~default8ColorTheme() override;
+    ~default8ColorTheme() noexcept override;
 
     // Method
     FString getClassName() const override;
@@ -213,7 +213,7 @@ class default16ColorTheme final : public FWidgetColors
     default16ColorTheme();
 
     // Destructor
-    ~default16ColorTheme() override;
+    ~default16ColorTheme() noexcept override;
 
     // Method
     FString getClassName() const override;
@@ -250,7 +250,7 @@ class default8ColorDarkTheme final : public FWidgetColors
     default8ColorDarkTheme();
 
     // Destructor
-    ~default8ColorDarkTheme() override;
+    ~default8ColorDarkTheme() noexcept override;
 
     // Method
     FString getClassName() const override;
@@ -287,7 +287,7 @@ class default16ColorDarkTheme final : public FWidgetColors
     default16ColorDarkTheme();
 
     // Destructor
-    ~default16ColorDarkTheme() override;
+    ~default16ColorDarkTheme() noexcept override;
 
     // Method
     FString getClassName() const override;

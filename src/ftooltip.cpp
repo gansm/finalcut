@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2020 Markus Gans                                      *
+* Copyright 2016-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -124,8 +124,8 @@ void FToolTip::init()
 void FToolTip::draw()
 {
   bool border = hasBorder();
-  int y{( border ) ? 2 : 1};
-  int x{( border ) ? 3 : 2};
+  int y{border ? 2 : 1};
+  int x{border ? 3 : 2};
   setColor();
   clearArea();
 
@@ -160,8 +160,8 @@ void FToolTip::calculateDimensions()
   int x{};
   int y{};
   bool border = hasBorder();
-  const std::size_t h = ( border ) ? text_num_lines + 2 : text_num_lines;
-  const std::size_t w = ( border ) ? max_line_width + 4 : max_line_width + 2;
+  const std::size_t h = border ? text_num_lines + 2 : text_num_lines;
+  const std::size_t w = border ? max_line_width + 4 : max_line_width + 2;
   const auto& r = getRootWidget();
 
   if ( r )
@@ -176,9 +176,14 @@ void FToolTip::calculateDimensions()
 }
 
 //----------------------------------------------------------------------
-void FToolTip::adjustSize()
+void FToolTip::initLayout()
 {
   calculateDimensions();
+}
+
+//----------------------------------------------------------------------
+void FToolTip::adjustSize()
+{
   FWindow::adjustSize();
 }
 

@@ -51,22 +51,15 @@ class FPoint
 {
   public:
     // Constructors
-    FPoint () = default;
-    FPoint (const FPoint&);      // copy constructor
-    FPoint (FPoint&&) noexcept;  // move constructor
-    FPoint (int, int);
-
-    // Destructor
-    virtual ~FPoint();
+    FPoint () noexcept = default;
+    FPoint (int, int) noexcept;
 
     // Overloaded operators
-    FPoint& operator =  (const FPoint&);
-    FPoint& operator =  (FPoint&&) noexcept;
     FPoint& operator += (const FPoint&);
     FPoint& operator -= (const FPoint&);
 
     // Accessors
-    virtual FString       getClassName();
+    FString               getClassName() const;
     int                   getX() const;
     int                   getY() const;
     void                  setX (int);
@@ -103,25 +96,13 @@ class FPoint
 
 // FPoint inline functions
 //----------------------------------------------------------------------
-inline FPoint::FPoint (const FPoint& p)  // copy constructor
-  : xpos{p.xpos}
-  , ypos{p.ypos}
-{ }
-
-//----------------------------------------------------------------------
-inline FPoint::FPoint (FPoint&& p) noexcept  // move constructor
-  : xpos{std::move(p.xpos)}
-  , ypos{std::move(p.ypos)}
-{ }
-
-//----------------------------------------------------------------------
-inline FPoint::FPoint (int x, int y)
+inline FPoint::FPoint (int x, int y) noexcept
   : xpos{x}
   , ypos{y}
 { }
 
 //----------------------------------------------------------------------
-inline FString FPoint::getClassName()
+inline FString FPoint::getClassName() const
 { return "FPoint"; }
 
 //----------------------------------------------------------------------

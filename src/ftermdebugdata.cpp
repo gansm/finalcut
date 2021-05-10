@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                       *
+* Copyright 2019-2021 Markus Gans                                       *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -26,13 +26,10 @@
 #include "final/ftermdetection.h"
 #include "final/ftermdebugdata.h"
 
+#if DEBUG
+
 namespace finalcut
 {
-
-#if DEBUG
-// static class attributes
-FTermData*      FTermDebugData::data           {nullptr};
-FTermDetection* FTermDebugData::term_detection {nullptr};
 
 //----------------------------------------------------------------------
 // class FTermDebugData
@@ -40,51 +37,49 @@ FTermDetection* FTermDebugData::term_detection {nullptr};
 
 // public methods of FTermDebugData
 //----------------------------------------------------------------------
-void FTermDebugData::init()
-{
-  data = FTerm::getFTermData();
-  term_detection = FTerm::getFTermDetection();
-}
-
-//----------------------------------------------------------------------
 const FString& FTermDebugData::getAnswerbackString()
 {
-  return term_detection->getAnswerbackString();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.getAnswerbackString();
 }
 
 //----------------------------------------------------------------------
 const FString& FTermDebugData::getSecDAString()
 {
-  return term_detection->getSecDAString();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.getSecDAString();
 }
 
 //----------------------------------------------------------------------
 const char* FTermDebugData::getTermType_256color()
 {
-  return term_detection->getTermType_256color();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.getTermType_256color();
 }
 
 //----------------------------------------------------------------------
 const char* FTermDebugData::getTermType_Answerback()
 {
-  return term_detection->getTermType_Answerback();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.getTermType_Answerback();
 }
 
 //----------------------------------------------------------------------
 const char* FTermDebugData::getTermType_SecDA()
 {
-  return term_detection->getTermType_SecDA();
+  auto& term_detection = FTerm::getFTermDetection();
+  return term_detection.getTermType_SecDA();
 }
 
 //----------------------------------------------------------------------
 #if defined(__linux__)
 int FTermDebugData::getFramebufferBpp()
 {
-  return data->getFramebufferBpp();
+  auto& fterm_data = FTerm::getFTermData();
+  return fterm_data.getFramebufferBpp();
 }
 #endif  // defined(__linux__)
 
-#endif  // DEBUG
-
 }  // namespace finalcut
 
+#endif  // DEBUG

@@ -86,7 +86,6 @@ class FStartOptions;
 class FTimerEvent;
 class FWheelEvent;
 class FMouseControl;
-class FKeyboard;
 class FPoint;
 class FObject;
 
@@ -98,7 +97,8 @@ class FApplication : public FWidget
 {
   public:
     // Typedef
-    typedef std::shared_ptr<FLog> FLogPtr;
+    using FLogPtr = std::shared_ptr<FLog>;
+    using Args = std::vector<std::string>;
 
     // Constructor
     FApplication (const int&, char*[]);
@@ -114,8 +114,7 @@ class FApplication : public FWidget
 
     // Accessors
     FString               getClassName() const override;
-    int                   getArgc() const;
-    char**                getArgv() const;
+    Args                  getArgs() const;
     static FApplication*  getApplicationObject();
     static FWidget*       getKeyboardWidget();
     static FLogPtr&       getLog();
@@ -163,17 +162,17 @@ class FApplication : public FWidget
     using CmdOption = struct option;
 #endif
 
-    // Typedefs
-    typedef std::pair<FObject*, FEvent*> EventPair;
-    typedef std::deque<EventPair> FEventQueue;
-    typedef std::unordered_map<int, std::function<void(char*)>> CmdMap;
+    // Using-declaration
+    using EventPair = std::pair<FObject*, FEvent*>;
+    using FEventQueue = std::deque<EventPair>;
+    using CmdMap = std::unordered_map<int, std::function<void(char*)>>;
 
     // Methods
     void                  init();
     static void           setTerminalEncoding (const FString&);
     static void           setLongOptions(std::vector<CmdOption>&);
     static void           setCmdOptionsMap (CmdMap&);
-    static void           cmdOptions (const int&, char*[]);
+    static void           cmdOptions (const Args&);
     static FStartOptions& getStartOptions();
     static void           showParameterUsage();
     void                  destroyLog();
@@ -206,24 +205,23 @@ class FApplication : public FWidget
     void                  sendMouseMoveEvent ( const FMouseData&
                                              , const FPoint&
                                              , const FPoint&
-                                             , int ) const;
+                                             , MouseButton ) const;
     void                  sendMouseLeftClickEvent ( const FMouseData&
                                                   , const FPoint&
                                                   , const FPoint&
-                                                  , int ) const;
+                                                  , MouseButton ) const;
     void                  sendMouseRightClickEvent ( const FMouseData&
                                                    , const FPoint&
                                                    , const FPoint&
-                                                   , int ) const;
+                                                   , MouseButton ) const;
     void                  sendMouseMiddleClickEvent ( const FMouseData&
                                                     , const FPoint&
                                                     , const FPoint&
-                                                    , int ) const;
+                                                    , MouseButton ) const;
     void                  sendWheelEvent ( const FMouseData&
                                          , const FPoint&
                                          , const FPoint& ) const;
-    void                  flushTerminal();
-    static FWidget*       processParameters (const int&, char*[]);
+    static FWidget*       processParameters (const Args&);
     void                  processResizeEvent() const;
     void                  processCloseWidget();
     void                  processLogger() const;
@@ -233,22 +231,17 @@ class FApplication : public FWidget
     static bool           isNextEventTimeout();
 
     // Data members
-    int                   app_argc{};
-    char**                app_argv{};
+    Args                  app_args{};
     uInt64                key_timeout{100000};        // 100 ms
     uInt64                dblclick_interval{500000};  // 500 ms
     std::streambuf*       default_clog_rdbuf{std::clog.rdbuf()};
     FWidget*              clicked_widget{};
     FEventQueue           event_queue{};
-    int                   flush_count{0};
     static uInt64         next_event_wait;
     static timeval        time_last_event;
     static int            loop_level;
     static int            quit_code;
     static bool           quit_now;
-    static bool           pending_updates;
-    static FMouseControl* mouse;
-    static FKeyboard*     keyboard;
     static FWidget*       keyboard_widget;
 };
 
@@ -264,12 +257,8 @@ inline FString FApplication::getClassName() const
 { return "FApplication"; }
 
 //----------------------------------------------------------------------
-inline int FApplication::getArgc() const
-{ return app_argc; }
-
-//----------------------------------------------------------------------
-inline char** FApplication::getArgv() const
-{ return app_argv; }
+inline FApplication::Args FApplication::getArgs() const
+{ return app_args; }
 
 //----------------------------------------------------------------------
 inline void FApplication::cb_exitApp (FWidget* w) const

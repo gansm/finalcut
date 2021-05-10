@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -51,28 +51,9 @@ constexpr std::array<const char* const, 8> button_text =
 //----------------------------------------------------------------------
 FMessageBox::FMessageBox (FWidget* parent)
   : FDialog{parent}
-  , button_digit{FMessageBox::Ok, FMessageBox::Reject, FMessageBox::Reject}
+  , button_digit{{ButtonType::Ok, ButtonType::Reject, ButtonType::Reject}}
 {
   setTitlebarText("Message for you");
-  init();
-}
-
-//----------------------------------------------------------------------
-FMessageBox::FMessageBox (const FMessageBox& mbox)
-  : FDialog{mbox.getParentWidget()}
-  , headline_text{mbox.headline_text}
-  , text{mbox.text}
-  , text_components{mbox.text_components}
-  , max_line_width{mbox.max_line_width}
-  , emphasis_color{mbox.emphasis_color}
-  , button_digit{mbox.button_digit[0],
-                 mbox.button_digit[1],
-                 mbox.button_digit[2]}
-  , num_buttons{mbox.num_buttons}
-  , text_num_lines{mbox.text_num_lines}
-  , center_text{mbox.center_text}
-{
-  setTitlebarText (mbox.getTitlebarText());
   init();
 }
 
@@ -85,54 +66,17 @@ FMessageBox::FMessageBox ( const FString& caption
                          , FWidget* parent )
   : FDialog{parent}
   , text{message}
-  , button_digit{button0, button1, button2}
+  , button_digit{{button0, button1, button2}}
 {
   setTitlebarText(caption);
   init();
 }
 
 //----------------------------------------------------------------------
-FMessageBox::~FMessageBox()  // destructor
-{
-  deallocation();
-}
+FMessageBox::~FMessageBox() noexcept = default;  // destructor
 
 
 // public methods of FMessageBox
-//----------------------------------------------------------------------
-FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
-{
-  if ( &mbox == this )
-  {
-    return *this;
-  }
-  else
-  {
-    for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
-      if ( button[n] )
-        delete button[n];
-
-    if ( mbox.getParentWidget() )
-      mbox.getParentWidget()->addChild (this);
-
-    setTitlebarText (mbox.getTitlebarText());
-    headline_text   = mbox.headline_text;
-    text            = mbox.text;
-    text_components = mbox.text_components;
-    max_line_width  = mbox.max_line_width;
-    center_text     = mbox.center_text;
-    emphasis_color  = mbox.emphasis_color;
-    num_buttons     = mbox.num_buttons;
-    text_num_lines  = mbox.text_num_lines;
-    button_digit[0] = mbox.button_digit[0];
-    button_digit[1] = mbox.button_digit[1];
-    button_digit[2] = mbox.button_digit[2];
-    init();
-
-    return *this;
-  }
-}
-
 //----------------------------------------------------------------------
 void FMessageBox::setHeadline (const FString& headline)
 {
@@ -158,17 +102,31 @@ void FMessageBox::setText (const FString& txt)
   if ( button[0] )
     button[0]->setY (int(getHeight()) - 4, false);
 
-  if ( button[1] && button_digit[1] != FMessageBox::Reject )
+  if ( button[1] && button_digit[1] != ButtonType::Reject )
     button[1]->setY (int(getHeight()) - 4, false);
 
-  if ( button[2] && button_digit[2] != FMessageBox::Reject )
+  if ( button[2] && button_digit[2] != ButtonType::Reject )
     button[2]->setY (int(getHeight()) - 4, false);
 
   adjustButtons();
 }
 
+//----------------------------------------------------------------------
+FMessageBox::ButtonType FMessageBox::exec()
+{
+  result_code = ButtonType::Reject;
+  show();
+  return result_code;
+}
 
 // protected methods of FMessageBox
+//----------------------------------------------------------------------
+void FMessageBox::initLayout()
+{
+  calculateDimensions();
+  adjustButtons();
+}
+
 //----------------------------------------------------------------------
 void FMessageBox::adjustSize()
 {
@@ -195,9 +153,16 @@ void FMessageBox::adjustSize()
 }
 
 //----------------------------------------------------------------------
+void FMessageBox::done (ButtonType result)
+{
+  hide();
+  result_code = result;
+}
+
+//----------------------------------------------------------------------
 void FMessageBox::cb_processClick (ButtonType reply)
 {
-  done(int(reply));
+  done(reply);
 }
 
 
@@ -207,21 +172,21 @@ void FMessageBox::init()
 {
   calculateDimensions();
 
-  if ( (button_digit[2] != Reject && button_digit[1] == Reject)
-    || (button_digit[1] != Reject && button_digit[0] == Reject) )
+  if ( (button_digit[2] != ButtonType::Reject && button_digit[1] == ButtonType::Reject)
+    || (button_digit[1] != ButtonType::Reject && button_digit[0] == ButtonType::Reject) )
   {
     button_digit[0] = button_digit[1] \
                     = button_digit[2] \
-                    = FMessageBox::Reject;
+                    = ButtonType::Reject;
   }
 
-  if ( button_digit[0] == FMessageBox::Reject )
-    button_digit[0] = FMessageBox::Ok;
+  if ( button_digit[0] == ButtonType::Reject )
+    button_digit[0] = ButtonType::Ok;
 
-  if ( button_digit[1] == FMessageBox::Reject
-    && button_digit[2] == FMessageBox::Reject )
+  if ( button_digit[1] == ButtonType::Reject
+    && button_digit[2] == ButtonType::Reject )
     num_buttons = 1;
-  else if ( button_digit[2] == FMessageBox::Reject )
+  else if ( button_digit[2] == ButtonType::Reject )
     num_buttons = 2;
   else
     num_buttons = 3;
@@ -238,26 +203,26 @@ inline void FMessageBox::allocation()
 {
   try
   {
-    button[0] = new FButton (this);
-    button[0]->setText(button_text[button_digit[0]]);
+    button[0].reset(new FButton (this));
+    button[0]->setText(button_text[std::size_t(button_digit[0])]);
     button[0]->setPos(FPoint{3, int(getHeight()) - 4}, false);
     button[0]->setWidth(1, false);
     button[0]->setHeight(1, false);
     button[0]->setFocus();
 
-    if ( button_digit[1] > FMessageBox::Reject )
+    if ( button_digit[1] > ButtonType::Reject )
     {
-      button[1] = new FButton(this);
-      button[1]->setText(button_text[button_digit[1]]);
+      button[1].reset(new FButton(this));
+      button[1]->setText(button_text[std::size_t(button_digit[1])]);
       button[1]->setPos(FPoint{17, int(getHeight()) - 4}, false);
       button[1]->setWidth(0, false);
       button[1]->setHeight(1, false);
     }
 
-    if ( button_digit[2] > FMessageBox::Reject )
+    if ( button_digit[2] > ButtonType::Reject )
     {
-      button[2] = new FButton(this);
-      button[2]->setText(button_text[button_digit[2]]);
+      button[2].reset(new FButton(this));
+      button[2]->setText(button_text[std::size_t(button_digit[2])]);
       button[2]->setPos(FPoint{32, int(getHeight()) - 4}, false);
       button[2]->setWidth(0, false);
       button[2]->setHeight(1, false);
@@ -271,17 +236,9 @@ inline void FMessageBox::allocation()
 }
 
 //----------------------------------------------------------------------
-inline void FMessageBox::deallocation()
-{
-  for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
-    if ( button[n] )
-      delete button[n];
-}
-
-//----------------------------------------------------------------------
 inline void FMessageBox::initCallbacks()
 {
-  if ( button[0] && button_digit[0] != FMessageBox::Reject )
+  if ( button[0] && button_digit[0] != ButtonType::Reject )
   {
     button[0]->addCallback
     (
@@ -291,7 +248,7 @@ inline void FMessageBox::initCallbacks()
     );
   }
 
-  if ( button[1] && button_digit[1] != FMessageBox::Reject )
+  if ( button[1] && button_digit[1] != ButtonType::Reject )
   {
     button[1]->addCallback
     (
@@ -301,7 +258,7 @@ inline void FMessageBox::initCallbacks()
     );
   }
 
-  if ( button[2] && button_digit[2] != FMessageBox::Reject )
+  if ( button[2] && button_digit[2] != ButtonType::Reject )
   {
     button[2]->addCallback
     (
@@ -391,7 +348,7 @@ void FMessageBox::draw()
 //----------------------------------------------------------------------
 void FMessageBox::resizeButtons() const
 {
-  std::array<std::size_t, 3> len{};
+  std::array<std::size_t, MAX_BUTTONS> len{};
   std::size_t max_size{};
 
   for (std::size_t n{0}; n < num_buttons && n < MAX_BUTTONS; n++)
@@ -446,7 +403,7 @@ void FMessageBox::adjustButtons()
     std::size_t max_width;
     const auto& root_widget = getRootWidget();
     setWidth(btn_width + 5);
-    max_width = ( root_widget ) ? root_widget->getClientWidth() : 80;
+    max_width = root_widget ? root_widget->getClientWidth() : 80;
     setX (int((max_width - getWidth()) / 2));
   }
 

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -41,7 +41,7 @@ bool sortByName ( const FFileDialog::FDirEntry& lhs
                 , const FFileDialog::FDirEntry& rhs )
 {
   // lhs < rhs
-  return bool( strcasecmp(lhs.name.c_str(), rhs.name.c_str()) < 0 );
+  return strcasecmp(lhs.name.c_str(), rhs.name.c_str()) < 0;
 }
 
 //----------------------------------------------------------------------
@@ -81,16 +81,13 @@ FString fileChooser ( FWidget* parent
                        , type
                        , parent );
 
-  if ( fileopen.exec() == FDialog::Accept )
+  if ( fileopen.exec() == FDialog::ResultCode::Accept )
     ret = fileopen.getPath() + fileopen.getSelectedFile();
   else
     ret = FString{};
 
   return ret;
 }
-
-// static class attributes
-FSystem*  FFileDialog::fsystem{nullptr};
 
 
 //----------------------------------------------------------------------
@@ -102,16 +99,6 @@ FSystem*  FFileDialog::fsystem{nullptr};
 FFileDialog::FFileDialog (FWidget* parent)
   : FDialog{parent}
 {
-  init();
-}
-
-//----------------------------------------------------------------------
-FFileDialog::FFileDialog (const FFileDialog& fdlg)
-  : FDialog{fdlg.getParentWidget()}
-{
-  if ( fdlg.directory )
-    setPath(fdlg.directory);
-
   init();
 }
 
@@ -139,41 +126,14 @@ FFileDialog::~FFileDialog()  // destructor
 
 // public methods of FFileDialog
 //----------------------------------------------------------------------
-FFileDialog& FFileDialog::operator = (const FFileDialog& fdlg)
-{
-  if ( &fdlg == this )
-  {
-    return *this;
-  }
-  else
-  {
-    clear();
-
-    if ( fdlg.getParentWidget() )
-      fdlg.getParentWidget()->addChild (this);
-
-    directory = fdlg.directory;
-    filter_pattern = fdlg.filter_pattern;
-    dlg_type = fdlg.dlg_type;
-    show_hidden = fdlg.show_hidden;
-
-    if ( directory )
-      setPath(directory);
-
-    init();
-    return *this;
-  }
-}
-
-//----------------------------------------------------------------------
 FString FFileDialog::getSelectedFile() const
 {
   const auto n = uLong(filebrowser.currentItem() - 1);
 
   if ( dir_entries[n].directory )
-    return FString{""};
+    return {""};
   else
-    return FString{dir_entries[n].name};
+    return {dir_entries[n].name};
 }
 
 //----------------------------------------------------------------------
@@ -202,7 +162,9 @@ void FFileDialog::setPath (const FString& dir)
     return;
   }
 
-  if ( fsystem && fsystem->realpath(dir.c_str(), resolved_path.data()) != nullptr )
+  const auto& fsystem = FTerm::getFSystem();
+
+  if ( fsystem->realpath(dir.c_str(), resolved_path.data()) != nullptr )
     r_dir.setString(resolved_path.data());
   else
     r_dir.setString(dir);
@@ -244,16 +206,10 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
 
   const FKey key = ev->key();
 
-  switch ( key )
+  if ( key == FKey::Erase || key == FKey::Backspace )
   {
-    case fc::Fkey_erase:
-    case fc::Fkey_backspace:
-      changeDir("..");
-      ev->accept();
-      break;
-
-    default:
-      break;
+    changeDir("..");
+    ev->accept();
   }
 }
 
@@ -262,7 +218,7 @@ FString FFileDialog::fileOpenChooser ( FWidget* parent
                                      , const FString& dirname
                                      , const FString& filter )
 {
-  return fileChooser (parent, dirname, filter, FFileDialog::Open);
+  return fileChooser (parent, dirname, filter, DialogType::Open);
 }
 
 //----------------------------------------------------------------------
@@ -270,7 +226,7 @@ FString FFileDialog::fileSaveChooser ( FWidget* parent
                                      , const FString& dirname
                                      , const FString& filter )
 {
-  return fileChooser (parent, dirname, filter, FFileDialog::Save);
+  return fileChooser (parent, dirname, filter, DialogType::Save);
 }
 
 
@@ -324,9 +280,6 @@ void FFileDialog::init()
   int x{};
   int y{};
 
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
-
   setGeometry(FPoint{1, 1}, FSize{w, h}, false);
   const auto& parent_widget = getParentWidget();
 
@@ -338,7 +291,7 @@ void FFileDialog::init()
   else
     x = y = 1;
 
-  if ( dlg_type == FFileDialog::Save )
+  if ( dlg_type == DialogType::Save )
     FDialog::setText("Save file");
   else
     FDialog::setText("Open file");
@@ -366,7 +319,7 @@ inline void FFileDialog::widgetSettings (const FPoint& pos)
   cancel_btn.setText ("&Cancel");
   cancel_btn.setGeometry(FPoint{19, 10}, FSize{9, 1});
 
-  if ( dlg_type == FFileDialog::Save )
+  if ( dlg_type == DialogType::Save )
     open_btn.setText ("&Save");
   else
     open_btn.setText ("&Open");
@@ -600,9 +553,7 @@ void FFileDialog::followSymLink (const char* const dir, FDirEntry& entry) const
   std::array<char, MAXPATHLEN> symLink{};
   struct stat sb{};
 
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
-
+  const auto& fsystem = FTerm::getFSystem();
   std::strncpy (symLink.data(), dir, symLink.size() - 1);
   symLink[symLink.size() - 1] = '\0';
   std::strncat ( symLink.data()
@@ -633,7 +584,7 @@ void FFileDialog::dirEntriesToList()
   for (auto&& entry : dir_entries)
   {
     if ( entry.directory )
-      filebrowser.insert(FString{entry.name}, fc::SquareBrackets);
+      filebrowser.insert(FString{entry.name}, BracketType::Brackets);
     else
       filebrowser.insert(FString{entry.name});
   }
@@ -665,9 +616,6 @@ int FFileDialog::changeDir (const FString& dirname)
 {
   FString lastdir{directory};
   FString newdir{dirname};
-
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
 
   if ( newdir.includes('~') )
     newdir = newdir.replace('~', getHomeDir());
@@ -743,15 +691,13 @@ FString FFileDialog::getHomeDir()
   struct passwd* pwd_ptr{};
   std::array<char, 1024> buf{};
 
-  if ( ! fsystem )
-    fsystem = FTerm::getFSystem();
-
+  const auto& fsystem = FTerm::getFSystem();
   const uid_t euid = fsystem->geteuid();
 
   if ( fsystem->getpwuid_r(euid, &pwd, buf.data(), buf.size(), &pwd_ptr) )
-    return FString{""};
+    return {""};
   else
-    return FString{pwd.pw_dir};
+    return {pwd.pw_dir};
 }
 
 //----------------------------------------------------------------------
@@ -799,7 +745,7 @@ void FFileDialog::cb_processActivate()
     if ( found )
       changeDir(input);
     else
-      done (FDialog::Accept);
+      done (ResultCode::Accept);
   }
 }
 
@@ -829,19 +775,19 @@ void FFileDialog::cb_processClicked()
   if ( dir_entries[n].directory )
     changeDir(dir_entries[n].name);
   else
-    done (FDialog::Accept);
+    done (ResultCode::Accept);
 }
 
 //----------------------------------------------------------------------
 void FFileDialog::cb_processCancel()
 {
-  done (FDialog::Reject);
+  done (ResultCode::Reject);
 }
 
 //----------------------------------------------------------------------
 void FFileDialog::cb_processOpen()
 {
-  done (FDialog::Accept);
+  done (ResultCode::Accept);
 }
 
 //----------------------------------------------------------------------

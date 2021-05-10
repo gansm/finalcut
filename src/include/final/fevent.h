@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -101,15 +101,14 @@ class FPoint;
 class FEvent  // event base class
 {
   public:
-    FEvent() = default;
-    explicit FEvent(fc::events);
-    fc::events getType() const;
+    explicit FEvent(Event);
+    Event getType() const;
     bool isQueued() const;
     bool wasSent() const;
 
   private:
     // Data members
-    fc::events t{fc::None_Event};
+    Event t{Event::None};
     bool queued{false};
     bool send{false};
 
@@ -125,9 +124,7 @@ class FEvent  // event base class
 class FKeyEvent : public FEvent  // keyboard event
 {
   public:
-    FKeyEvent() = default;
-    FKeyEvent (fc::events, FKey);
-    ~FKeyEvent();
+    FKeyEvent (Event, FKey);
 
     FKey     key() const;
     bool     isAccepted() const;
@@ -135,7 +132,7 @@ class FKeyEvent : public FEvent  // keyboard event
     void     ignore();
 
   private:
-    FKey     k{0};
+    FKey     k{FKey::None};
     bool     accpt{false};
 };
 
@@ -147,10 +144,8 @@ class FKeyEvent : public FEvent  // keyboard event
 class FMouseEvent : public FEvent  // mouse event
 {
   public:
-    FMouseEvent() = default;
-    FMouseEvent (fc::events, const FPoint&, const FPoint&, int);
-    FMouseEvent (fc::events, const FPoint&, int);
-    ~FMouseEvent();
+    FMouseEvent (Event, const FPoint&, const FPoint&, MouseButton);
+    FMouseEvent (Event, const FPoint&, MouseButton);
 
     const FPoint& getPos() const;
     const FPoint& getTermPos() const;
@@ -158,12 +153,12 @@ class FMouseEvent : public FEvent  // mouse event
     int           getY() const;
     int           getTermX() const;
     int           getTermY() const;
-    int           getButton() const;
+    MouseButton   getButton() const;
 
   private:
-    FPoint  p{};
-    FPoint  tp{};
-    int     b{};
+    FPoint        p{};
+    FPoint        tp{};
+    MouseButton   b{};
 };
 
 
@@ -174,10 +169,8 @@ class FMouseEvent : public FEvent  // mouse event
 class FWheelEvent : public FEvent  // wheel event
 {
   public:
-    FWheelEvent() = default;
-    FWheelEvent (fc::events, const FPoint&, int);
-    FWheelEvent (fc::events, const FPoint&, const FPoint&, int);
-    ~FWheelEvent();
+    FWheelEvent (Event, const FPoint&, MouseWheel);
+    FWheelEvent (Event, const FPoint&, const FPoint&, MouseWheel);
 
     const FPoint& getPos() const;
     const FPoint& getTermPos() const;
@@ -185,12 +178,12 @@ class FWheelEvent : public FEvent  // wheel event
     int           getY() const;
     int           getTermX() const;
     int           getTermY() const;
-    int           getWheel() const;
+    MouseWheel    getWheel() const;
 
   private:
-    FPoint  p{};
-    FPoint  tp{};
-    int     w{};
+    FPoint        p{};
+    FPoint        tp{};
+    MouseWheel    w{MouseWheel::None};
 };
 
 
@@ -201,21 +194,19 @@ class FWheelEvent : public FEvent  // wheel event
 class FFocusEvent : public FEvent  // focus event
 {
   public:
-    FFocusEvent() = default;
-    explicit FFocusEvent (fc::events);
-    ~FFocusEvent();
+    explicit FFocusEvent (Event);
 
     bool           gotFocus()  const;
     bool           lostFocus() const;
-    fc::FocusTypes getFocusType() const;
-    void           setFocusType(fc::FocusTypes);
+    FocusTypes     getFocusType() const;
+    void           setFocusType (FocusTypes);
     bool           isAccepted() const;
     void           accept();
     void           ignore();
 
   private:
     bool           accpt{true};
-    fc::FocusTypes focus_type{fc::FocusDefiniteWidget};
+    FocusTypes     focus_type{FocusTypes::DefiniteWidget};
 };
 
 
@@ -227,10 +218,8 @@ class FWidget;  // class forward declaration
 class FAccelEvent : public FEvent  // focus event
 {
   public:
-    FAccelEvent() = default;
-    FAccelEvent (fc::events, FWidget*);
+    FAccelEvent (Event, FWidget*);
     FAccelEvent (const FAccelEvent&) = delete;
-    ~FAccelEvent();
     FAccelEvent& operator = (const FAccelEvent&) = delete;
 
     FWidget* focusedWidget() const;
@@ -251,9 +240,7 @@ class FAccelEvent : public FEvent  // focus event
 class FResizeEvent : public FEvent  // resize event
 {
   public:
-    FResizeEvent() = default;
-    explicit FResizeEvent (fc::events);
-    ~FResizeEvent();
+    explicit FResizeEvent (Event);
 
     bool     isAccepted() const;
     void     accept();
@@ -271,9 +258,7 @@ class FResizeEvent : public FEvent  // resize event
 class FShowEvent : public FEvent  // show event
 {
   public:
-    FShowEvent() = default;
-    explicit FShowEvent (fc::events);
-    ~FShowEvent();
+    explicit FShowEvent (Event);
 };
 
 
@@ -284,9 +269,7 @@ class FShowEvent : public FEvent  // show event
 class FHideEvent : public FEvent  // hide event
 {
   public:
-    FHideEvent() = default;
-    explicit FHideEvent (fc::events);
-    ~FHideEvent();
+    explicit FHideEvent (Event);
 };
 
 
@@ -297,9 +280,7 @@ class FHideEvent : public FEvent  // hide event
 class FCloseEvent : public FEvent  // close event
 {
   public:
-    FCloseEvent() = default;
-    explicit FCloseEvent(fc::events);
-    ~FCloseEvent();
+    explicit FCloseEvent(Event);
 
     bool     isAccepted() const;
     void     accept();
@@ -317,9 +298,7 @@ class FCloseEvent : public FEvent  // close event
 class FTimerEvent : public FEvent  // timer event
 {
   public:
-    FTimerEvent() = default;
-    FTimerEvent (fc::events, int);
-    ~FTimerEvent();
+    FTimerEvent (Event, int);
 
     int      getTimerId() const;
 
@@ -335,13 +314,9 @@ class FTimerEvent : public FEvent  // timer event
 class FUserEvent : public FEvent  // user event
 {
   public:
-    FUserEvent() = default;
-
     // Disable copy constructor
     FUserEvent (const FUserEvent&) = delete;
-    FUserEvent (fc::events, int);
-
-    ~FUserEvent();
+    FUserEvent (Event, int);
 
     // Disable copy assignment operator (=)
     FUserEvent& operator = (const FUserEvent&) = delete;

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -29,6 +29,7 @@
 using finalcut::FPoint;
 using finalcut::FRect;
 using finalcut::FSize;
+using finalcut::FColor;
 
 
 //----------------------------------------------------------------------
@@ -38,8 +39,8 @@ using finalcut::FSize;
 class Background final : public finalcut::FDialog
 {
   public:
-    // Typedef
-    typedef std::tuple<uChar, uChar, uChar>  RGB;
+    // Using-declaration
+    using RGB = std::tuple<uChar, uChar, uChar>;
 
     // Constructor
     explicit Background (finalcut::FWidget* = nullptr);
@@ -48,12 +49,15 @@ class Background final : public finalcut::FDialog
     Background (const Background&) = delete;
 
     // Destructor
-    ~Background();
+    ~Background() noexcept override;
 
     // Disable copy assignment operator (=)
     Background& operator = (const Background&) = delete;
 
   private:
+    // Methods
+    void initLayout() override;
+
     // Callback method
     void cb_changed();
     void cb_choice();
@@ -91,15 +95,8 @@ class Background final : public finalcut::FDialog
 Background::Background (finalcut::FWidget* parent)
   : FDialog{parent}
 {
-  // Dialog settings
-  //   Avoids calling a virtual function from the constructor
-  //   (CERT, OOP50-CPP)
-  FDialog::setText ("Background color palette");
-  FDialog::setGeometry (FPoint{25, 5}, FSize{32, 12});
-
   // Combobox
-  color_choice.setGeometry (FPoint{2, 2}, FSize{18, 1});
-  color_choice.setLabelOrientation (finalcut::FLineEdit::label_above);
+  color_choice.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::Above);
   color_choice.setLabelText ("Color choice");
   color_choice.unsetEditable();
 
@@ -110,20 +107,17 @@ Background::Background (finalcut::FWidget* parent)
   }
 
   // Spin boxes
-  red.setGeometry (FPoint{2, 5}, FSize{7, 1});
-  red.setLabelOrientation (finalcut::FLineEdit::label_above);
+  red.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::Above);
   red.setLabelText ("Red");
   red.setRange (0, 255);
   red.setValue (0x80);
 
-  green.setGeometry (FPoint{12, 5}, FSize{7, 1});
-  green.setLabelOrientation (finalcut::FLineEdit::label_above);
+  green.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::Above);
   green.setLabelText ("Green");
   green.setRange (0, 255);
   green.setValue (0xa4);
 
-  blue.setGeometry (FPoint{22, 5}, FSize{7, 1});
-  blue.setLabelOrientation (finalcut::FLineEdit::label_above);
+  blue.setLabelOrientation (finalcut::FLineEdit::LabelOrientation::Above);
   blue.setLabelText ("Blue");
   blue.setRange (0, 255);
   blue.setValue (0xec);
@@ -131,14 +125,11 @@ Background::Background (finalcut::FWidget* parent)
   // Set the initial palette values
   if ( finalcut::FTerm::canChangeColorPalette() )
   {
-    finalcut::FTerm::setPalette ( finalcut::fc::LightMagenta
+    finalcut::FTerm::setPalette ( FColor::LightMagenta
                                 , int(red.getValue())
                                 , int(green.getValue())
                                 , int(blue.getValue()) );
   }
-
-  // Quit button
-  quit.setGeometry(FPoint{19, 8}, FSize{10, 1});
 
   // Add some function callbacks
   quit.addCallback
@@ -169,8 +160,20 @@ Background::Background (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-Background::~Background()  // destructor
-{ }
+Background::~Background() noexcept = default;  // destructor
+
+//----------------------------------------------------------------------
+void Background::initLayout()
+{
+  FDialog::setText ("Background color palette");
+  FDialog::setGeometry (FPoint{25, 5}, FSize{32, 12});
+  color_choice.setGeometry (FPoint{2, 2}, FSize{18, 1});
+  red.setGeometry (FPoint{2, 5}, FSize{7, 1});
+  green.setGeometry (FPoint{12, 5}, FSize{7, 1});
+  blue.setGeometry (FPoint{22, 5}, FSize{7, 1});
+  quit.setGeometry(FPoint{19, 8}, FSize{10, 1});  // Quit button
+  FDialog::initLayout();
+}
 
 //----------------------------------------------------------------------
 void Background::cb_changed()
@@ -178,7 +181,7 @@ void Background::cb_changed()
   if ( ! finalcut::FTerm::canChangeColorPalette() )
     return;
 
-  finalcut::FTerm::setPalette ( finalcut::fc::LightMagenta
+  finalcut::FTerm::setPalette ( FColor::LightMagenta
                               , int(red.getValue())
                               , int(green.getValue())
                               , int(blue.getValue()) );
@@ -199,7 +202,7 @@ void Background::cb_choice()
   red.setValue(r);
   green.setValue(g);
   blue.setValue(b);
-  finalcut::FTerm::setPalette ( finalcut::fc::LightMagenta
+  finalcut::FTerm::setPalette ( FColor::LightMagenta
                               , int(red.getValue())
                               , int(green.getValue())
                               , int(blue.getValue()) );
@@ -220,7 +223,7 @@ int main (int argc, char* argv[])
 
   // The following lines require an initialized terminal
   if ( finalcut::FTerm::canChangeColorPalette() )
-    app.setBackgroundColor(finalcut::fc::LightMagenta);
+    app.setBackgroundColor(FColor::LightMagenta);
 
   Background dialog(&app);
   finalcut::FWidget::setMainWidget(&dialog);

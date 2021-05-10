@@ -46,9 +46,7 @@ FCheckBox::FCheckBox (const FString& txt, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FCheckBox::~FCheckBox()  // destructor
-{ }
-
+FCheckBox::~FCheckBox() noexcept = default;  // destructor
 
 // private methods of FCheckBox
 //----------------------------------------------------------------------
@@ -101,7 +99,7 @@ inline void FCheckBox::drawChecked()
   else
   {
     print ('[');
-    print (fc::Times);  // Times ×
+    print (UniChar::Times);  // Times ×
     print (']');
   }
 }

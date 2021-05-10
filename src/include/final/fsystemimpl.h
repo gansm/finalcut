@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -56,25 +56,6 @@
 
 #endif  // defined(__linux__)
 
-#if defined(__sun) && defined(__SVR4)
-  #include <termio.h>
-  typedef struct termio SGTTY;
-  typedef struct termios SGTTYS;
-
-  #ifdef _LP64
-    typedef unsigned int chtype;
-  #else
-    typedef unsigned long chtype;
-  #endif  // _LP64
-
-  #include <term.h>  // termcap
-#else
-  #include <term.h>  // termcap
-#endif  // defined(__sun) && defined(__SVR4)
-
-#ifdef F_HAVE_LIBGPM
-  #undef buttons  // from term.h
-#endif
 
 #include <sys/ioctl.h>
 #include <sys/stat.h>
@@ -86,6 +67,7 @@
 
 #include "final/fc.h"
 #include "final/fsystem.h"
+
 namespace finalcut
 {
 
@@ -97,10 +79,10 @@ class FSystemImpl : public FSystem
 {
   public:
     // Constructor
-    FSystemImpl();
+    FSystemImpl() = default;
 
     // Destructor
-    ~FSystemImpl() override;
+    ~FSystemImpl() noexcept override;
 
     // Methods
 #if defined(ISA_SYSCTL_SUPPORT)
@@ -172,16 +154,6 @@ class FSystemImpl : public FSystem
       return std::putchar(char(c));
 #else
       return std::putchar(c);
-#endif
-    }
-
-    int tputs (const char* str, int affcnt, fn_putc putc) override
-    {
-#if defined(__sun) && defined(__SVR4)
-      return ::tputs ( C_STR(str)
-                     , affcnt, reinterpret_cast<int (*)(char)>(putc) );
-#else
-      return ::tputs (str, affcnt, putc);
 #endif
     }
 

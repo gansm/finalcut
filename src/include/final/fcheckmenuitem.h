@@ -72,7 +72,7 @@ class FCheckMenuItem : public FMenuItem
     FCheckMenuItem (const FCheckMenuItem&) = delete;
 
     // Destructor
-    ~FCheckMenuItem() override;
+    ~FCheckMenuItem() noexcept override;
 
     // Disable copy assignment operator (=)
     FCheckMenuItem& operator = (const FCheckMenuItem&) = delete;

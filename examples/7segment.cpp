@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -26,12 +26,11 @@
 
 #include <final/final.h>
 
-namespace fc = finalcut::fc;
 using finalcut::FColorPair;
+using finalcut::FColor;
 using finalcut::FRect;
 using finalcut::FPoint;
 using finalcut::FSize;
-
 
 //----------------------------------------------------------------------
 // class SegmentView
@@ -44,8 +43,7 @@ class SegmentView final : public finalcut::FDialog
     explicit SegmentView (finalcut::FWidget* = nullptr);
 
   private:
-    // Typedef
-    typedef struct
+    struct sevenSegment
     {
       unsigned char a : 1;
       unsigned char b : 1;
@@ -55,12 +53,13 @@ class SegmentView final : public finalcut::FDialog
       unsigned char f : 1;
       unsigned char g : 1;
       unsigned char   : 1;  // padding bit
-    } sevenSegment;
+    };
 
     // Methods
     void hexEncoding();
     void get7Segment (const wchar_t);
     void draw() override;
+    void initLayout() override;
 
     // Data members
     std::map<wchar_t, sevenSegment> code{};
@@ -73,25 +72,15 @@ class SegmentView final : public finalcut::FDialog
 SegmentView::SegmentView (finalcut::FWidget* parent)
   : FDialog{parent}
 {
-  // Dialog settings
-  //   Avoids calling a virtual function from the constructor
-  //   (CERT, OOP50-CPP)
-  FDialog::setText ("Seven-segment display");
-  FDialog::setGeometry (FPoint{25, 5}, FSize{42, 15});
-
   // Set encoding
   hexEncoding();
 
   // Input field
-  input.setGeometry (FPoint(2, 2), FSize{12, 1});
   input.setLabelText (L"&Hex value");
   input.setLabelText (L"&Hex-digits or (.) (:) (H) (L) (P) (U)");
-  input.setLabelOrientation(finalcut::FLineEdit::label_above);
+  input.setLabelOrientation(finalcut::FLineEdit::LabelOrientation::Above);
   input.setMaxLength(9);
   input.setInputFilter("[:.hHlLpPuU[:xdigit:]]");
-
-  // Exit button
-  exit.setGeometry(FPoint{28, 11}, FSize{10, 1});
 
   // Add some function callbacks
   input.addCallback
@@ -200,12 +189,12 @@ void SegmentView::draw()
   finalcut::FTermBuffer left_space{};
 
   FDialog::draw();
-  setColor(fc::LightGray, fc::Black);
+  setColor(FColor::LightGray, FColor::Black);
   finalcut::drawBorder(this, FRect(FPoint{3, 6}, FPoint{40, 11}));
 
   for (auto&& ch : input.getText().toUpper())
   {
-    const FColorPair color{fc::LightRed, fc::Black};
+    const FColorPair color{FColor::LightRed, FColor::Black};
     get7Segment(ch);
 
     for (std::size_t i{0}; i < 3; i++)
@@ -221,6 +210,19 @@ void SegmentView::draw()
           << FPoint {4, 8} << left_space << tbuffer[1]
           << FPoint {4, 9} << left_space << tbuffer[2]
           << FPoint {4, 10} << finalcut::FString{36, ' '};
+}
+
+//----------------------------------------------------------------------
+void SegmentView::initLayout()
+{
+  // Dialog settings
+  FDialog::setText ("Seven-segment display");
+  FDialog::setGeometry (FPoint{25, 5}, FSize{42, 15});
+  // Input field
+  input.setGeometry (FPoint(2, 2), FSize{12, 1});
+  // Exit button
+  exit.setGeometry(FPoint{28, 11}, FSize{10, 1});
+  FDialog::initLayout();
 }
 
 

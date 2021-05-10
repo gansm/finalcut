@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -85,6 +85,7 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     void tmuxTest();
     void ktermTest();
     void mltermTest();
+    void kittyTest();
     void ttytypeTest();
 
   private:
@@ -114,6 +115,7 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture, test::ConEmu
     CPPUNIT_TEST (tmuxTest);
     CPPUNIT_TEST (ktermTest);
     CPPUNIT_TEST (mltermTest);
+    CPPUNIT_TEST (kittyTest);
     CPPUNIT_TEST (ttytypeTest);
 
     // End of test suite definition
@@ -139,7 +141,7 @@ void FTermDetectionTest::classNameTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::ansiTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   setenv ("TERM", "ansi", 1);
   data.setTermType("ansi");
@@ -158,6 +160,7 @@ void FTermDetectionTest::ansiTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! detect.isXTerminal() );
@@ -180,6 +183,7 @@ void FTermDetectionTest::ansiTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -199,7 +203,7 @@ void FTermDetectionTest::ansiTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::ansi);
+    startConEmuTerminal (ConEmu::console::ansi);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -209,7 +213,7 @@ void FTermDetectionTest::ansiTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::xtermTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
@@ -228,6 +232,7 @@ void FTermDetectionTest::xtermTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( detect.isXTerminal() );
@@ -250,6 +255,7 @@ void FTermDetectionTest::xtermTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
@@ -261,7 +267,7 @@ void FTermDetectionTest::xtermTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::xterm);
+    startConEmuTerminal (ConEmu::console::xterm);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -271,7 +277,7 @@ void FTermDetectionTest::xtermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::rxvtTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("rxvt-cygwin-native");
   detect.setTerminalDetection(true);
@@ -290,6 +296,7 @@ void FTermDetectionTest::rxvtTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! detect.isXTerminal() );
@@ -312,6 +319,7 @@ void FTermDetectionTest::rxvtTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -324,7 +332,7 @@ void FTermDetectionTest::rxvtTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::rxvt);
+    startConEmuTerminal (ConEmu::console::rxvt);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -334,7 +342,7 @@ void FTermDetectionTest::rxvtTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::urxvtTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("rxvt-unicode-256color");
   detect.setTerminalDetection(true);
@@ -353,6 +361,7 @@ void FTermDetectionTest::urxvtTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! detect.isXTerminal() );
@@ -375,6 +384,7 @@ void FTermDetectionTest::urxvtTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -386,7 +396,7 @@ void FTermDetectionTest::urxvtTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::urxvt);
+    startConEmuTerminal (ConEmu::console::urxvt);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -396,7 +406,7 @@ void FTermDetectionTest::urxvtTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::kdeKonsoleTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
@@ -415,6 +425,7 @@ void FTermDetectionTest::kdeKonsoleTest()
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
     unsetenv("TMUX");
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( detect.isXTerminal() );
@@ -437,6 +448,7 @@ void FTermDetectionTest::kdeKonsoleTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -448,7 +460,7 @@ void FTermDetectionTest::kdeKonsoleTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::kde_konsole);
+    startConEmuTerminal (ConEmu::console::kde_konsole);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -458,7 +470,7 @@ void FTermDetectionTest::kdeKonsoleTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::gnomeTerminalTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
@@ -477,7 +489,7 @@ void FTermDetectionTest::gnomeTerminalTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
-
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( detect.isXTerminal() );
@@ -500,6 +512,7 @@ void FTermDetectionTest::gnomeTerminalTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
@@ -511,7 +524,7 @@ void FTermDetectionTest::gnomeTerminalTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::gnome_terminal);
+    startConEmuTerminal (ConEmu::console::gnome_terminal);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -521,7 +534,7 @@ void FTermDetectionTest::gnomeTerminalTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::newerVteTerminalTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
@@ -540,7 +553,7 @@ void FTermDetectionTest::newerVteTerminalTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
-
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( detect.isXTerminal() );
@@ -563,6 +576,7 @@ void FTermDetectionTest::newerVteTerminalTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
@@ -574,7 +588,7 @@ void FTermDetectionTest::newerVteTerminalTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::newer_vte_terminal);
+    startConEmuTerminal (ConEmu::console::newer_vte_terminal);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -584,7 +598,7 @@ void FTermDetectionTest::newerVteTerminalTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::puttyTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
@@ -603,6 +617,7 @@ void FTermDetectionTest::puttyTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( detect.isXTerminal() );
@@ -625,6 +640,7 @@ void FTermDetectionTest::puttyTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -637,7 +653,7 @@ void FTermDetectionTest::puttyTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::putty);
+    startConEmuTerminal (ConEmu::console::putty);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -647,7 +663,7 @@ void FTermDetectionTest::puttyTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::windowsTerminalTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
@@ -666,6 +682,7 @@ void FTermDetectionTest::windowsTerminalTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
+    unsetenv("KITTY_WINDOW_ID");
     setenv ("WT_PROFILE_ID", "{61c54cbd-c2a6-5271-96e7-009a87ff44bf}", 1);
     setenv ("WT_SESSION", "4dc413a1-5ed9-46d4-b4e0-5a2fec7acb44", 1);
     detect.detect();
@@ -690,6 +707,7 @@ void FTermDetectionTest::windowsTerminalTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -701,7 +719,7 @@ void FTermDetectionTest::windowsTerminalTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::win_terminal);
+    startConEmuTerminal (ConEmu::console::win_terminal);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -711,7 +729,7 @@ void FTermDetectionTest::windowsTerminalTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::teraTermTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
@@ -730,7 +748,7 @@ void FTermDetectionTest::teraTermTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
-
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( detect.isXTerminal() );
@@ -753,6 +771,7 @@ void FTermDetectionTest::teraTermTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -764,7 +783,7 @@ void FTermDetectionTest::teraTermTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::tera_term);
+    startConEmuTerminal (ConEmu::console::tera_term);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -774,7 +793,7 @@ void FTermDetectionTest::teraTermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::cygwinTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("cygwin");
   detect.setTerminalDetection(true);
@@ -793,7 +812,7 @@ void FTermDetectionTest::cygwinTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
-
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! detect.isXTerminal() );
@@ -816,6 +835,7 @@ void FTermDetectionTest::cygwinTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -827,7 +847,7 @@ void FTermDetectionTest::cygwinTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::cygwin);
+    startConEmuTerminal (ConEmu::console::cygwin);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -837,7 +857,7 @@ void FTermDetectionTest::cygwinTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::minttyTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
@@ -856,7 +876,7 @@ void FTermDetectionTest::minttyTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
-
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( detect.isXTerminal() );
@@ -879,6 +899,7 @@ void FTermDetectionTest::minttyTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
@@ -890,7 +911,7 @@ void FTermDetectionTest::minttyTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::mintty);
+    startConEmuTerminal (ConEmu::console::mintty);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -900,7 +921,7 @@ void FTermDetectionTest::minttyTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::linuxTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("linux");
   detect.setTerminalDetection(true);
@@ -919,7 +940,7 @@ void FTermDetectionTest::linuxTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
-
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! detect.isXTerminal() );
@@ -942,6 +963,7 @@ void FTermDetectionTest::linuxTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -960,7 +982,7 @@ void FTermDetectionTest::linuxTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::linux_con);
+    startConEmuTerminal (ConEmu::console::linux_con);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -970,7 +992,7 @@ void FTermDetectionTest::linuxTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::freebsdTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
@@ -989,7 +1011,7 @@ void FTermDetectionTest::freebsdTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
-
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
     detect.setFreeBSDTerm (true);  // Fake FreeBSD Console detection
 
@@ -1013,6 +1035,7 @@ void FTermDetectionTest::freebsdTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -1033,7 +1056,7 @@ void FTermDetectionTest::freebsdTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::freebsd_con);
+    startConEmuTerminal (ConEmu::console::freebsd_con);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -1043,7 +1066,7 @@ void FTermDetectionTest::freebsdTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::netbsdTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("wsvt25");
   detect.setTerminalDetection(true);
@@ -1062,7 +1085,7 @@ void FTermDetectionTest::netbsdTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
-
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
     detect.setNetBSDTerm (true);  // Fake NetBSD Console detection
 
@@ -1086,6 +1109,7 @@ void FTermDetectionTest::netbsdTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -1104,7 +1128,7 @@ void FTermDetectionTest::netbsdTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::netbsd_con);
+    startConEmuTerminal (ConEmu::console::netbsd_con);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -1114,7 +1138,7 @@ void FTermDetectionTest::netbsdTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::openbsdTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("vt220");
   detect.setTerminalDetection(true);
@@ -1133,7 +1157,7 @@ void FTermDetectionTest::openbsdTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
-
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
     detect.setOpenBSDTerm (true);  // Fake OpenBSD Console detection
 
@@ -1157,6 +1181,7 @@ void FTermDetectionTest::openbsdTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -1175,7 +1200,7 @@ void FTermDetectionTest::openbsdTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::openbsd_con);
+    startConEmuTerminal (ConEmu::console::openbsd_con);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -1185,7 +1210,7 @@ void FTermDetectionTest::openbsdTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::sunTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("sun-color");
 
@@ -1203,7 +1228,7 @@ void FTermDetectionTest::sunTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
-
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! detect.isXTerminal() );
@@ -1226,6 +1251,7 @@ void FTermDetectionTest::sunTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -1244,7 +1270,7 @@ void FTermDetectionTest::sunTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::sun_con);
+    startConEmuTerminal (ConEmu::console::sun_con);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -1254,7 +1280,7 @@ void FTermDetectionTest::sunTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::screenTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("screen");
   detect.setTerminalDetection(true);
@@ -1273,7 +1299,7 @@ void FTermDetectionTest::screenTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
-
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! detect.isXTerminal() );
@@ -1296,6 +1322,7 @@ void FTermDetectionTest::screenTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -1313,7 +1340,7 @@ void FTermDetectionTest::screenTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::screen);
+    startConEmuTerminal (ConEmu::console::screen);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -1323,7 +1350,7 @@ void FTermDetectionTest::screenTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::tmuxTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("screen");
   detect.setTerminalDetection(true);
@@ -1343,7 +1370,7 @@ void FTermDetectionTest::tmuxTest()
     unsetenv("ROXTERM_ID");
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
-
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! detect.isXTerminal() );
@@ -1366,6 +1393,7 @@ void FTermDetectionTest::tmuxTest()
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -1383,7 +1411,7 @@ void FTermDetectionTest::tmuxTest()
   else  // Parent
   {
     // Start the terminal simulation
-    startConEmuTerminal (ConEmu::tmux);
+    startConEmuTerminal (ConEmu::console::tmux);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -1393,7 +1421,7 @@ void FTermDetectionTest::tmuxTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::ktermTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("kterm");
   detect.setTerminalDetection(true);
@@ -1412,7 +1440,7 @@ void FTermDetectionTest::ktermTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
-
+    unsetenv("KITTY_WINDOW_ID");
     detect.detect();
 
     CPPUNIT_ASSERT ( ! detect.isXTerminal() );
@@ -1435,6 +1463,7 @@ void FTermDetectionTest::ktermTest()
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( detect.isKtermTerminal() );
     CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
@@ -1453,7 +1482,7 @@ void FTermDetectionTest::ktermTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::kterm);
+    startConEmuTerminal (ConEmu::console::kterm);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -1463,7 +1492,7 @@ void FTermDetectionTest::ktermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::mltermTest()
 {
-  finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTerm::getFTermData();
   finalcut::FTermDetection detect;
   data.setTermType("mlterm");
   detect.setTerminalDetection(true);
@@ -1477,6 +1506,77 @@ void FTermDetectionTest::mltermTest()
     setenv ("COLORFGBG", "default;default", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
+    unsetenv("VTE_VERSION");
+    unsetenv("XTERM_VERSION");
+    unsetenv("ROXTERM_ID");
+    unsetenv("KONSOLE_DBUS_SESSION");
+    unsetenv("KONSOLE_DCOP");
+    unsetenv("TMUX");
+    unsetenv("KITTY_WINDOW_ID");
+    detect.detect();
+
+    CPPUNIT_ASSERT ( ! detect.isXTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isGnomeTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isWindowsTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
+    CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
+    CPPUNIT_ASSERT ( ! detect.isLinuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
+    CPPUNIT_ASSERT ( ! detect.isNetBSDTerm() );
+    CPPUNIT_ASSERT ( ! detect.isOpenBSDTerm() );
+    CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
+    CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKittyTerminal() );
+    CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
+    CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
+    CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "mlterm-256color" );
+
+    setenv ("TERM", "mlterm", 1);
+    unsetenv("COLORFGBG");
+    detect.detect();
+    CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "xterm-256color" );
+
+    printConEmuDebug();
+    closeConEmuStdStreams();
+    exit(EXIT_SUCCESS);
+  }
+  else  // Parent
+  {
+    // Start the terminal emulation
+    startConEmuTerminal (ConEmu::console::mlterm);
+
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
+      std::cerr << "waitpid error" << std::endl;
+  }
+}
+
+//----------------------------------------------------------------------
+void FTermDetectionTest::kittyTest()
+{
+  auto& data = finalcut::FTerm::getFTermData();
+  finalcut::FTermDetection detect;
+  data.setTermType("xterm-kitty");
+  detect.setTerminalDetection(true);
+
+  pid_t pid = forkConEmu();
+
+  if ( isConEmuChildProcess(pid) )
+  {
+    setenv ("TERM", "xterm-kitty", 1);
+    setenv ("KITTY_WINDOW_ID", "1", 1);
+    setenv ("COLORTERM", "truecolor", 1);
+    unsetenv("TERMCAP");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -1504,17 +1604,16 @@ void FTermDetectionTest::mltermTest()
     CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
     CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
-    CPPUNIT_ASSERT ( detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( detect.isKittyTerminal() );
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "mlterm-256color" );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "xterm-kitty" );
 
-    setenv ("TERM", "mlterm", 1);
-    unsetenv("COLORFGBG");
-    detect.detect();
-    CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "xterm-256color" );
+    auto kitty_version = detect.getKittyVersion();
+    CPPUNIT_ASSERT (  kitty_version.primary == 0 );
+    CPPUNIT_ASSERT (  kitty_version.secondary == 13 );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1523,7 +1622,7 @@ void FTermDetectionTest::mltermTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::mlterm);
+    startConEmuTerminal (ConEmu::console::kitty);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -1586,7 +1685,8 @@ void FTermDetectionTest::ttytypeTest()
     unsetenv("KONSOLE_DBUS_SESSION");
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
-    finalcut::FTermData& data = *finalcut::FTerm::getFTermData();
+    unsetenv("KITTY_WINDOW_ID");
+    auto& data = finalcut::FTerm::getFTermData();
 
     // Test /dev/tty3 with linux
     data.setTermFileName("/dev/tty3");
@@ -1610,7 +1710,7 @@ void FTermDetectionTest::ttytypeTest()
   else  // Parent
   {
     // Start the terminal emulation
-    startConEmuTerminal (ConEmu::ansi);
+    startConEmuTerminal (ConEmu::console::ansi);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;

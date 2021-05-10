@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -96,14 +96,12 @@ class FMenu : public FWindow, public FMenuList
     FMenuItem*          getItem();
 
     // Mutators
-    bool                setEnable (bool) override;
-    bool                setEnable() override;
+    bool                setEnable (bool = true) override;
     bool                unsetEnable() override;
     bool                setDisable() override;
     void                setSelected();
     void                unsetSelected();
-    bool                setMenuWidget (bool);
-    bool                setMenuWidget();
+    bool                setMenuWidget (bool = true);
     bool                unsetMenuWidget();
     void                setStatusbarMessage (const FString&) override;
     void                setMenu (FMenu*);
@@ -132,12 +130,7 @@ class FMenu : public FWindow, public FMenuList
     void                cb_menuitemToggled (const FMenuItem*) const;
 
   private:
-    // Constants
-    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
-    static constexpr bool SELECT_ITEM = true;
-
-    // Typedef
-    typedef struct
+    struct MouseStates
     {
       uChar focus_changed        : 1;
       uChar hide_sub_menu        : 1;
@@ -146,14 +139,18 @@ class FMenu : public FWindow, public FMenuList
       uChar mouse_over_supermenu : 1;
       uChar mouse_over_menubar   : 1;
       uChar                      : 2;  // padding bits
-    } MouseStates;
+    };
 
-    typedef struct
+    struct MenuText
     {
       FString text;
       std::size_t hotkeypos;
       bool no_underline;
-    } MenuText;
+    };
+
+    // Constants
+    static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr bool SELECT_ITEM = true;
 
     // Accessors
     FWidget*     getSuperMenu() const;
@@ -192,9 +189,9 @@ class FMenu : public FWindow, public FMenuList
     void         mouseMoveDeselection (FMenuItem*, MouseStates&);
     void         mouseUpOverBorder();
     void         mouseMoveOverBorder (MouseStates&) const;
-    void         passEventToSubMenu (const FMouseEvent&&);
-    void         passEventToSuperMenu (const FMouseEvent&&);
-    void         passEventToMenuBar (const FMouseEvent&&) const;
+    void         passEventToSubMenu (const FMouseEvent&);
+    void         passEventToSuperMenu (const FMouseEvent&);
+    void         passEventToMenuBar (const FMouseEvent&) const;
     bool         containsMenuStructure (const FPoint&);
     bool         containsMenuStructure (int, int);
     FMenu*       superMenuAt (const FPoint&);
@@ -202,6 +199,7 @@ class FMenu : public FWindow, public FMenuList
     bool         selectNextItem();
     bool         selectPrevItem();
     void         keypressMenuBar (FKeyEvent*) const;
+    bool         hotkeyFound (FKey, const FKeyEvent&) const;
     bool         hotkeyMenu (FKeyEvent*);
     void         draw() override;
     void         drawItems();
@@ -264,10 +262,6 @@ inline bool FMenu::setEnable (bool enable)
 { return menuitem.setEnable(enable); }
 
 //----------------------------------------------------------------------
-inline bool FMenu::setEnable()
-{ return menuitem.setEnable(); }
-
-//----------------------------------------------------------------------
 inline bool FMenu::unsetEnable()
 { return menuitem.unsetEnable(); }
 
@@ -282,10 +276,6 @@ inline void FMenu::setSelected()
 //----------------------------------------------------------------------
 inline void FMenu::unsetSelected()
 { menuitem.unsetSelected(); }
-
-//----------------------------------------------------------------------
-inline bool FMenu::setMenuWidget()
-{ return setMenuWidget(true); }
 
 //----------------------------------------------------------------------
 inline bool FMenu::unsetMenuWidget()

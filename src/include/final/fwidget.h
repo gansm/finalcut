@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -125,20 +125,17 @@ class FWidgetColors;
 class FWidget : public FVTerm, public FObject
 {
   public:
-    // Using-declaration
-    using FVTerm::setColor;
-    using FVTerm::print;
-
     struct FAccelerator
     {
       alignas(8) FKey key;
       FWidget* object;
     };
 
-    // Typedefs
-    typedef std::vector<FWidget*> FWidgetList;
-    typedef std::vector<FAccelerator> FAcceleratorList;
-    typedef std::shared_ptr<FWidgetColors> FWidgetColorsPtr;
+    // Using-declarations
+    using FVTerm::setColor;
+    using FVTerm::print;
+    using FWidgetList = std::vector<FWidget*>;
+    using FAcceleratorList = std::vector<FAccelerator>;
 
     struct FWidgetFlags  // Properties of a widget ⚑
     {
@@ -186,17 +183,16 @@ class FWidget : public FVTerm, public FObject
     static FWidget*&         getClickedWidget();
     static FWidget*&         getOpenMenu();
     static FWidget*&         getMoveSizeWidget();
-    static FWidgetList*&     getWindowList();
     static FMenuBar*         getMenuBar();
     static FStatusBar*       getStatusBar();
-    static FWidgetColorsPtr& getColorTheme();
+    static auto              getColorTheme() -> std::shared_ptr<FWidgetColors>&;
     virtual FWidget*         getFirstFocusableWidget (FObjectList);
     virtual FWidget*         getLastFocusableWidget (FObjectList);
     const FAcceleratorList&  getAcceleratorList() const;
     FString                  getStatusbarMessage() const;
     FColor                   getForegroundColor() const;  // get the primary
     FColor                   getBackgroundColor() const;  // widget colors
-    std::vector<bool>&       doubleFlatLine_ref (fc::sides);
+    std::vector<bool>&       doubleFlatLine_ref (Side);
     // Positioning and sizes accessors...
     int                      getX() const;
     int                      getY() const;
@@ -238,24 +234,19 @@ class FWidget : public FVTerm, public FObject
     static void              setColorTheme();
     FAcceleratorList&        setAcceleratorList();
     virtual void             setStatusbarMessage (const FString&);
-    bool                     setVisible (bool);
-    bool                     setVisible();
+    bool                     setVisible (bool = true);
     bool                     unsetVisible();
-    virtual bool             setEnable (bool);
-    virtual bool             setEnable();
+    virtual bool             setEnable (bool = true);
     virtual bool             unsetEnable();
     virtual bool             setDisable();
-    virtual bool             setVisibleCursor (bool);  // input cursor visibility
-    virtual bool             setVisibleCursor();       // for the widget
-    virtual bool             unsetVisibleCursor();
-    virtual bool             setFocus (bool);
-    virtual bool             setFocus();
+    virtual bool             setVisibleCursor (bool = true);  // input cursor visibility
+    virtual bool             unsetVisibleCursor();            // for the widget
+    virtual bool             setFocus (bool = true);
     virtual bool             unsetFocus();
-    void                     setFocusable();
+    void                     setFocusable (bool = true);
     void                     unsetFocusable();
-    bool                     ignorePadding (bool);    // ignore padding from
-    bool                     ignorePadding();         // the parent widget
-    bool                     acceptPadding();
+    bool                     ignorePadding (bool = true);    // ignore padding from
+    bool                     acceptPadding();                // the parent widget
     virtual void             setForegroundColor (FColor);
     virtual void             setBackgroundColor (FColor);
     virtual void             resetColors();
@@ -287,10 +278,10 @@ class FWidget : public FVTerm, public FObject
     virtual bool             setCursorPos (const FPoint&);
     void                     unsetCursorPos();
     virtual void             setPrintPos (const FPoint&);
-    void                     setDoubleFlatLine (fc::sides, bool = true);
-    void                     unsetDoubleFlatLine (fc::sides);
-    void                     setDoubleFlatLine (fc::sides, int, bool = true);
-    void                     unsetDoubleFlatLine (fc::sides, int);
+    void                     setDoubleFlatLine (Side, bool = true);
+    void                     unsetDoubleFlatLine (Side);
+    void                     setDoubleFlatLine (Side, int, bool = true);
+    void                     unsetDoubleFlatLine (Side, int);
 
     // Inquiries
     bool                     isRootWidget() const;
@@ -340,7 +331,7 @@ class FWidget : public FVTerm, public FObject
     static FWidgetList*&     getAlwaysOnTopList();
     static FWidgetList*&     getWidgetCloseList();
     void                     addPreprocessingHandler ( const FVTerm*
-                                                     , const FPreprocessingFunction& ) override;
+                                                     , FPreprocessingFunction&& ) override;
     void                     delPreprocessingHandler (const FVTerm*) override;
 
     // Inquiry
@@ -357,6 +348,7 @@ class FWidget : public FVTerm, public FObject
     // Methods
     void                     initTerminal() override;
     void                     initDesktop();
+    virtual void             initLayout();
     virtual void             adjustSize();
     void                     adjustSizeGlobal();
     void                     hideArea (const FSize&);
@@ -432,22 +424,22 @@ class FWidget : public FVTerm, public FObject
     // Methods
     void                     determineDesktopSize();
     void                     initRootWidget();
+    void                     initWidgetLayout();
     void                     finish();
     void                     insufficientSpaceAdjust();
     void                     KeyPressEvent (FKeyEvent*);
     void                     KeyDownEvent (FKeyEvent*);
     void                     emitWheelCallback (const FWheelEvent*) const;
-    void                     setWindowFocus (bool);
-    bool                     changeFocus (FWidget*, FWidget*, fc::FocusTypes);
+    void                     setWindowFocus (bool = true);
+    bool                     changeFocus (FWidget*, FWidget*, FocusTypes);
     void                     processDestroy() const;
     virtual void             draw();
     void                     drawWindows() const;
     void                     drawChildren();
     static bool              isDefaultTheme();
     static void              initColorTheme();
-    void                     destroyColorTheme();
     void                     removeQueuedEvent() const;
-    void                     setStatusbarText (bool) const;
+    void                     setStatusbarText (bool = true) const;
 
     // Data members
     struct FWidgetFlags      flags{};
@@ -471,8 +463,8 @@ class FWidget : public FVTerm, public FObject
     FSize                    wshadow{0, 0};
 
     // default widget foreground and background color
-    FColor                   foreground_color{fc::Default};
-    FColor                   background_color{fc::Default};
+    FColor                   foreground_color{FColor::Default};
+    FColor                   background_color{FColor::Default};
     FString                  statusbar_message{};
     FAcceleratorList         accelerator_list{};
     FCallback                callback_impl{};
@@ -487,7 +479,6 @@ class FWidget : public FVTerm, public FObject
     static FWidget*          move_size_widget;
     static FWidget*          show_root_widget;
     static FWidget*          redraw_root_widget;
-    static FWidgetList*      window_list;
     static FWidgetList*      dialog_list;
     static FWidgetList*      always_on_top_list;
     static FWidgetList*      close_widget;
@@ -519,6 +510,7 @@ bool          isFocusPrevKey (const FKey);
 FKey          getHotkey (const FString&);
 std::size_t   getHotkeyPos (const FString& src, FString& dest);
 void          setHotkeyViaString (FWidget*, const FString&);
+void          setWidgetFocus (FWidget*);
 void          drawShadow (FWidget*);
 void          drawTransparentShadow (FWidget*);
 void          drawBlockShadow (FWidget*);
@@ -563,23 +555,12 @@ inline FWidget*& FWidget::getMoveSizeWidget()
 { return move_size_widget; }
 
 //----------------------------------------------------------------------
-inline FWidget::FWidgetList*& FWidget::getWindowList()
-{ return window_list; }
-
-//----------------------------------------------------------------------
 inline FMenuBar* FWidget::getMenuBar()
 { return menubar; }
 
 //----------------------------------------------------------------------
 inline FStatusBar* FWidget::getStatusBar()
 { return statusbar; }
-
-//----------------------------------------------------------------------
-inline FWidget::FWidgetColorsPtr& FWidget::getColorTheme()
-{
-  static auto color_theme = new FWidgetColorsPtr();
-  return *color_theme;
-}
 
 //----------------------------------------------------------------------
 inline const FWidget::FAcceleratorList& FWidget::getAcceleratorList() const
@@ -780,16 +761,8 @@ inline void FWidget::setStatusbarMessage (const FString& msg)
 { statusbar_message = msg; }
 
 //----------------------------------------------------------------------
-inline bool FWidget::setVisible()
-{ return setVisible(true); }
-
-//----------------------------------------------------------------------
 inline bool FWidget::unsetVisible()
 { return setVisible(false); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::setEnable()
-{ return setEnable(true); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::unsetEnable()
@@ -804,24 +777,16 @@ inline bool FWidget::setVisibleCursor (bool enable)
 { return (flags.visible_cursor = enable); }
 
 //----------------------------------------------------------------------
-inline bool FWidget::setVisibleCursor()
-{ return setVisibleCursor(true); }
-
-//----------------------------------------------------------------------
 inline bool FWidget::unsetVisibleCursor()
 { return setVisibleCursor(false); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::setFocus()
-{ return setFocus(true); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::unsetFocus()
 { return setFocus(false); }
 
 //----------------------------------------------------------------------
-inline void FWidget::setFocusable()
-{ flags.focusable = true; }
+inline void FWidget::setFocusable (bool enable)
+{ flags.focusable = enable; }
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetFocusable()
@@ -832,10 +797,6 @@ inline bool FWidget::ignorePadding (bool enable)
 { return (ignore_padding = enable); }
 
 //----------------------------------------------------------------------
-inline bool FWidget::ignorePadding()
-{ return (ignore_padding = true); }
-
-//----------------------------------------------------------------------
 inline bool FWidget::acceptPadding()
 { return (ignore_padding = false); }
 
@@ -843,7 +804,7 @@ inline bool FWidget::acceptPadding()
 inline void FWidget::setForegroundColor (FColor color)
 {
   // valid colors -1..254
-  if ( color == fc::Default || color >> 8 == 0 )
+  if ( color == FColor::Default || (color >> 8) == FColor::Black )
     foreground_color = color;
 }
 
@@ -851,7 +812,7 @@ inline void FWidget::setForegroundColor (FColor color)
 inline void FWidget::setBackgroundColor (FColor color)
 {
   // valid colors -1..254
-  if ( color == fc::Default || color >> 8 == 0 )
+  if ( color == FColor::Default || (color >> 8) == FColor::Black )
     background_color = color;
 }
 
@@ -919,11 +880,11 @@ inline void FWidget::unsetCursorPos()
 { setCursorPos ({-1, -1}); }
 
 //----------------------------------------------------------------------
-inline void FWidget::unsetDoubleFlatLine (fc::sides side)
+inline void FWidget::unsetDoubleFlatLine (Side side)
 { setDoubleFlatLine(side, false); }
 
 //----------------------------------------------------------------------
-inline void FWidget::unsetDoubleFlatLine (fc::sides side, int pos)
+inline void FWidget::unsetDoubleFlatLine (Side side, int pos)
 { setDoubleFlatLine(side, pos, false); }
 
 //----------------------------------------------------------------------
@@ -1054,110 +1015,110 @@ inline void FWidget::processDestroy() const
 //----------------------------------------------------------------------
 constexpr wchar_t NF_menu_button[]
 {
-  fc::NF_rev_menu_button1,
-  fc::NF_rev_menu_button2,
-  fc::NF_rev_menu_button3,
+  wchar_t(UniChar::NF_rev_menu_button1),
+  wchar_t(UniChar::NF_rev_menu_button2),
+  wchar_t(UniChar::NF_rev_menu_button3),
   '\0'
 };
 
 constexpr wchar_t NF_button_up[]
 {
-  fc::NF_rev_up_pointing_triangle1,
-  fc::NF_rev_up_pointing_triangle2,
+  wchar_t(UniChar::NF_rev_up_pointing_triangle1),
+  wchar_t(UniChar::NF_rev_up_pointing_triangle2),
   '\0'
 };
 
 constexpr wchar_t NF_button_down[]
 {
-  fc::NF_rev_down_pointing_triangle1,
-  fc::NF_rev_down_pointing_triangle2,
+  wchar_t(UniChar::NF_rev_down_pointing_triangle1),
+  wchar_t(UniChar::NF_rev_down_pointing_triangle2),
   '\0'
 };
 
 constexpr wchar_t NF_button_arrow_up[]
 {
-  fc::NF_rev_up_arrow1,
-  fc::NF_rev_up_arrow2,
+  wchar_t(UniChar::NF_rev_up_arrow1),
+  wchar_t(UniChar::NF_rev_up_arrow2),
   '\0'
 };
 
 constexpr wchar_t NF_button_arrow_down[]
 {
-  fc::NF_rev_down_arrow1,
-  fc::NF_rev_down_arrow2,
+  wchar_t(UniChar::NF_rev_down_arrow1),
+  wchar_t(UniChar::NF_rev_down_arrow2),
   '\0'
 };
 
 constexpr wchar_t NF_button_arrow_left[]
 {
-  fc::NF_rev_left_arrow1,
-  fc::NF_rev_left_arrow2,
+  wchar_t(UniChar::NF_rev_left_arrow1),
+  wchar_t(UniChar::NF_rev_left_arrow2),
   '\0'
 };
 
 constexpr wchar_t NF_button_arrow_right[]
 {
-  fc::NF_rev_right_arrow1,
-  fc::NF_rev_right_arrow2,
+  wchar_t(UniChar::NF_rev_right_arrow1),
+  wchar_t(UniChar::NF_rev_right_arrow2),
   '\0'
 };
 
 constexpr wchar_t NF_Drive[]
 {
-  fc::NF_shadow_box_left,
-  fc::NF_shadow_box_middle,
-  fc::NF_shadow_box_hdd,
-  fc::NF_shadow_box_right,
+  wchar_t(UniChar::NF_shadow_box_left),
+  wchar_t(UniChar::NF_shadow_box_middle),
+  wchar_t(UniChar::NF_shadow_box_hdd),
+  wchar_t(UniChar::NF_shadow_box_right),
   '\0'
 };
 
 constexpr wchar_t NF_CD_ROM[]
 {
-  fc::NF_shadow_box_left,
-  fc::NF_shadow_box_middle,
-  fc::NF_shadow_box_cd,
-  fc::NF_shadow_box_right,
+  wchar_t(UniChar::NF_shadow_box_left),
+  wchar_t(UniChar::NF_shadow_box_middle),
+  wchar_t(UniChar::NF_shadow_box_cd),
+  wchar_t(UniChar::NF_shadow_box_right),
   '\0'
 };
 
 constexpr wchar_t NF_Net_Drive[]
 {
-  fc::NF_shadow_box_left,
-  fc::NF_shadow_box_middle,
-  fc::NF_shadow_box_net,
-  fc::NF_shadow_box_right,
+  wchar_t(UniChar::NF_shadow_box_left),
+  wchar_t(UniChar::NF_shadow_box_middle),
+  wchar_t(UniChar::NF_shadow_box_net),
+  wchar_t(UniChar::NF_shadow_box_right),
   '\0'
 };
 
 constexpr wchar_t CHECKBOX[]
 {
-  fc::NF_shadow_box_left,
-  fc::NF_shadow_box_middle,
-  fc::NF_shadow_box_right,
+  wchar_t(UniChar::NF_shadow_box_left),
+  wchar_t(UniChar::NF_shadow_box_middle),
+  wchar_t(UniChar::NF_shadow_box_right),
   '\0'
 };
 
 constexpr wchar_t CHECKBOX_ON[]
 {
-  fc::NF_shadow_box_left,
-  fc::NF_shadow_box_checked,
-  fc::NF_shadow_box_right,
+  wchar_t(UniChar::NF_shadow_box_left),
+  wchar_t(UniChar::NF_shadow_box_checked),
+  wchar_t(UniChar::NF_shadow_box_right),
   '\0'
 };
 
 constexpr wchar_t RADIO_BUTTON[]
 {
-  fc::NF_radio_button1,
-  fc::NF_radio_button2,
-  fc::NF_radio_button3,
+  wchar_t(UniChar::NF_radio_button1),
+  wchar_t(UniChar::NF_radio_button2),
+  wchar_t(UniChar::NF_radio_button3),
   '\0'
 };
 
 constexpr wchar_t CHECKED_RADIO_BUTTON[]
 {
-  fc::NF_radio_button1,
-  fc::NF_radio_button2_checked,
-  fc::NF_radio_button3,
+  wchar_t(UniChar::NF_radio_button1),
+  wchar_t(UniChar::NF_radio_button2_checked),
+  wchar_t(UniChar::NF_radio_button3),
   '\0'
 };
 

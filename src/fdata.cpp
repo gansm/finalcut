@@ -31,12 +31,7 @@ namespace finalcut
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FDataAccess::FDataAccess()
-{ }
-
-//----------------------------------------------------------------------
-FDataAccess::~FDataAccess()  // destructor
-{ }
+FDataAccess::~FDataAccess() noexcept = default;  // destructor
 
 }  // namespace finalcut
 

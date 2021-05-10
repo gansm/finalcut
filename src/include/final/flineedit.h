@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -48,6 +48,7 @@
 #endif
 
 #include <limits>
+#include <unordered_map>
 #include <utility>
 
 #include "final/fwidget.h"
@@ -69,16 +70,16 @@ class FLineEdit : public FWidget
     using FWidget::setGeometry;
 
     // Enumerations
-    enum label_o
+    enum class LabelOrientation
     {
-      label_above = 0,
-      label_left  = 1
+      Above = 0,
+      Left  = 1
     };
 
-    enum inputType
+    enum class InputType
     {
-      textfield = 0,
-      password  = 1
+      Textfield = 0,
+      Password  = 1
     };
 
     // Constructor
@@ -98,7 +99,7 @@ class FLineEdit : public FWidget
     FLineEdit& operator = (const FString&);
     template <typename typeT>
     FLineEdit& operator << (const typeT&);
-    FLineEdit& operator << (fc::SpecialCharacter);
+    FLineEdit& operator << (UniChar);
     FLineEdit& operator << (const wchar_t);
     const FLineEdit& operator >> (FString&) const;
 
@@ -108,7 +109,7 @@ class FLineEdit : public FWidget
     std::size_t         getMaxLength() const;
     std::size_t         getCursorPosition() const;
     FLabel*             getLabelObject() const;
-    label_o             getLabelOrientation() const;
+    LabelOrientation    getLabelOrientation() const;
 
     // Mutators
     void                setText (const FString&);
@@ -117,25 +118,21 @@ class FLineEdit : public FWidget
     void                setMaxLength (std::size_t);
     void                setCursorPosition (std::size_t);
     void                setLabelText (const FString&);
-    void                setInputType (const inputType);
-    void                setLabelOrientation (const label_o);
+    void                setInputType (const InputType);
+    void                setLabelOrientation (const LabelOrientation);
     void                setLabelAssociatedWidget (FWidget*);
     void                resetColors() override;
     void                setSize (const FSize&, bool = true) override;
     void                setGeometry ( const FPoint&, const FSize&
                                     , bool = true ) override;
-    bool                setEnable (bool) override;
-    bool                setEnable() override;
+    bool                setEnable (bool = true) override;
     bool                unsetEnable() override;
     bool                setDisable() override;
-    bool                setFocus (bool) override;
-    bool                setFocus() override;
+    bool                setFocus (bool = true) override;
     bool                unsetFocus() override;
-    bool                setShadow (bool);
-    bool                setShadow();
+    bool                setShadow (bool = true);
     bool                unsetShadow();
-    bool                setReadOnly (bool);
-    bool                setReadOnly();
+    bool                setReadOnly (bool = true);
     bool                unsetReadOnly();
 
     // Inquiry
@@ -163,22 +160,17 @@ class FLineEdit : public FWidget
     void                adjustSize() override;
 
   private:
-    // Typedef
-    typedef std::pair<std::size_t, std::size_t> offsetPair;
-
-    // Enumeration
-    enum dragScroll
-    {
-      noScroll    = 0,
-      scrollLeft  = 1,
-      scrollRight = 2
-    };
+    // Using-declaration
+    using offsetPair = std::pair<std::size_t, std::size_t>;
+    using KeyMap = std::unordered_map<FKey, std::function<void()>, FKeyHash>;
 
     // Constants
     static constexpr auto NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr auto NOT_FOUND = static_cast<std::size_t>(-1);
 
     // Methods
     void                init();
+    void                mapKeyFunctions();
     bool                hasHotkey() const;
     void                draw() override;
     void                drawInputField();
@@ -204,24 +196,25 @@ class FLineEdit : public FWidget
     void                processChanged() const;
 
     // Data members
-    FString       text{""};
-    FString       print_text{""};
-    FString       label_text{""};
-    FLabel*       label{};
-    FWidget*      label_associated_widget{this};
-    std::wstring  input_filter{};
-    dragScroll    drag_scroll{FLineEdit::noScroll};
-    label_o       label_orientation{FLineEdit::label_left};
-    inputType     input_type{FLineEdit::textfield};
-    int           scroll_repeat{100};
-    bool          scroll_timer{false};
-    bool          insert_mode{true};
-    bool          read_only{false};
-    std::size_t   cursor_pos{NOT_SET};
-    std::size_t   text_offset{0};
-    std::size_t   char_width_offset{0};
-    std::size_t   x_pos{0};
-    std::size_t   max_length{std::numeric_limits<std::size_t>::max()};
+    FString          text{""};
+    FString          print_text{""};
+    FString          label_text{""};
+    FLabel*          label{};
+    FWidget*         label_associated_widget{this};
+    std::wstring     input_filter{};
+    KeyMap           key_map{};
+    DragScrollMode   drag_scroll{DragScrollMode::None};
+    LabelOrientation label_orientation{LabelOrientation::Left};
+    InputType        input_type{InputType::Textfield};
+    int              scroll_repeat{100};
+    bool             scroll_timer{false};
+    bool             insert_mode{true};
+    bool             read_only{false};
+    std::size_t      cursor_pos{NOT_SET};
+    std::size_t      text_offset{0};
+    std::size_t      char_width_offset{0};
+    std::size_t      x_pos{0};
+    std::size_t      max_length{std::numeric_limits<std::size_t>::max()};
 };
 
 
@@ -257,7 +250,7 @@ inline FLabel* FLineEdit::getLabelObject() const
 { return label; }
 
 //----------------------------------------------------------------------
-inline FLineEdit::label_o FLineEdit::getLabelOrientation() const
+inline FLineEdit::LabelOrientation FLineEdit::getLabelOrientation() const
 { return label_orientation; }
 
 //----------------------------------------------------------------------
@@ -269,16 +262,12 @@ inline void FLineEdit::clearInputFilter()
 { input_filter.clear(); }
 
 //----------------------------------------------------------------------
-inline void FLineEdit::setInputType (const inputType type)
+inline void FLineEdit::setInputType (const InputType type)
 { input_type = type; }
 
 //----------------------------------------------------------------------
 inline void FLineEdit::setLabelAssociatedWidget (FWidget* w)
 { label_associated_widget = w; }
-
-//----------------------------------------------------------------------
-inline bool FLineEdit::setEnable()
-{ return setEnable(true); }
 
 //----------------------------------------------------------------------
 inline bool FLineEdit::unsetEnable()
@@ -289,24 +278,12 @@ inline bool FLineEdit::setDisable()
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::setFocus()
-{ return setFocus(true); }
-
-//----------------------------------------------------------------------
 inline bool FLineEdit::unsetFocus()
 { return setFocus(false); }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::setShadow()
-{ return setShadow(true); }
-
-//----------------------------------------------------------------------
 inline bool FLineEdit::unsetShadow()
 { return setShadow(false); }
-
-//----------------------------------------------------------------------
-inline bool FLineEdit::setReadOnly()
-{ return setReadOnly(true); }
 
 //----------------------------------------------------------------------
 inline bool FLineEdit::unsetReadOnly()

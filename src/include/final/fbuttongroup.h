@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -86,8 +86,7 @@ class FButtonGroup : public FScrollView
     FString&            getText();
 
     // Mutator
-    bool                setEnable(bool) override;
-    bool                setEnable() override;
+    bool                setEnable (bool = true) override;
     bool                unsetEnable() override;
     bool                setDisable() override;
     void                setText (const FString&);
@@ -145,10 +144,6 @@ class FButtonGroup : public FScrollView
 //----------------------------------------------------------------------
 inline FString FButtonGroup::getClassName() const
 { return "FButtonGroup"; }
-
-//----------------------------------------------------------------------
-inline bool FButtonGroup::setEnable()
-{ return setEnable(true); }
 
 //----------------------------------------------------------------------
 inline bool FButtonGroup::unsetEnable()

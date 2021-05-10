@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -68,7 +68,9 @@
 #include <cstddef>
 #include <functional>
 #include <map>
+#include <memory>
 #include <queue>
+#include <utility>
 
 #include "final/fkeyboard.h"
 #include "final/fpoint.h"
@@ -90,24 +92,21 @@ namespace finalcut
 class FMouseData
 {
   public:
+    // Constructor
+    FMouseData() = default;
+
+    // Copy constructor
+    FMouseData (const FMouseData&) = default;
+
+    // Destructor
+    virtual ~FMouseData() noexcept;
+
+    // copy assignment operator (=)
+    FMouseData& operator = (const FMouseData&) = default;
+
     // Accessors
     virtual FString       getClassName() const;
     const FPoint&         getPos() const;
-
-    // Constructor
-    FMouseData();
-
-    // Default copy constructor
-    FMouseData (const FMouseData&) = default;
-    // Default move constructor
-    FMouseData (FMouseData&&) = default;
-    // Default copy assignment operator (=)
-    FMouseData& operator = (const FMouseData&) = default;
-    // Default move assignment operator (=)
-    FMouseData& operator = (FMouseData&&) = default;
-
-    // Destructor
-    virtual ~FMouseData();
 
     // Inquiries
     bool                  isLeftButtonPressed() const;
@@ -128,27 +127,26 @@ class FMouseData
     void                  clearButtonState();
 
   protected:
-    // Typedef and Enumerations
-    typedef struct
-    {
-      uChar left_button    : 2;  // 0..3
-      uChar right_button   : 2;  // 0..3
-      uChar middle_button  : 2;  // 0..3
-      uChar shift_button   : 1;  // 0..1
-      uChar control_button : 1;  // 0..1
-      uChar meta_button    : 1;  // 0..1
-      uChar wheel_up       : 1;  // 0..1
-      uChar wheel_down     : 1;  // 0..1
-      uChar mouse_moved    : 1;  // 0..1
-      uChar                : 4;  // padding bits
-    } FMouseButton;  // bit field
-
-    enum states
+    // Enumerations
+    enum class State : uChar
     {
       Undefined   = 0,
       Pressed     = 1,
       Released    = 2,
       DoubleClick = 3
+    };
+
+    struct FMouseButton
+    {
+      State left_button{};
+      State right_button{};
+      State middle_button{};
+      bool  shift_button{};
+      bool  control_button{};
+      bool  meta_button{};
+      bool  wheel_up{};
+      bool  wheel_down{};
+      bool  mouse_moved{};
     };
 
     // Accessors
@@ -173,20 +171,17 @@ class FMouse : public FMouseData
 {
   public:
     // Enumeration
-    enum mouse_type
+    enum class MouseType
     {
-      none  = 0,
-      gpm   = 1,
-      x11   = 2,
-      sgr   = 3,
-      urxvt = 4
+      None  = 0,
+      Gpm   = 1,
+      X11   = 2,
+      Sgr   = 3,
+      Urxvt = 4
     };
 
     // Constructor
     FMouse();
-
-    // Destructor
-    ~FMouse() override;
 
     // Accessors
     FString               getClassName() const override;
@@ -218,7 +213,7 @@ class FMouse : public FMouseData
 
     // Mutator
     void                   setNewPos (int, int);
-    void                   setPending (bool);
+    void                   setPending (bool = true);
     void                   setEvent();
     void                   setMousePressedTime (const timeval*);
     void                   resetMousePressedTime();
@@ -256,9 +251,6 @@ class FMouseGPM final : public FMouse
     // Constructor
     FMouseGPM();
 
-    // Destructor
-    ~FMouseGPM() override;
-
     // Accessors
     FString              getClassName() const override;
 
@@ -272,26 +264,26 @@ class FMouseGPM final : public FMouse
     // Methods
     void                 setRawData (FKeyboard::keybuffer&) override;
     void                 processEvent (struct timeval*) override;
-    bool                 gpmMouse (bool);
+    bool                 gpmMouse (bool = true);
     bool                 enableGpmMouse();
     bool                 disableGpmMouse();
     bool                 hasSignificantEvents() const;
     void                 interpretKeyDown();
     void                 interpretKeyUp();
-    bool                 getGpmKeyPressed(bool);
-    void                 drawGpmPointer() const;
+    bool                 getGpmKeyPressed (bool = true);
+    void                 drawPointer() const;
 
   private:
     // Enumeration
-    enum gpmEventType
+    enum class gpmEventType
     {
-      no_event       = 0,
-      keyboard_event = 1,
-      mouse_event    = 2
+      None     = 0,
+      Keyboard = 1,
+      Mouse    = 2
     };
 
     // Method
-    int                gpmEvent (bool = true) const;
+    gpmEventType       gpmEvent (bool = true) const;
 
     // Data member
     Gpm_Event          gpm_ev{};
@@ -321,12 +313,6 @@ inline bool FMouseGPM::isGpmMouseEnabled() const
 class FMouseX11 final : public FMouse
 {
   public:
-    // Constructor
-    FMouseX11() = default;
-
-    // Destructor
-    ~FMouseX11() override = default;
-
     // Accessors
     FString              getClassName() const override;
 
@@ -380,12 +366,6 @@ class FMouseX11 final : public FMouse
 class FMouseSGR final : public FMouse
 {
   public:
-    // Constructor
-    FMouseSGR() = default;
-
-    // Destructor
-    ~FMouseSGR() override = default;
-
     // Accessors
     FString       getClassName() const override;
 
@@ -439,12 +419,6 @@ class FMouseSGR final : public FMouse
 class FMouseUrxvt final : public FMouse
 {
   public:
-    // Constructor
-    FMouseUrxvt() = default;
-
-    // Destructor
-    ~FMouseUrxvt() override = default;
-
     // Accessors
     FString       getClassName() const override;
 
@@ -527,14 +501,8 @@ class FMouseControl
     // Constructor
     FMouseControl();
 
-    // Disable copy constructor
-    FMouseControl (const FMouseControl&) = delete;
-
     // Destructor
     virtual ~FMouseControl();
-
-    // Disable copy assignment operator (=)
-    FMouseControl& operator = (const FMouseControl&) = delete;
 
     // Accessors
     virtual FString           getClassName() const;
@@ -545,7 +513,7 @@ class FMouseControl
     void                      setStdinNo (int);
     void                      setMaxWidth (uInt16);
     void                      setMaxHeight (uInt16);
-    void                      setDblclickInterval (const uInt64);
+    void                      setDblclickInterval (const uInt64) const;
     void                      setEventCommand (const FMouseCommand&);
     void                      useGpmMouse (bool = true);
     void                      useXtermMouse (bool = true);
@@ -573,22 +541,23 @@ class FMouseControl
     // Methods
     void                      enable();
     void                      disable();
-    virtual void              setRawData ( FMouse::mouse_type
+    virtual void              setRawData ( FMouse::MouseType
                                          , FKeyboard::keybuffer& );
     virtual void              processEvent (struct timeval* time);
     void                      processQueuedInput();
-    bool                      getGpmKeyPressed (bool);
-    void                      drawGpmPointer();
+    bool                      getGpmKeyPressed (bool = true);
+    void                      drawPointer();
 
   private:
-    // Typedef
-    typedef std::map<FMouse::mouse_type, FMouse*> FMouseProtocol;
-    typedef std::unique_ptr<FMouseData> FMouseDataPtr;
+    // Using-declaration
+    using FMousePtr = std::unique_ptr<FMouse>;
+    using FMouseDataPtr = std::unique_ptr<FMouseData>;
+    using FMouseProtocol = std::map<FMouse::MouseType, FMousePtr>;
 
     // Accessor
-    FMouse*                   getMouseWithData();
-    FMouse*                   getMouseWithEvent();
-    void                      xtermMouse (bool) const;
+    FMouse::MouseType         getMouseWithData();
+    FMouse::MouseType         getMouseWithEvent();
+    void                      xtermMouse (bool = true) const;
     void                      enableXTermMouse() const;
     void                      disableXTermMouse() const;
 

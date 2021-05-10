@@ -22,14 +22,14 @@
 
 #include <fstream>
 #include <functional>
-#include <map>
 #include <iostream>
 #include <string>
 #include <vector>
 
 #include <final/final.h>
 
-namespace fc = finalcut::fc;
+using FKey = finalcut::FKey;
+using finalcut::FColor;
 using finalcut::FPoint;
 using finalcut::FRect;
 using finalcut::FSize;
@@ -42,9 +42,6 @@ using finalcut::FSize;
 class ProgressDialog final : public finalcut::FDialog
 {
   public:
-    // Using-declaration
-    using FDialog::setGeometry;
-
     // Constructor
     explicit ProgressDialog (finalcut::FWidget* = nullptr);
 
@@ -58,6 +55,9 @@ class ProgressDialog final : public finalcut::FDialog
     ProgressDialog& operator = (const ProgressDialog&) = delete;
 
   private:
+    // Method
+    void initLayout() override;
+
     // Event handlers
     void onShow (finalcut::FShowEvent*) override;
     void onTimer (finalcut::FTimerEvent*) override;
@@ -78,29 +78,18 @@ class ProgressDialog final : public finalcut::FDialog
 ProgressDialog::ProgressDialog (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
-  // Dialog settings
-  //   Avoids calling a virtual function from the constructor
-  //   (CERT, OOP50-CPP)
-  FDialog::setGeometry ( FPoint{int((getParentWidget()->getWidth() - 40) / 2), 7}
-                       , FSize{40, 10} );
-  FDialog::setText("Progress bar");
   //setModal();
-
   reset.setText("&Reset");
   reset.setStatusbarMessage ("Reset the progress bar");
-  reset.setGeometry(FPoint{2, 6}, FSize{8, 1}, false);
   reset.setDisable();
 
   more.setText("&More");
   more.setStatusbarMessage ("Increases the progress bar position");
-  more.setGeometry(FPoint{15, 6}, FSize{8, 1}, false);
   more.setDisable();
 
   quit.setText("E&xit");
-  quit.setGeometry(FPoint{28, 6}, FSize{8, 1}, false);
   quit.setDisable();
 
-  progressbar.setGeometry(FPoint{2, 3}, FSize{34, 1}, false);
   //progressbar.setPercentage(78);
 
   reset.addCallback
@@ -129,6 +118,19 @@ ProgressDialog::~ProgressDialog()  // destructor
   delCallback(&quit);
   delCallback(&more);
   delCallback(&reset);
+}
+
+//----------------------------------------------------------------------
+void ProgressDialog::initLayout()
+{
+  FDialog::setGeometry ( FPoint{int((getParentWidget()->getWidth() - 40) / 2), 7}
+                       , FSize{40, 10} );
+  FDialog::setText("Progress bar");
+  reset.setGeometry(FPoint{2, 6}, FSize{8, 1}, false);
+  more.setGeometry(FPoint{15, 6}, FSize{8, 1}, false);
+  quit.setGeometry(FPoint{28, 6}, FSize{8, 1}, false);
+  progressbar.setGeometry(FPoint{2, 3}, FSize{34, 1}, false);
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------
@@ -196,7 +198,7 @@ class TextWindow final : public finalcut::FDialog
     TextWindow (const TextWindow&) = delete;
 
     // Destructor
-    ~TextWindow() override;
+    ~TextWindow() override = default;
 
     // Disable copy assignment operator (=)
     TextWindow& operator = (const TextWindow&) = delete;
@@ -206,6 +208,7 @@ class TextWindow final : public finalcut::FDialog
 
   private:
     // Method
+    void initLayout() override;
     void adjustSize() override;
 
     // Data members
@@ -217,8 +220,6 @@ TextWindow::TextWindow (finalcut::FWidget* parent)
   : finalcut::FDialog{parent}
 {
   scrolltext.ignorePadding();
-  scrolltext.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});
-  setMinimumSize (FSize{51, 6});
   scrolltext.setFocus();
   scrolltext.insert(" -----------------------------------------------\n"
                     " line 1\n"
@@ -231,13 +232,17 @@ TextWindow::TextWindow (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-TextWindow::~TextWindow()  // destructor
-{ }
-
-//----------------------------------------------------------------------
 void TextWindow::append (const finalcut::FString& str)
 {
   scrolltext.append(str);
+}
+
+//----------------------------------------------------------------------
+void TextWindow::initLayout()
+{
+  scrolltext.setGeometry (FPoint{1, 2}, FSize{getWidth(), getHeight() - 1});
+  setMinimumSize (FSize{51, 6});
+  FDialog::initLayout();
 }
 
 //----------------------------------------------------------------------
@@ -262,7 +267,7 @@ class MyDialog final : public finalcut::FDialog
     MyDialog (const MyDialog&) = delete;
 
     // Destructor
-    ~MyDialog() override;
+    ~MyDialog() override = default;
 
     // Disable copy assignment operator (=)
     MyDialog& operator = (const MyDialog&) = delete;
@@ -283,6 +288,7 @@ class MyDialog final : public finalcut::FDialog
     void initButtons();
     void initLabels();
     void initWidgetsCallbacks();
+    void initLayout() override;
     void adjustSize() override;
 
     // Event handlers
@@ -328,13 +334,13 @@ class MyDialog final : public finalcut::FDialog
     finalcut::FMenuItem       File2{"/etc/fstab", &Recent};
     finalcut::FMenuItem       File3{"/etc/passwd", &Recent};
     // "Edit" menu items
-    finalcut::FMenuItem       Undo{fc::Fckey_z, "Undo", &Edit};
-    finalcut::FMenuItem       Redo{fc::Fckey_y, "Redo", &Edit};
+    finalcut::FMenuItem       Undo{FKey::Ctrl_z, "Undo", &Edit};
+    finalcut::FMenuItem       Redo{FKey::Ctrl_y, "Redo", &Edit};
     finalcut::FMenuItem       Line2{&Edit};
-    finalcut::FMenuItem       Cut{fc::Fckey_x, "Cu&t", &Edit};
-    finalcut::FMenuItem       Copy{fc::Fckey_c, "&Copy", &Edit};
-    finalcut::FMenuItem       Paste{fc::Fckey_v, "&Paste", &Edit};
-    finalcut::FMenuItem       Clear{fc::Fkey_dc, "C&lear", &Edit};
+    finalcut::FMenuItem       Cut{FKey::Ctrl_x, "Cu&t", &Edit};
+    finalcut::FMenuItem       Copy{FKey::Ctrl_c, "&Copy", &Edit};
+    finalcut::FMenuItem       Paste{FKey::Ctrl_v, "&Paste", &Edit};
+    finalcut::FMenuItem       Clear{FKey::Del_char, "C&lear", &Edit};
     // "View" menu items
     finalcut::FMenuItem       Env{"&Terminal...", &View};
     finalcut::FMenuItem       Drive{"&Drive symbols...", &View};
@@ -342,9 +348,9 @@ class MyDialog final : public finalcut::FDialog
     finalcut::FCheckMenuItem  Theme{"Dark &mode", &View};
     // Statusbar
     finalcut::FStatusBar      Statusbar{this};
-    finalcut::FStatusKey      key_F1{fc::Fkey_f1, "About", &Statusbar};
-    finalcut::FStatusKey      key_F2{fc::Fkey_f2, "View", &Statusbar};
-    finalcut::FStatusKey      key_F3{fc::Fkey_f3, "Quit", &Statusbar};
+    finalcut::FStatusKey      key_F1{FKey::F1, "About", &Statusbar};
+    finalcut::FStatusKey      key_F2{FKey::F2, "View", &Statusbar};
+    finalcut::FStatusKey      key_F3{FKey::F3, "Quit", &Statusbar};
     // Dialog widgets
     finalcut::FButton         MyButton1{this};
     finalcut::FButton         MyButton2{this};
@@ -376,10 +382,6 @@ MyDialog::MyDialog (finalcut::FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-MyDialog::~MyDialog()  // destructor
-{ }
-
-//----------------------------------------------------------------------
 void MyDialog::init()
 {
   initMenu();                // Initialize the program menu
@@ -403,11 +405,11 @@ void MyDialog::initMenu()
   Help.setStatusbarMessage ("Show version and copyright information");
 
   // "File" menu items
-  Open.addAccelerator (fc::Fckey_o);  // Ctrl + O
+  Open.addAccelerator (FKey::Ctrl_o);  // Ctrl + O
   Open.setStatusbarMessage ("Locate and open a text file");
   Recent.setStatusbarMessage ("View text file");
   Line1.setSeparator();
-  Quit.addAccelerator (fc::Fmkey_x);  // Meta/Alt + X
+  Quit.addAccelerator (FKey::Meta_x);  // Meta/Alt + X
   Quit.setStatusbarMessage ("Exit the program");
 
   // "Edit" menu items
@@ -581,7 +583,6 @@ void MyDialog::initWidgets()
   initToggleButtons();
 
   // A text input field
-  myLineEdit.setGeometry(FPoint{22, 1}, FSize{10, 1});
   myLineEdit.setLabelText (L"&Input");
   myLineEdit.setStatusbarMessage ("Press Enter to set the title");
   myLineEdit << finalcut::FString{"EnTry"}.toLower();
@@ -590,9 +591,8 @@ void MyDialog::initWidgets()
   initButtons();
 
   // A multiple selection listbox
-  myList.setGeometry(FPoint{38, 1}, FSize{14, 17});
-  myList.setText ("Items");
 
+  myList.setText ("Items");
   myList.setStatusbarMessage ("99 items in a list");
   myList.setMultiSelection();
   myList.reserve(100);
@@ -608,21 +608,18 @@ void MyDialog::initWidgets()
 void MyDialog::initFlatButtons()
 {
   // Flat buttons
-  MyButton1.setGeometry(FPoint{3, 3}, FSize{5, 1});
   MyButton1.setText (L"&SIN");
   MyButton1.setStatusbarMessage ("Sine function");
   MyButton1.setNoUnderline();
   MyButton1.setFlat();
-  MyButton1.setDoubleFlatLine (fc::bottom);
+  MyButton1.setDoubleFlatLine (finalcut::Side::Bottom);
 
-  MyButton2.setGeometry(FPoint{3, 5}, FSize{5, 1});
   MyButton2.setText (L"&COS");
   MyButton2.setStatusbarMessage ("Cosine function");
   MyButton2.setNoUnderline();
   MyButton2.setFlat();
-  MyButton2.setDoubleFlatLine (fc::top);
+  MyButton2.setDoubleFlatLine (finalcut::Side::Top);
 
-  MyButton3.setGeometry(FPoint{10, 3}, FSize{5, 3});
   MyButton3.setText (L"&=");
   MyButton3.setStatusbarMessage ("Equal");
   MyButton3.setNoUnderline();
@@ -655,25 +652,16 @@ void MyDialog::initFlatButtons()
 void MyDialog::initToggleButtons()
 {
   // Radio buttons in a group
-  radioButtonGroup.setGeometry(FPoint{3, 8}, FSize{14, 4});
+
   //radioButtonGroup->unsetBorder();
-
-  radio1.setGeometry(FPoint{1, 1}, FSize{10, 1});
   radio1.setStatusbarMessage ("Enable button Test");
-
-  radio2.setGeometry(FPoint{1, 2}, FSize{11, 1});
   radio2.setText ("&Disable");
   radio2.setStatusbarMessage ("Disable button Test");
   radio2.setChecked();
   //radio2.setDisable();
 
   // Checkboxes in a group
-  checkButtonGroup.setGeometry(FPoint{3, 12}, FSize{14, 4});
-
-  check1.setGeometry(FPoint{1, 1}, FSize{11, 1});
   check1.setNoUnderline();
-
-  check2.setGeometry(FPoint{1, 2}, FSize{9, 1});
   check2.setChecked();
   check2.setNoUnderline();
 }
@@ -682,20 +670,18 @@ void MyDialog::initToggleButtons()
 void MyDialog::initButtons()
 {
   // Buttons
-  MyButton4.setGeometry(FPoint{20, 8}, FSize{12, 1});
+
   MyButton4.setText (L"&Get input");
   MyButton4.setStatusbarMessage ("Take text from input field");
   MyButton4.setFocus();
 
-  MyButton5.setGeometry(FPoint{20, 11}, FSize{12, 1});
   MyButton5.setText (L"&Test");
   MyButton5.setStatusbarMessage ("Progressbar testing dialog");
   MyButton5.setDisable();
 
-  MyButton6.setGeometry(FPoint{20, 14}, FSize{12, 1});
   MyButton6.setText (L"&Quit");
   MyButton6.setStatusbarMessage ("Exit the program");
-  MyButton6.addAccelerator('x');
+  MyButton6.addAccelerator(FKey('x'));
 
   // Add button callback functions
   MyButton4.addCallback
@@ -724,20 +710,12 @@ void MyDialog::initButtons()
 void MyDialog::initLabels()
 {
   // Text labels
-  headline.setGeometry(FPoint{21, 3}, FSize{10, 1});
+
   headline.setEmphasis();
-  headline.setAlignment (fc::alignCenter);
+  headline.setAlignment (finalcut::Align::Center);
   headline = L"List items";
-
-  tagged.setGeometry(FPoint{21, 4}, FSize{7, 1});
-
-  tagged_count.setGeometry(FPoint{29, 4}, FSize{5, 1});
   tagged_count << 0;
-
-  sum.setGeometry(FPoint{21, 5}, FSize{7, 3});
-  sum.setAlignment (fc::alignRight);
-
-  sum_count.setGeometry(FPoint{29, 5}, FSize{5, 3});
+  sum.setAlignment (finalcut::Align::Right);
   sum_count << myList.getCount();
 }
 
@@ -775,9 +753,38 @@ void MyDialog::initWidgetsCallbacks()
 }
 
 //----------------------------------------------------------------------
+void MyDialog::initLayout()
+{
+  MyButton1.setGeometry(FPoint{3, 3}, FSize{5, 1});
+  MyButton2.setGeometry(FPoint{3, 5}, FSize{5, 1});
+  MyButton3.setGeometry(FPoint{10, 3}, FSize{5, 3});
+  MyButton4.setGeometry(FPoint{20, 8}, FSize{12, 1});
+  MyButton5.setGeometry(FPoint{20, 11}, FSize{12, 1});
+  MyButton6.setGeometry(FPoint{20, 14}, FSize{12, 1});
+  radioButtonGroup.setGeometry(FPoint{3, 8}, FSize{14, 4});
+  radio1.setGeometry(FPoint{1, 1}, FSize{10, 1});
+  radio2.setGeometry(FPoint{1, 2}, FSize{11, 1});
+  checkButtonGroup.setGeometry(FPoint{3, 12}, FSize{14, 4});
+  check1.setGeometry(FPoint{1, 1}, FSize{11, 1});
+  check2.setGeometry(FPoint{1, 2}, FSize{9, 1});
+  headline.setGeometry(FPoint{21, 3}, FSize{10, 1});
+  tagged.setGeometry(FPoint{21, 4}, FSize{7, 1});
+  tagged_count.setGeometry(FPoint{29, 4}, FSize{5, 1});
+  sum.setGeometry(FPoint{21, 5}, FSize{7, 3});
+  sum_count.setGeometry(FPoint{29, 5}, FSize{5, 3});
+  myLineEdit.setGeometry(FPoint{22, 1}, FSize{10, 1});
+  myList.setGeometry(FPoint{38, 1}, FSize{14, 17});
+  FDialog::initLayout();
+}
+
+//----------------------------------------------------------------------
 void MyDialog::adjustSize()
 {
-  const auto h = getDesktopHeight() - 4;
+  auto h = getDesktopHeight();
+
+  if ( h > 4 )
+    h -= 4;
+
   setHeight (h, false);
   finalcut::FDialog::adjustSize();  // with new client area size
   auto x = int((getDesktopWidth() - getWidth()) / 2);
@@ -787,7 +794,7 @@ void MyDialog::adjustSize()
 
   setPos (FPoint{x, 2}, false);
 
-  if ( initialized )
+  if ( initialized && h > 3 )
     myList.setHeight (h - 3, true);
 }
 
@@ -811,15 +818,15 @@ void MyDialog::cb_noFunctionMsg (const finalcut::FButton& button)
 void MyDialog::cb_about()
 {
   constexpr char libver[] = F_VERSION;
-  const finalcut::FString line(2, fc::BoxDrawingsHorizontal);
+  const finalcut::FString line(2, finalcut::UniChar::BoxDrawingsHorizontal);
 
   finalcut::FMessageBox info ( "About"
                              , line + L" FINAL CUT " + line + L"\n\n"
                                L"Version " + libver + L"\n\n"
-                               L"(c) 2020 by Markus Gans"
-                             , finalcut::FMessageBox::Ok
-                             , finalcut::FMessageBox::Reject
-                             , finalcut::FMessageBox::Reject
+                               L"(c) 2021 by Markus Gans"
+                             , finalcut::FMessageBox::ButtonType::Ok
+                             , finalcut::FMessageBox::ButtonType::Reject
+                             , finalcut::FMessageBox::ButtonType::Reject
                              , this );
   info.setCenterText();
   info.show();
@@ -837,12 +844,12 @@ void MyDialog::cb_terminfo()
       << "  Type: " << finalcut::FTerm::getTermType() << "\n"
       << "  Name: " << finalcut::FTerm::getTermFileName() << "\n"
       << "  Mode: " << finalcut::FTerm::getEncodingString() << "\n"
-      << "  Size: " << x << fc::Times
+      << "  Size: " << x << finalcut::UniChar::Times
                     << y << "\n"
       << "Colors: " << finalcut::FTerm::getMaxColor()
-    , finalcut::FMessageBox::Ok
-    , finalcut::FMessageBox::Reject
-    , finalcut::FMessageBox::Reject
+    , finalcut::FMessageBox::ButtonType::Ok
+    , finalcut::FMessageBox::ButtonType::Reject
+    , finalcut::FMessageBox::ButtonType::Reject
     , this
   );
   info1.setHeadline("Terminal:");
@@ -858,9 +865,9 @@ void MyDialog::cb_drives()
     , "Generic:       \n\n"
       "Network:       \n\n"
       "     CD:"
-    , finalcut::FMessageBox::Ok
-    , finalcut::FMessageBox::Reject
-    , finalcut::FMessageBox::Reject
+    , finalcut::FMessageBox::ButtonType::Ok
+    , finalcut::FMessageBox::ButtonType::Reject
+    , finalcut::FMessageBox::ButtonType::Reject
     , this
   );
 
@@ -891,12 +898,12 @@ void MyDialog::cb_drives()
     }
     else
     {
-      net.setForegroundColor (fc::White);
-      net.setBackgroundColor (fc::DarkGray);
-      drive.setForegroundColor (fc::White);
-      drive.setBackgroundColor (fc::DarkGray);
-      cd.setForegroundColor (fc::White);
-      cd.setBackgroundColor (fc::DarkGray);
+      net.setForegroundColor (FColor::White);
+      net.setBackgroundColor (FColor::DarkGray);
+      drive.setForegroundColor (FColor::White);
+      drive.setBackgroundColor (FColor::DarkGray);
+      cd.setForegroundColor (FColor::White);
+      cd.setBackgroundColor (FColor::DarkGray);
     }
 
     info2.exec();
@@ -1049,11 +1056,11 @@ int main (int argc, char* argv[])
 {
   const finalcut::FString ver{F_VERSION};  // Library version
   const finalcut::FString title { "FINAL CUT " + ver
-                                + " (C) 2020 by Markus Gans" };
+                                + " (C) 2021 by Markus Gans" };
 
   // Create the application object app
   finalcut::FApplication app{argc, argv};
-  app.setNonBlockingRead();
+  finalcut::FVTerm::setNonBlockingRead();
 
   // Create main dialog object d
   MyDialog d{&app};

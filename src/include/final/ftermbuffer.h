@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2020 Markus Gans                                      *
+* Copyright 2017-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -69,11 +69,12 @@ class FTermBuffer
     FTermBuffer (Iterator, Iterator);
 
     // Destructor
-    virtual ~FTermBuffer();
+    virtual ~FTermBuffer() noexcept;
 
     // Overloaded operators
     template <typename typeT>
     FTermBuffer& operator << (const typeT&);
+    FTermBuffer& operator << (const UniChar&);
     FTermBuffer& operator << (const FCharVector&);
     FTermBuffer& operator << (const std::string&);
     FTermBuffer& operator << (const std::wstring&);
@@ -109,6 +110,9 @@ class FTermBuffer
 
   private:
     FCharVector            data{};
+    void                   add ( FString::const_iterator&
+                               , FString::const_iterator&
+                               , int& );
 
     // Non-member operators
     friend FCharVector& operator << ( FCharVector&
@@ -134,6 +138,13 @@ inline FTermBuffer& FTermBuffer::operator << (const typeT& s)
   if ( ! outstream.str().isEmpty() )
     write (outstream.str());
 
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FTermBuffer& FTermBuffer::operator << (const UniChar& c)
+{
+  write (static_cast<wchar_t>(c));
   return *this;
 }
 

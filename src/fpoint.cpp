@@ -31,26 +31,7 @@ namespace finalcut
 // class FPoint
 //----------------------------------------------------------------------
 
-FPoint::~FPoint()  // destructor
-{ }
-
 // public methods of FPoint
-//----------------------------------------------------------------------
-FPoint& FPoint::operator = (const FPoint& p)
-{
-  xpos = p.xpos;
-  ypos = p.ypos;
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FPoint& FPoint::operator = (FPoint&& p) noexcept
-{
-  xpos = std::move(p.xpos);
-  ypos = std::move(p.ypos);
-  return *this;
-}
-
 //----------------------------------------------------------------------
 FPoint& FPoint::operator += (const FPoint& p)
 {

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -34,12 +34,7 @@ namespace finalcut
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FLogger::FLogger()
-{ }
-
-//----------------------------------------------------------------------
-FLogger::~FLogger()  // destructor
-{ }
+FLogger::~FLogger() noexcept = default;  // destructor
 
 
 // private methods of FLogger
@@ -68,19 +63,17 @@ std::string FLogger::getTimeString() const
   struct tm time{};
   localtime_r (&t, &time);
   std::strftime (str.data(), str.size(), "%a, %d %b %Y %T %z", &time);
-  return std::string(str.data());
+  return {str.data()};
 }
 
 //----------------------------------------------------------------------
-std::string FLogger::getEOL()
+std::string FLogger::getEOL() const
 {
-  std::lock_guard<std::mutex> lock_guard(getMutex());
-
-  if ( getEnding() == FLog::LF )
+  if ( getEnding() == LineEnding::LF )
     return "\n";
-  else if ( getEnding() == FLog::CR )
+  else if ( getEnding() == LineEnding::CR )
     return "\r";
-  else if ( getEnding() == FLog::CRLF )
+  else if ( getEnding() == LineEnding::CRLF )
     return "\r\n";
 
   return "";
@@ -91,20 +84,18 @@ void FLogger::printLogLine (const std::string& msg)
 {
   const std::string& log_level = [this] ()
   {
-    std::lock_guard<std::mutex> lock_guard(getMutex());
-
     switch ( getLevel() )
     {
-      case Info:
+      case LogLevel::Info:
         return "INFO";
 
-      case Warn:
+      case LogLevel::Warn:
         return "WARNING";
 
-      case Error:
+      case LogLevel::Error:
         return "ERROR";
 
-      case Debug:
+      case LogLevel::Debug:
         return "DEBUG";
     }
 
@@ -123,6 +114,7 @@ void FLogger::printLogLine (const std::string& msg)
   const std::string& eol = getEOL();
   const std::string replace_str = eol + prefix;
   newlineReplace (message, replace_str);
+  std::lock_guard<std::mutex> lock_guard(output_mutex);
   output << prefix << message << eol;
 }
 

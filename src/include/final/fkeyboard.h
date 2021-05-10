@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -52,8 +52,6 @@ namespace finalcut
 // class forward declaration
 class FApplication;
 class FString;
-class FTermDetection;
-class FTermLinux;
 
 //----------------------------------------------------------------------
 // class FKeyboardCommand
@@ -90,8 +88,8 @@ class FKeyboard final
     // Constants
     static constexpr std::size_t FIFO_BUF_SIZE{512};
 
-    // Typedef
-    typedef char keybuffer[FIFO_BUF_SIZE];
+    // Using-declaration
+    using keybuffer = char[FIFO_BUF_SIZE];
 
     // Constructor
     FKeyboard();
@@ -100,7 +98,7 @@ class FKeyboard final
     FKeyboard (const FKeyboard&) = delete;
 
     // Destructor
-    ~FKeyboard();
+    ~FKeyboard() = default;
 
     // Disable copy assignment operator (=)
     FKeyboard& operator = (const FKeyboard&) = delete;
@@ -117,11 +115,11 @@ class FKeyboard final
     // Mutators
     template <typename T>
     void                  setTermcapMap (const T&);
+    void                  setTermcapMap();
     static void           setKeypressTimeout (const uInt64);
     static void           setReadBlockingTime (const uInt64);
-    static void           setNonBlockingInputSupport (bool);
-    bool                  setNonBlockingInput (bool);
-    bool                  setNonBlockingInput();
+    static void           setNonBlockingInputSupport (bool = true);
+    bool                  setNonBlockingInput (bool = true);
     bool                  unsetNonBlockingInput();
     void                  enableUTF8();
     void                  disableUTF8();
@@ -137,7 +135,6 @@ class FKeyboard final
     bool                  hasDataInQueue() const;
 
     // Methods
-    static void           init();
     bool&                 hasUnprocessedInput();
     bool                  isKeyPressed (uInt64 = read_blocking_time);
     void                  clearKeyBuffer();
@@ -148,7 +145,7 @@ class FKeyboard final
 
   private:
     // Using-declaration
-    using FKeyMapPtr = std::shared_ptr<decltype(fc::fkey)>;
+    using FKeyMapPtr = std::shared_ptr<decltype(fc::fkey_cap_table)>;
 
     // Constants
     static constexpr FKey NOT_SET = static_cast<FKey>(-1);
@@ -157,7 +154,7 @@ class FKeyboard final
     // Accessors
     FKey                  getMouseProtocolKey() const;
     FKey                  getTermcapKey();
-    FKey                  getMetaKey();
+    FKey                  getKnownKey();
     FKey                  getSingleKey();
 
     // Inquiry
@@ -182,12 +179,6 @@ class FKeyboard final
     FKeyboardCommand      escape_key_cmd{};
     FKeyboardCommand      mouse_tracking_cmd{};
 
-#if defined(__linux__)
-    #undef linux
-    static FTermLinux*    linux;
-#endif
-
-    FTermDetection*       term_detection{nullptr};
     static timeval        time_keypressed;
     static uInt64         read_blocking_time;
     static uInt64         read_blocking_time_short;
@@ -195,8 +186,8 @@ class FKeyboard final
     static bool           non_blocking_input_support;
     FKeyMapPtr            key_map{};
     std::queue<FKey>      fkey_queue{};
-    FKey                  fkey{0};
-    FKey                  key{0};
+    FKey                  fkey{FKey::None};
+    FKey                  key{FKey::None};
     char                  read_character{};
     char                  fifo_buf[FIFO_BUF_SIZE]{'\0'};
     int                   fifo_offset{0};
@@ -240,6 +231,13 @@ inline void FKeyboard::setTermcapMap (const T& keymap)
 { key_map = std::make_shared<T>(keymap); }
 
 //----------------------------------------------------------------------
+inline void FKeyboard::setTermcapMap ()
+{
+  using type = decltype(fc::fkey_cap_table);
+  key_map = std::make_shared<type>(fc::fkey_cap_table);
+}
+
+//----------------------------------------------------------------------
 inline void FKeyboard::setKeypressTimeout (const uInt64 timeout)
 { key_timeout = timeout; }
 
@@ -250,10 +248,6 @@ inline void FKeyboard::setReadBlockingTime (const uInt64 blocking_time)
 //----------------------------------------------------------------------
 inline void FKeyboard::setNonBlockingInputSupport (bool enable)
 { non_blocking_input_support = enable; }
-
-//----------------------------------------------------------------------
-inline bool FKeyboard::setNonBlockingInput()
-{ return setNonBlockingInput(true); }
 
 //----------------------------------------------------------------------
 inline bool FKeyboard::unsetNonBlockingInput()

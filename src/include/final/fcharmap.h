@@ -38,8 +38,31 @@ namespace finalcut
 namespace fc
 {
 
-extern std::array<std::array<uInt, fc::NUM_OF_ENCODINGS>, 115> character;
-extern const std::array<std::array<int, 2>, 39> vt100_key_to_utf8;
+// Unicode fallback table for VT100, PC, and ASCII
+struct CharEncodeMap
+{
+  wchar_t unicode;
+  wchar_t vt100;
+  wchar_t pc;
+  wchar_t ascii;
+};
+
+extern std::array<CharEncodeMap, 115> character;
+
+inline wchar_t& getCharacter (CharEncodeMap& char_enc, const Encoding& enc)
+{
+  const auto array = reinterpret_cast<wchar_t*>(&char_enc);
+  return array[std::size_t(enc)];
+}
+
+// vt100 <-> utf-8
+struct DECSpecialGraphics
+{
+  VT100Key key;
+  UniChar  unicode;
+};
+
+extern const std::array<DECSpecialGraphics, 39> dec_special_graphics;
 extern const std::array<std::array<wchar_t, 2>, 256> cp437_ucs;
 extern const std::array<std::array<wchar_t, 2>, 227> halfwidth_fullwidth;
 

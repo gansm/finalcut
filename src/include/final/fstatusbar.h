@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -96,8 +96,7 @@ class FStatusKey : public FWidget
     void                setText (const FString&);
     void                setActive();
     void                unsetActive();
-    bool                setMouseFocus(bool);
-    bool                setMouseFocus();
+    bool                setMouseFocus (bool = true);
     bool                unsetMouseFocus();
 
     // Inquiry
@@ -117,7 +116,7 @@ class FStatusKey : public FWidget
     // Data members
     FString     text{};
     FStatusBar* bar{nullptr};
-    FKey        key{0};
+    FKey        key{};
     bool        active{false};
     bool        mouse_focus{false};
 
@@ -150,10 +149,6 @@ inline void FStatusKey::setText (const FString& txt)
 //----------------------------------------------------------------------
 inline void FStatusKey::unsetActive()
 { active = false; }
-
-//----------------------------------------------------------------------
-inline bool FStatusKey::setMouseFocus()
-{ return setMouseFocus(true); }
 
 //----------------------------------------------------------------------
 inline bool FStatusKey::unsetMouseFocus()
@@ -230,8 +225,8 @@ class FStatusBar : public FWindow
     void                cb_statuskey_activated (const FStatusKey*);
 
   private:
-    // Typedef
-    typedef std::vector<FStatusKey*> FKeyList;
+    // Using-declaration
+    using FKeyList = std::vector<FStatusKey*>;
 
     // Methods
     void                init();

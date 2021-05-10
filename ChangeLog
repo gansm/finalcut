@@ -1,10 +1,91 @@
-2019-11-14  Markus Gans  <guru.mail@muenster.de>
+2021-05-07 Markus Gans  <guru.mail@muenster.de>
+	* Some pointers were replaced by references
+
+2021-05-04 Markus Gans  <guru.mail@muenster.de>
+	* Prevent flickering when resizing terminals or redrawing 
+	  the screen via ctrl-l
+
+2021-05-02 Markus Gans  <guru.mail@muenster.de>
+	* Bugfix for sending multiple SIGWINCH signals from 
+	  gnome-terminal under Wayland
+
+2021-05-01 Markus Gans  <guru.mail@muenster.de>
+	* Replace some std::bind with lambda functions
+
+2021-04-30 Markus Gans  <guru.mail@muenster.de>
+	* Fixes Linux console bug from February 20, 2021
+
+2021-04-27 Markus Gans  <guru.mail@muenster.de>
+	* Code optimization at widget focus
+
+2021-04-24 Markus Gans  <guru.mail@muenster.de>
+	* Fixed mutex deadlock in FLogger
+
+2021-04-21 Markus Gans  <guru.mail@muenster.de>
+	* Fixes the detection of the terminal size after a SIGWINCH signal
+
+2021-04-18 Markus Gans  <guru.mail@muenster.de>
+	* Decoupling the FWidget and FWindow classes from FVTerm
+	* Avoid redrawing widgets when show() is called multiple times
+	* Readjustment of the root widget when the terminal size is changed
+
+2021-04-11 Markus Gans  <guru.mail@muenster.de>
+	* Better support for kitty terminals
+
+2021-03-31 Markus Gans  <guru.mail@muenster.de>
+	* argv is now stored internally as a std::vector container
+
+2021-03-30 Markus Gans  <guru.mail@muenster.de>
+	* Stops terminal refresh during dialog resizing until all 
+	  child widgets have been redrawn
+
+2021-03-28 Markus Gans  <guru.mail@muenster.de>
+	* Widget now have the virtual method initLayout() to set 
+	  the widget layouts automatically before the first drawing 
+	  on the terminal is done. Also texts in full-width characters, 
+	  whose character width is determined automatically, should be 
+	  calculated here.
+
+2021-03-15 Markus Gans  <guru.mail@muenster.de>
+	* Dynamic adjustment of the terminal refresh rate between 
+	  5 and 60 Hz
+
+2021-03-09 Markus Gans  <guru.mail@muenster.de>
+	* Implementation of an own padding print method for sending 
+	  control codes to the terminal
+
+2021-02-28 Markus Gans  <guru.mail@muenster.de>
+	* Removing the termcap library from the header files so 
+	  that FINAL CUT programs are not affected by the preprocessor 
+	  #define macros.
+	  Many thanks to Zhenyu Zhang for this optimization suggestion
+
+2021-02-24 Markus Gans  <guru.mail@muenster.de>
+	* Fixed the incorrect display on terminals without 
+	  UTF-8 character encoding
+
+2021-02-20 Markus Gans  <guru.mail@muenster.de>
+	* Optimize terminal output buffer queue with differencing
+	  for strings, and control characters and control sequences
+
+2021-02-09 Markus Gans  <guru.mail@muenster.de>
+	* Added support for combined unicode characters
+	* Added a unit test for the FTermBuffer class
+	* Added a unit test for the FTterm functions
+
+2020-12-31  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring to scoped enumerations
+
+2020-11-18  Markus Gans  <guru.mail@muenster.de>
+	* The terminal update rate is now limited to 60 Hz
+
+2020-11-14  Markus Gans  <guru.mail@muenster.de>
 	* Version 0.7.1
 	* Bugfix: The cursor position was not changed anymore 
 	  if there was no change to the content
 	* Forcing a direct update for faster terminal output
 
-2019-11-07  Markus Gans  <guru.mail@muenster.de>
+2020-11-07  Markus Gans  <guru.mail@muenster.de>
 	* Version 0.7.0
 
 2020-11-04  Markus Gans  <guru.mail@muenster.de>
