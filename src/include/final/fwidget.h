@@ -507,6 +507,7 @@ class FWidget : public FVTerm, public FObject
 void          detectTermSize();
 bool          isFocusNextKey (const FKey);
 bool          isFocusPrevKey (const FKey);
+bool          isInFWidgetList (const FWidget::FWidgetList*, const FWidget*);
 FKey          getHotkey (const FString&);
 std::size_t   getHotkeyPos (const FString& src, FString& dest);
 void          setHotkeyViaString (FWidget*, const FString&);

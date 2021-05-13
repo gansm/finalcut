@@ -1,3 +1,6 @@
+2021-05-13 Markus Gans  <guru.mail@muenster.de>
+	* Prevent duplicate widget in the close widget list
+
 2021-05-07 Markus Gans  <guru.mail@muenster.de>
 	* Some pointers were replaced by references
 

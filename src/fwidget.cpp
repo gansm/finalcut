@@ -851,7 +851,7 @@ bool FWidget::close()
     {
       hide();
 
-      if ( ! flags.modal )
+      if ( ! flags.modal && ! isInFWidgetList(close_widget, this) )
         close_widget->push_back(this);
     }
 

@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <algorithm>
+
 #include "final/fapplication.h"
 #include "final/fcolorpair.h"
 #include "final/fstatusbar.h"
@@ -51,6 +53,16 @@ bool isFocusPrevKey (const FKey key)
     return true;
 
   return false;
+}
+
+//----------------------------------------------------------------------
+bool isInFWidgetList (const FWidget::FWidgetList* list, const FWidget* obj)
+{
+  if ( ! list || ! obj )
+    return false;
+
+  return std::any_of ( list->begin(), list->end()
+                     , [&obj] (FWidget* w) { return w == obj; } );
 }
 
 //----------------------------------------------------------------------
