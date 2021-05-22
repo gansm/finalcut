@@ -178,7 +178,7 @@ class FListBox : public FWidget
     FListBox (Iterator, Iterator, InsertConverter, FWidget* = nullptr);
     template <typename Container
             , typename LazyConverter>
-    FListBox (Container, LazyConverter, FWidget* = nullptr);
+    FListBox (Container, LazyConverter&&, FWidget* = nullptr);
 
     // Disable copy constructor
     FListBox (const FListBox&) = delete;
@@ -235,10 +235,10 @@ class FListBox : public FWidget
     template <typename Container
             , typename LazyConverter>
     void                 insert ( const Container&
-                                , const LazyConverter& );
+                                , LazyConverter&& );
     template <typename Container
             , typename LazyConverter>
-    void                 insert (Container*, const LazyConverter&);
+    void                 insert (Container*, LazyConverter&&);
     void                 insert (const FListBoxItem&);
     template <typename T
             , typename DT = std::nullptr_t>
@@ -417,12 +417,12 @@ inline FListBox::FListBox ( Iterator first
 template <typename Container
         , typename LazyConverter>
 inline FListBox::FListBox ( Container container
-                          , LazyConverter convert
+                          , LazyConverter&& convert
                           , FWidget* parent )
   : FWidget{parent}
 {
   init();
-  insert (container, convert);
+  insert (container, std::forward<LazyConverter>(convert));
 }
 
 //----------------------------------------------------------------------
@@ -550,11 +550,11 @@ inline void FListBox::insert ( Iterator first
 //----------------------------------------------------------------------
 template <typename Container
         , typename LazyConverter>
-void FListBox::insert (const Container& container, const LazyConverter& converter)
+void FListBox::insert (const Container& container, LazyConverter&& converter)
 {
   conv_type = ConvertType::Lazy;
   source_container = makeFData(container);
-  lazy_inserter = converter;
+  lazy_inserter = std::move(converter);
   const std::size_t size = container.size();
 
   if ( size > 0 )
@@ -566,9 +566,9 @@ void FListBox::insert (const Container& container, const LazyConverter& converte
 //----------------------------------------------------------------------
 template <typename Container
         , typename LazyConverter>
-void FListBox::insert (Container* container, const LazyConverter& converter)
+void FListBox::insert (Container* container, LazyConverter&& converter)
 {
-  insert (*container, converter);
+  insert (*container, std::forward<LazyConverter>(converter));
 }
 
 //----------------------------------------------------------------------

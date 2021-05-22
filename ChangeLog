@@ -1,3 +1,6 @@
+2021-05-22 Markus Gans  <guru.mail@muenster.de>
+	* Convert FOptiMove from char[] to std::string
+
 2021-05-13 Markus Gans  <guru.mail@muenster.de>
 	* Prevent duplicate widget in the close widget list
 

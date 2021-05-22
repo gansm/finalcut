@@ -16,12 +16,12 @@ Describe clearly and precisely what the problem is.
 Example: I have an issue when [...]
 
 
-**Describe your desired solution**
+**Your desired solution**
 
 Describe clearly and concisely what you want to reach.
 
 
-**Describe alternatives you have considered**
+**Alternatives you have considered**
 
 Describe clearly and concisely the other solutions you considered.
 

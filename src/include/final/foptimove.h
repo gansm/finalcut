@@ -44,6 +44,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <string>
 
 #include "final/fstring.h"
 
@@ -143,7 +144,7 @@ class FOptiMove final
 
     // Methods
     void          check_boundaries (int&, int&, int&, int&) const;
-    const char*   moveCursor (int, int, int, int);
+    std::string   moveCursor (int, int, int, int);
 
   private:
     struct Capability
@@ -154,7 +155,7 @@ class FOptiMove final
     };
 
     // Constant
-    static constexpr std::size_t BUF_SIZE{512};
+    static constexpr std::string::size_type BUF_SIZE{512u};
 
     // Constants
     static constexpr int LONG_DURATION{INT_MAX};
@@ -166,14 +167,14 @@ class FOptiMove final
     void          calculateCharDuration();
     int           capDuration (const char[], int) const;
     int           capDurationToLength (int) const;
-    int           repeatedAppend (const Capability&, int, char*) const;
-    int           relativeMove (char[], int, int, int, int) const;
-    int           verticalMove (char[], int, int) const;
-    void          downMove (char[], int&, int, int) const;
-    void          upMove (char[], int&, int, int) const;
-    int           horizontalMove (char[], int, int) const;
-    void          rightMove (char[], int&, int, int) const;
-    void          leftMove (char[], int&, int, int) const;
+    int           repeatedAppend (const Capability&, int, std::string&) const;
+    int           relativeMove (std::string&, int, int, int, int) const;
+    int           verticalMove (std::string&, int, int) const;
+    void          downMove (std::string&, int&, int, int) const;
+    void          upMove (std::string&, int&, int, int) const;
+    int           horizontalMove (std::string&, int, int) const;
+    void          rightMove (std::string&, int&, int, int) const;
+    void          leftMove (std::string&, int&, int, int) const;
 
     bool          isWideMove (int, int, int, int) const;
     bool          isMethod0Faster (int&, int, int);
@@ -211,7 +212,7 @@ class FOptiMove final
     int           char_duration{1};
     int           baudrate{9600};
     int           tabstop{0};
-    char          move_buf[BUF_SIZE]{'\0'};
+    std::string   move_buf{};
     bool          automatic_left_margin{false};
     bool          eat_nl_glitch{false};
 
