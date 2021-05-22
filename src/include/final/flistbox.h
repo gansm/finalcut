@@ -554,7 +554,7 @@ void FListBox::insert (const Container& container, LazyConverter&& converter)
 {
   conv_type = ConvertType::Lazy;
   source_container = makeFData(container);
-  lazy_inserter = std::move(converter);
+  lazy_inserter = std::forward<LazyConverter>(converter);
   const std::size_t size = container.size();
 
   if ( size > 0 )
