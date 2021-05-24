@@ -330,9 +330,9 @@ void FTermDetection::termtypeAnalysis()
   if ( std::strncmp(termtype, "screen", 6) == 0 )
   {
     terminal_type.screen = true;
-    const char* tmux = std::getenv("TMUX");
+    std::string tmux = std::getenv("TMUX");
 
-    if ( tmux && std::strlen(tmux) != 0 )
+    if ( tmux.length() != 0 )
       terminal_type.tmux = true;
   }
 
@@ -813,10 +813,10 @@ FString FTermDetection::getSecDA()
   const int stdout_no{FTermios::getStdOut()};
   fd_set ifds{};
   struct timeval tv{};
-  constexpr auto& SECDA{ESC "[>c"};
+  const std::string SECDA{ESC "[>c"};
 
   // Get the secondary device attributes
-  if ( write(stdout_no, SECDA, std::strlen(SECDA)) == -1 )
+  if ( write(stdout_no, SECDA.data(), SECDA.length()) == -1 )
     return sec_da_str;
 
   std::fflush(stdout);

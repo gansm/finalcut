@@ -372,18 +372,16 @@ void FFileDialog::initCallbacks()
 inline bool FFileDialog::patternMatch ( const char* const pattern
                                       , const char fname[] ) const
 {
-  std::array<char, 128> search{};
+  std::string search{};
+  search.reserve(128);
 
   if ( show_hidden && fname[0] == '.' && fname[1] != '\0' )  // hidden files
   {
-    search[0] = '.';
-    search[1] = '\0';
-    std::strncat(search.data(), pattern, search.size() - std::strlen(search.data()) - 1);
+    search = ".";
+    search.append(pattern);
   }
   else
-    std::strncpy(search.data(), pattern, search.size() - 1);
-
-  search[search.size() - 1] = '\0';
+    search = pattern;
 
   if ( fnmatch (search.data(), fname, FNM_PERIOD) == 0 )
     return true;
@@ -550,16 +548,11 @@ void FFileDialog::followSymLink (const char* const dir, FDirEntry& entry) const
     return;  // No symbolic link
 
   std::array<char, MAXPATHLEN> resolved_path{};
-  std::array<char, MAXPATHLEN> symLink{};
+  std::string symLink{};
+  symLink.reserve(MAXPATHLEN);
   struct stat sb{};
-
   const auto& fsystem = FTerm::getFSystem();
-  std::strncpy (symLink.data(), dir, symLink.size() - 1);
-  symLink[symLink.size() - 1] = '\0';
-  std::strncat ( symLink.data()
-               , entry.name.c_str()
-               , symLink.size() - std::strlen(symLink.data()) - 1);
-  symLink[symLink.size() - 1] = '\0';
+  symLink = dir + entry.name;
 
   if ( fsystem->realpath(symLink.data(), resolved_path.data()) == nullptr )
     return;  // Cannot follow the symlink

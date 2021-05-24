@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <algorithm>
 #include <vector>
 
 #include "final/fapplication.h"
@@ -405,7 +406,7 @@ void FWidget::setPos (const FPoint& p, bool adjust)
     return;
   }
 
-  if ( ! isWindowWidget() )
+  if ( ! isWindowWidget() )  // A widgets must be inside the client area
   {
     if ( pos.getX() < 1 )
       pos.setX(1);
@@ -430,7 +431,7 @@ void FWidget::setWidth (std::size_t width, bool adjust)
   if ( getWidth() == width && wsize.getWidth() == width  )
     return;
 
-  if ( width < 1 )
+  if ( width < 1 )  // A width can never be narrower than 1 character
     width = 1;
 
   wsize.setWidth(width);
@@ -452,7 +453,7 @@ void FWidget::setHeight (std::size_t height, bool adjust)
   if ( getHeight() == height && wsize.getHeight() == height )
     return;
 
-  if ( height < 1 )
+  if ( height < 1 )  // A height can never be narrower than 1 character
     height = 1;
 
   wsize.setHeight(height);
@@ -479,10 +480,10 @@ void FWidget::setSize (const FSize& size, bool adjust)
     && getHeight() == height && wsize.getHeight() == height )
     return;
 
-  if ( width < 1 )
+  if ( width < 1 )  // A width can never be narrower than 1 character
     width = 1;
 
-  if ( height < 1 )
+  if ( height < 1 )  // A height can never be narrower than 1 character
     height = 1;
 
   wsize.setWidth(width);
@@ -624,20 +625,19 @@ void FWidget::setGeometry (const FPoint& p, const FSize& s, bool adjust)
   if ( getPos() == p && getWidth() == w && getHeight() == h )
     return;
 
-  if ( ! isWindowWidget() )
-  {
-    ( x < 1 ) ? wsize.setX(1) : wsize.setX(x);
-    ( y < 1 ) ? wsize.setY(1) : wsize.setY(y);
-  }
-  else
+  if ( isWindowWidget() )  // A window widget can be outside
   {
     wsize.setX(x);
     wsize.setY(y);
   }
+  else  // A normal widget must be inside the client area
+  {
+    wsize.setX(std::max(x, 1));
+    wsize.setY(std::max(y, 1));
+  }
 
-  ( w < 1 ) ? wsize.setWidth(1) : wsize.setWidth(w);
-  ( h < 1 ) ? wsize.setHeight(1) : wsize.setHeight(h);
-
+  wsize.setWidth(std::max(w, std::size_t(1u)));
+  wsize.setHeight(std::max(h, std::size_t(1u)));
   adjust_wsize = wsize;
   const int term_x = getTermX();
   const int term_y = getTermY();

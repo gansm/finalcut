@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -36,19 +36,16 @@
 #include <final/final.h>
 
 
-#define CPPUNIT_ASSERT_CSTRING(expected, actual) \
-            check_c_string (expected, actual, CPPUNIT_SOURCELINE())
+#define CPPUNIT_ASSERT_STRING(expected, actual) \
+            check_string (expected, actual, CPPUNIT_SOURCELINE())
 
 //----------------------------------------------------------------------
-void check_c_string ( const char* s1
-                    , const char* s2
-                    , CppUnit::SourceLine sourceLine )
+void check_string ( const std::string& s1
+                  , const std::string& s2
+                  , CppUnit::SourceLine sourceLine )
 {
-  if ( s1 == 0 && s2 == 0 )  // Strings are equal
+  if ( s1 == s2 )  // Strings are equal
     return;
-
-  if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
-      return;
 
   ::CppUnit::Asserter::fail ("Strings are not equal", sourceLine);
 }
@@ -187,7 +184,7 @@ void FOptiAttrTest::sgrOptimizerTest()
 
   finalcut::FChar from{};
   finalcut::FChar to{};
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blue text on white background + bold + dim + italic
   to.fg_color = finalcut::FColor::Blue;
@@ -196,10 +193,10 @@ void FOptiAttrTest::sgrOptimizerTest()
   to.attr.bit.dim = true;
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;2;1;3;34;47m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Yellow text on Black Yellow + bold
   to.fg_color = finalcut::FColor::Yellow;
@@ -208,88 +205,123 @@ void FOptiAttrTest::sgrOptimizerTest()
   to.attr.bit.dim = false;
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;1;33;40m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
 
   // Test only the optimizer
   // -----------------------
-  finalcut::SGRoptimizer::AttributeBuffer buffer = { CSI "0;10m" CSI "11m"  CSI "36m" CSI "44m" };
+  std::string buffer = { CSI "0;10m" CSI "11m"  CSI "36m" CSI "44m" };
   finalcut::SGRoptimizer sgr_optimizer(buffer);
+  CPPUNIT_ASSERT ( buffer.length() == 22 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;10;11;36;44m" );
+  CPPUNIT_ASSERT ( buffer.length() == 16 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "0;10;11;36;44m" );
 
-  std::strcpy(buffer.data(), CSI "0;1m" CSI "34m");
+  buffer = CSI "0;1m" CSI "34m";
+  CPPUNIT_ASSERT ( buffer.length() == 11 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;1;34m" );
+  CPPUNIT_ASSERT ( buffer.length() == 9 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "0;1;34m" );
 
-  std::strcpy(buffer.data(), CSI "m" CSI "34m");
+  buffer = CSI "m" CSI "34m";
+  CPPUNIT_ASSERT ( buffer.length() == 8 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;34m" );
+  CPPUNIT_ASSERT ( buffer.length() == 7 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "0;34m" );
 
-  std::strcpy(buffer.data(), CSI "1m" CSI "m" CSI "45m");
+  buffer = CSI "1m" CSI "m" CSI "45m";
+  CPPUNIT_ASSERT ( buffer.length() == 12 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "1;0;45m" );
+  CPPUNIT_ASSERT ( buffer.length() == 9 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "1;0;45m" );
 
-  std::strcpy(buffer.data(), CSI "47m");
+  buffer = CSI "47m";
+  CPPUNIT_ASSERT ( buffer.length() == 5 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "47m" );
+  CPPUNIT_ASSERT ( buffer.length() == 5 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "47m" );
 
-  std::strcpy(buffer.data(), CSI "47m" CSI "m" CSI "1m");
+  buffer = CSI "47m" CSI "m" CSI "1m";
+  CPPUNIT_ASSERT ( buffer.length() == 12 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "47;0;1m" );
+  CPPUNIT_ASSERT ( buffer.length() == 9 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "47;0;1m" );
 
-  std::strcpy(buffer.data(), CSI "49m" CSI "m" CSI "0m");
+  buffer = CSI "49m" CSI "m" CSI "0m";
+  CPPUNIT_ASSERT ( buffer.length() == 12 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "49;0;0m" );
+  CPPUNIT_ASSERT ( buffer.length() == 9 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "49;0;0m" );
 
-  std::strcpy(buffer.data(), CSI "m" CSI "m" CSI "m");
+  buffer = CSI "m" CSI "m" CSI "m";
+  CPPUNIT_ASSERT ( buffer.length() == 9 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;0;0m" );
+  CPPUNIT_ASSERT ( buffer.length() == 8 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "0;0;0m" );
 
-  std::strcpy(buffer.data(), CSI "m");
+  buffer = CSI "m";
+  CPPUNIT_ASSERT ( buffer.length() == 3 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "m" );
+  CPPUNIT_ASSERT ( buffer.length() == 3 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "m" );
 
-  std::strcpy(buffer.data(), CSI "0;10;1;7m" CSI "3m" CSI "39m" CSI "49m");
+  buffer = CSI "0;10;1;7m" CSI "3m" CSI "39m" CSI "49m";
+  CPPUNIT_ASSERT ( buffer.length() == 25 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;10;1;7;3;39;49m" );
+  CPPUNIT_ASSERT ( buffer.length() == 19 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "0;10;1;7;3;39;49m" );
 
-  std::strcpy(buffer.data(), CSI "m" CSI "38;5;20m" CSI "48;5;229m");
+  buffer = CSI "m" CSI "38;5;20m" CSI "48;5;229m";
+  CPPUNIT_ASSERT ( buffer.length() == 24 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;38;5;20;48;5;229m" );
+  CPPUNIT_ASSERT ( buffer.length() == 21 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "0;38;5;20;48;5;229m" );
 
-  std::strcpy(buffer.data(), CSI "m" CSI "38;5;20m" CSI "11;16H");
+  buffer = CSI "m" CSI "38;5;20m" CSI "11;16H";
+  CPPUNIT_ASSERT ( buffer.length() == 21 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;38;5;20m" CSI "11;16H" );
+  CPPUNIT_ASSERT ( buffer.length() == 20 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "0;38;5;20m" CSI "11;16H" );
 
-  std::strcpy(buffer.data(), CSI "1;1H" CSI "m" CSI "38;5;35m");
+  buffer = CSI "1;1H" CSI "m" CSI "38;5;35m";
+  CPPUNIT_ASSERT ( buffer.length() == 19 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "1;1H" CSI "0;38;5;35m" );
+  CPPUNIT_ASSERT ( buffer.length() == 18 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "1;1H" CSI "0;38;5;35m" );
 
-  std::strcpy(buffer.data(), CSI "m" CSI "38;5;20m" CSI "11;16H" CSI "48;5;229m");
+  buffer = CSI "m" CSI "38;5;20m" CSI "11;16H" CSI "48;5;229m";
+  CPPUNIT_ASSERT ( buffer.length() == 32 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;38;5;20m" CSI "11;16H" CSI "48;5;229m" );
+  CPPUNIT_ASSERT ( buffer.length() == 31 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "0;38;5;20m" CSI "11;16H" CSI "48;5;229m" );
 
-  std::strcpy(buffer.data(), CSI "m" CSI "38;5;20m" "ABC" CSI "48;5;229m");
+  buffer = CSI "m" CSI "38;5;20m" "ABC" CSI "48;5;229m";
+  CPPUNIT_ASSERT ( buffer.length() == 27 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;38;5;20mABC" CSI "48;5;229m" );
+  CPPUNIT_ASSERT ( buffer.length() == 26 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "0;38;5;20mABC" CSI "48;5;229m" );
 
-
-  std::strcpy(buffer.data(), CSI "m" CSI "1m" CSI "2m" CSI "3m" CSI "4m"
-                      CSI "5m" CSI "7m" CSI "8m" CSI "9m");
+  buffer = CSI "m" CSI "1m" CSI "2m" CSI "3m" CSI "4m"
+                      CSI "5m" CSI "7m" CSI "8m" CSI "9m";
+  CPPUNIT_ASSERT ( buffer.length() == 35 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;1;2;3;4;5;7;8;9m" );
+  CPPUNIT_ASSERT ( buffer.length() == 20 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "0;1;2;3;4;5;7;8;9m" );
 
-  std::strcpy(buffer.data(), CSI "0m" CSI "46;36;1m");
+  buffer = CSI "0m" CSI "46;36;1m";
+  CPPUNIT_ASSERT ( buffer.length() == 14 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;46;36;1m" );
+  CPPUNIT_ASSERT ( buffer.length() == 12 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "0;46;36;1m" );
 
-  std::strcpy(buffer.data(), CSI "m" CSI "38;2;0;139;139m" CSI "48;2;240;255;240m");
+  buffer = CSI "m" CSI "38;2;0;139;139m" CSI "48;2;240;255;240m";
+  CPPUNIT_ASSERT ( buffer.length() == 39 );
   sgr_optimizer.optimize();
-  CPPUNIT_ASSERT_CSTRING ( buffer.data(), CSI "0;38;2;0;139;139;48;2;240;255;240m" );
+  CPPUNIT_ASSERT ( buffer.length() == 36 );
+  CPPUNIT_ASSERT_STRING ( buffer.data(), CSI "0;38;2;0;139;139;48;2;240;255;240m" );
 }
 
 //----------------------------------------------------------------------
@@ -361,21 +393,21 @@ void FOptiAttrTest::fakeReverseTest()
 
   finalcut::FChar from{};
   finalcut::FChar to{};
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Gray text on blue background
   to.fg_color = finalcut::FColor::LightGray;
   to.bg_color = finalcut::FColor::Blue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "37m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse on
   to.attr.bit.reverse = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "34m" CSI "47m" );
   CPPUNIT_ASSERT ( from.fg_color == finalcut::FColor::LightGray );
   CPPUNIT_ASSERT ( from.bg_color == finalcut::FColor::Blue );
@@ -384,18 +416,18 @@ void FOptiAttrTest::fakeReverseTest()
   // Gray text on red background
   to.bg_color = finalcut::FColor::Red;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "31m" CSI "47m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "37m" CSI "41m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 }
 
 //----------------------------------------------------------------------
@@ -454,7 +486,7 @@ void FOptiAttrTest::ansiTest()
 
   finalcut::FChar from{};
   finalcut::FChar to{};
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default color + bold
   from.fg_color = finalcut::FColor::Default;
@@ -463,10 +495,10 @@ void FOptiAttrTest::ansiTest()
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;1m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blue text on white background + dim + italic
   to.fg_color = finalcut::FColor::Blue;
@@ -474,10 +506,10 @@ void FOptiAttrTest::ansiTest()
   to.attr.bit.dim = true;
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;1m" CSI "34m" CSI "47m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reset attributes + default background
   to.attr.bit.bold = false;
@@ -485,238 +517,238 @@ void FOptiAttrTest::ansiTest()
   to.attr.bit.italic = false;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" CSI "34m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Red text on black background
   to.fg_color = finalcut::FColor::Red;
   to.bg_color = finalcut::FColor::Black;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "31m" CSI "40m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // 256 color text and background
   to.fg_color = finalcut::FColor::SpringGreen3;
   to.bg_color = finalcut::FColor::NavyBlue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "32m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold on (with default colors)
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   to.attr.bit.bold = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;1m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off (with default colors)
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim on (with default colors)
   to.attr.bit.dim = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off (with default colors)
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic on (with default colors)
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off (with default colors)
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline on (with default colors)
   to.attr.bit.underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;4m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off (with default colors)
   to.attr.bit.underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink on (with default colors)
   to.attr.bit.blink = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;5m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink off (with default colors)
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse on (with default colors)
   to.attr.bit.reverse = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;7m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off (with default colors)
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout on (with default colors)
   to.attr.bit.standout = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;7m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off (with default colors)
   to.attr.bit.standout = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible on (with default colors)
   to.attr.bit.invisible = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;8m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off (with default colors)
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect on (with default colors)
   to.attr.bit.protect = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off (with default colors)
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out on (with default colors)
   to.attr.bit.crossed_out = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off (with default colors)
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline on (with default colors)
   to.attr.bit.dbl_underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off (with default colors)
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set on (with default colors)
   to.attr.bit.alt_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;11m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off (with default colors)
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "10m" CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set on (with default colors)
   to.attr.bit.pc_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10m" CSI "11m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off (with default colors)
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" CSI "10m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Turn on all attributes (with default colors)
   to.attr.bit.pc_charset    = true;
@@ -734,133 +766,133 @@ void FOptiAttrTest::ansiTest()
   to.attr.bit.alt_charset   = true;
   to.attr.bit.pc_charset    = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;7;4;7;5;1;8;11m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Cyan text on blue background
   to.fg_color = finalcut::FColor::Cyan;
   to.bg_color = finalcut::FColor::Blue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;7;5;8;11m" CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;7;5;8;11m" CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;7;5;8;11m"
                            CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off
   to.attr.bit.underline = false;
   CPPUNIT_ASSERT ( from == to );  // because of noColorVideo = 3
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink off
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;7;8;11m" CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;8;11m" CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off
   to.attr.bit.standout = false;
   CPPUNIT_ASSERT ( from == to );  // because of noColorVideo = 3
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;11m" CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;11m" CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;11m" CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10;11m" CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;10m" CSI "11m"  CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" CSI "10m" CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Green text color
   to.fg_color = finalcut::FColor::Green;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), CSI "32m" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), CSI "32m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default text color
   to.fg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( printSequence(oa.changeAttribute(from, to)).c_str()
+  CPPUNIT_ASSERT_STRING ( printSequence(oa.changeAttribute(from, to)).c_str()
                          , "Esc [ 3 9 m " );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 }
 
 //----------------------------------------------------------------------
@@ -917,7 +949,7 @@ void FOptiAttrTest::vt100Test()
 
   finalcut::FChar from{};
   finalcut::FChar to{};
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default color + bold
   from.fg_color = finalcut::FColor::Default;
@@ -926,10 +958,10 @@ void FOptiAttrTest::vt100Test()
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blue text on white background + dim + italic
   to.fg_color = finalcut::FColor::Blue;
@@ -937,10 +969,10 @@ void FOptiAttrTest::vt100Test()
   to.attr.bit.dim = true;
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reset attributes + default background
   to.attr.bit.bold = false;
@@ -948,21 +980,21 @@ void FOptiAttrTest::vt100Test()
   to.attr.bit.italic = false;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>"  );
 
   // Red text on black background
   to.fg_color = finalcut::FColor::Red;
   to.bg_color = finalcut::FColor::Black;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "" );
 
   // 256 color text and background
   to.fg_color = finalcut::FColor::SpringGreen3;
   to.bg_color = finalcut::FColor::NavyBlue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
 
 
   // Bold on (with default colors)
@@ -970,211 +1002,211 @@ void FOptiAttrTest::vt100Test()
   to.bg_color = finalcut::FColor::Default;
   to.attr.bit.bold = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off (with default colors)
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim on (with default colors)
   to.attr.bit.dim = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off (with default colors)
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic on (with default colors)
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off (with default colors)
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline on (with default colors)
   to.attr.bit.underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;4m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off (with default colors)
   to.attr.bit.underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink on (with default colors)
   to.attr.bit.blink = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;5m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink off (with default colors)
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse on (with default colors)
   to.attr.bit.reverse = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;7m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off (with default colors)
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout on (with default colors)
   to.attr.bit.standout = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1;7m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off (with default colors)
   to.attr.bit.standout = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible on (with default colors)
   to.attr.bit.invisible = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
   CPPUNIT_ASSERT ( to.encoded_char[0] == ' ' );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off (with default colors)
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect on (with default colors)
   to.attr.bit.protect = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off (with default colors)
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out on (with default colors)
   to.attr.bit.crossed_out = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off (with default colors)
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline on (with default colors)
   to.attr.bit.dbl_underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off (with default colors)
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set on (with default colors)
   to.attr.bit.alt_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\016$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off (with default colors)
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "\017" CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set on (with default colors)
   to.attr.bit.pc_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off (with default colors)
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Turn on all attributes (with default colors)
   to.attr.bit.pc_charset    = true;
@@ -1192,133 +1224,133 @@ void FOptiAttrTest::vt100Test()
   to.attr.bit.alt_charset   = true;
   to.attr.bit.pc_charset    = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1;4;7;5m\016$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Cyan text on blue background
   to.fg_color = finalcut::FColor::Cyan;
   to.bg_color = finalcut::FColor::Blue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
 
   // Bold off
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>\016" CSI "4m$<2>"
                            CSI "5m$<2>" CSI "7m$<2>" CSI "7m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>\016" CSI "4m$<2>"
                            CSI "5m$<2>" CSI "7m$<2>" CSI "7m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off
   to.attr.bit.underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "m$<2>\016" CSI "5m$<2>"
                            CSI "7m$<2>" CSI "7m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink off
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>\016" CSI "7m$<2>" CSI "7m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>\016" CSI "7m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off
   to.attr.bit.standout = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "m$<2>\016" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
 
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>\016" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>\016" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>\016" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "\017" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Green text color
   to.fg_color = finalcut::FColor::Green;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default text color
   to.fg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 }
 
 //----------------------------------------------------------------------
@@ -1385,7 +1417,7 @@ void FOptiAttrTest::xtermTest()
 
   finalcut::FChar from{};
   finalcut::FChar to{};
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default color + bold
   from.fg_color = finalcut::FColor::Default;
@@ -1394,10 +1426,10 @@ void FOptiAttrTest::xtermTest()
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" CSI "0;1m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blue text on white background + dim + italic
   to.fg_color = finalcut::FColor::Blue;
@@ -1405,11 +1437,11 @@ void FOptiAttrTest::xtermTest()
   to.attr.bit.dim = true;
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" CSI "0;1;2m" CSI "3m"
                            CSI "34m" CSI "107m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reset attributes + default background
   to.attr.bit.bold = false;
@@ -1417,238 +1449,238 @@ void FOptiAttrTest::xtermTest()
   to.attr.bit.italic = false;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" CSI "34m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Red text on black background
   to.fg_color = finalcut::FColor::Red;
   to.bg_color = finalcut::FColor::Black;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "31m" CSI "40m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // 256 color text and background
   to.fg_color = finalcut::FColor::SpringGreen3;
   to.bg_color = finalcut::FColor::NavyBlue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "38;5;42m" CSI "48;5;17m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold on (with default colors)
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   to.attr.bit.bold = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" CSI "0;1m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off (with default colors)
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim on (with default colors)
   to.attr.bit.dim = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" CSI "0;2m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off (with default colors)
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic on (with default colors)
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" CSI "0m" CSI "3m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off (with default colors)
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline on (with default colors)
   to.attr.bit.underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" CSI "0;4m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off (with default colors)
   to.attr.bit.underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink on (with default colors)
   to.attr.bit.blink = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" CSI "0;5m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink off (with default colors)
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse on (with default colors)
   to.attr.bit.reverse = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" CSI "0;7m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off (with default colors)
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout on (with default colors)
   to.attr.bit.standout = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" CSI "0;7m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off (with default colors)
   to.attr.bit.standout = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible on (with default colors)
   to.attr.bit.invisible = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" CSI "0;8m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off (with default colors)
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect on (with default colors)
   to.attr.bit.protect = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off (with default colors)
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out on (with default colors)
   to.attr.bit.crossed_out = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" CSI "0m" CSI "9m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off (with default colors)
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline on (with default colors)
   to.attr.bit.dbl_underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" CSI "0m" CSI "21m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off (with default colors)
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set on (with default colors)
   to.attr.bit.alt_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(0" CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off (with default colors)
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set on (with default colors)
   to.attr.bit.pc_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off (with default colors)
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Turn on all attributes (with default colors)
   to.attr.bit.pc_charset    = true;
@@ -1666,138 +1698,138 @@ void FOptiAttrTest::xtermTest()
   to.attr.bit.alt_charset   = true;
   to.attr.bit.pc_charset    = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(0" CSI "0;1;2;4;7;5;8m" CSI "3m"
                            CSI "9m" CSI "21m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Cyan text on blue background
   to.fg_color = finalcut::FColor::Cyan;
   to.bg_color = finalcut::FColor::Blue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "22m" CSI "2m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "22m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "23m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off
   to.attr.bit.underline = false;
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "24m" CSI "21m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
 
   // Blink off
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "25m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "27m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off
   to.attr.bit.standout = false;
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "27m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "28m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" CSI "36m" CSI "44m" ESC "(0" CSI "9m" CSI "21m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "29m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "24m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(B" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Green text color
   to.fg_color = finalcut::FColor::Green;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), CSI "32m" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), CSI "32m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default text color
   to.fg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( printSequence(oa.changeAttribute(from, to)).c_str()
+  CPPUNIT_ASSERT_STRING ( printSequence(oa.changeAttribute(from, to)).c_str()
                          , "Esc [ 3 9 m " );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 }
 
 //----------------------------------------------------------------------
@@ -1854,7 +1886,7 @@ void FOptiAttrTest::rxvtTest()
 
   finalcut::FChar from{};
   finalcut::FChar to{};
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default color + bold
   from.fg_color = finalcut::FColor::Default;
@@ -1863,10 +1895,10 @@ void FOptiAttrTest::rxvtTest()
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blue text on white background + dim + italic
   to.fg_color = finalcut::FColor::Blue;
@@ -1874,10 +1906,10 @@ void FOptiAttrTest::rxvtTest()
   to.attr.bit.dim = true;
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1m\017" CSI "34m" CSI "47m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reset attributes + default background
   to.attr.bit.bold = false;
@@ -1885,239 +1917,239 @@ void FOptiAttrTest::rxvtTest()
   to.attr.bit.italic = false;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" CSI "34m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Red text on black background
   to.fg_color = finalcut::FColor::Red;
   to.bg_color = finalcut::FColor::Black;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "31m" CSI "40m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // 256 color text and background
   to.fg_color = finalcut::FColor::SpringGreen3;
   to.bg_color = finalcut::FColor::NavyBlue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "32m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold on (with default colors)
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   to.attr.bit.bold = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off (with default colors)
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim on (with default colors)
   to.attr.bit.dim = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off (with default colors)
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic on (with default colors)
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off (with default colors)
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline on (with default colors)
   to.attr.bit.underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;4m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off (with default colors)
   to.attr.bit.underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink on (with default colors)
   to.attr.bit.blink = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;5m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink off (with default colors)
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse on (with default colors)
   to.attr.bit.reverse = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;7m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off (with default colors)
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout on (with default colors)
   to.attr.bit.standout = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;7m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off (with default colors)
   to.attr.bit.standout = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible on (with default colors)
   to.attr.bit.invisible = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
   CPPUNIT_ASSERT ( to.encoded_char[0] == ' ' );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off (with default colors)
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect on (with default colors)
   to.attr.bit.protect = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off (with default colors)
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out on (with default colors)
   to.attr.bit.crossed_out = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" CSI "9m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off (with default colors)
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline on (with default colors)
   to.attr.bit.dbl_underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" CSI "21m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off (with default colors)
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set on (with default colors)
   to.attr.bit.alt_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\016" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off (with default colors)
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "\017" CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set on (with default colors)
   to.attr.bit.pc_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off (with default colors)
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Turn on all attributes (with default colors)
   to.attr.bit.pc_charset    = true;
@@ -2135,138 +2167,138 @@ void FOptiAttrTest::rxvtTest()
   to.attr.bit.alt_charset   = true;
   to.attr.bit.pc_charset    = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1;4;7;5m\016"
                            CSI "9m" CSI "21m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Cyan text on blue background
   to.fg_color = finalcut::FColor::Cyan;
   to.bg_color = finalcut::FColor::Blue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "22m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "22m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off
   to.attr.bit.underline = false;
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "24m" CSI "21m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
 
   // Blink off
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "25m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "27m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off
   to.attr.bit.standout = false;
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "27m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "28m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" CSI "36m" CSI "44m\016" CSI "9m" CSI "21m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "29m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "24m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Green text color
   to.fg_color = finalcut::FColor::Green;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), CSI "32m" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), CSI "32m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default text color
   to.fg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( printSequence(oa.changeAttribute(from, to)).c_str()
+  CPPUNIT_ASSERT_STRING ( printSequence(oa.changeAttribute(from, to)).c_str()
                          , "Esc [ 3 9 m " );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 }
 
 //----------------------------------------------------------------------
@@ -2324,7 +2356,7 @@ void FOptiAttrTest::linuxTest()
 
   finalcut::FChar from{};
   finalcut::FChar to{};
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default color + bold
   from.fg_color = finalcut::FColor::Default;
@@ -2333,10 +2365,10 @@ void FOptiAttrTest::linuxTest()
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blue text on white background + dim + italic
   to.fg_color = finalcut::FColor::Blue;
@@ -2344,10 +2376,10 @@ void FOptiAttrTest::linuxTest()
   to.attr.bit.dim = true;
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1m\017" CSI "34;22m" CSI "47;5m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reset attributes + default background
   to.attr.bit.bold = false;
@@ -2355,239 +2387,239 @@ void FOptiAttrTest::linuxTest()
   to.attr.bit.italic = false;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" CSI "34;22m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Red text on black background
   to.fg_color = finalcut::FColor::Red;
   to.bg_color = finalcut::FColor::Black;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "31;22m" CSI "40;25m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // 256 color text and background
   to.fg_color = finalcut::FColor::SpringGreen3;
   to.bg_color = finalcut::FColor::NavyBlue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "32;1m" CSI "44;25m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold on (with default colors)
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   to.attr.bit.bold = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off (with default colors)
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim on (with default colors)
   to.attr.bit.dim = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off (with default colors)
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic on (with default colors)
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off (with default colors)
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline on (with default colors)
   to.attr.bit.underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off (with default colors)
   to.attr.bit.underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink on (with default colors)
   to.attr.bit.blink = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;5m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink off (with default colors)
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse on (with default colors)
   to.attr.bit.reverse = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;7m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off (with default colors)
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout on (with default colors)
   to.attr.bit.standout = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;7m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off (with default colors)
   to.attr.bit.standout = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible on (with default colors)
   to.attr.bit.invisible = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
   CPPUNIT_ASSERT ( to.encoded_char[0] == ' ' );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off (with default colors)
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\17" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect on (with default colors)
   to.attr.bit.protect = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off (with default colors)
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out on (with default colors)
   to.attr.bit.crossed_out = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off (with default colors)
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline on (with default colors)
   to.attr.bit.dbl_underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off (with default colors)
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set on (with default colors)
   to.attr.bit.alt_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\016" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off (with default colors)
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "\017" CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set on (with default colors)
   to.attr.bit.pc_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" CSI "11m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off (with default colors)
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" CSI "10m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Turn on all attributes (with default colors)
   to.attr.bit.pc_charset    = true;
@@ -2605,132 +2637,132 @@ void FOptiAttrTest::linuxTest()
   to.attr.bit.alt_charset   = true;
   to.attr.bit.pc_charset    = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1;7;5m\016"
                            CSI "11m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Cyan text on blue background
   to.fg_color = finalcut::FColor::Cyan;
   to.bg_color = finalcut::FColor::Blue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "36;22m" CSI "44;25m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "22m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off
   to.attr.bit.underline = false;
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink off
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "25m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "27m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off
   to.attr.bit.standout = false;
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "27m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" CSI "10m" CSI "36;22m" CSI "44;25m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Green text color
   to.fg_color = finalcut::FColor::Green;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), CSI "32;22m" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), CSI "32;22m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default text color
   to.fg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( printSequence(oa.changeAttribute(from, to)).c_str()
+  CPPUNIT_ASSERT_STRING ( printSequence(oa.changeAttribute(from, to)).c_str()
                          , "Esc [ 3 9 m " );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 }
 
 //----------------------------------------------------------------------
@@ -2805,7 +2837,7 @@ void FOptiAttrTest::puttyTest()
 
   finalcut::FChar from{};
   finalcut::FChar to{};
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default color + bold
   from.fg_color = finalcut::FColor::Default;
@@ -2814,10 +2846,10 @@ void FOptiAttrTest::puttyTest()
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blue text on white background + dim + italic
   to.fg_color = finalcut::FColor::Blue;
@@ -2825,10 +2857,10 @@ void FOptiAttrTest::puttyTest()
   to.attr.bit.dim = true;
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1;2m\017" CSI "34m" CSI "107m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reset attributes + default background
   to.attr.bit.bold = false;
@@ -2836,239 +2868,239 @@ void FOptiAttrTest::puttyTest()
   to.attr.bit.italic = false;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" CSI "39;49m" CSI "34m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Red text on black background
   to.fg_color = finalcut::FColor::Red;
   to.bg_color = finalcut::FColor::Black;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "31m" CSI "40m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // 256 color text and background
   to.fg_color = finalcut::FColor::SpringGreen3;
   to.bg_color = finalcut::FColor::NavyBlue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "38;5;42m" CSI "48;5;17m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold on (with default colors)
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   to.attr.bit.bold = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off (with default colors)
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim on (with default colors)
   to.attr.bit.dim = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;2m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off (with default colors)
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic on (with default colors)
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off (with default colors)
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline on (with default colors)
   to.attr.bit.underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;4m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off (with default colors)
   to.attr.bit.underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink on (with default colors)
   to.attr.bit.blink = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;5m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink off (with default colors)
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse on (with default colors)
   to.attr.bit.reverse = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;7m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off (with default colors)
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout on (with default colors)
   to.attr.bit.standout = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1;7m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off (with default colors)
   to.attr.bit.standout = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible on (with default colors)
   to.attr.bit.invisible = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
   CPPUNIT_ASSERT ( to.encoded_char[0] == ' ' );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off (with default colors)
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect on (with default colors)
   to.attr.bit.protect = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off (with default colors)
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out on (with default colors)
   to.attr.bit.crossed_out = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" CSI "9m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off (with default colors)
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline on (with default colors)
   to.attr.bit.dbl_underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" CSI "21m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off (with default colors)
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set on (with default colors)
   to.attr.bit.alt_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\016" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off (with default colors)
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "\017" CSI "0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set on (with default colors)
   to.attr.bit.pc_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017" CSI "11m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off (with default colors)
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" CSI "10m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Turn on all attributes (with default colors)
   to.attr.bit.pc_charset    = true;
@@ -3086,138 +3118,138 @@ void FOptiAttrTest::puttyTest()
   to.attr.bit.alt_charset   = true;
   to.attr.bit.pc_charset    = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1;2;4;7;5m\016"
                            CSI "9m" CSI "21m" CSI "11m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Cyan text on blue background
   to.fg_color = finalcut::FColor::Cyan;
   to.bg_color = finalcut::FColor::Blue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "22m" CSI "2m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "22m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off
   to.attr.bit.underline = false;
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "24m" CSI "21m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
 
   // Blink off
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "25m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "27m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off
   to.attr.bit.standout = false;
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "27m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "28m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" CSI "36m" CSI "44m" "\016"
                            CSI "11m" CSI "9m" CSI "21m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "29m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "24m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m" CSI "10m" CSI "36m" CSI "44m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Green text color
   to.fg_color = finalcut::FColor::Green;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), CSI "32m" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), CSI "32m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default text color
   to.fg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( printSequence(oa.changeAttribute(from, to)).c_str()
+  CPPUNIT_ASSERT_STRING ( printSequence(oa.changeAttribute(from, to)).c_str()
                          , "Esc [ 3 9 ; 4 9 m Esc [ 4 4 m " );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 }
 
 //----------------------------------------------------------------------
@@ -3275,7 +3307,7 @@ void FOptiAttrTest::teratermTest()
 
   finalcut::FChar from{};
   finalcut::FChar to{};
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default color + bold
   from.fg_color = finalcut::FColor::Default;
@@ -3284,10 +3316,10 @@ void FOptiAttrTest::teratermTest()
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blue text on white background + dim + italic
   to.fg_color = finalcut::FColor::Blue;
@@ -3295,11 +3327,11 @@ void FOptiAttrTest::teratermTest()
   to.attr.bit.dim = true;
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017$<2>" CSI "38;5;4m"
                            CSI "48;5;15m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reset attributes + default background
   to.attr.bit.bold = false;
@@ -3307,239 +3339,239 @@ void FOptiAttrTest::teratermTest()
   to.attr.bit.italic = false;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" CSI "39;49m" CSI "38;5;4m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Red text on black background
   to.fg_color = finalcut::FColor::Red;
   to.bg_color = finalcut::FColor::Black;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "38;5;1m" CSI "48;5;0m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // 256 color text and background
   to.fg_color = finalcut::FColor::SpringGreen3;
   to.bg_color = finalcut::FColor::NavyBlue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "38;5;10m" CSI "48;5;4m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold on (with default colors)
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   to.attr.bit.bold = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off (with default colors)
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim on (with default colors)
   to.attr.bit.dim = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off (with default colors)
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic on (with default colors)
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off (with default colors)
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline on (with default colors)
   to.attr.bit.underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;4m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off (with default colors)
   to.attr.bit.underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink on (with default colors)
   to.attr.bit.blink = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;5m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink off (with default colors)
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse on (with default colors)
   to.attr.bit.reverse = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;7m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off (with default colors)
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout on (with default colors)
   to.attr.bit.standout = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1;7m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off (with default colors)
   to.attr.bit.standout = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible on (with default colors)
   to.attr.bit.invisible = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
   CPPUNIT_ASSERT ( to.encoded_char[0] == ' ' );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off (with default colors)
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect on (with default colors)
   to.attr.bit.protect = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off (with default colors)
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out on (with default colors)
   to.attr.bit.crossed_out = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017$<2>" CSI "9m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off (with default colors)
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline on (with default colors)
   to.attr.bit.dbl_underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017$<2>" CSI "21m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off (with default colors)
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set on (with default colors)
   to.attr.bit.alt_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\016$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off (with default colors)
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "\017" CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set on (with default colors)
   to.attr.bit.pc_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m\017$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off (with default colors)
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Turn on all attributes (with default colors)
   to.attr.bit.pc_charset    = true;
@@ -3557,129 +3589,129 @@ void FOptiAttrTest::teratermTest()
   to.attr.bit.alt_charset   = true;
   to.attr.bit.pc_charset    = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0;1;4;7;5m\016$<2>"
                            CSI "9m" CSI "21m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Cyan text on blue background
   to.fg_color = finalcut::FColor::Cyan;
   to.bg_color = finalcut::FColor::Blue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "38;5;6m" CSI "48;5;4m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from == to );  // because of noColorVideo = 41
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "22m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off
   to.attr.bit.underline = false;
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "24m" CSI "21m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink off
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from == to );  // because of noColorVideo = 41
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "27m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off
   to.attr.bit.standout = false;
   CPPUNIT_ASSERT ( from == to );  // because of noColorVideo = 41
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "28m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" CSI "38;5;6m" CSI "48;5;4m"
                            "\016" CSI "9m" CSI "21m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "29m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "24m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , "\017" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "0m$<2>" CSI "38;5;6m" CSI "48;5;4m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Green text color
   to.fg_color = finalcut::FColor::Green;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), CSI "38;5;2m" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), CSI "38;5;2m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default text color
   to.fg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( printSequence(oa.changeAttribute(from, to)).c_str()
+  CPPUNIT_ASSERT_STRING ( printSequence(oa.changeAttribute(from, to)).c_str()
                          , "Esc [ 3 9 ; 4 9 m Esc [ 4 8 ; 5 ; 4 m " );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 }
 
 //----------------------------------------------------------------------
@@ -3746,7 +3778,7 @@ void FOptiAttrTest::ibmColorTest()
 
   finalcut::FChar from{};
   finalcut::FChar to{};
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default color + bold
   from.fg_color = finalcut::FColor::Default;
@@ -3755,9 +3787,9 @@ void FOptiAttrTest::ibmColorTest()
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blue text on white background + dim + italic
   to.fg_color = finalcut::FColor::Blue;
@@ -3765,10 +3797,10 @@ void FOptiAttrTest::ibmColorTest()
   to.attr.bit.dim = true;
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "31m" CSI "107m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reset attributes + default background
   to.attr.bit.bold = false;
@@ -3776,214 +3808,214 @@ void FOptiAttrTest::ibmColorTest()
   to.attr.bit.italic = false;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "32;40m" CSI "31m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Red text on black background
   to.fg_color = finalcut::FColor::Red;
   to.bg_color = finalcut::FColor::Black;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "34m" CSI "40m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // 256 color text and background
   to.fg_color = finalcut::FColor::SpringGreen3;
   to.bg_color = finalcut::FColor::NavyBlue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "32m" CSI "41m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold on (with default colors)
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   to.attr.bit.bold = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "32;40m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off (with default colors)
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim on (with default colors)
   to.attr.bit.dim = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off (with default colors)
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic on (with default colors)
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off (with default colors)
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline on (with default colors)
   to.attr.bit.underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off (with default colors)
   to.attr.bit.underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink on (with default colors)
   to.attr.bit.blink = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink off (with default colors)
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse on (with default colors)
   to.attr.bit.reverse = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off (with default colors)
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout on (with default colors)
   to.attr.bit.standout = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off (with default colors)
   to.attr.bit.standout = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible on (with default colors)
   to.attr.bit.invisible = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
   CPPUNIT_ASSERT ( to.encoded_char[0] == ' ' );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off (with default colors)
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect on (with default colors)
   to.attr.bit.protect = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off (with default colors)
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out on (with default colors)
   to.attr.bit.crossed_out = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off (with default colors)
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline on (with default colors)
   to.attr.bit.dbl_underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off (with default colors)
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set on (with default colors)
   to.attr.bit.alt_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off (with default colors)
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set on (with default colors)
   to.attr.bit.pc_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off (with default colors)
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Turn on all attributes (with default colors)
   to.attr.bit.pc_charset    = true;
@@ -4001,121 +4033,121 @@ void FOptiAttrTest::ibmColorTest()
   to.attr.bit.alt_charset   = true;
   to.attr.bit.pc_charset    = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Cyan text on blue background
   to.fg_color = finalcut::FColor::Cyan;
   to.bg_color = finalcut::FColor::Blue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "33m" CSI "41m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off
   to.attr.bit.underline = false;
   CPPUNIT_ASSERT ( from == to );  // because of noColorVideo = 3
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink off
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off
   to.attr.bit.standout = false;
   CPPUNIT_ASSERT ( from == to );  // because of noColorVideo = 3
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Green text color
   to.fg_color = finalcut::FColor::Green;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , CSI "32m" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default text color
   to.fg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( printSequence(oa.changeAttribute(from, to)).c_str()
+  CPPUNIT_ASSERT_STRING ( printSequence(oa.changeAttribute(from, to)).c_str()
                          , "Esc [ 3 2 ; 4 0 m Esc [ 4 1 m " );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 }
 
 //----------------------------------------------------------------------
@@ -4185,7 +4217,7 @@ void FOptiAttrTest::wyse50Test()
 
   finalcut::FChar from{};
   finalcut::FChar to{};
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default color + bold
   from.fg_color = finalcut::FColor::Default;
@@ -4194,10 +4226,10 @@ void FOptiAttrTest::wyse50Test()
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "cD" ESC "G4" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blue text on white background + dim + italic
   to.fg_color = finalcut::FColor::Blue;
@@ -4205,10 +4237,10 @@ void FOptiAttrTest::wyse50Test()
   to.attr.bit.dim = true;
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "cD" ESC "Gt" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reset attributes + default background
   to.attr.bit.bold = false;
@@ -4216,237 +4248,237 @@ void FOptiAttrTest::wyse50Test()
   to.attr.bit.italic = false;
   to.bg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Red text on black background
   to.fg_color = finalcut::FColor::Red;
   to.bg_color = finalcut::FColor::Black;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // 256 color text and background
   to.fg_color = finalcut::FColor::SpringGreen3;
   to.bg_color = finalcut::FColor::NavyBlue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold on (with default colors)
   to.fg_color = finalcut::FColor::Default;
   to.bg_color = finalcut::FColor::Default;
   to.attr.bit.bold = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "cD" ESC "G4" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off (with default colors)
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim on (with default colors)
   to.attr.bit.dim = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "cD" ESC "Gp" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off (with default colors)
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic on (with default colors)
   to.attr.bit.italic = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "cD" ESC "G0" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off (with default colors)
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline on (with default colors)
   to.attr.bit.underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "cD" ESC "G8" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off (with default colors)
   to.attr.bit.underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink on (with default colors)
   to.attr.bit.blink = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "cD" ESC "G2" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink off (with default colors)
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse on (with default colors)
   to.attr.bit.reverse = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "cD" ESC "G4" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off (with default colors)
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout on (with default colors)
   to.attr.bit.standout = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "cD" ESC "Gt" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off (with default colors)
   to.attr.bit.standout = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible on (with default colors)
   to.attr.bit.invisible = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "cD" ESC "G1" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off (with default colors)
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect on (with default colors)
   to.attr.bit.protect = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC ")" ESC "cD" ESC "G0" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off (with default colors)
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out on (with default colors)
   to.attr.bit.crossed_out = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "cD" ESC "G0" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off (with default colors)
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline on (with default colors)
   to.attr.bit.dbl_underline = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "cD" ESC "G0" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off (with default colors)
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set on (with default colors)
   to.attr.bit.alt_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "cE" ESC "G0" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off (with default colors)
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "cD" ESC "(" ESC "H\003" ESC "G0"
                            ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set on (with default colors)
   to.attr.bit.pc_charset = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "cD" ESC "G0" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off (with default colors)
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Turn on all attributes (with default colors)
   to.attr.bit.pc_charset    = true;
@@ -4464,143 +4496,143 @@ void FOptiAttrTest::wyse50Test()
   to.attr.bit.alt_charset   = true;
   to.attr.bit.pc_charset    = true;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC ")" ESC "cE" ESC "G\177" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Cyan text on blue background
   to.fg_color = finalcut::FColor::Cyan;
   to.bg_color = finalcut::FColor::Blue;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Bold off
   to.attr.bit.bold = false;
   CPPUNIT_ASSERT ( from != to );
 
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD"
                            ESC "cE" ESC "Gp" ESC "G8" ESC "G2"
                            ESC "G2" ESC "Gt" ESC "G1" ESC ")" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Dim off
   to.attr.bit.dim = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD"
                            ESC "cE" ESC "G8" ESC "G2" ESC "G2"
                            ESC "Gt" ESC "G1" ESC ")" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Italic off
   to.attr.bit.italic = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Underline off
   to.attr.bit.underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "G0" ESC "cE" ESC "G2" ESC "G2"
                            ESC "Gt" ESC "G1" ESC ")" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Blink off
   to.attr.bit.blink = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD"
                            ESC "cE" ESC "G2" ESC "Gt" ESC "G1"
                            ESC ")" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Reverse off
   to.attr.bit.reverse = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD"
                            ESC "cE" ESC "Gt" ESC "G1" ESC ")" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Standout off
   to.attr.bit.standout = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "G0" ESC "cE" ESC "G1" ESC ")" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Invisible off
   to.attr.bit.invisible = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD"
                            ESC "cE" ESC ")" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Protect off
   to.attr.bit.protect = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD"
                            ESC "cE" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Crossed out off
   to.attr.bit.crossed_out = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD"
                            ESC "cE" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Double underline off
   to.attr.bit.dbl_underline = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Alternate character set off
   to.attr.bit.alt_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), ESC "cD" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // PC character set off
   to.attr.bit.pc_charset = false;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to)
                          , ESC "(" ESC "H\003" ESC "G0" ESC "cD" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Green text color
   to.fg_color = finalcut::FColor::Green;
   CPPUNIT_ASSERT ( from != to );
-  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), "" );
+  CPPUNIT_ASSERT_STRING ( oa.changeAttribute(from, to), "" );
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 
   // Default text color
   to.fg_color = finalcut::FColor::Default;
   CPPUNIT_ASSERT ( from == to );
-  CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
+  CPPUNIT_ASSERT ( oa.changeAttribute(from, to).empty() );
 }
 
 //----------------------------------------------------------------------

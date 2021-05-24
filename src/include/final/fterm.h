@@ -268,7 +268,7 @@ class FTerm final
     static int               openConsole();
     static int               closeConsole();
     static std::string       moveCursorString (int, int, int, int);
-    static const char*       cursorsVisibilityString (bool = true);
+    static std::string       cursorsVisibilityString (bool = true);
     static void              detectTermSize();
     static void              setTermSize (const FSize&);
     static void              setTermTitle (const FString&);
@@ -301,7 +301,7 @@ class FTerm final
 
     void                     initTerminal();
     static void              initScreenSettings();
-    static const char*       changeAttribute (FChar&, FChar&);
+    static std::string       changeAttribute (FChar&, FChar&);
     static void              changeTermSizeFinished();
 
   private:
@@ -336,8 +336,8 @@ class FTerm final
     static void              restoreColorPalette();
     static void              setInsertCursorStyle();
     static void              setOverwriteCursorStyle();
-    static const char*       enableCursorString();
-    static const char*       disableCursorString();
+    static std::string       enableCursorString();
+    static std::string       disableCursorString();
     static void              enableMouse();
     static void              disableMouse();
     static void              enableApplicationEscKey();

@@ -185,9 +185,9 @@ void FVTerm::hideCursor (bool enable) const
   if ( ! cursor_hideable )
     return;
 
-  const char* visibility_str = FTerm::cursorsVisibilityString (enable);
+  auto visibility_str = FTerm::cursorsVisibilityString (enable);
 
-  if ( ! visibility_str )  // Exit the function if the string is empty
+  if ( visibility_str.empty() )  // Exit the function if the string is empty
     return;
 
   appendOutputBuffer(FTermControl{visibility_str});
@@ -1764,8 +1764,8 @@ FChar FVTerm::getCharacter ( CharacterType char_type
 
   const int x = pos.getX();
   const int y = pos.getY();
-  int xx = ( x > 0 ) ? x : 0;
-  int yy = ( y > 0 ) ? y : 0;
+  int xx = std::max(x, 0);
+  int yy = std::max(y, 0);
 
   if ( xx >= vterm->width )
     xx = vterm->width - 1;
@@ -3080,7 +3080,7 @@ inline void FVTerm::appendAttributes (FChar& next_attr) const
   // generate attribute string for the next character
   const auto& attr_str = FTerm::changeAttribute (term_attribute, next_attr);
 
-  if ( attr_str )
+  if ( ! attr_str.empty() )
     appendOutputBuffer (FTermControl{attr_str});
 }
 

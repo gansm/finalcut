@@ -689,10 +689,10 @@ FPoint readCursorPos()
   const int stdout_no{FTermios::getStdOut()};
   fd_set ifds{};
   struct timeval tv{};
-  constexpr auto& DECXCPR{ESC "[6n"};
+  const std::string DECXCPR{ESC "[6n"};
 
   // Report Cursor Position (DECXCPR)
-  if ( write(stdout_no, DECXCPR, std::strlen(DECXCPR)) < 1 )
+  if ( write(stdout_no, DECXCPR.data(), DECXCPR.length()) < 1 )
     return {x, y};
 
   std::fflush(stdout);

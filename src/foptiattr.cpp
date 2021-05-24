@@ -39,6 +39,8 @@ namespace finalcut
 //----------------------------------------------------------------------
 FOptiAttr::FOptiAttr()
 {
+  attr_buf.reserve(SGRoptimizer::ATTR_BUF_SIZE);
+
   // Set bits that must not be reset
   reset_byte_mask.attr.bit.transparent = true;
   reset_byte_mask.attr.bit.color_overlay = true;
@@ -543,11 +545,11 @@ FColor FOptiAttr::vga2ansi (FColor color)
 }
 
 //----------------------------------------------------------------------
-const char* FOptiAttr::changeAttribute (FChar& term, FChar& next)
+std::string FOptiAttr::changeAttribute (FChar& term, FChar& next)
 {
   const bool next_has_color = hasColor(next);
   fake_reverse = false;
-  attr_buf[0] = '\0';
+  attr_buf.clear();
   prevent_no_color_video_attributes (term, next_has_color);
   prevent_no_color_video_attributes (next);
   detectSwitchOn (term, next);
@@ -559,7 +561,7 @@ const char* FOptiAttr::changeAttribute (FChar& term, FChar& next)
 
   // Look for no changes
   if ( ! (switchOn() || switchOff() || hasColorChanged(term, next)) )
-    return nullptr;
+    return {};
 
   if ( hasNoAttribute(next) )
   {
@@ -578,7 +580,7 @@ const char* FOptiAttr::changeAttribute (FChar& term, FChar& next)
   if ( FStartOptions::getFStartOptions().sgr_optimizer )
     sgr_optimizer.optimize();
 
-  return attr_buf.data();
+  return attr_buf;
 }
 
 
@@ -1537,9 +1539,7 @@ inline bool FOptiAttr::append_sequence (const char seq[])
   if ( ! seq )
     return false;
 
-  char* attr_ptr{attr_buf.data()};
-  std::strncat (attr_ptr, seq, attr_buf.size() - std::strlen(attr_ptr));
-  attr_buf[attr_buf.size() - 1] = '\0';
+  attr_buf.append(seq);
   return true;
 }
 

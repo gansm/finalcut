@@ -769,12 +769,12 @@ FString FTermXTerminal::captureXTermFont() const
                && temp[3] == '0' && temp[4] == ';' )
   {
     // Skip leading Esc ] 5 0 ;
-    char* str = &temp[5];
-    const std::size_t n = std::strlen(str);
+    std::string str = &temp[5];
+    const std::size_t n = str.length();
 
     // BEL + '\0' = string terminator
     if ( n >= 5 && str[n - 1] == BEL[0] && str[n] == '\0' )
-      str[n - 1] = '\0';
+      str.erase(n - 1);
 
     return {str};
   }
@@ -822,8 +822,8 @@ FString FTermXTerminal::captureXTermTitle() const
   if ( pos > 6 && temp[0] == ESC[0] && temp[1] == ']' && temp[2] == 'l' )
   {
     // Skip leading Esc + ] + l = OSC l
-    char* str = &temp[3];
-    const std::size_t n = std::strlen(str);
+    std::string str = &temp[3];
+    const std::size_t n = str.length();
 
     // Esc + \ = OSC string terminator
     if ( n >= 2 && str[n - 2] == ESC[0] && str[n - 1] == '\\' )
@@ -831,7 +831,7 @@ FString FTermXTerminal::captureXTermTitle() const
       if ( n < 4 )
         return {};
 
-      str[n - 2] = '\0';
+      str.erase(n - 2);
       return {str};
     }
   }

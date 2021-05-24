@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -49,13 +49,10 @@ class SGRoptimizer final
 {
   public:
     // Constants
-    static constexpr std::size_t ATTR_BUF_SIZE{8192};
-
-    // Using-declaration
-    using AttributeBuffer = std::array<char, ATTR_BUF_SIZE>;
+    static constexpr std::string::size_type ATTR_BUF_SIZE{8192u};
 
     // Constructors
-    explicit SGRoptimizer (AttributeBuffer&);
+    explicit SGRoptimizer (std::string&);
 
     // Disable copy constructor
     SGRoptimizer (const SGRoptimizer&) = delete;
@@ -78,7 +75,7 @@ class SGRoptimizer final
     void combineParameter();
 
     // Data member
-    AttributeBuffer& seq;
+    std::string& seq;
 
     struct parameter
     {

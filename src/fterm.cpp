@@ -428,9 +428,9 @@ bool FTerm::isInitialized()
 //----------------------------------------------------------------------
 bool FTerm::isCursorHideable()
 {
-  const char* cursor_off_str = disableCursorString();
+  const auto& cursor_off_str = disableCursorString();
 
-  if ( cursor_off_str && std::strlen(cursor_off_str) > 0 )
+  if ( ! cursor_off_str.empty() )
     return true;
 
   return false;
@@ -732,28 +732,28 @@ std::string FTerm::moveCursorString (int xold, int yold, int xnew, int ynew)
 }
 
 //----------------------------------------------------------------------
-const char* FTerm::cursorsVisibilityString (bool enable)
+std::string FTerm::cursorsVisibilityString (bool enable)
 {
   // Hides or shows the input cursor on the terminal
 
-  const char* visibility_str{nullptr};
+  std::string visibility_str{};
   auto& data = FTerm::getFTermData();
 
   if ( data.isCursorHidden() == enable )
-    return nullptr;
+    return {};
 
   if ( enable )
   {
     visibility_str = disableCursorString();
 
-    if ( visibility_str )
+    if ( ! visibility_str.empty() )
       data.setCursorHidden (true);  // Global state
   }
   else
   {
     visibility_str = enableCursorString();
 
-    if ( visibility_str )
+    if ( ! visibility_str.empty() )
       data.setCursorHidden (false);  // Global state
   }
 
@@ -1157,7 +1157,7 @@ void FTerm::initScreenSettings()
 }
 
 //----------------------------------------------------------------------
-const char* FTerm::changeAttribute (FChar& term_attr, FChar& next_attr)
+std::string FTerm::changeAttribute (FChar& term_attr, FChar& next_attr)
 {
   auto& opti_attr = FTerm::getFOptiAttr();
   return opti_attr.changeAttribute (term_attr, next_attr);
@@ -1837,19 +1837,20 @@ void FTerm::setOverwriteCursorStyle()
 }
 
 //----------------------------------------------------------------------
-const char* FTerm::enableCursorString()
+std::string FTerm::enableCursorString()
 {
   // Returns the cursor enable string
 
-  static constexpr std::size_t SIZE = 32;
-  static std::array<char, SIZE> enable_str{};
+  static constexpr std::string::size_type SIZE{32u};
+  std::string enable_str{};
+  enable_str.reserve(SIZE);
   const auto& vs = TCAP(t_cursor_visible);
   const auto& ve = TCAP(t_cursor_normal);
 
   if ( ve )
-    std::strncpy (enable_str.data(), ve, SIZE - 1);
+    enable_str = ve;
   else if ( vs )
-    std::strncpy (enable_str.data(), vs, SIZE - 1);
+    enable_str = vs;
 
 #if defined(__linux__)
   if ( isLinuxTerm() )
@@ -1857,12 +1858,9 @@ const char* FTerm::enableCursorString()
     // Restore the last used Linux console cursor style
     auto& linux_console = FTerm::getFTermLinux();
     const char* cstyle = linux_console.getCursorStyleString();
-    std::size_t length = std::strlen(enable_str.data());
-    std::strncat (enable_str.data(), cstyle, SIZE - length - 1);
+    enable_str.append(cstyle);
   }
 #endif  // defined(__linux__)
-
-  enable_str[SIZE - 1] = '\0';
 
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
   if ( isFreeBSDTerm() )
@@ -1873,11 +1871,11 @@ const char* FTerm::enableCursorString()
   }
 #endif  // defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
 
-  return enable_str.data();
+  return enable_str;
 }
 
 //----------------------------------------------------------------------
-const char* FTerm::disableCursorString()
+std::string FTerm::disableCursorString()
 {
   // Returns the cursor disable string
 
@@ -1886,7 +1884,7 @@ const char* FTerm::disableCursorString()
   if ( vi )
     return vi;
 
-  return nullptr;
+  return {};
 }
 
 //----------------------------------------------------------------------

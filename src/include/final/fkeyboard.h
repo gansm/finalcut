@@ -162,7 +162,7 @@ class FKeyboard final
     static bool           isIntervalTimeout();
 
     // Methods
-    FKey                  UTF8decode (const char[]) const;
+    FKey                  UTF8decode (const std::string&) const;
     ssize_t               readKey();
     void                  parseKeyBuffer();
     FKey                  parseKeyString();

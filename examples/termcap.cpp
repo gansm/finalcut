@@ -167,22 +167,21 @@ void tcapNumeric (const std::string& name, int cap_num)
 }
 
 //----------------------------------------------------------------------
-void tcapString (const std::string& name, const char cap_str[])
+void tcapString (const std::string& name, const char cap_string[])
 {
   std::string sequence{};
+  std::string cap_str{cap_string ? cap_string : std::string{}};
   std::cout << name << ": ";
 
-  if ( cap_str == nullptr )
+  if ( cap_str.empty() )
   {
     std::cout << "\r\n";
     return;
   }
 
-  const auto len = uInt(std::strlen(cap_str));
-
-  for (uInt i{0}; i < len; i++)
+  for (auto&& ch : cap_str)
   {
-    const auto c = uChar(cap_str[i]);
+    const auto c = uChar(ch);
 
     if ( c > 127 )
     {

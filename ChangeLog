@@ -1,3 +1,6 @@
+2021-05-24 Markus Gans  <guru.mail@muenster.de>
+	* Using std::string for the attribute buffer
+
 2021-05-22 Markus Gans  <guru.mail@muenster.de>
 	* Convert FOptiMove from char[] to std::string
 
