@@ -167,7 +167,7 @@ class FOptiMove final
     void          calculateCharDuration();
     int           capDuration (const char[], int) const;
     int           capDurationToLength (int) const;
-    int           repeatedAppend (const Capability&, int, std::string&) const;
+    int           repeatedAppend (std::string&, const Capability&, int) const;
     int           relativeMove (std::string&, int, int, int, int) const;
     int           verticalMove (std::string&, int, int) const;
     void          downMove (std::string&, int&, int, int) const;

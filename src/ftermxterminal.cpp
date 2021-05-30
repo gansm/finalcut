@@ -345,10 +345,6 @@ void FTermXTerminal::setXTermTitle()
     || FTermcap::osc_support )
   {
     oscPrefix();
-
-    if ( xterm_title.isNull() )
-      xterm_title = "";
-
     FTerm::putstringf (OSC "0;%s" BEL, xterm_title.c_str());
     oscPostfix();
     std::fflush(stdout);

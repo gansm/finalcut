@@ -367,7 +367,7 @@ class FTerm final
 // non-member function forward declarations
 // implemented in fterm_functions.cpp
 //----------------------------------------------------------------------
-uInt env2uint (const char*);
+uInt env2uint (const std::string&);
 bool isReverseNewFontchar (wchar_t);
 bool hasFullWidthSupports();
 wchar_t cp437_to_unicode (uChar);

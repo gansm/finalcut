@@ -398,7 +398,7 @@ inline bool FKeyboard::isKeypressTimeout()
 //----------------------------------------------------------------------
 FKey FKeyboard::UTF8decode (const std::string& utf8) const
 {
-  using distance_type = std::iterator_traits<std::string::iterator>::difference_type;
+  using distance_type = std::string::difference_type;
   FKey ucs{FKey::None};  // Universal coded character
   constexpr std::size_t max = 4;
   const auto len = utf8.length();

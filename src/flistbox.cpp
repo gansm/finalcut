@@ -749,7 +749,7 @@ void FListBox::drawScrollbars() const
 //----------------------------------------------------------------------
 void FListBox::drawHeadline()
 {
-  if ( text.isNull() || text.isEmpty() )
+  if ( text.isEmpty() )
     return;
 
   const FString txt{" " + text + " "};
@@ -1678,7 +1678,7 @@ void FListBox::changeOnResize() const
 //----------------------------------------------------------------------
 void FListBox::lazyConvert(FListBoxItems::iterator iter, std::size_t y)
 {
-  if ( conv_type != ConvertType::Lazy || ! iter->getText().isNull() )
+  if ( conv_type != ConvertType::Lazy || ! iter->getText().isEmpty() )
     return;
 
   lazy_inserter (*iter, source_container, y + std::size_t(yoffset));

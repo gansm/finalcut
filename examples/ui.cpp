@@ -1013,7 +1013,7 @@ void MyDialog::cb_view (const finalcut::FMenuItem* item)
   else
     file = finalcut::FFileDialog::fileOpenChooser (this);
 
-  if ( file.isNull() )
+  if ( file.isEmpty() )
     return;
 
   const auto& view = new TextWindow(this);

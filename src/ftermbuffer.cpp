@@ -66,7 +66,6 @@ FString FTermBuffer::toString() const
 //----------------------------------------------------------------------
 int FTermBuffer::write (const FString& string)
 {
-  assert ( ! string.isNull() );
   data.reserve(data.size() + string.getLength());
   const auto last = string.end();
   auto begin = string.begin();

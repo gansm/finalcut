@@ -281,7 +281,7 @@ void FMessageBox::calculateDimensions()
   if ( text_num_lines == 0 )
     return;
 
-  if ( ! headline_text.isNull() )
+  if ( ! headline_text.isEmpty() )
     headline_height = 2;
 
   for (auto&& line : text_components)

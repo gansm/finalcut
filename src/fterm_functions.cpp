@@ -199,9 +199,9 @@ constexpr std::array<UniChar, 20> reverse_newfont_list =
 
 // FTerm non-member functions
 //----------------------------------------------------------------------
-uInt env2uint (const char* env)
+uInt env2uint (const std::string& env)
 {
-  const FString str{getenv(env)};
+  const FString str{getenv(env.data())};
 
   if ( str.isEmpty() )
     return 0;

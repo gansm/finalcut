@@ -280,9 +280,7 @@ void FTextView::replaceRange (const FString& str, int from, int to)
 
   auto iter = data.begin();
   data.erase (iter + from, iter + to + 1);
-
-  if ( ! str.isNull() )
-    insert(str, from);
+  insert(str, from);
 }
 
 //----------------------------------------------------------------------

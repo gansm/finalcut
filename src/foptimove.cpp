@@ -604,9 +604,9 @@ int FOptiMove::capDurationToLength (int duration) const
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::repeatedAppend ( const Capability& o
-                              , int count
-                              , std::string& dst ) const
+int FOptiMove::repeatedAppend ( std::string& dst
+                              , const Capability& o
+                              , int count ) const
 {
   const std::size_t src_len = std::strlen(o.cap);
   const std::size_t dst_len = dst.length();
@@ -702,7 +702,7 @@ inline void FOptiMove::downMove ( std::string& move, int& vtime
     if ( ! move.empty() )
       move.clear();
 
-    vtime = repeatedAppend (F_cursor_down, num, move);
+    vtime = repeatedAppend (move, F_cursor_down, num);
   }
 }
 
@@ -723,7 +723,7 @@ inline void FOptiMove::upMove ( std::string& move, int& vtime
     if ( ! move.empty() )
       move.clear();
 
-    vtime = repeatedAppend (F_cursor_up, num, move);
+    vtime = repeatedAppend (move, F_cursor_up, num);
   }
 }
 
@@ -737,7 +737,6 @@ inline int FOptiMove::horizontalMove (std::string& hmove, int from_x, int to_x) 
     // Move to fixed column position
     hmove = FTermcap::encodeParameter(F_column_address.cap, to_x);
     htime = F_column_address.duration;
-
   }
 
   if ( to_x > from_x )
@@ -777,7 +776,7 @@ inline void FOptiMove::rightMove ( std::string& hmove, int& htime
         if ( tab_pos > to_x )
           break;
 
-        htime_r += repeatedAppend (F_tab, 1, str);
+        htime_r += repeatedAppend (str, F_tab, 1);
 
         if ( htime_r >= LONG_DURATION )
           break;
@@ -788,7 +787,7 @@ inline void FOptiMove::rightMove ( std::string& hmove, int& htime
       num = to_x - pos;
     }
 
-    htime_r += repeatedAppend (F_cursor_right, num, str);
+    htime_r += repeatedAppend (str, F_cursor_right, num);
 
     if ( htime_r < htime )
     {
@@ -827,7 +826,7 @@ inline void FOptiMove::leftMove ( std::string& hmove, int& htime
         if ( tab_pos < to_x )
           break;
 
-        htime_l += repeatedAppend (F_back_tab, 1, str);
+        htime_l += repeatedAppend (str, F_back_tab, 1);
 
         if ( htime_l >= LONG_DURATION )
           break;
@@ -838,11 +837,10 @@ inline void FOptiMove::leftMove ( std::string& hmove, int& htime
       num = pos - to_x;
     }
 
-    htime_l += repeatedAppend (F_cursor_left, num, str);
+    htime_l += repeatedAppend (str, F_cursor_left, num);
 
     if ( htime_l < htime )
     {
-
       hmove = str;
       htime = htime_l;
     }

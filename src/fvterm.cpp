@@ -342,8 +342,8 @@ void FVTerm::delPreprocessingHandler (const FVTerm* instance)
 //----------------------------------------------------------------------
 int FVTerm::print (const FString& string)
 {
-  if ( string.isNull() )
-    return -1;
+  if ( string.isEmpty() )
+    return 0;
 
   FTermBuffer term_buffer{};
   term_buffer.write(string);
@@ -353,7 +353,7 @@ int FVTerm::print (const FString& string)
 //----------------------------------------------------------------------
 int FVTerm::print (FTermArea* area, const FString& string)
 {
-  if ( ! area || string.isNull() )
+  if ( ! area || string.isEmpty() )
     return -1;
 
   FTermBuffer term_buffer{};

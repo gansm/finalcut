@@ -65,15 +65,15 @@ FString fileChooser ( FWidget* parent
   FString path{dirname};
   FString file_filter{filter};
 
-  if ( path.isNull() || path.isEmpty() )
+  if ( path.isEmpty() )
   {
     path.setString(FFileDialog::getHomeDir());
 
-    if ( path.isNull() || path.isEmpty() )
+    if ( path.isEmpty() )
       path.setString("/");
   }
 
-  if ( file_filter.isNull() || file_filter.isEmpty() )
+  if ( file_filter.isEmpty() )
     file_filter.setString("*");
 
   FFileDialog fileopen ( path
@@ -111,7 +111,7 @@ FFileDialog::FFileDialog ( const FString& dirname
   , filter_pattern{filter}
   , dlg_type{type}
 {
-  if ( ! dirname.isNull() )
+  if ( ! dirname.isEmpty() )
     setPath(dirname);
 
   init();
@@ -728,7 +728,7 @@ void FFileDialog::cb_processActivate()
                             {
                               return ! entry.name.empty()
                                   && input
-                                  && ! input.isNull()
+                                  && ! input.isEmpty()
                                   && std::strcmp(entry.name.c_str(), input.c_str()) == 0
                                   && entry.directory;
                             }

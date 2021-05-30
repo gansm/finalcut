@@ -80,10 +80,11 @@ class FString
 {
   public:
     // Using-declarations
-    using iterator        = wchar_t*;
-    using const_iterator  = const wchar_t*;
-    using reference       = wchar_t&;
-    using const_reference = const wchar_t&;
+    using iterator        = std::wstring::iterator;
+    using const_iterator  = std::wstring::const_iterator;
+    using reference       = std::wstring::reference;
+    using const_reference = std::wstring::const_reference;
+    using difference_type = std::wstring::difference_type;
 
     // Constructors
     FString () = default;
@@ -167,7 +168,7 @@ class FString
     virtual FString getClassName() const;
 
     // inquiries
-    bool isNull() const noexcept;
+    bool isNull() const noexcept;  // deprecated
     bool isEmpty() const noexcept;
 
     // Methods
@@ -245,24 +246,17 @@ class FString
 
   private:
     // Constants
-    static constexpr uInt FWDBUFFER = 15;
     static constexpr uInt INPBUFFER = 200;
 
     // Methods
-    void           _initLength (std::size_t);
-    void           _assign (const wchar_t[]);
-    void           _insert (std::size_t, const wchar_t[]);
-    void           _insert (std::size_t, std::size_t, const wchar_t[]);
-    void           _remove (std::size_t, std::size_t);
-    const char*    _to_cstring (const wchar_t[]) const;
-    const wchar_t* _to_wcstring (const char[]) const;
-    const wchar_t* _extractToken (wchar_t*[], const wchar_t[], const wchar_t[]) const;
+    void               _assign (const std::wstring&);
+    std::string        _toCharString (const std::wstring&) const;
+    std::wstring       _toWideString (const std::string&) const;
+    const wchar_t*     _extractToken (wchar_t*[], const wchar_t[], const wchar_t[]) const;
 
     // Data members
-    wchar_t*             string{nullptr};
-    std::size_t          length{0};
-    std::size_t          bufsize{0};
-    mutable char*        c_string{nullptr};
+    std::wstring         string{};
+    mutable std::string  char_string{};
     static wchar_t       null_char;
     static const wchar_t const_null_char;
 
@@ -288,7 +282,7 @@ template <typename NumT
 inline FString& FString::operator << (const NumT val)
 {
   const FString numstr(FString().setNumber(val));
-  _insert (length, numstr.length, numstr.string);
+  string.append(numstr.string);
   return *this;
 }
 
@@ -296,10 +290,10 @@ inline FString& FString::operator << (const NumT val)
 template <typename IndexT>
 inline FString::reference FString::operator [] (const IndexT pos)
 {
-  if ( isNegative(pos) || pos > IndexT(length) )
+  if ( isNegative(pos) || pos > IndexT(string.length()) )
     throw std::out_of_range("");  // Invalid index position
 
-  if ( std::size_t(pos) == length )
+  if ( std::size_t(pos) == string.length() )
     return null_char;
 
   return string[std::size_t(pos)];
@@ -309,10 +303,10 @@ inline FString::reference FString::operator [] (const IndexT pos)
 template <typename IndexT>
 inline FString::const_reference FString::operator [] (const IndexT pos) const
 {
-  if ( isNegative(pos) || pos > IndexT(length) )
+  if ( isNegative(pos) || pos > IndexT(string.length()) )
     throw std::out_of_range("");  // Invalid index position
 
-  if ( std::size_t(pos) == length )
+  if ( std::size_t(pos) == string.length() )
     return const_null_char;
 
   return string[std::size_t(pos)];
@@ -371,63 +365,63 @@ inline FString FString::getClassName() const
 { return "FString"; }
 
 //----------------------------------------------------------------------
-inline bool FString::isNull() const noexcept
-{ return ( bufsize == 0 || (bufsize > 0 && ! string) ); }
+inline bool FString::isNull() const noexcept  // deprecated
+{ return false; }
 
 //----------------------------------------------------------------------
 inline bool FString::isEmpty() const noexcept
-{ return ( length == 0 || (length > 0 && string[0] == L'\0') ); }
+{ return string.empty(); }
 
 //----------------------------------------------------------------------
 inline std::size_t FString::getLength() const noexcept
-{ return length; }
+{ return string.length(); }
 
 //----------------------------------------------------------------------
 inline std::size_t FString::capacity() const noexcept
-{ return ( length > 0 ) ? bufsize - 1 : 0; }
+{ return string.capacity(); }
 
 //----------------------------------------------------------------------
 inline FString::iterator FString::begin() noexcept
-{ return string; }
+{ return string.begin(); }
 
 //----------------------------------------------------------------------
 inline FString::iterator FString::end() noexcept
-{ return string + length; }
+{ return string.end(); }
 
 //----------------------------------------------------------------------
 inline FString::const_iterator FString::begin() const noexcept
-{ return string; }
+{ return string.cbegin(); }
 
 //----------------------------------------------------------------------
 inline FString::const_iterator FString::end() const noexcept
-{ return string + length; }
+{ return string.cend(); }
 
 //----------------------------------------------------------------------
 inline FString::reference FString::front()
 {
   assert ( ! isEmpty() );
-  return (*this)[0];
+  return string.front();
 }
 
 //----------------------------------------------------------------------
 inline FString::reference FString::back()
 {
   assert( ! isEmpty() );
-  return (*this)[length - 1];
+  return string.back();
 }
 
 //----------------------------------------------------------------------
 inline FString::const_reference FString::front() const
 {
   assert ( ! isEmpty() );
-  return (*this)[0];
+  return string.front();
 }
 
 //----------------------------------------------------------------------
 inline FString::const_reference FString::back() const
 {
   assert( ! isEmpty() );
-  return (*this)[length - 1];
+  return string.back();
 }
 
 //----------------------------------------------------------------------
