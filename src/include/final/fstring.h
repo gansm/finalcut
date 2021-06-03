@@ -437,8 +437,7 @@ inline FString& FString::sprintf (const FString& format, Args&&... args)
 
   std::swprintf ( buf.data(), buf.size(), format.wc_str()
                 , std::forward<Args>(args)... );
-  std::wstring s(buf.data());
-  _assign(s);
+  setString(buf.data());
   return *this;
 }
 
