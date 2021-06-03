@@ -249,10 +249,9 @@ class FString
     static constexpr uInt INPBUFFER = 200;
 
     // Methods
-    void               _assign (const std::wstring&);
+    void               _assign (std::wstring&);
     std::string        _toCharString (const std::wstring&) const;
     std::wstring       _toWideString (const std::string&) const;
-    const wchar_t*     _extractToken (wchar_t*[], const wchar_t[], const wchar_t[]) const;
 
     // Data members
     std::wstring         string{};
@@ -438,7 +437,8 @@ inline FString& FString::sprintf (const FString& format, Args&&... args)
 
   std::swprintf ( buf.data(), buf.size(), format.wc_str()
                 , std::forward<Args>(args)... );
-  _assign(buf.data());
+  std::wstring s(buf.data());
+  _assign(s);
   return *this;
 }
 

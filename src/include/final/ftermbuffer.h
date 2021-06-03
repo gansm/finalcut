@@ -111,7 +111,7 @@ class FTermBuffer
   private:
     FCharVector            data{};
     void                   add ( FString::const_iterator&
-                               , FString::const_iterator&
+                               , const FString::const_iterator&
                                , int& );
 
     // Non-member operators
