@@ -150,6 +150,7 @@ void FTermDetectionTest::ansiTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "ansi", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -222,6 +223,7 @@ void FTermDetectionTest::xtermTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm", 1);
     setenv ("XTERM_VERSION", "XTerm(312)", 1);
     unsetenv("TERMCAP");
@@ -286,6 +288,7 @@ void FTermDetectionTest::rxvtTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "rxvt-cygwin-native", 1);
     setenv ("COLORTERM", "rxvt-xpm", 1);
     setenv ("COLORFGBG", "default;default", 1);
@@ -351,6 +354,7 @@ void FTermDetectionTest::urxvtTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "rxvt-unicode-256color", 1);
     setenv ("COLORTERM", "rxvt-xpm", 1);
     setenv ("COLORFGBG", "default;default;0", 1);
@@ -415,6 +419,7 @@ void FTermDetectionTest::kdeKonsoleTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm-256color", 1);
     setenv ("COLORTERM", "truecolor", 1);
     setenv ("KONSOLE_DBUS_SERVICE", "DCOPRef(konsole-11768,konsole)", 1);
@@ -479,6 +484,7 @@ void FTermDetectionTest::gnomeTerminalTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm-256color", 1);
     setenv ("COLORTERM", "truecolor", 1);
     setenv ("VTE_VERSION", "5202", 1);
@@ -543,6 +549,7 @@ void FTermDetectionTest::newerVteTerminalTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm-256color", 1);
     setenv ("COLORTERM", "truecolor", 1);
     setenv ("VTE_VERSION", "5300", 1);
@@ -607,6 +614,7 @@ void FTermDetectionTest::puttyTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -672,6 +680,7 @@ void FTermDetectionTest::windowsTerminalTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm-256color", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -738,6 +747,7 @@ void FTermDetectionTest::teraTermTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -802,6 +812,7 @@ void FTermDetectionTest::cygwinTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "cygwin", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -866,6 +877,7 @@ void FTermDetectionTest::minttyTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm-256color", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -930,6 +942,7 @@ void FTermDetectionTest::linuxTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "linux", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -1001,6 +1014,7 @@ void FTermDetectionTest::freebsdTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -1075,6 +1089,7 @@ void FTermDetectionTest::netbsdTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "wsvt25", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -1147,6 +1162,7 @@ void FTermDetectionTest::openbsdTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "vt220", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -1218,6 +1234,7 @@ void FTermDetectionTest::sunTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "sun-color", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -1289,6 +1306,7 @@ void FTermDetectionTest::screenTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "screen", 1);
     setenv ("TERMCAP", "SC|screen|VT 100/ANSI X3.64 virtual terminal:...", 1);
     unsetenv("COLORTERM");
@@ -1359,6 +1377,7 @@ void FTermDetectionTest::tmuxTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "screen", 1);
     setenv ("TMUX", "/tmp/tmux-1000/default,7844,0", 1);
     setenv ("TMUX_PANE", "%0", 1);
@@ -1430,6 +1449,7 @@ void FTermDetectionTest::ktermTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "kterm", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -1501,6 +1521,7 @@ void FTermDetectionTest::mltermTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "mlterm", 1);
     setenv ("MLTERM", "3.8.4", 1);
     setenv ("COLORFGBG", "default;default", 1);
@@ -1573,6 +1594,7 @@ void FTermDetectionTest::kittyTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm-kitty", 1);
     setenv ("KITTY_WINDOW_ID", "1", 1);
     setenv ("COLORTERM", "truecolor", 1);
@@ -1585,7 +1607,7 @@ void FTermDetectionTest::kittyTest()
     unsetenv("TMUX");
     detect.detect();
 
-    CPPUNIT_ASSERT ( ! detect.isXTerminal() );
+    CPPUNIT_ASSERT ( detect.isXTerminal() );
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
@@ -1675,6 +1697,7 @@ void FTermDetectionTest::ttytypeTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     unsetenv("TERM");
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");

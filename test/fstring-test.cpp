@@ -1246,6 +1246,9 @@ void FStringTest::convertToNumberTest()
   str = "255";
   CPPUNIT_ASSERT ( str.toUShort() == 255U );
 
+  str = "0";
+  CPPUNIT_ASSERT ( str.toInt() == 0 );
+
   str = "-32768";
   CPPUNIT_ASSERT ( str.toInt() == -32768 );
 
@@ -1334,6 +1337,12 @@ void FStringTest::convertFromNumberTest()
 void FStringTest::exceptionTest()
 {
   CPPUNIT_ASSERT_THROW ( finalcut::FString("abc").toULong()
+                       , std::invalid_argument );
+
+  CPPUNIT_ASSERT_THROW ( finalcut::FString("").toULong()
+                       , std::invalid_argument );
+
+  CPPUNIT_ASSERT_THROW ( finalcut::FString().toULong()
                        , std::invalid_argument );
 
   CPPUNIT_ASSERT_THROW ( finalcut::FString("abc")[4]
@@ -1479,6 +1488,20 @@ void FStringTest::trimTest()
   CPPUNIT_ASSERT ( trim_str3.trim().isEmpty() );
   CPPUNIT_ASSERT ( trim_str3.trim().getLength() == 0 );
   CPPUNIT_ASSERT ( trim_str3.trim().capacity() < std::wstring().max_size() );
+
+  const finalcut::FString trim_str4 = "x";
+  CPPUNIT_ASSERT ( trim_str4.ltrim() == "x" );
+  CPPUNIT_ASSERT ( ! trim_str4.ltrim().isEmpty() );
+  CPPUNIT_ASSERT ( trim_str4.ltrim().getLength() == 1 );
+  CPPUNIT_ASSERT ( trim_str4.ltrim().capacity() < std::wstring().max_size() );
+  CPPUNIT_ASSERT ( trim_str4.rtrim() == "x" );
+  CPPUNIT_ASSERT ( ! trim_str4.rtrim().isEmpty() );
+  CPPUNIT_ASSERT ( trim_str4.rtrim().getLength() == 1 );
+  CPPUNIT_ASSERT ( trim_str4.rtrim().capacity() < std::wstring().max_size() );
+  CPPUNIT_ASSERT ( trim_str4.trim() == "x" );
+  CPPUNIT_ASSERT ( ! trim_str4.trim().isEmpty() );
+  CPPUNIT_ASSERT ( trim_str4.trim().getLength() == 1 );
+  CPPUNIT_ASSERT ( trim_str4.trim().capacity() < std::wstring().max_size() );
 }
 
 //----------------------------------------------------------------------

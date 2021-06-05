@@ -2109,6 +2109,7 @@ void FTermLinuxTest::linuxConsoleTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "linux", 1);
     setenv ("COLUMNS", "90", 1);
     setenv ("LINES", "30", 1);
@@ -2233,6 +2234,7 @@ void FTermLinuxTest::linuxConsoleLat15Test()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "linux", 1);
     setenv ("COLUMNS", "90", 1);
     setenv ("LINES", "30", 1);
@@ -2314,13 +2316,14 @@ void FTermLinuxTest::linuxCursorStyleTest()
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  const auto& term_detection = finalcut::FTerm::getFTermDetection();
+  auto& term_detection = finalcut::FTerm::getFTermDetection();
   finalcut::FTermLinux linux;
 
   pid_t pid = forkConEmu();
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "linux", 1);
     setenv ("COLUMNS", "90", 1);
     setenv ("LINES", "30", 1);
@@ -2511,6 +2514,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "linux", 1);
     setenv ("COLUMNS", "90", 1);
     setenv ("LINES", "30", 1);
@@ -2778,13 +2782,14 @@ void FTermLinuxTest::linuxFontTest()
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  const auto& term_detection = finalcut::FTerm::getFTermDetection();
+  auto& term_detection = finalcut::FTerm::getFTermDetection();
   finalcut::FTermLinux linux;
 
   pid_t pid = forkConEmu();
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "linux", 1);
     setenv ("COLUMNS", "90", 1);
     setenv ("LINES", "30", 1);

@@ -50,27 +50,6 @@
 namespace finalcut
 {
 
-// static class attributes
-FTermDetection::FTerminalType FTermDetection::terminal_type{};
-FTermDetection::colorEnv      FTermDetection::color_env{};
-FTermDetection::kittyVersion  FTermDetection::kitty_version{};
-FTermDetection::secondaryDA   FTermDetection::secondary_da{};
-char                          FTermDetection::termtype[256]{};
-char                          FTermDetection::ttytypename[256]{};
-bool                          FTermDetection::decscusr_support{};
-bool                          FTermDetection::terminal_detection{};
-bool                          FTermDetection::color256{};
-const FString*                FTermDetection::answer_back{nullptr};
-const FString*                FTermDetection::sec_da{nullptr};
-int                           FTermDetection::gnome_terminal_id{};
-
-#if DEBUG
-  char FTermDetection::termtype_256color[256]{};
-  char FTermDetection::termtype_Answerback[256]{};
-  char FTermDetection::termtype_SecDA[256]{};
-#endif  // DEBUG
-
-
 //----------------------------------------------------------------------
 // class FTermDetection
 //----------------------------------------------------------------------
@@ -105,13 +84,13 @@ FTermDetection::~FTermDetection()  // destructor
 // public methods of FTermDetection
 //----------------------------------------------------------------------
 #if DEBUG
-const FString& FTermDetection::getAnswerbackString()
+const FString& FTermDetection::getAnswerbackString() const
 {
   return ( answer_back ) ? *answer_back : fc::emptyFString::get();
 }
 
 //----------------------------------------------------------------------
-const FString& FTermDetection::getSecDAString()
+const FString& FTermDetection::getSecDAString() const
 {
   return ( sec_da ) ? *sec_da : fc::emptyFString::get();
 }
@@ -330,9 +309,9 @@ void FTermDetection::termtypeAnalysis()
   if ( std::strncmp(termtype, "screen", 6) == 0 )
   {
     terminal_type.screen = true;
-    std::string tmux = std::getenv("TMUX");
+    auto tmux = std::getenv("TMUX");
 
-    if ( tmux.length() != 0 )
+    if ( tmux && tmux[0] != '\0' )
       terminal_type.tmux = true;
   }
 
@@ -452,7 +431,7 @@ bool FTermDetection::get256colorEnvString()
   color_env.string5 = std::getenv("KONSOLE_DBUS_SESSION");
   color_env.string6 = std::getenv("KONSOLE_DCOP");
   color_env.string7 = std::getenv("COLORFGBG");
-  color_env.string7 = std::getenv("KITTY_WINDOW_ID");
+  color_env.string8 = std::getenv("KITTY_WINDOW_ID");
 
   if ( color_env.string1 != nullptr
     || color_env.string2 != nullptr
@@ -780,7 +759,7 @@ int FTermDetection::str2int (const FString& s)
 
   constexpr int ERROR = -1;
 
-  if ( ! s )
+  if ( s.isEmpty() )
     return ERROR;
 
   try

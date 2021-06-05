@@ -380,6 +380,7 @@ void ftermopenbsdTest::netbsdConsoleTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     finalcut::FTermOpenBSD netbsd;
 
     setenv ("TERM", "wsvt25", 1);
@@ -484,6 +485,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     finalcut::FTermOpenBSD openbsd;
 
     setenv ("TERM", "vt220", 1);

@@ -2166,8 +2166,8 @@ bool FTerm::init_terminal() const
   initBaudRate();
 
   // Terminal detection
-  FTermDetection::detect();
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTerm::getFTermDetection();
+  term_detection.detect();
   setTermType (term_detection.getTermType());
   return true;
 }

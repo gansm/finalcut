@@ -460,10 +460,7 @@ long FString::toLong() const
   const FString s{trim()};
   const wchar_t* p = s.string.c_str();
 
-  if ( ! p )
-    throw std::invalid_argument ("null value");
-
-  if ( ! *p )
+  if ( s.isEmpty() )
     throw std::invalid_argument ("empty value");
 
   if ( *p == L'-' )
@@ -513,10 +510,7 @@ uLong FString::toULong() const
   const FString s{trim()};
   const wchar_t* p = s.string.c_str();
 
-  if ( ! p )
-    throw std::invalid_argument ("null value");
-
-  if ( ! *p )
+  if ( s.isEmpty() )
     throw std::invalid_argument ("empty value");
 
   if ( *p == L'-' )
@@ -612,14 +606,15 @@ FString FString::rtrim() const
   if ( isEmpty() )
     return *this;
 
-  const auto first = string.begin();
-  auto iter = string.end() - 1;
+  const auto r_end = string.rend();
+  auto r_iter = string.rbegin();
 
-  while ( iter != first && std::iswspace(std::wint_t(*iter)) )
-    --iter;
+  while ( r_iter != r_end && std::iswspace(std::wint_t(*r_iter)) )
+    ++r_iter;
 
-  if ( first != iter )
-    return std::wstring(first, iter + 1);
+  if ( r_iter != r_end )
+    return std::wstring( make_reverse_iterator(r_end)
+                       , make_reverse_iterator(r_iter) );
   else
     return {};
 }

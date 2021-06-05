@@ -119,6 +119,12 @@ std::unique_ptr<T> make_unique (Args&&... args)
   return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
+template<typename Iter>
+constexpr std::reverse_iterator<Iter> make_reverse_iterator (Iter iter)
+{
+  return std::reverse_iterator<Iter>(iter);
+}
+
 using charSubstitution = std::unordered_map<wchar_t, wchar_t>;
 
 struct FCharAttribute

@@ -657,6 +657,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     static constexpr int left_alt = 0x38;
     finalcut::FTermFreeBSD freebsd;
     const auto& fsystem = finalcut::FTerm::getFSystem();
