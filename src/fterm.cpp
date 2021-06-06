@@ -2168,7 +2168,7 @@ bool FTerm::init_terminal() const
   // Terminal detection
   auto& term_detection = FTerm::getFTermDetection();
   term_detection.detect();
-  setTermType (term_detection.getTermType());
+  setTermType (term_detection.getTermType().c_str());
   return true;
 }
 

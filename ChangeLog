@@ -1,5 +1,6 @@
 2021-06-06 Markus Gans  <guru.mail@muenster.de>
 	* Bug fixing in FString and FTermDetection
+	* FTermDetection now has clean code by using FString instead of char*
 
 2021-06-03 Markus Gans  <guru.mail@muenster.de>
 	* Some FString optimizations

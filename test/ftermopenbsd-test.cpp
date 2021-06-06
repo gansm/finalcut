@@ -522,7 +522,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
     CPPUNIT_ASSERT ( data.getTermGeometry().getHeight() == 25 );
     CPPUNIT_ASSERT ( ! data.hasShadowCharacter() );
     CPPUNIT_ASSERT ( ! data.hasHalfBlockCharacter() );
-    CPPUNIT_ASSERT_CSTRING ( term_detection.getTermType(), "pccon" );
+    CPPUNIT_ASSERT ( term_detection.getTermType() == "pccon" );
 
     openbsd.finish();
 

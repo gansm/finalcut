@@ -51,21 +51,21 @@ const FString& FTermDebugData::getSecDAString()
 }
 
 //----------------------------------------------------------------------
-const char* FTermDebugData::getTermType_256color()
+const FString& FTermDebugData::getTermType_256color()
 {
   auto& term_detection = FTerm::getFTermDetection();
   return term_detection.getTermType_256color();
 }
 
 //----------------------------------------------------------------------
-const char* FTermDebugData::getTermType_Answerback()
+const FString& FTermDebugData::getTermType_Answerback()
 {
   auto& term_detection = FTerm::getFTermDetection();
   return term_detection.getTermType_Answerback();
 }
 
 //----------------------------------------------------------------------
-const char* FTermDebugData::getTermType_SecDA()
+const FString& FTermDebugData::getTermType_SecDA()
 {
   auto& term_detection = FTerm::getFTermDetection();
   return term_detection.getTermType_SecDA();

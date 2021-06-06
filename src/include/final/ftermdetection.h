@@ -100,7 +100,7 @@ class FTermDetection final
 
     // Accessor
     FString               getClassName() const;
-    const char*           getTermType() const;
+    const FString&        getTermType() const;
     int                   getGnomeTerminalID() const;
     kittyVersion          getKittyVersion() const;
     FTerminalType&        getTermTypeStruct();
@@ -108,9 +108,9 @@ class FTermDetection final
 #if DEBUG
     const FString&        getAnswerbackString() const;
     const FString&        getSecDAString() const;
-    const char*           getTermType_256color() const;
-    const char*           getTermType_Answerback() const;
-    const char*           getTermType_SecDA() const;
+    const FString&        getTermType_256color() const;
+    const FString&        getTermType_Answerback() const;
+    const FString&        getTermType_SecDA() const;
 #endif
 
     // Inquiries
@@ -162,7 +162,7 @@ class FTermDetection final
     void                  setMltermTerminal (bool = true);
     void                  setKittyTerminal (bool = true);
     void                  setTerminalDetection (bool = true);
-    void                  setTtyTypeFileName (const char[]);
+    void                  setTtyTypeFileName (const FString&);
 
     // Methods
     void                  detect();
@@ -188,7 +188,6 @@ class FTermDetection final
     };
 
     // Methods
-    void                  deallocation();
     void                  getSystemTermType();
     bool                  getTTYtype();
 #if F_HAVE_GETTTYNAM
@@ -196,45 +195,48 @@ class FTermDetection final
 #endif
     void                  termtypeAnalysis();
     void                  detectTerminal();
-    const char*           init_256colorTerminal();
+    FString               init_256colorTerminal();
     bool                  get256colorEnvString();
-    const char*           termtype_256color_quirks();
-    const char*           determineMaxColor (const char[]);
-    FString               getXTermColorName (FColor);
-    const char*           parseAnswerbackMsg (const char[]);
-    FString               getAnswerbackMsg();
-    const char*           parseSecDA (const char[]);
-    int                   str2int (const FString&);
-    FString               getSecDA();
-    const char*           secDA_Analysis (const char[]);
-    const char*           secDA_Analysis_0 (const char[]);
-    const char*           secDA_Analysis_1 (const char[]);
-    const char*           secDA_Analysis_24 (const char[]);
-    const char*           secDA_Analysis_32 (const char[]);
-    const char*           secDA_Analysis_65 (const char[]);
-    const char*           secDA_Analysis_67 (const char[]);
-    const char*           secDA_Analysis_77 (const char[]);
-    const char*           secDA_Analysis_82 ();
-    const char*           secDA_Analysis_83 (const char[]);
-    const char*           secDA_Analysis_84 (const char[]);
-    const char*           secDA_Analysis_85 ();
-    const char*           secDA_Analysis_vte (const char[]);
-    const char*           secDA_Analysis_kitty (const char[]);
+    FString               termtype_256color_quirks();
+    FString           determineMaxColor (const FString&);
+    FString               getXTermColorName (FColor) const;
+    FString               parseAnswerbackMsg (const FString&);
+    FString               getAnswerbackMsg() const;
+    FString               parseSecDA (const FString&);
+    int                   str2int (const FString&) const;
+    FString               getSecDA() const;
+    FString               secDA_Analysis (const FString&);
+    FString               secDA_Analysis_0 (const FString&);
+    FString               secDA_Analysis_1 (const FString&);
+    FString               secDA_Analysis_24 (const FString&);
+    FString               secDA_Analysis_32 ();
+    FString               secDA_Analysis_65 (const FString&);
+    FString               secDA_Analysis_67 ();
+    FString               secDA_Analysis_77 ();
+    FString               secDA_Analysis_82 ();
+    FString               secDA_Analysis_83 (const FString&);
+    FString               secDA_Analysis_84 (const FString&);
+    FString               secDA_Analysis_85 ();
+    FString               secDA_Analysis_vte (const FString&);
+    FString               secDA_Analysis_kitty (const FString&);
 
     // Data members
 #if DEBUG
-    char           termtype_256color[256]{};
-    char           termtype_Answerback[256]{};
-    char           termtype_SecDA[256]{};
+    FString        termtype_256color{};
+    FString        termtype_Answerback{};
+    FString        termtype_SecDA{};
 #endif
-    char           termtype[256]{};
-    char           ttytypename[256]{};
-    bool           decscusr_support{};
-    bool           terminal_detection{};
+    FString        termtype{};
+    FString        ttytypename{"/etc/ttytype"};  // Default ttytype file
+    bool           decscusr_support{false};      // Preset to false
+    bool           terminal_detection{true};     // Preset to true
     bool           color256{};
-    int            gnome_terminal_id{};
-    const FString* answer_back{nullptr};
-    const FString* sec_da{nullptr};
+    // Gnome terminal id from SecDA
+    // Example: vte version 0.40.0 = 0 * 100 + 40 * 100 + 0 = 4000
+    //                      a.b.c  = a * 100 +  b * 100 + c
+    int            gnome_terminal_id{0};
+    FString        answer_back{};
+    FString        sec_da{};
     FTerminalType  terminal_type{};
     colorEnv       color_env{};
     kittyVersion   kitty_version{};
@@ -248,7 +250,7 @@ inline FString FTermDetection::getClassName() const
 { return "FTermDetection"; }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::getTermType() const
+inline const FString& FTermDetection::getTermType() const
 { return termtype; }
 
 //----------------------------------------------------------------------
@@ -265,15 +267,15 @@ inline FTermDetection::FTerminalType& FTermDetection::getTermTypeStruct()
 
 #if DEBUG
 //----------------------------------------------------------------------
-inline const char* FTermDetection::getTermType_256color() const
+inline const FString& FTermDetection::getTermType_256color() const
 { return termtype_256color; }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::getTermType_Answerback() const
+inline const FString& FTermDetection::getTermType_Answerback() const
 { return termtype_Answerback; }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::getTermType_SecDA() const
+inline const FString& FTermDetection::getTermType_SecDA() const
 { return termtype_SecDA; }
 #endif
 
