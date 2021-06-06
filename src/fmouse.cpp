@@ -739,7 +739,7 @@ void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf)
   // Import the X11 xterm mouse protocol (SGR-Mode) raw mouse data
 
   const std::size_t fifo_buf_size = sizeof(fifo_buf);
-  std::size_t len = std::strlen(fifo_buf);
+  std::size_t len = stringLength(fifo_buf);
   std::size_t n{3};
 
   while ( n < len && n <= MOUSE_BUF_SIZE + 1 )
@@ -969,7 +969,7 @@ void FMouseUrxvt::setRawData (FKeyboard::keybuffer& fifo_buf)
   // Import the X11 xterm mouse protocol (Urxvt-Mode) raw mouse data
 
   const std::size_t fifo_buf_size = sizeof(fifo_buf);
-  std::size_t len = std::strlen(fifo_buf);
+  std::size_t len = stringLength(fifo_buf);
   std::size_t n{2};
 
   while ( n < len && n <= MOUSE_BUF_SIZE )

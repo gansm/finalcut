@@ -390,14 +390,14 @@ bool FTermDetection::get256colorEnvString()
   color_env.string7 = std::getenv("COLORFGBG");
   color_env.string8 = std::getenv("KITTY_WINDOW_ID");
 
-  if ( color_env.string1 != nullptr
-    || color_env.string2 != nullptr
-    || color_env.string3 != nullptr
-    || color_env.string4 != nullptr
-    || color_env.string5 != nullptr
-    || color_env.string6 != nullptr
-    || color_env.string7 != nullptr
-    || color_env.string8 != nullptr )
+  if ( ! color_env.string1.isEmpty()
+    || ! color_env.string2.isEmpty()
+    || ! color_env.string3.isEmpty()
+    || ! color_env.string4.isEmpty()
+    || ! color_env.string5.isEmpty()
+    || ! color_env.string6.isEmpty()
+    || ! color_env.string7.isEmpty()
+    || ! color_env.string8.isEmpty() )
     return true;
 
   return false;
@@ -408,9 +408,8 @@ FString FTermDetection::termtype_256color_quirks()
 {
   FString new_termtype{};
 
-  if ( color_env.string2
-    || (color_env.string1
-      && std::strncmp(color_env.string1, "gnome-terminal", 14) == 0) )
+  if ( ! color_env.string2.isEmpty()
+    || color_env.string1 == "gnome-terminal" )
   {
     terminal_type.gnome_terminal = true;
     // Each gnome-terminal should be able to use 256 colors
@@ -439,21 +438,20 @@ FString FTermDetection::termtype_256color_quirks()
     new_termtype = "mlterm-256color";
 
   if ( termtype.left(4) == "rxvt"
-    && color_env.string1
-    && std::strncmp(color_env.string1, "rxvt-xpm", 8) == 0 )
+    && color_env.string1.left(8) == "rxvt-xpm" )
   {
     new_termtype = "rxvt-256color";
     terminal_type.rxvt = true;
   }
 
-  if ( (color_env.string5 && std::strlen(color_env.string5) > 0)
-    || (color_env.string6 && std::strlen(color_env.string6) > 0) )
+  if ( color_env.string5.getLength() > 0
+    || color_env.string6.getLength() > 0 )
   {
     terminal_type.kde_konsole = true;
     new_termtype = "konsole-256color";
   }
 
-  if ( color_env.string3 && std::strlen(color_env.string3) > 0 )
+  if ( color_env.string3.getLength() > 0 )
     decscusr_support = true;
 
   return new_termtype;
@@ -538,7 +536,7 @@ FString FTermDetection::getXTermColorName (FColor color) const
 
   if ( pos > 4 && std::sscanf(temp.data(), parse, &index, buf.data()) == 2 )
   {
-    std::size_t n = std::strlen(buf.data());
+    auto n = stringLength(buf.data());
 
     // BEL + '\0' = string terminator
     if ( n >= 6 && buf[n - 1] == BEL[0] && buf[n] == '\0' )

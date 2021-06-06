@@ -249,7 +249,7 @@ inline FKey FKeyboard::getMouseProtocolKey() const
   if ( ! mouse_support )
     return NOT_SET;
 
-  const std::size_t buf_len = std::strlen(fifo_buf);
+  const std::size_t buf_len = stringLength(fifo_buf);
 
   // x11 mouse tracking
   if ( buf_len >= 6 && fifo_buf[1] == '[' && fifo_buf[2] == 'M' )
@@ -282,7 +282,7 @@ inline FKey FKeyboard::getTermcapKey()
   for (auto&& entry : *key_map)
   {
     const char* kstr = entry.string;
-    const std::size_t len = kstr ? std::strlen(kstr) : 0;
+    const std::size_t len = kstr ? stringLength(kstr) : 0;
 
     if ( kstr && std::strncmp(kstr, fifo_buf, len) == 0 )  // found
     {
@@ -312,7 +312,7 @@ inline FKey FKeyboard::getKnownKey()
   for (auto&& entry : fc::fkey_table)
   {
     const char* kstr = entry.string;  // The string is never null
-    const std::size_t len = std::strlen(kstr);
+    const std::size_t len = stringLength(kstr);
 
     if ( std::strncmp(kstr, fifo_buf, len) == 0 )  // found
     {
@@ -355,7 +355,7 @@ inline FKey FKeyboard::getSingleKey()
   if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
   {
     std::array<char, 5> utf8char{};  // Init array with '\0'
-    const std::size_t buf_len = std::strlen(fifo_buf);
+    const std::size_t buf_len = stringLength(fifo_buf);
 
     if ( (firstchar & 0xe0) == 0xc0 )
       len = 2;
@@ -482,14 +482,14 @@ void FKeyboard::parseKeyBuffer()
       {
         key = fkey;
         mouseTracking();
-        fifo_offset = int(std::strlen(fifo_buf));
+        fifo_offset = int(stringLength(fifo_buf));
         break;
       }
 
       if ( fkey != FKey::Incomplete )
       {
         fkey_queue.push(fkey);
-        fifo_offset = int(std::strlen(fifo_buf));
+        fifo_offset = int(stringLength(fifo_buf));
       }
     }
 

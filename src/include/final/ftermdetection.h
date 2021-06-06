@@ -170,14 +170,14 @@ class FTermDetection final
   private:
     struct colorEnv
     {
-      char* string1{nullptr};
-      char* string2{nullptr};
-      char* string3{nullptr};
-      char* string4{nullptr};
-      char* string5{nullptr};
-      char* string6{nullptr};
-      char* string7{nullptr};
-      char* string8{nullptr};
+      FString string1{};
+      FString string2{};
+      FString string3{};
+      FString string4{};
+      FString string5{};
+      FString string6{};
+      FString string7{};
+      FString string8{};
     };
 
     struct secondaryDA

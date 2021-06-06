@@ -608,7 +608,7 @@ int FOptiMove::repeatedAppend ( std::string& dst
                               , const Capability& o
                               , int count ) const
 {
-  const std::size_t src_len = std::strlen(o.cap);
+  const std::size_t src_len = stringLength(o.cap);
   const std::size_t dst_len = dst.length();
   int total{0};
 

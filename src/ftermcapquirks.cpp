@@ -381,7 +381,7 @@ void FTermcapQuirks::sunConsole()
       fc::fkey_cap_table[i].string = "\b";  // backspace key
 
     if ( std::strncmp(fc::fkey_cap_table[i].tname, "kD", 2) == 0
-      && std::strlen(fc::fkey_cap_table[i].tname) == 2 )
+      && stringLength(fc::fkey_cap_table[i].tname) == 2 )
       fc::fkey_cap_table[i].string = "\177";  // delete-character key
 
     if ( std::strncmp(fc::fkey_cap_table[i].tname, "@7", 2) == 0 )

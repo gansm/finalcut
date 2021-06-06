@@ -119,10 +119,16 @@ std::unique_ptr<T> make_unique (Args&&... args)
   return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
-template<typename Iter>
+template <typename Iter>
 constexpr std::reverse_iterator<Iter> make_reverse_iterator (Iter iter)
 {
   return std::reverse_iterator<Iter>(iter);
+}
+
+template <typename T>
+constexpr std::size_t stringLength (T&& array)
+{
+  return std::string(std::forward<T>(array)).length();
 }
 
 using charSubstitution = std::unordered_map<wchar_t, wchar_t>;
