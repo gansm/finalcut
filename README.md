@@ -13,7 +13,7 @@ The structure of the Qt framework was originally the inspiration for the C++ cla
 | *Latest release*   | [![Latest Release](https://img.shields.io/github/release/gansm/finalcut.svg)](https://github.com/gansm/finalcut/releases) |
 | *License*          | [![license](https://img.shields.io/github/license/gansm/finalcut.svg?colorA=#333)](COPYING)      |
 | *Class Reference*  | [![documented](https://codedocs.xyz/gansm/finalcut.svg)](https://codedocs.xyz/gansm/finalcut/hierarchy.html) |
-| *Travis CI*        | [![Build Status](https://travis-ci.org/gansm/finalcut.svg?branch=main)](https://travis-ci.org/gansm/finalcut)
+| *Travis CI*        | [![Build Status](https://travis-ci.com/gansm/finalcut.svg?branch=main)](https://travis-ci.com/gansm/finalcut)
 | *Coverity Scan*    | [![Coverity Scan Status](https://img.shields.io/coverity/scan/6508.svg)](https://scan.coverity.com/projects/6508 )|
 | *LGTM*             | [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/gansm/finalcut.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/gansm/finalcut/context:cpp) |
 | *SonarCloud*       | [![Quality gate](https://sonarcloud.io/api/project_badges/measure?project=gansm_finalcut&metric=alert_status)](https://sonarcloud.io/dashboard?id=gansm_finalcut) |
