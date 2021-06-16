@@ -201,7 +201,7 @@ class FMouse : public FMouseData
     template <typename ClassT>
     static FMouse*        createMouseObject ();
     virtual void          setRawData (FKeyboard::keybuffer&) = 0;
-    virtual void          processEvent (struct timeval*) = 0;
+    virtual void          processEvent (const TimeValue&) = 0;
 
   protected:
     // Accessors
@@ -209,17 +209,17 @@ class FMouse : public FMouseData
     uInt16                getMaxWidth() const;
     uInt16                getMaxHeight() const;
     uInt64                getDblclickInterval() const;
-    timeval*              getMousePressedTime();
+    TimeValue             getMousePressedTime();
 
     // Mutator
     void                   setNewPos (int, int);
     void                   setPending (bool = true);
     void                   setEvent();
-    void                   setMousePressedTime (const timeval*);
+    void                   setMousePressedTime (const TimeValue&);
     void                   resetMousePressedTime();
 
     // Inquiry
-    bool                   isDblclickTimeout (const timeval*) const;
+    bool                   isDblclickTimeout (const TimeValue&) const;
 
   private:
     // Data members
@@ -228,7 +228,7 @@ class FMouse : public FMouseData
     uInt16                 max_width{80};
     uInt16                 max_height{25};
     uInt64                 dblclick_interval{500000};  // 500 ms
-    struct timeval         time_mousepressed{};
+    TimeValue              time_mousepressed{};
     FPoint                 new_mouse_position{};
 };
 
@@ -263,7 +263,7 @@ class FMouseGPM final : public FMouse
 
     // Methods
     void                 setRawData (FKeyboard::keybuffer&) override;
-    void                 processEvent (struct timeval*) override;
+    void                 processEvent (const TimeValue&) override;
     bool                 gpmMouse (bool = true);
     bool                 enableGpmMouse();
     bool                 disableGpmMouse();
@@ -321,7 +321,7 @@ class FMouseX11 final : public FMouse
 
     // Methods
     void                 setRawData (FKeyboard::keybuffer&) override;
-    void                 processEvent (struct timeval*) override;
+    void                 processEvent (const TimeValue&) override;
 
   private:
     // Enumeration
@@ -351,7 +351,7 @@ class FMouseX11 final : public FMouse
     // Methods
     void         setKeyState (int);
     void         setMoveState (const FPoint&, int);
-    void         setButtonState (const int, const struct timeval*);
+    void         setButtonState (const int, const TimeValue&);
 
     // Data member
     char  x11_mouse[MOUSE_BUF_SIZE]{'\0'};
@@ -374,7 +374,7 @@ class FMouseSGR final : public FMouse
 
     // Methods
     void          setRawData (FKeyboard::keybuffer&) override;
-    void          processEvent (struct timeval*) override;
+    void          processEvent (const TimeValue&) override;
 
   private:
     // Enumeration
@@ -403,7 +403,7 @@ class FMouseSGR final : public FMouse
     // Methods
     void          setKeyState (int);
     void          setMoveState (const FPoint&, int);
-    void          setPressedButtonState (const int, const struct timeval*);
+    void          setPressedButtonState (const int, const TimeValue&);
     void          setReleasedButtonState (const int);
 
     // Data members
@@ -427,7 +427,7 @@ class FMouseUrxvt final : public FMouse
 
     // Methods
     void          setRawData (FKeyboard::keybuffer&) override;
-    void          processEvent (struct timeval*) override;
+    void          processEvent (const TimeValue&) override;
 
   private:
     // Enumeration
@@ -457,7 +457,7 @@ class FMouseUrxvt final : public FMouse
     // Methods
     void          setKeyState (int);
     void          setMoveState (const FPoint&, int);
-    void          setButtonState (const int, const struct timeval*);
+    void          setButtonState (const int, const TimeValue&);
 
     // Data members
     char  urxvt_mouse[MOUSE_BUF_SIZE]{'\0'};
@@ -543,7 +543,7 @@ class FMouseControl
     void                      disable();
     virtual void              setRawData ( FMouse::MouseType
                                          , FKeyboard::keybuffer& );
-    virtual void              processEvent (struct timeval* time);
+    virtual void              processEvent (const TimeValue&);
     void                      processQueuedInput();
     bool                      getGpmKeyPressed (bool = true);
     void                      drawPointer();

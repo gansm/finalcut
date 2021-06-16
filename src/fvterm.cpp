@@ -61,14 +61,12 @@ bool                 FVTerm::force_terminal_update{false};
 uInt64               FVTerm::flush_wait{MIN_FLUSH_WAIT};
 uInt64               FVTerm::flush_average{MIN_FLUSH_WAIT};
 uInt64               FVTerm::flush_median{MIN_FLUSH_WAIT};
-uInt64               FVTerm::term_size_check_timeout{500000};  // 500 ms
 uInt                 FVTerm::erase_char_length{};
 uInt                 FVTerm::repeat_char_length{};
 uInt                 FVTerm::clr_bol_length{};
 uInt                 FVTerm::clr_eol_length{};
 uInt                 FVTerm::cursor_address_length{};
-struct timeval       FVTerm::time_last_flush{};
-struct timeval       FVTerm::last_term_size_check{};
+TimeValue            FVTerm::time_last_flush{};
 const FVTerm*        FVTerm::init_object{nullptr};
 FVTerm::FTermArea*   FVTerm::vterm{nullptr};
 FVTerm::FTermArea*   FVTerm::vdesktop{nullptr};
@@ -603,7 +601,7 @@ void FVTerm::flush() const
   std::fflush(stdout);
   auto& mouse = FTerm::getFMouseControl();
   mouse.drawPointer();
-  FObject::getCurrentTime (&time_last_flush);
+  time_last_flush = FObject::getCurrentTime();
 }
 
 
@@ -1876,11 +1874,8 @@ void FVTerm::init()
   vdesktop->visible = true;
   active_area = vdesktop;
 
-  // Initialize the flush and last terminal size check time
-  time_last_flush.tv_sec = 0;
-  time_last_flush.tv_usec = 0;
-  last_term_size_check.tv_sec = 0;
-  last_term_size_check.tv_usec = 0;
+  // Initialize the last flush time
+  time_last_flush = TimeValue{};
 }
 
 //----------------------------------------------------------------------
@@ -2880,32 +2875,12 @@ bool FVTerm::isInsideTerminal (const FPoint& pos) const
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isTermSizeChanged() const
-{
-  if ( ! isTermSizeCheckTimeout() )
-    return false;
-
-  FObject::getCurrentTime (&last_term_size_check);
-  auto& fterm_data = FTerm::getFTermData();
-  const auto& old_term_geometry = fterm_data.getTermGeometry();
-  FTerm::detectTermSize();
-  auto term_geometry = fterm_data.getTermGeometry();
-  term_geometry.move (-1, -1);
-
-  if ( old_term_geometry.getSize() != term_geometry.getSize() )
-    return true;
-
-  return false;
-}
-
-//----------------------------------------------------------------------
 inline void FVTerm::flushTimeAdjustment() const
 {
-  timeval now;
-  FObject::getCurrentTime(&now);
-  timeval diff = now - time_last_flush;
+  const auto now = FObject::getCurrentTime();
+  const auto diff = now - time_last_flush;
 
-  if ( diff.tv_sec > 0 || diff.tv_usec > 400000 )
+  if ( diff > milliseconds(400) )
   {
     flush_wait = MIN_FLUSH_WAIT;  // Reset to minimum values after 400 ms
     flush_average = MIN_FLUSH_WAIT;
@@ -2913,7 +2888,7 @@ inline void FVTerm::flushTimeAdjustment() const
   }
   else
   {
-    auto usec = uInt64(diff.tv_usec);
+    auto usec = uInt64(duration_cast<microseconds>(diff).count());
 
     if ( usec < MIN_FLUSH_WAIT )
       usec = MIN_FLUSH_WAIT;
@@ -2947,13 +2922,7 @@ inline void FVTerm::flushTimeAdjustment() const
 //----------------------------------------------------------------------
 inline bool FVTerm::isFlushTimeout()
 {
-  return FObject::isTimeout (&time_last_flush, flush_wait);
-}
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isTermSizeCheckTimeout()
-{
-  return FObject::isTimeout (&last_term_size_check, term_size_check_timeout);
+  return FObject::isTimeout (time_last_flush, flush_wait);
 }
 
 //----------------------------------------------------------------------

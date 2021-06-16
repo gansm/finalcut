@@ -108,7 +108,7 @@ class FKeyboard final
     FKey                  getKey() const;
     FString               getKeyName (const FKey) const;
     keybuffer&            getKeyBuffer();
-    timeval*              getKeyPressedTime();
+    TimeValue             getKeyPressedTime();
     static uInt64         getKeypressTimeout();
     static uInt64         getReadBlockingTime();
 
@@ -179,7 +179,7 @@ class FKeyboard final
     FKeyboardCommand      escape_key_cmd{};
     FKeyboardCommand      mouse_tracking_cmd{};
 
-    static timeval        time_keypressed;
+    static TimeValue      time_keypressed;
     static uInt64         read_blocking_time;
     static uInt64         read_blocking_time_short;
     static uInt64         key_timeout;
@@ -214,8 +214,8 @@ inline FKeyboard::keybuffer& FKeyboard::getKeyBuffer()
 { return fifo_buf; }
 
 //----------------------------------------------------------------------
-inline timeval* FKeyboard::getKeyPressedTime()
-{ return &time_keypressed; }
+inline TimeValue FKeyboard::getKeyPressedTime()
+{ return time_keypressed; }
 
 //----------------------------------------------------------------------
 inline uInt64 FKeyboard::getKeypressTimeout()

@@ -72,7 +72,7 @@ int            FApplication::loop_level      {0};        // event loop level
 int            FApplication::quit_code       {EXIT_SUCCESS};
 bool           FApplication::quit_now        {false};
 uInt64         FApplication::next_event_wait {5000};     // 5 ms (200 Hz)
-struct timeval FApplication::time_last_event {};
+TimeValue      FApplication::time_last_event {};
 
 
 //----------------------------------------------------------------------
@@ -392,8 +392,7 @@ void FApplication::init()
   setMaxChildren(1);
 
   // Initialize the last event time
-  time_last_event.tv_sec = 0;
-  time_last_event.tv_usec = 0;
+  time_last_event = TimeValue{};
 
   // Initialize keyboard
   auto& keyboard = FTerm::getFKeyboard();
@@ -858,7 +857,7 @@ void FApplication::queuingMouseInput() const
     return;
 
   auto& keyboard = FTerm::getFKeyboard();
-  struct timeval* time_keypressed = keyboard.getKeyPressedTime();
+  auto time_keypressed = keyboard.getKeyPressedTime();
   mouse.processEvent (time_keypressed);
   keyboard.hasUnprocessedInput() = mouse.hasUnprocessedInput();
   mouse.clearEvent();
@@ -1308,7 +1307,7 @@ bool FApplication::processNextEvent()
 
   if ( is_timeout || hasDataInQueue() )
   {
-    FObject::getCurrentTime (&time_last_event);
+    time_last_event = FObject::getCurrentTime();
     queuingKeyboardInput();
     queuingMouseInput();
     processKeyboardEvent();
@@ -1401,7 +1400,7 @@ bool FApplication::isEventProcessable ( FObject* receiver
 //----------------------------------------------------------------------
 bool FApplication::isNextEventTimeout()
 {
-  return FObject::isTimeout (&time_last_event, next_event_wait);
+  return FObject::isTimeout (time_last_event, next_event_wait);
 }
 
 

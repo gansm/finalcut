@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -373,9 +373,11 @@ void FKeyboardTest::noArgumentTest()
 
   CPPUNIT_ASSERT ( sum == 0 );
 
-  timeval* time = keyboard->getKeyPressedTime();
-  CPPUNIT_ASSERT ( time->tv_sec == 0);
-  CPPUNIT_ASSERT ( time->tv_usec == 0);
+  auto time = keyboard->getKeyPressedTime();
+  auto duration_s = std::chrono::duration_cast<std::chrono::seconds>(time.time_since_epoch());
+  auto duration_us = std::chrono::duration_cast<std::chrono::microseconds>(time.time_since_epoch());
+  CPPUNIT_ASSERT ( duration_s.count() == 0);
+  CPPUNIT_ASSERT ( duration_us.count() == 0);
 
   CPPUNIT_ASSERT ( ! keyboard->hasUnprocessedInput() );
   CPPUNIT_ASSERT ( ! keyboard->isKeyPressed() );

@@ -51,7 +51,7 @@ uInt64 FKeyboard::key_timeout{100000};             // 100 ms  (10 Hz)
 uInt64 FKeyboard::read_blocking_time{100000};      // 100 ms  (10 Hz)
 uInt64 FKeyboard::read_blocking_time_short{5000};  //   5 ms (200 Hz)
 bool   FKeyboard::non_blocking_input_support{true};
-struct timeval FKeyboard::time_keypressed{};
+TimeValue FKeyboard::time_keypressed{};
 
 
 //----------------------------------------------------------------------
@@ -63,8 +63,7 @@ struct timeval FKeyboard::time_keypressed{};
 FKeyboard::FKeyboard()
 {
   // Initialize keyboard values
-  time_keypressed.tv_sec = 0;
-  time_keypressed.tv_usec = 0;
+  time_keypressed = TimeValue{};  // Set to epoch time
 
   // Get the stdin file status flags
   stdin_status_flags = fcntl(FTermios::getStdIn(), F_GETFL);
@@ -392,7 +391,7 @@ inline FKey FKeyboard::getSingleKey()
 //----------------------------------------------------------------------
 inline bool FKeyboard::isKeypressTimeout()
 {
-  return FObject::isTimeout (&time_keypressed, key_timeout);
+  return FObject::isTimeout (time_keypressed, key_timeout);
 }
 
 //----------------------------------------------------------------------
@@ -457,7 +456,7 @@ inline ssize_t FKeyboard::readKey()
 void FKeyboard::parseKeyBuffer()
 {
   ssize_t bytesread{};
-  FObject::getCurrentTime (&time_keypressed);
+  time_keypressed = FObject::getCurrentTime();
 
   while ( (bytesread = readKey()) > 0 )
   {

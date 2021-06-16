@@ -103,7 +103,7 @@ Special X11 bitmap font used by FINAL CUT to display graphic objects.
 
 %build
 autoreconf -vif
-export CPPFLAGS="%{optflags} -Wall -Wextra -Wpedantic"
+export CPPFLAGS="%{optflags} -Wall -Wextra -Wpedantic -flto"
 %ifnarch %ix86 x86_64
 export CPPFLAGS="$CPPFLAGS -Wno-error=unused-parameter"
 %endif

@@ -418,10 +418,8 @@ class FVTerm
     bool                  updateTerminalLine (uInt) const;
     bool                  updateTerminalCursor() const;
     bool                  isInsideTerminal (const FPoint&) const;
-    bool                  isTermSizeChanged() const;
     void                  flushTimeAdjustment() const;
     static bool           isFlushTimeout();
-    static bool           isTermSizeCheckTimeout();
     static bool           hasPendingUpdates (const FTermArea*);
     static void           markAsPrinted (uInt, uInt);
     static void           markAsPrinted (uInt, uInt, uInt);
@@ -453,8 +451,7 @@ class FVTerm
     static FChar                  next_attribute;
     static FChar                  s_ch;  // shadow character
     static FChar                  i_ch;  // inherit background character
-    static timeval                time_last_flush;
-    static timeval                last_term_size_check;
+    static TimeValue              time_last_flush;
     static bool                   draw_completed;
     static bool                   combined_char_support;
     static bool                   no_terminal_updates;
@@ -462,7 +459,6 @@ class FVTerm
     static uInt64                 flush_wait;
     static uInt64                 flush_average;
     static uInt64                 flush_median;
-    static uInt64                 term_size_check_timeout;
     static uInt                   erase_char_length;
     static uInt                   repeat_char_length;
     static uInt                   clr_bol_length;

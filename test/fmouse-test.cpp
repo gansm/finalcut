@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -40,13 +40,13 @@ namespace test
 class FMouse_protected : public finalcut::FMouse
 {
   public:
-    virtual bool hasData()
+    bool hasData() override
     { return true; }
 
-    virtual void setRawData (finalcut::FKeyboard::keybuffer&)
+    void setRawData (finalcut::FKeyboard::keybuffer&) override
     { }
 
-    virtual void processEvent (struct timeval*)
+    void processEvent (const TimeValue&) override
     { }
 
     uInt16 getMaxWidth()
@@ -59,7 +59,7 @@ class FMouse_protected : public finalcut::FMouse
       return finalcut::FMouse::getMaxHeight();
     }
 
-    const finalcut::FPoint& getNewMousePosition()
+    const finalcut::FPoint& getNewMousePosition() const
     {
       return finalcut::FMouse::getNewPos();
     }
@@ -69,7 +69,7 @@ class FMouse_protected : public finalcut::FMouse
       return finalcut::FMouse::getDblclickInterval();
     }
 
-    bool isDblclickTimeout (timeval* t)
+    bool isDblclickTimeout (const TimeValue& t)
     {
       return finalcut::FMouse::isDblclickTimeout(t);
     }
@@ -199,24 +199,24 @@ void FMouseTest::doubleClickTest()
 
   test::FMouse_protected mouse;
   CPPUNIT_ASSERT ( mouse.getDblclickInterval() == 500000 );  // 500 ms
-  timeval tv = { 0, 0 };
-  CPPUNIT_ASSERT ( mouse.isDblclickTimeout(&tv) );
+  TimeValue tv = {};
+  CPPUNIT_ASSERT ( mouse.isDblclickTimeout(tv) );
 
-  finalcut::FObject::getCurrentTime(&tv);
-  CPPUNIT_ASSERT ( ! mouse.isDblclickTimeout(&tv) );
+  tv = finalcut::FObject::getCurrentTime();
+  CPPUNIT_ASSERT ( ! mouse.isDblclickTimeout(tv) );
 
-  tv.tv_sec--;  // Minus one second
-  CPPUNIT_ASSERT ( mouse.isDblclickTimeout(&tv) );
+  tv -= std::chrono::seconds(1);  // Minus one second
+  CPPUNIT_ASSERT ( mouse.isDblclickTimeout(tv) );
 
   mouse.setDblclickInterval(1000000);
-  finalcut::FObject::getCurrentTime(&tv);
-  CPPUNIT_ASSERT ( ! mouse.isDblclickTimeout(&tv) );
+  tv = finalcut::FObject::getCurrentTime();
+  CPPUNIT_ASSERT ( ! mouse.isDblclickTimeout(tv) );
 
-  timeval tv_delta = { 0, 500000 };
-  tv = tv - tv_delta;
-  CPPUNIT_ASSERT ( ! mouse.isDblclickTimeout(&tv) );
-  tv = tv - tv_delta;
-  CPPUNIT_ASSERT ( mouse.isDblclickTimeout(&tv) );
+  auto tv_delta = std::chrono::microseconds(500000);
+  tv -= tv_delta;
+  CPPUNIT_ASSERT ( ! mouse.isDblclickTimeout(tv) );
+  tv -= tv_delta;
+  CPPUNIT_ASSERT ( mouse.isDblclickTimeout(tv) );
 }
 
 //----------------------------------------------------------------------
@@ -266,9 +266,8 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( x11_mouse.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( std::strcmp(rawdata1, "@@") == 0 );
 
-  timeval tv;
-  finalcut::FObject::getCurrentTime(&tv);
-  x11_mouse.processEvent (&tv);
+  auto tv = finalcut::FObject::getCurrentTime();
+  x11_mouse.processEvent (tv);
 
   CPPUNIT_ASSERT ( x11_mouse.getPos() == finalcut::FPoint(48, 18) );
   CPPUNIT_ASSERT ( x11_mouse.hasEvent() );
@@ -290,7 +289,7 @@ void FMouseTest::x11MouseTest()
   finalcut::FKeyboard::keybuffer raw = \
       { 0x1b, '[', 'M', 0x23, 0x50, 0x32 };
   x11_mouse.setRawData (raw);
-  x11_mouse.processEvent (&tv);
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! x11_mouse.hasEvent() );
 
   // Left mouse button pressed
@@ -299,7 +298,7 @@ void FMouseTest::x11MouseTest()
   x11_mouse.setRawData (rawdata2);
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
   CPPUNIT_ASSERT ( ! x11_mouse.hasUnprocessedInput() );
-  x11_mouse.processEvent (&tv);
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! x11_mouse.hasData() );
   CPPUNIT_ASSERT ( x11_mouse.getPos() == finalcut::FPoint(1, 1) );
   CPPUNIT_ASSERT ( x11_mouse.hasEvent() );
@@ -324,7 +323,7 @@ void FMouseTest::x11MouseTest()
 
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
   CPPUNIT_ASSERT ( ! x11_mouse.hasUnprocessedInput() );
-  x11_mouse.processEvent (&tv);
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! x11_mouse.hasData() );
   CPPUNIT_ASSERT ( x11_mouse.getPos() == finalcut::FPoint(1, 1) );
   CPPUNIT_ASSERT ( x11_mouse.hasEvent() );
@@ -349,8 +348,8 @@ void FMouseTest::x11MouseTest()
 
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
   CPPUNIT_ASSERT ( ! x11_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  x11_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! x11_mouse.hasData() );
   CPPUNIT_ASSERT ( x11_mouse.getPos() == finalcut::FPoint(1, 1) );
   CPPUNIT_ASSERT ( x11_mouse.hasEvent() );
@@ -377,8 +376,8 @@ void FMouseTest::x11MouseTest()
 
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
   CPPUNIT_ASSERT ( x11_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  x11_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! x11_mouse.hasData() );
   CPPUNIT_ASSERT ( x11_mouse.getPos() == finalcut::FPoint(1, 1) );
   CPPUNIT_ASSERT ( x11_mouse.hasEvent() );
@@ -397,7 +396,7 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   x11_mouse.setRawData (rawdata5);
-  x11_mouse.processEvent (&tv);
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! x11_mouse.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( ! x11_mouse.isMiddleButtonPressed() );
   CPPUNIT_ASSERT ( x11_mouse.isMiddleButtonReleased() );
@@ -410,8 +409,8 @@ void FMouseTest::x11MouseTest()
 
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
   CPPUNIT_ASSERT ( x11_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  x11_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! x11_mouse.hasData() );
   CPPUNIT_ASSERT ( x11_mouse.getPos() == finalcut::FPoint(1, 1) );
   CPPUNIT_ASSERT ( x11_mouse.hasEvent() );
@@ -430,7 +429,7 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   x11_mouse.setRawData (rawdata6);
-  x11_mouse.processEvent (&tv);
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! x11_mouse.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( ! x11_mouse.isRightButtonPressed() );
   CPPUNIT_ASSERT ( x11_mouse.isRightButtonReleased() );
@@ -443,8 +442,8 @@ void FMouseTest::x11MouseTest()
 
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
   CPPUNIT_ASSERT ( x11_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  x11_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! x11_mouse.hasData() );
   CPPUNIT_ASSERT ( x11_mouse.getPos() == finalcut::FPoint(80, 25) );
   CPPUNIT_ASSERT ( x11_mouse.hasEvent() );
@@ -463,7 +462,7 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   x11_mouse.setRawData (rawdata7);
-  x11_mouse.processEvent (&tv);
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! x11_mouse.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( x11_mouse.isWheelDown() );
 
@@ -476,8 +475,8 @@ void FMouseTest::x11MouseTest()
 
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
   CPPUNIT_ASSERT ( x11_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  x11_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! x11_mouse.hasData() );
   CPPUNIT_ASSERT ( x11_mouse.getPos() == finalcut::FPoint(1, 1) );
   CPPUNIT_ASSERT ( x11_mouse.hasEvent() );
@@ -496,12 +495,12 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   x11_mouse.setRawData (rawdata8);
-  x11_mouse.processEvent (&tv);
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( x11_mouse.getPos() == finalcut::FPoint(3, 5) );
   CPPUNIT_ASSERT ( x11_mouse.isMoved() );
 
   x11_mouse.setRawData (rawdata8);
-  x11_mouse.processEvent (&tv);
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( x11_mouse.getPos() == finalcut::FPoint(3, 5) );
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
@@ -515,8 +514,8 @@ void FMouseTest::x11MouseTest()
 
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
   CPPUNIT_ASSERT ( x11_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  x11_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! x11_mouse.hasData() );
   CPPUNIT_ASSERT ( x11_mouse.getPos() == finalcut::FPoint(16, 32) );
   CPPUNIT_ASSERT ( x11_mouse.hasEvent() );
@@ -535,21 +534,21 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 
   x11_mouse.setRawData (rawdata9);
-  x11_mouse.processEvent (&tv);
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( x11_mouse.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( ! x11_mouse.isShiftKeyPressed() );
   CPPUNIT_ASSERT ( ! x11_mouse.isControlKeyPressed() );
   CPPUNIT_ASSERT ( x11_mouse.isMetaKeyPressed() );
 
   x11_mouse.setRawData (rawdata9);
-  x11_mouse.processEvent (&tv);
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( x11_mouse.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( ! x11_mouse.isShiftKeyPressed() );
   CPPUNIT_ASSERT ( x11_mouse.isControlKeyPressed() );
   CPPUNIT_ASSERT ( ! x11_mouse.isMetaKeyPressed() );
 
   x11_mouse.setRawData (rawdata9);
-  x11_mouse.processEvent (&tv);
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( x11_mouse.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( x11_mouse.isShiftKeyPressed() );
   CPPUNIT_ASSERT ( x11_mouse.isControlKeyPressed() );
@@ -560,7 +559,7 @@ void FMouseTest::x11MouseTest()
       { 0x1b, '[', 'M', 0x20, 0x7f, 0x3f };
   x11_mouse.setRawData (rawdata10);
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
-  x11_mouse.processEvent (&tv);
+  x11_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( x11_mouse.hasEvent() );
   x11_mouse.clearEvent();
   CPPUNIT_ASSERT ( ! x11_mouse.hasEvent() );
@@ -581,9 +580,8 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( sgr_mouse.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( std::strcmp(rawdata1, "@@") == 0 );
 
-  timeval tv;
-  finalcut::FObject::getCurrentTime(&tv);
-  sgr_mouse.processEvent (&tv);
+  auto tv = finalcut::FObject::getCurrentTime();
+  sgr_mouse.processEvent (tv);
 
   CPPUNIT_ASSERT ( sgr_mouse.getPos() == finalcut::FPoint(73, 4) );
   CPPUNIT_ASSERT ( sgr_mouse.hasEvent() );
@@ -605,7 +603,7 @@ void FMouseTest::sgrMouseTest()
   finalcut::FKeyboard::keybuffer raw = \
       { 0x1b, '[', '<', '0', ';', '7', '3', ';', '4', 'M' };
   sgr_mouse.setRawData (raw);
-  sgr_mouse.processEvent (&tv);
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! sgr_mouse.hasEvent() );
 
   // Left mouse button released
@@ -615,7 +613,7 @@ void FMouseTest::sgrMouseTest()
 
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( ! sgr_mouse.hasUnprocessedInput() );
-  sgr_mouse.processEvent (&tv);
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( sgr_mouse.getPos() == finalcut::FPoint(73, 4) );
   CPPUNIT_ASSERT ( sgr_mouse.hasEvent() );
@@ -640,8 +638,8 @@ void FMouseTest::sgrMouseTest()
 
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( ! sgr_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  sgr_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( sgr_mouse.getPos() == finalcut::FPoint(73, 4) );
   CPPUNIT_ASSERT ( sgr_mouse.hasEvent() );
@@ -667,8 +665,8 @@ void FMouseTest::sgrMouseTest()
 
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( sgr_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  sgr_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( sgr_mouse.getPos() == finalcut::FPoint(1, 1) );
   CPPUNIT_ASSERT ( sgr_mouse.hasEvent() );
@@ -687,7 +685,7 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   sgr_mouse.setRawData (rawdata5);
-  sgr_mouse.processEvent (&tv);
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! sgr_mouse.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isMiddleButtonPressed() );
   CPPUNIT_ASSERT ( sgr_mouse.isMiddleButtonReleased() );
@@ -700,8 +698,8 @@ void FMouseTest::sgrMouseTest()
 
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( sgr_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  sgr_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( sgr_mouse.getPos() == finalcut::FPoint(3, 3) );
   CPPUNIT_ASSERT ( sgr_mouse.hasEvent() );
@@ -720,7 +718,7 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   sgr_mouse.setRawData (rawdata6);
-  sgr_mouse.processEvent (&tv);
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( sgr_mouse.getPos() == finalcut::FPoint(3, 4) );
   CPPUNIT_ASSERT ( ! sgr_mouse.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isRightButtonPressed() );
@@ -734,8 +732,8 @@ void FMouseTest::sgrMouseTest()
 
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( sgr_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  sgr_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( sgr_mouse.getPos() == finalcut::FPoint(4, 9) );
   CPPUNIT_ASSERT ( sgr_mouse.hasEvent() );
@@ -754,7 +752,7 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   sgr_mouse.setRawData (rawdata7);
-  sgr_mouse.processEvent (&tv);
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! sgr_mouse.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( sgr_mouse.isWheelDown() );
 
@@ -767,8 +765,8 @@ void FMouseTest::sgrMouseTest()
 
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( sgr_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  sgr_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( sgr_mouse.getPos() == finalcut::FPoint(1, 2) );
   CPPUNIT_ASSERT ( sgr_mouse.hasEvent() );
@@ -787,12 +785,12 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   sgr_mouse.setRawData (rawdata8);
-  sgr_mouse.processEvent (&tv);
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( sgr_mouse.getPos() == finalcut::FPoint(2, 3) );
   CPPUNIT_ASSERT ( sgr_mouse.isMoved() );
 
   sgr_mouse.setRawData (rawdata8);
-  sgr_mouse.processEvent (&tv);
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( sgr_mouse.getPos() == finalcut::FPoint(3, 4) );
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
@@ -806,8 +804,8 @@ void FMouseTest::sgrMouseTest()
 
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( sgr_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  sgr_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( sgr_mouse.getPos() == finalcut::FPoint(5, 5) );
   CPPUNIT_ASSERT ( sgr_mouse.hasEvent() );
@@ -826,21 +824,21 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 
   sgr_mouse.setRawData (rawdata9);
-  sgr_mouse.processEvent (&tv);
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( sgr_mouse.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isShiftKeyPressed() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isControlKeyPressed() );
   CPPUNIT_ASSERT ( sgr_mouse.isMetaKeyPressed() );
 
   sgr_mouse.setRawData (rawdata9);
-  sgr_mouse.processEvent (&tv);
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( sgr_mouse.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isShiftKeyPressed() );
   CPPUNIT_ASSERT ( sgr_mouse.isControlKeyPressed() );
   CPPUNIT_ASSERT ( ! sgr_mouse.isMetaKeyPressed() );
 
   sgr_mouse.setRawData (rawdata9);
-  sgr_mouse.processEvent (&tv);
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( sgr_mouse.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( sgr_mouse.isShiftKeyPressed() );
   CPPUNIT_ASSERT ( sgr_mouse.isControlKeyPressed() );
@@ -851,7 +849,7 @@ void FMouseTest::sgrMouseTest()
       { 0x1b, '[', '<', '2', ';', '1', ';', '1', 'M' };
   sgr_mouse.setRawData (rawdata10);
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
-  sgr_mouse.processEvent (&tv);
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( sgr_mouse.hasEvent() );
   sgr_mouse.clearEvent();
   CPPUNIT_ASSERT ( ! sgr_mouse.hasEvent() );
@@ -863,17 +861,17 @@ void FMouseTest::sgrMouseTest()
       , 0x1b, '[', '<', '6', ';', '5', ';', '@', 'M', '@' };
   sgr_mouse.setRawData (rawdata11);
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
-  sgr_mouse.processEvent (&tv);
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! sgr_mouse.hasEvent() );
 
   sgr_mouse.setRawData (rawdata11);
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
-  sgr_mouse.processEvent (&tv);
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! sgr_mouse.hasEvent() );
 
   sgr_mouse.setRawData (rawdata11);
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
-  sgr_mouse.processEvent (&tv);
+  sgr_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! sgr_mouse.hasEvent() );
 
   CPPUNIT_ASSERT ( sgr_mouse.hasUnprocessedInput() );
@@ -895,9 +893,8 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( urxvt_mouse.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( std::strcmp(rawdata1, "@@") == 0 );
 
-  timeval tv;
-  finalcut::FObject::getCurrentTime(&tv);
-  urxvt_mouse.processEvent (&tv);
+  auto tv = finalcut::FObject::getCurrentTime();
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() == finalcut::FPoint(49, 6) );
   CPPUNIT_ASSERT ( urxvt_mouse.hasEvent() );
   CPPUNIT_ASSERT ( urxvt_mouse.isLeftButtonPressed() );
@@ -918,7 +915,7 @@ void FMouseTest::urxvtMouseTest()
   finalcut::FKeyboard::keybuffer raw = \
       { 0x1b, '[', '3', '2', ';', '4', '9', ';', '6', 'M' };
   urxvt_mouse.setRawData (raw);
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasEvent() );
 
   // Left mouse button released
@@ -928,7 +925,7 @@ void FMouseTest::urxvtMouseTest()
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasUnprocessedInput() );
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() == finalcut::FPoint(49, 6) );
   CPPUNIT_ASSERT ( urxvt_mouse.hasEvent() );
@@ -953,8 +950,8 @@ void FMouseTest::urxvtMouseTest()
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  urxvt_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() == finalcut::FPoint(49, 6) );
   CPPUNIT_ASSERT ( urxvt_mouse.hasEvent() );
@@ -980,8 +977,8 @@ void FMouseTest::urxvtMouseTest()
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  urxvt_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() == finalcut::FPoint(1, 1) );
   CPPUNIT_ASSERT ( urxvt_mouse.hasEvent() );
@@ -1000,7 +997,7 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   urxvt_mouse.setRawData (rawdata5);
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMiddleButtonPressed() );
   CPPUNIT_ASSERT ( urxvt_mouse.isMiddleButtonReleased() );
@@ -1013,8 +1010,8 @@ void FMouseTest::urxvtMouseTest()
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  urxvt_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() == finalcut::FPoint(3, 3) );
   CPPUNIT_ASSERT ( urxvt_mouse.hasEvent() );
@@ -1033,7 +1030,7 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   urxvt_mouse.setRawData (rawdata6);
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() == finalcut::FPoint(3, 4) );
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isRightButtonPressed() );
@@ -1047,8 +1044,8 @@ void FMouseTest::urxvtMouseTest()
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  urxvt_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() == finalcut::FPoint(4, 9) );
   CPPUNIT_ASSERT ( urxvt_mouse.hasEvent() );
@@ -1067,7 +1064,7 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   urxvt_mouse.setRawData (rawdata7);
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( urxvt_mouse.isWheelDown() );
 
@@ -1080,8 +1077,8 @@ void FMouseTest::urxvtMouseTest()
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  urxvt_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() == finalcut::FPoint(1, 2) );
   CPPUNIT_ASSERT ( urxvt_mouse.hasEvent() );
@@ -1100,12 +1097,12 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   urxvt_mouse.setRawData (rawdata8);
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() == finalcut::FPoint(2, 3) );
   CPPUNIT_ASSERT ( urxvt_mouse.isMoved() );
 
   urxvt_mouse.setRawData (rawdata8);
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() == finalcut::FPoint(3, 4) );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
@@ -1119,8 +1116,8 @@ void FMouseTest::urxvtMouseTest()
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  urxvt_mouse.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() == finalcut::FPoint(5, 5) );
   CPPUNIT_ASSERT ( urxvt_mouse.hasEvent() );
@@ -1139,21 +1136,21 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMoved() );
 
   urxvt_mouse.setRawData (rawdata9);
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( urxvt_mouse.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isShiftKeyPressed() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isControlKeyPressed() );
   CPPUNIT_ASSERT ( urxvt_mouse.isMetaKeyPressed() );
 
   urxvt_mouse.setRawData (rawdata9);
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( urxvt_mouse.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isShiftKeyPressed() );
   CPPUNIT_ASSERT ( urxvt_mouse.isControlKeyPressed() );
   CPPUNIT_ASSERT ( ! urxvt_mouse.isMetaKeyPressed() );
 
   urxvt_mouse.setRawData (rawdata9);
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( urxvt_mouse.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( urxvt_mouse.isShiftKeyPressed() );
   CPPUNIT_ASSERT ( urxvt_mouse.isControlKeyPressed() );
@@ -1164,7 +1161,7 @@ void FMouseTest::urxvtMouseTest()
       { 0x1b, '[', '3', '2', ';', '1', ';', '1', 'M' };
   urxvt_mouse.setRawData (rawdata10);
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( urxvt_mouse.hasEvent() );
   urxvt_mouse.clearEvent();
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasEvent() );
@@ -1176,17 +1173,17 @@ void FMouseTest::urxvtMouseTest()
       , 0x1b, '[', '3', '4', ';', '5', ';', '@', 'M', '@' };
   urxvt_mouse.setRawData (rawdata11);
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasEvent() );
 
   urxvt_mouse.setRawData (rawdata11);
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasEvent() );
 
   urxvt_mouse.setRawData (rawdata11);
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasEvent() );
 
   CPPUNIT_ASSERT ( urxvt_mouse.hasUnprocessedInput() );
@@ -1199,7 +1196,7 @@ void FMouseTest::urxvtMouseTest()
   urxvt_mouse.setRawData (rawdata12);
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.hasUnprocessedInput() );
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() != finalcut::FPoint(-5, 5) );
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() == finalcut::FPoint(1, 5) );
@@ -1207,7 +1204,7 @@ void FMouseTest::urxvtMouseTest()
 
   urxvt_mouse.setRawData (rawdata12);
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() != finalcut::FPoint(3, -3) );
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() == finalcut::FPoint(3, 1) );
@@ -1220,7 +1217,7 @@ void FMouseTest::urxvtMouseTest()
       { 0x1b, '[', '3', '2', ';', '7', '0', ';', '2', '5', 'M' };
   urxvt_mouse.setRawData (rawdata13);
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
-  urxvt_mouse.processEvent (&tv);
+  urxvt_mouse.processEvent (tv);
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() != finalcut::FPoint(70, 25) );
   CPPUNIT_ASSERT ( urxvt_mouse.getPos() == finalcut::FPoint(40, 20) );
@@ -1271,9 +1268,8 @@ void FMouseTest::mouseControlTest()
 
   CPPUNIT_ASSERT ( mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
-  timeval tv;
-  finalcut::FObject::getCurrentTime(&tv);
-  mouse_control.processEvent (&tv);
+  auto tv = finalcut::FObject::getCurrentTime();
+  mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( ! mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(5, 8) );
   CPPUNIT_ASSERT ( mouse_control.hasEvent() );
@@ -1293,7 +1289,7 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::X11, rawdata1);
-  mouse_control.processEvent (&tv);
+  mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( ! mouse_control.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonPressed() );
   CPPUNIT_ASSERT ( mouse_control.isLeftButtonReleased() );
@@ -1306,8 +1302,8 @@ void FMouseTest::mouseControlTest()
   mouse_control.setRawData (finalcut::FMouse::MouseType::Sgr, rawdata2);
   CPPUNIT_ASSERT ( mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  mouse_control.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( ! mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(1, 1) );
   CPPUNIT_ASSERT ( mouse_control.hasEvent() );
@@ -1326,7 +1322,7 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::Sgr, rawdata2);
-  mouse_control.processEvent (&tv);
+  mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( ! mouse_control.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( ! mouse_control.isMiddleButtonPressed() );
   CPPUNIT_ASSERT ( mouse_control.isMiddleButtonReleased() );
@@ -1337,8 +1333,8 @@ void FMouseTest::mouseControlTest()
   mouse_control.setRawData (finalcut::FMouse::MouseType::Urxvt, rawdata3);
   CPPUNIT_ASSERT ( mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  mouse_control.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( ! mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(3, 3) );
   CPPUNIT_ASSERT ( mouse_control.hasEvent() );
@@ -1357,7 +1353,7 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::Urxvt, rawdata3);
-  mouse_control.processEvent (&tv);
+  mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(3, 4) );
   CPPUNIT_ASSERT ( ! mouse_control.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( ! mouse_control.isRightButtonPressed() );
@@ -1370,8 +1366,8 @@ void FMouseTest::mouseControlTest()
   mouse_control.setRawData (finalcut::FMouse::MouseType::X11, rawdata4);
   CPPUNIT_ASSERT ( mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  mouse_control.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( ! mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(80, 25) );
   CPPUNIT_ASSERT ( mouse_control.hasEvent() );
@@ -1390,7 +1386,7 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::X11, rawdata4);
-  mouse_control.processEvent (&tv);
+  mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( ! mouse_control.hasUnprocessedInput() );
   CPPUNIT_ASSERT ( mouse_control.isWheelDown() );
 
@@ -1402,8 +1398,8 @@ void FMouseTest::mouseControlTest()
   mouse_control.setRawData (finalcut::FMouse::MouseType::Sgr, rawdata5);
   CPPUNIT_ASSERT ( mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.hasUnprocessedInput() );
-  finalcut::FObject::getCurrentTime(&tv);
-  mouse_control.processEvent (&tv);
+  tv = finalcut::FObject::getCurrentTime();
+  mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( ! mouse_control.hasData() );
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(1, 2) );
   CPPUNIT_ASSERT ( mouse_control.hasEvent() );
@@ -1422,12 +1418,12 @@ void FMouseTest::mouseControlTest()
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::Sgr, rawdata5);
-  mouse_control.processEvent (&tv);
+  mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(2, 3) );
   CPPUNIT_ASSERT ( mouse_control.isMoved() );
 
   mouse_control.setRawData (finalcut::FMouse::MouseType::Sgr, rawdata5);
-  mouse_control.processEvent (&tv);
+  mouse_control.processEvent (tv);
   CPPUNIT_ASSERT ( mouse_control.getPos() == finalcut::FPoint(3, 4) );
   CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
 

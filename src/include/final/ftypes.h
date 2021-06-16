@@ -34,6 +34,7 @@
 #include <cstring>
 
 #include <array>
+#include <chrono>
 #include <functional>
 #include <limits>
 #include <memory>
@@ -51,25 +52,25 @@
               << " in "                          \
               << __func__ << std::endl  // ;
 
-using uChar   = unsigned char;
-using uShort  = unsigned short;
-using uInt    = unsigned int;
-using uLong   = unsigned long;
-using uInt8   = std::uint8_t;
-using uInt16  = std::uint16_t;
-using uInt32  = std::uint32_t;
-using uInt64  = std::uint64_t;
+using uChar     = unsigned char;
+using uShort    = unsigned short;
+using uInt      = unsigned int;
+using uLong     = unsigned long;
+using uInt8     = std::uint8_t;
+using uInt16    = std::uint16_t;
+using uInt32    = std::uint32_t;
+using uInt64    = std::uint64_t;
 
-using sInt    = signed int;
-using sLong   = signed long;
-using sInt8   = std::int8_t;
-using sInt16  = std::int16_t;
-using sInt32  = std::int32_t;
-using sInt64  = std::int64_t;
+using sInt      = signed int;
+using sLong     = signed long;
+using sInt8     = std::int8_t;
+using sInt16    = std::int16_t;
+using sInt32    = std::int32_t;
+using sInt64    = std::int64_t;
 
-using lDouble = long double;
-
-using FCall   = std::function<void()>;
+using lDouble   = long double;
+using TimeValue = std::chrono::time_point<std::chrono::system_clock>;
+using FCall     = std::function<void()>;
 
 namespace finalcut
 {
@@ -125,10 +126,10 @@ constexpr std::reverse_iterator<Iter> make_reverse_iterator (Iter iter)
   return std::reverse_iterator<Iter>(iter);
 }
 
-template <typename T>
-constexpr std::size_t stringLength (T&& array)
+template <typename CharT>
+constexpr std::size_t stringLength (const CharT* s)
 {
-  return std::string(std::forward<T>(array)).length();
+  return std::char_traits<CharT>::length(s);
 }
 
 using charSubstitution = std::unordered_map<wchar_t, wchar_t>;
