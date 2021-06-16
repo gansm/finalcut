@@ -110,9 +110,10 @@ Watch::Watch (FWidget* parent)
 void Watch::printTime()
 {
   finalcut::FString str{};
+  struct tm local_tm;
   using namespace std::chrono;
   auto now = system_clock::to_time_t(system_clock::now());
-  auto lt = *localtime(&now);
+  auto lt = *localtime_r(&now, &local_tm);
 
   if ( sec )
     str.sprintf("%02d:%02d:%02d", lt.tm_hour, lt.tm_min, lt.tm_sec);
