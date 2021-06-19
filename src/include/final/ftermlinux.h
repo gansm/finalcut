@@ -92,6 +92,7 @@ class FTermLinux final
 
     // Accessors
     FString              getClassName() const;
+    static auto          getInstance() -> FTermLinux&;
     CursorStyle          getCursorStyle() const;
     char*                getCursorStyleString();
     int                  getFramebufferBpp() const;

@@ -83,6 +83,7 @@ class FTermFreeBSD final
 
     // Accessors
     FString            getClassName() const;
+    static auto        getInstance() -> FTermFreeBSD&;
     static CursorStyle getCursorStyle();
 
     // Inquiry

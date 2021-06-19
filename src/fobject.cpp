@@ -344,18 +344,17 @@ void FObject::onUserEvent (FUserEvent*)
 uInt FObject::processTimerEvent()
 {
   uInt activated{0};
-  auto currentTime = getCurrentTime();
+  std::unique_lock<std::mutex> unique_lock( internal::var::timer_mutex
+                                          , std::defer_lock );
 
-  if ( ! internal::var::timer_mutex.try_lock() )
+  if ( ! unique_lock.try_lock() )
     return 0;
 
+  auto currentTime = getCurrentTime();
   auto& timer_list = globalTimerList();
 
   if ( ! timer_list || timer_list->empty() )
-  {
-    internal::var::timer_mutex.unlock();
     return 0;
-  }
 
   for (auto&& timer : *timer_list)
   {
@@ -376,7 +375,6 @@ uInt FObject::processTimerEvent()
     performTimerAction (timer.object, &t_ev);
   }
 
-  internal::var::timer_mutex.unlock();
   return activated;
 }
 

@@ -93,6 +93,7 @@ class FOptiMove final
 
     // Accessors
     FString       getClassName() const;
+    static auto   getInstance() -> FOptiMove&;
     uInt          getCursorHomeLength() const;
     uInt          getCarriageReturnLength() const;
     uInt          getCursorToLLLength() const;

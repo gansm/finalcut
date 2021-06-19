@@ -344,7 +344,7 @@ void ftermopenbsdTest::netbsdConsoleTest()
   std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
 
   auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
@@ -374,7 +374,7 @@ void ftermopenbsdTest::netbsdConsoleTest()
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  auto& term_detection = finalcut::FTerm::getFTermDetection();
+  auto& term_detection = finalcut::FTermDetection::getInstance();
   term_detection.setTerminalDetection(true);
   pid_t pid = forkConEmu();
 
@@ -403,7 +403,7 @@ void ftermopenbsdTest::netbsdConsoleTest()
 
 #if DEBUG
     const finalcut::FString& sec_da = \
-        finalcut::FTerm::getFTermDebugData().getSecDAString();
+        finalcut::FTermDebugData::getInstance().getSecDAString();
     CPPUNIT_ASSERT ( sec_da == "\033[>24;20;0c" );
 #endif
 
@@ -449,7 +449,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
   std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
 
   auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
@@ -479,7 +479,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  auto& term_detection = finalcut::FTerm::getFTermDetection();
+  auto& term_detection = finalcut::FTermDetection::getInstance();
   term_detection.setTerminalDetection(true);
   pid_t pid = forkConEmu();
 
@@ -501,7 +501,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
 
-    const auto& fsystem = finalcut::FTerm::getFSystem();
+    const auto& fsystem = finalcut::FSystem::getInstance();
     auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
     wskbd_bell_data& speaker = fsystest->getBell();
     openbsd.disableMetaSendsEscape();
@@ -511,7 +511,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
 
 #if DEBUG
     const finalcut::FString& sec_da = \
-        finalcut::FTerm::getFTermDebugData().getSecDAString();
+        finalcut::FTermDebugData::getInstance().getSecDAString();
     CPPUNIT_ASSERT ( sec_da == "\033[>24;20;0c" );
 #endif
 

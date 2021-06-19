@@ -209,7 +209,7 @@ class FMouse : public FMouseData
     uInt16                getMaxWidth() const;
     uInt16                getMaxHeight() const;
     uInt64                getDblclickInterval() const;
-    TimeValue             getMousePressedTime();
+    TimeValue             getMousePressedTime() const;
 
     // Mutator
     void                   setNewPos (int, int);
@@ -506,6 +506,7 @@ class FMouseControl
 
     // Accessors
     virtual FString           getClassName() const;
+    static auto               getInstance() -> FMouseControl&;
     const FPoint&             getPos();
     void                      clearEvent();
 

@@ -105,10 +105,11 @@ class FKeyboard final
 
     // Accessors
     FString               getClassName() const;
+    static auto           getInstance() -> FKeyboard&;
     FKey                  getKey() const;
     FString               getKeyName (const FKey) const;
     keybuffer&            getKeyBuffer();
-    TimeValue             getKeyPressedTime();
+    TimeValue             getKeyPressedTime() const;
     static uInt64         getKeypressTimeout();
     static uInt64         getReadBlockingTime();
 
@@ -214,7 +215,7 @@ inline FKeyboard::keybuffer& FKeyboard::getKeyBuffer()
 { return fifo_buf; }
 
 //----------------------------------------------------------------------
-inline TimeValue FKeyboard::getKeyPressedTime()
+inline TimeValue FKeyboard::getKeyPressedTime() const
 { return time_keypressed; }
 
 //----------------------------------------------------------------------

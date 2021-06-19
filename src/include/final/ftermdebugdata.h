@@ -35,13 +35,12 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include "final/fstring.h"
+
 #if DEBUG
 
 namespace finalcut
 {
-
-// class forward declaration
-class FTerm;
 
 //----------------------------------------------------------------------
 // class FTermDebugData
@@ -63,6 +62,8 @@ class FTermDebugData final
     FTermDebugData& operator = (const FTermDebugData&) = delete;
 
     // Accessors
+    static FString getClassName();
+    static auto    getInstance() -> FTermDebugData&;
     const FString& getAnswerbackString();
     const FString& getSecDAString();
     const FString& getTermType_256color();
@@ -72,6 +73,9 @@ class FTermDebugData final
     int            getFramebufferBpp();
 #endif
 };
+
+inline FString FTermDebugData::getClassName()
+{ return "FTermDebugData"; }
 
 }  // namespace finalcut
 

@@ -308,7 +308,7 @@ int main (int argc, char* argv[])
   {
     benchmark = true;
     // Disable terminal data requests
-    auto& start_options = finalcut::FStartOptions::getFStartOptions();
+    auto& start_options = finalcut::FStartOptions::getInstance();
     start_options.terminal_data_request = false;
   }
 

@@ -57,6 +57,9 @@ class FSystem
     // Destructor
     virtual ~FSystem() noexcept;
 
+    // Accessor
+    static auto   getInstance() -> std::unique_ptr<FSystem>&;
+
     // Methods
     virtual uChar inPortByte (uShort) = 0;
     virtual void  outPortByte (uChar, uShort) = 0;

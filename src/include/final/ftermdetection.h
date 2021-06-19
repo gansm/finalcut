@@ -100,6 +100,7 @@ class FTermDetection final
 
     // Accessor
     FString               getClassName() const;
+    static auto           getInstance() -> FTermDetection&;
     const FString&        getTermType() const;
     int                   getGnomeTerminalID() const;
     kittyVersion          getKittyVersion() const;

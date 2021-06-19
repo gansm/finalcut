@@ -33,7 +33,7 @@ using finalcut::Termcap;
 void tcapBoolean (const std::string&, bool);
 void tcapNumeric (const std::string&, int);
 void tcapString (const std::string&, const char[]);
-void debug (const finalcut::FApplication&);
+void debug();
 void booleans();
 void numeric();
 void string();
@@ -210,10 +210,9 @@ void tcapString (const std::string& name, const char cap_string[])
 
 //----------------------------------------------------------------------
 #if DEBUG
-void debug (const finalcut::FApplication& TermApp)
+void debug()
 {
-  const auto& fterm = TermApp.getFTerm();
-  auto& debug_data = fterm.getFTermDebugData();
+  auto& debug_data = finalcut::FTermDebugData::getInstance();
   const auto& ab_s = debug_data.getAnswerbackString();
   const auto& sec_da = debug_data.getSecDAString();
   std::cout << "\n.------------------- debug -------------------\r\n";
@@ -310,7 +309,7 @@ int main (int argc, char* argv[])
   finalcut::FTerm::useAlternateScreen(false);
 
   // Disable color palette changes and terminal data requests
-  auto& start_options = finalcut::FStartOptions::getFStartOptions();
+  auto& start_options = finalcut::FStartOptions::getInstance();
   start_options.color_change = false;
   start_options.terminal_data_request = false;
 
@@ -326,7 +325,7 @@ int main (int argc, char* argv[])
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";
   std::cout << "Terminal: " << finalcut::FTerm::getTermType() << "\r\n";
 
-  debug (term_app);
+  debug();
 
   booleans();
   numeric();

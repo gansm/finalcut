@@ -107,6 +107,7 @@ class FOptiAttr final
 
     // Accessors
     FString       getClassName() const;
+    static auto   getInstance() -> FOptiAttr&;
 
     // Mutators
     void          setTermEnvironment (const TermEnv&);

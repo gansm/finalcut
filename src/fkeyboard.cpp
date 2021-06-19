@@ -75,6 +75,13 @@ FKeyboard::FKeyboard()
 
 // public methods of FKeyboard
 //----------------------------------------------------------------------
+auto FKeyboard::getInstance() -> FKeyboard&
+{
+  static const auto& keyboard = make_unique<FKeyboard>();
+  return *keyboard;
+}
+
+//----------------------------------------------------------------------
 void FKeyboard::fetchKeyCode()
 {
   if ( fkey_queue.size() < MAX_QUEUE_SIZE )
@@ -536,7 +543,7 @@ FKey FKeyboard::keyCorrection (const FKey& keycode) const
 #if defined(__linux__)
   if ( FTerm::isLinuxTerm() )
   {
-    auto& linux_console = FTerm::getFTermLinux();
+    auto& linux_console = FTermLinux::getInstance();
     key_correction = linux_console.modifierKeyCorrection(keycode);
   }
   else

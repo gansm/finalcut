@@ -611,7 +611,7 @@ void FComboBox::cb_closeComboBox()
 //----------------------------------------------------------------------
 void FComboBox::cb_inputFieldSwitch()
 {
-  auto& mouse = FTerm::getFMouseControl();
+  auto& mouse = FMouseControl::getInstance();
 
   if ( ! mouse.isLeftButtonPressed() )
     return;
@@ -630,7 +630,7 @@ void FComboBox::cb_inputFieldSwitch()
 //----------------------------------------------------------------------
 void FComboBox::cb_inputFieldHandOver()
 {
-  auto& mouse = FTerm::getFMouseControl();
+  auto& mouse = FMouseControl::getInstance();
 
   if ( list_window.isHidden() )
     return;

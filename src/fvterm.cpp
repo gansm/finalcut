@@ -599,7 +599,7 @@ void FVTerm::flush() const
   }
 
   std::fflush(stdout);
-  auto& mouse = FTerm::getFMouseControl();
+  auto& mouse = FMouseControl::getInstance();
   mouse.drawPointer();
   time_last_flush = FObject::getCurrentTime();
 }
@@ -1881,7 +1881,7 @@ void FVTerm::init()
 //----------------------------------------------------------------------
 void FVTerm::init_characterLengths()
 {
-  const auto& opti_move = FTerm::getFOptiMove();
+  const auto& opti_move = FOptiMove::getInstance();
   cursor_address_length = opti_move.getCursorAddressLength();
   erase_char_length     = opti_move.getEraseCharsLength();
   repeat_char_length    = opti_move.getRepeatCharLength();
@@ -1915,7 +1915,7 @@ void FVTerm::init_combined_character()
   if ( FTerm::getEncoding() != Encoding::UTF8 )
     return;
 
-  const auto& term_detection = FTerm::getFTermDetection();
+  const auto& term_detection = FTermDetection::getInstance();
 
   if ( term_detection.isCygwinTerminal() )
     return;
@@ -1939,7 +1939,7 @@ void FVTerm::finish() const
   setNormal();
 
   if ( FTerm::hasAlternateScreen()
-    && FTerm::getFTermData().isInAlternateScreen() )
+    && FTermData::getInstance().isInAlternateScreen() )
     clearTerm();
 
   forceTerminalUpdate();

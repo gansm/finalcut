@@ -622,7 +622,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
   std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
 
   auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
@@ -651,7 +651,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
   data.setTermResized (false);
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  auto& term_detection = finalcut::FTerm::getFTermDetection();
+  auto& term_detection = finalcut::FTermDetection::getInstance();
   term_detection.setTerminalDetection(true);
   pid_t pid = forkConEmu();
 
@@ -660,7 +660,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
     // (gdb) set follow-fork-mode child
     static constexpr int left_alt = 0x38;
     finalcut::FTermFreeBSD freebsd;
-    const auto& fsystem = finalcut::FTerm::getFSystem();
+    const auto& fsystem = finalcut::FSystem::getInstance();
     auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
     struct keymap_t& keymap = fsystest->getTerminalKeymap();
 
@@ -759,7 +759,7 @@ void ftermfreebsdTest::freebsdConsoleTest()
 
 #if DEBUG
     const finalcut::FString& sec_da = \
-        finalcut::FTerm::getFTermDebugData().getSecDAString();
+        finalcut::FTermDebugData::getInstance().getSecDAString();
     CPPUNIT_ASSERT ( sec_da == "\033[>0;10;0c" );
 #endif
 

@@ -2066,7 +2066,7 @@ void FTermLinuxTest::linuxConsoleTest()
   std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
 
   auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
@@ -2098,7 +2098,7 @@ void FTermLinuxTest::linuxConsoleTest()
   data.setMonochron (false);
   data.setTermResized (false);
 
-  auto& term_detection = finalcut::FTerm::getFTermDetection();
+  auto& term_detection = finalcut::FTermDetection::getInstance();
   finalcut::FTermLinux linux;
 
   // setupterm is needed for tputs in ncurses >= 6.1
@@ -2134,7 +2134,7 @@ void FTermLinuxTest::linuxConsoleTest()
     CPPUNIT_ASSERT ( data.hasHalfBlockCharacter() );
     CPPUNIT_ASSERT ( linux.getFramebufferBpp() == 32 );
 
-    const auto& fsystem = finalcut::FTerm::getFSystem();
+    const auto& fsystem = finalcut::FSystem::getInstance();
     auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
     std::string& characters = fsystest->getCharacters();
     linux.setUTF8 (false);
@@ -2190,7 +2190,7 @@ void FTermLinuxTest::linuxConsoleLat15Test()
   fsystest->setCodeset(test::FSystemTest::Codeset::lat15);
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
 
   auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
@@ -2223,7 +2223,7 @@ void FTermLinuxTest::linuxConsoleLat15Test()
   data.setMonochron (false);
   data.setTermResized (false);
 
-  auto& term_detection = finalcut::FTerm::getFTermDetection();
+  auto& term_detection = finalcut::FTermDetection::getInstance();
   finalcut::FTermLinux linux;
 
   // setupterm is needed for tputs in ncurses >= 6.1
@@ -2282,7 +2282,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
   std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
 
   auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
@@ -2316,7 +2316,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  auto& term_detection = finalcut::FTerm::getFTermDetection();
+  auto& term_detection = finalcut::FTermDetection::getInstance();
   finalcut::FTermLinux linux;
 
   pid_t pid = forkConEmu();
@@ -2340,7 +2340,7 @@ void FTermLinuxTest::linuxCursorStyleTest()
     term_detection.detect();
     linux.init();
 
-    const auto& fsystem = finalcut::FTerm::getFSystem();
+    const auto& fsystem = finalcut::FSystem::getInstance();
     auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
     std::string& characters = fsystest->getCharacters();
     characters.clear();
@@ -2472,7 +2472,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
   std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
 
   auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
@@ -2506,7 +2506,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  auto& term_detection = finalcut::FTerm::getFTermDetection();
+  auto& term_detection = finalcut::FTermDetection::getInstance();
   finalcut::FTermLinux linux;
   term_detection.setLinuxTerm(true);
 
@@ -2530,7 +2530,7 @@ void FTermLinuxTest::linuxColorPaletteTest()
 
     term_detection.detect();
     linux.init();
-    const auto& fsystem = finalcut::FTerm::getFSystem();
+    const auto& fsystem = finalcut::FSystem::getInstance();
     auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
 
     CPPUNIT_ASSERT ( linux.resetColorMap() == true );
@@ -2748,7 +2748,7 @@ void FTermLinuxTest::linuxFontTest()
   std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
   std::cout << "\n";
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
 
   auto& encoding_list = data.getEncodingList();
   encoding_list["UTF-8"] = finalcut::Encoding::UTF8;
@@ -2782,7 +2782,7 @@ void FTermLinuxTest::linuxFontTest()
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
-  auto& term_detection = finalcut::FTerm::getFTermDetection();
+  auto& term_detection = finalcut::FTermDetection::getInstance();
   finalcut::FTermLinux linux;
 
   pid_t pid = forkConEmu();
@@ -2805,7 +2805,7 @@ void FTermLinuxTest::linuxFontTest()
 
     term_detection.detect();
     linux.init();
-    const auto& fsystem = finalcut::FTerm::getFSystem();
+    const auto& fsystem = finalcut::FSystem::getInstance();
     auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
     console_font_op& font = fsystest->getConsoleFont();
     CPPUNIT_ASSERT ( font.op == KD_FONT_OP_GET );
@@ -2892,7 +2892,7 @@ void FTermLinuxTest::modifierKeyTest()
   std::unique_ptr<finalcut::FSystem> fsys = finalcut::make_unique<test::FSystemTest>();
   finalcut::FTerm::setFSystem(fsys);
 
-  const auto& fsystem = finalcut::FTerm::getFSystem();
+  const auto& fsystem = finalcut::FSystem::getInstance();
   auto fsystest = static_cast<test::FSystemTest*>(fsystem.get());
   test::FSystemTest::ShiftState& mod_key = fsystest->getShiftState();
   finalcut::FTermLinux linux{};

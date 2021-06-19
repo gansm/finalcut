@@ -73,6 +73,7 @@ class FTermOpenBSD final
   public:
     // Accessor
     FString            getClassName() const;
+    static auto        getInstance() -> FTermOpenBSD&;
 
     // Inquiries
     static bool        isBSDConsole();

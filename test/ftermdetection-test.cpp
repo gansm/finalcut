@@ -124,7 +124,7 @@ void FTermDetectionTest::classNameTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::ansiTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   setenv ("TERM", "ansi", 1);
   data.setTermType("ansi");
@@ -197,7 +197,7 @@ void FTermDetectionTest::ansiTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::xtermTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
@@ -262,7 +262,7 @@ void FTermDetectionTest::xtermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::rxvtTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("rxvt-cygwin-native");
   detect.setTerminalDetection(true);
@@ -328,7 +328,7 @@ void FTermDetectionTest::rxvtTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::urxvtTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("rxvt-unicode-256color");
   detect.setTerminalDetection(true);
@@ -393,7 +393,7 @@ void FTermDetectionTest::urxvtTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::kdeKonsoleTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
@@ -458,7 +458,7 @@ void FTermDetectionTest::kdeKonsoleTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::gnomeTerminalTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
@@ -523,7 +523,7 @@ void FTermDetectionTest::gnomeTerminalTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::newerVteTerminalTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
@@ -588,7 +588,7 @@ void FTermDetectionTest::newerVteTerminalTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::puttyTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
@@ -654,7 +654,7 @@ void FTermDetectionTest::puttyTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::windowsTerminalTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
@@ -721,7 +721,7 @@ void FTermDetectionTest::windowsTerminalTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::teraTermTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
@@ -786,7 +786,7 @@ void FTermDetectionTest::teraTermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::cygwinTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("cygwin");
   detect.setTerminalDetection(true);
@@ -851,7 +851,7 @@ void FTermDetectionTest::cygwinTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::minttyTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
@@ -916,7 +916,7 @@ void FTermDetectionTest::minttyTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::linuxTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("linux");
   detect.setTerminalDetection(true);
@@ -988,7 +988,7 @@ void FTermDetectionTest::linuxTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::freebsdTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
@@ -1063,7 +1063,7 @@ void FTermDetectionTest::freebsdTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::netbsdTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("wsvt25");
   detect.setTerminalDetection(true);
@@ -1136,7 +1136,7 @@ void FTermDetectionTest::netbsdTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::openbsdTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("vt220");
   detect.setTerminalDetection(true);
@@ -1209,7 +1209,7 @@ void FTermDetectionTest::openbsdTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::sunTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("sun-color");
 
@@ -1280,7 +1280,7 @@ void FTermDetectionTest::sunTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::screenTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("screen");
   detect.setTerminalDetection(true);
@@ -1351,7 +1351,7 @@ void FTermDetectionTest::screenTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::tmuxTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("screen");
   detect.setTerminalDetection(true);
@@ -1423,7 +1423,7 @@ void FTermDetectionTest::tmuxTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::ktermTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("kterm");
   detect.setTerminalDetection(true);
@@ -1495,7 +1495,7 @@ void FTermDetectionTest::ktermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::mltermTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("mlterm");
   detect.setTerminalDetection(true);
@@ -1568,7 +1568,7 @@ void FTermDetectionTest::mltermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::kittyTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm-kitty");
   detect.setTerminalDetection(true);
@@ -1692,7 +1692,7 @@ void FTermDetectionTest::ttytypeTest()
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
     unsetenv("KITTY_WINDOW_ID");
-    auto& data = finalcut::FTerm::getFTermData();
+    auto& data = finalcut::FTermData::getInstance();
 
     // Test /dev/tty3 with linux
     data.setTermFileName("/dev/tty3");

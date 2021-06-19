@@ -52,6 +52,13 @@ FOptiAttr::FOptiAttr()
 
 // public methods of FOptiAttr
 //----------------------------------------------------------------------
+auto FOptiAttr::getInstance() -> FOptiAttr&
+{
+  static const auto& opti_attr = make_unique<FOptiAttr>();
+  return *opti_attr;
+}
+
+//----------------------------------------------------------------------
 void FOptiAttr::setTermEnvironment (const TermEnv& term_env)
 {
   // Set all required termcap values at once
@@ -577,7 +584,7 @@ std::string FOptiAttr::changeAttribute (FChar& term, FChar& next)
     changeAttributeSeparately (term, next);
   }
 
-  if ( FStartOptions::getFStartOptions().sgr_optimizer )
+  if ( FStartOptions::getInstance().sgr_optimizer )
     sgr_optimizer.optimize();
 
   return attr_buf;

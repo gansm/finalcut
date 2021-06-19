@@ -66,6 +66,7 @@ class FTermXTerminal final
 
     // Accessors
     FString               getClassName() const;
+    static auto           getInstance() -> FTermXTerminal&;
     XTermCursorStyle      getCursorStyle() const;
     FString               getFont() const;
     FString               getTitle() const;

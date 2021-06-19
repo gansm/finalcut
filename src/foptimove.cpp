@@ -56,6 +56,13 @@ FOptiMove::FOptiMove (int baud)
 
 // public methods of FOptiMove
 //----------------------------------------------------------------------
+auto FOptiMove::getInstance() -> FOptiMove&
+{
+  static const auto& opti_move = make_unique<FOptiMove>();
+  return *opti_move;
+}
+
+//----------------------------------------------------------------------
 void FOptiMove::setBaudRate (int baud)
 {
   assert ( baud >= 0 );

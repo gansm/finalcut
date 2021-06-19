@@ -85,7 +85,7 @@ FWidget::FWidget (FWidget* parent)
   {
     if ( internal::var::root_widget )
     {
-      auto& fterm_data = FTerm::getFTermData();
+      auto& fterm_data = FTermData::getInstance();
       fterm_data.setExitMessage("FWidget: No parent defined! "
                                 "There should be only one root object");
       FApplication::exit(EXIT_FAILURE);
@@ -2082,7 +2082,7 @@ void FWidget::initColorTheme()
   if ( getColorTheme().use_count() > 0 && ! isDefaultTheme() )
     return;  // A user theme is in use
 
-  if ( FStartOptions::getFStartOptions().dark_theme )
+  if ( FStartOptions::getInstance().dark_theme )
   {
     if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
       setColorTheme<default8ColorDarkTheme>();

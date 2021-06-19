@@ -488,7 +488,7 @@ void FTermFunctionsTest::FullWidthHalfWidthTest()
   CPPUNIT_ASSERT ( finalcut::getHalfWidth(L"ㄴ") == L"ﾤ" );
 
   // Column width (wchar_t)
-  auto& fterm_data = finalcut::FTerm::getFTermData();
+  auto& fterm_data = finalcut::FTermData::getInstance();
   fterm_data.setTermEncoding (finalcut::Encoding::UTF8);
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L"\t") == 0 );
   CPPUNIT_ASSERT ( finalcut::getColumnWidth(L"\r") == 0 );
@@ -2551,7 +2551,7 @@ void FTermFunctionsTest::combiningCharacterTest()
 //----------------------------------------------------------------------
 void FTermFunctionsTest::readCursorPosTest()
 {
-  auto& fterm_data = finalcut::FTerm::getFTermData();
+  auto& fterm_data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   fterm_data.setTermType("xterm");
   detect.setTerminalDetection(true);

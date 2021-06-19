@@ -162,7 +162,7 @@ void FFileDialog::setPath (const FString& dir)
     return;
   }
 
-  const auto& fsystem = FTerm::getFSystem();
+  const auto& fsystem = FSystem::getInstance();
 
   if ( fsystem->realpath(dir.c_str(), resolved_path.data()) != nullptr )
     r_dir.setString(resolved_path.data());
@@ -478,15 +478,13 @@ int FFileDialog::readDir()
 
       getEntry(dir, next);
     }
-    else if ( errno != 0 )
-    {
-      FMessageBox::error (this, "Reading directory\n" + directory);
-
-      if ( errno == EOVERFLOW )  // Value too large to be stored in data type
-        break;
-    }
     else
+    {
+      if ( errno != 0 )
+        FMessageBox::error (this, "Reading directory\n" + directory);
+
       break;
+    }
   }  // end while
 
   if ( closedir(directory_stream) != 0 )
@@ -551,7 +549,7 @@ void FFileDialog::followSymLink (const char* const dir, FDirEntry& entry) const
   std::string symLink{};
   symLink.reserve(MAXPATHLEN);
   struct stat sb{};
-  const auto& fsystem = FTerm::getFSystem();
+  const auto& fsystem = FSystem::getInstance();
   symLink = dir + entry.name;
 
   if ( fsystem->realpath(symLink.data(), resolved_path.data()) == nullptr )
@@ -684,7 +682,7 @@ FString FFileDialog::getHomeDir()
   struct passwd* pwd_ptr{};
   std::array<char, 1024> buf{};
 
-  const auto& fsystem = FTerm::getFSystem();
+  const auto& fsystem = FSystem::getInstance();
   const uid_t euid = fsystem->geteuid();
 
   if ( fsystem->getpwuid_r(euid, &pwd, buf.data(), buf.size(), &pwd_ptr) )

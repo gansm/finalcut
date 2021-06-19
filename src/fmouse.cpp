@@ -258,7 +258,7 @@ uInt64 FMouse::getDblclickInterval() const
 }
 
 //----------------------------------------------------------------------
-TimeValue FMouse::getMousePressedTime()
+TimeValue FMouse::getMousePressedTime() const
 {
   return time_mousepressed;
 }
@@ -1204,14 +1204,16 @@ void FMouseUrxvt::setButtonState (const int btn, const TimeValue& time)
 //----------------------------------------------------------------------
 FMouseControl::FMouseControl()
 {
+  using mt = FMouse::MouseType;
+
 #ifdef F_HAVE_LIBGPM
   if ( FTermLinux::isLinuxConsole() )
-    mouse_protocol[FMouse::MouseType::Gpm].reset(FMouse::createMouseObject<FMouseGPM>());
+    mouse_protocol[mt::Gpm].reset(FMouse::createMouseObject<FMouseGPM>());
 #endif
 
-  mouse_protocol[FMouse::MouseType::X11].reset(FMouse::createMouseObject<FMouseX11>());
-  mouse_protocol[FMouse::MouseType::Sgr].reset(FMouse::createMouseObject<FMouseSGR>());
-  mouse_protocol[FMouse::MouseType::Urxvt].reset(FMouse::createMouseObject<FMouseUrxvt>());
+  mouse_protocol[mt::X11].reset(FMouse::createMouseObject<FMouseX11>());
+  mouse_protocol[mt::Sgr].reset(FMouse::createMouseObject<FMouseSGR>());
+  mouse_protocol[mt::Urxvt].reset(FMouse::createMouseObject<FMouseUrxvt>());
 }
 
 //----------------------------------------------------------------------
@@ -1219,6 +1221,13 @@ FMouseControl::~FMouseControl() = default;  // destructor
 
 
 // public methods of FMouseControl
+//----------------------------------------------------------------------
+auto FMouseControl::getInstance() -> FMouseControl&
+{
+  static const auto& mouse = make_unique<FMouseControl>();
+  return *mouse;
+}
+
 //----------------------------------------------------------------------
 const FPoint& FMouseControl::getPos()
 {

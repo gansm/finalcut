@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -37,6 +37,15 @@ FColorPalette::FColorPalette (const FSetPalette& f)
 
 //----------------------------------------------------------------------
 FColorPalette::~FColorPalette() noexcept = default;  // destructor
+
+
+// public methods of FColorPalette
+//----------------------------------------------------------------------
+auto FColorPalette::getInstance() -> std::shared_ptr<FColorPalette>&
+{
+  static const auto& color_theme = make_unique<std::shared_ptr<FColorPalette>>();
+  return *color_theme.get();
+}
 
 
 // protected methods of FColorPalette

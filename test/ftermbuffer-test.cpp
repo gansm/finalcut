@@ -100,7 +100,7 @@ void FTermBufferTest::noArgumentTest()
 //----------------------------------------------------------------------
 void FTermBufferTest::writeTest()
 {
-  auto& fterm_data = finalcut::FTerm::getFTermData();
+  auto& fterm_data = finalcut::FTermData::getInstance();
   fterm_data.setTermEncoding (finalcut::Encoding::UTF8);
   finalcut::FTermBuffer term_buf{};
 
@@ -361,7 +361,7 @@ void FTermBufferTest::writeTest()
 void FTermBufferTest::streamTest()
 {
   auto multi_color_emojis = bool( wcswidth(L"🚧🚀🚴", 3) == 6 );
-  auto& fterm_data = finalcut::FTerm::getFTermData();
+  auto& fterm_data = finalcut::FTermData::getInstance();
   fterm_data.setTermEncoding (finalcut::Encoding::UTF8);
   finalcut::FTermBuffer::FCharVector fchar_vec = { finalcut::FChar{} };
   CPPUNIT_ASSERT ( fchar_vec.size() == 1 );
@@ -499,7 +499,7 @@ void FTermBufferTest::streamTest()
 //----------------------------------------------------------------------
 void FTermBufferTest::combiningCharacterTest()
 {
-  auto& fterm_data = finalcut::FTerm::getFTermData();
+  auto& fterm_data = finalcut::FTermData::getInstance();
   fterm_data.setTermEncoding (finalcut::Encoding::UTF8);
   finalcut::FTermBuffer term_buf{};
   // Skip leading zero-width characters

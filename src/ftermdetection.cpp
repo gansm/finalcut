@@ -64,6 +64,13 @@ FTermDetection::~FTermDetection() = default;  // destructor
 
 // public methods of FTermDetection
 //----------------------------------------------------------------------
+auto FTermDetection::getInstance() -> FTermDetection&
+{
+  static const auto& term_detection = make_unique<FTermDetection>();
+  return *term_detection;
+}
+
+//----------------------------------------------------------------------
 #if DEBUG
 const FString& FTermDetection::getAnswerbackString() const
 {
@@ -106,7 +113,7 @@ void FTermDetection::getSystemTermType()
 {
   // Import the untrusted environment variable TERM
   const auto& term_env = std::getenv("TERM");
-  const auto& termfilename = FTerm::getFTermData().getTermFileName();
+  const auto& termfilename = FTermData::getInstance().getTermFileName();
 
   if ( term_env )
   {
@@ -142,7 +149,7 @@ bool FTermDetection::getTTYtype()
   // vt100  ttys0
 
   // Get term basename
-  const auto& termfilename = FTerm::getFTermData().getTermFileName();
+  const auto& termfilename = FTermData::getInstance().getTermFileName();
   const char* term_basename = std::strrchr(termfilename.data(), '/');
 
   if ( term_basename == nullptr )
@@ -152,7 +159,7 @@ bool FTermDetection::getTTYtype()
 
   std::FILE* fp{};
   std::array<char, BUFSIZ> str{};
-  const auto& fsystem = FTerm::getFSystem();
+  const auto& fsystem = FSystem::getInstance();
 
   if ( (fp = fsystem->fopen(ttytypename.c_str(), "r")) == nullptr )
     return false;
@@ -196,7 +203,7 @@ bool FTermDetection::getTTYSFileEntry()
   // Analyse /etc/ttys and get the term name
 
   // get term basename
-  const auto& termfilename = FTerm::getFTermData().getTermFileName();
+  const auto& termfilename = FTermData::getInstance().getTermFileName();
   const char* term_basename = std::strrchr(termfilename.data(), '/');
 
   if ( term_basename == nullptr )
@@ -303,7 +310,7 @@ void FTermDetection::detectTerminal()
   if ( terminal_detection )
   {
     FTermios::setCaptureSendCharacters();
-    auto& keyboard = FTerm::getFKeyboard();
+    auto& keyboard = FKeyboard::getInstance();
     keyboard.setNonBlockingInput();
 
     // Initialize 256 colors terminals
@@ -346,7 +353,7 @@ void FTermDetection::detectTerminal()
   }
 
 #if defined(__CYGWIN__)
-  auto& fterm_data = FTerm::getFTermData();
+  auto& fterm_data = FTermData::getInstance();
   const auto& termfilename = fterm_data.getTermFileName();
 
   // Fixes problem with mouse input
@@ -463,7 +470,7 @@ FString FTermDetection::determineMaxColor (const FString& current_termtype)
   // Determine xterm maximum number of colors via OSC 4
 
   FString new_termtype{current_termtype};
-  auto& keyboard = FTerm::getFKeyboard();
+  auto& keyboard = FKeyboard::getInstance();
   keyboard.setNonBlockingInput();
 
   if ( ! color256
@@ -556,7 +563,7 @@ FString FTermDetection::getXTermColorName (FColor color) const
 FString FTermDetection::parseAnswerbackMsg (const FString& current_termtype)
 {
   FString new_termtype{current_termtype};
-  auto& keyboard = FTerm::getFKeyboard();
+  auto& keyboard = FKeyboard::getInstance();
   keyboard.setNonBlockingInput();
   // send ENQ and read the answerback message
   answer_back = getAnswerbackMsg();

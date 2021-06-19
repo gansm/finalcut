@@ -320,6 +320,12 @@ void FButton::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
+void FButton::onWheel (FWheelEvent*)
+{
+  setUp();
+}
+
+//----------------------------------------------------------------------
 void FButton::onTimer (FTimerEvent* ev)
 {
   delTimer(ev->getTimerId());

@@ -42,7 +42,7 @@ namespace finalcut
 //----------------------------------------------------------------------
 void FTermcapQuirks::terminalFixup()
 {
-  const auto& td = FTerm::getFTermDetection();
+  const auto& td = FTermDetection::getInstance();
 
   if ( td.isCygwinTerminal() )
   {
@@ -228,7 +228,7 @@ void FTermcapQuirks::xterm()
 void FTermcapQuirks::rxvt()
 {
   // Set enter/exit alternative charset mode for rxvt terminal
-  const auto& termtype = FTerm::getFTermData().getTermType();
+  const auto& termtype = FTermData::getInstance().getTermType();
 
   if ( termtype.substr(0,12) == "rxvt-16color" )
   {
@@ -237,7 +237,7 @@ void FTermcapQuirks::rxvt()
   }
 
   // Set ansi foreground and background color
-  if ( ! FTerm::getFTermDetection().isUrxvtTerminal() )
+  if ( ! FTermDetection::getInstance().isUrxvtTerminal() )
   {
     TCAP(t_set_a_foreground) = \
         CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm";
@@ -249,7 +249,7 @@ void FTermcapQuirks::rxvt()
 //----------------------------------------------------------------------
 void FTermcapQuirks::vte()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
+  const auto& term_detection = FTermDetection::getInstance();
 
   // gnome-terminal has NC=16 however, it can use the dim attribute
   FTermcap::attr_without_color = 0;
@@ -448,7 +448,7 @@ void FTermcapQuirks::screen()
   {
     FTermcap::can_change_color_palette = true;
 
-    if ( FTerm::getFTermDetection().isTmuxTerm() )
+    if ( FTermDetection::getInstance().isTmuxTerm() )
     {
       TCAP(t_initialize_color) = \
           ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"

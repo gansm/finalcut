@@ -427,7 +427,7 @@ void MyDialog::initMenu()
   Drive.setStatusbarMessage ("Show drive symbols");
   Line3.setSeparator();
 
-  if ( finalcut::FStartOptions::getFStartOptions().dark_theme )
+  if ( finalcut::FStartOptions::getInstance().dark_theme )
     Theme.setChecked();
 }
 
