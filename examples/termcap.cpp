@@ -210,7 +210,7 @@ void tcapString (const std::string& name, const char cap_string[])
 
 //----------------------------------------------------------------------
 #if DEBUG
-void debug()
+void showDebug()
 {
   auto& debug_data = finalcut::FTermDebugData::getInstance();
   const auto& ab_s = debug_data.getAnswerbackString();
@@ -238,14 +238,14 @@ void debug()
   std::cout << "`------------------- debug -------------------\r\n";
 }
 #else
-void debug (const finalcut::FApplication&)
+void showDebug()
 {
   // FINAL CUT was compiled without debug option
 }
 #endif
 
 //----------------------------------------------------------------------
-void booleans()
+void showBooleans()
 {
   std::cout << "\r\n[Booleans]\r\n";
   tcapBoolean ( "background_color_erase"
@@ -273,7 +273,7 @@ void booleans()
 }
 
 //----------------------------------------------------------------------
-void numeric()
+void showNumeric()
 {
   std::cout << "\r\n[Numeric]\r\n";
   tcapNumeric ("max_color"
@@ -287,7 +287,7 @@ void numeric()
 }
 
 //----------------------------------------------------------------------
-void string()
+void showString()
 {
   std::cout << "\r\n[String]\r\n";
   const auto& tcap_strings = finalcut::FTermcap::strings;
@@ -325,10 +325,9 @@ int main (int argc, char* argv[])
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";
   std::cout << "Terminal: " << finalcut::FTerm::getTermType() << "\r\n";
 
-  debug();
-
-  booleans();
-  numeric();
-  string();
+  showDebug();
+  showBooleans();
+  showNumeric();
+  showString();
   return 0;
 }
