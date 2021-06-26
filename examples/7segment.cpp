@@ -185,7 +185,7 @@ void SegmentView::get7Segment (const wchar_t c)
 //----------------------------------------------------------------------
 void SegmentView::draw()
 {
-  std::vector<finalcut::FTermBuffer> tbuffer{3};
+  std::vector<finalcut::FTermBuffer> tbuffer(3);
   finalcut::FTermBuffer left_space{};
 
   FDialog::draw();

@@ -39,6 +39,7 @@
 #include <algorithm>  // need for std::swap
 
 #include "final/fstring.h"
+#include "final/ftypes.h"
 #include "final/sgr_optimizer.h"
 
 namespace finalcut
@@ -222,10 +223,7 @@ class FOptiAttr final
     bool          unsetTermCrossedOut (FChar&);
     bool          setTermDoubleUnderline (FChar&);
     bool          unsetTermDoubleUnderline (FChar&);
-    bool          setTermAttributes ( FChar&
-                                    , bool, bool, bool
-                                    , bool, bool, bool
-                                    , bool, bool, bool );
+    bool          setTermAttributes (FChar&, const TCapAttributes&);
     bool          unsetTermAttributes (FChar&);
     bool          setTermAltCharset (FChar&);
     bool          unsetTermAltCharset (FChar&);

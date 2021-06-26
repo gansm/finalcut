@@ -888,34 +888,31 @@ inline bool FOptiAttr::unsetTermDoubleUnderline (FChar& term)
 }
 
 //----------------------------------------------------------------------
-bool FOptiAttr::setTermAttributes ( FChar& term
-                                  , bool p1, bool p2, bool p3
-                                  , bool p4, bool p5, bool p6
-                                  , bool p7, bool p8, bool p9 )
+bool FOptiAttr::setTermAttributes (FChar& term, const TCapAttributes& attr)
 {
   if ( F_set_attributes.cap )
   {
     const auto sgr = FTermcap::encodeParameter ( F_set_attributes.cap
-                                               , p1 && ! fake_reverse
-                                               , p2
-                                               , p3 && ! fake_reverse
-                                               , p4
-                                               , p5
-                                               , p6
-                                               , p7
-                                               , p8
-                                               , p9 );
+                                               , attr.p1 && ! fake_reverse
+                                               , attr.p2
+                                               , attr.p3 && ! fake_reverse
+                                               , attr.p4
+                                               , attr.p5
+                                               , attr.p6
+                                               , attr.p7
+                                               , attr.p8
+                                               , attr.p9 );
     append_sequence (sgr.data());
     resetColor(term);
-    term.attr.bit.standout      = p1;
-    term.attr.bit.underline     = p2;
-    term.attr.bit.reverse       = p3;
-    term.attr.bit.blink         = p4;
-    term.attr.bit.dim           = p5;
-    term.attr.bit.bold          = p6;
-    term.attr.bit.invisible     = p7;
-    term.attr.bit.protect       = p8;
-    term.attr.bit.alt_charset   = p9;
+    term.attr.bit.standout      = attr.p1;
+    term.attr.bit.underline     = attr.p2;
+    term.attr.bit.reverse       = attr.p3;
+    term.attr.bit.blink         = attr.p4;
+    term.attr.bit.dim           = attr.p5;
+    term.attr.bit.bold          = attr.p6;
+    term.attr.bit.invisible     = attr.p7;
+    term.attr.bit.protect       = attr.p8;
+    term.attr.bit.alt_charset   = attr.p9;
     term.attr.bit.pc_charset    = false;
     term.attr.bit.italic        = false;
     term.attr.bit.crossed_out   = false;
@@ -1243,15 +1240,15 @@ inline void FOptiAttr::changeAttributeSGR (FChar& term, FChar& next)
 
   if ( switchOn() || switchOff() )
     setTermAttributes ( term
-                      , next.attr.bit.standout
-                      , next.attr.bit.underline
-                      , next.attr.bit.reverse
-                      , next.attr.bit.blink
-                      , next.attr.bit.dim
-                      , next.attr.bit.bold
-                      , next.attr.bit.invisible
-                      , next.attr.bit.protect
-                      , next.attr.bit.alt_charset );
+                      , { next.attr.bit.standout
+                        , next.attr.bit.underline
+                        , next.attr.bit.reverse
+                        , next.attr.bit.blink
+                        , next.attr.bit.dim
+                        , next.attr.bit.bold
+                        , next.attr.bit.invisible
+                        , next.attr.bit.protect
+                        , next.attr.bit.alt_charset } );
 
   if ( alt_equal_pc_charset
     && F_enter_pc_charset_mode.cap

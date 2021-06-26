@@ -41,6 +41,8 @@
 #include <utility>
 #include <vector>
 
+#include "final/ftypes.h"
+
 // FTermcap string macro
 #define TCAP(...)  FTermcap::strings[int(Termcap::__VA_ARGS__)].string
 
@@ -129,7 +131,7 @@ class FTermcap final
     static void          termcapStrings();
     static void          termcapKeys();
     static std::string   encodeParams ( const std::string&
-                                      , const std::vector<int>& );
+                                      , const std::array<int, 9>& );
     template<typename PutChar>
     static void          delay_output (int, const PutChar&);
 
@@ -149,7 +151,9 @@ inline FString FTermcap::getClassName() const
 template <typename... Args>
 std::string FTermcap::encodeParameter (const std::string& cap, Args&&... args)
 {
-  return encodeParams(cap, {static_cast<int>(args)...});
+  std::array<int, 9> attr{{ 0, 0, 0, 0, 0, 0, 0, 0, 0 }};
+  attr = {{static_cast<int>(args)...}};
+  return encodeParams(cap, attr);
 }
 
 //----------------------------------------------------------------------

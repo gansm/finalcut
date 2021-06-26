@@ -155,7 +155,7 @@ void FTermFreeBSD::initCharMap()
   if ( ! isFreeBSDConsole() )
     return;
 
-  for (auto&& entry : fc::character)
+  for (auto&& entry : FCharMap::getInstance().getCharEncodeMap())
     if ( entry.pc < 0x1c )
       entry.pc = entry.ascii;
 }

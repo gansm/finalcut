@@ -927,15 +927,16 @@ wchar_t FTerm::charEncode (wchar_t c)
 wchar_t FTerm::charEncode (wchar_t c, Encoding enc)
 {
   wchar_t ch_enc = c;
-  auto found = std::find_if ( fc::character.begin()
-                            , fc::character.end()
-                            , [&c] (const fc::CharEncodeMap& entry)
+  auto& character = FCharMap::getInstance().getCharEncodeMap();
+  auto found = std::find_if ( character.begin()
+                            , character.end()
+                            , [&c] (const FCharMap::CharEncodeMap& entry)
                               {
                                 return entry.unicode == c;
                               } );
 
-  if ( found != fc::character.end() )
-    ch_enc = getCharacter(*found, enc);
+  if ( found != character.end() )
+    ch_enc = FCharMap::getCharacter(*found, enc);
 
   if ( enc == Encoding::PC && ch_enc == c )
     ch_enc = finalcut::unicode_to_cp437(c);
@@ -1134,6 +1135,7 @@ void FTerm::init_alt_charset()
   // Read the used VT100 pairs
 
   std::unordered_map<uChar, uChar> vt100_alt_char;
+  auto& character = FCharMap::getInstance().getCharEncodeMap();
 
   if ( TCAP(t_acs_chars) )
   {
@@ -1147,23 +1149,23 @@ void FTerm::init_alt_charset()
   }
 
   // Update array 'character' with discovered VT100 pairs
-  for (auto&& pair : fc::dec_special_graphics)
+  for (auto&& pair : FCharMap::getInstance().getDECSpecialGraphics())
   {
     const auto keyChar = uChar(pair.key);
     const auto altChar = wchar_t(vt100_alt_char[keyChar]);
     const auto utf8char = wchar_t(pair.unicode);
-    const auto p = std::find_if ( fc::character.begin()
-                                , fc::character.end()
-                                , [&utf8char] (fc::CharEncodeMap entry)
+    const auto p = std::find_if ( character.begin()
+                                , character.end()
+                                , [&utf8char] (FCharMap::CharEncodeMap entry)
                                   { return entry.unicode == utf8char; } );
-    if ( p != fc::character.end() )  // found in character
+    if ( p != character.end() )  // found in character
     {
-      const auto item = std::size_t(std::distance(fc::character.begin(), p));
+      const auto item = std::size_t(std::distance(character.begin(), p));
 
       if ( altChar )                 // update alternate character set
-        getCharacter(fc::character[item], Encoding::VT100) = altChar;
+        FCharMap::getCharacter(character[item], Encoding::VT100) = altChar;
       else                           // delete VT100 char in character
-        getCharacter(fc::character[item], Encoding::VT100) = L'\0';
+        FCharMap::getCharacter(character[item], Encoding::VT100) = L'\0';
     }
   }
 }
@@ -1232,7 +1234,7 @@ void FTerm::init_cygwin_charmap()
     return;
 
   // PC encoding changes
-  for (auto&& entry : fc::character)
+  for (auto&& entry : FCharMap::getInstance().getCharEncodeMap())
   {
     if ( entry.unicode == UniChar::BlackUpPointingTriangle )  // ▲
       entry.pc = 0x18;
@@ -1287,7 +1289,7 @@ void FTerm::init_teraterm_charmap()
   if ( ! isTeraTerm() )
     return;
 
-  for (auto&& entry : fc::character)
+  for (auto&& entry : FCharMap::getInstance().getCharEncodeMap())
     if ( entry.pc < 0x20 )
       entry.pc = entry.ascii;
 }

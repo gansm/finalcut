@@ -53,9 +53,6 @@ enum class FullWidthSupport
 // Constant
 constexpr std::size_t NOT_FOUND = static_cast<std::size_t>(-1);
 
-// global state
-static FullWidthSupport has_fullwidth_support = FullWidthSupport::Unknown;
-
 // Function prototypes
 bool hasAmbiguousWidth (wchar_t);
 
@@ -259,6 +256,9 @@ bool hasFullWidthSupports()
 {
   // Checks if the terminal has full-width character support
 
+  // global state
+  static FullWidthSupport has_fullwidth_support = FullWidthSupport::Unknown;
+
   if ( has_fullwidth_support == FullWidthSupport::Unknown )
   {
     if ( ! FTerm::isInitialized() )
@@ -284,15 +284,16 @@ wchar_t cp437_to_unicode (uChar c)
 {
   constexpr std::size_t CP437 = 0;
   constexpr std::size_t UNICODE = 1;
+  const auto& cp437_ucs = FCharMap::getInstance().getCP437UCSMap();
   wchar_t ucs = c;
-  auto found = std::find_if ( fc::cp437_ucs.begin()
-                            , fc::cp437_ucs.end()
+  auto found = std::find_if ( cp437_ucs.begin()
+                            , cp437_ucs.end()
                             , [&c] (const std::array<wchar_t, 2>& entry)
                               {
                                 return entry[CP437] == c;
                               } );
 
-  if ( found != fc::cp437_ucs.end() )
+  if ( found != cp437_ucs.end() )
     ucs = (*found)[UNICODE];
 
   return ucs;
@@ -303,16 +304,16 @@ uChar unicode_to_cp437 (wchar_t ucs)
 {
   constexpr std::size_t CP437 = 0;
   constexpr std::size_t UNICODE = 1;
+  const auto& cp437_ucs = FCharMap::getInstance().getCP437UCSMap();
   uChar c{'?'};
-
-  auto found = std::find_if ( fc::cp437_ucs.begin()
-                            , fc::cp437_ucs.end()
+  auto found = std::find_if ( cp437_ucs.begin()
+                            , cp437_ucs.end()
                             , [&ucs] (const std::array<wchar_t, 2>& entry)
                               {
                                 return entry[UNICODE] == ucs;
                               } );
 
-  if ( found != fc::cp437_ucs.end() )
+  if ( found != cp437_ucs.end() )
     c = static_cast<uChar>((*found)[CP437]);
 
   return c;
@@ -326,16 +327,17 @@ FString getFullWidth (const FString& str)
   FString s{str};
   auto table_search = [] (wchar_t& c)
   {
+    const auto& halfwidth_fullwidth = FCharMap::getInstance().getHalfFullWidthMap();
     constexpr std::size_t HALF = 0;
     constexpr std::size_t FULL = 1;
-    auto found = std::find_if ( fc::halfwidth_fullwidth.begin()
-                              , fc::halfwidth_fullwidth.end()
+    auto found = std::find_if ( halfwidth_fullwidth.begin()
+                              , halfwidth_fullwidth.end()
                               , [&c] (const std::array<wchar_t, 2>& entry)
                                 {
                                   return entry[HALF] == c;
                                 } );
 
-    if ( found != fc::halfwidth_fullwidth.end() )
+    if ( found != halfwidth_fullwidth.end() )
       c = (*found)[FULL];
   };
 
@@ -358,16 +360,17 @@ FString getHalfWidth (const FString& str)
   FString s{str};
   auto table_search = [] (wchar_t& c)
   {
+    const auto& halfwidth_fullwidth = FCharMap::getInstance().getHalfFullWidthMap();
     constexpr std::size_t HALF = 0;
     constexpr std::size_t FULL = 1;
-    auto found = std::find_if ( fc::halfwidth_fullwidth.begin()
-                              , fc::halfwidth_fullwidth.end()
+    auto found = std::find_if ( halfwidth_fullwidth.begin()
+                              , halfwidth_fullwidth.end()
                               , [&c] (const std::array<wchar_t, 2>& entry)
                                 {
                                   return entry[FULL] == c;
                                 } );
 
-    if ( found != fc::halfwidth_fullwidth.end() )
+    if ( found != halfwidth_fullwidth.end() )
       c = (*found)[HALF];
   };
 

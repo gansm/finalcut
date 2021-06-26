@@ -426,7 +426,7 @@ void FTermcap::termcapKeys()
   // Get termcap keys
 
   // Read termcap key sequences up to the self-defined values
-  for (auto&& entry : fc::fkey_cap_table)
+  for (auto&& entry : FKeyMap::getInstance().getKeyCapMap())
   {
     if ( entry.string != nullptr )  // String is already set
       break;
@@ -437,10 +437,8 @@ void FTermcap::termcapKeys()
 
 //----------------------------------------------------------------------
 std::string FTermcap::encodeParams ( const std::string& cap
-                                   , const std::vector<int>& param_vec )
+                                   , const std::array<int, 9>& params )
 {
-  std::array<int, 9> params{{ 0, 0, 0, 0, 0, 0, 0, 0, 0 }};
-  std::copy (param_vec.begin(), param_vec.end(), params.begin());
   auto str = ::tparm ( C_STR(cap.data()), params[0], params[1]
                      , params[2], params[3], params[4], params[5]
                      , params[6], params[7], params[8] );

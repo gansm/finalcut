@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -28,10 +28,33 @@
 namespace finalcut
 {
 
-namespace fc
+//----------------------------------------------------------------------
+auto FKeyMap::getInstance() -> FKeyMap&
 {
+  static const auto& key_map = make_unique<FKeyMap>();
+  return *key_map;
+}
 
-std::array<FKeyCapMap, 188> fkey_cap_table
+//----------------------------------------------------------------------
+FKeyMap::KeyCapMapType& FKeyMap::getKeyCapMap()
+{
+  return fkey_cap_table;
+}
+
+//----------------------------------------------------------------------
+const FKeyMap::KeyMapType& FKeyMap::getKeyMap()
+{
+  return fkey_table;
+}
+
+//----------------------------------------------------------------------
+const FKeyMap::KeyNameType& FKeyMap::getKeyName()
+{
+  return fkeyname;
+}
+
+//----------------------------------------------------------------------
+FKeyMap::KeyCapMapType FKeyMap::fkey_cap_table
 {{
   { FKey::Backspace       , nullptr,   "kb" },  // Backspace key
   { FKey::Clear_all_tabs  , nullptr,   "ka" },  // Clear-all-tabs key
@@ -228,7 +251,8 @@ std::array<FKeyCapMap, 188> fkey_cap_table
   { FKey::Lower_right     , ESC "Os",  "K5x"}   // Keypad Lower right
 }};
 
-constexpr std::array<FKeyMap, 232> fkey_table =
+//----------------------------------------------------------------------
+constexpr FKeyMap::KeyMapType FKeyMap::fkey_table =
 {{
   { FKey::Meta_insert               , "\033[2;3~"   },  // M-Insert
   { FKey::Meta_insert               , "\033\033[2~" },  // M-Insert
@@ -464,7 +488,8 @@ constexpr std::array<FKeyMap, 232> fkey_table =
   { FKey::Meta_tilde                , "\033~" }   // M-~
 }};
 
-constexpr std::array<FKeyName, 388> fkeyname =
+//----------------------------------------------------------------------
+constexpr FKeyMap::KeyNameType FKeyMap::fkeyname =
 {{
   { FKey::Ctrl_a                    , "Ctrl+A" },
   { FKey::Ctrl_b                    , "Ctrl+B" },
@@ -855,7 +880,5 @@ constexpr std::array<FKeyName, 388> fkeyname =
   { FKey::Urxvt_mouse               , "urxvt mouse extension" },
   { FKey::Incomplete                , "incomplete key string" }
 }};
-
-}  // namespace fc
 
 }  // namespace finalcut

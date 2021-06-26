@@ -134,6 +134,20 @@ constexpr std::size_t stringLength (const CharT* s)
 
 using charSubstitution = std::unordered_map<wchar_t, wchar_t>;
 
+struct TCapAttributes
+{
+  uInt8 p1 : 1;  // Standout
+  uInt8 p2 : 1;  // Underline
+  uInt8 p3 : 1;  // Reverse
+  uInt8 p4 : 1;  // Blink
+  uInt8 p5 : 1;  // Dim
+  uInt8 p6 : 1;  // Bold
+  uInt8 p7 : 1;  // Invisible
+  uInt8 p8 : 1;  // Protected
+  uInt8 p9 : 1;  // Alternate charset
+  uInt8    : 7;  // padding bits
+};
+
 struct FCharAttribute
 {
   // Attribute byte #0

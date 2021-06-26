@@ -146,7 +146,7 @@ class FKeyboard final
 
   private:
     // Using-declaration
-    using FKeyMapPtr = std::shared_ptr<decltype(fc::fkey_cap_table)>;
+    using FKeyMapPtr = std::shared_ptr<FKeyMap::KeyCapMapType>;
 
     // Constants
     static constexpr FKey NOT_SET = static_cast<FKey>(-1);
@@ -234,8 +234,8 @@ inline void FKeyboard::setTermcapMap (const T& keymap)
 //----------------------------------------------------------------------
 inline void FKeyboard::setTermcapMap ()
 {
-  using type = decltype(fc::fkey_cap_table);
-  key_map = std::make_shared<type>(fc::fkey_cap_table);
+  using type = FKeyMap::KeyCapMapType;
+  key_map = std::make_shared<type>(FKeyMap::getInstance().getKeyCapMap());
 }
 
 //----------------------------------------------------------------------

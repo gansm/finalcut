@@ -77,7 +77,7 @@ struct FKeyCapMap
   char tname[4];
 };
 
-using original_type = std::array<finalcut::fc::FKeyCapMap, 188>;
+using original_type = finalcut::FKeyMap::KeyCapMapType;
 using test_type = std::array<FKeyCapMap, 188>;
 
 test_type fkey =

@@ -828,7 +828,7 @@ wchar_t ftermfreebsdTest::charEncode (wchar_t c)
 {
   wchar_t ch_enc{L'\0'};
 
-  for (auto&& entry : finalcut::fc::character)
+  for (auto&& entry : finalcut::FCharMap::getInstance().getCharEncodeMap())
   {
     if ( entry.unicode == c )
     {

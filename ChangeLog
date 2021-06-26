@@ -1,3 +1,6 @@
+2021-06-26 Markus Gans  <guru.mail@muenster.de>
+	* Global non-constant variables are now encapsulated in classes
+
 2021-06-19 Markus Gans  <guru.mail@muenster.de>
 	* Moving the creator methods from FTerm to its own class
 
