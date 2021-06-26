@@ -284,7 +284,7 @@ wchar_t cp437_to_unicode (uChar c)
 {
   constexpr std::size_t CP437 = 0;
   constexpr std::size_t UNICODE = 1;
-  const auto& cp437_ucs = FCharMap::getInstance().getCP437UCSMap();
+  const auto& cp437_ucs = FCharMap::getCP437UCSMap();
   wchar_t ucs = c;
   auto found = std::find_if ( cp437_ucs.begin()
                             , cp437_ucs.end()
@@ -304,7 +304,7 @@ uChar unicode_to_cp437 (wchar_t ucs)
 {
   constexpr std::size_t CP437 = 0;
   constexpr std::size_t UNICODE = 1;
-  const auto& cp437_ucs = FCharMap::getInstance().getCP437UCSMap();
+  const auto& cp437_ucs = FCharMap::getCP437UCSMap();
   uChar c{'?'};
   auto found = std::find_if ( cp437_ucs.begin()
                             , cp437_ucs.end()
@@ -327,7 +327,7 @@ FString getFullWidth (const FString& str)
   FString s{str};
   auto table_search = [] (wchar_t& c)
   {
-    const auto& halfwidth_fullwidth = FCharMap::getInstance().getHalfFullWidthMap();
+    const auto& halfwidth_fullwidth = FCharMap::getHalfFullWidthMap();
     constexpr std::size_t HALF = 0;
     constexpr std::size_t FULL = 1;
     auto found = std::find_if ( halfwidth_fullwidth.begin()
@@ -360,7 +360,7 @@ FString getHalfWidth (const FString& str)
   FString s{str};
   auto table_search = [] (wchar_t& c)
   {
-    const auto& halfwidth_fullwidth = FCharMap::getInstance().getHalfFullWidthMap();
+    const auto& halfwidth_fullwidth = FCharMap::getHalfFullWidthMap();
     constexpr std::size_t HALF = 0;
     constexpr std::size_t FULL = 1;
     auto found = std::find_if ( halfwidth_fullwidth.begin()

@@ -370,7 +370,7 @@ void FTermcapQuirks::sunConsole()
   TCAP(t_parm_down_cursor) = CSI "%p1%dB";
   TCAP(t_parm_right_cursor) = CSI "%p1%dC";
   TCAP(t_parm_left_cursor) = CSI "%p1%dD";
-  auto& fkey_cap_table = FKeyMap::getInstance().getKeyCapMap();
+  auto& fkey_cap_table = FKeyMap::getKeyCapMap();
 
   // Sun Microsystems workstation console keys
   for (std::size_t i{0}; fkey_cap_table[i].tname[0] != 0; i++)

@@ -927,7 +927,7 @@ wchar_t FTerm::charEncode (wchar_t c)
 wchar_t FTerm::charEncode (wchar_t c, Encoding enc)
 {
   wchar_t ch_enc = c;
-  auto& character = FCharMap::getInstance().getCharEncodeMap();
+  auto& character = FCharMap::getCharEncodeMap();
   auto found = std::find_if ( character.begin()
                             , character.end()
                             , [&c] (const FCharMap::CharEncodeMap& entry)
@@ -1135,7 +1135,7 @@ void FTerm::init_alt_charset()
   // Read the used VT100 pairs
 
   std::unordered_map<uChar, uChar> vt100_alt_char;
-  auto& character = FCharMap::getInstance().getCharEncodeMap();
+  auto& character = FCharMap::getCharEncodeMap();
 
   if ( TCAP(t_acs_chars) )
   {
@@ -1149,7 +1149,7 @@ void FTerm::init_alt_charset()
   }
 
   // Update array 'character' with discovered VT100 pairs
-  for (auto&& pair : FCharMap::getInstance().getDECSpecialGraphics())
+  for (auto&& pair : FCharMap::getDECSpecialGraphics())
   {
     const auto keyChar = uChar(pair.key);
     const auto altChar = wchar_t(vt100_alt_char[keyChar]);
@@ -1234,7 +1234,7 @@ void FTerm::init_cygwin_charmap()
     return;
 
   // PC encoding changes
-  for (auto&& entry : FCharMap::getInstance().getCharEncodeMap())
+  for (auto&& entry : FCharMap::getCharEncodeMap())
   {
     if ( entry.unicode == UniChar::BlackUpPointingTriangle )  // ▲
       entry.pc = 0x18;
@@ -1289,7 +1289,7 @@ void FTerm::init_teraterm_charmap()
   if ( ! isTeraTerm() )
     return;
 
-  for (auto&& entry : FCharMap::getInstance().getCharEncodeMap())
+  for (auto&& entry : FCharMap::getCharEncodeMap())
     if ( entry.pc < 0x20 )
       entry.pc = entry.ascii;
 }

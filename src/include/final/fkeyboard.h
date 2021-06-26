@@ -235,7 +235,7 @@ inline void FKeyboard::setTermcapMap (const T& keymap)
 inline void FKeyboard::setTermcapMap ()
 {
   using type = FKeyMap::KeyCapMapType;
-  key_map = std::make_shared<type>(FKeyMap::getInstance().getKeyCapMap());
+  key_map = std::make_shared<type>(FKeyMap::getKeyCapMap());
 }
 
 //----------------------------------------------------------------------

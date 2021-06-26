@@ -91,8 +91,7 @@ void FKeyboard::fetchKeyCode()
 //----------------------------------------------------------------------
 FString FKeyboard::getKeyName (const FKey keynum) const
 {
-  const auto& fkeyname = FKeyMap::getInstance().getKeyName();
-
+  const auto& fkeyname = FKeyMap::getKeyName();
   const auto& found_key = std::find_if
   (
     fkeyname.cbegin(),
@@ -317,7 +316,7 @@ inline FKey FKeyboard::getKnownKey()
 
   assert ( FIFO_BUF_SIZE > 0 );
 
-  for (auto&& entry : FKeyMap::getInstance().getKeyMap())
+  for (auto&& entry : FKeyMap::getKeyMap())
   {
     const char* kstr = entry.string;  // The string is never null
     const std::size_t len = stringLength(kstr);

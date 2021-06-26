@@ -215,7 +215,7 @@ void FTermLinux::initCharMap() const
 
   if ( screen_unicode_map.entry_ct > 0 && screen_unicode_map.entries )
   {
-    for (auto&& entry : FCharMap::getInstance().getCharEncodeMap())
+    for (auto&& entry : FCharMap::getCharEncodeMap())
     {
       const auto ucs = entry.unicode;
       const sInt16 fontpos = getFontPos(ucs);

@@ -426,7 +426,7 @@ void FTermcap::termcapKeys()
   // Get termcap keys
 
   // Read termcap key sequences up to the self-defined values
-  for (auto&& entry : FKeyMap::getInstance().getKeyCapMap())
+  for (auto&& entry : FKeyMap::getKeyCapMap())
   {
     if ( entry.string != nullptr )  // String is already set
       break;
