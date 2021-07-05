@@ -1,0 +1,53 @@
+name: "ARM build"
+
+on:
+  push:
+    branches: [ main, actions-test ]
+  pull_request:
+    branches: [ main, actions-test ]
+  schedule:
+    - cron: '0 7 * * 2'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build on ${{ matrix.arch }}
+
+    # Run steps on a matrix of 3 arch/distro combinations
+    strategy:
+      matrix:
+        include:
+          - arch: aarch64
+          - arch: armv7
+
+    steps:
+    - name: Repository checkout
+      uses: actions/checkout@v2
+
+    - name: Before_install
+      run: |
+        lsb_release -a
+        uname -a
+        whoami
+        tty || echo
+        pwd
+
+    - name: Install dependencies via apt-get
+      run: |
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo apt-get update
+        sudo apt-get -y install \
+          ca-certificates \
+          gcc \
+          g++ \
+          gpm \
+          libgpm-dev \
+          libcppunit-dev \
+          autoconf-archive 
+
+    - name: Build 
+      run: |
+        autoreconf -v --install --force
+        ./configure --prefix=/usr
+        make -j10
+

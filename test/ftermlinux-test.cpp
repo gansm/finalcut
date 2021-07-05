@@ -2097,6 +2097,7 @@ void FTermLinuxTest::linuxConsoleTest()
   data.setVGAFont (false);
   data.setMonochron (false);
   data.setTermResized (false);
+  setenv ("TERM", "linux", 1);
 
   auto& term_detection = finalcut::FTermDetection::getInstance();
   finalcut::FTermLinux linux;

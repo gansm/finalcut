@@ -371,6 +371,7 @@ void ftermopenbsdTest::netbsdConsoleTest()
   data.setVGAFont (false);
   data.setMonochron (false);
   data.setTermResized (false);
+  setenv ("TERM", "wsvt25", 1);
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));
@@ -476,6 +477,7 @@ void ftermopenbsdTest::openbsdConsoleTest()
   data.setVGAFont (false);
   data.setMonochron (false);
   data.setTermResized (false);
+  setenv ("TERM", "vt220", 1);
 
   // setupterm is needed for tputs in ncurses >= 6.1
   setupterm (static_cast<char*>(0), 1, static_cast<int*>(0));

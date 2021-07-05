@@ -98,11 +98,17 @@ class FMouseData
     // Copy constructor
     FMouseData (const FMouseData&) = default;
 
+    // Move constructor
+    FMouseData (FMouseData&&) noexcept = default;
+
     // Destructor
     virtual ~FMouseData() noexcept;
 
     // copy assignment operator (=)
     FMouseData& operator = (const FMouseData&) = default;
+
+    // Move assignment operator (=)
+    FMouseData& operator = (FMouseData&&) noexcept = default;
 
     // Accessors
     virtual FString       getClassName() const;

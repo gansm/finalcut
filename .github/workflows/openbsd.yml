@@ -1,0 +1,38 @@
+name: "OpenBSD build"
+
+on:
+  push:
+    branches: [ main, actions-test ]
+  pull_request:
+    branches: [ main, actions-test ]
+  schedule:
+    - cron: '0 7 * * 2'
+
+jobs:
+  build:
+    runs-on: macos-10.15
+
+    steps:
+    - name: Repository checkout
+      uses: actions/checkout@v2
+
+    - name: Test on OpenBSD 6.8
+      uses: cross-platform-actions/action@v0.0.1
+      with:
+        operating_system: openbsd
+        version: 6.8
+        shell: bash
+        run: |
+          uname -a
+          whoami
+          pwd
+          # http://ftp.openbsd.org/pub/OpenBSD/6.8/packages/amd64/
+          sudo pkg_add gcc-8.4.0 g++-8.4.0 automake-1.16.2 autoconf-2.69p3 autoconf-archive libtool pkgconf cppunit
+          export CXX=eg++
+          export AUTOCONF_VERSION=2.69
+          export AUTOMAKE_VERSION=1.16
+          eg++ --version
+          autoreconf -v --install --force
+          ./configure --prefix=/usr
+          make -j10
+

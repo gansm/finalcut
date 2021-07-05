@@ -1,0 +1,33 @@
+name: "Solaris build"
+
+on:
+  push:
+    branches: [ main, actions-test ]
+  pull_request:
+    branches: [ main, actions-test ]
+  schedule:
+    - cron: '0 7 * * 2'
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Repository checkout
+      uses: actions/checkout@v2
+
+    - name: Test on Solaris 11.4
+      uses: vmactions/solaris-vm@v0.0.3
+      with:
+        prepare: pkgutil -y -i gcc5g++ automake autoconf autoconf_archive libtool pkgconfig libcppunit1_12_1 libcppunit_dev
+        run: |
+          uname -a
+          whoami
+          pwd
+          cat /etc/release
+          PATH=/opt/csw/bin:$PATH
+          export PATH
+          autoreconf -v --install --force
+          ./configure --prefix=/usr
+          make 
+
