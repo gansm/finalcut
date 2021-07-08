@@ -48,6 +48,10 @@ jobs:
             gpm \
             libgpm-dev \
             libcppunit-dev \
+            pkg-config \
+            libtool \
+            automake \
+            autoconf \
             autoconf-archive
           # Build 
           autoreconf -v --install --force
