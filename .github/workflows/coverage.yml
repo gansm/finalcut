@@ -2,9 +2,9 @@ name: "Code coverage"
 
 on:
   push:
-    branches: [ main, actions-test ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, actions-test ]
+    branches: [ main ]
   schedule:
     - cron: '0 7 * * 2'
 

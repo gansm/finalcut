@@ -373,6 +373,7 @@ void FMouseGPM::processEvent (const TimeValue&)
 
       case GPM_UP:
         interpretKeyUp();
+        break;
 
       default:
         break;
