@@ -48,6 +48,7 @@ jobs:
             gpm \
             libgpm-dev \
             libcppunit-dev \
+            libncurses-dev \
             pkg-config \
             libtool \
             automake \
