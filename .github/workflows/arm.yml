@@ -11,27 +11,26 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Build on ${{ matrix.arch }}
+    name: Build on ${{ matrix.architecture }}
 
     # Run steps on a matrix of 3 arch/distro combinations
     strategy:
       matrix:
         include:
-          - arch: aarch64
-          - arch: armv7
-          - arch: armv6
+          - architecture: aarch64
+          - architecture: armv7
+          - architecture: armv6
 
     steps:
     - name: Repository checkout
       uses: actions/checkout@v2
 
     - name: Test on ARM architecture
-      uses: uraimo/run-on-arch-action@v2.0.10
-      id: build
+      uses: darsvador/run-on-arch-action@v1.0.10
+      id: runcmd
       with:
-        githubToken: ${{ github.token }}
-        arch: ${{ matrix.arch }}
-        distro: bullseye
+        architecture: ${{ matrix.architecture }}
+        distribution: buster
         run: |
           lsb_release -a
           uname -a
