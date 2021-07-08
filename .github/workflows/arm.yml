@@ -38,10 +38,11 @@ jobs:
           tty || echo
           pwd
           # Install dependencies via apt-get
-          add-apt-repository ppa:ubuntu-toolchain-r/test
+          echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
           apt-get update
           apt-get -y install \
             ca-certificates \
+            make \
             gcc \
             g++ \
             gpm \
