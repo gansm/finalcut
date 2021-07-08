@@ -26,12 +26,12 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Test on ARM architecture
-      uses: uraimo/run-on-arch-action@v2.0.5
+      uses: uraimo/run-on-arch-action@v2.0.10
       id: build
       with:
+        githubToken: ${{ github.token }}
         arch: ${{ matrix.arch }}
         distro: bullseye
-        githubToken: ${{ github.token }}
         run: |
           lsb_release -a
           uname -a
@@ -53,4 +53,8 @@ jobs:
           autoreconf -v --install --force
           ./configure --prefix=/usr
           make -j10
+
+    - name: Get the output
+      run: |
+        echo "The uname output was ${{ steps.runcmd.outputs.uname }}"
 
