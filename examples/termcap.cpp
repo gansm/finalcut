@@ -33,10 +33,10 @@ using finalcut::Termcap;
 void tcapBoolean (const std::string&, bool);
 void tcapNumeric (const std::string&, int);
 void tcapString (const std::string&, const char[]);
-void debug();
-void booleans();
-void numeric();
-void string();
+void showDebug();
+void showBooleans();
+void showNumeric();
+void showString();
 
 
 //----------------------------------------------------------------------

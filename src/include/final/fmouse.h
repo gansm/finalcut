@@ -205,7 +205,7 @@ class FMouse : public FMouseData
 
     // Methods
     template <typename ClassT>
-    static FMouse*        createMouseObject ();
+    static auto           createMouseObject() -> std::unique_ptr<ClassT> ;
     virtual void          setRawData (FKeyboard::keybuffer&) = 0;
     virtual void          processEvent (const TimeValue&) = 0;
 
@@ -240,9 +240,9 @@ class FMouse : public FMouseData
 
 //----------------------------------------------------------------------
 template <typename ClassT>
-inline FMouse* FMouse::createMouseObject()
+inline auto FMouse::createMouseObject() -> std::unique_ptr<ClassT> 
 {
-  return new ClassT;
+  return make_unique<ClassT>();
 }
 
 

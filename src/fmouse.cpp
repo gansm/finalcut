@@ -1209,12 +1209,12 @@ FMouseControl::FMouseControl()
 
 #ifdef F_HAVE_LIBGPM
   if ( FTermLinux::isLinuxConsole() )
-    mouse_protocol[mt::Gpm].reset(FMouse::createMouseObject<FMouseGPM>());
+    mouse_protocol[mt::Gpm] = FMouse::createMouseObject<FMouseGPM>();
 #endif
 
-  mouse_protocol[mt::X11].reset(FMouse::createMouseObject<FMouseX11>());
-  mouse_protocol[mt::Sgr].reset(FMouse::createMouseObject<FMouseSGR>());
-  mouse_protocol[mt::Urxvt].reset(FMouse::createMouseObject<FMouseUrxvt>());
+  mouse_protocol[mt::X11] = FMouse::createMouseObject<FMouseX11>();
+  mouse_protocol[mt::Sgr] = FMouse::createMouseObject<FMouseSGR>();
+  mouse_protocol[mt::Urxvt] = FMouse::createMouseObject<FMouseUrxvt>();
 }
 
 //----------------------------------------------------------------------
