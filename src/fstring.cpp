@@ -45,27 +45,18 @@ const wchar_t FString::const_null_char{L'\0'};
 FString::FString (int len)
 {
   if ( len > 0 )
-    _initLength(std::size_t(len));
-  else
-    _initLength(0);
+    string = std::wstring(std::size_t(len), L'\0');
 }
 
 //----------------------------------------------------------------------
 FString::FString (std::size_t len)
-{
-  _initLength(len);
-}
+  : string{std::wstring(len, L'\0')}
+{ }
 
 //----------------------------------------------------------------------
 FString::FString (std::size_t len, wchar_t c)
-{
-  _initLength(len);
-  const wchar_t* ps = string;
-  wchar_t* pe = string + len;
-
-  while ( pe != ps )
-    *--pe = c;
-}
+  : string{std::wstring(len, c)}
+{ }
 
 //----------------------------------------------------------------------
 FString::FString (std::size_t len, const UniChar& c)
@@ -75,35 +66,38 @@ FString::FString (std::size_t len, const UniChar& c)
 //----------------------------------------------------------------------
 FString::FString (const FString& s)  // copy constructor
 {
-  if ( ! s.isNull() )
-    _assign (s.string);
+  if ( ! s.isEmpty() )
+  {
+    std::wstring copy(s.string);
+    _assign (copy);
+  }
 }
 
 //----------------------------------------------------------------------
 FString::FString (FString&& s) noexcept  // move constructor
   : string{s.string}
-  , length{s.length}
-  , bufsize{s.bufsize}
-  , c_string{s.c_string}
 {
-  s.string = nullptr;
-  s.length = 0;
-  s.bufsize = 0;
-  s.c_string = nullptr;
+  s.string.clear();
 }
 
 //----------------------------------------------------------------------
 FString::FString (const std::wstring& s)
 {
   if ( ! s.empty() )
-    _assign (s.c_str());
+  {
+    std::wstring str(s);
+    _assign (str);
+  }
 }
 
 //----------------------------------------------------------------------
 FString::FString (const wchar_t s[])
 {
   if ( s )
-    _assign (s);
+  {
+    std::wstring str(s);
+    _assign (str);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -111,9 +105,8 @@ FString::FString (const std::string& s)
 {
   if ( ! s.empty() )
   {
-    const wchar_t* wc_string = _to_wcstring(s.c_str());
-    _assign(wc_string);
-    delete[] wc_string;
+    auto wide_string = _toWideString(s.c_str());
+    _assign(wide_string);
   }
 }
 
@@ -122,17 +115,16 @@ FString::FString (const char s[])
 {
   if ( s )
   {
-    const wchar_t* wc_string = _to_wcstring(s);
-    _assign( wc_string );
-    delete[] wc_string;
+    auto wide_string = _toWideString(s);
+    _assign(wide_string);
   }
 }
 
 //----------------------------------------------------------------------
 FString::FString (const UniChar& c)
 {
-  std::array<wchar_t, 2> s{{ static_cast<wchar_t>(c), L'\0' }};
-  _assign (s.data());
+  std::wstring str{ static_cast<wchar_t>(c) };
+  _assign (str);
 }
 
 //----------------------------------------------------------------------
@@ -140,8 +132,8 @@ FString::FString (const wchar_t c)
 {
   if ( c )
   {
-    std::array<wchar_t, 2> s{{ c, L'\0' }};
-    _assign (s.data());
+    std::wstring str{ c };
+    _assign (str);
   }
 }
 
@@ -150,20 +142,13 @@ FString::FString (const char c)
 {
   if ( c )
   {
-    std::array<wchar_t, 2> s{{ wchar_t(c & 0xff), L'\0' }};
-    _assign (s.data());
+    std::wstring str{ wchar_t(c & 0xff) };
+    _assign (str);
   }
 }
 
 //----------------------------------------------------------------------
-FString::~FString()  // destructor
-{
-  if ( string )
-    delete[] string;
-
-  if ( c_string )
-    delete[] c_string;
-}
+FString::~FString() = default;  // destructor
 
 
 // FString operators
@@ -171,7 +156,10 @@ FString::~FString()  // destructor
 FString& FString::operator = (const FString& s)
 {
   if ( &s != this )
-    _assign (s.string);
+  {
+    std::wstring str{s.string};
+    _assign (str);
+  }
 
   return *this;
 }
@@ -181,21 +169,8 @@ FString& FString::operator = (FString&& s) noexcept
 {
   if ( &s != this )
   {
-    if ( string )
-      delete[] string;
-
-    if ( c_string )
-      delete[] c_string;
-
     string = s.string;
-    length = s.length;
-    bufsize = s.bufsize;
-    c_string = s.c_string;
-
-    s.string = nullptr;
-    s.length = 0;
-    s.bufsize = 0;
-    s.c_string = nullptr;
+    s.string.clear();
   }
 
   return *this;
@@ -204,14 +179,14 @@ FString& FString::operator = (FString&& s) noexcept
 //----------------------------------------------------------------------
 const FString& FString::operator += (const FString& s)
 {
-  _insert (length, s.length, s.string);
+  string.append(s.string);
   return *this;
 }
 
 //----------------------------------------------------------------------
 FString& FString::operator << (const FString& s)
 {
-  _insert (length, s.length, s.string);
+  string.append(s.string);
   return *this;
 }
 
@@ -219,7 +194,7 @@ FString& FString::operator << (const FString& s)
 FString& FString::operator << (const UniChar& c)
 {
   FString s{static_cast<wchar_t>(c)};
-  _insert (length, s.length, s.string);
+  string.append(s.string);
   return *this;
 }
 
@@ -227,7 +202,7 @@ FString& FString::operator << (const UniChar& c)
 FString& FString::operator << (const wchar_t c)
 {
   FString s{c};
-  _insert (length, s.length, s.string);
+  string.append(s.string);
   return *this;
 }
 
@@ -235,42 +210,42 @@ FString& FString::operator << (const wchar_t c)
 FString& FString::operator << (const char c)
 {
   FString s{c};
-  _insert (length, s.length, s.string);
+  string.append(s.string);
   return *this;
 }
 
 //----------------------------------------------------------------------
 const FString& FString::operator >> (FString& s) const
 {
-  s._insert (s.length, length, string);
+  s.string.append(string);
   return *this;
 }
 
 //----------------------------------------------------------------------
 const FString& FString::operator >> (std::wstring& s) const
 {
-  s += std::wstring(string);
+  s += string;
   return *this;
 }
 
 //----------------------------------------------------------------------
 const FString& FString::operator >> (std::string& s) const
 {
-  s += toString();
+  s.append(toString());
   return *this;
 }
 
 //----------------------------------------------------------------------
 const FString& FString::operator >> (wchar_t& c) const
 {
-  c = ( length > 0 ) ? string[0] : L'\0';
+  c = ( ! isEmpty() ) ? string[0] : L'\0';
   return *this;
 }
 
 //----------------------------------------------------------------------
 const FString& FString::operator >> (char& c) const
 {
-  c = ( length > 0 ) ? char(string[0] & 0xff) : '\0';
+  c = ( ! isEmpty() ) ? char(string[0] & 0xff) : '\0';
   return *this;
 }
 
@@ -333,7 +308,7 @@ const FString& FString::operator >> (float& num) const
 //----------------------------------------------------------------------
 FString::operator bool () const
 {
-  return string;
+  return ! isEmpty();
 }
 
 //----------------------------------------------------------------------
@@ -347,12 +322,7 @@ const FString& FString::operator () () const
 //----------------------------------------------------------------------
 FString FString::clear()
 {
-  if ( string )
-    delete[] string;
-
-  length  = 0;
-  bufsize = 0;
-  string  = nullptr;
+  string.clear();
   return *this;
 }
 
@@ -361,7 +331,7 @@ const wchar_t* FString::wc_str() const
 {
   // Returns a constant wide character string
 
-  return string;
+  return string.c_str();
 }
 
 //----------------------------------------------------------------------
@@ -369,7 +339,7 @@ wchar_t* FString::wc_str()
 {
   // Returns a wide character string
 
-  return string;
+  return const_cast<wchar_t*>(string.c_str());
 }
 
 //----------------------------------------------------------------------
@@ -377,12 +347,13 @@ const char* FString::c_str() const
 {
   // Returns a constant c-string
 
-  if ( length > 0 )
-    return _to_cstring(string);
-  else if ( string )
-    return "";
+  if ( ! isEmpty() )
+  {
+    char_string = _toCharString(string);
+    return char_string.c_str();
+  }
   else
-    return nullptr;
+    return "";
 }
 
 //----------------------------------------------------------------------
@@ -390,21 +361,19 @@ char* FString::c_str()
 {
   // Returns a c-string
 
-  if ( length > 0 )
-    return const_cast<char*>(_to_cstring(string));
-  else if ( string )
+  if ( ! isEmpty() )
   {
-    static char empty_string{'\0'};
-    return &empty_string;
+    char_string = _toCharString(string);
+    return const_cast<char*>(char_string.c_str());
   }
   else
-    return nullptr;
+    return const_cast<char*>("");
 }
 
 //----------------------------------------------------------------------
 std::string FString::toString() const
 {
-  return {c_str(), length};
+  return c_str();
 }
 
 //----------------------------------------------------------------------
@@ -489,12 +458,9 @@ long FString::toLong() const
   long tenth_limit{LONG_MAX / 10};
   long tenth_limit_digit{LONG_MAX % 10};
   const FString s{trim()};
-  const wchar_t* p = s.string;
+  const wchar_t* p = s.string.c_str();
 
-  if ( ! p )
-    throw std::invalid_argument ("null value");
-
-  if ( ! *p )
+  if ( s.isEmpty() )
     throw std::invalid_argument ("empty value");
 
   if ( *p == L'-' )
@@ -542,12 +508,9 @@ uLong FString::toULong() const
   const uLong tenth_limit{ULONG_MAX / 10};
   const uLong tenth_limit_digit{ULONG_MAX % 10};
   const FString s{trim()};
-  const wchar_t* p = s.string;
+  const wchar_t* p = s.string.c_str();
 
-  if ( ! p )
-    throw std::invalid_argument ("null value");
-
-  if ( ! *p )
+  if ( s.isEmpty() )
     throw std::invalid_argument ("empty value");
 
   if ( *p == L'-' )
@@ -596,14 +559,11 @@ float FString::toFloat() const
 //----------------------------------------------------------------------
 double FString::toDouble() const
 {
-  if ( ! string )
+  if ( isEmpty() )
     throw std::invalid_argument ("null value");
 
-  if ( ! *string )
-    throw std::invalid_argument ("empty value");
-
   wchar_t* p{};
-  const double ret = std::wcstod(string, &p);
+  const double ret = std::wcstod(string.c_str(), &p);
 
   if ( p != nullptr && *p != L'\0' )
     throw std::invalid_argument ("no valid floating point value");
@@ -623,48 +583,47 @@ double FString::toDouble() const
 //----------------------------------------------------------------------
 FString FString::ltrim() const
 {
-  const FString s{*this};
+  // Handle empty string
+  if ( isEmpty() )
+    return *this;
 
-  // handle NULL and empty string
-  if ( ! (string && *string) )
-    return s;
+  auto iter = string.begin();
+  const auto last = string.end();
 
-  const wchar_t* p = s.string;
+  while ( iter != last && std::iswspace(std::wint_t(*iter)) )
+    ++iter;
 
-  while ( std::iswspace(std::wint_t(*p)) )
-    p++;
-
-  return p;
+  if ( iter != last )
+    return std::wstring(iter, last);
+  else
+    return {};
 }
 
 //----------------------------------------------------------------------
 FString FString::rtrim() const
 {
-  FString s{*this};
+  // Handle empty string
+  if ( isEmpty() )
+    return *this;
 
-  // handle NULL and empty string
-  if ( ! (string && *string) )
-    return s;
+  const auto r_end = string.rend();
+  auto r_iter = string.rbegin();
 
-  wchar_t* p = s.string;
-  wchar_t* last = p + length;
+  while ( r_iter != r_end && std::iswspace(std::wint_t(*r_iter)) )
+    ++r_iter;
 
-  while ( std::iswspace(std::wint_t(*--last)) && last > p )
-    s.length--;
-
-  if ( last == p && std::iswspace(std::wint_t(*last)) )
-    s = L"";
+  if ( r_iter != r_end )
+    return std::wstring( make_reverse_iterator(r_end)
+                       , make_reverse_iterator(r_iter) );
   else
-    *(last + 1) = '\0';
-
-  return s;
+    return {};
 }
 
 //----------------------------------------------------------------------
 FString FString::trim() const
 {
-  // handle NULL and empty string
-  if ( ! (string && *string) )
+  // Handle NULL and empty string
+  if ( isEmpty() )
     return *this;
 
   const FString s{ltrim()};
@@ -674,88 +633,73 @@ FString FString::trim() const
 //----------------------------------------------------------------------
 FString FString::left (std::size_t len) const
 {
-  FString s{*this};
+  // Handle empty and too long strings
+  if ( isEmpty() || len > getLength() )
+    return *this;
 
-  // handle NULL and empty string
-  if ( ! (string && *string) )
-    return s;
-
-  if ( len > length )
-    return s;
-
-  wchar_t* p = s.string;
-  s.length = len;
-  *(p + len) = '\0';
-  return s;
+  return string.substr(0, len);
 }
 
 //----------------------------------------------------------------------
 FString FString::right (std::size_t len) const
 {
-  const FString s{*this};
+  // Handle empty and too long strings
+  if ( isEmpty() || len > getLength() )
+    return *this;
 
-  // handle NULL and empty string
-  if ( ! (string && *string) )
-    return s;
-
-  if ( len > length )
-    return s;
-
-  const wchar_t* p = s.string;
-  p += (length - len);
-  return p;
+  return string.substr(string.size() - len, len);
 }
 
 //----------------------------------------------------------------------
 FString FString::mid (std::size_t pos, std::size_t len) const
 {
-  const FString s{*this};
-
-  // handle NULL and empty string
-  if ( ! (string && *string) )
-    return s;
+  // Handle empty string
+  if ( isEmpty() )
+    return *this;
 
   if ( pos == 0 )
     pos = 1;
+
+  auto length = string.length();
 
   if ( pos <= length && pos + len > length )
     len = length - pos + 1;
 
   if ( pos > length || pos + len - 1 > length || len == 0 )
-    return {L""};
+    return {};
 
-  wchar_t* p = s.string;
-  wchar_t* first = p + pos - 1;
-  *(first + len) = '\0';
-  return first;
+  auto first = string.begin() + static_cast<difference_type>(pos) - 1;
+  auto last = first + static_cast<difference_type>(len);
+  return std::wstring(first, last);
 }
 
 //----------------------------------------------------------------------
 FStringList FString::split (const FString& delimiter) const
 {
+  if ( isEmpty() )
+    return {};
+
   const FString s{*this};
   FStringList string_list{};
+  auto delimiter_length = delimiter.getLength();
+  std::wstring::size_type first = 0;
+  std::wstring::size_type last;
 
-  // handle NULL and empty string
-  if ( ! (string && *string) )
-    return string_list;
-
-  wchar_t* rest{nullptr};
-  const wchar_t* token = _extractToken(&rest, s.string, delimiter.wc_str());
-
-  while ( token )
+  while ( (last = s.string.find(delimiter.string, first)) != std::wstring::npos )
   {
-    string_list.emplace_back(token);
-    token = _extractToken (&rest, nullptr, delimiter.wc_str());
+    string_list.emplace_back(std::wstring(s.string, first, last - first));
+    first = last + delimiter_length;
   }
 
+  string_list.emplace_back(std::wstring(s.string, first));
   return string_list;
 }
 
 //----------------------------------------------------------------------
 FString& FString::setString (const FString& s)
 {
-  _assign (s.string);
+  std::wstring str{s.string};
+  _assign (str);
   return *this;
 }
 
@@ -781,7 +725,8 @@ FString& FString::setNumber (sInt64 num)
   if ( num < 0 )
     *--s = '-';
 
-  _assign (s);
+  std::wstring str{s};
+  _assign (str);
   return *this;
 }
 
@@ -799,7 +744,8 @@ FString& FString::setNumber (uInt64 num)
   }
   while ( num );
 
-  _assign (s);
+  std::wstring str{s};
+  _assign (str);
   return *this;
 }
 
@@ -864,7 +810,8 @@ FString& FString::setFormatedNumber (sInt64 num, char separator)
   if ( num < 0 )
     *--s = '-';
 
-  _assign (s);
+  std::wstring str{s};
+  _assign (str);
   return *this;
 }
 
@@ -890,7 +837,8 @@ FString& FString::setFormatedNumber (uInt64 num, char separator)
   }
   while ( num );
 
-  _assign (s);
+  std::wstring str{s};
+  _assign (str);
   return *this;
 }
 
@@ -898,43 +846,19 @@ FString& FString::setFormatedNumber (uInt64 num, char separator)
 //----------------------------------------------------------------------
 bool FString::operator < (const FString& s) const
 {
-  if ( string && ! s.string )
-    return false;
-
-  if ( ! string && s.string )
-    return true;
-
-  if ( ! (string || s.string) )
-    return false;
-
-  return std::wcscmp(string, s.string) < 0;
+  return string < s.string;
 }
 
 //----------------------------------------------------------------------
 bool FString::operator <= (const FString& s) const
 {
-  if ( ! (string || s.string) )
-    return true;
-
-  if ( string && ! s.string )
-    return false;
-
-  if ( ! string && s.string )
-    return true;
-
-  return std::wcscmp(string, s.string) <= 0;
+  return string <= s.string;
 }
 
 //----------------------------------------------------------------------
 bool FString::operator == (const FString& s) const
 {
-  if ( ! (string || s.string) )
-    return true;
-
-  if ( bool(string) != bool(s.string) || length != s.length )
-    return false;
-
-  return std::wcscmp(string, s.string) == 0;
+  return string == s.string;
 }
 
 //----------------------------------------------------------------------
@@ -946,87 +870,49 @@ bool FString::operator != (const FString& s) const
 //----------------------------------------------------------------------
 bool FString::operator >= (const FString& s) const
 {
-  if ( string && ! s.string )
-    return true;
-
-  if ( ! string && s.string )
-    return false;
-
-  if ( ! (string || s.string) )
-    return true;
-
-  return std::wcscmp(string, s.string) >= 0;
+  return string >= s.string;
 }
 
 //----------------------------------------------------------------------
 bool FString::operator > (const FString& s) const
 {
-  if ( ! (string || s.string) )
-    return false;
-
-  if ( string && ! s.string )
-    return true;
-
-  if ( ! string && s.string )
-    return false;
-
-  return std::wcscmp(string, s.string) > 0;
+  return string > s.string;
 }
 
 //----------------------------------------------------------------------
 const FString& FString::insert (const FString& s, int pos)
 {
-  if ( isNegative(pos) || uInt(pos) > length )
+  if ( isNegative(pos) || uInt(pos) > string.length() )
     throw std::out_of_range("");
 
-  _insert (uInt(pos), s.length, s.string);
+  string.insert(uInt(pos), s.string, 0 , s.getLength());
   return *this;
 }
 
 //----------------------------------------------------------------------
 const FString& FString::insert (const FString& s, std::size_t pos)
 {
-  if ( pos > length )
+  if ( pos > string.length() )
     throw std::out_of_range("");
 
-  _insert (pos, s.length, s.string);
+  string.insert(uInt(pos), s.string, 0 , s.getLength());
   return *this;
 }
 
 //----------------------------------------------------------------------
 FString FString::replace (const FString& from, const FString& to) const
 {
+  // Handle empty strings
+  if ( isEmpty() || from.isEmpty() )
+    return *this;
+
   FString s{*this};
+  std::wstring::size_type pos{};
 
-  // handle NULL and empty string
-  if ( ! (string && *string) )
-    return s;
-
-  if ( from.isNull() || to.isNull() )
-    return s;
-
-  if ( from.isEmpty() )
-    return s;
-
-  const wchar_t* p = s.string;
-  const std::size_t from_length = from.getLength();
-  const std::size_t to_length = to.getLength();
-  std::size_t pos{0};
-
-  while ( *p )
+  while ( (pos = s.string.find(from.string, pos)) != std::wstring::npos )
   {
-    if ( std::wcsncmp(p, from.string, from_length) == 0 )
-    {
-      s._remove(pos, from_length);
-      s._insert(pos, to_length, to.string);
-      pos += to_length;
-      p = s.string + pos;
-    }
-    else
-    {
-      pos++;
-      p++;
-    }
+     s.string.replace (pos, from.getLength(), to.string);
+     pos += to.getLength();
   }
 
   return s;
@@ -1061,24 +947,26 @@ FString FString::replaceControlCodes() const
 //----------------------------------------------------------------------
 FString FString::expandTabs (int tabstop) const
 {
-  FString instr{string};
-  FString outstr{};
-
   if ( tabstop <= 0 )
-    return instr;
+    return *this;
 
-  const FStringList tab_split = instr.split("\t");
-  const uLong last = tab_split.size();
+  FString outstr{};
+  const auto tab_split = split(L"\t");
+  const auto last = tab_split.end() - 1;
+  auto iter = tab_split.begin();
 
-  for (std::size_t i{0}; i < last; i++)
+  while ( iter != tab_split.end() )
   {
-    const auto len = tab_split[i].getLength();
-    const auto tab_len = std::size_t(tabstop);
-
-    if ( i == last - 1 )
-      outstr += tab_split[i];
+    if ( iter != last )
+    {
+      const auto len = iter->getLength();
+      const auto tab_len = std::size_t(tabstop);
+      outstr += *iter + std::wstring(tab_len - (len % tab_len), L' ');
+    }
     else
-      outstr += tab_split[i] + FString(tab_len - (len % tab_len), L' ');
+      outstr += *iter;
+
+    ++iter;
   }
 
   return outstr;
@@ -1108,8 +996,7 @@ FString FString::removeDel() const
     }
   }
 
-  s.string[i] = L'\0';
-  s.length = i;
+  s.string.erase(i);
   return s;
 }
 
@@ -1133,8 +1020,7 @@ FString FString::removeBackspaces() const
     }
   }
 
-  s.string[i] = L'\0';
-  s.length = i;
+  s.string.erase(i);
   return s;
 }
 
@@ -1150,374 +1036,104 @@ const FString& FString::overwrite (const FString& s, int pos)
 //----------------------------------------------------------------------
 const FString& FString::overwrite (const FString& s, std::size_t pos)
 {
-  if ( pos > length )
-    pos = length;
+  if ( pos > string.length() )
+    pos = string.length();
 
-  if ( length >= (pos + s.length) )
-  {
-    std::wcsncpy (string + pos, s.string, s.length);
-  }
-  else
-  {
-    std::wcsncpy (string + pos, s.string, length - pos);
-    _insert (length, pos + s.length - length, s.string + length - pos);
-  }
-
+  string.replace(pos, s.getLength(), s.string);
   return *this;
 }
 
 //----------------------------------------------------------------------
 const FString& FString::remove (std::size_t pos, std::size_t len)
 {
+  auto length = string.length();
+
   if ( pos > length )
     return *this;
 
   if ( pos + len > length )
     len = length - pos;
 
-  _remove (pos, len);
-
+  string.erase (pos, len);
   return *this;
 }
 
 //----------------------------------------------------------------------
 bool FString::includes (const FString& s) const
 {
-  if ( ! s )
+  if ( s.isEmpty() )
     return false;
 
-  if ( ! (string && s.string) )
-    return false;
-
-  return std::wcsstr(string, s.string) != nullptr;
+  return string.find(s.string) != std::wstring::npos;
 }
 
 
 // private methods of FString
 //----------------------------------------------------------------------
-inline void FString::_initLength (std::size_t len)
+inline void FString::_assign (std::wstring& s)
 {
-  if ( len == 0 )
+  if ( string == s )
     return;
 
-  length  = len;
-  bufsize = FWDBUFFER + len + 1;
-
-  try
-  {
-    string = new wchar_t[bufsize];
-    std::wmemset (string, L'\0', bufsize);
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("wchar_t[bufsize]");
-  }
+  s.swap(string);
 }
 
 //----------------------------------------------------------------------
-void FString::_assign (const wchar_t s[])
+inline std::string FString::_toCharString (const std::wstring& s) const
 {
-  if ( ! s )
-  {
-    clear();
-    return;
-  }
+  if ( s.empty() )
+    return {};
 
-  if ( string && std::wcscmp(string, s) == 0 )
-    return;  // string == s
-
-  std::size_t new_length{std::wcslen(s)};
-
-  if ( ! string || new_length > capacity() )
-  {
-    if ( string )
-      delete[] string;
-
-    bufsize = FWDBUFFER + new_length + 1;
-
-    try
-    {
-      string = new wchar_t[bufsize];
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("wchar_t[bufsize]");
-      return;
-    }
-  }
-
-  std::wcsncpy (string, s, bufsize);
-  length = new_length;
-  string[capacity()] = L'\0';
-}
-
-//----------------------------------------------------------------------
-void FString::_insert (std::size_t len, const wchar_t s[])
-{
-  if ( len == 0 )  // String s is a null or a empty string
-    return;
-
-  if ( string )
-    delete[] string;
-
-  length = len;
-  bufsize = FWDBUFFER + length + 1;
-
-  try
-  {
-    string = new wchar_t[bufsize];
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("wchar_t[bufsize]");
-    return;
-  }
-
-  std::wcsncpy (string, s, bufsize);
-  string[capacity()] = L'\0';
-}
-
-//----------------------------------------------------------------------
-void FString::_insert ( std::size_t pos
-                      , std::size_t len
-                      , const wchar_t s[] )
-{
-  if ( len == 0 )  // String s is a null or a empty string
-    return;
-
-  if ( ! string )  // string is null
-  {
-    _insert (len, s);
-  }
-  else
-  {
-    std::size_t x{};
-
-    if ( length + len <= capacity() )
-    {
-      // output string <= bufsize
-      for (x = length; x + 1 > pos; x--)  // shifting right side + '\0'
-        string[x + len] = string[x];
-
-      for (x = 0; x < len; x++)           // insert string
-        string[x + pos] = s[x];
-
-      length += len;
-    }
-    else
-    {
-      // output string > bufsize
-      bufsize = FWDBUFFER + length + len + 1;
-      wchar_t* sptr{};
-
-      try
-      {
-        sptr = new wchar_t[bufsize];      // generate new string
-      }
-      catch (const std::bad_alloc&)
-      {
-        badAllocOutput ("wchar_t[bufsize]");
-        return;
-      }
-
-      std::size_t y{0};
-
-      for (x = 0; x < pos; x++)           // left side
-        sptr[y++] = string[x];
-
-      for (x = 0 ; x < len; x++)          // insert string
-        sptr[y++] = s[x];
-
-      for (x = pos; x < length + 1; x++)  // right side + '\0'
-        sptr[y++] = string[x];
-
-      length += len;
-      delete[] string;                    // delete old string
-      string = sptr;
-    }
-  }
-}
-
-//----------------------------------------------------------------------
-void FString::_remove (std::size_t pos, std::size_t len)
-{
-  if ( capacity() - length + len <= FWDBUFFER )
-  {
-    // shifting left side to pos
-    for (std::size_t i = pos; i + len < length + 1; i++)
-      string[i] = string[i + len];
-
-    length -= len;
-  }
-  else
-  {
-    bufsize = length + 1 - len + FWDBUFFER;
-    wchar_t* sptr{};
-
-    try
-    {
-      sptr = new wchar_t[bufsize];            // generate new string
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("wchar_t[bufsize]");
-      return;
-    }
-
-    std::size_t x{};
-    std::size_t y{};
-
-    for (x = 0; x < pos; x++)                 // left side
-      sptr[y++] = string[x];
-
-    for (x = pos + len; x < length + 1; x++)  // right side + '\0'
-      sptr[y++] = string[x];
-
-    delete[] string;                          // delete old string
-    string = sptr;
-    length -= len;
-  }
-}
-
-//----------------------------------------------------------------------
-inline const char* FString::_to_cstring (const wchar_t s[]) const
-{
-  if ( ! s )  // handle NULL string
-    return nullptr;
-
-  if ( ! *s )  // handle empty string
-  {
-    try
-    {
-      // Generate a empty string ("")
-      c_string = new char[1]();
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("char[1]");
-      return nullptr;
-    }
-
-    return c_string;
-  }
-
-  if ( c_string )
-    delete[] c_string;
-
-  const wchar_t* src = s;
+  const wchar_t* src = s.c_str();
   auto state = std::mbstate_t();
   auto size = std::wcsrtombs(nullptr, &src, 0, &state) + 1;
 
-  try
-  {
-    c_string = new char[size];
+  std::vector<char> dest(size);
 
-    // pre-initialiaze the whole string with '\0'
-    std::memset (c_string, '\0', size);
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("char[size]");
-    return nullptr;
-  }
-
-  const auto mblength = std::wcsrtombs (c_string, &src, size, &state);
+  const auto mblength = std::wcsrtombs (dest.data(), &src, size, &state);
 
   if ( mblength == static_cast<std::size_t>(-1) && errno != EILSEQ )
   {
-    delete[] c_string;
-    c_string = nullptr;
-    return "";
+    return {};
   }
 
-  return c_string;
+  return dest.data();
 }
 
 //----------------------------------------------------------------------
-inline const wchar_t* FString::_to_wcstring (const char s[]) const
+inline std::wstring FString::_toWideString (const std::string& s) const
 {
-  if ( ! s )   // handle NULL string
-    return nullptr;
+  if ( s.empty() )
+    return {};
 
-  if ( ! *s )  // handle empty string
-  {
-    try
-    {
-      // Generate a empty wide string (L"")
-      return new wchar_t[1]();
-    }
-    catch (const std::bad_alloc&)
-    {
-      badAllocOutput ("wchar_t[1]");
-      return nullptr;
-    }
-  }
-
-  const char* src = s;
-  wchar_t* dest{};
+  const char* src = s.c_str();
   auto state = std::mbstate_t();
   auto size = std::mbsrtowcs(nullptr, &src, 0, &state) + 1;
 
   if ( size == 0 )  // ...malformed UTF-8 string
-    return nullptr;
+    return {};
 
-  try
-  {
-    dest = new wchar_t[size];
-    // pre-initialiaze the whole string with '\0'
-    std::wmemset (dest, L'\0', size);
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("wchar_t[size]");
-    return nullptr;
-  }
+  std::vector<wchar_t> dest(size);
 
-  const auto wclength = std::mbsrtowcs (dest, &src, size, &state);
+  const auto wide_length = std::mbsrtowcs (dest.data(), &src, size, &state);
 
-  if ( wclength == static_cast<std::size_t>(-1) )
+  if ( wide_length == static_cast<std::size_t>(-1) )
   {
-    if ( src != s )
-      return dest;
+    if ( src != s.c_str() )
+      return dest.data();
     else
     {
-      delete[] dest;
-      return nullptr;
+      return {};
     }
   }
 
-  if ( wclength == size )
+  if ( wide_length == size )
     dest[size - 1] = '\0';
 
-  if ( wclength )
-    return dest;
+  if ( wide_length != 0 )
+    return dest.data();
   else
-  {
-    delete[] dest;
-    return nullptr;
-  }
-}
-
-//----------------------------------------------------------------------
-inline const wchar_t* FString::_extractToken ( wchar_t* rest[]
-                                             , const wchar_t s[]
-                                             , const wchar_t delim[] ) const
-{
-  wchar_t* token = s ? const_cast<wchar_t*>(s) : *rest;
-
-  if ( ! token )
-    return nullptr;
-
-  if ( ! token[0] )
-    return nullptr;
-
-  *rest = std::wcspbrk(token, delim);
-
-  if ( *rest )
-    *(*rest)++ = '\0';
-  else
-    *rest = token + std::wcslen(token);
-  return token;
+    return {};
 }
 
 
@@ -1525,8 +1141,7 @@ inline const wchar_t* FString::_extractToken ( wchar_t* rest[]
 //----------------------------------------------------------------------
 FString operator + (const FString& s1, const FString& s2)
 {
-  FString tmp{s1};
-  tmp._insert (tmp.length, s2.length, s2.wc_str());
+  auto tmp = s1.string + s2.string;
   return tmp;
 }
 
@@ -1535,14 +1150,14 @@ std::ostream& operator << (std::ostream& outstr, const FString& s)
 {
   const auto width = std::size_t(outstr.width());
 
-  if ( s.length > 0 )
+  if ( s.string.length() > 0 )
   {
-    outstr << s._to_cstring(s.string);
+    outstr << s._toCharString(s.string).c_str();
   }
   else if ( width > 0 )
   {
     const FString fill_str{width, wchar_t(outstr.fill())};
-    outstr << s._to_cstring(fill_str.string);
+    outstr << s._toCharString(fill_str.string).c_str();
   }
 
   return outstr;
@@ -1553,12 +1168,11 @@ std::istream& operator >> (std::istream& instr, FString& s)
 {
   std::array<char, FString::INPBUFFER + 1> buf{};
   instr.getline (buf.data(), FString::INPBUFFER);
-  const wchar_t* wc_str = s._to_wcstring(buf.data());
+  auto wide_string = s._toWideString(buf.data());
 
-  if ( wc_str )
+  if ( ! wide_string.empty() )
   {
-    s._assign (wc_str);
-    delete[] wc_str;
+    s._assign (wide_string);
   }
 
   return instr;
@@ -1569,7 +1183,7 @@ std::wostream& operator << (std::wostream& outstr, const FString& s)
 {
   const auto width = std::size_t(outstr.width());
 
-  if ( s.length > 0 )
+  if ( s.string.length() > 0 )
   {
     outstr << s.string;
   }
@@ -1587,7 +1201,8 @@ std::wistream& operator >> (std::wistream& instr, FString& s)
 {
   std::array<wchar_t, FString::INPBUFFER + 1> buf{};
   instr.getline (buf.data(), FString::INPBUFFER);
-  s._assign (buf.data());
+  std::wstring str(buf.data());
+  s._assign (str);
   return instr;
 }
 

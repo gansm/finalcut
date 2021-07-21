@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -29,10 +29,47 @@
 namespace finalcut
 {
 
-namespace fc
+//----------------------------------------------------------------------
+auto FCharMap::getInstance() -> FCharMap&
 {
+  static const auto& char_map = make_unique<FCharMap>();
+  return *char_map;
+}
 
-std::array<CharEncodeMap, 115> character =
+//----------------------------------------------------------------------
+wchar_t& FCharMap::getCharacter ( CharEncodeMap& char_enc
+                                , const Encoding& enc )
+{
+  const auto array = reinterpret_cast<wchar_t*>(&char_enc);
+  return array[std::size_t(enc)];
+}
+
+//----------------------------------------------------------------------
+FCharMap::CharEncodeType& FCharMap::getCharEncodeMap()
+{
+  return character;
+}
+
+//----------------------------------------------------------------------
+const FCharMap::DECGraphicsType& FCharMap::getDECSpecialGraphics()
+{
+  return dec_special_graphics;
+}
+
+//----------------------------------------------------------------------
+const FCharMap::Cp437UcsType& FCharMap::getCP437UCSMap()
+{
+  return cp437_ucs;
+}
+
+//----------------------------------------------------------------------
+const FCharMap::HalfFullWidthType& FCharMap::getHalfFullWidthMap()
+{
+  return halfwidth_fullwidth;
+}
+
+//----------------------------------------------------------------------
+FCharMap::CharEncodeType FCharMap::character =
 {{
   //  .--------------------- Unicode (UTF-8)
   //  |     .--------------- VT100
@@ -161,8 +198,8 @@ std::array<CharEncodeMap, 115> character =
  * (2) Only supported in use with newfont
  */
 
-
-constexpr std::array<DECSpecialGraphics, 39> dec_special_graphics =
+//----------------------------------------------------------------------
+constexpr FCharMap::DECGraphicsType FCharMap::dec_special_graphics =
 {{
   {VT100Key::rarrow   , UniChar::BlackRightPointingPointer},     // ►
   {VT100Key::larrow   , UniChar::BlackLeftPointingPointer},      // ◄
@@ -205,7 +242,8 @@ constexpr std::array<DECSpecialGraphics, 39> dec_special_graphics =
   {VT100Key::diamond  , UniChar::Bullet}                         // ◆
 }};
 
-constexpr std::array<std::array<wchar_t, 2>, 256> cp437_ucs =
+//----------------------------------------------------------------------
+constexpr FCharMap::Cp437UcsType FCharMap::cp437_ucs =
 {{
   {{0x00, 0x0000}},  // null
   {{0x01, 0x263a}},  // white smiling face
@@ -465,8 +503,9 @@ constexpr std::array<std::array<wchar_t, 2>, 256> cp437_ucs =
   {{0xff, 0x00a0}}   // no-break space
 }};
 
+//----------------------------------------------------------------------
 // Based on http://www.unicode.org/charts/PDF/UFF00.pdf
-constexpr std::array<std::array<wchar_t, 2>, 227> halfwidth_fullwidth =
+constexpr FCharMap::HalfFullWidthType FCharMap::halfwidth_fullwidth =
 {{
   // Fullwidth ASCII variants
   {{0x0020, 0x3000}},  // ' ' -> '　'
@@ -704,7 +743,4 @@ constexpr std::array<std::array<wchar_t, 2>, 227> halfwidth_fullwidth =
   {{0xffee, 0x25cb}}   // ￮ -> ○
 }};
 
-}  // namespace fc
-
 }  // namespace finalcut
-

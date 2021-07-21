@@ -361,7 +361,7 @@ void FButtonGroup::draw()
 //----------------------------------------------------------------------
 void FButtonGroup::drawLabel()
 {
-  if ( text.isNull() || text.isEmpty() )
+  if ( text.isEmpty() )
     return;
 
   FString label_text{};

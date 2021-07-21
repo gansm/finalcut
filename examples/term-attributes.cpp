@@ -287,7 +287,7 @@ void AttribDemo::printAltCharset()
   if ( ! finalcut::FTerm::isMonochron() )
     setColor (wc->label_fg, wc->label_bg);
 
-  print() << FPoint{1, 1} << "alternate charset: ";
+  print() << FPoint{1, 1} << "Alternate charset: ";
 
   if ( parent->getBGColor() == FColor::Default )
   {

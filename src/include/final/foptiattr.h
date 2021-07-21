@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2020 Markus Gans                                      *
+* Copyright 2016-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -39,6 +39,7 @@
 #include <algorithm>  // need for std::swap
 
 #include "final/fstring.h"
+#include "final/ftypes.h"
 #include "final/sgr_optimizer.h"
 
 namespace finalcut
@@ -107,6 +108,7 @@ class FOptiAttr final
 
     // Accessors
     FString       getClassName() const;
+    static auto   getInstance() -> FOptiAttr&;
 
     // Mutators
     void          setTermEnvironment (const TermEnv&);
@@ -156,7 +158,7 @@ class FOptiAttr final
     // Methods
     void          initialize();
     static FColor vga2ansi (FColor);
-    const char*   changeAttribute (FChar&, FChar&);
+    std::string   changeAttribute (FChar&, FChar&);
 
   private:
     struct Capability
@@ -164,9 +166,6 @@ class FOptiAttr final
       const char* cap;
       bool  caused_reset;
     };
-
-    // Using-declaration
-    using AttributeBuffer = SGRoptimizer::AttributeBuffer;
 
     // Enumerations
     enum init_reset_tests
@@ -224,10 +223,7 @@ class FOptiAttr final
     bool          unsetTermCrossedOut (FChar&);
     bool          setTermDoubleUnderline (FChar&);
     bool          unsetTermDoubleUnderline (FChar&);
-    bool          setTermAttributes ( FChar&
-                                    , bool, bool, bool
-                                    , bool, bool, bool
-                                    , bool, bool, bool );
+    bool          setTermAttributes (FChar&, const TCapAttributes&);
     bool          unsetTermAttributes (FChar&);
     bool          setTermAltCharset (FChar&);
     bool          unsetTermAltCharset (FChar&);
@@ -303,8 +299,8 @@ class FOptiAttr final
     FChar           off{};
     FChar           reset_byte_mask{};
 
+    std::string     attr_buf{};
     SGRoptimizer    sgr_optimizer{attr_buf};
-    AttributeBuffer attr_buf{};
 
     int             max_color{1};
     int             attr_without_color{0};

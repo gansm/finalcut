@@ -120,6 +120,7 @@ class FButton : public FWidget
     void                onMouseDown (FMouseEvent*) override;
     void                onMouseUp (FMouseEvent*) override;
     void                onMouseMove (FMouseEvent*) override;
+    void                onWheel (FWheelEvent*) override;
     void                onTimer (FTimerEvent*) override;
     void                onAccel (FAccelEvent*) override;
     void                onFocusIn (FFocusEvent*) override;

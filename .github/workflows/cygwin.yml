@@ -1,0 +1,45 @@
+name: "Cygwin build"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 7 * * 2'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    name: Build on ${{ matrix.platform }}
+
+    strategy:
+      matrix:
+        platform: [x86, x64]
+
+    steps:
+    - name: Install Cygwin
+      uses: egor-tensin/setup-cygwin@v3
+      with:
+        platform: ${{ matrix.platform }}
+        install-dir: C:\cygwin
+        packages: git grep make libncurses-devel gcc-core gcc-g++ automake autoconf autoconf-archive libtool pkgconf cppunit
+
+    - name: Test on Cygwin environment
+      run: |
+        uname -a
+        whoami
+        pwd
+        cygcheck -c -d  # Show installed Cygwin packages
+        g++ --version
+        mkdir src && cd src
+        git clone git://github.com/gansm/finalcut.git
+        cd finalcut || echo "The source code directory was not found!"
+        autoreconf --force --install --verbose --warnings=all
+        automake --add-missing --copy
+        ./configure --prefix=/usr
+        make -j10
+      shell: C:\cygwin\bin\bash.exe --login '{0}'
+      env:
+        SHELLOPTS: igncr
+

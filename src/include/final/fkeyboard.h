@@ -105,10 +105,11 @@ class FKeyboard final
 
     // Accessors
     FString               getClassName() const;
+    static auto           getInstance() -> FKeyboard&;
     FKey                  getKey() const;
     FString               getKeyName (const FKey) const;
     keybuffer&            getKeyBuffer();
-    timeval*              getKeyPressedTime();
+    TimeValue             getKeyPressedTime() const;
     static uInt64         getKeypressTimeout();
     static uInt64         getReadBlockingTime();
 
@@ -145,7 +146,7 @@ class FKeyboard final
 
   private:
     // Using-declaration
-    using FKeyMapPtr = std::shared_ptr<decltype(fc::fkey_cap_table)>;
+    using FKeyMapPtr = std::shared_ptr<FKeyMap::KeyCapMapType>;
 
     // Constants
     static constexpr FKey NOT_SET = static_cast<FKey>(-1);
@@ -162,7 +163,7 @@ class FKeyboard final
     static bool           isIntervalTimeout();
 
     // Methods
-    FKey                  UTF8decode (const char[]) const;
+    FKey                  UTF8decode (const std::string&) const;
     ssize_t               readKey();
     void                  parseKeyBuffer();
     FKey                  parseKeyString();
@@ -179,7 +180,7 @@ class FKeyboard final
     FKeyboardCommand      escape_key_cmd{};
     FKeyboardCommand      mouse_tracking_cmd{};
 
-    static timeval        time_keypressed;
+    static TimeValue      time_keypressed;
     static uInt64         read_blocking_time;
     static uInt64         read_blocking_time_short;
     static uInt64         key_timeout;
@@ -214,8 +215,8 @@ inline FKeyboard::keybuffer& FKeyboard::getKeyBuffer()
 { return fifo_buf; }
 
 //----------------------------------------------------------------------
-inline timeval* FKeyboard::getKeyPressedTime()
-{ return &time_keypressed; }
+inline TimeValue FKeyboard::getKeyPressedTime() const
+{ return time_keypressed; }
 
 //----------------------------------------------------------------------
 inline uInt64 FKeyboard::getKeypressTimeout()
@@ -233,8 +234,8 @@ inline void FKeyboard::setTermcapMap (const T& keymap)
 //----------------------------------------------------------------------
 inline void FKeyboard::setTermcapMap ()
 {
-  using type = decltype(fc::fkey_cap_table);
-  key_map = std::make_shared<type>(fc::fkey_cap_table);
+  using type = FKeyMap::KeyCapMapType;
+  key_map = std::make_shared<type>(FKeyMap::getKeyCapMap());
 }
 
 //----------------------------------------------------------------------

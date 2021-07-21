@@ -50,88 +50,52 @@
 namespace finalcut
 {
 
-// static class attributes
-FTermDetection::FTerminalType FTermDetection::terminal_type{};
-FTermDetection::colorEnv      FTermDetection::color_env{};
-FTermDetection::kittyVersion  FTermDetection::kitty_version{};
-FTermDetection::secondaryDA   FTermDetection::secondary_da{};
-char                          FTermDetection::termtype[256]{};
-char                          FTermDetection::ttytypename[256]{};
-bool                          FTermDetection::decscusr_support{};
-bool                          FTermDetection::terminal_detection{};
-bool                          FTermDetection::color256{};
-const FString*                FTermDetection::answer_back{nullptr};
-const FString*                FTermDetection::sec_da{nullptr};
-int                           FTermDetection::gnome_terminal_id{};
-
-#if DEBUG
-  char FTermDetection::termtype_256color[256]{};
-  char FTermDetection::termtype_Answerback[256]{};
-  char FTermDetection::termtype_SecDA[256]{};
-#endif  // DEBUG
-
-
 //----------------------------------------------------------------------
 // class FTermDetection
 //----------------------------------------------------------------------
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FTermDetection::FTermDetection()
-{
-  // Preset to true
-  terminal_detection = true;
-
-  // Preset to false
-  decscusr_support = false;
-
-  // Gnome terminal id from SecDA
-  // Example: vte version 0.40.0 = 0 * 100 + 40 * 100 + 0 = 4000
-  //                      a.b.c  = a * 100 +  b * 100 + c
-  gnome_terminal_id = 0;
-
-  // Set default ttytype file
-  std::strncpy (ttytypename, "/etc/ttytype", sizeof(ttytypename));
-  ttytypename[sizeof(ttytypename) - 1] = '\0';
-}
+FTermDetection::FTermDetection() = default;
 
 //----------------------------------------------------------------------
-FTermDetection::~FTermDetection()  // destructor
-{
-  deallocation();
-}
+FTermDetection::~FTermDetection() = default;  // destructor
 
 
 // public methods of FTermDetection
 //----------------------------------------------------------------------
-#if DEBUG
-const FString& FTermDetection::getAnswerbackString()
+auto FTermDetection::getInstance() -> FTermDetection&
 {
-  return ( answer_back ) ? *answer_back : fc::emptyFString::get();
+  static const auto& term_detection = make_unique<FTermDetection>();
+  return *term_detection;
 }
 
 //----------------------------------------------------------------------
-const FString& FTermDetection::getSecDAString()
+#if DEBUG
+const FString& FTermDetection::getAnswerbackString() const
 {
-  return ( sec_da ) ? *sec_da : fc::emptyFString::get();
+  return answer_back;
+}
+
+//----------------------------------------------------------------------
+const FString& FTermDetection::getSecDAString() const
+{
+  return sec_da;
 }
 #endif
 
 //----------------------------------------------------------------------
-void FTermDetection::setTtyTypeFileName (const char ttytype_filename[])
+void FTermDetection::setTtyTypeFileName (const FString& ttytype_filename)
 {
   if ( ! ttytype_filename )
     return;
 
-  std::strncpy (ttytypename, ttytype_filename, sizeof(ttytypename));
-  ttytypename[sizeof(ttytypename) - 1] = '\0';
+  ttytypename = ttytype_filename;
 }
 
 //----------------------------------------------------------------------
 void FTermDetection::detect()
 {
-  deallocation();
-
   // Set the variable 'termtype' to the predefined type of the terminal
   getSystemTermType();
 
@@ -145,27 +109,16 @@ void FTermDetection::detect()
 
 // private methods of FTermDetection
 //----------------------------------------------------------------------
-void FTermDetection::deallocation()
-{
-  if ( sec_da )
-    delete sec_da;
-
-  if ( answer_back )
-    delete answer_back;
-}
-
-//----------------------------------------------------------------------
 void FTermDetection::getSystemTermType()
 {
   // Import the untrusted environment variable TERM
   const auto& term_env = std::getenv("TERM");
-  const auto& termfilename = FTerm::getFTermData().getTermFileName();
+  const auto& termfilename = FTermData::getInstance().getTermFileName();
 
   if ( term_env )
   {
     // Save name in termtype
-    std::strncpy (termtype, term_env, sizeof(termtype));
-    termtype[sizeof(termtype) - 1] = '\0';
+    termtype = term_env;
     return;
   }
   else if ( ! termfilename.empty() )  // 1st fallback: use the teminal file name
@@ -180,8 +133,7 @@ void FTermDetection::getSystemTermType()
   }
 
   // 2nd fallback: use vt100 if not found
-  std::strncpy (termtype, "vt100", sizeof(termtype));
-  termtype[sizeof(termtype) - 1] = '\0';
+  termtype = "vt100";
 }
 
 //----------------------------------------------------------------------
@@ -197,7 +149,7 @@ bool FTermDetection::getTTYtype()
   // vt100  ttys0
 
   // Get term basename
-  const auto& termfilename = FTerm::getFTermData().getTermFileName();
+  const auto& termfilename = FTermData::getInstance().getTermFileName();
   const char* term_basename = std::strrchr(termfilename.data(), '/');
 
   if ( term_basename == nullptr )
@@ -207,9 +159,9 @@ bool FTermDetection::getTTYtype()
 
   std::FILE* fp{};
   std::array<char, BUFSIZ> str{};
-  const auto& fsystem = FTerm::getFSystem();
+  const auto& fsystem = FSystem::getInstance();
 
-  if ( (fp = fsystem->fopen(ttytypename, "r")) == nullptr )
+  if ( (fp = fsystem->fopen(ttytypename.c_str(), "r")) == nullptr )
     return false;
 
   // Read and parse the file
@@ -234,8 +186,7 @@ bool FTermDetection::getTTYtype()
     if ( type != nullptr && name != nullptr && ! std::strcmp(name, term_basename) )
     {
       // Save name in termtype
-      std::strncpy (termtype, type, sizeof(termtype));
-      termtype[sizeof(termtype) - 1] = '\0';
+      termtype = type;
       fsystem->fclose(fp);
       return true;
     }
@@ -252,7 +203,7 @@ bool FTermDetection::getTTYSFileEntry()
   // Analyse /etc/ttys and get the term name
 
   // get term basename
-  const auto& termfilename = FTerm::getFTermData().getTermFileName();
+  const auto& termfilename = FTermData::getInstance().getTermFileName();
   const char* term_basename = std::strrchr(termfilename.data(), '/');
 
   if ( term_basename == nullptr )
@@ -270,8 +221,7 @@ bool FTermDetection::getTTYSFileEntry()
     if ( type != nullptr )
     {
       // Save name in termtype
-      std::strncpy (termtype, type, sizeof(termtype));
-      termtype[sizeof(termtype) - 1] = '\0';
+      termtype = type;
       endttyent();
       return true;
     }
@@ -286,67 +236,67 @@ bool FTermDetection::getTTYSFileEntry()
 void FTermDetection::termtypeAnalysis()
 {
   // Cygwin console
-  if ( std::strncmp(termtype, "cygwin", 6) == 0 )
+
+  if ( termtype.left(6) == "cygwin" )
     terminal_type.cygwin = true;
 
   // rxvt terminal emulator (native MS Window System port) on cygwin
-  if ( std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
+  if ( termtype == "rxvt-cygwin-native" )
     terminal_type.rxvt = true;
 
   // Ansi terminal
-  if ( std::strncmp(termtype, "ansi", 4) == 0 )
+  if ( termtype.left(4) == "ansi" )
   {
     terminal_detection = false;
     terminal_type.ansi = true;
   }
 
   // Sun Microsystems workstation console
-  if ( std::strncmp(termtype, "sun", 3) == 0 )
+  if ( termtype.left(3) == "sun" )
   {
     terminal_detection = false;
     terminal_type.sun_con = true;
   }
 
   // Kterm
-  if ( std::strncmp(termtype, "kterm", 5) == 0 )
+  if ( termtype.left(5) == "kterm" )
   {
     terminal_detection = false;
     terminal_type.kterm = true;
   }
 
   // mlterm
-  if ( std::strncmp(termtype, "mlterm", 6) == 0 )
+  if ( termtype.left(6) == "mlterm" )
     terminal_type.mlterm = true;
 
   // rxvt
-  if ( std::strncmp(termtype, "rxvt", 4) == 0 )
+  if ( termtype.left(4) == "rxvt" )
     terminal_type.rxvt = true;
 
   // urxvt
-  if ( std::strncmp(termtype, "rxvt-unicode", 12) == 0 )
+  if ( termtype.left(12) == "rxvt-unicode" )
     terminal_type.urxvt = true;
 
   // screen/tmux
-  if ( std::strncmp(termtype, "screen", 6) == 0 )
+  if ( termtype.left(6) == "screen" )
   {
     terminal_type.screen = true;
-    const char* tmux = std::getenv("TMUX");
+    auto tmux = std::getenv("TMUX");
 
-    if ( tmux && std::strlen(tmux) != 0 )
+    if ( tmux && tmux[0] != '\0' )
       terminal_type.tmux = true;
   }
 
   // Linux console
-  if ( std::strncmp(termtype, "linux", 5) == 0
-    || std::strncmp(termtype, "con", 3) == 0 )
+  if ( termtype.left(5) == "linux" || termtype.left(3) == "con" )
     terminal_type.linux_con = true;
 
   // NetBSD workstation console
-  if ( std::strncmp(termtype, "wsvt25", 6) == 0 )
+  if ( termtype.left(6) == "wsvt25" )
     terminal_type.netbsd_con = true;
 
   // kitty
-  if ( std::strncmp(termtype, "xterm-kitty", 11) == 0 )
+  if ( termtype.left(11) == "xterm-kitty" )
     terminal_type.kitty = true;
 }
 
@@ -355,12 +305,12 @@ void FTermDetection::detectTerminal()
 {
   // Terminal detection
 
-  const char* new_termtype{nullptr};
+  FString new_termtype{};
 
   if ( terminal_detection )
   {
     FTermios::setCaptureSendCharacters();
-    auto& keyboard = FTerm::getFKeyboard();
+    auto& keyboard = FKeyboard::getInstance();
     keyboard.setNonBlockingInput();
 
     // Initialize 256 colors terminals
@@ -384,28 +334,26 @@ void FTermDetection::detectTerminal()
   //
 
   // Test if the terminal is a xterm
-  if ( std::strncmp(termtype, "xterm", 5) == 0
-    || std::strncmp(termtype, "Eterm", 5) == 0 )
+  if ( termtype.left(5) == "xterm" || termtype.left(5) == "Eterm" )
   {
     terminal_type.xterm = true;
 
     // Each xterm should be able to use at least 16 colors
-    if ( ! new_termtype && std::strlen(termtype) == 5 )
+    if ( ! new_termtype && termtype.getLength() == 5 )
       new_termtype = "xterm-16color";
   }
-  else if ( std::strncmp(termtype, "ansi", 4) == 0 )  // ANSI detection
+  else if ( termtype.left(4) == "ansi" )  // ANSI detection
     terminal_type.ansi = true;
 
   // set the new environment variable TERM
   if ( new_termtype )
   {
-    setenv("TERM", new_termtype, 1);
-    std::strncpy (termtype, new_termtype, sizeof(termtype));
-    termtype[sizeof(termtype) - 1] = '\0';
+    setenv("TERM", new_termtype.c_str(), 1);
+    termtype = new_termtype;
   }
 
 #if defined(__CYGWIN__)
-  auto& fterm_data = FTerm::getFTermData();
+  auto& fterm_data = FTermData::getInstance();
   const auto& termfilename = fterm_data.getTermFileName();
 
   // Fixes problem with mouse input
@@ -415,13 +363,13 @@ void FTermDetection::detectTerminal()
 }
 
 //----------------------------------------------------------------------
-const char* FTermDetection::init_256colorTerminal()
+FString FTermDetection::init_256colorTerminal()
 {
-  const char* new_termtype{nullptr};
+  FString new_termtype{};
 
   if ( get256colorEnvString() )
     color256 = true;
-  else if ( std::strstr (termtype, "256color") )
+  else if ( termtype.includes("256color") )
     color256 = true;
   else
     color256 = false;
@@ -429,13 +377,8 @@ const char* FTermDetection::init_256colorTerminal()
   new_termtype = termtype_256color_quirks();
 
 #if DEBUG
-  if ( new_termtype )
-  {
-    std::strncpy ( termtype_256color
-                 , new_termtype
-                 , sizeof(termtype_256color) );
-    termtype_256color[sizeof(termtype_256color) - 1] = '\0';
-  }
+  if ( ! new_termtype.isEmpty() )
+    termtype_256color = new_termtype;
 #endif  // DEBUG
 
   return new_termtype;
@@ -452,29 +395,28 @@ bool FTermDetection::get256colorEnvString()
   color_env.string5 = std::getenv("KONSOLE_DBUS_SESSION");
   color_env.string6 = std::getenv("KONSOLE_DCOP");
   color_env.string7 = std::getenv("COLORFGBG");
-  color_env.string7 = std::getenv("KITTY_WINDOW_ID");
+  color_env.string8 = std::getenv("KITTY_WINDOW_ID");
 
-  if ( color_env.string1 != nullptr
-    || color_env.string2 != nullptr
-    || color_env.string3 != nullptr
-    || color_env.string4 != nullptr
-    || color_env.string5 != nullptr
-    || color_env.string6 != nullptr
-    || color_env.string7 != nullptr
-    || color_env.string8 != nullptr )
+  if ( ! color_env.string1.isEmpty()
+    || ! color_env.string2.isEmpty()
+    || ! color_env.string3.isEmpty()
+    || ! color_env.string4.isEmpty()
+    || ! color_env.string5.isEmpty()
+    || ! color_env.string6.isEmpty()
+    || ! color_env.string7.isEmpty()
+    || ! color_env.string8.isEmpty() )
     return true;
 
   return false;
 }
 
 //----------------------------------------------------------------------
-const char* FTermDetection::termtype_256color_quirks()
+FString FTermDetection::termtype_256color_quirks()
 {
-  const char* new_termtype{nullptr};
+  FString new_termtype{};
 
-  if ( color_env.string2
-    || (color_env.string1
-      && std::strncmp(color_env.string1, "gnome-terminal", 14) == 0) )
+  if ( ! color_env.string2.isEmpty()
+    || color_env.string1 == "gnome-terminal" )
   {
     terminal_type.gnome_terminal = true;
     // Each gnome-terminal should be able to use 256 colors
@@ -490,46 +432,45 @@ const char* FTermDetection::termtype_256color_quirks()
   if ( ! color256 )
     return new_termtype;
 
-  if ( std::strncmp(termtype, "xterm", 5) == 0 )
+  if ( termtype.left(5) == "xterm" )
     new_termtype = "xterm-256color";
 
-  if ( std::strncmp(termtype, "screen", 6) == 0 )
+  if ( termtype.left(6) == "screen" )
     new_termtype = "screen-256color";
 
-  if ( std::strncmp(termtype, "Eterm", 5) == 0 )
+  if ( termtype.left(5) == "Eterm" )
     new_termtype = "Eterm-256color";
 
-  if ( std::strncmp(termtype, "mlterm", 6) == 0 )
+  if ( termtype.left(6) == "mlterm" )
     new_termtype = "mlterm-256color";
 
-  if ( std::strncmp(termtype, "rxvt", 4) != 0
-    && color_env.string1
-    && std::strncmp(color_env.string1, "rxvt-xpm", 8) == 0 )
+  if ( termtype.left(4) == "rxvt"
+    && color_env.string1.left(8) == "rxvt-xpm" )
   {
     new_termtype = "rxvt-256color";
     terminal_type.rxvt = true;
   }
 
-  if ( (color_env.string5 && std::strlen(color_env.string5) > 0)
-    || (color_env.string6 && std::strlen(color_env.string6) > 0) )
+  if ( color_env.string5.getLength() > 0
+    || color_env.string6.getLength() > 0 )
   {
     terminal_type.kde_konsole = true;
     new_termtype = "konsole-256color";
   }
 
-  if ( color_env.string3 && std::strlen(color_env.string3) > 0 )
+  if ( color_env.string3.getLength() > 0 )
     decscusr_support = true;
 
   return new_termtype;
 }
 
 //----------------------------------------------------------------------
-const char* FTermDetection::determineMaxColor (const char current_termtype[])
+FString FTermDetection::determineMaxColor (const FString& current_termtype)
 {
   // Determine xterm maximum number of colors via OSC 4
 
-  const char* new_termtype = current_termtype;
-  auto& keyboard = FTerm::getFKeyboard();
+  FString new_termtype{current_termtype};
+  auto& keyboard = FKeyboard::getInstance();
   keyboard.setNonBlockingInput();
 
   if ( ! color256
@@ -563,7 +504,7 @@ const char* FTermDetection::determineMaxColor (const char current_termtype[])
 }
 
 //----------------------------------------------------------------------
-FString FTermDetection::getXTermColorName (FColor color)
+FString FTermDetection::getXTermColorName (FColor color) const
 {
   FString color_str{""};
   std::array<char, 30> buf{};
@@ -602,7 +543,7 @@ FString FTermDetection::getXTermColorName (FColor color)
 
   if ( pos > 4 && std::sscanf(temp.data(), parse, &index, buf.data()) == 2 )
   {
-    std::size_t n = std::strlen(buf.data());
+    auto n = stringLength(buf.data());
 
     // BEL + '\0' = string terminator
     if ( n >= 6 && buf[n - 1] == BEL[0] && buf[n] == '\0' )
@@ -619,26 +560,16 @@ FString FTermDetection::getXTermColorName (FColor color)
 }
 
 //----------------------------------------------------------------------
-const char* FTermDetection::parseAnswerbackMsg (const char current_termtype[])
+FString FTermDetection::parseAnswerbackMsg (const FString& current_termtype)
 {
-  const char* new_termtype = current_termtype;
-  auto& keyboard = FTerm::getFKeyboard();
+  FString new_termtype{current_termtype};
+  auto& keyboard = FKeyboard::getInstance();
   keyboard.setNonBlockingInput();
   // send ENQ and read the answerback message
-  const auto& ans = getAnswerbackMsg();
+  answer_back = getAnswerbackMsg();
   keyboard.unsetNonBlockingInput();
 
-  try
-  {
-    answer_back = new FString(ans);
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FString");
-    return nullptr;
-  }
-
-  if ( *answer_back == "PuTTY" )
+  if ( answer_back == "PuTTY" )
   {
     terminal_type.putty = true;
 
@@ -654,20 +585,15 @@ const char* FTermDetection::parseAnswerbackMsg (const char current_termtype[])
   std::fflush (stdout);
 
 #if DEBUG
-  if ( new_termtype )
-  {
-    std::strncpy ( termtype_Answerback
-                 , new_termtype
-                 , sizeof(termtype_Answerback) - 1);
-    termtype_Answerback[sizeof(termtype_Answerback) - 1] = '\0';
-  }
+  if ( ! new_termtype.isEmpty() )
+    termtype_Answerback = new_termtype;
 #endif  // DEBUG
 
   return new_termtype;
 }
 
 //----------------------------------------------------------------------
-FString FTermDetection::getAnswerbackMsg()
+FString FTermDetection::getAnswerbackMsg() const
 {
   FString answerback{""};
   fd_set ifds{};
@@ -707,44 +633,30 @@ FString FTermDetection::getAnswerbackMsg()
 }
 
 //----------------------------------------------------------------------
-const char* FTermDetection::parseSecDA (const char current_termtype[])
+FString FTermDetection::parseSecDA (const FString& current_termtype)
 {
   // The Linux console and older cygwin terminals knows no Sec_DA
   if ( isLinuxTerm() || isCygwinTerminal() )
     return current_termtype;
 
    // Secondary device attributes (SEC_DA) <- decTerminalID string
-  const auto& ans = getSecDA();
+  sec_da = getSecDA();
 
-  try
-  {
-    // Secondary device attributes (SEC_DA) <- decTerminalID string
-    sec_da = new FString(ans);
-  }
-  catch (const std::bad_alloc&)
-  {
-    badAllocOutput ("FString");
-    return current_termtype;
-  }
-
-  if ( sec_da->getLength() < 6 )
+  if ( sec_da.getLength() < 6 )
     return current_termtype;
 
   // remove the first 3 bytes ("\033[>")
-  FString temp{sec_da->right(sec_da->getLength() - 3)};
+  FString temp(sec_da.right(sec_da.getLength() - 3));
   // remove the last byte ("c")
   temp.remove(temp.getLength() - 1, 1);
   // split into components
-  const FStringList sec_da_list = temp.split(';');
-
-  const uLong num_components = sec_da_list.size();
+  const auto sec_da_components = temp.split(';');
+  const auto num_components = sec_da_components.size();
 
   // The second device attribute (SEC_DA) always has 3 parameters,
   // otherwise it usually has a copy of the device attribute (primary DA)
   if ( num_components < 3 )
     return current_termtype;
-
-  const FString* sec_da_components = &sec_da_list[0];
 
   if ( sec_da_components[0].isEmpty() )
     return current_termtype;
@@ -758,21 +670,18 @@ const char* FTermDetection::parseSecDA (const char current_termtype[])
   // Read the terminal hardware option
   secondary_da.terminal_id_hardware = str2int(sec_da_components[2]);
 
-  const char* new_termtype = secDA_Analysis(current_termtype);
+  FString new_termtype = secDA_Analysis(current_termtype);
 
 #if DEBUG
-  if ( new_termtype )
-  {
-    std::strncpy (termtype_SecDA, new_termtype, sizeof(termtype_SecDA));
-    termtype_SecDA[sizeof(termtype_SecDA) - 1] = '\0';
-  }
+  if ( ! new_termtype.isEmpty() )
+    termtype_SecDA = new_termtype;
 #endif  // DEBUG
 
   return new_termtype;
 }
 
 //----------------------------------------------------------------------
-int FTermDetection::str2int (const FString& s)
+int FTermDetection::str2int (const FString& s) const
 {
   // This is not a general string to integer conversion method.
   // It is only used in this class to convert the device attribute
@@ -780,7 +689,7 @@ int FTermDetection::str2int (const FString& s)
 
   constexpr int ERROR = -1;
 
-  if ( ! s )
+  if ( s.isEmpty() )
     return ERROR;
 
   try
@@ -802,7 +711,7 @@ int FTermDetection::str2int (const FString& s)
 }
 
 //----------------------------------------------------------------------
-FString FTermDetection::getSecDA()
+FString FTermDetection::getSecDA() const
 {
   FString sec_da_str{""};
 
@@ -813,10 +722,10 @@ FString FTermDetection::getSecDA()
   const int stdout_no{FTermios::getStdOut()};
   fd_set ifds{};
   struct timeval tv{};
-  constexpr auto& SECDA{ESC "[>c"};
+  const std::string SECDA{ESC "[>c"};
 
   // Get the secondary device attributes
-  if ( write(stdout_no, SECDA, std::strlen(SECDA)) == -1 )
+  if ( write(stdout_no, SECDA.data(), SECDA.length()) == -1 )
     return sec_da_str;
 
   std::fflush(stdout);
@@ -852,9 +761,9 @@ FString FTermDetection::getSecDA()
 }
 
 //----------------------------------------------------------------------
-const char* FTermDetection::secDA_Analysis (const char current_termtype[])
+FString FTermDetection::secDA_Analysis (const FString& current_termtype)
 {
-  const char* new_termtype = current_termtype;
+  FString new_termtype{current_termtype};
 
   switch ( secondary_da.terminal_id_type )
   {
@@ -875,7 +784,7 @@ const char* FTermDetection::secDA_Analysis (const char current_termtype[])
       break;
 
     case 32:  // Tera Term
-      new_termtype = secDA_Analysis_32(current_termtype);
+      new_termtype = secDA_Analysis_32();
       break;
 
     case 41:  // DEC VT420
@@ -888,11 +797,11 @@ const char* FTermDetection::secDA_Analysis (const char current_termtype[])
       break;
 
     case 67:  // Cygwin
-      new_termtype = secDA_Analysis_67(current_termtype);
+      new_termtype = secDA_Analysis_67();
       break;
 
     case 77:  // mintty
-      new_termtype = secDA_Analysis_77(current_termtype);
+      new_termtype = secDA_Analysis_77();
       break;
 
     case 82:  // rxvt
@@ -928,11 +837,11 @@ const char* FTermDetection::secDA_Analysis (const char current_termtype[])
 }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::secDA_Analysis_0 (const char current_termtype[])
+inline FString FTermDetection::secDA_Analysis_0 (const FString& current_termtype)
 {
   // Terminal ID 0 - DEC VT100
 
-  const char* new_termtype = current_termtype;
+  FString new_termtype{current_termtype};
 
   if ( secondary_da.terminal_id_version == 10
     && secondary_da.terminal_id_hardware == 1 )
@@ -951,11 +860,11 @@ inline const char* FTermDetection::secDA_Analysis_0 (const char current_termtype
 }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::secDA_Analysis_1 (const char current_termtype[])
+inline FString FTermDetection::secDA_Analysis_1 (const FString& current_termtype)
 {
   // Terminal ID 1 - DEC VT220
 
-  const char* new_termtype = current_termtype;
+  FString new_termtype{current_termtype};
 
   if ( isKittyTerminal() )
     new_termtype = secDA_Analysis_kitty(new_termtype);
@@ -966,11 +875,11 @@ inline const char* FTermDetection::secDA_Analysis_1 (const char current_termtype
 }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::secDA_Analysis_24 (const char current_termtype[])
+inline FString FTermDetection::secDA_Analysis_24 (const FString& current_termtype)
 {
   // Terminal ID 24 - DEC VT320
 
-  const char* new_termtype = current_termtype;
+  FString new_termtype{current_termtype};
 
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
 
@@ -978,9 +887,9 @@ inline const char* FTermDetection::secDA_Analysis_24 (const char current_termtyp
      && FTermOpenBSD::isBSDConsole() )
   {
     // NetBSD/OpenBSD workstation console
-    if ( std::strncmp(termtype, "wsvt25", 6) == 0 )
+    if ( termtype.left(6) == "wsvt25" )
       terminal_type.netbsd_con = true;
-    else if ( std::strncmp(termtype, "vt220", 5) == 0 )
+    else if ( termtype.left(5) == "vt220" )
     {
       terminal_type.openbsd_con = true;
       new_termtype = "pccon";
@@ -993,17 +902,16 @@ inline const char* FTermDetection::secDA_Analysis_24 (const char current_termtyp
 }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::secDA_Analysis_32 (const char[])
+inline FString FTermDetection::secDA_Analysis_32()
 {
   // Terminal ID 32 - Tera Term
 
   terminal_type.tera_term = true;
-  const char* new_termtype = "teraterm";
-  return new_termtype;
+  return "teraterm";
 }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::secDA_Analysis_65 (const char current_termtype[])
+inline FString FTermDetection::secDA_Analysis_65 (const FString& current_termtype)
 {
   // Terminal ID 65 - DEC VT525 and VTE >= 0.53.0
 
@@ -1011,37 +919,35 @@ inline const char* FTermDetection::secDA_Analysis_65 (const char current_termtyp
 }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::secDA_Analysis_67 (const char[])
+inline FString FTermDetection::secDA_Analysis_67()
 {
   // Terminal ID 67 - cygwin
 
   terminal_type.cygwin = true;
-  const char* new_termtype = "cygwin";
   std::fflush(stdout);
-  return new_termtype;
+  return "cygwin";
 }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::secDA_Analysis_77 (const char[])
+inline FString FTermDetection::secDA_Analysis_77()
 {
   // Terminal ID 77 - mintty
 
   terminal_type.mintty = true;
   decscusr_support = true;
-  const char* new_termtype = "xterm-256color";
   std::fflush(stdout);
-  return new_termtype;
+  return "xterm-256color";
 }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::secDA_Analysis_82()
+inline FString FTermDetection::secDA_Analysis_82()
 {
   // Terminal ID 82 - rxvt
 
-  const char* new_termtype{};
+  FString new_termtype{};
   terminal_type.rxvt = true;
 
-  if ( std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
+  if ( termtype == "rxvt-cygwin-native" )
     new_termtype = "rxvt-16color";
   else
     new_termtype = "rxvt";
@@ -1050,36 +956,34 @@ inline const char* FTermDetection::secDA_Analysis_82()
 }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::secDA_Analysis_83 (const char current_termtype[])
+inline FString FTermDetection::secDA_Analysis_83 (const FString& current_termtype)
 {
   // Terminal ID 83 - screen
 
-  const char* new_termtype = current_termtype;
   terminal_type.screen = true;
-  return new_termtype;
+  return current_termtype;
 }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::secDA_Analysis_84 (const char current_termtype[])
+inline FString FTermDetection::secDA_Analysis_84 (const FString& current_termtype)
 {
   // Terminal ID 84 - tmux
 
-  const char* new_termtype = current_termtype;
   terminal_type.screen = true;
   terminal_type.tmux = true;
-  return new_termtype;
+  return current_termtype;
 }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::secDA_Analysis_85()
+inline FString FTermDetection::secDA_Analysis_85()
 {
   // Terminal ID 85 - rxvt-unicode
 
-  const char* new_termtype{};
+  FString new_termtype{};
   terminal_type.rxvt = true;
   terminal_type.urxvt = true;
 
-  if ( std::strncmp(termtype, "rxvt-", 5) != 0 )
+  if ( termtype.left(5) == "rxvt-" )
   {
     if ( color256 )
       new_termtype = "rxvt-256color";
@@ -1093,12 +997,12 @@ inline const char* FTermDetection::secDA_Analysis_85()
 }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::secDA_Analysis_vte (const char current_termtype[])
+inline FString FTermDetection::secDA_Analysis_vte (const FString& current_termtype)
 {
   // VTE terminal library
   // (Since VTE ) the terminal ID has changed from 1 to 65)
 
-  const char* new_termtype = current_termtype;
+  FString new_termtype{current_termtype};
 
   if ( secondary_da.terminal_id_version > 1000 )
   {
@@ -1117,11 +1021,11 @@ inline const char* FTermDetection::secDA_Analysis_vte (const char current_termty
 }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::secDA_Analysis_kitty (const char current_termtype[])
+inline FString FTermDetection::secDA_Analysis_kitty (const FString& current_termtype)
 {
   // kitty
 
-  const char* new_termtype = current_termtype;
+  FString new_termtype{current_termtype};
 
   if ( secondary_da.terminal_id_version > 3999 )
   {

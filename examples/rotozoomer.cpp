@@ -190,7 +190,7 @@ void RotoZoomer::generateReport()
   finalcut::FStringStream rep;
   dimension_str << getDesktopWidth()
                 << "x" << getDesktopHeight();
-  int elapsed_ms = int(duration_cast<milliseconds>(end - start).count());
+  auto elapsed_ms = int(duration_cast<milliseconds>(end - start).count());
   time_str << double(elapsed_ms) / 1000 << "s";
   fps_str << double(loops) * 1000.0 / double(elapsed_ms);
 
@@ -308,7 +308,7 @@ int main (int argc, char* argv[])
   {
     benchmark = true;
     // Disable terminal data requests
-    auto& start_options = finalcut::FStartOptions::getFStartOptions();
+    auto& start_options = finalcut::FStartOptions::getInstance();
     start_options.terminal_data_request = false;
   }
 

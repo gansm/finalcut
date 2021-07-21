@@ -1,0 +1,61 @@
+name: "SonarCloud analysis"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 7 * * 2'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      SONAR_TOKEN: "${{ secrets.SONAR_TOKEN }}"
+
+    steps:
+    - name: Repository checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+    - name: Before_install
+      run: |
+        lsb_release -a
+        uname -a
+        whoami
+        tty || echo
+        pwd
+
+    - name: Install dependencies via apt-get
+      run: |
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo apt-get update
+        sudo apt-get -y install \
+          ca-certificates \
+          gcc \
+          g++ \
+          gpm \
+          wget \
+          unzip \
+          libgpm-dev \
+          libcppunit-dev \
+          autoconf-archive 
+
+    - name: Build with SonarCloud
+      run: |
+        wget -q "https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip"
+        unzip -q "build-wrapper-linux-x86.zip" -d "/tmp" || echo
+        LATEST_VERSION=$(wget -O- https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/ 2>/dev/null | grep 'linux.zip"' | cut -d\" -f2 | tail -n1)
+        wget -q "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/$LATEST_VERSION"
+        unzip -q "$LATEST_VERSION" -d "/tmp" || echo
+        echo "sonar.host.url=https://sonarcloud.io" >> /tmp/sonar-scanner-*/conf/sonar-scanner.properties
+        mkdir /tmp/sonar-cache
+        autoreconf -v --install --force
+        ./configure --prefix=/usr
+        /tmp/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-output make all
+        /tmp/sonar-scanner-4.6.2.2472-linux/bin/sonar-scanner
+

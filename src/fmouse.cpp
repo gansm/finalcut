@@ -196,37 +196,37 @@ FString FMouse::getClassName() const
 }
 
 //----------------------------------------------------------------------
-inline void FMouse::clearEvent()
+void FMouse::clearEvent()
 {
   mouse_event_occurred = false;
 }
 
 //----------------------------------------------------------------------
-inline void FMouse::setMaxWidth (uInt16 x_max)
+void FMouse::setMaxWidth (uInt16 x_max)
 {
   max_width = x_max;
 }
 
 //----------------------------------------------------------------------
-inline void FMouse::setMaxHeight (uInt16 y_max)
+void FMouse::setMaxHeight (uInt16 y_max)
 {
   max_height = y_max;
 }
 
 //----------------------------------------------------------------------
-inline void FMouse::setDblclickInterval (const uInt64 timeout)
+void FMouse::setDblclickInterval (const uInt64 timeout)
 {
   dblclick_interval = timeout;
 }
 
 //----------------------------------------------------------------------
-inline bool FMouse::hasEvent() const
+bool FMouse::hasEvent() const
 {
   return mouse_event_occurred;
 }
 
 //----------------------------------------------------------------------
-inline bool FMouse::hasUnprocessedInput() const
+bool FMouse::hasUnprocessedInput() const
 {
   return unprocessed_buffer_data;
 }
@@ -234,7 +234,7 @@ inline bool FMouse::hasUnprocessedInput() const
 
 // protected methods of FMouse
 //----------------------------------------------------------------------
-inline const FPoint& FMouse::getNewPos() const
+const FPoint& FMouse::getNewPos() const
 {
   return new_mouse_position;
 }
@@ -258,9 +258,9 @@ uInt64 FMouse::getDblclickInterval() const
 }
 
 //----------------------------------------------------------------------
-timeval* FMouse::getMousePressedTime()
+TimeValue FMouse::getMousePressedTime() const
 {
-  return &time_mousepressed;
+  return time_mousepressed;
 }
 
 //----------------------------------------------------------------------
@@ -276,16 +276,15 @@ void FMouse::setPending (bool is_pending)
 }
 
 //----------------------------------------------------------------------
-void FMouse::setMousePressedTime (const timeval* time)
+void FMouse::setMousePressedTime (const TimeValue& time)
 {
-  time_mousepressed = *time;
+  time_mousepressed = time;
 }
 
 //----------------------------------------------------------------------
 void FMouse::resetMousePressedTime()
 {
-  time_mousepressed.tv_sec = 0;
-  time_mousepressed.tv_usec = 0;
+  time_mousepressed = TimeValue{};  // Set to epoch time
 }
 
 //----------------------------------------------------------------------
@@ -295,7 +294,7 @@ void FMouse::setEvent()
 }
 
 //----------------------------------------------------------------------
-bool FMouse::isDblclickTimeout (const timeval* time) const
+bool FMouse::isDblclickTimeout (const TimeValue& time) const
 {
   return FObject::isTimeout (time, dblclick_interval);
 }
@@ -341,7 +340,7 @@ void FMouseGPM::setRawData (FKeyboard::keybuffer&)
 }
 
 //----------------------------------------------------------------------
-void FMouseGPM::processEvent (struct timeval*)
+void FMouseGPM::processEvent (const TimeValue&)
 {
   clearButtonState();
 
@@ -374,6 +373,7 @@ void FMouseGPM::processEvent (struct timeval*)
 
       case GPM_UP:
         interpretKeyUp();
+        break;
 
       default:
         break;
@@ -582,7 +582,7 @@ void FMouseX11::setRawData (FKeyboard::keybuffer& fifo_buf)
 }
 
 //----------------------------------------------------------------------
-void FMouseX11::processEvent (struct timeval* time)
+void FMouseX11::processEvent (const TimeValue& time)
 {
   // Parse and interpret the X11 xterm mouse string
 
@@ -641,7 +641,7 @@ void FMouseX11::setMoveState (const FPoint& mouse_position, int btn)
 }
 
 //----------------------------------------------------------------------
-void FMouseX11::setButtonState (const int btn, const struct timeval* time)
+void FMouseX11::setButtonState (const int btn, const TimeValue& time)
 {
   // Get the x11 mouse button state
 
@@ -739,7 +739,7 @@ void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf)
   // Import the X11 xterm mouse protocol (SGR-Mode) raw mouse data
 
   const std::size_t fifo_buf_size = sizeof(fifo_buf);
-  std::size_t len = std::strlen(fifo_buf);
+  std::size_t len = stringLength(fifo_buf);
   std::size_t n{3};
 
   while ( n < len && n <= MOUSE_BUF_SIZE + 1 )
@@ -765,7 +765,7 @@ void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf)
 }
 
 //----------------------------------------------------------------------
-void FMouseSGR::processEvent (struct timeval* time)
+void FMouseSGR::processEvent (const TimeValue& time)
 {
   const auto& mouse_position = getPos();
   uInt16 x{0};
@@ -867,7 +867,7 @@ void FMouseSGR::setMoveState (const FPoint& mouse_position, int btn)
 
 //----------------------------------------------------------------------
 void FMouseSGR::setPressedButtonState ( const int btn
-                                      , const struct timeval* time )
+                                      , const TimeValue& time )
 {
   // Gets the extended x11 mouse mode (SGR) status for pressed buttons
 
@@ -969,7 +969,7 @@ void FMouseUrxvt::setRawData (FKeyboard::keybuffer& fifo_buf)
   // Import the X11 xterm mouse protocol (Urxvt-Mode) raw mouse data
 
   const std::size_t fifo_buf_size = sizeof(fifo_buf);
-  std::size_t len = std::strlen(fifo_buf);
+  std::size_t len = stringLength(fifo_buf);
   std::size_t n{2};
 
   while ( n < len && n <= MOUSE_BUF_SIZE )
@@ -995,7 +995,7 @@ void FMouseUrxvt::setRawData (FKeyboard::keybuffer& fifo_buf)
 }
 
 //----------------------------------------------------------------------
-void FMouseUrxvt::processEvent (struct timeval* time)
+void FMouseUrxvt::processEvent (const TimeValue& time)
 {
   // Parse and interpret the X11 xterm mouse string (Urxvt-Mode)
 
@@ -1122,7 +1122,7 @@ void FMouseUrxvt::setMoveState (const FPoint& mouse_position, int btn)
 }
 
 //----------------------------------------------------------------------
-void FMouseUrxvt::setButtonState (const int btn, const struct timeval* time)
+void FMouseUrxvt::setButtonState (const int btn, const TimeValue& time)
 {
   // Get the urxvt mouse button state
 
@@ -1205,14 +1205,16 @@ void FMouseUrxvt::setButtonState (const int btn, const struct timeval* time)
 //----------------------------------------------------------------------
 FMouseControl::FMouseControl()
 {
+  using mt = FMouse::MouseType;
+
 #ifdef F_HAVE_LIBGPM
   if ( FTermLinux::isLinuxConsole() )
-    mouse_protocol[FMouse::MouseType::Gpm].reset(FMouse::createMouseObject<FMouseGPM>());
+    mouse_protocol[mt::Gpm] = FMouse::createMouseObject<FMouseGPM>();
 #endif
 
-  mouse_protocol[FMouse::MouseType::X11].reset(FMouse::createMouseObject<FMouseX11>());
-  mouse_protocol[FMouse::MouseType::Sgr].reset(FMouse::createMouseObject<FMouseSGR>());
-  mouse_protocol[FMouse::MouseType::Urxvt].reset(FMouse::createMouseObject<FMouseUrxvt>());
+  mouse_protocol[mt::X11] = FMouse::createMouseObject<FMouseX11>();
+  mouse_protocol[mt::Sgr] = FMouse::createMouseObject<FMouseSGR>();
+  mouse_protocol[mt::Urxvt] = FMouse::createMouseObject<FMouseUrxvt>();
 }
 
 //----------------------------------------------------------------------
@@ -1220,6 +1222,13 @@ FMouseControl::~FMouseControl() = default;  // destructor
 
 
 // public methods of FMouseControl
+//----------------------------------------------------------------------
+auto FMouseControl::getInstance() -> FMouseControl&
+{
+  static const auto& mouse = make_unique<FMouseControl>();
+  return *mouse;
+}
+
 //----------------------------------------------------------------------
 const FPoint& FMouseControl::getPos()
 {
@@ -1561,7 +1570,7 @@ void FMouseControl::processQueuedInput()
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::processEvent (struct timeval* time)
+void FMouseControl::processEvent (const TimeValue& time)
 {
   auto mtype = getMouseWithData();
   auto mouse_object = mouse_protocol[mtype].get();

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include "final/fsystem.h"
+#include "final/fsystemimpl.h"
 
 namespace finalcut
 {
@@ -32,6 +33,15 @@ namespace finalcut
 // constructors and destructor
 //----------------------------------------------------------------------
 FSystem::~FSystem() noexcept = default;  // destructor
+
+
+// public methods of FSystem
+//----------------------------------------------------------------------
+auto FSystem::getInstance() -> std::unique_ptr<FSystem>&
+{
+  static const auto& fsys = make_unique<std::unique_ptr<FSystem>>(make_unique<FSystemImpl>());
+  return *fsys.get();
+}
 
 }  // namespace finalcut
 

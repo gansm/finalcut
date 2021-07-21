@@ -13,9 +13,6 @@ AM_INIT_AUTOMAKE
 AC_PROG_CC
 AC_PROG_CXX
 
-m4_pattern_forbid([^AX_CHECK_COMPILE_FLAG\b],
-		  [Macro AX_CHECK_COMPILE_FLAG not found. Please install GNU autoconf-archive])
-
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS( \
@@ -80,8 +77,9 @@ AC_CONFIG_FILES([Makefile
                  finalcut.pc])
 
 # Check for C++11 support
-AX_CHECK_COMPILE_FLAG([[-std=c++11]],,
-                      [AC_MSG_ERROR([compiler did not accept -std=c++11])])
+m4_ifdef([AX_CXX_COMPILE_STDCXX_11],
+         [AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])],
+         [AC_MSG_ERROR([Macro AX_CXX_COMPILE_STDCXX_11 not found. Please install GNU autoconf-archive])])
 
 # use GPM (General Purpose Mouse)
 AC_ARG_WITH([gpm],

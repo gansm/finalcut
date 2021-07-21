@@ -44,14 +44,23 @@
 #include <sys/time.h>  // need for gettimeofday
 #include <cstdlib>
 #include <cstring>
+#include <chrono>
 #include <list>
 #include <memory>
 #include <vector>
 
 #include "final/fstring.h"
+#include "final/ftypes.h"
 
 namespace finalcut
 {
+
+using std::chrono::duration_cast;
+using std::chrono::seconds;
+using std::chrono::milliseconds;
+using std::chrono::microseconds;
+using std::chrono::system_clock;
+using std::chrono::time_point;
 
 // class forward declaration
 class FEvent;
@@ -122,7 +131,6 @@ class FObject
     bool                  isDirectChild (const FObject*) const;
     bool                  isWidget() const;
     bool                  isInstanceOf (const FString&) const;
-    bool                  isTimerInUpdating() const;
 
     // Methods
     void                  removeParent();
@@ -134,8 +142,8 @@ class FObject
     virtual bool          event (FEvent*);
 
     // Timer methods
-    static void           getCurrentTime (timeval*);
-    static bool           isTimeout (const timeval*, uInt64);
+    static TimeValue      getCurrentTime();
+    static bool           isTimeout (const TimeValue&, uInt64);
     int                   addTimer (int);
     bool                  delTimer (int) const;
     bool                  delOwnTimers() const;
@@ -144,10 +152,10 @@ class FObject
   protected:
     struct FTimerData
     {
-      int       id;
-      timeval   interval;
-      timeval   timeout;
-      FObject*  object;
+      int          id;
+      milliseconds interval;
+      TimeValue    timeout;
+      FObject*     object;
     };
 
     // Using-declaration
@@ -178,7 +186,6 @@ class FObject
     std::size_t           max_children{UNLIMITED};
     bool                  has_parent{false};
     bool                  widget_object{false};
-    static bool           timer_modify_lock;
 };
 
 
@@ -263,71 +270,12 @@ inline bool FObject::isInstanceOf (const FString& classname) const
 { return classname == getClassName(); }
 
 //----------------------------------------------------------------------
-inline bool FObject::isTimerInUpdating() const
-{ return timer_modify_lock; }
-
-//----------------------------------------------------------------------
 inline FObject::FTimerList* FObject::getTimerList() const
 { return globalTimerList().get(); }
 
 //----------------------------------------------------------------------
 inline void FObject::setWidgetProperty (bool property)
 { widget_object = property; }
-
-
-//----------------------------------------------------------------------
-// Operator functions for timeval
-//----------------------------------------------------------------------
-
-static inline timeval operator + (const timeval& t1, const timeval& t2)
-{
-  timeval tmp{};
-  tmp.tv_sec = t1.tv_sec + t2.tv_sec;
-
-  if ( (tmp.tv_usec = t1.tv_usec + t2.tv_usec) >= 1000000 )
-  {
-    tmp.tv_sec++;
-    tmp.tv_usec -= 1000000;
-  }
-
-  return tmp;
-}
-
-//----------------------------------------------------------------------
-static inline timeval operator - (const timeval& t1, const timeval& t2)
-{
-  timeval tmp{};
-  tmp.tv_sec = t1.tv_sec - t2.tv_sec;
-
-  if ( (tmp.tv_usec = t1.tv_usec - t2.tv_usec) < 0 )
-  {
-    tmp.tv_sec--;
-    tmp.tv_usec += 1000000;
-  }
-
-  return tmp;
-}
-
-//----------------------------------------------------------------------
-static inline timeval& operator += (timeval& t1, const timeval& t2)
-{
-  t1.tv_sec += t2.tv_sec;
-
-  if ( (t1.tv_usec += t2.tv_usec) >= 1000000 )
-  {
-    t1.tv_sec++;
-    t1.tv_usec -= 1000000;
-  }
-
-  return t1;
-}
-
-//----------------------------------------------------------------------
-static inline bool operator < (const timeval& t1, const timeval& t2)
-{
-  return (t1.tv_sec < t2.tv_sec)
-      || (t1.tv_sec == t2.tv_sec && t1.tv_usec < t2.tv_usec);
-}
 
 }  // namespace finalcut
 

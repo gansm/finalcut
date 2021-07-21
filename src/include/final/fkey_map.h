@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -29,6 +29,7 @@
 
 #include <array>
 
+#include "final/fstring.h"
 #include "final/ftypes.h"
 
 namespace finalcut
@@ -36,35 +37,54 @@ namespace finalcut
 
 enum class FKey : uInt32;   // forward declaration
 
-namespace fc
+class FKeyMap final
 {
+  public:
+    struct KeyCapMap
+    {
+      FKey  num;
+      const char* string;
+      char  tname[4];
+    };
 
-struct FKeyCapMap
-{
-  FKey  num;
-  const char* string;
-  char  tname[4];
+    struct KeyMap
+    {
+      FKey num;
+      char string[8];
+    };
+
+    struct KeyName
+    {
+      FKey num;
+      char string[26];
+    };
+
+    // Using-declaration
+    using KeyCapMapType = std::array<KeyCapMap, 188>;
+    using KeyMapType = std::array<KeyMap, 232>;
+    using KeyNameType = std::array<KeyName, 388>;
+
+    // Constructors
+    FKeyMap() = default;
+
+    // Accessors
+    FString                   getClassName() const;
+    static auto               getInstance() -> FKeyMap&;
+    static KeyCapMapType&     getKeyCapMap();
+    static const KeyMapType&  getKeyMap();
+    static const KeyNameType& getKeyName();
+
+  private:
+    // Data members
+    static KeyCapMapType     fkey_cap_table;
+    static const KeyMapType  fkey_table;
+    static const KeyNameType fkeyname;
 };
 
-extern std::array<FKeyCapMap, 188> fkey_cap_table;
-
-struct FKeyMap
-{
-  FKey num;
-  char string[8];
-};
-
-extern const std::array<FKeyMap, 232> fkey_table;
-
-struct FKeyName
-{
-  FKey num;
-  char string[26];
-};
-
-extern const std::array<FKeyName, 388> fkeyname;
-
-}  // namespace fc
+// FKeyMap inline functions
+//----------------------------------------------------------------------
+inline FString FKeyMap::getClassName() const
+{ return "FKeyMap"; }
 
 }  // namespace finalcut
 

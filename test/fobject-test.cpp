@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2018-2020 Markus Gans                                      *
+* Copyright 2018-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -216,7 +216,6 @@ void FObjectTest::noArgumentTest()
   CPPUNIT_ASSERT ( ! o1.isDirectChild(&o2) );
   CPPUNIT_ASSERT ( ! o1.isWidget() );
   CPPUNIT_ASSERT ( o1.isInstanceOf("FObject") );
-  CPPUNIT_ASSERT ( ! o1.isTimerInUpdating() );
 
   test::FObject_protected t;
   auto ev = new finalcut::FEvent(finalcut::Event::None);
@@ -287,7 +286,6 @@ void FObjectTest::childObjectTest()
   CPPUNIT_ASSERT ( ! c1->isDirectChild(c7) );
   CPPUNIT_ASSERT ( ! c1->isWidget() );
   CPPUNIT_ASSERT ( c1->isInstanceOf("FObject") );
-  CPPUNIT_ASSERT ( ! c1->isTimerInUpdating() );
 }
 
 //----------------------------------------------------------------------
@@ -553,15 +551,16 @@ void FObjectTest::iteratorTest()
 //----------------------------------------------------------------------
 void FObjectTest::timeTest()
 {
-  struct timeval time1;
+  TimeValue time1{};
   uInt64 timeout = 750000;  // 750 ms
-  finalcut::FObject::getCurrentTime(&time1);
-  CPPUNIT_ASSERT ( ! finalcut::FObject::isTimeout (&time1, timeout) );
+  time1 = finalcut::FObject::getCurrentTime();
+  CPPUNIT_ASSERT ( ! finalcut::FObject::isTimeout (time1, timeout) );
   sleep(1);
-  CPPUNIT_ASSERT ( finalcut::FObject::isTimeout (&time1, timeout) );
-  time1.tv_sec = 300;
-  time1.tv_usec = 2000000;  // > 1000000 µs to test diff underflow
-  CPPUNIT_ASSERT ( finalcut::FObject::isTimeout (&time1, timeout) );
+  CPPUNIT_ASSERT ( finalcut::FObject::isTimeout (time1, timeout) );
+  time1 = TimeValue{}
+        + std::chrono::seconds(300)
+        + std::chrono::microseconds(2000000);
+  CPPUNIT_ASSERT ( finalcut::FObject::isTimeout (time1, timeout) );
 }
 
 //----------------------------------------------------------------------
@@ -622,19 +621,20 @@ void FObjectTest::timerTest()
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 0 );
   CPPUNIT_ASSERT ( t2.getTimerList()->size() == 0 );
 
-  timeval tv1 = { 1321006271, 0 };
-  timeval tv2 = { 27166271, 0 };
-  timeval tv_sum = tv1 + tv2;
-  CPPUNIT_ASSERT ( tv_sum.tv_sec == 1348172542 );
-  CPPUNIT_ASSERT ( tv_sum.tv_usec == 0 );
+  auto tv1 = TimeValue{} + std::chrono::seconds(1321006271);
+  auto tv2 = TimeValue{} + std::chrono::seconds(27166271);
+  auto tv2_duration = std::chrono::duration_cast<std::chrono::seconds>(tv2.time_since_epoch());
+  auto tv_sum = tv1 + tv2_duration;
+  auto sec_sum = std::chrono::duration_cast<std::chrono::seconds>(tv_sum.time_since_epoch()).count();
+  CPPUNIT_ASSERT ( sec_sum == 1348172542 );
 
-  timeval tv_difference = tv1 - tv2;
-  CPPUNIT_ASSERT ( tv_difference.tv_sec == 1293840000 );
-  CPPUNIT_ASSERT ( tv_difference.tv_usec == 0 );
+  auto tv_difference = tv1 - tv2_duration;
+  auto sec_difference = std::chrono::duration_cast<std::chrono::seconds>(tv_difference.time_since_epoch()).count();
+  CPPUNIT_ASSERT ( sec_difference == 1293840000 );
 
-  tv_sum += tv2;
-  CPPUNIT_ASSERT ( tv_sum.tv_sec == 1375338813 );
-  CPPUNIT_ASSERT ( tv_sum.tv_usec == 0 );
+  tv_sum += tv2_duration;
+  sec_sum = std::chrono::duration_cast<std::chrono::seconds>(tv_sum.time_since_epoch()).count();
+  CPPUNIT_ASSERT ( sec_sum == 1375338813 );
 
   CPPUNIT_ASSERT ( tv2 < tv1 );
   CPPUNIT_ASSERT ( ! (tv1 < tv2) );
@@ -645,21 +645,37 @@ void FObjectTest::timerTest()
   CPPUNIT_ASSERT ( tv_difference < tv_sum );
   CPPUNIT_ASSERT ( ! (tv_sum < tv_difference) );
 
-  tv1.tv_usec = tv2.tv_usec = 600000;
-  tv_sum = tv1 + tv2;
-  CPPUNIT_ASSERT ( tv_sum.tv_sec == 1348172543 );
-  CPPUNIT_ASSERT ( tv_sum.tv_usec == 200000 );
+  tv1 += std::chrono::microseconds(600000);
+  tv2 += std::chrono::microseconds(600000);
+  tv2_duration = std::chrono::duration_cast<std::chrono::seconds>(tv2.time_since_epoch());
+  tv_sum = tv1 + tv2_duration;
+  auto s_sum = std::chrono::duration_cast<std::chrono::seconds>(tv_sum.time_since_epoch()).count();
+  CPPUNIT_ASSERT ( s_sum == 1348172542 );
+  auto us_sum = ( std::chrono::duration_cast<std::chrono::microseconds>(tv_sum.time_since_epoch())
+                - std::chrono::seconds(1348172542) ).count();
+  CPPUNIT_ASSERT ( us_sum == 600000 );
 
-  tv1.tv_usec = 654321;
-  tv2.tv_usec = 123456;
-  tv_difference = tv1 - tv2;
-  CPPUNIT_ASSERT ( tv_difference.tv_sec == 1293840000 );
-  CPPUNIT_ASSERT ( tv_difference.tv_usec == 530865 );
+  auto tv1_sec = std::chrono::duration_cast<std::chrono::seconds>(tv1.time_since_epoch());
+  auto tv2_sec = std::chrono::duration_cast<std::chrono::seconds>(tv2.time_since_epoch());
+  tv1 = TimeValue{} + tv1_sec + std::chrono::microseconds(654321);
+  tv2 = TimeValue{} + tv2_sec + std::chrono::microseconds(123456);
+  auto tv2_duration_ms = std::chrono::duration_cast<std::chrono::microseconds>(tv2.time_since_epoch());
+  tv_difference = tv1 - tv2_duration_ms;
+  sec_difference = std::chrono::duration_cast<std::chrono::seconds>(tv_difference.time_since_epoch()).count();
+  CPPUNIT_ASSERT ( sec_difference == 1293840000 );
+  auto usec_difference = ( std::chrono::duration_cast<std::chrono::microseconds>(tv_difference.time_since_epoch())
+                         - std::chrono::seconds(1293840000) ).count();
+  CPPUNIT_ASSERT ( usec_difference == 530865 );
 
-  tv2.tv_usec = 999888;
-  tv_sum += tv2;
-  CPPUNIT_ASSERT ( tv_sum.tv_sec == 1375338815 );
-  CPPUNIT_ASSERT ( tv_sum.tv_usec == 199888 );
+  tv2_sec = std::chrono::duration_cast<std::chrono::seconds>(tv2.time_since_epoch());
+  tv2 = TimeValue{} + tv2_sec + std::chrono::microseconds(999888);
+  auto tv2_duration2 = std::chrono::duration_cast<std::chrono::microseconds>(tv2.time_since_epoch());
+  tv_sum += tv2_duration2;
+  s_sum = std::chrono::duration_cast<std::chrono::seconds>(tv_sum.time_since_epoch()).count();
+  CPPUNIT_ASSERT ( s_sum == 1375338814 );
+  us_sum = ( std::chrono::duration_cast<std::chrono::microseconds>(tv_sum.time_since_epoch())
+           - std::chrono::seconds(1375338814) ).count();
+  CPPUNIT_ASSERT ( us_sum == 599888 );
 
   CPPUNIT_ASSERT ( tv2 < tv1 );
   CPPUNIT_ASSERT ( ! (tv1 < tv2) );

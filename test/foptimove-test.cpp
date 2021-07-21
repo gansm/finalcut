@@ -36,19 +36,16 @@
 #include <final/final.h>
 
 
-#define CPPUNIT_ASSERT_CSTRING(expected, actual) \
-            check_c_string (expected, actual, CPPUNIT_SOURCELINE())
+#define CPPUNIT_ASSERT_STRING(expected, actual) \
+            check_string (expected, actual, CPPUNIT_SOURCELINE())
 
 //----------------------------------------------------------------------
-void check_c_string ( const char* s1
-                    , const char* s2
-                    , CppUnit::SourceLine sourceLine )
+void check_string ( const std::string& s1
+                  , const std::string& s2
+                  , CppUnit::SourceLine sourceLine )
 {
-  if ( s1 == 0 && s2 == 0 )  // Strings are equal
+  if ( s1 == s2 )  // Strings are equal
     return;
-
-  if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
-      return;
 
   ::CppUnit::Asserter::fail ("Strings are not equal", sourceLine);
 }
@@ -121,8 +118,8 @@ void FOptiMoveTest::classNameTest()
 void FOptiMoveTest::noArgumentTest()
 {
   finalcut::FOptiMove om;
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 1, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 9, 9), CSI "10;10H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 1, 5, 5), CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 9, 9), CSI "10;10H");
 
   // Delete all presets
   om.set_tabular (0);
@@ -142,7 +139,7 @@ void FOptiMoveTest::noArgumentTest()
   om.set_parm_right_cursor (0);
   om.set_parm_left_cursor (0);
 
-  CPPUNIT_ASSERT (om.moveCursor (1, 1, 5, 5) == nullptr);
+  CPPUNIT_ASSERT (om.moveCursor (1, 1, 5, 5).empty());
 }
 
 //----------------------------------------------------------------------
@@ -164,9 +161,9 @@ void FOptiMoveTest::homeTest()
   om.set_parm_left_cursor (CSI "%p1%dD");
 
   // Upper home (first line, first column)
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 10, 0, 0), CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 10, 0, 0), CSI "H");
   // Lower home (last line, first column)
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 10, 0, 23), CSI "X");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 10, 0, 23), CSI "X");
 }
 
 //----------------------------------------------------------------------
@@ -191,8 +188,8 @@ void FOptiMoveTest::fromLeftToRightTest()
   om.set_parm_right_cursor (CSI "%p1%dC");
   om.set_parm_left_cursor (CSI "%p1%dD");
 
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 1), "\r\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), "\r\b" ESC "D");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 1), "\r\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), "\r\b" ESC "D");
 }
 
 //----------------------------------------------------------------------
@@ -218,39 +215,39 @@ void FOptiMoveTest::ansiTest()
   om.set_parm_right_cursor (CSI "%p1%dC");
   om.set_parm_left_cursor (CSI "%p1%dD");
 
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), "\r" CSI "B");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), CSI "C");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), CSI "D");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), CSI "10G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), CSI "B");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), CSI "A");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), CSI "3d");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), CSI "Z");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), "\r\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r" CSI "B");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), CSI "D");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), CSI "10G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), CSI "B");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), CSI "A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), CSI "3d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "Z");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\r\t");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 53, 40), CSI "25d");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 53, 40), CSI "25d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
 }
 
 //----------------------------------------------------------------------
@@ -274,39 +271,39 @@ void FOptiMoveTest::vt100Test()
   om.set_parm_right_cursor (CSI "%p1%dC");
   om.set_parm_left_cursor (CSI "%p1%dD");
 
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H$<5>");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), "\r\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), CSI "C$<2>");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), CSI "2C");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), "\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), CSI "A$<2>");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), "\n\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), CSI "2A");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), CSI "76C");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H$<5>");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), CSI "7D");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H$<5>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C$<2>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "2C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), CSI "A$<2>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), "\n\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), CSI "2A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "76C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H$<5>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "7D");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\b\b");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H$<5>");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H$<5>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H$<5>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H$<5>");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H$<5>");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H$<5>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H$<5>");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H$<5>");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), CSI "26C");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "26C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 53, 40), "\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), CSI "2A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 53, 40), "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "2A");
 }
 
 //----------------------------------------------------------------------
@@ -333,39 +330,39 @@ void FOptiMoveTest::xtermTest()
   om.set_parm_right_cursor (CSI "%p1%dC");
   om.set_parm_left_cursor (CSI "%p1%dD");
 
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), "\r\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), CSI "C");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), "\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), CSI "A");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), "\n\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), CSI "Z");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), "\r\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), CSI "A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), "\n\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "Z");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\r\t");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 23, 53, 40), "\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
 }
 
 //----------------------------------------------------------------------
@@ -391,39 +388,39 @@ void FOptiMoveTest::rxvtTest()
   om.set_parm_right_cursor (CSI "%p1%dC");
   om.set_parm_left_cursor (CSI "%p1%dD");
 
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), "\r\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), CSI "C");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), "\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), CSI "A");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), "\n\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), CSI "33G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), CSI "A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), "\n\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "33G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\b\b");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 23, 53, 40), "\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
 }
 
 //----------------------------------------------------------------------
@@ -450,39 +447,39 @@ void FOptiMoveTest::linuxTest()
   om.set_parm_right_cursor (CSI "%p1%dC");
   om.set_parm_left_cursor (CSI "%p1%dD");
 
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), "\r\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), CSI "C");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), "\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), CSI "A");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), "\n\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), CSI "Z");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), "\r\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), CSI "A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), "\n\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "Z");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\r\t");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 23, 53, 40), "\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
 }
 
 //----------------------------------------------------------------------
@@ -508,41 +505,41 @@ void FOptiMoveTest::cygwinTest()
   om.set_parm_right_cursor (CSI "%p1%dC");
   om.set_parm_left_cursor (CSI "%p1%dD");
 
-  CPPUNIT_ASSERT_CSTRING ( printSequence(om.moveCursor (1, 2, 3, 4)).c_str()
+  CPPUNIT_ASSERT_STRING ( printSequence(om.moveCursor (1, 2, 3, 4)).c_str()
                          , "Esc [ 5 ; 4 H " );
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), "\r" CSI "B");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), CSI "C");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), CSI "B");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), CSI "A");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), CSI "3d");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), CSI "Z");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), "\r\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r" CSI "B");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), CSI "B");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), CSI "A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), CSI "3d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "Z");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\r\t");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 23, 53, 40), CSI "B");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), CSI "B");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
 }
 
 //----------------------------------------------------------------------
@@ -570,39 +567,39 @@ void FOptiMoveTest::puttyTest()
   om.set_parm_right_cursor (CSI "%p1%dC");
   om.set_parm_left_cursor (CSI "%p1%dD");
 
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), "\r" ESC "D");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), CSI "C");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), ESC "D");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), ESC "M");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), ESC "D" ESC "D");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), ESC "M" ESC "M");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), CSI "Z");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), "\r\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r" ESC "D");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), ESC "D");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), ESC "M");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), ESC "D" ESC "D");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), ESC "M" ESC "M");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "Z");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\r\t");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 23, 53, 40), ESC "D");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), ESC "M" ESC "M");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), ESC "D");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), ESC "M" ESC "M");
 }
 
 //----------------------------------------------------------------------
@@ -641,39 +638,39 @@ void FOptiMoveTest::teratermTest()
 
   om.setTermEnvironment(optimove_env);
 
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), CSI "H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), "\r\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), CSI "C");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), "\t");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), "\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), CSI "A");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), "\n\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), CSI "33G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), CSI "6;6H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), CSI "H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), CSI "C");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), CSI "12G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), "\t");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), CSI "A");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), "\n\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), CSI "21;76H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), CSI "33G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\b\b");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), CSI "11;80H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), CSI "11;51H");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), CSI "11;24H");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), CSI "11;13H");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), CSI "80G");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 23, 53, 40), "\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), CSI "1d");
 }
 
 
@@ -699,39 +696,39 @@ void FOptiMoveTest::wyse50Test()
   //          << printSequence(om.moveCursor (1, 2, 3, 4))
   //          << "\n";
 
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), ESC "=%%");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), "\036");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), "\r");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), "\r\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), "\f");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), "\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), "\f\f");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), "\b\b");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), ESC "= (");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), "\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), "\v");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), "\n\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), "\v\v");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), "\r\b\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), ESC "=4k");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), ESC "= @");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (0, 0, 5, 5), ESC "=%%");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 0, 0), "\036");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 1), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (79, 1, 0, 2), "\r\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 10, 4), "\f");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 4, 9, 4), "\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (9, 4, 11, 4), "\f\f");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (11, 4, 9, 4), "\b\b");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (1, 0, 8, 0), ESC "= (");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 1), "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 1, 16, 0), "\v");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 0, 16, 2), "\n\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (16, 2, 16, 0), "\v\v");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 2, 79, 2), "\r\b\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (5, 5, 75, 20), ESC "=4k");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (39, 0, 32, 0), ESC "= @");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (10, 0, 8, 0), "\b\b");
 
   // xold is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), ESC "=*o");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), ESC "=*R");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (99, 10, 79, 10), ESC "=*o");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (-3, 33, 50, 10), ESC "=*R");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), ESC "=*7");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), ESC "=*,");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, 33, 23, 10), ESC "=*7");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (23, -3, 12, 10), ESC "=*,");
 
   // xnew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), "\r\b\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), "\r");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 22, 100, 22), "\r\b\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (3, 22, -5, 22), "\r");
 
   // ynew is outside screen
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 23, 53, 40), "\n");
-  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), "\v\v");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 23, 53, 40), "\n");
+  CPPUNIT_ASSERT_STRING (om.moveCursor (53, 2, 53, -3), "\v\v");
 }
 
 //----------------------------------------------------------------------

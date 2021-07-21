@@ -251,8 +251,8 @@ void FTermcap::termcap()
   static char term_buffer[BUF_SIZE]{};
   std::vector<std::string> terminals{};
   int status = uninitialized;
-  auto& fterm_data = FTerm::getFTermData();
-  const auto& term_detection = FTerm::getFTermDetection();
+  auto& fterm_data = FTermData::getInstance();
+  const auto& term_detection = FTermDetection::getInstance();
   const bool color256 = term_detection.canDisplay256Colors();
   baudrate = int(fterm_data.getBaudrate());
 
@@ -301,7 +301,7 @@ void FTermcap::termcapError (int status)
 
   if ( status == no_entry || status == uninitialized )
   {
-    const auto& termtype = FTerm::getFTermData().getTermType();
+    const auto& termtype = FTermData::getInstance().getTermType();
     std::clog << FLog::LogLevel::Error
               << "Unknown terminal: \"" << termtype << "\". "
               << "Check the TERM environment variable. "
@@ -376,7 +376,7 @@ void FTermcap::termcapNumerics()
 {
   // Get termcap numerics
 
-  auto& fterm_data = FTerm::getFTermData();
+  auto& fterm_data = FTermData::getInstance();
 
   // Maximum number of colors on screen
   max_color = std::max(max_color, getNumber("Co"));
@@ -426,7 +426,7 @@ void FTermcap::termcapKeys()
   // Get termcap keys
 
   // Read termcap key sequences up to the self-defined values
-  for (auto&& entry : fc::fkey_cap_table)
+  for (auto&& entry : FKeyMap::getKeyCapMap())
   {
     if ( entry.string != nullptr )  // String is already set
       break;
@@ -437,10 +437,8 @@ void FTermcap::termcapKeys()
 
 //----------------------------------------------------------------------
 std::string FTermcap::encodeParams ( const std::string& cap
-                                   , const std::vector<int>& param_vec )
+                                   , const std::array<int, 9>& params )
 {
-  std::array<int, 9> params{{ 0, 0, 0, 0, 0, 0, 0, 0, 0 }};
-  std::copy (param_vec.begin(), param_vec.end(), params.begin());
   auto str = ::tparm ( C_STR(cap.data()), params[0], params[1]
                      , params[2], params[3], params[4], params[5]
                      , params[6], params[7], params[8] );

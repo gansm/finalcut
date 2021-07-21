@@ -79,7 +79,12 @@ class FTermDetection final
       uInt8                : 3;  // padding bits
     };
 
-    struct kittyVersion;  // forward declaration
+    struct kittyVersion
+    {
+      int primary{0};
+      int secondary{0};
+    };
+
 
     // Constructors
     FTermDetection();
@@ -94,183 +99,167 @@ class FTermDetection final
     FTermDetection& operator = (const FTermDetection&) = delete;
 
     // Accessor
-    static FString        getClassName();
-    static const char*    getTermType();
-    static int            getGnomeTerminalID();
-    static kittyVersion   getKittyVersion();
+    FString               getClassName() const;
+    static auto           getInstance() -> FTermDetection&;
+    const FString&        getTermType() const;
+    int                   getGnomeTerminalID() const;
+    kittyVersion          getKittyVersion() const;
     FTerminalType&        getTermTypeStruct();
 
 #if DEBUG
-    static const FString& getAnswerbackString();
-    static const FString& getSecDAString();
-    static const char*    getTermType_256color();
-    static const char*    getTermType_Answerback();
-    static const char*    getTermType_SecDA();
+    const FString&        getAnswerbackString() const;
+    const FString&        getSecDAString() const;
+    const FString&        getTermType_256color() const;
+    const FString&        getTermType_Answerback() const;
+    const FString&        getTermType_SecDA() const;
 #endif
 
     // Inquiries
-    static bool           isAnsiTerminal();
-    static bool           isXTerminal();
-    static bool           isRxvtTerminal();
-    static bool           isUrxvtTerminal();
-    static bool           isKdeTerminal();
-    static bool           isGnomeTerminal();
-    static bool           isPuttyTerminal();
-    static bool           isWindowsTerminal();
-    static bool           isTeraTerm();
-    static bool           isCygwinTerminal();
-    static bool           isMinttyTerm();
-    static bool           isLinuxTerm();
-    static bool           isFreeBSDTerm();
-    static bool           isNetBSDTerm();
-    static bool           isOpenBSDTerm();
-    static bool           isSunTerminal();
-    static bool           isScreenTerm();
-    static bool           isTmuxTerm();
-    static bool           isKtermTerminal();
-    static bool           isMltermTerminal();
-    static bool           isKittyTerminal();
-    static bool           canDisplay256Colors();
-    static bool           hasTerminalDetection();
-    static bool           hasSetCursorStyleSupport();
+    bool                  isAnsiTerminal() const;
+    bool                  isXTerminal() const;
+    bool                  isRxvtTerminal() const;
+    bool                  isUrxvtTerminal() const;
+    bool                  isKdeTerminal() const;
+    bool                  isGnomeTerminal() const;
+    bool                  isPuttyTerminal() const;
+    bool                  isWindowsTerminal() const;
+    bool                  isTeraTerm() const;
+    bool                  isCygwinTerminal() const;
+    bool                  isMinttyTerm() const;
+    bool                  isLinuxTerm() const;
+    bool                  isFreeBSDTerm() const;
+    bool                  isNetBSDTerm() const;
+    bool                  isOpenBSDTerm() const;
+    bool                  isSunTerminal() const;
+    bool                  isScreenTerm() const;
+    bool                  isTmuxTerm() const;
+    bool                  isKtermTerminal() const;
+    bool                  isMltermTerminal() const;
+    bool                  isKittyTerminal() const;
+    bool                  canDisplay256Colors() const;
+    bool                  hasTerminalDetection() const;
+    bool                  hasSetCursorStyleSupport() const;
 
     // Mutators
-    static void           setAnsiTerminal (bool = true);
-    static void           setXTerminal (bool = true);
-    static void           setRxvtTerminal (bool = true);
-    static void           setUrxvtTerminal (bool = true);
-    static void           setKdeTerminal (bool = true);
-    static void           setGnomeTerminal (bool = true);
-    static void           setPuttyTerminal (bool = true);
-    static void           setWindowsTerminal (bool = true);
-    static void           setTeraTerm (bool = true);
-    static void           setCygwinTerminal (bool = true);
-    static void           setMinttyTerm (bool = true);
-    static void           setLinuxTerm (bool = true);
-    static void           setFreeBSDTerm (bool = true);
-    static void           setNetBSDTerm (bool = true);
-    static void           setOpenBSDTerm (bool = true);
-    static void           setSunTerminal (bool = true);
-    static void           setScreenTerm (bool = true);
-    static void           setTmuxTerm (bool = true);
-    static void           setKtermTerminal (bool = true);
-    static void           setMltermTerminal (bool = true);
-    static void           setKittyTerminal (bool = true);
-    static void           setTerminalDetection (bool = true);
-    static void           setTtyTypeFileName (const char[]);
+    void                  setAnsiTerminal (bool = true);
+    void                  setXTerminal (bool = true);
+    void                  setRxvtTerminal (bool = true);
+    void                  setUrxvtTerminal (bool = true);
+    void                  setKdeTerminal (bool = true);
+    void                  setGnomeTerminal (bool = true);
+    void                  setPuttyTerminal (bool = true);
+    void                  setWindowsTerminal (bool = true);
+    void                  setTeraTerm (bool = true);
+    void                  setCygwinTerminal (bool = true);
+    void                  setMinttyTerm (bool = true);
+    void                  setLinuxTerm (bool = true);
+    void                  setFreeBSDTerm (bool = true);
+    void                  setNetBSDTerm (bool = true);
+    void                  setOpenBSDTerm (bool = true);
+    void                  setSunTerminal (bool = true);
+    void                  setScreenTerm (bool = true);
+    void                  setTmuxTerm (bool = true);
+    void                  setKtermTerminal (bool = true);
+    void                  setMltermTerminal (bool = true);
+    void                  setKittyTerminal (bool = true);
+    void                  setTerminalDetection (bool = true);
+    void                  setTtyTypeFileName (const FString&);
 
     // Methods
-    static void           detect();
+    void                  detect();
 
   private:
-    struct colorEnv;      // forward declaration
-    struct secondaryDA;   // forward declaration
+    struct colorEnv
+    {
+      FString string1{};
+      FString string2{};
+      FString string3{};
+      FString string4{};
+      FString string5{};
+      FString string6{};
+      FString string7{};
+      FString string8{};
+    };
+
+    struct secondaryDA
+    {
+      int terminal_id_type{-1};
+      int terminal_id_version{-1};
+      int terminal_id_hardware{-1};
+    };
 
     // Methods
-    static void           deallocation();
-    static void           getSystemTermType();
-    static bool           getTTYtype();
+    void                  getSystemTermType();
+    bool                  getTTYtype();
 #if F_HAVE_GETTTYNAM
-    static bool           getTTYSFileEntry();
+    bool                  getTTYSFileEntry();
 #endif
-    static void           termtypeAnalysis();
-    static void           detectTerminal();
-    static const char*    init_256colorTerminal();
-    static bool           get256colorEnvString();
-    static const char*    termtype_256color_quirks();
-    static const char*    determineMaxColor (const char[]);
-    static FString        getXTermColorName (FColor);
-    static const char*    parseAnswerbackMsg (const char[]);
-    static FString        getAnswerbackMsg();
-    static const char*    parseSecDA (const char[]);
-    static int            str2int (const FString&);
-    static FString        getSecDA();
-    static const char*    secDA_Analysis (const char[]);
-    static const char*    secDA_Analysis_0 (const char[]);
-    static const char*    secDA_Analysis_1 (const char[]);
-    static const char*    secDA_Analysis_24 (const char[]);
-    static const char*    secDA_Analysis_32 (const char[]);
-    static const char*    secDA_Analysis_65 (const char[]);
-    static const char*    secDA_Analysis_67 (const char[]);
-    static const char*    secDA_Analysis_77 (const char[]);
-    static const char*    secDA_Analysis_82 ();
-    static const char*    secDA_Analysis_83 (const char[]);
-    static const char*    secDA_Analysis_84 (const char[]);
-    static const char*    secDA_Analysis_85 ();
-    static const char*    secDA_Analysis_vte (const char[]);
-    static const char*    secDA_Analysis_kitty (const char[]);
+    void                  termtypeAnalysis();
+    void                  detectTerminal();
+    FString               init_256colorTerminal();
+    bool                  get256colorEnvString();
+    FString               termtype_256color_quirks();
+    FString           determineMaxColor (const FString&);
+    FString               getXTermColorName (FColor) const;
+    FString               parseAnswerbackMsg (const FString&);
+    FString               getAnswerbackMsg() const;
+    FString               parseSecDA (const FString&);
+    int                   str2int (const FString&) const;
+    FString               getSecDA() const;
+    FString               secDA_Analysis (const FString&);
+    FString               secDA_Analysis_0 (const FString&);
+    FString               secDA_Analysis_1 (const FString&);
+    FString               secDA_Analysis_24 (const FString&);
+    FString               secDA_Analysis_32 ();
+    FString               secDA_Analysis_65 (const FString&);
+    FString               secDA_Analysis_67 ();
+    FString               secDA_Analysis_77 ();
+    FString               secDA_Analysis_82 ();
+    FString               secDA_Analysis_83 (const FString&);
+    FString               secDA_Analysis_84 (const FString&);
+    FString               secDA_Analysis_85 ();
+    FString               secDA_Analysis_vte (const FString&);
+    FString               secDA_Analysis_kitty (const FString&);
 
     // Data members
 #if DEBUG
-    static char           termtype_256color[256];
-    static char           termtype_Answerback[256];
-    static char           termtype_SecDA[256];
+    FString        termtype_256color{};
+    FString        termtype_Answerback{};
+    FString        termtype_SecDA{};
 #endif
-    static char           termtype[256];
-    static char           ttytypename[256];
-    static bool           decscusr_support;
-    static bool           terminal_detection;
-    static bool           color256;
-    static int            gnome_terminal_id;
-    static const FString* answer_back;
-    static const FString* sec_da;
-    static FTerminalType  terminal_type;
-    static colorEnv       color_env;
-    static kittyVersion   kitty_version;
-    static secondaryDA    secondary_da;
-};
-
-
-//----------------------------------------------------------------------
-// struct FTermDetection::colorEnv
-//----------------------------------------------------------------------
-struct FTermDetection::colorEnv
-{
-  char* string1{nullptr};
-  char* string2{nullptr};
-  char* string3{nullptr};
-  char* string4{nullptr};
-  char* string5{nullptr};
-  char* string6{nullptr};
-  char* string7{nullptr};
-  char* string8{nullptr};
-};
-
-//----------------------------------------------------------------------
-// struct FTermDetection::KittyVersion
-//----------------------------------------------------------------------
-struct FTermDetection::kittyVersion
-{
-  int primary{0};
-  int secondary{0};
-};
-
-//----------------------------------------------------------------------
-// struct FTermDetection::secondaryDA
-//----------------------------------------------------------------------
-struct FTermDetection::secondaryDA
-{
-  int terminal_id_type{-1};
-  int terminal_id_version{-1};
-  int terminal_id_hardware{-1};
+    FString        termtype{};
+    FString        ttytypename{"/etc/ttytype"};  // Default ttytype file
+    bool           decscusr_support{false};      // Preset to false
+    bool           terminal_detection{true};     // Preset to true
+    bool           color256{};
+    // Gnome terminal id from SecDA
+    // Example: vte version 0.40.0 = 0 * 100 + 40 * 100 + 0 = 4000
+    //                      a.b.c  = a * 100 +  b * 100 + c
+    int            gnome_terminal_id{0};
+    FString        answer_back{};
+    FString        sec_da{};
+    FTerminalType  terminal_type{};
+    colorEnv       color_env{};
+    kittyVersion   kitty_version{};
+    secondaryDA    secondary_da{};
 };
 
 
 // FTermDetection inline functions
 //----------------------------------------------------------------------
-inline FString FTermDetection::getClassName()
+inline FString FTermDetection::getClassName() const
 { return "FTermDetection"; }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::getTermType()
+inline const FString& FTermDetection::getTermType() const
 { return termtype; }
 
 //----------------------------------------------------------------------
-inline int FTermDetection::getGnomeTerminalID()
+inline int FTermDetection::getGnomeTerminalID() const
 { return gnome_terminal_id; }
 
 //----------------------------------------------------------------------
-inline FTermDetection::kittyVersion FTermDetection::getKittyVersion()
+inline FTermDetection::kittyVersion FTermDetection::getKittyVersion() const
 { return kitty_version; }
 
 //----------------------------------------------------------------------
@@ -279,112 +268,112 @@ inline FTermDetection::FTerminalType& FTermDetection::getTermTypeStruct()
 
 #if DEBUG
 //----------------------------------------------------------------------
-inline const char* FTermDetection::getTermType_256color()
+inline const FString& FTermDetection::getTermType_256color() const
 { return termtype_256color; }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::getTermType_Answerback()
+inline const FString& FTermDetection::getTermType_Answerback() const
 { return termtype_Answerback; }
 
 //----------------------------------------------------------------------
-inline const char* FTermDetection::getTermType_SecDA()
+inline const FString& FTermDetection::getTermType_SecDA() const
 { return termtype_SecDA; }
 #endif
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::canDisplay256Colors()
+inline bool FTermDetection::canDisplay256Colors() const
 { return color256; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::hasSetCursorStyleSupport()
+inline bool FTermDetection::hasSetCursorStyleSupport() const
 { return decscusr_support; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isXTerminal()
+inline bool FTermDetection::isXTerminal() const
 { return terminal_type.xterm; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isAnsiTerminal()
+inline bool FTermDetection::isAnsiTerminal() const
 { return terminal_type.ansi; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isRxvtTerminal()
+inline bool FTermDetection::isRxvtTerminal() const
 { return terminal_type.rxvt; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isUrxvtTerminal()
+inline bool FTermDetection::isUrxvtTerminal() const
 { return terminal_type.urxvt; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isMltermTerminal()
+inline bool FTermDetection::isMltermTerminal() const
 { return terminal_type.mlterm; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isKittyTerminal()
+inline bool FTermDetection::isKittyTerminal() const
 { return terminal_type.kitty; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isPuttyTerminal()
+inline bool FTermDetection::isPuttyTerminal() const
 { return terminal_type.putty; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isWindowsTerminal()
+inline bool FTermDetection::isWindowsTerminal() const
 { return terminal_type.win_terminal; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isKdeTerminal()
+inline bool FTermDetection::isKdeTerminal() const
 { return terminal_type.kde_konsole; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isGnomeTerminal()
+inline bool FTermDetection::isGnomeTerminal() const
 { return terminal_type.gnome_terminal; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isKtermTerminal()
+inline bool FTermDetection::isKtermTerminal() const
 { return terminal_type.kterm; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isTeraTerm()
+inline bool FTermDetection::isTeraTerm() const
 { return terminal_type.tera_term; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isCygwinTerminal()
+inline bool FTermDetection::isCygwinTerminal() const
 { return terminal_type.cygwin; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isMinttyTerm()
+inline bool FTermDetection::isMinttyTerm() const
 { return terminal_type.mintty; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isLinuxTerm()
+inline bool FTermDetection::isLinuxTerm() const
 { return terminal_type.linux_con; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isFreeBSDTerm()
+inline bool FTermDetection::isFreeBSDTerm() const
 { return terminal_type.freebsd_con; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isNetBSDTerm()
+inline bool FTermDetection::isNetBSDTerm() const
 { return terminal_type.netbsd_con; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isOpenBSDTerm()
+inline bool FTermDetection::isOpenBSDTerm() const
 { return terminal_type.openbsd_con; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isSunTerminal()
+inline bool FTermDetection::isSunTerminal() const
 { return terminal_type.sun_con; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isScreenTerm()
+inline bool FTermDetection::isScreenTerm() const
 { return terminal_type.screen; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isTmuxTerm()
+inline bool FTermDetection::isTmuxTerm() const
 { return terminal_type.tmux; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::hasTerminalDetection()
+inline bool FTermDetection::hasTerminalDetection() const
 { return terminal_detection; }
 
 //----------------------------------------------------------------------

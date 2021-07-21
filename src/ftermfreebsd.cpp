@@ -47,6 +47,13 @@ bool                      FTermFreeBSD::meta_sends_escape{true};
 
 // public methods of FTermFreeBSD
 //----------------------------------------------------------------------
+auto FTermFreeBSD::getInstance() -> FTermFreeBSD&
+{
+  static const auto& freebsd_console = make_unique<FTermFreeBSD>();
+  return *freebsd_console;
+}
+
+//----------------------------------------------------------------------
 FTermFreeBSD::CursorStyle FTermFreeBSD::getCursorStyle()
 {
   return cursor_style;
@@ -61,7 +68,7 @@ bool FTermFreeBSD::setCursorStyle (CursorStyle style)
     return false;
 
   cursor_style = style;
-  auto& fterm_data = FTerm::getFTermData();
+  auto& fterm_data = FTermData::getInstance();
 
   if ( fterm_data.isCursorHidden() )
     return false;
@@ -75,7 +82,7 @@ bool FTermFreeBSD::isFreeBSDConsole()
   // Check if it's a FreeBSD console
 
   keymap_t keymap{};
-  const auto& fsystem = FTerm::getFSystem();
+  const auto& fsystem = FSystem::getInstance();
 
   if ( fsystem->ioctl(0, GIO_KEYMAP, &keymap) == 0 )
     return true;
@@ -148,7 +155,7 @@ void FTermFreeBSD::initCharMap()
   if ( ! isFreeBSDConsole() )
     return;
 
-  for (auto&& entry : fc::character)
+  for (auto&& entry : FCharMap::getCharEncodeMap())
     if ( entry.pc < 0x1c )
       entry.pc = entry.ascii;
 }
@@ -187,7 +194,7 @@ bool FTermFreeBSD::saveFreeBSDAltKey()
   static constexpr int left_alt = 0x38;
   int ret{-1};
   keymap_t keymap{};
-  const auto& fsystem = FTerm::getFSystem();
+  const auto& fsystem = FSystem::getInstance();
   ret = fsystem->ioctl (0, GIO_KEYMAP, &keymap);
 
   if ( ret < 0 )
@@ -206,7 +213,7 @@ bool FTermFreeBSD::setFreeBSDAltKey (uInt key)
   static constexpr int left_alt = 0x38;
   int ret{-1};
   keymap_t keymap{};
-  const auto& fsystem = FTerm::getFSystem();
+  const auto& fsystem = FSystem::getInstance();
   ret = fsystem->ioctl (0, GIO_KEYMAP, &keymap);
 
   if ( ret < 0 )
@@ -241,7 +248,7 @@ bool FTermFreeBSD::resetFreeBSDAlt2Meta()
 //----------------------------------------------------------------------
 bool FTermFreeBSD::setFreeBSDCursorStyle (CursorStyle style)
 {
-  const auto& fsystem = FTerm::getFSystem();
+  const auto& fsystem = FSystem::getInstance();
 
   if ( fsystem->ioctl(0, CONS_CURSORTYPE, &style) == 0 )
     return true;

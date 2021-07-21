@@ -1,0 +1,65 @@
+name: "ARM build"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 7 * * 2'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build on ${{ matrix.architecture }}
+
+    # Run steps on a matrix of 3 arch/distro combinations
+    strategy:
+      matrix:
+        include:
+          - architecture: aarch64
+          - architecture: armv7
+          - architecture: armv6
+
+    steps:
+    - name: Repository checkout
+      uses: actions/checkout@v2
+
+    - name: Test on ARM architecture
+      uses: darsvador/run-on-arch-action@v1.0.10
+      id: runcmd
+      with:
+        architecture: ${{ matrix.architecture }}
+        distribution: buster
+        run: |
+          lsb_release -a
+          uname -a
+          whoami
+          tty || echo
+          pwd
+          # Install dependencies via apt-get
+          echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+          apt-get update
+          apt-get -y install \
+            ca-certificates \
+            make \
+            gcc \
+            g++ \
+            gpm \
+            libgpm-dev \
+            libcppunit-dev \
+            libncurses-dev \
+            pkg-config \
+            libtool \
+            automake \
+            autoconf \
+            autoconf-archive
+          # Build 
+          autoreconf -v --install --force
+          ./configure --prefix=/usr
+          make -j10
+
+    - name: Get the output
+      run: |
+        echo "The uname output was ${{ steps.runcmd.outputs.uname }}"
+

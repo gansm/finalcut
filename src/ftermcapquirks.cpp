@@ -42,7 +42,7 @@ namespace finalcut
 //----------------------------------------------------------------------
 void FTermcapQuirks::terminalFixup()
 {
-  const auto& td = FTerm::getFTermDetection();
+  const auto& td = FTermDetection::getInstance();
 
   if ( td.isCygwinTerminal() )
   {
@@ -228,7 +228,7 @@ void FTermcapQuirks::xterm()
 void FTermcapQuirks::rxvt()
 {
   // Set enter/exit alternative charset mode for rxvt terminal
-  const auto& termtype = FTerm::getFTermData().getTermType();
+  const auto& termtype = FTermData::getInstance().getTermType();
 
   if ( termtype.substr(0,12) == "rxvt-16color" )
   {
@@ -237,7 +237,7 @@ void FTermcapQuirks::rxvt()
   }
 
   // Set ansi foreground and background color
-  if ( ! FTerm::getFTermDetection().isUrxvtTerminal() )
+  if ( ! FTermDetection::getInstance().isUrxvtTerminal() )
   {
     TCAP(t_set_a_foreground) = \
         CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm";
@@ -249,7 +249,7 @@ void FTermcapQuirks::rxvt()
 //----------------------------------------------------------------------
 void FTermcapQuirks::vte()
 {
-  const auto& term_detection = FTerm::getFTermDetection();
+  const auto& term_detection = FTermDetection::getInstance();
 
   // gnome-terminal has NC=16 however, it can use the dim attribute
   FTermcap::attr_without_color = 0;
@@ -370,73 +370,74 @@ void FTermcapQuirks::sunConsole()
   TCAP(t_parm_down_cursor) = CSI "%p1%dB";
   TCAP(t_parm_right_cursor) = CSI "%p1%dC";
   TCAP(t_parm_left_cursor) = CSI "%p1%dD";
+  auto& fkey_cap_table = FKeyMap::getKeyCapMap();
 
   // Sun Microsystems workstation console keys
-  for (std::size_t i{0}; fc::fkey_cap_table[i].tname[0] != 0; i++)
+  for (std::size_t i{0}; fkey_cap_table[i].tname[0] != 0; i++)
   {
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "K2", 2) == 0 )
-      fc::fkey_cap_table[i].string = CSI "218z";  // center of keypad
+    if ( std::strncmp(fkey_cap_table[i].tname, "K2", 2) == 0 )
+      fkey_cap_table[i].string = CSI "218z";  // center of keypad
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "kb", 2) == 0 )
-      fc::fkey_cap_table[i].string = "\b";  // backspace key
+    if ( std::strncmp(fkey_cap_table[i].tname, "kb", 2) == 0 )
+      fkey_cap_table[i].string = "\b";  // backspace key
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "kD", 2) == 0
-      && std::strlen(fc::fkey_cap_table[i].tname) == 2 )
-      fc::fkey_cap_table[i].string = "\177";  // delete-character key
+    if ( std::strncmp(fkey_cap_table[i].tname, "kD", 2) == 0
+      && stringLength(fkey_cap_table[i].tname) == 2 )
+      fkey_cap_table[i].string = "\177";  // delete-character key
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "@7", 2) == 0 )
-      fc::fkey_cap_table[i].string = CSI "220z";  // end key
+    if ( std::strncmp(fkey_cap_table[i].tname, "@7", 2) == 0 )
+      fkey_cap_table[i].string = CSI "220z";  // end key
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "k;", 2) == 0 )
-      fc::fkey_cap_table[i].string = CSI "233z";  // F10 function key
+    if ( std::strncmp(fkey_cap_table[i].tname, "k;", 2) == 0 )
+      fkey_cap_table[i].string = CSI "233z";  // F10 function key
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "F1", 2) == 0 )
-      fc::fkey_cap_table[i].string = CSI "234z";  // F11 function key
+    if ( std::strncmp(fkey_cap_table[i].tname, "F1", 2) == 0 )
+      fkey_cap_table[i].string = CSI "234z";  // F11 function key
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "F2", 2) == 0 )
-      fc::fkey_cap_table[i].string = CSI "235z";  // F12 function key
+    if ( std::strncmp(fkey_cap_table[i].tname, "F2", 2) == 0 )
+      fkey_cap_table[i].string = CSI "235z";  // F12 function key
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "kh", 2) == 0 )
-      fc::fkey_cap_table[i].string = CSI "214z";  // home key
+    if ( std::strncmp(fkey_cap_table[i].tname, "kh", 2) == 0 )
+      fkey_cap_table[i].string = CSI "214z";  // home key
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "kI", 2) == 0 )
-      fc::fkey_cap_table[i].string = CSI "247z";  // insert-character key
+    if ( std::strncmp(fkey_cap_table[i].tname, "kI", 2) == 0 )
+      fkey_cap_table[i].string = CSI "247z";  // insert-character key
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "kN", 2) == 0 )
-      fc::fkey_cap_table[i].string = CSI "222z";  // next-page key
+    if ( std::strncmp(fkey_cap_table[i].tname, "kN", 2) == 0 )
+      fkey_cap_table[i].string = CSI "222z";  // next-page key
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "%7", 2) == 0 )
-      fc::fkey_cap_table[i].string = CSI "194z";  // options key
+    if ( std::strncmp(fkey_cap_table[i].tname, "%7", 2) == 0 )
+      fkey_cap_table[i].string = CSI "194z";  // options key
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "kP", 2) == 0 )
-      fc::fkey_cap_table[i].string = CSI "216z";  // prev-page key
+    if ( std::strncmp(fkey_cap_table[i].tname, "kP", 2) == 0 )
+      fkey_cap_table[i].string = CSI "216z";  // prev-page key
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "&5", 2) == 0 )
-      fc::fkey_cap_table[i].string = CSI "193z";  // resume key
+    if ( std::strncmp(fkey_cap_table[i].tname, "&5", 2) == 0 )
+      fkey_cap_table[i].string = CSI "193z";  // resume key
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "&8", 2) == 0 )
-      fc::fkey_cap_table[i].string = CSI "195z";  // undo key
+    if ( std::strncmp(fkey_cap_table[i].tname, "&8", 2) == 0 )
+      fkey_cap_table[i].string = CSI "195z";  // undo key
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "K2", 2) == 0 )
-      fc::fkey_cap_table[i].string = CSI "218z";  // center of keypad
+    if ( std::strncmp(fkey_cap_table[i].tname, "K2", 2) == 0 )
+      fkey_cap_table[i].string = CSI "218z";  // center of keypad
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "kDx", 3) == 0 )
-      fc::fkey_cap_table[i].string = CSI "249z";  // keypad delete
+    if ( std::strncmp(fkey_cap_table[i].tname, "kDx", 3) == 0 )
+      fkey_cap_table[i].string = CSI "249z";  // keypad delete
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "@8x", 3) == 0 )
-      fc::fkey_cap_table[i].string = CSI "250z";  // enter/send key
+    if ( std::strncmp(fkey_cap_table[i].tname, "@8x", 3) == 0 )
+      fkey_cap_table[i].string = CSI "250z";  // enter/send key
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "KP1", 3) == 0 )
-      fc::fkey_cap_table[i].string = CSI "212z";  // keypad slash
+    if ( std::strncmp(fkey_cap_table[i].tname, "KP1", 3) == 0 )
+      fkey_cap_table[i].string = CSI "212z";  // keypad slash
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "KP2", 3) == 0 )
-      fc::fkey_cap_table[i].string = CSI "213z";  // keypad asterisk
+    if ( std::strncmp(fkey_cap_table[i].tname, "KP2", 3) == 0 )
+      fkey_cap_table[i].string = CSI "213z";  // keypad asterisk
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "KP3", 3) == 0 )
-      fc::fkey_cap_table[i].string = CSI "254z";  // keypad minus sign
+    if ( std::strncmp(fkey_cap_table[i].tname, "KP3", 3) == 0 )
+      fkey_cap_table[i].string = CSI "254z";  // keypad minus sign
 
-    if ( std::strncmp(fc::fkey_cap_table[i].tname, "KP4", 3) == 0 )
-      fc::fkey_cap_table[i].string = CSI "253z";  // keypad plus sign
+    if ( std::strncmp(fkey_cap_table[i].tname, "KP4", 3) == 0 )
+      fkey_cap_table[i].string = CSI "253z";  // keypad plus sign
   }
 }
 
@@ -448,7 +449,7 @@ void FTermcapQuirks::screen()
   {
     FTermcap::can_change_color_palette = true;
 
-    if ( FTerm::getFTermDetection().isTmuxTerm() )
+    if ( FTermDetection::getInstance().isTmuxTerm() )
     {
       TCAP(t_initialize_color) = \
           ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"

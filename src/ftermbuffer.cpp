@@ -66,7 +66,6 @@ FString FTermBuffer::toString() const
 //----------------------------------------------------------------------
 int FTermBuffer::write (const FString& string)
 {
-  assert ( ! string.isNull() );
   data.reserve(data.size() + string.getLength());
   const auto last = string.end();
   auto begin = string.begin();
@@ -152,7 +151,7 @@ void FTermBuffer::write (const FColorPair& pair) const
 // private methods of FTermBuffer
 //----------------------------------------------------------------------
 void FTermBuffer::add ( FString::const_iterator& begin
-                      , FString::const_iterator& end
+                      , const FString::const_iterator& end
                       , int& char_width )
 {
   if ( begin == end )

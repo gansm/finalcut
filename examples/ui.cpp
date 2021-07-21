@@ -427,7 +427,7 @@ void MyDialog::initMenu()
   Drive.setStatusbarMessage ("Show drive symbols");
   Line3.setSeparator();
 
-  if ( finalcut::FStartOptions::getFStartOptions().dark_theme )
+  if ( finalcut::FStartOptions::getInstance().dark_theme )
     Theme.setChecked();
 }
 
@@ -1013,7 +1013,7 @@ void MyDialog::cb_view (const finalcut::FMenuItem* item)
   else
     file = finalcut::FFileDialog::fileOpenChooser (this);
 
-  if ( file.isNull() )
+  if ( file.isEmpty() )
     return;
 
   const auto& view = new TextWindow(this);

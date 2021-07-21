@@ -122,7 +122,7 @@ void FTermcapTest::classNameTest()
 void FTermcapTest::initTest()
 {
   // Without a terminal type
-  auto& fterm_data = finalcut::FTerm::getFTermData();
+  auto& fterm_data = finalcut::FTermData::getInstance();
   CPPUNIT_ASSERT ( fterm_data.getTermType().empty() );
   finalcut::FTermcap tcap;
   CPPUNIT_ASSERT ( ! tcap.isInitialized() );
@@ -141,7 +141,7 @@ void FTermcapTest::initTest()
   tcap.init();
   CPPUNIT_ASSERT ( fterm_data.getTermType() == "xterm" );
   setenv ("TERM", "xterm-256color", 1);  // 256 color terminal
-  auto& term_detection = finalcut::FTerm::getFTermDetection();
+  auto& term_detection = finalcut::FTermDetection::getInstance();
   CPPUNIT_ASSERT ( ! term_detection.canDisplay256Colors() );
   term_detection.detect();
   CPPUNIT_ASSERT ( term_detection.canDisplay256Colors() );
@@ -156,7 +156,7 @@ void FTermcapTest::initTest()
 //----------------------------------------------------------------------
 void FTermcapTest::getFlagTest()
 {
-  auto& fterm_data = finalcut::FTerm::getFTermData();
+  auto& fterm_data = finalcut::FTermData::getInstance();
   fterm_data.setTermType("ansi");
   finalcut::FTermcap tcap;
   tcap.init();
@@ -171,7 +171,7 @@ void FTermcapTest::getFlagTest()
 //----------------------------------------------------------------------
 void FTermcapTest::getNumberTest()
 {
-  auto& fterm_data = finalcut::FTerm::getFTermData();
+  auto& fterm_data = finalcut::FTermData::getInstance();
   fterm_data.setTermType("xterm");
   finalcut::FTermcap tcap;
   tcap.init();
@@ -188,7 +188,7 @@ void FTermcapTest::getNumberTest()
 //----------------------------------------------------------------------
 void FTermcapTest::getStringTest()
 {
-  auto& fterm_data = finalcut::FTerm::getFTermData();
+  auto& fterm_data = finalcut::FTermData::getInstance();
   fterm_data.setTermType("ansi");
   finalcut::FTermcap tcap;
   tcap.init();
@@ -206,7 +206,7 @@ void FTermcapTest::getStringTest()
 //----------------------------------------------------------------------
 void FTermcapTest::encodeMotionParameterTest()
 {
-  auto& fterm_data = finalcut::FTerm::getFTermData();
+  auto& fterm_data = finalcut::FTermData::getInstance();
   fterm_data.setTermType("ansi");
   finalcut::FTermcap tcap;
   tcap.init();
@@ -222,7 +222,7 @@ void FTermcapTest::encodeMotionParameterTest()
 //----------------------------------------------------------------------
 void FTermcapTest::encodeParameterTest()
 {
-  auto& fterm_data = finalcut::FTerm::getFTermData();
+  auto& fterm_data = finalcut::FTermData::getInstance();
   fterm_data.setTermType("ansi");
   finalcut::FTermcap tcap;
   tcap.init();
@@ -248,7 +248,7 @@ void FTermcapTest::paddingPrintTest()
   finalcut::FTermcap tcap;
   setenv ("TERM", "xterm", 1);  // xterm has no padding character
   unsetenv("TERMCAP");
-  auto& fterm_data = finalcut::FTerm::getFTermData();
+  auto& fterm_data = finalcut::FTermData::getInstance();
   fterm_data.setTermType("xterm");
   CPPUNIT_ASSERT ( ! tcap.xon_xoff_flow_control );
   tcap.init();

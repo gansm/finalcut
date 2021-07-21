@@ -72,23 +72,23 @@ class FLogger : public FLog
     ~FLogger() noexcept override;
 
     // Methods
-    FString getClassName() const override;
-    void info (const std::string&) override;
-    void warn (const std::string&) override;
-    void error (const std::string&) override;
-    void debug (const std::string&) override;
-    void flush() override;
-    void setOutputStream (const std::ostream&) override;
-    void setLineEnding (LineEnding) override;
-    void enableTimestamp() override;
-    void disableTimestamp() override;
+    FString       getClassName() const override;
+    void          info (const std::string&) override;
+    void          warn (const std::string&) override;
+    void          error (const std::string&) override;
+    void          debug (const std::string&) override;
+    void          flush() override;
+    void          setOutputStream (const std::ostream&) override;
+    void          setLineEnding (LineEnding) override;
+    void          enableTimestamp() override;
+    void          disableTimestamp() override;
 
   private:
     // Methods
-    void              newlineReplace (std::string&, const std::string&) const;
-    std::string       getTimeString() const;
-    std::string       getEOL() const;
-    void              printLogLine (const std::string&);
+    void          newlineReplace (std::string&, const std::string&) const;
+    std::string   getTimeString() const;
+    std::string   getEOL() const;
+    void          printLogLine (const std::string&);
 
     // Data member
     bool         timestamp{false};

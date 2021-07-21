@@ -34,23 +34,6 @@
 #include <conemu.h>
 #include <final/final.h>
 
-#define CPPUNIT_ASSERT_CSTRING(expected, actual) \
-            check_c_string (expected, actual, CPPUNIT_SOURCELINE())
-
-//----------------------------------------------------------------------
-void check_c_string ( const char* s1
-                    , const char* s2
-                    , CppUnit::SourceLine sourceLine )
-{
-  if ( s1 == 0 && s2 == 0 )  // Strings are equal
-    return;
-
-  if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
-      return;
-
-  ::CppUnit::Asserter::fail ("Strings are not equal", sourceLine);
-}
-
 
 //----------------------------------------------------------------------
 // class FTermDetectionTest
@@ -141,7 +124,7 @@ void FTermDetectionTest::classNameTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::ansiTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   setenv ("TERM", "ansi", 1);
   data.setTermType("ansi");
@@ -150,6 +133,7 @@ void FTermDetectionTest::ansiTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "ansi", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -187,14 +171,14 @@ void FTermDetectionTest::ansiTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "ansi" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "ansi" );
 
     // Test fallback to vt100 without TERM environment variable
     unsetenv("TERM");
     detect.setAnsiTerminal(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -213,7 +197,7 @@ void FTermDetectionTest::ansiTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::xtermTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
@@ -222,6 +206,7 @@ void FTermDetectionTest::xtermTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm", 1);
     setenv ("XTERM_VERSION", "XTerm(312)", 1);
     unsetenv("TERMCAP");
@@ -277,7 +262,7 @@ void FTermDetectionTest::xtermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::rxvtTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("rxvt-cygwin-native");
   detect.setTerminalDetection(true);
@@ -286,6 +271,7 @@ void FTermDetectionTest::rxvtTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "rxvt-cygwin-native", 1);
     setenv ("COLORTERM", "rxvt-xpm", 1);
     setenv ("COLORFGBG", "default;default", 1);
@@ -323,7 +309,7 @@ void FTermDetectionTest::rxvtTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "rxvt-16color" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "rxvt-16color" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -342,7 +328,7 @@ void FTermDetectionTest::rxvtTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::urxvtTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("rxvt-unicode-256color");
   detect.setTerminalDetection(true);
@@ -351,6 +337,7 @@ void FTermDetectionTest::urxvtTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "rxvt-unicode-256color", 1);
     setenv ("COLORTERM", "rxvt-xpm", 1);
     setenv ("COLORFGBG", "default;default;0", 1);
@@ -406,7 +393,7 @@ void FTermDetectionTest::urxvtTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::kdeKonsoleTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
@@ -415,6 +402,7 @@ void FTermDetectionTest::kdeKonsoleTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm-256color", 1);
     setenv ("COLORTERM", "truecolor", 1);
     setenv ("KONSOLE_DBUS_SERVICE", "DCOPRef(konsole-11768,konsole)", 1);
@@ -470,7 +458,7 @@ void FTermDetectionTest::kdeKonsoleTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::gnomeTerminalTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
@@ -479,6 +467,7 @@ void FTermDetectionTest::gnomeTerminalTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm-256color", 1);
     setenv ("COLORTERM", "truecolor", 1);
     setenv ("VTE_VERSION", "5202", 1);
@@ -534,7 +523,7 @@ void FTermDetectionTest::gnomeTerminalTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::newerVteTerminalTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
@@ -543,6 +532,7 @@ void FTermDetectionTest::newerVteTerminalTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm-256color", 1);
     setenv ("COLORTERM", "truecolor", 1);
     setenv ("VTE_VERSION", "5300", 1);
@@ -598,7 +588,7 @@ void FTermDetectionTest::newerVteTerminalTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::puttyTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
@@ -607,6 +597,7 @@ void FTermDetectionTest::puttyTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -663,7 +654,7 @@ void FTermDetectionTest::puttyTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::windowsTerminalTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
@@ -672,6 +663,7 @@ void FTermDetectionTest::windowsTerminalTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm-256color", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -729,7 +721,7 @@ void FTermDetectionTest::windowsTerminalTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::teraTermTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
@@ -738,6 +730,7 @@ void FTermDetectionTest::teraTermTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -793,7 +786,7 @@ void FTermDetectionTest::teraTermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::cygwinTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("cygwin");
   detect.setTerminalDetection(true);
@@ -802,6 +795,7 @@ void FTermDetectionTest::cygwinTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "cygwin", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -857,7 +851,7 @@ void FTermDetectionTest::cygwinTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::minttyTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm-256color");
   detect.setTerminalDetection(true);
@@ -866,6 +860,7 @@ void FTermDetectionTest::minttyTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm-256color", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -921,7 +916,7 @@ void FTermDetectionTest::minttyTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::linuxTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("linux");
   detect.setTerminalDetection(true);
@@ -930,6 +925,7 @@ void FTermDetectionTest::linuxTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "linux", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -973,7 +969,7 @@ void FTermDetectionTest::linuxTest()
     detect.setLinuxTerm(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isLinuxTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -992,7 +988,7 @@ void FTermDetectionTest::linuxTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::freebsdTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm");
   detect.setTerminalDetection(true);
@@ -1001,6 +997,7 @@ void FTermDetectionTest::freebsdTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -1047,7 +1044,7 @@ void FTermDetectionTest::freebsdTest()
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isXTerminal() );
     CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1066,7 +1063,7 @@ void FTermDetectionTest::freebsdTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::netbsdTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("wsvt25");
   detect.setTerminalDetection(true);
@@ -1075,6 +1072,7 @@ void FTermDetectionTest::netbsdTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "wsvt25", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -1119,7 +1117,7 @@ void FTermDetectionTest::netbsdTest()
     detect.setNetBSDTerm(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1138,7 +1136,7 @@ void FTermDetectionTest::netbsdTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::openbsdTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("vt220");
   detect.setTerminalDetection(true);
@@ -1147,6 +1145,7 @@ void FTermDetectionTest::openbsdTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "vt220", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -1191,7 +1190,7 @@ void FTermDetectionTest::openbsdTest()
     detect.setOpenBSDTerm(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isOpenBSDTerm() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1210,7 +1209,7 @@ void FTermDetectionTest::openbsdTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::sunTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("sun-color");
 
@@ -1218,6 +1217,7 @@ void FTermDetectionTest::sunTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "sun-color", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -1261,7 +1261,7 @@ void FTermDetectionTest::sunTest()
     detect.setSunTerminal(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1280,7 +1280,7 @@ void FTermDetectionTest::sunTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::screenTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("screen");
   detect.setTerminalDetection(true);
@@ -1289,6 +1289,7 @@ void FTermDetectionTest::screenTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "screen", 1);
     setenv ("TERMCAP", "SC|screen|VT 100/ANSI X3.64 virtual terminal:...", 1);
     unsetenv("COLORTERM");
@@ -1326,12 +1327,12 @@ void FTermDetectionTest::screenTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "screen" );
 
     setenv ("XTERM_VERSION", "XTerm(312)", 1);
     detect.detect();
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "screen-256color" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1350,7 +1351,7 @@ void FTermDetectionTest::screenTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::tmuxTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("screen");
   detect.setTerminalDetection(true);
@@ -1359,6 +1360,7 @@ void FTermDetectionTest::tmuxTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "screen", 1);
     setenv ("TMUX", "/tmp/tmux-1000/default,7844,0", 1);
     setenv ("TMUX_PANE", "%0", 1);
@@ -1397,12 +1399,12 @@ void FTermDetectionTest::tmuxTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "screen" );
 
     setenv ("VTE_VERSION", "3801", 1);
     detect.detect();
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "screen-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "screen-256color" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1421,7 +1423,7 @@ void FTermDetectionTest::tmuxTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::ktermTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("kterm");
   detect.setTerminalDetection(true);
@@ -1430,6 +1432,7 @@ void FTermDetectionTest::ktermTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "kterm", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -1473,7 +1476,7 @@ void FTermDetectionTest::ktermTest()
     detect.setKtermTerminal(false);
     detect.detect();
     CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1492,7 +1495,7 @@ void FTermDetectionTest::ktermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::mltermTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("mlterm");
   detect.setTerminalDetection(true);
@@ -1501,6 +1504,7 @@ void FTermDetectionTest::mltermTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "mlterm", 1);
     setenv ("MLTERM", "3.8.4", 1);
     setenv ("COLORFGBG", "default;default", 1);
@@ -1539,13 +1543,13 @@ void FTermDetectionTest::mltermTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "mlterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "mlterm-256color" );
 
     setenv ("TERM", "mlterm", 1);
     unsetenv("COLORFGBG");
     detect.detect();
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "xterm-256color" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "xterm-256color" );
 
     printConEmuDebug();
     closeConEmuStdStreams();
@@ -1564,7 +1568,7 @@ void FTermDetectionTest::mltermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::kittyTest()
 {
-  auto& data = finalcut::FTerm::getFTermData();
+  auto& data = finalcut::FTermData::getInstance();
   finalcut::FTermDetection detect;
   data.setTermType("xterm-kitty");
   detect.setTerminalDetection(true);
@@ -1573,6 +1577,7 @@ void FTermDetectionTest::kittyTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     setenv ("TERM", "xterm-kitty", 1);
     setenv ("KITTY_WINDOW_ID", "1", 1);
     setenv ("COLORTERM", "truecolor", 1);
@@ -1585,7 +1590,7 @@ void FTermDetectionTest::kittyTest()
     unsetenv("TMUX");
     detect.detect();
 
-    CPPUNIT_ASSERT ( ! detect.isXTerminal() );
+    CPPUNIT_ASSERT ( detect.isXTerminal() );
     CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
     CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
     CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
@@ -1609,7 +1614,7 @@ void FTermDetectionTest::kittyTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "xterm-kitty" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "xterm-kitty" );
 
     auto kitty_version = detect.getKittyVersion();
     CPPUNIT_ASSERT (  kitty_version.primary == 0 );
@@ -1675,6 +1680,7 @@ void FTermDetectionTest::ttytypeTest()
 
   if ( isConEmuChildProcess(pid) )
   {
+    // (gdb) set follow-fork-mode child
     unsetenv("TERM");
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
@@ -1686,22 +1692,22 @@ void FTermDetectionTest::ttytypeTest()
     unsetenv("KONSOLE_DCOP");
     unsetenv("TMUX");
     unsetenv("KITTY_WINDOW_ID");
-    auto& data = finalcut::FTerm::getFTermData();
+    auto& data = finalcut::FTermData::getInstance();
 
     // Test /dev/tty3 with linux
     data.setTermFileName("/dev/tty3");
     detect.detect();
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "linux" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "linux" );
 
     // Test /dev/ttyp0 with vt100
     data.setTermFileName("/dev/ttyp0");
     detect.detect();
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "vt100" );
 
     // Test non-existent /dev/tty8 with fallback to vt100
     data.setTermFileName("/dev/tty8");
     detect.detect();
-    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), "vt100" );
+    CPPUNIT_ASSERT ( detect.getTermType() == "vt100" );
 
     printConEmuDebug();
     closeConEmuStdStreams();

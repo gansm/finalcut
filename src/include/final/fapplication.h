@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2020 Markus Gans                                      *
+* Copyright 2013-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -238,7 +238,7 @@ class FApplication : public FWidget
     FWidget*              clicked_widget{};
     FEventQueue           event_queue{};
     static uInt64         next_event_wait;
-    static timeval        time_last_event;
+    static TimeValue      time_last_event;
     static int            loop_level;
     static int            quit_code;
     static bool           quit_now;

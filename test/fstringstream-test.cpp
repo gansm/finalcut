@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -83,12 +83,10 @@ void FStringStreamTest::classNameTest()
 void FStringStreamTest::defaultObjectTest()
 {
   finalcut::FStringStream ss{std::ios_base::out};
-  CPPUNIT_ASSERT ( ss.str().isNull() );
   CPPUNIT_ASSERT ( ss.str().isEmpty() );
-  CPPUNIT_ASSERT ( ss.str() != "" );
+  CPPUNIT_ASSERT ( ss.str() == "" );
 
   ss << "Hello";
-  CPPUNIT_ASSERT ( ! ss.str().isNull() );
   CPPUNIT_ASSERT ( ! ss.str().isEmpty() );
   CPPUNIT_ASSERT ( ss.str() = "Hello" );
 
@@ -97,9 +95,8 @@ void FStringStreamTest::defaultObjectTest()
   CPPUNIT_ASSERT ( ss.str() == L"Hello, World!" );
 
   ss.clear();
-  CPPUNIT_ASSERT ( ss.str().isNull() );
   CPPUNIT_ASSERT ( ss.str().isEmpty() );
-  CPPUNIT_ASSERT ( ss.str() != "" );
+  CPPUNIT_ASSERT ( ss.str() == "" );
   ss.clear();
 
   ss << "Three" << " " << "parts";
@@ -140,7 +137,6 @@ void FStringStreamTest::moveConstructorTest()
   const finalcut::FStringStream ss2{std::move(ss1)};
   CPPUNIT_ASSERT ( ss2.str() == L"abc" );
   CPPUNIT_ASSERT ( ss2.str().getLength() == 3 );
-  CPPUNIT_ASSERT ( ss1.str().isNull() );
   CPPUNIT_ASSERT ( ss1.str().isEmpty() );
   CPPUNIT_ASSERT ( ss1.str().getLength() == 0 );
 }
@@ -153,7 +149,6 @@ void FStringStreamTest::assignmentTest()
   ss2 = std::move(ss1);
   CPPUNIT_ASSERT ( ss2.str() == L"xyz" );
   CPPUNIT_ASSERT ( ss2.str().getLength() == 3 );
-  CPPUNIT_ASSERT ( ss1.str().isNull() );
   CPPUNIT_ASSERT ( ss1.str().isEmpty() );
   CPPUNIT_ASSERT ( ss1.str().getLength() == 0 );
 }
@@ -189,7 +184,6 @@ void FStringStreamTest::rdbufTest()
   CPPUNIT_ASSERT ( ss.str().getLength() == 4 );
 
   ss.rdbuf()->str(L"");
-  CPPUNIT_ASSERT ( ss.str().isNull() );
   CPPUNIT_ASSERT ( ss.str().isEmpty() );
   CPPUNIT_ASSERT ( ss.str().getLength() == 0 );
 }

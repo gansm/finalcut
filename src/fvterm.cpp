@@ -61,14 +61,12 @@ bool                 FVTerm::force_terminal_update{false};
 uInt64               FVTerm::flush_wait{MIN_FLUSH_WAIT};
 uInt64               FVTerm::flush_average{MIN_FLUSH_WAIT};
 uInt64               FVTerm::flush_median{MIN_FLUSH_WAIT};
-uInt64               FVTerm::term_size_check_timeout{500000};  // 500 ms
 uInt                 FVTerm::erase_char_length{};
 uInt                 FVTerm::repeat_char_length{};
 uInt                 FVTerm::clr_bol_length{};
 uInt                 FVTerm::clr_eol_length{};
 uInt                 FVTerm::cursor_address_length{};
-struct timeval       FVTerm::time_last_flush{};
-struct timeval       FVTerm::last_term_size_check{};
+TimeValue            FVTerm::time_last_flush{};
 const FVTerm*        FVTerm::init_object{nullptr};
 FVTerm::FTermArea*   FVTerm::vterm{nullptr};
 FVTerm::FTermArea*   FVTerm::vdesktop{nullptr};
@@ -185,9 +183,9 @@ void FVTerm::hideCursor (bool enable) const
   if ( ! cursor_hideable )
     return;
 
-  const char* visibility_str = FTerm::cursorsVisibilityString (enable);
+  auto visibility_str = FTerm::cursorsVisibilityString (enable);
 
-  if ( ! visibility_str )  // Exit the function if the string is empty
+  if ( visibility_str.empty() )  // Exit the function if the string is empty
     return;
 
   appendOutputBuffer(FTermControl{visibility_str});
@@ -342,8 +340,8 @@ void FVTerm::delPreprocessingHandler (const FVTerm* instance)
 //----------------------------------------------------------------------
 int FVTerm::print (const FString& string)
 {
-  if ( string.isNull() )
-    return -1;
+  if ( string.isEmpty() )
+    return 0;
 
   FTermBuffer term_buffer{};
   term_buffer.write(string);
@@ -353,7 +351,7 @@ int FVTerm::print (const FString& string)
 //----------------------------------------------------------------------
 int FVTerm::print (FTermArea* area, const FString& string)
 {
-  if ( ! area || string.isNull() )
+  if ( ! area || string.isEmpty() )
     return -1;
 
   FTermBuffer term_buffer{};
@@ -601,9 +599,9 @@ void FVTerm::flush() const
   }
 
   std::fflush(stdout);
-  auto& mouse = FTerm::getFMouseControl();
+  auto& mouse = FMouseControl::getInstance();
   mouse.drawPointer();
-  FObject::getCurrentTime (&time_last_flush);
+  time_last_flush = FObject::getCurrentTime();
 }
 
 
@@ -1764,8 +1762,8 @@ FChar FVTerm::getCharacter ( CharacterType char_type
 
   const int x = pos.getX();
   const int y = pos.getY();
-  int xx = ( x > 0 ) ? x : 0;
-  int yy = ( y > 0 ) ? y : 0;
+  int xx = std::max(x, 0);
+  int yy = std::max(y, 0);
 
   if ( xx >= vterm->width )
     xx = vterm->width - 1;
@@ -1876,17 +1874,14 @@ void FVTerm::init()
   vdesktop->visible = true;
   active_area = vdesktop;
 
-  // Initialize the flush and last terminal size check time
-  time_last_flush.tv_sec = 0;
-  time_last_flush.tv_usec = 0;
-  last_term_size_check.tv_sec = 0;
-  last_term_size_check.tv_usec = 0;
+  // Initialize the last flush time
+  time_last_flush = TimeValue{};
 }
 
 //----------------------------------------------------------------------
 void FVTerm::init_characterLengths()
 {
-  const auto& opti_move = FTerm::getFOptiMove();
+  const auto& opti_move = FOptiMove::getInstance();
   cursor_address_length = opti_move.getCursorAddressLength();
   erase_char_length     = opti_move.getEraseCharsLength();
   repeat_char_length    = opti_move.getRepeatCharLength();
@@ -1920,7 +1915,7 @@ void FVTerm::init_combined_character()
   if ( FTerm::getEncoding() != Encoding::UTF8 )
     return;
 
-  const auto& term_detection = FTerm::getFTermDetection();
+  const auto& term_detection = FTermDetection::getInstance();
 
   if ( term_detection.isCygwinTerminal() )
     return;
@@ -1944,7 +1939,7 @@ void FVTerm::finish() const
   setNormal();
 
   if ( FTerm::hasAlternateScreen()
-    && FTerm::getFTermData().isInAlternateScreen() )
+    && FTermData::getInstance().isInAlternateScreen() )
     clearTerm();
 
   forceTerminalUpdate();
@@ -2880,32 +2875,12 @@ bool FVTerm::isInsideTerminal (const FPoint& pos) const
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isTermSizeChanged() const
-{
-  if ( ! isTermSizeCheckTimeout() )
-    return false;
-
-  FObject::getCurrentTime (&last_term_size_check);
-  auto& fterm_data = FTerm::getFTermData();
-  const auto& old_term_geometry = fterm_data.getTermGeometry();
-  FTerm::detectTermSize();
-  auto term_geometry = fterm_data.getTermGeometry();
-  term_geometry.move (-1, -1);
-
-  if ( old_term_geometry.getSize() != term_geometry.getSize() )
-    return true;
-
-  return false;
-}
-
-//----------------------------------------------------------------------
 inline void FVTerm::flushTimeAdjustment() const
 {
-  timeval now;
-  FObject::getCurrentTime(&now);
-  timeval diff = now - time_last_flush;
+  const auto now = FObject::getCurrentTime();
+  const auto diff = now - time_last_flush;
 
-  if ( diff.tv_sec > 0 || diff.tv_usec > 400000 )
+  if ( diff > milliseconds(400) )
   {
     flush_wait = MIN_FLUSH_WAIT;  // Reset to minimum values after 400 ms
     flush_average = MIN_FLUSH_WAIT;
@@ -2913,7 +2888,7 @@ inline void FVTerm::flushTimeAdjustment() const
   }
   else
   {
-    auto usec = uInt64(diff.tv_usec);
+    auto usec = uInt64(duration_cast<microseconds>(diff).count());
 
     if ( usec < MIN_FLUSH_WAIT )
       usec = MIN_FLUSH_WAIT;
@@ -2947,13 +2922,7 @@ inline void FVTerm::flushTimeAdjustment() const
 //----------------------------------------------------------------------
 inline bool FVTerm::isFlushTimeout()
 {
-  return FObject::isTimeout (&time_last_flush, flush_wait);
-}
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isTermSizeCheckTimeout()
-{
-  return FObject::isTimeout (&last_term_size_check, term_size_check_timeout);
+  return FObject::isTimeout (time_last_flush, flush_wait);
 }
 
 //----------------------------------------------------------------------
@@ -3080,7 +3049,7 @@ inline void FVTerm::appendAttributes (FChar& next_attr) const
   // generate attribute string for the next character
   const auto& attr_str = FTerm::changeAttribute (term_attribute, next_attr);
 
-  if ( attr_str )
+  if ( ! attr_str.empty() )
     appendOutputBuffer (FTermControl{attr_str});
 }
 

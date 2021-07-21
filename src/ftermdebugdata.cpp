@@ -37,37 +37,44 @@ namespace finalcut
 
 // public methods of FTermDebugData
 //----------------------------------------------------------------------
+auto FTermDebugData::getInstance() -> FTermDebugData&
+{
+  static const auto& debug_data = make_unique<FTermDebugData>();
+  return *debug_data;
+}
+
+//----------------------------------------------------------------------
 const FString& FTermDebugData::getAnswerbackString()
 {
-  auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTermDetection::getInstance();
   return term_detection.getAnswerbackString();
 }
 
 //----------------------------------------------------------------------
 const FString& FTermDebugData::getSecDAString()
 {
-  auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTermDetection::getInstance();
   return term_detection.getSecDAString();
 }
 
 //----------------------------------------------------------------------
-const char* FTermDebugData::getTermType_256color()
+const FString& FTermDebugData::getTermType_256color()
 {
-  auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTermDetection::getInstance();
   return term_detection.getTermType_256color();
 }
 
 //----------------------------------------------------------------------
-const char* FTermDebugData::getTermType_Answerback()
+const FString& FTermDebugData::getTermType_Answerback()
 {
-  auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTermDetection::getInstance();
   return term_detection.getTermType_Answerback();
 }
 
 //----------------------------------------------------------------------
-const char* FTermDebugData::getTermType_SecDA()
+const FString& FTermDebugData::getTermType_SecDA()
 {
-  auto& term_detection = FTerm::getFTermDetection();
+  auto& term_detection = FTermDetection::getInstance();
   return term_detection.getTermType_SecDA();
 }
 
@@ -75,7 +82,7 @@ const char* FTermDebugData::getTermType_SecDA()
 #if defined(__linux__)
 int FTermDebugData::getFramebufferBpp()
 {
-  auto& fterm_data = FTerm::getFTermData();
+  auto& fterm_data = FTermData::getInstance();
   return fterm_data.getFramebufferBpp();
 }
 #endif  // defined(__linux__)

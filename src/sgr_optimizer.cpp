@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -19,7 +19,7 @@
 * License along with this program.  If not, see                        *
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
-
+#include <iostream>
 #include <cstring>
 #include <vector>
 
@@ -35,9 +35,11 @@ namespace finalcut
 
 // constructors and destructor
 //----------------------------------------------------------------------
-SGRoptimizer::SGRoptimizer (AttributeBuffer& sequence)
+SGRoptimizer::SGRoptimizer (std::string& sequence)
   : seq{sequence}
-{ }
+{
+  seq.reserve(ATTR_BUF_SIZE);
+}
 
 
 // public methods of SGRoptimizer
@@ -55,7 +57,7 @@ void SGRoptimizer::findParameter()
 {
   // Find ANSI X3.64 terminal SGR (Select Graphic Rendition) strings
 
-  const std::size_t len = std::strlen(seq.data());
+  const std::size_t len = seq.length();
   csi_parameter.clear();
 
   if ( len < 6 )
@@ -105,6 +107,7 @@ void SGRoptimizer::combineParameter()
     return;
 
   const auto& first = csi_parameter.front();
+  const std::size_t len = seq.length();
   std::size_t count = 1;
   std::size_t read_pos{};
   std::size_t write_pos = first.end;
@@ -146,12 +149,14 @@ void SGRoptimizer::combineParameter()
     }
   }
 
-  while ( seq[write_pos] != '\0' )
+  while ( read_pos < len )
   {
     seq[write_pos] = seq[read_pos];
     read_pos++;
     write_pos++;
   }
+
+  seq.erase(write_pos);
 }
 
 }  // namespace finalcut

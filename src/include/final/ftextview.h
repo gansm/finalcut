@@ -252,10 +252,6 @@ void FTextView::insert (const std::initializer_list<T>& list, int pos)
 }
 
 //----------------------------------------------------------------------
-inline void FTextView::deleteRange (int from, int to)
-{ replaceRange (FString(), from, to); }
-
-//----------------------------------------------------------------------
 inline void FTextView::deleteLine (int pos)
 { deleteRange (pos, pos); }
 

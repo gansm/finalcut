@@ -34,6 +34,7 @@
 #include <cstring>
 
 #include <array>
+#include <chrono>
 #include <functional>
 #include <limits>
 #include <memory>
@@ -51,25 +52,25 @@
               << " in "                          \
               << __func__ << std::endl  // ;
 
-using uChar   = unsigned char;
-using uShort  = unsigned short;
-using uInt    = unsigned int;
-using uLong   = unsigned long;
-using uInt8   = std::uint8_t;
-using uInt16  = std::uint16_t;
-using uInt32  = std::uint32_t;
-using uInt64  = std::uint64_t;
+using uChar     = unsigned char;
+using uShort    = unsigned short;
+using uInt      = unsigned int;
+using uLong     = unsigned long;
+using uInt8     = std::uint8_t;
+using uInt16    = std::uint16_t;
+using uInt32    = std::uint32_t;
+using uInt64    = std::uint64_t;
 
-using sInt    = signed int;
-using sLong   = signed long;
-using sInt8   = std::int8_t;
-using sInt16  = std::int16_t;
-using sInt32  = std::int32_t;
-using sInt64  = std::int64_t;
+using sInt      = signed int;
+using sLong     = signed long;
+using sInt8     = std::int8_t;
+using sInt16    = std::int16_t;
+using sInt32    = std::int32_t;
+using sInt64    = std::int64_t;
 
-using lDouble = long double;
-
-using FCall   = std::function<void()>;
+using lDouble   = long double;
+using TimeValue = std::chrono::time_point<std::chrono::system_clock>;
+using FCall     = std::function<void()>;
 
 namespace finalcut
 {
@@ -119,7 +120,33 @@ std::unique_ptr<T> make_unique (Args&&... args)
   return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
+template <typename Iter>
+constexpr std::reverse_iterator<Iter> make_reverse_iterator (Iter iter)
+{
+  return std::reverse_iterator<Iter>(iter);
+}
+
+template <typename CharT>
+constexpr std::size_t stringLength (const CharT* s)
+{
+  return std::char_traits<CharT>::length(s);
+}
+
 using charSubstitution = std::unordered_map<wchar_t, wchar_t>;
+
+struct TCapAttributes
+{
+  uInt8 p1 : 1;  // Standout
+  uInt8 p2 : 1;  // Underline
+  uInt8 p3 : 1;  // Reverse
+  uInt8 p4 : 1;  // Blink
+  uInt8 p5 : 1;  // Dim
+  uInt8 p6 : 1;  // Bold
+  uInt8 p7 : 1;  // Invisible
+  uInt8 p8 : 1;  // Protected
+  uInt8 p9 : 1;  // Alternate charset
+  uInt8    : 7;  // padding bits
+};
 
 struct FCharAttribute
 {

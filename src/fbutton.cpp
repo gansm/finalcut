@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -209,11 +209,7 @@ bool FButton::setDown (bool enable)
 //----------------------------------------------------------------------
 void FButton::setText (const FString& txt)
 {
-  if ( txt.isNull() )
-    text.setString("");
-  else
-    text.setString(txt);
-
+  text.setString(txt);
   detectHotkey();
 }
 
@@ -321,6 +317,12 @@ void FButton::onMouseMove (FMouseEvent* ev)
     else
       setUp();
   }
+}
+
+//----------------------------------------------------------------------
+void FButton::onWheel (FWheelEvent*)
+{
+  setUp();
 }
 
 //----------------------------------------------------------------------

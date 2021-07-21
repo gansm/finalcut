@@ -203,7 +203,7 @@ DirectLogger::~DirectLogger() noexcept = default;  // destructor
 int main (int argc, char* argv[])
 {
   // Disable mouse, color palette changes and terminal data requests
-  auto& start_options = finalcut::FStartOptions::getFStartOptions();
+  auto& start_options = finalcut::FStartOptions::getInstance();
   start_options.mouse_support = false;
   start_options.color_change = false;
   start_options.terminal_data_request = false;
@@ -265,7 +265,7 @@ int main (int argc, char* argv[])
   std::cout << "\r" << line << std::flush;
   // Generation of a logger in a shared_ptr via a pointer
   finalcut::FApplication::setLog(std::make_shared<DirectLogger>());
-  const auto& opti_move = finalcut::FTerm::getFOptiMove();
+  const auto& opti_move = finalcut::FOptiMove::getInstance();
   finalcut::printDurations(opti_move);
 
   // Waiting for keypress

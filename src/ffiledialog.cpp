@@ -65,15 +65,15 @@ FString fileChooser ( FWidget* parent
   FString path{dirname};
   FString file_filter{filter};
 
-  if ( path.isNull() || path.isEmpty() )
+  if ( path.isEmpty() )
   {
     path.setString(FFileDialog::getHomeDir());
 
-    if ( path.isNull() || path.isEmpty() )
+    if ( path.isEmpty() )
       path.setString("/");
   }
 
-  if ( file_filter.isNull() || file_filter.isEmpty() )
+  if ( file_filter.isEmpty() )
     file_filter.setString("*");
 
   FFileDialog fileopen ( path
@@ -111,7 +111,7 @@ FFileDialog::FFileDialog ( const FString& dirname
   , filter_pattern{filter}
   , dlg_type{type}
 {
-  if ( ! dirname.isNull() )
+  if ( ! dirname.isEmpty() )
     setPath(dirname);
 
   init();
@@ -162,7 +162,7 @@ void FFileDialog::setPath (const FString& dir)
     return;
   }
 
-  const auto& fsystem = FTerm::getFSystem();
+  const auto& fsystem = FSystem::getInstance();
 
   if ( fsystem->realpath(dir.c_str(), resolved_path.data()) != nullptr )
     r_dir.setString(resolved_path.data());
@@ -372,18 +372,16 @@ void FFileDialog::initCallbacks()
 inline bool FFileDialog::patternMatch ( const char* const pattern
                                       , const char fname[] ) const
 {
-  std::array<char, 128> search{};
+  std::string search{};
+  search.reserve(128);
 
   if ( show_hidden && fname[0] == '.' && fname[1] != '\0' )  // hidden files
   {
-    search[0] = '.';
-    search[1] = '\0';
-    std::strncat(search.data(), pattern, search.size() - std::strlen(search.data()) - 1);
+    search = ".";
+    search.append(pattern);
   }
   else
-    std::strncpy(search.data(), pattern, search.size() - 1);
-
-  search[search.size() - 1] = '\0';
+    search = pattern;
 
   if ( fnmatch (search.data(), fname, FNM_PERIOD) == 0 )
     return true;
@@ -480,15 +478,13 @@ int FFileDialog::readDir()
 
       getEntry(dir, next);
     }
-    else if ( errno != 0 )
-    {
-      FMessageBox::error (this, "Reading directory\n" + directory);
-
-      if ( errno == EOVERFLOW )  // Value too large to be stored in data type
-        break;
-    }
     else
+    {
+      if ( errno != 0 )
+        FMessageBox::error (this, "Reading directory\n" + directory);
+
       break;
+    }
   }  // end while
 
   if ( closedir(directory_stream) != 0 )
@@ -550,16 +546,11 @@ void FFileDialog::followSymLink (const char* const dir, FDirEntry& entry) const
     return;  // No symbolic link
 
   std::array<char, MAXPATHLEN> resolved_path{};
-  std::array<char, MAXPATHLEN> symLink{};
+  std::string symLink{};
+  symLink.reserve(MAXPATHLEN);
   struct stat sb{};
-
-  const auto& fsystem = FTerm::getFSystem();
-  std::strncpy (symLink.data(), dir, symLink.size() - 1);
-  symLink[symLink.size() - 1] = '\0';
-  std::strncat ( symLink.data()
-               , entry.name.c_str()
-               , symLink.size() - std::strlen(symLink.data()) - 1);
-  symLink[symLink.size() - 1] = '\0';
+  const auto& fsystem = FSystem::getInstance();
+  symLink = dir + entry.name;
 
   if ( fsystem->realpath(symLink.data(), resolved_path.data()) == nullptr )
     return;  // Cannot follow the symlink
@@ -691,7 +682,7 @@ FString FFileDialog::getHomeDir()
   struct passwd* pwd_ptr{};
   std::array<char, 1024> buf{};
 
-  const auto& fsystem = FTerm::getFSystem();
+  const auto& fsystem = FSystem::getInstance();
   const uid_t euid = fsystem->geteuid();
 
   if ( fsystem->getpwuid_r(euid, &pwd, buf.data(), buf.size(), &pwd_ptr) )
@@ -735,7 +726,7 @@ void FFileDialog::cb_processActivate()
                             {
                               return ! entry.name.empty()
                                   && input
-                                  && ! input.isNull()
+                                  && ! input.isEmpty()
                                   && std::strcmp(entry.name.c_str(), input.c_str()) == 0
                                   && entry.directory;
                             }

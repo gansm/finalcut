@@ -225,7 +225,7 @@ void FTextView::insert (const FString& str, int pos)
   else
     s = FString{str}.rtrim().expandTabs(FTerm::getTabstop());
 
-  auto text_split = s.split("\r\n");
+  auto text_split = s.split("\n");
 
   for (auto&& line : text_split)  // Line loop
   {
@@ -275,14 +275,26 @@ void FTextView::insert (const FString& str, int pos)
 //----------------------------------------------------------------------
 void FTextView::replaceRange (const FString& str, int from, int to)
 {
+  try
+  {
+    deleteRange (from, to);
+  }
+  catch (const std::out_of_range&)
+  {
+    throw std::out_of_range("");  // Invalid range
+  }
+
+  insert(str, from);
+}
+
+//----------------------------------------------------------------------
+void FTextView::deleteRange (int from, int to)
+{
   if ( from > to || from >= int(getRows()) || to >= int(getRows()) )
-    return;
+    throw std::out_of_range("");  // Invalid range
 
   auto iter = data.begin();
   data.erase (iter + from, iter + to + 1);
-
-  if ( ! str.isNull() )
-    insert(str, from);
 }
 
 //----------------------------------------------------------------------

@@ -385,7 +385,7 @@ void Calc::drawDispay()
 {
   finalcut::FString display{input};
 
-  if ( display.isNull() || display.isEmpty()  )
+  if ( display.isEmpty() )
     display = L'0';
 
   if ( display.right(3) == L"-0." )
@@ -651,7 +651,6 @@ void Calc::radix_point (const lDouble&)
     return;
 
   if ( isDataEntryKey(last_key)
-    && ! input.isNull()
     && ! input.isEmpty()
     && ! input.includes('.') )
     input += '.';

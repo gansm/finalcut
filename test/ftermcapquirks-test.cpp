@@ -293,8 +293,8 @@ void FTermcapQuirksTest::xtermTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  auto& data = finalcut::FTerm::getFTermData();
-  auto& detect = finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTermData::getInstance();
+  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermcap::can_change_color_palette = false;
   detect.setXTerminal (true);
@@ -324,8 +324,8 @@ void FTermcapQuirksTest::freebsdTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  auto& data = finalcut::FTerm::getFTermData();
-  auto& detect = finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTermData::getInstance();
+  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
   detect.setFreeBSDTerm (true);
@@ -363,8 +363,8 @@ void FTermcapQuirksTest::cygwinTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  auto& data = finalcut::FTerm::getFTermData();
-  auto& detect = finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTermData::getInstance();
+  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcap::background_color_erase = false;
   finalcut::FTermcapQuirks quirks;
   detect.setCygwinTerminal (true);
@@ -388,8 +388,8 @@ void FTermcapQuirksTest::linuxTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  auto& data = finalcut::FTerm::getFTermData();
-  auto& detect = finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTermData::getInstance();
+  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcap::max_color = 8;
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
@@ -460,8 +460,8 @@ void FTermcapQuirksTest::rxvtTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  auto& data = finalcut::FTerm::getFTermData();
-  auto& detect = finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTermData::getInstance();
+  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcapQuirks quirks;
   detect.setRxvtTerminal (true);
   data.setTermType ("rxvt");
@@ -501,8 +501,8 @@ void FTermcapQuirksTest::vteTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  auto& data = finalcut::FTerm::getFTermData();
-  auto& detect = finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTermData::getInstance();
+  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
   detect.setGnomeTerminal (true);
@@ -527,8 +527,8 @@ void FTermcapQuirksTest::kittyTest()
 
   caps[int(finalcut::Termcap::t_enter_ca_mode)].string = CSI "?1049h";
   caps[int(finalcut::Termcap::t_exit_ca_mode)].string = CSI "?1049l";
-  auto& data = finalcut::FTerm::getFTermData();
-  auto& detect = finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTermData::getInstance();
+  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcapQuirks quirks;
   detect.setKittyTerminal (true);
   data.setTermType ("xterm-kitty");
@@ -551,8 +551,8 @@ void FTermcapQuirksTest::puttyTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  auto& data = finalcut::FTerm::getFTermData();
-  auto& detect = finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTermData::getInstance();
+  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcap::background_color_erase = false;
   finalcut::FTermcap::can_change_color_palette = false;
   finalcut::FTermcap::osc_support = false;
@@ -641,8 +641,8 @@ void FTermcapQuirksTest::teratermTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  auto& data = finalcut::FTerm::getFTermData();
-  auto& detect = finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTermData::getInstance();
+  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcap::eat_nl_glitch = false;
   finalcut::FTermcapQuirks quirks;
   detect.setTeraTerm (true);
@@ -671,8 +671,8 @@ void FTermcapQuirksTest::sunTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  auto& data = finalcut::FTerm::getFTermData();
-  auto& detect = finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTermData::getInstance();
+  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcap::eat_nl_glitch = false;
   finalcut::FTermcapQuirks quirks;
   detect.setSunTerminal (true);
@@ -688,92 +688,93 @@ void FTermcapQuirksTest::sunTest()
                          , CSI "%p1%dC" );
   CPPUNIT_ASSERT_CSTRING ( caps[int(finalcut::Termcap::t_parm_left_cursor)].string
                          , CSI "%p1%dD" );
+  auto& fkey_cap_table = finalcut::FKeyMap::getInstance().getKeyCapMap();
 
-  for (std::size_t i = 0; finalcut::fc::fkey_cap_table[i].tname[0] != 0; i++)
+  for (std::size_t i = 0; fkey_cap_table[i].tname[0] != 0; i++)
   {
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "K2", 2) == 0 )  // center of keypad
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "K2", 2) == 0 )  // center of keypad
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "218z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "kb", 2) == 0 )  // backspace key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "kb", 2) == 0 )  // backspace key
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , "\b" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "kD", 2) == 0
-      && std::strlen(finalcut::fc::fkey_cap_table[i].tname) == 2 )  // delete-character key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "kD", 2) == 0
+      && std::strlen(fkey_cap_table[i].tname) == 2 )  // delete-character key
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , "\177" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "@7", 2) == 0 )  // end key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "@7", 2) == 0 )  // end key
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "220z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "k;", 2) == 0 )  // F10 function key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "k;", 2) == 0 )  // F10 function key
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "233z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "F1", 2) == 0 )  // F11 function key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "F1", 2) == 0 )  // F11 function key
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "234z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "F2", 2) == 0 )  // F12 function key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "F2", 2) == 0 )  // F12 function key
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "235z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "kh", 2) == 0 )  // home key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "kh", 2) == 0 )  // home key
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "214z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "kI", 2) == 0 )  // insert-character key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "kI", 2) == 0 )  // insert-character key
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "247z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "kN", 2) == 0 )  // next-page key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "kN", 2) == 0 )  // next-page key
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "222z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "%7", 2) == 0 )  // options key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "%7", 2) == 0 )  // options key
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "194z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "kP", 2) == 0 )  // prev-page key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "kP", 2) == 0 )  // prev-page key
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "216z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "&5", 2) == 0 )  // resume key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "&5", 2) == 0 )  // resume key
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "193z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "&8", 2) == 0 )  // undo key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "&8", 2) == 0 )  // undo key
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "195z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "K2", 2) == 0 )  // center of keypad
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "K2", 2) == 0 )  // center of keypad
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "218z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "kDx", 3) == 0 )  // keypad delete
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "kDx", 3) == 0 )  // keypad delete
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "249z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "@8x", 3) == 0 )  // enter/send key
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "@8x", 3) == 0 )  // enter/send key
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "250z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "KP1", 3) == 0 )  // keypad slash
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "KP1", 3) == 0 )  // keypad slash
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "212z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "KP2", 3) == 0 )  // keypad asterisk
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "KP2", 3) == 0 )  // keypad asterisk
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "213z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "KP3", 3) == 0 )  // keypad minus sign
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "KP3", 3) == 0 )  // keypad minus sign
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "254z" );
 
-    if ( std::strncmp(finalcut::fc::fkey_cap_table[i].tname, "KP4", 3) == 0 )  // keypad plus sign
-      CPPUNIT_ASSERT_CSTRING ( finalcut::fc::fkey_cap_table[i].string
+    if ( std::strncmp(fkey_cap_table[i].tname, "KP4", 3) == 0 )  // keypad plus sign
+      CPPUNIT_ASSERT_CSTRING ( fkey_cap_table[i].string
                              , CSI "253z" );
   }
 
@@ -789,8 +790,8 @@ void FTermcapQuirksTest::screenTest()
   for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
-  auto& data = finalcut::FTerm::getFTermData();
-  auto& detect = finalcut::FTerm::getFTermDetection();
+  auto& data = finalcut::FTermData::getInstance();
+  auto& detect = finalcut::FTermDetection::getInstance();
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermcap::can_change_color_palette = false;
   detect.setScreenTerm (true);

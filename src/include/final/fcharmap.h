@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -30,43 +30,63 @@
 #include <array>
 
 #include "final/fc.h"
+#include "final/fstring.h"
 #include "final/ftypes.h"
+
 
 namespace finalcut
 {
 
-namespace fc
+class FCharMap final
 {
+  public:
+    // Unicode fallback table for VT100, PC, and ASCII
+    struct CharEncodeMap
+    {
+      wchar_t unicode;
+      wchar_t vt100;
+      wchar_t pc;
+      wchar_t ascii;
+    };
 
-// Unicode fallback table for VT100, PC, and ASCII
-struct CharEncodeMap
-{
-  wchar_t unicode;
-  wchar_t vt100;
-  wchar_t pc;
-  wchar_t ascii;
+    // vt100 <-> utf-8
+    struct DECSpecialGraphics
+    {
+      VT100Key key;
+      UniChar  unicode;
+    };
+
+    // Using-declaration
+    using CharEncodeType = std::array<CharEncodeMap, 115>;
+    using DECGraphicsType = std::array<DECSpecialGraphics, 39>;
+    using Cp437UcsType = std::array<std::array<wchar_t, 2>, 256>;
+    using HalfFullWidthType = std::array<std::array<wchar_t, 2>, 227>;
+
+    // Constructors
+    FCharMap() = default;
+
+    // Accessors
+    FString                         getClassName() const;
+    static auto                     getInstance() -> FCharMap&;
+    static wchar_t&                 getCharacter ( CharEncodeMap& char_enc
+                                                 , const Encoding& enc );
+    static CharEncodeType&          getCharEncodeMap();
+    static const DECGraphicsType&   getDECSpecialGraphics();
+    static const Cp437UcsType&      getCP437UCSMap();
+    static const HalfFullWidthType& getHalfFullWidthMap();
+
+  private:
+    // Data members
+    static CharEncodeType          character;
+    static const DECGraphicsType   dec_special_graphics;
+    static const Cp437UcsType      cp437_ucs;
+    static const HalfFullWidthType halfwidth_fullwidth;
 };
 
-extern std::array<CharEncodeMap, 115> character;
-
-inline wchar_t& getCharacter (CharEncodeMap& char_enc, const Encoding& enc)
-{
-  const auto array = reinterpret_cast<wchar_t*>(&char_enc);
-  return array[std::size_t(enc)];
-}
-
-// vt100 <-> utf-8
-struct DECSpecialGraphics
-{
-  VT100Key key;
-  UniChar  unicode;
-};
-
-extern const std::array<DECSpecialGraphics, 39> dec_special_graphics;
-extern const std::array<std::array<wchar_t, 2>, 256> cp437_ucs;
-extern const std::array<std::array<wchar_t, 2>, 227> halfwidth_fullwidth;
-
-}  // namespace fc
+// FCharMap inline functions
+//----------------------------------------------------------------------
+inline FString FCharMap::getClassName() const
+{ return "FCharMap"; }
 
 }  // namespace finalcut
 

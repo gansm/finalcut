@@ -42,6 +42,7 @@ FOptiMove::FOptiMove (int baud)
 {
   assert ( baud >= 0 );
 
+  move_buf.reserve(BUF_SIZE);
   calculateCharDuration();
 
   // ANSI set cursor address preset for undefined terminals
@@ -54,6 +55,13 @@ FOptiMove::FOptiMove (int baud)
 
 
 // public methods of FOptiMove
+//----------------------------------------------------------------------
+auto FOptiMove::getInstance() -> FOptiMove&
+{
+  static const auto& opti_move = make_unique<FOptiMove>();
+  return *opti_move;
+}
+
 //----------------------------------------------------------------------
 void FOptiMove::setBaudRate (int baud)
 {
@@ -481,7 +489,7 @@ void FOptiMove::check_boundaries ( int& xold, int& yold
 }
 
 //----------------------------------------------------------------------
-const char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
+std::string FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
 {
   int method{0};
   int move_time{LONG_DURATION};
@@ -494,7 +502,7 @@ const char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
       || yold < 0
       || isWideMove (xold, yold, xnew, ynew) ) )
   {
-    return ( move_time < LONG_DURATION ) ? move_buf : nullptr;
+    return ( move_time < LONG_DURATION ) ? move_buf : std::string{};
   }
 
   // Method 1: local movement
@@ -523,7 +531,7 @@ const char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
   if ( move_time < LONG_DURATION )
     return move_buf;
   else
-    return nullptr;
+    return {};
 }
 
 
@@ -603,30 +611,23 @@ int FOptiMove::capDurationToLength (int duration) const
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::repeatedAppend ( const Capability& o
-                              , int count
-                              , char* dst ) const
+int FOptiMove::repeatedAppend ( std::string& dst
+                              , const Capability& o
+                              , int count ) const
 {
-  const std::size_t src_len = std::strlen(o.cap);
-  const std::size_t dst_len = ( dst != nullptr ) ? std::strlen(dst) : 0;
+  const std::size_t src_len = stringLength(o.cap);
+  const std::size_t dst_len = dst.length();
   int total{0};
 
   if ( (dst_len + uInt(count) * src_len) < BUF_SIZE - 1 )
   {
     total += count * o.duration;
+    int cnt = count;
 
-    if ( dst )
+    while ( cnt > 0 )
     {
-      dst += dst_len;
-      std::size_t free = BUF_SIZE - dst_len - 2;
-      int cnt = count;
-
-      while ( cnt-- > 0 )
-      {
-        std::strncpy (dst, o.cap, free);
-        dst += src_len;
-        free -= src_len;
-      }
+      cnt--;
+      dst.append(o.cap);
     }
   }
   else
@@ -636,15 +637,15 @@ int FOptiMove::repeatedAppend ( const Capability& o
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::relativeMove ( char move[]
+int FOptiMove::relativeMove ( std::string& move
                             , int from_x, int from_y
                             , int to_x, int to_y ) const
 {
   int vtime{0};
   int htime{0};
 
-  if ( move )
-    move[0] = '\0';
+  if ( ! move.empty() )
+    move.clear();
 
   if ( to_y != from_y )  // vertical move
   {
@@ -656,41 +657,30 @@ int FOptiMove::relativeMove ( char move[]
 
   if ( to_x != from_x )  // horizontal move
   {
-    char hmove[BUF_SIZE]{};
+    std::string hmove{};
     htime = horizontalMove (hmove, from_x, to_x);
 
     if ( htime >= LONG_DURATION )
       return LONG_DURATION;
 
-    if ( move )
-    {
-      if ( *move )
-        std::strncat (move, hmove, BUF_SIZE - std::strlen(move));
-      else
-        std::strncpy (move, hmove, BUF_SIZE);
-
-      move[BUF_SIZE - 1] = '\0';
-    }
+    if ( ! move.empty() )
+      move.append(hmove);
+    else
+      move = hmove;
   }
 
   return vtime + htime;
 }
 
 //----------------------------------------------------------------------
-inline int FOptiMove::verticalMove (char move[], int from_y, int to_y) const
+inline int FOptiMove::verticalMove (std::string& move, int from_y, int to_y) const
 {
   int vtime{LONG_DURATION};
 
   if ( F_row_address.cap )
   {
-    if ( move )
-    {
-      std::strncpy ( move
-                   , FTermcap::encodeParameter(F_row_address.cap, to_y).data()
-                   , BUF_SIZE );
-      move[BUF_SIZE - 1] = '\0';
-    }
-
+    // Move to fixed row position
+    move = FTermcap::encodeParameter(F_row_address.cap, to_y);
     vtime = F_row_address.duration;
   }
 
@@ -703,73 +693,56 @@ inline int FOptiMove::verticalMove (char move[], int from_y, int to_y) const
 }
 
 //----------------------------------------------------------------------
-inline void FOptiMove::downMove ( char move[], int& vtime
+inline void FOptiMove::downMove ( std::string& move, int& vtime
                                 , int from_y, int to_y ) const
 {
   const int num = to_y - from_y;
 
   if ( F_parm_down_cursor.cap && F_parm_down_cursor.duration < vtime )
   {
-    if ( move )
-    {
-      std::strncpy ( move
-                   , FTermcap::encodeParameter(F_parm_down_cursor.cap, num).data()
-                   , BUF_SIZE );
-      move[BUF_SIZE - 1] = '\0';
-    }
-
+    move = FTermcap::encodeParameter(F_parm_down_cursor.cap, num);
     vtime = F_parm_down_cursor.duration;
   }
 
   if ( F_cursor_down.cap && (num * F_cursor_down.duration < vtime) )
   {
-    if ( move )
-      move[0] = '\0';
+    if ( ! move.empty() )
+      move.clear();
 
-    vtime = repeatedAppend (F_cursor_down, num, move);
+    vtime = repeatedAppend (move, F_cursor_down, num);
   }
 }
 
 //----------------------------------------------------------------------
-inline void FOptiMove::upMove ( char move[], int& vtime
+inline void FOptiMove::upMove ( std::string& move, int& vtime
                               , int from_y, int to_y ) const
 {
   const int num = from_y - to_y;
 
   if ( F_parm_up_cursor.cap && F_parm_up_cursor.duration < vtime )
   {
-    if ( move )
-    {
-      std::strncpy ( move
-                   , FTermcap::encodeParameter(F_parm_up_cursor.cap, num).data()
-                   , BUF_SIZE );
-      move[BUF_SIZE - 1] = '\0';
-    }
-
+    move = FTermcap::encodeParameter(F_parm_up_cursor.cap, num);
     vtime = F_parm_up_cursor.duration;
   }
 
   if ( F_cursor_up.cap && (num * F_cursor_up.duration < vtime) )
   {
-    if ( move )
-      move[0] = '\0';
+    if ( ! move.empty() )
+      move.clear();
 
-    vtime = repeatedAppend (F_cursor_up, num, move);
+    vtime = repeatedAppend (move, F_cursor_up, num);
   }
 }
 
 //----------------------------------------------------------------------
-inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x) const
+inline int FOptiMove::horizontalMove (std::string& hmove, int from_x, int to_x) const
 {
   int htime{LONG_DURATION};
 
   if ( F_column_address.cap )
   {
-    // Move to fixed column position1
-    std::strncat ( hmove
-                 , FTermcap::encodeParameter(F_column_address.cap, to_x).data()
-                 , BUF_SIZE - std::strlen(hmove) - 1 );
-    hmove[BUF_SIZE - 1] = '\0';
+    // Move to fixed column position
+    hmove = FTermcap::encodeParameter(F_column_address.cap, to_x);
     htime = F_column_address.duration;
   }
 
@@ -782,25 +755,21 @@ inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x) const
 }
 
 //----------------------------------------------------------------------
-inline void FOptiMove::rightMove ( char hmove[], int& htime
+inline void FOptiMove::rightMove ( std::string& hmove, int& htime
                                  , int from_x, int to_x ) const
 {
   int num = to_x - from_x;
 
   if ( F_parm_right_cursor.cap && F_parm_right_cursor.duration < htime )
   {
-    std::strncpy ( hmove
-                 , FTermcap::encodeParameter(F_parm_right_cursor.cap, num).data()
-                 , BUF_SIZE - 1);
-    hmove[BUF_SIZE - 1] = '\0';
+    hmove = FTermcap::encodeParameter(F_parm_right_cursor.cap, num);
     htime = F_parm_right_cursor.duration;
   }
 
   if ( F_cursor_right.cap )
   {
-    std::array<char, BUF_SIZE> str{};
+    std::string str{};
     int htime_r{0};
-    str[0] = '\0';
 
     // try to use tab
     if ( tabstop > 0 && F_tab.cap )
@@ -814,7 +783,7 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
         if ( tab_pos > to_x )
           break;
 
-        htime_r += repeatedAppend (F_tab, 1, str.data());
+        htime_r += repeatedAppend (str, F_tab, 1);
 
         if ( htime_r >= LONG_DURATION )
           break;
@@ -825,37 +794,32 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
       num = to_x - pos;
     }
 
-    htime_r += repeatedAppend (F_cursor_right, num, str.data());
+    htime_r += repeatedAppend (str, F_cursor_right, num);
 
     if ( htime_r < htime )
     {
-      std::strncpy (hmove, str.data(), BUF_SIZE);
-      hmove[BUF_SIZE - 1] = '\0';
+      hmove = str;
       htime = htime_r;
     }
   }
 }
 
 //----------------------------------------------------------------------
-inline void FOptiMove::leftMove ( char hmove[], int& htime
+inline void FOptiMove::leftMove ( std::string& hmove, int& htime
                                 , int from_x, int to_x ) const
 {
   int num = from_x - to_x;
 
   if ( F_parm_left_cursor.cap && F_parm_left_cursor.duration < htime )
   {
-    std::strncpy ( hmove
-                 , FTermcap::encodeParameter(F_parm_left_cursor.cap, num).data()
-                 , BUF_SIZE - 1);
-    hmove[BUF_SIZE - 1] = '\0';
+    hmove = FTermcap::encodeParameter(F_parm_left_cursor.cap, num);
     htime = F_parm_left_cursor.duration;
   }
 
   if ( F_cursor_left.cap )
   {
-    std::array<char, BUF_SIZE> str{};
+    std::string str{};
     int htime_l{0};
-    str[0] = '\0';
 
     // try to use backward tab
     if ( tabstop > 0 && F_back_tab.cap )
@@ -869,7 +833,7 @@ inline void FOptiMove::leftMove ( char hmove[], int& htime
         if ( tab_pos < to_x )
           break;
 
-        htime_l += repeatedAppend (F_back_tab, 1, str.data());
+        htime_l += repeatedAppend (str, F_back_tab, 1);
 
         if ( htime_l >= LONG_DURATION )
           break;
@@ -880,12 +844,11 @@ inline void FOptiMove::leftMove ( char hmove[], int& htime
       num = pos - to_x;
     }
 
-    htime_l += repeatedAppend (F_cursor_left, num, str.data());
+    htime_l += repeatedAppend (str, F_cursor_left, num);
 
     if ( htime_l < htime )
     {
-      std::strncpy (hmove, str.data(), BUF_SIZE);
-      hmove[BUF_SIZE - 1] = '\0';
+      hmove = str;
       htime = htime_l;
     }
   }
@@ -914,9 +877,7 @@ inline bool FOptiMove::isMethod0Faster ( int& move_time
 
   if ( ! move_xy.empty() )
   {
-    std::strncpy ( static_cast<char*>(move_buf)
-                 , move_xy.data(), BUF_SIZE - 1 );
-    move_buf[BUF_SIZE - 1] = '\0';
+    move_buf = move_xy;
     move_time = F_cursor_address.duration;
     return true;
   }
@@ -933,8 +894,8 @@ inline bool FOptiMove::isMethod1Faster ( int& move_time
 
   if ( xold >= 0 && yold >= 0 )
   {
-    std::array<char, BUF_SIZE> null_result{};
-    const int new_time = relativeMove (null_result.data(), xold, yold, xnew, ynew);
+    std::string null_result{};
+    const int new_time = relativeMove (null_result, xold, yold, xnew, ynew);
 
     if ( new_time < LONG_DURATION && new_time < move_time )
     {
@@ -955,8 +916,8 @@ inline bool FOptiMove::isMethod2Faster ( int& move_time
 
   if ( yold >= 0 && F_carriage_return.cap )
   {
-    std::array<char, BUF_SIZE> null_result{};
-    const int new_time = relativeMove (null_result.data(), 0, yold, xnew, ynew);
+    std::string null_result{};
+    const int new_time = relativeMove (null_result, 0, yold, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_carriage_return.duration + new_time < move_time )
@@ -977,8 +938,8 @@ inline bool FOptiMove::isMethod3Faster ( int& move_time
 
   if ( F_cursor_home.cap )
   {
-    std::array<char, BUF_SIZE> null_result{};
-    const int new_time = relativeMove (null_result.data(), 0, 0, xnew, ynew);
+    std::string null_result{};
+    const int new_time = relativeMove (null_result, 0, 0, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_cursor_home.duration + new_time < move_time )
@@ -998,10 +959,9 @@ inline bool FOptiMove::isMethod4Faster ( int& move_time
   // Test method 4: home-down + local movement
   if ( F_cursor_to_ll.cap )
   {
-    std::array<char, BUF_SIZE> null_result{};
-    const int new_time = relativeMove ( null_result.data()
-                                      , 0, int(screen_height) - 1
-                                      , xnew, ynew );
+    std::string null_result{};
+    int down = int(screen_height) - 1;
+    const int new_time = relativeMove (null_result, 0, down, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_cursor_to_ll.duration + new_time < move_time )
@@ -1025,10 +985,10 @@ inline bool FOptiMove::isMethod5Faster ( int& move_time
     && yold > 0
     && F_cursor_left.cap )
   {
-    std::array<char, BUF_SIZE> null_result{};
-    const int new_time = relativeMove ( null_result.data()
-                                      , int(screen_width) - 1, yold - 1
-                                      , xnew, ynew );
+    std::string null_result{};
+    int x = int(screen_width) - 1;
+    int y = yold - 1;
+    const int new_time = relativeMove (null_result, x, y, xnew, ynew);
 
     if ( new_time < LONG_DURATION
       && F_carriage_return.cap
@@ -1037,7 +997,6 @@ inline bool FOptiMove::isMethod5Faster ( int& move_time
     {
       move_time = F_carriage_return.duration
                 + F_cursor_left.duration + new_time;
-
       return true;
     }
   }
@@ -1050,52 +1009,55 @@ void FOptiMove::moveByMethod ( int method
                              , int xold, int yold
                              , int xnew, int ynew )
 {
-  char* move_ptr = move_buf;
-
   switch ( method )
   {
     case 1:
-      relativeMove (move_ptr, xold, yold, xnew, ynew);
+      relativeMove (move_buf, xold, yold, xnew, ynew);
       break;
 
     case 2:
       if ( F_carriage_return.cap )
       {
-        std::strncpy (move_ptr, F_carriage_return.cap, BUF_SIZE - 1);
-        move_ptr[BUF_SIZE - 1] ='\0';
-        move_ptr += F_carriage_return.length;
-        relativeMove (move_ptr, 0, yold, xnew, ynew);
+        move_buf = F_carriage_return.cap;
+        std::string s{};
+        relativeMove (s, 0, yold, xnew, ynew);
+        move_buf.append(s);
       }
       break;
 
     case 3:
-      std::strncpy (move_ptr, F_cursor_home.cap, BUF_SIZE - 1);
-      move_ptr[BUF_SIZE - 1] ='\0';
-      move_ptr += F_cursor_home.length;
-      relativeMove (move_ptr, 0, 0, xnew, ynew);
+      move_buf = F_cursor_home.cap;
+      {
+        std::string s{};
+        relativeMove (s, 0, 0, xnew, ynew);
+        move_buf.append(s);
+      }
       break;
 
     case 4:
-      std::strncpy (move_ptr, F_cursor_to_ll.cap, BUF_SIZE - 1);
-      move_ptr[BUF_SIZE - 1] ='\0';
-      move_ptr += F_cursor_to_ll.length;
-      relativeMove (move_ptr, 0, int(screen_height) - 1, xnew, ynew);
+      move_buf = F_cursor_to_ll.cap;
+      {
+        std::string s{};
+        int down = int(screen_height) - 1;
+        relativeMove (s, 0, down, xnew, ynew);
+        move_buf.append(s);
+      }
       break;
 
     case 5:
-      move_buf[0] = '\0';
-
       if ( xold >= 0 )
-        std::strncat ( move_ptr
-                     , F_carriage_return.cap
-                     , BUF_SIZE - std::strlen(move_ptr) - 1 );
+        move_buf = F_carriage_return.cap;
+      else
+        move_buf.clear();
 
-      std::strncat ( move_ptr
-                   , F_cursor_left.cap
-                   , BUF_SIZE - std::strlen(move_ptr) - 1);
-      move_ptr[BUF_SIZE - 1] ='\0';
-      move_ptr += std::strlen(move_buf);
-      relativeMove (move_ptr, int(screen_width) - 1, yold - 1, xnew, ynew);
+      move_buf.append(F_cursor_left.cap);
+      {
+        std::string s{};
+        int x = int(screen_width) - 1;
+        int y = yold - 1;
+        relativeMove (s, x, y, xnew, ynew);
+        move_buf.append(s);
+      }
       break;
 
     default:

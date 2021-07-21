@@ -127,31 +127,12 @@ namespace finalcut
 
 // class forward declaration
 class FColorPalette;
-class FKeyboard;
-class FMouseControl;
-class FOptiAttr;
-class FOptiMove;
 class FPoint;
 class FStartOptions;
 class FSize;
 class FString;
 class FTermBuffer;
-class FTermData;
-class FTermDebugData;
-class FTermDetection;
-class FTermXTerminal;
 
-#if defined(__linux__) || defined(UNIT_TEST)
-  class FTermLinux;
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-  class FTermFreeBSD;
-#endif
-
-#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
-  class FTermOpenBSD;
-#endif
 
 //----------------------------------------------------------------------
 // class FTerm
@@ -187,31 +168,6 @@ class FTerm final
     static std::string       getTermFileName();
     static int               getTabstop();
     static int               getMaxColor();
-    static auto              getColorPaletteTheme() -> std::shared_ptr<FColorPalette>&;
-    static auto              getFSystem() -> std::unique_ptr<FSystem>&;
-    static auto              getFTermData() -> FTermData&;
-    static auto              getFOptiMove() -> FOptiMove&;
-    static auto              getFOptiAttr() -> FOptiAttr&;
-    static auto              getFTermDetection() -> FTermDetection&;
-    static auto              getFTermXTerminal() -> FTermXTerminal&;
-    static auto              getFKeyboard() -> FKeyboard&;
-    static auto              getFMouseControl() -> FMouseControl&;
-
-#if defined(__linux__) || defined(UNIT_TEST)
-    static auto              getFTermLinux() -> FTermLinux&;
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__) || defined(UNIT_TEST)
-    static auto              getFTermFreeBSD() -> FTermFreeBSD&;
-#endif
-
-#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(UNIT_TEST)
-    static auto              getFTermOpenBSD() -> FTermOpenBSD&;
-#endif
-
-#if DEBUG
-    static auto              getFTermDebugData() -> FTermDebugData&;
-#endif
 
     // Inquiries
     static bool              isNormal (const FChar&);
@@ -268,7 +224,7 @@ class FTerm final
     static int               openConsole();
     static int               closeConsole();
     static std::string       moveCursorString (int, int, int, int);
-    static const char*       cursorsVisibilityString (bool = true);
+    static std::string       cursorsVisibilityString (bool = true);
     static void              detectTermSize();
     static void              setTermSize (const FSize&);
     static void              setTermTitle (const FString&);
@@ -301,7 +257,7 @@ class FTerm final
 
     void                     initTerminal();
     static void              initScreenSettings();
-    static const char*       changeAttribute (FChar&, FChar&);
+    static std::string       changeAttribute (FChar&, FChar&);
     static void              changeTermSizeFinished();
 
   private:
@@ -336,8 +292,8 @@ class FTerm final
     static void              restoreColorPalette();
     static void              setInsertCursorStyle();
     static void              setOverwriteCursorStyle();
-    static const char*       enableCursorString();
-    static const char*       disableCursorString();
+    static std::string       enableCursorString();
+    static std::string       disableCursorString();
     static void              enableMouse();
     static void              disableMouse();
     static void              enableApplicationEscKey();
@@ -367,7 +323,7 @@ class FTerm final
 // non-member function forward declarations
 // implemented in fterm_functions.cpp
 //----------------------------------------------------------------------
-uInt env2uint (const char*);
+uInt env2uint (const std::string&);
 bool isReverseNewFontchar (wchar_t);
 bool hasFullWidthSupports();
 wchar_t cp437_to_unicode (uChar);
@@ -404,7 +360,7 @@ inline FString FTerm::getClassName()
 //----------------------------------------------------------------------
 inline void FTerm::setFSystem (std::unique_ptr<FSystem>& fsystem)
 {
-  getFSystem().swap(fsystem);
+  FSystem::getInstance().swap(fsystem);
 }
 
 //----------------------------------------------------------------------
@@ -419,8 +375,8 @@ inline bool FTerm::unsetUTF8()
 template <typename ClassT>
 inline void FTerm::setColorPaletteTheme (const FSetPalette& f)
 {
-  getColorPaletteTheme() = std::make_shared<ClassT>(f);
-  getColorPaletteTheme()->setColorPalette();
+  FColorPalette::getInstance() = std::make_shared<ClassT>(f);  // Set instance
+  FColorPalette::getInstance()->setColorPalette();             // Set palette
 }
 
 //----------------------------------------------------------------------

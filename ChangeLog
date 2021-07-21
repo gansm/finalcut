@@ -1,3 +1,36 @@
+2021-07-18 Markus Gans  <guru.mail@muenster.de>
+	* Improved the GNU autoconf-archive check
+
+2021-06-26 Markus Gans  <guru.mail@muenster.de>
+	* Global non-constant variables are now encapsulated in classes
+
+2021-06-19 Markus Gans  <guru.mail@muenster.de>
+	* Moving the creator methods from FTerm to its own class
+
+2021-06-16 Markus Gans  <guru.mail@muenster.de>
+	* Converted the internal timer from timeval 
+	  to std::chrono::time_point<system_clock>
+
+2021-06-06 Markus Gans  <guru.mail@muenster.de>
+	* Bug fixing in FString and FTermDetection
+	* FTermDetection now has clean code by using FString instead of char*
+	* Replace std::strlen with stringLength
+
+2021-06-03 Markus Gans  <guru.mail@muenster.de>
+	* Some FString optimizations
+
+2021-05-30 Markus Gans  <guru.mail@muenster.de>
+	* FString internally changed from wchar_t* to std::wstring
+
+2021-05-24 Markus Gans  <guru.mail@muenster.de>
+	* Using std::string for the attribute buffer
+
+2021-05-22 Markus Gans  <guru.mail@muenster.de>
+	* Convert FOptiMove from char[] to std::string
+
+2021-05-13 Markus Gans  <guru.mail@muenster.de>
+	* Prevent duplicate widget in the close widget list
+
 2021-05-07 Markus Gans  <guru.mail@muenster.de>
 	* Some pointers were replaced by references
 

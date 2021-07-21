@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <memory>
+#include <mutex>
 
 #include "final/fevent.h"
 #include "final/fc.h"
@@ -29,8 +30,17 @@
 namespace finalcut
 {
 
-// static class attributes
-bool FObject::timer_modify_lock;
+namespace internal
+{
+
+struct var
+{
+  static std::mutex timer_mutex;
+};
+
+std::mutex var::timer_mutex{};
+
+}  // namespace internal
 
 
 //----------------------------------------------------------------------
@@ -44,8 +54,6 @@ FObject::FObject (FObject* parent)
 {
   if ( parent )  // add object to parent
     parent->addChild(this);
-  else
-    timer_modify_lock = false;
 }
 
 //----------------------------------------------------------------------
@@ -179,54 +187,24 @@ bool FObject::event (FEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FObject::getCurrentTime (timeval* time)
+TimeValue FObject::getCurrentTime()
 {
-  // Get the current time as timeval struct
-
-  gettimeofday(time, nullptr);
-
-  // NTP fix
-  while ( time->tv_usec >= 1000000 )
-  {
-    time->tv_usec -= 1000000;
-    time->tv_sec++;
-  }
-
-  while ( time->tv_usec < 0 )
-  {
-    if ( time->tv_sec > 0 )
-    {
-      time->tv_usec += 1000000;
-      time->tv_sec--;
-    }
-    else
-    {
-      time->tv_usec = 0;
-      break;
-    }
-  }
+  return system_clock::now();  // Get the current time
 }
 
 //----------------------------------------------------------------------
-bool FObject::isTimeout (const timeval* time, uInt64 timeout)
+bool FObject::isTimeout (const TimeValue& time, uInt64 timeout)
 {
-  // Checks whether the specified time span (timeout in µs) has elapse
+  // Checks whether the specified time span (timeout in µs) has elapsed
 
-  struct timeval now{};
-  struct timeval diff{};
+  const auto now = getCurrentTime();
 
-  FObject::getCurrentTime(&now);
-  diff.tv_sec = now.tv_sec - time->tv_sec;
-  diff.tv_usec = now.tv_usec - time->tv_usec;
+  if ( now < time )
+    return false;
 
-  if ( diff.tv_usec < 0 )
-  {
-    diff.tv_sec--;
-    diff.tv_usec += 1000000;
-  }
-
-  const auto diff_usec = uInt64((diff.tv_sec * 1000000) + diff.tv_usec);
-  return ( diff_usec > timeout );
+  const auto diff = now - time;
+  const auto diff_usec = uInt64(duration_cast<microseconds>(diff).count());
+  return diff_usec > timeout;
 }
 
 //----------------------------------------------------------------------
@@ -235,10 +213,8 @@ int FObject::addTimer (int interval)
   // Create a timer and returns the timer identifier number
   // (interval in ms)
 
-  timeval time_interval{};
-  timeval currentTime{};
   int id{1};
-  timer_modify_lock = true;
+  std::lock_guard<std::mutex> lock_guard(internal::var::timer_mutex);
   auto& timer_list = globalTimerList();
 
   // find an unused timer id
@@ -262,10 +238,8 @@ int FObject::addTimer (int interval)
   if ( id <= 0 || id > int(timer_list->size() + 1) )
     return 0;
 
-  time_interval.tv_sec  =  interval / 1000;
-  time_interval.tv_usec = (interval % 1000) * 1000;
-  getCurrentTime (&currentTime);
-  timeval timeout = currentTime + time_interval;
+  const auto time_interval = milliseconds(interval);
+  const auto timeout = getCurrentTime() + time_interval;
   FTimerData t{ id, time_interval, timeout, this };
 
   // insert in list sorted by timeout
@@ -276,7 +250,6 @@ int FObject::addTimer (int interval)
     ++iter;
 
   timer_list->insert (iter, t);
-  timer_modify_lock = false;
   return id;
 }
 
@@ -288,7 +261,7 @@ bool FObject::delTimer (int id) const
   if ( id <= 0 )
     return false;
 
-  timer_modify_lock = true;
+  std::lock_guard<std::mutex> lock_guard(internal::var::timer_mutex);
   auto& timer_list = globalTimerList();
   auto iter = timer_list->begin();
   const auto& last = timer_list->end();
@@ -299,11 +272,9 @@ bool FObject::delTimer (int id) const
   if ( iter != last )
   {
     timer_list->erase(iter);
-    timer_modify_lock = false;
     return true;
   }
 
-  timer_modify_lock = false;
   return false;
 }
 
@@ -312,6 +283,7 @@ bool FObject::delOwnTimers() const
 {
   // Deletes all timers of this object
 
+  std::lock_guard<std::mutex> lock_guard(internal::var::timer_mutex);
   auto& timer_list = globalTimerList();
 
   if ( ! timer_list )
@@ -320,7 +292,6 @@ bool FObject::delOwnTimers() const
   if ( timer_list->empty() )
     return false;
 
-  timer_modify_lock = true;
   auto iter = timer_list->begin();
 
   while ( iter != timer_list->end() )
@@ -331,7 +302,6 @@ bool FObject::delOwnTimers() const
       ++iter;
   }
 
-  timer_modify_lock = false;
   return true;
 }
 
@@ -340,6 +310,7 @@ bool FObject::delAllTimers() const
 {
   // Deletes all timers of all objects
 
+  std::lock_guard<std::mutex> lock_guard(internal::var::timer_mutex);
   auto& timer_list = globalTimerList();
 
   if ( ! timer_list )
@@ -348,10 +319,8 @@ bool FObject::delAllTimers() const
   if ( timer_list->empty() )
     return false;
 
-  timer_modify_lock = true;
   timer_list->clear();
   timer_list->shrink_to_fit();
-  timer_modify_lock = false;
   return true;
 }
 
@@ -374,20 +343,17 @@ void FObject::onUserEvent (FUserEvent*)
 //----------------------------------------------------------------------
 uInt FObject::processTimerEvent()
 {
-  timeval currentTime{};
   uInt activated{0};
+  std::unique_lock<std::mutex> unique_lock( internal::var::timer_mutex
+                                          , std::defer_lock );
 
-  getCurrentTime (&currentTime);
-
-  if ( isTimerInUpdating() )
+  if ( ! unique_lock.try_lock() )
     return 0;
 
+  auto currentTime = getCurrentTime();
   auto& timer_list = globalTimerList();
 
-  if ( ! timer_list )
-    return 0;
-
-  if ( timer_list->empty() )
+  if ( ! timer_list || timer_list->empty() )
     return 0;
 
   for (auto&& timer : *timer_list)
@@ -402,7 +368,7 @@ uInt FObject::processTimerEvent()
     if ( timer.timeout < currentTime )
       timer.timeout = currentTime + timer.interval;
 
-    if ( timer.interval.tv_usec > 0 || timer.interval.tv_sec > 0 )
+    if ( timer.interval > microseconds(0) )
       activated++;
 
     FTimerEvent t_ev(Event::Timer, timer.id);

@@ -72,6 +72,7 @@ class FTermData final
 
     // Accessors
     FString            getClassName() const;
+    static auto        getInstance() -> FTermData&;
     EncodingMap&       getEncodingList();
     charSubstitution&  getCharSubstitutionMap();
     Encoding           getTermEncoding() const;
@@ -169,6 +170,13 @@ class FTermData final
 //----------------------------------------------------------------------
 inline FString FTermData::getClassName() const
 { return "FTermData"; }
+
+//----------------------------------------------------------------------
+inline auto FTermData::getInstance() -> FTermData&
+{
+  static const auto& data = make_unique<FTermData>();
+  return *data;
+}
 
 //----------------------------------------------------------------------
 inline FTermData::EncodingMap& FTermData::getEncodingList()
