@@ -149,6 +149,7 @@ class FWidget : public FVTerm, public FObject
       uInt32 focusable      : 1;
       uInt32 scrollable     : 1;
       uInt32 resizeable     : 1;
+      uInt32 minimizable    : 1;
       uInt32 modal          : 1;
       uInt32 visible_cursor : 1;
       uInt32 window_widget  : 1;
@@ -158,7 +159,7 @@ class FWidget : public FVTerm, public FObject
       uInt32 flat           : 1;
       uInt32 no_border      : 1;
       uInt32 no_underline   : 1;
-      uInt32                : 13;  // padding bits
+      uInt32                : 12;  // padding bits
     };
 
     // Constructor

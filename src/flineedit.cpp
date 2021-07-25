@@ -457,13 +457,15 @@ void FLineEdit::onTimer (FTimerEvent*)
   }
   else if ( drag_scroll == DragScrollMode::Rightward )
   {
-    if ( text_offset == endPosToOffset(len).first )
+    const auto& offset = endPosToOffset(len).first;
+
+    if ( text_offset == offset )
     {
       drag_scroll = DragScrollMode::None;
       return;
     }
 
-    if ( text_offset < endPosToOffset(len).first )
+    if ( text_offset < offset )
       text_offset++;
 
     if ( cursor_pos < len )
@@ -888,7 +890,7 @@ void FLineEdit::adjustTextOffset()
   // Right cursor overflow
   if ( cursor_pos_column + 1 > text_offset_column + input_width )
   {
-    const offsetPair offset_pair = endPosToOffset(cursor_pos);
+    const auto& offset_pair = endPosToOffset(cursor_pos);
     text_offset = offset_pair.first;
     char_width_offset = offset_pair.second;
     text_offset_column = getColumnWidth (print_text, text_offset);

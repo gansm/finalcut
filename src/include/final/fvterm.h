@@ -292,6 +292,9 @@ class FVTerm
     virtual void          initTerminal();
 
   private:
+    // Constants
+    static constexpr int DEFAULT_MINIMIZED_HEIGHT = 1;
+
     struct FTermControl
     {
       std::string string;
@@ -362,6 +365,8 @@ class FVTerm
     static bool           reallocateTextArea ( FTermArea*
                                              , std::size_t );
     static CoveredState   isCovered (const FPoint&, const FTermArea*);
+    static int            getFullAreaWidth (const FTermArea*);
+    static int            getFullAreaHeight (const FTermArea*);
     static void           updateOverlappedColor (const FChar&, const FChar&, FChar&);
     static void           updateOverlappedCharacter (FChar&, FChar&);
     static void           updateShadedCharacter (const FChar&, FChar&, FChar&);
@@ -375,6 +380,7 @@ class FVTerm
     bool                  hasChildAreaChanges (FTermArea*) const;
     void                  clearChildAreaChanges (const FTermArea*) const;
     static bool           isInsideArea (const FPoint&, const FTermArea*);
+    static bool           isTransparentInvisible (const FChar&);
     static FChar          generateCharacter (const FPoint&);
     static FChar          getCharacter ( CharacterType
                                        , const FPoint&
@@ -410,6 +416,8 @@ class FVTerm
     bool                  isFullWidthPaddingChar (const FChar&) const;
     void                  cursorWrap() const;
     bool                  printWrap (FTermArea*) const;
+    bool                  changedToTransparency (const FChar&, const FChar&) const;
+    bool                  changedFromTransparency (const FChar&, const FChar&) const;
     void                  printCharacterOnCoordinate ( FTermArea*
                                                      , const int&
                                                      , const int&
@@ -507,23 +515,26 @@ struct FVTerm::FTermArea  // define virtual terminal character properties
   }
 
   // Data members
-  int offset_left{0};             // Distance from left terminal side
-  int offset_top{0};              // Distance from top of the terminal
-  int width{-1};                  // Window width
-  int height{-1};                 // Window height
-  int right_shadow{0};            // Right window shadow
-  int bottom_shadow{0};           // Bottom window shadow
-  int cursor_x{0};                // X-position for the next write operation
-  int cursor_y{0};                // Y-position for the next write operation
-  int input_cursor_x{-1};         // X-position input cursor
-  int input_cursor_y{-1};         // Y-position input cursor
-  FDataAccessPtr owner{nullptr};  // Object that owns this FTermArea
+  int            offset_left{0};      // Distance from left terminal side
+  int            offset_top{0};       // Distance from top of the terminal
+  int            width{-1};           // Window width
+  int            height{-1};          // Window height
+  int            min_width{-1};       // Minimized window width
+  int            min_height{-1};      // Minimized window height
+  int            right_shadow{0};     // Right window shadow
+  int            bottom_shadow{0};    // Bottom window shadow
+  int            cursor_x{0};         // X-position for the next write operation
+  int            cursor_y{0};         // Y-position for the next write operation
+  int            input_cursor_x{-1};  // X-position input cursor
+  int            input_cursor_y{-1};  // Y-position input cursor
+  bool           input_cursor_visible{false};
+  bool           has_changes{false};
+  bool           visible{false};
+  bool           minimized{false};
+  FDataAccessPtr owner{nullptr};      // Object that owns this FTermArea
   FPreprocessing preproc_list{};
-  FLineChanges* changes{nullptr};
-  FChar* data{nullptr};      // FChar data of the drawing area
-  bool input_cursor_visible{false};
-  bool has_changes{false};
-  bool visible{false};
+  FLineChanges*  changes{nullptr};
+  FChar*         data{nullptr};       // FChar data of the drawing area
 };
 
 struct D

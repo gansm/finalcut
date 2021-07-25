@@ -630,13 +630,13 @@ void FMenuItem::createDialogList (FMenu* winmenu) const
       auto win = static_cast<FDialog*>(*iter);
       FMenuItem* win_item{};
       const auto n = uInt32(std::distance(first, iter));
-      // get the dialog title
-      const auto& name = win->getText();
+      const auto& name = win->getText();  // get the dialog title
+      FString state = ( win->isMinimized() ) ? L" (minimized)" : L"";
 
       try
       {
         // create a new dialog list item
-        win_item = new FMenuItem (name, winmenu);
+        win_item = new FMenuItem (name + state, winmenu);
       }
       catch (const std::bad_alloc&)
       {
@@ -707,6 +707,9 @@ void FMenuItem::cb_switchToDialog (FDialog* win) const
 {
   if ( ! win )
     return;
+
+  if ( win->isMinimized() )
+    win->minimizeWindow();  // unminimize window
 
   auto focus = getFocusWidget();
   FAccelEvent a_ev (Event::Accelerator, focus);

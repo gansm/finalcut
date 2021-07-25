@@ -509,7 +509,7 @@ int FVTerm::print (FTermArea* area, FChar& term_char)
   area->has_changes = true;
 
   // Line break at right margin
-  if ( area->cursor_x > area->width + area->right_shadow )
+  if ( area->cursor_x > getFullAreaWidth(area) )
   {
     area->cursor_x = 1;
     area->cursor_y++;
@@ -518,7 +518,7 @@ int FVTerm::print (FTermArea* area, FChar& term_char)
     printPaddingCharacter (area, term_char);
 
   // Prevent up scrolling
-  if ( area->cursor_y > area->height + area->bottom_shadow )
+  if ( area->cursor_y > getFullAreaHeight(area) )
   {
     area->cursor_y--;
     return -1;
@@ -693,13 +693,13 @@ void FVTerm::resizeArea ( const FRect& box
   const std::size_t full_height = std::size_t(height) + std::size_t(bsh);
   const std::size_t area_size = full_width * full_height;
 
-  if ( area->height + area->bottom_shadow != int(full_height) )
+  if ( getFullAreaHeight(area) != int(full_height) )
   {
     realloc_success = reallocateTextArea ( area
                                          , full_height
                                          , area_size );
   }
-  else if ( area->width + area->right_shadow != int(full_width) )
+  else if ( getFullAreaWidth(area) != int(full_width) )
   {
     realloc_success = reallocateTextArea (area, area_size);
   }
@@ -713,6 +713,8 @@ void FVTerm::resizeArea ( const FRect& box
   area->offset_top    = offset_top;
   area->width         = width;
   area->height        = height;
+  area->min_width     = width;
+  area->min_height    = DEFAULT_MINIMIZED_HEIGHT;
   area->right_shadow  = rsw;
   area->bottom_shadow = bsh;
   area->has_changes   = false;
@@ -765,13 +767,10 @@ void FVTerm::restoreVTerm (const FRect& box)
   if ( x + w > vterm->width )
     w = vterm->width - x;
 
-  if ( w < 0 )
-    return;
-
   if ( y + h > vterm->height )
     h = vterm->height - y;
 
-  if ( h < 0 )
+  if ( w < 0 || h < 0 )
     return;
 
   for (auto ty{0}; ty < h; ty++)
@@ -912,7 +911,7 @@ void FVTerm::getArea (const FRect& box, const FTermArea* area)
 
   for (auto _y = 0; _y < y_end; _y++)  // line loop
   {
-    const int line_len = area->width + area->right_shadow;
+    const int line_len = getFullAreaWidth(area);
     const auto& tc = vterm->data[(y + _y - 1) * vterm->width + x - 1];  // terminal character
     auto& ac = area->data[(dy + _y) * line_len + dx];  // area character
     std::memcpy (&ac, &tc, sizeof(ac) * unsigned(length));
@@ -935,8 +934,9 @@ void FVTerm::putArea (const FTermArea* area) const
 
   int ax  = area->offset_left;
   const int ay  = area->offset_top;
-  const int width = area->width + area->right_shadow;
-  const int height = area->height + area->bottom_shadow;
+  const int width = getFullAreaWidth(area);
+  //const int height = getFullAreaHeight(area);
+  const int height = area->minimized ? area->min_height : getFullAreaHeight(area);
   int ol{0};  // Outside left
   int y_end{};
 
@@ -1021,8 +1021,9 @@ void FVTerm::putArea (const FPoint& pos, const FTermArea* area)
 
   int ax = pos.getX() - 1;
   const int ay = pos.getY() - 1;
-  const int width = area->width + area->right_shadow;
-  const int height = area->height + area->bottom_shadow;
+  const int width = getFullAreaWidth(area);
+  //const int height = getFullAreaHeight(area);
+  const int height = area->minimized ? area->min_height : getFullAreaHeight(area);
   int ol{0};  // outside left
   int y_end{};
   int length{};
@@ -1112,7 +1113,7 @@ void FVTerm::scrollAreaForward (FTermArea* area) const
     return;
 
   const int length = area->width;
-  const int total_width = area->width + area->right_shadow;
+  const int total_width = getFullAreaWidth(area);
   const int y_max = area->height - 1;
 
   for (auto y{0}; y < y_max; y++)
@@ -1165,7 +1166,7 @@ void FVTerm::scrollAreaReverse (FTermArea* area) const
     return;
 
   const int length = area->width;
-  const int total_width = area->width + area->right_shadow;
+  const int total_width = getFullAreaWidth(area);
   const int y_max = area->height - 1;
 
   for (auto y = y_max; y > 0; y--)
@@ -1222,7 +1223,7 @@ void FVTerm::clearArea (FTermArea* area, wchar_t fillchar) const
     return;
   }
 
-  const auto w = uInt(area->width + area->right_shadow);
+  const auto w = uInt(getFullAreaWidth(area));
 
   if ( area->right_shadow == 0 )
   {
@@ -1411,13 +1412,14 @@ FVTerm::CoveredState FVTerm::isCovered ( const FPoint& pos
 
       const int& win_x = win->offset_left;
       const int& win_y = win->offset_top;
-      const FRect geometry { win_x , win_y
-          , std::size_t(win->width) + std::size_t(win->right_shadow)
-          , std::size_t(win->height) + std::size_t(win->bottom_shadow) };
+      const int height = win->minimized ? win->min_height : getFullAreaHeight(win);
+      const FRect geometry { win_x, win_y
+                           , std::size_t(getFullAreaWidth(win))
+                           , std::size_t(height) };
 
       if ( found && geometry.contains(pos) )
       {
-        const int width = win->width + win->right_shadow;
+        const int width = getFullAreaWidth(win);
         const int& x = pos.getX();
         const int& y = pos.getY();
         const auto& tmp = &win->data[(y - win_y) * width + (x - win_x)];
@@ -1442,6 +1444,18 @@ FVTerm::CoveredState FVTerm::isCovered ( const FPoint& pos
 }
 
 //----------------------------------------------------------------------
+inline int FVTerm::getFullAreaWidth (const FTermArea* area)
+{
+  return area->width + area->right_shadow;
+}
+
+//----------------------------------------------------------------------
+inline int FVTerm::getFullAreaHeight (const FTermArea* area)
+{
+  return area->height + area->bottom_shadow;
+}
+
+//----------------------------------------------------------------------
 inline void FVTerm::updateOverlappedColor ( const FChar& area_char
                                           , const FChar& over_char
                                           , FChar& vterm_char )
@@ -1456,12 +1470,7 @@ inline void FVTerm::updateOverlappedColor ( const FChar& area_char
   nc.attr.bit.reverse  = false;
   nc.attr.bit.standout = false;
 
-  if ( nc.ch[0] == UniChar::LowerHalfBlock
-    || nc.ch[0] == UniChar::UpperHalfBlock
-    || nc.ch[0] == UniChar::LeftHalfBlock
-    || nc.ch[0] == UniChar::RightHalfBlock
-    || nc.ch[0] == UniChar::MediumShade
-    || nc.ch[0] == UniChar::FullBlock )
+  if ( isTransparentInvisible(nc) )
     nc.ch[0] = L' ';
 
   nc.attr.bit.no_changes = bool(vterm_char.attr.bit.printed && vterm_char == nc);
@@ -1491,12 +1500,7 @@ inline void FVTerm::updateShadedCharacter ( const FChar& area_char
   cover_char.attr.bit.reverse  = false;
   cover_char.attr.bit.standout = false;
 
-  if ( cover_char.ch[0] == UniChar::LowerHalfBlock
-    || cover_char.ch[0] == UniChar::UpperHalfBlock
-    || cover_char.ch[0] == UniChar::LeftHalfBlock
-    || cover_char.ch[0] == UniChar::RightHalfBlock
-    || cover_char.ch[0] == UniChar::MediumShade
-    || cover_char.ch[0] == UniChar::FullBlock )
+  if ( isTransparentInvisible(cover_char) )
     cover_char.ch[0] = L' ';
 
   cover_char.attr.bit.no_changes = \
@@ -1539,7 +1543,7 @@ bool FVTerm::updateVTermCharacter ( const FTermArea* area
                                   , const FPoint& terminal_pos )
 {
   // Area character
-  const int width = area->width + area->right_shadow;
+  const int width = getFullAreaWidth(area);
   const int area_index = area_pos.getY() * width + area_pos.getX();
   const auto& ac = area->data[area_index];
   // Terminal character
@@ -1684,6 +1688,19 @@ bool FVTerm::isInsideArea (const FPoint& pos, const FTermArea* area)
 }
 
 //----------------------------------------------------------------------
+bool FVTerm::isTransparentInvisible (const FChar& fchar)
+{
+  return ( fchar.ch[0] == UniChar::LowerHalfBlock
+        || fchar.ch[0] == UniChar::UpperHalfBlock
+        || fchar.ch[0] == UniChar::LeftHalfBlock
+        || fchar.ch[0] == UniChar::RightHalfBlock
+        || fchar.ch[0] == UniChar::MediumShade
+        || fchar.ch[0] == UniChar::FullBlock )
+  ? true
+  : false;
+}
+
+//----------------------------------------------------------------------
 FChar FVTerm::generateCharacter (const FPoint& pos)
 {
   // Generates characters for a given position considering all areas
@@ -1704,14 +1721,15 @@ FChar FVTerm::generateCharacter (const FPoint& pos)
 
     const int win_x = win->offset_left;
     const int win_y = win->offset_top;
+    const int height = win->minimized ? win->min_height : getFullAreaHeight(win);
     const FRect geometry { win_x, win_y
-        , std::size_t(win->width) + std::size_t(win->right_shadow)
-        , std::size_t(win->height) + std::size_t(win->bottom_shadow) };
+                         , std::size_t(getFullAreaWidth(win))
+                         , std::size_t(height) };
 
     // Window is visible and contains current character
     if ( geometry.contains(x, y) )
     {
-      const int line_len = win->width + win->right_shadow;
+      const auto line_len = int(geometry.getWidth());
       auto tmp = &win->data[(y - win_y) * line_len + (x - win_x)];
 
       if ( ! tmp->attr.bit.transparent )   // Current character not transparent
@@ -1727,12 +1745,7 @@ FChar FVTerm::generateCharacter (const FPoint& pos)
           s_ch.attr.bit.reverse  = false;
           s_ch.attr.bit.standout = false;
 
-          if ( s_ch.ch[0] == UniChar::LowerHalfBlock
-            || s_ch.ch[0] == UniChar::UpperHalfBlock
-            || s_ch.ch[0] == UniChar::LeftHalfBlock
-            || s_ch.ch[0] == UniChar::RightHalfBlock
-            || s_ch.ch[0] == UniChar::MediumShade
-            || s_ch.ch[0] == UniChar::FullBlock )
+          if ( isTransparentInvisible(s_ch) )
             s_ch.ch[0] = L' ';
 
           sc = &s_ch;
@@ -1799,9 +1812,10 @@ FChar FVTerm::getCharacter ( CharacterType char_type
       if ( ! win || ! win->visible )
         continue;
 
+      const int height = win->minimized ? win->min_height : getFullAreaHeight(win);
       const FRect geometry { win->offset_left, win->offset_top
-          , std::size_t(win->width) + std::size_t(win->right_shadow)
-          , std::size_t(win->height) + std::size_t(win->bottom_shadow) };
+                           , std::size_t(getFullAreaWidth(win))
+                           , std::size_t(height) };
 
       // Window visible and contains current character
       if ( geometry.contains(x, y) )
@@ -1980,12 +1994,7 @@ void FVTerm::putAreaCharacter ( const FPoint& pos, const FTermArea* area
       ch.attr.bit.reverse  = false;
       ch.attr.bit.standout = false;
 
-      if ( ch.ch[0] == UniChar::LowerHalfBlock
-        || ch.ch[0] == UniChar::UpperHalfBlock
-        || ch.ch[0] == UniChar::LeftHalfBlock
-        || ch.ch[0] == UniChar::RightHalfBlock
-        || ch.ch[0] == UniChar::MediumShade
-        || ch.ch[0] == UniChar::FullBlock )
+      if ( isTransparentInvisible(ch) )
         ch.ch[0] = L' ';
 
       std::memcpy (&vterm_char, &ch, sizeof(vterm_char));
@@ -2010,7 +2019,7 @@ void FVTerm::getAreaCharacter ( const FPoint& pos, const FTermArea* area
 {
   const int area_x = area->offset_left;
   const int area_y = area->offset_top;
-  const int line_len = area->width + area->right_shadow;
+  const int line_len = getFullAreaWidth(area);
   const int x = pos.getX();
   const int y = pos.getY();
   auto& tmp = area->data[(y - area_y) * line_len + (x - area_x)];
@@ -2122,7 +2131,7 @@ bool FVTerm::clearFullArea (const FTermArea* area, FChar& nc) const
 void FVTerm::clearAreaWithShadow (const FTermArea* area, const FChar& nc)
 {
   FChar t_char = nc;
-  const int total_width = area->width + area->right_shadow;
+  const int total_width = getFullAreaWidth(area);
   t_char.attr.bit.transparent = true;
 
   for (auto y{0}; y < area->height; y++)
@@ -2698,6 +2707,22 @@ bool FVTerm::printWrap (FTermArea* area) const
 }
 
 //----------------------------------------------------------------------
+inline bool FVTerm::changedToTransparency (const FChar& from, const FChar& to) const
+{
+  return ( ( ! from.attr.bit.transparent && to.attr.bit.transparent )
+        || ( ! from.attr.bit.color_overlay && to.attr.bit.color_overlay )
+        || ( ! from.attr.bit.inherit_background && to.attr.bit.inherit_background ) )
+    ? true
+    : false;
+}
+
+//----------------------------------------------------------------------
+inline bool FVTerm::changedFromTransparency (const FChar& from, const FChar& to) const
+{
+  return changedToTransparency(to, from) ? true : false;
+}
+
+//----------------------------------------------------------------------
 inline void FVTerm::printCharacterOnCoordinate ( FTermArea* area
                                                , const int& ax
                                                , const int& ay
@@ -2705,26 +2730,22 @@ inline void FVTerm::printCharacterOnCoordinate ( FTermArea* area
 {
   if ( area->cursor_x <= 0
     || area->cursor_y <= 0
-    || ax >= area->width + area->right_shadow
-    || ay >= area->height + area->bottom_shadow )
+    || ax >= getFullAreaWidth(area)
+    || ay >= getFullAreaHeight(area) )
     return;
 
-  const int line_len = area->width + area->right_shadow;
+  const int line_len = getFullAreaWidth(area);
   auto& ac = area->data[ay * line_len + ax];  // area character
 
   if ( ac != ch )  // compare with an overloaded operator
   {
-    if ( ( ! ac.attr.bit.transparent && ch.attr.bit.transparent )
-      || ( ! ac.attr.bit.color_overlay && ch.attr.bit.color_overlay )
-      || ( ! ac.attr.bit.inherit_background && ch.attr.bit.inherit_background ) )
+    if ( changedToTransparency(ac, ch) )
     {
       // add one transparent character form line
       area->changes[ay].trans_count++;
     }
 
-    if ( ( ac.attr.bit.transparent && ! ch.attr.bit.transparent )
-      || ( ac.attr.bit.color_overlay && ! ch.attr.bit.color_overlay )
-      || ( ac.attr.bit.inherit_background && ! ch.attr.bit.inherit_background ) )
+    if ( changedFromTransparency(ac, ch) )
     {
       // remove one transparent character from line
       area->changes[ay].trans_count--;

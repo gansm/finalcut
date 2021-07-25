@@ -71,6 +71,7 @@ class FDialog : public FWindow
   public:
     // Using-declaration
     using FWindow::setResizeable;
+    using FWindow::setMinimizable;
 
     // Enumeration
     enum class ResultCode : int
@@ -102,6 +103,7 @@ class FDialog : public FWindow
     bool                  setModal (bool = true);
     bool                  unsetModal();
     bool                  setResizeable (bool = true) override;
+    bool                  setMinimizable (bool = true) override;
     bool                  setScrollable (bool = true);
     bool                  unsetScrollable();
     bool                  setBorder (bool = true);
@@ -129,6 +131,8 @@ class FDialog : public FWindow
     bool                  expandHeight (int);
     bool                  reduceWidth (int);
     bool                  expandWidth (int);
+    bool                  zoomWindow() override;
+    bool                  minimizeWindow() override;
     void                  activateDialog();
 
     // Event handlers
@@ -158,6 +162,7 @@ class FDialog : public FWindow
       int         mouse_x;
       int         mouse_y;
       FPoint      termPos;
+      std::size_t minimize_btn;
       std::size_t zoom_btn;
       bool        mouse_over_menu;
     };
@@ -174,27 +179,40 @@ class FDialog : public FWindow
     void                  initDialogMenu();
     void                  initMoveSizeMenuItem (FMenu*);
     void                  initZoomMenuItem (FMenu*);
+    void                  initMinimizeMenuItem (FMenu*);
     void                  initCloseMenuItem (FMenu*);
     void                  mapKeyFunctions();
     void                  drawBorder() override;
     void                  drawTitleBar();
     void                  drawBarButton();
     void                  drawZoomButton();
-    void                  drawRestoreSizeButton();
-    void                  drawZoomedButton();
+    void                  drawMinimizeButton();
+    void                  printRestoreSizeButton();
+    void                  printZoomedButton();
+    void                  printMinimizeButton();
     void                  drawTextBar();
     void                  restoreOverlaidWindows();
     void                  setCursorToFocusWidget();
     void                  leaveMenu();
     void                  openMenu();
     void                  selectFirstMenuItem();
+    void                  setMinimizeItem();
     void                  setZoomItem();
     std::size_t           getZoomButtonWidth() const;
+    std::size_t           getMinimizeButtonWidth() const;
+    void                  activateMinimizeButton (const MouseStates&);
+    void                  deactivateMinimizeButton();
+    void                  leaveMinimizeButton (const MouseStates&);
+    void                  pressMinimizeButton (const MouseStates&);
     void                  activateZoomButton (const MouseStates&);
     void                  deactivateZoomButton();
     void                  leaveZoomButton (const MouseStates&);
     void                  pressZoomButton (const MouseStates&);
     bool                  isMouseOverMenu (const FPoint&) const;
+    bool                  isMouseOverMenuButton (const MouseStates&);
+    bool                  isMouseOverZoomButton (const MouseStates&);
+    bool                  isMouseOverMinimizeButton (const MouseStates&);
+    bool                  isMouseOverTitlebar (const MouseStates&);
     void                  passEventToSubMenu ( const MouseStates&
                                              , const FMouseEvent& );
     void                  moveSizeKey (FKeyEvent*);
@@ -214,6 +232,7 @@ class FDialog : public FWindow
 
     // Callback methods
     void                  cb_move();
+    void                  cb_minimize();
     void                  cb_zoom();
     void                  cb_close();
 
@@ -222,6 +241,8 @@ class FDialog : public FWindow
     ResultCode            result_code{ResultCode::Reject};
     bool                  zoom_button_pressed{false};
     bool                  zoom_button_active{false};
+    bool                  minimize_button_pressed{false};
+    bool                  minimize_button_active{false};
     bool                  setPos_error{false};
     bool                  setSize_error{false};
     FPoint                titlebar_click_pos{};
@@ -231,6 +252,7 @@ class FDialog : public FWindow
     FMenuItem*            dgl_menuitem{nullptr};
     FMenuItem*            move_size_item{nullptr};
     FMenuItem*            zoom_item{nullptr};
+    FMenuItem*            minimize_item{nullptr};
     FMenuItem*            close_item{nullptr};
     FToolTip*             tooltip{nullptr};
     KeyMap                key_map{};

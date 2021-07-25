@@ -24,7 +24,7 @@ Describe what you would expect instead.
 
 ## In which environment did the bug occur?
 * Which operating system do you use?<br />
-    Linux, FreeBSD, NetBSD, OpenBSD, macOS, Cygwin, or Solaris
+    _Linux, FreeBSD, NetBSD, OpenBSD, macOS, Cygwin, or Solaris_
 
 * Which distribution do you use?
 

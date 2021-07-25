@@ -240,7 +240,7 @@ class FMouse : public FMouseData
 
 //----------------------------------------------------------------------
 template <typename ClassT>
-inline auto FMouse::createMouseObject() -> std::unique_ptr<ClassT> 
+inline auto FMouse::createMouseObject() -> std::unique_ptr<ClassT>
 {
   return make_unique<ClassT>();
 }

@@ -100,6 +100,8 @@ class FWindow : public FWidget
     bool                deactivateWindow();
     virtual bool        setResizeable (bool = true);
     bool                unsetResizeable();
+    virtual bool        setMinimizable (bool = true);
+    bool                unsetMinimizable();
     bool                setTransparentShadow (bool = true);
     bool                unsetTransparentShadow();
     bool                setShadow (bool = true);
@@ -109,9 +111,11 @@ class FWindow : public FWidget
 
     // Inquiries
     bool                isZoomed() const;
+    bool                isMinimized() const;
     bool                isWindowActive() const;
     bool                isWindowHidden() const;
     bool                isResizeable() const;
+    bool                isMinimizable() const;
     bool                isAlwaysOnTop() const;
     bool                hasTransparentShadow() const;
     bool                hasShadow() const;
@@ -135,10 +139,11 @@ class FWindow : public FWidget
     static void         delWindow (const FWidget*);
     static void         swapWindow (const FWidget*, const FWidget*);
     static bool         raiseWindow (FWidget*);
-    bool                raiseWindow ();
+    bool                raiseWindow();
     static bool         lowerWindow (FWidget*);
-    bool                lowerWindow ();
-    bool                zoomWindow ();
+    bool                lowerWindow();
+    virtual bool        zoomWindow();
+    virtual bool        minimizeWindow();
     static void         switchToPrevWindow (const FWidget*);
     static bool         activatePrevWindow();
     void                setShadowSize (const FSize&) override;
@@ -159,6 +164,7 @@ class FWindow : public FWidget
 
   private:
     // Methods
+    static FRect        getVisibleTermGeometry (FWindow*);
     static void         deleteFromAlwaysOnTopList (const FWidget*);
     static void         processAlwaysOnTop();
     static FWindow*     getWindowWidgetImpl (FWidget*);
@@ -210,6 +216,10 @@ inline bool FWindow::unsetResizeable()
 { return setResizeable(false); }
 
 //----------------------------------------------------------------------
+inline bool FWindow::unsetMinimizable()
+{ return setMinimizable(false); }
+
+//----------------------------------------------------------------------
 inline bool FWindow::unsetTransparentShadow()
 { return setTransparentShadow(false); }
 
@@ -232,6 +242,10 @@ inline bool FWindow::isWindowActive() const
 //----------------------------------------------------------------------
 inline bool FWindow::isResizeable() const
 { return getFlags().resizeable; }
+
+//----------------------------------------------------------------------
+inline bool FWindow::isMinimizable() const
+{ return getFlags().minimizable; }
 
 //----------------------------------------------------------------------
 inline bool FWindow::isAlwaysOnTop() const

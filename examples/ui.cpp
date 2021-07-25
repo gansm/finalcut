@@ -1022,6 +1022,7 @@ void MyDialog::cb_view (const finalcut::FMenuItem* item)
   view->setGeometry ( FPoint { 1 + int((getRootWidget()->getWidth() - 60) / 2),
                                int(getRootWidget()->getHeight() / 6) }
                     , FSize{60, getRootWidget()->getHeight() * 3 / 4} );
+  view->setMinimizable();
   view->setResizeable();
   std::string line{""};
   std::ifstream infile;

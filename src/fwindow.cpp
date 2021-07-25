@@ -169,6 +169,12 @@ bool FWindow::setResizeable (bool enable)
 }
 
 //----------------------------------------------------------------------
+bool FWindow::setMinimizable (bool enable)
+{
+  return (setFlags().minimizable = enable);
+}
+
+//----------------------------------------------------------------------
 bool FWindow::setTransparentShadow (bool enable)
 {
   setFlags().shadow = setFlags().trans_shadow = enable;
@@ -218,11 +224,24 @@ bool FWindow::setAlwaysOnTop (bool enable)
       deleteFromAlwaysOnTopList (this);
       getAlwaysOnTopList()->push_back (this);
     }
+
+    unsetMinimizable();
   }
   else
     deleteFromAlwaysOnTopList (this);
 
   return enable;
+}
+
+//----------------------------------------------------------------------
+bool FWindow::isMinimized() const
+{
+  // returns the window minimized state
+
+  if ( isVirtualWindow() )
+    return getVWin()->minimized;
+  else
+    return false;
 }
 
 //----------------------------------------------------------------------
@@ -428,24 +447,24 @@ FWindow* FWindow::getWindowWidgetAt (int x, int y)
 {
   // returns the window object to the corresponding coordinates
 
-  if ( getWindowList() && ! getWindowList()->empty() )
+  if ( ! getWindowList() || getWindowList()->empty() )
+    return nullptr;
+
+  auto iter = getWindowList()->end();
+  const auto begin = getWindowList()->begin();
+
+  do
   {
-    auto iter = getWindowList()->end();
-    const auto begin = getWindowList()->begin();
+    --iter;
+    auto w = static_cast<FWindow*>(*iter);
 
-    do
+    if ( *iter && ! w->isWindowHidden()
+      && getVisibleTermGeometry(w).contains(x, y) )
     {
-      --iter;
-      auto w = static_cast<FWindow*>(*iter);
-
-      if ( *iter && ! w->isWindowHidden()
-        && w->getTermGeometry().contains(x, y) )
-      {
-        return w;
-      }
+      return w;
     }
-    while ( iter != begin );
   }
+  while ( iter != begin );
 
   return nullptr;
 }
@@ -486,16 +505,10 @@ void FWindow::swapWindow (const FWidget* obj1, const FWidget* obj2)
 {
   // swaps the window layer between obj1 and obj2
 
-  if ( ! getWindowList() )
-    return;
-
-  if ( getWindowList()->empty() )
-    return;
-
-  if ( obj1->getFlags().modal )
-    return;
-
-  if ( obj2->getFlags().modal )
+  if ( ! getWindowList()
+    || getWindowList()->empty()
+    || obj1->getFlags().modal
+    || obj2->getFlags().modal )
     return;
 
   auto iter = getWindowList()->begin();
@@ -522,21 +535,14 @@ bool FWindow::raiseWindow (FWidget* obj)
 {
   // raises the window widget obj to the top
 
-  if ( ! getWindowList() )
-    return false;
-
-  if ( getWindowList()->empty() )
-    return false;
-
-  if ( ! obj->isWindowWidget() )
+  if ( ! getWindowList()
+    || getWindowList()->empty()
+    || ! obj->isWindowWidget() )
     return false;
 
   const auto last = static_cast<FWidget*>(getWindowList()->back());
 
-  if ( last == obj )
-    return false;
-
-  if ( last->getFlags().modal && ! obj->isMenuWidget() )
+  if ( last == obj || (last->getFlags().modal && ! obj->isMenuWidget()) )
     return false;
 
   auto iter = getWindowList()->begin();
@@ -564,19 +570,11 @@ bool FWindow::lowerWindow (FWidget* obj)
 {
   // lowers the window widget obj to the bottom
 
-  if ( ! getWindowList() )
-    return false;
-
-  if ( getWindowList()->empty() )
-    return false;
-
-  if ( ! obj->isWindowWidget() )
-    return false;
-
-  if ( getWindowList()->front() == obj )
-    return false;
-
-  if ( obj->getFlags().modal )
+  if ( ! getWindowList()
+    || getWindowList()->empty()
+    || ! obj->isWindowWidget()
+    || getWindowList()->front() == obj
+    || obj->getFlags().modal )
     return false;
 
   auto iter = getWindowList()->begin();
@@ -611,6 +609,9 @@ bool FWindow::zoomWindow()
   }
   else
   {
+    if ( isMinimized() )
+      minimizeWindow();  // unminimize window
+
     zoomed = true;
     // save the current geometry
     normalGeometry = getGeometry();
@@ -621,6 +622,23 @@ bool FWindow::zoomWindow()
   }
 
   return zoomed;
+}
+
+//----------------------------------------------------------------------
+bool FWindow::minimizeWindow()
+{
+  if ( ! isVirtualWindow() )
+    return false;
+
+  if ( zoomed )
+    zoomWindow();  // unzoom window
+
+  const auto& virtual_win = getVWin();
+  virtual_win->minimized = ( isMinimized() ) ? false : true;
+  const auto& t_geometry = getTermGeometryWithShadow();
+  restoreVTerm (t_geometry);
+
+  return virtual_win->minimized;
 }
 
 //----------------------------------------------------------------------
@@ -793,6 +811,22 @@ void FWindow::onWindowLowered (FEvent*)
 
 
 // private methods of FWindow
+//----------------------------------------------------------------------
+inline FRect FWindow::getVisibleTermGeometry (FWindow* win)
+{
+  const auto& term_geometry = win->getTermGeometry();
+
+  if ( win->isMinimized() )
+  {
+    FRect minimized_term_geometry(std::move(term_geometry));
+    auto min_height = std::size_t(win->getVWin()->min_height);
+    minimized_term_geometry.setHeight(min_height);
+    return minimized_term_geometry;
+  }
+  else
+    return term_geometry;
+}
+
 //----------------------------------------------------------------------
 void FWindow::deleteFromAlwaysOnTopList (const FWidget* obj)
 {

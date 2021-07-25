@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        platform: [x86, x64]
+        platform: [i686, x64]
 
     steps:
     - name: Install Cygwin
