@@ -3,6 +3,8 @@ Title bar actions on mouse clicks
 
 The FINAL CUT title bar of dialog windows has different behaviors on mouse clicks.
 
+<br />
+
 ![](FDialog.svg)
 
 

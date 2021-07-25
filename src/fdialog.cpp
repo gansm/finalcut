@@ -1568,7 +1568,7 @@ inline bool FDialog::isMouseOverMenu (const FPoint& termpos) const
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isMouseOverMenuButton (const MouseStates& ms)
+inline bool FDialog::isMouseOverMenuButton (const MouseStates& ms) const
 {
   if ( ms.mouse_x < 4 && ms.mouse_y == 1 )
     return true;
@@ -1577,7 +1577,7 @@ inline bool FDialog::isMouseOverMenuButton (const MouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isMouseOverZoomButton (const MouseStates& ms)
+inline bool FDialog::isMouseOverZoomButton (const MouseStates& ms) const
 {
   if ( ms.mouse_x > int(getWidth() - ms.zoom_btn)
     && ms.mouse_x <= int(getWidth())
@@ -1588,7 +1588,7 @@ inline bool FDialog::isMouseOverZoomButton (const MouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isMouseOverMinimizeButton (const MouseStates& ms)
+inline bool FDialog::isMouseOverMinimizeButton (const MouseStates& ms)  const
 {
   if ( ms.mouse_x > int(getWidth() - ms.minimize_btn - ms.zoom_btn)
     && ms.mouse_x <= int(getWidth() - ms.zoom_btn)
@@ -1599,7 +1599,7 @@ inline bool FDialog::isMouseOverMinimizeButton (const MouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isMouseOverTitlebar (const MouseStates& ms)
+inline bool FDialog::isMouseOverTitlebar (const MouseStates& ms) const
 {
   if ( ms.mouse_x >= 4
     && ms.mouse_x <= int(getWidth() - ms.minimize_btn - ms.zoom_btn)

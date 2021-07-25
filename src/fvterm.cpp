@@ -935,7 +935,6 @@ void FVTerm::putArea (const FTermArea* area) const
   int ax  = area->offset_left;
   const int ay  = area->offset_top;
   const int width = getFullAreaWidth(area);
-  //const int height = getFullAreaHeight(area);
   const int height = area->minimized ? area->min_height : getFullAreaHeight(area);
   int ol{0};  // Outside left
   int y_end{};
@@ -1022,7 +1021,6 @@ void FVTerm::putArea (const FPoint& pos, const FTermArea* area)
   int ax = pos.getX() - 1;
   const int ay = pos.getY() - 1;
   const int width = getFullAreaWidth(area);
-  //const int height = getFullAreaHeight(area);
   const int height = area->minimized ? area->min_height : getFullAreaHeight(area);
   int ol{0};  // outside left
   int y_end{};

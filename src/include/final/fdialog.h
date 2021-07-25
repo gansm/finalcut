@@ -209,10 +209,10 @@ class FDialog : public FWindow
     void                  leaveZoomButton (const MouseStates&);
     void                  pressZoomButton (const MouseStates&);
     bool                  isMouseOverMenu (const FPoint&) const;
-    bool                  isMouseOverMenuButton (const MouseStates&);
-    bool                  isMouseOverZoomButton (const MouseStates&);
-    bool                  isMouseOverMinimizeButton (const MouseStates&);
-    bool                  isMouseOverTitlebar (const MouseStates&);
+    bool                  isMouseOverMenuButton (const MouseStates&) const;
+    bool                  isMouseOverZoomButton (const MouseStates&) const;
+    bool                  isMouseOverMinimizeButton (const MouseStates&) const;
+    bool                  isMouseOverTitlebar (const MouseStates&) const;
     void                  passEventToSubMenu ( const MouseStates&
                                              , const FMouseEvent& );
     void                  moveSizeKey (FKeyEvent*);

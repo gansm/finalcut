@@ -814,7 +814,7 @@ void FWindow::onWindowLowered (FEvent*)
 //----------------------------------------------------------------------
 inline FRect FWindow::getVisibleTermGeometry (FWindow* win)
 {
-  const auto& term_geometry = win->getTermGeometry();
+  auto&& term_geometry = win->getTermGeometry();
 
   if ( win->isMinimized() )
   {
