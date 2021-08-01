@@ -1,3 +1,6 @@
+2021-08-01 Markus Gans  <guru.mail@muenster.de>
+	* Fixed mutex deadlock in FObject
+
 2021-07-25 Markus Gans  <guru.mail@muenster.de>
 	* Function setMinimizable() to minimize FDialog windows added
 
