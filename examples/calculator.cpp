@@ -269,7 +269,7 @@ Calc::Calc (FWidget* parent)
     btn->setDoubleFlatLine(finalcut::Side::Top);
     btn->setDoubleFlatLine(finalcut::Side::Bottom);
 
-    if ( finalcut::FTerm::isNewFont() )
+    if ( finalcut::FVTerm::getFOutput()->isNewFont() )
       btn->unsetClickAnimation();
 
     btn->addCallback
@@ -406,7 +406,7 @@ void Calc::drawDispay()
   if ( error )
     display = " Error                          ";
 
-  if ( finalcut::FTerm::isMonochron() )
+  if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
   const auto& wc = getColorTheme();
@@ -414,10 +414,10 @@ void Calc::drawDispay()
           << FPoint{3, 3} << display << ' '
           << FColorPair{wc->dialog_fg, wc->dialog_bg};
 
-  if ( finalcut::FTerm::isMonochron() )
+  if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  if ( finalcut::FTerm::isNewFont() )
+  if ( finalcut::FVTerm::getFOutput()->isNewFont() )
   {
     const auto bottom_line     {finalcut::UniChar::NF_border_line_bottom};
     const auto top_bottom_line {finalcut::UniChar::NF_border_line_up_and_down};

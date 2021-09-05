@@ -1,3 +1,10 @@
+2021-09-05 Markus Gans  <guru.mail@muenster.de>
+	* The methods for the physical terminal output of class FVTerm 
+	  were extracted and moved to the new class FVTermOutput. 
+	  The class FVTermOutput is the implementation of the abstract 
+	  class FOutput. This abstraction layer can be the basis for 
+	  an alternative implementation.
+
 2021-08-01 Markus Gans  <guru.mail@muenster.de>
 	* Fixed mutex deadlock in FObject
 

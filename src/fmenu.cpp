@@ -492,7 +492,7 @@ void FMenu::calculateDimensions()
     }
     else if ( accel_key != FKey::None )
     {
-      const std::size_t accel_len = FTerm::getKeyName(accel_key).getLength();
+      const std::size_t accel_len = FVTerm::getFOutput()->getKeyName(accel_key).getLength();
       item_width += accel_len + 2;
     }
 
@@ -1153,7 +1153,7 @@ void FMenu::draw()
   const auto& wc = getColorTheme();
   setColor (wc->menu_active_fg, wc->menu_active_bg);
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   clearArea();
@@ -1161,7 +1161,7 @@ void FMenu::draw()
   drawItems();
   drawShadow(this);
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 }
 
@@ -1188,10 +1188,10 @@ inline void FMenu::drawSeparator (int y)
   print() << FPoint{1, 2 + y}
           << FColorPair{wc->menu_active_fg, wc->menu_active_bg};
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
   {
     print (UniChar::NF_border_line_vertical_right);
     FString line { std::size_t(getWidth()) - 2
@@ -1208,7 +1208,7 @@ inline void FMenu::drawSeparator (int y)
     print (UniChar::BoxDrawingsVerticalAndLeft);
   }
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 }
 
@@ -1255,7 +1255,7 @@ inline void FMenu::drawMenuLine (FMenuItem* m_item, int y)
   if ( is_selected )
     drawTrailingSpaces (column_width);
 
-  if ( FTerm::isMonochron() && is_enabled && is_selected )
+  if ( FVTerm::getFOutput()->isMonochron() && is_enabled && is_selected )
     setReverse(true);
 }
 
@@ -1271,7 +1271,7 @@ inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
 
   auto print_bullet = [this] ()
   {
-    if ( FTerm::isNewFont() )
+    if ( FVTerm::getFOutput()->isNewFont() )
       print (UniChar::NF_Bullet);      // NF_Bullet ●
     else
       print (UniChar::BlackCircle);    // BlackCircle ●
@@ -1279,7 +1279,7 @@ inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
 
   auto print_check_mark = [this] ()
   {
-    if ( FTerm::isNewFont() )
+    if ( FVTerm::getFOutput()->isNewFont() )
       print (UniChar::NF_check_mark);  // NF_check_mark ✓
     else
       print (UniChar::SquareRoot);     // SquareRoot √
@@ -1299,7 +1299,7 @@ inline void FMenu::drawCheckMarkPrefix (const FMenuItem* m_item)
       const auto& wc = getColorTheme();
       setColor (wc->menu_inactive_fg, getBackgroundColor());
 
-      if ( FTerm::getEncoding() == Encoding::ASCII )
+      if ( FVTerm::getFOutput()->getEncoding() == Encoding::ASCII )
         print ('-');
       else
         print (UniChar::SmallBullet);  // ·
@@ -1319,10 +1319,10 @@ inline void FMenu::drawMenuText (MenuText& data)
   for (std::size_t z{0}; z < data.text.getLength(); z++)
   {
     if ( ! std::iswprint(std::wint_t(data.text[z]))
-      && ! FTerm::isNewFont()
+      && ! FVTerm::getFOutput()->isNewFont()
       && ( data.text[z] < UniChar::NF_rev_left_arrow2
         || data.text[z] > UniChar::NF_check_mark )
-      && ! FTerm::charEncodable(wchar_t(data.text[z])) )
+      && ! FVTerm::getFOutput()->isEncodable(wchar_t(data.text[z])) )
     {
       data.text[z] = L' ';
     }
@@ -1366,7 +1366,7 @@ inline void FMenu::drawSubMenuIndicator (std::size_t& startpos)
 //----------------------------------------------------------------------
 inline void FMenu::drawAcceleratorKey (std::size_t& startpos, FKey accel_key)
 {
-  const FString accel_name {FTerm::getKeyName(accel_key)};
+  const FString accel_name {FVTerm::getFOutput()->getKeyName(accel_key)};
   const std::size_t c = has_checkable_items ? 1 : 0;
   const std::size_t accel_len = accel_name.getLength();
   const std::size_t plain_text_length = startpos + accel_len + c + 2;
@@ -1405,7 +1405,7 @@ inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
       setForegroundColor (wc->menu_active_focus_fg);
       setBackgroundColor (wc->menu_active_focus_bg);
 
-      if ( FTerm::isMonochron() )
+      if ( FVTerm::getFOutput()->isMonochron() )
         setReverse(false);
     }
     else
@@ -1413,7 +1413,7 @@ inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
       setForegroundColor (wc->menu_active_fg);
       setBackgroundColor (wc->menu_active_bg);
 
-      if ( FTerm::isMonochron() )
+      if ( FVTerm::getFOutput()->isMonochron() )
         setReverse(true);
     }
   }
@@ -1422,7 +1422,7 @@ inline void FMenu::setLineAttributes (const FMenuItem* m_item, int y)
     setForegroundColor (wc->menu_inactive_fg);
     setBackgroundColor (wc->menu_inactive_bg);
 
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(true);
   }
 

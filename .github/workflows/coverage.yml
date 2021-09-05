@@ -38,7 +38,7 @@ jobs:
           gpm \
           libgpm-dev \
           libcppunit-dev \
-          autoconf-archive 
+          autoconf-archive
 
     - name: Download coveralls
       run: pip install --user cpp-coveralls

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -91,8 +91,8 @@ bool FSpinBox::setFocus (bool enable)
 bool FSpinBox::setShadow (bool enable)
 {
   if ( enable
-    && FTerm::getEncoding() != Encoding::VT100
-    && FTerm::getEncoding() != Encoding::ASCII )
+    && FVTerm::getFOutput()->getEncoding() != Encoding::VT100
+    && FVTerm::getFOutput()->getEncoding() != Encoding::ASCII )
   {
     setFlags().shadow = true;
     setShadowSize(FSize{1, 1});
@@ -280,10 +280,6 @@ void FSpinBox::onTimer (FTimerEvent*)
     addTimer(repeat_time);
   }
 
-  assert ( spining_state == SpiningState::None
-        || spining_state == SpiningState::Up
-        || spining_state == SpiningState::Down );
-
   switch ( spining_state )
   {
     case SpiningState::None:
@@ -298,6 +294,9 @@ void FSpinBox::onTimer (FTimerEvent*)
       decreaseValue();
       updateInputField();
       break;
+
+    default:
+      throw std::invalid_argument("Unimplemented spining state");
   }
 }
 

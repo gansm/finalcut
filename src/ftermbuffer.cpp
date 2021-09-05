@@ -29,6 +29,7 @@
 #include "final/fstring.h"
 #include "final/fstyle.h"
 #include "final/ftermbuffer.h"
+#include "final/foutput.h"
 #include "final/fvterm.h"
 #include "final/ftypes.h"
 
@@ -161,7 +162,8 @@ void FTermBuffer::add ( FString::const_iterator& begin
   nc.attr.byte[2] = 0;
   nc.attr.byte[3] = 0;
 
-  if ( char_width == 2 && FTerm::getEncoding() != Encoding::UTF8 )
+  if ( char_width == 2
+    && FVTerm::getFOutput()->getEncoding() != Encoding::UTF8 )
   {
     nc.ch[0] = '.';
     nc.attr.bit.char_width = 1;

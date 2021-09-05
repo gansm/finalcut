@@ -232,13 +232,8 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList list)
 }
 
 //----------------------------------------------------------------------
-std::vector<bool>& FWidget::doubleFlatLine_ref (Side side)
+std::vector<bool>& FWidget::doubleFlatLine_ref (Side side) throw()
 {
-  assert ( side == Side::Top
-        || side == Side::Right
-        || side == Side::Bottom
-        || side == Side::Left );
-
   switch ( side )
   {
     case Side::Top:
@@ -252,6 +247,9 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (Side side)
 
     case Side::Left:
       return double_flatline_mask.left;
+
+    default:
+      throw std::invalid_argument("Unimplemented side");
   }
 
   return double_flatline_mask.top;
@@ -595,16 +593,16 @@ void FWidget::setRightPadding (int right, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setTermSize (const FSize& size) const
+void FWidget::setTerminalSize (const FSize& size) const
 {
-  // Set xterm size to width x height
+  // Set terminal size to width x height
 
-  if ( FTerm::isXTerminal() )
+  if ( FVTerm::getFOutput()->allowsTerminalSizeManipulation() )
   {
     internal::var::root_widget->wsize.setRect(FPoint{1, 1}, size);
     internal::var::root_widget->adjust_wsize = internal::var::root_widget->wsize;
-    FTerm::setTermSize(size);  // width = columns / height = lines
-    detectTermSize();
+    FVTerm::getFOutput()->setTerminalSize(size);
+    detectTerminalSize();
   }
 }
 
@@ -699,18 +697,13 @@ void FWidget::setPrintPos (const FPoint& pos)
 {
   const FPoint p{ woffset.getX1() + getX() + pos.getX() - 1,
                   woffset.getY1() + getY() + pos.getY() - 1 };
-  setPrintCursor(p);
+  setCursor(p);
 }
 
 //----------------------------------------------------------------------
-void FWidget::setDoubleFlatLine (Side side, bool bit)
+void FWidget::setDoubleFlatLine (Side side, bool bit) throw()
 {
   uLong length{};
-
-  assert ( side == Side::Top
-        || side == Side::Right
-        || side == Side::Bottom
-        || side == Side::Left );
 
   switch ( side )
   {
@@ -733,17 +726,15 @@ void FWidget::setDoubleFlatLine (Side side, bool bit)
       length = double_flatline_mask.left.size();
       double_flatline_mask.left.assign(length, bit);
       break;
+
+    default:
+      throw std::invalid_argument("Unimplemented side");
   }
 }
 
 //----------------------------------------------------------------------
-void FWidget::setDoubleFlatLine (Side side, int pos, bool bit)
+void FWidget::setDoubleFlatLine (Side side, int pos, bool bit) throw()
 {
-  assert ( side == Side::Top
-        || side == Side::Right
-        || side == Side::Bottom
-        || side == Side::Left );
-
   assert ( pos >= 1 );
 
   uLong length{};
@@ -782,6 +773,9 @@ void FWidget::setDoubleFlatLine (Side side, int pos, bool bit)
         double_flatline_mask.left[index] = bit;
 
       break;
+
+    default:
+      throw std::invalid_argument("Unimplemented side");
   }
 }
 
@@ -1283,7 +1277,7 @@ void FWidget::initDesktop()
     initTerminal();
 
   // Sets the initial screen settings
-  FTerm::initScreenSettings();
+  FVTerm::getFOutput()->initScreenSettings();
 
   // Initializing vdesktop
   const auto& r = getRootWidget();
@@ -1744,7 +1738,7 @@ void FWidget::determineDesktopSize()
 {
   // Determine width and height of the terminal
 
-  detectTermSize();
+  detectTerminalSize();
   auto width = getDesktopWidth();
   auto height = getDesktopHeight();
   wsize.setRect(1, 1, width, height);
@@ -2084,14 +2078,14 @@ void FWidget::initColorTheme()
 
   if ( FStartOptions::getInstance().dark_theme )
   {
-    if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
+    if ( FVTerm::getFOutput()->getMaxColor() < 16 )  // for 8 color mode
       setColorTheme<default8ColorDarkTheme>();
     else
       setColorTheme<default16ColorDarkTheme>();
   }
   else  // Default theme
   {
-    if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
+    if ( FVTerm::getFOutput()->getMaxColor() < 16 )  // for 8 color mode
       setColorTheme<default8ColorTheme>();
     else
       setColorTheme<default16ColorTheme>();
@@ -2130,10 +2124,10 @@ void FWidget::setStatusbarText (bool enable) const
 
 // non-member functions
 //----------------------------------------------------------------------
-void detectTermSize()
+void detectTerminalSize()
 {
   const auto& r = internal::var::root_widget;
-  FTerm::detectTermSize();
+  FVTerm::getFOutput()->detectTerminalSize();
   r->adjust_wsize.setRect (1, 1, r->getDesktopWidth(), r->getDesktopHeight());
   r->woffset.setRect (0, 0, r->getDesktopWidth(), r->getDesktopHeight());
   r->wclient_offset.setCoordinates

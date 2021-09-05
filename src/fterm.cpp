@@ -338,6 +338,13 @@ bool FTerm::isCursorHideable()
 }
 
 //----------------------------------------------------------------------
+bool FTerm::isEncodable (wchar_t c)
+{
+  const wchar_t ch = charEncode(c);
+  return ch > 0 && ch != c;
+}
+
+//----------------------------------------------------------------------
 bool FTerm::hasChangedTermSize()
 {
   return FTermData::getInstance().hasTermResized();
@@ -838,20 +845,16 @@ void FTerm::resetBeep()
 void FTerm::beep()
 {
   if ( TCAP(t_bell) )
+  {
     putstring (TCAP(t_bell));
+    std::fflush(stdout);
+  }
 }
 
 //----------------------------------------------------------------------
-void FTerm::setEncoding (Encoding enc)
+void FTerm::setEncoding (Encoding enc) throw()
 {
   FTermData::getInstance().setTermEncoding (enc);
-
-  assert ( enc == Encoding::UTF8
-        || enc == Encoding::VT100  // VT100 line drawing
-        || enc == Encoding::PC     // CP-437
-        || enc == Encoding::ASCII
-        || enc == Encoding::Unknown
-        || enc == Encoding::NUM_OF_ENCODINGS );
 
   // Set the new putchar() function pointer
   switch ( enc )
@@ -872,6 +875,10 @@ void FTerm::setEncoding (Encoding enc)
     case Encoding::Unknown:
     case Encoding::NUM_OF_ENCODINGS:
       putchar() = &FTerm::putchar_ASCII;
+      break;
+
+    default:
+      throw std::invalid_argument("Unimplemented encoding");
   }
 
   if ( isLinuxTerm() )
@@ -907,13 +914,6 @@ std::string FTerm::getEncodingString()
       return it->first;
 
   return "";
-}
-
-//----------------------------------------------------------------------
-bool FTerm::charEncodable (wchar_t c)
-{
-  const wchar_t ch = charEncode(c);
-  return ch > 0 && ch != c;
 }
 
 //----------------------------------------------------------------------
@@ -991,9 +991,9 @@ void FTerm::putstring (const std::string& str, int affcnt)
 //----------------------------------------------------------------------
 int FTerm::putchar_ASCII (int c)
 {
-  const auto& fsys = FSystem::getInstance();
+  auto put = [] (int ch) { return FSystem::getInstance()->putchar(ch); };
 
-  if ( fsys->putchar(char(c)) == EOF )
+  if ( put(char(c)) == EOF )
     return 0;
   else
     return 1;
@@ -1002,36 +1002,36 @@ int FTerm::putchar_ASCII (int c)
 //----------------------------------------------------------------------
 int FTerm::putchar_UTF8 (int c)
 {
-  const auto& fsys = FSystem::getInstance();
+  auto put = [] (int ch) { FSystem::getInstance()->putchar(ch); };
 
   if ( c < 0x80 )
   {
     // 1 Byte (7-bit): 0xxxxxxx
-    fsys->putchar (c);
+    put (c);
     return 1;
   }
   else if ( c < 0x800 )
   {
     // 2 byte (11-bit): 110xxxxx 10xxxxxx
-    fsys->putchar (0xc0 | (c >> 6) );
-    fsys->putchar (0x80 | (c & 0x3f) );
+    put (0xc0 | (c >> 6) );
+    put (0x80 | (c & 0x3f) );
     return 2;
   }
   else if ( c < 0x10000 )
   {
     // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
-    fsys->putchar (0xe0 | (c >> 12) );
-    fsys->putchar (0x80 | ((c >> 6) & 0x3f) );
-    fsys->putchar (0x80 | (c & 0x3f) );
+    put (0xe0 | (c >> 12) );
+    put (0x80 | ((c >> 6) & 0x3f) );
+    put (0x80 | (c & 0x3f) );
     return 3;
   }
   else if ( c < 0x200000 )
   {
     // 4 byte (21-bit): 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-    fsys->putchar (0xf0 | (c >> 18) );
-    fsys->putchar (0x80 | ((c >> 12) & 0x3f) );
-    fsys->putchar (0x80 | ((c >> 6) & 0x3f) );
-    fsys->putchar (0x80 | (c & 0x3f));
+    put (0xf0 | (c >> 18) );
+    put (0x80 | ((c >> 12) & 0x3f) );
+    put (0x80 | ((c >> 6) & 0x3f) );
+    put (0x80 | (c & 0x3f));
     return 4;
   }
   else
@@ -1641,70 +1641,6 @@ inline bool FTerm::hasNoFontSettingOption()
 }
 
 //----------------------------------------------------------------------
-inline bool FTerm::isDefaultPaletteTheme()
-{
-  FStringList default_themes
-  {
-    "default8ColorPalette",
-    "default16ColorPalette",
-    "default16DarkColorPalette"
-  };
-
-  auto iter = std::find ( default_themes.begin()
-                        , default_themes.end()
-                        , FColorPalette::getInstance()->getClassName() );
-
-  if ( iter == default_themes.end() )  // No default theme
-    return false;
-
-  return true;
-}
-
-//----------------------------------------------------------------------
-void FTerm::redefineColorPalette()
-{
-  // Redefine the color palette
-
-  if ( ! (canChangeColorPalette() && getStartOptions().color_change) )
-    return;
-
-  resetColorMap();
-  saveColorMap();
-
-  if ( FColorPalette::getInstance().use_count() > 0
-    && ! isDefaultPaletteTheme() )
-  {
-    // A user color palette theme is in use
-    FColorPalette::getInstance()->setColorPalette();
-    return;
-  }
-
-  if ( getStartOptions().dark_theme )
-  {
-    setColorPaletteTheme<default16DarkColorPalette>();
-  }
-  else
-  {
-    if ( getMaxColor() >= 16 )
-      setColorPaletteTheme<default16ColorPalette>();
-    else  // 8 colors
-      setColorPaletteTheme<default8ColorPalette>();
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::restoreColorPalette()
-{
-  if ( ! (canChangeColorPalette() && getStartOptions().color_change) )
-    return;
-
-  // Reset screen settings
-  FColorPalette::getInstance()->resetColorPalette();
-  FTermXTerminal::getInstance().resetColorMap();
-  resetColorMap();
-}
-
-//----------------------------------------------------------------------
 void FTerm::setInsertCursorStyle()
 {
   FTermXTerminal::getInstance().setCursorStyle (XTermCursorStyle::BlinkingUnderline);
@@ -2002,9 +1938,6 @@ void FTerm::init()
   // KDE terminal cursor and cygwin + teraterm charmap correction
   initTermspecifics();
 
-  // Redefine the color palette
-  redefineColorPalette();
-
   // Set 220 Hz beep (100 ms)
   setBeep(220, 100);
 
@@ -2176,9 +2109,6 @@ void FTerm::finish() const
   // Set xterm full block cursor
   FTermXTerminal::getInstance().setCursorStyle (XTermCursorStyle::SteadyBlock);
 
-  // Restore the color palette
-  restoreColorPalette();
-
   // Switch to normal escape key mode
   disableApplicationEscKey();
 
@@ -2289,9 +2219,9 @@ void FTerm::resetSignalHandler()
 }
 
 //----------------------------------------------------------------------
-void FTerm::signal_handler (int signum)
+void FTerm::signal_handler (int sig_num)
 {
-  switch (signum)
+  switch ( sig_num )
   {
     case SIGWINCH:
       terminalSizeChange();
@@ -2303,7 +2233,7 @@ void FTerm::signal_handler (int signum)
     case SIGABRT:
     case SIGILL:
     case SIGSEGV:
-      processTermination(signum);
+      processTermination(sig_num);
 
     default:
       break;

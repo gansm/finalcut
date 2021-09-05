@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2020 Markus Gans                                      *
+* Copyright 2012-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -185,7 +185,7 @@ void FScrollbar::redraw()
 //----------------------------------------------------------------------
 void FScrollbar::calculateSliderValues()
 {
-  if ( FTerm::isNewFont() && bar_orientation == Orientation::Horizontal )
+  if ( FVTerm::getFOutput()->isNewFont() && bar_orientation == Orientation::Horizontal )
     bar_length = ( length > 2 ) ? length - 4 : 1;
   else
     bar_length = ( length > 2 ) ? length - 2 : 1;
@@ -279,7 +279,7 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
       slider_click_stop_pos = mouse_y - 2;
     else
     {
-      if ( FTerm::isNewFont() )
+      if ( FVTerm::getFOutput()->isNewFont() )
         slider_click_stop_pos = mouse_x - 3;
       else
         slider_click_stop_pos = mouse_x - 2;
@@ -456,7 +456,7 @@ void FScrollbar::draw()
     drawButtons();
 
   current_slider_pos = -1;
-  max_color = FTerm::getMaxColor();
+  max_color = FVTerm::getFOutput()->getMaxColor();
   drawBar();
 }
 
@@ -474,20 +474,20 @@ void FScrollbar::drawVerticalBar()
 
   setColor (wc->scrollbar_bg, wc->scrollbar_fg);
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
   for (auto z{1}; z <= int(slider_length); z++)  // Draw slider
   {
     print() << FPoint{1, 1 + slider_pos + z};
 
-    if ( FTerm::isNewFont() )
+    if ( FVTerm::getFOutput()->isNewFont() )
       print (' ');
 
     print (' ');
   }
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   setColor (wc->scrollbar_fg, wc->scrollbar_bg);
@@ -498,24 +498,24 @@ void FScrollbar::drawVerticalBar()
     drawVerticalBackgroundLine();
   }
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 }
 
 //----------------------------------------------------------------------
 inline void FScrollbar::drawVerticalBackgroundLine()
 {
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
   {
-    if ( FTerm::isMonochron() || max_color < 16 )
+    if ( FVTerm::getFOutput()->isMonochron() || max_color < 16 )
       print (UniChar::MediumShade);  // ▒
     else
       print (UniChar::NF_border_line_left);  // ⎸
   }
 
-  if ( FTerm::isMonochron() || max_color < 16 )
+  if ( FVTerm::getFOutput()->isMonochron() || max_color < 16 )
     print (UniChar::MediumShade);  // ▒
-  else if ( FTerm::isNewFont() )
+  else if ( FVTerm::getFOutput()->isNewFont() )
     print (UniChar::NF_rev_border_line_right);  //⎹
   else
     print (' ');
@@ -527,7 +527,7 @@ void FScrollbar::drawHorizontalBar()
   const auto& wc = getColorTheme();
   setColor (wc->scrollbar_fg, wc->scrollbar_bg);
 
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
     print() << FPoint{3, 1};
   else
     print() << FPoint{2, 1};
@@ -537,13 +537,13 @@ void FScrollbar::drawHorizontalBar()
 
   setColor (wc->scrollbar_bg, wc->scrollbar_fg);
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
   for (auto z{0}; z < int(slider_length); z++)  // Draw slider
     print (' ');
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   setColor (wc->scrollbar_fg, wc->scrollbar_bg);
@@ -552,16 +552,16 @@ void FScrollbar::drawHorizontalBar()
   for (; z <= int(bar_length); z++)
     drawHorizontalBackgroundColumn();
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 }
 
 //----------------------------------------------------------------------
 inline void FScrollbar::drawHorizontalBackgroundColumn()
 {
-  if ( FTerm::isNewFont() && max_color > 8 )
+  if ( FVTerm::getFOutput()->isNewFont() && max_color > 8 )
     print (UniChar::NF_border_line_up_and_down);  // ニ
-  else if ( FTerm::isMonochron() || max_color < 16 )
+  else if ( FVTerm::getFOutput()->isMonochron() || max_color < 16 )
     print (UniChar::MediumShade);  // ▒
   else
     print (' ');
@@ -573,7 +573,7 @@ void FScrollbar::drawButtons()
   const auto& wc = getColorTheme();
   setColor (wc->scrollbar_button_fg, wc->scrollbar_button_bg);
 
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
   {
     print() << FPoint{1, 1};
 
@@ -594,7 +594,7 @@ void FScrollbar::drawButtons()
   {
     print() << FPoint{1, 1};
 
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(true);
 
     if ( bar_orientation == Orientation::Vertical )
@@ -610,7 +610,7 @@ void FScrollbar::drawButtons()
               << UniChar::BlackRightPointingPointer;  // ►
     }
 
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(false);
   }
 }
@@ -654,7 +654,7 @@ FScrollbar::ScrollType FScrollbar::getVerticalClickedScrollType (int y) const
 //----------------------------------------------------------------------
 FScrollbar::ScrollType FScrollbar::getHorizontalClickedScrollType (int x) const
 {
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
   {
     if ( x == 1 || x == 2 )
     {
@@ -711,7 +711,7 @@ int FScrollbar::getSliderClickPos (int mouse_x, int mouse_y) const
   }
   else  // horizontal bar orientation
   {
-    if ( FTerm::isNewFont() )
+    if ( FVTerm::getFOutput()->isNewFont() )
     {
       if ( mouse_x > slider_pos + 2
         && mouse_x <= slider_pos + int(slider_length) + 2 )
@@ -745,7 +745,7 @@ void FScrollbar::jumpToClickPos (int x, int y)
   }
   else  // horizontal
   {
-    const int nf = FTerm::isNewFont() ? 1 : 0;
+    const int nf = FVTerm::getFOutput()->isNewFont() ? 1 : 0;
 
     if ( x > 1 + nf && x < int(getWidth()) - nf )
     {
@@ -773,7 +773,7 @@ void FScrollbar::jumpToClickPos (int pos)
     jumpToClickPos (0, pos + 2);
   else
   {
-    if ( FTerm::isNewFont() )
+    if ( FVTerm::getFOutput()->isNewFont() )
       jumpToClickPos (pos + 3, 0);
     else
       jumpToClickPos (pos + 2, 0);
@@ -811,7 +811,7 @@ void FScrollbar::changeOnResize()
 
   if ( bar_orientation == Orientation::Vertical )
   {
-    setWidth(FTerm::isNewFont() ? 2 : 1);
+    setWidth(FVTerm::getFOutput()->isNewFont() ? 2 : 1);
     setHeight(length);
   }
   else  // horizontal

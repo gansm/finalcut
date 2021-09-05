@@ -190,7 +190,7 @@ bool FWindow::setTransparentShadow (bool enable)
 //----------------------------------------------------------------------
 bool FWindow::setShadow (bool enable)
 {
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     return false;
 
   if ( enable )
@@ -258,7 +258,7 @@ bool FWindow::isWindowHidden() const
 //----------------------------------------------------------------------
 void FWindow::drawBorder()
 {
-  if ( FTerm::isNewFont() )  // Draw a newfont outer frame
+  if ( FVTerm::getFOutput()->isNewFont() )  // Draw a newfont outer frame
   {
     const FRect r{FPoint{1, 1}, getSize()};
     print() << r.getUpperLeftPos()
@@ -683,7 +683,7 @@ void FWindow::switchToPrevWindow (const FWidget* widget)
     auto focus = active_win->getWindowFocusWidget();
 
     if ( ! active_win->isWindowActive() )
-      active_win->setActiveWindow(active_win);
+      FWidget::setActiveWindow(active_win);
 
     if ( focus )
     {
@@ -712,7 +712,7 @@ bool FWindow::activatePrevWindow()
 
     if ( ! w->isWindowHidden() )
     {
-      w->setActiveWindow(w);
+      FWidget::setActiveWindow(w);
       return true;
     }
   }

@@ -50,6 +50,10 @@ bool FTermXTerminal::mouse_support{false};
 // class FTermXTerminal
 //----------------------------------------------------------------------
 
+// constructors and destructor
+//----------------------------------------------------------------------
+FTermXTerminal::FTermXTerminal() = default;
+
 // public methods of FTermXTerminal
 //----------------------------------------------------------------------
 auto FTermXTerminal::getInstance() -> FTermXTerminal&
@@ -90,8 +94,8 @@ void FTermXTerminal::setTermSize (const FSize& size)
 {
   // Set xterm size to {term_width} x {term_height}
 
-  term_width = size.getWidth();
-  term_height = size.getHeight();
+  term_width = size.getWidth();    // width  = columns
+  term_height = size.getHeight();  // height = lines
   setXTermSize();
 }
 

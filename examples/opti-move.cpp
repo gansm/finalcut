@@ -62,8 +62,8 @@ bool keyPressed()
 void term_boundaries (int& x, int& y)
 {
   // checks and corrects the terminal boundaries
-  const auto term_width  = int(finalcut::FTerm::getColumnNumber());
-  const auto term_height = int(finalcut::FTerm::getLineNumber());
+  const auto term_width  = int(finalcut::FVTerm::getFOutput()->getColumnNumber());
+  const auto term_height = int(finalcut::FVTerm::getFOutput()->getLineNumber());
 
   if ( x < 0 )
     x = 0;
@@ -221,13 +221,6 @@ int main (int argc, char* argv[])
   auto xmax = int(term_app.getDesktopWidth() - 1);
   auto ymax = int(term_app.getDesktopHeight() - 1);
   finalcut::FString line{std::size_t(xmax) + 1, '-'};
-
-  // Place the cursor in the upper left corner
-  term_app.setTermXY(0, 0);
-  // Reset all terminal attributes
-  term_app.setNormal();
-  // Clear the screen
-  term_app.clearArea();
 
   // Show the determined terminal name and text resolution
   std::cout << "Terminal: " << finalcut::FTerm::getTermType() << "\r\n";

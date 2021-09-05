@@ -828,7 +828,7 @@ void FDialog::draw()
   // Fill the background
   setColor();
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   clearArea();
@@ -839,14 +839,14 @@ void FDialog::draw()
   if ( getFlags().shadow )
     drawDialogShadow();
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 }
 
 //----------------------------------------------------------------------
 void FDialog::drawDialogShadow()
 {
-  if ( FTerm::isMonochron() && ! getFlags().trans_shadow )
+  if ( FVTerm::getFOutput()->isMonochron() && ! getFlags().trans_shadow )
     return;
 
   drawShadow(this);
@@ -1048,7 +1048,7 @@ void FDialog::drawBorder()
   else
     setColor();
 
-  if ( FTerm::isNewFont() )  // Draw a newfont U-shaped frame
+  if ( FVTerm::getFOutput()->isNewFont() )  // Draw a newfont U-shaped frame
   {
     const FRect r{FPoint{1, 1}, getSize()};
 
@@ -1081,7 +1081,7 @@ void FDialog::drawTitleBar()
   drawMinimizeButton();  // Draw the minimize button
   drawZoomButton();      // Draw the zoom/unzoom button
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
 #if DEBUG
@@ -1106,7 +1106,7 @@ void FDialog::drawBarButton()
   else
     setColor (wc->titlebar_button_fg, wc->titlebar_button_bg);
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
   {
     if ( isWindowActive() )
       setReverse(false);
@@ -1114,11 +1114,11 @@ void FDialog::drawBarButton()
       setReverse(true);
   }
 
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
   {
     print (finalcut::NF_menu_button);
   }
-  else if ( FTerm::isMonochron() )
+  else if ( FVTerm::getFOutput()->isMonochron() )
   {
     print ('[');
 
@@ -1184,13 +1184,13 @@ void FDialog::drawMinimizeButton()
 //----------------------------------------------------------------------
 inline void FDialog::printRestoreSizeButton()
 {
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
   {
     print (finalcut::NF_button_down);
   }
   else
   {
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
     {
       print ('[');
       print (UniChar::BlackDiamondSuit);  // ◆
@@ -1208,13 +1208,13 @@ inline void FDialog::printRestoreSizeButton()
 //----------------------------------------------------------------------
 inline void FDialog::printZoomedButton()
 {
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
   {
     print (finalcut::NF_button_up);
   }
   else
   {
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
     {
       print ('[');
       print (UniChar::BlackUpPointingTriangle);  // ▲
@@ -1232,13 +1232,13 @@ inline void FDialog::printZoomedButton()
 //----------------------------------------------------------------------
 inline void FDialog::printMinimizeButton()
 {
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
   {
     print (finalcut::NF_button_down);
   }
   else
   {
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
     {
       print ('[');
       print (UniChar::BlackDownPointingTriangle);  // ▼
@@ -1261,7 +1261,7 @@ void FDialog::drawTextBar()
   std::size_t x{1};
   const auto& wc = getColorTheme();
 
-  if ( FTerm::getMaxColor() < 16 )
+  if ( FVTerm::getFOutput()->getMaxColor() < 16 )
     setBold();
 
   if ( isWindowActive() || (dialog_menu && dialog_menu->isShown()) )
@@ -1299,7 +1299,7 @@ void FDialog::drawTextBar()
   for ( ; x + 1 + length < width - minimize_btn - zoom_btn - 1; x++)
     print (' ');
 
-  if ( FTerm::getMaxColor() < 16 )
+  if ( FVTerm::getFOutput()->getMaxColor() < 16 )
     unsetBold();
 }
 
@@ -1439,7 +1439,7 @@ inline std::size_t FDialog::getZoomButtonWidth() const
 {
   if ( ! isResizeable() )
     return 0;
-  else if ( FTerm::isNewFont() )
+  else if ( FVTerm::getFOutput()->isNewFont() )
     return 2;
   else
     return 3;
@@ -1450,7 +1450,7 @@ inline std::size_t FDialog::getMinimizeButtonWidth() const
 {
   if ( ! isMinimizable() )
     return 0;
-  else if ( FTerm::isNewFont() )
+  else if ( FVTerm::getFOutput()->isNewFont() )
     return 2;
   else
     return 3;
@@ -1862,12 +1862,12 @@ void FDialog::cb_move()
 
   setMoveSizeWidget(this);
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   drawBorder();
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
   save_geometry = getGeometry();
@@ -1884,16 +1884,16 @@ void FDialog::cb_move()
 
   if ( isResizeable() )
   {
-    if ( FTerm::isLinuxTerm() )
-      tooltip->setText ( "        Arrow keys: Move\n"
-                         "Shift + Arrow keys: Resize\n"
-                         "             Enter: Done\n"
-                         "               Esc: Cancel" );
-    else
+    if ( FVTerm::getFOutput()->areMetaAndArrowKeysSupported() )
       tooltip->setText ( "       Arrow keys: Move\n"
                          "Meta + Arrow keys: Resize\n"
                          "            Enter: Done\n"
                          "              Esc: Cancel" );
+    else
+      tooltip->setText ( "        Arrow keys: Move\n"
+                         "Shift + Arrow keys: Resize\n"
+                         "             Enter: Done\n"
+                         "               Esc: Cancel" );
   }
   else
   {

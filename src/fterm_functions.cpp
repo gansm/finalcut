@@ -222,6 +222,17 @@ uInt env2uint (const std::string& env)
 }
 
 //----------------------------------------------------------------------
+FColor rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b)
+{
+  // Converts a 24-bit RGB color to a 256-color compatible approximation
+
+  const uInt16 ri = (((r * 5) + 127) / 255) * 36;
+  const uInt16 gi = (((g * 5) + 127) / 255) * 6;
+  const uInt16 bi = (((b * 5) + 127) / 255);
+  return FColor(16 + ri + gi + bi);
+}
+
+//----------------------------------------------------------------------
 inline bool hasAmbiguousWidth (wchar_t wchar)
 {
   const auto& begin = std::begin(ambiguous_width_list);
@@ -525,7 +536,7 @@ std::size_t getColumnWidth (const wchar_t wchar)
   column_width = wcwidth(wchar);
 
   if ( (wchar >= UniChar::NF_rev_left_arrow2 && wchar <= UniChar::NF_check_mark)
-     || FTerm::getEncoding() != Encoding::UTF8 )
+    || FVTerm::getFOutput()->getEncoding() != Encoding::UTF8 )
   {
     column_width = 1;
   }
@@ -563,7 +574,8 @@ void addColumnWidth (FChar& term_char)
 {
   const std::size_t char_width = getColumnWidth(term_char.ch[0]);
 
-  if ( char_width == 2 && FTerm::getEncoding() != Encoding::UTF8 )
+  if ( char_width == 2
+    && FVTerm::getFOutput()->getEncoding() != Encoding::UTF8 )
   {
     term_char.ch[0] = '.';
     term_char.attr.bit.char_width = 1;

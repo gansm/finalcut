@@ -200,6 +200,7 @@ class FTerm final
     static bool              isNewFont();
     static bool              isInitialized();
     static bool              isCursorHideable();
+    static bool              isEncodable (wchar_t);
     static bool              hasChangedTermSize();
     static bool              hasShadowCharacter();
     static bool              hasHalfBlockCharacter();
@@ -232,16 +233,13 @@ class FTerm final
     static void              saveColorMap();
     static void              resetColorMap();
     static void              setPalette (FColor, int, int, int);
-    template <typename ClassT>
-    static void              setColorPaletteTheme (const FSetPalette& = &FTerm::setPalette);
     static void              setBeep (int, int);
     static void              resetBeep();
     static void              beep();
 
-    static void              setEncoding (Encoding);
+    static void              setEncoding (Encoding) throw();
     static Encoding          getEncoding();
     static std::string       getEncodingString();
-    static bool              charEncodable (wchar_t);
     static wchar_t           charEncode (wchar_t);
     static wchar_t           charEncode (wchar_t, Encoding);
 
@@ -287,9 +285,6 @@ class FTerm final
     static void              init_tab_quirks();
     static void              init_captureFontAndTitle();
     static bool              hasNoFontSettingOption();
-    static bool              isDefaultPaletteTheme();
-    static void              redefineColorPalette();
-    static void              restoreColorPalette();
     static void              setInsertCursorStyle();
     static void              setOverwriteCursorStyle();
     static std::string       enableCursorString();
@@ -324,6 +319,7 @@ class FTerm final
 // implemented in fterm_functions.cpp
 //----------------------------------------------------------------------
 uInt env2uint (const std::string&);
+FColor rgb2ColorIndex (uInt8, uInt8, uInt8);
 bool isReverseNewFontchar (wchar_t);
 bool hasFullWidthSupports();
 wchar_t cp437_to_unicode (uChar);
@@ -344,13 +340,6 @@ std::size_t searchLeftCharBegin (const FString&, std::size_t);
 std::size_t searchRightCharBegin (const FString&, std::size_t);
 FPoint readCursorPos();
 
-// Check for 7-bit ASCII
-template<typename CharT>
-inline bool is7bit (CharT ch)
-{
-  using char_type = typename std::make_unsigned<CharT>::type;
-  return static_cast<char_type>(ch) < 128;
-}
 
 // FTerm inline functions
 //----------------------------------------------------------------------
@@ -370,14 +359,6 @@ inline void FTerm::unsetInsertCursor()
 //----------------------------------------------------------------------
 inline bool FTerm::unsetUTF8()
 { return setUTF8(false); }
-
-//----------------------------------------------------------------------
-template <typename ClassT>
-inline void FTerm::setColorPaletteTheme (const FSetPalette& f)
-{
-  FColorPalette::getInstance() = std::make_shared<ClassT>(f);  // Set instance
-  FColorPalette::getInstance()->setColorPalette();             // Set palette
-}
 
 //----------------------------------------------------------------------
 template <typename... Args>

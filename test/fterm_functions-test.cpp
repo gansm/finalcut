@@ -22,6 +22,7 @@
 #include <wchar.h>
 
 #include <limits>
+#include <memory>
 
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
@@ -53,6 +54,7 @@ class FTermFunctionsTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 
   protected:
     void env2uintTest();
+    void rgb2ColorIndexTest();
     void isReverseNewFontcharTest();
     void cp437Test();
     void FullWidthHalfWidthTest();
@@ -68,6 +70,7 @@ class FTermFunctionsTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 
     // Add a methods to the test suite
     CPPUNIT_TEST (env2uintTest);
+    CPPUNIT_TEST (rgb2ColorIndexTest);
     CPPUNIT_TEST (isReverseNewFontcharTest);
     CPPUNIT_TEST (cp437Test);
     CPPUNIT_TEST (FullWidthHalfWidthTest);
@@ -76,6 +79,9 @@ class FTermFunctionsTest : public CPPUNIT_NS::TestFixture, test::ConEmu
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
+
+    // Data member
+    finalcut::FVTerm fvterm{};  // Needed for FVTerm::getFOutput()
 };
 
 
@@ -94,6 +100,47 @@ void FTermFunctionsTest::env2uintTest()
   CPPUNIT_ASSERT ( finalcut::env2uint("NUM4") == 0 );
   // Invalid
   CPPUNIT_ASSERT ( finalcut::env2uint("NON_EXISTENT_VARIABLE") == 0 );
+}
+
+//----------------------------------------------------------------------
+void FTermFunctionsTest::rgb2ColorIndexTest()
+{
+  // #000000
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0x00, 0x00, 0x00) == 16 );
+  // #000000
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0xff, 0xff, 0xff) == 231 );
+  // #76eeff
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0x76, 0xee, 0xff) == 123 );
+  // #d26fb7
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0xd2, 0x6f, 0xb7) == 176 );
+  // #896a53
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0x89, 0x6a, 0x53) == 138 );
+  // #ebf59c
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0xeb, 0xf5, 0x9c) == 229 );
+  // #c89f07
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0xc8, 0x9f, 0x07) == 178 );
+  // #61cb55
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0x61, 0xcb, 0x55) == 114 );
+  // #f16d4d
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0xf1, 0x6d, 0x4d) == 210 );
+  // #96c0af
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0x96, 0xc0, 0xaf) == 151 );
+  // #341bb6
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0x34, 0x1b, 0xb6) == 62 );
+  // #da1240
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0xda, 0x12, 0x40) == 161 );
+  // #6f2cce
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0x6f, 0x2c, 0xce) == 98 );
+  // #f19a1d
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0xf1, 0x9a, 0x1d) == 215 );
+  // #0e1068
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0x0e, 0x10, 0x68) == 18 );
+  // #cc9099
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0xcc, 0x90, 0x99) == 181 );
+  // #b9c3bb
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0xb9, 0xc3, 0xbb) == 188 );
+  // #094132
+  CPPUNIT_ASSERT ( finalcut::rgb2ColorIndex (0x09, 0x41, 0x32) == 23 );
 }
 
 //----------------------------------------------------------------------

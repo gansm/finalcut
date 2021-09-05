@@ -54,7 +54,7 @@ jobs:
             automake \
             autoconf \
             autoconf-archive
-          # Build 
+          # Build
           autoreconf -v --install --force
           ./configure --prefix=/usr
           make -j10

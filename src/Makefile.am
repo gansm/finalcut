@@ -32,8 +32,10 @@ libfinal_la_SOURCES = \
 	flogger.cpp \
 	fmenu.cpp \
 	fmouse.cpp \
-	fsystem.cpp \
+	foutput.cpp \
 	fsystemimpl.cpp \
+	fsystem.cpp \
+	ftermoutput.cpp \
 	fkeyboard.cpp \
 	fdialoglistmenu.cpp \
 	fmenubar.cpp \
@@ -141,6 +143,8 @@ finalcutinclude_HEADERS = \
 	include/final/fstringstream.h \
 	include/final/fsystem.h \
 	include/final/fsystemimpl.h \
+	include/final/foutput.h \
+	include/final/ftermoutput.h \
 	include/final/ftermcap.h \
 	include/final/ftermcapquirks.h \
 	include/final/ftermxterminal.h \

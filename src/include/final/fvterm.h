@@ -72,13 +72,12 @@ namespace finalcut
 
 // class forward declaration
 class FColorPair;
+class FOutput;
 class FPoint;
 class FRect;
 class FSize;
 class FString;
-class FTerm;
 class FTermBuffer;
-class FTermDebugData;
 class FStyle;
 
 
@@ -123,14 +122,8 @@ class FVTerm
     // Constructor
     FVTerm();
 
-    // Disable copy constructor
-    FVTerm (const FVTerm&) = delete;
-
     // Destructor
     virtual ~FVTerm();
-
-    // Disable copy assignment operator (=)
-    FVTerm& operator = (const FVTerm&) = delete;
 
     // Overloaded operators
     template <typename typeT>
@@ -147,20 +140,16 @@ class FVTerm
     virtual FString       getClassName() const;
     static FColor         getTermForegroundColor();
     static FColor         getTermBackgroundColor();
+    static auto           getFOutput() -> std::shared_ptr<FOutput>;
     FTermArea*&           getVWin();
     const FTermArea*      getVWin() const;
     FPoint                getPrintCursor();
-    static FChar          getAttribute();
+    static FChar&         getAttribute();
     static FVTermList*    getWindowList();
-    FTerm&                getFTerm() const;
 
     // Mutators
-    void                  setTermXY (int, int) const;
     void                  setTerminalUpdates (TerminalUpdate) const;
-    void                  hideCursor (bool = true) const;
-    void                  showCursor() const;
-    void                  setPrintCursor (const FPoint&);
-    FColor                rgb2ColorIndex (uInt8, uInt8, uInt8) const;
+    void                  setCursor (const FPoint&);
     static void           setColor (FColor, FColor);
     static void           setNormal();
     static bool           setBold (bool = true);
@@ -215,6 +204,10 @@ class FVTerm
     static bool           isTransparent();
     static bool           isTransShadow();
     static bool           isInheritBackground();
+    static bool           isDrawingFinished();
+    static bool           isTerminalUpdateForced();
+    static bool           areTerminalUpdatesPaused();
+    static bool           hasPendingTerminalUpdates();
 
     // Methods
     virtual void          clearArea (wchar_t = L' ');
@@ -295,66 +288,12 @@ class FVTerm
     // Constants
     static constexpr int DEFAULT_MINIMIZED_HEIGHT = 1;
 
-    struct FTermControl
-    {
-      std::string string;
-    };
-
-    struct FTermChar
-    {
-      wchar_t ch;
-    };
-
-    struct FTermString
-    {
-      std::wstring string;
-    };
-
     // Enumerations
     enum class CharacterType
     {
       Overlapped,
       Covered
     };
-
-    enum class PrintState
-    {
-      NothingPrinted,
-      RepeatCharacterPrinted,
-      WhitespacesPrinted,
-      LineCompletelyPrinted
-    };
-
-    enum class OutputType : uInt8  // Output data type of the terminal
-    {
-      String,
-      Control
-    };
-
-    struct TermString
-    {
-      explicit TermString (const std::wstring& wstr)
-        : wstring{wstr}
-      { }
-
-      explicit TermString (const std::string& str)
-        : string{str}
-      { }
-
-      std::wstring wstring{};
-      std::string string{};
-    };
-
-    // Using-declaration
-    using OutputData = std::tuple<OutputType, TermString>;
-    using OutputBuffer = std::queue<OutputData>;
-
-    // Constants
-    //   Buffer limit for character output on the terminal
-    static constexpr std::size_t TERMINAL_OUTPUT_BUFFER_LIMIT = 1024;
-    //   Upper and lower flush limit
-    static constexpr uInt64 MIN_FLUSH_WAIT = 16667;   //   16.6 ms = 60 Hz
-    static constexpr uInt64 MAX_FLUSH_WAIT = 200000;  //  200.0 ms = 5 Hz
 
     // Methods
     void                  resetTextAreaToDefault ( const FTermArea*
@@ -365,8 +304,8 @@ class FVTerm
     static bool           reallocateTextArea ( FTermArea*
                                              , std::size_t );
     static CoveredState   isCovered (const FPoint&, const FTermArea*);
-    static int            getFullAreaWidth (const FTermArea*);
-    static int            getFullAreaHeight (const FTermArea*);
+    static constexpr int  getFullAreaWidth (const FTermArea*);
+    static constexpr int  getFullAreaHeight (const FTermArea*);
     static void           updateOverlappedColor (const FChar&, const FChar&, FChar&);
     static void           updateOverlappedCharacter (FChar&, FChar&);
     static void           updateShadedCharacter (const FChar&, FChar&, FChar&);
@@ -388,33 +327,14 @@ class FVTerm
     static FChar          getCoveredCharacter (const FPoint&, const FTermArea*);
     static FChar          getOverlappedCharacter (const FPoint&, const FTermArea*);
     void                  init();
-    static void           init_characterLengths();
-    static void           init_combined_character();
     void                  finish() const;
     static void           putAreaLine (const FChar&, FChar&, std::size_t);
     static void           putAreaCharacter ( const FPoint&, const FTermArea*
                                            , const FChar&, FChar& );
     static void           getAreaCharacter ( const FPoint&, const FTermArea*
                                            , FChar*& );
-    bool                  clearTerm (wchar_t = L' ') const;
     bool                  clearFullArea (const FTermArea*, FChar&) const;
     static void           clearAreaWithShadow (const FTermArea*, const FChar&);
-    static bool           canClearToEOL (uInt, uInt);
-    static bool           canClearLeadingWS (uInt&, uInt);
-    static bool           canClearTrailingWS (uInt&, uInt);
-    bool                  skipUnchangedCharacters (uInt&, uInt, uInt) const;
-    void                  printRange (uInt, uInt, uInt, bool) const;
-    void                  replaceNonPrintableFullwidth (uInt, FChar&) const;
-    void                  printCharacter (uInt&, uInt, bool, FChar&) const;
-    void                  printFullWidthCharacter (uInt&, uInt, FChar&) const;
-    void                  printFullWidthPaddingCharacter (uInt&, uInt, FChar&) const;
-    void                  printHalfCovertFullWidthCharacter (uInt&, uInt, FChar&) const;
-    void                  skipPaddingCharacter (uInt&, uInt, const FChar&) const;
-    PrintState            eraseCharacters (uInt&, uInt, uInt, bool) const;
-    PrintState            repeatCharacter (uInt&, uInt, uInt) const;
-    bool                  isFullWidthChar (const FChar&) const;
-    bool                  isFullWidthPaddingChar (const FChar&) const;
-    void                  cursorWrap() const;
     bool                  printWrap (FTermArea*) const;
     bool                  changedToTransparency (const FChar&, const FChar&) const;
     bool                  changedFromTransparency (const FChar&, const FChar&) const;
@@ -423,56 +343,29 @@ class FVTerm
                                                      , const int&
                                                      , const FChar&) const;
     void                  printPaddingCharacter (FTermArea*, const FChar&);
-    bool                  updateTerminalLine (uInt) const;
-    bool                  updateTerminalCursor() const;
     bool                  isInsideTerminal (const FPoint&) const;
-    void                  flushTimeAdjustment() const;
-    static bool           isFlushTimeout();
     static bool           hasPendingUpdates (const FTermArea*);
-    static void           markAsPrinted (uInt, uInt);
-    static void           markAsPrinted (uInt, uInt, uInt);
-    static void           newFontChanges (FChar&);
-    static void           charsetChanges (FChar&);
-    void                  appendCharacter (FChar&) const;
-    void                  appendChar (FChar&) const;
-    void                  appendAttributes (FChar&) const;
-    void                  appendLowerRight (FChar&) const;
-    void                  characterFilter (FChar&) const;
-    bool                  isOutputBufferLimitReached() const;
-    void                  appendOutputBuffer (const FTermControl&) const;
-    void                  appendOutputBuffer (const FTermChar&) const;
-    void                  appendOutputBuffer (const FTermString&) const;
 
     // Data members
     FTermArea*                    print_area{nullptr};        // print area for this object
     FTermArea*                    child_print_area{nullptr};  // print area for children
     FTermArea*                    vwin{nullptr};              // virtual window
-    std::shared_ptr<FTerm>        fterm{};
-    std::shared_ptr<FPoint>       term_pos{};     // terminal cursor position
-    std::shared_ptr<OutputBuffer> output_buffer{};
+    std::shared_ptr<FOutput>      foutput{};
     std::shared_ptr<FVTermList>   window_list{};  // List of all window owner
     static const FVTerm*          init_object;    // Global FVTerm object
     static FTermArea*             vterm;          // virtual terminal
     static FTermArea*             vdesktop;       // virtual desktop
     static FTermArea*             active_area;    // active area
-    static FChar                  term_attribute;
     static FChar                  next_attribute;
     static FChar                  s_ch;  // shadow character
     static FChar                  i_ch;  // inherit background character
-    static TimeValue              time_last_flush;
     static bool                   draw_completed;
-    static bool                   combined_char_support;
     static bool                   no_terminal_updates;
     static bool                   force_terminal_update;
-    static uInt64                 flush_wait;
-    static uInt64                 flush_average;
-    static uInt64                 flush_median;
-    static uInt                   erase_char_length;
-    static uInt                   repeat_char_length;
-    static uInt                   clr_bol_length;
-    static uInt                   clr_eol_length;
-    static uInt                   cursor_address_length;
-    static bool                   cursor_hideable;
+
+    // Friend classes
+    friend class FOutput;
+    friend class FTermOutput;
 };
 
 
@@ -646,7 +539,7 @@ inline const FVTerm::FTermArea* FVTerm::getVWin() const
 { return vwin; }
 
 //----------------------------------------------------------------------
-inline FChar FVTerm::getAttribute()
+inline FChar& FVTerm::getAttribute()
 { return next_attribute; }
 
 //----------------------------------------------------------------------
@@ -656,14 +549,6 @@ inline FVTerm::FVTermList* FVTerm::getWindowList()
         ? init_object->window_list.get()
         : nullptr;
 }
-
-//----------------------------------------------------------------------
-inline FTerm& FVTerm::getFTerm() const
-{ return *fterm; }
-
-//----------------------------------------------------------------------
-inline void FVTerm::showCursor() const
-{ return hideCursor(false); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setColor (FColor fg, FColor bg)
@@ -676,7 +561,7 @@ inline void FVTerm::setColor (FColor fg, FColor bg)
 //----------------------------------------------------------------------
 inline void FVTerm::setNormal()
 {
-  // reset all character attributes
+  // Reset all character attributes
   next_attribute.attr.byte[0] = 0;
   next_attribute.attr.byte[1] = 0;
   next_attribute.attr.bit.no_changes = false;
@@ -881,6 +766,22 @@ inline bool FVTerm::isInheritBackground()
 { return next_attribute.attr.bit.inherit_background; }
 
 //----------------------------------------------------------------------
+inline bool FVTerm::isDrawingFinished()
+{ return draw_completed; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isTerminalUpdateForced()
+{ return force_terminal_update; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::areTerminalUpdatesPaused()
+{ return no_terminal_updates; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::hasPendingTerminalUpdates()
+{ return hasPendingUpdates(vterm); }
+
+//----------------------------------------------------------------------
 template <typename... Args>
 inline int FVTerm::printf (const FString& format, Args&&... args)
 {
@@ -936,10 +837,6 @@ inline bool FVTerm::hasChildPrintArea() const
 //----------------------------------------------------------------------
 inline bool FVTerm::isVirtualWindow() const
 { return vwin; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isCursorHideable() const
-{ return cursor_hideable; }
 
 //----------------------------------------------------------------------
 inline void FVTerm::hideVTermCursor() const

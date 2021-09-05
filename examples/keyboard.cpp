@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -54,7 +54,7 @@ Keyboard::Keyboard (finalcut::FWidget* parent)
 void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
 {
   const finalcut::FKey key_id = ev->key();
-  finalcut::FString key_name = finalcut::FTerm::getKeyName(key_id);
+  finalcut::FString key_name = finalcut::FVTerm::getFOutput()->getKeyName(key_id);
   bool is_last_line{false};
 
   if ( key_name.isEmpty() )

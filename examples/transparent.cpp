@@ -91,7 +91,7 @@ void Transparent::draw()
 {
   finalcut::FDialog::draw();
 
-  if ( finalcut::FTerm::isMonochron() )
+  if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   if ( type == Type::Shadow )
@@ -102,7 +102,7 @@ void Transparent::draw()
   }
   else if ( type == Type::InheritBackground )
   {
-    if ( finalcut::FTerm::getMaxColor() > 8 )
+    if ( finalcut::FVTerm::getFOutput()->getMaxColor() > 8 )
       print() << FColorPair {FColor::Blue, FColor::Black};
     else
       print() << FColorPair {FColor::Green, FColor::Black};
@@ -226,14 +226,14 @@ void MainWindow::draw()
 {
   finalcut::FDialog::draw();
 
-  if ( finalcut::FTerm::isMonochron() )
+  if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   setColor();
   print() << FPoint{2, 4} << line1;
   print() << FPoint{2, 5} << line2;
 
-  if ( finalcut::FTerm::isMonochron() )
+  if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 }
 

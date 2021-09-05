@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2019-2020 Markus Gans                                      *
+* Copyright 2019-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -176,11 +176,11 @@ void setWidgetFocus (FWidget* widget)
 //----------------------------------------------------------------------
 void drawShadow (FWidget* w)
 {
-  if ( FTerm::isMonochron() && ! w->flags.trans_shadow )
+  if ( FVTerm::getFOutput()->isMonochron() && ! w->flags.trans_shadow )
     return;
 
-  if ( (FTerm::getEncoding() == Encoding::VT100 && ! w->flags.trans_shadow)
-    || (FTerm::getEncoding() == Encoding::ASCII && ! w->flags.trans_shadow) )
+  if ( (FVTerm::getFOutput()->getEncoding() == Encoding::VT100 && ! w->flags.trans_shadow)
+    || (FVTerm::getFOutput()->getEncoding() == Encoding::ASCII && ! w->flags.trans_shadow) )
   {
     clearShadow(w);
     return;
@@ -221,7 +221,7 @@ void drawTransparentShadow (FWidget* w)
              << FString {width, L' '}
              << FStyle {Style::None};
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     w->setReverse(false);
 }
 
@@ -230,7 +230,7 @@ void drawBlockShadow (FWidget* w)
 {
   // non-transparent shadow
 
-  if ( ! FTerm::hasShadowCharacter() )
+  if ( ! FVTerm::getFOutput()->hasShadowCharacter() )
     return;
 
   const std::size_t width = w->getWidth();
@@ -271,7 +271,7 @@ void drawBlockShadow (FWidget* w)
 //----------------------------------------------------------------------
 void clearShadow (FWidget* w)
 {
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     return;
 
   const std::size_t width = w->getWidth();
@@ -308,7 +308,7 @@ void clearShadow (FWidget* w)
 //----------------------------------------------------------------------
 void drawFlatBorder (FWidget* w)
 {
-  if ( ! FTerm::isNewFont() )
+  if ( ! FVTerm::getFOutput()->isNewFont() )
     return;
 
   const std::size_t width = w->getWidth();
@@ -369,7 +369,7 @@ void drawFlatBorder (FWidget* w)
 //----------------------------------------------------------------------
 void clearFlatBorder (FWidget* w)
 {
-  if ( ! FTerm::isNewFont() )
+  if ( ! FVTerm::getFOutput()->isNewFont() )
     return;
 
   const std::size_t width = w->getWidth();
@@ -451,7 +451,7 @@ void drawBorder (FWidget* w, const FRect& r)
   FRect rect = r;
   checkBorder (w, rect);
 
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
     drawNewFontBox (w, rect);
   else
     drawBox (w, rect);
@@ -463,7 +463,7 @@ void drawListBorder (FWidget* w, const FRect& r)
   FRect rect = r;
   checkBorder (w, rect);
 
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
     drawNewFontListBox (w, rect);
   else
     drawBox (w, rect);

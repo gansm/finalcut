@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -60,6 +60,7 @@
 #include <final/fmouse.h>
 #include <final/foptiattr.h>
 #include <final/foptimove.h>
+#include <final/foutput.h>
 #include <final/fpoint.h>
 #include <final/fprogressbar.h>
 #include <final/fradiobutton.h>
@@ -83,6 +84,7 @@
 #include <final/ftermdebugdata.h>
 #include <final/ftermdetection.h>
 #include <final/ftermios.h>
+#include <final/ftermoutput.h>
 #include <final/ftermxterminal.h>
 #include <final/ftextview.h>
 #include <final/ftogglebutton.h>

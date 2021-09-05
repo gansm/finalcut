@@ -82,7 +82,7 @@ std::string FLogger::getEOL() const
 //----------------------------------------------------------------------
 void FLogger::printLogLine (const std::string& msg)
 {
-  const std::string& log_level = [this] ()
+  const std::string& log_level = [this] () -> std::string
   {
     switch ( getLevel() )
     {
@@ -102,7 +102,7 @@ void FLogger::printLogLine (const std::string& msg)
     return "";
   }();
 
-  const std::string prefix = [this, &log_level] ()
+  const std::string prefix = [this, &log_level] () -> std::string
   {
     if ( timestamp )
       return getTimeString() + " [" + log_level + "] ";

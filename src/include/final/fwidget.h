@@ -101,6 +101,7 @@
 
 #include "final/fcallback.h"
 #include "final/fobject.h"
+#include "final/foutput.h"
 #include "final/fpoint.h"
 #include "final/frect.h"
 #include "final/fsize.h"
@@ -193,7 +194,7 @@ class FWidget : public FVTerm, public FObject
     FString                  getStatusbarMessage() const;
     FColor                   getForegroundColor() const;  // get the primary
     FColor                   getBackgroundColor() const;  // widget colors
-    std::vector<bool>&       doubleFlatLine_ref (Side);
+    std::vector<bool>&       doubleFlatLine_ref (Side) throw();
     // Positioning and sizes accessors...
     int                      getX() const;
     int                      getY() const;
@@ -265,7 +266,7 @@ class FWidget : public FVTerm, public FObject
     void                     setLeftPadding (int, bool = true);
     void                     setBottomPadding (int, bool = true);
     void                     setRightPadding (int, bool = true);
-    void                     setTermSize (const FSize&) const;
+    void                     setTerminalSize (const FSize&) const;
     virtual void             setGeometry (const FRect&, bool = true);
     virtual void             setGeometry (const FPoint&, const FSize&, bool = true);
     virtual void             setShadowSize (const FSize&);
@@ -279,9 +280,9 @@ class FWidget : public FVTerm, public FObject
     virtual bool             setCursorPos (const FPoint&);
     void                     unsetCursorPos();
     virtual void             setPrintPos (const FPoint&);
-    void                     setDoubleFlatLine (Side, bool = true);
+    void                     setDoubleFlatLine (Side, bool = true) throw();
     void                     unsetDoubleFlatLine (Side);
-    void                     setDoubleFlatLine (Side, int, bool = true);
+    void                     setDoubleFlatLine (Side, int, bool = true) throw();
     void                     unsetDoubleFlatLine (Side, int);
 
     // Inquiries
@@ -492,7 +493,7 @@ class FWidget : public FVTerm, public FObject
     friend class FScrollView;
 
     // Friend functions
-    friend void detectTermSize();
+    friend void detectTerminalSize();
     friend void drawShadow (FWidget*);
     friend void drawTransparentShadow (FWidget*);
     friend void drawBlockShadow (FWidget*);
@@ -505,7 +506,7 @@ class FWidget : public FVTerm, public FObject
 // non-member function forward declarations
 // implemented in fwidget_functions.cpp
 //----------------------------------------------------------------------
-void          detectTermSize();
+void          detectTerminalSize();
 bool          isFocusNextKey (const FKey);
 bool          isFocusPrevKey (const FKey);
 bool          isInFWidgetList (const FWidget::FWidgetList*, const FWidget*);
@@ -717,11 +718,11 @@ inline const FRect& FWidget::getTermGeometryWithShadow()
 
 //----------------------------------------------------------------------
 inline std::size_t FWidget::getDesktopWidth() const
-{ return FTerm::getColumnNumber(); }
+{ return FVTerm::getFOutput()->getColumnNumber(); }
 
 //----------------------------------------------------------------------
 inline std::size_t FWidget::getDesktopHeight() const
-{ return FTerm::getLineNumber(); }
+{ return FVTerm::getFOutput()->getLineNumber(); }
 
 //----------------------------------------------------------------------
 inline const FWidget::FWidgetFlags& FWidget::getFlags() const

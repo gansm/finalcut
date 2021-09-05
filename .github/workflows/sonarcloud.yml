@@ -43,7 +43,7 @@ jobs:
           unzip \
           libgpm-dev \
           libcppunit-dev \
-          autoconf-archive 
+          autoconf-archive
 
     - name: Build with SonarCloud
       run: |

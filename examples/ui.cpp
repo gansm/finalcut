@@ -846,7 +846,7 @@ void MyDialog::cb_terminfo()
       << "  Mode: " << finalcut::FTerm::getEncodingString() << "\n"
       << "  Size: " << x << finalcut::UniChar::Times
                     << y << "\n"
-      << "Colors: " << finalcut::FTerm::getMaxColor()
+      << "Colors: " << finalcut::FVTerm::getFOutput()->getMaxColor()
     , finalcut::FMessageBox::ButtonType::Ok
     , finalcut::FMessageBox::ButtonType::Reject
     , finalcut::FMessageBox::ButtonType::Reject
@@ -871,7 +871,7 @@ void MyDialog::cb_drives()
     , this
   );
 
-  if ( finalcut::FTerm::isNewFont() )
+  if ( finalcut::FVTerm::getFOutput()->isNewFont() )
   {
     finalcut::FLabel drive {finalcut::NF_Drive, &info2};
     drive.setGeometry (FPoint{11, 2}, FSize{4, 1});
@@ -890,7 +890,7 @@ void MyDialog::cb_drives()
     finalcut::FLabel cd {" CD ", &info2};
     cd.setGeometry (FPoint{11, 6}, FSize{4, 1});
 
-    if ( finalcut::FTerm::isMonochron() )
+    if ( finalcut::FVTerm::getFOutput()->isMonochron() )
     {
       net.setReverseMode();
       drive.setReverseMode();
@@ -1073,6 +1073,9 @@ int main (int argc, char* argv[])
   // When you close the main widget, the application will be closed.
   finalcut::FWidget::setMainWidget(&d);
 
+  // Enable the final cut graphical font
+  //finalcut::FVTerm::getFOutput()->setNewFont();
+
   // Show the dialog d
   d.show();
 
@@ -1080,10 +1083,7 @@ int main (int argc, char* argv[])
   finalcut::FTerm::setTermTitle (title);
 
   // Sets the terminal size to 94×30
-  //finalcut::FTerm::setTermSize(FSize{94, 30});
-
-  // Enable the final cut graphical font
-  //finalcut::FTerm::setNewFont();
+  //app.setTerminalSize(FSize{94, 30});
 
   // Start the application
   // and return the result to the operating system

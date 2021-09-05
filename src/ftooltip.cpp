@@ -42,7 +42,7 @@ FToolTip::FToolTip (FWidget* parent)
 //----------------------------------------------------------------------
 FToolTip::FToolTip (const FString& txt, FWidget* parent)
   : FWindow{parent}
-  , text{txt.trim()}
+  , text{text_auto_trim ? txt.trim() : txt}
 {
   init();
 }
@@ -69,7 +69,7 @@ FToolTip::~FToolTip()  // destructor
 //----------------------------------------------------------------------
 void FToolTip::setText (const FString& txt)
 {
-  text.setString(txt.trim());
+  text.setString(text_auto_trim ? txt.trim() : txt);
   calculateDimensions();
 }
 

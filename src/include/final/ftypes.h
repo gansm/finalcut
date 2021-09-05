@@ -99,6 +99,14 @@ struct is_negative<T, false>
 
 }  // namespace internal
 
+// Check for 7-bit ASCII
+template<typename CharT>
+inline bool is7bit (CharT ch)
+{
+  using char_type = typename std::make_unsigned<CharT>::type;
+  return static_cast<char_type>(ch) < 128;
+}
+
 template <typename T>
 constexpr bool isNegative (const T& x)
 {

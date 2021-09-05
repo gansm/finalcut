@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2020 Markus Gans                                      *
+* Copyright 2014-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -88,8 +88,8 @@ void FProgressbar::setGeometry ( const FPoint& pos, const FSize& size
 bool FProgressbar::setShadow (bool enable)
 {
   if ( enable
-    && FTerm::getEncoding() != Encoding::VT100
-    && FTerm::getEncoding() != Encoding::ASCII )
+    && FVTerm::getFOutput()->getEncoding() != Encoding::VT100
+    && FVTerm::getFOutput()->getEncoding() != Encoding::ASCII )
   {
     setFlags().shadow = true;
     setShadowSize(FSize{1, 1});
@@ -149,7 +149,7 @@ void FProgressbar::draw()
 //----------------------------------------------------------------------
 void FProgressbar::drawProgressLabel()
 {
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   useParentWidgetColor();
@@ -160,7 +160,7 @@ void FProgressbar::drawProgressLabel()
   else
     printf ("%3zu %%", percentage);
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 }
 
@@ -175,7 +175,7 @@ void FProgressbar::drawProgressBar()
 
   drawProgressBackground(len);
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 }
 
@@ -184,7 +184,7 @@ std::size_t FProgressbar::drawProgressIndicator()
 {
   // Draw the progress indicator
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   const auto& wc = getColorTheme();
@@ -196,14 +196,14 @@ std::size_t FProgressbar::drawProgressIndicator()
   if ( len >= bar_length )
     return len;
 
-  if ( std::size_t(round(length)) > len || FTerm::getMaxColor() < 16 )
+  if ( std::size_t(round(length)) > len || FVTerm::getFOutput()->getMaxColor() < 16 )
   {
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(false);
 
     print(' ');
 
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(true);
   }
   else
@@ -225,7 +225,7 @@ void FProgressbar::drawProgressBackground (std::size_t len)
   const auto& wc = getColorTheme();
   setColor (wc->progressbar_fg, wc->progressbar_bg);
 
-  if ( FTerm::getMaxColor() < 16 )
+  if ( FVTerm::getFOutput()->getMaxColor() < 16 )
     print() << FString {bg_len, UniChar::MediumShade};  // ▒
   else
     print() << FString {bg_len, L' '};

@@ -163,7 +163,7 @@ void EventDialog::onTimer (finalcut::FTimerEvent*)
 void EventDialog::onKeyPress (finalcut::FKeyEvent* ev)
 {
   const finalcut::FKey key_id = ev->key();
-  finalcut::FString key_name = finalcut::FTerm::getKeyName(key_id);
+  finalcut::FString key_name = finalcut::FVTerm::getFOutput()->getKeyName(key_id);
 
   if ( key_name.isEmpty() )
     key_name = wchar_t(key_id);

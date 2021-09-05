@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2020 Markus Gans                                      *
+* Copyright 2015-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -139,12 +139,12 @@ inline void FSwitch::drawChecked()
 
   if ( hasFocus() && ! button_pressed )
   {
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
     {
       on.setString(L" <On>");
       setBold(true);
     }
-    else if ( FTerm::getMaxColor() < 16 )
+    else if ( FVTerm::getFOutput()->getMaxColor() < 16 )
     {
       setBold(true);
       setColor (wc->button_active_focus_fg, wc->button_active_focus_bg);
@@ -154,27 +154,29 @@ inline void FSwitch::drawChecked()
   }
   else
   {
-    if ( FTerm::isMonochron() || FTerm::getMaxColor() < 16 )
+    if ( FVTerm::getFOutput()->isMonochron()
+      || FVTerm::getFOutput()->getMaxColor() < 16 )
       setColor (wc->button_active_focus_fg, wc->button_active_bg);
     else
       setColor (wc->button_hotkey_fg, wc->button_active_bg);
   }
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
   print (on);
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
-  if ( FTerm::isMonochron() || FTerm::getMaxColor() < 16 )
+  if ( FVTerm::getFOutput()->isMonochron()
+    || FVTerm::getFOutput()->getMaxColor() < 16 )
     setBold(false);
 
   print() << FColorPair{wc->button_inactive_fg, wc->button_inactive_bg}
           << off;
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
   setCursorPos ({3 + int(switch_offset_pos), 1});
@@ -189,19 +191,19 @@ inline void FSwitch::drawUnchecked()
   const auto& wc = getColorTheme();
   setColor (wc->button_inactive_fg, wc->button_inactive_bg);
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   print (on);
 
   if ( hasFocus() && ! button_pressed )
   {
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
     {
       off.setString(L"<Off>");
       setBold(true);
     }
-    else if ( FTerm::getMaxColor() < 16 )
+    else if ( FVTerm::getFOutput()->getMaxColor() < 16 )
     {
       setBold(true);
       setColor (wc->button_active_focus_fg, wc->button_active_focus_bg);
@@ -211,18 +213,20 @@ inline void FSwitch::drawUnchecked()
   }
   else
   {
-    if ( FTerm::isMonochron() || FTerm::getMaxColor() < 16 )
+    if ( FVTerm::getFOutput()->isMonochron()
+      || FVTerm::getFOutput()->getMaxColor() < 16 )
       setColor (wc->button_active_focus_fg, wc->button_active_bg);
     else
       setColor (wc->button_hotkey_fg, wc->button_active_bg);
   }
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 
   print (off);
 
-  if ( FTerm::isMonochron() || FTerm::getMaxColor() < 16 )
+  if ( FVTerm::getFOutput()->isMonochron()
+    || FVTerm::getFOutput()->getMaxColor() < 16 )
     setBold(false);
 
   setCursorPos ({7 + int(switch_offset_pos), 1});

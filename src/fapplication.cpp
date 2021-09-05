@@ -295,17 +295,19 @@ void FApplication::initTerminal()
 //----------------------------------------------------------------------
 void FApplication::setDefaultTheme()
 {
-  if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
+  auto foutput = FVTerm::getFOutput();
+
+  if ( foutput->getMaxColor() < 16 )  // for 8 color mode
   {
     if ( getStartOptions().color_change )
-      FTerm::setColorPaletteTheme<default8ColorPalette>();
+      foutput->setColorPaletteTheme<default8ColorPalette>();
 
     setColorTheme<default8ColorTheme>();
   }
   else
   {
     if ( getStartOptions().color_change )
-      FTerm::setColorPaletteTheme<default16ColorPalette>();
+      foutput->setColorPaletteTheme<default16ColorPalette>();
 
     setColorTheme<default16ColorTheme>();
   }
@@ -314,10 +316,12 @@ void FApplication::setDefaultTheme()
 //----------------------------------------------------------------------
 void FApplication::setDarkTheme()
 {
-  if ( getStartOptions().color_change )
-    FTerm::setColorPaletteTheme<default16DarkColorPalette>();
+  auto foutput = FVTerm::getFOutput();
 
-  if ( FTerm::getMaxColor() < 16 )  // for 8 color mode
+  if ( getStartOptions().color_change )
+    foutput->setColorPaletteTheme<default16DarkColorPalette>();
+
+  if ( foutput->getMaxColor() < 16 )  // for 8 color mode
     setColorTheme<default8ColorDarkTheme>();
   else
     setColorTheme<default16ColorDarkTheme>();
@@ -822,7 +826,7 @@ inline bool FApplication::hasDataInQueue() const
 
   if ( keyboard.hasDataInQueue()
     || mouse.hasDataInQueue()
-    || FTerm::hasChangedTermSize() )
+    || FVTerm::getFOutput()->hasTerminalResized() )
     return true;
 
   return false;
@@ -833,7 +837,7 @@ void FApplication::queuingKeyboardInput() const
 {
   if ( quit_now
     || internal::var::exit_loop
-    || FTerm::hasChangedTermSize() )
+    || FVTerm::getFOutput()->hasTerminalResized() )
     return;
 
   findKeyboardWidget();
@@ -853,7 +857,7 @@ void FApplication::queuingMouseInput() const
   if ( quit_now
     || internal::var::exit_loop
     || ! mouse.hasData()
-    || FTerm::hasChangedTermSize() )
+    || FVTerm::getFOutput()->hasTerminalResized() )
     return;
 
   auto& keyboard = FKeyboard::getInstance();
@@ -868,7 +872,7 @@ void FApplication::processKeyboardEvent() const
 {
   if ( quit_now
     || internal::var::exit_loop
-    || FTerm::hasChangedTermSize() )
+    || FVTerm::getFOutput()->hasTerminalResized() )
     return;
 
   auto& keyboard = FKeyboard::getInstance();
@@ -880,7 +884,7 @@ void FApplication::processMouseEvent() const
 {
   if ( quit_now
     || internal::var::exit_loop
-    || FTerm::hasChangedTermSize() )
+    || FVTerm::getFOutput()->hasTerminalResized() )
     return;
 
   FMouseControl::getInstance().processQueuedInput();
@@ -1186,10 +1190,6 @@ void FApplication::sendMouseMiddleClickEvent ( const FMouseData& md
                           , mouse_position
                           , MouseButton::Middle | key_state );
     sendEvent (clicked_widget, &m_down_ev);
-
-    // gnome-terminal sends no released on middle click
-    if ( FTerm::isGnomeTerminal() )
-      setClickedWidget(nullptr);
   }
   else if ( md.isMiddleButtonReleased() )
   {
@@ -1253,10 +1253,10 @@ FWidget* FApplication::processParameters (const Args& args)
 //----------------------------------------------------------------------
 void FApplication::processResizeEvent() const
 {
-  if ( ! FTerm::hasChangedTermSize() )  // A SIGWINCH signal was received
+  if ( ! FVTerm::getFOutput()->hasTerminalResized() )  // A SIGWINCH signal was received
     return;
 
-  FTerm::detectTermSize();  // Detect and save the current terminal size
+  FVTerm::getFOutput()->detectTerminalSize();  // Detect and save the current terminal size
   auto& mouse = FMouseControl::getInstance();
   mouse.setMaxWidth (uInt16(getDesktopWidth()));
   mouse.setMaxHeight (uInt16(getDesktopHeight()));
@@ -1264,7 +1264,7 @@ void FApplication::processResizeEvent() const
   sendEvent(internal::var::app_object, &r_ev);
 
   if ( r_ev.isAccepted() )
-    FTerm::changeTermSizeFinished();
+    FVTerm::getFOutput()->commitTerminalResize();
 }
 
 //----------------------------------------------------------------------

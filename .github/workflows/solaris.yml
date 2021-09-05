@@ -29,5 +29,5 @@ jobs:
           export PATH
           autoreconf -v --install --force
           ./configure --prefix=/usr
-          make 
+          make
 

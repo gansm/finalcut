@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020 Markus Gans                                           *
+* Copyright 2020-2021 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -66,6 +66,7 @@ void FBusyIndicator::stop()
 void FBusyIndicator::init()
 {
   FToolTip::hide();
+  disableAutoTrim();
 }
 
 //----------------------------------------------------------------------
@@ -73,7 +74,7 @@ void FBusyIndicator::createIndicatorText()
 {
   std::array<FString, 4> line{};
 
-  if ( FTerm::getEncoding() == Encoding::UTF8 )
+  if ( FVTerm::getFOutput()->getEncoding() == Encoding::UTF8 )
   {
     const auto& p = uni_pattern;
     line[0] << "   " << p[7] << " " << p[0] << "   \n";
@@ -98,7 +99,7 @@ void FBusyIndicator::createIndicatorText()
 void FBusyIndicator::onTimer (finalcut::FTimerEvent*)
 {
   // Rotate pattern
-  if ( FTerm::getEncoding() == Encoding::UTF8 )
+  if ( FVTerm::getFOutput()->getEncoding() == Encoding::UTF8 )
   {
     const wchar_t last = uni_pattern[7];
     std::memmove(uni_pattern + 1, uni_pattern , sizeof(wchar_t) * 7);

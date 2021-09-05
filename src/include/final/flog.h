@@ -83,7 +83,7 @@ class FLog : public std::stringbuf
     template <typename T>
     FLog& operator << (const T& s);
     FLog& operator << (IOManip);
-    FLog& operator << (LogLevel);
+    FLog& operator << (LogLevel) throw();
 
     virtual FString getClassName() const;
     virtual void info (const std::string&) = 0;

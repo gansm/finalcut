@@ -223,7 +223,7 @@ void FTextView::insert (const FString& str, int pos)
   if ( str.isEmpty() )
     s = "\n";
   else
-    s = FString{str}.rtrim().expandTabs(FTerm::getTabstop());
+    s = FString{str}.rtrim().expandTabs(getFOutput()->getTabstop());
 
   auto text_split = s.split("\n");
 
@@ -555,7 +555,7 @@ void FTextView::init()
   initScrollbar (vbar, Orientation::Vertical, this, &FTextView::cb_vbarChange);
   initScrollbar (hbar, Orientation::Horizontal, this, &FTextView::cb_hbarChange);
   resetColors();
-  nf_offset = FTerm::isNewFont() ? 1 : 0;
+  nf_offset = FVTerm::getFOutput()->isNewFont() ? 1 : 0;
   setTopPadding(1);
   setLeftPadding(1);
   setBottomPadding(1);
@@ -604,13 +604,13 @@ void FTextView::drawBorder()
 {
   if ( ! useFDialogBorder() )
   {
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(true);
 
     const FRect box{FPoint{1, 1}, getSize()};
     finalcut::drawListBorder (this, box);
 
-    if ( FTerm::isMonochron() )
+    if ( FVTerm::getFOutput()->isMonochron() )
       setReverse(false);
   }
 }
@@ -642,7 +642,7 @@ void FTextView::drawText()
 
   setColor();
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(true);
 
   for (std::size_t y{0}; y < num; y++)  // Line loop
@@ -669,7 +669,7 @@ void FTextView::drawText()
     print() << FString{trailing_whitespace, L' '};
   }
 
-  if ( FTerm::isMonochron() )
+  if ( FVTerm::getFOutput()->isMonochron() )
     setReverse(false);
 }
 
@@ -698,7 +698,9 @@ inline bool FTextView::isPrintable (wchar_t ch) const
 {
   // Check for printable characters
 
-  const bool utf8 = ( FTerm::getEncoding() == Encoding::UTF8 ) ? true : false;
+  const bool utf8 = ( FVTerm::getFOutput()->getEncoding() == Encoding::UTF8 )
+                    ? true
+                    : false;
 
   if ( (utf8 && std::iswprint(std::wint_t(ch)))
     || (! utf8 && std::isprint(char(ch))) )
@@ -719,7 +721,7 @@ void FTextView::changeOnResize() const
   const std::size_t width  = getWidth();
   const std::size_t height = getHeight();
 
-  if ( FTerm::isNewFont() )
+  if ( FVTerm::getFOutput()->isNewFont() )
   {
     vbar->setGeometry (FPoint{int(width), 1}, FSize{2, height - 1});
     hbar->setGeometry (FPoint{1, int(height)}, FSize{width - 2, 1});
@@ -735,19 +737,11 @@ void FTextView::changeOnResize() const
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_vbarChange (const FWidget*)
+void FTextView::cb_vbarChange (const FWidget*) throw()
 {
   const FScrollbar::ScrollType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
-  assert ( scrollType == FScrollbar::ScrollType::None
-        || scrollType == FScrollbar::ScrollType::Jump
-        || scrollType == FScrollbar::ScrollType::StepBackward
-        || scrollType == FScrollbar::ScrollType::StepForward
-        || scrollType == FScrollbar::ScrollType::PageBackward
-        || scrollType == FScrollbar::ScrollType::PageForward
-        || scrollType == FScrollbar::ScrollType::WheelUp
-        || scrollType == FScrollbar::ScrollType::WheelDown );
 
   if ( scrollType >= FScrollbar::ScrollType::StepBackward )
     update_scrollbar = true;
@@ -784,25 +778,20 @@ void FTextView::cb_vbarChange (const FWidget*)
     case FScrollbar::ScrollType::WheelDown:
       scrollBy (0, wheel_distance);
       break;
+
+    default:
+      throw std::invalid_argument("Unimplemented scroll type");
   }
 
   update_scrollbar = true;
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_hbarChange (const FWidget*)
+void FTextView::cb_hbarChange (const FWidget*) throw()
 {
   const FScrollbar::ScrollType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;
   int distance{1};
-  assert ( scrollType == FScrollbar::ScrollType::None
-        || scrollType == FScrollbar::ScrollType::Jump
-        || scrollType == FScrollbar::ScrollType::StepBackward
-        || scrollType == FScrollbar::ScrollType::StepForward
-        || scrollType == FScrollbar::ScrollType::PageBackward
-        || scrollType == FScrollbar::ScrollType::PageForward
-        || scrollType == FScrollbar::ScrollType::WheelUp
-        || scrollType == FScrollbar::ScrollType::WheelDown );
 
   if ( scrollType >= FScrollbar::ScrollType::StepBackward )
     update_scrollbar = true;
@@ -839,6 +828,9 @@ void FTextView::cb_hbarChange (const FWidget*)
     case FScrollbar::ScrollType::WheelDown:
       scrollBy (wheel_distance, 0);
       break;
+
+    default:
+      throw std::invalid_argument("Unimplemented scroll type");
   }
 
   update_scrollbar = true;

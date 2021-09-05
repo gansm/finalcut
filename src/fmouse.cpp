@@ -542,6 +542,10 @@ FMouseGPM::gpmEventType FMouseGPM::gpmEvent (bool clear) const
 // class FMouseX11
 //----------------------------------------------------------------------
 
+// constructors and destructor
+//----------------------------------------------------------------------
+FMouseX11::FMouseX11() = default;
+
 // public methods of FMouseX11
 //----------------------------------------------------------------------
 FString FMouseX11::getClassName() const
@@ -719,6 +723,10 @@ void FMouseX11::setButtonState (const int btn, const TimeValue& time)
 //----------------------------------------------------------------------
 // class FMouseSGR
 //----------------------------------------------------------------------
+
+// constructors and destructor
+//----------------------------------------------------------------------
+FMouseSGR::FMouseSGR() = default;
 
 // public methods of FMouseSGR
 //----------------------------------------------------------------------
@@ -949,6 +957,10 @@ void FMouseSGR::setReleasedButtonState (const int btn)
 //----------------------------------------------------------------------
 // class FMouseUrxvt
 //----------------------------------------------------------------------
+
+// constructors and destructor
+//----------------------------------------------------------------------
+FMouseUrxvt::FMouseUrxvt() = default;
 
 // public methods of FMouseUrxvt
 //----------------------------------------------------------------------

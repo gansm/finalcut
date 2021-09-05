@@ -48,6 +48,9 @@ class FString;
 class FTermXTerminal final
 {
   public:
+    // Constructor
+    FTermXTerminal();
+
     // Mutators
     void                  redefineDefaultColors (bool = true);
     void                  setCursorStyle (XTermCursorStyle);

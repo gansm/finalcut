@@ -1344,6 +1344,13 @@ enum class ScrollBarMode
   Scroll = 2   // Always shows a scroll bar
 };
 
+// Cursor mode
+enum class CursorMode
+{
+  Insert,
+  Overwrite
+};
+
 // Xterm cursor style
 enum class XTermCursorStyle
 {

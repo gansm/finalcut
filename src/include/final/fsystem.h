@@ -52,7 +52,7 @@ class FSystem
     using fn_putc = int (*)(int);
 
     // Constructor
-    FSystem () = default;
+    FSystem() = default;
 
     // Destructor
     virtual ~FSystem() noexcept;

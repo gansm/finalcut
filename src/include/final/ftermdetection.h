@@ -199,7 +199,7 @@ class FTermDetection final
     FString               init_256colorTerminal();
     bool                  get256colorEnvString();
     FString               termtype_256color_quirks();
-    FString           determineMaxColor (const FString&);
+    FString               determineMaxColor (const FString&);
     FString               getXTermColorName (FColor) const;
     FString               parseAnswerbackMsg (const FString&);
     FString               getAnswerbackMsg() const;
