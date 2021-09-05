@@ -62,7 +62,7 @@ class FTermOutput final : public FOutput
     explicit FTermOutput (const FVTerm&);
 
     // Destructor
-    virtual ~FTermOutput() noexcept;
+    ~FTermOutput() noexcept override;
 
     // Accessors
     FString        getClassName() const override;
@@ -176,12 +176,12 @@ class FTermOutput final : public FOutput
     void           restoreColorPalette() override;
     void           init_characterLengths();
     void           init_combined_character();
-    bool           canClearToEOL (uInt, uInt);
-    bool           canClearLeadingWS (uInt&, uInt);
-    bool           canClearTrailingWS (uInt&, uInt);
+    bool           canClearToEOL (uInt, uInt) const;
+    bool           canClearLeadingWS (uInt&, uInt) const;
+    bool           canClearTrailingWS (uInt&, uInt) const;
     bool           skipUnchangedCharacters (uInt&, uInt, uInt);
     void           printRange (uInt, uInt, uInt, bool);
-    void           replaceNonPrintableFullwidth (uInt, FChar&);
+    void           replaceNonPrintableFullwidth (uInt, FChar&) const;
     void           printCharacter (uInt&, uInt, bool, FChar&);
     void           printFullWidthCharacter (uInt&, uInt, FChar&);
     void           printFullWidthPaddingCharacter (uInt&, uInt, FChar&);
@@ -198,8 +198,8 @@ class FTermOutput final : public FOutput
     bool           isFlushTimeout() const;
     void           markAsPrinted (uInt, uInt);
     void           markAsPrinted (uInt, uInt, uInt);
-    void           newFontChanges (FChar&);
-    void           charsetChanges (FChar&);
+    void           newFontChanges (FChar&) const;
+    void           charsetChanges (FChar&) const;
     void           appendCharacter (FChar&);
     void           appendChar (FChar&);
     void           appendAttributes (FChar&);

@@ -84,9 +84,9 @@ class FOutput : public std::enable_shared_from_this<FOutput>
     virtual bool        setNewFont() = 0;
     virtual void        setNonBlockingRead (bool = true) = 0;
     template <typename ClassT>
-    void                setColorPaletteTheme();
+    void                setColorPaletteTheme() const;
     template <typename ClassT>
-    void                setColorPaletteTheme (const FSetPalette&);
+    void                setColorPaletteTheme (const FSetPalette&) const;
 
     // Inquiries
     virtual bool        isCursorHideable() const = 0;
@@ -139,7 +139,7 @@ inline const FVTerm& FOutput::getFVTerm() const
 
 //----------------------------------------------------------------------
 template <typename ClassT>
-inline void FOutput::setColorPaletteTheme()
+inline void FOutput::setColorPaletteTheme() const
 {
   const auto& set_Palette = getFSetPaletteRef();
   setColorPaletteTheme<ClassT>(set_Palette);
@@ -147,7 +147,7 @@ inline void FOutput::setColorPaletteTheme()
 
 //----------------------------------------------------------------------
 template <typename ClassT>
-inline void FOutput::setColorPaletteTheme (const FSetPalette& f)
+inline void FOutput::setColorPaletteTheme (const FSetPalette& f) const
 {
   // Set instance
   FColorPalette::getInstance() = std::make_shared<ClassT>(f);

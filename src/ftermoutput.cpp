@@ -356,7 +356,7 @@ void FTermOutput::scrollAreaForward (FVTerm::FTermArea* area)
 
   setCursor (FPoint{0, vdesktop->height});
   FTerm::scrollTermForward();
-  getFVTerm().putArea (FPoint{1, 1}, vdesktop);
+  FVTerm::putArea (FPoint{1, 1}, vdesktop);
   const int y_max = area->height - 1;
 
   // avoid update lines from 0 to (y_max - 1)
@@ -377,7 +377,7 @@ void FTermOutput::scrollAreaReverse (FVTerm::FTermArea* area)
 
   setCursor (FPoint{0, 0});
   FTerm::scrollTermReverse();
-  getFVTerm().putArea (FPoint{1, 1}, vdesktop);
+  FVTerm::putArea (FPoint{1, 1}, vdesktop);
   const int y_max = area->height - 1;
 
   // avoid update lines from 1 to y_max
@@ -605,7 +605,7 @@ void FTermOutput::init_combined_character()
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::canClearToEOL (uInt xmin, uInt y)
+bool FTermOutput::canClearToEOL (uInt xmin, uInt y) const
 {
   // Is the line from xmin to the end of the line blank?
   // => clear to end of line
@@ -640,7 +640,7 @@ bool FTermOutput::canClearToEOL (uInt xmin, uInt y)
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::canClearLeadingWS (uInt& xmin, uInt y)
+bool FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const
 {
   // Line has leading whitespace
   // => clear from xmin to beginning of line
@@ -678,7 +678,7 @@ bool FTermOutput::canClearLeadingWS (uInt& xmin, uInt y)
 }
 
 //----------------------------------------------------------------------
-bool FTermOutput::canClearTrailingWS (uInt& xmax, uInt y)
+bool FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const
 {
   // Line has trailing whitespace
   // => clear from xmax to end of line
@@ -788,7 +788,7 @@ void FTermOutput::printRange ( uInt xmin, uInt xmax, uInt y
 
 //----------------------------------------------------------------------
 inline void FTermOutput::replaceNonPrintableFullwidth ( uInt x
-                                                      , FChar& print_char )
+                                                      , FChar& print_char ) const
 {
   // Replace non-printable full-width characters that are truncated
   // from the right or left terminal side
@@ -1288,7 +1288,7 @@ inline void FTermOutput::markAsPrinted (uInt from, uInt to, uInt line)
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::newFontChanges (FChar& next_char)
+inline void FTermOutput::newFontChanges (FChar& next_char) const
 {
   // NewFont special cases
   if ( ! FTerm::isNewFont() )
@@ -1304,7 +1304,7 @@ inline void FTermOutput::newFontChanges (FChar& next_char)
 }
 
 //----------------------------------------------------------------------
-inline void FTermOutput::charsetChanges (FChar& next_char)
+inline void FTermOutput::charsetChanges (FChar& next_char) const
 {
   const wchar_t& ch = next_char.ch[0];
   std::copy( next_char.ch.begin()

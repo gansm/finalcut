@@ -1408,7 +1408,17 @@ bool FApplication::isNextEventTimeout()
 //----------------------------------------------------------------------
 std::ostream& operator << (std::ostream& outstr, FLog::LogLevel l)
 {
-  *FApplication::getLog() << l;
+  try
+  {
+    *FApplication::getLog() << l;
+  }
+  catch (const std::invalid_argument&)
+  {
+    auto& fterm_data = FTermData::getInstance();
+    fterm_data.setExitMessage("Use of an unimplemented log level");
+    FApplication::exit(EXIT_FAILURE);
+  }
+
   return outstr;
 }
 

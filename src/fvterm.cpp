@@ -74,17 +74,15 @@ FVTerm::FVTerm()
 
 //----------------------------------------------------------------------
 FVTerm::FVTerm (const FVTerm& fvterm)  // copy constructor
-{
-  foutput = std::shared_ptr<FOutput>(fvterm.foutput);
-  window_list = std::shared_ptr<FVTermList>(fvterm.window_list);
-}
+  : foutput{std::shared_ptr<FOutput>(fvterm.foutput)}
+  , window_list{std::shared_ptr<FVTermList>(fvterm.window_list)}
+{ }
 
 //----------------------------------------------------------------------
 FVTerm::FVTerm (FVTerm&& fvterm) noexcept  // move constructor
-{
-  foutput = std::shared_ptr<FOutput>(fvterm.foutput);
-  window_list = std::shared_ptr<FVTermList>(fvterm.window_list);
-}
+  : foutput{std::shared_ptr<FOutput>(fvterm.foutput)}
+  , window_list{std::shared_ptr<FVTermList>(fvterm.window_list)}
+{ }
 
 //----------------------------------------------------------------------
 FVTerm::~FVTerm()  // destructor
