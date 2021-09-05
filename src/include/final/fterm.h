@@ -237,7 +237,7 @@ class FTerm final
     static void              resetBeep();
     static void              beep();
 
-    static void              setEncoding (Encoding) noexcept;
+    static void              setEncoding (Encoding);
     static Encoding          getEncoding();
     static std::string       getEncodingString();
     static wchar_t           charEncode (wchar_t);

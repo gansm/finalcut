@@ -382,7 +382,7 @@ class FListView : public FWidget
     FListViewItems&       getData();
     const FListViewItems& getData() const;
 
-    virtual void          sort() noexcept;
+    virtual void          sort();
 
     // Event handlers
     void                  onKeyPress (FKeyEvent*) override;
@@ -490,8 +490,8 @@ class FListView : public FWidget
     bool                  hasCheckableItems() const;
 
     // Callback methods
-    void                  cb_vbarChange (const FWidget*) noexcept;
-    void                  cb_hbarChange (const FWidget*) noexcept;
+    void                  cb_vbarChange (const FWidget*);
+    void                  cb_hbarChange (const FWidget*);
 
     // Data members
     iterator              root{};

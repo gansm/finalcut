@@ -922,7 +922,7 @@ void FListView::clear()
 }
 
 //----------------------------------------------------------------------
-void FListView::sort() noexcept
+void FListView::sort()
 {
   // Sorts the list view according to the specified setting
 
@@ -2719,7 +2719,7 @@ void FListView::scrollBy (int dx, int dy)
 }
 
 //----------------------------------------------------------------------
-void FListView::cb_vbarChange (const FWidget*) noexcept
+void FListView::cb_vbarChange (const FWidget*)
 {
   const FScrollbar::ScrollType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
@@ -2777,7 +2777,7 @@ void FListView::cb_vbarChange (const FWidget*) noexcept
 }
 
 //----------------------------------------------------------------------
-void FListView::cb_hbarChange (const FWidget*) noexcept
+void FListView::cb_hbarChange (const FWidget*)
 {
   const FScrollbar::ScrollType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;

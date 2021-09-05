@@ -76,7 +76,7 @@ class FTermOutput final : public FOutput
 
     // Mutators
     void           setCursor (FPoint) override;
-    void           setCursor (CursorMode) throw() override;
+    void           setCursor (CursorMode) override;
     void           hideCursor (bool = true) override;
     void           showCursor() override;
     void           setTerminalSize (FSize) override;

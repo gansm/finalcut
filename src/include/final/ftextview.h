@@ -162,8 +162,8 @@ class FTextView : public FWidget
     void                changeOnResize() const;
 
     // Callback methods
-    void                cb_vbarChange (const FWidget*) noexcept;
-    void                cb_hbarChange (const FWidget*) noexcept;
+    void                cb_vbarChange (const FWidget*);
+    void                cb_hbarChange (const FWidget*);
 
     // Data members
     FStringList        data{};

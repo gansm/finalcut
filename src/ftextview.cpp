@@ -737,7 +737,7 @@ void FTextView::changeOnResize() const
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_vbarChange (const FWidget*) noexcept
+void FTextView::cb_vbarChange (const FWidget*)
 {
   const FScrollbar::ScrollType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
@@ -787,7 +787,7 @@ void FTextView::cb_vbarChange (const FWidget*) noexcept
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_hbarChange (const FWidget*) noexcept
+void FTextView::cb_hbarChange (const FWidget*)
 {
   const FScrollbar::ScrollType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;

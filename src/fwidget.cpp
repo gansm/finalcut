@@ -232,7 +232,7 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList list)
 }
 
 //----------------------------------------------------------------------
-std::vector<bool>& FWidget::doubleFlatLine_ref (Side side) noexcept
+std::vector<bool>& FWidget::doubleFlatLine_ref (Side side)
 {
   switch ( side )
   {
@@ -699,7 +699,7 @@ void FWidget::setPrintPos (const FPoint& pos)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setDoubleFlatLine (Side side, bool bit) noexcept
+void FWidget::setDoubleFlatLine (Side side, bool bit)
 {
   uLong length{};
 
@@ -731,7 +731,7 @@ void FWidget::setDoubleFlatLine (Side side, bool bit) noexcept
 }
 
 //----------------------------------------------------------------------
-void FWidget::setDoubleFlatLine (Side side, int pos, bool bit) noexcept
+void FWidget::setDoubleFlatLine (Side side, int pos, bool bit)
 {
   assert ( pos >= 1 );
 

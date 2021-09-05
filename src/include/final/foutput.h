@@ -76,7 +76,7 @@ class FOutput : public std::enable_shared_from_this<FOutput>
 
     // Mutators
     virtual void        setCursor (FPoint) = 0;
-    virtual void        setCursor (CursorMode) throw() = 0;
+    virtual void        setCursor (CursorMode) = 0;
     virtual void        hideCursor (bool = true) = 0;
     virtual void        showCursor() = 0;
     virtual void        setTerminalSize (FSize) = 0;

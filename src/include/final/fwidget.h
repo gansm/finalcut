@@ -194,7 +194,7 @@ class FWidget : public FVTerm, public FObject
     FString                  getStatusbarMessage() const;
     FColor                   getForegroundColor() const;  // get the primary
     FColor                   getBackgroundColor() const;  // widget colors
-    std::vector<bool>&       doubleFlatLine_ref (Side) noexcept;
+    std::vector<bool>&       doubleFlatLine_ref (Side);
     // Positioning and sizes accessors...
     int                      getX() const;
     int                      getY() const;
@@ -280,9 +280,9 @@ class FWidget : public FVTerm, public FObject
     virtual bool             setCursorPos (const FPoint&);
     void                     unsetCursorPos();
     virtual void             setPrintPos (const FPoint&);
-    void                     setDoubleFlatLine (Side, bool = true) noexcept;
+    void                     setDoubleFlatLine (Side, bool = true);
     void                     unsetDoubleFlatLine (Side);
-    void                     setDoubleFlatLine (Side, int, bool = true) noexcept;
+    void                     setDoubleFlatLine (Side, int, bool = true);
     void                     unsetDoubleFlatLine (Side, int);
 
     // Inquiries

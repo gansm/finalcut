@@ -184,7 +184,7 @@ void FTermOutput::setCursor (FPoint p)
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::setCursor (CursorMode mode) throw()
+void FTermOutput::setCursor (CursorMode mode)
 {
   if ( mode == CursorMode::Insert )
     FTerm::setInsertCursor();

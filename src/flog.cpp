@@ -39,7 +39,7 @@ FLog::~FLog()  // destructor
 
 // public methods of FLog
 //----------------------------------------------------------------------
-FLog& FLog::operator << (LogLevel log_level) noexcept
+FLog& FLog::operator << (LogLevel log_level)
 {
   sync();
   std::lock_guard<std::mutex> lock_guard(current_log_mutex);
