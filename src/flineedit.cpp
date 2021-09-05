@@ -651,7 +651,7 @@ void FLineEdit::drawInputField()
   if ( isActiveFocus && FVTerm::getFOutput()->getMaxColor() < 16 )
     setBold();
 
-  const std::size_t text_offset_column = [this] () throw()
+  const std::size_t text_offset_column = [this] ()
   {
     switch ( input_type )
     {
@@ -662,10 +662,8 @@ void FLineEdit::drawInputField()
         return printPassword();
 
       default:
-        throw std::invalid_argument("Unimplemented input type");
+        return std::size_t(0);
     }
-
-    return std::size_t(0);
   }();
 
   while ( x_pos + 1 < getWidth() )

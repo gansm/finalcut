@@ -1690,7 +1690,7 @@ void FListBox::lazyConvert(FListBoxItems::iterator iter, std::size_t y)
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_vbarChange (const FWidget*) throw()
+void FListBox::cb_vbarChange (const FWidget*) noexcept
 {
   const FScrollbar::ScrollType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
@@ -1754,7 +1754,7 @@ void FListBox::cb_vbarChange (const FWidget*) throw()
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_hbarChange (const FWidget*) throw()
+void FListBox::cb_hbarChange (const FWidget*) noexcept
 {
   const FScrollbar::ScrollType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;

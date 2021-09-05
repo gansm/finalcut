@@ -42,7 +42,7 @@ FToolTip::FToolTip (FWidget* parent)
 //----------------------------------------------------------------------
 FToolTip::FToolTip (const FString& txt, FWidget* parent)
   : FWindow{parent}
-  , text{text_auto_trim ? txt.trim() : txt}
+  , text{txt.trim()}
 {
   init();
 }

@@ -854,7 +854,7 @@ void FScrollView::setViewportCursor()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::cb_vbarChange (const FWidget*) throw()
+void FScrollView::cb_vbarChange (const FWidget*) noexcept
 {
   FScrollbar::ScrollType scrollType = vbar->getScrollType();
   static constexpr int wheel_distance = 4;
@@ -908,7 +908,7 @@ void FScrollView::cb_vbarChange (const FWidget*) throw()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::cb_hbarChange (const FWidget*) throw()
+void FScrollView::cb_hbarChange (const FWidget*) noexcept
 {
   FScrollbar::ScrollType scrollType = hbar->getScrollType();
   static constexpr int wheel_distance = 4;

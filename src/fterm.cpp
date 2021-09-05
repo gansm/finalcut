@@ -852,7 +852,7 @@ void FTerm::beep()
 }
 
 //----------------------------------------------------------------------
-void FTerm::setEncoding (Encoding enc) throw()
+void FTerm::setEncoding (Encoding enc) noexcept
 {
   FTermData::getInstance().setTermEncoding (enc);
 

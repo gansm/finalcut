@@ -170,8 +170,8 @@ class FScrollView : public FWidget
     void                setViewportCursor();
 
     // Callback methods
-    void                cb_vbarChange (const FWidget*)  throw();
-    void                cb_hbarChange (const FWidget*)  throw();
+    void                cb_vbarChange (const FWidget*)  noexcept;
+    void                cb_hbarChange (const FWidget*)  noexcept;
 
     // Data members
     FRect              scroll_geometry{1, 1, 1, 1};

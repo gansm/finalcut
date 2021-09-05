@@ -20,10 +20,6 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#if defined(__CYGWIN__)
-  #include <unistd.h>  // need for ttyname_r
-#endif
-
 #include <numeric>
 #include <queue>
 #include <string>
@@ -77,6 +73,20 @@ FVTerm::FVTerm()
 }
 
 //----------------------------------------------------------------------
+FVTerm::FVTerm (const FVTerm& fvterm)  // copy constructor
+{
+  foutput = std::shared_ptr<FOutput>(fvterm.foutput);
+  window_list = std::shared_ptr<FVTermList>(fvterm.window_list);
+}
+
+//----------------------------------------------------------------------
+FVTerm::FVTerm (FVTerm&& fvterm) noexcept  // move constructor
+{
+  foutput = std::shared_ptr<FOutput>(fvterm.foutput);
+  window_list = std::shared_ptr<FVTermList>(fvterm.window_list);
+}
+
+//----------------------------------------------------------------------
 FVTerm::~FVTerm()  // destructor
 {
   if ( init_object == this )
@@ -85,6 +95,22 @@ FVTerm::~FVTerm()  // destructor
 
 
 // Overloaded operators
+//----------------------------------------------------------------------
+FVTerm& FVTerm::operator = (const FVTerm& fvterm)  // copy assignment operator (=)
+{
+  foutput = std::shared_ptr<FOutput>(fvterm.foutput);
+  window_list = std::shared_ptr<FVTermList>(fvterm.window_list);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FVTerm& FVTerm::operator = (FVTerm&& fvterm) noexcept  // move assignment operator (=)
+{
+  foutput = std::shared_ptr<FOutput>(fvterm.foutput);
+  window_list = std::shared_ptr<FVTermList>(fvterm.window_list);
+  return *this;
+}
+
 //----------------------------------------------------------------------
 FVTerm& FVTerm::operator << (const FTermBuffer& term_buffer)
 {
@@ -1263,13 +1289,13 @@ FVTerm::CoveredState FVTerm::isCovered ( const FPoint& pos
 }
 
 //----------------------------------------------------------------------
-inline constexpr int FVTerm::getFullAreaWidth (const FTermArea* area)
+constexpr int FVTerm::getFullAreaWidth (const FTermArea* area)
 {
   return area->width + area->right_shadow;
 }
 
 //----------------------------------------------------------------------
-inline constexpr int FVTerm::getFullAreaHeight (const FTermArea* area)
+constexpr int FVTerm::getFullAreaHeight (const FTermArea* area)
 {
   return area->height + area->bottom_shadow;
 }

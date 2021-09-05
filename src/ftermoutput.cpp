@@ -20,6 +20,10 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__CYGWIN__)
+  #include <unistd.h>  // need for ttyname_r
+#endif
+
 #include "final/fapplication.h"
 #include "final/fkeyboard.h"
 #include "final/fmouse.h"

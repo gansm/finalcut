@@ -121,11 +121,16 @@ class FVTerm
 
     // Constructor
     FVTerm();
+    FVTerm (const FVTerm&);      // copy constructor
+    FVTerm (FVTerm&&) noexcept;  // move constructor
 
     // Destructor
     virtual ~FVTerm();
 
     // Overloaded operators
+    FVTerm& operator = (const FVTerm&);      // copy assignment operator (=)
+    FVTerm& operator = (FVTerm&&) noexcept;  // move assignment operator (=)
+
     template <typename typeT>
     FVTerm& operator << (const typeT&);
     FVTerm& operator << (const UniChar&);

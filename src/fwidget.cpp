@@ -232,7 +232,7 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList list)
 }
 
 //----------------------------------------------------------------------
-std::vector<bool>& FWidget::doubleFlatLine_ref (Side side) throw()
+std::vector<bool>& FWidget::doubleFlatLine_ref (Side side) noexcept
 {
   switch ( side )
   {
@@ -251,8 +251,6 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (Side side) throw()
     default:
       throw std::invalid_argument("Unimplemented side");
   }
-
-  return double_flatline_mask.top;
 }
 
 //----------------------------------------------------------------------
@@ -701,7 +699,7 @@ void FWidget::setPrintPos (const FPoint& pos)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setDoubleFlatLine (Side side, bool bit) throw()
+void FWidget::setDoubleFlatLine (Side side, bool bit) noexcept
 {
   uLong length{};
 
@@ -733,7 +731,7 @@ void FWidget::setDoubleFlatLine (Side side, bool bit) throw()
 }
 
 //----------------------------------------------------------------------
-void FWidget::setDoubleFlatLine (Side side, int pos, bool bit) throw()
+void FWidget::setDoubleFlatLine (Side side, int pos, bool bit) noexcept
 {
   assert ( pos >= 1 );
 
