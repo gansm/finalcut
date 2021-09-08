@@ -107,6 +107,7 @@
 #include "final/fsize.h"
 #include "final/ftypes.h"
 #include "final/fvterm.h"
+#include "final/fwidget_functions.h"
 
 namespace finalcut
 {
@@ -501,31 +502,6 @@ class FWidget : public FVTerm, public FObject
     friend void drawFlatBorder (FWidget*);
     friend void clearFlatBorder (FWidget*);
 };
-
-
-// non-member function forward declarations
-// implemented in fwidget_functions.cpp
-//----------------------------------------------------------------------
-void          detectTerminalSize();
-bool          isFocusNextKey (const FKey);
-bool          isFocusPrevKey (const FKey);
-bool          isInFWidgetList (const FWidget::FWidgetList*, const FWidget*);
-FKey          getHotkey (const FString&);
-std::size_t   getHotkeyPos (const FString& src, FString& dest);
-void          setHotkeyViaString (FWidget*, const FString&);
-void          setWidgetFocus (FWidget*);
-void          drawShadow (FWidget*);
-void          drawTransparentShadow (FWidget*);
-void          drawBlockShadow (FWidget*);
-void          clearShadow (FWidget*);
-void          drawFlatBorder (FWidget*);
-void          clearFlatBorder (FWidget*);
-void          checkBorder (const FWidget*, FRect&);
-void          drawBorder (FWidget*, const FRect&);
-void          drawListBorder (FWidget*, const FRect&);
-void          drawBox (FWidget*, const FRect&);
-void          drawNewFontBox (FWidget*, const FRect&);
-void          drawNewFontListBox (FWidget*, const FRect&);
 
 
 // FWidget inline functions

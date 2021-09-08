@@ -62,7 +62,7 @@ class FTermOutput final : public FOutput
     explicit FTermOutput (const FVTerm&);
 
     // Destructor
-    ~FTermOutput() noexcept override;
+    ~FTermOutput() noexcept;
 
     // Accessors
     FString        getClassName() const override;
@@ -97,14 +97,14 @@ class FTermOutput final : public FOutput
     bool           areMetaAndArrowKeysSupported() const override;
 
     // Methods
-    void           initTerminal() override;
+    void           initTerminal (FVTerm::FTermArea*) override;
     void           finishTerminal() override;
     bool           updateTerminal() override;
     void           detectTerminalSize() override;
     void           commitTerminalResize() override;
     void           initScreenSettings() override;
-    void           scrollAreaForward (FVTerm::FTermArea*) override;
-    void           scrollAreaReverse (FVTerm::FTermArea*) override;
+    bool           scrollTerminalForward() override;
+    bool           scrollTerminalReverse() override;
     bool           clearTerm (wchar_t = L' ') override;
     void           flush() override;
     void           beep() const override;
@@ -171,6 +171,7 @@ class FTermOutput final : public FOutput
 
     // Methods
     FStartOptions& getStartOptions();
+    bool           isInputCursorInsideTerminal();
     bool           isDefaultPaletteTheme() override;
     void           redefineColorPalette() override;
     void           restoreColorPalette() override;
@@ -212,7 +213,7 @@ class FTermOutput final : public FOutput
 
     // Data members
     FTerm                         fterm{};
-    FVTerm::FTermArea*            vterm{};
+    static FVTerm::FTermArea*     vterm;
     std::shared_ptr<OutputBuffer> output_buffer{};
     std::shared_ptr<FPoint>       term_pos{};  // terminal cursor position
     TimeValue                     time_last_flush{};

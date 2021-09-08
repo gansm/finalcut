@@ -42,6 +42,9 @@
 namespace finalcut
 {
 
+// static class attributes
+FVTerm::FTermArea* FTermOutput::vterm{nullptr};
+
 //----------------------------------------------------------------------
 // class FTermOutput
 //----------------------------------------------------------------------
@@ -251,14 +254,14 @@ void FTermOutput::setNonBlockingRead (bool enable)
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::initTerminal()
+void FTermOutput::initTerminal (FVTerm::FTermArea* virtual_terminal)
 {
   getFTerm().initTerminal();
 
   // Redefine the color palette
   redefineColorPalette();
 
-  vterm         = getFVTerm().getVirtualTerminal();
+  vterm         = virtual_terminal;
   output_buffer = std::make_shared<OutputBuffer>();
   term_pos      = std::make_shared<FPoint>(-1, -1);
 
@@ -347,45 +350,25 @@ void FTermOutput::initScreenSettings()
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::scrollAreaForward (FVTerm::FTermArea* area)
+bool FTermOutput::scrollTerminalForward()
 {
-  auto vdesktop = getFVTerm().getVirtualDesktop();
+  if ( ! TCAP(t_scroll_forward) )
+    return false;
 
-  if ( ! TCAP(t_scroll_forward) || area != vdesktop )
-    return;
-
-  setCursor (FPoint{0, vdesktop->height});
+  setCursor (FPoint{0, int(getLineNumber())});
   FTerm::scrollTermForward();
-  FVTerm::putArea (FPoint{1, 1}, vdesktop);
-  const int y_max = area->height - 1;
-
-  // avoid update lines from 0 to (y_max - 1)
-  for (auto y{0}; y < y_max; y++)
-  {
-    area->changes[y].xmin = uInt(area->width - 1);
-    area->changes[y].xmax = 0;
-  }
+  return true;
 }
 
 //----------------------------------------------------------------------
-void FTermOutput::scrollAreaReverse (FVTerm::FTermArea* area)
+bool FTermOutput::scrollTerminalReverse()
 {
-  auto vdesktop = getFVTerm().getVirtualDesktop();
-
-  if ( ! TCAP(t_scroll_reverse) || area != vdesktop )
-    return;
+  if ( ! TCAP(t_scroll_reverse) )
+    return false;
 
   setCursor (FPoint{0, 0});
   FTerm::scrollTermReverse();
-  FVTerm::putArea (FPoint{1, 1}, vdesktop);
-  const int y_max = area->height - 1;
-
-  // avoid update lines from 1 to y_max
-  for (auto y{1}; y <= y_max; y++)
-  {
-    area->changes[y].xmin = uInt(area->width - 1);
-    area->changes[y].xmax = 0;
-  }
+  return true;
 }
 
 //----------------------------------------------------------------------
@@ -487,6 +470,24 @@ void FTermOutput::beep() const
 inline FStartOptions& FTermOutput::getStartOptions()
 {
   return FStartOptions::getInstance();
+}
+
+//----------------------------------------------------------------------
+inline bool FTermOutput::isInputCursorInsideTerminal()
+{
+  if ( vterm && vterm->input_cursor_visible )
+  {
+    const int x = vterm->input_cursor_x;
+    const int y = vterm->input_cursor_y;
+
+    if ( x >= 0 && x < int(getColumnNumber())
+      && y >= 0 && y < int(getLineNumber()) )
+    {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -610,9 +611,8 @@ bool FTermOutput::canClearToEOL (uInt xmin, uInt y) const
   // Is the line from xmin to the end of the line blank?
   // => clear to end of line
 
-  auto& vt = vterm;
   const auto& ce = TCAP(t_clr_eol);
-  const auto& min_char = vt->data[y * uInt(vt->width) + xmin];
+  const auto& min_char = vterm->data[y * uInt(vterm->width) + xmin];
 
   if ( ce && min_char.ch[0] == L' ' )
   {
@@ -620,9 +620,9 @@ bool FTermOutput::canClearToEOL (uInt xmin, uInt y) const
     const bool normal = FTerm::isNormal(min_char);
     const bool& ut = FTermcap::background_color_erase;
 
-    for (uInt x = xmin + 1; x < uInt(vt->width); x++)
+    for (uInt x = xmin + 1; x < uInt(vterm->width); x++)
     {
-      const auto& ch = vt->data[y * uInt(vt->width) + x];
+      const auto& ch = vterm->data[y * uInt(vterm->width) + x];
 
       if ( min_char == ch )
         beginning_whitespace++;
@@ -630,7 +630,7 @@ bool FTermOutput::canClearToEOL (uInt xmin, uInt y) const
         break;
     }
 
-    if ( beginning_whitespace == uInt(vt->width) - xmin
+    if ( beginning_whitespace == uInt(vterm->width) - xmin
       && (ut || normal)
       && clr_eol_length < beginning_whitespace )
       return true;
@@ -645,9 +645,8 @@ bool FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const
   // Line has leading whitespace
   // => clear from xmin to beginning of line
 
-  auto& vt = vterm;
   const auto& cb = TCAP(t_clr_bol);
-  const auto& first_char = vt->data[y * uInt(vt->width)];
+  const auto& first_char = vterm->data[y * uInt(vterm->width)];
 
   if ( cb && first_char.ch[0] == L' ' )
   {
@@ -655,9 +654,9 @@ bool FTermOutput::canClearLeadingWS (uInt& xmin, uInt y) const
     const bool normal = FTerm::isNormal(first_char);
     const bool& ut = FTermcap::background_color_erase;
 
-    for (uInt x{1}; x < uInt(vt->width); x++)
+    for (uInt x{1}; x < uInt(vterm->width); x++)
     {
-      const auto& ch = vt->data[y * uInt(vt->width) + x];
+      const auto& ch = vterm->data[y * uInt(vterm->width) + x];
 
       if ( first_char == ch )
         leading_whitespace++;
@@ -683,9 +682,8 @@ bool FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const
   // Line has trailing whitespace
   // => clear from xmax to end of line
 
-  auto& vt = vterm;
   const auto& ce = TCAP(t_clr_eol);
-  const auto& last_char = vt->data[(y + 1) * uInt(vt->width) - 1];
+  const auto& last_char = vterm->data[(y + 1) * uInt(vterm->width) - 1];
 
   if ( ce && last_char.ch[0] == L' ' )
   {
@@ -693,9 +691,9 @@ bool FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const
     const bool normal = FTerm::isNormal(last_char);
     const bool& ut = FTermcap::background_color_erase;
 
-    for (uInt x = uInt(vt->width) - 1; x >  0 ; x--)
+    for (uInt x = uInt(vterm->width) - 1; x >  0 ; x--)
     {
-      const auto& ch = vt->data[y * uInt(vt->width) + x];
+      const auto& ch = vterm->data[y * uInt(vterm->width) + x];
 
       if ( last_char == ch )
         trailing_whitespace++;
@@ -703,11 +701,11 @@ bool FTermOutput::canClearTrailingWS (uInt& xmax, uInt y) const
         break;
     }
 
-    if ( trailing_whitespace > uInt(vt->width) - xmax
+    if ( trailing_whitespace > uInt(vterm->width) - xmax
       && (ut || normal)
       && clr_bol_length < trailing_whitespace )
     {
-      xmax = uInt(vt->width) - trailing_whitespace;
+      xmax = uInt(vterm->width) - trailing_whitespace;
       return true;
     }
   }
@@ -720,8 +718,7 @@ bool FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y)
 {
   // Skip characters without changes if it is faster than redrawing
 
-  auto& vt = vterm;
-  auto& print_char = vt->data[y * uInt(vt->width) + x];
+  auto& print_char = vterm->data[y * uInt(vterm->width) + x];
   print_char.attr.bit.printed = true;
 
   if ( print_char.attr.bit.no_changes )
@@ -730,7 +727,7 @@ bool FTermOutput::skipUnchangedCharacters (uInt& x, uInt xmax, uInt y)
 
     for (uInt i = x + 1; i <= xmax; i++)
     {
-      const auto& ch = vt->data[y * uInt(vt->width) + i];
+      const auto& ch = vterm->data[y * uInt(vterm->width) + i];
 
       if ( ch.attr.bit.no_changes )
         count++;
@@ -970,9 +967,8 @@ FTermOutput::PrintState FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt 
 {
   // Erase a number of characters to draw simple whitespaces
 
-  const auto& vt = vterm;
   const auto& ec = TCAP(t_erase_chars);
-  auto& print_char = vt->data[y * uInt(vt->width) + x];
+  auto& print_char = vterm->data[y * uInt(vterm->width) + x];
 
   if ( ! ec || print_char.ch[0] != L' ' )
     return PrintState::NothingPrinted;
@@ -981,7 +977,7 @@ FTermOutput::PrintState FTermOutput::eraseCharacters ( uInt& x, uInt xmax, uInt 
 
   for (uInt i = x + 1; i <= xmax; i++)
   {
-    const auto& ch = vt->data[y * uInt(vt->width) + i];
+    const auto& ch = vterm->data[y * uInt(vterm->width) + i];
 
     if ( print_char == ch )
       whitespace++;
@@ -1035,9 +1031,8 @@ FTermOutput::PrintState FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y
 {
   // Repeat one character n-fold
 
-  const auto& vt = vterm;
   const auto& rp = TCAP(t_repeat_char);
-  auto& print_char = vt->data[y * uInt(vt->width) + x];
+  auto& print_char = vterm->data[y * uInt(vterm->width) + x];
 
   if ( ! rp )
     return PrintState::NothingPrinted;
@@ -1046,7 +1041,7 @@ FTermOutput::PrintState FTermOutput::repeatCharacter (uInt& x, uInt xmax, uInt y
 
   for (uInt i = x + 1; i <= xmax; i++)
   {
-    const auto& ch = vt->data[y * uInt(vt->width) + i];
+    const auto& ch = vterm->data[y * uInt(vterm->width) + i];
 
     if ( print_char == ch )
       repetitions++;
@@ -1134,9 +1129,8 @@ bool FTermOutput::updateTerminalLine (uInt y)
   // Updates pending changes from line y to the terminal
 
   bool ret{false};
-  const auto& vt = vterm;
-  uInt& xmin = vt->changes[y].xmin;
-  uInt& xmax = vt->changes[y].xmax;
+  uInt& xmin = vterm->changes[y].xmin;
+  uInt& xmax = vterm->changes[y].xmax;
 
   if ( xmin <= xmax )  // Line has changes
   {
@@ -1161,17 +1155,17 @@ bool FTermOutput::updateTerminalLine (uInt y)
 
     if ( is_eol_clean )
     {
-      auto& min_char = vt->data[y * uInt(vt->width) + xmin];
+      auto& min_char = vterm->data[y * uInt(vterm->width) + xmin];
       appendAttributes (min_char);
       appendOutputBuffer (FTermControl{ce});
-      markAsPrinted (xmin, uInt(vt->width - 1), y);
+      markAsPrinted (xmin, uInt(vterm->width - 1), y);
     }
     else
     {
       if ( draw_leading_ws )
       {
         const auto& cb = TCAP(t_clr_bol);
-        auto& first_char = vt->data[y * uInt(vt->width)];
+        auto& first_char = vterm->data[y * uInt(vterm->width)];
         appendAttributes (first_char);
         appendOutputBuffer (FTermControl{cb});
         markAsPrinted (0, xmin, y);
@@ -1181,15 +1175,15 @@ bool FTermOutput::updateTerminalLine (uInt y)
 
       if ( draw_trailing_ws )
       {
-        auto& last_char = vt->data[(y + 1) * uInt(vt->width) - 1];
+        auto& last_char = vterm->data[(y + 1) * uInt(vterm->width) - 1];
         appendAttributes (last_char);
         appendOutputBuffer (FTermControl{ce});
-        markAsPrinted (xmax + 1, uInt(vt->width - 1), y);
+        markAsPrinted (xmax + 1, uInt(vterm->width - 1), y);
       }
     }
 
     // Reset line changes
-    xmin = uInt(vt->width);
+    xmin = uInt(vterm->width);
     xmax = 0;
   }
 
@@ -1201,17 +1195,12 @@ bool FTermOutput::updateTerminalLine (uInt y)
 bool FTermOutput::updateTerminalCursor()
 {
   // Updates the input cursor visibility and the position
-  if ( vterm && vterm->input_cursor_visible )
-  {
-    const int x = vterm->input_cursor_x;
-    const int y = vterm->input_cursor_y;
 
-    if ( getFVTerm().isInsideTerminal(FPoint{x, y}) )
-    {
-      setCursor (FPoint{x, y});
-      showCursor();
-      return true;
-    }
+  if ( isInputCursorInsideTerminal() )
+  {
+    setCursor (FPoint{vterm->input_cursor_x, vterm->input_cursor_y});
+    showCursor();
+    return true;
   }
   else
     hideCursor();

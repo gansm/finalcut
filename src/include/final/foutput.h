@@ -40,6 +40,10 @@
 #include "final/ftypes.h"
 #include "final/fvterm.h"
 
+// Fixes problem with -Weffc++, because the base class
+// std::enable_shared_from_this has a non-virtual destructor
+#pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+
 namespace finalcut
 {
 
@@ -101,14 +105,14 @@ class FOutput : public std::enable_shared_from_this<FOutput>
     virtual bool        areMetaAndArrowKeysSupported() const = 0;
 
     // Methods
-    virtual void        initTerminal() = 0;
+    virtual void        initTerminal (FVTerm::FTermArea*) = 0;
     virtual void        finishTerminal() = 0;
     virtual bool        updateTerminal() = 0;
     virtual void        detectTerminalSize() = 0;
     virtual void        commitTerminalResize() = 0;
     virtual void        initScreenSettings() = 0;
-    virtual void        scrollAreaForward (FVTerm::FTermArea*) = 0;
-    virtual void        scrollAreaReverse (FVTerm::FTermArea*) = 0;
+    virtual bool        scrollTerminalForward() = 0;
+    virtual bool        scrollTerminalReverse() = 0;
     virtual bool        clearTerm (wchar_t = L' ') = 0;
     virtual void        flush() = 0;
     virtual void        beep() const = 0;

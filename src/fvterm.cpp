@@ -1018,8 +1018,8 @@ void FVTerm::scrollAreaForward (FTermArea* area) const
   area->changes[y_max].xmax = uInt(area->width - 1);
   area->has_changes = true;
 
-  // Scrolls the terminal up one line
-  foutput->scrollAreaForward(area);
+  if ( area == vdesktop )
+    scrollTerminalForward();  // Scrolls the terminal up one line
 }
 
 //----------------------------------------------------------------------
@@ -1056,8 +1056,8 @@ void FVTerm::scrollAreaReverse (FTermArea* area) const
   area->changes[0].xmax = uInt(area->width - 1);
   area->has_changes = true;
 
-  // Scrolls the terminal down one line
-  foutput->scrollAreaReverse(area);
+  if ( area == vdesktop )
+    scrollTerminalReverse();  // Scrolls the terminal down one line
 }
 
 //----------------------------------------------------------------------
@@ -1153,7 +1153,7 @@ void FVTerm::finishDrawing()
 //----------------------------------------------------------------------
 void FVTerm::initTerminal()
 {
-  foutput->initTerminal();
+  foutput->initTerminal(vterm);
 }
 
 
@@ -1470,6 +1470,44 @@ void FVTerm::updateVTerm() const
 }
 
 //----------------------------------------------------------------------
+inline void FVTerm::scrollTerminalForward() const
+{
+  // Scrolls the terminal up one line
+
+  if ( ! foutput->scrollTerminalForward() )
+    return;
+
+  FVTerm::putArea (FPoint{1, 1}, vdesktop);
+  const int y_max = vdesktop->height - 1;
+
+  // avoid update lines from 0 to (y_max - 1)
+  for (auto y{0}; y < y_max; y++)
+  {
+    vdesktop->changes[y].xmin = uInt(vdesktop->width - 1);
+    vdesktop->changes[y].xmax = 0;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::scrollTerminalReverse() const
+{
+  // Scrolls the terminal down one line
+
+  if ( ! foutput->scrollTerminalReverse() )
+    return;
+
+  FVTerm::putArea (FPoint{1, 1}, vdesktop);
+  const int y_max = vdesktop->height - 1;
+
+  // avoid update lines from 1 to y_max
+  for (auto y{1}; y <= y_max; y++)
+  {
+    vdesktop->changes[y].xmin = uInt(vdesktop->width - 1);
+    vdesktop->changes[y].xmax = 0;
+  }
+}
+
+//----------------------------------------------------------------------
 void FVTerm::callPreprocessingHandler (const FTermArea* area)
 {
   // Call preprocessing handler
@@ -1694,8 +1732,8 @@ void FVTerm::init()
 
   try
   {
-    foutput       = std::make_shared<FTermOutput>(*this);
-    window_list   = std::make_shared<FVTermList>();
+    foutput     = std::make_shared<FTermOutput>(*this);
+    window_list = std::make_shared<FVTermList>();
   }
   catch (const std::bad_alloc&)
   {

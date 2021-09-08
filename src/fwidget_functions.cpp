@@ -27,7 +27,9 @@
 #include "final/fstatusbar.h"
 #include "final/fstyle.h"
 #include "final/fwidget.h"
+#include "final/fwidget_functions.h"
 #include "final/fwidgetcolors.h"
+
 
 namespace finalcut
 {

@@ -966,9 +966,6 @@ void FListView::sort()
         sort (user_defined_descending);
       }
       break;
-
-    default:
-      throw std::invalid_argument("Unimplemented column sort type");
   }
 
   current_iter = itemlist.begin();
@@ -2756,9 +2753,6 @@ void FListView::cb_vbarChange (const FWidget*)
     case FScrollbar::ScrollType::WheelDown:
       wheelDown (wheel_distance);
       break;
-
-    default:
-      throw std::invalid_argument("Unimplemented scroll type");
   }
 
   if ( isShown() )
@@ -2814,9 +2808,6 @@ void FListView::cb_hbarChange (const FWidget*)
     case FScrollbar::ScrollType::WheelDown:
       scrollBy (wheel_distance, 0);
       break;
-
-    default:
-      throw std::invalid_argument("Unimplemented scroll type");
   }
 
   if ( isShown() )

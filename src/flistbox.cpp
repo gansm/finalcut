@@ -1728,9 +1728,6 @@ void FListBox::cb_vbarChange (const FWidget*)
     case FScrollbar::ScrollType::WheelDown:
       wheelDown (wheel_distance);
       break;
-
-    default:
-      throw std::invalid_argument("Unimplemented scroll type");
   }
 
   if ( current_before != current )
@@ -1792,9 +1789,6 @@ void FListBox::cb_hbarChange (const FWidget*)
     case FScrollbar::ScrollType::WheelDown:
       scrollRight (wheel_distance);
       break;
-
-    default:
-      throw std::invalid_argument("Unimplemented scroll type");
   }
 
   if ( xoffset_before != xoffset )

@@ -294,9 +294,6 @@ void FSpinBox::onTimer (FTimerEvent*)
       decreaseValue();
       updateInputField();
       break;
-
-    default:
-      throw std::invalid_argument("Unimplemented spining state");
   }
 }
 

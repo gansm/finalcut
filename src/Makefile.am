@@ -155,6 +155,7 @@ finalcutinclude_HEADERS = \
 	include/final/ftermdetection.h \
 	include/final/ftermios.h \
 	include/final/fterm.h \
+	include/final/fterm_functions.h \
 	include/final/ftermdata.h \
 	include/final/ftextview.h \
 	include/final/fvterm.h \
@@ -162,6 +163,7 @@ finalcutinclude_HEADERS = \
 	include/final/fcolorpalette.h \
 	include/final/fwidgetcolors.h \
 	include/final/fwidget.h \
+	include/final/fwidget_functions.h \
 	include/final/fwindow.h
 
 clean-local:

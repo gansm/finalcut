@@ -876,9 +876,6 @@ void FTerm::setEncoding (Encoding enc)
     case Encoding::NUM_OF_ENCODINGS:
       putchar() = &FTerm::putchar_ASCII;
       break;
-
-    default:
-      throw std::invalid_argument("Unimplemented encoding");
   }
 
   if ( isLinuxTerm() )

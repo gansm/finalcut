@@ -118,7 +118,6 @@ class FTermLinux final
     bool                 resetColorMap();
     void                 setBeep (int, int) const;
     void                 resetBeep() const;
-
     FKey                 modifierKeyCorrection (const FKey&);
 
   private:

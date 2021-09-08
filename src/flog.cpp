@@ -61,9 +61,6 @@ FLog& FLog::operator << (LogLevel log_level)
     case LogLevel::Debug:
       current_log = [this] (const std::string& s) { debug(s); };
       break;
-
-    default:
-      throw std::invalid_argument("Unimplemented log level");
   }
 
   return *this;

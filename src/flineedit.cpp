@@ -660,10 +660,9 @@ void FLineEdit::drawInputField()
 
       case InputType::Password:
         return printPassword();
-
-      default:
-        return std::size_t(0);
     }
+
+    return std::size_t(0);
   }();
 
   while ( x_pos + 1 < getWidth() )

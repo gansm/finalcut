@@ -247,10 +247,9 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (Side side)
 
     case Side::Left:
       return double_flatline_mask.left;
-
-    default:
-      throw std::invalid_argument("Unimplemented side");
   }
+
+  return double_flatline_mask.top;
 }
 
 //----------------------------------------------------------------------
@@ -724,9 +723,6 @@ void FWidget::setDoubleFlatLine (Side side, bool bit)
       length = double_flatline_mask.left.size();
       double_flatline_mask.left.assign(length, bit);
       break;
-
-    default:
-      throw std::invalid_argument("Unimplemented side");
   }
 }
 
@@ -771,9 +767,6 @@ void FWidget::setDoubleFlatLine (Side side, int pos, bool bit)
         double_flatline_mask.left[index] = bit;
 
       break;
-
-    default:
-      throw std::invalid_argument("Unimplemented side");
   }
 }
 

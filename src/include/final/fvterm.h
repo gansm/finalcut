@@ -60,7 +60,7 @@
 #include "final/fc.h"
 #include "final/fdata.h"
 #include "final/fstringstream.h"
-#include "final/fterm.h"
+#include "final/fterm_functions.h"
 
 #define F_PREPROC_HANDLER(i,h) \
     reinterpret_cast<FVTerm*>((i)), \
@@ -320,6 +320,8 @@ class FVTerm
                                                , const FPoint&
                                                , const FPoint& );
     void                  updateVTerm() const;
+    void                  scrollTerminalForward() const;
+    void                  scrollTerminalReverse() const;
     static void           callPreprocessingHandler (const FTermArea*);
     bool                  hasChildAreaChanges (FTermArea*) const;
     void                  clearChildAreaChanges (const FTermArea*) const;
@@ -367,10 +369,6 @@ class FVTerm
     static bool                   draw_completed;
     static bool                   no_terminal_updates;
     static bool                   force_terminal_update;
-
-    // Friend classes
-    friend class FOutput;
-    friend class FTermOutput;
 };
 
 

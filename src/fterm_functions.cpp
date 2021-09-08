@@ -35,9 +35,9 @@
 #include "final/flog.h"
 #include "final/fpoint.h"
 #include "final/fterm.h"
+#include "final/fterm_functions.h"
 #include "final/ftermbuffer.h"
 #include "final/ftermios.h"
-
 
 namespace finalcut
 {

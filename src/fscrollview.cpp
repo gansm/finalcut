@@ -899,9 +899,6 @@ void FScrollView::cb_vbarChange (const FWidget*)
     case FScrollbar::ScrollType::WheelDown:
       scrollBy (0, wheel_distance);
       break;
-
-    default:
-      throw std::invalid_argument("Unimplemented scroll type");
   }
 
   update_scrollbar = true;
@@ -953,9 +950,6 @@ void FScrollView::cb_hbarChange (const FWidget*)
     case FScrollbar::ScrollType::WheelDown:
       scrollBy (wheel_distance, 0);
       break;
-
-    default:
-      throw std::invalid_argument("Unimplemented scroll type");
   }
 
   update_scrollbar = true;
